@@ -4803,6 +4803,21 @@ pub fn groebner_decompose(
         BinaryPoint::Affine { x, .. } => x.clone(),
         BinaryPoint::Infinity => return (None, SolveStats::default()),
     };
+    // `KIC_M4_DESCENT=s5|s5sym` routes m = 4 to the S₅ template; unset,
+    // or when the template cannot be built, the chain below runs.
+    if m == 4 {
+        if let Some(out) = crate::cryptanalysis::s5_weil_template::dispatch_groebner_m4(
+            kc,
+            fb,
+            index_of,
+            st,
+            target,
+            engine,
+            node_budget,
+        ) {
+            return out;
+        }
+    }
     let sys = match crate::cryptanalysis::polynomial_reuse::build_decomposition_system_reusing(
         &fb.subspace_basis,
         &x_r,
