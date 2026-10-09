@@ -25,6 +25,7 @@ mod gf2_la;
 mod pdp;
 mod relation;
 mod sat;
+mod spec_sym_m5;
 mod suite_extra;
 
 fn registry() -> Vec<harness::Kernel> {
@@ -38,6 +39,7 @@ fn registry() -> Vec<harness::Kernel> {
     relation::register(&mut kernels);
     dlp::register(&mut kernels);
     suite_extra::register(&mut kernels);
+    spec_sym_m5::register(&mut kernels);
     kernels
 }
 
