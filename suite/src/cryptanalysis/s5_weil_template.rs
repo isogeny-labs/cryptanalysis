@@ -1864,3 +1864,181 @@ mod tests {
         assert!(S5Template::build_x(&big[..5], &F2mElement::one(23), &st23).is_some());
     }
 }
+
+/// Review differential tests on inputs the first round did not use:
+/// subfield curves with `b ≠ 1`, bases without `1`, the boundary
+/// `4ℓ = MAX_DENSE_VARS` on the full field, the smallest field, targets
+/// built from the 2-torsion point and targets inside the factor base.
+#[cfg(test)]
+mod review_tests {
+    use super::*;
+    use crate::cryptanalysis::koblitz_groebner::SolverEngine;
+    use crate::cryptanalysis::koblitz_symmetrised::{
+        plain_subspace_factor_base, random_subspace_containing_one,
+    };
+    use rand::rngs::StdRng;
+    use rand::{Rng, SeedableRng};
+
+    fn brute(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        target: &BinaryPoint,
+    ) -> BTreeSet<Vec<usize>> {
+        // Over the factor-base points themselves, not over V⁴.
+        let p = &fb.points;
+        let mut out = BTreeSet::new();
+        for a in 0..p.len() {
+            let pa = kc.add(&BinaryPoint::Infinity, &p[a]);
+            for b in 0..p.len() {
+                let pb = kc.add(&pa, &p[b]);
+                for c in 0..p.len() {
+                    let pc = kc.add(&pb, &p[c]);
+                    for d in 0..p.len() {
+                        if kc.add(&pc, &p[d]) == *target {
+                            let mut v = vec![a, b, c, d];
+                            v.sort_unstable();
+                            out.insert(v);
+                        }
+                    }
+                }
+            }
+        }
+        out
+    }
+
+    fn random_basis_any(n: u32, ell: usize, rng: &mut StdRng) -> Vec<F2mElement> {
+        loop {
+            let v: Vec<u64> = (0..ell)
+                .map(|_| rng.gen::<u64>() & ((1 << n) - 1))
+                .collect();
+            if span_table(&v).iter().skip(1).all(|&x| x != 0)
+                && span_table(&v).iter().collect::<BTreeSet<_>>().len() == 1 << ell
+            {
+                return v.into_iter().map(|x| element(x, n)).collect();
+            }
+        }
+    }
+
+    fn review_targets(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        rng: &mut StdRng,
+    ) -> Vec<BinaryPoint> {
+        let pts = &fb.points;
+        let pick = |rng: &mut StdRng| pts[rng.gen_range(0..pts.len())].clone();
+        let mut out = Vec::new();
+        for _ in 0..4 {
+            out.push((0..4).fold(BinaryPoint::Infinity, |acc, _| kc.add(&acc, &pick(rng))));
+        }
+        // Sums of 2 and 3 factor-base points (only padded decompositions exist).
+        out.push(kc.add(&pick(rng), &pick(rng)));
+        out.push(kc.add(&kc.add(&pick(rng), &pick(rng)), &pick(rng)));
+        // A factor-base point itself.
+        out.push(pick(rng));
+        // 2-torsion T = (0, √b): P + Q + R + T, and T itself.
+        let t = points_with_x(&kc.curve, &F2mElement::zero(kc.n));
+        if let Some(t) = t.first() {
+            out.push(kc.add(&kc.add(&pick(rng), &pick(rng)), &kc.add(&pick(rng), t)));
+            out.push(t.clone());
+        }
+        // Random points of the curve (mostly no decomposition).
+        for _ in 0..3 {
+            out.push(kc.mul(kc.generator(), &BigUint::from(rng.gen_range(1u64..1 << 40))));
+        }
+        out.retain(|t| matches!(t, BinaryPoint::Affine { .. }));
+        out
+    }
+
+    fn check(kc: &KoblitzCurve, fb: &FrobeniusFactorBase, rng: &mut StdRng, label: &str) -> usize {
+        let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        let index_of = fb.index_map();
+        let mut nonempty = 0;
+        for target in review_targets(kc, fb, rng) {
+            let truth = brute(kc, fb, &target);
+            nonempty += usize::from(!truth.is_empty());
+            for engine in [SolverEngine::default()] {
+                for d in [
+                    M4Descent::Chained,
+                    M4Descent::S5Template,
+                    M4Descent::S5Symmetrised,
+                ] {
+                    let o = decompose_all_m4(kc, fb, &index_of, &st, &target, d, engine, 1 << 30)
+                        .unwrap();
+                    assert!(!o.stats.exhausted);
+                    assert_eq!(o.decompositions, truth, "{label} {d:?} {engine:?} all");
+                    let (found, _, _) =
+                        groebner_decompose_m4(kc, fb, &index_of, &st, &target, d, engine, 1 << 30);
+                    assert_eq!(found.is_some(), !truth.is_empty(), "{label} {d:?} first");
+                    if let Some(mut idx) = found {
+                        idx.sort_unstable();
+                        assert!(truth.contains(&idx), "{label} {d:?} member");
+                    }
+                }
+            }
+        }
+        nonempty
+    }
+
+    #[test]
+    fn review_subfield_curves_with_b_not_one() {
+        let mut rng = StdRng::seed_from_u64(0xbee5);
+        let mut nonempty = 0;
+        for (k, n, ell) in [
+            (3u32, 9u32, 2usize),
+            (3, 9, 3),
+            (3, 15, 2),
+            (3, 15, 3),
+            (5, 15, 3),
+        ] {
+            for b_index in [2u64, 3, (1 << k) - 1] {
+                for a_index in [0u64, 1] {
+                    let Some(kc) = KoblitzCurve::subfield(k, n, a_index, b_index) else {
+                        continue;
+                    };
+                    assert_ne!(bits_of(&kc.curve.b), 1);
+                    let basis = if rng.gen_bool(0.5) {
+                        random_subspace_containing_one(&kc, ell, &mut rng)
+                    } else {
+                        random_basis_any(n, ell, &mut rng)
+                    };
+                    let Some(fb) = plain_subspace_factor_base(&kc, &basis) else {
+                        continue;
+                    };
+                    if fb.points.is_empty() {
+                        continue;
+                    }
+                    nonempty += check(&kc, &fb, &mut rng, &format!("k{k} n{n} l{ell} b{b_index}"));
+                }
+            }
+        }
+        eprintln!("nonempty {nonempty}");
+        assert!(nonempty >= 20, "nonempty {nonempty}");
+    }
+
+    /// The smallest field, and the full field at the dense cap:
+    /// `n = 5`, `ℓ = 5` is `4ℓ = 20 = MAX_DENSE_VARS`.
+    #[test]
+    fn review_edge_fields_and_the_cap() {
+        let mut rng = StdRng::seed_from_u64(0xed6e);
+        for (n, ell) in [(3u32, 1usize), (3, 2), (3, 3), (5, 2)] {
+            for a in 0u8..=1 {
+                let Some(kc) = KoblitzCurve::new(a, n) else {
+                    continue;
+                };
+                let basis = random_basis_any(n, ell, &mut rng);
+                let Some(fb) = plain_subspace_factor_base(&kc, &basis) else {
+                    continue;
+                };
+                if fb.points.is_empty() {
+                    continue;
+                }
+                check(&kc, &fb, &mut rng, &format!("edge n{n} l{ell} a{a}"));
+            }
+        }
+        let kc = KoblitzCurve::new(0, 5).unwrap();
+        let st = FieldStructure::new(5, &kc.curve.irreducible);
+        let basis = random_basis_any(5, 5, &mut rng);
+        let t = S5Template::build_x(&basis, &kc.curve.b, &st).expect("4ℓ = 20 builds");
+        assert_eq!(t.n_vars(), MAX_DENSE_VARS);
+    }
+}
