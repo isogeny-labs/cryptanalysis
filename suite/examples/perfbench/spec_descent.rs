@@ -11,6 +11,10 @@
 //! for monomial, so the fingerprints agree, and `perfindex.py compare`
 //! can pair a binary run with and without the variable.
 //! `spec_descend_s4_n23_np6` uses the inputs of `pdp/descend_s4_n23_np6`.
+//! `spec_descend_wide_s3_n47_np40` measures the 128-bit mask itself: at
+//! two summands both engines expand the same closed form of `S_3`, so its
+//! generic run is the same code, and nothing in the repository descended
+//! past 64 variables before this module.
 //! The oracle kernel has no generic twin: before this module,
 //! `descent-algebraic` refused `m = 4`.
 
@@ -200,7 +204,7 @@ pub fn register(kernels: &mut Vec<Kernel>) {
     );
     add(
         "pdp/spec_descend_wide_s3_n47_np40",
-        "S3 with a 128-bit mask, n=47 n'=40 (80 variables), tensor (naive if generic), 16 targets",
+        "S3 with a 128-bit mask, n=47 n'=40 (80 variables), 16 targets (no generic twin)",
         Tier::Quick,
         wide_s3_n47_np40,
     );

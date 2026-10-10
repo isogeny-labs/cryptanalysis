@@ -725,10 +725,15 @@ pub fn max_n_prime_wide(summands: u32) -> u32 {
 
 /// The subspace dimensions at which [`descend_narrow`] sends three
 /// summands to the [`Engine::Tensor`] path instead of the fast path.  Both
-/// return the same system there; the tensor engine measured faster from
-/// `n' = 3` to `10` (1.2× to 3.4× at `n = 31`, one thread), and nothing
-/// past `10` was measured, so the fast path keeps the rest.
-pub const TENSOR_S4_N_PRIME: std::ops::RangeInclusive<u32> = 3..=10;
+/// return the same system there.  Measured on one thread at `n = 23` and
+/// `31` (best of up to five runs, random basis and target), the tensor
+/// engine took 0.79× to 0.80× the fast path's time at `n' = 3`, and
+/// 0.17× to 0.70× from `n' = 4` to `14`.  At `n' = 1` and `2` it was
+/// slower (1.1× to 1.9×), and nothing past `14` was measured, so the fast
+/// path keeps those.  At two summands the tensor engine took 0.71× to
+/// 1.06× the fast path's time, too small a difference to move two summands
+/// off the fast path.
+pub const TENSOR_S4_N_PRIME: std::ops::RangeInclusive<u32> = 3..=14;
 
 /// Descend `S_{m+1}(x_1, …, x_m, x_R) = 0` with every `x_i` in the span of
 /// `v_basis`, into a 64-bit system.
@@ -1233,7 +1238,7 @@ mod tests {
             let gf = &inst.gf;
             for (m, nps) in [
                 (2u32, vec![1u32, 6, 13, 20, 32]),
-                (3, vec![1, 2, 3, 5, 6, 8, 10, 11]),
+                (3, vec![1, 2, 3, 5, 6, 8, 10, 11, 12, 14, 15]),
             ] {
                 for np in nps {
                     let basis = random_basis(&mut rng, np, gf.mask);
