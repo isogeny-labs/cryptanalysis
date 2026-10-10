@@ -1252,6 +1252,10 @@ impl SubspaceOracle {
     }
 }
 
+// The same oracle over a coset `V + c` (affine factor bases).
+mod coset;
+pub use coset::AffineSubspaceOracle;
+
 #[cfg(test)]
 mod tests {
     use super::*;
