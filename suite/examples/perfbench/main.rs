@@ -26,6 +26,7 @@ mod pdp;
 mod relation;
 mod sat;
 mod suite_extra;
+mod walksat;
 
 fn registry() -> Vec<harness::Kernel> {
     let mut kernels = Vec::new();
@@ -38,6 +39,7 @@ fn registry() -> Vec<harness::Kernel> {
     relation::register(&mut kernels);
     dlp::register(&mut kernels);
     suite_extra::register(&mut kernels);
+    walksat::register(&mut kernels);
     kernels
 }
 
