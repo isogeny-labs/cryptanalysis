@@ -22,6 +22,7 @@ def main():
     ip, ir = load("inverse_protocol.json"), load("inverse_result.json")
     rp, rr = load("retry_protocol.json"), load("retry_result.json")
     audit = load("audit.json")
+    sp, sr = load("inverse_sage_protocol.json"), load("inverse_sage_audit.json")
     paths = {"source": HERE / "run.py", "geometry": run.GEOMETRY,
              "prior": run.PRIOR, "targets": HERE / "targets.json",
              "runtime": HERE / "sage_runtime_info.json"}
@@ -43,9 +44,23 @@ def main():
     assert audit["result_sha256"] == sha(HERE / "result.json")
     assert audit["source_sha256"] == sha(HERE / "audit_sage.py")
     assert audit["positive_raw_group_sum"] and len(audit["selected_seed_panel"]) == 16
+    spaths = {"source": HERE / "inverse_sage_audit.py", "geometry": run.GEOMETRY,
+              "targets": HERE / "targets.json", "inverse_result": HERE / "inverse_result.json",
+              "runtime": HERE / "inverse_sage_runtime_info.json"}
+    assert sp["sha256"] == {k: sha(v) for k, v in spaths.items()}
+    assert sr["status"] == "PASS_COMPLETE_OPPOSITE_ORIENTATION"
+    assert sr["source_sha256"] == sha(HERE / "inverse_sage_audit.py")
+    assert sr["protocol_sha256"] == sha(HERE / "inverse_sage_protocol.json")
+    assert sr["left_distinct_coordinates"] == sr["right_distinct_coordinates"] == 1984
+    assert len(sr["rows"]) == 8
     assert len(r["rows"]) == len(ir["rows"]) == 8
-    for a, b in zip(r["rows"], ir["rows"]):
+    for a, b, s in zip(r["rows"], ir["rows"], sr["rows"]):
         assert (a["kind"], a["option"]) == (b["kind"], b["option"])
+        assert (s["kind"], s["option"]) == (b["kind"], b["option"])
+        assert s["roots_examined"] == b["roots_tested"] == 2046
+        assert sorted(tuple(x) for x in s["hits"]) == sorted(
+            (h["left_seed"], h["right_seed"], h["left_z"], h["right_z"])
+            for h in b["hits"])
         assert b["status"] == "COMPLETE" and b["query_ns"] <= 120_010_000_000
         assert b["left_coordinates"] == ir["left_distinct_coordinates"] == 1984
         assert a["query_ns"] <= 120_010_000_000
@@ -61,10 +76,11 @@ def main():
                                         "right_z": 1979731517413}]
     assert all(not row["hits"] for i, row in enumerate(ir["rows"]) if i != 3)
     assert max(r["peak_rss_bytes"], rr["peak_rss_bytes"],
-               ir["peak_rss_bytes"]) < 4*1024**3
+               ir["peak_rss_bytes"], sr["peak_rss_bytes"]) < 4*1024**3
     print(json.dumps({"status": "PASS_COMPLETE_INVERSE_EIGHT_LIFTS",
                       "first_linearized_complete_lifts": 7,
                       "inverse_complete_lifts": 8,
+                      "independent_sage_complete_lifts": 8,
                       "positive_hits": 1, "negative_hits": 0}))
 
 
