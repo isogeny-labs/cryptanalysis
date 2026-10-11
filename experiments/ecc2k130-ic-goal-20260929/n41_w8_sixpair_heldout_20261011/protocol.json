@@ -1,0 +1,52 @@
+{
+  "candidate_id": null,
+  "combined_rss_cap_bytes_each": 4294967296,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "generator_projected": [
+    1236950581268,
+    1658150202663
+  ],
+  "ic_online_boundary": "after source table and factor-log loading, table build, and public point input loading; before raw-preimage computation",
+  "parent_wall_cap_seconds_each": 300,
+  "public_target": [
+    1096889081872,
+    1442440541544
+  ],
+  "rho_online_boundary": "after public point and generator input loading; before target-dependent partition construction",
+  "rho_walk": "16 target-dependent additive partitions, hash partition, 8-bit x distinguished points, one worker, no cross-target state",
+  "run_order": [
+    "ic",
+    "rho"
+  ],
+  "source_sha256": {
+    "factor_logs": "d5c4ba0a76b7afa76ca524fffc8c60fd353bb77a8123b0adf4000c1e44fb682b",
+    "group_kernel": "3aa0f1fcddb048ded6a6b843d9a52bcfca39b6e9744f6f80fa26f2524958f353",
+    "online_binary": "1786a2b00dd9e386500780b2d744a75e4c4ef755832318e2f64ef59dcd34218d",
+    "online_source": "f6565359a444b324b44dfdac2b075c705327cb8bed9b7fc365440fe7fcecb234",
+    "preparation_protocol": "7c2e66dbeb203995a9e963d65f7684914dc6e35a765c31fc5a3d11ea7ea7e800",
+    "preparation_result": "b0cf2c8a5a774b4b5c5bfc3fd7a018bc6ff1336ac0930e19e730bf5f71c9ddf4",
+    "preparer": "6b83f880fed8070538be8145a6f26c0ca5a11ca92d51f49958f0eba8537bb9ce",
+    "public_target": "ff76d8efccf8e4848760e3943e610681caf4f4309c3b429f2d0952373f0ab2f3",
+    "runner": "f04b3f7fe5d86f2f103ae766a6fdc6b9c4fd363c1c84eaad826067f67a21a38b",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "smoke_output": "ba7092cce2b6dc0cf94af9152704d348de88d3265f50c5a391962721dcbdf024",
+    "smoke_target": "63904181927fd5824d52173979d6068a99463446742c78a26f854674a53ceaac",
+    "source_states": "1f99b78210c3ec6c30945f3a9d261c1fd58cbb3a509e3a050fb5bdd4a75f06dd",
+    "state_logs": "2d8723995a549daab63bd91d22c8ea24b4bd19f8092aed83fe1042c7e970c21b",
+    "torsion": "b34653fc369473024daf3de274a7c966c8889d4102bf62fbc8be5414b451ef2d"
+  },
+  "status": "FROZEN_N41_W8_HELDOUT_ONE_TARGET_IC_RHO",
+  "target_count": 1,
+  "worker_count_each": 1,
+  "workload_id": "86cc67dad07c",
+  "workload_record": {
+    "cold_or_warm": "one cold target after reusable tables and factor logs",
+    "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+    "input_law": "SHA256 held-out one-target point, scalar sealed from solvers",
+    "public_target": [
+      1096889081872,
+      1442440541544
+    ],
+    "target_count": 1
+  }
+}
