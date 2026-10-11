@@ -1,0 +1,22 @@
+# Published ECC2K-130 point queried with one joint W16 prefix circuit
+
+The 32 signed W16 first-pair prefixes were bound to the fixed published `ecc2k-130` point, and **all 128 residual-target fibers were searched in one shared five-pair XCNF**. The one-worker query reached its 595-second safe wall stop after 185 active CryptoMiniSat restarts. Its recorded status is `CENSORED_TIME`. The [receipt audit](audit.json) binds the exact formula, solver transcript, source hashes, cap, and exclusive phase sum; an [independent checked-Sage audit](sage_audit.json) verified the public subgroup point, all 32 signed first-pair projected sums, all 32 residuals, and all 128 raw cofactor preimages.
+
+The curve is `EC1N131Ckb1heb5f1998f20b` over `GF(2)[t]/(t^131+t^13+t²+t+1)`, with prime subgroup order `680564733841876926932320129493409985129`. The fixed public point is `(2309658012506412099988466246134815930289, 1578526100003023531340803776621036465818)` in that polynomial basis. The W16 source has **B=393,552** actual subgroup-usable factor-base points and **K=32,675** folded columns. The residual method fixes a signed first pair, then searches ten free source masks in five same-rotation pairs with two shared-seed four-atom blocks. The 32 signed prefixes came from an [archived list](../n131_w16_joint_prefix_20261010/prefixes.json) frozen for a different constructed control before this published-point query. Their projected sums were retained; every public-point residual and four-element raw fiber was recomputed for this workload and again inside the timed query. The remaining masks, signs, pair outputs, and target choice were unpinned. This is a component proposal with `candidate_id: null`.
+
+The [input record](inputs.json) and [query protocol](protocol.json) freeze the target, prefix law, checked Sage runtime, inherited circuit source, solver binary, flags, one worker, 600-second online cap, and 4-GiB combined RSS cap. The joint circuit has 198,137 variables, 79,072 AND gates, 425,729 CNF clauses, 34,729 native-XOR rows, and 26,481,763 XCNF bytes. The exact XCNF SHA-256 is `e9ec6a059242b81a7676c01852979debcce627422b8c1afe3fd668233892f4d1`.
+
+| Exclusive target-dependent phase | Observed wall |
+| --- | ---: |
+| Recompute and verify 32 residuals and 128 raw fibers | 9.464423 s |
+| Build joint XCNF | 34.160998 s |
+| Serialize and hash XCNF | 0.265723 s |
+| Search, including failed attempts and safe stop | 551.557959 s |
+| Terminal transcript and relation check | 0.005145 s |
+| **Complete query interval** | **595.454248 s** |
+
+The [run receipt](result.json) records 32.242 sampled solver CPU seconds, 660,783,104 B sampled peak combined RSS, 185 restart lines, empty stderr, no terminal SAT/UNSAT line, no model lines, and termination at the parent safe wall stop. The low sampled CPU fraction during the 551.558-second search interval is a direct scheduling observation on this host. This capped row cannot rank the circuit against another CPU algorithm or establish the time needed with a full CPU entitlement. It does provide a complete ordinary public-point query attempt on the frozen 128-choice source law, under the stated wall and memory limits.
+
+The [Sage geometry replay](sage_audit.py) uses the installed field and curve implementation, independently from the integer-field producer. It reconstructs every archived signed raw first pair, checks its fourfold projected point, verifies `prefix + residual = Q` in the prime subgroup, and checks each raw fiber's fourfold image and reciprocal coordinate. The Sage launcher [runtime receipt](sage_runtime_info.json) was saved before the workload. The [terminal auditor](audit.py) checks the exact formula header, all input and output hashes, active solver search, resource cap, and phase arithmetic.
+
+The next controlled search should execute this **same frozen formula and 128 choices** on a host that supplies one auditable CPU worker for the full wall envelope; keep the target-dependent preparation and relation replay charged. In parallel, a new target-conditioned generator must reduce pair-output search structurally: the N41 exact inverse join resolves a supplied residual, whereas this N131 run still exposes five free pair outputs to SAT. The next method gate should produce or reject those outputs from the public target before source-mask expansion, and record ordinary relation yield and novel rank rather than infer them from a capped SAT search.
