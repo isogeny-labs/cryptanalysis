@@ -1,6 +1,6 @@
 # N41 two-pair reciprocal output BDD census
 
-**Result.** A reduced ordered BDD built from 200,000 distinct reciprocal x-coordinates of valid two-pair sums has 1,237,720 nodes. Equal-size uniform field and curve-valid controls have 1,423,144 and 1,422,442 nodes. The 13.0% relative reduction is measurable, but the representation still uses 6.19 nodes per observed value. Even a minimal three-32-bit-integer serialization would use 14,852,640 bytes for the nodes, versus 1,600,000 bytes for 200,000 raw 64-bit reciprocals. This bit order and representation therefore do not give a compact sampled output domain.
+**Result.** A reduced ordered BDD built from 200,000 distinct reciprocal x-coordinates of valid two-pair sums has 1,237,720 nodes. Equal-size uniform field and curve-valid controls have 1,423,144 and 1,422,442 nodes. The 13.0% relative reduction is measurable, but the representation still uses 6.19 nodes per observed value. A straightforward three-32-bit-integer serialization would use 14,852,640 bytes for the nodes, versus 1,600,000 bytes for 200,000 raw 64-bit reciprocals. This bit order and representation therefore do not give a compact sampled output domain under that serialization.
 
 ## Source and method
 
