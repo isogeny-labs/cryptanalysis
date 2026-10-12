@@ -1,0 +1,64 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --verb=1 --verbstat=2 --printsol=1 --restartprint=10000000 --random=2026100613 --maxtime=118.000 --maxmatrixrows=40000 --maxmatrixcols=85000 --maxnummatrices=10 --maxconfl=1000000000000 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_bounded_xor_20261012/public_cap64/projected.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_d13_bounded_xor_20261012/public_cap64/projected.xcnf'
+c o -- header says num vars:         113062
+c o -- header says num clauses:      280725
+c -- clauses added: 228629
+c -- xor clauses added: 52096
+c -- vars added 113062
+c Parsing time: 0.07 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 52096 GJ matrices: 0 T: 0.07
+c [find&init matx] performing matrix init
+c [matrix] Good   matrix  0c [matrix] disabling SLS since matrix is found
+  38213 x80536  density:0.0003  xorlen avg: 20.80
+c [matrix] Good   matrix  1    655 x 2358  density:0.0232  xorlen avg: 54.68
+c [matrix] Good   matrix  2   1465 x 1634  density:0.0049  xorlen avg:  7.94
+c [matrix] Good   matrix  3   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  4   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  5   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  6   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  7   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  8   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] Good   matrix  9   1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] UNused matrix      1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] UNused matrix      1307 x 3010  density:0.0016  xorlen avg:  4.94
+c [matrix] unused matrices: 2 of which too few rows: 0
+c [matrix] Using 10 matrices recovered from 2614 xors T: 0.01 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   127  111620  108K  119K    7.50    4.62     0     0   127     0  711.53  711.53
+c rst  geom  stb   vs     2   249  111620  108K  119K    7.50    4.62     0     0   249     0  801.55  801.55
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   384  111620  108K  119K    7.50    4.62     0     0   384     0 1111.18 1111.18
+c rst  geom  stb   vs     4   531  111620  108K  119K    7.50    4.62     0     0   531     0 1295.36 1295.36
+c rst  geom  stb   vs     5   692  111620  108K  119K    7.50    4.62     2     0   690     0 1071.00 1071.00
+c rst  geom  stb   vs     6   870  111620  108K  119K    7.50    4.62     2     1   867     0  915.72  915.72
+c rst  geom  stb   vs     7  1064  111620  108K  119K    7.50    4.62     2     1  1061     0  785.87  785.87
+c rst  geom  stb   vs     8  1277  111620  108K  119K    7.50    4.62     2     1  1274     0  683.24  683.24
+c rst  geom  stb   vs     9  1511  111620  108K  119K    7.50    4.62     2     1  1508     0  613.39  613.39
+c rst  geom  stb   vs    10  1768  111620  108K  119K    7.50    4.62     2     1  1765     0  553.14  553.14
+c rst  geom  stb   vs    11  2051  111620  108K  119K    7.50    4.62     2     1  2048     0  514.18  514.18
+c rst  geom  stb   vs    12  2361  111620  108K  119K    7.50    4.62     2     4  2355     0  477.91  477.91
+c rst  geom  stb   vs    13  2701  111620  108K  119K    7.50    4.62     2     4  2695     0  456.99  456.99
+c rst  geom  stb   vs    14  3075  111620  108K  119K    7.50    4.62     2     4  3069     0  427.16  427.16
+c rst  geom  stb   vs    15  3485  111620  108K  119K    7.50    4.62     2     4  3479     0  424.67  424.67
+c rst  geom  stb   vs    16  3935  111620  108K  119K    7.50    4.62     2     6  3927     0  399.06  399.06
+c rst  geom  stb   vs    17  4429  111620  108K  119K    7.50    4.62     2     6  4421     0  387.91  387.91
+c rst  geom  stb   vs    18  4972  111620  108K  119K    7.50    4.62     2     7  4963     0  373.11  373.11
+c rst  geom  stb   vs    19  5570  111620  108K  119K    7.50    4.62     2     7  5561     0  354.82  354.82
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c [distill-long-red0] cls tried: 2/2 T: 0.00 T-out: N T-r: 100.00%
+c [distill-long-red1] cls tried: 7/7 T: 0.00 T-out: N T-r: 99.67%
+c rst  luby ibes  vmt    20  5671  111620  108K  119K    7.50    4.62     2     7  5662     0  350.76  350.76
+c rst  luby ibes  vmt    21  5773  111620  108K  119K    7.50    4.62     2     7  5764     0  347.66  347.66
+c rst  luby ibes  vmt    22  5974  111620  108K  119K    7.50    4.62     2    10  5962     0  341.47  341.47
+c rst  luby ibes  vmt    23  6075  111620  108K  119K    7.50    4.62     2    10  6063     0  338.14  338.14
+c rst  luby ibes  vmt    24  6176  111620  108K  119K    7.50    4.62     2    10  6164     0  335.58  335.58
