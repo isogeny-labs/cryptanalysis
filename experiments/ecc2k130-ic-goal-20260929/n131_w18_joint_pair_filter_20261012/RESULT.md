@@ -2,7 +2,7 @@
 
 ## Contribution
 
-The diagonal two-pair source fills the entire trace-zero reciprocal affine space for **every** ordered pair of nonzero source seeds. An independent field-arithmetic replay checked 41 pivotal witnesses in each of the 65,025 seed bins. Consequently, an output-only affine parity filter conditioned on those two seeds has no additional exact gate beyond reciprocal trace zero. A second census reaches the full 821-dimensional space of degree-at-most-two Boolean functions in all 255 equal-seed bins, and an independent arithmetic path reproduces every rank and probe count. This redirects the next filter experiment toward a condition using both partial sums and the public target, rather than a low-degree test of one combined reciprocal.
+The diagonal two-pair source affinely spans the trace-zero reciprocal space for **every** ordered pair of nonzero source seeds. An independent field-arithmetic replay checked 41 pivotal witnesses in each of the 65,025 seed bins. Consequently, an output-only affine parity filter conditioned on those two seeds has no additional exact gate beyond reciprocal trace zero. A second census reaches the full 821-dimensional space of degree-at-most-two Boolean functions in all 255 equal-seed bins, and an independent arithmetic path reproduces every rank and probe count. This redirects the next filter experiment toward a condition using both partial sums and the public target, rather than a low-degree test of one combined reciprocal.
 
 ## Exact source and result
 
