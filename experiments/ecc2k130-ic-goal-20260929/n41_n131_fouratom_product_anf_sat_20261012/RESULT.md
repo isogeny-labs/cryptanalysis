@@ -1,0 +1,22 @@
+# Joint product ANF reaches an unpinned N41 model; direct N131 XCNF hits its cap
+
+**Result.** A native-XOR encoding of the exact fixed-seed four-atom ANF found the sole relaxed N41 positive product assignment with all 14 product bits free. The returned assignment was checked against every CNF and XOR row, the original binary-field eliminant, and the archived source-product masks `(26,83)`. The paired field control returned UNSAT, agreeing with the inherited exhaustive 16,384-assignment audit. On the archived N131 W15 constructed positive and field control, the same encoding emitted 104 MB formulas and both solver calls reached the frozen 120-second cap. The N131 one-sided polynomial-GCD oracle on these same seed/output cases had previously completed in 6.522 and 6.964 seconds of internal query time, so this direct SAT encoding does not advance the current N131 inverse stage.
+
+## Method and frozen inputs
+
+The [N41 protocol](protocol.json) and [N131 protocol](n131_protocol.json) fix the runners, inherited independent ANF source, CryptoMiniSat binary, input hashes, one worker, 4-GiB RSS ceiling, and solver wall caps before execution. The input rows are inherited from the [exact joint ANF experiment](../n41_n131_fouratom_product_anf_20261012/RESULT.md). Each is one fixed pair of source seeds and Frobenius rotations with one supplied four-atom output. The N41 instance uses `GF(2)[t]/(t^41+t³+1)`, W8 source seeds `(94,171)`, rotations `(14,21)`, and 128 product values per seed. The N131 W15 instance uses `GF(2)[t]/(t^131+t^13+t²+t+1)`, seed 13686 in both slots, rotations `(26,39)`, and 16,384 product values per seed. The positive N131 output is constructed from archived source masks; the control output is separately fixed.
+
+For every nonconstant square-free monomial in the field-valued ANF, the emitter reuses one Boolean wire. A degree-two-or-higher monomial wire is constrained by three CNF clauses to equal one prior monomial wire AND one primary product bit. Each of the `n` field coefficient bits becomes one native-XOR row; the field constant determines whether its first literal is negated. The [Lean proof map](PROOF_MAP.md) records checked gate and parity lemmas and the remaining formal bridge from generated coefficients to the field eliminant. The returned N41 model was also checked row by row by a separate parser and evaluated against the original field equation.
+
+| Fixed seed/output | ANF terms | Primary bits | XCNF variables | AND gates | XOR literals | Formula | Status | ANF build | Emit | Solver | Sampled solver RSS |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: |
+| N41 positive | 4,026 | 14 | 4,060 | 4,046 | 82,792 | 543,679 B | SAT, source products matched | 0.180 s | 0.039 s | 0.638 s | 10.2 MB |
+| N41 field control | 4,026 | 14 | 4,060 | 4,046 | 82,497 | 542,260 B | UNSAT | 0.191 s | 0.037 s | 5.155 s | 26.1 MB |
+| N131 constructed positive | 220,172 | 28 | 220,535 | 220,507 | 14,420,218 | 103,950,357 B | TIMEOUT at 120 s | 18.647 s | 6.928 s | 120.032 s | 341.6 MB |
+| N131 field control | 220,172 | 28 | 220,535 | 220,507 | 14,424,364 | 103,973,296 B | TIMEOUT at 120 s | 14.144 s | 4.300 s | 120.051 s | 352.3 MB |
+
+The [N41 positive receipt](n41_positive.json), [N41 control receipt](n41_negative.json), [N131 positive receipt](n131_positive.json), and [N131 control receipt](n131_control.json) retain exact source/formula/stdout hashes, phase times, terminal status, cap and sampled RSS. The emitted XCNF and raw solver output are archived beside them. CPU times are exploratory because this host does not have an isolation receipt. The N41 and N131 rows are fixed-seed component costs; supplied four-atom outputs exclude the seed/output search required for an ordinary public target. `candidate_id` remains null at this stage.
+
+## Next falsifiable refinement
+
+The direct SAT branch loses at N131 because almost every ANF term becomes a shared monomial gate and contributes to many field XOR rows. A narrower experiment is to use the one-sided GCD to select a small number of first-product values, then encode only the second-product constraint for those values and compare its charged query cost with the existing GCD query on the identical N131 input. Retain the GCD branch as the baseline. Promotion still requires target-derived offered outputs and an unpinned N41 public-point relation using the complete search path before a frozen N131 ordinary relation run.
