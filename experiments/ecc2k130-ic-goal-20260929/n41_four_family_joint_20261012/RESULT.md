@@ -3,7 +3,7 @@
 An exact group join exhausts four prescribed N41 diagonal-pair seed families
 against the frozen public target in **0.107–0.111 seconds of local process
 time**. It finds the checked eight-column relation in the positive tuple and
-zero group hits in two target-independent negative tuples. The corresponding
+zero group hits in two witness-independent negative tuples. The corresponding
 output-first native-XOR SAT circuits keep all four pair outputs free, but all
 three queries reach a 40-second CryptoMiniSat limit with `BOUNDED_UNKNOWN`.
 Fixing the positive tuple's three checked S3 root bits also reaches that
