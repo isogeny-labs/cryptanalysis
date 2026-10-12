@@ -40,7 +40,7 @@ verified all 128 public residuals. The [receipt audit](audit_result.json)
 passed. This is a censored ordinary-query stage result, with
 `candidate_id: null` and no measured relation row or rank increment.
 
-CryptoMiniSat's startup log declined the seven `3315 × 9132` XOR matrices
+CryptoMiniSat's startup log declined six `3315 × 9132` XOR matrices
 under its default matrix limits. The next frozen test keeps the same XCNF,
 public point, one-worker CPU and memory limits and enables those matrices in
 the [Gaussian replay](../n131_w18_four_seed_sevenpair_gauss_20261011/protocol.json).

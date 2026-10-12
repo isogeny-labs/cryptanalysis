@@ -1,13 +1,14 @@
 # Frozen Gaussian-matrix replay on the seven-pair public formula
 
 CryptoMiniSat's first pass over the seven-pair N131 ordinary-point XCNF
-discarded seven `3315 × 9132` XOR matrices under its default 2,000-row and
+discarded six `3315 × 9132` XOR matrices under its default 2,000-row and
 1,000-column limits. This replay keeps the exact public-point XCNF, solver
 binary, one worker, 300 CPU-second search cap, 4,500-second wall cap, and
 4-GiB combined RSS cap; it raises the matrix limits to 4,000 rows and 10,000
 columns and permits seven matrices. The `44172 × 101564` matrix remains
-outside those limits. The test asks whether enabling the seven medium-sized
-XOR matrices changes ordinary-point search behavior under the same cap.
+outside those limits. The replay's initialization enabled all six of those
+matrices plus one `277 × 2504` matrix. The test asks whether this Gaussian
+propagation changes ordinary-point search behavior under the same cap.
 
 Run from the repository root with its selected Python 3.9 environment
 (including `psutil`):
