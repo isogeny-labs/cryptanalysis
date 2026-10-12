@@ -1,0 +1,16 @@
+NearCharacterRank.lean:17:23: error: unsolved goals
+case cons
+test : Nat → Bool
+zero : test 0 = false
+linear : ∀ (a b : Nat), test (a.xor b) = (test a ^^ test b)
+value : Nat
+rest : List Nat
+ih : (∀ (value : Nat), value ∈ rest → test value = false) → test (xorSum rest) = false
+vanishes : ∀ (value_1 : Nat), value_1 ∈ value :: rest → test value_1 = false
+hv : test value = false
+hrest : ∀ (item : Nat), item ∈ rest → test item = false
+⊢ (false ^^ false) = false
+'NearCharacterRank.certificateX' depends on axioms: [propext]
+'NearCharacterRank.certificateInverse' depends on axioms: [propext]
+'NearCharacterRank.no_extra_linear_equalityX' depends on axioms: [propext, sorryAx, Quot.sound]
+'NearCharacterRank.no_extra_linear_equalityInverse' depends on axioms: [propext, sorryAx, Quot.sound]
