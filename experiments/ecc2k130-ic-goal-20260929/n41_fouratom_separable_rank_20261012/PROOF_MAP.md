@@ -1,0 +1,10 @@
+# Proof map for the four-atom separable-rank gate
+
+| Result | Exact assumptions and evidence | Lean status |
+| --- | --- | --- |
+| N41 specialized 9-by-9 coefficient matrices have rank 9 for 18 frozen cases | `protocol.json`, `result.json`; `audit_sage.py` rebuilds all 81 entries and Sage rank for each, with matrix SHA-256 equality | **Partial.** No Lean finite-field encoding or imported 81-entry rank certificates. |
+| N41 complete positive and negative 32-by-32 product-fiber evaluation matrices have rank 9 | The frozen `panel.json` supplies 32 distinct products in each seed bin; `audit_sage.py` checks source products, Vandermonde ranks, and the complete matrix rank | **Partial.** The finite lists and field operations are verified by two executable paths, not a Lean kernel theorem. |
+| N131 W15 constructed positive and field-control coefficient matrices have rank 9 | `protocol_n131.json`, `result_n131.json`, and `audit_n131_sage.py` match all coefficients and independently check Sage rank; positive archived product root evaluates to zero | **Partial.** The exact W15 basis-to-field mapping and finite matrix certificate are not imported into Lean. |
+| Rank 9 evaluation values require at least nine separable summands over the field | Written proof in `RESULT.md`: Vandermonde column independence for 32 distinct products, matrix rank preservation, and subadditivity of rank for eight outer products | **Open Lean theorem.** Requires a pinned matrix-rank/Vandermonde development and a proof connecting the concrete `H` evaluation matrix to that theorem. |
+
+The checked Lean toolchain used in sibling formalizations is Lean 4.34.1. This experiment adds no claimed Lean theorem or kernel certificate. The exact outstanding definitions are the binary fields `GF(2)[t]/(t^41+t³+1)` and `GF(2)[t]/(t^131+t^13+t²+t+1)`, their canonical encodings, the 266-term eliminant, finite product bins, and the rank certificates. No `sorry`, `admit`, native-evaluation proof, or custom research axiom is presented as a proof. The mathematical rank argument is written in the result report, and full formalization remains open.

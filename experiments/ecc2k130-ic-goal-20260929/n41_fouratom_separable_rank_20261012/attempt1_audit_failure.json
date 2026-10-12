@@ -1,0 +1,11 @@
+{
+  "status": "PRODUCER_FAILURE_WRONG_SOURCE_ENCODING",
+  "attempt": "N131 first coefficient-rank producer",
+  "protocol_sha256": "4ddf237d3e6c11f7084943ee3faeaa32561d75189f90d510df76652fbd4d87b6",
+  "result_sha256": "87e8d36e7a07678ca3162b3f4e683b49ec8ced176a71251c45ea5d3aaf742913",
+  "audit_command": "gtimeout 120 ./sage -python experiments/ecc2k130-ic-goal-20260929/n41_fouratom_separable_rank_20261012/audit_n131_sage.py",
+  "audit_exit_code": 1,
+  "failed_check": "assert value==0 on archived positive product root",
+  "cause": "producer treated seed_mask << 1 as polynomial-basis coordinate; archived W15 source uses a different basis",
+  "correction": "protocol_n131.json binds control_result.json rotated_seed_coordinates; result_n131.json and audit_n131.json are the corrected run"
+}
