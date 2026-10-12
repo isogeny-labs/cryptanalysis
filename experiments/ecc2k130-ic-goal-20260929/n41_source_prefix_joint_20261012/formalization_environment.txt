@@ -1,0 +1,18 @@
+Lean core check:
+  Command: lean RankWitness.lean > lean_check.txt
+  Working directory: this experiment directory
+  Exit: 0
+  Toolchain: leanprover/lean4:v4.34.1
+
+Attempted Mathlib environment:
+  Command: lake env lean --version
+  Working directory: /Volumes/SSD990/math/lean
+  Exit: 1
+  Output:
+    error: /Volumes/SSD990/math/lean/lakefile.lean:263:0: iut: clone failed:
+    Cloning into '/Volumes/SSD990/math/lean/.lake/packages/.iut-bootstrap-33494-133446634170375'...
+    fatal: unable to access 'https://github.com/lana-agents/iut.git/': Could not resolve host: github.com
+    error: /Volumes/SSD990/math/lean/lakefile.lean: package configuration has errors
+
+Additional checker:
+  command -v lean4checker exited 1 on this host.
