@@ -24,6 +24,9 @@ frozen hash, and launches one solver under the declared limits. It preserves
 the complete solver streams, CPU/wall and memory receipt, and any SAT model's
 full CNF/native-XOR clause check. A SAT model still needs independent Sage
 group replay before it contributes an IC relation.
+Run `python3 -B` on [audit.py](audit.py) from the repository root after the
+solver finishes to cross-check the formula, source, solver streams, cap, and
+recorded matrix activation.
 
 This is a solver-stage diagnostic on the same public target. Its
 `candidate_id` stays `null`; the complete single-target online IC and rho
