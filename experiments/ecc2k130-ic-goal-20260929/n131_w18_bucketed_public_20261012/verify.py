@@ -29,11 +29,11 @@ def main():
         units=[f'{v} 0' for v in row['unit_literals']]
         assert lines[1:13]==units and lines[13:]==base[1:]
         assert sha(HERE/f"bucket_{row['rank']:02}.xcnf")==row['formula_sha256']
-    table=get('table_gate_result');table_lines=(HERE/'bucket_00_table.xcnf').read_text().splitlines()
+    table=get('table_gate_result.json');table_lines=(HERE/'bucket_00_table.xcnf').read_text().splitlines()
     bucket_lines=(HERE/'bucket_00.xcnf').read_text().splitlines()
     assert table_lines[1+table['added_cnf_clauses']:]==bucket_lines[1:]
     assert sha(HERE/'bucket_00_table.xcnf')==table['formula_sha256']
-    search=get('search_receipt');assert search['status']=='BOUNDED_UNKNOWN'
+    search=get('search_receipt.json');assert search['status']=='BOUNDED_UNKNOWN'
     assert len(search['attempts'])==8
     for row in search['attempts']:
         i=row['rank'];assert row['bucket']==plan['plan'][i]['bucket']
@@ -41,7 +41,7 @@ def main():
         assert sha(HERE/f'bucket_{i:02}.stdout')==row['stdout_sha256']
         assert sha(HERE/f'bucket_{i:02}.stderr')==row['stderr_sha256']
         assert row['solver_terminal_lines']==[s for s in (HERE/f'bucket_{i:02}.stdout').read_text().splitlines() if s.startswith('s ')]
-    inc=get('incremental_receipt');assert inc['status']=='BOUNDED_UNKNOWN'
+    inc=get('incremental_receipt.json');assert inc['status']=='BOUNDED_UNKNOWN'
     assert inc['stop_reason']=='WALL_CAP' and len(inc['attempts'])==7
     assert all(r['status']=='BOUNDED_UNKNOWN' and r['bucket']==plan['plan'][r['rank']]['bucket'] for r in inc['attempts'])
     assert sha(HERE/'incremental.stdout')==inc['stdout_sha256']
