@@ -34,6 +34,9 @@ selected terminal state's two columns are removed. It counts matchings of
 each graph component through degree seven, then multiplies by `7!` for slot
 order and `4^7` for the signed choices. The final mean includes all 32
 terminal states, four raw fibers, and division by the subgroup order.
+The [Lean proof map](PROOF_MAP.md) records a checked theorem for the
+distinct-column/matching equivalence and the remaining obligations for a
+fully formalized numerical census.
 The [result](result.json) retains all 32 terminal-conditioned counts, the
 full matching polynomial through degree eight, source hashes, and the exact
 rational ceiling. The counter also reconstructs the earlier fixed-seed
