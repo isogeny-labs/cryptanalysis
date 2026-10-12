@@ -25,6 +25,14 @@ launch, then run through the repository's checked launcher:
 ./sage -python experiments/ecc2k130-ic-goal-20260929/n131_w18_four_seed_sevenpair_ordinary_20261011/query.py query
 ```
 
+After the solver process terminates, archive the raw XCNF with
+`python3 -B audit.py archive`, replay the 128 residuals and any returned
+group witness with `./sage -python audit_sage.py`, then run
+`python3 -B audit.py audit`. Keep the raw solver stdout and stderr and the
+terminal status even when the cap stops search. Once byte replay passes, the
+raw XCNF may be removed; its compressed archive and digest remain in the
+receipt.
+
 This proposal has `candidate_id: null` while the ordinary-query result,
 relation rank, factor logs, target scalar, and paired same-point rho
 measurement are pending.
