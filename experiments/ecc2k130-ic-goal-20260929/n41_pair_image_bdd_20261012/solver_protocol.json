@@ -1,0 +1,44 @@
+{
+  "candidate_id": null,
+  "rss_cap_bytes": 4294967296,
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_allseed_fourpair_20261012/n41_diagonal/control_fixture.json": "082530245abbb312cb878dfadd2b960a8a214943966b4a2b9c334adfc71c0856",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_allseed_fourpair_forward_20261012/chart.json": "781da36bdb419a20dbea2c16ba166c5f5e2f96d39660c775ce4ec42246d2fbec",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/build.py": "0c4437cb0bb81237bee2fe30943e3c6997019659d6a94e6df622bf55640a1371",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/build_audit.json": "5c9116c25097339011b078564309aa9a3a689d0c2c309e7b2cc92837a65ad78c",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/build_result.json": "e77514abcc2b39a91081b57ef8f055f889a5f99a3c0969ce98c910f64b1d3017",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/census_result.json": "b645b8f586c6fa9a90eeb8084a2539d4c0a6b8e4acb12c60173ce64edc874ef8",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/control.xcnf": "50c5db6ce437d2e97dc9f6dc2fac6ed32e752fd3de9924849d0bf81a39a89f6b",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/control_build.json": "4e9ba43a8dc9acb481c30de382b7d835b2c53366aef4f9a0700387375bb1d5da",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/output_values.json": "8a3f1d86ee511dedddaa5af70d5f327085583322bf8aad3a155cfc66cfef7c60",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/public.xcnf": "ca83f9f4b47e416ff7e601d8403a4fa2e64e476f08d2f8efbc8445add521cd4e",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/solver.py": "12e5de2f22fbab7df2bbbcc7f70bd6d9dc9c358415fb78a0b1039f9c3829517d",
+    "/opt/homebrew/bin/cryptominisat5": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+  },
+  "specs": {
+    "control": {
+      "flags": [
+        "--threads=1",
+        "--maxtime=30",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1"
+      ],
+      "parent_seconds": 35,
+      "solver_seconds": 30
+    },
+    "ordinary": {
+      "flags": [
+        "--threads=1",
+        "--maxtime=180",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1"
+      ],
+      "parent_seconds": 190,
+      "solver_seconds": 180
+    }
+  },
+  "status": "FROZEN_BEFORE_N41_OUTPUT_BDD_SOLVER_CONTROL_AND_QUERY",
+  "workers": 1
+}
