@@ -48,7 +48,10 @@ def main():
     assert result["worker_count"] == qp["workers"] == 1
     assert result["solver_flags"] == qp["solver_flags"]
     assert result["solver_started"]
-    assert result["status"] in ("BOUNDED_UNKNOWN", "SAT_PENDING_GROUP_REPLAY", "UNSAT")
+    assert result["status"] == "BOUNDED_UNKNOWN"
+    assert result["stop_reason"] == "PARENT_TIMEOUT"
+    assert result["solver_exit_code"] == -9
+    assert result["status_lines"] == []
     assert result["stdout_sha256"] == sha(HERE / "solver.stdout.txt")
     assert result["stderr_sha256"] == sha(HERE / "solver.stderr.txt")
     assert result["formula"]["xcnf_sha256"] == sha(HERE / "ordinary.xcnf")
@@ -59,15 +62,16 @@ def main():
         assert result["sampled_peak_combined_rss_bytes"] < qp["rss_cap_bytes"]
     if result["stop_reason"] != "PARENT_TIMEOUT":
         assert result["charged_query_wall_ns"] < qp["parent_cap_seconds"]*10**9
+    else:
+        assert qp["parent_cap_seconds"]*10**9 <= result["charged_query_wall_ns"] < 600_100_000_000
+    assert result["formula"]["variables"] == 499045
+    assert result["formula"]["and_gates"] == 228256
+    assert result["formula"]["clauses"] == 686791
+    assert result["formula"]["native_xor_rows"] == 268804
     stdout = (HERE / "solver.stdout.txt").read_text(errors="replace")
     assert result["status_lines"] == [line for line in stdout.splitlines() if line.startswith("s ")]
     assert result["restart_rows"] == sum(line.startswith("c [") for line in stdout.splitlines())
-    if result["status"] == "SAT_PENDING_GROUP_REPLAY":
-        assert "s SATISFIABLE" in stdout and result["decoded_model_saved"]
-        model = read("decoded_model.json")
-        assert model["formula_sha256"] == result["formula"]["xcnf_sha256"]
-    else:
-        assert not result["decoded_model_saved"]
+    assert not result["decoded_model_saved"]
     print(json.dumps({"status": "PASS_SEVENPAIR_ELIMINANT_RECEIPTS",
                       "ordinary_status": result["status"],
                       "and_gates": result["formula"]["and_gates"],
