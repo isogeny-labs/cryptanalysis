@@ -1,0 +1,52 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "families": "all source states whose two masks XOR to the selected seed",
+  "negative_seed_tuples": [
+    [
+      220,
+      31,
+      59,
+      64
+    ],
+    [
+      145,
+      190,
+      233,
+      221
+    ]
+  ],
+  "parent_cap_seconds": 45,
+  "positive_seed_tuple": [
+    7,
+    85,
+    94,
+    171
+  ],
+  "public_target": [
+    920359962848,
+    755404565011
+  ],
+  "rss_cap_bytes": 4294967296,
+  "selection_rule": "positive from prior checked chart; negative from target/source SHA-256",
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=40",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1"
+  ],
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_allseed_fourpair_20261012/fourpair_v2.py": "f0aeb47f6864f6823a2b19a7a244c1ae3b810fb10946831ca4014c9ee0239f96",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_allseed_fourpair_20261012/n41_diagonal/control_fixture.json": "082530245abbb312cb878dfadd2b960a8a214943966b4a2b9c334adfc71c0856",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_allseed_fourpair_20261012/n41_diagonal/pairs.tsv": "df367421657bf29d7c47a9bd62b26c6424993e81b98d4d1f70cb7e05f0d8b22a",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_allseed_fourpair_forward_20261012/build.py": "b83a5c73ed31246cf85eef3a13f13e8623eeb6105278ccf3269baf8ef8ace33d",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_four_family_joint_20261012/run.py": "f8a60192eee57d4ef7eb381bd581715d71b8f488f3c8ac81a4862a14fa650c8b",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_pair_image_bdd_20261012/build.py": "0c4437cb0bb81237bee2fe30943e3c6997019659d6a94e6df622bf55640a1371",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_tenpair_functional_20261012/build.py": "ff3a253b9df5b9da2aeeac96a7b7ae86964a207a38a49f56e8a81c0a8c6a165e",
+    "/Volumes/SSD990/cryptanalysis/experiments/koblitz-polynomial-w-pair-20260925/karatsuba_circuit.py": "22ac473d1ed45bc2dd12664bae188cecd13c707819085835d6a03f87ee57bd2f",
+    "/opt/homebrew/bin/cryptominisat5": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+  },
+  "status": "FROZEN_BEFORE_FOUR_FAMILY_QUERIES",
+  "target_reciprocal": 344545435656
+}
