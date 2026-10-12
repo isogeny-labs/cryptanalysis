@@ -1,8 +1,8 @@
 # Exact N41 suffix sums fill the reciprocal trace-zero hyperplane
 
-**An exact 64-by-64 sample of right-suffix pair sums has reciprocal binary
-rank 40 in the 41-bit field.** Every one of its 4,096 reciprocals has trace
-zero. Consequently, the exact right-suffix domain admits no additional
+**The 3,544 four-column-compatible sums in a 64-by-64 sample of right-suffix
+pairs have reciprocal binary rank 40 in the 41-bit field.** Every one of
+their reciprocals has trace zero. Consequently, the exact right-suffix domain admits no additional
 homogeneous `GF(2)`-linear reciprocal equality beyond trace zero: a linear
 test that accepts every exact suffix sum also accepts every trace-zero
 residual. This closes the proposed output-only *linear* inverse gate for the
@@ -28,29 +28,34 @@ The independently [verified result](analysis.json) is:
 | Frozen reciprocal set | Count | Trace-zero values | Linear rank | Affine rank |
 | --- | ---: | ---: | ---: | ---: |
 | Positive plus 1,711 target-derived residuals | 1,712 | 1,712 | 40 | 40 |
-| Exact suffix sums from first 64 valid pairs at each right rotation | 4,096 | 4,096 | 40 | — |
+| Pair sums before cross-pair column filtering | 4,096 | 4,096 | 40 | — |
+| Four-column-compatible exact suffix sums | 3,544 | 3,544 | 40 | — |
 
 The [suffix protocol](suffix_protocol.json) froze a second source-bound check
 before its run. It selects the first 64 canonical distinct-column pairs in
 each right source, then adds all 4,096 cross-rotation pair-point combinations.
 Checked Sage found zero identity or zero-`x` exceptional sums and computed all
-4,096 reciprocals. The [suffix receipt](suffix_analysis.json) retains every
-value and selected source-pair index. The direct and S3 predecessor receipts
+4,096 reciprocals. This initial census did not filter column overlap
+**between** the two pairs. The subsequent [column-compatible audit](../n41_suffix_quadratic_span_20261012/RESULT.md)
+removed 552 overlapping combinations and independently confirmed rank 40
+on the retained 3,544 sums; it also found full degree-two feature rank.
+The [suffix receipt](suffix_analysis.json) retains the original values and
+selected source-pair indices. The direct and S3 predecessor receipts
 agree that the positive residual has an exact suffix witness, while all 1,711
 controls have completed exact misses under this fixed-second-pair input law.
 
 The [independent audit](verify.py) checks frozen hashes, reconstructs the
 canonical pair-index selection, verifies each residual reciprocal by
 polynomial-basis field multiplication, recomputes the trace functional, and
-eliminates both archived reciprocal lists over `GF(2)` using a separate
+eliminates both original reciprocal lists over `GF(2)` using a separate
 binary-pivot implementation. It reports
 `PASS_N41_OUTPUT_FIRST_LINEAR_SPAN_AUDIT 1712 40 4096 40`.
 
 ## Why the rank result excludes a linear gate here
 
 The field trace `Tr: GF(2^41) -> GF(2)` is a nonzero linear functional, so
-its kernel is a 40-dimensional binary space. Every sampled exact suffix
-reciprocal lies in that kernel, and their independently checked rank is 40;
+its kernel is a 40-dimensional binary space. Every four-column-compatible
+suffix reciprocal lies in that kernel, and the corrected audit's rank is 40;
 therefore their span equals the entire kernel. Any binary-linear functional
 that vanishes on **all** exact suffix reciprocals must vanish on the trace
 kernel. Such a functional is either zero or the trace functional. The
