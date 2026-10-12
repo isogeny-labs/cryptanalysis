@@ -24,6 +24,16 @@ def load(name, path):
 
 
 def main():
+    failed = read("failure_v1.json")
+    assert failed["status"] == "PRODUCER_FAILURE"
+    assert failed["scientific_decision"] is None
+    assert failed["protocol_sha256"] == sha(HERE / "protocol.json")
+    assert failed["sha256"] == {
+        "circuit": sha(HERE / "circuit.py"),
+        "failed_formula": sha(HERE / "control.xcnf"),
+        "runner": sha(HERE / "run.py"),
+        "stderr": sha(HERE / "control.stderr.txt"),
+    }
     runner = load("direct_receipt_runner", HERE / "run_v2.py")
     query = load("direct_receipt_query", HERE / "query.py")
     protocol, control = read("protocol_v2.json"), read("control_result_v2.json")
@@ -48,7 +58,10 @@ def main():
     assert result["worker_count"] == qp["workers"] == 1
     assert result["solver_flags"] == qp["solver_flags"]
     assert result["solver_started"]
-    assert result["status"] in ("BOUNDED_UNKNOWN", "SAT_PENDING_GROUP_REPLAY", "UNSAT")
+    assert result["status"] == "BOUNDED_UNKNOWN"
+    assert result["stop_reason"] == "PARENT_TIMEOUT"
+    assert result["solver_exit_code"] == -9
+    assert result["status_lines"] == []
     assert result["stdout_sha256"] == sha(HERE / "solver.stdout.txt")
     assert result["stderr_sha256"] == sha(HERE / "solver.stderr.txt")
     assert result["formula"]["xcnf_sha256"] == sha(HERE / "ordinary.xcnf")
@@ -65,14 +78,10 @@ def main():
     stdout = (HERE / "solver.stdout.txt").read_text(errors="replace")
     assert result["status_lines"] == [line for line in stdout.splitlines() if line.startswith("s ")]
     assert result["restart_rows"] == sum(line.startswith("c [") for line in stdout.splitlines())
-    if result["status"] == "SAT_PENDING_GROUP_REPLAY":
-        assert "s SATISFIABLE" in stdout and result["decoded_model_saved"]
-        model = read("decoded_model.json")
-        assert model["formula_sha256"] == result["formula"]["xcnf_sha256"]
-    else:
-        assert not result["decoded_model_saved"]
-    if result["status"] == "UNSAT":
-        assert "s UNSATISFIABLE" in stdout
+    assert not result["decoded_model_saved"]
+    assert result["formula"]["variables"] == 461828
+    assert result["formula"]["clauses"] == 608765
+    assert result["formula"]["native_xor_rows"] == 257421
     print(json.dumps({"status": "PASS_DIRECT_REGROUP_RECEIPTS",
                       "ordinary_status": result["status"],
                       "and_gates": result["formula"]["and_gates"],
