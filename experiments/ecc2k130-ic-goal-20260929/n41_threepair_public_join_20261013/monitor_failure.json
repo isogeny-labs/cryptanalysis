@@ -1,0 +1,10 @@
+{
+  "status": "INFRASTRUCTURE_FAILURE",
+  "stage": "first_public_parent_monitor",
+  "cause": "psutil.children(recursive=True) raised macOS sysctl PermissionError before a result receipt could be written",
+  "partial_stdout_sha256": "2847dd45c63e514471ab8da08d4df2fec224eaddff036e2da0496ed3755bbe4f",
+  "partial_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "orphan_pid": 46466,
+  "cleanup": "Identified exact command with escalated ps, sent TERM to PID 46466, and verified no join3 process remained before retry1",
+  "coverage_credit": 0
+}
