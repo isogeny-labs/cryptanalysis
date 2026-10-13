@@ -1,0 +1,14 @@
+TripleImageBound.lean:14:17: error: failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+α : Type
+inst✝ : BEq α
+xs : List α
+a✝ : ∀ (y : List α), InvImage (fun x1 x2 => x1 < x2) (fun x => x.length) y xs → y.eraseDups.length ≤ y.length
+x : α
+tail : List α
+x✝ : ∀ (y : List α), InvImage (fun x1 x2 => x1 < x2) (fun x => x.length) y (x :: tail) → y.eraseDups.length ≤ y.length
+⊢ (List.filter (fun b => !b == x) tail).length < tail.length + 1
+'eraseDups_length_le' depends on axioms: [sorryAx]
+'triple_image_card_le' depends on axioms: [propext, sorryAx, Quot.sound]

@@ -1,0 +1,45 @@
+TripleImageBound.lean:8:20: error: Function expected at
+  Finset
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (Fin S × Fin S × Fin S)
+
+Hint: The identifier `Finset` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+TripleImageBound.lean:8:6: error(lean.invalidField): Invalid field notation: Type of
+  Finset
+is not known; cannot resolve field `univ`
+TripleImageBound.lean:12:23: error: Function expected at
+  Finset
+but this term has type
+  x✝
+
+Note: Expected a function because this term is being applied to the argument
+  (Fin S × Fin S × Fin S)
+TripleImageBound.lean:12:9: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  Finset
+has type `x✝` which does not have the necessary form.
+TripleImageBound.lean:13:10: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  Finset
+has type `x✝` which does not have the necessary form.
+TripleImageBound.lean:11:20: error: Function expected at
+  Finset
+but this term has type
+  x✝
+
+Note: Expected a function because this term is being applied to the argument
+  (Fin S × Fin S × Fin S)
+TripleImageBound.lean:11:6: error(lean.invalidField): Invalid field notation: Field projection operates on types of the form `C ...` where C is a constant. The expression
+  Finset
+has type `x✝` which does not have the necessary form.
+TripleImageBound.lean:14:30: error(lean.unknownIdentifier): Unknown identifier `mul_assoc`
+TripleImageBound.lean:14:21: error: unsolved goals
+x✝ : Sort u_1
+Finset : x✝
+S : Nat
+G : Type
+inst✝ : DecidableEq G
+f : Fin S × Fin S × Fin S → G
+⊢ sorry () = S * S * S
+'triple_image_card_le' depends on axioms: [sorryAx]
