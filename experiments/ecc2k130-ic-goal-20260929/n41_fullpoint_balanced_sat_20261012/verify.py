@@ -131,9 +131,19 @@ def main():
               "ten_distinct_edges": True,
               "formula_and_terminal_profiles": profiles,
               "source_sha256": sha(HERE / "verify.py")}
-    with (HERE / "audit.json").open("x") as stream:
-        json.dump(output, stream, indent=2, sort_keys=True)
-        stream.write("\n")
+    archive = HERE / "audit.json"
+    if archive.exists():
+        previous = json.loads(archive.read_text())
+        assert previous["source_sha256"] == "0fdb1f488c5f2ce6f210333926d38b212511dc861057698fa9ee54c5154eaabf"
+        # The first write-once verifier produced the immutable receipt. This
+        # replay addition changes only the verifier hash, so compare all
+        # measured and mathematical fields without modifying that receipt.
+        assert {k: v for k, v in previous.items() if k != "source_sha256"} == {
+            k: v for k, v in output.items() if k != "source_sha256"}
+    else:
+        with archive.open("x") as stream:
+            json.dump(output, stream, indent=2, sort_keys=True)
+            stream.write("\n")
     print(output["status"])
 
 

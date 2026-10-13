@@ -28,7 +28,7 @@ The [protocol](protocol.json) froze the runner, input, known relation, prior bui
 | Pinned source and target control | 174,594 CNF and 14,401 XOR rows | 30.016 s | 121,143,296 B | 593 | `PARENT_TIME_CAP`, no SAT/UNSAT line |
 | Unpinned public point | 174,583 CNF and 14,401 XOR rows | 180.036 s | 166,789,120 B | 1,417 | `PARENT_TIME_CAP`, no SAT/UNSAT line |
 
-The [independent archive audit](audit.json) rechecks input and formula hashes, both XCNF headers and all row counts, the exact eleven control-only unit clauses, raw solver logs and terminal statuses, ten distinct source edges, and all nine positive group additions with separate integer-field arithmetic. The [control](control.json) and [public](public.json) receipts retain commands, phase boundary, resource peaks, exits, and log hashes. `FullPointTree.lean` was checked with Lean 4.34.1; [the output](lean_check.txt) reports only `propext` under `#print axioms`.
+The [independent archive audit](audit.json) rechecks input and formula hashes, both XCNF headers and all row counts, the exact eleven control-only unit clauses, raw solver logs and terminal statuses, ten distinct source edges, and all nine positive group additions with separate integer-field arithmetic. `verify.py` can now replay those checks read-only against the immutable first audit receipt. The [control](control.json) and [public](public.json) receipts retain commands, phase boundary, resource peaks, exits, and log hashes. `FullPointTree.lean` was checked with Lean 4.34.1; [the output](lean_check.txt) reports only `propext` under `#print axioms`.
 
 ## Next gate
 
