@@ -1,0 +1,40 @@
+{
+  "candidate_id": null,
+  "cap": {
+    "rss_bytes": 4294967296,
+    "solver_wall_s": 5
+  },
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--xor=0",
+    "--printsol=1",
+    "--random=20261012",
+    "--maxconfl=20000000",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_fouratom_onesided_sat_20261012/panel_13.small.xcnf"
+  ],
+  "formula": {
+    "and_gates": 455,
+    "bytes": 131538,
+    "cnf_clauses": 1365,
+    "native_xor_rows": 131,
+    "primary_bits": 14,
+    "sha256": "4c8392e9b55ec6b3b54aa6ae0bbb0498688b0270be49215438d53a3d003cd6c3",
+    "variables": 469,
+    "xor_literal_count": 30846
+  },
+  "formula_check": null,
+  "label": "panel_13",
+  "peak_solver_rss_bytes_sampled": 4931584,
+  "phase_ns_exploratory": {
+    "anf_specialize": 34307541,
+    "formula_emit": 11954750,
+    "model_check": 788417,
+    "solver": 172004625
+  },
+  "returncode": 20,
+  "semantic_check": null,
+  "specialized_anf_monomials": 470,
+  "status": "UNSAT",
+  "stdout_sha256": "03664d743fece28c92267411525a9b6d5974d15597cd9ddda12d7bd501d7a716"
+}
