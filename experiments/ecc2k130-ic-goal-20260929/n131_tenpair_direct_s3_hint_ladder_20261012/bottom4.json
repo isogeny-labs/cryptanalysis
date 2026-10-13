@@ -1,0 +1,28 @@
+{
+  "candidate_id": null,
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=55",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_tenpair_direct_s3_hint_ladder_20261012/bottom4.xcnf"
+  ],
+  "exit_code": -9,
+  "formula": {
+    "bytes": 15657805,
+    "sha256": "c523c44507d24f132952ab407f3b3ce8fa27ee0291925a162d7b6c5a9728e288",
+    "unit_clauses": 2014
+  },
+  "label": "bottom4",
+  "model_check": null,
+  "peak_combined_rss_bytes_sampled": 218202112,
+  "restart_rows": 279,
+  "solver_wall_ns_exploratory": 60013709667,
+  "status": "PARENT_TIME_CAP",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "d94d2197654e2867f037de859129cd5d8f9fc7db2d00a9203a3ee9644af1af19",
+  "stop": "PARENT_TIME_CAP",
+  "terminal_lines": []
+}
