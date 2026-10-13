@@ -1,0 +1,23 @@
+# Direct S3 upper links preserve the N131 ten-pair witness and expose the same free-sum boundary
+
+**Result.** Replacing each half-trace-plus-branch upper link with the direct characteristic-two equation `triple² + triple + total² = 0` preserved the complete constructed ten-pair N131 assignment: **528,841 CNF clauses, 81,064 native-XOR rows, and all nine group-law links passed**. With ten true pair-output coordinates supplied, the unpinned upper sums remained in active search at the 60-second cap. Supplying the ten true source selectors as well reached the same cap. Supplying all eight true upper sums produced a complete SAT model in **11.884 s**, checked against all **531,379** pinned clauses and 81,064 XOR rows. Thus the direct encoding changes the Boolean representation but does not remove the observed need for joint upper-sum information in this control.
+
+## Exact transformation and input law
+
+The [frozen protocol](protocol.json) binds the original [ten-pair circuit](../n131_w18_tenpair_binary_frob_20261012/ten.py), exact constructed fixture, solver binary, two partial-information arms, one worker, 60-second parent caps, and 4-GiB combined RSS ceiling. The source uses ten free W18 seed-212 pair slots over `GF(2)[t]/(t^131+t^13+t²+t+1)` on `y²+xy=x³+1`. The two diagnostic arms give the solver true source information from a constructed point; they are not ordinary public-target queries. The new [runner](run.py) transforms the archived `build` function by one exact, checked source-block replacement and leaves the pair-source gate, folded-column shield, tree, and target selector as before.
+
+For each upper link, write `triple = a b c` and `total = a+b+c` in reciprocal coordinates. The old encoding required `Tr(total)=0` and `triple=HT(total²)+e`, with one Boolean branch `e`. Since `HT(total²)²+HT(total²)=total²` when the trace is zero, it implies `triple²+triple+total²=0`. Conversely, the direct equation gives `Tr(total)=0`; the difference between `triple` and `HT(total²)` solves `e²+e=0` and is therefore 0 or 1. This is the same finite nonexceptional S3 condition. The constructed assignment was also evaluated through nine independent native group-sum links.
+
+| Frozen constructed-target arm | True data supplied | Status | Solver wall | Peak combined RSS | Restart rows |
+| --- | --- | --- | ---: | ---: | ---: |
+| [Outputs only](outputs_only.json) | 10 target-choice bits; ten 131-bit pair outputs | `PARENT_TIME_CAP` | 60.017 s | 338,558,976 B | 329 |
+| [Selectors and outputs](selectors_outputs.json) | Above plus ten 17-bit source selectors | `PARENT_TIME_CAP` | 60.036 s | 214,171,648 B | 361 |
+| [All upper coordinates, corrected R2](full_upper_control_R2.json) | Above plus eight 131-bit upper sums | SAT; full XCNF model checked | 11.884 s | 308,101,120 B | 560 |
+
+The direct unpinned constructed formula has 258,780 variables and 15,641,224 bytes. Its build, complete assignment check, and serialization took 9.326, 1.569, and 0.028 s in the first run; [construction receipt](construction.json) separates those phases. The R2 rebuild took 5.813 s and assignment check 1.555 s in its [build receipt](upper_r2_build.json). These are exploratory CPU intervals on an unisolated host. The earlier half-trace full-upper control returned SAT in 15.612 s under a different frozen formula; this pair of local observations is not a controlled speedup claim.
+
+The first full-upper solver call returned `s SATISFIABLE`, then its runner failed during model parsing because an unqualified Python import resolved another module named `run`. The [failure receipt](R1_failure.json) preserves that status and the log hashes; the [postrun audit](full_upper_control_R1_audit.json) independently checked its saved model against all 531,379 clauses and 81,064 XOR rows. The repaired [R2 protocol](upper_r2_protocol.json) froze an explicit checker import before its repeat, whose terminal receipt and model check passed. The [archive audit](archive_audit.json) replays raw hashes for all four compressed arm formulas. The base `direct_control.xcnf` remains in the directory for byte-for-byte reconstruction.
+
+## Search decision
+
+The two free-upper-sum arms are censored at their caps, while the positive complete-upper control establishes encoding correctness. This branch has no measured ordinary relation yield. A useful continuation must derive exact restrictions on multiple upper sums from the frozen public target without revealing fixture values, then preserve unpinned N41 relations and show that the full N131 target-dependent work fits one worker, 600 seconds, and 4 GiB. The complete IC pipeline retains `candidate_id: null`.
