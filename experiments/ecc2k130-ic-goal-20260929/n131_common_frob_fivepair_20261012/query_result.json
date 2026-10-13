@@ -1,0 +1,43 @@
+{
+  "build": {
+    "exit_code": 0,
+    "sampled_peak_combined_rss_bytes": 514342912,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "cde11f646f220e1c0c078d4db19fe7c16fb08d298c556dfbc0475597ccc5e2b6",
+    "stop_reason": null,
+    "wall_ns": 25058223209
+  },
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "peak_combined_rss_bytes_sampled": 609779712,
+  "protocol_sha256": "19582e51d7a7afee2a724eff2e5b0b6297f7488ecd09701bcf326f4b0a9faff8",
+  "public_point": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "solver": {
+    "exit_code": -9,
+    "sampled_peak_combined_rss_bytes": 609779712,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "49ab8424f92450d07a86ebbd046e2a588f9db75d6af80104cb141eebe6449944",
+    "stop_reason": "PARENT_TIME_CAP",
+    "wall_ns": 574958555667
+  },
+  "solver_command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=480",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_common_frob_fivepair_20261012/public.xcnf"
+  ],
+  "solver_restart_rows": 879,
+  "solver_terminal_lines": [],
+  "status": "PARENT_TIME_CAP",
+  "target_dependent_attempt_ns": 600060763166,
+  "transformed_target": [
+    1011194589287210738281611435711478792573,
+    464867644853173232674848580669299498572
+  ]
+}
