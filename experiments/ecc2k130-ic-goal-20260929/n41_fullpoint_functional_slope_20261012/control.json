@@ -1,0 +1,47 @@
+{
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=25",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_fullpoint_functional_slope_20261012/control.xcnf"
+  ],
+  "exit_code": 0,
+  "group_replay": {
+    "nine_links_checked": 9,
+    "raw_preimage_index": 1,
+    "raw_sum": [
+      946309826754,
+      403262551014
+    ],
+    "selected_state_ids": [
+      76,
+      101,
+      87,
+      53,
+      61,
+      64,
+      2,
+      70,
+      29,
+      108
+    ],
+    "ten_distinct_edges": true
+  },
+  "model_check": {
+    "cnf_clauses_checked": 325713,
+    "native_xor_rows_checked": 52354
+  },
+  "peak_combined_rss_bytes_sampled": 121946112,
+  "restart_rows": 1,
+  "status": "SAT",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "756e4c3c099c44b4996ce337b1b087edb983d98e68a71b930c568e68e23f8ced",
+  "stop": null,
+  "terminal_lines": [
+    "s SATISFIABLE"
+  ],
+  "wall_ns_exploratory": 524180208
+}
