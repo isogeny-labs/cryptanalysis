@@ -1,0 +1,11 @@
+# Proof map: modular family product and residual replay
+
+| Result | Declaration or evidence | Exact assumptions and verification status |
+| --- | --- | --- |
+| Repeated reduction preserves the product's evaluation at a norm root | `FamilyGate.eval_modularFold` in [FamilyGate.lean](FamilyGate.lean) | Generic polynomial-like and value types, multiplicative evaluation, and a reduction that preserves evaluation at the chosen point; checked Lean 4.34.1. |
+| A zero modular-product value occurs exactly when some family factor vanishes | `FamilyGate.modular_gate_exact` | Above hypotheses, nonzero one and no zero divisors in the value domain; checked Lean with `#print axioms` reporting only `propext` and `Quot.sound`. |
+| Concrete remainder modulo `N_t` preserves evaluation at its roots | Written identity `F=qN_t+r`, hence `F(z)=r(z)` when `N_t(z)=0`; [eight-case panel](result.json) and [global product panel](global_result.json) | Concrete `GF(2^41)[Z]` polynomial division and GCD are not formalized in Lean here. The three independent 63-GCD panel controls agree with the modular and global zero decisions. |
+| Exact positive residual is represented by two curve points | [independent checked-Sage replay](audit_result.json) and [revised replay](audit_v2_result.json) | Frozen source, seed labels, reciprocal roots, raw target lift, sign choices, subgroup projection, and archived pair witness; complete group equation checked. |
+| Literal N131 global-product degree and dense-memory gate | [exact integer projection](projection_result.json), source support hash, written leading-coefficient argument in [RESULT.md](RESULT.md) | Unfiltered W18 polynomial source with all nonzero seed sums. The concrete 131-bit field polynomial and seed-factor product are not formalized in Lean; sparse or implicit representations remain open. |
+
+The full curve-specific modular-GCD theorem remains partially formalized at the polynomial remainder, binary-field, resultant, and group-law bridges. The checked Lean theorems contain no `sorry`, `admit`, custom claim axiom, or native evaluation. From this directory run `lean FamilyGate.lean`; [lean-toolchain](lean-toolchain), [lean_version.txt](lean_version.txt), and [lean_check.txt](lean_check.txt) pin the version and axiom output. `lean4checker --fresh` is unavailable on this host.
