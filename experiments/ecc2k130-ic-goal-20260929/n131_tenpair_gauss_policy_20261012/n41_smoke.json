@@ -1,0 +1,43 @@
+{
+  "archived_formula": {
+    "gzip_sha256": "71a14a19393830d923ca51aa08d1eca4a062e1b74adf22c49fdf2313aa1e5f2a",
+    "raw_bytes": 543679,
+    "raw_sha256": "2391e0a3f4b9e950cb149254b5077ef8cb215ce839681e08a3c94cc79e8b0bd3"
+  },
+  "candidate_id": null,
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--xor=0",
+    "--maxnummatrices=0",
+    "--maxtime=10",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_tenpair_gauss_policy_20261012/n41_smoke.xcnf"
+  ],
+  "label": "n41_smoke",
+  "model_check": {
+    "cnf_clauses_checked": 12138,
+    "native_xor_rows_checked": 41
+  },
+  "peak_combined_rss_bytes_sampled": 33587200,
+  "phase_ns_exploratory": {
+    "archive_replay": 2980042,
+    "model_check": 34670625,
+    "solver_and_terminal": 453954208
+  },
+  "resource": {
+    "parent_cap_s": 15,
+    "rss_cap_bytes": 4294967296,
+    "solver_cap_s": 10,
+    "workers": 1
+  },
+  "solver_exit_code": 0,
+  "status": "SAT",
+  "status_lines": [
+    "s SATISFIABLE"
+  ],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "c45f9a144d3a0d96557507701e9d9b737f107e3c30943d5dcaf8892632030bee"
+}
