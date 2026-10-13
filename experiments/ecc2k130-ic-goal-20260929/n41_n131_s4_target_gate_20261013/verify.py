@@ -71,9 +71,107 @@ def main():
         assert "sorry" not in body and "admit" not in body
     assert read("launch_failure_v1.json")["status"] == "LAUNCH_WRAPPER_FAILED"
     assert read("audit_run_v2.json")["status"] == "EXIT_NONZERO"
+    source_protocol = read("source_protocol.json")
+    source_files = {
+        "builder": HERE / "source_compare.py",
+        "circuit": HERE / "circuit_compare.py",
+        "parent": GOAL / "n131_w18_allseed_fourpair_20261012/fourpair_v2.py",
+        "source": GOAL / "n41_w7_entropy_cubic_20261011/w8/geometry.json",
+        "public": GOAL / "n41_common_frob_factor_20261012/audit_result.json",
+    }
+    assert source_protocol["sha256"] == {key: sha(path) for key, path in source_files.items()}
+    source_build = read("source_build_result.json")
+    assert source_build["protocol_sha256"] == sha(HERE / "source_protocol.json")
+    assert source_build["public_point"] == source_protocol["public_point"]
+    for row in source_build["rows"]:
+        assert row["formula_sha256"] == sha(HERE / f"public_{row['variant']}.xcnf")
+        assert row["source_counts"]["and_gates"] == 2397
+    source_run_protocol = read("source_run_protocol.json")
+    source_run_files = {
+        "runner": HERE / "source_run.py",
+        "source_protocol": HERE / "source_protocol.json",
+        "build_result": HERE / "source_build_result.json",
+        "solver": Path(source_run_protocol["solver_path"]),
+        "two_s3_links": HERE / "public_two_s3_links.xcnf",
+        "direct_s4": HERE / "public_direct_s4.xcnf",
+    }
+    assert source_run_protocol["sha256"] == {
+        key: sha(path) for key, path in source_run_files.items()}
+    source_run = read("source_run_result.json")
+    assert source_run["protocol_sha256"] == sha(HERE / "source_run_protocol.json")
+    for row in source_run["rows"]:
+        assert row["status"] == "BOUNDED_UNKNOWN" and row["stop_reason"] == "WALL_CAP"
+        assert row["solver_terminal_lines"] == []
+        variant = row["variant"]
+        assert row["stdout_sha256"] == sha(HERE / f"public_{variant}.solver.stdout")
+        assert row["stderr_sha256"] == sha(HERE / f"public_{variant}.solver.stderr")
+    control_protocol = read("source_control_protocol.json")
+    control_files = {
+        "script": HERE / "control_middle_sage.py",
+        "runtime": HERE / "source_sage_runtime_info.json",
+        "prior": GOAL / "n41_common_frob_factor_20261012/audit_result.json",
+        "s4_audit": HERE / "audit_result.json",
+    }
+    assert control_protocol["sha256"] == {key: sha(path) for key, path in control_files.items()}
+    control = read("source_control.json")
+    assert control["status"] == "PASS_THREE_PAIR_GROUP_CONTROL"
+    assert control["protocol_sha256"] == sha(HERE / "source_control_protocol.json")
+    assert control["target_reciprocal"] == audit["n41"]["target_reciprocal"]
+    control_build_protocol = read("source_control_build_protocol.json")
+    control_build_files = {
+        "builder": HERE / "source_control_build.py",
+        "source_builder": HERE / "source_compare.py",
+        "control": HERE / "source_control.json",
+        "public_build": HERE / "source_build_result.json",
+    }
+    assert control_build_protocol["sha256"] == {
+        key: sha(path) for key, path in control_build_files.items()}
+    assert control_build_protocol["parent_protocol_sha256"] == sha(
+        HERE / "source_control_build_protocol_v1.json")
+    control_failure = read("source_control_build_failure_v1.json")
+    assert control_failure["status"] == "ASSERTION_FAILURE_AFTER_BOTH_FORMULAS_WRITTEN"
+    assert control_failure["protocol_sha256"] == sha(HERE / "source_control_build_protocol_v1.json")
+    assert control_failure["formula_sha256"] == {
+        variant: sha(HERE / f"control_{variant}.xcnf")
+        for variant in ("two_s3_links", "direct_s4")}
+    control_build = read("source_control_build_result.json")
+    assert control_build["protocol_sha256"] == sha(HERE / "source_control_build_protocol.json")
+    for row in control_build["rows"]:
+        assert row["formula_sha256"] == sha(HERE / f"control_{row['variant']}.xcnf")
+    control_run_protocol = read("control_run_protocol.json")
+    control_run_files = {
+        "runner": HERE / "control_run.py",
+        "build": HERE / "source_control_build_result.json",
+        "solver": Path(control_run_protocol["solver_path"]),
+        "two_s3_links": HERE / "control_two_s3_links.xcnf",
+        "direct_s4": HERE / "control_direct_s4.xcnf",
+    }
+    assert control_run_protocol["sha256"] == {
+        key: sha(path) for key, path in control_run_files.items()}
+    control_run = read("control_run_result.json")
+    assert control_run["protocol_sha256"] == sha(HERE / "control_run_protocol.json")
+    assert all(row["status"] == "SAT_PENDING_MODEL_CHECK" for row in control_run["rows"])
+    model_protocol = read("control_model_protocol.json")
+    model_files = {
+        "checker": HERE / "check_control_models.py",
+        "control": HERE / "source_control.json",
+        "run": HERE / "control_run_result.json",
+        "two_s3_formula": HERE / "control_two_s3_links.xcnf",
+        "s4_formula": HERE / "control_direct_s4.xcnf",
+        "two_s3_stdout": HERE / "control_two_s3_links.solver.stdout",
+        "s4_stdout": HERE / "control_direct_s4.solver.stdout",
+    }
+    assert model_protocol["sha256"] == {key: sha(path) for key, path in model_files.items()}
+    model = read("control_model_result.json")
+    assert model["status"] == "PASS_BOTH_COMPLETE_MODELS_AND_GROUP_CONTROL"
+    assert model["protocol_sha256"] == sha(HERE / "control_model_protocol.json")
+    from check_control_models import check
+    assert model["rows"] == [check(variant) for variant in ("two_s3_links", "direct_s4")]
     print(json.dumps({"status": "PASS_TERMINAL_BINDINGS", "fields": ["n41", "n131"],
                       "symbolic_terms": 24, "symmetric_terms": 6,
-                      "circuit_rows": len(counts["rows"])}, sort_keys=True))
+                      "circuit_rows": len(counts["rows"]),
+                      "public_query_statuses": [row["status"] for row in source_run["rows"]],
+                      "control_models": len(model["rows"])}, sort_keys=True))
 
 
 if __name__ == "__main__":
