@@ -1,0 +1,11 @@
+Command: python3 -B run.py
+Exit code: 1
+Stage: runner import, before native worker launch
+Traceback:
+  File "run.py", line 10, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'
+
+The source and frozen protocol were retained. The same runner subsequently
+executed under /Volumes/SSD990/cryptanalysis/sage -python run.py, with the
+checked runtime receipt saved before that measured run.

@@ -1,0 +1,124 @@
+SignatureCollision.lean:11:57: error: unsolved goals
+case false.false.false.true
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = false
+hg : g x = false
+hh : h x = false
+hk : k x = true
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case false.false.true.false
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = false
+hg : g x = false
+hh : h x = true
+hk : k x = false
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case false.true.false.false
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = false
+hg : g x = true
+hh : h x = false
+hk : k x = false
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case false.true.true.true
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = false
+hg : g x = true
+hh : h x = true
+hk : k x = true
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case true.false.false.false
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = true
+hg : g x = false
+hh : h x = false
+hk : k x = false
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case true.false.true.true
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = true
+hg : g x = false
+hh : h x = true
+hk : k x = true
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case true.true.false.true
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = true
+hg : g x = true
+hh : h x = false
+hk : k x = true
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+
+case true.true.true.false
+α : Type
+f g h k : α → Bool
+x : α
+hf : f x = true
+hg : g x = true
+hh : h x = true
+hk : k x = false
+equal_signatures : ∀ (x : α), f x = g x ↔ h x = k x
+⊢ False
+SignatureCollision.lean:15:14: warning: This simp argument is unused:
+  hf
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bx, hg, hh, hk] at equal_signatures ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SignatureCollision.lean:15:18: warning: This simp argument is unused:
+  hg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bx, hf, hh, hk] at equal_signatures ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SignatureCollision.lean:15:22: warning: This simp argument is unused:
+  hh
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bx, hf, hg, hk] at equal_signatures ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SignatureCollision.lean:15:26: warning: This simp argument is unused:
+  hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bx, hf, hg, hh] at equal_signatures ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SignatureCollision.lean:20:38: error: unsolved goals
+α : Type
+bit0 other : α → Bool
+trace_zero : ∀ (x : α), bit0 x = false
+x : α
+⊢ False
+'SignatureCollision.pair_collision_implies_four_term_zero' depends on axioms: [propext, sorryAx]
+'SignatureCollision.zero_coordinate_product' depends on axioms: [propext, sorryAx]
