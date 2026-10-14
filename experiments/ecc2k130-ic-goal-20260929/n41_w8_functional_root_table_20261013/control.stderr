@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_functional_root_table_20261013/experiment.py", line 121, in <module>
+    {'freeze':freeze,'control':control}[sys.argv[1]]()
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_functional_root_table_20261013/experiment.py", line 105, in control
+    start=time.monotonic_ns();c,w,e=circuit.build(target);built=time.monotonic_ns()
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_functional_root_table_20261013/circuit.py", line 168, in build
+    circ.require_zero([circ.xor(w for w,t in zip(total.bits(),trace_basis) if t)])
+NameError: name 'trace_basis' is not defined
