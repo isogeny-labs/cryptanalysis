@@ -1,0 +1,20 @@
+# A fixed second W20 product code raises the half-coverage gate to 517,380,078 proposals
+
+**Fixing two pair-product codes on the frozen N131 W20 seven-pair source leaves at most `16·528180^5` projected targets per proposal.** Under a uniform prime-subgroup target law, the union bound stays below 50% for 517,380,077 fixed proposals and first permits 50% at **517,380,078**. Even with a free exact completion oracle, a 600-second explicit scan would need at least **862,301 proposals per second** before this necessary coverage threshold. Fixing one code needs 3,919 proposals; fixing three needs 68,317,452,269,847. This sharp transition identifies the number of product choices that an implicit target constraint must handle jointly, before expanding their source masks.
+
+## Source and method
+
+The curve is `EC1N131Ckb1heb5f1998f20b` over `GF(2)[t]/(t^131+t^13+t²+t+1)`, with `y²+xy=x³+1`, subgroup order `r=680564733841876926932320129493409985129`, cofactor four, W20 seed 898618, and seven Frobenius rotations `(0,18,36,54,72,90,108)`. The audited source has `P=132045` valid pair edges per slot and `S=528180=4P` signed pair states. Its [selector check](../n131_w20_selector_elimination_20261013/RESULT.md) exhausts all 524,288 19-bit codes and establishes a left inverse for the product map, so a fixed valid code identifies one edge. The exact source-count receipt and independent source audit precede this calculation; their hashes are in [count_result.json](count_result.json). This is a component gate with `candidate_id: null`.
+
+For `f` specified codes, each fixed edge contributes four signed point states and each remaining slot contributes at most `S` states. There are at most `M_f=4^f S^(7-f)` labeled tuples. Group addition and cofactor projection map each tuple to one subgroup point, so the image has at most `M_f` targets; distinct-column restrictions and collisions only lower it. For `k` fixed proposals, the union reaches at most `k M_f` targets. Thus a uniform target has success probability at most `min(1,k M_f/r)`, and `ceil(r/(2M_f))` proposals are necessary before the bound permits 50% success. This is an upper bound, not a prediction of coverage. A target-derived advice alphabet with `C` values changes the ceiling to `CkM_f/r` if each advice value fixes at most `k` proposals; an implicit target-dependent predicate that searches outside such a fixed list is outside this model.
+
+| Fixed code slots `f` | N131 proposals before 50% is permitted | Minimum decisions/s in 600 s | N41 same-source-size control threshold |
+| ---: | ---: | ---: | ---: |
+| 1 | 3,919 | 7 | 1 |
+| 2 | 517,380,078 | 862,301 | 1 |
+| 3 | 68,317,452,269,847 | 113,862,420,450 | 7 |
+| 4 | 9,020,977,984,971,815,975 | 15,034,963,308,286,360 | 263 |
+
+The N41 control uses the fixed-seed seven-pair public-point source with 40 valid codes and 160 signed states per slot, independently replayed through all 1,120 rotated states. Its one- and two-code bounds are already vacuous because `16·160^5 > r_41`. It cannot measure the rejection rate of a W20 two-code proposal; use it for exact witness preservation and algorithm correctness. The [machine-readable result](count_result.json) includes all `f=1..6` rows and source hashes; [count.py](count.py) recomputes them with exact integers. The preliminary result before adding the exhaustive selector receipt is preserved as [count_preselector.json](count_preselector.json).
+
+The generic finite-list coverage implication and the exact W20 half-threshold arithmetic are kernel-checked in [CodeCoverage.lean](CodeCoverage.lean); [PROOF_MAP.md](PROOF_MAP.md) records the concrete-source formalization boundary. `lean CodeCoverage.lean` succeeds with audited axioms in `lean_check.log`. This is an exact cardinality diagnostic, with no CPU timing comparison. The next constructive experiment should encode a target-conditioned joint predicate on two or more unresolved product codes and demonstrate exact witness preservation and rejection on the frozen N41 public point before taking its measured construction and query cost to the N131 600 s / 4 GiB gate.

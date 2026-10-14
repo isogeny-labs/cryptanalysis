@@ -1,0 +1,24 @@
+{
+  "artifact_sha256": {
+    "CodeCoverage.lean": "cd159669a6475478d37bc39e5b2717ef281f6946764820e21ed37a25514fd37f",
+    "PROOF_MAP.md": "56a2f5cf87f3508613d629686c9dad0c236001704b6011a421562e90ecd92b6e",
+    "RESULT.md": "892e4eb4fe83b037c37023d269e7f5b463e64619e295394f9df7f81fdacad637",
+    "count.py": "ceaf29af5d8070ec279b91cbdf95c216aff906342787ec124429e51144a49cd5",
+    "count_preselector.json": "f7b424a1a3a75825fedb3491c63e597050ee6b7a0b379bc8e4dcb19e38bae5b7",
+    "count_result.json": "c5443664a473a0ef3a13f13ac0f3a34c07805600ece9a5dabd7c80fa08fd1f18",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "lean_check.log": "1fdb7804ddc40fe085b045b80ab6329ff5f441891d16cae4bb338039c864dffc",
+    "verify.py": "6f2ab9f394851bf44c5982486dc6190a237234786d501bbf13dd9b9cf96cf763"
+  },
+  "calculation_command": "python3 -B count.py",
+  "candidate_id": null,
+  "proof_command": "lean CodeCoverage.lean",
+  "source_result_sha256": {
+    "n131_w20_selector_elimination_20261013/basis_result.json": "e1a81bfe20ab2c4e928cf7e264cbd5f0088acafb3d8689a49eb249f2299a36b5",
+    "n131_w20_sevenpair_gate_20261010/count_result_v2.json": "64a076d546aee89bbd700650a8e6ffba73221d0643bf31a0c09d312db2b041ca",
+    "n41_w8_functional_root_table_v2_20261013/preflight.json": "4e186737c1d15b2d85ac2d12b112fe69b3f1dee14259a8cf1139518bf7004f89",
+    "n41_w8_sign_label_closure_20261013/sage_result.json": "590b6707a62a67e6931d580a4aff932d06702d1fae8125c8ac3c0d53d9ea30bb"
+  },
+  "status": "POST_COMPUTATION_HASH_AUDIT",
+  "verification_command": "python3 -B verify.py"
+}
