@@ -1,0 +1,31 @@
+SignLift.lean:63:20: error: Type mismatch
+  hplus
+has type
+  Reachable R (left.node right claimed) (R.add (anchor left) (anchor right))
+but is expected to have type
+  Reachable R (left.node right (R.add (anchor left) (anchor right))) (R.add (anchor left) (anchor right))
+SignLift.lean:64:42: error: Application type mismatch: The argument
+  hplus
+has type
+  Reachable R (left.node right claimed) (R.add (anchor left) (anchor right))
+but is expected to have type
+  Reachable R (left.node right (R.neg (R.add (anchor left) (anchor right)))) (R.add (anchor left) (anchor right))
+in the application
+  reachable_neg R hplus
+SignLift.lean:66:20: error: Type mismatch
+  hminus
+has type
+  Reachable R (left.node right claimed) (R.add (anchor left) (R.neg (anchor right)))
+but is expected to have type
+  Reachable R (left.node right (R.add (anchor left) (R.neg (anchor right))))
+    (R.add (anchor left) (R.neg (anchor right)))
+SignLift.lean:67:42: error: Application type mismatch: The argument
+  hminus
+has type
+  Reachable R (left.node right claimed) (R.add (anchor left) (R.neg (anchor right)))
+but is expected to have type
+  Reachable R (left.node right (R.neg (R.add (anchor left) (R.neg (anchor right)))))
+    (R.add (anchor left) (R.neg (anchor right)))
+in the application
+  reachable_neg R hminus
+'SignLift.target_reachable' depends on axioms: [sorryAx]

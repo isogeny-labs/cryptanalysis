@@ -1,0 +1,7 @@
+Command: python3 -B audit_formula.py
+Exit code: 1
+Stage: import of frozen circuit dependencies, before formula reconstruction
+Error: ModuleNotFoundError: No module named 'psutil'
+The archived circuit imports a runner module requiring psutil. The same
+hash-frozen audit then completed with
+/Volumes/SSD990/cryptanalysis/sage -python audit_formula.py.
