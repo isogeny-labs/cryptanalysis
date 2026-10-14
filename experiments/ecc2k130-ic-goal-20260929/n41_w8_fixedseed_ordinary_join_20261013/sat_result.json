@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=180",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_fixedseed_ordinary_join_20261013/ordinary.xcnf"
+  ],
+  "exit_code": -15,
+  "monitor_degraded": false,
+  "protocol_sha256": "067f5abbca844abe730870841410b5c00141ea26d599eb53457cb9ec6511e2fc",
+  "sampled_peak_combined_rss_bytes": 82444288,
+  "sha256": {
+    "sat.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sat.stdout": "bbf36bea05f99678ce069514c2eb1193d6ee2ea3092c9b5444a554c7a9133701"
+  },
+  "status": "BOUNDED_UNKNOWN",
+  "stop_reason": "PARENT_WALL_CAP",
+  "terminal_lines": [],
+  "wall_ns": 185391288916
+}
