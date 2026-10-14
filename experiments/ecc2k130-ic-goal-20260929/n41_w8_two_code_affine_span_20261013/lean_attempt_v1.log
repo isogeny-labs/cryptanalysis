@@ -1,0 +1,15 @@
+CubicParity_v1.lean:20:55: error(lean.unknownIdentifier): Unknown constant `Nat.xor_left_comm`
+CubicParity_v1.lean:19:33: error: unsolved goals
+a d₀ d₁ d₂ d₃ d₄ d₅ d₆ : Nat
+⊢ a ^^^
+      (a ^^^ (d₀ ^^^ (a ^^^ (d₁ ^^^ (a ^^^ (d₂ ^^^ (a ^^^ (d₃ ^^^ (a ^^^ (d₄ ^^^ (a ^^^ (d₅ ^^^ (a ^^^ d₆))))))))))))) =
+    d₀ ^^^ (d₁ ^^^ (d₂ ^^^ (d₃ ^^^ (d₄ ^^^ (d₅ ^^^ d₆)))))
+CubicParity_v1.lean:20:41: warning: This simp argument is unused:
+  Nat.xor_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [cubicCoeff, xor7, Nat.xor_assoc, Nat.xor_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'CubicParity.cubicCoeff_of_differences' depends on axioms: [propext, sorryAx, Quot.sound]
+'CubicParity.nonzero_cubic_of_independent_differences' depends on axioms: [propext, sorryAx, Quot.sound]
