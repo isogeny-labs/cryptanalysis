@@ -1,0 +1,10 @@
+# Proof map: implicit second-product span gate
+
+| Result | Exact assumptions | Verification |
+| --- | --- | --- |
+| Sparse linearized evaluation commutes with quotient reduction | Two commutative rings and a map preserving zero, addition, multiplication; arbitrary coefficient list and input | `SparseLinearized.eval_map` in [SparseLinearized.lean](SparseLinearized.lean), pinned Lean 4.34.1. [lean_check.log](lean_check.log) reports only `propext` in `#print axioms`. The failed first build, missing the `Lean.Grind` namespace opening, is preserved in `lean_attempt1.log`. |
+| Reduced GCD has the same roots as the full annihilator | Nonzero `f∈GF(2⁴¹)[q]`, `r=L_Q mod f`, Euclidean identity `gcd(f,L_Q)=gcd(f,r)`; `L_Q` splits into all 128 distinct second-span values | Written proof in [RESULT.md](RESULT.md). The first four cells of each panel compare Sage `r` with direct `L_Q mod f`; both full-grid implementations independently agree on every source-valid match. The concrete quotient/GCD polynomial theorem remains open in Lean because the pinned bare `Std` environment has no polynomial Euclidean or finite-field API. |
+| Span relaxation preserves every usable source root | The 40 usable second products are contained in the seven-dimensional product span | Source geometry and both exact full-grid results; independently checked in [verification_v2.json](verification_v2.json). A positive relaxed root is filtered against the usable set. |
+| Public witness has a genuine group relation | Frozen N41 public residual, four suffix pair states, exact seven source pair states and distinct folded columns | The prior interpolated experiment's independent group audit is hash-bound by the new verifiers. Its source-to-resultant curve bridge remains an open full Lean formalization. |
+
+The algebraic recurrence is exact for every field and ring map satisfying the theorem's hypotheses. The N41 cardinalities and timing are measured finite-instance facts. The N131 work projection applies only to the explicit two-loop oracle shape and does not transfer the N41 wall time across fields or hardware.
