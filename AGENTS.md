@@ -328,15 +328,18 @@ Here:
   `crax`, `./sage`, `cloud/` launchers), seeds, input paths with sha256,
   output directories, timeouts, success exit codes and observable stop
   conditions. A value the design does not give is a specification error,
-  never a default. In a fresh dispatch it assesses the executor's returned
+  never a default. The card format and `tools/task_card.py` (lint, prompt,
+  run, check-relay) are the same in every repository of the owner; the tool
+  is canonical in crypto-autoresearcher and copied here byte-identical, so
+  never edit the copy. In a fresh dispatch it assesses the executor's returned
   text against the outputs on disk (`executed_as_specified`, `stopped`,
   `impeded` or `executor_deviated`) and recommends `proceed_to_analysis`,
   `rerun_after_infrastructure_fix`, `respecify` or `escalate`; it never
   interprets.
 - **Mechanical** (Haiku 5.5 at effort low,
-  [`executor-mechanical`](.claude/agents/executor-mechanical.md)) runs exactly
-  the card's commands, writes only inside its `write_scope`, returns tool
-  output verbatim, computes nothing, edits no code, inputs or results, and
+  [`executor-mechanical`](.claude/agents/executor-mechanical.md)) runs one
+  command, `python3 tools/task_card.py run <card>`, which executes the card
+  and writes its receipt; it returns that output verbatim, computes nothing, edits no code, inputs or results, and
   refuses any card that leaves a choice.
 
 Subagents never nest in Claude Code: the main session does every dispatch,
