@@ -1,0 +1,7 @@
+ClassBound.lean:6:23: error: invalid binder annotation, type is not a class instance
+ClassBound.lean:8:47: error: unexpected token '+'; expected term
+ClassBound.lean:12:52: error: unexpected token '+'; expected term
+
+The initial module used Mathlib-style AddGroup/AddMonoidHom names while this pinned standalone Std environment does not provide those declarations. The corrected module defines the exact group and homomorphism laws it needs and derives inverse-class preservation from them.
+
+The next build found that `Function.Bijective` is likewise unavailable in this standalone environment. The final statement spells out injectivity and surjectivity over `Fin 4` directly.
