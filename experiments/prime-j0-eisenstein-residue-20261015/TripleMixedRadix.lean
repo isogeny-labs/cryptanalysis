@@ -180,6 +180,84 @@ theorem mixed_77_step_terminal_bound (q : Nat → Nat)
     omega
   exact h16
 
+/-- Four norm-6481 steps followed by twelve norm-58807 steps need
+76 point triplings and leave terminal norm at most 45089. -/
+theorem mixed_76_step_terminal_bound (q : Nat → Nat)
+    (hzero : q 0 ≤ scalarOrder)
+    (hfirst : ∀ i : Nat, i < 4 →
+      100*6481*q (i+1) ≤ 101*q i + 10100*6481)
+    (hlast : ∀ i : Nat, 4 ≤ i → i < 16 →
+      100*58807*q (i+1) ≤ 101*q i + 10100*58807) :
+    q 16 ≤ 45089 := by
+  have h0 : q 0 ≤ 115792089237316195423570985008687907852837564279074904382605163141518161494337 := by
+    unfold scalarOrder at hzero
+    omega
+  have h1 : q 1 ≤ 18045056338480073658047630745066314909946912501445093878480360248871060602 := by
+    have hs : 100*6481*q 1 ≤ 101*q 0 + 10100*6481 := by
+      simpa using hfirst 0 (by decide)
+    omega
+  have h2 : q 2 ≤ 2812144252717925381056643581625825961895753992664642002355371678963188 := by
+    have hs : 100*6481*q 2 ≤ 101*q 1 + 10100*6481 := by
+      simpa using hfirst 1 (by decide)
+    omega
+  have h3 : q 3 ≤ 438244976893242498822282057929653482720986195431459407865904242618 := by
+    have hs : 100*6481*q 3 ≤ 101*q 2 + 10100*6481 := by
+      simpa using hfirst 2 (by decide)
+    omega
+  have h4 : q 4 ≤ 68296162114206900757677037264149053780002477609284678590428011 := by
+    have hs : 100*6481*q 4 ≤ 101*q 3 + 10100*6481 := by
+      simpa using hfirst 3 (by decide)
+    omega
+  have h5 : q 5 ≤ 1172974709394272276519016573482587860591468743268276317143 := by
+    have hs : 100*58807*q 5 ≤ 101*q 4 + 10100*58807 := by
+      simpa using hlast 4 (by decide) (by decide)
+    omega
+  have h6 : q 6 ≤ 20145636684207917412624462040529422334031381140016750 := by
+    have hs : 100*58807*q 6 ≤ 101*q 5 + 10100*58807 := by
+      simpa using hlast 5 (by decide) (by decide)
+    omega
+  have h7 : q 7 ≤ 345997807251687666208966732887831662172389255655 := by
+    have hs : 100*58807*q 7 ≤ 101*q 6 + 10100*58807 := by
+      simpa using hlast 6 (by decide) (by decide)
+    omega
+  have h8 : q 8 ≤ 5942452179573937505246933191910996629552928 := by
+    have hs : 100*58807*q 8 ≤ 101*q 7 + 10100*58807 := by
+      simpa using hlast 7 (by decide) (by decide)
+    omega
+  have h9 : q 9 ≤ 102060582947092639996928979948477334361 := by
+    have hs : 100*58807*q 9 ≤ 101*q 8 + 10100*58807 := by
+      simpa using hlast 8 (by decide) (by decide)
+    omega
+  have h10 : q 10 ≤ 1752872766448952784479709384052375 := by
+    have hs : 100*58807*q 10 ≤ 101*q 9 + 10100*58807 := by
+      simpa using hlast 9 (by decide) (by decide)
+    omega
+  have h11 : q 11 ≤ 30105284985009306924762468478 := by
+    have hs : 100*58807*q 11 ≤ 101*q 10 + 10100*58807 := by
+      simpa using hlast 10 (by decide) (by decide)
+    omega
+  have h12 : q 12 ≤ 517053035095471627425579 := by
+    have hs : 100*58807*q 12 ≤ 101*q 11 + 10100*58807 := by
+      simpa using hlast 11 (by decide) (by decide)
+    omega
+  have h13 : q 13 ≤ 8880295975758436064 := by
+    have hs : 100*58807*q 13 ≤ 101*q 12 + 10100*58807 := by
+      simpa using hlast 12 (by decide) (by decide)
+    omega
+  have h14 : q 14 ≤ 152517539332425 := by
+    have hs : 100*58807*q 14 ≤ 101*q 13 + 10100*58807 := by
+      simpa using hlast 13 (by decide) (by decide)
+    omega
+  have h15 : q 15 ≤ 2619462320 := by
+    have hs : 100*58807*q 15 ≤ 101*q 14 + 10100*58807 := by
+      simpa using hlast 14 (by decide) (by decide)
+    omega
+  have h16 : q 16 ≤ 45089 := by
+    have hs : 100*58807*q 16 ≤ 101*q 15 + 10100*58807 := by
+      simpa using hlast 15 (by decide) (by decide)
+    omega
+  exact h16
+
 /-- Two norm-6481 steps followed by fourteen norm-58807 steps reach the
 existing terminal table with 78 triplings in the point recurrence. -/
 theorem mixed_sixteen_step_terminal_bound (q : Nat → Nat)
@@ -354,6 +432,50 @@ theorem mixed_77_quotients_terminal
   omega
 
 
+/-- Exact 76-step quotient sequence reaches the larger terminal table. -/
+theorem mixed_76_quotients_terminal
+    (state digit : Nat → HornerRadix.Pair)
+    (hinitial : pairNorm (state 0).1 (state 0).2 ≤ scalarOrder)
+    (hquot81 : ∀ i : Nat, i < 4 →
+      Triple81Radix.primePair81 (state (i+1)) =
+        HornerRadix.pairAdd (state i) (-(digit i).1,-(digit i).2))
+    (hdigit81 : ∀ i : Nat, i < 4 →
+      pairNorm (digit i).1 (digit i).2 ≤ 6481)
+    (hquot243 : ∀ i : Nat, 4 ≤ i → i < 16 →
+      Triple243Radix.primePair243 (state (i+1)) =
+        HornerRadix.pairAdd (state i) (-(digit i).1,-(digit i).2))
+    (hdigit243 : ∀ i : Nat, 4 ≤ i → i < 16 →
+      pairNorm (digit i).1 (digit i).2 ≤ 58807) :
+    pairNorm (state 16).1 (state 16).2 ≤ 45089 := by
+  let norms : Nat → Nat := fun i => (pairNorm (state i).1 (state i).2).toNat
+  have hnorm (i : Nat) : (norms i : Int) = pairNorm (state i).1 (state i).2 := by
+    have hn := pair_norm_nonnegative (state i).1 (state i).2
+    simp [norms, Int.toNat_of_nonneg hn]
+  have hzero : norms 0 ≤ scalarOrder := by
+    have heq := hnorm 0
+    omega
+  have hfirst : ∀ i : Nat, i < 4 →
+      100*6481*norms (i+1) ≤ 101*norms i + 10100*6481 := by
+    intro i hi
+    have hs := Triple81Radix.quotient_norm_step (state i) (digit i) (state (i+1))
+      (hquot81 i hi) (hdigit81 i hi)
+    have hnow := hnorm i
+    have hnext := hnorm (i+1)
+    omega
+  have hlast : ∀ i : Nat, 4 ≤ i → i < 16 →
+      100*58807*norms (i+1) ≤ 101*norms i + 10100*58807 := by
+    intro i hlo hhi
+    have hs := Triple243Radix.quotient_norm_step (state i) (digit i) (state (i+1))
+      (hquot243 i hlo hhi) (hdigit243 i hlo hhi)
+    have hnow := hnorm i
+    have hnext := hnorm (i+1)
+    omega
+  have hterminal := mixed_76_step_terminal_bound norms hzero hfirst hlast
+  have heq := hnorm 16
+  omega
+
+
+
 private theorem square_below_100 (x : Int) (h : x*x ≤ 2588) :
     -100 < x ∧ x < 100 := by
   have hupper : x < 100 := by
@@ -401,6 +523,32 @@ private theorem square_below_150 (x : Int) (h : x*x ≤ 20236) :
     rw [heq] at hfirst
     omega
   exact ⟨hlower,hupper⟩
+
+
+private theorem square_below_450 (x : Int) (h : x*x ≤ 180356) :
+    -450 < x ∧ x < 450 := by
+  have hupper : x < 450 := by
+    by_cases hc : x < 450
+    · exact hc
+    have hx : 450 ≤ x := by omega
+    have hfirst : 450*x ≤ x*x :=
+      Int.mul_le_mul_of_nonneg_right hx (by omega)
+    have hsecond : 202500 ≤ 450*x :=
+      Int.mul_le_mul_of_nonneg_left hx (by decide)
+    omega
+  have hlower : -450 < x := by
+    by_cases hc : -450 < x
+    · exact hc
+    have hx : 450 ≤ -x := by omega
+    have hfirst : 450*(-x) ≤ (-x)*(-x) :=
+      Int.mul_le_mul_of_nonneg_right hx (by omega)
+    have hsecond : 202500 ≤ 450*(-x) :=
+      Int.mul_le_mul_of_nonneg_left hx (by decide)
+    have heq : (-x)*(-x) = x*x := by simp [Int.neg_mul, Int.mul_neg]
+    rw [heq] at hfirst
+    omega
+  exact ⟨hlower,hupper⟩
+
 
 
 /-- The terminal norm certificate also covers both native signed
@@ -461,6 +609,37 @@ theorem mixed_77_terminal_coordinates_in_table (a b : Int)
   have haa := square_below_150 a ha
   have hbb := square_below_150 b hb
   exact ⟨haa.1,haa.2,hbb.1,hbb.2⟩
+
+
+/-- The 76-step terminal coordinates fit the 450 lookup range. -/
+theorem mixed_76_terminal_coordinates_in_table (a b : Int)
+    (hnorm : pairNorm a b ≤ 45089) :
+    -450 < a ∧ a < 450 ∧ -450 < b ∧ b < 450 := by
+  have square_nonneg (x : Int) : 0 ≤ x*x := by
+    by_cases hx : 0 ≤ x
+    · exact Int.mul_nonneg hx hx
+    · have h := Int.mul_nonneg (by omega : 0 ≤ -x) (by omega : 0 ≤ -x)
+      simpa [Int.neg_mul, Int.mul_neg] using h
+  have hsq : 0 ≤ (a+2*b)*(a+2*b) := square_nonneg _
+  have hsq2 : 0 ≤ (2*a+3*b)*(2*a+3*b) := square_nonneg _
+  have haidentity : 4*pairNorm a b =
+      a*a + 3*((a+2*b)*(a+2*b)) := by
+    simp [pairNorm, Int.mul_add, Int.add_mul, Int.mul_assoc,
+          Int.mul_comm, Int.mul_left_comm]
+    simp only [← Int.mul_assoc]
+    omega
+  have hbidentity : 4*pairNorm a b =
+      (2*a+3*b)*(2*a+3*b) + 3*(b*b) := by
+    simp [pairNorm, Int.mul_add, Int.add_mul, Int.mul_assoc,
+          Int.mul_comm, Int.mul_left_comm]
+    simp only [← Int.mul_assoc]
+    omega
+  have ha : a*a ≤ 180356 := by omega
+  have hb : b*b ≤ 180356 := by omega
+  have haa := square_below_450 a ha
+  have hbb := square_below_450 b hb
+  exact ⟨haa.1,haa.2,hbb.1,hbb.2⟩
+
 
 
 /-- The two radix-81 steps wrap the fourteen radix-243 steps in the
@@ -535,12 +714,55 @@ theorem two_scalar_mixed_77_horner {Point : Type}
   rw [houter, hinner]
 
 
+/-- Reverse Horner evaluation for the 4+12 schedule. -/
+theorem two_scalar_mixed_76_horner {Point : Type}
+    (add : Point → Point → Point) (prime81 prime243 : Point → Point)
+    (g q : HornerRadix.Pair → Point)
+    (assoc : ∀ x y z, add (add x y) z = add x (add y z))
+    (comm : ∀ x y, add x y = add y x)
+    (prime81_add : ∀ x y, prime81 (add x y) = add (prime81 x) (prime81 y))
+    (prime243_add : ∀ x y, prime243 (add x y) = add (prime243 x) (prime243 y))
+    (g_add : ∀ x y, g (HornerRadix.pairAdd x y) = add (g x) (g y))
+    (q_add : ∀ x y, q (HornerRadix.pairAdd x y) = add (q x) (q y))
+    (g_prime81 : ∀ x, g (Triple81Radix.primePair81 x) = prime81 (g x))
+    (q_prime81 : ∀ x, q (Triple81Radix.primePair81 x) = prime81 (q x))
+    (g_prime243 : ∀ x, g (Triple243Radix.primePair243 x) = prime243 (g x))
+    (q_prime243 : ∀ x, q (Triple243Radix.primePair243 x) = prime243 (q x))
+    (scalarG scalarQ middleG middleQ terminalG terminalQ : HornerRadix.Pair)
+    (digits81 digits243 : List (HornerRadix.Pair × HornerRadix.Pair))
+    (_hlen81 : digits81.length = 4) (_hlen243 : digits243.length = 12)
+    (trace81G : Triple81Radix.ValidTrace81 scalarG (digits81.map Prod.fst) middleG)
+    (trace81Q : Triple81Radix.ValidTrace81 scalarQ (digits81.map Prod.snd) middleQ)
+    (trace243G : Triple243Radix.ValidTrace243 middleG (digits243.map Prod.fst) terminalG)
+    (trace243Q : Triple243Radix.ValidTrace243 middleQ (digits243.map Prod.snd) terminalQ) :
+    add (g scalarG) (q scalarQ) =
+      HornerRadix.evaluatePoints add prime81
+        (digits81.map (fun d => add (g d.1) (q d.2)))
+        (HornerRadix.evaluatePoints add prime243
+          (digits243.map (fun d => add (g d.1) (q d.2)))
+          (add (g terminalG) (q terminalQ))) := by
+  have houter := Triple81Radix.two_scalar_horner81 add prime81 g q
+    assoc comm prime81_add g_add q_add g_prime81 q_prime81
+    scalarG scalarQ middleG middleQ digits81 trace81G trace81Q
+  have hinner := Triple243Radix.two_scalar_horner243 add prime243 g q
+    assoc comm prime243_add g_add q_add g_prime243 q_prime243
+    middleG middleQ terminalG terminalQ digits243 trace243G trace243Q
+  rw [houter, hinner]
+
+
+
 theorem mixed_horner_tripling_count : 2*4+14*5 = 78 := by decide
 theorem mixed_77_horner_tripling_count : 3*4+13*5 = 77 := by decide
+theorem mixed_76_horner_tripling_count : 4*4+12*5 = 76 := by decide
 
 #print axioms equilateral_basis
 #print axioms floor_corner_norm_bound
 #print axioms selected_initial_norm_bound
+#print axioms mixed_76_step_terminal_bound
+#print axioms mixed_76_quotients_terminal
+#print axioms mixed_76_terminal_coordinates_in_table
+#print axioms two_scalar_mixed_76_horner
+#print axioms mixed_76_horner_tripling_count
 #print axioms mixed_77_step_terminal_bound
 #print axioms mixed_77_quotients_terminal
 #print axioms mixed_77_terminal_coordinates_in_table

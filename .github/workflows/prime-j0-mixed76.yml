@@ -1,0 +1,45 @@
+name: prime-j0-mixed76
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/prime-j0-mixed76.yml"
+      - "experiments/prime-j0-eisenstein-residue-20261015/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-mixed76:
+    name: Portable mixed76 build and exact replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust and OpenSSL linker library
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.93.1 --profile minimal
+          rustup default 1.93.1
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev
+      - name: Freeze parent source and replay mixed76
+        run: |
+          set -euo pipefail
+          python3 experiments/prime-j0-eisenstein-residue-20261015/verify_portable_mixed77.py \
+            --output "$RUNNER_TEMP/mixed77-parent.json" \
+            --bundle-out "$RUNNER_TEMP/mixed77-parent.tar.gz"
+          python3 experiments/prime-j0-eisenstein-residue-20261015/verify_portable_mixed76.py \
+            --parent-bundle "$RUNNER_TEMP/mixed77-parent.tar.gz" \
+            --output "$RUNNER_TEMP/mixed76-replay.json"
+          python3 - "$RUNNER_TEMP/mixed76-replay.json" <<'PY'
+          import json, sys
+          receipt = json.load(open(sys.argv[1]))
+          assert receipt['status'] == 'portable_exact_output_replay_passed'
+          assert receipt['parent_bundle_sha256'] == '0598b16fb66efda38515bc2a3685c9ff38b3c2e797ca66d7e7c0a2451e0a998c'
+          assert receipt['mixed76_exact_outputs'] == 257
+          assert receipt['control_exact_outputs'] == 5
+          assert receipt['exact_outputs'] == 262
+          print(receipt['status'], receipt['binary_sha256'])
+          PY

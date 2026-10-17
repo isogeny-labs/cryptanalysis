@@ -1,6 +1,14 @@
-# A 77-tripling mixed Eisenstein radix for joint secp256k1 multiplication
+# A 76-tripling mixed Eisenstein radix for joint secp256k1 multiplication
 
-The refined schedule uses three norm-6481 quotient steps and thirteen
+The new schedule uses four norm-6481 quotient steps and twelve norm-58807
+steps. Reverse Horner evaluation therefore applies `4*4+12*5=76` point
+triplings, sixteen rotations, and sixteen projective additions. The checked
+recurrence gives terminal norm at most 45,089 and both signed terminal
+coordinates have absolute value below 450. This fits the existing nine-bit
+direct-seed table and its dynamic Q-point graph. The 77- and 78-tripling
+paths remain opt-in controls for the full-cost comparison.
+
+The prior 77-step schedule uses three norm-6481 quotient steps and thirteen
 norm-58807 steps. Reverse Horner evaluation therefore uses
 `3*4+13*5=77` point triplings, sixteen rotations, and sixteen projective
 additions. The checked recurrence gives terminal norm at most 5059 from
@@ -51,7 +59,23 @@ remain explicit implementation proof obligations.
 For the 77-step path, the Lean module also proves the exact 3+13 recurrence,
 its application to the quotient sequence, terminal coordinate range,
 two-scalar Horner composition, and the tripling count. The pinned verifier
-audits fourteen declarations in total.
+also audits the 76-step 4+12 recurrence, exact quotient terminal statement,
+coordinate range, Horner composition, and tripling count: nineteen checked
+declarations in total.
+
+| 76-step result | Lean declaration | Exact bridge or hypotheses | Verification |
+| --- | --- | --- | --- |
+| Uniform starting norm | `selected_initial_norm_bound` | Exact lattice floor equations and selected-corner norm no larger than the floor corner | Checked |
+| Sixteen-step terminal norm `≤45089` | `mixed_76_step_terminal_bound` | Initial norm `≤n`; four norm-6481 and twelve norm-58807 weighted step inequalities | Checked |
+| Exact quotient terminal | `mixed_76_quotients_terminal` | Radix division identities and digit norm bounds at every step | Checked |
+| Signed terminal coordinates `<450` | `mixed_76_terminal_coordinates_in_table` | Terminal pair norm `≤45089` | Checked |
+| Two-scalar point recurrence | `two_scalar_mixed_76_horner` | Abelian addition and both radix endomorphism homomorphisms, with trace lengths 4 and 12 | Checked |
+| Fixed tripling count `76` | `mixed_76_horner_tripling_count` | Integer arithmetic | Checked |
+
+The checked statements are conditional at the native boundary: the
+signed-limb recoder, corner selector, and curve-operation implementation
+still require refinement checks against these hypotheses. The verifier
+records every module build and `#print axioms` result under pinned Lean 4.34.1.
 
 ## Native implementation and replay
 
@@ -90,6 +114,15 @@ output checks across frozen one- and 128-case runs and a fresh 128-case
 same-point fixture. Its binary used the same diagnostic empty atlas shims
 for unrelated modes; its elapsed fields are correctness diagnostics only.
 
+The opt-in [76-step recoder](joint_mixed76.rs) and
+[runner](rho_restart_joint_mixed76.rs) are added to the frozen portable
+77-step source by a [hash-checked overlay](native_rho_restart_mixed76_overlay.py).
+The [portable 76-step verifier](verify_portable_mixed76.py) builds this
+source with no atlas placeholders and checks 257 mixed-76 outputs plus five
+control outputs against the frozen and independent fixtures. Its
+[receipt](triple-mixed76-portable-replay.json) retains the exact source and
+binary hashes; local elapsed fields remain correctness diagnostics.
+
 The [portable overlay](native_rho_restart_mixed77_portable_overlay.py)
 replaces twelve machine-local compile-time atlas includes with lazy runtime
 loads. An optional atlas mode requires `EISENSTEIN_ATLAS_DIR` and fails if
@@ -127,6 +160,9 @@ serial one-restart pairs: mixed-77 against mixed-78, fixed radix-243,
 fixed radix-81, and OpenSSL, bracketed by three OpenSSL A/A controls.
 It requires the new pod ID, executable and `libcrypto` hashes, exposed CPU,
 and exact source bundle before producing the manifest and rules.
+The 76-step path needs the same serial one-target comparison after its own
+source bundle and Linux binary are frozen; its 76-tripling count alone is an
+operator-count improvement, not a wall-time result.
 The [independent panel auditor](analyze_tier1_mixed77.py) regenerates those
 rules, replays the fixture point through separate curve arithmetic, verifies
 all source and runtime artifact hashes, reads every raw arm and pair ledger,

@@ -16,7 +16,10 @@ MODULES = (
 )
 THEOREMS = (
     'equilateral_basis', 'floor_corner_norm_bound',
-    'selected_initial_norm_bound', 'mixed_77_step_terminal_bound',
+    'selected_initial_norm_bound', 'mixed_76_step_terminal_bound',
+    'mixed_76_quotients_terminal', 'mixed_76_terminal_coordinates_in_table',
+    'two_scalar_mixed_76_horner', 'mixed_76_horner_tripling_count',
+    'mixed_77_step_terminal_bound',
     'mixed_77_quotients_terminal', 'mixed_77_terminal_coordinates_in_table',
     'two_scalar_mixed_77_horner', 'mixed_77_horner_tripling_count',
     'mixed_sixteen_step_terminal_bound',
