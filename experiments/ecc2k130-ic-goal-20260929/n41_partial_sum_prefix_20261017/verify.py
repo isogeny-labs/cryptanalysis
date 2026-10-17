@@ -42,6 +42,10 @@ result={'status':'PASS_INDEPENDENT_HALF_CODE_PREFIX_GATE',
         'native_result_sha256':sha(HERE/'half_result.json'),
         'audit_result_sha256':sha(HERE/'audit_result.json'),
         'source_sha256':sha(SOURCE),'checked_prefix_widths':half['prefix_bits']}
-with (HERE/'terminal.json').open('x') as f:
-    json.dump(result,f,sort_keys=True,indent=2);f.write('\n')
+terminal=HERE/'terminal.json'
+if terminal.exists():
+    assert json.loads(terminal.read_text())==result
+else:
+    with terminal.open('x') as f:
+        json.dump(result,f,sort_keys=True,indent=2);f.write('\n')
 print(result['status'])
