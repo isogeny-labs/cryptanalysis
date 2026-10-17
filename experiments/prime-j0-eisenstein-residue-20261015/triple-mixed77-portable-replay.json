@@ -1,0 +1,63 @@
+{
+  "atlas_include_bytes_count": 0,
+  "binary_sha256": "d1579c830d61f5552f3f520bc26abee3af73c41d16a76d53d1fa654c924305eb",
+  "cargo": "cargo 1.93.1 (Homebrew)",
+  "compile_fixture_archive_sha256": "378c611a5204abcfa1bcf819a73ca1ec3f0e5c1f335637a509125e5a9d021baa",
+  "exact_outputs": 257,
+  "optional_atlas_dir_set": false,
+  "overlay_sha256": {
+    "native_rho_restart_joint243_overlay.py": "ec1a3ba8935766f49e5306fb428c08a30ea539365e45f76aa00a6f0078045ce5",
+    "native_rho_restart_joint_overlay.py": "e0c9735baaf11086c4b0a452e2d3ee186bbe512f7e58327e7c73cf716ead59dd",
+    "native_rho_restart_mixed77_overlay.py": "6b379f1a8414e676bdd78856a586c2edc5f713775519791a7f168eded616cc2a",
+    "native_rho_restart_mixed77_portable_overlay.py": "6d7e5425c3edffe038b9b2d7bada5635844d2412ded9463fe8f11933115ed5d2",
+    "native_rho_restart_mixed78_overlay.py": "dfdf814af937a072462bfb8d310c42ce348d4ae70c63a85fc58fc1e478967264"
+  },
+  "platform": "macOS-26.6-arm64-arm-64bit-Mach-O",
+  "provenance_archive_sha256": "00705a762c13f3b1e0f1130955c76d4b65df407d63edf220a53f099ad470a6ea",
+  "results": [
+    {
+      "count": 1,
+      "fixture": "frozen",
+      "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
+      "last_expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "stdout": "verified=1 count=1 online_ms=0.108458 target_preparation_ms=0.043208 restart_eval_ms=0.065250 generator_preparation_ms=0.129958 graph_plan_ms=0.000000 plan_load_ms=0.433209 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=3 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "count": 128,
+      "fixture": "frozen",
+      "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
+      "last_expected_point": "a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a",
+      "stdout": "verified=1 count=128 online_ms=14.819624 target_preparation_ms=1.259208 restart_eval_ms=13.560416 generator_preparation_ms=4.845333 graph_plan_ms=0.000000 plan_load_ms=13.063291 plan_bytes=222432 g_table_bytes=152384 q_table_bytes=151808 constructed_q_points=1874 graph_edges=1860 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a"
+    },
+    {
+      "count": 128,
+      "fixture": "independent",
+      "fixture_sha256": "5b0b0a50dbae2cd57415f425b7e3a9654190d363887e06198fc7328161a40439",
+      "last_expected_point": "8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929",
+      "stdout": "verified=1 count=128 online_ms=14.343625 target_preparation_ms=1.139667 restart_eval_ms=13.203958 generator_preparation_ms=1.236916 graph_plan_ms=0.000000 plan_load_ms=16.045917 plan_bytes=223600 g_table_bytes=153752 q_table_bytes=153320 constructed_q_points=1876 graph_edges=1857 direct_seeds=19 steps=16 triplings=77 mode=joint_mixed77 point=8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929"
+    }
+  ],
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+  "schema": 1,
+  "source_sha256": {
+    "Cargo.lock": "c31dcbed43a3410e0ee3a440ee7165b221a304804ab9cbb9d7532f2a6ffa482f",
+    "Cargo.toml": "438235eda97f13312fbb34ad9728be1292a0765b34aae8cdaa082db0dfc3b85b",
+    "src/bin/eisenstein_fixed.rs": "e6623d371b996c11c4f2242e18c5224d05208ba03e69c22eee7c37cb0df28c07",
+    "src/bin/eisenstein_fixed/ct_bignum.rs": "5a7f8116ef40585ccebadd630a8e50e7945052669297613817b4dbac4daf3d34",
+    "src/bin/eisenstein_fixed/joint_mixed77.rs": "01408f02678b8e4ca026176c5ac0f1ed9836b1a030e391604fa06fdf21516b7e",
+    "src/bin/eisenstein_fixed/joint_mixed78.rs": "b1283010d887809948de4ddd80f42d0220462dd39531dc31b382cb55d5d6cf8e",
+    "src/bin/eisenstein_fixed/joint_norm4033.rs": "568f3de95a89232d97c5e1ed941ebd6aac1a81cb8d4ead22d375907dede257cb",
+    "src/bin/eisenstein_fixed/joint_norm58807.rs": "67f7041985e2a7fbff1b40023dd2ef4611e843f4eedb21791b2ed73aa9bed96c",
+    "src/bin/eisenstein_fixed/unit_orbit_windows.rs": "dbe79553e2a37d1f227304a10f75836f57e5def0002e5016452a7bf1e43c17e3",
+    "src/bin/mixed640_bench_fixture.json": "7f4672b7b676969fe40056d0f14c6ecf45ad36109870cdf3466ebafd9e7b22d8",
+    "src/bin/mixed640_stream_fixture.json": "6b7ce3b515d0980b9975398b8b31e5e1cfdc9e54510d04faf29fee3f3bacf778",
+    "src/bin/mixed640_uniform_fixture.json": "a1c4964f174e36ea26f6a1897128f651a2ce7251e4bf4ffd532ff09221e721d3",
+    "src/bin/rho_restart_hybrid.rs": "531e7f21fbcd6171cbf25898f29bf37c41b8b441d8f5a0eaaa8b70ba6268ae9f",
+    "src/bin/rho_restart_joint.rs": "4295ed7584abe7fcf916c27e86cd843197ea7b1572b0b4789aca9ef5b283a498",
+    "src/bin/rho_restart_joint243.rs": "347138ce0a66fd027d522b36b8d42564af43ecbf82936a358fc656b681d137b9",
+    "src/bin/rho_restart_joint_mixed77.rs": "b051ec27f4a705315392dbaf19fcb6481702f83400b742fac7e2619d3b1ba0d2",
+    "src/bin/rho_restart_joint_mixed78.rs": "5524d854afb0c1eea5d29fc535b95c6be997b86b1c3790e8fb608b66232f5f22"
+  },
+  "status": "portable_exact_output_replay_passed",
+  "timing_status": "diagnostic_only_unisolated"
+}

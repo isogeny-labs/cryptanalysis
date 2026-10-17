@@ -11,6 +11,33 @@ permissions:
   contents: read
 
 jobs:
+  portable-mixed77:
+    name: Portable mixed77 build and exact replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust and OpenSSL linker library
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.93.1 --profile minimal
+          rustup default 1.93.1
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev
+      - name: Build portable source and replay same-point outputs
+        run: |
+          set -euo pipefail
+          python3 experiments/prime-j0-eisenstein-residue-20261015/verify_portable_mixed77.py \
+            --output "$RUNNER_TEMP/mixed77-portable-replay.json"
+          python3 - "$RUNNER_TEMP/mixed77-portable-replay.json" <<'PY'
+          import json, sys
+          receipt = json.load(open(sys.argv[1]))
+          assert receipt['status'] == 'portable_exact_output_replay_passed'
+          assert receipt['atlas_include_bytes_count'] == 0
+          assert receipt['exact_outputs'] == 257
+          print(receipt['status'], receipt['binary_sha256'])
+          PY
+
   proof:
     name: Pinned Lean joint Horner proof
     runs-on: ubuntu-24.04
