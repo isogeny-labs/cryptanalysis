@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_rr_quadratic_separator_20261017/audit.py", line 197, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_rr_quadratic_separator_20261017/audit.py", line 150, in main
+    positive, hits = chart_values(geometry, fixed, target,
+                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+                                  protocol['positive_mask'], 1)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_rr_quadratic_separator_20261017/audit.py", line 107, in chart_values
+    assert (value == 0) == (group == target)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
