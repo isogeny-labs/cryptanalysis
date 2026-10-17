@@ -1,0 +1,43 @@
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:18:9: error: unsolved goals
+case zero
+R : Type
+inst✝ : CommRing R
+a b : Nat → R
+x : R
+⊢ 0 = 0 + 0
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:20:28: error(lean.unknownIdentifier): Unknown identifier `add_mul`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:20:37: error(lean.unknownIdentifier): Unknown identifier `add_assoc`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:20:48: error(lean.unknownIdentifier): Unknown identifier `add_left_comm`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:20:63: error(lean.unknownIdentifier): Unknown identifier `add_comm`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:19:14: error: unsolved goals
+case succ
+R : Type
+inst✝ : CommRing R
+a b : Nat → R
+x : R
+n : Nat
+ih : evalPrefix n (fun i => a i + b i) x = evalPrefix n a x + evalPrefix n b x
+⊢ evalPrefix n a x + evalPrefix n b x + (a n + b n) * x ^ n =
+    evalPrefix n a x + a n * x ^ n + (evalPrefix n b x + b n * x ^ n)
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:27:9: error: unsolved goals
+case zero
+R : Type
+inst✝ : CommRing R
+c : R
+a : Nat → R
+x : R
+⊢ 0 = c * 0
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:29:28: error(lean.unknownIdentifier): Unknown identifier `mul_add`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:29:37: error(lean.unknownIdentifier): Unknown identifier `mul_assoc`
+experiments/ecc2k130-ic-goal-20260929/n41_first_product_interpolated_eliminant_20261017/InterpolationEval.lean:28:14: error: unsolved goals
+case succ
+R : Type
+inst✝ : CommRing R
+c : R
+a : Nat → R
+x : R
+n : Nat
+ih : evalPrefix n (fun i => c * a i) x = c * evalPrefix n a x
+⊢ c * evalPrefix n a x + c * a n * x ^ n = c * (evalPrefix n a x + a n * x ^ n)
+'InterpolationEval.evalPrefix_add' depends on axioms: [sorryAx]
+'InterpolationEval.evalPrefix_smul' depends on axioms: [sorryAx]
