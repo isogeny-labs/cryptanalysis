@@ -1,0 +1,118 @@
+{
+  "protocol_sha256": "e30e2f870b225135faaa94997fc20c39c606954e4d17c58a28784aaa7d3440ac",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=115",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_baseline.xcnf"
+      ],
+      "conflicts": [
+        100001,
+        100001
+      ],
+      "elapsed_ns": 17645294291,
+      "exit_code": 0,
+      "formula_sha256": "6ec523cab2fd0b72e9bfe23dd1b2e612fa28641daea2aea0276051159535b74a",
+      "index": 0,
+      "sampled_peak_combined_rss_bytes": 169361408,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "78e9c20c764419cf5dc95ed85ae86fe5a776f726678118e2f37d7bf4ea308d8b",
+      "stop_reason": null,
+      "variant": "baseline"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=115",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": [
+        100001,
+        100001
+      ],
+      "elapsed_ns": 17325258542,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 1,
+      "sampled_peak_combined_rss_bytes": 152240128,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c382c0d41afc59d8a92bbc9fc2e62187d76ddb50967b223436711a87659e03cc",
+      "stop_reason": null,
+      "variant": "trace"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=115",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": [
+        100001,
+        100001
+      ],
+      "elapsed_ns": 21009024167,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 2,
+      "sampled_peak_combined_rss_bytes": 147685376,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "941be65419176af074bf0a022eb597af91410689f0f7f4775b7f98f89038350d",
+      "stop_reason": null,
+      "variant": "trace"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=115",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_baseline.xcnf"
+      ],
+      "conflicts": [
+        100001,
+        100001
+      ],
+      "elapsed_ns": 47345921792,
+      "exit_code": 0,
+      "formula_sha256": "6ec523cab2fd0b72e9bfe23dd1b2e612fa28641daea2aea0276051159535b74a",
+      "index": 3,
+      "sampled_peak_combined_rss_bytes": 135069696,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ffcf25cfe519b8dc1797fd23525d301c6c63f9869adb21e8066256a3ee2ffecc",
+      "stop_reason": null,
+      "variant": "baseline"
+    }
+  ],
+  "status": "COMPLETE_N131_TRACE_PARITY_CONFLICT_PROBE"
+}
