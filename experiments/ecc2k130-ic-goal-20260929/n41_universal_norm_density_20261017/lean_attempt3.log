@@ -1,0 +1,27 @@
+NormRoot.lean:16:22: error(lean.unknownIdentifier): Unknown identifier `zero_mul`
+NormRoot.lean:16:32: error(lean.unknownIdentifier): Unknown identifier `add_zero`
+NormRoot.lean:16:4: error: Type mismatch: After simplification, term
+  division
+ has type
+  factors.prod = remainder + 0 * quotient
+but is expected to have type
+  factors.prod = remainder
+NormRoot.lean:31:16: error(lean.unknownIdentifier): Unknown identifier `zero_mul`
+NormRoot.lean:31:26: error(lean.unknownIdentifier): Unknown identifier `add_zero`
+NormRoot.lean:30:50: error: unsolved goals
+R : Type
+inst✝ : CommRing R
+oldValue alpha : R
+h : oldValue = 0
+⊢ 0 * 0 + alpha * 0 = 0
+NormRoot.lean:38:36: error(lean.unknownIdentifier): Unknown identifier `zero_mul`
+NormRoot.lean:38:13: error: unsolved goals
+R : Type
+inst✝ : CommRing R
+alpha : R
+charTwo : alpha + alpha = 0
+⊢ 0 * alpha = 0
+'NormRoot.reduced_product_value' depends on axioms: [sorryAx]
+'NormRoot.reduced_product_zero_iff' depends on axioms: [sorryAx]
+'NormRoot.annihilator_update_old_root' depends on axioms: [sorryAx]
+'NormRoot.annihilator_update_new_basis' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

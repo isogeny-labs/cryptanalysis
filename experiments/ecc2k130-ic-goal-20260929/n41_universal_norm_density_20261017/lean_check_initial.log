@@ -1,0 +1,11 @@
+NormRoot.lean:31:16: warning: This simp argument is unused:
+  Semiring.zero_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [h, Semiring.mul_zero, Semiring.add_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'NormRoot.reduced_product_value' does not depend on any axioms
+'NormRoot.reduced_product_zero_iff' does not depend on any axioms
+'NormRoot.annihilator_update_old_root' depends on axioms: [propext]
+'NormRoot.annihilator_update_new_basis' depends on axioms: [propext, Classical.choice, Quot.sound]
