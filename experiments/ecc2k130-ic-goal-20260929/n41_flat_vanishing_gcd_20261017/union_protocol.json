@@ -1,0 +1,8 @@
+{
+  "candidate_id": null,
+  "panels": ["witness", "negative"],
+  "source": "same 40-by-40-by-40 valid canonical mask grid as protocol.json",
+  "union_cover": "one degree-27 polynomial whose roots are the union of all eight all-valid affine 3-flats; direct Horner checks on the remaining 13 masks",
+  "query_routes": ["all-40 Horner evaluation", "one degree-27 vanishing-polynomial GCD plus 13 remaining Horner evaluations"],
+  "resource_envelope": {"workers": 1, "alarm_seconds": 300, "rss_boundary_bytes": 4294967296}
+}

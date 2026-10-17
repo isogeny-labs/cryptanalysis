@@ -1,0 +1,70 @@
+{
+  "candidate_id": null,
+  "leftover_masks": [
+    2,
+    5,
+    26,
+    28,
+    81,
+    95,
+    131,
+    142,
+    159,
+    201,
+    202,
+    204,
+    217
+  ],
+  "panels": [
+    {
+      "direct_horner_evaluations": 64000,
+      "gcd_count": 1600,
+      "label": "witness",
+      "leftover_horner_evaluations": 20800,
+      "nonconstant_gcds": 1,
+      "phase_ns": {
+        "coefficient": 124082675,
+        "direct": 374833513,
+        "union_gcd_route": 31011868658
+      },
+      "post_gcd_root_checks": 27,
+      "specialized_pair_count": 1600,
+      "zero_masks": [
+        [
+          153,
+          215,
+          64
+        ]
+      ]
+    },
+    {
+      "direct_horner_evaluations": 64000,
+      "gcd_count": 1600,
+      "label": "negative",
+      "leftover_horner_evaluations": 20800,
+      "nonconstant_gcds": 0,
+      "phase_ns": {
+        "coefficient": 121262924,
+        "direct": 351856808,
+        "union_gcd_route": 27929764082
+      },
+      "post_gcd_root_checks": 0,
+      "specialized_pair_count": 1600,
+      "zero_masks": []
+    }
+  ],
+  "peak_self_rss_raw": 255000576,
+  "source_sha256": {
+    "flat_result.json": "f73da2c8445a476c6b6a539353d9d951bc0c15a7066204b4544b7e61773ba866",
+    "geometry.json": "d100282312b509a4e93dd8896b8d79f7c664537e224e25b607eab28e6c87dcae",
+    "negative_result_v2.json": "5ef7dc671a9af6f4cca3044aea2ce4dbd8f752f401be3ab86a4f909f04736db9",
+    "sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "sweep_result.json": "25c8f28f81d031c96b78f0e0c2f8c1c178f55ae332d332f9cf813bfd455ec79d",
+    "union.py": "af1b21289d212a1c6613051cc9f57ad10039b4b890f7f6c2a2cd71b5b10a6ee3",
+    "union_protocol.json": "5d7fff2ee3bca936f6865bc14dfb5f09eb4afa3e2f7571ef5e8dfbe9addc9dd8",
+    "witness_result_v2.json": "154820a76765bc8a7046b9d61d368ff41045058994952c682f9f86a495b9ad1f"
+  },
+  "status": "PASS_N41_UNION_VANISHING_GCD_MATCHED_SCAN",
+  "union_root_count": 27,
+  "union_setup_ns": 21451083
+}

@@ -1,0 +1,8 @@
+{
+  "candidate_id": null,
+  "panels": ["witness", "negative"],
+  "source": "all 40 valid source masks per slot; six all-valid right affine 3-flats covering the 27 masks that belong to any 3-flat, and direct evaluation of the other 13 right masks",
+  "flat_cover": "lexicographically first minimum-cardinality six-flat cover",
+  "query_routes": ["all-40 Horner evaluation", "six precomputed degree-eight vanishing-polynomial GCDs plus 13 remaining Horner evaluations"],
+  "resource_envelope": {"workers": 1, "alarm_seconds": 300, "rss_boundary_bytes": 4294967296}
+}

@@ -1,0 +1,78 @@
+{
+  "candidate_id": null,
+  "cover_indices": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    6
+  ],
+  "cover_mask_count": 27,
+  "leftover_masks": [
+    2,
+    5,
+    26,
+    28,
+    81,
+    95,
+    131,
+    142,
+    159,
+    201,
+    202,
+    204,
+    217
+  ],
+  "panels": [
+    {
+      "direct_horner_evaluations": 64000,
+      "gcd_count": 9600,
+      "label": "witness",
+      "leftover_horner_evaluations": 20800,
+      "nonconstant_gcds": 1,
+      "phase_ns": {
+        "coefficient": 148902962,
+        "direct": 576956210,
+        "gcd_route": 52359788309
+      },
+      "post_gcd_root_checks": 8,
+      "specialized_pair_count": 1600,
+      "zero_masks": [
+        [
+          153,
+          215,
+          64
+        ]
+      ]
+    },
+    {
+      "direct_horner_evaluations": 64000,
+      "gcd_count": 9600,
+      "label": "negative",
+      "leftover_horner_evaluations": 20800,
+      "nonconstant_gcds": 0,
+      "phase_ns": {
+        "coefficient": 134319153,
+        "direct": 371817878,
+        "gcd_route": 38585340444
+      },
+      "post_gcd_root_checks": 0,
+      "specialized_pair_count": 1600,
+      "zero_masks": []
+    }
+  ],
+  "peak_self_rss_raw": 255295488,
+  "source_sha256": {
+    "flat_result.json": "f73da2c8445a476c6b6a539353d9d951bc0c15a7066204b4544b7e61773ba866",
+    "geometry.json": "d100282312b509a4e93dd8896b8d79f7c664537e224e25b607eab28e6c87dcae",
+    "negative_result_v2.json": "5ef7dc671a9af6f4cca3044aea2ce4dbd8f752f401be3ab86a4f909f04736db9",
+    "protocol.json": "fabfe8559c0751719e1bd78493b7e3b18be0d5fd578565dee976589f167bb524",
+    "run.py": "1640ba6052d9d73c29e56f1bfe344e9891e1d7869ad24726610f258f34a9c32d",
+    "sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "sweep_result.json": "25c8f28f81d031c96b78f0e0c2f8c1c178f55ae332d332f9cf813bfd455ec79d",
+    "witness_result_v2.json": "154820a76765bc8a7046b9d61d368ff41045058994952c682f9f86a495b9ad1f"
+  },
+  "status": "PASS_N41_FLAT_VANISHING_GCD_MATCHED_SCAN",
+  "vanishing_setup_ns": 24370708
+}
