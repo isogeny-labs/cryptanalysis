@@ -88,3 +88,13 @@ runs require a new output directory and retain their own source identity.
 The `crypto` mirror is prepared but not applied: its required Conductor service
 is unreachable. See the companion
 [access problem](https://github.com/aburan28/crypto-autoresearcher/blob/codex/aes-distinguisher-research/problems/aes-lab-conductor-and-campaign-admission.md).
+
+Subsequent integration update: the current user authorized standalone
+application in `crypto`. The source mirror is now applied; eleven native/Cargo
+files match this companion and fourteen native tests pass there. Repository
+verification and PR delivery are tracked by the linked problem record. This
+does not rerun or alter the frozen suite, its observations, or campaign status.
+Delivery: [crypto PR #2105](https://github.com/aburan28/crypto/pull/2105).
+The native mirror/backlog checks pass, while the required root library check
+fails before tests on unchanged ecbench/Gaudry sources. The linked problem
+record preserves that separate regression gap.
