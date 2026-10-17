@@ -1,0 +1,112 @@
+{
+  "protocol_sha256": "72c2aa0fe50400e83262c19763bf24978dc1425cb7bf7b23cea7e3817686759e",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "413447",
+      "elapsed_ns": 56884436959,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 0,
+      "propagations": "45M",
+      "sampled_peak_combined_rss_bytes": 103415808,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "adc77f449c8bea8dcb8256b6359fa83fbe5c61e36daf31f274b30a948c83c21d",
+      "stop_reason": null,
+      "variant": "original"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_rotation_alignment_20261017/n131_aligned_trace.xcnf"
+      ],
+      "conflicts": null,
+      "decisions": null,
+      "elapsed_ns": 150053359583,
+      "exit_code": -9,
+      "formula_sha256": "783b74744ad1a927fa8e6694497c732a390f7f4a99dc32099b383f4d5bec36f8",
+      "index": 1,
+      "propagations": null,
+      "sampled_peak_combined_rss_bytes": 130564096,
+      "status_lines": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4e7d7b74ff726c74114fea7760cb7915b625c76af010fbf38fe27e1ffe31127b",
+      "stop_reason": "WALL_CAP",
+      "variant": "aligned"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_rotation_alignment_20261017/n131_aligned_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "457056",
+      "elapsed_ns": 141431213083,
+      "exit_code": 0,
+      "formula_sha256": "783b74744ad1a927fa8e6694497c732a390f7f4a99dc32099b383f4d5bec36f8",
+      "index": 2,
+      "propagations": "81M",
+      "sampled_peak_combined_rss_bytes": 166543360,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "137f04389b4c0ad7feed1dcf26ec47709dd172659c1b113dcd4a7d40ec265988",
+      "stop_reason": null,
+      "variant": "aligned"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "413447",
+      "elapsed_ns": 53081454083,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 3,
+      "propagations": "45M",
+      "sampled_peak_combined_rss_bytes": 113082368,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "da675c5de6616c82226476383a7171d7df58a4924ce9f2e337561c8af6b96287",
+      "stop_reason": null,
+      "variant": "original"
+    }
+  ],
+  "status": "COMPLETE_N131_ALIGNED_CONFLICT_PROBE"
+}
