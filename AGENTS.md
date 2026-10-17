@@ -310,6 +310,42 @@ not estimates of natural relation yield. An unverified isogeny neighbor or
 conductor guess is a proposal only: `ISO1` requires an explicit verified map,
 ordered edge links, subgroup/log transport, and charged route costs.
 
+## Model tiers
+
+The owner's model-tier topology is the same in every repository; the
+reference is
+[`docs/model-tiers.md` in aburan28/crypto-autoresearcher](https://github.com/aburan28/crypto-autoresearcher/blob/main/docs/model-tiers.md).
+Here:
+
+- **Frontier** (Claude Mythos `claude-mythos-5`, Fable 5.1 `claude-fable-5-1`)
+  and **core** (Opus 5.5 `claude-opus-5-5`, or the OpenAI, GLM and Qwen
+  equivalents) keep the reasoning: experiment design, curve and arm choice,
+  controls, analysis and interpretation, every claim, speedup and evidence
+  tier, papers, and every PR decision.
+- **Director** (Sonnet 5.5, [`experiment-director`](.claude/agents/experiment-director.md))
+  compiles a decided experiment into a frozen command card: exact argv for
+  the build (`cmake`, `cargo`) and the run (`./build/ca`, `ca_bench`,
+  `crax`, `./sage`, `cloud/` launchers), seeds, input paths with sha256,
+  output directories, timeouts, success exit codes and observable stop
+  conditions. A value the design does not give is a specification error,
+  never a default. In a fresh dispatch it assesses the executor's returned
+  text against the outputs on disk (`executed_as_specified`, `stopped`,
+  `impeded` or `executor_deviated`) and recommends `proceed_to_analysis`,
+  `rerun_after_infrastructure_fix`, `respecify` or `escalate`; it never
+  interprets.
+- **Mechanical** (Haiku 5.5 at effort low,
+  [`executor-mechanical`](.claude/agents/executor-mechanical.md)) runs exactly
+  the card's commands, writes only inside its `write_scope`, returns tool
+  output verbatim, computes nothing, edits no code, inputs or results, and
+  refuses any card that leaves a choice.
+
+Subagents never nest in Claude Code: the main session does every dispatch,
+relays the director's card to the executor verbatim and adds nothing, then
+dispatches the director again to assess. Mechanical output is an
+observation, never a claim: every rule in this file about measurement rows,
+evidence tiers, matched rho and verification still applies before anything it
+returned is reported as a result.
+
 ## Remote compute
 
 A cloud-agent VM has 4 CPUs, 15 GB and no GPU. Run bigger work, such as
