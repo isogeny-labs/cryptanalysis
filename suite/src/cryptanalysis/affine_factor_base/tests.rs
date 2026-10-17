@@ -691,3 +691,46 @@ fn affine_system_is_the_hull_system_at_shift_one() {
         }
     }
 }
+
+/// Second, independent stress seed for the cheap specialised routes
+/// (`S3Solve`, `S4PairsAndSolve`, `Auto`) against the enumerated reference:
+/// many more random curves, subspaces of every dimension from 0, shifts
+/// inside and outside `V`, and `n` up to 16.
+#[test]
+fn specialised_routes_stress_against_enumeration() {
+    let mut rng = StdRng::seed_from_u64(0x57E5_AFF2);
+    let (mut nonempty, mut total) = (0, 0);
+    for n in 4u32..=16 {
+        for l in 0..=n.min(5) {
+            for _ in 0..3 {
+                let mask = (1u64 << n) - 1;
+                let curve = generic_curve(n, rng.gen_range(0..2), (rng.gen::<u64>() & mask).max(1));
+                let basis = random_independent(&mut rng, n, l);
+                let shift = if rng.gen_bool(0.2) && !basis.is_empty() {
+                    basis[0]
+                } else {
+                    rng.gen::<u64>() & mask
+                };
+                let coset = AffineSubspace::new(&basis, shift).unwrap();
+                let points = affine_points(&curve, &coset).unwrap();
+                if points.is_empty() {
+                    continue;
+                }
+                let dec = AffineDecomposer::new(&curve, &coset, &points).unwrap();
+                let label = format!("stress n={n} l={l} c={shift:#x}");
+                let ts = targets(&curve, &points, 3, &mut rng, 4);
+                for m in [2usize, 3] {
+                    let (ne, t) =
+                        check_routes(&curve, &coset, &points, &dec, &ts, m, false, &label);
+                    nonempty += ne;
+                    total += t;
+                }
+            }
+        }
+    }
+    assert!(total > 300, "stress covered too few targets: {total}");
+    assert!(
+        nonempty * 5 >= total,
+        "too few decomposable targets: {nonempty}/{total}"
+    );
+}
