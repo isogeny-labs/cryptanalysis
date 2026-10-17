@@ -34,7 +34,9 @@ jobs:
           receipt = json.load(open(sys.argv[1]))
           assert receipt['status'] == 'portable_exact_output_replay_passed'
           assert receipt['atlas_include_bytes_count'] == 0
-          assert receipt['exact_outputs'] == 257
+          assert receipt['mixed77_exact_outputs'] == 257
+          assert receipt['control_exact_outputs'] == 4
+          assert receipt['exact_outputs'] == 261
           print(receipt['status'], receipt['binary_sha256'])
           PY
 

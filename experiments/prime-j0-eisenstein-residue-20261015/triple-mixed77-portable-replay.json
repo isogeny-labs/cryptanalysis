@@ -4,7 +4,31 @@
   "bundle_sha256": "0598b16fb66efda38515bc2a3685c9ff38b3c2e797ca66d7e7c0a2451e0a998c",
   "cargo": "cargo 1.93.1 (Homebrew)",
   "compile_fixture_archive_sha256": "378c611a5204abcfa1bcf819a73ca1ec3f0e5c1f335637a509125e5a9d021baa",
-  "exact_outputs": 257,
+  "control_exact_outputs": 4,
+  "control_results": [
+    {
+      "expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "mode": "openssl_nowarm",
+      "stdout": "verified=1 count=1 online_ms=2.018917 preparation_ms=0.000041 openssl_warmup_ms=0.000000 table_preparation_ms=0.000041 retained_bytes=0 mode=openssl_nowarm point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "mode": "joint_triple81",
+      "stdout": "verified=1 count=1 online_ms=0.079542 target_preparation_ms=0.030417 restart_eval_ms=0.049125 generator_preparation_ms=0.052875 graph_plan_ms=0.000000 plan_load_ms=0.094500 plan_bytes=2820 g_table_bytes=1544 q_table_bytes=1544 constructed_q_points=21 graph_edges=13 direct_seeds=8 steps=20 triplings_per_step=4 mode=joint_triple81 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "mode": "joint_triple243",
+      "stdout": "verified=1 count=1 online_ms=0.081000 target_preparation_ms=0.035458 restart_eval_ms=0.045542 generator_preparation_ms=0.050333 graph_plan_ms=0.000000 plan_load_ms=0.217375 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=1 direct_seeds=16 steps=16 triplings_per_step=5 mode=joint_triple243 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "mode": "joint_mixed78",
+      "stdout": "verified=1 count=1 online_ms=0.081583 target_preparation_ms=0.035875 restart_eval_ms=0.045708 generator_preparation_ms=0.055333 graph_plan_ms=0.000000 plan_load_ms=0.211666 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=2 direct_seeds=15 steps=16 triplings=78 mode=joint_mixed78 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    }
+  ],
+  "exact_outputs": 261,
+  "mixed77_exact_outputs": 257,
   "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)",
   "optional_atlas_dir_set": false,
   "overlay_sha256": {
@@ -22,21 +46,21 @@
       "fixture": "frozen",
       "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
       "last_expected_point": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
-      "stdout": "verified=1 count=1 online_ms=0.123583 target_preparation_ms=0.050875 restart_eval_ms=0.072708 generator_preparation_ms=0.160083 graph_plan_ms=0.000000 plan_load_ms=0.508541 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=3 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+      "stdout": "verified=1 count=1 online_ms=0.099375 target_preparation_ms=0.036292 restart_eval_ms=0.063083 generator_preparation_ms=0.130584 graph_plan_ms=0.000000 plan_load_ms=0.856083 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=3 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
     },
     {
       "count": 128,
       "fixture": "frozen",
       "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
       "last_expected_point": "a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a",
-      "stdout": "verified=1 count=128 online_ms=9.392667 target_preparation_ms=2.225167 restart_eval_ms=7.167500 generator_preparation_ms=2.261292 graph_plan_ms=0.000000 plan_load_ms=12.078500 plan_bytes=222432 g_table_bytes=152384 q_table_bytes=151808 constructed_q_points=1874 graph_edges=1860 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a"
+      "stdout": "verified=1 count=128 online_ms=99.760333 target_preparation_ms=79.965833 restart_eval_ms=19.794500 generator_preparation_ms=1.220375 graph_plan_ms=0.000000 plan_load_ms=15.622125 plan_bytes=222432 g_table_bytes=152384 q_table_bytes=151808 constructed_q_points=1874 graph_edges=1860 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a"
     },
     {
       "count": 128,
       "fixture": "independent",
       "fixture_sha256": "5b0b0a50dbae2cd57415f425b7e3a9654190d363887e06198fc7328161a40439",
       "last_expected_point": "8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929",
-      "stdout": "verified=1 count=128 online_ms=14.308959 target_preparation_ms=1.436084 restart_eval_ms=12.872875 generator_preparation_ms=2.327250 graph_plan_ms=0.000000 plan_load_ms=9.997125 plan_bytes=223600 g_table_bytes=153752 q_table_bytes=153320 constructed_q_points=1876 graph_edges=1857 direct_seeds=19 steps=16 triplings=77 mode=joint_mixed77 point=8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929"
+      "stdout": "verified=1 count=128 online_ms=14.289999 target_preparation_ms=5.826791 restart_eval_ms=8.463208 generator_preparation_ms=1.254083 graph_plan_ms=0.000000 plan_load_ms=73.431208 plan_bytes=223600 g_table_bytes=153752 q_table_bytes=153320 constructed_q_points=1876 graph_edges=1857 direct_seeds=19 steps=16 triplings=77 mode=joint_mixed77 point=8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929"
     }
   ],
   "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
@@ -63,5 +87,5 @@
   },
   "status": "portable_exact_output_replay_passed",
   "timing_status": "diagnostic_only_unisolated",
-  "verifier_sha256": "25e27f3cd700ea2d523224de61954927d0cf5079de652f08a5a9b1e3ac08b402"
+  "verifier_sha256": "b66a3b98d0be53ab5674c0a0eba41e324db7b7547c909da22d9cd21dc1100dad"
 }

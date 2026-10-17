@@ -122,6 +122,20 @@ def main(output: Path, bundle_out: Path | None) -> None:
             results.append({'fixture': label, 'fixture_sha256': digest(fixture),
                             'count': count, 'last_expected_point': expected,
                             'stdout': stdout})
+        control_results = []
+        frozen = HERE / 'rho-restart-first128-fixture.json'
+        first_point = json.loads(frozen.read_text())['cases'][0]['point_hex']
+        for mode, args in (
+            ('openssl_nowarm', ['--pilot-rho-restart', 'openssl_nowarm']),
+            ('joint_triple81', ['--pilot-rho-restart-joint-triple81']),
+            ('joint_triple243', ['--pilot-rho-restart-joint-triple243']),
+            ('joint_mixed78', ['--pilot-rho-restart-joint-mixed78']),
+        ):
+            stdout = run([str(binary), *args, str(frozen), '1'], root, build_env)
+            assert 'verified=1 count=1' in stdout
+            assert stdout.endswith('point=' + first_point)
+            control_results.append({'mode': mode, 'stdout': stdout,
+                                    'expected_point': first_point})
         receipt = {
             'schema': 1, 'status': 'portable_exact_output_replay_passed',
             'timing_status': 'diagnostic_only_unisolated',
@@ -141,8 +155,11 @@ def main(output: Path, bundle_out: Path | None) -> None:
                     'native_rho_restart_mixed77_portable_overlay.py')},
             'source_sha256': source_hashes, 'binary_sha256': digest(binary),
             'bundle_sha256': bundle_sha256,
-            'exact_outputs': sum(row['count'] for row in results),
-            'results': results,
+            'mixed77_exact_outputs': sum(row['count'] for row in results),
+            'control_exact_outputs': len(control_results),
+            'exact_outputs': sum(row['count'] for row in results)
+                             + len(control_results),
+            'results': results, 'control_results': control_results,
         }
         output.write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
         print(json.dumps({'status': receipt['status'],

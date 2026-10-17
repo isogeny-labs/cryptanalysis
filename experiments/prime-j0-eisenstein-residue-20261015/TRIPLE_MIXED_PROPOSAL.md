@@ -100,7 +100,8 @@ functions remain in the source. The [portable verifier](verify_portable_mixed77.
 archived source, applies hash-checked overlays, builds a release binary with
 no atlas placeholder bytes, and replays the frozen and independent fixtures.
 The [portable replay receipt](triple-mixed77-portable-replay.json) records
-the source and binary hashes and 257 exact outputs on local ARM64. The
+the source and binary hashes, 257 mixed-77 exact outputs, and four comparator
+mode outputs on local ARM64. The
 workflow is configured to build and replay this path on pinned Rust 1.93.1
 under Linux.
 Its local elapsed fields remain correctness diagnostics until the isolated
@@ -121,6 +122,11 @@ First compare the one-restart 77- and 78-step paths with the frozen
 evaluation, and output conversion. Use the serial Tier 1 RunPod queue with
 alternating pairs, exact replay, host counters, and bracketing A/A controls
 under the [joint benchmark contract](RHO_JOINT_BENCHMARK_PLAN.md). The
-128-restart stream asks the separate batch-amortization question. The three
+focused [Tier 1 panel generator](make_tier1_mixed77_panel.py) freezes 112
+serial one-restart pairs: mixed-77 against mixed-78, fixed radix-243,
+fixed radix-81, and OpenSSL, bracketed by three OpenSSL A/A controls.
+It requires the new pod ID, executable and `libcrypto` hashes, exposed CPU,
+and exact source bundle before producing the manifest and rules.
+The 128-restart stream asks the separate batch-amortization question. The three
 saved triplings per restart become a measured improvement only if the full
 charged interval passes that gate.
