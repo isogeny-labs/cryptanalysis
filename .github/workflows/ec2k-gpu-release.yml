@@ -5,7 +5,7 @@ name: cryptanalysis-release
 # A tag cryptanalysis-vX.Y.Z (or the legacy ec2k-gpu-vX.Y.Z) builds the
 # campaign build (WALK=sigma) and unified CLI on Linux
 # x86_64 and aarch64 with the pinned CUDA 13.3 from NVIDIA's pip wheels, for
-# sm_80 through sm_120 plus compute_120 PTX, and publishes the tarballs and
+# sm_75 through sm_120 plus compute_120 PTX, and publishes the tarballs and
 # a macOS arm64 CLI with the separate Metal table walk, a pinned Sage
 # accelerator overlay, and their .sha256 as a GitHub release. A tag with
 # -rc or -pre in it is a
@@ -240,7 +240,7 @@ jobs:
           version=${version#ec2k-gpu-v}
           cat > notes.md <<EOF
           cryptanalysis $version: BSGS, rho, and prime-field index calculus from one CLI.
-          ECC2K-130 rho uses a packaged curve-specific CUDA backend for NVIDIA GPUs from Ampere (sm_80) onward on Linux.
+          ECC2K-130 rho uses a packaged curve-specific CUDA backend for NVIDIA GPUs from Turing (sm_75) onward on Linux.
           The macOS arm64 archive contains a Metal table walk. Its points are separate from the CUDA sigma campaign.
 
           \`\`\`sh
@@ -254,7 +254,7 @@ jobs:
 
           On macOS arm64, unpack cryptanalysis-$version-macos-arm64.tar.gz and use \`bin/cryptanalysis rho --curve ecc2k130 --backend metal --check\`, then \`bin/cryptanalysis rho --curve ecc2k130 --backend metal --run-id R --dp-file table-dps.bin --verify 100\`. The Metal shader is compiled at start-up. The release runner compiles and checks host arithmetic; validate the walk on a real Apple GPU before using its reports.
 
-          Pick \`R\` at random in 10000-65534, one per GPU. The legacy ec2k-gpu archive is also included for existing runners. See share/cryptanalysis/ECC2K130-README.md in the archive for campaign point details, and ecc2k130/scripts/device_check.sh for checks on a card. The index-calculus command currently targets the multiplicative group of a prime field.
+          Pick \`R\` at random in 10000-49999, one per GPU (ecc-challenges.com assigns 50000-65534). The legacy ec2k-gpu archive is also included for existing runners. See share/cryptanalysis/ECC2K130-README.md in the archive for campaign point details, and ecc2k130/scripts/device_check.sh for checks on a card. The index-calculus command currently targets the multiplicative group of a prime field.
 
           The cryptanalysis-sage-$version-source.tar.gz asset contains the pinned Sage patch stack. The macOS arm64 Sage accelerator archive contains seven compiled/runtime modules for an already built Sage at the pinned commit and matching Python ABI. It is not a full Sage installation; see docs/SAGE_RELEASE.md.
           EOF
