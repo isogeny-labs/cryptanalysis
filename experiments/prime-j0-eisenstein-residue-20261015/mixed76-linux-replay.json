@@ -1,0 +1,64 @@
+{
+  "binary_sha256": "f249f1f31f4e76770353efd34e3ce1e99e4ea07badf57921d22483ac5a8f4918",
+  "cargo": "cargo 1.93.1 (083ac5135 2025-12-15)",
+  "control_exact_outputs": 5,
+  "controls": [
+    {
+      "mode": "openssl_nowarm",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=1.057023 preparation_ms=0.000080 openssl_warmup_ms=0.000000 table_preparation_ms=0.000080 retained_bytes=0 mode=openssl_nowarm point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "mode": "joint_triple81",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=0.086090 target_preparation_ms=0.034780 restart_eval_ms=0.051310 generator_preparation_ms=0.053801 graph_plan_ms=0.000000 plan_load_ms=0.101920 plan_bytes=2820 g_table_bytes=1544 q_table_bytes=1544 constructed_q_points=21 graph_edges=13 direct_seeds=8 steps=20 triplings_per_step=4 mode=joint_triple81 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "mode": "joint_triple243",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=0.087110 target_preparation_ms=0.040340 restart_eval_ms=0.046770 generator_preparation_ms=0.047910 graph_plan_ms=0.000000 plan_load_ms=0.207051 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=1 direct_seeds=16 steps=16 triplings_per_step=5 mode=joint_triple243 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "mode": "joint_mixed78",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=0.088640 target_preparation_ms=0.042010 restart_eval_ms=0.046630 generator_preparation_ms=0.050570 graph_plan_ms=0.000000 plan_load_ms=0.206121 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=2 direct_seeds=15 steps=16 triplings=78 mode=joint_mixed78 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "mode": "joint_mixed77",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=0.087210 target_preparation_ms=0.041060 restart_eval_ms=0.046150 generator_preparation_ms=0.050650 graph_plan_ms=0.000000 plan_load_ms=0.217381 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=3 direct_seeds=14 steps=16 triplings=77 mode=joint_mixed77 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    }
+  ],
+  "libcrypto_sha256": "d6fc1bc9de29c55fc905f77edba1ccc7c7a50b32bd2bb9086b0d0b00104eafc4",
+  "mixed76_exact_outputs": 257,
+  "platform": "Linux-6.8.0-137-generic-x86_64-with-glibc2.39",
+  "pod_id": "thyvmdqmzsz5ik",
+  "results": [
+    {
+      "count": 1,
+      "fixture": "rho-restart-first128-fixture.json",
+      "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
+      "stderr": "",
+      "stdout": "verified=1 count=1 online_ms=0.087470 target_preparation_ms=0.040240 restart_eval_ms=0.047230 generator_preparation_ms=0.061110 graph_plan_ms=0.000000 plan_load_ms=0.200511 plan_bytes=2404 g_table_bytes=1256 q_table_bytes=1256 constructed_q_points=17 graph_edges=3 direct_seeds=14 steps=16 triplings=76 mode=joint_mixed76 point=6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a"
+    },
+    {
+      "count": 128,
+      "fixture": "rho-restart-first128-fixture.json",
+      "fixture_sha256": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
+      "stderr": "",
+      "stdout": "verified=1 count=128 online_ms=7.123053 target_preparation_ms=1.336784 restart_eval_ms=5.786269 generator_preparation_ms=1.408985 graph_plan_ms=0.000000 plan_load_ms=7.963265 plan_bytes=221970 g_table_bytes=152456 q_table_bytes=153248 constructed_q_points=1860 graph_edges=1840 direct_seeds=20 steps=16 triplings=76 mode=joint_mixed76 point=a774f4916d233b9c863b2483a11b56778789f22d06c82c5abd2614aeacc9441e:a6c00dda29b720eacdb2ad443383013b6d3732b1fbe59697b7b305df36fdcd1a"
+    },
+    {
+      "count": 128,
+      "fixture": "mixed77-independent-fixture.json",
+      "fixture_sha256": "5b0b0a50dbae2cd57415f425b7e3a9654190d363887e06198fc7328161a40439",
+      "stderr": "",
+      "stdout": "verified=1 count=128 online_ms=7.321764 target_preparation_ms=1.447275 restart_eval_ms=5.874489 generator_preparation_ms=1.953526 graph_plan_ms=0.000000 plan_load_ms=8.352967 plan_bytes=223034 g_table_bytes=152456 q_table_bytes=152960 constructed_q_points=1869 graph_edges=1852 direct_seeds=17 steps=16 triplings=76 mode=joint_mixed76 point=8fca69c5a6770b32e0ad06f8335b93c618837d1cb31e4611e519ee53b74dc237:de6d4099429083c4bcbec3eb67ba840e9ba4431906c18e7ae8649e79dbacd929"
+    }
+  ],
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "schema": 1,
+  "source_bundle_sha256": "aa194966c8ce274f53b169c836baf16ff52c5d94ba384cec9994d72f65f02e8b",
+  "status": "linux_exact_output_replay_passed",
+  "timing_status": "diagnostic_only_pre_panel"
+}

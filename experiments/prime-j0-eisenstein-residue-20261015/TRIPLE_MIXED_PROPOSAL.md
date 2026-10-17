@@ -145,12 +145,12 @@ The prepared 20-entry, 3,009,079-byte bundle has SHA-256
 `0598b16fb66efda38515bc2a3685c9ff38b3c2e797ca66d7e7c0a2451e0a998c`.
 It contains Cargo inputs, all executed Rust source, compile fixtures, both
 replay fixtures, and a source manifest. It contains no atlas shims or
-machine-local absolute paths in Rust source. Transfer and Tier 1 measurement
-remain subject to the existing RunPod source-egress approval gate.
+machine-local absolute paths in Rust source. Its separate 77-step focused
+panel remains available for an independently audited run.
 
 ## Decision gate
 
-First compare the one-restart 77- and 78-step paths with the frozen
+The frozen plan compares the one-restart 77- and 78-step paths with the
 `243+omega`, `81+omega`, and OpenSSL arms on the same public point, charging Q preparation,
 evaluation, and output conversion. Use the serial Tier 1 RunPod queue with
 alternating pairs, exact replay, host counters, and bracketing A/A controls
@@ -167,9 +167,11 @@ The [76-step Tier 1 panel generator](make_tier1_mixed76_panel.py) freezes
 fixed radix-81, and OpenSSL, with three bracketing OpenSSL A/A controls.
 Its [independent auditor](analyze_tier1_mixed76.py) checks the frozen source,
 same-point output, raw arm order, host receipts, pair accounting, and noise
-gate. The Linux binary and host allocation still need to be frozen on the
-selected pod before running the panel. The 76-tripling count is an
-operator-count improvement; a wall-time comparison awaits that run.
+gate. The Linux build replay verified 257 mixed-76 outputs and five controls
+on the selected Pod; its [receipt](mixed76-linux-replay.json) binds binary
+SHA-256 `f249f1f31f4e76770353efd34e3ce1e99e4ea07badf57921d22483ac5a8f4918`
+and `libcrypto` SHA-256
+`d6fc1bc9de29c55fc905f77edba1ccc7c7a50b32bd2bb9086b0d0b00104eafc4`.
 The [independent panel auditor](analyze_tier1_mixed77.py) regenerates those
 rules, replays the fixture point through separate curve arithmetic, verifies
 all source and runtime artifact hashes, reads every raw arm and pair ledger,
@@ -177,6 +179,46 @@ and gates the paired interval on complete runs and A/A controls. Missing,
 failed, or noisy pairs remain recorded and leave the aggregate unknown.
 Its rejected-preflight diagnostic produced zero valid pairs and unknown
 comparison statuses; it is a failure-semantics check, not timing evidence.
-The 128-restart stream asks the separate batch-amortization question. The three
-saved triplings per restart become a measured improvement only if the full
-charged interval passes that gate.
+The 128-restart stream asks the separate batch-amortization question.
+
+## Mixed-76 one-restart Tier 1 result
+
+The [manifest](tier1-mixed76-one-cpu-manifest.json) and
+[rules](tier1-mixed76-one-cpu-rules.json) freeze one supplied public `Q`,
+one scalar pair, CPU 40 on RunPod allocation `thyvmdqmzsz5ik`, sixteen
+alternating pairs per comparator, and three OpenSSL A/A controls per repeat.
+The exposed allocation had eight CPUs, one NUMA node, no cgroup CPU quota,
+and no verified physical-host exclusivity. The online interval includes
+target `Q`-table construction, Horner evaluation, and output conversion for
+the joint paths; reusable `G` setup and Q-independent planning are outside
+it. OpenSSL `nowarm` times its first scalar multiplication and affine output.
+The same point is checked independently in each arm.
+
+The first [raw run](tier1-mixed76-run1-raw.tar.gz) completed all 256 arms and
+128 pairs with stable artifacts. Its [audit](tier1-mixed76-run1-audit.json)
+rejected the tier gate because one `cal_after` OpenSSL A/A ratio was 1.338,
+outside the frozen [0.90, 1.11] range; all its comparator aggregates remain
+`unknown_after_tier_gate`. Raw archive SHA-256:
+`9698f26563c7548ab741850ebdf197b1357d30c652fb8afbbef707d6a19e0c3d`.
+
+The matched second [raw run](tier1-mixed76-run2-raw.tar.gz) completed all
+256 arms and 128 pairs; its [independent audit](tier1-mixed76-run2-audit.json)
+found stable artifacts, no invalid arms, no A/A failures, and a passing Tier 1
+gate. Raw archive SHA-256:
+`911338b161d9456613e4b0ac95db591b869d58ad53c4529ae296bdb66f62c5e1`.
+Each row below uses the frozen online interval in milliseconds. The ratio is
+the median of the sixteen paired `reference / mixed-76` ratios; the interval
+is the paired bootstrap 95% interval, not a ratio of the two time medians.
+
+| Reference | Reference median ms | Mixed-76 median ms | Paired ratio | 95% interval | Audit status |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Mixed-77 | 0.089230 | 0.087561 | 1.01769 | [0.97021, 1.03914] | Unresolved |
+| Mixed-78 | 0.089276 | 0.088680 | 1.00607 | [0.96871, 1.02576] | Unresolved |
+| Radix-243 | 0.087860 | 0.087530 | 1.00508 | [0.98617, 1.00875] | Unresolved |
+| Radix-81 | 0.085710 | 0.086990 | 0.98494 | [0.98296, 0.98950] | Mixed-76 slower |
+| OpenSSL nowarm | 1.076653 | 0.087295 | 12.30176 | [12.21794, 12.54681] | Mixed-76 faster under this boundary |
+
+The smaller tripling count therefore has not produced a qualified online
+advantage over mixed-77 or mixed-78 on this one-target workload. A fresh
+target panel would test whether the rank ordering transfers beyond this
+point; the retained first-run noise failure remains part of the evidence.
