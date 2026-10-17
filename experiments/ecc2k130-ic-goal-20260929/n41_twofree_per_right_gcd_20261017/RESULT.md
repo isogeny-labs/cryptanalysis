@@ -1,0 +1,24 @@
+# Low-degree per-right GCD for two free pair-product spans
+
+**Specializing the exact two-free-product eliminant at each right product keeps left-span elimination at degree 16 and reproduces the sole archived N41 witness pair.** The same method returns no pair on the frozen negative residual. Each of 256 right-product specializations was checked against all 128 left-span products, for 32,768 direct evaluations in the independent comparison loop. The successful bounded run used one checked-Sage worker and 255,688,704 bytes peak self RSS.
+
+| Frozen conditional N41 residual | Right products | Specialized degree | GCD matches | Specialization + GCD | Direct replay | Total panel |
+| --- | ---: | ---: | --- | ---: | ---: | ---: |
+| Archived public-relation residual | 128 | 16 throughout | `(1383481007416, 216004441708)` | **1.557 s** | 3.208 s | 4.767 s |
+| Frozen negative residual | 128 | 16 throughout | none | **1.642 s** | 3.391 s | 5.035 s |
+
+The GCD route uses a degree-128 linearized span annihilator only as a dividend; after specialization it reduces that annihilator modulo a degree-16 polynomial before taking a GCD. It never materializes the degree-3,072 nested resultant from the earlier [two-free-product experiment](../n41_twofree_symbolic_resultant_replay_20261016/RESULT.md). The earlier nested resultant took 64.006 s and reported 1.93 GB process RSS on the witness panel; these are different implementations and runs on an ordinary host, so their wall intervals are diagnostic rather than an isolated speedup comparison.
+
+## Exact test and proof boundary
+
+Let `V_Q` be the seven-dimensional left product span, `L_Q(X)=Π_(q∈V_Q)(X+q)` its linearized annihilator, and `F(q,r)` the archived bidegree `(16,24)` target-conditioned eliminant. For a chosen right product `r`, specialize `f_r(X)=F(X,r)` and compute `g_r=gcd(f_r,L_Q mod f_r)`. Euclidean division preserves the GCD. Because `L_Q` splits into distinct linear factors precisely at the members of `V_Q`, the roots of `g_r` are exactly the left-span products satisfying `F(q,r)=0`. An identically zero specialization would retain every left product; a nonzero constant retains none. Neither panel encountered an identically zero specialization.
+
+The [v2 protocol](protocol_v2.json) prospectively pins the worker, two archived symbolic inputs, source geometry, old span results, accepted [Sage runtime](sage_runtime_info.json), one worker, 120-second alarm, and 4-GiB observational RSS boundary. The [result](result_v2.json) records each exact product match, degree, exclusive specialization/GCD/direct-replay times, and 8/32/128-product checkpoints. The worker performs 32,768 direct field evaluations; the [read-only verifier](verification.json) checks their declared domains and recorded outcomes against the two archived full-span results, as well as all hashes, phase sums, and the preserved first-attempt receipt. The original run stopped at a JSON tuple/list comparison and is retained as [attempt 1](attempt1.json) with its original [protocol](protocol.json) and [tool-output transcription](attempt1.stderr.txt); the first invocation did not redirect raw stderr to disk. No arithmetic mismatch was observed before that comparison.
+
+The readable proof above uses polynomial factorization, the Euclidean GCD identity, and the previously established zero set of the linearized annihilator. The earlier [TwoSpanProduct.lean](../n41_twofree_symbolic_resultant_replay_20261016/TwoSpanProduct.lean) checks the finite-product zero implication with `#print axioms` under no-zero-divisor hypotheses. A faithful Lean statement connecting concrete polynomial remainder, GCD, and this binary-field root set is still open; the present finite-field instance is checked by exhaustive per-right evaluation and the archived independent resultant result. The [proof map](PROOF_MAP.md) records the exact missing bridge. This formalization status is partial.
+
+## Transfer decision
+
+The N131 W23 source has 1,049,218 usable pair codes per slot. Even one fixed first-product/residual panel would require 1,049,218 right-code tests: **1,749 GCD tests/s** to fit 600 seconds, before constructing the N131 eliminant or checking four raw preimages. A literal outer loop over one million first-product choices and one million right-code choices would require **1,100,858,411,524** conditional tests, or **1.83 billion tests/s** under the same cap, before the other pair slots are charged. These are workload counts for the literal transfer, not a lower bound on every batched algorithm.
+
+The per-right GCD is therefore a compact conditional oracle, with `candidate_id: null`. The next experiment must eliminate or batch an outer partial-sum family jointly with the public point before this oracle can contribute to an unpinned six-pair relation search. The prior N41 unpinned group join supplies the relation control; this fixed-prefix panel measures only the conditional elimination stage.

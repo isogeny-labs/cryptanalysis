@@ -1,0 +1,90 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "panels": [
+    {
+      "checkpoints": [
+        {
+          "elapsed_ns": 303730875,
+          "processed": 8
+        },
+        {
+          "elapsed_ns": 1198744292,
+          "processed": 32
+        },
+        {
+          "elapsed_ns": 4766606167,
+          "processed": 128
+        }
+      ],
+      "degree_histogram": {
+        "16": 128
+      },
+      "direct_replay_ns": 3208025086,
+      "gcd_ns": 1415053538,
+      "identically_zero_specializations": 0,
+      "left_span_size": 128,
+      "matches": [
+        [
+          1383481007416,
+          216004441708
+        ]
+      ],
+      "max_specialized_degree": 16,
+      "name": "witness",
+      "panel_ns": 4767027125,
+      "right_products": 128,
+      "specialize_ns": 142102836,
+      "valid_matches": [
+        [
+          1383481007416,
+          216004441708
+        ]
+      ],
+      "valid_right_products": 40
+    },
+    {
+      "checkpoints": [
+        {
+          "elapsed_ns": 292051542,
+          "processed": 8
+        },
+        {
+          "elapsed_ns": 1224316333,
+          "processed": 32
+        },
+        {
+          "elapsed_ns": 5034423583,
+          "processed": 128
+        }
+      ],
+      "degree_histogram": {
+        "16": 128
+      },
+      "direct_replay_ns": 3391068530,
+      "gcd_ns": 1490894627,
+      "identically_zero_specializations": 0,
+      "left_span_size": 128,
+      "matches": [],
+      "max_specialized_degree": 16,
+      "name": "negative",
+      "panel_ns": 5034734833,
+      "right_products": 128,
+      "specialize_ns": 150754456,
+      "valid_matches": [],
+      "valid_right_products": 40
+    }
+  ],
+  "peak_self_rss_raw": 255688704,
+  "protocol_sha256": "66d20cfcb2cfda0d210881cf011d829dcedbed16690429bb8bcd55038c768d9b",
+  "source_sha256": {
+    "geometry": "d100282312b509a4e93dd8896b8d79f7c664537e224e25b607eab28e6c87dcae",
+    "joint": "e2e6a67b3a1c4577dd150b538201a8f901024576b194f72b20a35009fe0be6c0",
+    "negative": "5ff5e590d7208ad6356127398ce1a8dc5463c150d3e6217201d754897a6a0e4a",
+    "negative_joint": "007bb539cf4fce800df3cf3668430af670dd2ccac110e387da435eed8eb2ab4c",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "witness": "73adf511cea895c56428b3fe29b10ab6bc5ed8a56cd30cb59ead460705792880",
+    "worker_v2": "8e58f1a474cb780d7e0c4768a0efb530a273a66d950e97a021474fe0d0f026c2"
+  },
+  "status": "PASS_PER_RIGHT_LOW_DEGREE_GCD"
+}
