@@ -1,0 +1,37 @@
+{
+  "input_policy": "no arguments; each binary should immediately exit with usage error",
+  "interrupted_query_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "interrupted_query_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rows": [
+    {
+      "binary_sha256": "b743742940cdb5127f208c1fb8e8ac399dd9a57f842374d11e05657053febf5f",
+      "elapsed_ns": 14910750,
+      "label": "frozen_original_path",
+      "returncode": 2,
+      "status": "EXITED",
+      "stderr": "ERROR usage: join_five input.tsv\n",
+      "stdout": ""
+    },
+    {
+      "binary_sha256": "b743742940cdb5127f208c1fb8e8ac399dd9a57f842374d11e05657053febf5f",
+      "elapsed_ns": 15418292,
+      "label": "copied_original_binary",
+      "returncode": 2,
+      "status": "EXITED",
+      "stderr": "ERROR usage: join_five input.tsv\n",
+      "stdout": ""
+    },
+    {
+      "binary_sha256": "d8c007bba355af33d513caf0bde0ccbedb09b18fbfbbf1f8472c756e9d8bbc26",
+      "elapsed_ns": 149282417,
+      "label": "new_target_join_binary",
+      "returncode": 2,
+      "status": "EXITED",
+      "stderr": "ERROR usage: join_five input.tsv\n",
+      "stdout": ""
+    }
+  ],
+  "script_sha256": "da36fcdc87f4ae5f22ebc7e79f08c7e55b85dccce7a510e1b92d0453d0cdee14",
+  "status": "COMPLETE_BOUNDED_NATIVE_LAUNCH_DIAGNOSTIC",
+  "target_join_protocol_sha256": "2371097cf31e04435c225244f360f012bfef8853dfe015bee5852dfc15b5b898"
+}

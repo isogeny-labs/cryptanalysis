@@ -1,0 +1,44 @@
+{
+  "attempts": [
+    {
+      "attempt": 0,
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=178",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_lazy_source_20261017/exact3_attempt0.xcnf"
+      ],
+      "cuts_before": 0,
+      "exit_code": -9,
+      "formula_sha256": "621000fe07aad1521e2da591f407a2a7334cb709f286fc939585c4e856a351eb",
+      "solver_elapsed_ns": 180068383459,
+      "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "solver_stdout_sha256": "567dfd6a4593963f140d7569e03b82e15ba3b9ea988431d8248ebb818c8bd3b8",
+      "status_lines": [],
+      "stop_reason": "TIME_CAP"
+    }
+  ],
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "cuts": [],
+  "formula_counts": {
+    "and_gates": 14391,
+    "clauses": 43679,
+    "generic_mul_calls": 0,
+    "sparse_mul_calls": 13,
+    "variables": 17328,
+    "xor_rows": 2446
+  },
+  "last_model": null,
+  "oriented_raw_point": [
+    2105655159232,
+    891719206310
+  ],
+  "protocol_sha256": "c6686c339b1e9448c8b107b2d4887f5d1e0542a13d93296a87b33e56bf198f13",
+  "sampled_peak_combined_rss_bytes": 257425408,
+  "status": "BOUNDED_UNKNOWN",
+  "total_query_ns": 180074686625,
+  "variant": "exact3"
+}
