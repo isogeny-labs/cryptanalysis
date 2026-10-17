@@ -1,0 +1,57 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "public_point": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "raw_public_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "rows": [
+    {
+      "and_gates": 76859,
+      "build_ns": 5287710292,
+      "check_ns": 288990666,
+      "clauses": 232429,
+      "constructed_check": {
+        "clauses": 232429,
+        "native_xor_rows": 42502
+      },
+      "generic_mul_calls": 12,
+      "peak_self_rss_bytes": 118947840,
+      "sparse_mul_calls": 1,
+      "target": "control",
+      "target_reciprocal": 2543740546921944725245703699703568836536,
+      "variables": 121204,
+      "xor_rows": 42502
+    },
+    {
+      "and_gates": 76859,
+      "build_ns": 4874724041,
+      "check_ns": 2625,
+      "clauses": 232429,
+      "constructed_check": null,
+      "generic_mul_calls": 12,
+      "peak_self_rss_bytes": 130400256,
+      "sparse_mul_calls": 1,
+      "target": "public",
+      "target_reciprocal": 770794657550069419943936485965613853151,
+      "variables": 121204,
+      "xor_rows": 42502
+    }
+  ],
+  "source_sha256": {
+    "circuit.py": "a64d791fe635193aaf6956da91e6c82c61e315bf181b2c667a50d226ffae5844",
+    "circuit_n131_3p2.py": "64726b2d09367a24843f25e0cf24a74e2b7cc8516a145cdccaf5e53b0e3ebfd3",
+    "n131_control_3p2.json": "189f53e644001c47736b34ad5ad296bb6f3af4d8f3f7c586b9416c266b43fb93",
+    "protocol.json": "c66381fdef0bcc47339672a17253319da296a0570c541607924005be615904d4",
+    "run.py": "00a9ef30c511b499f1612a1d2006ec17a140c64bac27a109c36db8830ef37726",
+    "sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "screen_n131_3p2.py": "b9fb404492fe16d28dedb99e56f7f769b00a750828615b1628182c0d73847799",
+    "selector.py": "87c4056ccbde23639898163caa40dca42033e3ef031b5575ff74009272c4bb1c"
+  },
+  "status": "COMPLETE_CIRCUIT_SCREEN",
+  "workload_id": "cc09e7eb202a"
+}

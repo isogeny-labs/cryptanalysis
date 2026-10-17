@@ -1,0 +1,57 @@
+{
+  "candidate_id": null,
+  "protocol_sha256": "4e9d6408e96ebdfd0bc1ce0f9b01227b5ecbda4b8c5486631cb2600def0af9ea",
+  "rows": [
+    {
+      "arm": "four_plus_one",
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=100",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fivepair_w9_w29_20261017/n131_ordinary.xcnf"
+      ],
+      "elapsed_ns": 9706344792,
+      "exit_code": 0,
+      "formula_sha256": "81b730fc6cdfc16907548003ccc16de065ff88957ec33de96cdc6291359e8fe0",
+      "last_restart": "c rst  geom ibes   vs   336  100K  118372   76K  153K    3.01    2.34  5083  6693   33K    44  203.11  202.92",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 168640512,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "dd121a7c05784ac97bab08e080e4cf4e7197b6e3561584f5c312a258ba2c76d5",
+      "stop_reason": null
+    },
+    {
+      "arm": "three_plus_two",
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=100",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fivepair_w9_w29_20261017/n131_3p2.xcnf"
+      ],
+      "elapsed_ns": 6448657542,
+      "exit_code": 0,
+      "formula_sha256": "6ec523cab2fd0b72e9bfe23dd1b2e612fa28641daea2aea0276051159535b74a",
+      "last_restart": "c rst  geom ibes   vs   336  100K  118372   76K  153K    3.01    2.34  4472  5327   29K    38  196.80  196.61",
+      "restart_count": 336,
+      "sampled_peak_combined_rss_bytes": 151076864,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "645bf53a1f467d05599ff37db739d6a2c1dac7ae423e369c1b300ad1a6c75236",
+      "stop_reason": "MONITOR_FAILURE"
+    }
+  ],
+  "status": "COMPLETE_REVERSE_ORDER_TOPOLOGY_SCREEN"
+}
