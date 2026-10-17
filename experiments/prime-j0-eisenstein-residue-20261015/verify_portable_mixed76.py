@@ -2,6 +2,8 @@
 """Build and replay the opt-in 76-tripling arm on frozen portable source."""
 import argparse
 from hashlib import sha256
+import gzip
+import io
 import json
 import os
 from pathlib import Path
@@ -26,7 +28,27 @@ def run(argv: list[str], root: Path, env: dict[str, str]) -> str:
     return result.stdout.strip()
 
 
-def main(parent: Path, output: Path) -> None:
+def write_bundle(root: Path, output: Path) -> str:
+    files = {str(path.relative_to(root)): path.read_bytes()
+             for path in sorted(root.rglob('*')) if path.is_file()}
+    assert files and 'source-manifest.json' in files
+    for name, data in files.items():
+        if name.endswith(('.rs', '.toml')):
+            assert all(marker not in data for marker in
+                       (b'/Volumes/', b'/private/tmp/', b'/Users/'))
+    with output.open('wb') as raw:
+        with gzip.GzipFile(fileobj=raw, mode='wb', filename='', mtime=0) as zipped:
+            with tarfile.open(fileobj=zipped, mode='w') as archive:
+                for name, data in sorted(files.items()):
+                    info = tarfile.TarInfo(name)
+                    info.size = len(data)
+                    info.mtime = info.uid = info.gid = 0
+                    info.mode = 0o644
+                    archive.addfile(info, io.BytesIO(data))
+    return digest(output)
+
+
+def main(parent: Path, output: Path, bundle_out: Path | None) -> None:
     assert digest(parent) == PARENT_SHA256
     with tempfile.TemporaryDirectory(prefix='mixed76-portable-') as temporary:
         root = Path(temporary)
@@ -43,8 +65,21 @@ def main(parent: Path, output: Path) -> None:
              str(root)], HERE, os.environ.copy())
         env = os.environ.copy()
         env.pop('EISENSTEIN_ATLAS_DIR', None)
-        source = {str(path.relative_to(root)): digest(path)
-                  for path in sorted(root.rglob('*')) if path.is_file()}
+        source_without_manifest = {
+            str(path.relative_to(root)): digest(path)
+            for path in sorted(root.rglob('*'))
+            if path.is_file() and path.name != 'source-manifest.json'}
+        manifest = {'schema': 1, 'parent_bundle_sha256': PARENT_SHA256,
+                    'source_sha256': source_without_manifest,
+                    'command': ['cargo', 'build', '--release', '--locked',
+                                '--bin', 'eisenstein_fixed']}
+        (root / 'source-manifest.json').write_text(
+            json.dumps(manifest, sort_keys=True, indent=2) + '\n')
+        source = {**source_without_manifest,
+                  'source-manifest.json': digest(root / 'source-manifest.json')}
+        bundle_sha256 = (write_bundle(root, bundle_out)
+                         if bundle_out is not None else None)
+        assert bundle_sha256 is None or digest(bundle_out) == bundle_sha256
         rustc = run(['rustc', '--version'], root, env)
         cargo = run(['cargo', '--version'], root, env)
         openssl = run(['openssl', 'version'], root, env)
@@ -86,6 +121,7 @@ def main(parent: Path, output: Path) -> None:
             'timing_status': 'diagnostic_only_unisolated',
             'parent_bundle_sha256': PARENT_SHA256,
             'parent_bundle_file_sha256': digest(parent),
+            'bundle_sha256': bundle_sha256,
             'overlay_sha256': digest(HERE / 'native_rho_restart_mixed76_overlay.py'),
             'verifier_sha256': digest(Path(__file__)),
             'platform': platform.platform(), 'rustc': rustc,
@@ -108,5 +144,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--parent-bundle', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--bundle-out', type=Path)
     args = parser.parse_args()
-    main(args.parent_bundle, args.output)
+    main(args.parent_bundle, args.output, args.bundle_out)

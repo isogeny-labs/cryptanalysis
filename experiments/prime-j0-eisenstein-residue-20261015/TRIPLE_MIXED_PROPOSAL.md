@@ -160,9 +160,16 @@ serial one-restart pairs: mixed-77 against mixed-78, fixed radix-243,
 fixed radix-81, and OpenSSL, bracketed by three OpenSSL A/A controls.
 It requires the new pod ID, executable and `libcrypto` hashes, exposed CPU,
 and exact source bundle before producing the manifest and rules.
-The 76-step path needs the same serial one-target comparison after its own
-source bundle and Linux binary are frozen; its 76-tripling count alone is an
-operator-count improvement, not a wall-time result.
+The 76-step [portable source bundle](verify_portable_mixed76.py) is frozen at
+SHA-256 `aa194966c8ce274f53b169c836baf16ff52c5d94ba384cec9994d72f65f02e8b`.
+The [76-step Tier 1 panel generator](make_tier1_mixed76_panel.py) freezes
+128 serial one-restart pairs against mixed-77, mixed-78, fixed radix-243,
+fixed radix-81, and OpenSSL, with three bracketing OpenSSL A/A controls.
+Its [independent auditor](analyze_tier1_mixed76.py) checks the frozen source,
+same-point output, raw arm order, host receipts, pair accounting, and noise
+gate. The Linux binary and host allocation still need to be frozen on the
+selected pod before running the panel. The 76-tripling count is an
+operator-count improvement; a wall-time comparison awaits that run.
 The [independent panel auditor](analyze_tier1_mixed77.py) regenerates those
 rules, replays the fixture point through separate curve arithmetic, verifies
 all source and runtime artifact hashes, reads every raw arm and pair ledger,
