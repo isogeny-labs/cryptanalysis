@@ -1,0 +1,116 @@
+{
+  "protocol_sha256": "a7af36ed323efb55e2c45c968ebee572dc820311571ce2ccd634c6210471ee51",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=85",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_inverse_output_20261017/n41_exact5_output_trace.xcnf"
+      ],
+      "conflicts": "100002",
+      "decisions": "152338      (0.00      % random)",
+      "elapsed_ns": 62353270625,
+      "exit_code": 0,
+      "formula_sha256": "421cd8a6ef0cc00eb92cc3cb68b8bd761400dfc8821bbdddccde2dd7b8a07b99",
+      "index": 0,
+      "propagations": "34M         (6127K     props/s)",
+      "sampled_peak_combined_rss_bytes": 86867968,
+      "solver_thread_time": "6.34",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6c913228313c1d266181660578ec629ac7bf357fa2b613f04a512151ee6725bb",
+      "stop_reason": null,
+      "variant": "exact_source"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=85",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_inverse_output_20261017/n41_inverse_output_trace.xcnf"
+      ],
+      "conflicts": null,
+      "decisions": null,
+      "elapsed_ns": 90032853792,
+      "exit_code": -9,
+      "formula_sha256": "e1a6ece8ee0d0ce64bf6c6510f49cf259b344404546983cfb00f8446509e506c",
+      "index": 1,
+      "propagations": null,
+      "sampled_peak_combined_rss_bytes": 87703552,
+      "solver_thread_time": null,
+      "status_lines": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "21b9cebe5af275005eb839c32d37cf3ee09a664b36637e41dc88aed2f44cbb2e",
+      "stop_reason": "WALL_CAP",
+      "variant": "inverse_output"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=85",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_inverse_output_20261017/n41_inverse_output_trace.xcnf"
+      ],
+      "conflicts": "100002",
+      "decisions": "151320      (0.00      % random)",
+      "elapsed_ns": 70217059125,
+      "exit_code": 0,
+      "formula_sha256": "e1a6ece8ee0d0ce64bf6c6510f49cf259b344404546983cfb00f8446509e506c",
+      "index": 2,
+      "propagations": "38M         (6444K     props/s)",
+      "sampled_peak_combined_rss_bytes": 95469568,
+      "solver_thread_time": "6.65",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "03df142834d89260962fb0d9a47381fd36d1185da7db80c6fcefa1a0b5a0b0d3",
+      "stop_reason": null,
+      "variant": "inverse_output"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=85",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_inverse_output_20261017/n41_exact5_output_trace.xcnf"
+      ],
+      "conflicts": "100002",
+      "decisions": "152338      (0.00      % random)",
+      "elapsed_ns": 85686043167,
+      "exit_code": 0,
+      "formula_sha256": "421cd8a6ef0cc00eb92cc3cb68b8bd761400dfc8821bbdddccde2dd7b8a07b99",
+      "index": 3,
+      "propagations": "34M         (5840K     props/s)",
+      "sampled_peak_combined_rss_bytes": 86999040,
+      "solver_thread_time": "6.75",
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f7fe6fe98f2060de86ff480b36bf361ad37dd208f2ccfbdbc26955e203e6f4f6",
+      "stop_reason": "MONITOR_FAILURE",
+      "variant": "exact_source"
+    }
+  ],
+  "status": "COMPLETE_N41_INVERSE_OUTPUT_CONFLICT_PROBE"
+}
