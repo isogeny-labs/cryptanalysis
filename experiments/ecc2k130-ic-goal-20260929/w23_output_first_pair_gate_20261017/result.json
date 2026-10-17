@@ -1,0 +1,76 @@
+{
+  "candidate_id": null,
+  "decoder_pivots": [
+    2,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "decoder_random_checks": 1024,
+  "decoder_rank": 22,
+  "pair_field_identity_check": "PASS",
+  "rows": [
+    {
+      "and_gates": 5764,
+      "build_ns": 480255667,
+      "check": {
+        "clauses": 17557,
+        "native_xor_rows": 582
+      },
+      "check_ns": 33456833,
+      "clauses": 17557,
+      "generic_mul_calls": 0,
+      "mode": "code_first",
+      "sparse_mul_calls": 1,
+      "variables": 6630,
+      "xor_rows": 582
+    },
+    {
+      "and_gates": 8699,
+      "build_ns": 393310459,
+      "check": {
+        "clauses": 26471,
+        "native_xor_rows": 4335
+      },
+      "check_ns": 36254083,
+      "clauses": 26471,
+      "generic_mul_calls": 1,
+      "mode": "output_first",
+      "sparse_mul_calls": 0,
+      "variables": 13427,
+      "xor_rows": 4335
+    }
+  ],
+  "source_curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "source_sha256": {
+    "n131_fixed_seed_ninepair_cubic_20261011/run.py": "00a9ef30c511b499f1612a1d2006ec17a140c64bac27a109c36db8830ef37726",
+    "n131_w18_allseed_fourpair_20261012/fourpair_v2.py": "f0aeb47f6864f6823a2b19a7a244c1ae3b810fb10946831ca4014c9ee0239f96",
+    "n131_w20_output_inverse_linear_20261012/OutputLinearization.lean": "8b1893a12d33bfb421e438edfc3305bc493b418f911a8cad6144538c3ba9d322",
+    "n131_w20_output_inverse_linear_20261012/lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "n131_w20_selector_elimination_v2_20261013/selector.py": "87c4056ccbde23639898163caa40dca42033e3ef031b5575ff74009272c4bb1c",
+    "n131_w23_sixpair_shared_circuit_20261017/circuit.py": "a64d791fe635193aaf6956da91e6c82c61e315bf181b2c667a50d226ffae5844",
+    "n131_w23_sixpair_shared_circuit_20261017/fixture.json": "d02cf4f3d1e5ada2e2bb37743a7328f95b3a8f9696cfbddc7dc172e26ceaa5e0",
+    "w23_output_first_pair_gate_20261017/experiment.py": "700fbb138b11ff8c0a6c42ff21e0105d4b89c761e781ed1a365622ab8881a91a",
+    "w23_output_first_pair_gate_20261017/sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+  },
+  "status": "COMPLETE",
+  "syndrome_codimension": 109
+}
