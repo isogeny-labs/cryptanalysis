@@ -92,6 +92,8 @@ def main() -> None:
     paths = {'binary': str(binary), 'libcrypto': str(args.libcrypto_path),
              'bundle': str(bundle), 'fixture': str(fixture_remote),
              'source_manifest': str(REMOTE_ROOT / 'source-manifest.json')}
+    source_paths = {name: str(REMOTE_ROOT / name)
+                    for name in sorted(source['source_sha256'])}
     hashes = {'binary': args.binary_sha256,
               'libcrypto': args.libcrypto_sha256,
               'bundle': source['bundle_sha256'], 'fixture': digest(FIXTURE),
@@ -106,7 +108,8 @@ def main() -> None:
              'comparison_acceptance': ('all 16 same-point pairs valid; three '
                 'bracketing OpenSSL A/A controls within [0.90,1.11]; paired '
                 'bootstrap 95% log-ratio interval excludes one'),
-             'timing_boundary': boundary, 'paths': paths, 'hashes': hashes}
+             'timing_boundary': boundary, 'paths': paths,
+             'source_paths': source_paths, 'hashes': hashes}
     rule_path = REMOTE_PANELS / 'tier1-mixed77-one-cpu-rules.json'
     manifest = {
         'schema': 1, 'measurement_tier': 'tier1_instance',
@@ -122,7 +125,7 @@ def main() -> None:
         'cases': cases,
         'artifacts': [str(REMOTE_PANELS / 'allocation.json'),
                       str(REMOTE_PANELS / 'host-probe.json'),
-                      *paths.values(), str(rule_path)],
+                      *paths.values(), *source_paths.values(), str(rule_path)],
     }
     args.output_dir.mkdir(parents=True, exist_ok=True)
     write(args.output_dir / rule_path.name, rules)

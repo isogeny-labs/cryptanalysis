@@ -127,6 +127,13 @@ serial one-restart pairs: mixed-77 against mixed-78, fixed radix-243,
 fixed radix-81, and OpenSSL, bracketed by three OpenSSL A/A controls.
 It requires the new pod ID, executable and `libcrypto` hashes, exposed CPU,
 and exact source bundle before producing the manifest and rules.
+The [independent panel auditor](analyze_tier1_mixed77.py) regenerates those
+rules, replays the fixture point through separate curve arithmetic, verifies
+all source and runtime artifact hashes, reads every raw arm and pair ledger,
+and gates the paired interval on complete runs and A/A controls. Missing,
+failed, or noisy pairs remain recorded and leave the aggregate unknown.
+Its rejected-preflight diagnostic produced zero valid pairs and unknown
+comparison statuses; it is a failure-semantics check, not timing evidence.
 The 128-restart stream asks the separate batch-amortization question. The three
 saved triplings per restart become a measured improvement only if the full
 charged interval passes that gate.
