@@ -1,0 +1,144 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --maxtime=120 --maxnummatrices=0 --zero-exit-status --verb=1 --printsol=1 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_dual_norm_resultant_20261017/public.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_dual_norm_resultant_20261017/public.xcnf'
+c o -- header says num vars:         606936
+c o -- header says num clauses:     1690931
+c -- clauses added: 1625466
+c -- xor clauses added: 65465
+c -- vars added 606936
+c Parsing time: 0.28 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 65385 GJ matrices: 0 T: 0.43
+c [find&init matx] performing matrix init
+c [matrix] Too many rows in matrix: 20897 -> set usage to NO
+c [matrix] UNused matrix     20897 x148640  density:0.0003  xorlen avg: 40.87
+c [matrix] Too many rows in matrix: 10106 -> set usage to NO
+c [matrix] UNused matrix     10106 x66129  density:0.0007  xorlen avg: 48.47
+c [matrix] Too many columns in matrix: 23006 -> set usage to NO
+c [matrix] UNused matrix      1973 x23006  density:0.0009  xorlen avg: 21.57
+c [matrix] Too many columns in matrix: 6887 -> set usage to NO
+c [matrix] UNused matrix       934 x 6887  density:0.0058  xorlen avg: 40.13
+c [matrix] Too many columns in matrix: 22637 -> set usage to NO
+c [matrix] UNused matrix      1891 x22637  density:0.0009  xorlen avg: 19.30
+c [matrix] Too many columns in matrix: 15802 -> set usage to NO
+c [matrix] UNused matrix      1493 x15802  density:0.0015  xorlen avg: 23.24
+c [matrix] Too many columns in matrix: 22268 -> set usage to NO
+c [matrix] UNused matrix      1809 x22268  density:0.0008  xorlen avg: 17.85
+c [matrix] Too many columns in matrix: 1804 -> set usage to NO
+c [matrix] UNused matrix       369 x 1804  density:0.0477  xorlen avg: 86.09
+c [matrix] Too many columns in matrix: 15433 -> set usage to NO
+c [matrix] UNused matrix      1411 x15433  density:0.0013  xorlen avg: 20.30
+c [matrix] Too many columns in matrix: 15368 -> set usage to NO
+c [matrix] UNused matrix      1633 x15368  density:0.0011  xorlen avg: 17.49
+c [matrix] Too many columns in matrix: 21899 -> set usage to NO
+c [matrix] Too many columns in matrix: 8506 -> set usage to NO
+c [matrix] Too many columns in matrix: 15064 -> set usage to NO
+c [matrix] Too many columns in matrix: 1066 -> set usage to NO
+c [matrix] Too many columns in matrix: 1066 -> set usage to NO
+c [matrix] Too many columns in matrix: 8137 -> set usage to NO
+c [matrix] Too many columns in matrix: 1066 -> set usage to NO
+c [matrix] Too many columns in matrix: 14695 -> set usage to NO
+c [matrix] Too many columns in matrix: 11298 -> set usage to NO
+c [matrix] Too many columns in matrix: 7848 -> set usage to NO
+c [matrix] Too many columns in matrix: 7696 -> set usage to NO
+c [matrix] Too many columns in matrix: 7696 -> set usage to NO
+c [matrix] Too many columns in matrix: 10929 -> set usage to NO
+c [matrix] Too many columns in matrix: 4088 -> set usage to NO
+c [matrix] Too many columns in matrix: 7327 -> set usage to NO
+c [matrix] Too many columns in matrix: 4048 -> set usage to NO
+c [matrix] Too many columns in matrix: 7327 -> set usage to NO
+c [matrix] Too many columns in matrix: 5444 -> set usage to NO
+c [matrix] Too many columns in matrix: 3643 -> set usage to NO
+c [matrix] Too many columns in matrix: 3643 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1839 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] unused matrices: 98 of which too few rows: 0
+c [matrix] Using 0 matrices recovered from 65385 xors T: 0.04 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   111  606854  542K 1082K    3.02    2.34     0     4   107     0  113.78  113.78
+c rst  geom  stb   vs     2   234  606854  542K 1082K    3.02    2.34     0     4   230     0  402.63  402.63
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   368  606854  542K 1082K    3.02    2.34    10    15   343     0  342.23  342.23
+c rst  geom  stb   vs     4   515  606854  542K 1082K    3.02    2.34    10    15   490     0  257.59  257.59
+c rst  geom  stb   vs     5   677  606854  542K 1082K    3.02    2.34    14    45   618     0  200.75  200.75
+c rst  geom  stb   vs     6   856  606854  542K 1082K    3.02    2.34    27    59   770     0 19936.17 19936.17
+c rst  geom  stb   vs     7  1051  606854  542K 1082K    3.02    2.34    27    73   951     0 17502.71 17502.71
+c rst  geom  stb   vs     8  1265  606854  542K 1082K    3.02    2.34    27    73  1165     0 14676.31 14676.31
+c rst  geom  stb   vs     9  1499  606854  542K 1082K    3.02    2.34    30    87  1382     0 13193.19 13193.19
+c rst  geom  stb   vs    10  1757  606854  542K 1082K    3.02    2.34    39   101  1617     0 15181.63 15181.63
+c rst  geom  stb   vs    11  2039  606854  542K 1082K    3.02    2.34    39   103  1897     0 19130.97 19130.97
+c rst  geom  stb   vs    12  2350  606854  542K 1082K    3.02    2.34    39   103  2208     0 17077.20 17077.20
+c rst  geom  stb   vs    13  2691  606854  542K 1082K    3.02    2.34    42   105  2544     0 20774.32 20774.32
+c rst  geom  stb   vs    14  3064  606854  542K 1082K    3.02    2.34    57   181  2826     0 18344.65 18344.65
+c rst  geom  stb   vs    15  3475  606854  542K 1082K    3.02    2.34    61   184  3230     0 22689.50 22689.50
+c rst  geom  stb   vs    16  3925  606854  542K 1082K    3.02    2.34    61   184  3680     0 20169.26 20169.26
+c rst  geom  stb   vs    17  4419  606854  542K 1082K    3.02    2.34    65   197  4157     0 17942.05 17942.05
