@@ -1,0 +1,44 @@
+{
+  "status": "COMPLETE_SIXPAIR_CONTROL_AND_PUBLIC_BUILD",
+  "control_raw_point": [
+    499171870192,
+    1687017422060
+  ],
+  "public_raw_point": [
+    2026560328086,
+    1928332930914
+  ],
+  "panels": [
+    {
+      "name": "control",
+      "target_reciprocal": 737860252610,
+      "variables": 31536,
+      "and_gates": 26937,
+      "clauses": 82957,
+      "xor_rows": 3692,
+      "xcnf_bytes": 1713070,
+      "xcnf_sha256": "2fea0d33944bfcfbec9972bb5c537907878eafb164050b630346dfae7ceee919",
+      "build_ns": 253570166,
+      "assignment_check_ns": 84335625,
+      "serialization_ns": 2069959,
+      "control_check": {
+        "clauses": 82957,
+        "native_xor_rows": 3692
+      }
+    },
+    {
+      "name": "public",
+      "target_reciprocal": 548056158626,
+      "variables": 31533,
+      "and_gates": 26937,
+      "clauses": 82957,
+      "xor_rows": 3689,
+      "xcnf_bytes": 1712500,
+      "xcnf_sha256": "02f90e359cae8033bcbee4aa364d2490ee2f4d4d325ae5b560b0dc36d37af6d4",
+      "build_ns": 210380709,
+      "assignment_check_ns": 1500,
+      "serialization_ns": 2624458,
+      "control_check": null
+    }
+  ]
+}
