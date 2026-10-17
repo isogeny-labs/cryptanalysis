@@ -1,0 +1,25 @@
+{
+  "candidate_id": null,
+  "command": "/opt/homebrew/bin/gtimeout 600 /Volumes/SSD990/cryptanalysis/sage -python search_sage.py",
+  "expected_archived_witness": [
+    105,
+    244,
+    66,
+    47,
+    111
+  ],
+  "fixed_state_ids": {
+    "0": 105,
+    "4": 111
+  },
+  "method": "fixed slots 0,4; enumerate slot 1 signed states; target-conditioned quartic subspace roots for slots 2,3; exact point replay",
+  "resource_envelope": "one checked Sage process; ordinary shared host descriptive timing; 4 GiB RSS gate observational",
+  "source_sha256": {
+    "prior": "39be4617a85d39719cb8086d9a943b16a5ce857e38ef4b6b73b330c87e5cdfda",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "script": "f681b4df1cc904b62df052d186c2315cf57aa60e31edbf7860bca4b73e6a1400",
+    "states": "bff6f50a6b62ff627c79002b2fc19a5e5dcdc80b254d5c9e7e7a7949a763795b"
+  },
+  "target_orientation": 6,
+  "timeout_seconds": 600
+}
