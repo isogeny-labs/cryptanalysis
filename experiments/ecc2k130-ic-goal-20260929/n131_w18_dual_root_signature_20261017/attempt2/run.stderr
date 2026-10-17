@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_dual_root_signature_20261017/census.py", line 202, in <module>
+    {'freeze':freeze,'run':run}[sys.argv[1]]()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_dual_root_signature_20261017/census.py", line 176, in run
+    rows=read_rows()
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w18_dual_root_signature_20261017/census.py", line 54, in read_rows
+    assert a==code and b==(code^212) and 0<=bit<=16
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

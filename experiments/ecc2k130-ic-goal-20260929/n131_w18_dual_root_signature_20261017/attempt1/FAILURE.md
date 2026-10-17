@@ -1,0 +1,3 @@
+# Frozen parser preflight rejected an archived discriminator
+
+The first frozen census stopped while reading the source table. It assumed `root_bit` must be zero or one, but the archived W18 row for code 28 has discriminator 7. The field is a source/root discriminator; the two exact reciprocal coordinates are the separate `a0` and `a1` columns used by this experiment. The failure occurred before dual-space construction or degree screening. The original script, protocol, stdout, and stderr remain in this directory. The corrected parser accepts the archived discriminator range and is frozen under a new root protocol before rerun.
