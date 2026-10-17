@@ -86,6 +86,16 @@
 //!   the Gröbner engines take) must be permuted back first.
 //! - The block-graph search is exhaustive over block subsets and is
 //!   refused above [`MAX_PLAN_BLOCKS`] blocks (`m ≤ 11`).
+//! - For `m = 2` the crossbred plan has `k = ℓ = n_vars / 2`, the same
+//!   `k` as the generic split: it is a constant-factor gain there, not an
+//!   algorithmic one.  For `m = 4` the crossbred plan has `k = 3ℓ + n`,
+//!   larger than the generic split's, and was slower than it when
+//!   measured on `K_1/2^7`; [`choose_block_solver`] takes block XL there
+//!   (it enumerates fewer variables), so the crossbred plan is not
+//!   dispatched for `m ≥ 3` on such systems.
+//! - An exhausted search is never used to pick a decomposition
+//!   (`decompose_via_blocks` defers to the generic path), because it
+//!   skips branches that may hold an earlier root.
 //! - Nothing here changes the asymptotic cost of the decomposition: it is
 //!   still exponential in `ℓ`.  What changes is which exponent: `2^k`
 //!   with `k` set by the blocks instead of `n_vars / 2`.
@@ -975,16 +985,30 @@ pub fn choose_block_solver(
 pub fn solve_semaev_blocks(
     sys: &DecompositionSystem,
 ) -> Option<(Vec<u64>, SearchStats, BlockSolver)> {
+    solve_semaev_blocks_with(
+        sys,
+        &CrossbredBlockOptions::default(),
+        &BlockXlOptions::default(),
+    )
+}
+
+/// [`solve_semaev_blocks`] with explicit solver options (the choice of
+/// solver is still [`choose_block_solver`]'s).  Tests use it to force an
+/// exhausted search with a small `max_kernel_dim`.
+pub fn solve_semaev_blocks_with(
+    sys: &DecompositionSystem,
+    xb: &CrossbredBlockOptions,
+    xl: &BlockXlOptions,
+) -> Option<(Vec<u64>, SearchStats, BlockSolver)> {
     let layout = SummandBlocks::of_system(sys)?;
     let (which, _) = choose_block_solver(&sys.equations, &layout)?;
     match which {
         BlockSolver::Crossbred => {
-            let (roots, st) =
-                solve_crossbred_blocks(&sys.equations, &layout, &CrossbredBlockOptions::default())?;
+            let (roots, st) = solve_crossbred_blocks(&sys.equations, &layout, xb)?;
             Some((roots, st.search, which))
         }
         BlockSolver::Xl => {
-            let (roots, st) = solve_block_xl(&sys.equations, &layout, &BlockXlOptions::default())?;
+            let (roots, st) = solve_block_xl(&sys.equations, &layout, xl)?;
             let search = SearchStats {
                 points: st.points,
                 survivors: st.survivors,
@@ -1026,10 +1050,12 @@ pub fn generic_groups(roots: &[u64], k_generic: usize) -> Vec<&[u64]> {
 /// at its `k_generic`) and return the first decomposition.
 ///
 /// Returns `None` — use the generic path — when no block plan applies,
-/// when the block search is exhausted without a decomposition, or when
-/// the first group of roots that lifts lifts to two different
-/// decompositions (the generic path's choice inside a group is not
-/// reproduced, so the block path defers rather than guess).
+/// when the block search is **exhausted** (whatever it found: an exhausted
+/// search skips whole branches, which may hold a root in an earlier
+/// low-bit group than the one that lifted, so its first lift need not be
+/// the generic path's), or when the first group of roots that lifts lifts
+/// to two different decompositions (the generic path's choice inside a
+/// group is not reproduced, so the block path defers rather than guess).
 pub(crate) fn decompose_via_blocks(
     kc: &crate::cryptanalysis::koblitz_index_calculus::KoblitzCurve,
     fb: &crate::cryptanalysis::koblitz_index_calculus::FrobeniusFactorBase,
@@ -1038,7 +1064,34 @@ pub(crate) fn decompose_via_blocks(
     target: &crate::binary_ecc::BinaryPoint,
     k_generic: usize,
 ) -> Option<(Option<Vec<usize>>, SearchStats)> {
-    let (mut roots, stats, _) = solve_semaev_blocks(sys)?;
+    decompose_via_blocks_with(
+        kc,
+        fb,
+        index_of,
+        sys,
+        target,
+        k_generic,
+        &CrossbredBlockOptions::default(),
+        &BlockXlOptions::default(),
+    )
+}
+
+/// [`decompose_via_blocks`] with explicit solver options.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn decompose_via_blocks_with(
+    kc: &crate::cryptanalysis::koblitz_index_calculus::KoblitzCurve,
+    fb: &crate::cryptanalysis::koblitz_index_calculus::FrobeniusFactorBase,
+    index_of: &std::collections::HashMap<(num_bigint::BigUint, num_bigint::BigUint), usize>,
+    sys: &DecompositionSystem,
+    target: &crate::binary_ecc::BinaryPoint,
+    k_generic: usize,
+    xb: &CrossbredBlockOptions,
+    xl: &BlockXlOptions,
+) -> Option<(Option<Vec<usize>>, SearchStats)> {
+    let (mut roots, stats, _) = solve_semaev_blocks_with(sys, xb, xl)?;
+    if stats.exhausted {
+        return None;
+    }
     order_like_generic(&mut roots, k_generic);
     for group in generic_groups(&roots, k_generic) {
         let mut found: Option<Vec<usize>> = None;
@@ -1059,9 +1112,6 @@ pub(crate) fn decompose_via_blocks(
         if found.is_some() {
             return Some((found, stats));
         }
-    }
-    if stats.exhausted {
-        return None;
     }
     Some((None, stats))
 }

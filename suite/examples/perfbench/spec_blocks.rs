@@ -44,7 +44,12 @@ fn systems(
     let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
     let mut rng = StdRng::seed_from_u64(seed);
     let mut targets = Vec::new();
+    let mut draws = 0usize;
     while targets.len() < planted {
+        // Bounded: some factor bases (K_0/2^7 divisor 0 is one point) have
+        // no affine m-sum, and an unbounded retry would hang the harness.
+        draws += 1;
+        assert!(draws <= 100_000, "no affine {m}-sum of factor-base points");
         let t = (0..m).fold(BinaryPoint::Infinity, |acc, _| {
             kc.add(&acc, &fb.points[rng.gen_range(0..fb.points.len())])
         });
@@ -197,7 +202,12 @@ fn decompose_kernel(
     let index = fb.index_map();
     let mut rng = StdRng::seed_from_u64(seed);
     let mut targets = Vec::new();
+    let mut draws = 0usize;
     while targets.len() < planted {
+        // Bounded: some factor bases (K_0/2^7 divisor 0 is one point) have
+        // no affine m-sum, and an unbounded retry would hang the harness.
+        draws += 1;
+        assert!(draws <= 100_000, "no affine {m}-sum of factor-base points");
         let t = (0..m).fold(BinaryPoint::Infinity, |acc, _| {
             kc.add(&acc, &fb.points[rng.gen_range(0..fb.points.len())])
         });
@@ -264,9 +274,6 @@ fn xl_m4_n15() -> Box<dyn Workload> {
 }
 fn generic_m4_n7() -> Box<dyn Workload> {
     generic_kernel(m4_n7())
-}
-fn xb_direct_m4_n7() -> Box<dyn Workload> {
-    xb_kernel(m4_n7(), Preprocess::Direct)
 }
 fn xl_m4_n7() -> Box<dyn Workload> {
     xl_kernel(m4_n7(), 8)
@@ -337,12 +344,6 @@ pub fn register(kernels: &mut Vec<Kernel>) {
         generic_m4_n7,
     );
     k(
-        "bool_gb/spec_xb_blocks_m4_n7",
-        "bool_gb",
-        "crossbred_blocks (D=3, k=16, {U_0, X_3} linear, direct) on the same K_1/2^7 m=4 chains",
-        xb_direct_m4_n7,
-    );
-    k(
         "bool_gb/spec_xl_blocks_m4_n7",
         "bool_gb",
         "block-elimination XL (k=9 over 3 stages) on the same K_1/2^7 m=4 chains, 8 sweeps",
@@ -363,7 +364,7 @@ pub fn register(kernels: &mut Vec<Kernel>) {
     k(
         "bool_gb/spec_xb_blocks_m2_n23",
         "bool_gb",
-        "crossbred_blocks (D=2, k=11 = X_0, direct) on the same K_1/2^23 m=2 systems",
+        "crossbred_blocks (D=2, k=11 = X_0, direct) on the same K_1/2^23 m=2 systems; same k as the generic split, so a constant-factor gain only, not an algorithmic one",
         xb_direct_m2_n23,
     );
     k(

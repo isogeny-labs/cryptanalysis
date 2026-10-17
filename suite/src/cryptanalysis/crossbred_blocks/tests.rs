@@ -324,7 +324,16 @@ fn semaev_systems(
     let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
     let mut rng = StdRng::seed_from_u64(seed);
     let mut targets = Vec::new();
+    let mut draws = 0usize;
     while targets.len() < planted {
+        // Bounded: a factor base can have no affine `m`-sum at all (see
+        // `planted_targets_can_be_impossible`), and an unbounded retry
+        // loop there spins forever.
+        draws += 1;
+        assert!(
+            draws <= 100_000,
+            "K{a}/2^{n} divisor {fi}: no affine {m}-sum of factor-base points in {draws} draws"
+        );
         let t = (0..m).fold(BinaryPoint::Infinity, |acc, _| {
             kc.add(&acc, &fb.points[rng.gen_range(0..fb.points.len())])
         });
@@ -473,5 +482,150 @@ fn block_decompose_matches_generic_decompose() {
         }
         assert!(same > 0, "K{a}/2^{n} m={m}: generic never decided");
         let _ = found;
+    }
+}
+
+/// An exhausted block search skips branches, so its first lift need not be
+/// the generic path's.  With `max_kernel_dim` forced tiny the search is
+/// exhausted on many targets; `decompose_via_blocks_with` must then defer
+/// (`None`) even when some retained root lifts, and whatever it does
+/// return must still equal the generic decomposition.
+#[test]
+fn exhausted_block_search_defers_to_generic() {
+    use crate::cryptanalysis::koblitz_index_calculus::lift_candidate;
+    let (mut exhausted, mut exhausted_with_lift, mut returned) = (0usize, 0usize, 0usize);
+    for (a, n, fi, m, step) in [
+        (0u8, 9u32, 0usize, 2usize, 1u64),
+        (0, 9, 0, 3, 3),
+        (0, 15, 1, 2, 211),
+        (0, 15, 1, 3, 1499),
+        (1, 7, 0, 4, 1),
+        (0, 7, 0, 4, 1),
+    ] {
+        let kc = KoblitzCurve::new(a, n).unwrap();
+        let fb = build_frobenius_factor_base(&kc, fi).unwrap();
+        let index = fb.index_map();
+        let field = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        let r = kc.subgroup_order.to_u64_digits()[0];
+        let mut k = 1u64;
+        while k < r {
+            let target = kc.mul(kc.generator(), &BigUint::from(k));
+            k += step;
+            let BinaryPoint::Affine { x, .. } = &target else {
+                continue;
+            };
+            let Some(sys) =
+                crate::cryptanalysis::polynomial_reuse::build_decomposition_system_reusing(
+                    &fb.subspace_basis,
+                    x,
+                    &kc.curve.b,
+                    m,
+                    &field,
+                )
+            else {
+                continue;
+            };
+            let kg = crossbred_params_for(&sys.equations, sys.n_vars).enumerated;
+            for dim in [0u32, 1, 2] {
+                let mut xb = CrossbredBlockOptions::default();
+                xb.search.max_kernel_dim = dim;
+                let xl = BlockXlOptions {
+                    max_kernel_dim: dim,
+                    ..BlockXlOptions::default()
+                };
+                let Some((roots, st, _)) = solve_semaev_blocks_with(&sys, &xb, &xl) else {
+                    continue;
+                };
+                let got = decompose_via_blocks_with(&kc, &fb, &index, &sys, &target, kg, &xb, &xl);
+                if st.exhausted {
+                    exhausted += 1;
+                    let lifts = roots.iter().any(|&root| {
+                        let xs: Vec<_> = (0..sys.m)
+                            .map(|i| sys.summand_x(&fb.subspace_basis, root, i, kc.n))
+                            .collect();
+                        lift_candidate(&kc, &fb, &index, &xs, &target).is_some()
+                    });
+                    exhausted_with_lift += usize::from(lifts);
+                    assert!(
+                        got.is_none(),
+                        "K{a}/2^{n} m={m} k={k} dim={dim}: exhausted search must defer"
+                    );
+                } else if let Some((Some(idxs), _)) = got {
+                    returned += 1;
+                    let gp = crossbred_params_for(&sys.equations, sys.n_vars);
+                    let (gen, gst) =
+                        crossbred_decompose(&kc, &fb, &index, &field, &target, m, Some(gp));
+                    if !gst.exhausted {
+                        assert_eq!(Some(idxs), gen, "K{a}/2^{n} m={m} k={k} dim={dim}");
+                    }
+                }
+            }
+        }
+    }
+    assert!(
+        exhausted > 0,
+        "tiny max_kernel_dim never exhausted a search"
+    );
+    assert!(
+        exhausted_with_lift > 0,
+        "no exhausted search kept a liftable root: the old early return is untested"
+    );
+    let _ = returned;
+}
+
+/// The hang seen on `K_0/2^7`, `m = 4` with planted targets was this kind
+/// of generator, not a solver: the divisor-0 factor base of `K_0/2^7` is a
+/// single point whose 4-fold sum is the point at infinity (checked
+/// exhaustively below), so "plant an affine 4-sum" has no answer and an
+/// unbounded retry loop never ends.  The generators are now bounded, and
+/// the solver is shown to terminate on the same cell's random targets and
+/// to agree with the generic path there.
+#[test]
+fn planted_targets_can_be_impossible() {
+    let kc = KoblitzCurve::new(0, 7).unwrap();
+    let fb = build_frobenius_factor_base(&kc, 0).unwrap();
+    let np = fb.points.len();
+    let m = 4usize;
+    let mut idx = vec![0usize; m];
+    let (mut affine, mut total) = (0u64, 0u64);
+    loop {
+        let t = idx
+            .iter()
+            .fold(BinaryPoint::Infinity, |acc, &i| kc.add(&acc, &fb.points[i]));
+        affine += u64::from(matches!(t, BinaryPoint::Affine { .. }));
+        total += 1;
+        let mut j = 0;
+        while j < m {
+            idx[j] += 1;
+            if idx[j] < np {
+                break;
+            }
+            idx[j] = 0;
+            j += 1;
+        }
+        if j == m {
+            break;
+        }
+    }
+    assert_eq!(total, (np as u64).pow(m as u32));
+    assert_eq!(affine, 0, "K_0/2^7 divisor 0 m=4: planted targets exist");
+    let field = FieldStructure::new(kc.n, &kc.curve.irreducible);
+    let index = fb.index_map();
+    let r = kc.subgroup_order.to_u64_digits()[0];
+    for k in 1..r {
+        let target = kc.mul(kc.generator(), &BigUint::from(k));
+        let sys = match &target {
+            BinaryPoint::Affine { x, .. } => {
+                build_decomposition_system(&fb.subspace_basis, x, &kc.curve.b, m, &field)
+            }
+            BinaryPoint::Infinity => continue,
+        };
+        let Some(sys) = sys else { continue };
+        let gp = crossbred_params_for(&sys.equations, sys.n_vars);
+        let (blk, _) = crossbred_decompose(&kc, &fb, &index, &field, &target, m, None);
+        let (gen, gst) = crossbred_decompose(&kc, &fb, &index, &field, &target, m, Some(gp));
+        if !gst.exhausted {
+            assert_eq!(blk, gen, "K_0/2^7 m=4 k={k}");
+        }
     }
 }
