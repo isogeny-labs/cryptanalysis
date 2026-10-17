@@ -1,0 +1,9 @@
+# Proof map
+
+| Result | Mathematical scope | Lean declaration / verification | Concrete bridge |
+| --- | --- | --- | --- |
+| Additive functional nonzero certificate | A commutative ring, additive Boolean functional, constant ANF coefficient mapped to one and all selected nonconstant coefficients mapped to zero | `TraceCertificate.certificate_excludes_zero` in the prior pinned `../n41_trace_rectangle_certificate_20261017/TraceCertificate.lean`; its archived `lean_check.log` includes `#print axioms` | The new sweep finds no such functional because every frozen block's value differences span all 41 field bits. |
+| Exactly eight all-valid N41 3-flats and no 4-flat | Fixed legal 40-mask set, affine XOR geometry in `GF(2)^8` | **Partial formalization:** no Lean enumeration theorem yet | Producer enumerates independent direction triples and quadruples; verifier re-enumerates triples with least anchor and checks every possible 4-flat extension. Exact legal mask list is frozen in `geometry.json`. |
+| Rank 41 on every target-conditioned flat triple | Two fixed coefficient tensors over `GF(2)[t]/(t^41+t^3+1)`, eight source flats in each of three slots | **Partial formalization:** concrete field evaluator, tensor parser, and 512-block rank certificate remain to be connected to Lean | Checked-Sage producer freezes 40³ values per panel; Python verifier replays all 512 ranks and directly recomputes four selected 512-value blocks with separate field arithmetic. |
+
+The full concrete census is open in Lean. Its missing bridge is a formal bit-level `GF(2^41)` evaluator for the frozen coefficient tensors, plus a kernel-checked finite rank reduction over all 512 blocks. The executable receipts establish the stated finite computation under the pinned source hashes. No `sorry`, custom axiom, or native-evaluation shortcut is being presented as a proof of the concrete census.
