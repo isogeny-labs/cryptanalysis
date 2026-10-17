@@ -1,0 +1,19 @@
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:29:6: error: unsolved goals
+case pos
+α : Type u
+inst✝ : DecidableEq α
+a x : α
+xs : List α
+ih : a ∈ unique xs ↔ a ∈ xs
+hx : x ∈ xs
+⊢ a = x → a ∈ xs
+experiments/ecc2k130-ic-goal-20260929/n131_w23_residual_coverage_bound_20261016/Coverage.lean:29:22: warning: This simp argument is unused:
+  hx
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [unique, ih, hx]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'TargetOrbitCoverage.unique_mem' depends on axioms: [propext, sorryAx]
+'TargetOrbitCoverage.unique_nodup' depends on axioms: [propext, sorryAx]
+'TargetOrbitCoverage.distinct_target_bound' depends on axioms: [propext]
