@@ -1,0 +1,4 @@
+# Preserve generated verification logs and binary evidence byte for byte.
+checks/*.log whitespace=-blank-at-eof
+reports/**/report.pdf -text -diff
+runs.tar.xz -text -diff

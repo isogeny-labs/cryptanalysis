@@ -13,9 +13,11 @@ tools/aes-discover/target/release/aes-discover --help
 
 Rust 1.87+ and OpenSSL (for the independent correctness tests) are required.
 The standalone crate deliberately avoids compiling unrelated algebra/ECDLP
-engines. Its sources and lockfile are mirrored byte-for-byte between
-`aburan28/crypto` and `aburan28/cryptanalysis`; `crypto` is the source of truth
-after this coordinated change. Changes must update both and check SHA-256 parity.
+engines. The intended integration policy is to mirror its sources and lockfile
+byte-for-byte into `aburan28/crypto`, then check SHA-256 parity on later changes.
+That integration is currently pending a required Conductor reservation in
+`crypto`; this checkout is the implemented version. The companion autoresearcher
+study tracks the access obstruction and the prepared integration patch.
 
 ## Discovery and validation
 
