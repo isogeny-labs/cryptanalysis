@@ -240,7 +240,7 @@ ECC_HD void foldKarat128(uint32_t r[8], uint64_t l0, uint64_t l1, uint64_t h0, u
 /* 4 x 4 words -> 8 words, Karatsuba again: 3 clmul64 = 9 clmul32. */
 ECC_HD void clmul128(uint32_t r[8], const uint32_t a[4], const uint32_t b[4])
 {
-#if ECC_PACKED_CLMUL_FLAT && ECC_PACKED_CLMAD && defined(__CUDA_ARCH__)
+#if ECC_PACKED_CLMUL_FLAT && ECC_USE_CLMAD_INSN
     /* Issue the three .lo halves, then the three .hi, so the carry-less unit
        sees six independent multiplies instead of three lo/hi pairs. */
     const uint64_t a0 = uint64_t(a[0]) | (uint64_t(a[1]) << 32);
@@ -288,7 +288,7 @@ struct P131 {
    clmul64 so that testpacked.cpp checks the device formulation bit for bit. */
 ECC_HD uint64_t clmadLo64(uint64_t x, uint64_t y, uint64_t add)
 {
-#    if defined(__CUDA_ARCH__)
+#    if ECC_USE_CLMAD_INSN
     uint64_t r;
     asm("clmad.lo.u64 %0, %1, %2, %3;" : "=l"(r) : "l"(x), "l"(y), "l"(add));
     return r;
@@ -491,7 +491,7 @@ ECC_HD void product131Pair(const P131 &a, const P131 &b, const P131 &c, uint32_t
 {
     uint64_t blo_l, clo_l, bhi_l, chi_l, bmid_l, cmid_l;
     uint64_t blo_h, clo_h, bhi_h, chi_h, bmid_h, cmid_h;
-#    if ECC_PACKED_CLMAD && defined(__CUDA_ARCH__)
+#    if ECC_USE_CLMAD_INSN
     const uint64_t a0 = uint64_t(a.v[0]) | (uint64_t(a.v[1]) << 32);
     const uint64_t a1 = uint64_t(a.v[2]) | (uint64_t(a.v[3]) << 32);
     const uint64_t b0 = uint64_t(b.v[0]) | (uint64_t(b.v[1]) << 32);
