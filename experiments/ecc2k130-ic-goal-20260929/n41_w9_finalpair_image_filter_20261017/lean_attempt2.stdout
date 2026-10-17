@@ -1,0 +1,31 @@
+FinalPairImage.lean:55:17: error: unsolved goals
+F : Type
+inst✝ : Field F
+charTwo : ∀ (x : F), x + x = 0
+A B D C H p e : F
+source : C * e * e + p * e + H = 0
+target : A * e * e + B * e + D = 0
+hg : Prop
+⊢ (A * H + C * D) * (A * H + C * D) + (A * p + C * B) * (B * H + p * D) = 0
+FinalPairImage.lean:58:28: error: unexpected token ':='; expected command
+FinalPairImage.lean:78:5: error: unknown tactic
+FinalPairImage.lean:77:43: error: unsolved goals
+F : Type
+inst✝ : Field F
+charTwo : ∀ (x : F), x + x = 0
+C H e : F
+he : e ≠ 0
+⊢ (C * e * e + H) / e * e = C * e * e + H
+FinalPairImage.lean:75:30: error: unsolved goals
+F : Type
+inst✝ : Field F
+charTwo : ∀ (x : F), x + x = 0
+C H e : F
+he : e ≠ 0
+hinv : (C * e * e + H) / e * e = C * e * e + H
+⊢ C * e * e + (C * e * e + H) / e * e + H = 0
+'FinalPairImage.map_additive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.equal_output_two_preimages' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.second_root' depends on axioms: [propext, Classical.choice, Quot.sound]
+'FinalPairImage.shared_root_resultant_zero' depends on axioms: [sorryAx]
+'FinalPairImage.unrestricted_product_from_root' depends on axioms: [sorryAx]
