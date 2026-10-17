@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "sage/structure/category_object.pyx", line 858, in sage.structure.category_object.CategoryObject.getattr_from_category
+    return self._cached_methods[name]
+KeyError: 'fetch_int'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_s3_rationality_propagation_20261017/small_field_s3_sage.py", line 54, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_s3_rationality_propagation_20261017/small_field_s3_sage.py", line 27, in main
+    values = [field.fetch_int(i) for i in range(1, 1 << n)]
+              ^^^^^^^^^^^^^^^
+  File "sage/structure/category_object.pyx", line 852, in sage.structure.category_object.CategoryObject.__getattr__
+    return self.getattr_from_category(name)
+  File "sage/structure/category_object.pyx", line 867, in sage.structure.category_object.CategoryObject.getattr_from_category
+    attr = getattr_from_other_class(self, cls, name)
+  File "sage/cpython/getattr.pyx", line 357, in sage.cpython.getattr.getattr_from_other_class
+    raise AttributeError(dummy_error_message)
+AttributeError: 'FiniteField_givaro_with_category' object has no attribute 'fetch_int'
