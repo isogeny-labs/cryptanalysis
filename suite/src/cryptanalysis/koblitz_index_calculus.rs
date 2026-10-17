@@ -4789,6 +4789,15 @@ pub(crate) fn lift_candidate(
 /// `None` from a completed solve is a *proof* that no decomposition
 /// exists over this factor base; a `None` with `stats.exhausted` set
 /// only means the node budget ran out.
+///
+/// Process-wide opt-in: with `KIC_M4_DESCENT=s5`, `m = 4` is solved from
+/// the hardcoded `S₅` template (`s5_weil_template`) instead of the chain
+/// of `S₃` links.  The set of decompositions is the same, but the
+/// *first-found* one (and the [`SolveStats`]) may be another member of that
+/// set, because the search order differs; whether one is found is not.
+/// The template is faster only on some cells (`n >= 17`, `ℓ = 3`) and
+/// slower on others (`ℓ = 4`, small `n`, subfield curves), so it is
+/// unset by default.
 pub fn groebner_decompose(
     kc: &KoblitzCurve,
     fb: &FrobeniusFactorBase,
@@ -4883,6 +4892,11 @@ pub fn groebner_decompose(
 /// Per target the result is [`groebner_decompose`]'s: the same
 /// decomposition (the first root, in the same search order, that lifts)
 /// and the same [`SolveStats`], whichever decider answers.
+///
+/// Exception: the batch path always solves the chain.  With
+/// `KIC_M4_DESCENT=s5` set, [`groebner_decompose`] takes the `S₅` template
+/// at `m = 4`, so its first-found decomposition may then be another member
+/// of the same set than this function returns.
 pub fn groebner_decompose_batch(
     kc: &KoblitzCurve,
     fb: &FrobeniusFactorBase,

@@ -78,10 +78,10 @@
 //! system being solved, so the specialised and the chained oracle may
 //! return different members of the same set; whether one is found at all
 //! is the same (tested).  [`groebner_decompose`] dispatches to it for
-//! `m = 4` when `KIC_M4_DESCENT` is `s5` or `s5sym`; unset (or `chained`)
-//! keeps the chain, which also stays the fallback whenever a template
-//! cannot be built (unknowns past [`MAX_DENSE_VARS`], `n` outside
-//! `2..=64`).
+//! `m = 4` when `KIC_M4_DESCENT=s5` (opt-in; `s5sym` is not an
+//! environment choice); unset (or anything else) keeps the chain, which
+//! also stays the fallback whenever a template cannot be built (unknowns
+//! past [`MAX_DENSE_VARS`], `n` outside `2..=64`).
 //!
 //! ## Solving, and what it costs
 //!
@@ -90,7 +90,7 @@
 //! equation at `ℓ = 3`, where the chain is cubic with a few dozen.  The
 //! Gröbner engines consume it unchanged, except that the default
 //! [`SolverEngine::InheritedF4`] is run as [`SolverEngine::MatrixF4`]
-//! ([`template_engine`]): same row space, same roots, a tenth of the work
+//! ([`template_engine`]): same row space, same roots, about a tenth of the work
 //! on these rows.  Whether the template beats the chain then depends on
 //! the cell — it wins where the chain's `2n` intermediates dominate
 //! (`n ≥ 17` at `ℓ = 3`) and loses where its own `4ℓ`-variable tree does
@@ -1010,15 +1010,30 @@ pub enum M4Descent {
 }
 
 impl M4Descent {
-    /// `KIC_M4_DESCENT`: `s5` or `s5sym`; anything else (or unset) is
-    /// [`M4Descent::Chained`].  Read once per process.
+    /// `KIC_M4_DESCENT`: `s5` selects the `S₅` template; anything else
+    /// (or unset) is [`M4Descent::Chained`].  Read once per process.
+    ///
+    /// `s5sym` is deliberately not accepted: the symmetrised template was
+    /// not faster than the chain on any cell measured (0.91x in
+    /// instructions on the one cell where it builds), so it stays an
+    /// explicit-argument API ([`decompose_all_m4`],
+    /// [`groebner_decompose_m4`]) and never an environment switch.
     pub fn from_env() -> Self {
         static CHOICE: std::sync::OnceLock<M4Descent> = std::sync::OnceLock::new();
         *CHOICE.get_or_init(|| match std::env::var("KIC_M4_DESCENT").as_deref() {
             Ok("s5") => M4Descent::S5Template,
-            Ok("s5sym") => M4Descent::S5Symmetrised,
             _ => M4Descent::Chained,
         })
+    }
+
+    /// The descent [`dispatch_groebner_m4`] uses: the test override when
+    /// set on this thread, otherwise [`M4Descent::from_env`].
+    fn dispatch_choice() -> Self {
+        #[cfg(test)]
+        if let Some(d) = DISPATCH_OVERRIDE.with(|c| c.get()) {
+            return d;
+        }
+        Self::from_env()
     }
 
     fn variant(self) -> Option<S5Variant> {
@@ -1258,6 +1273,14 @@ thread_local! {
     static CHAIN_REQUESTED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
+#[cfg(test)]
+thread_local! {
+    /// Test-only per-thread stand-in for `KIC_M4_DESCENT`, which is read
+    /// once per process and so cannot be varied inside one test binary.
+    static DISPATCH_OVERRIDE: std::cell::Cell<Option<M4Descent>> =
+        const { std::cell::Cell::new(None) };
+}
+
 /// The first-found `m = 4` oracle by `descent`: solve, lift each root as
 /// it is found (`lift_candidate`, as [`groebner_decompose`] does), stop
 /// at the first that closes.  Falls back to the chain
@@ -1280,10 +1303,30 @@ pub fn groebner_decompose_m4(
     {
         return (d, s, descent);
     }
-    let was = CHAIN_REQUESTED.with(|c| c.replace(true));
+    let _chain = ChainGuard::request();
     let (d, s) = groebner_decompose(kc, fb, index_of, st, target, M, engine, node_budget);
-    CHAIN_REQUESTED.with(|c| c.set(was));
     (d, s, M4Descent::Chained)
+}
+
+/// Scope guard for [`CHAIN_REQUESTED`]: restores the previous value on
+/// drop, including when a panic unwinds through the chain call (a caught
+/// panic must not leave the dispatch disabled on this thread).
+struct ChainGuard {
+    was: bool,
+}
+
+impl ChainGuard {
+    fn request() -> Self {
+        Self {
+            was: CHAIN_REQUESTED.with(|c| c.replace(true)),
+        }
+    }
+}
+
+impl Drop for ChainGuard {
+    fn drop(&mut self) {
+        CHAIN_REQUESTED.with(|c| c.set(self.was));
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1325,8 +1368,8 @@ fn specialised_first(
 }
 
 /// The `m = 4` hook of [`groebner_decompose`]: `Some` when
-/// `KIC_M4_DESCENT` selects a specialised descent and its template
-/// builds, `None` to run the chain.
+/// `KIC_M4_DESCENT=s5` selects the template and it builds, `None` to run
+/// the chain.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn dispatch_groebner_m4(
     kc: &KoblitzCurve,
@@ -1340,7 +1383,7 @@ pub(crate) fn dispatch_groebner_m4(
     if CHAIN_REQUESTED.with(|c| c.get()) {
         return None;
     }
-    let descent = M4Descent::from_env();
+    let descent = M4Descent::dispatch_choice();
     if descent == M4Descent::Chained {
         return None;
     }
@@ -2040,5 +2083,75 @@ mod review_tests {
         let basis = random_basis_any(5, 5, &mut rng);
         let t = S5Template::build_x(&basis, &kc.curve.b, &st).expect("4ℓ = 20 builds");
         assert_eq!(t.n_vars(), MAX_DENSE_VARS);
+    }
+    /// The `groebner_decompose` hook itself (the path `KIC_M4_DESCENT=s5`
+    /// takes): with the dispatch forced to the template it must find a
+    /// decomposition exactly when brute force does, return a member of
+    /// the brute-force set, and actually run the template; with the
+    /// chain requested it must not.
+    #[test]
+    fn dispatch_hook_agrees_with_brute_force_and_the_chain() {
+        use crate::cryptanalysis::koblitz_index_calculus::groebner_decompose;
+        let mut rng = StdRng::seed_from_u64(0xd15b);
+        let engine = SolverEngine::default();
+        let mut hooked = 0;
+        let mut nonempty = 0;
+        for (n, ell) in [(5u32, 2usize), (7, 2), (7, 3)] {
+            let Some(kc) = KoblitzCurve::new(0, n) else {
+                continue;
+            };
+            let basis = random_basis_any(n, ell, &mut rng);
+            let Some(fb) = plain_subspace_factor_base(&kc, &basis) else {
+                continue;
+            };
+            if fb.points.is_empty() {
+                continue;
+            }
+            let st = FieldStructure::new(n, &kc.curve.irreducible);
+            let index_of = fb.index_map();
+            for target in review_targets(&kc, &fb, &mut rng) {
+                let truth = brute(&kc, &fb, &target);
+                nonempty += usize::from(!truth.is_empty());
+                DISPATCH_OVERRIDE.with(|c| c.set(Some(M4Descent::S5Template)));
+                let direct =
+                    dispatch_groebner_m4(&kc, &fb, &index_of, &st, &target, engine, 1 << 30);
+                let (found, _) =
+                    groebner_decompose(&kc, &fb, &index_of, &st, &target, 4, engine, 1 << 30);
+                // Under a chain request the hook stays out of the way.
+                let guard = ChainGuard::request();
+                let skipped =
+                    dispatch_groebner_m4(&kc, &fb, &index_of, &st, &target, engine, 1 << 30);
+                let (chain_found, _) =
+                    groebner_decompose(&kc, &fb, &index_of, &st, &target, 4, engine, 1 << 30);
+                drop(guard);
+                DISPATCH_OVERRIDE.with(|c| c.set(None));
+                assert!(skipped.is_none(), "chain request must bypass the hook");
+                assert_eq!(chain_found.is_some(), !truth.is_empty(), "chain n{n}");
+                if direct.is_some() {
+                    hooked += 1;
+                }
+                assert_eq!(found.is_some(), !truth.is_empty(), "hook n{n} l{ell}");
+                if let Some(mut idx) = found {
+                    idx.sort_unstable();
+                    assert!(truth.contains(&idx), "hook member n{n} l{ell}");
+                }
+            }
+        }
+        assert!(nonempty >= 6, "nonempty {nonempty}");
+        assert!(hooked >= 6, "the template path ran {hooked} times");
+    }
+
+    /// A panic caught while the chain is requested must not leave the
+    /// dispatch disabled on the thread.
+    #[test]
+    fn chain_request_is_restored_after_a_caught_panic() {
+        assert!(!CHAIN_REQUESTED.with(|c| c.get()));
+        let r = std::panic::catch_unwind(|| {
+            let _g = ChainGuard::request();
+            assert!(CHAIN_REQUESTED.with(|c| c.get()));
+            panic!("unwind through the chain call");
+        });
+        assert!(r.is_err());
+        assert!(!CHAIN_REQUESTED.with(|c| c.get()), "flag leaked");
     }
 }
