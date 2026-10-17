@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/opt/homebrew/bin/gtimeout",
+    "180",
+    "/Volumes/SSD990/cryptanalysis/sage",
+    "-python",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_s3_code_inverse_20261017/n131_probe_sage.py"
+  ],
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "queries": [
+    "constructed first-two-pair positive",
+    "frozen public raw point minus constructed slots 2,3,4"
+  ],
+  "resource_envelope": {
+    "observational_rss_bytes": 4294967296,
+    "parent_wall_seconds": 180,
+    "workers": 1
+  },
+  "source_law": "all 512 validated sampled W29 codes plus two constructed-control source codes",
+  "source_sha256": {
+    "control": "b5b477ec28659bc079dc1c02462f688596b62cc96d387b6b3283eaa949e53d6f",
+    "group_audit": "24ca5bcba95cc9ffc9848ef398f40e04b131168fc4022346b25f6abdc71e35d5",
+    "public": "ae82042cbf5c09769082235ec54dce61d7edc5d9c7c6e8ae1f1276639c80874b",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "sample": "2473876a4c2bbbbe1cd4f1b433ab92d9e5c5d401a1ef31ff057b0a09800499b8",
+    "sample_audit": "0363bbbcc0e58cf3689acbfbc41dff3a5f52acf2d9c8f9a72423f4e8fc366896",
+    "script": "edf35a5a0dbc34dc54059be66da6d1e69eea246dab736845134ebb64241c5a73"
+  },
+  "status": "FROZEN_BEFORE_N131_DIRECT_S3_SOURCE_SAMPLE"
+}
