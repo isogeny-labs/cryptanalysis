@@ -94,7 +94,9 @@ The [portable overlay](native_rho_restart_mixed77_portable_overlay.py)
 replaces twelve machine-local compile-time atlas includes with lazy runtime
 loads. An optional atlas mode requires `EISENSTEIN_ATLAS_DIR` and fails if
 its bytes are unavailable; the joint rho-restart paths do not use that
-directory. The [portable verifier](verify_portable_mixed77.py) assembles the
+directory. The benchmark source also omits archived test-only modules after
+the release code, which contain machine-local paths; the executed release
+functions remain in the source. The [portable verifier](verify_portable_mixed77.py) assembles the
 archived source, applies hash-checked overlays, builds a release binary with
 no atlas placeholder bytes, and replays the frozen and independent fixtures.
 The [portable replay receipt](triple-mixed77-portable-replay.json) records
@@ -103,6 +105,14 @@ workflow is configured to build and replay this path on pinned Rust 1.93.1
 under Linux.
 Its local elapsed fields remain correctness diagnostics until the isolated
 same-point benchmark runs.
+
+The verifier can emit the exact source transfer archive with `--bundle-out`.
+The prepared 20-entry, 3,009,079-byte bundle has SHA-256
+`0598b16fb66efda38515bc2a3685c9ff38b3c2e797ca66d7e7c0a2451e0a998c`.
+It contains Cargo inputs, all executed Rust source, compile fixtures, both
+replay fixtures, and a source manifest. It contains no atlas shims or
+machine-local absolute paths in Rust source. Transfer and Tier 1 measurement
+remain subject to the existing RunPod source-egress approval gate.
 
 ## Decision gate
 

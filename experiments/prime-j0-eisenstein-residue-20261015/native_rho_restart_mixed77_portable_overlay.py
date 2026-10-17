@@ -5,7 +5,8 @@ The parent snapshot embeds twelve atlases through machine-local absolute
 paths. This overlay leaves their consumers intact but loads each atlas only
 if its corresponding optional mode is used. The joint rho-restart modes do
 not access those atlases. Missing optional bytes fail at use, never silently
-substitute empty data.
+substitute empty data. Archived test-only modules after the release code are
+removed from this benchmark source because they embed local machine paths.
 """
 from pathlib import Path
 import re
@@ -53,8 +54,19 @@ def main(root: Path) -> None:
                                 f'from_bytes({name}.as_slice(),')
         source = source.replace(f'let bytes = {name};',
                                 f'let bytes = {name}.as_slice();')
+    test_marker = '\n#[cfg(test)]\nmod split_prime_tests {'
+    assert source.count(test_marker) == 1
+    source = source.split(test_marker, 1)[0] + '\n'
     assert 'include_bytes!' not in source
+    assert '/private/tmp/' not in source and '/Volumes/' not in source
     windows.write_text(source)
+    front = root / 'src/bin/eisenstein_fixed.rs'
+    front_source = front.read_text()
+    front_test_marker = '\n#[cfg(test)]\nmod eisenstein_tau_tests {'
+    assert front_source.count(front_test_marker) == 1
+    front_source = front_source.split(front_test_marker, 1)[0] + '\n'
+    assert '/private/tmp/' not in front_source and '/Volumes/' not in front_source
+    front.write_text(front_source)
 
 
 if __name__ == '__main__':
