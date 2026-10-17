@@ -1,0 +1,25 @@
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/code_linear.cpp:2:
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/implicit_core.hpp:4:
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/../n131_target_derived_right_block_20261013/native_right.cpp:330:1: warning: non-void function does not return a value in all control paths [-Wreturn-type]
+  330 | }
+      | ^
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/code_linear.cpp:2:
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/implicit_core.hpp:6:
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/../n131_w18_pair_output_tables_20261013/quadratic_base.hpp:169:67: warning: non-void function does not return a value in all control paths [-Wreturn-type]
+  169 | }catch(const std::exception&e){std::cerr<<e.what()<<"\n";return 1;}
+      |                                                                   ^
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/code_linear.cpp:2:
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/implicit_core.hpp:27:14: warning: unused function 'query' [-Wunused-function]
+   27 | static Query query(const Field&f,Fe z,const std::vector<Row>&left,
+      |              ^~~~~
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/../n131_w20_affine_product_recovery_20261017/implicit_core.hpp:53:13: warning: unused function 'emit_query' [-Wunused-function]
+   53 | static void emit_query(std::ostream&out,const Query&q){
+      |             ^~~~~~~~~~
+In file included from experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/code_linear.cpp:3:
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/affine_prefix.hpp:61:20: warning: unused function 'query_affine' [-Wunused-function]
+   61 | static AffineQuery query_affine(const Field&f,Fe target,const std::vector<Row>&left,
+      |                    ^~~~~~~~~~~~
+experiments/ecc2k130-ic-goal-20260929/n131_w20_code_linear_right_20261017/affine_prefix.hpp:117:13: warning: unused function 'emit_affine' [-Wunused-function]
+  117 | static void emit_affine(std::ostream&out,const AffineQuery&q){
+      |             ^~~~~~~~~~~
+6 warnings generated.
