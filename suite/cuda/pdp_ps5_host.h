@@ -14,12 +14,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef PS5_UNUSED
+#    if defined(__GNUC__)
+#        define PS5_UNUSED __attribute__((unused))
+#    else
+#        define PS5_UNUSED
+#    endif
+#endif
+
 typedef struct {
     int n;
     uint64_t mod; /* the modulus as an integer, bit n set */
 } Ps5Gf;
 
-static uint64_t ps5_gf_mul(const Ps5Gf *f, uint64_t a, uint64_t b)
+static PS5_UNUSED uint64_t ps5_gf_mul(const Ps5Gf *f, uint64_t a, uint64_t b)
 {
     uint64_t r = 0;
     while (b) {
@@ -31,10 +39,10 @@ static uint64_t ps5_gf_mul(const Ps5Gf *f, uint64_t a, uint64_t b)
     return r;
 }
 
-static uint64_t ps5_gf_sqr(const Ps5Gf *f, uint64_t a) { return ps5_gf_mul(f, a, a); }
+static PS5_UNUSED uint64_t ps5_gf_sqr(const Ps5Gf *f, uint64_t a) { return ps5_gf_mul(f, a, a); }
 
 /* a^(2^n - 2) = prod_{i=1}^{n-1} a^(2^i); 0 maps to 0. */
-static uint64_t ps5_gf_inv(const Ps5Gf *f, uint64_t a)
+static PS5_UNUSED uint64_t ps5_gf_inv(const Ps5Gf *f, uint64_t a)
 {
     uint64_t r = 1, t = a;
     for (int i = 1; i < f->n; ++i) {
@@ -51,9 +59,9 @@ typedef struct {
     uint64_t val[64], pre[64];
 } Ps5As;
 
-static int ps5_clz_hi(uint64_t v) { return 63 - __builtin_clzll(v); }
+static PS5_UNUSED int ps5_clz_hi(uint64_t v) { return 63 - __builtin_clzll(v); }
 
-static void ps5_as_init(Ps5As *s, const Ps5Gf *f)
+static PS5_UNUSED void ps5_as_init(Ps5As *s, const Ps5Gf *f)
 {
     memset(s, 0, sizeof *s);
     for (int i = 0; i < f->n; ++i) {
@@ -74,7 +82,7 @@ static void ps5_as_init(Ps5As *s, const Ps5Gf *f)
 }
 
 /* Returns 1 and sets *z, or 0 when Tr(c) = 1. */
-static int ps5_as_solve(const Ps5As *s, uint64_t c, uint64_t *z)
+static PS5_UNUSED int ps5_as_solve(const Ps5As *s, uint64_t c, uint64_t *z)
 {
     uint64_t v = c, w = 0;
     while (v) {
@@ -94,7 +102,7 @@ typedef struct {
     uint64_t x, y;
 } Ps5Pt;
 
-static Ps5Pt ps5_neg(Ps5Pt p)
+static PS5_UNUSED Ps5Pt ps5_neg(Ps5Pt p)
 {
     if (!p.inf) p.y ^= p.x;
     return p;
@@ -102,7 +110,7 @@ static Ps5Pt ps5_neg(Ps5Pt p)
 
 /* Exact group law, every special case (identity, P + (-P), doubling, the
  * 2-torsion point (0, 1)); one inversion per call. */
-static Ps5Pt ps5_add(const Ps5Gf *f, Ps5Pt p, Ps5Pt q)
+static PS5_UNUSED Ps5Pt ps5_add(const Ps5Gf *f, Ps5Pt p, Ps5Pt q)
 {
     Ps5Pt inf = {1, 0, 0};
     if (p.inf) return q;
@@ -123,14 +131,14 @@ static Ps5Pt ps5_add(const Ps5Gf *f, Ps5Pt p, Ps5Pt q)
     return r;
 }
 
-static int ps5_on_curve(const Ps5Gf *f, uint64_t x, uint64_t y)
+static PS5_UNUSED int ps5_on_curve(const Ps5Gf *f, uint64_t x, uint64_t y)
 {
     uint64_t x2 = ps5_gf_sqr(f, x);
     return (ps5_gf_sqr(f, y) ^ ps5_gf_mul(f, x, y)) == (ps5_gf_mul(f, x2, x) ^ x2 ^ 1u);
 }
 
 /* The smaller rational y for abscissa x, or 0 when x lifts to no point. */
-static int ps5_lift(const Ps5Gf *f, const Ps5As *as, uint64_t x, uint64_t *y)
+static PS5_UNUSED int ps5_lift(const Ps5Gf *f, const Ps5As *as, uint64_t x, uint64_t *y)
 {
     if (x == 0) {
         *y = 1;
@@ -146,7 +154,7 @@ static int ps5_lift(const Ps5Gf *f, const Ps5As *as, uint64_t x, uint64_t *y)
 /* The four candidate third abscissae of the pair (P1, P2) and target R:
  * x(P1+P2+R), x(P1+P2-R), x(P1-P2+R), x(P1-P2-R); ok[k] = 0 where the sum is
  * the point at infinity. */
-static void ps5_thirds(const Ps5Gf *f, Ps5Pt p1, Ps5Pt p2, Ps5Pt r, uint64_t t[4], int ok[4])
+static PS5_UNUSED void ps5_thirds(const Ps5Gf *f, Ps5Pt p1, Ps5Pt p2, Ps5Pt r, uint64_t t[4], int ok[4])
 {
     Ps5Pt zs[2] = {ps5_add(f, p1, p2), ps5_add(f, p1, ps5_neg(p2))};
     Ps5Pt rs[2] = {r, ps5_neg(r)};
@@ -160,7 +168,7 @@ static void ps5_thirds(const Ps5Gf *f, Ps5Pt p1, Ps5Pt p2, Ps5Pt r, uint64_t t[4
 
 /* A target for which the group-law formulation can disagree with the
  * baseline: x_R = 0, x_R in V, or 1/x_R in V. */
-static int ps5_degenerate(const Ps5Gf *f, int l, uint64_t xr)
+static PS5_UNUSED int ps5_degenerate(const Ps5Gf *f, int l, uint64_t xr)
 {
     return xr == 0 || xr < (1ull << l) || ps5_gf_inv(f, xr) < (1ull << l);
 }
@@ -171,7 +179,7 @@ typedef struct {
     uint64_t s;
 } Ps5Rng;
 
-static uint64_t ps5_rng_next(Ps5Rng *r)
+static PS5_UNUSED uint64_t ps5_rng_next(Ps5Rng *r)
 {
     uint64_t z = (r->s += 0x9E3779B97F4A7C15ull);
     z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ull;
@@ -196,7 +204,7 @@ typedef struct {
     char digest_verdicts[65], digest_roots[65];
 } Ps5Corpus;
 
-static int ps5_cmp3(const void *a, const void *b)
+static PS5_UNUSED int ps5_cmp3(const void *a, const void *b)
 {
     const uint64_t *x = (const uint64_t *)a, *y = (const uint64_t *)b;
     for (int i = 0; i < 3; ++i) {
@@ -206,7 +214,7 @@ static int ps5_cmp3(const void *a, const void *b)
 }
 
 /* Reads the text format of corpus.rs `write_corpus`.  0 on success. */
-static int ps5_read_corpus(const char *text, Ps5Corpus *c)
+static PS5_UNUSED int ps5_read_corpus(const char *text, Ps5Corpus *c)
 {
     memset(c, 0, sizeof *c);
     size_t cap_t = 128;
@@ -258,7 +266,7 @@ static int ps5_read_corpus(const char *text, Ps5Corpus *c)
     return c->l > 0 && c->n > 0 && c->modulus ? 0 : -4;
 }
 
-static void ps5_free_corpus(Ps5Corpus *c)
+static PS5_UNUSED void ps5_free_corpus(Ps5Corpus *c)
 {
     for (size_t i = 0; i < c->n_targets; ++i) free(c->t[i].roots);
     free(c->t);

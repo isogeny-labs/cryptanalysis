@@ -392,6 +392,9 @@ int main(int argc, char **argv)
            "\"digest_roots\":\"%s\",\"digest_roots_corpus_file\":\"%s\",\"digest_verdicts_equal_corpus\":%s,"
            "\"digest_roots_equal_corpus\":%s,\"digest_verdicts_equal_expected\":%d,"
            "\"digest_roots_equal_expected\":%d,\"gates_fused_per_run\":%u,\"gates_unfused_per_run\":%u,"
+           "\"bitops_fused_per_lane_slot\":%.4f,\"bitops_unfused_per_lane_slot\":%.4f,"
+           "\"lane_utilisation\":%.6f,\"bitops_fused_per_valid_pair\":%.4f,"
+           "\"bitops_unfused_per_valid_pair\":%.4f,\"lop3_thread_instructions_per_valid_pair\":%.4f,"
            "\"threads\":%d,\"emulation_secs\":%.3f,\"mismatches\":%u}\n",
            PS5_L, PS5_N, prog_sha, corpus_path, corpus_sha, n_targets, corp.n_targets, m, nblk, n_jobs,
            (unsigned long long)lane_slots, (unsigned long long)want_pairs, (unsigned long long)pairs_run,
@@ -402,6 +405,10 @@ int main(int argc, char **argv)
            (unsigned long long)verdict_mismatch, (unsigned long long)unsupported,
            (unsigned long long)overflow, dv, corp.digest_verdicts, dr, corp.digest_roots,
            dv_corpus ? "true" : "false", dr_corpus ? "true" : "false", dv_expect, dr_expect,
-           info[4], info[5], threads, emu_secs, mismatches);
+           info[4], info[5],
+           (double)info[4] / PS5_TASKS, (double)info[5] / PS5_TASKS, (double)want_pairs / (double)lane_slots,
+           (double)info[4] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
+           (double)info[5] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
+           (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, mismatches);
     return mismatches ? 1 : 0;
 }

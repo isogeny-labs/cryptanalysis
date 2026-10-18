@@ -22,6 +22,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef PS5_UNUSED
+#    if defined(__GNUC__)
+#        define PS5_UNUSED __attribute__((unused))
+#    else
+#        define PS5_UNUSED
+#    endif
+#endif
+
 /* ── SHA-256 ─────────────────────────────────────────────────────────── */
 
 typedef struct {
@@ -45,7 +53,7 @@ static const uint32_t ps5_sha_k[64] = {
 
 #define PS5_ROR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
 
-static void ps5_sha_block(Ps5Sha *s, const uint8_t *p)
+static PS5_UNUSED void ps5_sha_block(Ps5Sha *s, const uint8_t *p)
 {
     uint32_t w[64];
     for (int i = 0; i < 16; ++i)
@@ -84,7 +92,7 @@ static void ps5_sha_block(Ps5Sha *s, const uint8_t *p)
     s->h[7] += h;
 }
 
-static void ps5_sha_init(Ps5Sha *s)
+static PS5_UNUSED void ps5_sha_init(Ps5Sha *s)
 {
     static const uint32_t iv[8] = {0x6a09e667u, 0xbb67ae85u, 0x3c6ef372u, 0xa54ff53au,
                                    0x510e527fu, 0x9b05688cu, 0x1f83d9abu, 0x5be0cd19u};
@@ -93,7 +101,7 @@ static void ps5_sha_init(Ps5Sha *s)
     s->fill = 0;
 }
 
-static void ps5_sha_update(Ps5Sha *s, const void *data, size_t n)
+static PS5_UNUSED void ps5_sha_update(Ps5Sha *s, const void *data, size_t n)
 {
     const uint8_t *p = (const uint8_t *)data;
     s->len += n;
@@ -112,7 +120,7 @@ static void ps5_sha_update(Ps5Sha *s, const void *data, size_t n)
 }
 
 /* Writes 64 lowercase hex digits and a NUL into `hex`. */
-static void ps5_sha_final_hex(Ps5Sha *s, char hex[65])
+static PS5_UNUSED void ps5_sha_final_hex(Ps5Sha *s, char hex[65])
 {
     uint64_t bits = s->len * 8u;
     uint8_t pad = 0x80;
@@ -125,7 +133,7 @@ static void ps5_sha_final_hex(Ps5Sha *s, char hex[65])
     for (int i = 0; i < 8; ++i) sprintf(hex + 8 * i, "%08x", s->h[i]);
 }
 
-static void ps5_sha256_hex(const void *data, size_t n, char hex[65])
+static PS5_UNUSED void ps5_sha256_hex(const void *data, size_t n, char hex[65])
 {
     Ps5Sha s;
     ps5_sha_init(&s);
@@ -135,7 +143,7 @@ static void ps5_sha256_hex(const void *data, size_t n, char hex[65])
 
 /* ── files ───────────────────────────────────────────────────────────── */
 
-static uint8_t *ps5_read_file(const char *path, size_t *len)
+static PS5_UNUSED uint8_t *ps5_read_file(const char *path, size_t *len)
 {
     FILE *f = fopen(path, "rb");
     if (!f) return NULL;
@@ -162,7 +170,7 @@ static uint8_t *ps5_read_file(const char *path, size_t *len)
 }
 
 /* The unsigned integer after `"key":` in a flat JSON object, or -1. */
-static long long ps5_json_int(const char *text, const char *key)
+static PS5_UNUSED long long ps5_json_int(const char *text, const char *key)
 {
     char pat[64];
     snprintf(pat, sizeof pat, "\"%s\":", key);
@@ -175,7 +183,7 @@ static long long ps5_json_int(const char *text, const char *key)
 }
 
 /* The string after `"key":"` in a flat JSON object; copied into `out`. */
-static int ps5_json_str(const char *text, const char *key, char *out, size_t cap)
+static PS5_UNUSED int ps5_json_str(const char *text, const char *key, char *out, size_t cap)
 {
     char pat[64];
     snprintf(pat, sizeof pat, "\"%s\":\"", key);
@@ -208,7 +216,7 @@ typedef struct {
 } Ps5Prog;
 
 /* Parses and validates (wires refer only to earlier wires).  0 on success. */
-static int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, char *err, size_t errcap)
+static PS5_UNUSED int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, char *err, size_t errcap)
 {
     memset(p, 0, sizeof *p);
     size_t cap = 1024, pos = 0;
@@ -261,7 +269,7 @@ static int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, char *err, 
     return 0;
 }
 
-static void __attribute__((unused)) ps5_slp_free(Ps5Prog *p)
+static PS5_UNUSED void ps5_slp_free(Ps5Prog *p)
 {
     free(p->ops);
     free(p->outs);
@@ -269,7 +277,7 @@ static void __attribute__((unused)) ps5_slp_free(Ps5Prog *p)
 }
 
 /* Evaluates every wire on 32-bit words: `in[k]` is input k, `wires` has n_ops entries. */
-static void __attribute__((unused)) ps5_slp_eval(const Ps5Prog *p, const uint32_t *in, uint32_t *wires)
+static PS5_UNUSED void ps5_slp_eval(const Ps5Prog *p, const uint32_t *in, uint32_t *wires)
 {
     for (size_t i = 0; i < p->n_ops; ++i) {
         const Ps5Op *o = &p->ops[i];
