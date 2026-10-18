@@ -4,8 +4,12 @@ defaultTargets = ["Retrospective"]
 [[require]]
 name = "CryptoLean"
 git = "https://github.com/aburan28/crypto-lean"
-rev = "68117089795313bc2ffe3a3b5f72052d5fa7cb91"
+rev = "617b0a5433516796f9ea9d48109b8eb135f92dfc"
 
 [[lean_lib]]
 name = "Retrospective"
 globs = ["Retrospective.*"]
+
+# The repository proof gate explicitly builds every tracked proof source.
+[[lean_lib]]
+name = "AxiomAudit"
