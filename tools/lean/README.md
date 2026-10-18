@@ -1,6 +1,6 @@
 # Lean proof gate
 
-This is a copy of `tools/lean/` in [aburan28/crypto](https://github.com/aburan28/crypto/tree/main/tools/lean), which is the source of truth. Change it there first and copy it here. This repository has no Lean proofs yet, so CI runs only the self-test until the first Lean target lands.
+The gate implementation is copied from `tools/lean/` in [aburan28/crypto](https://github.com/aburan28/crypto/tree/main/tools/lean), which is the source of truth. Change the implementation there first and copy it here. The [2026-10-18 retrospective](../../research/lean_retrospective_20261018/README.md) adds this repository's first research Lake project; CI discovers and checks it in addition to the gate self-test.
 
 `proof-gate.sh` checks every Lean target in the repository. CI runs it through
 [`lean-proof-gate.yml`](../../.github/workflows/lean-proof-gate.yml): on any

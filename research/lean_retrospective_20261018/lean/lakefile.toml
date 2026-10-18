@@ -1,0 +1,11 @@
+name = "Retrospective"
+defaultTargets = ["Retrospective"]
+
+[[require]]
+name = "CryptoLean"
+git = "https://github.com/aburan28/crypto-lean"
+rev = "68117089795313bc2ffe3a3b5f72052d5fa7cb91"
+
+[[lean_lib]]
+name = "Retrospective"
+globs = ["Retrospective.*"]
