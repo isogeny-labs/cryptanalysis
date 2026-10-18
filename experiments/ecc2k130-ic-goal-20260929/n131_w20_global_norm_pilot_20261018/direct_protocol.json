@@ -1,0 +1,29 @@
+{
+  "audited_subset_sizes": [
+    256,
+    1024
+  ],
+  "compile_command": [
+    "clang++",
+    "-std=c++17",
+    "-O3",
+    "-DNDEBUG",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_global_norm_pilot_20261018/direct_audit.cpp",
+    "-o",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_global_norm_pilot_20261018/direct_audit"
+  ],
+  "source_sha256": {
+    "coefficients.tsv": "6196352ca4b704c9ce11c7e8d1b2c29dc9184e0aaeefadbb8bff1953cd5b5a21",
+    "direct_audit": "5caebfad433ac5c46f5feaa4ee0568d72e03a6854b8b8bff38c84bbcfa4d5c31",
+    "direct_audit.cpp": "b43ae3135752082ad51d0cc4891e2b79bae0f1bf561ed26dba8cbbd1c9e7b56a",
+    "direct_audit_1024_stdout.txt": "984a04b97df8a7e61dbd9990839e9350e0febd4bd4a8ec8c862a8d11a51bf1d2",
+    "direct_audit_stdout.txt": "984a04b97df8a7e61dbd9990839e9350e0febd4bd4a8ec8c862a8d11a51bf1d2",
+    "field.hpp": "d85b70e38a1cae4ca68b5b6a3ed708d7578166daa13b987cac44988960710649",
+    "support_w20.tsv": "21f190a925c60044ba85b89dbcef39a71407b0c852de7c7ab88c95bed05e8944"
+  },
+  "status": "FROZEN_INDEPENDENT_NATIVE_DIRECT_AUDIT",
+  "target_rows": [
+    0,
+    1
+  ]
+}
