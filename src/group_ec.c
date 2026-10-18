@@ -129,9 +129,11 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         uint64_t d;
         if (FINF(&a[i]) || FINF(&b[i])) d = one;
         else if (FX(&a[i]) == FX(&b[i])) {
-            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0) d = BA(FY(&a[i]), FY(&a[i]));
+            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0)
+                d = BA(FY(&a[i]), FY(&a[i]));
             else d = one;
-        } else d = BS(FX(&b[i]), FX(&a[i]));
+        } else
+            d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
         pre[i] = i ? BM(pre[i - 1], d) : d;
     }
