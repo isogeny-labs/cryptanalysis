@@ -4948,9 +4948,16 @@ pub fn groebner_decompose_batch(
 /// degree `D`; the search then sweeps `2^k` assignments of the first
 /// `k` variables, each leaving a linear solve in the rest.
 ///
-/// `params` fixes `(D, k)`; `None` takes `D` from the system's own
-/// degree and `k = n_vars / 2`, capped by the search's enumeration
-/// budget.  As in the Gröbner path a root of `S₃` fixes the summands
+/// `params` fixes `(D, k)` for the generic search.  `None` first tries
+/// the block-planned solvers of
+/// [`crate::cryptanalysis::crossbred_blocks`] (`(D, k)` read off the
+/// summand blocks, intermediates kept linear), which return the same
+/// decomposition the generic path does whenever the generic search is not
+/// exhausted (and may decide where it is); when no block plan applies, the
+/// block search is exhausted, or the choice is ambiguous, it falls back
+/// to `D` from the system's own degree and `k = n_vars / 2`, capped by
+/// the search's enumeration budget.  `IC_CROSSBRED_BLOCKS=0` skips the
+/// block path.  As in the Gröbner path a root of `S₃` fixes the summands
 /// only up to sign, so each is lifted and the first that closes the
 /// group identity wins.
 ///
@@ -4985,6 +4992,16 @@ pub fn crossbred_decompose(
         Some(sys) => sys,
         None => return (None, CrossbredSearchStats::default()),
     };
+    if params.is_none() && crate::cryptanalysis::crossbred_blocks::enabled() {
+        // `(D, k)` from the summand blocks; the generic split below stays
+        // the fallback and the explicit-`params` path.
+        let k_generic = crossbred_params_for(&sys.equations, sys.n_vars).enumerated;
+        if let Some(found) = crate::cryptanalysis::crossbred_blocks::decompose_via_blocks(
+            kc, fb, index_of, &sys, target, k_generic,
+        ) {
+            return found;
+        }
+    }
     let params = params.unwrap_or_else(|| crossbred_params_for(&sys.equations, sys.n_vars));
     let xb = match extract_crossbred(&sys.equations, sys.n_vars, &params) {
         Some(xb) => xb,
@@ -5010,7 +5027,7 @@ pub fn crossbred_decompose(
 /// found the kernel grows with `k` and the search cost grows as `2^k`,
 /// so the midpoint is the defensible default rather than a tuned one.
 /// `k` is capped so the sweep stays inside the search's memory budget.
-fn crossbred_params_for(system: &[F2BoolPoly], n_vars: usize) -> CrossbredParams {
+pub(crate) fn crossbred_params_for(system: &[F2BoolPoly], n_vars: usize) -> CrossbredParams {
     let degree = system
         .iter()
         .flat_map(|p| p.terms.iter())

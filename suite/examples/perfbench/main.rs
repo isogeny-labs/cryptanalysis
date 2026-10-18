@@ -26,6 +26,7 @@ mod pdp;
 mod relation;
 mod sat;
 mod spec_fes_chain;
+mod spec_blocks;
 mod suite_extra;
 mod walksat;
 
@@ -35,6 +36,7 @@ fn registry() -> Vec<harness::Kernel> {
     bool_gb::register(&mut kernels);
     fp_gb::register(&mut kernels);
     sat::register(&mut kernels);
+    spec_blocks::register(&mut kernels);
     pdp::register(&mut kernels);
     field_ec::register(&mut kernels);
     relation::register(&mut kernels);
