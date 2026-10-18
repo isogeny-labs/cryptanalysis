@@ -97,6 +97,7 @@
 //! ```
 
 pub mod aes;
+pub mod affine_factor_base;
 pub mod ai_schoof;
 pub mod algebra_cache;
 pub mod aut_folded_rho;
