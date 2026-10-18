@@ -27,6 +27,7 @@ mod relation;
 mod sat;
 mod spec_fes_chain;
 mod spec_blocks;
+mod spec_descent;
 mod suite_extra;
 mod walksat;
 
@@ -44,6 +45,7 @@ fn registry() -> Vec<harness::Kernel> {
     suite_extra::register(&mut kernels);
     walksat::register(&mut kernels);
     spec_fes_chain::register(&mut kernels);
+    spec_descent::register(&mut kernels);
     kernels
 }
 
