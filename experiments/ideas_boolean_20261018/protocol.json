@@ -1,0 +1,23 @@
+{
+  "schema": "ideas-boolean-correctness/v1",
+  "frozen_before_trials": true,
+  "scope": "CPU-only exact correctness and counted-work pilot for audit items 3, 5, 6; not an IC performance run",
+  "gpu": {"devices": [], "F4_F2_ECHELON": "host"},
+  "maximum_workers": 1,
+  "solver_timeout_seconds": 20,
+  "solver_critical_pair_budget": 100000,
+  "memory_limit_bytes": 1610612736,
+  "seed": 20261018,
+  "direct_cells": [[13,3,2],[13,3,3],[17,4,3]],
+  "direct_target_laws": ["planted-distinct-when-possible", "natural-uniform-curve-point"],
+  "chained_cell": {"n":3,"m":4,"ell":1,"points_x":[1,1,1,0],"target_laws":["planted-point-sum","next-uniform-curve-point"]},
+  "orders": ["grevlex-natural","grevlex-reversed-permutation","grevlex-interleaved-permutation","block-eliminate-first-half","block-eliminate-second-half","weighted-grevlex"],
+  "order_notes": "Reversed/interleaved variants are variable permutations. Block variants compare the first block by grevlex before the second, with no total-degree key outside the blocks; they are real elimination orders. Weighted grevlex uses positive block-dependent weights before reverse lexicographic ties.",
+  "references": {"native_f5":"experiments/pdp-scaling/boolean_f5b_native.cpp", "python_f5":"experiments/pdp-scaling/boolean_f5b.py", "certificate":"independent exhaustive Boolean truth tables, order-aware staircase, all source equations and all ordinary and field S-pairs"},
+  "observed_degree": "maximum degree of materialized input/product/reduction polynomials, not an invariant solving degree or a measured F4 dreg",
+  "macaulay_control": {"cell":"chained m4 n3 ell1", "degree":4, "row_rule":"each descended S3 equation times every monomial of degree at most one; same row shape for every target", "replay":"learn complete deterministic row/pivot/XOR trace on first target; attempt second target; on first divergence rerun whole baseline and charge attempted plus fallback work; charge first-target learning separately"},
+  "dinur": {"primary_source":"https://arxiv.org/abs/2005.04800v2", "implemented_component":"Algorithm 2 MultParityCount with Algorithm 3 base case, Equation (2) complement-product semantics, exact downset Mobius transforms", "kappa":"1/2 (pilot parameter, not asymptotic optimum)", "lambda":"1/5", "repetitions":"48*N+1 at each recursive call, as paper", "validation":"full vector of parity counts checked against independent exhaustive evaluation", "limit":"parity component only; Valiant-Vazirani isolation and decision-to-search reduction are not implemented; no full solver exponent c is inferred"},
+  "stop_conditions": ["20 seconds per F5 order, retained as timeout", "1.5 GiB per process", "exact root/basis/certificate mismatch stops claims", "no extrapolation from these cells to deployed curves"],
+  "success_criteria": ["six explicitly defined orders agree on exact input root sets and produce valid reduced bases when completing", "native and Python F5 bases independently certified", "D4 Macaulay rows agree in exact row space after replay/fallback", "Dinur parity vectors equal exhaustive parities"],
+  "remaining_requested_scope": ["n<=41 scaling and confidence-bounded full solver exponent c", "full Dinur search/isolation reductions", "independently sourced Lokshtanov et al implementation", "realistic nondegenerate m4 ell>=3 chained degree4 systems beyond the native F5 12-variable ceiling", "GPU full IC comparison with strongest external F4/F5 and cost calibration", "Joux-Vitse learned symbolic trace replay (this pilot is checked fixed-row elimination replay)"]
+}

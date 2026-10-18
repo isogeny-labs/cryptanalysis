@@ -1,0 +1,105 @@
+{
+  "basis": [
+    [
+      32,
+      48
+    ],
+    [
+      1,
+      4,
+      16
+    ],
+    [
+      0,
+      2,
+      8,
+      32
+    ],
+    [
+      0,
+      1,
+      16,
+      17
+    ],
+    [
+      0,
+      1,
+      16,
+      18,
+      33
+    ],
+    [
+      34
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "case_id": "direct-n13-m3-ell2-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 6,
+    "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 6,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 7,
+    "criterion_calls": 5015,
+    "criterion_hits": 481,
+    "max_materialized_degree": 6,
+    "normal_zero_outputs": 37,
+    "pairs_processed": 100,
+    "product_nnz": 9926,
+    "product_rows": 2263,
+    "reductions": 1000,
+    "signature_insertions": 23,
+    "signature_zero_pairs": 17
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+  "order": {
+    "blocks": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1
+    ],
+    "layout_sha256": "433c00eeac9805ef9443125c76928846d3caaaffd3194d91bddaf5063c57427d",
+    "name": "block-eliminate-second-half",
+    "second_elimination_block": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "weights": [
+      1,
+      1,
+      2,
+      2,
+      3,
+      3
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 7 23 1000 100 5015 481 37 17 2263 9926 6\n2 32 48\n3 1 4 16\n4 0 2 8 32\n4 0 1 16 17\n5 0 1 16 18 33\n1 34\n2 2 3\n"
+}

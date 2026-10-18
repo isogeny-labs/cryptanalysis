@@ -1,0 +1,18 @@
+{
+  "schema":"ideas-m4ri-f5-correctness/v1",
+  "frozen_before_trials":true,
+  "scope":"CPU-only correctness control, not an IC performance comparison",
+  "inputs":"all 8 exact ANFs in runs/cpu-correctness-r1/inputs.json",
+  "backend":"existing experiments/pdp-scaling/boolean_f5b_m4ri.cpp through boolean_m4ri_runner.compute_m4ri_basis",
+  "m4ri_source":"https://github.com/malb/m4ri/releases/download/20260122/m4ri-20260122.tar.gz",
+  "library_build":"single job, --disable-openmp --enable-static --disable-shared, workspace-local prefix",
+  "library_control":"upstream exact elimination test before interpreting backend results",
+  "signature_limits":[0,64],
+  "matrix_degree":"4 for chained S3, N for direct Semaev",
+  "timeout_seconds_per_trial":30,
+  "maximum_workers":1,
+  "memory_limit_bytes":1610612736,
+  "verification":"exact exhaustive Boolean root/staircase certificate; group law root certificates already retained in inputs.json",
+  "accounting":"retain signature work, matrix rows/rank and admitted F5 rows separately; all CPU wall times are unisolated diagnostics only",
+  "claim_limits":["does not implement a new F5 algorithm", "does not measure a full DLP or prove constant solving degree", "no external msolve reference was available"]
+}

@@ -1,0 +1,20 @@
+{
+  "schema":"ideas-lptwy-decision/v1",
+  "frozen_before_trials":true,
+  "primary_source":"https://people.csail.mit.edu/rrw/polyEqSoda2017Submit.pdf",
+  "algorithm":"Lemma 3.3, q=2 randomized satisfiability decision: independent probabilistic polynomials for every suffix, random-weighted sum, full Mobius evaluation, 100*N repetitions, 40% scoreboard threshold",
+  "scope":"CPU-only exact-output correctness pilot, not IC performance evidence",
+  "input_source":"runs/cpu-correctness-r1/inputs.json, all six direct descended cells, exact bytes retained",
+  "n0_rule":"max(1, floor(N/5)); pilot parameter, not the paper's asymptotic optimum delta=1/(5d) for degree d>2",
+  "l_rule":"n0+2",
+  "repetitions":"100*N (log base 2, q=2)",
+  "seed_rule":"case seed + 830",
+  "polynomial_representation":"canonical squarefree ANF over GF(2), counted naive product before fast evaluation",
+  "maximum_workers":1,
+  "timeout_seconds_per_case":90,
+  "memory_limit_bytes":1610612736,
+  "correctness_reference":"independent exhaustive Boolean root set of the byte-identical descended ANFs",
+  "accounting":"record random bits, ANF coefficient XORs, monomial product visits, Mobius XORs and scoreboard increments separately; do not equate differently priced operations",
+  "negative_controls":"natural targets with zero certified Boolean roots when present; inconsistent singleton equation control in tests",
+  "claim_limits":["randomized decision, not full root search", "no full solver exponent c from this tiny grid", "actual high-degree input d, not quadratic d=2, governs applicability", "no GPU performance ratio or deployed-size claim"]
+}

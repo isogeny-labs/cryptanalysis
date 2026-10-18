@@ -1,0 +1,5681 @@
+[
+  {
+    "basis": [
+      [
+        8,
+        12
+      ],
+      [
+        0,
+        4,
+        16,
+        20
+      ],
+      [
+        0,
+        4,
+        16,
+        24,
+        36
+      ],
+      [
+        40
+      ],
+      [
+        32,
+        48
+      ],
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5579,
+      "product_rows_requested": 1539
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "a2b738760cb850340781faa8bafc0e03c590be5de29277b0c0f23c30fa303b8f",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 10,
+      "basis_sha256": "eb0deeeb28821d5f0c5c9d371bc5ebb60eed5a6f03d3eab695361f418de91647",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 73,
+      "critical_pairs_processed": 71,
+      "critical_pairs_removed": 95,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 16,
+      "multiply_cache_hits": 1017,
+      "multiply_cache_misses": 522,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 63,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 152,
+      "reduction_table_rows": 160,
+      "reductions": 567,
+      "reductions_to_zero": 20,
+      "rewrite_index_hits": 84,
+      "rewrite_index_lookups": 1486,
+      "seconds": 0.022241844999825844,
+      "signature_batch_eliminations": 11,
+      "signature_batch_rows": 16,
+      "signature_batch_size": 16,
+      "signature_batches": 5,
+      "signature_truncated": false,
+      "syzygies_indexed": 20,
+      "syzygy_index_hits": 84,
+      "syzygy_index_lookups": 1570
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        12
+      ],
+      [
+        10
+      ],
+      [
+        0,
+        1,
+        4,
+        6,
+        9
+      ],
+      [
+        0,
+        1,
+        4,
+        5
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ],
+      [
+        1,
+        4,
+        16
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5684,
+      "product_rows_requested": 1491
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "693940aafbee6a2d83bb609eb7ea1cf80b7cd9611ae5f9926157ce5f7c6393b7",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 11,
+      "basis_sha256": "48fd75eec72910f2e50887deb65fe169542a0b0515c58db31fe278e11e80c40e",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 101,
+      "critical_pairs_processed": 109,
+      "critical_pairs_removed": 65,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 16,
+      "multiply_cache_hits": 998,
+      "multiply_cache_misses": 493,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 69,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 228,
+      "reduction_table_rows": 156,
+      "reductions": 607,
+      "reductions_to_zero": 20,
+      "rewrite_index_hits": 88,
+      "rewrite_index_lookups": 1860,
+      "seconds": 0.06481761999975788,
+      "signature_batch_eliminations": 17,
+      "signature_batch_rows": 16,
+      "signature_batch_size": 16,
+      "signature_batches": 7,
+      "signature_truncated": false,
+      "syzygies_indexed": 17,
+      "syzygy_index_hits": 78,
+      "syzygy_index_lookups": 1938
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        4,
+        16,
+        20
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        0,
+        4,
+        16,
+        24,
+        36
+      ],
+      [
+        32,
+        48
+      ],
+      [
+        40
+      ],
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5552,
+      "product_rows_requested": 1534
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "b72f13d9edfe16d7c1df8d992a0f59b4a73c92a7eb73b274bddf80593fc1af96",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 10,
+      "basis_sha256": "42a690c8ab3cd4e0e4174fc462e9e44e7b37dd8b7a37296cb2797316d2c337ae",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 74,
+      "critical_pairs_processed": 72,
+      "critical_pairs_removed": 94,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 16,
+      "multiply_cache_hits": 1012,
+      "multiply_cache_misses": 522,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 63,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 153,
+      "reduction_table_rows": 160,
+      "reductions": 563,
+      "reductions_to_zero": 20,
+      "rewrite_index_hits": 84,
+      "rewrite_index_lookups": 1486,
+      "seconds": 0.047907918999953836,
+      "signature_batch_eliminations": 11,
+      "signature_batch_rows": 16,
+      "signature_batch_size": 16,
+      "signature_batches": 5,
+      "signature_truncated": false,
+      "syzygies_indexed": 20,
+      "syzygy_index_hits": 84,
+      "syzygy_index_lookups": 1570
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        0,
+        4,
+        16,
+        20
+      ],
+      [
+        0,
+        4,
+        16,
+        24,
+        36
+      ],
+      [
+        40
+      ],
+      [
+        32,
+        48
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5981,
+      "product_rows_requested": 1653
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "dcc5493677c88abeb6fb2b23028725a36be91f9da16ff64535c6936ac0e70fe4",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 12,
+      "basis_sha256": "c7a09c297d0b3e08ef90d6486aa447e89ff73d3e19adf89c77ca2a89d753ec06",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 86,
+      "critical_pairs_processed": 80,
+      "critical_pairs_removed": 116,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 18,
+      "multiply_cache_hits": 1038,
+      "multiply_cache_misses": 615,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 76,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 163,
+      "reduction_table_rows": 156,
+      "reductions": 598,
+      "reductions_to_zero": 20,
+      "rewrite_index_hits": 119,
+      "rewrite_index_lookups": 2127,
+      "seconds": 0.012021503999676497,
+      "signature_batch_eliminations": 35,
+      "signature_batch_rows": 18,
+      "signature_batch_size": 16,
+      "signature_batches": 5,
+      "signature_truncated": false,
+      "syzygies_indexed": 20,
+      "syzygy_index_hits": 83,
+      "syzygy_index_lookups": 2210
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        32,
+        48
+      ],
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ],
+      [
+        0,
+        1,
+        16,
+        17
+      ],
+      [
+        0,
+        1,
+        16,
+        18,
+        33
+      ],
+      [
+        34
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 6063,
+      "product_rows_requested": 1826
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "433c00eeac9805ef9443125c76928846d3caaaffd3194d91bddaf5063c57427d",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 14,
+      "basis_sha256": "60e476182b6642bba2f159c3ccdc170805504ca7751a7cf71d2063be23c52d09",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 98,
+      "critical_pairs_processed": 69,
+      "critical_pairs_removed": 134,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 20,
+      "multiply_cache_hits": 1199,
+      "multiply_cache_misses": 627,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 89,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 190,
+      "reduction_table_rows": 150,
+      "reductions": 680,
+      "reductions_to_zero": 25,
+      "rewrite_index_hits": 99,
+      "rewrite_index_lookups": 2171,
+      "seconds": 0.030868057000134286,
+      "signature_batch_eliminations": 13,
+      "signature_batch_rows": 20,
+      "signature_batch_size": 16,
+      "signature_batches": 5,
+      "signature_truncated": false,
+      "syzygies_indexed": 25,
+      "syzygy_index_hits": 133,
+      "syzygy_index_lookups": 2304
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        12
+      ],
+      [
+        0,
+        1,
+        4,
+        5
+      ],
+      [
+        0,
+        1,
+        4,
+        6,
+        9
+      ],
+      [
+        10
+      ],
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "389d88e46d21361d26baed902d0c8ea57256674eb4594a87b965685da88f6c0c",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5507,
+      "product_rows_requested": 1545
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "9814ea9a2d4b53dff38edfa19030438c329d59a856f9e1d7dcdb3b6b23252430",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 30888,
+    "stats": {
+      "basis_insertions": 11,
+      "basis_sha256": "54886c78fae09047841cf129fbe256efc0a7a831527cc25563e455a582ba348c",
+      "basis_size": 7,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 20,
+      "critical_pairs_discarded": 129,
+      "critical_pairs_processed": 126,
+      "critical_pairs_removed": 64,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 17,
+      "multiply_cache_hits": 1034,
+      "multiply_cache_misses": 511,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 69,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 190,
+      "reduction_table_rows": 148,
+      "reductions": 585,
+      "reductions_to_zero": 16,
+      "rewrite_index_hits": 79,
+      "rewrite_index_lookups": 1971,
+      "seconds": 0.043803483999909076,
+      "signature_batch_eliminations": 3,
+      "signature_batch_rows": 11,
+      "signature_batch_size": 16,
+      "signature_batches": 8,
+      "signature_truncated": false,
+      "syzygies_indexed": 16,
+      "syzygy_index_hits": 114,
+      "syzygy_index_lookups": 2085
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        12
+      ],
+      [
+        0,
+        4,
+        16,
+        20
+      ],
+      [
+        0,
+        4,
+        16,
+        24,
+        36
+      ],
+      [
+        40
+      ],
+      [
+        32,
+        48
+      ],
+      [
+        1,
+        4,
+        16
+      ],
+      [
+        0,
+        2,
+        8,
+        32
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-0",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 6,
+      "solutions": [
+        7,
+        13,
+        19,
+        28,
+        49,
+        52
+      ],
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "e0bbaea1be0534e43635f21b8c6dbe8d738b465599771f2424a5f0957f554c8d",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 7 0.00108456 40 1564 3.6047e-05 0.000567403 0.000451173 1.9183e-05 8.179e-06\n2 8 12\n4 0 4 16 20\n5 0 4 16 24 36\n1 40\n2 32 48\n3 1 4 16\n4 0 2 8 32\n"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5678,
+      "product_rows_requested": 1766
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "a2b738760cb850340781faa8bafc0e03c590be5de29277b0c0f23c30fa303b8f",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 16,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 106,
+      "critical_pairs_processed": 89,
+      "critical_pairs_removed": 143,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 28,
+      "multiply_cache_hits": 1087,
+      "multiply_cache_misses": 679,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 121,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 148,
+      "reduction_table_rows": 172,
+      "reductions": 707,
+      "reductions_to_zero": 11,
+      "rewrite_index_hits": 168,
+      "rewrite_index_lookups": 2635,
+      "seconds": 0.012260394000350061,
+      "signature_batch_eliminations": 32,
+      "signature_batch_rows": 26,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 11,
+      "syzygy_index_hits": 81,
+      "syzygy_index_lookups": 2716
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 6549,
+      "product_rows_requested": 1929
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "693940aafbee6a2d83bb609eb7ea1cf80b7cd9611ae5f9926157ce5f7c6393b7",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 17,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 90,
+      "critical_pairs_processed": 94,
+      "critical_pairs_removed": 167,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 29,
+      "multiply_cache_hits": 1189,
+      "multiply_cache_misses": 740,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 142,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 172,
+      "reduction_table_rows": 171,
+      "reductions": 838,
+      "reductions_to_zero": 15,
+      "rewrite_index_hits": 154,
+      "rewrite_index_lookups": 3608,
+      "seconds": 0.015695173999574763,
+      "signature_batch_eliminations": 34,
+      "signature_batch_rows": 22,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 15,
+      "syzygy_index_hits": 103,
+      "syzygy_index_lookups": 3711
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5294,
+      "product_rows_requested": 1714
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "b72f13d9edfe16d7c1df8d992a0f59b4a73c92a7eb73b274bddf80593fc1af96",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 16,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 98,
+      "critical_pairs_processed": 88,
+      "critical_pairs_removed": 154,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 28,
+      "multiply_cache_hits": 1032,
+      "multiply_cache_misses": 682,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 120,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 169,
+      "reduction_table_rows": 172,
+      "reductions": 678,
+      "reductions_to_zero": 12,
+      "rewrite_index_hits": 151,
+      "rewrite_index_lookups": 3070,
+      "seconds": 0.059759421000308066,
+      "signature_batch_eliminations": 28,
+      "signature_batch_rows": 22,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 12,
+      "syzygy_index_hits": 101,
+      "syzygy_index_lookups": 3171
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5186,
+      "product_rows_requested": 1518
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "dcc5493677c88abeb6fb2b23028725a36be91f9da16ff64535c6936ac0e70fe4",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 10,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 73,
+      "critical_pairs_processed": 82,
+      "critical_pairs_removed": 63,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 22,
+      "multiply_cache_hits": 979,
+      "multiply_cache_misses": 539,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 86,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 58,
+      "reduction_table_rows": 176,
+      "reductions": 671,
+      "reductions_to_zero": 19,
+      "rewrite_index_hits": 83,
+      "rewrite_index_lookups": 1529,
+      "seconds": 0.03883492099976138,
+      "signature_batch_eliminations": 31,
+      "signature_batch_rows": 16,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 17,
+      "syzygy_index_hits": 53,
+      "syzygy_index_lookups": 1582
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 5602,
+      "product_rows_requested": 1721
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "433c00eeac9805ef9443125c76928846d3caaaffd3194d91bddaf5063c57427d",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 15,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 96,
+      "critical_pairs_processed": 89,
+      "critical_pairs_removed": 135,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 27,
+      "multiply_cache_hits": 1069,
+      "multiply_cache_misses": 652,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 112,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 95,
+      "reduction_table_rows": 172,
+      "reductions": 665,
+      "reductions_to_zero": 13,
+      "rewrite_index_hits": 129,
+      "rewrite_index_lookups": 2747,
+      "seconds": 0.02485842300029617,
+      "signature_batch_eliminations": 49,
+      "signature_batch_rows": 23,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 13,
+      "syzygy_index_hits": 102,
+      "syzygy_index_lookups": 2849
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "observed": {
+      "allocated_column_universe": 64,
+      "max_materialized_degree": 6,
+      "observed_columns": 64,
+      "product_nnz_requested": 4511,
+      "product_rows_requested": 1332
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1
+      ],
+      "layout_sha256": "9814ea9a2d4b53dff38edfa19030438c329d59a856f9e1d7dcdb3b6b23252430",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "weights": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 30892,
+    "stats": {
+      "basis_insertions": 9,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 69,
+      "critical_pairs_processed": 84,
+      "critical_pairs_removed": 68,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 21,
+      "multiply_cache_hits": 834,
+      "multiply_cache_misses": 498,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 69,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 123,
+      "reduction_table_rows": 171,
+      "reductions": 608,
+      "reductions_to_zero": 16,
+      "rewrite_index_hits": 72,
+      "rewrite_index_lookups": 1382,
+      "seconds": 0.06239349999987098,
+      "signature_batch_eliminations": 38,
+      "signature_batch_rows": 16,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 12,
+      "syzygy_index_hits": 65,
+      "syzygy_index_lookups": 1447
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell2-1",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 0,
+      "solutions": [],
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 1 0.00113996 44 1889 3.6395e-05 0.000592133 0.000485566 1.5195e-05 2.078e-06\n1 0\n"
+  },
+  {
+    "basis": [
+      [
+        8,
+        40
+      ],
+      [
+        72
+      ],
+      [
+        0,
+        32,
+        96,
+        256,
+        264
+      ],
+      [
+        0,
+        32,
+        256,
+        288
+      ],
+      [
+        64,
+        320
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        2,
+        32,
+        256
+      ],
+      [
+        4,
+        32,
+        256
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        128,
+        256
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2979132,
+      "product_rows_requested": 292549
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "e9b5ad911228b66d3c51266e4ab0d6b6c26cf5c0c47a3b9f0e8ee111928de8d5",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 35504,
+    "stats": {
+      "basis_insertions": 450,
+      "basis_sha256": "e44a7bfeed1b9b5e0db7987410f34eaf3f1f7834d9519bb6314e234f05d4370b",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 85138,
+      "critical_pairs_processed": 880,
+      "critical_pairs_removed": 13229,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 453,
+      "multiply_cache_hits": 254771,
+      "multiply_cache_misses": 37778,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 8121,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 35808,
+      "reduction_table_rows": 1065,
+      "reductions": 107807,
+      "reductions_to_zero": 38,
+      "rewrite_index_hits": 97989,
+      "rewrite_index_lookups": 516502,
+      "seconds": 14.498088913999709,
+      "signature_batch_eliminations": 1492,
+      "signature_batch_rows": 464,
+      "signature_batch_size": 16,
+      "signature_batches": 55,
+      "signature_truncated": false,
+      "syzygies_indexed": 38,
+      "syzygy_index_hits": 378,
+      "syzygy_index_lookups": 516880
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        24
+      ],
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        0,
+        2,
+        10,
+        16,
+        17
+      ],
+      [
+        9
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        16,
+        256
+      ],
+      [
+        2,
+        16,
+        128
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        2,
+        4
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2605235,
+      "product_rows_requested": 279700
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ac6e6ba96a8bbd395125125cfcea8dc7496d17f22f9dd191948ecccd79944ff6",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 35376,
+    "stats": {
+      "basis_insertions": 442,
+      "basis_sha256": "90ca5fb9f0027643d38ca766d33f6c708382247bf1b214bbf42b8a423cff2328",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 82182,
+      "critical_pairs_processed": 777,
+      "critical_pairs_removed": 12556,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 445,
+      "multiply_cache_hits": 241605,
+      "multiply_cache_misses": 38095,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 8096,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 34760,
+      "reduction_table_rows": 1069,
+      "reductions": 101280,
+      "reductions_to_zero": 34,
+      "rewrite_index_hits": 93875,
+      "rewrite_index_lookups": 472714,
+      "seconds": 16.513888637000036,
+      "signature_batch_eliminations": 1475,
+      "signature_batch_rows": 454,
+      "signature_batch_size": 16,
+      "signature_batches": 49,
+      "signature_truncated": false,
+      "syzygies_indexed": 34,
+      "syzygy_index_hits": 863,
+      "syzygy_index_lookups": 473577
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        72
+      ],
+      [
+        8,
+        40
+      ],
+      [
+        0,
+        32,
+        96,
+        256,
+        264
+      ],
+      [
+        64,
+        320
+      ],
+      [
+        0,
+        32,
+        256,
+        288
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        2,
+        32,
+        256
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        128,
+        256
+      ],
+      [
+        4,
+        32,
+        256
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2400906,
+      "product_rows_requested": 283780
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "2fa5eba2bfead84b5888301eb778f763f2f9847dab81901b1a509c6764d708f8",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 35504,
+    "stats": {
+      "basis_insertions": 447,
+      "basis_sha256": "434cbd9985c2a0514ed9c0f8938c45ad9003f58a001f12774680d514f7c2543f",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 82806,
+      "critical_pairs_processed": 913,
+      "critical_pairs_removed": 14308,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 450,
+      "multiply_cache_hits": 246436,
+      "multiply_cache_misses": 37344,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 7998,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 39022,
+      "reduction_table_rows": 1069,
+      "reductions": 104926,
+      "reductions_to_zero": 32,
+      "rewrite_index_hits": 96140,
+      "rewrite_index_lookups": 571974,
+      "seconds": 9.360822645000098,
+      "signature_batch_eliminations": 1444,
+      "signature_batch_rows": 464,
+      "signature_batch_size": 16,
+      "signature_batches": 58,
+      "signature_truncated": false,
+      "syzygies_indexed": 32,
+      "syzygy_index_hits": 974,
+      "syzygy_index_lookups": 572948
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        2,
+        32,
+        256
+      ],
+      [
+        4,
+        32,
+        256
+      ],
+      [
+        8,
+        40
+      ],
+      [
+        72
+      ],
+      [
+        0,
+        32,
+        96,
+        256,
+        264
+      ],
+      [
+        0,
+        32,
+        256,
+        288
+      ],
+      [
+        64,
+        320
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        128,
+        256
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2184574,
+      "product_rows_requested": 234102
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "6a635392e532d1591c566d609f3b01d5d6ee13abc2dbdcdd93735f08619cf27f",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 35248,
+    "stats": {
+      "basis_insertions": 398,
+      "basis_sha256": "c3779d24a6f1f77921f5b3634cb6e0a8942613f056b232148e3a035eb950b1ee",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 65154,
+      "critical_pairs_processed": 688,
+      "critical_pairs_removed": 12207,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 401,
+      "multiply_cache_hits": 202070,
+      "multiply_cache_misses": 32032,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 6483,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 11170,
+      "reduction_table_rows": 1076,
+      "reductions": 68866,
+      "reductions_to_zero": 40,
+      "rewrite_index_hits": 76264,
+      "rewrite_index_lookups": 497961,
+      "seconds": 6.897086210999987,
+      "signature_batch_eliminations": 1159,
+      "signature_batch_rows": 408,
+      "signature_batch_size": 16,
+      "signature_batches": 43,
+      "signature_truncated": false,
+      "syzygies_indexed": 40,
+      "syzygy_index_hits": 1097,
+      "syzygy_index_lookups": 499058
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        64,
+        320
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        4,
+        16,
+        256
+      ],
+      [
+        4,
+        32,
+        256
+      ],
+      [
+        65
+      ],
+      [
+        0,
+        4,
+        68,
+        256,
+        257
+      ],
+      [
+        128,
+        256
+      ],
+      [
+        0,
+        4,
+        256,
+        260
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        4
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 1972774,
+      "product_rows_requested": 187074
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "085969ddd4253cef81e88a2e38b6cb41846a46bcac8bb77a68a3685e638ceca6",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 34992,
+    "stats": {
+      "basis_insertions": 342,
+      "basis_sha256": "cbfc07171699dfa82dab9ac0d821f9dbea6a6a14f40dc6398a125d20ebdc65f4",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 45786,
+      "critical_pairs_processed": 871,
+      "critical_pairs_removed": 10906,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 345,
+      "multiply_cache_hits": 156585,
+      "multiply_cache_misses": 30489,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 5789,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 17716,
+      "reduction_table_rows": 1066,
+      "reductions": 70860,
+      "reductions_to_zero": 38,
+      "rewrite_index_hits": 55944,
+      "rewrite_index_lookups": 454756,
+      "seconds": 6.190354600000319,
+      "signature_batch_eliminations": 1030,
+      "signature_batch_rows": 353,
+      "signature_batch_size": 16,
+      "signature_batches": 55,
+      "signature_truncated": false,
+      "syzygies_indexed": 38,
+      "syzygy_index_hits": 748,
+      "syzygy_index_lookups": 455504
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        40
+      ],
+      [
+        9
+      ],
+      [
+        0,
+        4,
+        12,
+        32,
+        33
+      ],
+      [
+        0,
+        4,
+        32,
+        36
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        4,
+        32,
+        128
+      ],
+      [
+        4,
+        32,
+        256
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        2,
+        4
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 6,
+      "roots_sha256": "9419d43c36ce9da258a7a0f13448954e7d2729a899c11a89331fb7e1d8f1f569",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2745356,
+      "product_rows_requested": 287032
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "5842d2748174eb04509f9a97e553d4c60d69d85ccfb7e04ccc01bb9c64dbde88",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 35376,
+    "stats": {
+      "basis_insertions": 447,
+      "basis_sha256": "78a50c0419c9abc173dd059cdf2bfc3b3e75a6fe2c995f778f5d082c7701f08b",
+      "basis_size": 10,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 1,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 23,
+      "critical_pairs_discarded": 84051,
+      "critical_pairs_processed": 819,
+      "critical_pairs_removed": 12959,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 450,
+      "multiply_cache_hits": 248301,
+      "multiply_cache_misses": 38731,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 8108,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 32848,
+      "reduction_table_rows": 1064,
+      "reductions": 102124,
+      "reductions_to_zero": 26,
+      "rewrite_index_hits": 96336,
+      "rewrite_index_lookups": 497586,
+      "seconds": 8.501611741000033,
+      "signature_batch_eliminations": 1423,
+      "signature_batch_rows": 463,
+      "signature_batch_size": 16,
+      "signature_batches": 52,
+      "signature_truncated": false,
+      "syzygies_indexed": 26,
+      "syzygy_index_hits": 674,
+      "syzygy_index_lookups": 498260
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        8,
+        40
+      ],
+      [
+        72
+      ],
+      [
+        0,
+        32,
+        96,
+        256,
+        264
+      ],
+      [
+        0,
+        32,
+        256,
+        288
+      ],
+      [
+        64,
+        320
+      ],
+      [
+        0,
+        1,
+        8,
+        64
+      ],
+      [
+        2,
+        32,
+        256
+      ],
+      [
+        4,
+        32,
+        256
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        128,
+        256
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-0",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 6,
+      "solutions": [
+        55,
+        62,
+        391,
+        440,
+        454,
+        496
+      ],
+      "standard_monomials": 6,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "1012b7ffcde04f58f01c11fe83f907cf7fced4f5e8139f8dd1be930345f4b4f2",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 10 0.0417089 452 112123 0.000851647 0.0334055 0.00696301 0.000336153 3.4522e-05\n2 8 40\n1 72\n5 0 32 96 256 264\n4 0 32 256 288\n2 64 320\n4 0 1 8 64\n3 2 32 256\n3 4 32 256\n2 16 32\n2 128 256\n"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2607543,
+      "product_rows_requested": 290942
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "e9b5ad911228b66d3c51266e4ab0d6b6c26cf5c0c47a3b9f0e8ee111928de8d5",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 35504,
+    "stats": {
+      "basis_insertions": 456,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 87529,
+      "critical_pairs_processed": 764,
+      "critical_pairs_removed": 12074,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 468,
+      "multiply_cache_hits": 251569,
+      "multiply_cache_misses": 39373,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 9654,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 34738,
+      "reduction_table_rows": 1078,
+      "reductions": 103998,
+      "reductions_to_zero": 25,
+      "rewrite_index_hits": 99328,
+      "rewrite_index_lookups": 459545,
+      "seconds": 13.55166202700002,
+      "signature_batch_eliminations": 1464,
+      "signature_batch_rows": 464,
+      "signature_batch_size": 16,
+      "signature_batches": 48,
+      "signature_truncated": false,
+      "syzygies_indexed": 25,
+      "syzygy_index_hits": 275,
+      "syzygy_index_lookups": 459820
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2751003,
+      "product_rows_requested": 290563
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ac6e6ba96a8bbd395125125cfcea8dc7496d17f22f9dd191948ecccd79944ff6",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 35504,
+    "stats": {
+      "basis_insertions": 453,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 84781,
+      "critical_pairs_processed": 860,
+      "critical_pairs_removed": 14370,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 465,
+      "multiply_cache_hits": 252998,
+      "multiply_cache_misses": 37565,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 8686,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 35991,
+      "reduction_table_rows": 1078,
+      "reductions": 106720,
+      "reductions_to_zero": 33,
+      "rewrite_index_hits": 98757,
+      "rewrite_index_lookups": 563054,
+      "seconds": 5.302598739000132,
+      "signature_batch_eliminations": 1528,
+      "signature_batch_rows": 479,
+      "signature_batch_size": 16,
+      "signature_batches": 54,
+      "signature_truncated": false,
+      "syzygies_indexed": 32,
+      "syzygy_index_hits": 394,
+      "syzygy_index_lookups": 563448
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2784781,
+      "product_rows_requested": 285337
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "2fa5eba2bfead84b5888301eb778f763f2f9847dab81901b1a509c6764d708f8",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 35504,
+    "stats": {
+      "basis_insertions": 450,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 82776,
+      "critical_pairs_processed": 886,
+      "critical_pairs_removed": 14058,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 462,
+      "multiply_cache_hits": 246130,
+      "multiply_cache_misses": 39207,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 9622,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 32460,
+      "reduction_table_rows": 1082,
+      "reductions": 101653,
+      "reductions_to_zero": 33,
+      "rewrite_index_hits": 96445,
+      "rewrite_index_lookups": 551620,
+      "seconds": 5.166118075999748,
+      "signature_batch_eliminations": 1481,
+      "signature_batch_rows": 464,
+      "signature_batch_size": 16,
+      "signature_batches": 56,
+      "signature_truncated": false,
+      "syzygies_indexed": 33,
+      "syzygy_index_hits": 389,
+      "syzygy_index_lookups": 552009
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 1993833,
+      "product_rows_requested": 230317
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "6a635392e532d1591c566d609f3b01d5d6ee13abc2dbdcdd93735f08619cf27f",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 35248,
+    "stats": {
+      "basis_insertions": 400,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 66100,
+      "critical_pairs_processed": 632,
+      "critical_pairs_removed": 9916,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 412,
+      "multiply_cache_hits": 194569,
+      "multiply_cache_misses": 35748,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 8619,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 16690,
+      "reduction_table_rows": 1080,
+      "reductions": 73727,
+      "reductions_to_zero": 27,
+      "rewrite_index_hits": 75827,
+      "rewrite_index_lookups": 348681,
+      "seconds": 4.323490709999987,
+      "signature_batch_eliminations": 1199,
+      "signature_batch_rows": 416,
+      "signature_batch_size": 16,
+      "signature_batches": 40,
+      "signature_truncated": false,
+      "syzygies_indexed": 27,
+      "syzygy_index_hits": 189,
+      "syzygy_index_lookups": 348870
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 1609921,
+      "product_rows_requested": 170288
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "085969ddd4253cef81e88a2e38b6cb41846a46bcac8bb77a68a3685e638ceca6",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 34864,
+    "stats": {
+      "basis_insertions": 328,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 41738,
+      "critical_pairs_processed": 721,
+      "critical_pairs_removed": 9789,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 340,
+      "multiply_cache_hits": 141103,
+      "multiply_cache_misses": 29185,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 6070,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 21349,
+      "reduction_table_rows": 1086,
+      "reductions": 70501,
+      "reductions_to_zero": 42,
+      "rewrite_index_hits": 51179,
+      "rewrite_index_lookups": 355655,
+      "seconds": 5.170590952000111,
+      "signature_batch_eliminations": 1033,
+      "signature_batch_rows": 336,
+      "signature_batch_size": 16,
+      "signature_batches": 46,
+      "signature_truncated": false,
+      "syzygies_indexed": 40,
+      "syzygy_index_hits": 348,
+      "syzygy_index_lookups": 356003
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 0,
+      "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "observed": {
+      "allocated_column_universe": 512,
+      "max_materialized_degree": 9,
+      "observed_columns": 512,
+      "product_nnz_requested": 2915547,
+      "product_rows_requested": 293941
+    },
+    "order": {
+      "blocks": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7,
+          8
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "5842d2748174eb04509f9a97e553d4c60d69d85ccfb7e04ccc01bb9c64dbde88",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "weights": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 35632,
+    "stats": {
+      "basis_insertions": 456,
+      "basis_sha256": "db407f11d7ede59abaab0e98e097ff2dae10a048207b801745d7199ef19c2387",
+      "basis_size": 1,
+      "batch_independent_rows": 0,
+      "batch_input_rows": 0,
+      "batch_reductions": 0,
+      "completion_batch_size": 64,
+      "completion_insertions": 0,
+      "completion_pairs": 0,
+      "critical_pairs_discarded": 86678,
+      "critical_pairs_processed": 751,
+      "critical_pairs_removed": 12919,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 468,
+      "multiply_cache_hits": 254627,
+      "multiply_cache_misses": 39314,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 9654,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 32180,
+      "reduction_table_rows": 1076,
+      "reductions": 104427,
+      "reductions_to_zero": 27,
+      "rewrite_index_hits": 99290,
+      "rewrite_index_lookups": 472776,
+      "seconds": 16.625163539999903,
+      "signature_batch_eliminations": 1397,
+      "signature_batch_rows": 468,
+      "signature_batch_size": 16,
+      "signature_batches": 47,
+      "signature_truncated": false,
+      "syzygies_indexed": 27,
+      "syzygy_index_hits": 307,
+      "syzygy_index_lookups": 473083
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n13-m3-ell3-1",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 0,
+      "solutions": [],
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 1 0.0450994 458 111988 0.00188788 0.0371666 0.00594843 5.2688e-05 2.958e-06\n1 0\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "grevlex-natural",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "grevlex-reversed-permutation",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "grevlex-interleaved-permutation",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 568, in basis\n    ordinary = self.normal_form(\n               ^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 219, in normal_form\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "block-eliminate-first-half",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "block-eliminate-second-half",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 568, in basis\n    ordinary = self.normal_form(\n               ^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 219, in normal_form\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-0",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "order_name": "weighted-grevlex",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "basis": [
+      [
+        8,
+        136,
+        1032,
+        1160
+      ],
+      [
+        8,
+        264,
+        2056,
+        2312
+      ],
+      [
+        8,
+        264,
+        2056,
+        2304,
+        2320
+      ],
+      [
+        24
+      ],
+      [
+        40
+      ],
+      [
+        0,
+        8,
+        16,
+        32,
+        48
+      ],
+      [
+        72
+      ],
+      [
+        8,
+        64,
+        80,
+        136,
+        1024,
+        1040,
+        1152
+      ],
+      [
+        8,
+        64,
+        96,
+        264,
+        2048,
+        2080,
+        2304
+      ],
+      [
+        0,
+        16,
+        128,
+        144,
+        1024,
+        1040,
+        1152
+      ],
+      [
+        0,
+        8,
+        64,
+        160,
+        272
+      ],
+      [
+        192
+      ],
+      [
+        0,
+        32,
+        256,
+        288,
+        2048,
+        2080,
+        2304
+      ],
+      [
+        320
+      ],
+      [
+        0,
+        64,
+        128,
+        256,
+        384
+      ],
+      [
+        520
+      ],
+      [
+        0,
+        8,
+        16,
+        512,
+        528,
+        1024,
+        1032,
+        1040
+      ],
+      [
+        0,
+        8,
+        32,
+        512,
+        544,
+        2048,
+        2056,
+        2080
+      ],
+      [
+        576
+      ],
+      [
+        0,
+        64,
+        128,
+        512,
+        640,
+        1024,
+        1088,
+        1152
+      ],
+      [
+        0,
+        64,
+        256,
+        512,
+        768,
+        2048,
+        2112,
+        2304
+      ],
+      [
+        0,
+        8,
+        512,
+        1056,
+        2064
+      ],
+      [
+        0,
+        64,
+        512,
+        1280,
+        2176
+      ],
+      [
+        1536
+      ],
+      [
+        2560
+      ],
+      [
+        0,
+        512,
+        1024,
+        2048,
+        3072
+      ],
+      [
+        0,
+        1,
+        8,
+        64,
+        512
+      ],
+      [
+        2,
+        16,
+        128,
+        1024
+      ],
+      [
+        4,
+        32,
+        256,
+        2048
+      ]
+    ],
+    "case_id": "direct-n17-m4-ell3-0",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 24,
+      "solutions": [
+        678,
+        692,
+        790,
+        818,
+        916,
+        930,
+        1126,
+        1140,
+        1294,
+        1329,
+        1420,
+        1441,
+        2134,
+        2162,
+        2190,
+        2225,
+        2442,
+        2449,
+        3156,
+        3170,
+        3212,
+        3233,
+        3338,
+        3345
+      ],
+      "standard_monomials": 24,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 29 15.9121 4052 8302523 0.0371825 13.8746 1.95012 0.0413956 0.000279085\n4 8 136 1032 1160\n4 8 264 2056 2312\n5 8 264 2056 2304 2320\n1 24\n1 40\n5 0 8 16 32 48\n1 72\n7 8 64 80 136 1024 1040 1152\n7 8 64 96 264 2048 2080 2304\n7 0 16 128 144 1024 1040 1152\n5 0 8 64 160 272\n1 192\n7 0 32 256 288 2048 2080 2304\n1 320\n5 0 64 128 256 384\n1 520\n8 0 8 16 512 528 1024 1032 1040\n8 0 8 32 512 544 2048 2056 2080\n1 576\n8 0 64 128 512 640 1024 1088 1152\n8 0 64 256 512 768 2048 2112 2304\n5 0 8 512 1056 2064\n5 0 64 512 1280 2176\n1 1536\n1 2560\n5 0 512 1024 2048 3072\n5 0 1 8 64 512\n4 2 16 128 1024\n4 4 32 256 2048\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "grevlex-natural",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 568, in basis\n    ordinary = self.normal_form(\n               ^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 219, in normal_form\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "grevlex-reversed-permutation",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "grevlex-interleaved-permutation",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "block-eliminate-first-half",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 536, in basis\n    candidate = self.signature_reduce(\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 324, in signature_reduce\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "block-eliminate-second-half",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 568, in basis\n    ordinary = self.normal_form(\n               ^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 219, in normal_form\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "case_id": "direct-n17-m4-ell3-1",
+    "engine": "python-Boolean-F5B",
+    "error": "TimeoutError('Boolean F5B deadline')",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "order_name": "weighted-grevlex",
+    "status": "timeout",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/cryptanalysis/experiments/ideas_boolean_20261018/run.py\", line 189, in f5_worker\n    basis_packed = engine.basis(generators)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 568, in basis\n    ordinary = self.normal_form(\n               ^^^^^^^^^^^^^^^^^\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 219, in normal_form\n    self._check_budget()\n  File \"/workspace/cryptanalysis/experiments/pdp-scaling/boolean_f5b.py\", line 95, in _check_budget\n    raise TimeoutError(\"Boolean F5B deadline\")\nTimeoutError: Boolean F5B deadline\n"
+  },
+  {
+    "basis": [
+      [
+        0
+      ]
+    ],
+    "case_id": "direct-n17-m4-ell3-1",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 0,
+      "solutions": [],
+      "standard_monomials": 0,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "ec2885236289953b66c612c81192cef3712d5bc9a4317a08f714d65a7875a183",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 1 5.80533 4074 8379244 0.00232385 4.73484 1.0658 0.00208345 3.5e-06\n1 0\n"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        0,
+        16,
+        128,
+        144
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        4,
+        16,
+        128
+      ],
+      [
+        0,
+        8,
+        128
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 53344,
+      "product_rows_requested": 19864
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ffd954cf4906132701a5dfc5015fec3c094c1890a5ec2351875434d47db4ebaf",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 32816,
+    "stats": {
+      "basis_insertions": 26,
+      "basis_sha256": "f3ae04c7857fc69196420fd3d450499b74cb408993cc6dfb0d68eae7143ea139",
+      "basis_size": 9,
+      "batch_independent_rows": 13,
+      "batch_input_rows": 37,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 13,
+      "completion_pairs": 150,
+      "critical_pairs_discarded": 167,
+      "critical_pairs_processed": 128,
+      "critical_pairs_removed": 101,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 26,
+      "multiply_cache_hits": 7301,
+      "multiply_cache_misses": 12563,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 387,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1049,
+      "reduction_table_rows": 2816,
+      "reductions": 1474,
+      "reductions_to_zero": 27,
+      "rewrite_index_hits": 127,
+      "rewrite_index_lookups": 3316,
+      "seconds": 0.09168492199978573,
+      "signature_batch_eliminations": 36,
+      "signature_batch_rows": 40,
+      "signature_batch_size": 16,
+      "signature_batches": 8,
+      "signature_truncated": false,
+      "syzygies_indexed": 27,
+      "syzygy_index_hits": 141,
+      "syzygy_index_lookups": 3457
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        512
+      ],
+      [
+        256
+      ],
+      [
+        1,
+        2,
+        4,
+        128
+      ],
+      [
+        64
+      ],
+      [
+        32
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        1,
+        2,
+        4,
+        8
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 55493,
+      "product_rows_requested": 19697
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "5cdfd8f95e2e78e3bdb56d6f550b2947e846c7ccde3bf55df91a0d98972de461",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 32688,
+    "stats": {
+      "basis_insertions": 31,
+      "basis_sha256": "a023360178804e3dfd971e1dcbaafafccc6857ef31929a550c78e8bd7ace22f3",
+      "basis_size": 9,
+      "batch_independent_rows": 2,
+      "batch_input_rows": 2,
+      "batch_reductions": 2,
+      "completion_batch_size": 64,
+      "completion_insertions": 2,
+      "completion_pairs": 28,
+      "critical_pairs_discarded": 161,
+      "critical_pairs_processed": 80,
+      "critical_pairs_removed": 206,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 30,
+      "multiply_cache_hits": 7671,
+      "multiply_cache_misses": 12026,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 410,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 600,
+      "reduction_table_rows": 2846,
+      "reductions": 1289,
+      "reductions_to_zero": 21,
+      "rewrite_index_hits": 187,
+      "rewrite_index_lookups": 5011,
+      "seconds": 0.28903929900025105,
+      "signature_batch_eliminations": 44,
+      "signature_batch_rows": 37,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 21,
+      "syzygy_index_hits": 180,
+      "syzygy_index_lookups": 5191
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        0,
+        16,
+        128,
+        144
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        4,
+        16,
+        128
+      ],
+      [
+        0,
+        8,
+        128
+      ],
+      [
+        32
+      ],
+      [
+        256
+      ],
+      [
+        64
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 53128,
+      "product_rows_requested": 19413
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "3547554762abb28b213bea5a3e906988058d298e07eb188f3fb61fcb58e3c658",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 32688,
+    "stats": {
+      "basis_insertions": 25,
+      "basis_sha256": "42f6a44ad80aac13880137434f912369e120a02d1a5033fd1fa203bab8dda967",
+      "basis_size": 9,
+      "batch_independent_rows": 13,
+      "batch_input_rows": 37,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 13,
+      "completion_pairs": 150,
+      "critical_pairs_discarded": 175,
+      "critical_pairs_processed": 123,
+      "critical_pairs_removed": 96,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 25,
+      "multiply_cache_hits": 6882,
+      "multiply_cache_misses": 12531,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 359,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1041,
+      "reduction_table_rows": 2837,
+      "reductions": 1557,
+      "reductions_to_zero": 25,
+      "rewrite_index_hits": 105,
+      "rewrite_index_lookups": 3095,
+      "seconds": 1.1292915070002891,
+      "signature_batch_eliminations": 28,
+      "signature_batch_rows": 35,
+      "signature_batch_size": 16,
+      "signature_batches": 8,
+      "signature_truncated": false,
+      "syzygies_indexed": 25,
+      "syzygy_index_hits": 166,
+      "syzygy_index_lookups": 3261
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        4,
+        16,
+        128
+      ],
+      [
+        0,
+        16,
+        128,
+        144
+      ],
+      [
+        0,
+        8,
+        128
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 52607,
+      "product_rows_requested": 20489
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "d8289f2e05765a7739a04bc48cea604a8cce668fbad172404a56788abdcac922",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 32816,
+    "stats": {
+      "basis_insertions": 28,
+      "basis_sha256": "f4caabe0de05ad452e557effc8a4565266d81e8d220f0939f9fe275d7a6790d4",
+      "basis_size": 9,
+      "batch_independent_rows": 13,
+      "batch_input_rows": 36,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 13,
+      "completion_pairs": 150,
+      "critical_pairs_discarded": 179,
+      "critical_pairs_processed": 116,
+      "critical_pairs_removed": 123,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 28,
+      "multiply_cache_hits": 6916,
+      "multiply_cache_misses": 13573,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 418,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1015,
+      "reduction_table_rows": 2816,
+      "reductions": 1461,
+      "reductions_to_zero": 30,
+      "rewrite_index_hits": 146,
+      "rewrite_index_lookups": 3541,
+      "seconds": 0.287696651999795,
+      "signature_batch_eliminations": 31,
+      "signature_batch_rows": 42,
+      "signature_batch_size": 16,
+      "signature_batches": 8,
+      "signature_truncated": false,
+      "syzygies_indexed": 30,
+      "syzygy_index_hits": 156,
+      "syzygy_index_lookups": 3697
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        1,
+        2,
+        4,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ],
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 48619,
+      "product_rows_requested": 19193
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "6b408d63f0ba549b753162d39db3d24108652e7d10b0652fe02794074cec34bd",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 32816,
+    "stats": {
+      "basis_insertions": 20,
+      "basis_sha256": "b6499fdff6617391c06b48d36cc8003d2f874feffc743714ecb9a15682589a0c",
+      "basis_size": 9,
+      "batch_independent_rows": 13,
+      "batch_input_rows": 57,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 13,
+      "completion_pairs": 150,
+      "critical_pairs_discarded": 101,
+      "critical_pairs_processed": 81,
+      "critical_pairs_removed": 21,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 20,
+      "multiply_cache_hits": 6152,
+      "multiply_cache_misses": 13041,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 350,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1040,
+      "reduction_table_rows": 2847,
+      "reductions": 1366,
+      "reductions_to_zero": 38,
+      "rewrite_index_hits": 36,
+      "rewrite_index_lookups": 841,
+      "seconds": 0.27233799400028147,
+      "signature_batch_eliminations": 15,
+      "signature_batch_rows": 30,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 35,
+      "syzygy_index_hits": 86,
+      "syzygy_index_lookups": 927
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        1,
+        2,
+        4,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ],
+      [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      [
+        0,
+        1,
+        2,
+        3
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 5,
+      "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 52686,
+      "product_rows_requested": 19104
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ea8c97e0aaf3e289be779c5fe66a64fbb5d1fa7af63428a8d9848c8533fe5abf",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 32688,
+    "stats": {
+      "basis_insertions": 31,
+      "basis_sha256": "6b8b73b389082566430611bfaf9e51c31271c9d58f885acf6406fc2c86051969",
+      "basis_size": 9,
+      "batch_independent_rows": 5,
+      "batch_input_rows": 8,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 5,
+      "completion_pairs": 37,
+      "critical_pairs_discarded": 191,
+      "critical_pairs_processed": 95,
+      "critical_pairs_removed": 229,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 32,
+      "multiply_cache_hits": 7479,
+      "multiply_cache_misses": 11625,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 362,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 574,
+      "reduction_table_rows": 2806,
+      "reductions": 1121,
+      "reductions_to_zero": 22,
+      "rewrite_index_hits": 268,
+      "rewrite_index_lookups": 5594,
+      "seconds": 0.10835427400024855,
+      "signature_batch_eliminations": 40,
+      "signature_batch_rows": 39,
+      "signature_batch_size": 16,
+      "signature_batches": 7,
+      "signature_truncated": false,
+      "syzygies_indexed": 22,
+      "syzygy_index_hits": 152,
+      "syzygy_index_lookups": 5746
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        0,
+        16,
+        128,
+        144
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        4,
+        16,
+        128
+      ],
+      [
+        0,
+        8,
+        128
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-0",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 5,
+      "solutions": [
+        29,
+        30,
+        135,
+        145,
+        146
+      ],
+      "standard_monomials": 5,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 9 0.0055678 13 1065 0.00239365 0.00138611 0.000458882 0.00130165 2.3703e-05\n4 0 2 16 18\n4 0 16 128 144\n3 1 2 16\n3 4 16 128\n3 0 8 128\n1 32\n1 64\n1 256\n1 512\n"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        4,
+        16
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 53301,
+      "product_rows_requested": 20072
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ffd954cf4906132701a5dfc5015fec3c094c1890a5ec2351875434d47db4ebaf",
+      "name": "grevlex-natural",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-natural",
+    "peak_rss_kib": 33072,
+    "stats": {
+      "basis_insertions": 22,
+      "basis_sha256": "6fa026df5d4ce0de5184c877c964db8cc0de9ce63c2fb3c33bcb82dc8c7396f8",
+      "basis_size": 9,
+      "batch_independent_rows": 16,
+      "batch_input_rows": 30,
+      "batch_reductions": 4,
+      "completion_batch_size": 64,
+      "completion_insertions": 16,
+      "completion_pairs": 196,
+      "critical_pairs_discarded": 145,
+      "critical_pairs_processed": 111,
+      "critical_pairs_removed": 65,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 21,
+      "multiply_cache_hits": 6564,
+      "multiply_cache_misses": 13508,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 379,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1636,
+      "reduction_table_rows": 2671,
+      "reductions": 1953,
+      "reductions_to_zero": 27,
+      "rewrite_index_hits": 114,
+      "rewrite_index_lookups": 2054,
+      "seconds": 0.2623834500000157,
+      "signature_batch_eliminations": 25,
+      "signature_batch_rows": 35,
+      "signature_batch_size": 16,
+      "signature_batches": 7,
+      "signature_truncated": false,
+      "syzygies_indexed": 26,
+      "syzygy_index_hits": 96,
+      "syzygy_index_lookups": 2150
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        512
+      ],
+      [
+        256
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        64
+      ],
+      [
+        32
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        1,
+        2,
+        4
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 49630,
+      "product_rows_requested": 20070
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "5cdfd8f95e2e78e3bdb56d6f550b2947e846c7ccde3bf55df91a0d98972de461",
+      "name": "grevlex-reversed-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-reversed-permutation",
+    "peak_rss_kib": 32560,
+    "stats": {
+      "basis_insertions": 30,
+      "basis_sha256": "15d774dd8ef6c4361c56d27fc12cd5ff9d3aee2f0977c20d2f28a9cc40e11b6f",
+      "basis_size": 9,
+      "batch_independent_rows": 4,
+      "batch_input_rows": 6,
+      "batch_reductions": 3,
+      "completion_batch_size": 64,
+      "completion_insertions": 4,
+      "completion_pairs": 26,
+      "critical_pairs_discarded": 193,
+      "critical_pairs_processed": 96,
+      "critical_pairs_removed": 130,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 31,
+      "multiply_cache_hits": 8420,
+      "multiply_cache_misses": 11650,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 421,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 354,
+      "reduction_table_rows": 2696,
+      "reductions": 693,
+      "reductions_to_zero": 21,
+      "rewrite_index_hits": 186,
+      "rewrite_index_lookups": 3412,
+      "seconds": 0.24031758999990416,
+      "signature_batch_eliminations": 13,
+      "signature_batch_rows": 35,
+      "signature_batch_size": 16,
+      "signature_batches": 7,
+      "signature_truncated": false,
+      "syzygies_indexed": 21,
+      "syzygy_index_hits": 137,
+      "syzygy_index_lookups": 3549
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        4,
+        16
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        32
+      ],
+      [
+        256
+      ],
+      [
+        64
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 51161,
+      "product_rows_requested": 19558
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "3547554762abb28b213bea5a3e906988058d298e07eb188f3fb61fcb58e3c658",
+      "name": "grevlex-interleaved-permutation",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "grevlex-interleaved-permutation",
+    "peak_rss_kib": 32944,
+    "stats": {
+      "basis_insertions": 20,
+      "basis_sha256": "3c2c65d64c7541716388eb1a30f4b36d98a542ceb46fc70dfe933f9ec6685481",
+      "basis_size": 9,
+      "batch_independent_rows": 16,
+      "batch_input_rows": 30,
+      "batch_reductions": 4,
+      "completion_batch_size": 64,
+      "completion_insertions": 16,
+      "completion_pairs": 196,
+      "critical_pairs_discarded": 101,
+      "critical_pairs_processed": 95,
+      "critical_pairs_removed": 73,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 19,
+      "multiply_cache_hits": 6505,
+      "multiply_cache_misses": 13053,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 360,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1659,
+      "reduction_table_rows": 2683,
+      "reductions": 1998,
+      "reductions_to_zero": 26,
+      "rewrite_index_hits": 87,
+      "rewrite_index_lookups": 1917,
+      "seconds": 0.09241645600013726,
+      "signature_batch_eliminations": 10,
+      "signature_batch_rows": 28,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 26,
+      "syzygy_index_hits": 87,
+      "syzygy_index_lookups": 2004
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        0,
+        4,
+        16
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 53515,
+      "product_rows_requested": 20148
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "d8289f2e05765a7739a04bc48cea604a8cce668fbad172404a56788abdcac922",
+      "name": "block-eliminate-first-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "block-eliminate-first-half",
+    "peak_rss_kib": 33072,
+    "stats": {
+      "basis_insertions": 22,
+      "basis_sha256": "be5d6259caa1c2a64f980389d93193ad3308b57459535fa70ff0a16c30eb6a3e",
+      "basis_size": 9,
+      "batch_independent_rows": 16,
+      "batch_input_rows": 26,
+      "batch_reductions": 4,
+      "completion_batch_size": 64,
+      "completion_insertions": 16,
+      "completion_pairs": 196,
+      "critical_pairs_discarded": 139,
+      "critical_pairs_processed": 96,
+      "critical_pairs_removed": 69,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 21,
+      "multiply_cache_hits": 6140,
+      "multiply_cache_misses": 14008,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 379,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1474,
+      "reduction_table_rows": 2671,
+      "reductions": 1863,
+      "reductions_to_zero": 31,
+      "rewrite_index_hits": 104,
+      "rewrite_index_lookups": 2018,
+      "seconds": 0.11587172600002305,
+      "signature_batch_eliminations": 20,
+      "signature_batch_rows": 32,
+      "signature_batch_size": 16,
+      "signature_batches": 7,
+      "signature_truncated": false,
+      "syzygies_indexed": 31,
+      "syzygy_index_hits": 104,
+      "syzygy_index_lookups": 2122
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        4,
+        16
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        0,
+        1,
+        2,
+        4
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 56425,
+      "product_rows_requested": 20184
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "6b408d63f0ba549b753162d39db3d24108652e7d10b0652fe02794074cec34bd",
+      "name": "block-eliminate-second-half",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "block-eliminate-second-half",
+    "peak_rss_kib": 32944,
+    "stats": {
+      "basis_insertions": 18,
+      "basis_sha256": "06fe04bc49f9544b2fc91faced4e4f150915f8fc07df6cdf40a644c324e2b256",
+      "basis_size": 9,
+      "batch_independent_rows": 19,
+      "batch_input_rows": 52,
+      "batch_reductions": 5,
+      "completion_batch_size": 64,
+      "completion_insertions": 19,
+      "completion_pairs": 283,
+      "critical_pairs_discarded": 86,
+      "critical_pairs_processed": 65,
+      "critical_pairs_removed": 28,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 16,
+      "multiply_cache_hits": 6791,
+      "multiply_cache_misses": 13393,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 395,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 2690,
+      "reduction_table_rows": 2729,
+      "reductions": 3014,
+      "reductions_to_zero": 38,
+      "rewrite_index_hits": 42,
+      "rewrite_index_lookups": 782,
+      "seconds": 0.27854085299986764,
+      "signature_batch_eliminations": 7,
+      "signature_batch_rows": 27,
+      "signature_batch_size": 16,
+      "signature_batches": 5,
+      "signature_truncated": false,
+      "syzygies_indexed": 35,
+      "syzygy_index_hits": 72,
+      "syzygy_index_lookups": 854
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        0,
+        1,
+        2,
+        4
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "exact_root_equality": true,
+      "ordinary_and_boolean_field_pairs_zero": true,
+      "reduced": true,
+      "root_count": 3,
+      "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+      "source_generators_reduce_to_zero": true,
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "engine": "python-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "observed": {
+      "allocated_column_universe": 1024,
+      "max_materialized_degree": 10,
+      "observed_columns": 1024,
+      "product_nnz_requested": 54556,
+      "product_rows_requested": 19862
+    },
+    "order": {
+      "blocks": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          7,
+          8,
+          9
+        ]
+      ],
+      "first_elimination_block": [
+        0,
+        1,
+        2
+      ],
+      "layout_sha256": "ea8c97e0aaf3e289be779c5fe66a64fbb5d1fa7af63428a8d9848c8533fe5abf",
+      "name": "weighted-grevlex",
+      "second_elimination_block": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "weights": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6
+      ]
+    },
+    "order_name": "weighted-grevlex",
+    "peak_rss_kib": 32816,
+    "stats": {
+      "basis_insertions": 20,
+      "basis_sha256": "f1cbd588aea41c3a59cee36a5e4b04f4b7189ed61cd7450bd019dd65cfb60a52",
+      "basis_size": 9,
+      "batch_independent_rows": 18,
+      "batch_input_rows": 40,
+      "batch_reductions": 5,
+      "completion_batch_size": 64,
+      "completion_insertions": 18,
+      "completion_pairs": 237,
+      "critical_pairs_discarded": 103,
+      "critical_pairs_processed": 84,
+      "critical_pairs_removed": 66,
+      "groebner_verified": true,
+      "interreduce_passes": 2,
+      "interreduce_removed": 19,
+      "multiply_cache_hits": 7220,
+      "multiply_cache_misses": 12642,
+      "native_interreduce_calls": 0,
+      "native_interreduce_used": false,
+      "product_pairs_skipped": 376,
+      "reduction_table_builds": 3,
+      "reduction_table_collapses": 0,
+      "reduction_table_hits": 1866,
+      "reduction_table_rows": 2670,
+      "reductions": 2220,
+      "reductions_to_zero": 31,
+      "rewrite_index_hits": 92,
+      "rewrite_index_lookups": 1730,
+      "seconds": 0.30412612800000716,
+      "signature_batch_eliminations": 22,
+      "signature_batch_rows": 33,
+      "signature_batch_size": 16,
+      "signature_batches": 6,
+      "signature_truncated": false,
+      "syzygies_indexed": 31,
+      "syzygy_index_hits": 77,
+      "syzygy_index_lookups": 1807
+    },
+    "status": "complete"
+  },
+  {
+    "basis": [
+      [
+        0,
+        2,
+        16,
+        18
+      ],
+      [
+        1,
+        2,
+        16
+      ],
+      [
+        0,
+        4,
+        16
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ],
+      [
+        0,
+        128
+      ],
+      [
+        256
+      ],
+      [
+        512
+      ]
+    ],
+    "case_id": "chain-n3-m4-ell1-1",
+    "certificate": {
+      "ideal_equality": true,
+      "method": "exact-Boolean-zeros-and-staircase",
+      "monomial_cache": true,
+      "reduced_groebner_basis": true,
+      "root_count": 3,
+      "solutions": [
+        143,
+        153,
+        154
+      ],
+      "standard_monomials": 3,
+      "verified": true
+    },
+    "counter_limit": "native stdout exposes insertions/reductions, not criterion or zero-reduction counts",
+    "engine": "native-Boolean-F5B",
+    "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+    "returncode": 0,
+    "status": "complete",
+    "stderr": "",
+    "stdout": "OK 9 0.0139498 18 1511 0.00522449 0.00151137 0.000440165 0.00674279 2.7245e-05\n4 0 2 16 18\n3 1 2 16\n3 0 4 16\n2 0 8\n1 32\n1 64\n2 0 128\n1 256\n1 512\n"
+  }
+]

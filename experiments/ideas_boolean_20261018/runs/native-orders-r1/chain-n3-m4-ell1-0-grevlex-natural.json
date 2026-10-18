@@ -1,0 +1,127 @@
+{
+  "basis": [
+    [
+      0,
+      2,
+      16,
+      18
+    ],
+    [
+      0,
+      16,
+      128,
+      144
+    ],
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      4,
+      16,
+      128
+    ],
+    [
+      0,
+      8,
+      128
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 5,
+    "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 5,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 527,
+    "criterion_hits": 80,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 137,
+    "pairs_processed": 41,
+    "product_nnz": 49632,
+    "product_rows": 16460,
+    "reductions": 1065,
+    "signature_insertions": 13,
+    "signature_zero_pairs": 17
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "ffd954cf4906132701a5dfc5015fec3c094c1890a5ec2351875434d47db4ebaf",
+    "name": "grevlex-natural",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 13 1065 41 527 80 137 17 16460 49632 10\n4 0 2 16 18\n4 0 16 128 144\n3 1 2 16\n3 4 16 128\n3 0 8 128\n1 32\n1 64\n1 256\n1 512\n"
+}

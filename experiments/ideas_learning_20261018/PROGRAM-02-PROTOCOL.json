@@ -1,0 +1,14 @@
+{
+  "frozen_before_execution":true,
+  "reason":"The original strict-subgroup prefix training base is empty. Preserve that negative. Run a separate experiment using explicitly charged cofactor projection of liftable subspace points, rather than changing the original experiment.",
+  "training":{"n":7,"b":1,"ell":3},
+  "heldout":{"n":13,"b":7,"ell":3},
+  "heldout_policy":"Frozen before constructing or labeling the heldout curve; retain admission failures and do not substitute a curve.",
+  "factor_base":"x in multiplier*span(1,z,z^2), both signs, projected by [h], discard identity and deduplicate; record preprojection and projected point sets",
+  "multipliers":[1,2,3,5,7],
+  "kernel_grammar":["ordered-exhaustive-group","pair-hash-group","pair-sorted-group"],
+  "fitness":"all nonidentity subgroup target points; exact group-law additions, dictionary probes and comparisons separately; match actual projected usable-point count to multiplier1; select minimum additions+probes+comparisons including setup. Scalar target labels forbidden to the kernels.",
+  "correctness":"All kernel answers equal exhaustive three-sum support in subgroup scalar coordinates. Every positive support target has an independently replayed group-law witness. Holdout is evaluated only after selected program is written and hashed.",
+  "accounting":"Record projection scalar-multiplication group additions, base setup, pair table setup, all search candidate work, query kernel costs and independent labeling/replay overhead; never count yield support as a cost win.",
+  "scope":"Restricted deterministic program search, not an LLM evolutionary loop. CPU-only correctness/stage controls, no full IC or rho speedup."
+}

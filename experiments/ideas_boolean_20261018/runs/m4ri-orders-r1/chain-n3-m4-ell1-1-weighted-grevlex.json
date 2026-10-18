@@ -1,0 +1,136 @@
+{
+  "basis": [
+    [
+      0,
+      128
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ],
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      0,
+      8
+    ],
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      0,
+      1,
+      2,
+      4
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-1",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 3,
+    "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 3,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 0,
+    "criterion_hits": 0,
+    "diagnostic_completion_seconds": 0.00356609,
+    "diagnostic_elimination_seconds": 0.000359729,
+    "diagnostic_generation_seconds": 0.000234557,
+    "diagnostic_population_seconds": 3.462e-05,
+    "diagnostic_signature_seconds": 0.00209147,
+    "diagnostic_unisolated_seconds": 0.00637876,
+    "f5_remainders": 0,
+    "f5_rows": 0,
+    "matrix_rank": 274,
+    "matrix_rows": 565,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 19,
+    "product_nnz": 33159,
+    "product_rows": 13352,
+    "reductions": 62,
+    "signature_insertions": 0,
+    "signature_pairs_processed": 0,
+    "signature_zero_pairs": 0
+  },
+  "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+  "matrix_columns_allocated": 1024,
+  "matrix_degree": 4,
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "ea8c97e0aaf3e289be779c5fe66a64fbb5d1fa7af63428a8d9848c8533fe5abf",
+    "name": "weighted-grevlex",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 0.00637876 0 0 0.00209147 565 274 0.000234557 3.462e-05 0.000359729 0.00356609 0 0 0 0 19 0 13352 33159 10 62\n2 0 128\n1 256\n1 512\n3 1 2 16\n1 32\n1 64\n2 0 8\n4 0 1 2 3\n4 0 1 2 4\n"
+}

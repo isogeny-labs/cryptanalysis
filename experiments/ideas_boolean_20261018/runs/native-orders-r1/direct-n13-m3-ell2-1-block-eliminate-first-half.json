@@ -1,0 +1,73 @@
+{
+  "basis": [
+    [
+      0
+    ]
+  ],
+  "case_id": "direct-n13-m3-ell2-1",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 0,
+    "roots_sha256": "3e7077fd2f66d689e0cee6a7cf5b37bf2dca7c979af356d0a31cbc5c85605c7d",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 0,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 1,
+    "criterion_calls": 7928,
+    "criterion_hits": 925,
+    "max_materialized_degree": 6,
+    "normal_zero_outputs": 14,
+    "pairs_processed": 81,
+    "product_nnz": 14941,
+    "product_rows": 3517,
+    "reductions": 1566,
+    "signature_insertions": 38,
+    "signature_zero_pairs": 14
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "7f25954e47184dc40be7130eac9c20f30189fc2439c26f87c984286722c06b0a",
+  "order": {
+    "blocks": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1
+    ],
+    "layout_sha256": "dcc5493677c88abeb6fb2b23028725a36be91f9da16ff64535c6936ac0e70fe4",
+    "name": "block-eliminate-first-half",
+    "second_elimination_block": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "weights": [
+      1,
+      1,
+      2,
+      2,
+      3,
+      3
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 1 38 1566 81 7928 925 14 14 3517 14941 6\n1 0\n"
+}

@@ -1,0 +1,138 @@
+{
+  "basis": [
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      0,
+      2,
+      16,
+      18
+    ],
+    [
+      4,
+      16,
+      128
+    ],
+    [
+      0,
+      16,
+      128,
+      144
+    ],
+    [
+      0,
+      8,
+      128
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 5,
+    "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 5,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 0,
+    "criterion_hits": 0,
+    "diagnostic_completion_seconds": 0.00762375,
+    "diagnostic_elimination_seconds": 0.00037565,
+    "diagnostic_generation_seconds": 0.00026919,
+    "diagnostic_population_seconds": 3.4279e-05,
+    "diagnostic_signature_seconds": 0.0025256,
+    "diagnostic_unisolated_seconds": 0.010928,
+    "f5_remainders": 0,
+    "f5_rows": 0,
+    "matrix_rank": 335,
+    "matrix_rows": 653,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 21,
+    "product_nnz": 37779,
+    "product_rows": 13613,
+    "reductions": 70,
+    "signature_insertions": 0,
+    "signature_pairs_processed": 0,
+    "signature_zero_pairs": 0
+  },
+  "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+  "matrix_columns_allocated": 1024,
+  "matrix_degree": 4,
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "d8289f2e05765a7739a04bc48cea604a8cce668fbad172404a56788abdcac922",
+    "name": "block-eliminate-first-half",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 0.010928 0 0 0.0025256 653 335 0.00026919 3.4279e-05 0.00037565 0.00762375 0 0 0 0 21 0 13613 37779 10 70\n3 1 2 16\n4 0 2 16 18\n3 4 16 128\n4 0 16 128 144\n3 0 8 128\n1 32\n1 64\n1 256\n1 512\n"
+}

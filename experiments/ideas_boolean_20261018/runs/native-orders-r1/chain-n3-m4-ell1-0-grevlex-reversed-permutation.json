@@ -1,0 +1,132 @@
+{
+  "basis": [
+    [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      512
+    ],
+    [
+      256
+    ],
+    [
+      1,
+      2,
+      4,
+      128
+    ],
+    [
+      64
+    ],
+    [
+      32
+    ],
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      0,
+      1,
+      2,
+      4,
+      8
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 5,
+    "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 5,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 907,
+    "criterion_hits": 142,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 60,
+    "pairs_processed": 46,
+    "product_nnz": 51476,
+    "product_rows": 16866,
+    "reductions": 588,
+    "signature_insertions": 19,
+    "signature_zero_pairs": 20
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "5cdfd8f95e2e78e3bdb56d6f550b2947e846c7ccde3bf55df91a0d98972de461",
+    "name": "grevlex-reversed-permutation",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 19 588 46 907 142 60 20 16866 51476 10\n6 0 1 2 4 5 6\n4 0 1 2 3\n1 512\n1 256\n4 1 2 4 128\n1 64\n1 32\n3 1 2 16\n5 0 1 2 4 8\n"
+}

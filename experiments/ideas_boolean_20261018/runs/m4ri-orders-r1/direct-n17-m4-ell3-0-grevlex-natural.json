@@ -1,0 +1,284 @@
+{
+  "basis": [
+    [
+      8,
+      136,
+      1032,
+      1160
+    ],
+    [
+      8,
+      264,
+      2056,
+      2312
+    ],
+    [
+      8,
+      264,
+      2056,
+      2304,
+      2320
+    ],
+    [
+      24
+    ],
+    [
+      40
+    ],
+    [
+      0,
+      8,
+      16,
+      32,
+      48
+    ],
+    [
+      72
+    ],
+    [
+      8,
+      64,
+      80,
+      136,
+      1024,
+      1040,
+      1152
+    ],
+    [
+      8,
+      64,
+      96,
+      264,
+      2048,
+      2080,
+      2304
+    ],
+    [
+      0,
+      16,
+      128,
+      144,
+      1024,
+      1040,
+      1152
+    ],
+    [
+      0,
+      8,
+      64,
+      160,
+      272
+    ],
+    [
+      192
+    ],
+    [
+      0,
+      32,
+      256,
+      288,
+      2048,
+      2080,
+      2304
+    ],
+    [
+      320
+    ],
+    [
+      0,
+      64,
+      128,
+      256,
+      384
+    ],
+    [
+      520
+    ],
+    [
+      0,
+      8,
+      16,
+      512,
+      528,
+      1024,
+      1032,
+      1040
+    ],
+    [
+      0,
+      8,
+      32,
+      512,
+      544,
+      2048,
+      2056,
+      2080
+    ],
+    [
+      576
+    ],
+    [
+      0,
+      64,
+      128,
+      512,
+      640,
+      1024,
+      1088,
+      1152
+    ],
+    [
+      0,
+      64,
+      256,
+      512,
+      768,
+      2048,
+      2112,
+      2304
+    ],
+    [
+      0,
+      8,
+      512,
+      1056,
+      2064
+    ],
+    [
+      0,
+      64,
+      512,
+      1280,
+      2176
+    ],
+    [
+      1536
+    ],
+    [
+      2560
+    ],
+    [
+      0,
+      512,
+      1024,
+      2048,
+      3072
+    ],
+    [
+      0,
+      1,
+      8,
+      64,
+      512
+    ],
+    [
+      2,
+      16,
+      128,
+      1024
+    ],
+    [
+      4,
+      32,
+      256,
+      2048
+    ]
+  ],
+  "case_id": "direct-n17-m4-ell3-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 24,
+    "roots_sha256": "7d00572ef06f644ea12a6f299447a84d7d40d02e19b1cca1ccdbbcbd6923ff99",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 24,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 29,
+    "criterion_calls": 0,
+    "criterion_hits": 0,
+    "diagnostic_completion_seconds": 0.108194,
+    "diagnostic_elimination_seconds": 0.686394,
+    "diagnostic_generation_seconds": 0.891354,
+    "diagnostic_population_seconds": 0.0586077,
+    "diagnostic_signature_seconds": 0.0042389,
+    "diagnostic_unisolated_seconds": 1.75073,
+    "f5_remainders": 0,
+    "f5_rows": 0,
+    "matrix_rank": 4072,
+    "matrix_rows": 69394,
+    "max_materialized_degree": 12,
+    "normal_zero_outputs": 220,
+    "product_nnz": 358751,
+    "product_rows": 63252,
+    "reductions": 27828,
+    "signature_insertions": 0,
+    "signature_pairs_processed": 0,
+    "signature_zero_pairs": 0
+  },
+  "input_sha256": "449c4768841846463d49c8bae99117625d2aa7d456bf51cb8126d0fc389968ad",
+  "matrix_columns_allocated": 4096,
+  "matrix_degree": 12,
+  "order": {
+    "blocks": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7,
+        8
+      ],
+      [
+        9,
+        10,
+        11
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "layout_sha256": "b4ca702810abc5a05b40f3278a1ef5ddc07212359278b7a52306cc7982abbf74",
+    "name": "grevlex-natural",
+    "second_elimination_block": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "weights": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 29 1.75073 0 0 0.0042389 69394 4072 0.891354 0.0586077 0.686394 0.108194 0 0 0 0 220 0 63252 358751 12 27828\n4 8 136 1032 1160\n4 8 264 2056 2312\n5 8 264 2056 2304 2320\n1 24\n1 40\n5 0 8 16 32 48\n1 72\n7 8 64 80 136 1024 1040 1152\n7 8 64 96 264 2048 2080 2304\n7 0 16 128 144 1024 1040 1152\n5 0 8 64 160 272\n1 192\n7 0 32 256 288 2048 2080 2304\n1 320\n5 0 64 128 256 384\n1 520\n8 0 8 16 512 528 1024 1032 1040\n8 0 8 32 512 544 2048 2056 2080\n1 576\n8 0 64 128 512 640 1024 1088 1152\n8 0 64 256 512 768 2048 2112 2304\n5 0 8 512 1056 2064\n5 0 64 512 1280 2176\n1 1536\n1 2560\n5 0 512 1024 2048 3072\n5 0 1 8 64 512\n4 2 16 128 1024\n4 4 32 256 2048\n"
+}

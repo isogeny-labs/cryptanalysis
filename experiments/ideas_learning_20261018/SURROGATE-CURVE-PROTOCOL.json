@@ -1,0 +1,8 @@
+{
+  "frozen_before_curve_holdout_execution":true,
+  "input":"surrogate-corpus.json admitted immutable receipt rows",
+  "grouping":"Exact curve_id. Sort curve IDs by SHA256('curve-holdout-20261018|'+curve_id); first4 train,next3 calibrate,last2 test. No curve crosses a split.",
+  "model":"same fixed random-forest64/max_depth8/min_samples_leaf2; completed-cell maximum D_solve and log2 counted cost as separate responses",
+  "conformal_unit":"curve; take maximum absolute residual per calibration curve. A 90% finite-sample interval needs ceil((k+1)*0.9)<=k; otherwise interval unbounded.",
+  "claim":"Report heldout per-cell error and descriptive coverage only. With three calibration curves the 90% group interval is correctly unbounded. Historical curves remain nonrandom, so no exchangeability guarantee is asserted."
+}

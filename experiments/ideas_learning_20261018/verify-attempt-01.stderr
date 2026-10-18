@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/verify.py", line 65, in <module>
+    if __name__=="__main__":main()
+                            ^^^^^^
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/verify.py", line 16, in main
+    ident=curve_identity(rec["field"],rec["curve"],re.search(r"C(.+)h[a-f0-9]+$",cid)[1])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/curve_identity.py", line 48, in curve_identity
+    raise ValueError("Invalid readable curve tag.")
+ValueError: Invalid readable curve tag.

@@ -1,0 +1,154 @@
+{
+  "all_decision_calls": [
+    {
+      "free_variables": 6,
+      "input_sha256": "a61d485fbff7c9999053f1c787c2ba0e192d5384f875a4de6160064f0f2fab3f",
+      "result": {
+        "counts": {
+          "coefficient_xors": 145704,
+          "mobius_xors": 48000,
+          "monomial_products": 196528,
+          "random_bits": 23820,
+          "scoreboard_increments": 3483,
+          "suffixes": 1200
+        },
+        "ell": 3,
+        "maximum_score": 297,
+        "n0": 1,
+        "nvars": 6,
+        "repetitions": 600,
+        "satisfiable": true,
+        "seed": 20266848
+      },
+      "stage": 0,
+      "stderr": "completed_repetitions=100 monomial_products=30552\ncompleted_repetitions=200 monomial_products=65422\ncompleted_repetitions=300 monomial_products=95162\ncompleted_repetitions=400 monomial_products=132264\ncompleted_repetitions=500 monomial_products=163167\ncompleted_repetitions=600 monomial_products=196528\n"
+    },
+    {
+      "free_variables": 5,
+      "input_sha256": "997cab953c6fdee0ee7e931327fca6b161e80cb0f2149690afbf5d2728e1b150",
+      "result": {
+        "counts": {
+          "coefficient_xors": 65684,
+          "mobius_xors": 16000,
+          "monomial_products": 47129,
+          "random_bits": 20227,
+          "scoreboard_increments": 1329,
+          "suffixes": 1000
+        },
+        "ell": 3,
+        "maximum_score": 265,
+        "n0": 1,
+        "nvars": 5,
+        "repetitions": 500,
+        "satisfiable": true,
+        "seed": 20266948
+      },
+      "stage": 1,
+      "stderr": "completed_repetitions=100 monomial_products=10281\ncompleted_repetitions=200 monomial_products=20278\ncompleted_repetitions=300 monomial_products=28713\ncompleted_repetitions=400 monomial_products=37426\ncompleted_repetitions=500 monomial_products=47129\n"
+    },
+    {
+      "free_variables": 4,
+      "input_sha256": "9bedfad9dcc69650efc2dc2ea1a95f364fcf3f585f9e67081e40acd072dedf6a",
+      "result": {
+        "counts": {
+          "coefficient_xors": 20378,
+          "mobius_xors": 4800,
+          "monomial_products": 8866,
+          "random_bits": 16361,
+          "scoreboard_increments": 687,
+          "suffixes": 800
+        },
+        "ell": 3,
+        "maximum_score": 207,
+        "n0": 1,
+        "nvars": 4,
+        "repetitions": 400,
+        "satisfiable": true,
+        "seed": 20267048
+      },
+      "stage": 2,
+      "stderr": "completed_repetitions=100 monomial_products=2174\ncompleted_repetitions=200 monomial_products=4296\ncompleted_repetitions=300 monomial_products=6447\ncompleted_repetitions=400 monomial_products=8866\n"
+    },
+    {
+      "free_variables": 3,
+      "input_sha256": "607638d7562529dfba66cc317540f9c240420495ab75c1ca5592ffa2bc95e547",
+      "result": {
+        "counts": {
+          "coefficient_xors": 9112,
+          "mobius_xors": 1200,
+          "monomial_products": 2643,
+          "random_bits": 11195,
+          "scoreboard_increments": 146,
+          "suffixes": 600
+        },
+        "ell": 3,
+        "maximum_score": 44,
+        "n0": 1,
+        "nvars": 3,
+        "repetitions": 300,
+        "satisfiable": false,
+        "seed": 20267148
+      },
+      "stage": 3,
+      "stderr": "completed_repetitions=100 monomial_products=955\ncompleted_repetitions=200 monomial_products=1866\ncompleted_repetitions=300 monomial_products=2643\n"
+    },
+    {
+      "free_variables": 2,
+      "input_sha256": "721515fc18647f5e44eebad3837283c5628b59d1de8c5471086cd45a5c463079",
+      "result": {
+        "counts": {
+          "coefficient_xors": 3508,
+          "mobius_xors": 200,
+          "monomial_products": 561,
+          "random_bits": 7173,
+          "scoreboard_increments": 127,
+          "suffixes": 400
+        },
+        "ell": 3,
+        "maximum_score": 105,
+        "n0": 1,
+        "nvars": 2,
+        "repetitions": 200,
+        "satisfiable": true,
+        "seed": 20267248
+      },
+      "stage": 4,
+      "stderr": "completed_repetitions=100 monomial_products=286\ncompleted_repetitions=200 monomial_products=561\n"
+    },
+    {
+      "base_case": true,
+      "free_variables": 1,
+      "satisfiable": false
+    },
+    {
+      "base_case": true,
+      "free_variables": 0,
+      "satisfiable": false
+    }
+  ],
+  "assignment": 52,
+  "case_id": "direct-n13-m3-ell2-0",
+  "charged_counts": {
+    "base_term_evaluation_upper_bound": 44,
+    "coefficient_xors": 244386,
+    "mobius_xors": 70200,
+    "monomial_products": 255727,
+    "random_bits": 78776,
+    "scoreboard_increments": 5772,
+    "suffixes": 4000
+  },
+  "exists": true,
+  "final_anf_term_evaluations": 257,
+  "group_verification_cost": "included as checked group certificate; field/group operation instrumentation remains uncalibrated",
+  "independent_group_certificate": {
+    "algebraic_root_count": 1,
+    "distinct_factor_x_tuples": 1,
+    "group_verified_factor_x_tuples": 1,
+    "note": "Algebraic roots may fail point lifting or correspond to degenerate summation-polynomial components."
+  },
+  "independent_reference_root_count": 6,
+  "nvars": 6,
+  "original_anf_verified": true,
+  "restriction_term_visits": 584,
+  "status": "verified"
+}
