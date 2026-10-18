@@ -1,0 +1,9 @@
+{
+  "status": "PRODUCER_FAILURE_MISSING_PROTOCOL",
+  "command": "./sage -python experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/holdout.py",
+  "error_type": "FileNotFoundError",
+  "missing_file": "holdout_protocol.json",
+  "solver_started": false,
+  "cause": "The first protocol writer saved the holdout record as probe_protocol.json.",
+  "recovery": "The holdout record was moved to holdout_protocol.json; the original probe protocol was deterministically regenerated and its SHA-256 matched the completed probe receipt; all holdout source hashes then passed."
+}

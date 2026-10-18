@@ -1,0 +1,40 @@
+{
+  "arms": [
+    "direct",
+    "selector",
+    "selector",
+    "direct"
+  ],
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "formulas": {
+    "direct": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_direct_root_20261017/formula.xcnf",
+    "selector": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/formula.xcnf"
+  },
+  "max_conflicts": 50000,
+  "parent_wall_cap_seconds": 250,
+  "promotion_gate": "All arms finish 50000 conflicts with monitors passing; each selector/direct adjacent wall ratio is at most 0.75, and the same-formula A/A wall ratio in either direction is at most 1.25 for both formulas before a full N41 query.",
+  "public_point": [
+    1936680952394,
+    910597499030
+  ],
+  "rss_cap_bytes": 4294967296,
+  "solver": "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+  "solver_wall_cap_seconds": 240,
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_direct_root_20261017/build_result.json": "6993a1619baeffca2166624f342503fba9cafe56daaa28c6a231825d122cd988",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_direct_root_20261017/formula.xcnf": "23f1a14cc39c803c9a752b28b89f98139867142909c9da3a8d715a582389bccd",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/build.py": "f91b9a5a9864ab1f093465b02388c89f7cb3bae2aa17caa8aa0ccf832d10a2a5",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/build_protocol.json": "1373f382191506fe6f858cfb7c6cddb6eb28205498790abe7859b65262f394f3",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/build_result.json": "275d786d048775c8f57c9de2f5890c277f52cfd12751658056fe81fd12108c16",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/holdout.py": "3bad7b78e8446b3dfc970763be545af2e67425e0dbe4dfba6a97a7c0f9a8bcc2",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/probe_protocol.json": "3aaf1b77a58b5f992e6a4cf231f5eed2508feabaaaa8956961f16b8b9dd54b1a",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/probe_result.json": "d0d3f2d1cd14115ac876f923ef8b602ccd5c5a2a6820d29d3861f1d1c30bf391",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_root_branches_20261018/sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_target_w_bdd_20261017/audit_result.json": "100fbbe1d0398c6bd6a48f096a3189173afeb12ba3d587056c5823d4392f1a1b",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_target_w_bdd_20261017/w_table.json": "58597d363e2d185dc67312d289afec00237c4d84624d6cfc69466fc9de463a44",
+    "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+  },
+  "status": "FROZEN_BEFORE_ABBA_SELECTOR_HOLDOUT",
+  "worker_count": 1
+}
