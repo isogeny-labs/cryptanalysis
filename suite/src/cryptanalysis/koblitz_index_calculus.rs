@@ -159,6 +159,8 @@ use crate::cryptanalysis::sat::SolveResult;
 use crate::cryptanalysis::semaev_sat::{encode_boolean_system_with, XorEncoding};
 use crate::utils::mod_inverse;
 
+mod mitm_m5;
+
 /// Largest extension degree this module will build a curve for.  The
 /// factor base and the point-counting/factoring helpers are all
 /// materialised, so this is a deliberate guard rail, not a limit of
@@ -2452,7 +2454,8 @@ pub enum DecompositionStrategy {
     Sat,
     /// **Meet in the middle** over a precomputed table of all pair sums
     /// `P_i + P_j` ([`PairSumTable`]).  `m = 2` is one lookup, `m = 3`
-    /// is `|F|` lookups, `m = 4` is `|F|²` lookups — against
+    /// is `|F|` lookups, `m = 4` is `|F|²` lookups, `m = 5` is `|F|³/6`
+    /// ([`PairSumTable::witnesses_fast`]) — against
     /// `|F|^{m−1}` group operations for [`Self::Enumerate`].  Exact and
     /// complete like enumeration; costs `|F|²` memory once per run.
     PairTable,
@@ -2473,8 +2476,15 @@ pub enum DecompositionStrategy {
     /// Quadratic Semaev systems (`m = 2`) solved by ALMASTY-inspired FES
     /// ([`crate::cryptanalysis::mq_fes`]; <https://gitlab.lip6.fr/almasty/mq>):
     /// incremental Gray early-exit, Möbius all-roots, Monica past `n = 24`.
-    /// Refuses cubic chained systems.
+    /// Chained systems (`m ≥ 3`) go to the Gray-code chain search
+    /// [`crate::cryptanalysis::fes_chain`].
     MqFes,
+    /// WalkSAT local search on the same Semaev system
+    /// ([`crate::cryptanalysis::walksat`]), with the [`Self::Sat`] CDCL
+    /// path as the fallback whenever the walk ends without a
+    /// decomposition.  Verdicts are exactly the CDCL verdicts; the walk
+    /// only ever contributes verified, lifted decompositions.
+    WalkSat,
 }
 
 /// Packed identity of a point for hashing and sorting, in one `u64`:
@@ -4263,7 +4273,7 @@ impl PairSumTable {
         &run[start..end]
     }
 
-    /// **Decompose** `target` into exactly `m ∈ {2, 3, 4}` base points,
+    /// **Decompose** `target` into exactly `m ∈ {2, 3, 4, 5}` base points,
     /// returning sorted indices, or `None` when no decomposition exists
     /// (a complete search) or `m` is unsupported.  The returned sum is
     /// re-checked in the general group arithmetic before it is handed
@@ -4501,7 +4511,7 @@ impl PairSumTable {
 
     /// **Enumerate every sorted witness** `i_1 ≤ … ≤ i_m` with
     /// `Σ P_{i_k} = target`, calling `sink` for each; the sink returns
-    /// `true` to continue and `false` to stop.  Supports `m ∈ {2, 3, 4}`.
+    /// `true` to continue and `false` to stop.  Supports `m ∈ {2, 3, 4, 5}`.
     pub fn witnesses(
         &self,
         _kc: &KoblitzCurve,
@@ -4714,6 +4724,9 @@ impl PairSumTable {
                     }
                 }
             }
+            // Pair table × enumerated triple, in nested batched rows:
+            // [`mitm_m5`].
+            5 => self.witnesses_five(target, sorted, sink),
             _ => {}
         }
     }
@@ -4789,6 +4802,15 @@ pub(crate) fn lift_candidate(
 /// `None` from a completed solve is a *proof* that no decomposition
 /// exists over this factor base; a `None` with `stats.exhausted` set
 /// only means the node budget ran out.
+///
+/// Process-wide opt-in: with `KIC_M4_DESCENT=s5`, `m = 4` is solved from
+/// the hardcoded `S₅` template (`s5_weil_template`) instead of the chain
+/// of `S₃` links.  The set of decompositions is the same, but the
+/// *first-found* one (and the [`SolveStats`]) may be another member of that
+/// set, because the search order differs; whether one is found is not.
+/// The template is faster only on some cells (`n >= 17`, `ℓ = 3`) and
+/// slower on others (`ℓ = 4`, small `n`, subfield curves), so it is
+/// unset by default.
 pub fn groebner_decompose(
     kc: &KoblitzCurve,
     fb: &FrobeniusFactorBase,
@@ -4803,6 +4825,21 @@ pub fn groebner_decompose(
         BinaryPoint::Affine { x, .. } => x.clone(),
         BinaryPoint::Infinity => return (None, SolveStats::default()),
     };
+    // `KIC_M4_DESCENT=s5|s5sym` routes m = 4 to the S₅ template; unset,
+    // or when the template cannot be built, the chain below runs.
+    if m == 4 {
+        if let Some(out) = crate::cryptanalysis::s5_weil_template::dispatch_groebner_m4(
+            kc,
+            fb,
+            index_of,
+            st,
+            target,
+            engine,
+            node_budget,
+        ) {
+            return out;
+        }
+    }
     let sys = match crate::cryptanalysis::polynomial_reuse::build_decomposition_system_reusing(
         &fb.subspace_basis,
         &x_r,
@@ -4868,6 +4905,11 @@ pub fn groebner_decompose(
 /// Per target the result is [`groebner_decompose`]'s: the same
 /// decomposition (the first root, in the same search order, that lifts)
 /// and the same [`SolveStats`], whichever decider answers.
+///
+/// Exception: the batch path always solves the chain.  With
+/// `KIC_M4_DESCENT=s5` set, [`groebner_decompose`] takes the `S₅` template
+/// at `m = 4`, so its first-found decomposition may then be another member
+/// of the same set than this function returns.
 pub fn groebner_decompose_batch(
     kc: &KoblitzCurve,
     fb: &FrobeniusFactorBase,
@@ -4935,9 +4977,16 @@ pub fn groebner_decompose_batch(
 /// degree `D`; the search then sweeps `2^k` assignments of the first
 /// `k` variables, each leaving a linear solve in the rest.
 ///
-/// `params` fixes `(D, k)`; `None` takes `D` from the system's own
-/// degree and `k = n_vars / 2`, capped by the search's enumeration
-/// budget.  As in the Gröbner path a root of `S₃` fixes the summands
+/// `params` fixes `(D, k)` for the generic search.  `None` first tries
+/// the block-planned solvers of
+/// [`crate::cryptanalysis::crossbred_blocks`] (`(D, k)` read off the
+/// summand blocks, intermediates kept linear), which return the same
+/// decomposition the generic path does whenever the generic search is not
+/// exhausted (and may decide where it is); when no block plan applies, the
+/// block search is exhausted, or the choice is ambiguous, it falls back
+/// to `D` from the system's own degree and `k = n_vars / 2`, capped by
+/// the search's enumeration budget.  `IC_CROSSBRED_BLOCKS=0` skips the
+/// block path.  As in the Gröbner path a root of `S₃` fixes the summands
 /// only up to sign, so each is lifted and the first that closes the
 /// group identity wins.
 ///
@@ -4972,6 +5021,16 @@ pub fn crossbred_decompose(
         Some(sys) => sys,
         None => return (None, CrossbredSearchStats::default()),
     };
+    if params.is_none() && crate::cryptanalysis::crossbred_blocks::enabled() {
+        // `(D, k)` from the summand blocks; the generic split below stays
+        // the fallback and the explicit-`params` path.
+        let k_generic = crossbred_params_for(&sys.equations, sys.n_vars).enumerated;
+        if let Some(found) = crate::cryptanalysis::crossbred_blocks::decompose_via_blocks(
+            kc, fb, index_of, &sys, target, k_generic,
+        ) {
+            return found;
+        }
+    }
     let params = params.unwrap_or_else(|| crossbred_params_for(&sys.equations, sys.n_vars));
     let xb = match extract_crossbred(&sys.equations, sys.n_vars, &params) {
         Some(xb) => xb,
@@ -4997,7 +5056,7 @@ pub fn crossbred_decompose(
 /// found the kernel grows with `k` and the search cost grows as `2^k`,
 /// so the midpoint is the defensible default rather than a tuned one.
 /// `k` is capped so the sweep stays inside the search's memory budget.
-fn crossbred_params_for(system: &[F2BoolPoly], n_vars: usize) -> CrossbredParams {
+pub(crate) fn crossbred_params_for(system: &[F2BoolPoly], n_vars: usize) -> CrossbredParams {
     let degree = system
         .iter()
         .flat_map(|p| p.terms.iter())
@@ -6554,6 +6613,21 @@ fn koblitz_index_calculus_dlp_observed(
                 DecompositionStrategy::MqFes => {
                     let (idxs, stats) = crate::cryptanalysis::mq_fes::mq_fes_decompose(
                         kc, fb, &index_of, &field, target, opts.m,
+                    );
+                    RelationAttemptOutcome::Sat(idxs, stats)
+                }
+                DecompositionStrategy::WalkSat => {
+                    let (idxs, stats) = crate::cryptanalysis::walksat::walksat_then_sat_decompose(
+                        kc,
+                        fb,
+                        &index_of,
+                        &field,
+                        target,
+                        opts.m,
+                        opts.max_models,
+                        opts.sat_macaulay_degree,
+                        opts.sat_options,
+                        &crate::cryptanalysis::walksat::WalkSatDecompositionOptions::default(),
                     );
                     RelationAttemptOutcome::Sat(idxs, stats)
                 }
@@ -8114,6 +8188,21 @@ fn decompose_once(
         DecompositionStrategy::MqFes => {
             crate::cryptanalysis::mq_fes::mq_fes_decompose(kc, fb, index_of, field, target, opts.m)
                 .0
+        }
+        DecompositionStrategy::WalkSat => {
+            crate::cryptanalysis::walksat::walksat_then_sat_decompose(
+                kc,
+                fb,
+                index_of,
+                field,
+                target,
+                opts.m,
+                opts.max_models,
+                opts.sat_macaulay_degree,
+                opts.sat_options,
+                &crate::cryptanalysis::walksat::WalkSatDecompositionOptions::default(),
+            )
+            .0
         }
     }
 }
@@ -10147,7 +10236,7 @@ mod tests {
     /// The walked descent steps every walk's `a` by one per round and
     /// wraps it at `r` with a compare rather than a `%`.  `K_0/2^9` has
     /// `r = 127`, so a walk wraps within 127 rounds.  The pair table
-    /// answers two to four summands, so a five-summand descent never
+    /// answers two to five summands, so a six-summand descent never
     /// decomposes a probe and each walk runs until one is the identity,
     /// which a direct relation turns into the logarithm: that probe is
     /// the first `(round, walk)` with `a + b·d ≡ 0 (mod r)`.  The test
@@ -10173,7 +10262,7 @@ mod tests {
         let (mut cases, mut wrapped) = (0usize, 0usize);
         for seed in 0..128u64 {
             let walking = KoblitzIcOptions {
-                descent_m: Some(5),
+                descent_m: Some(6),
                 seed,
                 max_trials: (2 * WALKS * r) as usize,
                 allow_direct_relation: true,

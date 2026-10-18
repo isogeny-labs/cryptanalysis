@@ -25,7 +25,16 @@ mod gf2_la;
 mod pdp;
 mod relation;
 mod sat;
+mod sat_spec;
+mod spec_affine;
+mod spec_blocks;
+mod spec_descent;
+mod spec_fes_chain;
+mod spec_m4;
+mod spec_s5;
+mod spec_sym_m5;
 mod suite_extra;
+mod walksat;
 
 fn registry() -> Vec<harness::Kernel> {
     let mut kernels = Vec::new();
@@ -33,11 +42,20 @@ fn registry() -> Vec<harness::Kernel> {
     bool_gb::register(&mut kernels);
     fp_gb::register(&mut kernels);
     sat::register(&mut kernels);
+    spec_blocks::register(&mut kernels);
+    sat_spec::register(&mut kernels);
     pdp::register(&mut kernels);
+    spec_m4::register(&mut kernels);
     field_ec::register(&mut kernels);
     relation::register(&mut kernels);
     dlp::register(&mut kernels);
     suite_extra::register(&mut kernels);
+    walksat::register(&mut kernels);
+    spec_fes_chain::register(&mut kernels);
+    spec_descent::register(&mut kernels);
+    spec_sym_m5::register(&mut kernels);
+    spec_affine::register(&mut kernels);
+    spec_s5::register(&mut kernels);
     kernels
 }
 

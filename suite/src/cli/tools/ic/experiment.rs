@@ -112,7 +112,8 @@ pub enum Solver {
     /// Trimoska WDSat on the same Semaev ANF as `sat`.
     Wdsat,
     /// ALMASTY-inspired quadratic Semaev FES (`m = 2`): Gray early-exit,
-    /// Möbius all-roots, Monica past `n = 24`.
+    /// Möbius all-roots, Monica past `n = 24`; `m ≥ 3` by the Gray-code
+    /// chain search (`fes_chain`).
     MqFes,
 }
 impl Solver {
