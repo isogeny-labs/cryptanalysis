@@ -320,6 +320,8 @@ static int glv_recover(const ca_group *g, const ca_elem *base, const ca_elem *ta
 #ifdef CA_GLV_TRACE
 #    include <stdio.h>
 #    include <stdlib.h>
+#    include <assert.h>
+#    include "glv_trace_accounting.h"
 #    define GLV_RING 64
 /* Where glv_rho_solve's group operations go, written as one JSON line per
  * solve to $CA_GLV_TRACE_FILE.  Diagnostic builds only (-DCA_GLV_TRACE); the
@@ -340,6 +342,9 @@ typedef struct glv_walk {
     ca_elem Y;
     uint64_t a, b;
     uint64_t since_dp;
+#ifdef CA_GLV_TRACE
+    uint64_t trace_wasted_since_dp;
+#endif
     uint32_t idx;
     uint32_t first; /* the multiplier Y's own hash selects (a function of Y alone) */
     uint32_t tries; /* look-ahead advances taken from this Y */
@@ -523,6 +528,9 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
         w->b = ca_mulmod(w->b, c->lam_pow[k], n);
     }
     w->since_dp = 0;
+#ifdef CA_GLV_TRACE
+    ca_glv_trace_reset_since_dp(&w->trace_wasted_since_dp);
+#endif
     w->retry = 0;
 #ifdef CA_GLV_CYCLE_ESCAPE
     w->hn = 0;
@@ -801,6 +809,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     tr.restart_ops += 1; /* the doubling is booked with restarts */
                     tr.abandon_wasted +=
                         L; /* the L committed steps around the cycle were not productive */
+                    wk->trace_wasted_since_dp +=
+                        ca_glv_trace_cycle_steps_since_dp(L, wk->since_dp);
+                    assert(wk->trace_wasted_since_dp <= wk->since_dp);
                     wk->ring_pos = 0;
 #    endif
                 } else {
@@ -824,6 +835,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 if (ins < 0) goto nomem;
                 wk->since_dp = 0;
 #ifdef CA_GLV_TRACE
+                ca_glv_trace_reset_since_dp(&wk->trace_wasted_since_dp);
                 tr.dps++;
 #endif
                 if (ins == 1) {
@@ -853,7 +865,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             } else if (wk->since_dp > c.abandon) {
 #ifdef CA_GLV_TRACE
                 tr.abandons++;
-                tr.abandon_wasted += wk->since_dp;
+                assert(wk->trace_wasted_since_dp <= wk->since_dp);
+                tr.abandon_wasted += ca_glv_trace_unaccounted_abandon_steps(
+                    wk->since_dp, wk->trace_wasted_since_dp);
                 { /* is the walk in a short cycle?  find the current hash among the previous ones */
                     uint32_t L = 0, have = wk->ring_pos < GLV_RING ? wk->ring_pos : GLV_RING;
                     for (uint32_t d = 1; d < have && !L; d++)
@@ -891,6 +905,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 done:
 #ifdef CA_GLV_TRACE
 {
+    assert(tr.abandon_wasted <= tr.useful_steps);
+    assert(ca_glv_trace_ops_total(tr.table_ops, tr.start_ops, tr.restart_ops, tr.step_ops) == ops);
     const char *path = getenv("CA_GLV_TRACE_FILE");
     FILE *fp = path ? fopen(path, "a") : NULL;
     if (fp) {
