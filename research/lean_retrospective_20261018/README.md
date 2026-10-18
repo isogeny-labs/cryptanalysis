@@ -1,8 +1,10 @@
 # Lean retrospective, 2026-10-18
 
-Status: **partial retrospective; four new theorems machine checked**.
-Independent semantic-fidelity review is pending. This is this repository's
-first research Lake project; the previous Lean source was the proof-gate audit.
+Status: **partial retrospective; 4 mapped declarations machine checked and
+independently reviewed within their stated assumptions**. See the current
+[review disposition](semantic-review-v2.json), [status diagram](proof-chain-reviewed.svg)
+and [independent synthesis](https://github.com/aburan28/crypto-autoresearcher/blob/e792163f3b66b72ca7bac849459aa6eeeafc99bb/research/lean_review_evidence_20261018/synthesis.md). Broader historical claims
+and concrete bridges remain open; no official scientific status changes.
 
 ## Scope and source
 
@@ -87,3 +89,13 @@ findings. Receipt consistency is not authentication of a Lean run.
 
 The original `report.pdf` is the frozen producer report; current independent
 review PDFs are linked from the per-declaration review reports above.
+
+## Sealed review disposition
+
+[semantic-review-v2.json](semantic-review-v2.json) links the sealed19-claim synthesis
+and the independently authored44-control workflow closure. The original proof
+map, receipts, report and status graph remain dated producer snapshots; the new
+[diagram source](proof-chain-reviewed.json), [SVG](proof-chain-reviewed.svg) and
+[PDF](proof-chain-reviewed.pdf) reflect only the scoped review updates. Full raw
+records for two workflow rounds remain local, so public raw reproducibility is
+partial. Current-head GitHub CI remains pending in the linked review snapshot.
