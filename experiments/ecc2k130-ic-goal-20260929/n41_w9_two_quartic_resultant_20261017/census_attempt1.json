@@ -1,0 +1,9 @@
+{
+  "status": "BOUNDED_UNKNOWN",
+  "stop_reason": "frozen 120-second arithmetic wall cap",
+  "command": "./sage -python experiments/ecc2k130-ic-goal-20260929/n41_w9_two_quartic_resultant_20261017/census_sage.py",
+  "source_snapshot": "census_sage_attempt1.py",
+  "protocol_snapshot": "census_protocol_attempt1.json",
+  "completed_census": null,
+  "implementation_finding": "Repeated Sage integer-to-field conversion in the inner loop consumed the cap."
+}
