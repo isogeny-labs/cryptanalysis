@@ -20,18 +20,30 @@ HERE = Path(__file__).resolve().parent  # run from this directory with the three
 THEORY = {"j1728": math.sqrt(2 / 4), "j0": math.sqrt(2 / 6), "random": 1.0}
 VARIANTS = ("legacy", "patched", "escape")
 LABEL = {"legacy": "legacy walk", "patched": "look-ahead fix", "escape": "look-ahead fix + cycle escape"}
+SIZES = (24, 28, 32)
+CURVES = 40
+TARGETS = 200
 
 
 def load(path: Path):
     op = gzip.open if path.suffix == ".gz" else open
     runs = defaultdict(dict)
     wrong = 0
-    for line in op(path, "rt"):
-        r = json.loads(line)
-        if r["kind"] != "run":
-            continue
-        wrong += not r["correct"]
-        runs[(r["family"], r["r_bits"], r["curve_index"], r["target"], r["arm"])] = r["group_ops"] / math.sqrt(r["r"])
+    with op(path, "rt") as stream:
+        for line in stream:
+            r = json.loads(line)
+            if r["kind"] != "run":
+                continue
+            wrong += r["correct"] is not True
+            key = (r["family"], r["r_bits"], r["curve_index"], r["target"], r["arm"])
+            if key in runs:
+                raise ValueError(f"{path}: duplicate solve {key}")
+            if r["r"] <= 0 or r["group_ops"] <= 0:
+                raise ValueError(f"{path}: nonpositive order or operation count for {key}")
+            cost = r["group_ops"] / math.sqrt(r["r"])
+            if not math.isfinite(cost):
+                raise ValueError(f"{path}: nonfinite cost for {key}")
+            runs[key] = cost
     return runs, wrong
 
 
@@ -54,16 +66,33 @@ def main(argv=None) -> int:
     ap.add_argument("--boot", type=int, default=10000)
     ap.add_argument("--json-out", default=str(HERE / "results_v2.json"))
     a = ap.parse_args(argv)
+    if a.boot <= 0:
+        ap.error("--boot must be positive")
     data = {}
+    problems = []
+    expected = {(family, bits, curve, target, arm)
+                for family in THEORY for bits in SIZES
+                for curve in range(CURVES) for target in range(TARGETS)
+                for arm in ("rho", "curve_solve")}
     for v in VARIANTS:
         p = HERE / f"rows_v2_{v}.jsonl.gz"
         p = p if p.exists() else HERE / f"rows_v2_{v}.jsonl"
         data[v], wrong = load(p)
         print(f"{v}: {len(data[v])} solves, {wrong} wrong answers")
+        if wrong:
+            problems.append(f"{v}: {wrong} incorrect answers or solver failures")
+        missing = expected - data[v].keys()
+        extra = data[v].keys() - expected
+        if missing or extra:
+            problems.append(f"{v}: protocol grid differs ({len(missing)} missing, {len(extra)} unexpected solves)")
+    if problems:
+        raise ValueError("invalid comparison: " + "; ".join(problems))
     keys = sorted({k[:4] for k in data["legacy"]})
     rho_mismatch = sum(data[v][k + ("rho",)] != data["legacy"][k + ("rho",)] for v in VARIANTS for k in keys)
     rand_mismatch = sum(data[v][k + ("curve_solve",)] != data["legacy"][k + ("curve_solve",)] for v in VARIANTS for k in keys if k[0] == "random")
     print(f"invariants: rho differs across runs on {rho_mismatch} solves; random-curve curve_solve differs on {rand_mismatch} solves (both must be 0)")
+    if rho_mismatch or rand_mismatch:
+        raise ValueError(f"invalid comparison: {rho_mismatch} rho control mismatches; {rand_mismatch} random-curve control mismatches")
     level = 0.05 / 4
     rng = np.random.default_rng(20261017)
     out = {"ci_level": 1 - level, "rho_mismatch": rho_mismatch, "random_mismatch": rand_mismatch, "primary": [], "vs_rho": []}
