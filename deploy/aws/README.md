@@ -48,6 +48,8 @@ Every command takes `--region` (default `AWS_REGION`, else `us-east-1`) and
 * **The security group `ca-experiments`** in the default VPC. It admits tcp/22
   from the `--allow-cidr` ranges and nothing else. Ranges accumulate: revoke
   old addresses in the console when they change. `0.0.0.0/0` is refused.
+  If a same-named group is not tagged as launcher-managed or has non-SSH or
+  internet-wide ingress, launch refuses to use it.
 * **An EC2 key pair** `ca-experiments-<hash of your public key>`, imported
   once per key.
 

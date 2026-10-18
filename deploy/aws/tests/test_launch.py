@@ -49,7 +49,9 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(args.type, launch.GPU_TYPE)
 
     def test_allow_cidr_is_required_and_never_the_internet(self):
-        for bad in ([], ["--allow-cidr", "0.0.0.0/0"], ["--allow-cidr", "1.2.3.4"]):
+        for bad in ([], ["--allow-cidr", "0.0.0.0/0"], ["--allow-cidr", "0.0.0.0/00"],
+                    ["--allow-cidr", "1.2.3.4"], ["--allow-cidr", "1.2.3.4/24"],
+                    ["--allow-cidr", "::1/128"]):
             with self.assertRaises(SystemExit):
                 launch.parse(["launch", *bad])
 
@@ -110,14 +112,30 @@ class GroupAndKeyTest(unittest.TestCase):
         self.assertEqual([r["CidrIp"] for r in rule[0]["IpRanges"]], ["1.2.3.4/32", "5.6.7.0/24"])
 
     def test_existing_ranges_are_not_added_twice(self):
-        group = {"GroupId": "sg-1", "IpPermissions": [
-            {"FromPort": 22, "ToPort": 22, "IpRanges": [{"CidrIp": "1.2.3.4/32"}]}]}
+        group = {"GroupId": "sg-1", "Tags": [{"Key": launch.TAG, "Value": "1"}],
+                 "IpPermissions": [
+            {"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22,
+             "IpRanges": [{"CidrIp": "1.2.3.4/32"}]}]}
         ec2 = FakeEC2(groups=[group])
         launch.ensure_group(ec2, ["1.2.3.4/32"])
         self.assertEqual(ec2.calls, [])
         launch.ensure_group(ec2, ["1.2.3.4/32", "9.9.9.9/32"])
         rule = dict(ec2.calls)["authorize"]["IpPermissions"][0]
         self.assertEqual([r["CidrIp"] for r in rule["IpRanges"]], ["9.9.9.9/32"])
+
+    def test_unmanaged_or_overbroad_existing_group_is_refused(self):
+        safe = {"GroupId": "sg-1", "Tags": [{"Key": launch.TAG, "Value": "1"}],
+                "IpPermissions": []}
+        unmanaged = {**safe, "Tags": []}
+        broad = {**safe, "IpPermissions": [
+            {"IpProtocol": "tcp", "FromPort": 22, "ToPort": 22,
+             "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}]}
+        other_port = {**safe, "IpPermissions": [
+            {"IpProtocol": "tcp", "FromPort": 22, "ToPort": 23,
+             "IpRanges": [{"CidrIp": "1.2.3.4/32"}]}]}
+        for group in (unmanaged, broad, other_port):
+            with self.assertRaises(SystemExit):
+                launch.ensure_group(FakeEC2(groups=[group]), ["1.2.3.4/32"])
 
     def test_key_pair_is_imported_once(self):
         name = launch.key_pair_name(KEY)

@@ -32,6 +32,7 @@ credentials; the region is --region, else AWS_REGION, else us-east-1.
 import argparse
 import datetime
 import hashlib
+import ipaddress
 import os
 import shlex
 import subprocess
@@ -138,6 +139,16 @@ def ensure_group(ec2, cidrs):
         {"Name": "group-name", "Values": [GROUP]}, {"Name": "vpc-id", "Values": [vpc]}])
     if found["SecurityGroups"]:
         group = found["SecurityGroups"][0]
+        tags = {t["Key"]: t["Value"] for t in group.get("Tags", [])}
+        if tags.get(TAG) != "1":
+            sys.exit(f"security group {group['GroupId']} is named {GROUP} but is not launcher-managed")
+        for permission in group.get("IpPermissions", []):
+            if (permission.get("IpProtocol") != "tcp" or permission.get("FromPort") != 22 or
+                    permission.get("ToPort") != 22 or permission.get("Ipv6Ranges") or
+                    permission.get("PrefixListIds") or permission.get("UserIdGroupPairs")):
+                sys.exit(f"security group {group['GroupId']} has non-SSH ingress; refusing to use it")
+            if any(r.get("CidrIp") == "0.0.0.0/0" for r in permission.get("IpRanges", [])):
+                sys.exit(f"security group {group['GroupId']} opens SSH to the internet; refusing to use it")
     else:
         gid = ec2.create_security_group(
             GroupName=GROUP, VpcId=vpc, Description="ssh to experiment instances",
@@ -383,7 +394,11 @@ def parse(argv=None):
         for cidr in args.allow_cidr:
             if "/" not in cidr:
                 ap.error(f"--allow-cidr {cidr}: give a range, e.g. {cidr}/32")
-            if cidr.endswith("/0"):
+            try:
+                network = ipaddress.IPv4Network(cidr, strict=True)
+            except ValueError:
+                ap.error(f"--allow-cidr {cidr}: give a valid IPv4 CIDR")
+            if network.prefixlen == 0:
                 ap.error(f"--allow-cidr {cidr} opens ssh to the whole internet")
     args.command = getattr(args, "words", []) + command
     return args
