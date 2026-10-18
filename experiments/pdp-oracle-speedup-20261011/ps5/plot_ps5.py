@@ -38,7 +38,7 @@ for p in glob.glob(os.path.join(RAW, "parity_l*.jsonl")):
     if rows:
         parity[rows[-1]["l"]] = rows[-1]
 
-ls = sorted(emit)
+ls = [l for l in sorted(emit) if 8 <= l <= 12]
 tasks = 8
 fig, ax = plt.subplots(1, 2, figsize=(11, 4.2), constrained_layout=True)
 
@@ -59,7 +59,7 @@ ax[0].legend(fontsize=8, frameon=False, loc="upper left")
 ax[0].set_ylim(0, max(bottom) * 1.18)
 
 # Panel b: pairs replayed through the emulation, 80 targets per rung.
-pl = sorted(parity)
+pl = [l for l in sorted(parity) if 8 <= l <= 12]
 pairs = [parity[l]["pairs_replayed"] for l in pl]
 ax[1].bar([str(l) for l in pl], pairs, color="#2e7d32", width=0.62)
 ax[1].set_yscale("log")

@@ -116,7 +116,9 @@ No corpus target is degenerate (`unsupported_targets` is 0 in every record); the
 **The corpus never exercised an exceptional lane** (0 in all five rungs), so the host's exceptional-lane recomputation was not exercised by the corpus; the kernel's exceptional mask was exercised by the self-test below.
 The 459 hit lanes yield 153 distinct roots; the corpus has few positives per rung, which is why the self-test exists.
 
-**Model build.**  The same replay with every gate run through the `lop3` model (`raw/parity_l*_model.jsonl`): MODEL_RESULT
+**Model build.**  The same replay with every gate run through the `lop3` model `ps5_lop3(a, b, c, table)` (`raw/parity_l*_model.jsonl`, `raw/selftest_l*_model.jsonl`; self-test with 20 repetitions): for every rung 0 mismatches, 0 unconfirmed hit lanes,
+the same hit lanes, roots, verdict digest and root digest as the `plain` build (96, 105, 90, 78, 90 confirmed hit lanes at `l = 8..12`), both digests equal PS-0's; self-test 0 mismatches (163,720 lanes per rung).  Emulation wall seconds (3 threads, one run each) were 2.12, 4.86, 14.18, 55.84, 232.92
+for `l = 8..12` against 0.48, 1.34, 5.48, 28.47, 131.57 for `plain`.
 
 ### 4.2 Self-test (CPU emulation; `raw/selftest_l*.jsonl`, 50 repetitions per rung, seed 20261018)
 
@@ -178,17 +180,25 @@ L11_COMPILE
 
 ### 4.5 CPU-emulation wall times (exploratory; not a device figure)
 
-Single run per rung, 3 threads, `plain` build, wall seconds of the 80-target replay (all pairs), shared host, no A/A, no isolation receipt:
+One run per rung, 3 threads, wall seconds of the whole replay (80 targets, all pairs), shared host, no A/A, no isolation receipt (`emulation_secs` in `raw/parity_l*.jsonl`).  The last column is wall x 3 / pairs, which assumes three busy threads (CPU time was not measured).
 
-| `l` | 0.48 s | 1.34 s | 5.48 s | 28.47 s | 131.57 s |
-|:--|--:|--:|--:|--:|--:|
+| `l` | pairs replayed | `plain` build, wall s | `model` build, wall s | `plain`: thread-microseconds per valid pair |
+|--:|--:|--:|--:|--:|
+| 8 | 660,480 | 0.484 | 2.117 | 2.20 |
+| 9 | 2,570,480 | 1.339 | 4.860 | 1.56 |
+| 10 | 8,630,400 | 5.478 | 14.178 | 1.90 |
+| 11 | 40,602,240 | 28.467 | 55.837 | 2.10 |
+| 12 | 158,802,240 | 131.574 | 232.919 | 2.49 |
 
-(for `l = 8, 9, 10, 11, 12`).  Thread-seconds per valid pair (wall x 3 / pairs, assuming 3 busy threads): 2.20, 1.56, 1.90, 2.10, 2.49 microseconds.  This is a scalar, memory-resident evaluation of the gate list; it is not comparable with PS-3's
-per-core vector figures (different code, different host class) and says nothing about any device.
+This is a scalar, memory-resident evaluation of the gate list on the host.  It is not comparable with PS-3's per-core vector figures (different code, different host class) and says nothing about any device.
 
 ### 4.6 `l = 13` (optional)
 
-L13_RESULT
+Optional and **timing-only in the plan** (PS-0 froze no `l = 13` corpus).  What was run: PS-3's 3-target `l = 13` sample (`corpus/corpus_l13_ps3_sample.txt`, a byte copy of `crypto`'s
+`ps3_bitsliced/raw/corpus_l13.txt`, commit `eda4a6bf7`; verdicts built there by the independent enumerator), through the program that `pdp_speedup export-program --l 13 --tasks 8` writes.  That program's hash, `a494467d8b006e2fc06df2b6385c75baf75979a016d4d8b69ab0858b555d9538`
+(144,148 gates, 1,872 inputs), is **first recorded by this PR**; PS-2/PS-3 froze no `l = 13` program.  Result (`raw/parity_l13.jsonl`, `raw/selftest_l13.jsonl`, `plain` build): 4,052 base points, 24,634,134 pairs replayed, tiling check true, 0 hit lanes, verdict digest
+`04700f1a...5d03` and root digest `3d1325c7...0203` equal the sample's, 0 mismatches; self-test (50 repetitions) 0 mismatches in 409,300 lanes and 4,672,640 wires.  Counted bit operations: `G/8 = 18,018.5` fused per lane slot, `u = 0.9354`, 19,263.5 fused per valid pair.
+**All three sample targets are refuted (no roots)**, so this replay cannot detect a missed hit; the self-test covers that.  Emulation wall time 21.8 s (3 threads).  `l = 14, 15, 16`: not attempted.
 
 ## 5. Deviations, gaps and open requirements (all of them)
 
