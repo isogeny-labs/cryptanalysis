@@ -145,9 +145,10 @@ contains 32 branch constructions, four starts, and 10,152 walk additions;
 its setup/start fraction varied widely under local contention. The longer
 trace in [crypto PR #2137](https://github.com/aburan28/crypto/pull/2137)
 independently replayed 32 starts and 106,327 walk steps. Its locally observed
-setup/start share was 3.61%, still a diagnostic under that host's heavy
-load. The opt-in batch walk lane in that PR matched serial ordered check-ins
-and work counts on all 32 frozen Q points at `dp_bits=12` and an 8,192-step
+setup/start share was 3.61%. A repaired-main replay of the same walk
+transcript observed 7.01%; both are local diagnostics. The opt-in batch walk
+lane in that PR matched serial ordered check-ins and work counts on all 32
+frozen Q points at `dp_bits=12` and an 8,192-step
 cap: 64/64 arms and 32/32 pairs completed. These receipts focus the next
 qualified test on the walk addition. The frozen Tier 1 panel has 384 pairs,
 including two A/A controls per Q and four repetitions. Default routing
@@ -165,12 +166,15 @@ library tests passed with zero failures and 118 ignored; all 64 long replay
 arms across the 32 frozen Q points matched in 32 serial/batch pairs. These
 are build and correctness receipts, not qualified throughput evidence.
 
-For the locally observed 3.61% setup/start share, even eliminating that phase
-would improve total time by at most `1/(1 - 0.0361) = 1.037x` on that trace.
-The share requires a qualified-host measurement before it can bound the
-worker generally. The 768-arm worker panel remains the decisive next test:
-exact replay, passing A/A and host-noise gates, both a 10% relative and a
-64 MiB absolute cap on additional peak RSS, and a Q-cluster 95% lower paired
+The [repaired-main phase receipt](https://github.com/aburan28/crypto/blob/130890bec/experiments/rho-worker-phase-profile-20261017/rebased-main-phase-validation.json)
+pins the current-source binary and transcript. On its local trace, a twofold
+setup/start improvement would improve the profiled total by 1.036x, while
+eliminating the phase would give an upper bound of 1.075x. The source and
+timing conditions changed between the two traces; neither phase share can
+bound the worker on a qualified host. The 768-arm worker panel remains the
+decisive next test: exact replay, passing A/A and host-noise gates, both a
+10% relative and a 64 MiB absolute cap on additional peak RSS, and a
+Q-cluster 95% lower paired
 speedup bound above 1.05 are required to enable batched routing. The Rust
 source transfer to RunPod was rejected by automatic approval review, and the
 workspace lacks a rotated `RUNPOD_API_KEY` secret; the hosted result is pending.
