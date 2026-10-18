@@ -140,14 +140,18 @@ finding with the default worker unchanged. The generic C rho path uses a
 64-bit group order; the full-size target is the Rust collaborative worker.
 
 The current decision is to leave the default worker unchanged. The
-one-restart Tier 1 gate did not pass, and the measured short worker trace
-contains 32 branch constructions, four starts, and 10,152 walk additions.
-Its setup/start fraction varied from 67.9% to 75.6% across two contended
-local runs, while a stated 256-walker, 20-bit-DP operation-rate projection
-places setup and starts near 0.09% of worker time. A qualified long-worker
-trace is the remaining check. If it confirms the small share, optimize the
-per-step point addition and only integrate after full-worker replay and the
-paired 1.05 lower-bound gate. The separate Rust profiler snapshot is
-committed in the public `crypto` repository worktree at `fb7f6c2e33`;
-its RunPod transfer was rejected by automatic approval review, so its
-Tier 1 worker trace remains pending.
+one-restart Tier 1 gate did not pass. The short deterministic worker trace
+contains 32 branch constructions, four starts, and 10,152 walk additions;
+its setup/start fraction varied widely under local contention. The longer
+trace in [crypto PR #2137](https://github.com/aburan28/crypto/pull/2137)
+independently replayed 32 starts and 106,327 walk steps. Its locally observed
+setup/start share was 3.61%, still a diagnostic under that host's heavy
+load. The opt-in batch walk lane in that PR matched serial ordered check-ins
+and work counts on all 32 frozen Q points at `dp_bits=12` and an 8,192-step
+cap: 64/64 arms and 32/32 pairs completed. These receipts focus the next
+qualified test on the walk addition. The frozen Tier 1 panel has 384 pairs,
+including two A/A controls per Q and four repetitions. Default routing
+changes only after its independent audit passes exact replay, host and
+memory gates, and a Q-cluster 95% lower paired speedup bound above 1.05.
+The Rust source transfer to RunPod was rejected by automatic approval
+review, so the Tier 1 worker result remains pending.
