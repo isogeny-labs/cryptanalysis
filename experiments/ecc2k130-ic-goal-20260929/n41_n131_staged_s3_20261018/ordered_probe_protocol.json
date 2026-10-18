@@ -1,0 +1,37 @@
+{
+  "arms": [
+    "quadratic",
+    "ordered_staged",
+    "ordered_staged",
+    "quadratic"
+  ],
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "formulas": {
+    "ordered_staged": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/ordered_formula.xcnf",
+    "quadratic": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/formula.xcnf"
+  },
+  "max_conflicts": 20000,
+  "parent_wall_cap_seconds": 180,
+  "promotion_gate": "All arms reach conflict cap with monitors passing; each ordered staged-S3 arm has at most 90 percent of adjacent quadratic decisions and at most 75 percent of adjacent wall; a verified SAT relation also passes.",
+  "public_point": [
+    1936680952394,
+    910597499030
+  ],
+  "rss_cap_bytes": 4294967296,
+  "solver": "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+  "solver_wall_cap_seconds": 170,
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/audit_result.json": "5cc5414911406848e8b7af5d993efd7c0af5a989e3bd7b66033557bb46f135be",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/build_result.json": "aafe2176a4892618a7aed69f94cda07a5f69c7f7d21638e0c5a23a44d175f04a",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/ordered_build_result.json": "b59e68b19a3c1a40ed27c70646ffc77acd00e7a2e5f54098c7c4b83e49820168",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/ordered_formula.xcnf": "12bfe0ad259cefaf7227fd565fdbc914eb08ebadbbd1019e313e9c4d90734783",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/ordered_probe.py": "1232525411cde081cd65093a617506e5caec2e293f5e56b1f668c5778317156b",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_staged_s3_20261018/sage_runtime_info.json": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/build_result.json": "b6c1d1a74c4d39a70abeeca7faf5463ea835b48de497ea5c7ad4a0c88da4e21d",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/formula.xcnf": "0f5bc42526bf2ebdf47e206f630f7323e36020585f899ba2f1566ece434bf0ca",
+    "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+  },
+  "status": "FROZEN_BEFORE_N41_ORDERED_STAGED_S3_ABBA_PROBE",
+  "worker_count": 1
+}
