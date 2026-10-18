@@ -1,5 +1,7 @@
 # Bounded GPU continuation: items 7 and 13
 
+Latest CPU API-v2 attempt: **two actual HTTP400 capacity refusals; no pod allocated and no scientific trial**. Published controller493f0ca requested cpu3m/cpu5m; independent root inventory closeout found zero matching/active campaign resources and stopped the exact local idle watchdog. Original outcome fields remain unchanged. See [CPU API-v2 results](CPU_API_V2_RESULTS.md) and the fifth-page PDF addendum. Catalog-derived256GB was not an allocated host measurement.
+
 Latest separate GPU-v3 attempt: **CUDA build passed, device initialization failed; no GPU walk executed**. Its effective125GB RAM also failed the192GB frontier gate. The CPU-v3 request was capacity-refused without allocating a pod. See [GPU-v3 addendum](GPU_V3_RESULTS.md); that pod was fetched/deleted and absence verified.
 
 Status after recovered run1: **GPU correctness control executed; original ingestion failed; original memory-frontier attempt censored**. See [run1 results](RUN1_RESULTS.md), [run0 failure](RUN0_RESULTS.md), [current PDF](reports/report.pdf), and [independent archive audit](diagnostics/run1-audit/receipt.json). Root fetched the dedicated pod's evidence, deleted it and verified absence. No challenge slice or complete benchmark ran. The additive local v2 checker validates retained control reports without changing the original pipeline failure. Later allocation attempts are separate records.

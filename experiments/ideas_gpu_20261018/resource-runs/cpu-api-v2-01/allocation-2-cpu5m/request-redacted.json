@@ -1,0 +1,25 @@
+{
+  "cloud": "SECURE",
+  "cmd": [
+    "set -eu\nmkdir -p /root/cryptanalysis\ncd /root/cryptanalysis\ncurl --fail --location --retry 3 --output /tmp/ideas-payload.tar.gz https://raw.githubusercontent.com/aburan28/cryptanalysis/493f0ca1b7183dbd9e42ddcf8c44c650754e3fdb/experiments/ideas_gpu_20261018/remote-payload-v5.tar.gz\nprintf '%s  %s\\n' e269ad82ff1ff7724d88ccd34adf3752f642f9895f2dd015889315245fbfcfd4 /tmp/ideas-payload.tar.gz | sha256sum -c -\ntar -xzf /tmp/ideas-payload.tar.gz\nexec python3 experiments/ideas_gpu_20261018/remote_http_cpu_v3.py\n"
+  ],
+  "cpu": {
+    "id": "cpu5m",
+    "vcpuCount": 32
+  },
+  "disk": 40,
+  "entrypoint": [
+    "/bin/bash",
+    "-c"
+  ],
+  "env": {
+    "IDEAS_HTTP_BEARER": "<redacted>"
+  },
+  "image": "runpod/base:1.0.2-ubuntu2404",
+  "name": "ideas-20261018-cpu-api-v2-5863ccc2fda4ef74",
+  "ports": [
+    "8888/http"
+  ],
+  "startJupyter": false,
+  "startSsh": false
+}

@@ -1,0 +1,12 @@
+\textbf{Independent no-allocation closeout.} Root's separate receipt records a
+complete API-v2 inventory (one page), zero exact-request matches and zero
+active campaign resources. No provider DELETE was required. Root verified the
+exact local watchdog process identity/owner, stopped only that process with
+SIGTERM and recorded it stopped. The original controller outcome's false
+absence/deleted fields remain unchanged; the separate closeout binds the
+no-allocation observation. Receipt:
+\path{resource-runs/cpu-api-v2-01/root-no-allocation-closeout.json}.
+
+The frozen intent watchdog could otherwise poll an empty inventory every two
+seconds until its deadline. Explicit closeout avoids those needless local
+polls; controller/scientific sources were not changed.
