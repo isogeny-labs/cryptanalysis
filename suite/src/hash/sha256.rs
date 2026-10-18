@@ -76,7 +76,7 @@ fn pad(msg: &[u8]) -> Vec<u8> {
 
 // ── Compression ──────────────────────────────────────────────────────────────
 
-fn compress(state: &mut [u32; 8], block: &[u8]) {
+pub(crate) fn compress(state: &mut [u32; 8], block: &[u8]) {
     // Build the 64-word message schedule W from the 16 input words.
     let mut w = [0u32; 64];
     for i in 0..16 {

@@ -3,10 +3,10 @@
 //! One binary, one subcommand per attack. The generic discrete-logarithm
 //! solvers run on the C library in the repository root (64-bit groups,
 //! measured constants); everything else runs on this crate's
-//! arbitrary-precision attacks. Every command takes the global `--json`
-//! flag and then prints exactly one JSON object; every answer a command
-//! reports as solved has been verified independently of the solver that
-//! produced it.
+//! arbitrary-precision attacks. Every command accepts `--json` and emits one
+//! JSON object. Older research commands expose their native report text inside
+//! a JSON envelope. Native solver commands independently verify answers they
+//! mark solved; each research command retains its own evidence contract.
 //!
 //! `crax ic`, `crax icx` and the suite's cipher, hash, lattice, isogeny and
 //! collaborative-rho commands are the research command lines in
@@ -14,8 +14,10 @@
 //! and report formats. The older binaries (`ca-ic`, `ca-icx`, `ca-suite`,
 //! `ca-curves`) remain as compatible entry points to the same code.
 
+pub mod aes_attack;
 pub mod challenge;
 pub mod curve;
+pub mod digest;
 pub mod dlog;
 pub mod ecdlp;
 pub mod ecdsa;
@@ -38,14 +40,16 @@ Attacks by family:
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
-  symmetric & hash          list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash-auto, length-extension
+  sibling crypto tools      icx solve-prime|solve-cubic, isogeny-walk, store, crypto
+  symmetric & hash          aes-attack, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
   demos & research bench    visual-all, aes-visual-demo, bench, ec-challenges
   curves & challenges       curve names, curve info, challenge list|show|solve|rho-job
 
-Every command accepts --json. `crax <command> --help` shows its options.";
+Every command accepts --json. Native Markdown reports are wrapped as report_text in JSON mode.
+`crax <command> --help` shows its options.";
 
 /// The top-level parser.
 #[derive(Parser, Debug)]
@@ -67,6 +71,10 @@ pub struct Cli {
 /// Every `crax` subcommand.
 #[derive(Subcommand, Debug)]
 pub enum Command {
+    /// Recover key material on bounded AES-128 differential, linear, or integral instances.
+    AesAttack(aes_attack::AesAttackArgs),
+    /// Compute MD, SHA-1/2/3, or SHAKE digests from text, hex bytes, or a file.
+    Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
     Bsgs(dlog::IntervalArgs),
     /// Pollard rho: r-adding walk, distinguished points, negation map, threads.
@@ -158,6 +166,109 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// Bridge the sibling crypto executables without a shell. This keeps the
+/// public-target EC IC, isogeny-walk, and artifact-store surfaces reachable
+/// from `crax` while preserving the producing executable's exit status.
+fn run_external(
+    env_name: &str,
+    default_binary: &str,
+    sub: &str,
+    args: &[OsString],
+    json_requested: bool,
+    pass_json: bool,
+) -> ExitCode {
+    let binary = std::env::var_os(env_name).unwrap_or_else(|| default_binary.into());
+    let mut native_args: Vec<OsString> = args
+        .iter()
+        .filter(|arg| arg.as_os_str() != std::ffi::OsStr::new("--json"))
+        .cloned()
+        .collect();
+    if json_requested && pass_json {
+        native_args.push("--json".into());
+    }
+    let mut command = std::process::Command::new(&binary);
+    command.args(&native_args);
+    if json_requested {
+        match command.output() {
+            Ok(output) => {
+                let ok = output.status.success();
+                let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+                    .unwrap_or_else(|_| serde_json::Value::Null);
+                let report_text = report
+                    .is_null()
+                    .then(|| String::from_utf8_lossy(&output.stdout).to_string());
+                println!(
+                    "{}",
+                    serde_json::json!({
+                        "status": if ok { "ok" } else { "error" },
+                        "command": sub,
+                        "exit_code": output.status.code(),
+                        "report": report,
+                        "report_text": report_text,
+                        "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                    })
+                );
+                ExitCode::from(output.status.code().unwrap_or(1) as u8)
+            }
+            Err(e) => {
+                println!(
+                    "{}",
+                    serde_json::json!({"status":"error","command":sub,"error":format!("starting {}: {e}", binary.to_string_lossy())})
+                );
+                ExitCode::FAILURE
+            }
+        }
+    } else {
+        match command.status() {
+            Ok(status) => ExitCode::from(status.code().unwrap_or(1) as u8),
+            Err(e) => {
+                eprintln!("error: starting {}: {e}", binary.to_string_lossy());
+                ExitCode::FAILURE
+            }
+        }
+    }
+}
+
+/// Run a legacy suite command as a child so its native stdout and diagnostics
+/// can be reported as exactly one JSON object without changing its parser or
+/// allowing an inner `process::exit` to terminate the unified dispatcher.
+fn run_suite_json(sub: &str, args: &[OsString]) -> ExitCode {
+    let exe = match std::env::current_exe() {
+        Ok(path) => path,
+        Err(e) => {
+            println!(
+                "{}",
+                serde_json::json!({"status":"error","error":format!("locating crax: {e}")})
+            );
+            return ExitCode::FAILURE;
+        }
+    };
+    let output = std::process::Command::new(exe).arg(sub).args(args).output();
+    match output {
+        Ok(output) => {
+            let ok = output.status.success();
+            println!(
+                "{}",
+                serde_json::json!({
+                    "status": if ok { "ok" } else { "error" },
+                    "command": sub,
+                    "exit_code": output.status.code(),
+                    "report_text": String::from_utf8_lossy(&output.stdout),
+                    "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                })
+            );
+            ExitCode::from(output.status.code().unwrap_or(1) as u8)
+        }
+        Err(e) => {
+            println!(
+                "{}",
+                serde_json::json!({"status":"error","error":format!("starting crax: {e}")})
+            );
+            ExitCode::FAILURE
+        }
+    }
+}
+
 /// The full command tree, for `--help`: `crax`'s own subcommands plus the
 /// research command lines, grafted in under their `crax` names.
 pub fn command() -> clap::Command {
@@ -181,7 +292,10 @@ pub fn command() -> clap::Command {
             tools::icx::Cli::command()
                 .name("icx")
                 .about("Index calculus across every standardized curve: catalog, estimate, run"),
-        );
+        )
+        .subcommand(clap::Command::new("crypto").about("Bridge to the sibling crypto CLI"))
+        .subcommand(clap::Command::new("store").about("Content-addressed artifact store via crypto"))
+        .subcommand(clap::Command::new("isogeny-walk").about("Certified isogeny graph CLI"));
     for sub in tools::suite::Cli::command().get_subcommands() {
         cmd = cmd.subcommand(sub.clone());
     }
@@ -210,6 +324,8 @@ pub fn default_sigpipe() {
 pub fn run(out: Out, cmd: Command) -> CmdResult {
     use dlog::IntervalSolver;
     match cmd {
+        Command::AesAttack(a) => aes_attack::run(out, &a),
+        Command::Hash(a) => digest::run(out, &a),
         Command::Bsgs(a) => dlog::run_interval(out, IntervalSolver::Bsgs, &a),
         Command::Rho(a) => dlog::run_rho(out, &a),
         Command::Kangaroo(a) => dlog::run_interval(out, IntervalSolver::Kangaroo, &a),
@@ -256,7 +372,66 @@ where
         .cloned()
         .collect();
     let sub = rest.first().and_then(|a| a.to_str()).unwrap_or("");
+    let requested_json = lead_json || rest.iter().skip(1).any(|a| a == "--json");
+    match sub {
+        "crypto" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest[1..],
+                requested_json,
+                false,
+            )
+        }
+        "store" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest,
+                requested_json,
+                true,
+            )
+        }
+        "isogeny-walk" => {
+            return run_external(
+                "CRAX_ISOGENY_WALK_BIN",
+                "isogeny_walk",
+                sub,
+                &rest[1..],
+                requested_json,
+                false,
+            )
+        }
+        "icx"
+            if matches!(
+                rest.get(1).and_then(|a| a.to_str()),
+                Some("solve-prime" | "solve-cubic")
+            ) =>
+        {
+            return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
+        }
+        "ic" if matches!(
+            rest.get(1).and_then(|a| a.to_str()),
+            Some("solve-prime" | "solve-cubic")
+        ) =>
+        {
+            return run_external("CRAX_IC_BIN", "ic", sub, &rest[1..], requested_json, true);
+        }
+        _ => {}
+    }
     if let Some(tool) = tool_for(sub) {
+        if matches!(tool, Tool::Suite) && (lead_json || rest.iter().skip(1).any(|a| a == "--json"))
+        {
+            let native_args: Vec<OsString> = rest
+                .iter()
+                .skip(1)
+                .filter(|a| *a != "--json")
+                .cloned()
+                .collect();
+            return run_suite_json(sub, &native_args);
+        }
         let is_zp = matches!(tool, Tool::Ic) && rest.get(1).is_some_and(|a| a == "zp");
         if !is_zp {
             let mut argv: Vec<OsString> = vec![format!("crax {sub}").into()];
