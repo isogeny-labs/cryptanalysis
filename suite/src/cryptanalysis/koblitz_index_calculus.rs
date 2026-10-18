@@ -2473,7 +2473,8 @@ pub enum DecompositionStrategy {
     /// Quadratic Semaev systems (`m = 2`) solved by ALMASTY-inspired FES
     /// ([`crate::cryptanalysis::mq_fes`]; <https://gitlab.lip6.fr/almasty/mq>):
     /// incremental Gray early-exit, Möbius all-roots, Monica past `n = 24`.
-    /// Refuses cubic chained systems.
+    /// Chained systems (`m ≥ 3`) go to the Gray-code chain search
+    /// [`crate::cryptanalysis::fes_chain`].
     MqFes,
     /// WalkSAT local search on the same Semaev system
     /// ([`crate::cryptanalysis::walksat`]), with the [`Self::Sat`] CDCL

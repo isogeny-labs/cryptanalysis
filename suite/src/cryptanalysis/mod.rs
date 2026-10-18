@@ -148,6 +148,7 @@ pub mod f4_fp_tower;
 pub mod f4_gf2;
 pub mod f4_gpu;
 pub mod factoring;
+pub mod fes_chain;
 pub mod fes_gpu;
 pub mod ffd_harness;
 pub mod fght_snfs;

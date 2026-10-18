@@ -25,6 +25,7 @@ mod gf2_la;
 mod pdp;
 mod relation;
 mod sat;
+mod spec_fes_chain;
 mod suite_extra;
 mod walksat;
 
@@ -40,6 +41,7 @@ fn registry() -> Vec<harness::Kernel> {
     dlp::register(&mut kernels);
     suite_extra::register(&mut kernels);
     walksat::register(&mut kernels);
+    spec_fes_chain::register(&mut kernels);
     kernels
 }
 
