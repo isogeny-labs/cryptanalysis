@@ -1,0 +1,23 @@
+{
+  "schema": "ideas-highram-outcome/v1",
+  "source_commit": "111e323e7500f4e14427456a9907247b556c19c0",
+  "payload_sha256": "1f7aad2a8ad1d0f3cce2c549b93e1d4789ad22aad656f3ad44197747538bc44a",
+  "started_unix": 1792301421.908664,
+  "pod_id": null,
+  "workflow_returncode": null,
+  "results_fetched": false,
+  "deleted": false,
+  "absence_verified": false,
+  "allocation_refusals": [
+    {
+      "ram_gb": 256,
+      "error": "POST https://rest.runpod.io/v1/pods: HTTP 500: {\"error\":\"create pod: There are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\",\"status\":500}\n"
+    },
+    {
+      "ram_gb": 192,
+      "error": "POST https://rest.runpod.io/v1/pods: HTTP 500: {\"error\":\"create pod: There are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\\nThere are no instances currently available\",\"status\":500}\n"
+    }
+  ],
+  "controller_error": "No matching high-memory capacity; no pod allocated",
+  "finished_unix": 1792301426.9528668
+}
