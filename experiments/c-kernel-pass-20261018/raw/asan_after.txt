@@ -1,0 +1,218 @@
+cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DCA_SANITIZE=address,undefined \
+      -DCA_BUILD_SHARED=OFF
+-- cryptanalysis: sanitizers address,undefined
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/user/cryptanalysis/build-asan
+cmake --build build-asan -j4
+gmake[1]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[2]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[  1%] Building C object CMakeFiles/cryptanalysis_static.dir/src/modarith.c.o
+[  3%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_common.c.o
+[  4%] Building C object CMakeFiles/cryptanalysis_static.dir/src/util.c.o
+[  6%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_zp.c.o
+[  7%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_ec.c.o
+[  9%] Building C object CMakeFiles/cryptanalysis_static.dir/src/ec_tau.c.o
+[ 11%] Building C object CMakeFiles/cryptanalysis_static.dir/src/bsgs.c.o
+[ 12%] Building C object CMakeFiles/cryptanalysis_static.dir/src/rho.c.o
+[ 14%] Building C object CMakeFiles/cryptanalysis_static.dir/src/kangaroo.c.o
+[ 15%] Building C object CMakeFiles/cryptanalysis_static.dir/src/grumpy.c.o
+[ 17%] Building C object CMakeFiles/cryptanalysis_static.dir/src/precomp.c.o
+[ 19%] Building C object CMakeFiles/cryptanalysis_static.dir/src/curve.c.o
+[ 20%] Building C object CMakeFiles/cryptanalysis_static.dir/src/pohlig.c.o
+[ 22%] Building C object CMakeFiles/cryptanalysis_static.dir/src/cheon.c.o
+[ 23%] Building C object CMakeFiles/cryptanalysis_static.dir/src/linalg.c.o
+[ 25%] Building C object CMakeFiles/cryptanalysis_static.dir/src/indexcalc.c.o
+[ 26%] Building C object CMakeFiles/cryptanalysis_static.dir/src/coord.c.o
+[ 28%] Building C object CMakeFiles/cryptanalysis_static.dir/src/coord_net.c.o
+[ 30%] Building C object CMakeFiles/cryptanalysis_static.dir/src/ffi.c.o
+[ 31%] Building C object CMakeFiles/cryptanalysis_static.dir/src/gpu_rho.c.o
+[ 33%] Building C object CMakeFiles/cryptanalysis_static.dir/src/gpu_emulate.c.o
+[ 34%] Linking C static library libcryptanalysis.a
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 36%] Built target cryptanalysis_static
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 38%] Building C object CMakeFiles/cryptanalysis_cli.dir/tools/ca_cli.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 41%] Building C object CMakeFiles/ca.dir/tools/ca_cli.c.o
+[ 41%] Building C object CMakeFiles/ca_bench.dir/tools/ca_bench.c.o
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 42%] Building C object CMakeFiles/ca_perfbench.dir/tools/ca_perfbench.c.o
+[ 44%] Linking C executable cryptanalysis
+[ 46%] Linking C executable ca
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 46%] Built target cryptanalysis_cli
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 47%] Building C object CMakeFiles/test_modarith.dir/tests/test_modarith.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 47%] Built target ca
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 49%] Linking C executable ca_bench
+[ 50%] Building C object CMakeFiles/test_group.dir/tests/test_group.c.o
+[ 52%] Linking C executable ca_perfbench
+[ 53%] Linking C executable test_modarith
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 53%] Built target ca_bench
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 55%] Linking C executable test_group
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 57%] Building C object CMakeFiles/test_bsgs.dir/tests/test_bsgs.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 57%] Built target test_modarith
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 57%] Built target test_group
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 58%] Building C object CMakeFiles/test_rho.dir/tests/test_rho.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 60%] Building C object CMakeFiles/test_kangaroo.dir/tests/test_kangaroo.c.o
+[ 60%] Built target ca_perfbench
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 61%] Linking C executable test_bsgs
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 63%] Building C object CMakeFiles/test_grumpy.dir/tests/test_grumpy.c.o
+[ 65%] Linking C executable test_kangaroo
+[ 66%] Linking C executable test_rho
+[ 68%] Linking C executable test_grumpy
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 68%] Built target test_bsgs
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 68%] Built target test_rho
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 69%] Building C object CMakeFiles/test_precomp.dir/tests/test_precomp.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 71%] Building C object CMakeFiles/test_curve.dir/tests/test_curve.c.o
+[ 71%] Built target test_kangaroo
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 71%] Built target test_grumpy
+[ 73%] Building C object CMakeFiles/test_joint_tau.dir/tests/test_joint_tau.c.o
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 74%] Building C object CMakeFiles/test_pohlig.dir/tests/test_pohlig.c.o
+[ 76%] Linking C executable test_precomp
+[ 77%] Linking C executable test_pohlig
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 77%] Built target test_precomp
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 79%] Building C object CMakeFiles/test_cheon.dir/tests/test_cheon.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 79%] Built target test_pohlig
+[ 80%] Linking C executable test_joint_tau
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 82%] Building C object CMakeFiles/test_linalg.dir/tests/test_linalg.c.o
+[ 84%] Linking C executable test_cheon
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 84%] Built target test_joint_tau
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 85%] Linking C executable test_linalg
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 87%] Building C object CMakeFiles/test_indexcalc.dir/tests/test_indexcalc.c.o
+[ 87%] Built target test_cheon
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 88%] Linking C executable test_ffi
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 88%] Built target test_linalg
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 90%] Linking C executable test_indexcalc
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 92%] Building C object CMakeFiles/test_gpu.dir/tests/test_gpu.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 92%] Built target test_indexcalc
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build-asan'
+[ 93%] Building C object CMakeFiles/test_coord.dir/tests/test_coord.c.o
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 95%] Built target test_ffi
+[ 96%] Linking C executable test_gpu
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 96%] Built target test_gpu
+[ 98%] Linking C executable test_coord
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[ 98%] Built target test_coord
+[100%] Linking C executable test_curve
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build-asan'
+[100%] Built target test_curve
+gmake[2]: Leaving directory '/home/user/cryptanalysis/build-asan'
+gmake[1]: Leaving directory '/home/user/cryptanalysis/build-asan'
+ctest --test-dir build-asan --output-on-failure
+Internal ctest changing into directory: /home/user/cryptanalysis/build-asan
+Test project /home/user/cryptanalysis/build-asan
+      Start  1: modarith
+ 1/17 Test  #1: modarith .........................   Passed    0.32 sec
+      Start  2: group
+ 2/17 Test  #2: group ............................   Passed    3.00 sec
+      Start  3: bsgs
+ 3/17 Test  #3: bsgs .............................   Passed    0.14 sec
+      Start  4: rho
+ 4/17 Test  #4: rho ..............................   Passed    0.44 sec
+      Start  5: kangaroo
+ 5/17 Test  #5: kangaroo .........................   Passed   19.58 sec
+      Start  6: grumpy
+ 6/17 Test  #6: grumpy ...........................   Passed    0.11 sec
+      Start  7: precomp
+ 7/17 Test  #7: precomp ..........................   Passed    0.25 sec
+      Start  8: curve
+ 8/17 Test  #8: curve ............................   Passed    8.70 sec
+      Start  9: joint_tau
+ 9/17 Test  #9: joint_tau ........................   Passed    0.40 sec
+      Start 10: pohlig
+10/17 Test #10: pohlig ...........................   Passed    0.05 sec
+      Start 11: cheon
+11/17 Test #11: cheon ............................   Passed    0.21 sec
+      Start 12: linalg
+12/17 Test #12: linalg ...........................   Passed    9.68 sec
+      Start 13: indexcalc
+13/17 Test #13: indexcalc ........................   Passed   15.66 sec
+      Start 14: ffi
+14/17 Test #14: ffi ..............................   Passed    0.21 sec
+      Start 15: gpu
+15/17 Test #15: gpu ..............................   Passed    0.45 sec
+      Start 16: coord
+16/17 Test #16: coord ............................   Passed    3.78 sec
+      Start 17: ecc2k130-usecase
+17/17 Test #17: ecc2k130-usecase .................   Passed    0.12 sec
+
+100% tests passed, 0 tests failed out of 17
+
+Total Test time (real) =  63.11 sec

@@ -499,6 +499,10 @@ ca_status ca_ic_precompute(uint64_t p, uint64_t g, const ca_ic_params *params, c
     if (params->sieve_radius) C = params->sieve_radius;
     if (params->method == CA_IC_RANDOM_EXPONENT && !params->factor_base_bound) B = B * 3 / 2;
     if (B < 5) B = 5;
+    /* A factor-base prime q >= p reduces to 0 or to a smaller residue mod p,
+     * so its logarithm is undefined or duplicates another's and the solve
+     * fails for a tiny modulus (p < B).  p >= 7 keeps B >= 6 here. */
+    if ((uint64_t)B >= p) B = (uint32_t)(p - 1);
     uint32_t threads = params->threads ? params->threads : 1;
     st->threads = threads;
 

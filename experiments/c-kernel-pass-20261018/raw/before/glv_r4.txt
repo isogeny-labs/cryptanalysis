@@ -1,0 +1,21 @@
+libcryptanalysis 0.1.0 benchmark: glv
+
+GLV endomorphism-accelerated rho vs the plain negation-map rho on the same
+curve (S = group ops / sqrt(n)).  CM curves fold the walk by the automorphism
+group order m (6 for j=0, 4 for j=1728); a generic curve has only negation.
+
+| curve                        | endo  | m | GLV S=ops/sqrtn |  rho S | speedup | ok  |
+|------------------------------|-------|---|-----------------|-------:|--------:|-----|
+| glv-j0-26                    | j0    | 6 |           1.412 |  1.608 |   1.14x | 20/20 |
+| glv-j1728-26                 | j1728 | 4 |           1.516 |  2.038 |   1.34x | 20/20 |
+| glv-j0-32                    | j0    | 6 |           0.988 |  1.688 |   1.71x | 20/20 |
+| glv-j1728-32                 | j1728 | 4 |           1.587 |  1.487 |   0.94x | 20/20 |
+| generic-26                   | none  | 2 |           1.957 |  1.957 |   1.00x | 20/20 |
+| pf-anomalous-b9              | none  | 2 |           9.595 |  9.595 |   1.00x | 20/20 |
+| pf-generic-b7                | none  | 2 |           2.523 |  2.523 |   1.00x | 20/20 |
+| pf-ssj0-b7                   | none  | 2 |          13.702 | 13.702 |   1.00x | 20/20 |
+| pf-ssj1728-b7                | none  | 2 |          13.669 | 13.669 |   1.00x | 20/20 |
+| pf-mov-b15                   | none  | 2 |           3.499 |  3.499 |   1.00x | 20/20 |
+| pf-twist-smooth-b19          | none  | 2 |          17.322 | 17.322 |   1.00x | 20/20 |
+| pf-j0-twist-b27              | j0    | 6 |          10.717 | 11.716 |   1.09x | 20/20 |
+| volcano-l2-h3-p73-d3-floor   | none  | 2 |          17.095 | 17.095 |   1.00x | 20/20 |
