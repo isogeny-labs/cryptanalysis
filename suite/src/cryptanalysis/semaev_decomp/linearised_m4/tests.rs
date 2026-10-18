@@ -505,3 +505,29 @@ fn dispatched_and_portable_triple_loops_agree() {
         assert!(decompose_all_generic(&basis, 0, b, &fast, 1).is_none() || 4 * l + 2 * n <= 64);
     }
 }
+
+/// `Auto` takes the linearised route only where it is safe and bounded:
+/// a dependent basis (which [`TripleOracle::new`] rejects) goes to the
+/// generic chain and returns its answer, and so does a factor base past
+/// [`AUTO_LINEARISED_MAX_DIM`].
+#[test]
+fn auto_declines_dependent_and_oversized_bases() {
+    let gf = field(7, false);
+    for basis in [vec![3u64, 5, 6], vec![1, 1], vec![0, 2]] {
+        let want = decompose_all_m4(&basis, 1, 1, &gf, M4Path::Generic, usize::MAX);
+        assert!(want.decompositions.is_some(), "{basis:?}");
+        let got = decompose_all_m4(&basis, 1, 1, &gf, M4Path::Auto, usize::MAX);
+        assert_eq!(got.path, M4Path::Generic, "{basis:?}");
+        assert_eq!(got.decompositions, want.decompositions, "{basis:?}");
+    }
+    let gf = field(13, false);
+    let mut s = 0xCA90_0000_0000_0009u64;
+    let l = AUTO_LINEARISED_MAX_DIM as u32 + 1;
+    let basis = random_basis(l, &gf, &mut s);
+    let o = decompose_all_m4(&basis, 1, 1, &gf, M4Path::Auto, usize::MAX);
+    assert_eq!(o.path, M4Path::Generic);
+    assert!(
+        o.decompositions.is_none(),
+        "4l + 2n is past the solver's cap"
+    );
+}

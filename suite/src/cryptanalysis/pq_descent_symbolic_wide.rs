@@ -77,6 +77,10 @@ pub const MAX_SUMMANDS: u32 = 6;
 
 /// The largest [`field_monomial_bound`] a descent may have before it is
 /// refused: `2^22` field monomials, about 100 MB of hash map at worst.
+/// That counts only the field-coefficient map.  The split boolean system
+/// holds one term per set coefficient bit, about `n/2` times as many: at
+/// `m = 4`, `n' = 6`, `n = 63` the 2.9 M field monomials split into 90 M
+/// equation terms, about 720 MB (one review measurement, not a bound).
 pub const MAX_FIELD_MONOMIAL_BOUND: u64 = 1 << 22;
 
 /// Which construction of `S_{m+1}` to run.  Both return the same descent;
@@ -554,7 +558,7 @@ fn chain<M: BoolMask>(
     let x0 = arg_ring::<M>(args[0], np, basis);
     let x1 = arg_ring::<M>(args[1], np, basis);
     let mut p = s3_in_z(&x0, &x1, b, gf);
-    for &arg in &args[2..] {
+    for (k, &arg) in args.iter().enumerate().skip(2) {
         let q = s3_quadratic_in_y(&arg_ring::<M>(arg, np, basis), b, gf);
         p = match engine {
             Engine::Naive => resultant_naive(&p, &q, gf),
@@ -563,7 +567,13 @@ fn chain<M: BoolMask>(
                 .map(Ring::from_distinct)
                 .collect(),
         };
-        p = u_trim(p);
+        // Keep the formal degree `2^k` in `Z`, never trim: the next
+        // resultant's closed form reads `d` off the length, and a zero top
+        // coefficient (an all-zero basis) would otherwise divide the result
+        // by a power of `A`.
+        let formal = (1usize << k) + 1;
+        debug_assert!(p.iter().skip(formal).all(Ring::is_empty));
+        p.resize_with(formal, Ring::default);
     }
     p
 }
@@ -1238,9 +1248,10 @@ mod tests {
             let gf = &inst.gf;
             for (m, nps) in [
                 (2u32, vec![1u32, 6, 13, 20, 32]),
-                (3, vec![1, 2, 3, 5, 6, 8, 10, 11, 12, 14, 15]),
+                (3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
             ] {
-                for np in nps {
+                // n' = 13 at m = 3 once: the slow end, kept to one curve.
+                for np in nps.into_iter().filter(|&np| m != 3 || np != 13 || n == 17) {
                     let basis = random_basis(&mut rng, np, gf.mask);
                     let x_r = rng.gen::<u64>() & gf.mask;
                     let fast = descend(gf, inst.b, x_r, &basis, m).unwrap();
@@ -1261,6 +1272,52 @@ mod tests {
                         );
                         assert_eq!(sys.field_monomials, fast.field_monomials);
                         assert_eq!(sys.lift(5), fast.lift(5));
+                    }
+                }
+            }
+        }
+        // The Koblitz value b = 1 and the standard basis `binary-subspace`
+        // builds, unreduced (`1 << k`, k ≥ n) once n' > n.
+        for &(n, seed) in &[(7u32, 5u64), (11, 6)] {
+            let inst = random_binary_instance(n, seed, 1 << 20).expect("a curve");
+            let gf = &inst.gf;
+            for np in [3u32, 4, 7, 9, 13] {
+                let basis = standard_basis(np);
+                // n' = 13 once: b = 1, unreduced at n = 7.
+                let bs = match (np, n) {
+                    (13, 7) => vec![1],
+                    (13, _) => vec![],
+                    _ => vec![1, inst.b],
+                };
+                for b in bs {
+                    let x_r = rng.gen::<u64>() & gf.mask;
+                    let fast = descend(gf, b, x_r, &basis, 3).unwrap();
+                    let sys = descend_narrow(gf, b, x_r, &basis, 3).unwrap();
+                    assert_eq!(sys.equations, fast.equations, "n = {n} n' = {np} b = {b}");
+                    assert_eq!(sys.field_monomials, fast.field_monomials);
+                }
+            }
+        }
+    }
+
+    /// **An all-zero basis keeps the formal degree**: `S_6` and `S_7` on
+    /// `v_basis = [0; n']` are the word evaluator's, on both engines.  A
+    /// trimmed zero top coefficient used to divide the chain's resultant
+    /// by a power of `A` there.
+    #[test]
+    fn an_all_zero_basis_is_the_truth_table_descent() {
+        for &(n, seed) in &[(7u32, 1u64), (13, 2)] {
+            let inst = random_binary_instance(n, seed, 1 << 20).expect("a curve");
+            let gf = &inst.gf;
+            for m in [5u32, 6] {
+                for np in 1..=2u32 {
+                    let basis = vec![0u64; np as usize];
+                    for (b, x_r) in [(1u64, 0u64), (inst.b, 1), (inst.b, inst.b)] {
+                        let table = truth_table_descent(gf, b, x_r, &basis, m);
+                        for engine in [Engine::Tensor, Engine::Naive] {
+                            let sys = descend_narrow_with(engine, gf, b, x_r, &basis, m).unwrap();
+                            assert_eq!(masks(&sys), table, "{engine:?} n = {n} m = {m} n' = {np}");
+                        }
                     }
                 }
             }
