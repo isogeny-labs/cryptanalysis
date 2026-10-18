@@ -317,12 +317,37 @@ static int glv_recover(const ca_group *g, const ca_elem *base, const ca_elem *ta
     return 0;
 }
 
+#ifdef CA_GLV_TRACE
+#    include <stdio.h>
+#    include <stdlib.h>
+#    define GLV_RING 64
+/* Where glv_rho_solve's group operations go, written as one JSON line per
+ * solve to $CA_GLV_TRACE_FILE.  Diagnostic builds only (-DCA_GLV_TRACE); the
+ * walk itself is unchanged. */
+typedef struct glv_trace {
+    uint64_t table_ops, start_ops, restart_ops, step_ops;
+    uint64_t useful_steps, retry_steps, iterations;
+    uint64_t dps, coll_total, coll_same_ab, coll_recover_fail;
+    uint64_t abandons, abandon_wasted, abandon_cycle, abandon_nocycle;
+    uint64_t cycle_len[GLV_RING + 1];
+    uint64_t cycle2_same_idx, cycle2_after_retry; /* 2-cycles whose two steps used one multiplier;
+                                                     of those, entered through a retry */
+} glv_trace;
+#endif
+
 typedef struct glv_walk {
     ca_elem Y;
     uint64_t a, b;
     uint64_t since_dp;
     uint32_t idx;
     uint8_t retry;
+#ifdef CA_GLV_TRACE
+    uint64_t ring[GLV_RING];
+    uint32_t ring_idx[GLV_RING];
+    uint8_t ring_retry[GLV_RING];
+    uint32_t ring_pos;
+    uint8_t retried;
+#endif
 } glv_walk;
 
 /* base/target and the multiplier table travel with the walk in this context
@@ -580,6 +605,11 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     ca_rng rng;
     ca_rng_seed(&rng, ca_seed_or_random(seed));
     uint64_t ops = 0;
+#ifdef CA_GLV_TRACE
+    glv_trace tr;
+    memset(&tr, 0, sizeof(tr));
+    uint64_t ops_mark = 0;
+#endif
     c.M = calloc(c.r, sizeof(ca_elem));
     c.alpha = calloc(c.r, sizeof(uint64_t));
     c.beta = calloc(c.r, sizeof(uint64_t));
@@ -632,6 +662,10 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             startup->evaluation_seconds += ca_now() - batch_start;
         }
     }
+#ifdef CA_GLV_TRACE
+    tr.table_ops = ops - ops_mark;
+    ops_mark = ops;
+#endif
     double exp_dps = 1.25 * (double)sqrt_nm / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&tab, (size_t)(exp_dps < 1e8 ? exp_dps : 1e8)) != CA_OK) goto nomem;
     have_tab = 1;
@@ -642,6 +676,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             goto done;
         }
     }
+#ifdef CA_GLV_TRACE
+    tr.start_ops = ops - ops_mark;
+#endif
     uint64_t cap = 64 * sqrt_nm * c.m + (1ULL << 20); /* runaway guard */
     while (ops < cap) {
         for (uint32_t w = 0; w < W; w++) {
@@ -652,6 +689,10 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
         }
         ca_group_batch_op(g, Yn, Yn, B, W, scratch);
         ops += W;
+#ifdef CA_GLV_TRACE
+        tr.step_ops += W;
+        tr.iterations++;
+#endif
         for (uint32_t w = 0; w < W; w++) {
             glv_walk *wk = &walks[w];
             uint32_t k = glv_class_reduce(g, &Yn[w], c.m);
@@ -663,9 +704,20 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             if ((uint32_t)(ca_mix64(h) % c.r) == wk->idx) {
                 wk->idx = (wk->idx + 1) % c.r;
                 wk->retry = 1;
+#ifdef CA_GLV_TRACE
+                tr.retry_steps++;
+                wk->retried = 1;
+#endif
                 continue;
             }
             wk->retry = 0;
+#ifdef CA_GLV_TRACE
+            tr.useful_steps++;
+            wk->ring_idx[wk->ring_pos % GLV_RING] = wk->idx;
+            wk->ring_retry[wk->ring_pos % GLV_RING] = wk->retried;
+            wk->retried = 0;
+            wk->ring[wk->ring_pos++ % GLV_RING] = h;
+#endif
             wk->a = ca_addmod(wk->a, c.alpha[wk->idx], n);
             wk->b = ca_addmod(wk->b, c.beta[wk->idx], n);
             if (k) {
@@ -679,26 +731,109 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 int ins = ca_htab_insert(&tab, h, wk->a, wk->b, &oa, &ob);
                 if (ins < 0) goto nomem;
                 wk->since_dp = 0;
+#ifdef CA_GLV_TRACE
+                tr.dps++;
+#endif
                 if (ins == 1) {
+#ifdef CA_GLV_TRACE
+                    tr.coll_total++;
+                    if (oa == wk->a && ob == wk->b) tr.coll_same_ab++;
+#endif
                     if (!(oa == wk->a && ob == wk->b) &&
                         glv_recover(g, base, target, n, oa, ob, wk->a, wk->b, x)) {
                         rc = CA_OK;
                         goto done;
                     }
+#ifdef CA_GLV_TRACE
+                    if (!(oa == wk->a && ob == wk->b)) tr.coll_recover_fail++;
+                    uint64_t before = ops;
+#endif
                     if (!glv_restart(&c, wk, &rng, &ops)) {
                         rc = CA_ERR_INTERNAL;
                         goto done;
                     }
+#ifdef CA_GLV_TRACE
+                    tr.restart_ops += ops - before;
+                    wk->ring_pos = 0;
+                    wk->retried = 0;
+#endif
                 }
             } else if (wk->since_dp > c.abandon) {
+#ifdef CA_GLV_TRACE
+                tr.abandons++;
+                tr.abandon_wasted += wk->since_dp;
+                { /* is the walk in a short cycle?  find the current hash among the previous ones */
+                    uint32_t L = 0, have = wk->ring_pos < GLV_RING ? wk->ring_pos : GLV_RING;
+                    for (uint32_t d = 1; d < have && !L; d++)
+                        if (wk->ring[(wk->ring_pos - 1 - d) % GLV_RING] == h) L = d;
+                    if (L) {
+                        tr.abandon_cycle++;
+                        tr.cycle_len[L]++;
+                    } else
+                        tr.abandon_nocycle++;
+                    if (L == 2) {
+                        uint32_t i1 = wk->ring_idx[(wk->ring_pos - 1) % GLV_RING],
+                                 i2 = wk->ring_idx[(wk->ring_pos - 2) % GLV_RING];
+                        if (i1 == i2) {
+                            tr.cycle2_same_idx++;
+                            if (wk->ring_retry[(wk->ring_pos - 1) % GLV_RING] ||
+                                wk->ring_retry[(wk->ring_pos - 2) % GLV_RING])
+                                tr.cycle2_after_retry++;
+                        }
+                    }
+                }
+                uint64_t before = ops;
+#endif
                 if (!glv_restart(&c, wk, &rng, &ops)) {
                     rc = CA_ERR_INTERNAL;
                     goto done;
                 }
+#ifdef CA_GLV_TRACE
+                tr.restart_ops += ops - before;
+                wk->ring_pos = 0;
+                wk->retried = 0;
+#endif
             }
         }
     }
 done:
+#ifdef CA_GLV_TRACE
+{
+    const char *path = getenv("CA_GLV_TRACE_FILE");
+    FILE *fp = path ? fopen(path, "a") : NULL;
+    if (fp) {
+        fprintf(fp,
+                "{\"m\":%u,\"n\":%llu,\"W\":%u,\"r\":%u,\"dp_bits\":%d,\"abandon_after\":%llu,"
+                "\"solved\":%d,\"total_ops\":%llu,"
+                "\"table_ops\":%llu,\"start_ops\":%llu,\"restart_ops\":%llu,\"step_ops\":%llu,"
+                "\"useful_steps\":%llu,\"retry_steps\":%llu,"
+                "\"iterations\":%llu,\"dps\":%llu,\"coll_total\":%llu,\"coll_same_ab\":%llu,\"coll_"
+                "recover_fail\":%llu,"
+                "\"abandons\":%llu,\"abandon_wasted\":%llu,\"abandon_cycle\":%llu,\"abandon_"
+                "nocycle\":%llu,"
+                "\"cycle2_same_idx\":%llu,\"cycle2_after_retry\":%llu,\"cycle_len\":{",
+                c.m, (unsigned long long)n, W, c.r, c.dp_bits, (unsigned long long)c.abandon,
+                rc == CA_OK, (unsigned long long)ops, (unsigned long long)tr.table_ops,
+                (unsigned long long)tr.start_ops, (unsigned long long)tr.restart_ops,
+                (unsigned long long)tr.step_ops, (unsigned long long)tr.useful_steps,
+                (unsigned long long)tr.retry_steps, (unsigned long long)tr.iterations,
+                (unsigned long long)tr.dps, (unsigned long long)tr.coll_total,
+                (unsigned long long)tr.coll_same_ab, (unsigned long long)tr.coll_recover_fail,
+                (unsigned long long)tr.abandons, (unsigned long long)tr.abandon_wasted,
+                (unsigned long long)tr.abandon_cycle, (unsigned long long)tr.abandon_nocycle,
+                (unsigned long long)tr.cycle2_same_idx, (unsigned long long)tr.cycle2_after_retry);
+        int first = 1;
+        for (int L = 1; L <= GLV_RING; L++)
+            if (tr.cycle_len[L]) {
+                fprintf(fp, "%s\"%d\":%llu", first ? "" : ",", L,
+                        (unsigned long long)tr.cycle_len[L]);
+                first = 0;
+            }
+        fprintf(fp, "}}\n");
+        fclose(fp);
+    }
+}
+#endif
     if (st) {
         st->group_ops += ops;
         st->table_entries = ca_max_u64(st->table_entries, tab.count);
