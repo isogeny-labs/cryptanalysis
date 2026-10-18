@@ -1,0 +1,30 @@
+[
+  {
+    "argv": [
+      "dot",
+      "-Tsvg",
+      "gpu-final-flow.dot",
+      "-o",
+      "gpu-final-flow.svg"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "dot",
+      "-Tpng",
+      "-Gdpi=150",
+      "gpu-final-flow.dot",
+      "-o",
+      "gpu-final-flow.png"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "pdf_returncode": 0,
+    "overfull_lines": [],
+    "pages": 6
+  }
+]

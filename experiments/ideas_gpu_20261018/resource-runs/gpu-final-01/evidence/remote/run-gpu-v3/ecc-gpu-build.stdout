@@ -1,0 +1,9 @@
+make: Entering directory '/root/cryptanalysis/experiments/ideas_gpu_20261018/source/tree/ecc2k130'
+/root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-gpu-v3/cuda/bin/nvcc -O3 -std=c++17 -gencode arch=compute_89,code=sm_89 -DECC_BATCH=16 -DECC_THREADS=256 -DECC_MINBLOCKS=2 -DECC_PACKED_SINGLE_PRODUCT=1 -DECC_PACKED_CACHE_DENOM=1 -DECC_PACKED_BY_VALUE=1 -DECC_PACKED_PERM_SIGMA=3 -DECC_PACKED_POLY_CHAIN=1 -DECC_PACKED_UNROLL_INV=1 -DECC_PACKED_PAIR_PRODUCTS=1 -DECC_PACKED_POLY_STATE=1 -DECC_PACKED_DIRECT_REDUCE=1 -DECC_PACKED_GENERATED_PRODUCT=1 -DECC_PACKED_CLMAD=1 -DECC_PACKED_STATE_TILE=256 -DECC_PACKED_WEIGHTED_PREFIX=2 -DECC_PACKED_COMPACT_STATE=1 -DECC_WALK_TABLE=0 -DECC_PACKED_SHARED_SIGMA=1 -Xptxas -v -lineinfo -Xcompiler -O3 \
+    src/ec2k_gpu.cu /root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-gpu-v3/build/sigma/hostcheck.o /root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-gpu-v3/build/model.o -o /root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-gpu-v3/build/ec2k-gpu 2>&1 \
+    | grep -E "Compiling entry|Used|spill|error" | grep -v "0 bytes spill" || true
+ptxas info    : Compiling entry function '_ZN12eccPacked1314walkE10WalkParamsIjEPj' for 'sm_89'
+ptxas info    : Used 90 registers, used 1 barriers, 1792 bytes smem, 480 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compiling entry function '_ZN12eccPacked1314initE10WalkParamsIjEb' for 'sm_89'
+ptxas info    : Used 107 registers, used 0 barriers, 473 bytes cmem[0]
+make: Leaving directory '/root/cryptanalysis/experiments/ideas_gpu_20261018/source/tree/ecc2k130'

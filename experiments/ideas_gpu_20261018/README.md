@@ -1,5 +1,7 @@
 # Bounded GPU continuation: items 7 and 13
 
+Final allocated attempt: **RTX4090 client compiled, but CUDA device initialization failed before GPU arithmetic; cause unknown**. Host KAT/positive fixtures passed; original large frontier was gated by71GB effective RAM<192GB. The controller fetched/deleted/verified absence, and independent final inventory finds all five known allocated campaign IDs absent with zero campaign-prefix resources. No further allocation follows. See [final attempt](GPU_FINAL_RESULTS.md), [inventory receipt](resource-runs/gpu-final-01/root-final-inventory.json), and the sixth-page PDF addendum. Earlier controls/failures stay qualified below.
+
 Latest CPU API-v2 attempt: **two actual HTTP400 capacity refusals; no pod allocated and no scientific trial**. Published controller493f0ca requested cpu3m/cpu5m; independent root inventory closeout found zero matching/active campaign resources and stopped the exact local idle watchdog. Original outcome fields remain unchanged. See [CPU API-v2 results](CPU_API_V2_RESULTS.md) and the fifth-page PDF addendum. Catalog-derived256GB was not an allocated host measurement.
 
 Latest separate GPU-v3 attempt: **CUDA build passed, device initialization failed; no GPU walk executed**. Its effective125GB RAM also failed the192GB frontier gate. The CPU-v3 request was capacity-refused without allocating a pod. See [GPU-v3 addendum](GPU_V3_RESULTS.md); that pod was fetched/deleted and absence verified.
