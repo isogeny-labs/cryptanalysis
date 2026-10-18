@@ -2475,6 +2475,12 @@ pub enum DecompositionStrategy {
     /// incremental Gray early-exit, Möbius all-roots, Monica past `n = 24`.
     /// Refuses cubic chained systems.
     MqFes,
+    /// WalkSAT local search on the same Semaev system
+    /// ([`crate::cryptanalysis::walksat`]), with the [`Self::Sat`] CDCL
+    /// path as the fallback whenever the walk ends without a
+    /// decomposition.  Verdicts are exactly the CDCL verdicts; the walk
+    /// only ever contributes verified, lifted decompositions.
+    WalkSat,
 }
 
 /// Packed identity of a point for hashing and sorting, in one `u64`:
@@ -6557,6 +6563,21 @@ fn koblitz_index_calculus_dlp_observed(
                     );
                     RelationAttemptOutcome::Sat(idxs, stats)
                 }
+                DecompositionStrategy::WalkSat => {
+                    let (idxs, stats) = crate::cryptanalysis::walksat::walksat_then_sat_decompose(
+                        kc,
+                        fb,
+                        &index_of,
+                        &field,
+                        target,
+                        opts.m,
+                        opts.max_models,
+                        opts.sat_macaulay_degree,
+                        opts.sat_options,
+                        &crate::cryptanalysis::walksat::WalkSatDecompositionOptions::default(),
+                    );
+                    RelationAttemptOutcome::Sat(idxs, stats)
+                }
             }
         };
         // Targets are drawn serially above and consumed in order below,
@@ -8114,6 +8135,21 @@ fn decompose_once(
         DecompositionStrategy::MqFes => {
             crate::cryptanalysis::mq_fes::mq_fes_decompose(kc, fb, index_of, field, target, opts.m)
                 .0
+        }
+        DecompositionStrategy::WalkSat => {
+            crate::cryptanalysis::walksat::walksat_then_sat_decompose(
+                kc,
+                fb,
+                index_of,
+                field,
+                target,
+                opts.m,
+                opts.max_models,
+                opts.sat_macaulay_degree,
+                opts.sat_options,
+                &crate::cryptanalysis::walksat::WalkSatDecompositionOptions::default(),
+            )
+            .0
         }
     }
 }
