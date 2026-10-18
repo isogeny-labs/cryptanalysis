@@ -191,6 +191,7 @@ pub mod koblitz_pdp_phase_a;
 pub mod koblitz_relation_solver;
 pub mod koblitz_sparse_la;
 pub mod koblitz_symmetrised;
+pub mod koblitz_symmetrised_m5;
 pub mod lattice;
 pub mod legacy_curve_attacks;
 pub mod matrix_f5_f2;
