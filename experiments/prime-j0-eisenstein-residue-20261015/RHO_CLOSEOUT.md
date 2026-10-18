@@ -123,8 +123,8 @@ The qualified 32- and 128-restart results locate a reuse regime where the
 mixed-76 evaluation saving exceeds its preparation cost. They do not select
 the one-restart worker path, whose separate A/A gate failed.
 
-The collaborative rho phase profiler in the `crypto` repository, commit
-`fb7f6c2e33`, records one deterministic secp256k1 worker trace with 32 branch points,
+The collaborative rho phase profiler in the `crypto` repository records one
+deterministic secp256k1 worker trace with 32 branch points,
 four starts, and 10,152 walk steps. Its same-state local runs show large
 wall-time variation, so its phase fractions are diagnostics. Its measured
 per-step rate extrapolates to roughly 0.09% setup-plus-start time for 256
@@ -153,5 +153,24 @@ qualified test on the walk addition. The frozen Tier 1 panel has 384 pairs,
 including two A/A controls per Q and four repetitions. Default routing
 changes only after its independent audit passes exact replay, host and
 memory gates, and a Q-cluster 95% lower paired speedup bound above 1.05.
-The Rust source transfer to RunPod was rejected by automatic approval
-review, so the Tier 1 worker result remains pending.
+
+The worker branch has since been rebased onto repaired `crypto` main commit
+`abee07ee7337d04a7e734333669ca1bacd6c763a`. The
+[rebased-main validation receipt](https://github.com/aburan28/crypto/blob/ceddefda1ea16c99cb3b0cf3d3e8db4c9065f44f/experiments/rho-worker-phase-profile-20261017/rebased-main-validation.json)
+pins a source bundle rebuilt identically twice at SHA-256
+`abd7a2eaeebca050dcf0a9f2290c02b116dbdd4b0bfb43cb45bf4be1ca5f7025`.
+Its clean extraction built a byte-identical release benchmark and passed an
+independent q00 serial/batch replay. On the complete checkout, 4,396 release
+library tests passed with zero failures and 118 ignored; all 64 long replay
+arms across the 32 frozen Q points matched in 32 serial/batch pairs. These
+are build and correctness receipts, not qualified throughput evidence.
+
+For the locally observed 3.61% setup/start share, even eliminating that phase
+would improve total time by at most `1/(1 - 0.0361) = 1.037x` on that trace.
+The share requires a qualified-host measurement before it can bound the
+worker generally. The 768-arm worker panel remains the decisive next test:
+exact replay, passing A/A and host-noise gates, both a 10% relative and a
+64 MiB absolute cap on additional peak RSS, and a Q-cluster 95% lower paired
+speedup bound above 1.05 are required to enable batched routing. The Rust
+source transfer to RunPod was rejected by automatic approval review, and the
+workspace lacks a rotated `RUNPOD_API_KEY` secret; the hosted result is pending.
