@@ -249,3 +249,1920 @@ curves:
         - IW1E263d1hadee4e69fa3d
       outgoing: []
     evidence_ref: experiments/ic-candidate-catalog/isogeny_routes.json
+  # IC board curves (leaderboard tables A-C, one record per distinct slug; T11, 2026-10-18).
+  # Identity (EC1 curve ID and UID, field and curve records) and the ICV1 crosswalk are copied
+  # unchanged from docs/curves/registry.json, so strings such as subgroup_order stay strings:
+  # an integer would change the hashed record and so the UID. A table-C representation is the
+  # one named by research/ic_descent_20260930/curve_ids.json.
+  # factor_base_sources is not a schema field: it names where the board takes each curve's
+  # factor-base size and recipe. point_set_sha256 is null because no source carries a point-set
+  # digest; factor_base_refs stays empty and factor_base_link_status not_reconciled until an
+  # FB1 archive entry is reconciled (docs/curves/ic/README.md).
+  icv1_f2m47_t22705043_f4e44623:
+    label: 'IC board curve icv1-f2m47-t22705043-f4e44623 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^47))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m47-t22705043-f4e44623
+    curve_id: EC1N47Ce1h9669b6d5105b
+    curve_uid: 'urn:ec-record:1:sha256:9669b6d5105b035b2ff286a4e32c52725841e8546ab03de8a8077c5114e98b0c'
+    icv1_identity:
+      slug: icv1-f2m47-t22705043-f4e44623
+      full: 'ICV1:f2m-47-6034b035:22705043:140737465650286:0x1:-7:unk:r:f4e4462320d9'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 5264
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N47Ckb1fb5264PDP3pairtableRCaimedLAsparseTDwalkISO0h56c76c69f8c7
+      - table: C
+        points: 5264
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 47
+      representation: polynomial
+      modulus_exponents:
+        - 47
+        - 5
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '106781081677'
+      cofactor: 1318
+      generator:
+        - '0x6adb56a256c5'
+        - '0x4338047135e3'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m57_tm747311035_c1f545af:
+    label: 'IC board curve icv1-f2m57-tm747311035-c1f545af (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x1 over GF(2^57))'
+    curve_tag: e0
+    curve_ref: ic-board/icv1-f2m57-tm747311035-c1f545af
+    curve_id: EC1N57Ce0hb5884395c7f2
+    curve_uid: 'urn:ec-record:1:sha256:b5884395c7f28d0d22eb1acc451c34ff979b0a40f93629e44b30107592b76695'
+    icv1_identity:
+      slug: icv1-f2m57-tm747311035-c1f545af
+      full: 'ICV1:f2m-57-07f61dad:-747311035:144115188823166908:0x1:-7:unk:r:c1f545af2eb9'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 7296
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N57Ckb0fb7296PDP3pairtableRCaimedLAsparseTDwalkISO0h1a8fa89c2757
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 57
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+      modulus_exponents:
+        - 57
+        - 4
+        - 0
+      representation: polynomial
+    curve:
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+      cofactor: 523492
+      generator:
+        - '0x152b73c20219bc'
+        - '0xffeaa680a84eeb'
+      model: binary Weierstrass
+      subgroup_order: '275295876199'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m41_tm2308219_7f48b14a:
+    label: 'IC board curve icv1-f2m41-tm2308219-7f48b14a (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x1 over GF(2^41))'
+    curve_tag: e0
+    curve_ref: ic-board/icv1-f2m41-tm2308219-7f48b14a
+    curve_id: EC1N41Ce0he09550ab560a
+    curve_uid: 'urn:ec-record:1:sha256:e09550ab560a9bb6de7981f4b47c48235d8553626dc43dbe92bf73262a95a8e1'
+    icv1_identity:
+      slug: icv1-f2m41-tm2308219-7f48b14a
+      full: 'ICV1:f2m-41-39c74c32:-2308219:2199025563772:0x1:-7:unk:r:7f48b14a43b8'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 6560
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N41Ckb0fb6560PDP3pairtableRCaimedLAsparseTDwalkISO0h5b25909970b3
+      - table: C
+        points: 6560
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 41
+      representation: polynomial
+      modulus_exponents:
+        - 41
+        - 3
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+      subgroup_order: '549756390943'
+      cofactor: 4
+      generator:
+        - '0x1deeba21c88'
+        - '0x17ccbb7d40e'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m53_tm56619371_dac20a85:
+    label: 'IC board curve icv1-f2m53-tm56619371-dac20a85 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x1 over GF(2^53))'
+    curve_tag: e0
+    curve_ref: ic-board/icv1-f2m53-tm56619371-dac20a85
+    curve_id: EC1N53Ce0hb097de99be9a
+    curve_uid: 'urn:ec-record:1:sha256:b097de99be9a3af970966707e65d24bf63302ba5324f05b714f916a680651ae6'
+    icv1_identity:
+      slug: icv1-f2m53-tm56619371-dac20a85
+      full: 'ICV1:f2m-53-8e1a71e5:-56619371:9007199311360364:0x1:-7:unk:r:dac20a8570a8'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 27984
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N53Ckb0fb27984PDP3pairtableRCaimedLAsparseTDwalkISO0h715dd7692112
+      - table: C
+        points: 27984
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 53
+      representation: polynomial
+      modulus_exponents:
+        - 53
+        - 6
+        - 2
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+      subgroup_order: '21044858204113'
+      cofactor: 428
+      generator:
+        - '0xb447205ea953'
+        - '0x1c2c3312123e9e'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m59_tm943548413_98844ecc:
+    label: 'IC board curve icv1-f2m59-tm943548413-98844ecc (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^59))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m59-tm943548413-98844ecc
+    curve_id: EC1N59Ce1h20858f64459b
+    curve_uid: 'urn:ec-record:1:sha256:20858f64459bbef8a18a8b75dbe579ce4cb0901d5c1b70d236ac154427d86980'
+    icv1_identity:
+      slug: icv1-f2m59-tm943548413-98844ecc
+      full: 'ICV1:f2m-59-eeb35974:-943548413:576460753246971902:0x1:-7:unk:r:98844eccbb36'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 30208
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N59Ckb1fb30208PDP3pairtableRCaimedLAsparseTDwalkISO0hbc6af57810c8
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 59
+      representation: polynomial
+      modulus_exponents:
+        - 59
+        - 7
+        - 4
+        - 2
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '25179555920633'
+      cofactor: 22894
+      generator:
+        - '0x4637772649759e9'
+        - '0x23c2d5da728b130'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m61_t158598901_ab42b6c5:
+    label: 'IC board curve icv1-f2m61-t158598901-ab42b6c5 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x1 over GF(2^61))'
+    curve_tag: e0
+    curve_ref: ic-board/icv1-f2m61-t158598901-ab42b6c5
+    curve_id: EC1N61Ce0hd8c15448081e
+    curve_uid: 'urn:ec-record:1:sha256:d8c15448081eb349784c3d5d9d3144eaa4a5252d115f9049e10bbadf373db689'
+    icv1_identity:
+      slug: icv1-f2m61-t158598901-ab42b6c5
+      full: 'ICV1:f2m-61-78c443be:158598901:2305843009055095052:0x1:-7:unk:r:ab42b6c597c6'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: A
+        points: 39040
+        recipe: koblitz_one_target
+        source: research/ic_tool_program/rule/v3/analysis.json
+        point_set_sha256: null
+        candidate_id: IC1N61Ckb0fb39040PDP3pairtableRCaimedLAsparseTDwalkISO0he9352435e473
+      - table: C
+        points: 39040
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 61
+      representation: polynomial
+      modulus_exponents:
+        - 61
+        - 5
+        - 2
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+      subgroup_order: '162888033982417'
+      cofactor: 14156
+      generator:
+        - '0x5cc1d6ba365013e'
+        - '0x171d9a59a2d31eb9'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp10_t5_192cb216:
+    label: 'IC board curve icv1-fp10-t5-192cb216 (prime-field, y^2=x^3+a*x+b with a=1, b=15 over GF(827))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp10-t5-192cb216
+    curve_id: EC1P10Cfphcf15d87ab724
+    curve_uid: 'urn:ec-record:1:sha256:cf15d87ab724c8d1fc74d88af320937e4c1cc7e706d4e0e8a0d11734831342a3'
+    icv1_identity:
+      slug: icv1-fp10-t5-192cb216
+      full: 'ICV1:fp-827:5:823:463:unk:unk:r:192cb216d592'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '463'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 10
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 827
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 15
+      subgroup_order: '823'
+      cofactor: 1
+      generator:
+        - '0x2'
+        - '0x336'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp12_t19_d4a315df:
+    label: 'IC board curve icv1-fp12-t19-d4a315df (prime-field, y^2=x^3+a*x+b with a=1, b=3 over GF(3907))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp12-t19-d4a315df
+    curve_id: EC1P12Cfphe249b36f57ee
+    curve_uid: 'urn:ec-record:1:sha256:e249b36f57ee347ccac32df31968fd6aa04c2e9161b023388a77b2e82c974d4a'
+    icv1_identity:
+      slug: icv1-fp12-t19-d4a315df
+      full: 'ICV1:fp-3907:19:3889:3239:unk:unk:r:d4a315df72ed'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '3239'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 32
+        recipe: mitm_m2_negfold_walk
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 3907
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 3
+      subgroup_order: '3889'
+      cofactor: 1
+      generator:
+        - '0x6'
+        - '0xf'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp14_tm43_158b6914:
+    label: 'IC board curve icv1-fp14-tm43-158b6914 (prime-field, y^2=x^3+a*x+b with a=1, b=12 over GF(16187))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp14-tm43-158b6914
+    curve_id: EC1P14Cfph4f360f746508
+    curve_uid: 'urn:ec-record:1:sha256:4f360f746508dc06057c047d86463d426d802a68c7d719cc464b309780e4b2e4'
+    icv1_identity:
+      slug: icv1-fp14-tm43-158b6914
+      full: 'ICV1:fp-16187:-43:16231:12429:unk:unk:r:158b69140d4b'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '12429'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 26
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 16187
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 12
+      subgroup_order: '16231'
+      cofactor: 1
+      generator:
+        - '0x6'
+        - '0x3d1f'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp16_t351_d433f24e:
+    label: 'IC board curve icv1-fp16-t351-d433f24e (prime-field, y^2=x^3+a*x+b with a=1, b=16 over GF(65353))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp16-t351-d433f24e
+    curve_id: EC1P16Cfph25cb80ed53b2
+    curve_uid: 'urn:ec-record:1:sha256:25cb80ed53b2ef56b40393ed5c53f586b07b919cfa6250d138c946abd917f6b3'
+    icv1_identity:
+      slug: icv1-fp16-t351-d433f24e
+      full: 'ICV1:fp-65353:351:65003:20412:unk:unk:r:d433f24edf51'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '20412'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 40
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 65353
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 16
+      subgroup_order: '65003'
+      cofactor: 1
+      generator:
+        - '0x1'
+        - '0x3b3d'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp18_t175_45770ebc:
+    label: 'IC board curve icv1-fp18-t175-45770ebc (prime-field, y^2=x^3+a*x+b with a=3, b=2 over GF(261847))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp18-t175-45770ebc
+    curve_id: EC1P18Cfphf3346c488da6
+    curve_uid: 'urn:ec-record:1:sha256:f3346c488da69d51303dc3f0c3de3b8de9358a8645a80f33e75388e02ce2d50b'
+    icv1_identity:
+      slug: icv1-fp18-t175-45770ebc
+      full: 'ICV1:fp-261847:175:261673:864:unk:unk:r:45770ebcfcb2'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '864'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 64
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 261847
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 3
+        - 2
+      subgroup_order: '261673'
+      cofactor: 1
+      generator:
+        - '0x2'
+        - '0x4'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp20_t1293_3c2999ba:
+    label: 'IC board curve icv1-fp20-t1293-3c2999ba (prime-field, y^2=x^3+a*x+b with a=1, b=11 over GF(1048291))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp20-t1293-3c2999ba
+    curve_id: EC1P20Cfphbc31d4165da7
+    curve_uid: 'urn:ec-record:1:sha256:bc31d4165da7e5ea9b09a2a803cb545e74d20cccd9d011d8eb3e112037a95cdf'
+    icv1_identity:
+      slug: icv1-fp20-t1293-3c2999ba
+      full: 'ICV1:fp-1048291:1293:1046999:326892:unk:unk:r:3c2999ba43b0'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '326892'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 102
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 1048291
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 1
+        - 11
+      subgroup_order: '1046999'
+      cofactor: 1
+      generator:
+        - '0x1'
+        - '0x1e07c'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp22_tm1267_a5acaf6d:
+    label: 'IC board curve icv1-fp22-tm1267-a5acaf6d (prime-field, y^2=x^3+a*x+b with a=2224215, b=1791205 over GF(3290411))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp22-tm1267-a5acaf6d
+    curve_id: EC1P22Cfph3a2d8d148cc5
+    curve_uid: 'urn:ec-record:1:sha256:3a2d8d148cc5a22c2cd57c7925f2c5305963bc1fceb0a939b64c46d0ff56a720'
+    icv1_identity:
+      slug: icv1-fp22-tm1267-a5acaf6d
+      full: 'ICV1:fp-3290411:-1267:3291679:2453699:unk:unk:r:a5acaf6ddb6f'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '2453699'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 148
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 3290411
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 2224215
+        - 1791205
+      subgroup_order: '3291679'
+      cofactor: 1
+      generator:
+        - '0x108090'
+        - '0x1fbff2'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_fp24_t1577_77336155:
+    label: 'IC board curve icv1-fp24-t1577-77336155 (prime-field, y^2=x^3+a*x+b with a=5320418, b=8535318 over GF(10935329))'
+    curve_tag: fp
+    curve_ref: ic-board/icv1-fp24-t1577-77336155
+    curve_id: EC1P24Cfpha08989ff9bd9
+    curve_uid: 'urn:ec-record:1:sha256:a08989ff9bd9ffe8ca87576f2cbe083806beb6ec162e33194946cb0ddd378027'
+    icv1_identity:
+      slug: icv1-fp24-t1577-77336155
+      full: 'ICV1:fp-10935329:1577:10933753:2786525:unk:unk:r:773361558ca8'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '2786525'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 222
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 10935329
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+        - 0
+        - 0
+        - 0
+        - 5320418
+        - 8535318
+      subgroup_order: '10933753'
+      cofactor: 1
+      generator:
+        - '0x3f122'
+        - '0x959ceb'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m15_t131_ed7256f0:
+    label: 'IC board curve icv1-f2m15-t131-ed7256f0 (random binary, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x524b over GF(2^15))'
+    curve_tag: rb
+    curve_ref: ic-board/icv1-f2m15-t131-ed7256f0
+    curve_id: EC1N15Crbhe4e02575ec1c
+    curve_uid: 'urn:ec-record:1:sha256:e4e02575ec1c6f67d8b34dbdd6299b03d0642a067f934550bf3c1fcf180dddbc'
+    icv1_identity:
+      slug: icv1-f2m15-t131-ed7256f0
+      full: 'ICV1:f2m-15-2d490b65:131:32638:0x5f66:unk:unk:r:ed7256f03846'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x5f66'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 30
+        recipe: mitm_m2_negfold_walk
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 15
+      representation: polynomial
+      modulus_exponents:
+        - 15
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 21067
+      subgroup_order: '16319'
+      cofactor: 2
+      generator:
+        - '0x7b33'
+        - '0x6f56'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m18_t393_d2c04152:
+    label: 'IC board curve icv1-f2m18-t393-d2c04152 (random binary, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x6507 over GF(2^18))'
+    curve_tag: rb
+    curve_ref: ic-board/icv1-f2m18-t393-d2c04152
+    curve_id: EC1N18Crbhe731503070c0
+    curve_uid: 'urn:ec-record:1:sha256:e731503070c0f51755957a008869d5c6532b85a04c57300f9a4086ad8efef0df'
+    icv1_identity:
+      slug: icv1-f2m18-t393-d2c04152
+      full: 'ICV1:f2m-18-5c53157a:393:261752:0x19d8a:unk:unk:r:d2c04152be25'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x19d8a'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 30
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 18
+      representation: polynomial
+      modulus_exponents:
+        - 18
+        - 3
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 25863
+      subgroup_order: '32719'
+      cofactor: 8
+      generator:
+        - '0x34acd'
+        - '0x3ad23'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m21_t2591_de54d72e:
+    label: 'IC board curve icv1-f2m21-t2591-de54d72e (random binary, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1b6f3b over GF(2^21))'
+    curve_tag: rb
+    curve_ref: ic-board/icv1-f2m21-t2591-de54d72e
+    curve_id: EC1N21Crbh30df0435638d
+    curve_uid: 'urn:ec-record:1:sha256:30df0435638d7b3c21982c00bc9eb97e58b6ee193bc8884a07767dcb84a98f60'
+    icv1_identity:
+      slug: icv1-f2m21-t2591-de54d72e
+      full: 'ICV1:f2m-21-a6f878a4:2591:2094562:0x10c870:unk:unk:r:de54d72eef96'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x10c870'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 62
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 21
+      representation: polynomial
+      modulus_exponents:
+        - 21
+        - 2
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1797947
+      subgroup_order: '1047281'
+      cofactor: 2
+      generator:
+        - '0x38dd7'
+        - '0x16960d'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m24_tm3047_2d0c0e8c:
+    label: 'IC board curve icv1-f2m24-tm3047-2d0c0e8c (random binary, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x5fc9da over GF(2^24))'
+    curve_tag: rb
+    curve_ref: ic-board/icv1-f2m24-tm3047-2d0c0e8c
+    curve_id: EC1N24Crbh1d71c3dc9cbc
+    curve_uid: 'urn:ec-record:1:sha256:1d71c3dc9cbc1598f27eb08472572d8beeb2f1a5713a2b617d66f8118974fec5'
+    icv1_identity:
+      slug: icv1-f2m24-tm3047-2d0c0e8c
+      full: 'ICV1:f2m-24-4580e493:-3047:16780264:0xd809bd:unk:unk:r:2d0c0e8ceef0'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0xd809bd'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 134
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 24
+      representation: polynomial
+      modulus_exponents:
+        - 24
+        - 4
+        - 3
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 6277594
+      subgroup_order: '2097533'
+      cofactor: 8
+      generator:
+        - '0xa8bb75'
+        - '0xdd68ed'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m27_t12543_569dca8b:
+    label: 'IC board curve icv1-f2m27-t12543-569dca8b (random binary, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x845462 over GF(2^27))'
+    curve_tag: rb
+    curve_ref: ic-board/icv1-f2m27-t12543-569dca8b
+    curve_id: EC1N27Crbh9ce93808c7a5
+    curve_uid: 'urn:ec-record:1:sha256:9ce93808c7a5207d26539e0e5222e15739c6a1ffc36dbc7926c0d7558a91df80'
+    icv1_identity:
+      slug: icv1-f2m27-t12543-569dca8b
+      full: 'ICV1:f2m-27-070a37b6:12543:134205186:0x5fa276d:unk:unk:r:569dca8b7ccb'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x5fa276d'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: null
+        status: unproved_in_this_registry
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: B
+        points: 254
+        recipe: mitm_m2_negfold_walk_balanced
+        source: docs/ic/runs/ic-boundary-ledger-round5-2026-09-22.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 27
+      representation: polynomial
+      modulus_exponents:
+        - 27
+        - 5
+        - 2
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 8672354
+      subgroup_order: '22367531'
+      cofactor: 6
+      generator:
+        - '0x4525aa1'
+        - '0x11f1984'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m19_tm797_9c54981b:
+    label: 'IC board curve icv1-f2m19-tm797-9c54981b (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^19))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m19-tm797-9c54981b
+    curve_id: EC1N19Ce1h7e63aa468dcc
+    curve_uid: 'urn:ec-record:1:sha256:7e63aa468dcc9ee8813f014acabe3395ac3e3d9f533d00361a821770038f4d23'
+    icv1_identity:
+      slug: icv1-f2m19-tm797-9c54981b
+      full: 'ICV1:f2m-19-87f45376:-797:525086:0x1:-7:unk:r:9c54981b5d8c'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: C
+        points: 304
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 19
+      representation: polynomial
+      modulus_exponents:
+        - 19
+        - 5
+        - 2
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '262543'
+      cofactor: 2
+      generator:
+        - '0x6001e'
+        - '0x798a'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m23_tm5197_1f85e9e1:
+    label: 'IC board curve icv1-f2m23-tm5197-1f85e9e1 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^23))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m23-tm5197-1f85e9e1
+    curve_id: EC1N23Ce1heec6a3619e3f
+    curve_uid: 'urn:ec-record:1:sha256:eec6a3619e3fdf05035e0ef5d3ec8cf3af507268cf760c77d47518d62141b00f'
+    icv1_identity:
+      slug: icv1-f2m23-tm5197-1f85e9e1
+      full: 'ICV1:f2m-23-c07a6b8c:-5197:8393806:0x1:-7:unk:r:1f85e9e1acf0'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: C
+        points: 368
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 23
+      representation: polynomial
+      modulus_exponents:
+        - 23
+        - 5
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '4196903'
+      cofactor: 2
+      generator:
+        - '0x2aaaa5'
+        - '0x13907b'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m45_tm6236725_40939294:
+    label: 'IC board curve icv1-f2m45-tm6236725-40939294 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^45))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m45-tm6236725-40939294
+    curve_id: EC1N45Ce1h97bc367649de
+    curve_uid: 'urn:ec-record:1:sha256:97bc367649ded9e1309ece1e66c630f558ee953b017378c53b2c3cf2896747df'
+    icv1_identity:
+      slug: icv1-f2m45-tm6236725-40939294
+      full: 'ICV1:f2m-45-512796ce:-6236725:35184378325558:0x1:-7:unk:r:4093929493b9'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: C
+        points: 720
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 45
+      representation: polynomial
+      modulus_exponents:
+        - 45
+        - 4
+        - 3
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '29264761'
+      cofactor: 1202278
+      generator:
+        - '0x1dc4dbb29c25'
+        - '0x5ad648fbe9f'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m37_tm534059_32aad96b:
+    label: 'IC board curve icv1-f2m37-tm534059-32aad96b (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x0, b=0x1 over GF(2^37))'
+    curve_tag: e0
+    curve_ref: ic-board/icv1-f2m37-tm534059-32aad96b
+    curve_id: EC1N37Ce0h0c51aa4aa7c3
+    curve_uid: 'urn:ec-record:1:sha256:0c51aa4aa7c3c76c45885e230d717aedcbefad98e2604d1664ac38b57299f180'
+    icv1_identity:
+      slug: icv1-f2m37-tm534059-32aad96b
+      full: 'ICV1:f2m-37-754d41e3:-534059:137439487532:0x1:-7:unk:r:32aad96be451'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: C
+        points: 592
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 37
+      representation: polynomial
+      modulus_exponents:
+        - 37
+        - 6
+        - 4
+        - 1
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 0
+        - 0
+        - 0
+        - 1
+      subgroup_order: '230603167'
+      cofactor: 596
+      generator:
+        - '0x17262ad4f3'
+        - '0x82fe10673'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
+  icv1_f2m43_tm998717_e2e742b0:
+    label: 'IC board curve icv1-f2m43-tm998717-e2e742b0 (Koblitz, y^2+xy=x^3+a*x^2+b with a=0x1, b=0x1 over GF(2^43))'
+    curve_tag: e1
+    curve_ref: ic-board/icv1-f2m43-tm998717-e2e742b0
+    curve_id: EC1N43Ce1h7d34f0f22c70
+    curve_uid: 'urn:ec-record:1:sha256:7d34f0f22c707e3756957364281079ea2835960013fd13a1e648b7ff5e5fea8c'
+    icv1_identity:
+      slug: icv1-f2m43-tm998717-e2e742b0
+      full: 'ICV1:f2m-43-ac4bb7a2:-998717:8796094020926:0x1:-7:unk:r:e2e742b068ef'
+      status: registered_representation
+    trait_status:
+      ordinary:
+        value: true
+        status: derived_from_model
+      j_invariant:
+        value: '0x1'
+        status: derived_from_model
+      endomorphism_discriminant:
+        value: -7
+        status: derived_from_model
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unmeasured
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    factor_base_sources:
+      - table: C
+        points: 1376
+        recipe: koblitz_collection_m3_aimed
+        source: research/ic_descent_20260930/analysis-isolated.json
+        point_set_sha256: null
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    field:
+      characteristic: 2
+      degree: 43
+      representation: polynomial
+      modulus_exponents:
+        - 43
+        - 6
+        - 4
+        - 3
+        - 0
+      element_encoding: 'hex polynomial coefficient bitset, least significant bit is constant'
+    curve:
+      model: binary Weierstrass
+      coefficients:
+        - 1
+        - 1
+        - 0
+        - 0
+        - 1
+      subgroup_order: '4644189029'
+      cofactor: 1894
+      generator:
+        - '0x371c50fe7d2'
+        - '0x147f513d084'
+      target_group: prime-order subgroup
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: docs/curves/registry.json
