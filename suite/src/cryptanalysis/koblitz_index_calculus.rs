@@ -4810,7 +4810,9 @@ pub(crate) fn lift_candidate(
 /// set, because the search order differs; whether one is found is not.
 /// The template is faster only on some cells (`n >= 17`, `ℓ = 3`) and
 /// slower on others (`ℓ = 4`, small `n`, subfield curves), so it is
-/// unset by default.
+/// unset by default; `KIC_M4_DESCENT=s5` forces it on every cell, and
+/// `KIC_M4_DESCENT=s5auto` uses it only where
+/// `s5_weil_template::s5_template_advised` says it wins.
 pub fn groebner_decompose(
     kc: &KoblitzCurve,
     fb: &FrobeniusFactorBase,
@@ -4825,8 +4827,9 @@ pub fn groebner_decompose(
         BinaryPoint::Affine { x, .. } => x.clone(),
         BinaryPoint::Infinity => return (None, SolveStats::default()),
     };
-    // `KIC_M4_DESCENT=s5|s5sym` routes m = 4 to the S₅ template; unset,
-    // or when the template cannot be built, the chain below runs.
+    // `KIC_M4_DESCENT=s5` (always) or `s5auto` (where advised) routes
+    // m = 4 to the S₅ template; unset, or when the template cannot be
+    // built, the chain below runs.
     if m == 4 {
         if let Some(out) = crate::cryptanalysis::s5_weil_template::dispatch_groebner_m4(
             kc,
