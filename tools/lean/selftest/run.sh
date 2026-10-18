@@ -27,7 +27,7 @@ done
 # Projects with an unimported source must not inherit a default-root pass.
 projects=$(mktemp -d)
 trap 'rm -rf "$projects"' EXIT
-for control in omitted configured-good configured-bad; do
+for control in omitted unconfigured-good configured-good configured-bad; do
   project="$projects/$control"
   mkdir -p "$project"
   git -C "$project" init -q
@@ -41,19 +41,20 @@ defaultTargets = ["Root"]
 name = "Root"
 EOF
   echo 'theorem rootTrue : True := by trivial' > "$project/Root.lean"
-  if [ "$control" = configured-good ]; then
+  if [[ "$control" = *-good ]]; then
     echo 'theorem omittedTrue : True := by trivial' > "$project/Omitted.lean"
   else
     echo 'theorem omittedFalse : False := by sorry' > "$project/Omitted.lean"
   fi
-  if [ "$control" != omitted ]; then
+  if [[ "$control" = configured-* ]]; then
     printf '\n[[lean_lib]]\nname = "Omitted"\n' >> "$project/lakefile.toml"
   fi
   git -C "$project" add .
   (cd "$project" && "$gate" --out receipts .) > /tmp/lean-selftest.$$ 2>&1
   rc=$?
   case "$control" in
-    omitted) want_rc=1; expect='FAIL_build_source' ;;
+    omitted) want_rc=1; expect='FAIL_audit' ;;
+    unconfigured-good) want_rc=0; expect='PASS +2 thm' ;;
     configured-good) want_rc=0; expect='PASS +2 thm' ;;
     configured-bad) want_rc=1; expect='FAIL_audit' ;;
   esac

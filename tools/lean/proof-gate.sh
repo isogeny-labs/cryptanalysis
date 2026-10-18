@@ -5,7 +5,7 @@
 # For every Lean target in the repository:
 #   * a Lake project (a directory with lakefile.toml / lakefile.lean): `lake build`,
 #     explicitly build every tracked source owned by it (not only default
-#     targets), then audit every module the project itself built;
+#     targets), then audit every compiled module;
 #   * a standalone .lean file outside any Lake project: compile it with `lean -o`
 #     against the core library, then audit that module.
 # The audit (AuditAxioms.lean, next to this script) fails any theorem whose transitive
@@ -84,10 +84,13 @@ run_target() {
       status=FAIL_build
     else
       # A default target can omit a tracked proof entirely. Force each source
-      # through Lake's source-path target resolver; unknown/unconfigured source
-      # targets fail closed. Tool code and deliberate gate fixtures are outside
+      # through Lake's source-path target resolver. Unregistered auxiliary
+      # sources compile directly into a private directory and are audited too,
+      # so frozen Lake configurations need no edits. Tools and fixtures are outside
       # the proof inventory. Nested Lake projects are owned by their own gate.
-      local source rel owner
+      local source rel owner aux auxfile probe
+      aux="$log/aux"
+      mkdir -p "$aux"
       : > "$log/sources.log"
       while IFS= read -r -d '' source; do
         case "$source" in tools/selftest/*|*/tools/selftest/*|tools/lean/*|*/tools/lean/*|tools/AuditAxioms.lean|*/tools/AuditAxioms.lean|*/.lake/*|lakefile.lean|*/lakefile.lean) continue ;; esac
@@ -99,10 +102,22 @@ run_target() {
         rel=${source#"$t"/}
         [ "$t" = . ] && rel=$source
         printf '%s\n' "$rel" >> "$log/sources.log"
-        if ! (cd "$root/$t" && lake build "$rel") >> "$log/build.log" 2>&1; then
-          status=FAIL_build_source
-          printf 'error: tracked source not built: %s\n' "$source" >> "$log/build.log"
-          break
+        probe="$log/source-target.log"
+        if ! (cd "$root/$t" && lake build "$rel") > "$probe" 2>&1; then
+          if grep -q 'unknown target' "$probe"; then
+            printf 'direct source compile: %s\n' "$rel" >> "$log/build.log"
+            auxfile="$aux/${rel%.lean}.olean"
+            mkdir -p "$(dirname "$auxfile")"
+            if ! (cd "$root/$t" && LEAN_PATH="$aux:${LEAN_PATH:-}" lake env lean -o "$auxfile" "$rel") >> "$log/build.log" 2>&1; then
+              status=FAIL_build_source
+            fi
+          else
+            cat "$probe" >> "$log/build.log"
+            status=FAIL_build_source
+          fi
+          [ "$status" = PASS ] || break
+        else
+          cat "$probe" >> "$log/build.log"
         fi
       done < <(cd "$root" && git ls-files -z -- '*.lean')
       if [ "$status" = PASS ] && [ ! -s "$log/sources.log" ]; then
@@ -110,13 +125,14 @@ run_target() {
         echo 'error: no tracked project proof sources' >> "$log/build.log"
       fi
       local mods
-      mods=$(cd "$root/$t/.lake/build/lib/lean" 2>/dev/null && find . -name '*.olean' \
-        | sed 's|^\./||; s|\.olean$||; s|/|.|g' | sort | tr '\n' ' ')
+      mods=$({ (cd "$root/$t/.lake/build/lib/lean" 2>/dev/null && find . -name '*.olean');
+                (cd "$aux" && find . -name '*.olean'); } \
+        | sed 's|^\./||; s|\.olean$||; s|/|.|g' | sort -u | tr '\n' ' ')
       if [ "$status" != PASS ]; then
         : # Do not turn an omitted/unbuildable source into an audit success.
       elif [ -z "$mods" ]; then
         status=FAIL_no_modules
-      elif ! (cd "$root/$t" && lake env lean --run "$audit" "${trust_args[@]}" $mods) > "$log/audit.log" 2>&1; then
+      elif ! (cd "$root/$t" && LEAN_PATH="$aux:${LEAN_PATH:-}" lake env lean --run "$audit" "${trust_args[@]}" $mods) > "$log/audit.log" 2>&1; then
         status=FAIL_audit
       fi
     fi
@@ -129,7 +145,7 @@ run_target() {
     toolchain=$(cat "$(dirname "$root/$t")/lean-toolchain" 2>/dev/null || true)
     if ! (cd "$(dirname "$root/$t")" && lean -o "$dir/$mod.olean" "$root/$t") > "$log/build.log" 2>&1; then
       status=FAIL_build
-    elif ! LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" "${trust_args[@]}" "$mod" > "$log/audit.log" 2>&1; then
+    elif ! (cd "$(dirname "$root/$t")" && LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" "${trust_args[@]}" "$mod") > "$log/audit.log" 2>&1; then
       status=FAIL_audit
     fi
     [ -n "$toolchain" ] && echo "toolchain pin: $toolchain" >> "$log/build.log"
