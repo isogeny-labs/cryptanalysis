@@ -1,0 +1,35 @@
+{
+  "arms": [
+    "quadratic",
+    "functional",
+    "functional",
+    "quadratic"
+  ],
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "formulas": {
+    "functional": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_pairroot_functional_20261018/formula.xcnf",
+    "quadratic": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/formula.xcnf"
+  },
+  "max_conflicts": 20000,
+  "parent_wall_cap_seconds": 180,
+  "promotion_gate": "All arms reach the conflict cap with monitors passing; each functional arm has at most 80 percent of its adjacent quadratic arm decisions and no more than 125 percent of its adjacent quadratic arm wall.",
+  "public_point": [
+    1936680952394,
+    910597499030
+  ],
+  "rss_cap_bytes": 4294967296,
+  "solver": "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+  "solver_wall_cap_seconds": 170,
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_pairroot_functional_20261018/build_result.json": "09f982fc47b23ddae389a9292f01254cbaf6d3505c117c991959388f402cd46c",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_pairroot_functional_20261018/formula.xcnf": "f9a84c705bf4ec2c126b519bb55d764d6e1f47fcb154f041ec883b84f4105b3f",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_pairroot_functional_20261018/n41_result.json": "7ff4e04070ddeb67b2441776559a96d24424275999c76435ac1a6f7126706fc4",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_pairroot_functional_20261018/probe.py": "5e8b3c2d7739742809a149b63cad75c0fc6efd92446c663f310477e22c7259c2",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/build_result.json": "b6c1d1a74c4d39a70abeeca7faf5463ea835b48de497ea5c7ad4a0c88da4e21d",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_final_pair_quadratics_20261018/formula.xcnf": "0f5bc42526bf2ebdf47e206f630f7323e36020585f899ba2f1566ece434bf0ca",
+    "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+  },
+  "status": "FROZEN_BEFORE_ABBA_FUNCTIONAL_ROOT_PROBE",
+  "worker_count": 1
+}
