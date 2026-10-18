@@ -1,0 +1,20 @@
+{
+  "schema":"ideas-gpu-resource-protocol/v1",
+  "authorization":"User explicitly selected RunPod and supplied access for the remaining experiments.",
+  "credential_storage":"Ephemeral mode600 file outside every repository; never include its contents in commands, logs, reports or remote payloads.",
+  "pod_name":"ideas-20261018-ic-gpu",
+  "new_pods_maximum":1,
+  "gpu":"NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "gpu_count":1,
+  "minimum_host_ram_gb":96,
+  "minimum_vcpus":16,
+  "allowed_cuda_versions":["13.3"],
+  "maximum_runtime_hours":2,
+  "maximum_reported_price_per_hour_usd":3.0,
+  "ssh_readiness_timeout_seconds":300,
+  "disk_gb":80,
+  "lifecycle":"Existing pod helper's on-pod lifetime timer plus explicit controller deletion after jobs; delete dedicated pod immediately on creation/readiness/price/memory failure. Never modify existing unrelated pods.",
+  "scope":"Device/native correctness and bounded public-challenge/HPC measurements; not completion of a multi-year rho campaign.",
+  "gates":["Actual GPU/driver/runtime versions","native host known-answer check","device health and report replay","checkpoint/restart and durable local retrieval","exact workload protocol before scientific launches"],
+  "account_information":"Private account balance/other pod inventories are not research artifacts and are not retained in this directory."
+}

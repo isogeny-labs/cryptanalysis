@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=TB,bgcolor="white",pad="0.2",nodesep="0.22",ranksep="0.35",fontname="Helvetica"];
+  node [shape=box,style="rounded,filled",fillcolor="#edf3fb",color="#45658a",fontname="Helvetica",fontsize=11];
+  edge [color="#56718e",arrowsize=0.7];
+  host [label="Local native controls\n48/48 KAT + arithmetic\n8/8 ingestion replays",fillcolor="#dcefdc"];
+  build [label="Pending: pinned CUDA13.3\nBuild + device doctor"];
+  gate [label="Pending: GPU correctness\nKAT + replays + health\nRestart equality"];
+  walk [label="Pending: public sigma walk\nDP32 + checkpoint\n2 x 180 seconds"];
+  ingest [label="Pending: independent ingest\nCurve/weight/encoding\nDuplicate suppression"];
+  frontier [label="Pending: original closure cell\nHost RAM >=96 GB\n1200-second bound",fillcolor="#fff0da"];
+  limit [label="Remaining criteria\nFull challenge scalar\nFull negation contract\nDistributed/GPU F4",fillcolor="#f6e3e3"];
+  {rank=same;host;build;gate;}
+  {rank=same;walk;ingest;frontier;}
+  host -> build -> gate [constraint=false];
+  gate -> walk;
+  walk -> ingest [constraint=false];
+  build -> frontier;
+  ingest -> limit;
+  frontier -> limit;
+}
