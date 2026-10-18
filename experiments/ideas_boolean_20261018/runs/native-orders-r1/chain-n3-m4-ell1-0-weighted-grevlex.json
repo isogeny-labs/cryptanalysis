@@ -1,0 +1,132 @@
+{
+  "basis": [
+    [
+      1,
+      2,
+      4,
+      128
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ],
+    [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6
+    ],
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      0,
+      1,
+      2,
+      4,
+      8
+    ],
+    [
+      0,
+      1,
+      2,
+      3
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 5,
+    "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 5,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 861,
+    "criterion_hits": 140,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 106,
+    "pairs_processed": 65,
+    "product_nnz": 48982,
+    "product_rows": 17155,
+    "reductions": 701,
+    "signature_insertions": 19,
+    "signature_zero_pairs": 29
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "ea8c97e0aaf3e289be779c5fe66a64fbb5d1fa7af63428a8d9848c8533fe5abf",
+    "name": "weighted-grevlex",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 19 701 65 861 140 106 29 17155 48982 10\n4 1 2 4 128\n1 256\n1 512\n6 0 1 2 4 5 6\n3 1 2 16\n1 32\n1 64\n5 0 1 2 4 8\n4 0 1 2 3\n"
+}

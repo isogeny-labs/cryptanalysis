@@ -1,0 +1,101 @@
+{
+  "scope": "Actual CPU API-v2 capacity refusals only; no allocated pod, no scientific trial or 256GB host measurement.",
+  "source_commit": "493f0ca1b7183dbd9e42ddcf8c44c650754e3fdb",
+  "payload_sha256": "e269ad82ff1ff7724d88ccd34adf3752f642f9895f2dd015889315245fbfcfd4",
+  "requests": 2,
+  "refusals": [
+    {
+      "detail": "There are no longer any instances available with the requested specifications. Please refresh and try again.",
+      "error_type": "ProviderError",
+      "status": 400
+    },
+    {
+      "detail": "There are no longer any instances available with the requested specifications. Please refresh and try again.",
+      "error_type": "ProviderError",
+      "status": 400
+    }
+  ],
+  "catalog_metadata": [
+    {
+      "availability": "HIGH",
+      "derived_memory_GB": 256,
+      "id": "cpu3m",
+      "quoted_USD_per_hour": 1.76,
+      "vcpuCount": 32
+    },
+    {
+      "availability": "LOW",
+      "derived_memory_GB": 256,
+      "id": "cpu5m",
+      "quoted_USD_per_hour": 2.08,
+      "vcpuCount": 32
+    }
+  ],
+  "resource_outcome": {
+    "absence_verified": false,
+    "controller_error": "controller stopped; see stage receipts",
+    "controller_error_type": "RuntimeError",
+    "deleted": false,
+    "finished_unix": 1792303414.7418792,
+    "payload_sha256": "e269ad82ff1ff7724d88ccd34adf3752f642f9895f2dd015889315245fbfcfd4",
+    "pod_id": null,
+    "results_fetched": false,
+    "schema": "ideas-cpu-api-v2/v1",
+    "source_commit": "493f0ca1b7183dbd9e42ddcf8c44c650754e3fdb",
+    "started_unix": 1792303411.4934304
+  },
+  "evidence_sha256": {
+    "resource-runs/cpu-api-v2-01/resource-outcome.json": "9eb5f51a4a30b23520e89c3a7981737439d5ef6b411650c870ff2ea4afef0a05",
+    "resource-runs/cpu-api-v2-01/selected-catalog.json": "56bffc57e06bafaf8e5e25415cb67003aaa407af0ba940c802b4aaa68d92b3f7",
+    "resource-runs/cpu-api-v2-01/public-source-proof.json": "f7dcbc391e98864f2df14beb0cc3ecea4df971f396d73c8395255659094199de",
+    "resource-runs/cpu-api-v2-01/ownership-intent.json": "acd374f0de0edac9dcd4623bf01e043266a6c7b98602e2eaad42d7899ac2c72a",
+    "resource-runs/cpu-api-v2-01/allocation-1-cpu3m/refusal.json": "260dc56880633abb0cc58ba35223c464f4162a89020d4858e24b0b70a92b2bbc",
+    "resource-runs/cpu-api-v2-01/allocation-2-cpu5m/refusal.json": "260dc56880633abb0cc58ba35223c464f4162a89020d4858e24b0b70a92b2bbc",
+    "resource-runs/cpu-api-v2-01/allocation-1-cpu3m/request-redacted.json": "27f9a97d8ff70fd37a1a755759efff29eba05daed8f66020a7d9027b3ec49dec",
+    "resource-runs/cpu-api-v2-01/allocation-2-cpu5m/request-redacted.json": "1d64f2f68905c22ad8ecdcec9b210eb9a5f54bf21091a7028fde733f2078ddbe",
+    "cpu-api-v2-01-controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cpu-api-v2-01-controller.stderr": "4a8833205fd1d84262244a5826d53c403b51ad05291e0b903181d9562c9b3663",
+    "resource-runs/cpu-api-v2-01/root-no-allocation-closeout.json": "faee60ac520fd036b0b85ffd2fd71741d09cb0d262590115c7d9f56a471960b8"
+  },
+  "prior_four_page_pdf_sha256": "fb389bfbcf60bc1fba1e8b6f680ac78a932779a8c0cf929408531a684fa21417",
+  "scientific_runs": 0,
+  "results_fetched": false,
+  "scientific_promotion": null,
+  "root_closeout": {
+    "schema": "ideas-root-no-allocation-closeout/v1",
+    "request_name": "ideas-20261018-cpu-api-v2-5863ccc2fda4ef74",
+    "both_requests": {
+      "http_status": 400,
+      "reason": "explicit capacity unavailable"
+    },
+    "post_attempts": 2,
+    "provider_allocated_id": null,
+    "scientific_execution": false,
+    "independent_complete_inventory_pages": 1,
+    "matching_request_resource_count": 0,
+    "active_campaign_resource_count": 0,
+    "owned_resource_cleanup_required": false,
+    "local_watchdog_pid": 106755,
+    "local_watchdog_identity_verified": true,
+    "local_watchdog_stopped": true,
+    "reason_for_stopping": "Both POSTs definitively refused; complete independent inventory shows no request or campaign resource. No ambiguous creation or owned ID exists. Preserve original controller outcome unchanged.",
+    "finished_unix": 1792303535.863073
+  },
+  "root_closeout_sha256": "faee60ac520fd036b0b85ffd2fd71741d09cb0d262590115c7d9f56a471960b8",
+  "raw_resource_evidence_sha256": {
+    "resource-runs/cpu-api-v2-01/allocation-1-cpu3m/refusal.json": "260dc56880633abb0cc58ba35223c464f4162a89020d4858e24b0b70a92b2bbc",
+    "resource-runs/cpu-api-v2-01/allocation-1-cpu3m/request-redacted.json": "27f9a97d8ff70fd37a1a755759efff29eba05daed8f66020a7d9027b3ec49dec",
+    "resource-runs/cpu-api-v2-01/allocation-2-cpu5m/refusal.json": "260dc56880633abb0cc58ba35223c464f4162a89020d4858e24b0b70a92b2bbc",
+    "resource-runs/cpu-api-v2-01/allocation-2-cpu5m/request-redacted.json": "1d64f2f68905c22ad8ecdcec9b210eb9a5f54bf21091a7028fde733f2078ddbe",
+    "resource-runs/cpu-api-v2-01/cleanup-requested.json": "bb23f2efbc0cced95765ec8ef4fdee8bb752124f93a2446135cd305bc3ec5ea0",
+    "resource-runs/cpu-api-v2-01/ownership-intent.json": "acd374f0de0edac9dcd4623bf01e043266a6c7b98602e2eaad42d7899ac2c72a",
+    "resource-runs/cpu-api-v2-01/public-source-proof.json": "f7dcbc391e98864f2df14beb0cc3ecea4df971f396d73c8395255659094199de",
+    "resource-runs/cpu-api-v2-01/resource-outcome.json": "9eb5f51a4a30b23520e89c3a7981737439d5ef6b411650c870ff2ea4afef0a05",
+    "resource-runs/cpu-api-v2-01/root-no-allocation-closeout.json": "faee60ac520fd036b0b85ffd2fd71741d09cb0d262590115c7d9f56a471960b8",
+    "resource-runs/cpu-api-v2-01/selected-catalog.json": "56bffc57e06bafaf8e5e25415cb67003aaa407af0ba940c802b4aaa68d92b3f7",
+    "resource-runs/cpu-api-v2-01/watchdog-process.json": "77ab7935e7c367ea8fae037bdc1709e76bed98583c50e3b8c4950b8aefe7aeda",
+    "resource-runs/cpu-api-v2-01/watchdog-ready.json": "62c5e9cb5978d4b3395d231d6edad90fb6c8cf98c403c94af666d0394874f174",
+    "resource-runs/cpu-api-v2-01/watchdog.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "resource-runs/cpu-api-v2-01/watchdog.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

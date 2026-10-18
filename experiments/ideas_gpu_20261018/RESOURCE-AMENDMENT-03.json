@@ -1,0 +1,13 @@
+{
+  "schema": "ideas-gpu-resource-amendment/v1",
+  "base": "RESOURCE-AMENDMENT-02.json",
+  "observed_failure": "Replacement qy31gqnna1aasz reached running state but TCP SSH refused throughout readiness. Controller deleted it. No scientific workload ran.",
+  "change": "Use explicit key-only sshd bootstrap without image nginx/Jupyter/start.sh dependencies; allow one final infrastructure replacement with 600-second readiness.",
+  "new_pods_total_maximum": 3,
+  "simultaneous_new_pods_maximum": 1,
+  "replacement_maximum_lifetime_seconds": 6000,
+  "maximum_reported_price_per_hour_usd": 3.0,
+  "controller": "controller_v4.py",
+  "lifecycle": "Local controller always deletes its own recorded pod. Container watchdog terminates PID1 at lifetime limit; this is a workload cap, not proof of billing termination. Verify provider deletion before ending task.",
+  "unchanged": "Frozen native scientific protocols, 96GiB minimum host RAM, 16 vCPU, one GPU, existing unrelated pods untouched, no user API credential shipped."
+}

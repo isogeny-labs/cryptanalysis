@@ -1,0 +1,8 @@
+{
+  "frozen_before_sat_execution": true,
+  "reason": "Source inspection shows WDSat symmetry pruning interprets positions h-l as the same coefficient of a previous point. An arbitrary reordered core under -b would need a proof of that invariant. Symmetry is therefore disabled for reordered controls.",
+  "learning": "Select among all six lexicographic permutations of three coefficient positions, applied within each point block. Transfer to ell4 by ranks floor(3*j/ell), then coefficient index. Minimize total training conflicts, deterministic lexicographic tie break.",
+  "controls": ["paper-default-with-symmetry", "block-core-no-symmetry", "interleave-no-symmetry", "fixed-random-no-symmetry", "learned-static-no-symmetry"],
+  "unchanged": "Original training and heldout cells/seeds, symmetric degree<=3 model, five-second per-call timeout, complete group-law membership oracle, independent SAT assignment replay.",
+  "limits": "This is a CPU-only algorithmic correctness control; no neural branching, cube-and-conquer, XOR-CDCL or IC throughput claim."
+}

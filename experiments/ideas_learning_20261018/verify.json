@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "surrogate_curve.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "surrogate.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "sat_controls.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "bucket_gain.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "program_group.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "report_visuals.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "verify.py"
+    },
+    {
+      "check": "syntax",
+      "passed": true,
+      "source": "prefilter_search.py"
+    },
+    {
+      "check": "exact curve identities and yield tuple conservation",
+      "curves": 10,
+      "passed": true
+    },
+    {
+      "calls": 88,
+      "check": "all WDSat answers independently oracle-checked; permutations and symmetry gate",
+      "passed": true
+    },
+    {
+      "check": "exact bucket denominators, maxima, trace and rounding gates",
+      "passed": true,
+      "rows": 22
+    },
+    {
+      "cells": 1718,
+      "check": "receipt uniqueness, shape and curve separation, censoring and conformal rank",
+      "passed": true
+    },
+    {
+      "check": "executed source digests still match launch receipts",
+      "passed": true
+    }
+  ],
+  "not_claimed": [
+    "full IC recovery",
+    "formal UNSAT trace",
+    "new mathematical invariant",
+    "independent rerun of timings",
+    "all audit acceptance criteria complete"
+  ],
+  "passed": true,
+  "scope": "independent consistency/identity recheck; source workloads retain their group-law replay certificates"
+}

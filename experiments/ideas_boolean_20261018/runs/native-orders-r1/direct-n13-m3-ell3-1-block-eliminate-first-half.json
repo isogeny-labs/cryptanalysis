@@ -1,0 +1,82 @@
+{
+  "basis": [
+    [
+      0
+    ]
+  ],
+  "case_id": "direct-n13-m3-ell3-1",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 0,
+    "roots_sha256": "98ce42deef51d40269d542f5314bef2c7468d401ad5d85168bfab4c0108f75f7",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 0,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 1,
+    "criterion_calls": 220626,
+    "criterion_hits": 80432,
+    "max_materialized_degree": 9,
+    "normal_zero_outputs": 20,
+    "pairs_processed": 478,
+    "product_nnz": 4690320,
+    "product_rows": 212214,
+    "reductions": 94913,
+    "signature_insertions": 407,
+    "signature_zero_pairs": 20
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "92e92ae52a9395e9b3506b95a71c95a70314408c454280ba857398c24dec324f",
+  "order": {
+    "blocks": [
+      [
+        0,
+        1,
+        2
+      ],
+      [
+        3,
+        4,
+        5
+      ],
+      [
+        6,
+        7,
+        8
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "6a635392e532d1591c566d609f3b01d5d6ee13abc2dbdcdd93735f08619cf27f",
+    "name": "block-eliminate-first-half",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "weights": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 1 407 94913 478 220626 80432 20 20 212214 4690320 9\n1 0\n"
+}

@@ -1,0 +1,123 @@
+{
+  "basis": [
+    [
+      0,
+      8
+    ],
+    [
+      0,
+      4,
+      16
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      0,
+      128
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ],
+    [
+      4,
+      6
+    ],
+    [
+      0,
+      1,
+      2,
+      4
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-1",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 3,
+    "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 3,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 748,
+    "criterion_hits": 97,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 191,
+    "pairs_processed": 60,
+    "product_nnz": 50273,
+    "product_rows": 17396,
+    "reductions": 1405,
+    "signature_insertions": 16,
+    "signature_zero_pairs": 30
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "6b408d63f0ba549b753162d39db3d24108652e7d10b0652fe02794074cec34bd",
+    "name": "block-eliminate-second-half",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 16 1405 60 748 97 191 30 17396 50273 10\n2 0 8\n3 0 4 16\n1 32\n1 64\n2 0 128\n1 256\n1 512\n2 4 6\n4 0 1 2 4\n"
+}

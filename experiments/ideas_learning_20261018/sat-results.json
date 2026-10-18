@@ -1,0 +1,76 @@
+{
+  "all_results_oracle_checked": true,
+  "heldout_calls": 40,
+  "parent_learning_cpu_seconds": 0.743986422,
+  "scope": "static learned core order with real WDSat hook; no neural policy/cubing/XOR-CDCL/full IC run",
+  "selected": {
+    "conflicts": 3149,
+    "failures": 0,
+    "permutation": [
+      0,
+      1,
+      2
+    ],
+    "training_child_cpu_seconds": 0.03498100000000015
+  },
+  "summaries": [
+    {
+      "attempts": 8,
+      "conflicts_total": 3092,
+      "errors": 0,
+      "max_conflicts": 694,
+      "policy": "paper",
+      "solve_child_cpu_seconds_total": 0.047286000000000605,
+      "solve_wall_seconds_total": 0.10507839300043997,
+      "timeouts": 0,
+      "verified_answers": 8
+    },
+    {
+      "attempts": 8,
+      "conflicts_total": 16097,
+      "errors": 0,
+      "max_conflicts": 3644,
+      "policy": "block",
+      "solve_child_cpu_seconds_total": 0.15808499999999892,
+      "solve_wall_seconds_total": 0.3845182850004676,
+      "timeouts": 0,
+      "verified_answers": 8
+    },
+    {
+      "attempts": 8,
+      "conflicts_total": 16785,
+      "errors": 0,
+      "max_conflicts": 3776,
+      "policy": "interleave",
+      "solve_child_cpu_seconds_total": 0.16363900000000076,
+      "solve_wall_seconds_total": 0.41761735099998987,
+      "timeouts": 0,
+      "verified_answers": 8
+    },
+    {
+      "attempts": 8,
+      "conflicts_total": 16676,
+      "errors": 0,
+      "max_conflicts": 3760,
+      "policy": "fixed-random",
+      "solve_child_cpu_seconds_total": 0.18469899999999928,
+      "solve_wall_seconds_total": 0.491298979999101,
+      "timeouts": 0,
+      "verified_answers": 8
+    },
+    {
+      "attempts": 8,
+      "conflicts_total": 16097,
+      "errors": 0,
+      "max_conflicts": 3644,
+      "policy": "learned",
+      "solve_child_cpu_seconds_total": 0.148752,
+      "solve_wall_seconds_total": 0.4265409699992233,
+      "timeouts": 0,
+      "verified_answers": 8
+    }
+  ],
+  "training_calls": 48,
+  "training_child_cpu_seconds": 0.20983399999999985,
+  "unsat_scope": "exact group-law membership agreement on small factor bases, not a solver proof trace"
+}

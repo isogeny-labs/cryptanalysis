@@ -1,0 +1,11 @@
+{
+  "verified_sources":[
+    {"title":"Improved Algorithms for Solving Polynomial Systems over GF(2) by Multiple Parity-Counting","author":"Itai Dinur","version":"arXiv:2005.04800v2, 15 July 2020","url":"https://arxiv.org/pdf/2005.04800","pdf_sha256":"5ad9fa2c695b4ba01058da440a55923308d48e18fbee126bd6a6c9b2767adac3","read_sections":["2.2 decision/search/parity reductions","2.3 Equation (2) exact indicator and Equation (3) random indicator","3.1 Algorithm 2 and multiple parity counting","3.2 Algorithm 3 and t=48n+1"],"applicability":"arbitrary ANF systems over GF(2), actual input degree d; 0.6943 only d=2","implementation_scope":"Algorithm 2 parity component and complement-product base; no Dinur search/isolation"},
+    {"title":"Beating Brute Force for Systems of Polynomial Equations over Finite Fields","authors":["Daniel Lokshtanov","Ramamohan Paturi","Suguru Tamaki","Ryan Williams","Huacheng Yu"],"venue":"SODA 2017 author manuscript","url":"https://people.csail.mit.edu/rrw/polyEqSoda2017Submit.pdf","pdf_sha256":"69ad43dbf4cd18740303ba35b206b881e9fd6c9e445e6e30986490881bf0882b","author_index_url":"https://people.csail.mit.edu/rrw/projects.html","read_sections":["definition of reduced field ANF","Section 3 Lemmas 3.1-3.3","q=2 random polynomial construction","100n log(q) repetitions and 40% scoreboard threshold"],"applicability":"bounded-degree field-reduced polynomials; q=2 case implemented","implementation_scope":"randomized decision algorithm plus charged standard decision-to-search self-reduction; pilot delta=1/5, no asymptotic parameter claim"}
+  ],
+  "discarded_retrievals":[
+    {"url":"https://eccc.weizmann.ac.il/report/2015/087/download/","outcome":"downloaded a different paper; rejected as a source before any algorithm implementation"},
+    {"url":"https://people.csail.mit.edu/rrw/satfinitefields.pdf","outcome":"404; author index subsequently supplied the correct primary PDF"},
+    {"url":"https://dblp.org/search/publ/api?q=Beating%20Brute%20Force%20for%20Systems%20of%20Polynomial%20Equations&format=json","outcome":"anti-bot page; no bypass attempted"}
+  ]
+}

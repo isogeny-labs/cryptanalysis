@@ -1,0 +1,124 @@
+{
+  "basis": [
+    [
+      0,
+      2,
+      16,
+      18
+    ],
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      0,
+      4,
+      16
+    ],
+    [
+      0,
+      8
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      0,
+      128
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-1",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 3,
+    "roots_sha256": "a405f6fa1b097c2279e79da2e9786a7b10c37a5cd815e89c9ecbc3b665fc3bfd",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 3,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 887,
+    "criterion_hits": 141,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 189,
+    "pairs_processed": 57,
+    "product_nnz": 51752,
+    "product_rows": 17927,
+    "reductions": 1511,
+    "signature_insertions": 18,
+    "signature_zero_pairs": 27
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "608ac1c594b3c9b873b5229742aa9d92a51572e18b4fd5584f298a78a86c64c4",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "ffd954cf4906132701a5dfc5015fec3c094c1890a5ec2351875434d47db4ebaf",
+    "name": "grevlex-natural",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 18 1511 57 887 141 189 27 17927 51752 10\n4 0 2 16 18\n3 1 2 16\n3 0 4 16\n2 0 8\n1 32\n1 64\n2 0 128\n1 256\n1 512\n"
+}

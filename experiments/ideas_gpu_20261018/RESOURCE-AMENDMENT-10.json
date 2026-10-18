@@ -1,0 +1,33 @@
+{
+  "schema": "ideas-gpu-resource-amendment/v1",
+  "base": "RESOURCE-AMENDMENT-09.json",
+  "observed": "GPU requests with192/256GB hostRAM were both refused no capacity; no fourth pod allocated. Public CPUcatalog offers cpu3m32vCPU*8GB=256GB at1.76USD/hr, highavailability.",
+  "change": "Split the independent GPU controls and CPU-only closure measurement across two owned resources. NativeECCandclosurecontentsunchanged; CPUevidenceisnotGPUacceleration.",
+  "actual_new_pods_total_maximum": 5,
+  "additional_simultaneous_maximum": 2,
+  "CPU": {
+    "flavor": "cpu3m",
+    "vcpus": 32,
+    "provider_RAM_GB": 256,
+    "max_hourly_USD": 1.8,
+    "frontier_AS_cap": "min(200GB,effectiveRAM-32GB)",
+    "frontier_seconds": 1200
+  },
+  "GPU": {
+    "families": [
+      "RTX5090",
+      "RTX4090",
+      "RTXA6000",
+      "RTX6000Ada"
+    ],
+    "min_host_RAM_GB": 32,
+    "min_vcpus": 16,
+    "max_hourly_USD": 1.19,
+    "frontier_on_this_host": "Existing192GBgate remains; if insufficient it refuses. CPUfrontier is separate."
+  },
+  "maximum_hours_each": 1.2,
+  "maximum_additional_cost_USD": 3.588,
+  "budget_math": "(1.80+1.19)*1.2=3.588, within previous3.60USD ceiling",
+  "cleanup": "ControllerfinallyDELETE+absencecheck plus independently launched exact-id rootwatchdogs4320s, no unrelatedpods touched.",
+  "publication": "All delivered bytes public/hashchecked; only ephemeral service nonces onpods, not userAPIkey."
+}

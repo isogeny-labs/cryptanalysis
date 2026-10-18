@@ -1,0 +1,127 @@
+{
+  "basis": [
+    [
+      1,
+      2,
+      16
+    ],
+    [
+      0,
+      2,
+      16,
+      18
+    ],
+    [
+      4,
+      16,
+      128
+    ],
+    [
+      0,
+      16,
+      128,
+      144
+    ],
+    [
+      0,
+      8,
+      128
+    ],
+    [
+      32
+    ],
+    [
+      64
+    ],
+    [
+      256
+    ],
+    [
+      512
+    ]
+  ],
+  "case_id": "chain-n3-m4-ell1-0",
+  "certificate": {
+    "exact_root_equality": true,
+    "ordinary_and_boolean_field_pairs_zero": true,
+    "reduced": true,
+    "root_count": 5,
+    "roots_sha256": "99e7993549bf00b6c625d72f812cf8b046da6cd960686b662c7beb2752d3eedc",
+    "source_generators_reduce_to_zero": true,
+    "standard_monomials": 5,
+    "verified": true
+  },
+  "counters": {
+    "basis_size": 9,
+    "criterion_calls": 522,
+    "criterion_hits": 80,
+    "max_materialized_degree": 10,
+    "normal_zero_outputs": 137,
+    "pairs_processed": 42,
+    "product_nnz": 50027,
+    "product_rows": 16467,
+    "reductions": 1091,
+    "signature_insertions": 13,
+    "signature_zero_pairs": 17
+  },
+  "engine": "instrumented-native-Boolean-F5B",
+  "input_sha256": "6b2feaaa37f1422761cab1019968097828adb6a8ca4d959afeb448690300e18b",
+  "order": {
+    "blocks": [
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5,
+        6
+      ],
+      [
+        7,
+        8,
+        9
+      ]
+    ],
+    "first_elimination_block": [
+      0,
+      1,
+      2
+    ],
+    "layout_sha256": "d8289f2e05765a7739a04bc48cea604a8cce668fbad172404a56788abdcac922",
+    "name": "block-eliminate-first-half",
+    "second_elimination_block": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "weights": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6
+    ]
+  },
+  "returncode": 0,
+  "status": "verified",
+  "stderr": "",
+  "stdout": "OK 9 13 1091 42 522 80 137 17 16467 50027 10\n3 1 2 16\n4 0 2 16 18\n3 4 16 128\n4 0 16 128 144\n3 0 8 128\n1 32\n1 64\n1 256\n1 512\n"
+}

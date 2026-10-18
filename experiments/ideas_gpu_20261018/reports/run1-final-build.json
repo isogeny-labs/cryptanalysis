@@ -1,0 +1,35 @@
+[
+  {
+    "argv": [
+      "dot",
+      "-Tsvg",
+      "run-flow.dot",
+      "-o",
+      "run-flow.svg"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "dot",
+      "-Tpng",
+      "-Gdpi=150",
+      "run-flow.dot",
+      "-o",
+      "run-flow.png"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "pdflatex",
+      "-interaction=nonstopmode",
+      "-halt-on-error",
+      "report.tex"
+    ],
+    "returncode": 0,
+    "overfull_lines": []
+  }
+]

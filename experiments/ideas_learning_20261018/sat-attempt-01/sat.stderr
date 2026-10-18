@@ -1,0 +1,25 @@
+dimacs.c: In function ‘get_dimacs_xor_equation’:
+dimacs.c:74:52: error: returning ‘int_t (*)[251]’ {aka ‘long int (*)[251]’} from a function with incompatible return type ‘int_t **’ {aka ‘long int **’} [-Wincompatible-pointer-types]
+   74 | inline int_t ** get_dimacs_xor_equation() { return dimacs_xor_equation; }
+      |                                                    ^~~~~~~~~~~~~~~~~~~
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/sat_controls.py", line 97, in <module>
+    if __name__=="__main__":main()
+                            ^^^^^^
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/sat_controls.py", line 78, in main
+    rs=[attempt(cell,seed,"learned",list(perm),"train") for cell in p["training_cells"] for seed in p["training_seeds"]]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/sat_controls.py", line 43, in attempt
+    c=collector(cell);rng=random.Random(f"sat-target-20261018|{cell}|{seed}")
+      ^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/experiments/ideas_learning_20261018/sat_controls.py", line 38, in collector
+    c=Collector(cell["n"],3,cell["ell"],cell["b"],str(source),False,"default")
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/experiments/pdp-scaling/collect.py", line 113, in __init__
+    self.exe = wdsat_binary(self.params, src)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/experiments/pdp-scaling/solve.py", line 723, in wdsat_binary
+    subprocess.run(["gcc", "-O3", "-w", "-o", exe, *srcs, "-lm"], cwd=build, check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['gcc', '-O3', '-w', '-o', '/workspace/cryptanalysis/experiments/ideas_learning_20261018/build/wdsat/ab89bbf75afc/wdsat_solver', 'dimacs.c', 'xorset.c', 'xorgauss.c', 'wdsat_utils.c', 'wdsat.c', 'cnf.c', 'main.c', '-lm']' returned non-zero exit status 1.

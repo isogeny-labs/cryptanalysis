@@ -1,0 +1,17 @@
+{
+  "schema":"ideas-lptwy-search/v1",
+  "frozen_before_trials":true,
+  "parent_protocol":"lptwy_protocol.json",
+  "scope":"CPU-only full search self-reduction correctness pilot; no IC performance claim",
+  "inputs":"all 6 direct ANF fixtures in runs/cpu-correctness-r1/inputs.json",
+  "native_backend":"exact binary retained by runs/lptwy-correctness-r1/provenance.json",
+  "method":"run randomized decision on original system; if SAT, fix variables in ascending original index, try value zero by a fresh native decision call, select one otherwise; at <=1 remaining variable use exact base evaluation; independently verify final full assignment in original ANFs and elliptic curve group law",
+  "suffix_parameter":"max(1,floor(free_variables/5))",
+  "repetitions_per_call":"100*free_variables",
+  "seed":"case seed + 5830 + 100*stage",
+  "timeout_seconds_per_call":90,
+  "maximum_workers":1,
+  "charge":"all original and branch decision calls, restrictions, final ANF verification and group-law verification counts; counters stay in their original units",
+  "reference":"full exhaustive root set is an independent certificate and is not supplied to search",
+  "fit_policy":"do not infer an exponent c from 3 tiny sizes, differing input degrees, two arities and a pilot partition parameter"
+}

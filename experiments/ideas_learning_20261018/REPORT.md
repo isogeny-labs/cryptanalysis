@@ -1,0 +1,220 @@
+# AI research execution controls, 18 October 2026
+
+These are actual bounded, CPU-only controls for audit items 8, 10, 11 and 12.
+They produced no new index-calculus speedup, safe learned rejection rule, or
+resolution of an open problem. The useful outcomes are a negative branching
+comparison, detection of empty-base training failure, an exact finite bucket
+signal, and a degree surrogate whose calibration limits are explicit.
+
+All calculations used one worker per script with no GPU and
+`F4_F2_ECHELON=host`. Container timings are unqualified exploratory CPU
+diagnostics. They are not host-isolated performance evidence. No complete IC
+pipeline, same-target rho comparison, or deployed-curve attack ran here.
+
+## Item 8: real WDSat branching hook, negative result
+
+[sat_controls.py](sat_controls.py) executed **88 solver calls**: 48 training
+calls selecting among six static coefficient orders, followed by 40 heldout
+calls comparing five policies on the same eight targets. It used the upstream
+WDSat commit `61c6ff3f49445af2729274819edb27b85a89efc1`, the actual `-g`
+branch-order option, and the symmetric S4 model of degree at most three.
+Training used `(n,ell,b)=(11,3,1),(11,3,2)`; heldout cells were
+`(13,3,3),(17,4,5)`. Seeds and every ANF input are retained.
+
+The learned policy selected the ordinary ascending coefficient order. On the
+eight heldout targets, total conflicts were:
+
+| Policy | Conflicts | Verified answers | Timeouts/errors |
+|---|---:|---:|---:|
+| Paper default with symmetry | 3,092 | 8/8 | 0/0 |
+| Block core, symmetry disabled | 16,097 | 8/8 | 0/0 |
+| Interleaved core, symmetry disabled | 16,785 | 8/8 | 0/0 |
+| Fixed random core, symmetry disabled | 16,676 | 8/8 | 0/0 |
+| Learned static core, symmetry disabled | 16,097 | 8/8 | 0/0 |
+
+Every SAT assignment was replayed through the original elliptic-curve group
+law; every SAT/UNSAT answer agreed with complete small-base group-law
+membership enumeration. This is not an UNSAT proof-trace certificate.
+The controls disable symmetry for arbitrary orders because the upstream
+symmetry code interprets specific relative positions in the order. That
+accounting matters: the learned policy did not improve the ordinary block
+order and was worse than the paper control.
+
+The search charged 0.209834 child CPU seconds for training solver calls and
+0.743986 parent CPU seconds for training orchestration. Compiler/model setup,
+individual CPU/wall values, raw output and workload hashes remain separate
+in [sat-setup.json](sat-setup.json), [sat-raw.jsonl](sat-raw.jsonl),
+[sat-targets.json](sat-targets.json) and [sat-results.json](sat-results.json).
+The initial GCC14 type error was retained. A declaration/definition/local
+pointer used only as `memcpy` source was corrected to `void*` in an owned copy,
+as specified by [SAT-BUILD-PATCH.json](SAT-BUILD-PATCH.json); upstream was not
+edited. Learned neural branching, XOR-CDCL, cubing, cube coverage and an n41
+ladder remain open.
+
+## Item 11a: exact x-coordinate labels expose an unusable training base
+
+[prefilter_search.py](prefilter_search.py) counted full toy curves, admitted
+an exact odd prime-order subgroup, enumerated 27 cells and **7,254
+nonidentity subgroup targets**, and generated exhaustive three-sum labels.
+Each positive target has a group-law-replayed witness. An independent scalar
+sumset dynamic program checked the entire support, including negative labels.
+Both signs, repeated summands, actual usable-base cardinality and all ordered
+tuple multiplicities are explicit in [prefilter-inputs.jsonl](prefilter-inputs.jsonl).
+
+The frozen training cell `n7,b1,ell3,multiplier1` has **zero usable subgroup
+points** and 28 negative targets. Therefore both trained models are one-class
+models. At probability threshold 0.25 they reject every positive heldout:
+
+| Split | Targets | Decomposable targets | False negatives per learned model |
+|---|---:|---:|---:|
+| Calibration base | 28 | 4 | 4 |
+| New curves | 588 | 48 | 48 |
+| New base | 28 | 4 | 4 |
+| New field size | 6,582 | 8 | 8 |
+
+The all-accept baseline has zero false negatives and no rejections. The models
+are never wired into a decomposition oracle. This is an unsafe-transfer
+diagnostic, not evidence for a necessary condition or a new invariant.
+The heldouts do not rescue the training cell retrospectively.
+
+The first attempt failed the odd-prime subgroup gate; the second found an
+unhandled one-class fit. Both failures and the subsequent explicit amendments
+are retained. In particular n7,b2 and n11,b2 have 2-power group orders, and
+n11,b1 has a repeated largest prime factor and was excluded by the frozen
+simple-subgroup admission rule. A useful nondegenerate learning experiment
+with genuinely separated curves, bases and larger sizes is still owed.
+
+## Item 11b: the actual single-bucket question
+
+[bucket_gain.py](bucket_gain.py) separately measured the statistic requested
+by `crypto-autoresearcher:knowledge/open-problems/KN-OPEN-91d4f6.md`:
+`G=M_eff*max_(s,c) Pr[h(Q+R)=c | h(Q) XOR h(R)=s]`. The offset is `s XOR c`.
+This is a maximum over conditional buckets, not average agreement.
+
+The exact subgroups have orders 29 at n7 and 2,003 at n13. The maps are
+F2-linear x-functionals with j=1..4, alongside an x-only SHA-derived null
+matched to the effective image and the same ambient XOR alphabet. Nonempty
+images need not have power-of-two size on a finite subgroup; the first failed
+assumption and its correction are retained in
+[BUCKET-AMENDMENT-01.json](BUCKET-AMENDMENT-01.json).
+
+At n13 the strongest of the tested linear maps has **G=1.4375**, while its
+matched null has **G=1.0817**. That is a measured finite level-one signal. Two
+tiny subgroups do not establish growing gain or an asymptotic attack. At n7
+finite-image effects are large and the null can exceed the linear map.
+
+The halving trace is constant on both odd-order subgroups and has effective
+gain **1**. Exact full-group controls give trace gain **2** and a point-based
+quotient-of-order-four instrument gain **4**. The latter uses the full toy
+group's cyclic table and is not proposed as an efficient x-only filter.
+All pair totals and FFT rounding residuals were checked; n7 results were
+independently checked by direct pair enumeration. Exact numerator and
+denominator tables are in [bucket-results.json](bucket-results.json).
+This measurement leaves the open problem open.
+
+## Item 10: restricted program search returns the incumbent
+
+The first restricted scalar-coordinate search preserved 17 candidate/control
+records but encountered empty-base degeneracy. That is retained in
+[program-results.json](program-results.json). It cannot show useful progress.
+
+A separately frozen experiment,
+[PROGRAM-02-PROTOCOL.json](PROGRAM-02-PROTOCOL.json), searches actual
+group-law query kernels. Targets are supplied only as points; scalar labels
+are confined to an independent correctness oracle. The grammar contains
+ordered exhaustive triples, a pair-sum hash table, and sorted pair sums,
+combined with five scalar-multiplied subspace predicates. Both signs are
+explicitly cofactor-projected, identities discarded, and duplicates removed.
+Projection/setup/query operations and every candidate's search cost are charged.
+
+After an explicitly retained empty-base admission at ell3, the amended ell4
+training run at n7,b1 selected **multiplier1 with the existing pair-hash
+kernel** from 15 candidates, matching the baseline's six usable points.
+Its fitness was 288 counted group additions/probes/comparisons, including
+projection. The heldout curve n13,b7 was constructed only after selection.
+It has subgroup order 53 and 16 projected usable points. Both the selected
+program and incumbent took 820 counted units, decomposing all 52 nonidentity
+targets. Thus the search found **no new improvement**.
+
+All target answers agreed with exhaustive triple-sum membership and positive
+witness replay. Across search and holdout the charged candidate work was
+39,587 units; the run used 2.149112 CPU seconds. Multiplicity totals equal B^3
+for every base. Different base supports are reported separately and do not
+constitute a free yield improvement. See [program-group-results.json](program-group-results.json)
+and [program-group-inputs.json](program-group-inputs.json).
+
+This is restricted enumerative program search, not an AlphaEvolve/LLM loop.
+Complete IC cost, calibrated unit sensitivities, compiled kernel mutation,
+strong rho and independent pipeline holdouts remain owed.
+
+## Item 12: fit the real archive, respect calibration units
+
+[surrogate.py](surrogate.py) admitted **1,718** unique
+`pdp-degree-profile/1` aggregate-cell receipts from nine exact Koblitz curves
+(n=13,19,23,29,31,37,41,43,47). It retained source-file hashes, line numbers,
+workload/base/source identities and all four censored/incomplete cells. It
+excluded 36 collection-run rows with a different semantic schema. There were
+no duplicate or conflicting run IDs in this source set.
+
+The response is completed-cell maximum recorded MutantXL `D_solve`, not
+Boolean F4 solving degree. Counted cost is a separate response. Censored
+observations retain their observed lower bounds and are excluded from exact
+response fitting; they remain in a completion classifier. That classifier's
+heldout accuracy merely ties the majority baseline and falsely predicts two
+incomplete cells complete. Its apparent 99.47% accuracy is unhelpful.
+
+Shape-group holdout used 1,017 training, 322 complete calibration and 375
+complete test cells. The fixed random forest's degree MAE was 0.07048 and
+descriptive 90% split-interval coverage was 89.6%; the median baseline's MAE
+was 1.376. Counted-cost log2 MAE was 0.39583. These are observations on a
+selected, heterogeneous historical archive, not a coverage theorem.
+
+The stricter [surrogate_curve.py](surrogate_curve.py) keeps whole exact curves
+out of training. Its 383 test cells on n23/n31 give degree MAE **0.10041**
+and counted-cost log2 MAE **0.63061**. Only three independent calibration
+curves exist in that split. A 90% group-conformal quantile requests rank four,
+so the correct interval is **unbounded**. It cannot price an expensive future
+run with a finite calibrated upper bound. This limitation is in
+[surrogate-curve-results.json](surrogate-curve-results.json).
+
+Per-cell matrix memory is not fitted from cumulative main-process peak RSS.
+Unseen chained presentations and the proposed n23/ell6 or n29/ell7 m4 cells
+are rejected as unsupported. The archive has fixed orders and is not a
+complete presentation/order surface. Individual historical target receipts
+and executable historical snapshots were not reconstructed, so the full
+receipt-promotion gate remains open. Further independent curves, actual F4
+degree/memory receipts and prospective validation are required.
+
+## Artifacts, reproducibility and remaining status
+
+[PROTOCOL.json](PROTOCOL.json) and the individually named amendments were
+written before their corresponding executions. Launch receipts bind exact
+sources, inputs and seeds. All raw successes, failures and rejected admissions
+remain append-only in this directory. Executed commands use the following
+prefix from repository root:
+
+`F4_F2_ECHELON=host PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 experiments/ideas_learning_20261018/`
+
+The script suffixes were `prefilter_search.py`, `sat_controls.py`,
+`bucket_gain.py`, `program_group.py`, `surrogate.py` and
+`surrogate_curve.py`; complete argv and stdout/stderr are retained. Scripts
+refuse to overwrite final result files. Reproduction should copy protocols and
+scripts to a fresh sibling directory; WDSat requires its pinned source checkout.
+
+[controls.svg](controls.svg) is generated from editable
+[report_visuals.py](report_visuals.py); [evidence-flow.svg](evidence-flow.svg)
+comes from [evidence-flow.dot](evidence-flow.dot). This report and visuals are
+included in [REPORT.pdf](REPORT.pdf). [verify.json](verify.json) records the
+independent metadata/semantic consistency checks.
+
+Exact local curve records and full UIDs are exported in
+[curve-records.json](curve-records.json). They bind different generators and
+representations from historical aliases. No isogeny maps or canonical IC
+leaderboard facts changed. Canonical candidate/volcano graph sources were
+checked; no graph correction is implied by these stage controls. Registry
+integration of new exact curve records is an obligation for the integrating
+agent, because this task owns only the present experiment directory.
+
+The original four audit items remain open to their full acceptance criteria.
+No autoresearcher experiment status or knowledge finding was promoted, and no
+publication submission occurred.

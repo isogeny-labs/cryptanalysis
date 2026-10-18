@@ -1,0 +1,799 @@
+{
+  "scope": "Final distinct allocated GPU attempt; compilation and CPU fixtures passed, device initialization failed before GPU arithmetic. Failure cause unknown.",
+  "source_commit": "390898259771f708e431a49f356dcf2a296f82aa",
+  "archive_sha256": "d74c3fab830939e3ecfc18c03925b37d9dc5d1d30a893bacc68302eaf637d4de",
+  "archive_bytes": 27318,
+  "started_utc": "2026-10-18T06:22:18Z",
+  "finished_utc": "2026-10-18T06:24:10Z",
+  "execution_status": {
+    "ecc_exit": 3,
+    "negation_exit": 0,
+    "frontier_exit": 78,
+    "challenge_solution_claimed": false,
+    "campaign_seed_range_reserved": false
+  },
+  "devices": {
+    "status": "error",
+    "error": "unknown error",
+    "driverVersion": 13000,
+    "runtimeVersion": 13030,
+    "devices": []
+  },
+  "driver_version": "580.126.09",
+  "nvidia_reported_recovery_action": "Reboot",
+  "cause_established": false,
+  "cuda_architecture": "-gencode arch=compute_89,code=sm_89",
+  "host_test_records": [
+    {
+      "status": "ok",
+      "checks": 2862,
+      "rounds": 64
+    },
+    {
+      "status": "ok",
+      "checks": 28645,
+      "rounds": 64,
+      "hostClmul": 1
+    },
+    {
+      "status": "ok",
+      "checks": 28642,
+      "rounds": 64,
+      "hostClmul": 0
+    }
+  ],
+  "remote_positive_ingest_fixture": {
+    "status": "ok",
+    "records": 8,
+    "independent_curve_weight_seed_encoding_checks": 8,
+    "zero_length_records": 0,
+    "zero_length_golden_replayed": 0,
+    "positive_trails_replayed": 8,
+    "golden_trails_replayed": 8,
+    "trails_not_replayed": 0,
+    "max_trail_steps": 7,
+    "run_id": 53180,
+    "dp_weight": 60
+  },
+  "frontier_memory_gate": {
+    "host_total_bytes": 540788072448,
+    "cgroup_limit": "70999998464",
+    "effective_limit_bytes": 70999998464,
+    "required_minimum_bytes": 192000000000,
+    "process_address_space_cap_bytes": 38999998464
+  },
+  "frontier_terminal": {
+    "status": "impeded",
+    "reason": "original frontier requires at least 192000000000 effective host RAM bytes",
+    "frontier_executed": false
+  },
+  "negation": {
+    "none": {
+      "total_steps": 2208379,
+      "mul": 4416758,
+      "sqr": 2208379,
+      "inv": 2208379,
+      "n_walks_launched": 9,
+      "n_walks_discarded_at_cap": 9,
+      "dp_count": 0,
+      "censored": 1,
+      "collided": 0,
+      "step_budget": 2208379,
+      "walk_cap": 262144,
+      "peak_rss_bytes": 0
+    },
+    "det": {
+      "total_steps": 2208379,
+      "mul": 4940428,
+      "sqr": 2470214,
+      "inv": 2470214,
+      "n_walks_launched": 10,
+      "n_walks_discarded_at_cap": 9,
+      "dp_count": 1,
+      "censored": 1,
+      "collided": 0,
+      "step_budget": 2208379,
+      "walk_cap": 262144,
+      "peak_rss_bytes": 0
+    },
+    "reselect": {
+      "total_steps": 2208379,
+      "mul": 4940428,
+      "sqr": 2470214,
+      "inv": 2470214,
+      "n_walks_launched": 10,
+      "n_walks_discarded_at_cap": 9,
+      "dp_count": 1,
+      "censored": 1,
+      "collided": 0,
+      "step_budget": 2208379,
+      "walk_cap": 262144,
+      "peak_rss_bytes": 0
+    },
+    "baseline": {
+      "total_steps": 42678,
+      "mul": 85356,
+      "sqr": 42678,
+      "inv": 42678,
+      "n_walks_launched": 10,
+      "n_walks_discarded_at_cap": 0,
+      "dp_count": 10,
+      "censored": 0,
+      "collided": 1,
+      "step_budget": 2208379,
+      "walk_cap": 262144,
+      "peak_rss_bytes": 0
+    }
+  },
+  "resource_outcome": {
+    "absence_verified": true,
+    "deleted": true,
+    "evidence_bytes": 27318,
+    "evidence_sha256": "d74c3fab830939e3ecfc18c03925b37d9dc5d1d30a893bacc68302eaf637d4de",
+    "finished_unix": 1792304661.288836,
+    "payload_sha256": "e269ad82ff1ff7724d88ccd34adf3752f642f9895f2dd015889315245fbfcfd4",
+    "pod_id": "isu6msmhvdzvgs",
+    "results_fetched": true,
+    "schema": "ideas-gpu-final/v1",
+    "scientific_started": true,
+    "source_commit": "390898259771f708e431a49f356dcf2a296f82aa",
+    "started_unix": 1792304501.1579707,
+    "workflow_returncode": 1
+  },
+  "final_inventory": {
+    "schema": "ideas-final-cloud-inventory/v1",
+    "known_allocated_pod_ids": [
+      "ddklh0efbq99mv",
+      "qy31gqnna1aasz",
+      "uf7o6868cpoxi7",
+      "3nkvjgy3jmlzol",
+      "isu6msmhvdzvgs"
+    ],
+    "complete_inventory_pages": 1,
+    "known_ids_present": [],
+    "campaign_prefix_resources_present": [],
+    "latest_exact_id_independently_404": true,
+    "local_watchdog_pid": 120207,
+    "local_watchdog_process_state": "Z",
+    "checked_unix": 1792304796.8162267,
+    "provider_response_env_or_unrelated_inventory_recorded": false,
+    "further_allocations": false
+  },
+  "archive_audit": {
+    "archive": "experiments/ideas_gpu_20261018/resource-runs/gpu-final-01/evidence.tar.gz",
+    "archive_sha256": "d74c3fab830939e3ecfc18c03925b37d9dc5d1d30a893bacc68302eaf637d4de",
+    "archive_bytes": 27318,
+    "manifest_payload_records": 120,
+    "archive_file_count": 121,
+    "exact_retained_payload_coverage": true,
+    "all_retained_and_fresh_extraction_hashes_pass": true,
+    "checks": [
+      {
+        "path": "cc-version.txt",
+        "sha256": "3e8cc208c40f60832f67377aa1b03c3e7e858f20cd5d365464944700c0bd7ad1",
+        "matched": true
+      },
+      {
+        "path": "cgroup-cpu.max.before",
+        "sha256": "5a18f95c11d594e3e9fb37305fa8406cc46d23e91bc621157941659d835d009b",
+        "matched": true
+      },
+      {
+        "path": "cgroup-cpu.stat.after",
+        "sha256": "9c1e7a363b42ce78d2904d4fc5943d81f7d52bbe1f84dedf7f83d89c055fa223",
+        "matched": true
+      },
+      {
+        "path": "cgroup-cpu.stat.before",
+        "sha256": "516eb1a810b7dbbd45b6e7fbf7e4c65ec653ef9fe58842ec093c8f7c95a07b56",
+        "matched": true
+      },
+      {
+        "path": "cgroup-memory.events.after",
+        "sha256": "28fe05a1d7b8467a03fb54454f7b6a130fab752864d0454f5f6c4a4b6ce307f2",
+        "matched": true
+      },
+      {
+        "path": "cgroup-memory.events.before",
+        "sha256": "28fe05a1d7b8467a03fb54454f7b6a130fab752864d0454f5f6c4a4b6ce307f2",
+        "matched": true
+      },
+      {
+        "path": "cgroup-memory.max.before",
+        "sha256": "367cee95aa5f18958c838785560e10a986a13fad34e8ac18fd4c1abf36b3c26e",
+        "matched": true
+      },
+      {
+        "path": "cuda-architecture.txt",
+        "sha256": "f8a898b1077b7a691b50dca05220385d295b9d31d8532b3dc19ae856fb366391",
+        "matched": true
+      },
+      {
+        "path": "cuda-fetch.command",
+        "sha256": "175357be98e86d3a4355ccda7c1234b326d211fb582a617f90ad29ae20b2e181",
+        "matched": true
+      },
+      {
+        "path": "cuda-fetch.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "cuda-fetch.resources",
+        "sha256": "d14dab689c413f1679af3580b6908736b568a6ae11746ae63173bc2c2b8e6c2c",
+        "matched": true
+      },
+      {
+        "path": "cuda-fetch.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "cuda-fetch.stdout",
+        "sha256": "4c946a5058d4042161a5662c063b8e46d7703ee2dd866cf71f565ae27bc4b735",
+        "matched": true
+      },
+      {
+        "path": "cuda-wheels.sha256",
+        "sha256": "6534ed349c70dc081e7a39596ea22d024c602ef9118bb425ccdbd52deb9b9886",
+        "matched": true
+      },
+      {
+        "path": "cxx-version.txt",
+        "sha256": "88b7c4b67564a146863224148116065fee418539f0a408f3636a68f3bde51805",
+        "matched": true
+      },
+      {
+        "path": "ecc-devices.command",
+        "sha256": "5f70e9fd05c16fa2001255a66448addcc373b62a663fa0fabb0a7e8ce510951c",
+        "matched": true
+      },
+      {
+        "path": "ecc-devices.exit",
+        "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+        "matched": true
+      },
+      {
+        "path": "ecc-devices.resources",
+        "sha256": "9215ff61c2f9ebafae9e7cde312f0841435c9afde9bb654542e74dc8b68f4fb6",
+        "matched": true
+      },
+      {
+        "path": "ecc-devices.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ecc-devices.stdout",
+        "sha256": "8be7fd6b56d29373f8a03ad983ef7236c6fb2424ef2fac8192ac1bed71d2c76a",
+        "matched": true
+      },
+      {
+        "path": "ecc-gpu-build.command",
+        "sha256": "8ea566a4e4da8bfe744105fafd2ecb60ceaab712d8f16b20255c2279466f0fee",
+        "matched": true
+      },
+      {
+        "path": "ecc-gpu-build.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "ecc-gpu-build.resources",
+        "sha256": "61d089dc8e7f39f98629fe435eb5e29a340b270254d8ba9f2394e522290b2bd7",
+        "matched": true
+      },
+      {
+        "path": "ecc-gpu-build.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ecc-gpu-build.stdout",
+        "sha256": "f47a2a272cecf2e91ca74b6fa36a863275456eca1836c51c52b05583c588f346",
+        "matched": true
+      },
+      {
+        "path": "ecc-host-test.command",
+        "sha256": "4eb45a89b8e255bc2da1c478a396c76fb9569dfb04113a7d21392320f5adc088",
+        "matched": true
+      },
+      {
+        "path": "ecc-host-test.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "ecc-host-test.resources",
+        "sha256": "26508f3c579c838fbb3484d6680712b66932fd32645ae2b5030fbdf8b556821d",
+        "matched": true
+      },
+      {
+        "path": "ecc-host-test.stderr",
+        "sha256": "b89a87165063a539b1b22445833543869e1fec95005ef9823a9a5bad02ffc1ec",
+        "matched": true
+      },
+      {
+        "path": "ecc-host-test.stdout",
+        "sha256": "4e9b56221e3e29fd8119c0dad66c7371a67e454bf7ffed33c822dd372ebdf442",
+        "matched": true
+      },
+      {
+        "path": "ecc-pipeline.exit",
+        "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+        "matched": true
+      },
+      {
+        "path": "ecc-source-verification.txt",
+        "sha256": "adcd872d2cb2501735c4bde238d4967c7815a70759e65e79a1df61d6b610e3ed",
+        "matched": true
+      },
+      {
+        "path": "execution-status.json",
+        "sha256": "6711550b337f3b00a1a983c0453a52845bcad78cb471795d72216760ffed0614",
+        "matched": true
+      },
+      {
+        "path": "finished.utc",
+        "sha256": "b108d0479115cad153660573b7e5e5d67a9d4a41b9f4407ebf17855ec3efd56d",
+        "matched": true
+      },
+      {
+        "path": "fixture.32",
+        "sha256": "7d1696d1035fb0a900d69976bddd8013df890a5c8f2a0fb6a02da31f498d30b3",
+        "matched": true
+      },
+      {
+        "path": "fixture.64",
+        "sha256": "6e75c9e74c2c9853432eb6f8a70fa287c3b2ee1536982cc038c4a0f599ab12a1",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.command.txt",
+        "sha256": "150507e72a86ce41440b630266237f987f727616e54c444295da879c89a45bce",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.resources.txt",
+        "sha256": "0da0107c2bd88fbf1eafeb4438163e111e0c53589b58d5f8e21ffc74e8b172ee",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.stderr",
+        "sha256": "402010bf58f7fcb909d2c2201b35c866812dd6421040544bcebb1446778c45a5",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.stdout.jsonl",
+        "sha256": "77d03e0bdbdcf1c61781548fdb43df0be61e740c174a88bdff5d44e31133435f",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-sat.validation.txt",
+        "sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.command.txt",
+        "sha256": "a12d2a8b2a868ce2e07167cf2da41e82606ff0cf049e3abc54528080dc531391",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.resources.txt",
+        "sha256": "18f0c4b7990f206b10fa8dd116f0f57259efd195fa2b5ff44a4028bc0c3c427c",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.stderr",
+        "sha256": "abab818d69c7a7ec6733ffe08917173e57d12812ba8bfd5cce6c88a8d5ad2dba",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.stdout.jsonl",
+        "sha256": "833d929a33f5f3964a5c351acc877c6e6ec165b31e80bf7f5863faf1bc05bc3a",
+        "matched": true
+      },
+      {
+        "path": "frontier/control-unsat.validation.txt",
+        "sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+        "matched": true
+      },
+      {
+        "path": "frontier/host.txt",
+        "sha256": "1079af862561c00172d84a35fcd019b8fc65e9abce6ae0ecd7fe11527f58a455",
+        "matched": true
+      },
+      {
+        "path": "frontier/launcher.sha256",
+        "sha256": "6e74e65d63219a71adf96ffcf3392c08818c9c7a852d4e0efd79a1311e2ab918",
+        "matched": true
+      },
+      {
+        "path": "frontier/memory-gate.json",
+        "sha256": "66450218aef5cd7dc7e0078fbe9f15e1f8f78b14f99a9fcce5e3ae425f0287bf",
+        "matched": true
+      },
+      {
+        "path": "frontier/payload-verification.txt",
+        "sha256": "21aa4bb4a5123e8e3000d62a53ede620e32802fb39ddd5c71c35f4aee0549a34",
+        "matched": true
+      },
+      {
+        "path": "frontier/scope.txt",
+        "sha256": "216a3f6034a904d5876b9768664d66644aafa7949720f1eb215fdffa543af697",
+        "matched": true
+      },
+      {
+        "path": "frontier/started-utc.txt",
+        "sha256": "da0f4481e9ab55f47f6b713cb6e3cb7abf383b0c841528a9c33db4e1cb3a540b",
+        "matched": true
+      },
+      {
+        "path": "frontier/terminal-status.json",
+        "sha256": "54d0e1721fc56041b4a2ec11c8c621643ae6757b7f527b166d8df01cb35ec9a5",
+        "matched": true
+      },
+      {
+        "path": "frontier-launch.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "frontier-launch.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "frontier-pipeline.exit",
+        "sha256": "b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784",
+        "matched": true
+      },
+      {
+        "path": "hardware.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "http-adapter-command.json",
+        "sha256": "aa091ffe966a21b23ed39028e8bcfab02ee3d8cb4d37bb4162dc0301872fd1c0",
+        "matched": true
+      },
+      {
+        "path": "http-adapter-started.json",
+        "sha256": "0aa06269bb2b944ee0860016b8da06c3919ba7b799128fd1d42f12c731d313a8",
+        "matched": true
+      },
+      {
+        "path": "http-adapter-state.json",
+        "sha256": "f3555edeec9573d13e1cd253b7d5252467baf420b2eb4b2032caed6da499b2ca",
+        "matched": true
+      },
+      {
+        "path": "http-workflow.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "http-workflow.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ingest-build.command",
+        "sha256": "ce57714332504b3b5f8eb609ee0a5937bb5f5c300b622634362d3b79b732f421",
+        "matched": true
+      },
+      {
+        "path": "ingest-build.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "ingest-build.resources",
+        "sha256": "2849bcf16c1f057447f1f4861b7f90a010f793b1f6919f03ed8cb1aef5b4133b",
+        "matched": true
+      },
+      {
+        "path": "ingest-build.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ingest-build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture-check.command",
+        "sha256": "86cfd2b6a957cb6297d18bac63a4530f38516c2db46751077eb9550ca3ee8327",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture-check.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture-check.resources",
+        "sha256": "7edd7737d80d7aff8b6e5c83838d2bad5faa0b226a2e8965eeb10b195462adfd",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture-check.stdout",
+        "sha256": "2ed61a3abb4543fd6b32988947ee0f5002b9ea0640563d142a719f7ae8171219",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture.command",
+        "sha256": "d230cf736659b34605e12dd06d018070c9bb7a1c182d1692f9e9e17d58346dd1",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture.resources",
+        "sha256": "e483fc0554afba8a7df42488cec18689db8548d03bb6ced30405491a59e047a7",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "ingest-fixture.stdout",
+        "sha256": "6937af51497e39e41d8cf2decbca01cd4efead08af848ae0b3966e3bfda6afd1",
+        "matched": true
+      },
+      {
+        "path": "launch-source-verification.txt",
+        "sha256": "3ffb3e3b528f4801445b1ee04fde2e0050038bbf0617ac3e5bb35d92942e7320",
+        "matched": true
+      },
+      {
+        "path": "lscpu.txt",
+        "sha256": "b441e62ba89668e2c44f2362585b3841339d54bef512283eb217591ec787cfe8",
+        "matched": true
+      },
+      {
+        "path": "meminfo.txt",
+        "sha256": "176912a06953d48f5ab4b9adf551f5cd3a3b81c87d90eea03b7d6e2c7120735e",
+        "matched": true
+      },
+      {
+        "path": "native-binaries.sha256",
+        "sha256": "07b4d15dc2d501178bd5c4bdddd5bbc644339cf0df859669a215a37a8e937abf",
+        "matched": true
+      },
+      {
+        "path": "negation-baseline.command",
+        "sha256": "96042797bb2589dcca437e4b42b0db1e0e9b63928d3a0c7beac321c41a7ab746",
+        "matched": true
+      },
+      {
+        "path": "negation-baseline.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-baseline.resources",
+        "sha256": "2cf6244ab38e081fa43a77913f64a046b83808ee48522b57a95cf69146217869",
+        "matched": true
+      },
+      {
+        "path": "negation-baseline.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-baseline.stdout",
+        "sha256": "07aad214e04ef3c7ce1ffcd58e2929bca1569c92e5e03150e938b21baaccc42a",
+        "matched": true
+      },
+      {
+        "path": "negation-build.command",
+        "sha256": "454028fd241b81c3db2f3a3e5f1ab52e42cc138004bd0b2bceaca00a138b1c2a",
+        "matched": true
+      },
+      {
+        "path": "negation-build.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-build.resources",
+        "sha256": "efd6370e9cc82faeabe814718d508e4a0a6ac7a23a89b99bccd37c8c001c74b3",
+        "matched": true
+      },
+      {
+        "path": "negation-build.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-det.command",
+        "sha256": "234a936cb25da58032d09deae088f2e2dd94fc0fedf4477a5fe6317c75f6981b",
+        "matched": true
+      },
+      {
+        "path": "negation-det.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-det.resources",
+        "sha256": "a1bc966c25cc772bf3334998a4e919f288caa3e428de4fbf7a87aeaf62ada03b",
+        "matched": true
+      },
+      {
+        "path": "negation-det.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-det.stdout",
+        "sha256": "d16ac6af14c0229b5ad5fb163358f6e891351b32c0973ebb52891dba7e19d103",
+        "matched": true
+      },
+      {
+        "path": "negation-none.command",
+        "sha256": "6747c308ecc2b0cd659aa7276adce2d062c286898f21a22acf6faff9023ecfad",
+        "matched": true
+      },
+      {
+        "path": "negation-none.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-none.resources",
+        "sha256": "df11a9856dfb6539d1b3d4d0dfa65e03128ce494dd2533b09ec1dcebb1e509ec",
+        "matched": true
+      },
+      {
+        "path": "negation-none.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-none.stdout",
+        "sha256": "02838341f8c2da5baca78715d594a69eba3922397df00094da0124c15fbb1d9d",
+        "matched": true
+      },
+      {
+        "path": "negation-pipeline.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-reselect.command",
+        "sha256": "28c39d3ce6f38f265d34cefdb1ff5f16cc0b3eb8f682b92e0a9361ff85e183f9",
+        "matched": true
+      },
+      {
+        "path": "negation-reselect.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "negation-reselect.resources",
+        "sha256": "3130624e42bc1c7a593ee7616757b93ea0c2f06aac39cf41d3fd6f3be43a4682",
+        "matched": true
+      },
+      {
+        "path": "negation-reselect.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "negation-reselect.stdout",
+        "sha256": "d16ac6af14c0229b5ad5fb163358f6e891351b32c0973ebb52891dba7e19d103",
+        "matched": true
+      },
+      {
+        "path": "nvcc-version.txt",
+        "sha256": "cf24ed3a2015c6eedbe47a5f86a4387361fc5441b5c242d56ace440d908d209d",
+        "matched": true
+      },
+      {
+        "path": "nvidia-smi.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "matched": true
+      },
+      {
+        "path": "nvidia-smi.txt",
+        "sha256": "e230f422d9a6db7249514df1e32a9dca37ccb801f9d4c1c81640efefa789bcb3",
+        "matched": true
+      },
+      {
+        "path": "process-status.txt",
+        "sha256": "af310c70ddd138bfc91461f3b063743e592e6ef2e15758284eecf8eca71af500",
+        "matched": true
+      },
+      {
+        "path": "setup.command.json",
+        "sha256": "4edc4de20bff2724ea91005c4d2647c67b8f63792805b6ded4fac4914c1144cf",
+        "matched": true
+      },
+      {
+        "path": "setup.exit",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "matched": true
+      },
+      {
+        "path": "setup.resources.json",
+        "sha256": "0bf313a9c89e8364d4a40af0d0c6ad201fd95db30aac84824decbdcd042e2533",
+        "matched": true
+      },
+      {
+        "path": "setup.stderr",
+        "sha256": "f77216c41aadf6c667ac1a602069951966cea350daab793ffe11ae0de1225ddc",
+        "matched": true
+      },
+      {
+        "path": "setup.stdout",
+        "sha256": "1090376bb0fd2b6d56090b2a0a1a4e01d0fc4b012c4bb26ae8bf7b529ab9a887",
+        "matched": true
+      },
+      {
+        "path": "started.utc",
+        "sha256": "ae275f7a41b97fa8bb213c6fcc78f6d24840bceff2a874cb3e4fd28669171ac9",
+        "matched": true
+      },
+      {
+        "path": "uname.txt",
+        "sha256": "1079af862561c00172d84a35fcd019b8fc65e9abce6ae0ecd7fe11527f58a455",
+        "matched": true
+      }
+    ],
+    "scientific_reexecution": false
+  },
+  "not_run": [
+    "GPU KAT/native checker",
+    "GPU walk",
+    "corrected GPU-report ingestion",
+    "GPU health",
+    "checkpoint restart",
+    "throughput benchmarks",
+    "challenge",
+    "original large frontier"
+  ],
+  "solving_degree_claimed": false,
+  "challenge_solution_claimed": false,
+  "further_allocations": false,
+  "supporting_evidence_sha256": {
+    "resource-runs/gpu-final-01/resource-outcome.json": "8651aeaa32442fb6c15fb0afae275ef04f6fe614d2ed6ed90b83b91b82a57eec",
+    "resource-runs/gpu-final-01/root-final-inventory.json": "a49fefd8e625ec9455025e0e4762023480f546b11c7613bc376c74068d71db8f",
+    "resource-runs/gpu-final-01/selected-catalog.json": "57fd1a68cb509a5fcc7d6cc17d489ec42e80c9c6fc23967ab8047efaf3d64726",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/execution-status.json": "6711550b337f3b00a1a983c0453a52845bcad78cb471795d72216760ffed0614",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/ecc-devices.stdout": "8be7fd6b56d29373f8a03ad983ef7236c6fb2424ef2fac8192ac1bed71d2c76a",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/nvidia-smi.txt": "e230f422d9a6db7249514df1e32a9dca37ccb801f9d4c1c81640efefa789bcb3",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/cuda-architecture.txt": "f8a898b1077b7a691b50dca05220385d295b9d31d8532b3dc19ae856fb366391",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/ecc-host-test.stdout": "4e9b56221e3e29fd8119c0dad66c7371a67e454bf7ffed33c822dd372ebdf442",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/ingest-fixture-check.stdout": "2ed61a3abb4543fd6b32988947ee0f5002b9ea0640563d142a719f7ae8171219",
+    "resource-runs/gpu-final-01/evidence/remote/run-gpu-v3/frontier/memory-gate.json": "66450218aef5cd7dc7e0078fbe9f15e1f8f78b14f99a9fcce5e3ae425f0287bf"
+  }
+}

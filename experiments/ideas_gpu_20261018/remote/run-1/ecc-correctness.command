@@ -1,0 +1,1 @@
+/root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-1/build/ec2k-gpu walk --run-id 53180 --dp-weight 46 --threads 256 --steps 96 --launches 8 --verify 3 --dp-cap 1048576 --dp-file /root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-1/control.32 --dp-file64 /root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-1/control.64 

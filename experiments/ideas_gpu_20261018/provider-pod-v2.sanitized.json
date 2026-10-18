@@ -1,0 +1,44 @@
+{
+  "id": "uf7o6868cpoxi7",
+  "name": "ideas-20261018-ic-gpu",
+  "status": "RUNNING",
+  "cudaVersion": "13.0",
+  "cost": 0.69,
+  "gpu": {
+    "count": 1,
+    "id": "NVIDIA GeForce RTX 5090",
+    "memory": 125,
+    "vcpuCount": 28
+  },
+  "ports": [
+    "22/tcp"
+  ],
+  "ssh_endpoints": {
+    "direct": {
+      "host": "174.94.157.109",
+      "port": 47568
+    },
+    "proxy": {
+      "host": "ssh.runpod.io",
+      "port": 22
+    }
+  },
+  "runtime": {
+    "uptime": 182,
+    "ports": [
+      {
+        "ip": "100.65.25.47",
+        "private": 19123,
+        "public": 60693,
+        "type": "http"
+      },
+      {
+        "ip": "174.94.157.109",
+        "private": 22,
+        "public": 47568,
+        "type": "tcp"
+      }
+    ]
+  },
+  "api_mutations": 0
+}
