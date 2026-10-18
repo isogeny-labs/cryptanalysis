@@ -734,3 +734,432 @@ fn specialised_routes_stress_against_enumeration() {
         "too few decomposable targets: {nonempty}/{total}"
     );
 }
+
+/// Adversarial-review differential tests (round 2 reviewer): inputs the
+/// implementer's tests do not use — exhaustive tiny fields, a uniformly
+/// random `a` (both trace classes at every `n`), shuffled and partial
+/// (subset) point lists, empty and zero-dimensional bases, `n` near the
+/// single-word limit, and the generic Koblitz dispatch at `m = 3`.
+mod review {
+    use super::*;
+
+    fn all_points(curve: &BinaryCurve) -> Vec<BinaryPoint> {
+        let mut out = vec![BinaryPoint::Infinity];
+        for x in 0..1u64 << curve.m {
+            let xe = F2mElement::from_biguint(&BigUint::from(x), curve.m);
+            out.extend(points_with_x(curve, &xe));
+        }
+        out
+    }
+
+    /// Specialised routes vs the enumerated reference on every target.
+    fn check_cheap(
+        dec: &AffineDecomposer,
+        points: &[BinaryPoint],
+        curve: &BinaryCurve,
+        targets: &[BinaryPoint],
+        label: &str,
+    ) -> (usize, usize) {
+        let (mut ne, mut tot) = (0, 0);
+        for t in targets {
+            for m in [2usize, 3] {
+                let reference = dec.decompositions(t, m, AffineRoute::Enumerate);
+                assert!(reference.stats.complete);
+                for d in &reference.decompositions {
+                    assert_eq!(add_all(curve, points, d), *t, "{label}: ref sum");
+                }
+                let route = if m == 2 {
+                    AffineRoute::S3Solve
+                } else {
+                    AffineRoute::S4PairsAndSolve
+                };
+                for r in [route, AffineRoute::Auto] {
+                    let got = dec.decompositions(t, m, r);
+                    assert!(got.stats.complete, "{label}: incomplete");
+                    assert_eq!(
+                        got.decompositions, reference.decompositions,
+                        "{label}: {r:?} m={m} t={t:?}"
+                    );
+                }
+                tot += 1;
+                ne += usize::from(!reference.decompositions.is_empty());
+            }
+        }
+        (ne, tot)
+    }
+
+    fn rand_subset(
+        points: &[BinaryPoint],
+        rng: &mut StdRng,
+        keep: f64,
+        shuffle: bool,
+    ) -> Vec<BinaryPoint> {
+        let mut v: Vec<BinaryPoint> = points
+            .iter()
+            .filter(|_| rng.gen_bool(keep))
+            .cloned()
+            .collect();
+        if v.is_empty() {
+            v.push(points[0].clone());
+        }
+        if shuffle {
+            for i in (1..v.len()).rev() {
+                v.swap(i, rng.gen_range(0..=i));
+            }
+        }
+        v
+    }
+
+    /// Every curve `(a, b ≠ 0)` over `GF(2^n)`, `n = 2..=4`, a few
+    /// subspaces per dimension, **every** shift, **every** curve point
+    /// and `O` as target, `m = 2, 3`: cheap routes against enumeration
+    /// (full point lists), plus the three algebraic routes on a thinned
+    /// subset of the configurations.
+    #[test]
+    fn exhaustive_tiny_fields_all_curves_all_shifts_all_targets() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0001);
+        let (mut ne, mut tot, mut cfgs, mut alg_cfgs) = (0, 0, 0usize, 0usize);
+        for n in 2u32..=4 {
+            for a in 0..1u64 << n {
+                for b in 1..1u64 << n {
+                    let curve = generic_curve(n, a, b);
+                    let targets = all_points(&curve);
+                    for l in 0..=n.min(3) {
+                        for _ in 0..2 {
+                            let basis = random_independent(&mut rng, n, l);
+                            for shift in 0..1u64 << n {
+                                let coset = AffineSubspace::new(&basis, shift).unwrap();
+                                let points = affine_points(&curve, &coset).unwrap();
+                                if points.is_empty() {
+                                    continue;
+                                }
+                                let dec = AffineDecomposer::new(&curve, &coset, &points)
+                                    .expect("decomposer");
+                                cfgs += 1;
+                                let label = format!(
+                                    "tiny n={n} a={a:#x} b={b:#x} basis={basis:?} c={shift:#x}"
+                                );
+                                let (x, y) = check_cheap(&dec, &points, &curve, &targets, &label);
+                                ne += x;
+                                tot += y;
+                                if cfgs % 23 == 0 {
+                                    alg_cfgs += 1;
+                                    for m in [2usize, 3] {
+                                        check_routes(
+                                            &curve, &coset, &points, &dec, &targets, m, true,
+                                            &label,
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assert!(cfgs > 5000 && alg_cfgs > 200, "cfgs={cfgs} alg={alg_cfgs}");
+        assert!(ne * 5 >= tot, "too few decomposable targets {ne}/{tot}");
+    }
+
+    /// Uniformly random `a`, `n = 5..=20`, dimensions `0..=6`, shifts in
+    /// and out of `V`, shuffled partial point lists (so `±P` are often
+    /// split) and planted/base/2-torsion/`O` targets.
+    #[test]
+    fn random_a_shuffled_subset_bases_match_enumeration() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0002);
+        let (mut ne, mut tot) = (0, 0);
+        for n in 5u32..=20 {
+            for l in 0..=n.min(6) {
+                for rep in 0..3 {
+                    let mask = (1u64 << n) - 1;
+                    let curve =
+                        generic_curve(n, rng.gen::<u64>() & mask, (rng.gen::<u64>() & mask).max(1));
+                    let basis = random_independent(&mut rng, n, l);
+                    let shift = if rep == 2 && l > 0 {
+                        basis[0] ^ basis[l as usize - 1]
+                    } else {
+                        rng.gen::<u64>() & mask
+                    };
+                    let coset = AffineSubspace::new(&basis, shift).unwrap();
+                    let full = affine_points(&curve, &coset).unwrap();
+                    if full.is_empty() {
+                        continue;
+                    }
+                    for (keep, shuffle) in [(1.0, true), (0.6, true), (0.3, false)] {
+                        let points = rand_subset(&full, &mut rng, keep, shuffle);
+                        let dec = AffineDecomposer::new(&curve, &coset, &points).unwrap();
+                        let ts = targets(&curve, &points, 3, &mut rng, 4);
+                        let label = format!("rand n={n} l={l} keep={keep} c={shift:#x}");
+                        let (x, y) = check_cheap(&dec, &points, &curve, &ts, &label);
+                        ne += x;
+                        tot += y;
+                    }
+                }
+            }
+        }
+        assert!(tot > 1500, "{tot}");
+        assert!(ne * 6 >= tot, "too few decomposable targets {ne}/{tot}");
+    }
+
+    /// Algebraic / SAT / hull routes on small random-`a` fields with
+    /// partial shuffled point lists: they must equal the chain-
+    /// representable part of the enumerated reference.
+    #[test]
+    fn algebraic_and_sat_routes_on_subset_bases_random_a() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0003);
+        for n in 5u32..=9 {
+            for l in 0..=3u32.min(n) {
+                for rep in 0..2 {
+                    let mask = (1u64 << n) - 1;
+                    let curve =
+                        generic_curve(n, rng.gen::<u64>() & mask, (rng.gen::<u64>() & mask).max(1));
+                    let basis = random_independent(&mut rng, n, l);
+                    let shift = rng.gen::<u64>() & mask;
+                    let coset = AffineSubspace::new(&basis, shift).unwrap();
+                    let full = affine_points(&curve, &coset).unwrap();
+                    if full.is_empty() {
+                        continue;
+                    }
+                    let points =
+                        rand_subset(&full, &mut rng, if rep == 0 { 1.0 } else { 0.5 }, true);
+                    let dec = AffineDecomposer::new(&curve, &coset, &points).unwrap();
+                    let ts = targets(&curve, &points, 3, &mut rng, 3);
+                    let label = format!("alg n={n} l={l} c={shift:#x}");
+                    check_routes(&curve, &coset, &points, &dec, &ts, 2, true, &label);
+                    if 3 * l + n <= 22 {
+                        check_routes(&curve, &coset, &points, &dec, &ts, 3, true, &label);
+                    }
+                    // m = 4 (Auto resolves to the algebraic chain): the
+                    // chain-representable subset of the reference.
+                    if 4 * l + 2 * n <= 24 && points.len() <= 24 {
+                        for t in &ts {
+                            let reference = dec.decompositions(t, 4, AffineRoute::Enumerate);
+                            let rep4: Vec<_> = reference
+                                .decompositions
+                                .iter()
+                                .filter(|d| chain_representable(&curve, &points, d))
+                                .cloned()
+                                .collect();
+                            let got = dec.decompositions(t, 4, AffineRoute::Auto);
+                            assert!(got.stats.complete);
+                            assert_eq!(got.decompositions, rep4, "{label}: m=4 Auto");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Fields near the single-word limit, odd and even `n`, both trace
+    /// classes of `a`, cheap routes only.
+    #[test]
+    fn large_n_random_a_cheap_routes() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0004);
+        let (mut ne, mut tot) = (0, 0);
+        for n in [30u32, 31, 32, 33, 47, 53, 58, 59, 60, 61, 62] {
+            for l in [1u32, 2, 3, 4] {
+                for _ in 0..2 {
+                    let mask = (1u64 << n) - 1;
+                    let curve =
+                        generic_curve(n, rng.gen::<u64>() & mask, (rng.gen::<u64>() & mask).max(1));
+                    let basis = random_independent(&mut rng, n, l);
+                    let coset = AffineSubspace::new(&basis, rng.gen::<u64>() & mask).unwrap();
+                    let points = affine_points(&curve, &coset).unwrap();
+                    if points.is_empty() {
+                        continue;
+                    }
+                    let dec = AffineDecomposer::new(&curve, &coset, &points).unwrap();
+                    let ts = targets(&curve, &points, 3, &mut rng, 4);
+                    let (x, y) =
+                        check_cheap(&dec, &points, &curve, &ts, &format!("big n={n} l={l}"));
+                    ne += x;
+                    tot += y;
+                }
+            }
+        }
+        assert!(ne * 6 >= tot, "too few decomposable targets {ne}/{tot}");
+        // Beyond the single-word range everything refuses cleanly.
+        let c63 = BinaryCurve {
+            m: 63,
+            ..generic_curve(62, 1, 1)
+        };
+        assert!(affine_points(&c63, &AffineSubspace::new(&[1], 2).unwrap()).is_none());
+    }
+
+    /// Empty point lists, zero-dimensional cosets and misuse: every route
+    /// returns cleanly (no panic) and agrees with the reference.
+    #[test]
+    fn empty_and_zero_dimensional_bases_every_route() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0005);
+        let engine = SolverEngine::default();
+        let routes = [
+            AffineRoute::Auto,
+            AffineRoute::S3Solve,
+            AffineRoute::S4PairsAndSolve,
+            AffineRoute::Enumerate,
+            AffineRoute::Algebraic {
+                engine,
+                node_budget: usize::MAX,
+            },
+            AffineRoute::Sat {
+                conflict_budget: u64::MAX,
+            },
+            AffineRoute::GenericAlgebraic {
+                engine,
+                node_budget: usize::MAX,
+            },
+        ];
+        for n in [3u32, 5, 8, 13] {
+            let mask = (1u64 << n) - 1;
+            let curve = generic_curve(n, rng.gen::<u64>() & mask, (rng.gen::<u64>() & mask).max(1));
+            let ts = all_points(&curve);
+            // Empty base on a coset.
+            let coset = AffineSubspace::new(&[1, 2], 4).unwrap();
+            let dec = AffineDecomposer::new(&curve, &coset, &[]).unwrap();
+            assert!(dec.is_empty());
+            for t in ts.iter().take(12) {
+                for m in 0..=4usize {
+                    for r in routes {
+                        let got = dec.decompositions(t, m, r);
+                        assert!(
+                            got.decompositions.is_empty(),
+                            "empty base n={n} m={m} {r:?}"
+                        );
+                    }
+                }
+            }
+            // Zero-dimensional coset {c}: at most one abscissa.
+            for shift in [0u64, 1, 5 & mask, mask] {
+                let coset = AffineSubspace::new(&[], shift).unwrap();
+                let pts = affine_points(&curve, &coset).unwrap();
+                if pts.is_empty() {
+                    continue;
+                }
+                let dec = AffineDecomposer::new(&curve, &coset, &pts).unwrap();
+                for t in &ts {
+                    for m in 2..=3usize {
+                        let reference = dec.decompositions(t, m, AffineRoute::Enumerate);
+                        let rep: Vec<_> = reference
+                            .decompositions
+                            .iter()
+                            .filter(|d| chain_representable(&curve, &pts, d))
+                            .cloned()
+                            .collect();
+                        for r in routes {
+                            // A route used off its `m` is documented to
+                            // return nothing, incomplete.
+                            if matches!(
+                                (r, m),
+                                (AffineRoute::S3Solve, 3) | (AffineRoute::S4PairsAndSolve, 2)
+                            ) {
+                                let off = dec.decompositions(t, m, r);
+                                assert!(off.decompositions.is_empty());
+                                // `O` is refused before the route is looked at.
+                                assert_eq!(off.stats.complete, matches!(t, BinaryPoint::Infinity));
+                                continue;
+                            }
+                            let got = dec.decompositions(t, m, r);
+                            let want = match r {
+                                AffineRoute::Algebraic { .. }
+                                | AffineRoute::Sat { .. }
+                                | AffineRoute::GenericAlgebraic { .. } => &rep,
+                                _ => &reference.decompositions,
+                            };
+                            assert_eq!(
+                                &got.decompositions, want,
+                                "dim0 n={n} c={shift:#x} m={m} {r:?} t={t:?}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Generic Koblitz dispatch at `m = 3` on every small affine base
+    /// that fits the chained system: the existing hull-based Gröbner /
+    /// SAT / Crossbred / pair-table entry points return a member of the
+    /// specialised set, and `None` only when it is empty.
+    #[test]
+    fn koblitz_generic_dispatch_m3_returns_members_of_the_specialised_set() {
+        let mut rng = StdRng::seed_from_u64(0xEE71_0006);
+        let mut bases = 0;
+        for (a, n) in [(0u8, 7u32), (1, 7), (0, 9), (1, 9), (1, 5), (0, 5)] {
+            let Some(kc) = KoblitzCurve::new(a, n) else {
+                continue;
+            };
+            let factors = invariant_factors(&kc).len();
+            let mut divisors: Vec<Vec<usize>> = (0..factors).map(|i| vec![i]).collect();
+            divisors.extend((0..factors).flat_map(|i| (i + 1..factors).map(move |j| vec![i, j])));
+            for divisor in divisors {
+                let Some((basis, _)) = subspace_basis_for_factors(&kc, &divisor) else {
+                    continue;
+                };
+                let l = basis.len();
+                if !(1..=3).contains(&l) {
+                    continue;
+                }
+                for shift in frobenius_invariant_shifts(&kc, &basis) {
+                    let Some(afb) = build_affine_frobenius_factor_base(&kc, &basis, &shift) else {
+                        continue;
+                    };
+                    bases += 1;
+                    let dec = affine_koblitz_decomposer(&kc, &afb).unwrap();
+                    let mut ts = targets(&kc.curve, &afb.fb.points, 3, &mut rng, 4);
+                    for _ in 0..3 {
+                        let k = BigUint::from(rng.gen::<u64>()) % &kc.subgroup_order;
+                        ts.push(kc.mul(kc.generator(), &k));
+                    }
+                    for t in ts.iter().filter(|t| !matches!(t, BinaryPoint::Infinity)) {
+                        for m in [2usize, 3] {
+                            let all = dec.decompositions(t, m, AffineRoute::Enumerate);
+                            for strat in [
+                                DecompositionStrategy::Groebner,
+                                DecompositionStrategy::Sat,
+                                DecompositionStrategy::Crossbred,
+                                DecompositionStrategy::PairTable,
+                                DecompositionStrategy::Enumerate,
+                            ] {
+                                if m == 3 && 3 * l + n as usize > 26 {
+                                    continue;
+                                }
+                                let got = affine_koblitz_decompose(
+                                    &kc,
+                                    &afb,
+                                    &dec,
+                                    t,
+                                    m,
+                                    AffineDispatch::Generic(strat),
+                                );
+                                match got {
+                                    Some(d) => assert!(
+                                        all.decompositions.contains(&d),
+                                        "{} l={l} m={m} {strat:?}: {d:?} not in set",
+                                        kc.label()
+                                    ),
+                                    None => assert!(
+                                        all.decompositions.is_empty(),
+                                        "{} l={l} m={m} {strat:?} missed {:?}",
+                                        kc.label(),
+                                        all.decompositions
+                                    ),
+                                }
+                            }
+                            // Specialised canonical == enumerate_decompose.
+                            let spec = affine_koblitz_decompose(
+                                &kc,
+                                &afb,
+                                &dec,
+                                t,
+                                m,
+                                AffineDispatch::Specialised(AffineRoute::Auto),
+                            );
+                            assert_eq!(spec.as_ref(), all.first());
+                        }
+                    }
+                }
+            }
+        }
+        assert!(bases >= 3, "only {bases} bases");
+    }
+}
