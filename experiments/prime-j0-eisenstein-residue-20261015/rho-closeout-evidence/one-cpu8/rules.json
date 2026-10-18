@@ -1,0 +1,957 @@
+{
+  "aa_acceptance": [
+    0.9,
+    1.11
+  ],
+  "bootstrap": {
+    "across_clusters": "median of 32 cluster medians",
+    "cluster": "Q point",
+    "draws": 10000,
+    "interval_indices": [
+      250,
+      9749
+    ],
+    "seed": 20261017,
+    "within_cluster": "median log(reference/candidate) over 16 pairs"
+  },
+  "case_order": [
+    "cal_before",
+    "q00_openssl_vs_81",
+    "q00_81_vs_76",
+    "q00_openssl_vs_76",
+    "q01_81_vs_76",
+    "q01_openssl_vs_76",
+    "q01_openssl_vs_81",
+    "q02_openssl_vs_76",
+    "q02_openssl_vs_81",
+    "q02_81_vs_76",
+    "q03_openssl_vs_81",
+    "q03_81_vs_76",
+    "q03_openssl_vs_76",
+    "q04_81_vs_76",
+    "q04_openssl_vs_76",
+    "q04_openssl_vs_81",
+    "q05_openssl_vs_76",
+    "q05_openssl_vs_81",
+    "q05_81_vs_76",
+    "q06_openssl_vs_81",
+    "q06_81_vs_76",
+    "q06_openssl_vs_76",
+    "q07_81_vs_76",
+    "q07_openssl_vs_76",
+    "q07_openssl_vs_81",
+    "q08_openssl_vs_76",
+    "q08_openssl_vs_81",
+    "q08_81_vs_76",
+    "q09_openssl_vs_81",
+    "q09_81_vs_76",
+    "q09_openssl_vs_76",
+    "q10_81_vs_76",
+    "q10_openssl_vs_76",
+    "q10_openssl_vs_81",
+    "q11_openssl_vs_76",
+    "q11_openssl_vs_81",
+    "q11_81_vs_76",
+    "q12_openssl_vs_81",
+    "q12_81_vs_76",
+    "q12_openssl_vs_76",
+    "q13_81_vs_76",
+    "q13_openssl_vs_76",
+    "q13_openssl_vs_81",
+    "q14_openssl_vs_76",
+    "q14_openssl_vs_81",
+    "q14_81_vs_76",
+    "q15_openssl_vs_81",
+    "q15_81_vs_76",
+    "q15_openssl_vs_76",
+    "cal_mid",
+    "q16_81_vs_76",
+    "q16_openssl_vs_76",
+    "q16_openssl_vs_81",
+    "q17_openssl_vs_76",
+    "q17_openssl_vs_81",
+    "q17_81_vs_76",
+    "q18_openssl_vs_81",
+    "q18_81_vs_76",
+    "q18_openssl_vs_76",
+    "q19_81_vs_76",
+    "q19_openssl_vs_76",
+    "q19_openssl_vs_81",
+    "q20_openssl_vs_76",
+    "q20_openssl_vs_81",
+    "q20_81_vs_76",
+    "q21_openssl_vs_81",
+    "q21_81_vs_76",
+    "q21_openssl_vs_76",
+    "q22_81_vs_76",
+    "q22_openssl_vs_76",
+    "q22_openssl_vs_81",
+    "q23_openssl_vs_76",
+    "q23_openssl_vs_81",
+    "q23_81_vs_76",
+    "q24_openssl_vs_81",
+    "q24_81_vs_76",
+    "q24_openssl_vs_76",
+    "q25_81_vs_76",
+    "q25_openssl_vs_76",
+    "q25_openssl_vs_81",
+    "q26_openssl_vs_76",
+    "q26_openssl_vs_81",
+    "q26_81_vs_76",
+    "q27_openssl_vs_81",
+    "q27_81_vs_76",
+    "q27_openssl_vs_76",
+    "q28_81_vs_76",
+    "q28_openssl_vs_76",
+    "q28_openssl_vs_81",
+    "q29_openssl_vs_76",
+    "q29_openssl_vs_81",
+    "q29_81_vs_76",
+    "q30_openssl_vs_81",
+    "q30_81_vs_76",
+    "q30_openssl_vs_76",
+    "q31_81_vs_76",
+    "q31_openssl_vs_76",
+    "q31_openssl_vs_81",
+    "cal_after"
+  ],
+  "case_targets": {
+    "cal_after": {
+      "candidate": "openssl",
+      "fixture": "q31.json",
+      "fixture_sha256": "2492e5eaef6cc6fdf7cbd7df384b6ea34e3172f44ecbfa2efe63ed994c2a5567",
+      "q_hex": "f4abe2cdd9d93621997d768a7205e2842ebb3247f05bd7f9e3ca7b59411450c4:895c7474ac8eff617e55add08ebed6d5b4d7f6e6d0891a0c4862eaabc6fb3212",
+      "reference": "openssl"
+    },
+    "cal_before": {
+      "candidate": "openssl",
+      "fixture": "q00.json",
+      "fixture_sha256": "4abc87f35e57ecda91704ef594deaefd57befeb1fbdb775b70c4c9bafb57d38b",
+      "q_hex": "e469197120e930f773996d46e726f55cbb61952be2004e83666fec620703fcfc:a0702052001cf8fc2d4389642bcaeb524f588d920643df4b476104d0ee0eaf90",
+      "reference": "openssl"
+    },
+    "cal_mid": {
+      "candidate": "openssl",
+      "fixture": "q16.json",
+      "fixture_sha256": "fddfbfea258a4e079ad4bb6abe6b3eef04624fe1876042e8ce4a8c40d69a3e1e",
+      "q_hex": "45087d2d739cec79e896d824d8f815c80362819bcb15ac0918f89b1902cf5b41:09070951f9e6b664bd94176cc52520a6056a013aa77c4513815b1333a393ae9c",
+      "reference": "openssl"
+    },
+    "q00_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q00.json",
+      "fixture_sha256": "4abc87f35e57ecda91704ef594deaefd57befeb1fbdb775b70c4c9bafb57d38b",
+      "q_hex": "e469197120e930f773996d46e726f55cbb61952be2004e83666fec620703fcfc:a0702052001cf8fc2d4389642bcaeb524f588d920643df4b476104d0ee0eaf90",
+      "reference": "radix81"
+    },
+    "q00_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q00.json",
+      "fixture_sha256": "4abc87f35e57ecda91704ef594deaefd57befeb1fbdb775b70c4c9bafb57d38b",
+      "q_hex": "e469197120e930f773996d46e726f55cbb61952be2004e83666fec620703fcfc:a0702052001cf8fc2d4389642bcaeb524f588d920643df4b476104d0ee0eaf90",
+      "reference": "openssl"
+    },
+    "q00_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q00.json",
+      "fixture_sha256": "4abc87f35e57ecda91704ef594deaefd57befeb1fbdb775b70c4c9bafb57d38b",
+      "q_hex": "e469197120e930f773996d46e726f55cbb61952be2004e83666fec620703fcfc:a0702052001cf8fc2d4389642bcaeb524f588d920643df4b476104d0ee0eaf90",
+      "reference": "openssl"
+    },
+    "q01_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q01.json",
+      "fixture_sha256": "e227120323fd75673c6d7efa44a504c6a4e3882c87a512b8d3fd5910b560455a",
+      "q_hex": "03a7ef8deae93aa469d545ab673e193cfde68b1375d65f14fd108bcc080ac3e7:4c54b5a8e8ed29ef96a5a4aa7b40bbb0a8ccd0e4836e9e1c14fb76e5ebd9a9f7",
+      "reference": "radix81"
+    },
+    "q01_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q01.json",
+      "fixture_sha256": "e227120323fd75673c6d7efa44a504c6a4e3882c87a512b8d3fd5910b560455a",
+      "q_hex": "03a7ef8deae93aa469d545ab673e193cfde68b1375d65f14fd108bcc080ac3e7:4c54b5a8e8ed29ef96a5a4aa7b40bbb0a8ccd0e4836e9e1c14fb76e5ebd9a9f7",
+      "reference": "openssl"
+    },
+    "q01_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q01.json",
+      "fixture_sha256": "e227120323fd75673c6d7efa44a504c6a4e3882c87a512b8d3fd5910b560455a",
+      "q_hex": "03a7ef8deae93aa469d545ab673e193cfde68b1375d65f14fd108bcc080ac3e7:4c54b5a8e8ed29ef96a5a4aa7b40bbb0a8ccd0e4836e9e1c14fb76e5ebd9a9f7",
+      "reference": "openssl"
+    },
+    "q02_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q02.json",
+      "fixture_sha256": "24ead0b82c6c63c4325495a2de67222812f9a2ef96092ffb052da119c80db9a2",
+      "q_hex": "2f2d53d9f02c9011505430949f81d05332afbb0535bcc90e74d946ca7fa2e50a:d165594f804d78b88362fccd74d14702c7da44888fa4c9c70474c32bceb976b1",
+      "reference": "radix81"
+    },
+    "q02_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q02.json",
+      "fixture_sha256": "24ead0b82c6c63c4325495a2de67222812f9a2ef96092ffb052da119c80db9a2",
+      "q_hex": "2f2d53d9f02c9011505430949f81d05332afbb0535bcc90e74d946ca7fa2e50a:d165594f804d78b88362fccd74d14702c7da44888fa4c9c70474c32bceb976b1",
+      "reference": "openssl"
+    },
+    "q02_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q02.json",
+      "fixture_sha256": "24ead0b82c6c63c4325495a2de67222812f9a2ef96092ffb052da119c80db9a2",
+      "q_hex": "2f2d53d9f02c9011505430949f81d05332afbb0535bcc90e74d946ca7fa2e50a:d165594f804d78b88362fccd74d14702c7da44888fa4c9c70474c32bceb976b1",
+      "reference": "openssl"
+    },
+    "q03_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q03.json",
+      "fixture_sha256": "65422ad8ccecdb08d1c55b195f9a1a364291354b5a4503ab0393acd16b328d03",
+      "q_hex": "58035c981c3e9dca55411d621b41f6189e4f91a4312472bae212e0889c6c54d2:2b5476a381b7d50de33f37b39d8042f2e4f58988df3f08853292534888cf09cf",
+      "reference": "radix81"
+    },
+    "q03_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q03.json",
+      "fixture_sha256": "65422ad8ccecdb08d1c55b195f9a1a364291354b5a4503ab0393acd16b328d03",
+      "q_hex": "58035c981c3e9dca55411d621b41f6189e4f91a4312472bae212e0889c6c54d2:2b5476a381b7d50de33f37b39d8042f2e4f58988df3f08853292534888cf09cf",
+      "reference": "openssl"
+    },
+    "q03_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q03.json",
+      "fixture_sha256": "65422ad8ccecdb08d1c55b195f9a1a364291354b5a4503ab0393acd16b328d03",
+      "q_hex": "58035c981c3e9dca55411d621b41f6189e4f91a4312472bae212e0889c6c54d2:2b5476a381b7d50de33f37b39d8042f2e4f58988df3f08853292534888cf09cf",
+      "reference": "openssl"
+    },
+    "q04_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q04.json",
+      "fixture_sha256": "1802182f7f3c72484dfb3653a3682eea0cc9027f432de3b713fbb5bd5341b837",
+      "q_hex": "1628071b473ac2dabfd14eda35a619d664baea66a52ec6131602f474a6f36913:b878571a26ebf3052abe5b6d351526f122d671bae5e7a912ee18220b572e38f7",
+      "reference": "radix81"
+    },
+    "q04_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q04.json",
+      "fixture_sha256": "1802182f7f3c72484dfb3653a3682eea0cc9027f432de3b713fbb5bd5341b837",
+      "q_hex": "1628071b473ac2dabfd14eda35a619d664baea66a52ec6131602f474a6f36913:b878571a26ebf3052abe5b6d351526f122d671bae5e7a912ee18220b572e38f7",
+      "reference": "openssl"
+    },
+    "q04_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q04.json",
+      "fixture_sha256": "1802182f7f3c72484dfb3653a3682eea0cc9027f432de3b713fbb5bd5341b837",
+      "q_hex": "1628071b473ac2dabfd14eda35a619d664baea66a52ec6131602f474a6f36913:b878571a26ebf3052abe5b6d351526f122d671bae5e7a912ee18220b572e38f7",
+      "reference": "openssl"
+    },
+    "q05_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q05.json",
+      "fixture_sha256": "3f4ec03148174ee278404fb0165fbb177e193c30b311dd6fe0f8997db2f33ee6",
+      "q_hex": "1473257eb31fc41e14e02b5c2ef61c5022cc214ef433d68cb88c8774aa75581a:9799291295c0f34fae89aaf2e8dfe5bce773842c84662c1c3af2393c82d8f9c2",
+      "reference": "radix81"
+    },
+    "q05_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q05.json",
+      "fixture_sha256": "3f4ec03148174ee278404fb0165fbb177e193c30b311dd6fe0f8997db2f33ee6",
+      "q_hex": "1473257eb31fc41e14e02b5c2ef61c5022cc214ef433d68cb88c8774aa75581a:9799291295c0f34fae89aaf2e8dfe5bce773842c84662c1c3af2393c82d8f9c2",
+      "reference": "openssl"
+    },
+    "q05_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q05.json",
+      "fixture_sha256": "3f4ec03148174ee278404fb0165fbb177e193c30b311dd6fe0f8997db2f33ee6",
+      "q_hex": "1473257eb31fc41e14e02b5c2ef61c5022cc214ef433d68cb88c8774aa75581a:9799291295c0f34fae89aaf2e8dfe5bce773842c84662c1c3af2393c82d8f9c2",
+      "reference": "openssl"
+    },
+    "q06_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q06.json",
+      "fixture_sha256": "4765a21c61b3646e92e7277cf7cc77c6aa82a39fbdf6eee9518a9c7c10ffd4ee",
+      "q_hex": "06b10dd7691186c0cc4897f5ae1106de7a53717ab54a11f25733c6b547de4890:d2b816ca69dbca91ca7cd41237576019b1a0e9614dcf1ce8b28e64299776bf90",
+      "reference": "radix81"
+    },
+    "q06_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q06.json",
+      "fixture_sha256": "4765a21c61b3646e92e7277cf7cc77c6aa82a39fbdf6eee9518a9c7c10ffd4ee",
+      "q_hex": "06b10dd7691186c0cc4897f5ae1106de7a53717ab54a11f25733c6b547de4890:d2b816ca69dbca91ca7cd41237576019b1a0e9614dcf1ce8b28e64299776bf90",
+      "reference": "openssl"
+    },
+    "q06_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q06.json",
+      "fixture_sha256": "4765a21c61b3646e92e7277cf7cc77c6aa82a39fbdf6eee9518a9c7c10ffd4ee",
+      "q_hex": "06b10dd7691186c0cc4897f5ae1106de7a53717ab54a11f25733c6b547de4890:d2b816ca69dbca91ca7cd41237576019b1a0e9614dcf1ce8b28e64299776bf90",
+      "reference": "openssl"
+    },
+    "q07_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q07.json",
+      "fixture_sha256": "bf94a1ff6e07b37734f209fa798b23245a729e380da9740a1dfe187039d62629",
+      "q_hex": "ca8963cddbc243e615f108d5bb76a0b888f923080ec6a06c7f44ea9a21c0212e:de72e4f056be7ecbacfc59d40d554e2a34726f8a4c4e54c673a4ee03ccda6b09",
+      "reference": "radix81"
+    },
+    "q07_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q07.json",
+      "fixture_sha256": "bf94a1ff6e07b37734f209fa798b23245a729e380da9740a1dfe187039d62629",
+      "q_hex": "ca8963cddbc243e615f108d5bb76a0b888f923080ec6a06c7f44ea9a21c0212e:de72e4f056be7ecbacfc59d40d554e2a34726f8a4c4e54c673a4ee03ccda6b09",
+      "reference": "openssl"
+    },
+    "q07_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q07.json",
+      "fixture_sha256": "bf94a1ff6e07b37734f209fa798b23245a729e380da9740a1dfe187039d62629",
+      "q_hex": "ca8963cddbc243e615f108d5bb76a0b888f923080ec6a06c7f44ea9a21c0212e:de72e4f056be7ecbacfc59d40d554e2a34726f8a4c4e54c673a4ee03ccda6b09",
+      "reference": "openssl"
+    },
+    "q08_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q08.json",
+      "fixture_sha256": "1e2caad876fa834bf1f802c40eae58b22712fda1aaec34185775f25d989f75cd",
+      "q_hex": "c8b9814faca79a50a010754b2f32a932eee389235ab9663f1f6ec3caa0893efb:74390348708f999fdcf092789ec24d1e0dca6da0ced70cc9fa0531b65bae485f",
+      "reference": "radix81"
+    },
+    "q08_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q08.json",
+      "fixture_sha256": "1e2caad876fa834bf1f802c40eae58b22712fda1aaec34185775f25d989f75cd",
+      "q_hex": "c8b9814faca79a50a010754b2f32a932eee389235ab9663f1f6ec3caa0893efb:74390348708f999fdcf092789ec24d1e0dca6da0ced70cc9fa0531b65bae485f",
+      "reference": "openssl"
+    },
+    "q08_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q08.json",
+      "fixture_sha256": "1e2caad876fa834bf1f802c40eae58b22712fda1aaec34185775f25d989f75cd",
+      "q_hex": "c8b9814faca79a50a010754b2f32a932eee389235ab9663f1f6ec3caa0893efb:74390348708f999fdcf092789ec24d1e0dca6da0ced70cc9fa0531b65bae485f",
+      "reference": "openssl"
+    },
+    "q09_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q09.json",
+      "fixture_sha256": "f4b4155ee7c112205dbb3527ee61ab0ecd61043deefc2ad9d7c419bb90a2fbdc",
+      "q_hex": "6214ebf97d46f8469575eccd84f0fe044d4fb1fd4d210fdd37b0ac86b3105bbd:9d2834fe03b722a97799fc20922640eaaa099c78d9e4c39b374a6137d19cb68e",
+      "reference": "radix81"
+    },
+    "q09_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q09.json",
+      "fixture_sha256": "f4b4155ee7c112205dbb3527ee61ab0ecd61043deefc2ad9d7c419bb90a2fbdc",
+      "q_hex": "6214ebf97d46f8469575eccd84f0fe044d4fb1fd4d210fdd37b0ac86b3105bbd:9d2834fe03b722a97799fc20922640eaaa099c78d9e4c39b374a6137d19cb68e",
+      "reference": "openssl"
+    },
+    "q09_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q09.json",
+      "fixture_sha256": "f4b4155ee7c112205dbb3527ee61ab0ecd61043deefc2ad9d7c419bb90a2fbdc",
+      "q_hex": "6214ebf97d46f8469575eccd84f0fe044d4fb1fd4d210fdd37b0ac86b3105bbd:9d2834fe03b722a97799fc20922640eaaa099c78d9e4c39b374a6137d19cb68e",
+      "reference": "openssl"
+    },
+    "q10_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q10.json",
+      "fixture_sha256": "5b84401c4c3cbd96f1e7e991f4e8e21fd152e1926c41db6300c0c67cc6856021",
+      "q_hex": "60df0065607a967bf047211daf8591ce23ca67449058d90f87f545dede38ce15:fc9c2cf4efe0d969446733fa83eb85a8c708487b3f0a98be6f44191c5bdda614",
+      "reference": "radix81"
+    },
+    "q10_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q10.json",
+      "fixture_sha256": "5b84401c4c3cbd96f1e7e991f4e8e21fd152e1926c41db6300c0c67cc6856021",
+      "q_hex": "60df0065607a967bf047211daf8591ce23ca67449058d90f87f545dede38ce15:fc9c2cf4efe0d969446733fa83eb85a8c708487b3f0a98be6f44191c5bdda614",
+      "reference": "openssl"
+    },
+    "q10_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q10.json",
+      "fixture_sha256": "5b84401c4c3cbd96f1e7e991f4e8e21fd152e1926c41db6300c0c67cc6856021",
+      "q_hex": "60df0065607a967bf047211daf8591ce23ca67449058d90f87f545dede38ce15:fc9c2cf4efe0d969446733fa83eb85a8c708487b3f0a98be6f44191c5bdda614",
+      "reference": "openssl"
+    },
+    "q11_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q11.json",
+      "fixture_sha256": "e12496b01b4324d1322b2529d127dde1c763bc3748f776b85e653a6f9815ddf3",
+      "q_hex": "9e50cc5b85bbdcb1cf2b973cd4b7b3e3c9ec9d9940aa60305995d80e496a04b2:acd1e0537d9c12e9685bcdbb7dbb31bd215bb8d0bb56f13050a4e7d4fb107098",
+      "reference": "radix81"
+    },
+    "q11_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q11.json",
+      "fixture_sha256": "e12496b01b4324d1322b2529d127dde1c763bc3748f776b85e653a6f9815ddf3",
+      "q_hex": "9e50cc5b85bbdcb1cf2b973cd4b7b3e3c9ec9d9940aa60305995d80e496a04b2:acd1e0537d9c12e9685bcdbb7dbb31bd215bb8d0bb56f13050a4e7d4fb107098",
+      "reference": "openssl"
+    },
+    "q11_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q11.json",
+      "fixture_sha256": "e12496b01b4324d1322b2529d127dde1c763bc3748f776b85e653a6f9815ddf3",
+      "q_hex": "9e50cc5b85bbdcb1cf2b973cd4b7b3e3c9ec9d9940aa60305995d80e496a04b2:acd1e0537d9c12e9685bcdbb7dbb31bd215bb8d0bb56f13050a4e7d4fb107098",
+      "reference": "openssl"
+    },
+    "q12_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q12.json",
+      "fixture_sha256": "1a37b003b54c1774d59e44566265add23a6fac7756cf8cbfa3690a94fd9e6ebe",
+      "q_hex": "37b1b8876246af19dd8b01944c208291f07be4d783d0fe099a107ad3d57ae26b:fc9ec442385863b47e5477216fa5319a2af936add7dbad31c837e02d36723963",
+      "reference": "radix81"
+    },
+    "q12_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q12.json",
+      "fixture_sha256": "1a37b003b54c1774d59e44566265add23a6fac7756cf8cbfa3690a94fd9e6ebe",
+      "q_hex": "37b1b8876246af19dd8b01944c208291f07be4d783d0fe099a107ad3d57ae26b:fc9ec442385863b47e5477216fa5319a2af936add7dbad31c837e02d36723963",
+      "reference": "openssl"
+    },
+    "q12_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q12.json",
+      "fixture_sha256": "1a37b003b54c1774d59e44566265add23a6fac7756cf8cbfa3690a94fd9e6ebe",
+      "q_hex": "37b1b8876246af19dd8b01944c208291f07be4d783d0fe099a107ad3d57ae26b:fc9ec442385863b47e5477216fa5319a2af936add7dbad31c837e02d36723963",
+      "reference": "openssl"
+    },
+    "q13_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q13.json",
+      "fixture_sha256": "5d6eda04179845fc3feafed4e607fb2fae0cf1c59ad443f2941fb6f12be175aa",
+      "q_hex": "c448fdceb9b6fd89cc4ee4f2bd8a791111e80f4a58bc6293819283ae05ce4c1f:08f376df21e093f27dc8cf2a661a21e183d63015cc1539939fd6bc8bfe369372",
+      "reference": "radix81"
+    },
+    "q13_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q13.json",
+      "fixture_sha256": "5d6eda04179845fc3feafed4e607fb2fae0cf1c59ad443f2941fb6f12be175aa",
+      "q_hex": "c448fdceb9b6fd89cc4ee4f2bd8a791111e80f4a58bc6293819283ae05ce4c1f:08f376df21e093f27dc8cf2a661a21e183d63015cc1539939fd6bc8bfe369372",
+      "reference": "openssl"
+    },
+    "q13_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q13.json",
+      "fixture_sha256": "5d6eda04179845fc3feafed4e607fb2fae0cf1c59ad443f2941fb6f12be175aa",
+      "q_hex": "c448fdceb9b6fd89cc4ee4f2bd8a791111e80f4a58bc6293819283ae05ce4c1f:08f376df21e093f27dc8cf2a661a21e183d63015cc1539939fd6bc8bfe369372",
+      "reference": "openssl"
+    },
+    "q14_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q14.json",
+      "fixture_sha256": "38f5f18934749460860af0bfa972fbd44df2f066d67d3aa9f65647259a5cbc87",
+      "q_hex": "91d54d511772d3f37112531934b584023f0128787ea497b780ed151bf2cab922:146262698fc991016934c791b628ee69af4cb1cfb088230e3d96cc5c956ec0d4",
+      "reference": "radix81"
+    },
+    "q14_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q14.json",
+      "fixture_sha256": "38f5f18934749460860af0bfa972fbd44df2f066d67d3aa9f65647259a5cbc87",
+      "q_hex": "91d54d511772d3f37112531934b584023f0128787ea497b780ed151bf2cab922:146262698fc991016934c791b628ee69af4cb1cfb088230e3d96cc5c956ec0d4",
+      "reference": "openssl"
+    },
+    "q14_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q14.json",
+      "fixture_sha256": "38f5f18934749460860af0bfa972fbd44df2f066d67d3aa9f65647259a5cbc87",
+      "q_hex": "91d54d511772d3f37112531934b584023f0128787ea497b780ed151bf2cab922:146262698fc991016934c791b628ee69af4cb1cfb088230e3d96cc5c956ec0d4",
+      "reference": "openssl"
+    },
+    "q15_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q15.json",
+      "fixture_sha256": "1945aea1ce222db58fdc3a92bd19879cf9d8e3b7db5b93f2a93d809b9d350948",
+      "q_hex": "abd4cef0a99d1cffa2e748a6de88af63a4d799285fada0919b48e8ce5033e15a:4930f61a4e282cb03300c1ae1015c73af09582f4cebdaacb2cdd7cb391e36202",
+      "reference": "radix81"
+    },
+    "q15_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q15.json",
+      "fixture_sha256": "1945aea1ce222db58fdc3a92bd19879cf9d8e3b7db5b93f2a93d809b9d350948",
+      "q_hex": "abd4cef0a99d1cffa2e748a6de88af63a4d799285fada0919b48e8ce5033e15a:4930f61a4e282cb03300c1ae1015c73af09582f4cebdaacb2cdd7cb391e36202",
+      "reference": "openssl"
+    },
+    "q15_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q15.json",
+      "fixture_sha256": "1945aea1ce222db58fdc3a92bd19879cf9d8e3b7db5b93f2a93d809b9d350948",
+      "q_hex": "abd4cef0a99d1cffa2e748a6de88af63a4d799285fada0919b48e8ce5033e15a:4930f61a4e282cb03300c1ae1015c73af09582f4cebdaacb2cdd7cb391e36202",
+      "reference": "openssl"
+    },
+    "q16_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q16.json",
+      "fixture_sha256": "fddfbfea258a4e079ad4bb6abe6b3eef04624fe1876042e8ce4a8c40d69a3e1e",
+      "q_hex": "45087d2d739cec79e896d824d8f815c80362819bcb15ac0918f89b1902cf5b41:09070951f9e6b664bd94176cc52520a6056a013aa77c4513815b1333a393ae9c",
+      "reference": "radix81"
+    },
+    "q16_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q16.json",
+      "fixture_sha256": "fddfbfea258a4e079ad4bb6abe6b3eef04624fe1876042e8ce4a8c40d69a3e1e",
+      "q_hex": "45087d2d739cec79e896d824d8f815c80362819bcb15ac0918f89b1902cf5b41:09070951f9e6b664bd94176cc52520a6056a013aa77c4513815b1333a393ae9c",
+      "reference": "openssl"
+    },
+    "q16_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q16.json",
+      "fixture_sha256": "fddfbfea258a4e079ad4bb6abe6b3eef04624fe1876042e8ce4a8c40d69a3e1e",
+      "q_hex": "45087d2d739cec79e896d824d8f815c80362819bcb15ac0918f89b1902cf5b41:09070951f9e6b664bd94176cc52520a6056a013aa77c4513815b1333a393ae9c",
+      "reference": "openssl"
+    },
+    "q17_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q17.json",
+      "fixture_sha256": "59bc4bea65ae16c82260b1a7a393da31a1353791a835d5780822a8b276caa067",
+      "q_hex": "b5a18c4014bc18ba98e5e26dd542f65418e1ed4cc6b2f54f7779aae778d5e175:f459610d8741794b98ce2cbf6e4817e1b14cb20b91fa7d08753bc84c74e1cc49",
+      "reference": "radix81"
+    },
+    "q17_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q17.json",
+      "fixture_sha256": "59bc4bea65ae16c82260b1a7a393da31a1353791a835d5780822a8b276caa067",
+      "q_hex": "b5a18c4014bc18ba98e5e26dd542f65418e1ed4cc6b2f54f7779aae778d5e175:f459610d8741794b98ce2cbf6e4817e1b14cb20b91fa7d08753bc84c74e1cc49",
+      "reference": "openssl"
+    },
+    "q17_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q17.json",
+      "fixture_sha256": "59bc4bea65ae16c82260b1a7a393da31a1353791a835d5780822a8b276caa067",
+      "q_hex": "b5a18c4014bc18ba98e5e26dd542f65418e1ed4cc6b2f54f7779aae778d5e175:f459610d8741794b98ce2cbf6e4817e1b14cb20b91fa7d08753bc84c74e1cc49",
+      "reference": "openssl"
+    },
+    "q18_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q18.json",
+      "fixture_sha256": "07c114cb069e942833b2816918907fd3a8ed2dd8101dacb6b5ab2fbfe11cd37d",
+      "q_hex": "56068d45cc71397fab5f8ae68d1ea5d8c181cdc7f94c2c7cffb7b0de8b35c180:404b1de5d9a646e525dfce725a1be53d31efc9ca21cee162bc9a16f6bce2499e",
+      "reference": "radix81"
+    },
+    "q18_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q18.json",
+      "fixture_sha256": "07c114cb069e942833b2816918907fd3a8ed2dd8101dacb6b5ab2fbfe11cd37d",
+      "q_hex": "56068d45cc71397fab5f8ae68d1ea5d8c181cdc7f94c2c7cffb7b0de8b35c180:404b1de5d9a646e525dfce725a1be53d31efc9ca21cee162bc9a16f6bce2499e",
+      "reference": "openssl"
+    },
+    "q18_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q18.json",
+      "fixture_sha256": "07c114cb069e942833b2816918907fd3a8ed2dd8101dacb6b5ab2fbfe11cd37d",
+      "q_hex": "56068d45cc71397fab5f8ae68d1ea5d8c181cdc7f94c2c7cffb7b0de8b35c180:404b1de5d9a646e525dfce725a1be53d31efc9ca21cee162bc9a16f6bce2499e",
+      "reference": "openssl"
+    },
+    "q19_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q19.json",
+      "fixture_sha256": "233a8eff81b65cca7afcb74f592610d9598d60f740be9a407eec941ffdf13efc",
+      "q_hex": "300064db4d0a8f051f25712f60d45039a0ad1164ad8c387017ff1912e522e497:c804a833a21f39f1a80dca40468834561031f69c89a483f690e0cdf3d4e18170",
+      "reference": "radix81"
+    },
+    "q19_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q19.json",
+      "fixture_sha256": "233a8eff81b65cca7afcb74f592610d9598d60f740be9a407eec941ffdf13efc",
+      "q_hex": "300064db4d0a8f051f25712f60d45039a0ad1164ad8c387017ff1912e522e497:c804a833a21f39f1a80dca40468834561031f69c89a483f690e0cdf3d4e18170",
+      "reference": "openssl"
+    },
+    "q19_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q19.json",
+      "fixture_sha256": "233a8eff81b65cca7afcb74f592610d9598d60f740be9a407eec941ffdf13efc",
+      "q_hex": "300064db4d0a8f051f25712f60d45039a0ad1164ad8c387017ff1912e522e497:c804a833a21f39f1a80dca40468834561031f69c89a483f690e0cdf3d4e18170",
+      "reference": "openssl"
+    },
+    "q20_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q20.json",
+      "fixture_sha256": "ce6cd6f104eca0826b8d86dea5825bb6e302d80295fcf1ea754f1ecf122b3137",
+      "q_hex": "012e1208117c57cb43407ec961be307f17c5a51ed7aecd2acf03fff9fb5e9e8c:8aaaa8377701a7baff4dad20eb878f5f5a1c600be7323628ea179467fad208e1",
+      "reference": "radix81"
+    },
+    "q20_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q20.json",
+      "fixture_sha256": "ce6cd6f104eca0826b8d86dea5825bb6e302d80295fcf1ea754f1ecf122b3137",
+      "q_hex": "012e1208117c57cb43407ec961be307f17c5a51ed7aecd2acf03fff9fb5e9e8c:8aaaa8377701a7baff4dad20eb878f5f5a1c600be7323628ea179467fad208e1",
+      "reference": "openssl"
+    },
+    "q20_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q20.json",
+      "fixture_sha256": "ce6cd6f104eca0826b8d86dea5825bb6e302d80295fcf1ea754f1ecf122b3137",
+      "q_hex": "012e1208117c57cb43407ec961be307f17c5a51ed7aecd2acf03fff9fb5e9e8c:8aaaa8377701a7baff4dad20eb878f5f5a1c600be7323628ea179467fad208e1",
+      "reference": "openssl"
+    },
+    "q21_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q21.json",
+      "fixture_sha256": "9f5aa086c8dd8e46c306bb6ad0916b15be18ffb6e087ff605c524dab78cbfa8d",
+      "q_hex": "c65ebf5afc634f4c5373ae3bf663e0f491853e8d58b7970ebcdf9f1e7ef36c8f:2ad1b4b4f3da1cd1d34b36c1fbfbbbdb51c3c2cdf7a86c2445b53cdaee777e98",
+      "reference": "radix81"
+    },
+    "q21_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q21.json",
+      "fixture_sha256": "9f5aa086c8dd8e46c306bb6ad0916b15be18ffb6e087ff605c524dab78cbfa8d",
+      "q_hex": "c65ebf5afc634f4c5373ae3bf663e0f491853e8d58b7970ebcdf9f1e7ef36c8f:2ad1b4b4f3da1cd1d34b36c1fbfbbbdb51c3c2cdf7a86c2445b53cdaee777e98",
+      "reference": "openssl"
+    },
+    "q21_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q21.json",
+      "fixture_sha256": "9f5aa086c8dd8e46c306bb6ad0916b15be18ffb6e087ff605c524dab78cbfa8d",
+      "q_hex": "c65ebf5afc634f4c5373ae3bf663e0f491853e8d58b7970ebcdf9f1e7ef36c8f:2ad1b4b4f3da1cd1d34b36c1fbfbbbdb51c3c2cdf7a86c2445b53cdaee777e98",
+      "reference": "openssl"
+    },
+    "q22_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q22.json",
+      "fixture_sha256": "e03d7bf2325c745bea48580e8780b075bda9fab77f73384b32068db15bdf7a9d",
+      "q_hex": "d594a38cd7a3c41ab260949e9686b756313937df5ddd6bb09cee1ec760191f98:70f3e4965c99ee4ad70b538d0b603f8e51f09e154831a27fec16335e489b7f45",
+      "reference": "radix81"
+    },
+    "q22_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q22.json",
+      "fixture_sha256": "e03d7bf2325c745bea48580e8780b075bda9fab77f73384b32068db15bdf7a9d",
+      "q_hex": "d594a38cd7a3c41ab260949e9686b756313937df5ddd6bb09cee1ec760191f98:70f3e4965c99ee4ad70b538d0b603f8e51f09e154831a27fec16335e489b7f45",
+      "reference": "openssl"
+    },
+    "q22_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q22.json",
+      "fixture_sha256": "e03d7bf2325c745bea48580e8780b075bda9fab77f73384b32068db15bdf7a9d",
+      "q_hex": "d594a38cd7a3c41ab260949e9686b756313937df5ddd6bb09cee1ec760191f98:70f3e4965c99ee4ad70b538d0b603f8e51f09e154831a27fec16335e489b7f45",
+      "reference": "openssl"
+    },
+    "q23_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q23.json",
+      "fixture_sha256": "fa8389a76019a4ac1fa010d99039f4aa47387f46b33711c587f4ac4c3305e887",
+      "q_hex": "3324a32fc09f729fb318c639547a15e473b3a38858eff6dae39c9def624447da:a8d09ca7faea864604c43918e758d0a4a873d6bb05cec20dc74a4e9ccf9faafa",
+      "reference": "radix81"
+    },
+    "q23_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q23.json",
+      "fixture_sha256": "fa8389a76019a4ac1fa010d99039f4aa47387f46b33711c587f4ac4c3305e887",
+      "q_hex": "3324a32fc09f729fb318c639547a15e473b3a38858eff6dae39c9def624447da:a8d09ca7faea864604c43918e758d0a4a873d6bb05cec20dc74a4e9ccf9faafa",
+      "reference": "openssl"
+    },
+    "q23_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q23.json",
+      "fixture_sha256": "fa8389a76019a4ac1fa010d99039f4aa47387f46b33711c587f4ac4c3305e887",
+      "q_hex": "3324a32fc09f729fb318c639547a15e473b3a38858eff6dae39c9def624447da:a8d09ca7faea864604c43918e758d0a4a873d6bb05cec20dc74a4e9ccf9faafa",
+      "reference": "openssl"
+    },
+    "q24_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q24.json",
+      "fixture_sha256": "3fcf8654b5c690e8af892ef3fdb28540db83979237b6e9ebf4c4ac4a59e99145",
+      "q_hex": "87bd95ada0982faf80fd0917a9b052a33536bf4af1c3e338e51dda25cf532794:a122d5c72ac87a62c6a0c248975c7bd887e204325734b633b134288be8b95a32",
+      "reference": "radix81"
+    },
+    "q24_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q24.json",
+      "fixture_sha256": "3fcf8654b5c690e8af892ef3fdb28540db83979237b6e9ebf4c4ac4a59e99145",
+      "q_hex": "87bd95ada0982faf80fd0917a9b052a33536bf4af1c3e338e51dda25cf532794:a122d5c72ac87a62c6a0c248975c7bd887e204325734b633b134288be8b95a32",
+      "reference": "openssl"
+    },
+    "q24_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q24.json",
+      "fixture_sha256": "3fcf8654b5c690e8af892ef3fdb28540db83979237b6e9ebf4c4ac4a59e99145",
+      "q_hex": "87bd95ada0982faf80fd0917a9b052a33536bf4af1c3e338e51dda25cf532794:a122d5c72ac87a62c6a0c248975c7bd887e204325734b633b134288be8b95a32",
+      "reference": "openssl"
+    },
+    "q25_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q25.json",
+      "fixture_sha256": "d53a1e02133fbff5663acabe957de1950e2398d93f4c9da63ed1165be1efa9b4",
+      "q_hex": "aab58309c31a0e47cba331d71f9c2ad7b7e7bd3fff4dea50f19ac637ee250f02:39a8286bbd3127b40f3e66056521fd89c7d1ec7d46fc12f80b011962fdb1532b",
+      "reference": "radix81"
+    },
+    "q25_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q25.json",
+      "fixture_sha256": "d53a1e02133fbff5663acabe957de1950e2398d93f4c9da63ed1165be1efa9b4",
+      "q_hex": "aab58309c31a0e47cba331d71f9c2ad7b7e7bd3fff4dea50f19ac637ee250f02:39a8286bbd3127b40f3e66056521fd89c7d1ec7d46fc12f80b011962fdb1532b",
+      "reference": "openssl"
+    },
+    "q25_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q25.json",
+      "fixture_sha256": "d53a1e02133fbff5663acabe957de1950e2398d93f4c9da63ed1165be1efa9b4",
+      "q_hex": "aab58309c31a0e47cba331d71f9c2ad7b7e7bd3fff4dea50f19ac637ee250f02:39a8286bbd3127b40f3e66056521fd89c7d1ec7d46fc12f80b011962fdb1532b",
+      "reference": "openssl"
+    },
+    "q26_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q26.json",
+      "fixture_sha256": "c0cc1aa587ba0ab10bb6911c62bc4d12a4afe14752bd939ee7ccd8ea2392b1b3",
+      "q_hex": "279b82e0d4f191a80c7036c411e0097630bdabcc3ed04251b4f2e49903469d1e:5051a2e75df95a8d6e6750025057f7b63ffb5e63ec6939efb3c6e10232d40fe3",
+      "reference": "radix81"
+    },
+    "q26_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q26.json",
+      "fixture_sha256": "c0cc1aa587ba0ab10bb6911c62bc4d12a4afe14752bd939ee7ccd8ea2392b1b3",
+      "q_hex": "279b82e0d4f191a80c7036c411e0097630bdabcc3ed04251b4f2e49903469d1e:5051a2e75df95a8d6e6750025057f7b63ffb5e63ec6939efb3c6e10232d40fe3",
+      "reference": "openssl"
+    },
+    "q26_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q26.json",
+      "fixture_sha256": "c0cc1aa587ba0ab10bb6911c62bc4d12a4afe14752bd939ee7ccd8ea2392b1b3",
+      "q_hex": "279b82e0d4f191a80c7036c411e0097630bdabcc3ed04251b4f2e49903469d1e:5051a2e75df95a8d6e6750025057f7b63ffb5e63ec6939efb3c6e10232d40fe3",
+      "reference": "openssl"
+    },
+    "q27_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q27.json",
+      "fixture_sha256": "2db38470a8fb9d66d482d3bfdebab64737dbabbb2f56f20a973f2ada1dcc201e",
+      "q_hex": "06c4e677ce6a336820ba451ca15c957910b472b628aa65441ba6c4aed7318eae:c1755e57a09a72a95227db271cf2b4b9d9c6e65a02807f43a1e59368b837a89e",
+      "reference": "radix81"
+    },
+    "q27_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q27.json",
+      "fixture_sha256": "2db38470a8fb9d66d482d3bfdebab64737dbabbb2f56f20a973f2ada1dcc201e",
+      "q_hex": "06c4e677ce6a336820ba451ca15c957910b472b628aa65441ba6c4aed7318eae:c1755e57a09a72a95227db271cf2b4b9d9c6e65a02807f43a1e59368b837a89e",
+      "reference": "openssl"
+    },
+    "q27_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q27.json",
+      "fixture_sha256": "2db38470a8fb9d66d482d3bfdebab64737dbabbb2f56f20a973f2ada1dcc201e",
+      "q_hex": "06c4e677ce6a336820ba451ca15c957910b472b628aa65441ba6c4aed7318eae:c1755e57a09a72a95227db271cf2b4b9d9c6e65a02807f43a1e59368b837a89e",
+      "reference": "openssl"
+    },
+    "q28_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q28.json",
+      "fixture_sha256": "4b6b9004a83a0a6c71edbd2b43c74b40f6ceaa0d6027c6f0f16c95b07d544c7a",
+      "q_hex": "a80e3a2931bee5d3223e4f886f659a4b09a28f38757fecb9b32a065cfc283e95:ba071d6d400bf170f1fa620cc6d65f19a3dd7f4caaf3fe15caa5f18339b6d8ea",
+      "reference": "radix81"
+    },
+    "q28_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q28.json",
+      "fixture_sha256": "4b6b9004a83a0a6c71edbd2b43c74b40f6ceaa0d6027c6f0f16c95b07d544c7a",
+      "q_hex": "a80e3a2931bee5d3223e4f886f659a4b09a28f38757fecb9b32a065cfc283e95:ba071d6d400bf170f1fa620cc6d65f19a3dd7f4caaf3fe15caa5f18339b6d8ea",
+      "reference": "openssl"
+    },
+    "q28_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q28.json",
+      "fixture_sha256": "4b6b9004a83a0a6c71edbd2b43c74b40f6ceaa0d6027c6f0f16c95b07d544c7a",
+      "q_hex": "a80e3a2931bee5d3223e4f886f659a4b09a28f38757fecb9b32a065cfc283e95:ba071d6d400bf170f1fa620cc6d65f19a3dd7f4caaf3fe15caa5f18339b6d8ea",
+      "reference": "openssl"
+    },
+    "q29_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q29.json",
+      "fixture_sha256": "92ec7dcedb53e39c3adf93cc98285091748b21d33180df1d25e443db7dd408c0",
+      "q_hex": "7d0e1e5d333934c77d39cace20c5c85b67d9d86edd7889844a45eb9eb09b6482:087fd05c468890f8fd7ba609e5019fb500209df88486d5816f27ef052ebdf908",
+      "reference": "radix81"
+    },
+    "q29_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q29.json",
+      "fixture_sha256": "92ec7dcedb53e39c3adf93cc98285091748b21d33180df1d25e443db7dd408c0",
+      "q_hex": "7d0e1e5d333934c77d39cace20c5c85b67d9d86edd7889844a45eb9eb09b6482:087fd05c468890f8fd7ba609e5019fb500209df88486d5816f27ef052ebdf908",
+      "reference": "openssl"
+    },
+    "q29_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q29.json",
+      "fixture_sha256": "92ec7dcedb53e39c3adf93cc98285091748b21d33180df1d25e443db7dd408c0",
+      "q_hex": "7d0e1e5d333934c77d39cace20c5c85b67d9d86edd7889844a45eb9eb09b6482:087fd05c468890f8fd7ba609e5019fb500209df88486d5816f27ef052ebdf908",
+      "reference": "openssl"
+    },
+    "q30_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q30.json",
+      "fixture_sha256": "f68f83d7245a857bcabb69d58bc8b47b40a16e5b7f7d498956e80b248e06b900",
+      "q_hex": "c7d883b7437ece45dc0598b8afc7d6f08939a3e4401f213e80b755661fcaa888:6823d7c61e5afd625a650f9309bd94b724129c8c2ba81f7c744ecd20fe6871d1",
+      "reference": "radix81"
+    },
+    "q30_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q30.json",
+      "fixture_sha256": "f68f83d7245a857bcabb69d58bc8b47b40a16e5b7f7d498956e80b248e06b900",
+      "q_hex": "c7d883b7437ece45dc0598b8afc7d6f08939a3e4401f213e80b755661fcaa888:6823d7c61e5afd625a650f9309bd94b724129c8c2ba81f7c744ecd20fe6871d1",
+      "reference": "openssl"
+    },
+    "q30_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q30.json",
+      "fixture_sha256": "f68f83d7245a857bcabb69d58bc8b47b40a16e5b7f7d498956e80b248e06b900",
+      "q_hex": "c7d883b7437ece45dc0598b8afc7d6f08939a3e4401f213e80b755661fcaa888:6823d7c61e5afd625a650f9309bd94b724129c8c2ba81f7c744ecd20fe6871d1",
+      "reference": "openssl"
+    },
+    "q31_81_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q31.json",
+      "fixture_sha256": "2492e5eaef6cc6fdf7cbd7df384b6ea34e3172f44ecbfa2efe63ed994c2a5567",
+      "q_hex": "f4abe2cdd9d93621997d768a7205e2842ebb3247f05bd7f9e3ca7b59411450c4:895c7474ac8eff617e55add08ebed6d5b4d7f6e6d0891a0c4862eaabc6fb3212",
+      "reference": "radix81"
+    },
+    "q31_openssl_vs_76": {
+      "candidate": "mixed76",
+      "fixture": "q31.json",
+      "fixture_sha256": "2492e5eaef6cc6fdf7cbd7df384b6ea34e3172f44ecbfa2efe63ed994c2a5567",
+      "q_hex": "f4abe2cdd9d93621997d768a7205e2842ebb3247f05bd7f9e3ca7b59411450c4:895c7474ac8eff617e55add08ebed6d5b4d7f6e6d0891a0c4862eaabc6fb3212",
+      "reference": "openssl"
+    },
+    "q31_openssl_vs_81": {
+      "candidate": "radix81",
+      "fixture": "q31.json",
+      "fixture_sha256": "2492e5eaef6cc6fdf7cbd7df384b6ea34e3172f44ecbfa2efe63ed994c2a5567",
+      "q_hex": "f4abe2cdd9d93621997d768a7205e2842ebb3247f05bd7f9e3ca7b59411450c4:895c7474ac8eff617e55add08ebed6d5b4d7f6e6d0891a0c4862eaabc6fb3212",
+      "reference": "openssl"
+    }
+  },
+  "comparison_acceptance": "All exact same-point pairs and three bracketing OpenSSL A/A controls per repetition pass; cluster bootstrap by Q gives a 95% paired log-ratio interval excluding one.",
+  "execution_cpu": 8,
+  "hashes": {
+    "binary": "1ba810d3ad19b3c5153bf0345c736acec87a25d725aab9efffc4a55243c1202d",
+    "bundle": "8f69f5c4f11d9a3b5d0771d1edef3cb5eca111e540f99e621bece5a98522ffd5",
+    "fixture_manifest": "f46ad43788b7f9241927904541cbeb03ea70a96ca95aa84d527a9b22ba8d12b8",
+    "libcrypto": "6866ed711dab8927e1bf82bf1cd30e828bdfc34f3cc1e83b1c9eb01ce6c37d9a",
+    "source_files": {
+      "Cargo.lock": "c31dcbed43a3410e0ee3a440ee7165b221a304804ab9cbb9d7532f2a6ffa482f",
+      "Cargo.toml": "438235eda97f13312fbb34ad9728be1292a0765b34aae8cdaa082db0dfc3b85b",
+      "fixtures/mixed77-independent-fixture.json": "5b0b0a50dbae2cd57415f425b7e3a9654190d363887e06198fc7328161a40439",
+      "fixtures/rho-closeout/full-verification.json": "3f1082d08464ddc75a10cf6816dde0921d8646e800638158a9132ed2a4188989",
+      "fixtures/rho-closeout/manifest.json": "f46ad43788b7f9241927904541cbeb03ea70a96ca95aa84d527a9b22ba8d12b8",
+      "fixtures/rho-closeout/q00.json": "4abc87f35e57ecda91704ef594deaefd57befeb1fbdb775b70c4c9bafb57d38b",
+      "fixtures/rho-closeout/q01.json": "e227120323fd75673c6d7efa44a504c6a4e3882c87a512b8d3fd5910b560455a",
+      "fixtures/rho-closeout/q02.json": "24ead0b82c6c63c4325495a2de67222812f9a2ef96092ffb052da119c80db9a2",
+      "fixtures/rho-closeout/q03.json": "65422ad8ccecdb08d1c55b195f9a1a364291354b5a4503ab0393acd16b328d03",
+      "fixtures/rho-closeout/q04.json": "1802182f7f3c72484dfb3653a3682eea0cc9027f432de3b713fbb5bd5341b837",
+      "fixtures/rho-closeout/q05.json": "3f4ec03148174ee278404fb0165fbb177e193c30b311dd6fe0f8997db2f33ee6",
+      "fixtures/rho-closeout/q06.json": "4765a21c61b3646e92e7277cf7cc77c6aa82a39fbdf6eee9518a9c7c10ffd4ee",
+      "fixtures/rho-closeout/q07.json": "bf94a1ff6e07b37734f209fa798b23245a729e380da9740a1dfe187039d62629",
+      "fixtures/rho-closeout/q08.json": "1e2caad876fa834bf1f802c40eae58b22712fda1aaec34185775f25d989f75cd",
+      "fixtures/rho-closeout/q09.json": "f4b4155ee7c112205dbb3527ee61ab0ecd61043deefc2ad9d7c419bb90a2fbdc",
+      "fixtures/rho-closeout/q10.json": "5b84401c4c3cbd96f1e7e991f4e8e21fd152e1926c41db6300c0c67cc6856021",
+      "fixtures/rho-closeout/q11.json": "e12496b01b4324d1322b2529d127dde1c763bc3748f776b85e653a6f9815ddf3",
+      "fixtures/rho-closeout/q12.json": "1a37b003b54c1774d59e44566265add23a6fac7756cf8cbfa3690a94fd9e6ebe",
+      "fixtures/rho-closeout/q13.json": "5d6eda04179845fc3feafed4e607fb2fae0cf1c59ad443f2941fb6f12be175aa",
+      "fixtures/rho-closeout/q14.json": "38f5f18934749460860af0bfa972fbd44df2f066d67d3aa9f65647259a5cbc87",
+      "fixtures/rho-closeout/q15.json": "1945aea1ce222db58fdc3a92bd19879cf9d8e3b7db5b93f2a93d809b9d350948",
+      "fixtures/rho-closeout/q16.json": "fddfbfea258a4e079ad4bb6abe6b3eef04624fe1876042e8ce4a8c40d69a3e1e",
+      "fixtures/rho-closeout/q17.json": "59bc4bea65ae16c82260b1a7a393da31a1353791a835d5780822a8b276caa067",
+      "fixtures/rho-closeout/q18.json": "07c114cb069e942833b2816918907fd3a8ed2dd8101dacb6b5ab2fbfe11cd37d",
+      "fixtures/rho-closeout/q19.json": "233a8eff81b65cca7afcb74f592610d9598d60f740be9a407eec941ffdf13efc",
+      "fixtures/rho-closeout/q20.json": "ce6cd6f104eca0826b8d86dea5825bb6e302d80295fcf1ea754f1ecf122b3137",
+      "fixtures/rho-closeout/q21.json": "9f5aa086c8dd8e46c306bb6ad0916b15be18ffb6e087ff605c524dab78cbfa8d",
+      "fixtures/rho-closeout/q22.json": "e03d7bf2325c745bea48580e8780b075bda9fab77f73384b32068db15bdf7a9d",
+      "fixtures/rho-closeout/q23.json": "fa8389a76019a4ac1fa010d99039f4aa47387f46b33711c587f4ac4c3305e887",
+      "fixtures/rho-closeout/q24.json": "3fcf8654b5c690e8af892ef3fdb28540db83979237b6e9ebf4c4ac4a59e99145",
+      "fixtures/rho-closeout/q25.json": "d53a1e02133fbff5663acabe957de1950e2398d93f4c9da63ed1165be1efa9b4",
+      "fixtures/rho-closeout/q26.json": "c0cc1aa587ba0ab10bb6911c62bc4d12a4afe14752bd939ee7ccd8ea2392b1b3",
+      "fixtures/rho-closeout/q27.json": "2db38470a8fb9d66d482d3bfdebab64737dbabbb2f56f20a973f2ada1dcc201e",
+      "fixtures/rho-closeout/q28.json": "4b6b9004a83a0a6c71edbd2b43c74b40f6ceaa0d6027c6f0f16c95b07d544c7a",
+      "fixtures/rho-closeout/q29.json": "92ec7dcedb53e39c3adf93cc98285091748b21d33180df1d25e443db7dd408c0",
+      "fixtures/rho-closeout/q30.json": "f68f83d7245a857bcabb69d58bc8b47b40a16e5b7f7d498956e80b248e06b900",
+      "fixtures/rho-closeout/q31.json": "2492e5eaef6cc6fdf7cbd7df384b6ea34e3172f44ecbfa2efe63ed994c2a5567",
+      "fixtures/rho-restart-first128-fixture.json": "fc6a0283c51e3fd9c2eb0b82961092d3060c242d8122c9648c37fdaf614d094a",
+      "src/bin/eisenstein_fixed.rs": "43b7f671e6aae178224dc27f0471d2f580b82bcfc5f9d2aba9df16770d55d0d6",
+      "src/bin/eisenstein_fixed/ct_bignum.rs": "5a7f8116ef40585ccebadd630a8e50e7945052669297613817b4dbac4daf3d34",
+      "src/bin/eisenstein_fixed/joint_mixed76.rs": "0c878313de92000b43edc74ff8d2c263630ea1cfd58ec781c509fdde19fa5778",
+      "src/bin/eisenstein_fixed/joint_mixed77.rs": "01408f02678b8e4ca026176c5ac0f1ed9836b1a030e391604fa06fdf21516b7e",
+      "src/bin/eisenstein_fixed/joint_mixed78.rs": "b1283010d887809948de4ddd80f42d0220462dd39531dc31b382cb55d5d6cf8e",
+      "src/bin/eisenstein_fixed/joint_norm4033.rs": "568f3de95a89232d97c5e1ed941ebd6aac1a81cb8d4ead22d375907dede257cb",
+      "src/bin/eisenstein_fixed/joint_norm58807.rs": "67f7041985e2a7fbff1b40023dd2ef4611e843f4eedb21791b2ed73aa9bed96c",
+      "src/bin/eisenstein_fixed/unit_orbit_windows.rs": "427fbd7621ce3941586077c6dbb68f31a04ce37852dd0a74ecb205c374f4f6fa",
+      "src/bin/mixed640_bench_fixture.json": "7f4672b7b676969fe40056d0f14c6ecf45ad36109870cdf3466ebafd9e7b22d8",
+      "src/bin/mixed640_stream_fixture.json": "6b7ce3b515d0980b9975398b8b31e5e1cfdc9e54510d04faf29fee3f3bacf778",
+      "src/bin/mixed640_uniform_fixture.json": "a1c4964f174e36ea26f6a1897128f651a2ce7251e4bf4ffd532ff09221e721d3",
+      "src/bin/rho_restart_hybrid.rs": "d1f8ba4a6cef4a25cccef28b7925325236c6798309e92e2bcd9055e2f7afae3a",
+      "src/bin/rho_restart_joint.rs": "4bf8c31af7dd2847b1bf806b221b2b3214bfda620a0b156ca93c94f1394efb8d",
+      "src/bin/rho_restart_joint243.rs": "347138ce0a66fd027d522b36b8d42564af43ecbf82936a358fc656b681d137b9",
+      "src/bin/rho_restart_joint_mixed76.rs": "1ee754f9da803de77e89fe1cd0d6768a20200458bb0c3f574e549952401844ea",
+      "src/bin/rho_restart_joint_mixed77.rs": "b051ec27f4a705315392dbaf19fcb6481702f83400b742fac7e2619d3b1ba0d2",
+      "src/bin/rho_restart_joint_mixed78.rs": "5524d854afb0c1eea5d29fc535b95c6be997b86b1c3790e8fb608b66232f5f22"
+    },
+    "source_manifest": "3474be81e08f674dfeb16833ee92bdc61b9284dd2b899083fbdc066a470c1e91"
+  },
+  "instance_id": "lu2jj7z7kedvg5",
+  "paths": {
+    "binary": "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+    "bundle": "/workspace/isolated-bench/panels/rho-closeout-source-20261017.tar.gz",
+    "fixture_manifest": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/manifest.json",
+    "libcrypto": "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+    "source_manifest": "/workspace/bench-sources/rho-closeout/source-manifest.json"
+  },
+  "primary_comparisons": [
+    "openssl_vs_81",
+    "81_vs_76"
+  ],
+  "purpose": "rho-closeout-one-restart",
+  "q_count": 32,
+  "repetitions": 16,
+  "schema": 1,
+  "secondary_comparisons": [
+    "openssl_vs_76"
+  ],
+  "source_paths": {
+    "Cargo.lock": "/workspace/bench-sources/rho-closeout/Cargo.lock",
+    "Cargo.toml": "/workspace/bench-sources/rho-closeout/Cargo.toml",
+    "fixtures/mixed77-independent-fixture.json": "/workspace/bench-sources/rho-closeout/fixtures/mixed77-independent-fixture.json",
+    "fixtures/rho-closeout/full-verification.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/full-verification.json",
+    "fixtures/rho-closeout/manifest.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/manifest.json",
+    "fixtures/rho-closeout/q00.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+    "fixtures/rho-closeout/q01.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+    "fixtures/rho-closeout/q02.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+    "fixtures/rho-closeout/q03.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+    "fixtures/rho-closeout/q04.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+    "fixtures/rho-closeout/q05.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+    "fixtures/rho-closeout/q06.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+    "fixtures/rho-closeout/q07.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+    "fixtures/rho-closeout/q08.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+    "fixtures/rho-closeout/q09.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+    "fixtures/rho-closeout/q10.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+    "fixtures/rho-closeout/q11.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+    "fixtures/rho-closeout/q12.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+    "fixtures/rho-closeout/q13.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+    "fixtures/rho-closeout/q14.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+    "fixtures/rho-closeout/q15.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+    "fixtures/rho-closeout/q16.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+    "fixtures/rho-closeout/q17.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+    "fixtures/rho-closeout/q18.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+    "fixtures/rho-closeout/q19.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+    "fixtures/rho-closeout/q20.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+    "fixtures/rho-closeout/q21.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+    "fixtures/rho-closeout/q22.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+    "fixtures/rho-closeout/q23.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+    "fixtures/rho-closeout/q24.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+    "fixtures/rho-closeout/q25.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+    "fixtures/rho-closeout/q26.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+    "fixtures/rho-closeout/q27.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+    "fixtures/rho-closeout/q28.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+    "fixtures/rho-closeout/q29.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+    "fixtures/rho-closeout/q30.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+    "fixtures/rho-closeout/q31.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+    "fixtures/rho-restart-first128-fixture.json": "/workspace/bench-sources/rho-closeout/fixtures/rho-restart-first128-fixture.json",
+    "src/bin/eisenstein_fixed.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed.rs",
+    "src/bin/eisenstein_fixed/ct_bignum.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/ct_bignum.rs",
+    "src/bin/eisenstein_fixed/joint_mixed76.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed76.rs",
+    "src/bin/eisenstein_fixed/joint_mixed77.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed77.rs",
+    "src/bin/eisenstein_fixed/joint_mixed78.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed78.rs",
+    "src/bin/eisenstein_fixed/joint_norm4033.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_norm4033.rs",
+    "src/bin/eisenstein_fixed/joint_norm58807.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_norm58807.rs",
+    "src/bin/eisenstein_fixed/unit_orbit_windows.rs": "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/unit_orbit_windows.rs",
+    "src/bin/mixed640_bench_fixture.json": "/workspace/bench-sources/rho-closeout/src/bin/mixed640_bench_fixture.json",
+    "src/bin/mixed640_stream_fixture.json": "/workspace/bench-sources/rho-closeout/src/bin/mixed640_stream_fixture.json",
+    "src/bin/mixed640_uniform_fixture.json": "/workspace/bench-sources/rho-closeout/src/bin/mixed640_uniform_fixture.json",
+    "src/bin/rho_restart_hybrid.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_hybrid.rs",
+    "src/bin/rho_restart_joint.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint.rs",
+    "src/bin/rho_restart_joint243.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint243.rs",
+    "src/bin/rho_restart_joint_mixed76.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed76.rs",
+    "src/bin/rho_restart_joint_mixed77.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed77.rs",
+    "src/bin/rho_restart_joint_mixed78.rs": "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed78.rs"
+  },
+  "tier": "tier1_instance",
+  "timing_boundary": "One supplied public Q and one frozen (a,b) pair per case. Fixture loading, Q-independent curve/group initialization, generator-only OpenSSL warmup, reusable G-table preparation, and scalar-plan compilation are outside online time. OpenSSL globalwarm times Q point setup, first target EC_POINT_mul, and affine output. Joint radix-81 and mixed-76 time Q-table construction, Horner evaluation, and affine output. Each arm verifies the same point."
+}

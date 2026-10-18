@@ -1,0 +1,37 @@
+{
+  "failure": "direct SSH TCP timed out after sshd startup; Pod stopped",
+  "previous_pod": {
+    "computeType": null,
+    "containerDiskInGb": 30,
+    "costPerHr": 0.24,
+    "cpuFlavorId": "cpu3c",
+    "createdAt": "2026-10-18 00:38:23.743 +0000 UTC",
+    "desiredStatus": "EXITED",
+    "id": "wfr1v86uyxt5q1",
+    "imageName": "runpod/base:1.0.2-ubuntu2404",
+    "machineId": "h00xvwe10z8m",
+    "memoryInGb": 16,
+    "name": "rho-closeout-cpu-20261017",
+    "portMappings": null,
+    "publicIp": "",
+    "vcpuCount": 8
+  },
+  "replacement_pod": {
+    "computeType": null,
+    "containerDiskInGb": 30,
+    "costPerHr": 0.28,
+    "cpuFlavorId": "cpu5c",
+    "createdAt": "2026-10-18 00:40:43.75 +0000 UTC",
+    "desiredStatus": "RUNNING",
+    "id": "lu2jj7z7kedvg5",
+    "imageName": "runpod/base:1.0.2-ubuntu2404",
+    "machineId": "kh2rv24alz31",
+    "memoryInGb": 16,
+    "name": "rho-closeout-cpu5-20261017",
+    "portMappings": {
+      "22": 19474
+    },
+    "publicIp": "157.157.221.30",
+    "vcpuCount": 8
+  }
+}

@@ -222,3 +222,6 @@ The smaller tripling count therefore has not produced a qualified online
 advantage over mixed-77 or mixed-78 on this one-target workload. A fresh
 target panel would test whether the rank ordering transfers beyond this
 point; the retained first-run noise failure remains part of the evidence.
+The [rho closeout](RHO_CLOSEOUT.md) freezes 32 independently checked target
+points and a generator-only-warmed OpenSSL arm with target Q setup charged
+inside the online interval for that selection.
