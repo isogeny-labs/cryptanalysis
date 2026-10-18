@@ -38,3 +38,12 @@ void pdp_ps5_info(ps5_u32 out[8], const char **sha256)
     out[7] = PS5_OUTPUTS;
     *sha256 = PS5_PROGRAM_SHA256;
 }
+
+#if defined(PS5_WIRES_IN_MEMORY)
+/* Every wire of the program as the calling thread's last job left it (for the
+ * self-test, which compares them with an interpreter's). */
+void pdp_ps5_last_wires(ps5_u32 *dst)
+{
+    for (ps5_u32 k = 0; k < PS5_OPS; ++k) dst[k] = ps5_w[k];
+}
+#endif

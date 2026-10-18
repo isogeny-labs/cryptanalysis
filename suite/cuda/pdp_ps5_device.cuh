@@ -67,8 +67,31 @@ typedef unsigned long long ps5_u64;
 #define PS5_STR2(x) #x
 #define PS5_STR(x) PS5_STR2(x)
 
+#if !defined(__CUDA_ARCH__)
+/* Host model of the PTX instruction: bit i of `lut` selects the minterm
+ * (a, b, c) = (bit 2 of i, bit 1 of i, bit 0 of i).  With a literal table
+ * the compiler reduces a call to the gate it names; the self-test checks
+ * all 256 tables against this definition and the five used ones against
+ * the C operators. */
+PS5_INLINE ps5_u32 ps5_lop3(ps5_u32 a, ps5_u32 b, ps5_u32 c, unsigned lut)
+{
+    ps5_u32 r = 0u;
+    if (lut & 0x01u) r |= ~a & ~b & ~c;
+    if (lut & 0x02u) r |= ~a & ~b & c;
+    if (lut & 0x04u) r |= ~a & b & ~c;
+    if (lut & 0x08u) r |= ~a & b & c;
+    if (lut & 0x10u) r |= a & ~b & ~c;
+    if (lut & 0x20u) r |= a & ~b & c;
+    if (lut & 0x40u) r |= a & b & ~c;
+    if (lut & 0x80u) r |= a & b & c;
+    return r;
+}
+#endif
+
 #if defined(PS5_PLAIN_OPS)
-/* C operators; for comparing what the compiler makes of them. */
+/* C operators.  On the host this is the fast-to-compile form of the emulation
+ * (the tables above are proved equal to these operators by the self-test); on
+ * the device it is for comparing what ptxas makes of plain operators. */
 #    define PS5_XOR(a, b) ((a) ^ (b))
 #    define PS5_AND(a, b) ((a) & (b))
 #    define PS5_OR(a, b) ((a) | (b))
@@ -111,22 +134,7 @@ PS5_DEV PS5_INLINE ps5_u32 ps5_xand(ps5_u32 a, ps5_u32 b, ps5_u32 c)
 #    define PS5_NOT(a) ps5_not((a))
 #    define PS5_XAND(a, b, c) ps5_xand((a), (b), (c))
 #else
-/* Host model of the PTX instruction: bit i of `lut` selects the minterm
- * (a, b, c) = (bit 2 of i, bit 1 of i, bit 0 of i).  Called with literal
- * tables, so the compiler reduces each call to the gate it names. */
-PS5_INLINE ps5_u32 ps5_lop3(ps5_u32 a, ps5_u32 b, ps5_u32 c, unsigned lut)
-{
-    ps5_u32 r = 0u;
-    if (lut & 0x01u) r |= ~a & ~b & ~c;
-    if (lut & 0x02u) r |= ~a & ~b & c;
-    if (lut & 0x04u) r |= ~a & b & ~c;
-    if (lut & 0x08u) r |= ~a & b & c;
-    if (lut & 0x10u) r |= a & ~b & ~c;
-    if (lut & 0x20u) r |= a & ~b & c;
-    if (lut & 0x40u) r |= a & b & ~c;
-    if (lut & 0x80u) r |= a & b & c;
-    return r;
-}
+/* The host model of `lop3` is ps5_lop3 above; each gate is a call with its table. */
 #    define PS5_XOR(a, b) ps5_lop3((a), (b), (b), PS5_LUT_XOR)
 #    define PS5_AND(a, b) ps5_lop3((a), (b), (b), PS5_LUT_AND)
 #    define PS5_OR(a, b) ps5_lop3((a), (b), (b), PS5_LUT_OR)
