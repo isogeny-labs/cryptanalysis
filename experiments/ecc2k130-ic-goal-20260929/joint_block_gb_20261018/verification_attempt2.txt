@@ -1,0 +1,5 @@
+Command: python3 experiments/ecc2k130-ic-goal-20260929/joint_block_gb_20261018/verify_n131_panel.py
+Exit code: 1
+Failure: FileNotFoundError for /Volumes/SSD990/cryptanalysis/n131_w33_resultant_core_20261018/replay_result.json
+Cause: verifier used workspace root instead of parent experiment directory for the prior independent replay.
+Resolution: source path corrected; no measured solver inputs or receipts changed.
