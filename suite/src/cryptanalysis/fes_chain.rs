@@ -67,6 +67,29 @@
 //! The path refuses (returns `None` from [`ChainFes::new`]) for `n < 2`,
 //! `n > 63`, `ℓ > 32`, `m < 3`, `b = 0`, or a linearly dependent basis;
 //! the caller then keeps its generic behaviour.
+//!
+//! ## Work budget
+//!
+//! [`fes_chain_decompose`] also refuses, before walking anything, when
+//! [`ChainFes::leaves`] exceeds [`max_leaves`] — [`DEFAULT_MAX_LEAVES`]
+//! (`2^28`) unless the `IC_FES_CHAIN_MAX_LEAVES` environment variable
+//! says otherwise (clamped to the `2^40` ceiling [`MAX_LEAVES`]).  An
+//! over-budget cell is **exhausted, not refuted**: `None` is returned,
+//! `mq_fes_decompose` reports `exhausted` exactly as before this path
+//! existed, and `refuted` is never set.  Without the cap a large cell
+//! (`ℓ ≈ 20`) would walk for hours where it used to answer immediately.
+//!
+//! ## What `refuted` means
+//!
+//! The production walk is [`Symmetry::Sorted`], which can miss
+//! *degenerate* decompositions — those with a non-empty proper
+//! sub-multiset of signed summands summing to `O` (`R = Q + P − P`, say):
+//! when the cancelling summands sort first, no ordering the sorted walk
+//! visits has all its partial sums rational and non-zero.  So an exhaustive
+//! walk with no liftable root (`refuted = true`) proves only that **no
+//! non-degenerate decomposition exists** over the factor base — never that
+//! no decomposition of any kind does.  Use [`Symmetry::Full`] (or the
+//! generic path) where degenerate ones matter.
 
 use crate::binary_ecc::{BinaryPoint, F2mElement, IrreduciblePoly};
 use crate::cryptanalysis::koblitz_groebner::FieldStructure;
@@ -78,10 +101,38 @@ use num_bigint::BigUint;
 use std::collections::HashMap;
 use std::ops::ControlFlow;
 
-/// Leaves (summand tuples `x₀ … x_{m−2}`) above which
-/// [`fes_chain_decompose`] refuses rather than start a search it cannot
-/// finish: `2^40`.
+/// Hard ceiling on the leaf cap: `2^40`.  No setting of
+/// [`MAX_LEAVES_ENV`] raises [`max_leaves`] above it.
 pub const MAX_LEAVES: u128 = 1 << 40;
+
+/// Default work budget, in leaves (summand tuples `x₀ … x_{m−2}`; see
+/// [`ChainFes::leaves`]), above which [`fes_chain_decompose`] refuses
+/// rather than start a search it cannot finish: `2^28`.  That is on the
+/// order of a minute of walking, so a cell (`ℓ ≈ 20` at `m = 3` has about
+/// `2^39` sorted leaves) that the pre-`fes_chain` code reported as
+/// exhausted at once is reported the same way at once, not after hours.
+pub const DEFAULT_MAX_LEAVES: u128 = 1 << 28;
+
+/// Environment variable overriding [`DEFAULT_MAX_LEAVES`]: a decimal
+/// leaf count, clamped to [`MAX_LEAVES`].  Unset, empty or unparsable
+/// values keep the default.
+pub const MAX_LEAVES_ENV: &str = "IC_FES_CHAIN_MAX_LEAVES";
+
+/// Parse a [`MAX_LEAVES_ENV`] value.  `None` (unset) and anything that
+/// is not a decimal integer give [`DEFAULT_MAX_LEAVES`]; the result is
+/// clamped to [`MAX_LEAVES`].
+pub fn parse_max_leaves(raw: Option<&str>) -> u128 {
+    raw.and_then(|s| s.trim().parse::<u128>().ok())
+        .unwrap_or(DEFAULT_MAX_LEAVES)
+        .min(MAX_LEAVES)
+}
+
+/// The leaf cap in force: [`MAX_LEAVES_ENV`] if set, else
+/// [`DEFAULT_MAX_LEAVES`].  Read on every call (one `getenv`, negligible
+/// next to a solve).
+pub fn max_leaves() -> u128 {
+    parse_max_leaves(std::env::var(MAX_LEAVES_ENV).ok().as_deref())
+}
 
 /// Which orderings of the summands the search walks.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -636,8 +687,25 @@ pub fn fes_chain_decompose_with(
     m: usize,
     sym: Symmetry,
 ) -> Option<(Option<Vec<usize>>, SatDecompositionStats, FesChainStats)> {
+    fes_chain_decompose_capped(kc, fb, index_of, target, m, sym, max_leaves())
+}
+
+/// [`fes_chain_decompose_with`] with an explicit leaf cap instead of
+/// [`max_leaves`].  `None` when the path does not apply **or the search
+/// space exceeds `cap` leaves**; in neither case is anything refuted, and
+/// the check happens before any walking, so it returns at once.
+#[allow(clippy::type_complexity)]
+pub fn fes_chain_decompose_capped(
+    kc: &KoblitzCurve,
+    fb: &FrobeniusFactorBase,
+    index_of: &HashMap<(BigUint, BigUint), usize>,
+    target: &BinaryPoint,
+    m: usize,
+    sym: Symmetry,
+    cap: u128,
+) -> Option<(Option<Vec<usize>>, SatDecompositionStats, FesChainStats)> {
     let fes = ChainFes::new(&fb.subspace_basis, &kc.curve.b, m, &kc.curve.irreducible)?;
-    if fes.leaves(sym) > MAX_LEAVES {
+    if fes.leaves(sym) > cap.min(MAX_LEAVES) {
         return None;
     }
     let mut stats = SatDecompositionStats {
@@ -678,11 +746,14 @@ pub fn fes_chain_decompose_with(
 /// The `m ≥ 3` specialised decomposition oracle: [`Symmetry::Sorted`]
 /// Gray-code search, first liftable root in the documented order.
 ///
-/// Returns `None` when the path does not apply (see [`ChainFes::new`]
-/// and [`MAX_LEAVES`]); `mq_fes_decompose` then reports the attempt as
-/// exhausted, as it did for every `m ≥ 3` before this path existed.
+/// Returns `None` when the path does not apply (see [`ChainFes::new`]) or
+/// the search space exceeds the work budget ([`max_leaves`], default
+/// [`DEFAULT_MAX_LEAVES`], override with [`MAX_LEAVES_ENV`]);
+/// `mq_fes_decompose` then reports the attempt as exhausted and **not**
+/// refuted, as it did for every `m ≥ 3` before this path existed.
 /// `refuted` means the exhaustive walk found no liftable root, i.e. no
-/// non-degenerate decomposition exists.  `_st` is accepted for the
+/// non-degenerate decomposition exists (the walk is [`Symmetry::Sorted`],
+/// which can miss degenerate ones; see the module docs).  `_st` is accepted for the
 /// generic signature and not needed: the search works on field elements.
 pub fn fes_chain_decompose(
     kc: &KoblitzCurve,

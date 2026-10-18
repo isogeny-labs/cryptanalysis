@@ -633,3 +633,89 @@ fn agrees_with_generic_sat_m3() {
         }
     }
 }
+
+// ── Work budget ────────────────────────────────────────────────────
+
+#[test]
+fn max_leaves_env_parsing() {
+    assert_eq!(parse_max_leaves(None), DEFAULT_MAX_LEAVES);
+    assert_eq!(parse_max_leaves(Some("")), DEFAULT_MAX_LEAVES);
+    assert_eq!(parse_max_leaves(Some("lots")), DEFAULT_MAX_LEAVES);
+    assert_eq!(parse_max_leaves(Some("-3")), DEFAULT_MAX_LEAVES);
+    assert_eq!(parse_max_leaves(Some(" 12345 ")), 12345);
+    assert_eq!(parse_max_leaves(Some("0")), 0);
+    // Clamped to the hard ceiling.
+    assert_eq!(parse_max_leaves(Some("999999999999999999999")), MAX_LEAVES);
+    assert_eq!(parse_max_leaves(Some(&u128::MAX.to_string())), MAX_LEAVES);
+}
+
+/// An explicit cap below the cell's leaf count refuses at once and never
+/// claims a refutation; a cap at the leaf count runs the walk.
+#[test]
+fn explicit_cap_refuses_without_refuting() {
+    let k = kob(1, 11, 0).expect("curve");
+    let ell = k.fb.subspace_basis.len();
+    let t = targets(&k, 3, 2, 2, 0x70).remove(0);
+    let fes = ChainFes::new(
+        &k.fb.subspace_basis,
+        &k.kc.curve.b,
+        3,
+        &k.kc.curve.irreducible,
+    )
+    .expect("applies");
+    let leaves = fes.leaves(Symmetry::Sorted);
+    assert!(leaves > 1, "ell={ell}");
+    for cap in [0, 1, leaves - 1] {
+        let out =
+            fes_chain_decompose_capped(&k.kc, &k.fb, &k.index_of, &t, 3, Symmetry::Sorted, cap);
+        assert!(out.is_none(), "cap {cap} must refuse");
+    }
+    let (found, stats, extra) =
+        fes_chain_decompose_capped(&k.kc, &k.fb, &k.index_of, &t, 3, Symmetry::Sorted, leaves)
+            .expect("cap == leaves runs");
+    assert_eq!(stats.refuted, found.is_none());
+    assert!(extra.counters.leaves > 0);
+}
+
+/// A cell far past the default budget (`ℓ = 20`, `m = 3`: about `2^39`
+/// sorted leaves) is reported exhausted and not refuted, promptly, by
+/// both the chain entry point and `mq_fes_decompose`.
+#[test]
+fn over_budget_cell_is_exhausted_not_refuted() {
+    use crate::cryptanalysis::mq_fes::mq_fes_decompose;
+    let mut k = kob(1, 23, 0).expect("curve");
+    // Swap in 20 independent basis elements; the budget check runs before
+    // anything touches the factor base's points.
+    let mut rng = StdRng::seed_from_u64(0x71);
+    let n = k.kc.n;
+    let basis = loop {
+        let cand: Vec<u64> = (0..20).map(|_| rng.gen::<u64>() & ((1 << n) - 1)).collect();
+        if preimage_map(&cand, n as usize).1 == 20 {
+            break cand;
+        }
+    };
+    k.fb.subspace_basis = basis.iter().map(|&v| elem(v, n)).collect();
+    let fes = ChainFes::new(
+        &k.fb.subspace_basis,
+        &k.kc.curve.b,
+        3,
+        &k.kc.curve.irreducible,
+    )
+    .expect("applies");
+    assert!(fes.leaves(Symmetry::Sorted) > 1u128 << 38);
+    if max_leaves() >= fes.leaves(Symmetry::Sorted) {
+        return; // someone raised IC_FES_CHAIN_MAX_LEAVES past this cell
+    }
+    let t = k.kc.mul(k.kc.generator(), &BigUint::from(12345u32));
+    let start = std::time::Instant::now();
+    assert!(fes_chain_decompose(&k.kc, &k.fb, &k.index_of, &k.st, &t, 3).is_none());
+    let (d, stats) = mq_fes_decompose(&k.kc, &k.fb, &k.index_of, &k.st, &t, 3);
+    assert!(d.is_none());
+    assert!(stats.exhausted, "over-budget must report exhausted");
+    assert!(!stats.refuted, "over-budget must never claim refuted");
+    assert!(
+        start.elapsed() < std::time::Duration::from_secs(5),
+        "took {:?}",
+        start.elapsed()
+    );
+}

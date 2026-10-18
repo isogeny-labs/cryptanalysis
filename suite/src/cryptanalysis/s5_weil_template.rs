@@ -78,10 +78,13 @@
 //! system being solved, so the specialised and the chained oracle may
 //! return different members of the same set; whether one is found at all
 //! is the same (tested).  [`groebner_decompose`] dispatches to it for
-//! `m = 4` when `KIC_M4_DESCENT=s5` (opt-in; `s5sym` is not an
-//! environment choice); unset (or anything else) keeps the chain, which
-//! also stays the fallback whenever a template cannot be built (unknowns
-//! past [`MAX_DENSE_VARS`], `n` outside `2..=64`).
+//! `m = 4` when `KIC_M4_DESCENT=s5` (opt-in, forced on every cell) or
+//! `KIC_M4_DESCENT=s5auto` (the template only where
+//! [`s5_template_advised`] says it wins, the chain elsewhere; see
+//! "Where it wins"); `s5sym` is not an environment choice.  Unset (or
+//! anything else) keeps the chain, which also stays the fallback whenever
+//! a template cannot be built (unknowns past [`MAX_DENSE_VARS`], `n`
+//! outside `2..=64`).
 //!
 //! ## Solving, and what it costs
 //!
@@ -96,6 +99,21 @@
 //! (`n ≥ 17` at `ℓ = 3`) and loses where its own `4ℓ`-variable tree does
 //! (`ℓ = 4`) or where the chain is already cheap (the subfield `F_8` at
 //! `n = 15`); the perfbench kernels `pdp/spec_s5_*` pin those cells.
+//!
+//! ## Where it wins
+//!
+//! Paired wall-clock, template over chain (speedup, `>1` is a win):
+//! `n = 17, ℓ = 3`: 1.85x; `n = 23, ℓ = 3`: 1.38x; `n = 13, ℓ = 3`: about
+//! 0.9x; `n = 17, ℓ = 4`: 0.54x; `n = 15, ℓ = 3` over the subfield `F_8`
+//! (a Frobenius-invariant base): 0.31x.  So the winning regime that was
+//! measured is **`ℓ = 3`, `n ≥ 17`, base not Frobenius-invariant**, and
+//! nothing else; `n > 23` is an extrapolation (the chain's `2n`
+//! intermediates only grow, the template's `4ℓ = 12` unknowns do not).
+//! [`s5_template_advised`] encodes exactly that, as advice only:
+//! `KIC_M4_DESCENT=s5` forces the template regardless, and
+//! `KIC_M4_DESCENT=s5auto` ([`M4Descent::S5Auto`]) follows the advice per
+//! cell, deciding from the curve's `n`, the base's `ℓ` and whether the
+//! base is Frobenius-invariant ([`is_frobenius_invariant`]).
 //!
 //! ## Scope
 //!
@@ -995,6 +1013,49 @@ pub fn template_cached(
     built
 }
 
+// ── When the template is worth it ──────────────────────────────────
+
+/// Advice, from paired wall-clock measurements (see the module docs,
+/// "Where it wins"): `true` only in the measured winning regime — `ℓ = 3`
+/// unknown blocks, `n ≥ 17`, and a base that is not `subfield`
+/// (Frobenius-invariant, e.g. `F_8 ⊂ F_{2^15}`, where the chain is already
+/// cheap).  Everywhere else the chain was faster or level (`n = 13`,
+/// `ℓ = 4`, `n = 15` subfield), or nothing was measured (`ℓ ≠ 3`), so the
+/// advice is `false`.  It forces nothing: [`M4Descent::S5Template`] still
+/// runs the template on any cell that builds.
+pub fn s5_template_advised(n: u32, ell: usize, subfield: bool) -> bool {
+    ell == 3 && n >= 17 && !subfield
+}
+
+/// Whether the span of `basis` is closed under squaring, i.e.
+/// Frobenius-invariant (a subfield such as `F_8` is).  This is the
+/// `subfield` flag of [`s5_template_advised`].  Bases are at most 64-bit
+/// words ([`MAX_DENSE_VARS`] bounds `ℓ` far below that).
+pub fn is_frobenius_invariant(basis: &[F2mElement], st: &FieldStructure) -> bool {
+    // Reduced echelon form of the span, then test each square against it.
+    let mut rows: Vec<u64> = Vec::new();
+    let reduce = |rows: &[u64], mut v: u64| {
+        for &r in rows {
+            v = v.min(v ^ r);
+        }
+        v
+    };
+    for b in basis {
+        let v = reduce(&rows, bits_of(b));
+        if v != 0 {
+            rows.push(v);
+        }
+    }
+    // Squaring is `F_2`-linear: `(Σ a_k z^k)² = Σ a_k z^{2k}`.
+    basis.iter().all(|b| {
+        let v = bits_of(b);
+        let sq = (0..st.n as usize)
+            .filter(|k| (v >> k) & 1 == 1)
+            .fold(0u64, |acc, k| acc ^ st.squares[k]);
+        reduce(&rows, sq) == 0
+    })
+}
+
 // ── Decompositions ─────────────────────────────────────────────────
 
 /// How an `m = 4` decomposition system is built.
@@ -1007,11 +1068,19 @@ pub enum M4Descent {
     S5Template,
     /// `S₅` in `e₁ … e₄`, [`S5Template::build_symmetrised`].
     S5Symmetrised,
+    /// Per cell: [`M4Descent::S5Template`] where [`s5_template_advised`]
+    /// says it wins, otherwise [`M4Descent::Chained`].  Resolved by
+    /// [`M4Descent::resolve`] before anything is built, so outcomes and
+    /// [`groebner_decompose_m4`] report the descent that actually ran,
+    /// never this.
+    S5Auto,
 }
 
 impl M4Descent {
-    /// `KIC_M4_DESCENT`: `s5` selects the `S₅` template; anything else
-    /// (or unset) is [`M4Descent::Chained`].  Read once per process.
+    /// `KIC_M4_DESCENT`: `s5` forces the `S₅` template on every cell,
+    /// `s5auto` is [`M4Descent::S5Auto`] (template only where
+    /// [`s5_template_advised`]); anything else (or unset) is
+    /// [`M4Descent::Chained`].  Read once per process.
     ///
     /// `s5sym` is deliberately not accepted: the symmetrised template was
     /// not faster than the chain on any cell measured (0.91x in
@@ -1022,6 +1091,7 @@ impl M4Descent {
         static CHOICE: std::sync::OnceLock<M4Descent> = std::sync::OnceLock::new();
         *CHOICE.get_or_init(|| match std::env::var("KIC_M4_DESCENT").as_deref() {
             Ok("s5") => M4Descent::S5Template,
+            Ok("s5auto") => M4Descent::S5Auto,
             _ => M4Descent::Chained,
         })
     }
@@ -1036,9 +1106,34 @@ impl M4Descent {
         Self::from_env()
     }
 
+    /// Resolve [`M4Descent::S5Auto`] for this cell: the template where
+    /// [`s5_template_advised`] says so, the chain otherwise.  Every other
+    /// descent is returned unchanged.
+    pub fn resolve(self, kc: &KoblitzCurve, fb: &FrobeniusFactorBase, st: &FieldStructure) -> Self {
+        if self != M4Descent::S5Auto {
+            return self;
+        }
+        let ell = fb.subspace_basis.len();
+        // Cheap checks first: the invariance test only matters in the one
+        // regime that could otherwise be advised.
+        if ell == 3
+            && s5_template_advised(
+                kc.n,
+                ell,
+                kc.n >= 17 && is_frobenius_invariant(&fb.subspace_basis, st),
+            )
+        {
+            M4Descent::S5Template
+        } else {
+            M4Descent::Chained
+        }
+    }
+
     fn variant(self) -> Option<S5Variant> {
         match self {
-            M4Descent::Chained => None,
+            // `S5Auto` is resolved before it gets here; unresolved it is
+            // the conservative choice.
+            M4Descent::Chained | M4Descent::S5Auto => None,
             M4Descent::S5Template => Some(S5Variant::X),
             M4Descent::S5Symmetrised => Some(S5Variant::Symmetrised),
         }
@@ -1186,12 +1281,37 @@ fn chain_summands(basis: &[F2mElement], root: u64, n: u32) -> Vec<F2mElement> {
         .collect()
 }
 
+/// The template [`decompose_all_m4`] and the first-found oracle use for
+/// `descent` on this cell, with the descent it really is: `S5Auto`
+/// resolved, and a symmetrised template that cannot be built replaced by
+/// the `x`-template (which has no `Σ dim W_k` growth) before the chain.
+/// `None` means run the chain.
+fn template_for(
+    descent: M4Descent,
+    kc: &KoblitzCurve,
+    fb: &FrobeniusFactorBase,
+    st: &FieldStructure,
+) -> Option<(M4Descent, Rc<S5Template>)> {
+    let descent = descent.resolve(kc, fb, st);
+    let variant = descent.variant()?;
+    if let Some(t) = template_cached(variant, &fb.subspace_basis, &kc.curve.b, st) {
+        return Some((descent, t));
+    }
+    if descent == M4Descent::S5Symmetrised {
+        return template_cached(S5Variant::X, &fb.subspace_basis, &kc.curve.b, st)
+            .map(|t| (M4Descent::S5Template, t));
+    }
+    None
+}
+
 /// **Every** `m = 4` decomposition of `target` over `fb`, by `descent`.
 ///
 /// The system is solved to exhaustion (`max_solutions` unbounded); each
-/// distinct root is lifted by [`lift_all`].  A specialised descent whose
-/// template cannot be built runs the chain instead, and
-/// [`M4Outcome::descent`] says so.  `None` for the point at infinity or
+/// distinct root is lifted by [`lift_all`].  [`M4Descent::S5Auto`] is
+/// resolved per cell ([`M4Descent::resolve`]).  A symmetrised template
+/// that cannot be built falls back to the `x`-template, and a template
+/// that cannot be built at all to the chain; [`M4Outcome::descent`] says
+/// which ran.  `None` for the point at infinity or
 /// when not even the chain can be built.  The set is the same for every
 /// descent; `stats.exhausted` marks a solve the node budget cut short,
 /// whose set may be incomplete.
@@ -1210,12 +1330,10 @@ pub fn decompose_all_m4(
         return None;
     };
     let opts = all_roots_options(engine, node_budget);
-    let template = descent
-        .variant()
-        .and_then(|v| template_cached(v, &fb.subspace_basis, &kc.curve.b, st));
+    let template = template_for(descent, kc, fb, st);
     let mut out = M4Outcome::default();
     match template {
-        Some(t) => {
+        Some((descent, t)) => {
             let sys = t.instantiate(x_r);
             let opts = all_roots_options(template_engine(engine), node_budget);
             let (roots, stats) =
@@ -1298,10 +1416,10 @@ pub fn groebner_decompose_m4(
     engine: SolverEngine,
     node_budget: usize,
 ) -> (Option<Vec<usize>>, SolveStats, M4Descent) {
-    if let Some((d, s)) =
+    if let Some((d, s, used)) =
         specialised_first(kc, fb, index_of, st, target, descent, engine, node_budget)
     {
-        return (d, s, descent);
+        return (d, s, used);
     }
     let _chain = ChainGuard::request();
     let (d, s) = groebner_decompose(kc, fb, index_of, st, target, M, engine, node_budget);
@@ -1339,10 +1457,10 @@ fn specialised_first(
     descent: M4Descent,
     engine: SolverEngine,
     node_budget: usize,
-) -> Option<(Option<Vec<usize>>, SolveStats)> {
-    let template = template_cached(descent.variant()?, &fb.subspace_basis, &kc.curve.b, st)?;
+) -> Option<(Option<Vec<usize>>, SolveStats, M4Descent)> {
+    let (used, template) = template_for(descent, kc, fb, st)?;
     let BinaryPoint::Affine { x: x_r, .. } = target else {
-        return Some((None, SolveStats::default()));
+        return Some((None, SolveStats::default(), used));
     };
     let sys = template.instantiate(x_r);
     let opts = SolveOptions {
@@ -1364,12 +1482,12 @@ fn specialised_first(
             None => false,
         }
     });
-    Some((found, stats))
+    Some((found, stats, used))
 }
 
 /// The `m = 4` hook of [`groebner_decompose`]: `Some` when
-/// `KIC_M4_DESCENT=s5` selects the template and it builds, `None` to run
-/// the chain.
+/// `KIC_M4_DESCENT=s5` (or `s5auto` on a cell it advises) selects the
+/// template and it builds, `None` to run the chain.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn dispatch_groebner_m4(
     kc: &KoblitzCurve,
@@ -1388,6 +1506,7 @@ pub(crate) fn dispatch_groebner_m4(
         return None;
     }
     specialised_first(kc, fb, index_of, st, target, descent, engine, node_budget)
+        .map(|(d, s, _)| (d, s))
 }
 
 #[cfg(test)]
@@ -1866,8 +1985,9 @@ mod tests {
         }
     }
 
-    /// Past the dense cap the template is refused and the chain runs; the
-    /// explicit chain is not redirected by the dispatch hook.
+    /// Past the dense cap the symmetrised template is refused and the
+    /// `x`-template runs in its place (the chain only when that is refused
+    /// too); the explicit chain is not redirected by the dispatch hook.
     #[test]
     fn oversize_templates_fall_back_to_the_chain() {
         // W dimensions 3 + 6 + 7 + 7 = 23 > MAX_DENSE_VARS.
@@ -1888,7 +2008,10 @@ mod tests {
             1 << 30,
         )
         .unwrap();
-        assert_eq!(o.descent, Some(M4Descent::Chained));
+        // The symmetrised template does not build (23 > MAX_DENSE_VARS);
+        // the x-template (12 unknowns) does, and runs before the chain.
+        assert_eq!(o.descent, Some(M4Descent::S5Template));
+        assert_eq!(o.n_vars, 12);
         assert_eq!(o.decompositions, brute_force(&kc, &fb, &index_of, &target));
         let (_, _, used) = groebner_decompose_m4(
             &kc,
@@ -1900,11 +2023,147 @@ mod tests {
             SolverEngine::default(),
             1 << 30,
         );
-        assert_eq!(used, M4Descent::Chained);
+        assert_eq!(used, M4Descent::S5Template);
         let big = random_basis(&mut rng, 23, 6);
         let (_, st23) = field(23);
         assert!(S5Template::build_x(&big, &F2mElement::one(23), &st23).is_none());
         assert!(S5Template::build_x(&big[..5], &F2mElement::one(23), &st23).is_some());
+    }
+
+    #[test]
+    fn advice_is_the_measured_winning_regime() {
+        // Wins: n17 l3 (1.85x), n23 l3 (1.38x), extrapolated above.
+        assert!(s5_template_advised(17, 3, false));
+        assert!(s5_template_advised(23, 3, false));
+        assert!(s5_template_advised(31, 3, false));
+        // Losses and non-measurements: n15 subfield (0.31x), n17 l4
+        // (0.54x), n13 l3 (~0.9x), other ell.
+        assert!(!s5_template_advised(15, 3, true));
+        assert!(!s5_template_advised(17, 3, true));
+        assert!(!s5_template_advised(17, 4, false));
+        assert!(!s5_template_advised(13, 3, false));
+        assert!(!s5_template_advised(16, 3, false));
+        assert!(!s5_template_advised(23, 2, false));
+        assert!(!s5_template_advised(23, 5, false));
+    }
+
+    #[test]
+    fn frobenius_invariance_is_detected() {
+        // F_8 inside F_{2^15} is the measured subfield loss.
+        let (kc, fb) = base(15, 3).expect("a Frobenius base");
+        let st = FieldStructure::new(15, &kc.curve.irreducible);
+        assert!(is_frobenius_invariant(&fb.subspace_basis, &st));
+        // A basis made of 1 and two elements whose squares leave the span.
+        let (kc, st) = field(17);
+        let mut rng = StdRng::seed_from_u64(0x17);
+        let basis = random_subspace_containing_one(&kc, 3, &mut rng);
+        assert!(!is_frobenius_invariant(&basis, &st));
+        // Spans of {1}: closed under squaring.
+        assert!(is_frobenius_invariant(&[F2mElement::one(17)], &st));
+    }
+
+    /// `s5auto` is the chain outside the advised regime and the template
+    /// inside it, with the same decomposition sets (and the outcome says
+    /// which one ran).
+    #[test]
+    fn s5auto_equals_chain_outside_and_template_inside() {
+        let mut rng = StdRng::seed_from_u64(0xa070);
+        let engine = SolverEngine::default();
+        // (curve, base, advised)
+        let mut cells: Vec<(KoblitzCurve, FrobeniusFactorBase, bool)> = Vec::new();
+        let (kc, fb) = base(15, 3).expect("subfield base"); // n15 subfield
+        cells.push((kc, fb, false));
+        let (kc, _) = field(13); // n13 l3
+        let basis = random_subspace_containing_one(&kc, 3, &mut rng);
+        let fb = plain_subspace_factor_base(&kc, &basis).unwrap();
+        cells.push((kc, fb, false));
+        let (kc, _) = field(17); // n17 l2: wrong ell
+        let basis = random_subspace_containing_one(&kc, 2, &mut rng);
+        let fb = plain_subspace_factor_base(&kc, &basis).unwrap();
+        cells.push((kc, fb, false));
+        let (kc, _) = field(17); // n17 l3: the winning regime
+        let basis = random_subspace_containing_one(&kc, 3, &mut rng);
+        let fb = plain_subspace_factor_base(&kc, &basis).unwrap();
+        cells.push((kc, fb, true));
+        let mut inside_nonempty = 0;
+        for (kc, fb, advised) in cells {
+            let (n, ell) = (kc.n, fb.subspace_basis.len());
+            let st = FieldStructure::new(n, &kc.curve.irreducible);
+            let index_of = fb.index_map();
+            assert_eq!(
+                M4Descent::S5Auto.resolve(&kc, &fb, &st),
+                if advised {
+                    M4Descent::S5Template
+                } else {
+                    M4Descent::Chained
+                },
+                "resolve n={n} ell={ell}"
+            );
+            let all = targets(&kc, &fb, &mut rng);
+            let take = if advised { 3 } else { 6 };
+            for target in all.into_iter().take(take) {
+                let run = |d| {
+                    decompose_all_m4(&kc, &fb, &index_of, &st, &target, d, engine, 1 << 30).unwrap()
+                };
+                let auto = run(M4Descent::S5Auto);
+                let want = if advised {
+                    M4Descent::S5Template
+                } else {
+                    M4Descent::Chained
+                };
+                assert_eq!(auto.descent, Some(want), "n={n} ell={ell}");
+                let reference = run(want);
+                assert_eq!(auto.decompositions, reference.decompositions);
+                assert_eq!(auto.roots, reference.roots);
+                assert_eq!(auto.n_vars, reference.n_vars);
+                if advised {
+                    assert_eq!(auto.n_vars, 4 * ell);
+                    inside_nonempty += usize::from(!auto.decompositions.is_empty());
+                }
+                // The first-found oracle reports the same resolved descent.
+                let (found, _, used) = groebner_decompose_m4(
+                    &kc,
+                    &fb,
+                    &index_of,
+                    &st,
+                    &target,
+                    M4Descent::S5Auto,
+                    engine,
+                    1 << 30,
+                );
+                assert_eq!(used, want);
+                assert_eq!(found.is_some(), !reference.decompositions.is_empty());
+            }
+        }
+        assert!(inside_nonempty > 0, "no decomposition found in the regime");
+    }
+
+    /// The `groebner_decompose` hook under `s5auto`: the template inside
+    /// the regime, the chain (hook stays out) outside it.
+    #[test]
+    fn dispatch_hook_under_s5auto_follows_the_advice() {
+        let mut rng = StdRng::seed_from_u64(0xa072);
+        let engine = SolverEngine::default();
+        for (n, advised) in [(13u32, false), (17, true)] {
+            let (kc, _) = field(n);
+            let basis = random_subspace_containing_one(&kc, 3, &mut rng);
+            let fb = plain_subspace_factor_base(&kc, &basis).unwrap();
+            let st = FieldStructure::new(n, &kc.curve.irreducible);
+            let index_of = fb.index_map();
+            let pts = &fb.points;
+            let target = loop {
+                let t = (0..4).fold(BinaryPoint::Infinity, |acc, _| {
+                    kc.add(&acc, &pts[rng.gen_range(0..pts.len())])
+                });
+                if matches!(t, BinaryPoint::Affine { .. }) {
+                    break t;
+                }
+            };
+            DISPATCH_OVERRIDE.with(|c| c.set(Some(M4Descent::S5Auto)));
+            let hooked = dispatch_groebner_m4(&kc, &fb, &index_of, &st, &target, engine, 1 << 30);
+            DISPATCH_OVERRIDE.with(|c| c.set(None));
+            assert_eq!(hooked.is_some(), advised, "n={n}");
+        }
     }
 }
 
