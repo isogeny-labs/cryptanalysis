@@ -159,6 +159,9 @@ want_malformed ic --p 1000003 --g 2 --h 3 --method bogus
 want_malformed solve --alg precomp --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 40
 want_malformed solve --alg rho --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 64
 want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --dp-bits 64
+# Count products and arm capacities must be checked before allocation or work.
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 18446744073709551615 --per-level 1 --controls 0
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 18446744073709551615
 # A seed of 2^64 - 1 must not wrap the derived seed to 0 ("random"): two
 # runs give the same instance.
 checks=$((checks + 1))
@@ -281,6 +284,21 @@ want '"job_id"' coord-job "${ZP[@]}" --g 858101 --h "$H" --dp-bits 4 --unit-size
   --seed 42 --out "$tmp/job.txt"
 want_fail coord-job "${ZP[@]}" --g 858101            # --h is required
 want_fail coord-job "${ZP[@]}" --g 858101 --h "$H" --r 2   # r must be in [4, 4096]
+
+# A token exactly 255 bytes fits the documented bound even when the newline is
+# the byte after fgets' buffer; 256 bytes must be refused before connecting.
+printf '%0255d\n' 0 > "$tmp/token255"
+checks=$((checks + 1))
+rc=0
+"$CA" work --job "$tmp/job.txt" --token-file "$tmp/token255" \
+  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test >/dev/null 2>&1 || rc=$?
+if [ "$rc" -eq 2 ]; then
+  printf 'FAIL: a 255-byte --token-file was rejected as overlong\n' >&2
+  fail=$((fail + 1))
+fi
+printf '%0256d\n' 0 > "$tmp/token256"
+want_malformed work --job "$tmp/job.txt" --token-file "$tmp/token256" \
+  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test
 
 # The same job twice is the same id: that is what lets two agents agree
 # without exchanging anything.

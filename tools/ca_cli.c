@@ -219,6 +219,18 @@ static int close_written(FILE *f)
     return fclose(f) == 0 && !bad;
 }
 
+/* fgets may fill cap - 1 bytes without telling whether that was the whole
+ * line or a truncated prefix.  Peek one byte to distinguish an exact-size
+ * final line (or newline) from a genuinely overlong value. */
+static int line_overflow(FILE *f, const char *buf, size_t cap)
+{
+    size_t len = strlen(buf);
+    if (len < cap - 1 || (len && buf[len - 1] == '\n')) return 0;
+    int next = fgetc(f);
+    if (next == '\n' || next == EOF) return ferror(f) ? -1 : 0;
+    return 1;
+}
+
 /* strtod, not atof: atof cannot report a malformed value (cert-err34-c). */
 static double opt_f(const char *name, double def)
 {
@@ -953,9 +965,11 @@ static const char *coord_token(void)
         FILE *f = fopen(path, "r");
         if (!f) die("cannot read --token-file");
         const char *got = fgets(buf, sizeof(buf), f);
+        int overflow = got ? line_overflow(f, buf, sizeof(buf)) : 0;
         fclose(f);
         if (!got) die("--token-file is empty");
-        if (strlen(buf) == sizeof(buf) - 1 && buf[sizeof(buf) - 2] != '\n')
+        if (overflow < 0) die("cannot read --token-file");
+        if (overflow)
             die("--token-file holds a token longer than 255 bytes");
         buf[strcspn(buf, "\r\n")] = 0;
         if (!buf[0]) die("--token-file is empty");
@@ -1083,9 +1097,11 @@ static ca_coord_ctx *coord_load(int allow_remote)
         if (!f) die("cannot read --job");
         char line[CA_COORD_LINE_MAX];
         const char *got = fgets(line, sizeof(line), f);
+        int overflow = got ? line_overflow(f, line, sizeof(line)) : 0;
         fclose(f);
         if (!got) die("--job is empty");
-        if (strlen(line) == sizeof(line) - 1 && line[sizeof(line) - 2] != '\n')
+        if (overflow < 0) die("cannot read --job");
+        if (overflow)
             die("--job line is longer than a job document can be");
         line[strcspn(line, "\r\n")] = 0;
         ca_status rc = ca_coord_job_decode(&job, line);
@@ -1679,7 +1695,15 @@ static int cmd_volcano(void)
 
     /* Arms: the root, up to per_level curves of each level, the controls. */
     int with_aut = flag("--automorphisms");
-    size_t cap = 2 * (1 + (depth + 1) * per_level) + controls, na = 0;
+    /* There can be at most one base arm per volcano vertex plus each
+     * requested control, and automorphism folding can at most double that.
+     * Size from the graph we actually have: --per-level is only a selection
+     * limit and must not drive an overflowing or needlessly huge allocation. */
+    if (controls > (uint64_t)(SIZE_MAX - (size_t)vo.count))
+        die("--controls is too large for the volcano graph");
+    size_t base_cap = (size_t)vo.count + (size_t)controls;
+    if (base_cap > SIZE_MAX / 2) die("--controls is too large for the volcano graph");
+    size_t cap = 2 * base_cap, na = 0;
     varm *arms = calloc(cap, sizeof(*arms));
     if (!arms) die("out of memory");
     uint32_t *found = calloc(depth + 1, sizeof(*found));
@@ -1748,6 +1772,13 @@ static int cmd_volcano(void)
     ca_group *gs = calloc(na, sizeof(*gs));
     ca_elem *eP = calloc(na, sizeof(*eP)), *eQ = calloc(na, sizeof(*eQ));
     if (!gs || !eP || !eQ) die("out of memory");
+    /* These products size the worker's trial-major buffers and index them as
+     * uint64_t/size_t.  Check before the per-arm calloc calls so neither the
+     * work count nor a later byte-size multiplication can wrap. */
+    if (na == 0 || trials > UINT64_MAX / na ||
+        trials > SIZE_MAX / sizeof(double) || trials * na > SIZE_MAX / sizeof(uint64_t) ||
+        trials * na > SIZE_MAX / sizeof(double))
+        die("--trials is too large for the number of volcano arms");
     for (size_t i = 0; i < na; i++) {
         arms[i].ops = calloc(trials, sizeof(double));
         arms[i].secs = calloc(trials, sizeof(double));
