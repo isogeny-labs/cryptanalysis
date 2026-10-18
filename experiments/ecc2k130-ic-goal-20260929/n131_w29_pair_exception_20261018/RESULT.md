@@ -10,6 +10,13 @@ its right-hand side**. This rules out that exceptional intermediate for the
 first aligned pair (rotation zero) and, by Frobenius, for the second
 equal-rotation pair (rotation 36).
 
+Strictly ordered distinct product codes also rule out a common output
+reciprocal x-coordinate: a nonzero common root of the two pair quadratics
+forces their source products to agree. The 28 product-basis elements are
+independent, so distinct codes give distinct products. Together, these two
+facts close the two exceptional reciprocal charts for either equal-rotation
+pair when its code-order constraint is enforced.
+
 ## Exact instance and proof
 
 The field is `GF(2)[u]/(u^131+u^13+u²+u+1)` and the curve is
@@ -70,10 +77,10 @@ and [verification_result.json](verification_result.json). The SAT return
 alone has no proof certificate; the separate linear certificate supplies
 the mathematical exclusion.
 
-This removes one exceptional intermediate chart from the aligned N131
-five-pair point-decomposition design. The next implementation step is to
+This closes both exceptional reciprocal charts for the two aligned N131
+equal-rotation pair intermediates. The next implementation step is to
 reuse this explicit obstruction in a full target-conditioned N131 circuit,
-handle the remaining identity and unequal-rotation charts, and run the
+handle any remaining unequal-rotation charts, and run the
 frozen public-point relation gate with complete source-validity and
 distinct-column conditions.
 

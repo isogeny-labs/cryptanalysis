@@ -56,6 +56,7 @@ def in_span(word, piv):
 PB = rank['product_basis']
 assert n == 131 and rank['field_taps'] == [0, 1, 2, 13]
 assert len(PB) == 28 and len(rank['source_basis']) == 28
+assert len(echelon(PB)) == 28
 assert all(a == mul(x, x) ^ mul(rank['source_seed'], x)
            for a, x in zip(PB, rank['source_basis']))
 assert rank['C'] ^ rank['H'] == 1

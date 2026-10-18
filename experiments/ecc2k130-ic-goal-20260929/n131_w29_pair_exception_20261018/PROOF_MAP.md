@@ -11,6 +11,7 @@ curve-valid domain. Solver caps are recorded as bounded searches.
 | --- | --- | --- | --- |
 | Roots of the two fixed-seed pair quadratics are forced to `u=Cp+Hq`, `v=Hp+Cq` when `uv=1` | `PairException.reciprocal_roots_linearize` | Arbitrary characteristic-two field, `C+H=1`, `uv=1`, both quadratics | Checked |
 | Reciprocal roots force `(Cp+Hq)(Hp+Cq)=1` | `PairException.reciprocal_roots_force_product_one` | Same field and hypotheses | Checked |
+| A common nonzero pair root forces equal source products | `PairException.common_nonzero_root_forces_equal_products` | Arbitrary characteristic-two field, same nonzero root, both fixed-seed quadratics | Checked |
 | Substitution `q=p+s` gives `p²+ps+CHs²` | `PairException.sparse_product_identity` | Arbitrary characteristic-two field, `C+H=1`, `q=p+s` | Checked |
 | Adding `T=(0,1)` maps nonzero `x` to `1/x` on `y²+xy=x³+1` | `PairException.two_torsion_translate_x` | Arbitrary characteristic-two field, nonzero `x`, affine curve equation | Checked as the affine coordinate identity |
 | `CH=s²` follows from `C+H=1` and `H²+H=s²` | `PairException.seed_square_factorization` | Arbitrary characteristic-two field and stated equations | Checked |

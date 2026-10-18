@@ -51,7 +51,7 @@ assert read('linear_certificate_sage_replay.json')['status'] == 'PASS_SAGE_GF2_1
 assert read('verification_result.json')['status'] == 'PASS_INDEPENDENT_PURE_PYTHON_REPLAY'
 assert (here / 'lean_exit_code.txt').read_text().strip() == '0'
 lean_log = (here / 'lean_check.log').read_text()
-assert lean_log.count('depends on axioms:') == 6
+assert lean_log.count('depends on axioms:') == 7
 assert 'sorryAx' not in lean_log and 'error:' not in lean_log
 
 receipt = {

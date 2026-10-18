@@ -35,6 +35,18 @@ theorem reciprocal_roots_force_product_one
   rw [←hu,←hv]
   exact huv
 
+/-- A nonzero common root of two fixed-seed pair quadratics forces
+the same source product in both slots. -/
+theorem common_nonzero_root_forces_equal_products
+    {F : Type} [Field F] (charTwo : ∀ x : F, x+x=0)
+    (C H p q u : F) (hu : u≠0)
+    (hp : C*u*u+p*u+H=0)
+    (hq : C*u*u+q*u+H=0) : p=q := by
+  have htwo : (2 : F)=0 := by
+    have hz:=charTwo 1
+    grind +ring
+  grind +ring
+
 /-- Reparameterizing the second source product as `q=p+s` exposes
 only bilinear products of the two W29 code vectors. -/
 theorem sparse_product_identity
@@ -88,6 +100,7 @@ theorem additive_separator
 
 #print axioms PairException.reciprocal_roots_linearize
 #print axioms PairException.reciprocal_roots_force_product_one
+#print axioms PairException.common_nonzero_root_forces_equal_products
 #print axioms PairException.sparse_product_identity
 #print axioms PairException.two_torsion_translate_x
 #print axioms PairException.seed_square_factorization
