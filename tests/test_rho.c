@@ -107,5 +107,52 @@ int main(void)
             CHECK(ca_group_equal(&g, &chk, &h));
         }
     }
+
+    /* Regression: the base is the identity and the target is not.  No power
+     * of the identity equals the target, and the walk never produced a
+     * collision that verifies, so it ran until max_ops (forever without
+     * one).  It must report NOT_FOUND at once. */
+    {
+        ca_elem idb, tgt;
+        ca_group_identity(&g, &idb);
+        fx_instance(&g, &gen, 12345, &tgt);
+        ca_rho_params ip;
+        ca_rho_params_default(&ip);
+        ip.seed = 3;
+        ip.max_ops = 2000000;
+        ca_stats ist = {0};
+        uint64_t ix = 0;
+        CHECK(ca_rho_solve(&g, &idb, &tgt, &ip, &ix, &ist) == CA_ERR_NOT_FOUND);
+        CHECK_EQ_U64(ist.group_ops, 0);
+        CHECK(ca_rho_solve(&g, &idb, &idb, &ip, &ix, NULL) == CA_OK);
+        CHECK_EQ_U64(ix, 0);
+    }
+
+    /* Regression: with the negation map the look-ahead rule rejects a
+     * multiplier that returns to the previous point.  When all r multipliers
+     * are rejected the scan wrapped around and repeated forever; a small
+     * user-chosen r reaches that point with probability r^-r per step (about
+     * 1/256 per point at r = 4), so most runs at r = 4 stalled until max_ops.
+     * Every run must now finish, long before 400000 ops on a group of 65k. */
+    fx_ec(&g, &gen, 65537, 1, 1);
+    for (uint32_t r = 4; r <= 5; r++) {
+        for (uint64_t seed = 1; seed <= 30; seed++) {
+            ca_rho_params sp;
+            ca_rho_params_default(&sp);
+            sp.seed = seed;
+            sp.r = r;
+            sp.dp_bits = 0;
+            sp.max_ops = 400000;
+            uint64_t sx = 0;
+            fx_instance(&g, &gen, (seed * 7919) % g.order, &h);
+            ca_status sr = ca_rho_solve(&g, &gen, &h, &sp, &sx, NULL);
+            CHECK(sr == CA_OK);
+            if (sr == CA_OK) {
+                ca_elem chk;
+                ca_group_mul(&g, &chk, &gen, sx, NULL);
+                CHECK(ca_group_equal(&g, &chk, &h));
+            }
+        }
+    }
     TEST_MAIN_END();
 }

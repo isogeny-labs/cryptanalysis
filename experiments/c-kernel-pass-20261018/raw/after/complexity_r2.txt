@@ -1,0 +1,29 @@
+libcryptanalysis 0.1.0 benchmark: complexity
+
+Empirical time complexity.  The measured group-operation cost of each
+algorithm is fitted to C * N^alpha, so the exponent (the O()) is measured
+rather than assumed and the constant is comparable across algorithms.
+scope: global = whole algorithm, step = one phase of a method.
+
+Z_p^*:  cost ~ C * N^alpha, fitted over 5 sizes (N = group order).
+| algorithm       | scope  | theory   | fitted alpha | R^2    | const @ N^theory |
+|-----------------|--------|----------|--------------|--------|------------------|
+| bsgs            | global | N^0.500 |        0.487 | 0.9993 |            1.508 |
+| rho             | global | N^0.500 |        0.477 | 0.9903 |            1.781 |
+| kangaroo        | global | N^0.500 |        0.526 | 0.9910 |            1.843 |
+| grumpy          | global | N^0.500 |        0.502 | 0.9966 |            1.264 |
+| precomp build   | step   | N^0.667 |        0.647 | 0.9954 |            1.192 |
+| precomp online  | step   | N^0.333 |        0.347 | 0.8768 |            2.781 |
+
+E(F_p):  cost ~ C * N^alpha, fitted over 5 sizes (N = group order).
+| algorithm       | scope  | theory   | fitted alpha | R^2    | const @ N^theory |
+|-----------------|--------|----------|--------------|--------|------------------|
+| bsgs            | global | N^0.500 |        0.487 | 0.9993 |            1.508 |
+| rho             | global | N^0.500 |        0.428 | 0.9845 |            1.572 |
+| kangaroo        | global | N^0.500 |        0.494 | 0.9995 |            1.622 |
+| grumpy          | global | N^0.500 |        0.480 | 0.9956 |            1.128 |
+| precomp build   | step   | N^0.667 |        0.672 | 0.9877 |            1.302 |
+| precomp online  | step   | N^0.333 |        0.198 | 0.9798 |            2.920 |
+
+Index calculus in Z_p^* is omitted here: it is subexponential (L_p[1/2]),
+not a power law, so no single exponent describes it (see the ic mode).

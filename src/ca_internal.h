@@ -133,6 +133,15 @@ void ca_htab1_free(ca_htab1 *t);
 int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
 int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
 size_t ca_htab1_bytes(const ca_htab1 *t);
+/* Start loading the slot a key probes first.  A hint only: the table may
+ * be resized or modified before the access that follows, and nothing about
+ * the table's contents or the order of operations changes.  Lets a block of
+ * independent lookups overlap their cache misses. */
+static inline void ca_htab1_prefetch(const ca_htab1 *t, uint64_t key)
+{
+    if (key == 0) key = 1;
+    if (t->cap) __builtin_prefetch(&t->e[(size_t)key & (t->cap - 1)], 0, 1);
+}
 
 /* ---- misc -------------------------------------------------------------- */
 static inline uint64_t ca_max_u64(uint64_t a, uint64_t b) { return a > b ? a : b; }

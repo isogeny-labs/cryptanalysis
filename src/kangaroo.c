@@ -50,6 +50,21 @@ ca_status ca_kangaroo_solve(const ca_group *g, const ca_elem *base, const ca_ele
         return CA_ERR_NOT_FOUND;
     }
 
+    /* Past the linear scan the walk needs a target that some x * base can
+     * equal: with the identity as base (or a target outside the order-n
+     * subgroup) no hop ever reaches a tame/wild collision that verifies, and
+     * the loop below would run until max_ops, or forever without one. */
+    if (ca_group_is_identity(g, base)) {
+        if (ca_group_is_identity(g, target)) {
+            *x = lo;
+            if (st) st->seconds += ca_now() - t0;
+            return CA_OK;
+        }
+        ca_set_error("kangaroo: the base is the identity and the target is not");
+        return CA_ERR_NOT_FOUND;
+    }
+    if (n && !ca_check_members(g, base, target, n, "kangaroo")) return CA_ERR_NOT_FOUND;
+
     uint64_t sqrt_w = ca_isqrt(width) + 1;
     uint32_t herd = params->herd_size;
     /* 2 * herd must not wrap, and the herd arrays are allocated up front:
@@ -140,7 +155,9 @@ ca_status ca_kangaroo_solve(const ca_group *g, const ca_elem *base, const ca_ele
     }
     for (uint32_t i = 0; i < total; i++) hs[i] = ca_group_hash(g, &roos[i].Y);
     rc = CA_ERR_INTERNAL;
-    uint64_t abandon = (uint64_t)32 << dp;
+    /* 32 << dp wraps to 0 for dp >= 59 (dp is clamped to 62, not to 58), which
+     * would abandon every kangaroo at every hop; saturate instead. */
+    uint64_t abandon = dp >= 59 ? UINT64_MAX : (uint64_t)32 << dp;
     uint64_t dps = 0, restarts = 0;
     int running = 1;
     while (running) {

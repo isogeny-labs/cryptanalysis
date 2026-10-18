@@ -70,5 +70,23 @@ int main(void)
     ca_ic_stats st;
     CHECK(ca_ic_solve(1000003, 2, 123456, NULL, &x, &st) == CA_OK);
     CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+
+    /* Regression: the automatic factor-base bound (60 and up) exceeded a tiny
+     * modulus, so a prime q >= p was in the base, reduced to 0 or to another
+     * prime's residue, and the logarithms could not be solved. */
+    static const uint64_t tiny[] = {7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 53, 59, 61};
+    for (size_t i = 0; i < sizeof(tiny) / sizeof(tiny[0]); i++) {
+        for (int m = 0; m < 2; m++) {
+            uint64_t tp = tiny[i], tg = ca_primitive_root(tp), th = 2 + (i % (tp - 3));
+            ca_ic_params tpar;
+            ca_ic_params_default(&tpar);
+            tpar.seed = 5 + i;
+            tpar.method = m ? CA_IC_RANDOM_EXPONENT : CA_IC_LINEAR_SIEVE;
+            uint64_t tx = 0;
+            ca_status trc = ca_ic_solve(tp, tg, th, &tpar, &tx, NULL);
+            CHECK(trc == CA_OK);
+            if (trc == CA_OK) CHECK_EQ_U64(ca_powmod(tg, tx, tp), th);
+        }
+    }
     TEST_MAIN_END();
 }
