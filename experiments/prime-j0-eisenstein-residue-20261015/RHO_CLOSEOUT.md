@@ -158,13 +158,22 @@ memory gates, and a Q-cluster 95% lower paired speedup bound above 1.05.
 The worker branch has since been rebased onto repaired `crypto` main commit
 `abee07ee7337d04a7e734333669ca1bacd6c763a`. The
 [rebased-main validation receipt](https://github.com/aburan28/crypto/blob/ceddefda1ea16c99cb3b0cf3d3e8db4c9065f44f/experiments/rho-worker-phase-profile-20261017/rebased-main-validation.json)
-pins a source bundle rebuilt identically twice at SHA-256
+pins that revision's source bundle rebuilt identically twice at SHA-256
 `abd7a2eaeebca050dcf0a9f2290c02b116dbdd4b0bfb43cb45bf4be1ca5f7025`.
 Its clean extraction built a byte-identical release benchmark and passed an
 independent q00 serial/batch replay. On the complete checkout, 4,396 release
 library tests passed with zero failures and 118 ignored; all 64 long replay
 arms across the 32 frozen Q points matched in 32 serial/batch pairs. These
 are build and correctness receipts, not qualified throughput evidence.
+
+The current [shared-lock source receipt](https://github.com/aburan28/crypto/blob/3e3b055b6/experiments/rho-worker-phase-profile-20261017/shared-lock-source-validation.json)
+pins the revised runner and auditor at source-bundle SHA-256
+`ccc4c83128510e145bed6e8c04b26eb9a63f617bb2d3665826856ccd91902904`.
+The bundle reproduced twice, built cleanly from extraction, and produced the
+same binary; its q00 serial/batch outputs matched. The runner serializes
+benchmark requests sharing the Pod's persistent queue root. A two-process
+lock check passed, and the auditor rejects a container-local lock receipt.
+This scope does not establish physical-host exclusivity.
 
 The [repaired-main phase receipt](https://github.com/aburan28/crypto/blob/130890bec/experiments/rho-worker-phase-profile-20261017/rebased-main-phase-validation.json)
 pins the current-source binary and transcript. On its local trace, a twofold
@@ -174,7 +183,7 @@ timing conditions changed between the two traces; neither phase share can
 bound the worker on a qualified host. The 768-arm worker panel remains the
 decisive next test: exact replay, passing A/A and host-noise gates, both a
 10% relative and a 64 MiB absolute cap on additional peak RSS, and a
-Q-cluster 95% lower paired
-speedup bound above 1.05 are required to enable batched routing. The Rust
-source transfer to RunPod was rejected by automatic approval review, and the
-workspace lacks a rotated `RUNPOD_API_KEY` secret; the hosted result is pending.
+Q-cluster 95% lower paired speedup bound above 1.05 are required to enable
+batched routing. The Rust source transfer to RunPod was rejected by automatic
+approval review, and the workspace lacks a rotated `RUNPOD_API_KEY` secret;
+the hosted result is pending.
