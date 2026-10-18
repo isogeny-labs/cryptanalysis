@@ -28,10 +28,14 @@ def main():
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=STUDY, text=True).strip()
     payload = STUDY / "remote-payload-v1.tar.gz"
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
-    token = secrets.token_urlsafe(48)
-    fd = os.open(TOKEN_PATH, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "w") as output:
-        output.write(token)
+    resume = sys.argv[1:] == ["--resume"]
+    if resume:
+        token = TOKEN_PATH.read_text()
+    else:
+        token = secrets.token_urlsafe(48)
+        fd = os.open(TOKEN_PATH, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as output:
+            output.write(token)
     url = "https://raw.githubusercontent.com/aburan28/cryptanalysis/" + commit + "/experiments/ideas_gpu_20261018/remote-payload-v1.tar.gz"
     startup = "\n".join([
         "set -eu", "mkdir -p /root/cryptanalysis", "cd /root/cryptanalysis",
@@ -41,17 +45,20 @@ def main():
         "exec python3 experiments/ideas_gpu_20261018/remote_http.py", ""])
     outcome = {"pod_id": POD_ID, "transport": "documented HTTP proxy", "source_commit": commit,
                "payload_sha256": digest, "started_unix": time.time(), "workflow_returncode": None,
-               "results_fetched": False, "deleted": False, "absence_verified": False}
+               "results_fetched": False, "deleted": False, "absence_verified": False,
+               "resumed_existing_job": resume}
 
     def request(path, timeout=30):
         return urllib.request.urlopen(urllib.request.Request(BASE + path,
-            headers={"Authorization": "Bearer " + token}), timeout=timeout)
+            headers={"Authorization": "Bearer " + token,
+                     "User-Agent": "cryptanalysis-research/1.0"}), timeout=timeout)
 
     try:
-        tool.api("PATCH", tool.REST + "/pods/" + POD_ID, {
-            "ports": ["22/tcp", "8888/http"],
-            "dockerEntrypoint": ["/bin/bash", "-c"], "dockerStartCmd": [startup],
-            "env": {**pod.get("env", {}), "IDEAS_HTTP_BEARER": token}})
+        if not resume:
+            tool.api("PATCH", tool.REST + "/pods/" + POD_ID, {
+                "ports": ["22/tcp", "8888/http"],
+                "dockerEntrypoint": ["/bin/bash", "-c"], "dockerStartCmd": [startup],
+                "env": {**pod.get("env", {}), "IDEAS_HTTP_BEARER": token}})
         deadline = time.monotonic() + 5100
         last_notice = 0.0
         while time.monotonic() < deadline:
