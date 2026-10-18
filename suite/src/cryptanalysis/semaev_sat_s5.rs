@@ -1066,11 +1066,22 @@ const PERMUTATIONS_4: [[usize; 4]; 24] = [
 
 // ── Enumeration and dispatch ────────────────────────────────────────
 
+/// The most `ε`-monomials an `S₅` template may have for [`SatPath::Auto`]
+/// to take the specialised path; past it Auto takes the generic chain.
+/// A cost bound, not a measured crossover: each `ε`-monomial is one
+/// Tseitin auxiliary per target, searched under the caller's conflict
+/// budget (unlimited by default).  `2^15` admits `ℓ = 4` (about 19 600
+/// at `n = 13` and `n = 31`, already 0.2–6 s per target at `n = 13`) and
+/// stops `ℓ ≥ 6` (about 114 000 at `n = 31`).  [`SatPath::Specialised`]
+/// is not capped.
+pub const AUTO_S5_MAX_EPS_MONOMIALS: usize = 1 << 15;
+
 /// Which SAT encoding answers a decomposition query.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SatPath {
-    /// The specialised encoder where it applies (`m = 4`), the generic
-    /// chain otherwise.
+    /// The specialised encoder where it applies (`m = 4`) and its
+    /// template has at most [`AUTO_S5_MAX_EPS_MONOMIALS`] `ε`-monomials,
+    /// the generic chain otherwise.
     #[default]
     Auto,
     /// The specialised encoder only; `None` where it does not apply.
@@ -1332,8 +1343,21 @@ pub fn sat_decompositions(
     irr: &IrreduciblePoly,
     opts: SatEnumOptions,
 ) -> Option<(DecompositionSet, SatPathTaken)> {
-    let specialised = || {
-        if m != 4 {
+    sat_decompositions_capped(basis, x_r, b, m, irr, opts, AUTO_S5_MAX_EPS_MONOMIALS)
+}
+
+/// [`sat_decompositions`] with Auto's template-size cap as a parameter.
+fn sat_decompositions_capped(
+    basis: &[F2mElement],
+    x_r: &F2mElement,
+    b: &F2mElement,
+    m: usize,
+    irr: &IrreduciblePoly,
+    opts: SatEnumOptions,
+    auto_cap: usize,
+) -> Option<(DecompositionSet, SatPathTaken)> {
+    let specialised = |cap: usize| {
+        if m != 4 || s5_template(basis, b, irr)?.n_semaev_monomials() > cap {
             return None;
         }
         s5_decompositions(basis, x_r, b, irr, opts).map(|d| (d, SatPathTaken::SymmetrisedS5))
@@ -1343,9 +1367,9 @@ pub fn sat_decompositions(
             .map(|d| (d, SatPathTaken::GenericChain))
     };
     match opts.path {
-        SatPath::Specialised => specialised(),
+        SatPath::Specialised => specialised(usize::MAX),
         SatPath::Generic => generic(),
-        SatPath::Auto => specialised().or_else(generic),
+        SatPath::Auto => specialised(auto_cap).or_else(generic),
     }
 }
 
@@ -1368,7 +1392,8 @@ fn trace_bit(x: &F2mElement, irr: &IrreduciblePoly) -> bool {
 /// [`sat_decompose_with`] until one lifts or the search refutes; the
 /// trace row of `options.trace_constraint` is added on the summand bits.
 /// Everything else — other `m`, other factor bases, [`SatPath::Generic`],
-/// or an instance the specialised encoder cannot take — goes to
+/// an instance the specialised encoder cannot take, or under
+/// [`SatPath::Auto`] a template past [`AUTO_S5_MAX_EPS_MONOMIALS`] — goes to
 /// [`sat_decompose_with`] unchanged.  Both answer "is there a
 /// decomposition" identically where both complete; which decomposition
 /// is returned first may differ.
@@ -1406,7 +1431,9 @@ pub fn sat_decompose_dispatch(
         return generic();
     };
     let tpl = if eligible {
-        s5_template(&fb.subspace_basis, &kc.curve.b, &kc.curve.irreducible)
+        s5_template(&fb.subspace_basis, &kc.curve.b, &kc.curve.irreducible).filter(|t| {
+            path != SatPath::Auto || t.n_semaev_monomials() <= AUTO_S5_MAX_EPS_MONOMIALS
+        })
     } else {
         None
     };
@@ -2039,6 +2066,41 @@ mod tests {
         )
         .unwrap();
         assert_eq!(r.1, SatPathTaken::GenericChain);
+    }
+
+    /// Auto takes the specialised path only up to the template-size cap:
+    /// one cap below a cell's `ε`-monomial count sends it to the generic
+    /// chain, a cap at the count keeps it specialised, and both lists
+    /// agree.  The shipped cap admits `ℓ = 4` and stops `ℓ = 6` at `n = 31`.
+    #[test]
+    fn auto_takes_the_generic_chain_past_the_template_cap() {
+        for inst in instances(0x5a7_0009, 6, &[6, 7], 2) {
+            let tpl = s5_template(&inst.basis, &inst.b, &inst.f).unwrap();
+            let size = tpl.n_semaev_monomials();
+            let run = |cap| {
+                let o = SatEnumOptions::default();
+                sat_decompositions_capped(&inst.basis, &inst.x_r, &inst.b, 4, &inst.f, o, cap)
+                    .unwrap()
+            };
+            let below = run(size);
+            let above = run(size - 1);
+            assert_eq!(below.1, SatPathTaken::SymmetrisedS5, "{}", inst.label);
+            assert_eq!(above.1, SatPathTaken::GenericChain, "{}", inst.label);
+            assert!(below.0.complete && above.0.complete);
+            assert_eq!(
+                below.0.decompositions, above.0.decompositions,
+                "{}",
+                inst.label
+            );
+        }
+        let size = |n: u32, l: usize| {
+            let basis: Vec<F2mElement> = (0..l).map(|k| from_word(1 << k, n)).collect();
+            S5Template::build(&basis, &F2mElement::one(n), &irr(n))
+                .unwrap()
+                .n_semaev_monomials()
+        };
+        assert!(size(13, 4) <= AUTO_S5_MAX_EPS_MONOMIALS);
+        assert!(size(31, 6) > AUTO_S5_MAX_EPS_MONOMIALS);
     }
 
     #[test]

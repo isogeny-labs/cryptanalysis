@@ -859,12 +859,35 @@ pub fn decompose_all_generic(
     Some((out.into_iter().collect(), stats))
 }
 
+/// The largest factor-base dimension [`M4Path::Auto`] sends to the
+/// linearised route.  A cost bound, not a measured crossover: the triple
+/// loop visits `C(2^l + 2, 3) ≈ 2^{3l}/6` triples and holds `2^l` target
+/// tables, so at `l = 10` that is already about `1.8·10⁸` triples per
+/// target; past it [`M4Path::Auto`] takes the generic route, which
+/// declines a system over its unknown cap at once.  An explicit
+/// [`M4Path::Linearised`] is not capped.
+pub const AUTO_LINEARISED_MAX_DIM: usize = 10;
+
+/// Whether `basis` is linearly independent over `F₂`.
+fn f2_independent(basis: &[u64]) -> bool {
+    let mut rows: Vec<u64> = Vec::with_capacity(basis.len());
+    for &v in basis {
+        let r = rows.iter().fold(v, |r, &p| r.min(r ^ p));
+        if r == 0 {
+            return false;
+        }
+        rows.push(r);
+        rows.sort_unstable_by(|a, b| b.cmp(a));
+    }
+    true
+}
+
 /// Which `m = 4` decomposition route [`decompose_all_m4`] runs.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum M4Path {
-    /// [`TripleOracle::decompose_all`] when the factor base can be
-    /// enumerated (`l ≤ 30`) and the curve is non-singular, the generic
-    /// chain otherwise.
+    /// [`TripleOracle::decompose_all`] when the basis is `F₂`-independent,
+    /// its dimension is at most [`AUTO_LINEARISED_MAX_DIM`] and the curve
+    /// is non-singular, the generic chain otherwise.
     Auto,
     /// The linearised triples oracle.
     Linearised,
@@ -897,7 +920,7 @@ pub fn decompose_all_m4(
     node_budget: usize,
 ) -> M4Outcome {
     let linearised = match path {
-        M4Path::Auto => basis.len() <= 30 && b != 0,
+        M4Path::Auto => basis.len() <= AUTO_LINEARISED_MAX_DIM && b != 0 && f2_independent(basis),
         M4Path::Linearised => true,
         M4Path::Generic => false,
     };

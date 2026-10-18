@@ -565,6 +565,21 @@ pub fn meet_roots(
     x_r: &F2mElement,
     arities: &[usize],
 ) -> Option<(Vec<u64>, MeetStats)> {
+    meet_roots_within(v_basis, irr, x_r, arities, u64::MAX).map(|(roots, stats, _)| (roots, stats))
+}
+
+/// [`meet_roots`] under a root-find budget.  The meet's cost is known
+/// before it starts (`2^{k₂(ℓ−1)+1} + 2^{k₁(ℓ−1)}` root-finds, and the
+/// join needs the whole table), so a chain over `max_root_finds` is not
+/// started: it returns no roots, zero root-finds and `false` (incomplete).
+/// The third field is `true` when the root set is the whole set.
+fn meet_roots_within(
+    v_basis: &[F2mElement],
+    irr: &IrreduciblePoly,
+    x_r: &F2mElement,
+    arities: &[usize],
+    max_root_finds: u64,
+) -> Option<(Vec<u64>, MeetStats, bool)> {
     let n = irr.degree;
     if arities.len() != 2 || summands_of(arities).is_none() || v_basis.len() < 2 {
         return None;
@@ -585,6 +600,11 @@ pub fn meet_roots(
     if head + n as usize > MAX_VARS {
         return None;
     }
+    let mut stats = MeetStats::default();
+    let cost = (1u64 << (k2 * block + 1)) + (1u64 << (k1 * block));
+    if cost > max_root_finds {
+        return Some((Vec::new(), stats, false));
+    }
     let ub: Vec<u64> = v_basis[1..].iter().map(bits_of).collect();
     let u_r = bits_of(&u_r);
     let w_r = gf.sqr(u_r) ^ u_r;
@@ -598,7 +618,6 @@ pub fn meet_roots(
         acc
     };
     let w_q = vec![0u64, 1, 1];
-    let mut stats = MeetStats::default();
     let terms1 = symmetrised_terms(arities[0] - 1)?;
     let terms2 = symmetrised_terms(arities[1] - 1)?;
     let mask_of = |k: usize| -> u64 { (1u64 << (k * block)) - 1 };
@@ -672,7 +691,7 @@ pub fn meet_roots(
     }
     out.sort_unstable();
     stats.roots = out.len() as u64;
-    Some((out, stats))
+    Some((out, stats, true))
 }
 
 // ── Decompositions ─────────────────────────────────────────────────
@@ -739,6 +758,8 @@ struct Solved {
     roots: Vec<u64>,
     stats: SolveStats,
     meet: MeetStats,
+    /// The roots are the whole root set (no budget ran out).
+    complete: bool,
 }
 
 impl<'a> SymChainOracle<'a> {
@@ -817,11 +838,14 @@ impl<'a> SymChainOracle<'a> {
         })
     }
 
+    /// `meet_budget` caps [`ChainSolver::Meet`]'s root-finds (see
+    /// [`meet_roots_within`]); the Gröbner solver has its own budget.
     fn solve(
         &self,
         sys: &SymChainSystem,
         target: &BinaryPoint,
         solver: ChainSolver,
+        meet_budget: u64,
     ) -> Option<Solved> {
         match solver {
             ChainSolver::Groebner {
@@ -838,6 +862,7 @@ impl<'a> SymChainOracle<'a> {
                     solve_boolean_system_filtered(&sys.equations, sys.n_vars, &opts, |_| false);
                 Some(Solved {
                     roots,
+                    complete: !stats.exhausted,
                     stats,
                     meet: MeetStats::default(),
                 })
@@ -849,16 +874,18 @@ impl<'a> SymChainOracle<'a> {
                 if !sys.folded {
                     return None;
                 }
-                let (roots, meet) = meet_roots(
+                let (roots, meet, complete) = meet_roots_within(
                     &self.fb.v_basis,
                     &self.kc.curve.irreducible,
                     x,
                     &sys.arities,
+                    meet_budget,
                 )?;
                 Some(Solved {
                     roots,
                     stats: SolveStats::default(),
                     meet,
+                    complete,
                 })
             }
         }
@@ -947,7 +974,10 @@ impl<'a> SymChainOracle<'a> {
     /// completion and lift every root (see the module docs for the set and
     /// its order).  [`ChainShape::PlainU`] solves two systems, for `R` and
     /// for `R + T`.  `None` where the system does not build or the solver
-    /// does not apply.
+    /// does not apply.  The list includes the `T`-shifted copies of each
+    /// decomposition (summands `P_i ↦ P_i + T`, which stay in the base as
+    /// `1 ∈ V`) as separate entries: they are distinct valid index tuples,
+    /// so the count overstates the distinct relations modulo `T`.
     pub fn decompose_all(
         &self,
         target: &BinaryPoint,
@@ -981,7 +1011,7 @@ impl<'a> SymChainOracle<'a> {
             passes.push((sys, true));
         }
         for (sys, via_t) in &passes {
-            let solved = self.solve(sys, target, solver)?;
+            let solved = self.solve(sys, target, solver, u64::MAX)?;
             for &root in &solved.roots {
                 self.lift_all(sys, root, ft, shifted, *via_t, &mut set);
             }
@@ -1028,6 +1058,20 @@ impl<'a> SymChainOracle<'a> {
         m: usize,
         shape: ChainShape,
         solver: ChainSolver,
+    ) -> Option<OracleOutcome> {
+        self.decompose_first_within(target, m, shape, solver, u64::MAX)
+    }
+
+    /// [`Self::decompose_first`] with [`ChainSolver::Meet`] capped at
+    /// `meet_budget` root-finds: a meet over it is not run and reports no
+    /// relation with `complete = false`, never a refutation.
+    fn decompose_first_within(
+        &self,
+        target: &BinaryPoint,
+        m: usize,
+        shape: ChainShape,
+        solver: ChainSolver,
+        meet_budget: u64,
     ) -> Option<OracleOutcome> {
         let ft = self.fc.lift(target);
         let mut found: Option<(Vec<usize>, bool)> = None;
@@ -1076,13 +1120,13 @@ impl<'a> SymChainOracle<'a> {
             }
             ChainSolver::Meet => {
                 let sys = self.layout(target, m, shape)?;
-                let solved = self.solve(&sys, target, solver)?;
+                let solved = self.solve(&sys, target, solver, meet_budget)?;
                 for &root in &solved.roots {
                     if lift(&sys, root) {
                         break;
                     }
                 }
-                (sys, true, solved.meet.root_finds, 0, 0)
+                (sys, solved.complete, solved.meet.root_finds, 0, 0)
             }
         };
         let used_t = found.as_ref().is_some_and(|r| r.1);
@@ -1118,7 +1162,9 @@ fn system_degree(eqs: &[F2BoolPoly]) -> u32 {
 /// - `m = 4`, `Auto` → [`chained_symmetrised_groebner_decompose`]
 ///   (unchanged);
 /// - `m = 5`, `Auto` → the specialised path: the `[4, 4]` pair solved by
-///   [`ChainSolver::Meet`], which is exact and never exhausts a budget;
+///   [`ChainSolver::Meet`], which is exact, with its root-finds charged
+///   against `node_budget`: a meet that would need more is not run and
+///   returns no relation with `complete = false`;
 /// - an explicit shape, or a specialised path that declines (layout over
 ///   [`MAX_VARS`]) → that shape's chain under matrix-F4 with `engine` and
 ///   `node_budget`, and finally the generic [`ChainShape::S3Links`] chain.
@@ -1147,7 +1193,15 @@ pub fn symmetrised_decompose_dispatch(
         _ => {
             let oracle = SymChainOracle::new(kc, fb, st)?;
             let special = (m == 5 && shape == ChainShape::Auto)
-                .then(|| oracle.decompose_first(target, m, ChainShape::S4Pair, ChainSolver::Meet))
+                .then(|| {
+                    oracle.decompose_first_within(
+                        target,
+                        m,
+                        ChainShape::S4Pair,
+                        ChainSolver::Meet,
+                        u64::try_from(node_budget).unwrap_or(u64::MAX),
+                    )
+                })
                 .flatten();
             special
                 .or_else(|| oracle.decompose_first(target, m, shape, groebner))
@@ -1837,5 +1891,49 @@ mod tests {
                 all.decompositions.iter().any(|x| !x.via_t) || d.used_t
             );
         }
+    }
+
+    /// The `m = 5` meet charges its root-finds against the dispatch's
+    /// `node_budget`: under too small a budget it reports no relation and
+    /// `complete = false` (never a refutation); at its exact cost it is the
+    /// unbudgeted meet.
+    #[test]
+    fn the_meet_respects_the_node_budget() {
+        let (kc, st, fb) = instance(1, 9, 3, 0x77);
+        let engine = SolverEngine::default();
+        let o = SymChainOracle::new(&kc, &fb, &st).unwrap();
+        let mut found = 0;
+        for t in targets(&kc, &fb, 0x77) {
+            let full = o
+                .decompose_first(&t, 5, ChainShape::S4Pair, ChainSolver::Meet)
+                .unwrap();
+            assert!(full.complete);
+            found += usize::from(full.relation.is_some());
+            let cost = full.effort as usize;
+            let dispatch = |budget| {
+                symmetrised_decompose_dispatch(
+                    &kc,
+                    &fb,
+                    &st,
+                    &t,
+                    5,
+                    ChainShape::Auto,
+                    engine,
+                    budget,
+                )
+                .unwrap()
+            };
+            let tiny = dispatch(cost - 1);
+            assert!(!tiny.complete);
+            assert!(tiny.relation.is_none());
+            assert_eq!(tiny.effort, 0);
+            let ample = dispatch(cost);
+            assert!(ample.complete);
+            assert_eq!(
+                (ample.relation, ample.used_t, ample.effort),
+                (full.relation, full.used_t, full.effort)
+            );
+        }
+        assert!(found > 0, "no target had a relation to lose");
     }
 }
