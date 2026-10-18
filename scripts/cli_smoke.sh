@@ -162,6 +162,10 @@ want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --contr
 # Count products and arm capacities must be checked before allocation or work.
 want_malformed volcano --p 1000033 --a 5 --b 17 --trials 18446744073709551615 --per-level 1 --controls 0
 want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 18446744073709551615
+# A selection limit larger than the actual graph is harmless and must not
+# size an arm buffer from the user-supplied value.
+want '"radius":0' volcano --p 1000033 --a 5 --b 17 --radius 0 --max-vertices 1 \
+  --trials 1 --per-level 18446744073709551615 --controls 0 --jobs 1
 # A seed of 2^64 - 1 must not wrap the derived seed to 0 ("random"): two
 # runs give the same instance.
 checks=$((checks + 1))
