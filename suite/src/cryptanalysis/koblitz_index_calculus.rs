@@ -159,6 +159,8 @@ use crate::cryptanalysis::sat::SolveResult;
 use crate::cryptanalysis::semaev_sat::{encode_boolean_system_with, XorEncoding};
 use crate::utils::mod_inverse;
 
+mod mitm_m5;
+
 /// Largest extension degree this module will build a curve for.  The
 /// factor base and the point-counting/factoring helpers are all
 /// materialised, so this is a deliberate guard rail, not a limit of
@@ -2452,7 +2454,8 @@ pub enum DecompositionStrategy {
     Sat,
     /// **Meet in the middle** over a precomputed table of all pair sums
     /// `P_i + P_j` ([`PairSumTable`]).  `m = 2` is one lookup, `m = 3`
-    /// is `|F|` lookups, `m = 4` is `|F|²` lookups — against
+    /// is `|F|` lookups, `m = 4` is `|F|²` lookups, `m = 5` is `|F|³/6`
+    /// ([`PairSumTable::witnesses_fast`]) — against
     /// `|F|^{m−1}` group operations for [`Self::Enumerate`].  Exact and
     /// complete like enumeration; costs `|F|²` memory once per run.
     PairTable,
@@ -4270,7 +4273,7 @@ impl PairSumTable {
         &run[start..end]
     }
 
-    /// **Decompose** `target` into exactly `m ∈ {2, 3, 4}` base points,
+    /// **Decompose** `target` into exactly `m ∈ {2, 3, 4, 5}` base points,
     /// returning sorted indices, or `None` when no decomposition exists
     /// (a complete search) or `m` is unsupported.  The returned sum is
     /// re-checked in the general group arithmetic before it is handed
@@ -4508,7 +4511,7 @@ impl PairSumTable {
 
     /// **Enumerate every sorted witness** `i_1 ≤ … ≤ i_m` with
     /// `Σ P_{i_k} = target`, calling `sink` for each; the sink returns
-    /// `true` to continue and `false` to stop.  Supports `m ∈ {2, 3, 4}`.
+    /// `true` to continue and `false` to stop.  Supports `m ∈ {2, 3, 4, 5}`.
     pub fn witnesses(
         &self,
         _kc: &KoblitzCurve,
@@ -4721,6 +4724,9 @@ impl PairSumTable {
                     }
                 }
             }
+            // Pair table × enumerated triple, in nested batched rows:
+            // [`mitm_m5`].
+            5 => self.witnesses_five(target, sorted, sink),
             _ => {}
         }
     }
@@ -10184,7 +10190,7 @@ mod tests {
     /// The walked descent steps every walk's `a` by one per round and
     /// wraps it at `r` with a compare rather than a `%`.  `K_0/2^9` has
     /// `r = 127`, so a walk wraps within 127 rounds.  The pair table
-    /// answers two to four summands, so a five-summand descent never
+    /// answers two to five summands, so a six-summand descent never
     /// decomposes a probe and each walk runs until one is the identity,
     /// which a direct relation turns into the logarithm: that probe is
     /// the first `(round, walk)` with `a + b·d ≡ 0 (mod r)`.  The test
@@ -10210,7 +10216,7 @@ mod tests {
         let (mut cases, mut wrapped) = (0usize, 0usize);
         for seed in 0..128u64 {
             let walking = KoblitzIcOptions {
-                descent_m: Some(5),
+                descent_m: Some(6),
                 seed,
                 max_trials: (2 * WALKS * r) as usize,
                 allow_direct_relation: true,
