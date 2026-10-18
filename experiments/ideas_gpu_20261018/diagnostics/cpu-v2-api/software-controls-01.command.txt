@@ -1,0 +1,3 @@
+Offline controller/request-schema tests only; all credentials are synthetic and all provider/network/process actions mocked.
+ulimit -v 1048576
+PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 experiments/ideas_gpu_20261018/diagnostics/cpu-v2-api/test_controller.py
