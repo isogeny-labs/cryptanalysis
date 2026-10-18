@@ -73,6 +73,17 @@ this finite search family and sensitivity. Zero observations never certify an
 impossible differential. A later independent replication or expanded family gets
 a new protocol/output directory; old records are immutable.
 
+## Post-review statistical correction
+
+The original archived run preserves its raw statistical fields. A review found
+that the initial two-sided Chernoff shortcut could understate the opposite tail
+because Bernoulli KL divergence is asymmetric. The implementation now sums
+separate lower- and upper-tail bounds. The preserved hit counts were rechecked
+with the corrected method without replaying the cipher; see
+[`STATISTICAL-CORRECTION.md`](STATISTICAL-CORRECTION.md) and
+[`statistical-recheck.json`](statistical-recheck.json). The family-level
+classifications did not change.
+
 ## Execute and inspect
 
 ```sh

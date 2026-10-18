@@ -6,6 +6,19 @@ Classification: engineering and bounded observations. Preferred report:
 [machine-readable summary](reports/run-20261017T1846Z-v2/summary.json).
 The [protocol](README.md) and `run.sh` remain frozen as committed before execution.
 
+## Post-review correction
+
+The archived raw validation JSON preserves the original run's per-row bound
+fields. A review found that its initial `2 exp(-n D(x || p))` shortcut was not
+a conservative two-sided Chernoff bound for skewed null probabilities. See
+[`STATISTICAL-CORRECTION.md`](STATISTICAL-CORRECTION.md) for the corrected
+method and [`statistical-recheck.json`](statistical-recheck.json) for a
+count-only reanalysis bound to the archived inputs. The corrected method keeps
+the family classifications unchanged: two passing events at one round, two at
+two rounds, none in the other ten families, and all twelve matched PRP controls
+non-rejected. The previously rendered reports remain historical records; use
+the correction artifact for statistical bounds.
+
 ## Observations
 
 The raw run in `runs.tar.xz` records 41 successful commands. Extract it as
@@ -35,8 +48,8 @@ The engine, tests, lockfile and protocol were published at
 `8a3ee1d85cbb32b0fb78aa8b92cc363e3e0caffd` before the run. Receipts record exact
 argv, source and binary SHA-256, seeds, environment, dirty state, timestamps,
 stdout/stderr, statuses and a byte-identical validation replay. Source, protocol
-and executable hashes were rechecked against the exercised files. The current
-engine sources still match. A preliminary launch failed before any trial because
+and executable hashes bind the archived files at the exercised revision; the
+current source adds the statistical correction documented above. A preliminary launch failed before any trial because
 the output parent was missing; after creating that parent the unchanged card
 completed once. No scientific rerun was used to select an outcome.
 
@@ -55,9 +68,10 @@ The renderer now derives outcomes, source revision, settings, control results
 and alpha accounting from its inputs. A deliberately altered temporary fixture
 with empty candidate lists, failed controls, a failed process and a different
 revision produced those negative outcomes in its report. This was a software
-fixture check, not an additional cryptanalytic trial. No critical mathematical
-defect remained in the reviewed finite instrument; that review is not an
-independent scientific campaign review.
+fixture check, not an additional cryptanalytic trial. The earlier review did
+not catch the two-sided tail-bound defect corrected here. The current
+correction rechecks statistical classifications from stored counts; it is not
+an independent scientific campaign review.
 
 ## Reproduce the report
 

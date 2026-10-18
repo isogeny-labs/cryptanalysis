@@ -59,12 +59,15 @@ they are not secret-key generation or a substitute for independent final testing
 For a nonempty XOR projection of distinct bytes and a mask of rank `r`, the
 ideal output-difference probability is
 `(2^(128-r) - [target=0]) / (2^128 - 1)`. The implementation uses its numerically
-stable normalized form. It reports a **two-sided Chernoff upper bound**, not an
-exact p-value or a normal approximation, adds a conservative finite-query PRP
-collision-coupling slack, and applies Bonferroni across **both arms, all frozen
-events and all validation keys**. The slack uses all queries for that key, not
-just a favorable row. Tests in multiple separate specs need an additional
-campaign-level alpha allocation, frozen before execution.
+stable normalized form. It reports a **two-sided Chernoff upper bound** by
+adding separate lower- and upper-tail bounds at the observed absolute
+deviation. Bernoulli KL divergence is asymmetric, so doubling only the
+observed tail's bound can understate the opposite tail. It also adds a
+conservative finite-query PRP collision-coupling slack, and applies Bonferroni
+across **both arms, all frozen events and all validation keys**. The slack uses
+all queries for that key, not just a favorable row. Tests in multiple separate
+specs need an additional campaign-level alpha allocation, frozen before
+execution.
 
 A candidate is listed only if its frozen direction passes on **every tested
 key**, and the matched random-control family passes. This does not establish a
@@ -109,6 +112,11 @@ timestamps, stdout/stderr and exit status. Results are engineering observations
 outside existing official AES campaign arms; no ledger or scientific status is
 changed. The source-linked open-angle assessment and remaining experiments live
 in the companion `crypto-autoresearcher` study.
+
+The first archived suite's stored bound fields were generated before the
+two-sided tail correction; see its
+[`STATISTICAL-CORRECTION.md`](../../experiments/aes-distinguisher-lab-20261017/STATISTICAL-CORRECTION.md)
+and `statistical-recheck.json` before interpreting those historical fields.
 
 There is no SAT/MILP proof backend, exhaustive full-AES trail search, GPU path,
 learned model training, complete DS-MitM/biclique attack, or claimed full-AES break

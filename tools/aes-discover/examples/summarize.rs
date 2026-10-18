@@ -212,7 +212,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let component_observations = format!("Of {accepted} accepted nondegenerate quartets, inversion matches: {}; raw AES S-box matches: {}; affine-undone matches: {}; random byte-bijection matches: {}. These are local component observations, not an invariant through an AES round or a reproduction of a complete published attack.",
         quartet["key_wrapped_inversion_matches"], quartet["raw_aes_sbox_matches"],
         quartet["aes_output_linear_affine_undone_matches"], quartet["random_bijection_matches"]);
-    let md=format!("# Native AES laboratory: recorded suite\n\nStatus: {successful}/{} recorded commands exited successfully. Raw directory: `{}`.\n\n## Differential endpoints\n\n{table}\n{observations}\n\nThese observations establish neither security nor a novel attack. Per-family frozen event counts, discovery-key counts, input-difference counts and validation plans are in `summary.json`. Raw reports retain every key/event and the conservative Chernoff/PRP-coupling/Bonferroni bounds. A failed control withholds the affected family's candidates.\n\n![Recorded differential counts](differential-events.svg)\n\n## Component controls\n\n![Recorded integral counts](integral-structures.svg)\n\n![Recorded quartet counts](quartet-component.svg)\n\n{component_observations}\n\n## Provenance and limits\n\nThe recorded source revision is `{source_revision}`. The raw directory retains executable/source/protocol hashes, source dirty state, exact argv, seeds, timestamps, stdout/stderr and statuses. `summary.json` binds the summarized JSON, discovery artifacts, environment and statuses by SHA-256. This renderer derives descriptive observations only; it does not verify that every recorded claim or receipt is truthful. Deterministic replay is not independent scientific review.\n\nNo key recovery, hardware performance comparison, solver certificate, universal key-independence, security proof or accepted scientific-goal status follows. Source for the component experiment: https://eprint.iacr.org/2026/1549 . Its complete attack is not reproduced.\n",rows.len(),input.display());
+    let md=format!("# Native AES laboratory: recorded suite\n\nStatus: {successful}/{} recorded commands exited successfully. Raw directory: `{}`.\n\n## Differential endpoints\n\n{table}\n{observations}\n\nThese observations establish neither security nor a novel attack. Per-family frozen event counts, discovery-key counts, input-difference counts and validation plans are in `summary.json`. Raw reports preserve every key/event and the bound values calculated by the recorded source revision; consult that implementation before interpreting them as current conservative bounds. A failed control withholds the affected family's candidates.\n\n![Recorded differential counts](differential-events.svg)\n\n## Component controls\n\n![Recorded integral counts](integral-structures.svg)\n\n![Recorded quartet counts](quartet-component.svg)\n\n{component_observations}\n\n## Provenance and limits\n\nThe recorded source revision is `{source_revision}`. The raw directory retains executable/source/protocol hashes, source dirty state, exact argv, seeds, timestamps, stdout/stderr and statuses. `summary.json` binds the summarized JSON, discovery artifacts, environment and statuses by SHA-256. This renderer derives descriptive observations only; it does not verify that every recorded claim or receipt is truthful. Deterministic replay is not independent scientific review.\n\nNo key recovery, hardware performance comparison, solver certificate, universal key-independence, security proof or accepted scientific-goal status follows. Source for the component experiment: https://eprint.iacr.org/2026/1549 . Its complete attack is not reproduced.\n",rows.len(),input.display());
     write_new(&output.join("REPORT.md"), &md)?;
     let typ = format!(
         r##"#set page(paper: "a4", margin: 18mm)
@@ -228,13 +228,15 @@ exact commands, seeds, executable/source/protocol hashes, logs and statuses.
 #text({observations_typst})
 
 Per-family frozen event counts, keys, sample counts, input differences and alpha
-are in summary.json. A failed matched control withholds that family's candidates.
+are in summary.json. Source JSON preserves the bounds calculated by its recorded
+revision; check that implementation before interpreting them as current bounds.
+A failed matched control withholds that family's candidates.
 
 #image("differential-events.svg", width: 100%)
 
 This does not establish security, absence of a different distinguisher, novelty,
-key recovery, or universal key independence. The native software's conservative
-bounds and all per-key counts remain in the source JSON.
+key recovery, or universal key independence. All per-key counts and the original
+recorded bounds remain in the source JSON.
 
 #pagebreak()
 == Integral and component observations
