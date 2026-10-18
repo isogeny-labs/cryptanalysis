@@ -28,12 +28,19 @@ prog_sha() {
         10) echo c2a413f9f136c0a3c585920fa4ee40c5d67d39a260576b153db36e2dda0ac43b ;;
         11) echo 099679633c4d2f0c11f4e8b6024b6aa3d1a8703e59980f712593e90fb7065954 ;;
         12) echo a8bec32c3185d52f68cbd313dbff3840febc9d8c4ef99a826ab521dfc3862b9a ;;
+        # l = 13 is timing-only in the plan and was not frozen by PS-2: this hash is first recorded by PS-5
+        # (raw/export_check.txt), from the same binary.
+        13) echo a494467d8b006e2fc06df2b6385c75baf75979a016d4d8b69ab0858b555d9538 ;;
     esac
 }
 # PS-0's digests for run 1 of rung L (baseline_v1/digests.txt, copied as expected_digests_ps0.txt).
 digest_of() { # L which(verdicts|roots)
     awk -v l="l=$1" -v w="digest_$2" '$1=="run=1" && $2==l { for (i=1;i<=NF;i++) if ($i==w) print $(i+1) }' \
         "$HERE/expected_digests_ps0.txt"
+}
+
+corpus_of() { # L
+    if [ "$1" = 13 ]; then echo "$HERE/corpus/corpus_l13_ps3_sample.txt"; else echo "$HERE/corpus/corpus_l$1.txt"; fi
 }
 
 cmd=${1:-}
@@ -60,7 +67,7 @@ manifest)
 build)
     MODE=${1:-plain}
     mkdir -p "$OUT/prog"
-    for l in 8 9 10 11 12; do
+    for l in ${PS5_RUNGS:-8 9 10 11 12}; do
         zcat "$HERE/programs/pdp_slp_l${l}_b8.slp.gz" > "$OUT/prog/pdp_slp_l${l}_b8.slp"
         cp "$HERE/programs/pdp_slp_l${l}_b8.slp.json" "$OUT/prog/"
         got=$(sha256sum "$OUT/prog/pdp_slp_l${l}_b8.slp" | cut -d' ' -f1)
@@ -79,7 +86,7 @@ selftest)
     REPS=${2:-100}
     MODE=${3:-plain}
     SUF=; [ "$MODE" = model ] && SUF=_model
-    "$OUT/bin/pdp_ps5_selftest_l$L$SUF" --corpus "$HERE/corpus/corpus_l$L.txt" \
+    "$OUT/bin/pdp_ps5_selftest_l$L$SUF" --corpus "$(corpus_of "$L")" \
         --program "$OUT/prog/pdp_slp_l${L}_b8.slp" --reps "$REPS" | tee -a "$RAW/selftest_l$L$SUF.jsonl"
     ;;
 parity)
@@ -87,8 +94,12 @@ parity)
     T=${2:-2}
     MODE=${3:-plain}
     SUF=; [ "$MODE" = model ] && SUF=_model
-    "$OUT/bin/pdp_ps5_parity_l$L$SUF" --corpus "$HERE/corpus/corpus_l$L.txt" --threads "$T" \
-        --expect-verdicts "$(digest_of "$L" verdicts)" --expect-roots "$(digest_of "$L" roots)" \
+    EXTRA=
+    if [ -n "$(digest_of "$L" verdicts)" ]; then
+        EXTRA="--expect-verdicts $(digest_of "$L" verdicts) --expect-roots $(digest_of "$L" roots)"
+    fi
+    # shellcheck disable=SC2086
+    "$OUT/bin/pdp_ps5_parity_l$L$SUF" --corpus "$(corpus_of "$L")" --threads "$T" $EXTRA \
         --expect-program-sha "$(prog_sha "$L")" | tee -a "$RAW/parity_l$L$SUF.jsonl"
     ;;
 nvcc)
