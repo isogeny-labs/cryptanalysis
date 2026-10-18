@@ -34,6 +34,9 @@ def regenerate(manifest: dict, rules: dict, bundle: Path) -> None:
                    '--binary-sha256', rules['hashes']['binary'],
                    '--libcrypto-sha256', rules['hashes']['libcrypto'],
                    '--libcrypto-path', rules['paths']['libcrypto'],
+                   '--remote-root', str(Path(rules['paths']['binary']).parents[2]),
+                   '--remote-panels', str(Path(rules['paths']['bundle']).parent),
+                   '--provider', manifest['allocation']['provider'],
                    '--bundle-path', str(bundle), '--output-dir', temporary]
         result = subprocess.run(command, text=True, capture_output=True)
         assert result.returncode == 0, result.stdout + result.stderr
@@ -138,7 +141,7 @@ def audit(manifest_path: Path, rules_path: Path, raw_path: Path,
             if artifacts.get(path) != expected_hash:
                 structural.append('artifact mismatch: ' + path)
         for path in (manifest['allocation']['receipt'],
-                     '/workspace/isolated-bench/panels/host-probe.json'):
+                     str(Path(rules['paths']['bundle']).parent / 'host-probe.json')):
             if path not in artifacts:
                 structural.append('missing host artifact: ' + path)
         lookup = {}
