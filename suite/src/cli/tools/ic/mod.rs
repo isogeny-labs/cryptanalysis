@@ -5,6 +5,7 @@ mod budget;
 mod corpus;
 mod descent;
 mod experiment;
+mod fbkit;
 mod fixed;
 mod params;
 mod prime;
@@ -85,6 +86,8 @@ enum Action {
     Rho(rho::RhoArgs),
     /// Discrete logs in (Z/pZ)^* by the C library's linear sieve (p < 2^63), verified.
     Zp(crate::cli::ic::ZpArgs),
+    /// Factor-base toolkit: sweep, measure, rank, export and publish factor-base constructions for one curve.
+    Fbkit(Box<fbkit::FbkitArgs>),
 }
 #[derive(Args)]
 #[group(required = true, multiple = false)]
@@ -140,6 +143,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::Rho(args)) => rho::run(args.clone(), cli.json),
         Some(Action::Zp(args)) => crate::cli::ic::solve_zp(args)
             .and_then(|r| serde_json::to_value(r).map_err(|e| e.to_string())),
+        Some(Action::Fbkit(args)) => fbkit::run((**args).clone(), cli.json),
         Some(Action::Run(args)) => experiment::run(args.clone(), cli.json),
         None => {
             if let Some(name) = &cli.profile {
@@ -625,6 +629,9 @@ fn display(report: &Value) {
                 report["identity"]["all_reproduced"]
             );
         }
+        Some(op) if op.starts_with("fbkit-") => {
+            println!("{}", report["markdown"].as_str().unwrap_or(""));
+        }
         Some("error") => {
             eprintln!(
                 "ic: {}",
@@ -671,7 +678,11 @@ where
     let success = matches!(
         report["status"].as_str(),
         Some("complete" | "checks_passed" | "stopped")
-    ) || report.get("operation").is_none();
+    ) || (report["status"] == "skipped"
+        && report["operation"]
+            .as_str()
+            .is_some_and(|o| o.starts_with("fbkit-")))
+        || report.get("operation").is_none();
     let text = serde_json::to_string_pretty(&report).expect("JSON serializable");
     if let Some(path) = &cli.out {
         let result = OpenOptions::new()

@@ -1404,6 +1404,35 @@ also includes the total comparison time, so selection and unsuccessful
 candidate costs remain visible. A selected candidate is a bounded
 observation, not a global optimum, scaling claim, or challenge result.
 
+## Factor-base toolkit: ic fbkit
+
+`ca-ic fbkit` sweeps factor-base constructions for one curve, measures each at a
+chosen summand count `m` in `2..=8` (construction, relation yield, F4 solving
+degree, SAT size and conflicts), ranks them under an explicit objective, and
+keeps everything in a reproducible run directory that can be published to S3.
+Every number is a stage diagnostic: not an `IC1` result, not a speedup; `fb<B>`
+counts points before folding. The user guide is [FBKIT.md](FBKIT.md), the design
+record [FBKIT_SPEC.md](FBKIT_SPEC.md).
+
+    ./target/release/ca-ic fbkit list
+    ./target/release/ca-ic fbkit explain geometric
+    ./target/release/ca-ic fbkit build --koblitz-degree 11 --curve-a 1 --family geometric:l=4,seed=3 --m 2 --metrics construction,yield,f4
+    ./target/release/ca-ic fbkit sweep --koblitz-degree 11 --curve-a 1 --families coordinate,geometric --dims 3-4 --m 2,3 --metrics construction,yield,f4,sat --targets 4 --budget-seconds 5 --dir runs/fbkit-k11
+    ./target/release/ca-ic fbkit sweep --manifest docs/ic/sweeps/fbkit-m2-8-n7.json --dir runs/fbkit-m2-8 --jobs 8
+    ./target/release/ca-ic fbkit sweep --manifest docs/ic/sweeps/fbkit-shapes-n13.json --dir runs/fbkit-shapes --jobs 8 --resume
+    ./target/release/ca-ic fbkit rank --dir runs/fbkit-k11 --objective composite --weights dreg=2 --top 5
+    ./target/release/ca-ic fbkit export --dir runs/fbkit-k11 --cell <cell-id> --archive-out geometric-k11.json
+    ./target/release/ca-ic fbkit upload --dir runs/fbkit-k11 --s3 s3://bucket/prefix --dry-run
+    ./target/release/ca-ic fbkit download --s3 s3://bucket/prefix/fbkit/<curve_id>/<sweep_id> --dir runs/fbkit-copy
+
+A sweep writes `manifest.json`, `curve.json`, `cells/`, `points/`, `ranking.json`,
+`report.{json,md}` and `inventory.json` into `--dir`; `--resume` skips finished
+cells of the same manifest. `m` beyond the 64-variable cap of the boolean
+polynomial type still measures construction and yield and marks the solver
+groups `not_applicable` with the exact variable count. Upload needs the `aws`
+CLI (`FBKIT_AWS_BIN`) and a destination (`--s3`, `FBKIT_S3_URI` or
+`IC_ARCHIVE_S3_URI`); without one it reports `skipped`.
+
 ## Reports and resource accounting
 
 Add --json for machine-readable output or --out PATH to save the JSON

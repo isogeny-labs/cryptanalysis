@@ -749,3 +749,5 @@ verification — is `collect_and_solve_with` in
 [`ic_boundary.rs`](../../src/cryptanalysis/ic_boundary.rs), shared with
 the boundary ledger rather than reimplemented, so a framework row is
 comparable with a ledger row instead of merely similar to it.
+
+The factor-base toolkit `ic fbkit` ([`fbkit.rs`](../../src/cli/tools/ic/fbkit.rs) over [`cryptanalysis/fbkit/`](../../src/cryptanalysis/fbkit/mod.rs); guide in [FBKIT.md](FBKIT.md)) sweeps and ranks factor-base constructions with its own cell metrics; it reuses this framework's engines for the F4 and SAT stage measurements but is not one of its plug-in stages.

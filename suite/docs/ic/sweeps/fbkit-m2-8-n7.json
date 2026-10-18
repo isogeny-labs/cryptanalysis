@@ -1,0 +1,45 @@
+{
+  "_comment": "The applicability rule: at n=7, coordinate and geometric with l=2..4 for every m in 2..=8. Construction and yield are measured for every m; f4 and sat are not_applicable once n_vars = m*l + (m-2)*n exceeds 64 (l=3 at m=8, l=4 at m=8).",
+  "schema": "ic-fbkit-manifest/1",
+  "curve": {
+    "koblitz_degree": 7,
+    "curve_a": 1
+  },
+  "m": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "matrix": {
+    "families": [
+      "coordinate",
+      "geometric"
+    ],
+    "dims": [
+      2,
+      3,
+      4
+    ],
+    "seeds": [
+      1
+    ]
+  },
+  "metrics": {
+    "groups": [
+      "construction",
+      "yield",
+      "f4",
+      "sat"
+    ],
+    "targets": 4,
+    "exact_cap": 16777216,
+    "budget_seconds": 5,
+    "conflict_budget": 2000,
+    "d_max": 4
+  },
+  "seed": 1
+}

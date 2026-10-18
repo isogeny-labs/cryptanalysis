@@ -1,0 +1,50 @@
+{
+  "_comment": "Subspace shapes on K_0/GF(2^13): six families x l=3..5 x m=2,3, with and without trace_zero. Run: ca-ic fbkit sweep --manifest docs/ic/sweeps/fbkit-shapes-n13.json --dir runs/fbkit-shapes-n13 --jobs 8. Stage diagnostics only; not an IC1 result.",
+  "schema": "ic-fbkit-manifest/1",
+  "curve": {
+    "koblitz_degree": 13,
+    "curve_a": 0
+  },
+  "m": [
+    2,
+    3
+  ],
+  "matrix": {
+    "families": [
+      "coordinate",
+      "random",
+      "geometric",
+      "gp-scaled",
+      "frobenius-progression",
+      "sparse-descent"
+    ],
+    "dims": [
+      3,
+      4,
+      5
+    ],
+    "seeds": [
+      1
+    ],
+    "modifiers": [
+      {},
+      {
+        "trace_zero": 1
+      }
+    ]
+  },
+  "metrics": {
+    "groups": [
+      "construction",
+      "yield",
+      "f4",
+      "sat"
+    ],
+    "targets": 4,
+    "exact_cap": 16777216,
+    "budget_seconds": 10,
+    "conflict_budget": 5000,
+    "d_max": 5
+  },
+  "seed": 1
+}

@@ -116,6 +116,7 @@ $ ca-ic bench --sweep docs/ic/sweeps/solver-engines.json   # plug-in pipeline co
 $ ca-ic descent --families K --cells 11:6:2        # degree a Weil-descent system reaches vs semi-regular
 $ ca-ic corpus --degree 15 --dimension 5 --dir corpus/   # Semaev S4 corpus (Magma, DIMACS+XOR, CNF, ANF)
 $ ca-ic rho --koblitz-degrees 23,31 --runs 4       # the counted Pollard-rho references, paired
+$ ca-ic fbkit sweep --koblitz-degree 11 --curve-a 1 --families coordinate,geometric --dims 3-4 --m 2,3 --metrics construction,yield,f4,sat --dir runs/fbkit  # factor-base toolkit: sweep, rank, export, S3
 ```
 
 `ca-icx` runs index calculus across every standardized curve: the curve

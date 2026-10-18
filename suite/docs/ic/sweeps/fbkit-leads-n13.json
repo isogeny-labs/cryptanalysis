@@ -1,0 +1,187 @@
+{
+  "_comment": "New leads on K_0/GF(2^13): trace-form, power-sum, sparse-descent, maxmin-column-rate, geometric with the tau-twist and per-summand-shift system modifiers, symmetrised-u, dual-frobenius-u, mobius-pole.",
+  "schema": "ic-fbkit-manifest/1",
+  "curve": {
+    "koblitz_degree": 13,
+    "curve_a": 0
+  },
+  "m": [
+    2,
+    3
+  ],
+  "cells": [
+    {
+      "family": "trace-form",
+      "params": {
+        "k": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "trace-form",
+      "params": {
+        "k": 3,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "power-sum",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "power-sum",
+      "params": {
+        "l": 5,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "sparse-descent",
+      "params": {
+        "l": 4,
+        "w": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "sparse-descent",
+      "params": {
+        "l": 5,
+        "w": 3,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "maxmin-column-rate",
+      "params": {
+        "K": 16,
+        "pool": 64,
+        "samples": 128,
+        "m": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "maxmin-column-rate",
+      "params": {
+        "K": 32,
+        "pool": 128,
+        "samples": 128,
+        "m": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "geometric",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "geometric",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {
+        "tau-twist": 1
+      }
+    },
+    {
+      "family": "geometric",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {
+        "per-summand-shift": 1
+      }
+    },
+    {
+      "family": "geometric",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {
+        "tau-twist": 1,
+        "per-summand-shift": 1
+      }
+    },
+    {
+      "family": "symmetrised-u",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "symmetrised-u",
+      "params": {
+        "l": 5,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "dual-frobenius-u",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "dual-frobenius-u",
+      "params": {
+        "l": 5,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "mobius-pole",
+      "params": {
+        "l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "mobius-pole",
+      "params": {
+        "l": 5,
+        "seed": 1
+      },
+      "modifiers": {}
+    }
+  ],
+  "metrics": {
+    "groups": [
+      "construction",
+      "yield",
+      "f4",
+      "sat"
+    ],
+    "targets": 4,
+    "exact_cap": 16777216,
+    "budget_seconds": 10,
+    "conflict_budget": 5000,
+    "d_max": 5
+  },
+  "seed": 1
+}

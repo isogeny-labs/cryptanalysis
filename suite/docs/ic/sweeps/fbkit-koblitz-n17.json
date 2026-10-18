@@ -1,0 +1,152 @@
+{
+  "_comment": "Koblitz-structured and selected bases on K_1/GF(2^17) at m=2,3. Divisor indices 1, 2 and 0+1 are the factors of x^17-1 over F_2.",
+  "schema": "ic-fbkit-manifest/1",
+  "curve": {
+    "koblitz_degree": 17,
+    "curve_a": 1
+  },
+  "m": [
+    2,
+    3
+  ],
+  "cells": [
+    {
+      "family": "divisor",
+      "params": {
+        "indices": [
+          1
+        ]
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "divisor",
+      "params": {
+        "indices": [
+          2
+        ]
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "divisor",
+      "params": {
+        "indices": [
+          0,
+          1
+        ]
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "frobenius-union",
+      "params": {
+        "seed_dim": 3,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "frobenius-union",
+      "params": {
+        "seed_dim": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "compact-orbit-scan",
+      "params": {
+        "K": 16
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "compact-orbit-scan",
+      "params": {
+        "K": 32
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "greedy-coverage",
+      "params": {
+        "K": 16,
+        "pool": 64,
+        "m": 2
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "greedy-coverage",
+      "params": {
+        "K": 32,
+        "pool": 128,
+        "m": 2
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "maxmin-column-rate",
+      "params": {
+        "K": 16,
+        "pool": 64,
+        "samples": 128,
+        "m": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "maxmin-column-rate",
+      "params": {
+        "K": 32,
+        "pool": 128,
+        "samples": 128,
+        "m": 2,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "two-torsion-saturated",
+      "params": {
+        "parent": "compact-orbit-scan",
+        "parent.K": 16
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "two-torsion-saturated",
+      "params": {
+        "parent": "geometric",
+        "parent.l": 4,
+        "seed": 1
+      },
+      "modifiers": {}
+    },
+    {
+      "family": "pruned",
+      "params": {
+        "parent": "compact-orbit-scan",
+        "m": 3,
+        "parent.K": 8
+      },
+      "modifiers": {}
+    }
+  ],
+  "metrics": {
+    "groups": [
+      "construction",
+      "yield",
+      "f4",
+      "sat"
+    ],
+    "targets": 4,
+    "exact_cap": 16777216,
+    "budget_seconds": 10,
+    "conflict_budget": 5000,
+    "d_max": 5
+  },
+  "seed": 1
+}

@@ -37,7 +37,7 @@ Attacks by family:
   weak curves (any size)    ecdlp (singular, Smart anomalous, Pohlig-Hellman, MOV/Frey-Rueck)
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
-  index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
+  index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, fbkit, ...), icx
   symmetric & hash          list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
