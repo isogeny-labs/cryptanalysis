@@ -11,7 +11,8 @@ def sha(path):
 
 
 for name in ('n41_protocol.json', 'n131_protocol.json', 'build_protocol_v2.json',
-             'source_build_protocol.json', 'probe_protocol.json', 'source_probe_protocol.json'):
+             'source_build_protocol.json', 'probe_protocol.json',
+             'source_probe_protocol.json', 'low_degree_protocol.json'):
     path = here/name
     protocol = json.loads(path.read_text())
     for source, digest in protocol['sources'].items():
@@ -64,4 +65,29 @@ assert all(f"'{name}' depends on axioms: [propext, Classical.choice, Quot.sound]
                         'FunctionalRoots.target_normalization',
                         'FunctionalRoots.two_branch_completeness'))
 assert not any(token in (here/'FunctionalRoots.lean').read_text() for token in ('sorry', 'admit', 'sorryAx'))
+
+# Check the explicit XOR contradiction without rerunning row elimination.
+def quadratic_features(code, bits):
+    values = [1] + [(code >> i) & 1 for i in range(bits)]
+    values += [((code >> i) & 1) & ((code >> j) & 1)
+               for i in range(bits) for j in range(i+1, bits)]
+    return sum(value << j for j,value in enumerate(values))
+
+
+low = json.loads((here/'low_degree_result.json').read_text())
+assert low['status'] == 'PASS_QUADRATIC_SECTION_CONTRADICTION_CERTIFICATES'
+assert low['protocol_sha256'] == sha(here/'low_degree_protocol.json')
+for result in low['results']:
+    mode, bits = result['mode'], result['code_bits']
+    rows = json.loads((here/f'{mode}_result.json').read_text())['queries'][0]['sources']
+    rows = sorted((row for row in rows if isinstance(row['code'], int)),
+                  key=lambda row: row['code'])[:result['sample_size']]
+    witness = result['contradiction']['source_indices']
+    fx = fy = 0
+    for i in witness:
+        fx ^= quadratic_features(rows[i]['code'], bits)
+        fy ^= rows[i]['pair_roots'][0]
+    assert fx == result['contradiction']['xor_features'] == 0
+    assert fy == result['contradiction']['xor_output'] != 0
+    print(mode, 'quadratic-section contradiction terms', len(witness))
 print('PASS_FUNCTIONAL_ROOT_EVIDENCE_REPLAY')

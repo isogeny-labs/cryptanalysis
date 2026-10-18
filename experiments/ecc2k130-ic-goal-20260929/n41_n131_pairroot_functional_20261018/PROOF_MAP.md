@@ -23,6 +23,15 @@ source and target quadratic.
 | Target equation equivalence | `FunctionalRoots.target_normalization` | Arbitrary `Field F`, characteristic two, `A != 0`, and `B*r=A*w`; kernel checked. |
 | Exactly two possible roots once one root exists | `FunctionalRoots.two_branch_completeness` | Arbitrary characteristic-two field and two solutions of the same Artin-Schreier equation; kernel checked. |
 | Concrete half-trace identity and curve/code bridge | Open Lean bridge | Requires finite-field construction for `GF(2^41)` and `GF(2^131)`, Frobenius period, finite trace, half-trace implementation, and the Koblitz source-product and S3 coordinate identities. Exact Sage checks cover the frozen domains; this bridge is not reported as a Lean theorem. |
+| Finite-sample quadratic-section exclusion | Open Lean certificate bridge | The [certificate](low_degree_result.json) gives subsets whose degree-at-most-two Boolean feature vectors XOR to zero while their first half-trace source-root values XOR to a nonzero field element. The independent [verifier](verify.py) recomputes each XOR. A Lean encoding of the numeric feature/output certificate has not been completed. |
+
+For the final row, any degree-at-most-two Boolean polynomial in the code
+bits is a linear combination of the constant, linear, and pairwise-product
+features. Therefore XORing its output over a subset whose feature XOR is
+zero must give zero. The recorded nonzero root XOR contradicts such a
+representation of the **first half-trace section** on the frozen subset.
+This statement concerns that canonical section; per-code choice of the
+other quadratic root is a separate representation question.
 
 The actual theorem module is [FunctionalRoots.lean](FunctionalRoots.lean),
 with pinned [Lean 4.34.1](lean-toolchain). `lean FunctionalRoots.lean`

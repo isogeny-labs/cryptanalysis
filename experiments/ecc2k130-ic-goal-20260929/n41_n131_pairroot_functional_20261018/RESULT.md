@@ -47,6 +47,18 @@ source hashes before execution. The N131 finite sample is a sampled
 source-bound check; the zero pair hits apply to these 514 codes and this
 fixed suffix.
 
+A [quadratic Boolean interpolation check](low_degree_result.json) supplies
+an exact cheap falsifier for the canonical first half-trace source root.
+Over the N41 eight-bit code, the first contradiction appears at sorted
+row 26: 14 selected rows have zero XOR of all 37 constant/linear/quadratic
+features but nonzero XOR of their roots. Over the first 448 sorted N131
+sample codes, the first contradiction appears at row 403: 192 selected rows
+give the same inconsistency among 407 features. The [protocol](low_degree_protocol.json)
+pins the split and sources; [verify.py](verify.py) recomputes both XOR
+certificates. This excludes degree-at-most-two Boolean interpolation of
+the **first half-trace section** on those frozen rows. A different
+code-dependent branch assignment has not been excluded by this test.
+
 ## Boolean construction and paired probe
 
 The complete functional circuit has five 8-bit source codes, a 41-bit
@@ -97,10 +109,11 @@ single-target online timing is inferred from these stage probes.
 ## Next experiment
 
 Keep the exact two-quadratic gate and seek a code-to-source-root map with
-fewer nonlinear operations. A cheap next falsifier is a frozen held-out
-test of low-degree Boolean interpolation for the source root on W29 valid
-codes, comparing circuit size and paired solver work with the 20,000-conflict
-reference. Any favorable N41 encoding must then pass an independently
+fewer nonlinear operations. The quadratic interpolation certificate directs
+the next search to a code-dependent branch rule or a circuit for inversion
+restricted to valid W29 source codes. A proposed construction should first
+show fewer gates and better fixed-conflict N41 search than the present
+two-quadratic reference. Any favorable N41 encoding must then pass an independently
 checked N131 source-bound ordinary-query gate within one worker,
 600 seconds, and 4 GiB before target recovery and same-point rho timing.
 
