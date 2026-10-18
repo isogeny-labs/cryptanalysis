@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_functional_last_code_20261017/build.py", line 33, in <module>
+    from karatsuba_circuit import KaratsubaCircuit  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_s6_incremental_partition/frozen_source/dependencies/karatsuba_circuit.py", line 9, in <module>
+    from circuit_sat import Circuit  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_s6_incremental_partition/frozen_source/dependencies/circuit_sat.py", line 24, in <module>
+    from independent_replay import Curve, Field, points_with_x, trace
+ModuleNotFoundError: No module named 'independent_replay'
