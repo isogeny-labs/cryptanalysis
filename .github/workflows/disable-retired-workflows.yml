@@ -1,0 +1,42 @@
+name: Disable retired workflows (one-shot)
+# Disables workflows that PRs could not edit because sealed protocols hash their files.
+# Disabling leaves the files and seals untouched. Dispatch once with apply=true; undo with
+# `gh workflow enable <file>`. Delete this file afterwards.
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually disable (false = dry run, prints the list)"
+        type: boolean
+        default: false
+permissions:
+  actions: write
+  contents: read
+jobs:
+  disable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      APPLY: ${{ inputs.apply }}
+    steps:
+      - name: Disable
+        run: |
+          set -u
+          fail=0
+          while read -r w; do
+            [ -n "$w" ] || continue
+            if [ "$APPLY" = true ]; then
+              gh workflow disable "$w" -R "$REPO" && echo "disabled $w" || { echo "FAILED $w"; fail=1; }
+            else
+              echo "would disable $w"
+            fi
+          done <<'LIST'
+          boolean-groebner.yml
+          gpu-independent-certificate.yml
+          ordered-certificate.yml
+          packed-truth-verifier.yml
+          public-point-replay.yml
+          LIST
+          exit $fail
