@@ -633,3 +633,299 @@ fn print_cell_sizes() {
         );
     }
 }
+
+// ── Adversarial review additions ────────────────────────────────────
+
+fn rev_group_sum(kc: &KoblitzCurve, fb: &FrobeniusFactorBase, idxs: &[usize]) -> BinaryPoint {
+    idxs.iter()
+        .fold(BinaryPoint::Infinity, |acc, &i| kc.add(&acc, &fb.points[i]))
+}
+
+fn rev_random_targets(kc: &KoblitzCurve, count: usize, seed: u64) -> Vec<BinaryPoint> {
+    let mut rng = SplitMix(seed);
+    let g = kc.generator().clone();
+    (0..count)
+        .map(|_| {
+            let k = BigUint::from(rng.next() >> 20) + 1u32;
+            kc.mul(&g, &k)
+        })
+        .collect()
+}
+
+/// Verdicts of the portfolio equal CDCL's on unplanted random targets
+/// (about half decompose at m = 2), across encodings, seeds, trace row
+/// on/off and tiny model caps.
+#[test]
+fn rev_portfolio_matches_cdcl_on_random_targets() {
+    let mut cells_run = 0;
+    let (mut dec, mut undec, mut walk_hits) = (0usize, 0usize, 0usize);
+    for (a, n, m) in [
+        (0u8, 5u32, 2usize),
+        (1, 5, 2),
+        (0, 7, 2),
+        (1, 7, 2),
+        (0, 9, 2),
+        (1, 9, 2),
+        (0, 11, 2),
+        (1, 11, 2),
+        (1, 13, 2),
+        (0, 15, 2),
+        (0, 7, 3),
+        (1, 7, 3),
+        (1, 9, 3),
+    ] {
+        let Some(kc) = KoblitzCurve::new(a, n) else {
+            continue;
+        };
+        let Some(fb) = build_frobenius_factor_base(&kc, 0) else {
+            continue;
+        };
+        cells_run += 1;
+        let index_of = fb.index_map();
+        let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        for target in rev_random_targets(&kc, 14, 1000 + n as u64) {
+            let (cdcl, cs) = sat_decompose(&kc, &fb, &index_of, &st, &target, m, 4096, None);
+            assert_eq!(cs.spurious, 0);
+            if cdcl.is_some() {
+                dec += 1;
+            } else {
+                undec += 1;
+            }
+            for (encoding, seed, trace, cap) in [
+                (WalkEncoding::Anf, 1u64, true, 64usize),
+                (WalkEncoding::Anf, 77, false, 64),
+                (WalkEncoding::CnfXor, 5, true, 64),
+                (WalkEncoding::Anf, 3, true, 1),
+                (WalkEncoding::CnfXor, 9, false, 2),
+            ] {
+                let mut o = WalkSatDecompositionOptions {
+                    encoding,
+                    trace_constraint: trace,
+                    max_models: cap,
+                    ..WalkSatDecompositionOptions::default()
+                };
+                o.walk.seed = seed;
+                let (w, ws) = walksat_decompose(&kc, &fb, &index_of, &st, &target, m, &o);
+                assert_eq!(ws.spurious, 0);
+                if let Some(idxs) = &w {
+                    assert_eq!(idxs.len(), m);
+                    assert!(idxs.windows(2).all(|p| p[0] <= p[1]), "sorted");
+                    assert_eq!(rev_group_sum(&kc, &fb, idxs), target, "K{a}/2^{n}");
+                    assert!(cdcl.is_some(), "walk decomposed what CDCL refuted");
+                    walk_hits += 1;
+                }
+                let (p, ps) = walksat_then_sat_decompose(
+                    &kc,
+                    &fb,
+                    &index_of,
+                    &st,
+                    &target,
+                    m,
+                    4096,
+                    None,
+                    SatDecompositionOptions::default(),
+                    &o,
+                );
+                assert_eq!(p.is_some(), cdcl.is_some(), "K{a}/2^{n} m={m} verdict");
+                assert_eq!(ps.spurious, 0);
+                if let Some(idxs) = &p {
+                    assert_eq!(rev_group_sum(&kc, &fb, idxs), target);
+                }
+                if w.is_none() {
+                    assert_eq!(p, cdcl, "fallback returns the CDCL decomposition");
+                    assert_eq!(ps.refuted, cs.refuted);
+                } else {
+                    assert!(!ps.refuted);
+                }
+            }
+        }
+    }
+    eprintln!("cells {cells_run} decomposable {dec} undecomposable {undec} walk hits {walk_hits}");
+    assert!(cells_run >= 8 && dec > 20 && undec > 5);
+}
+
+/// m = 4 chained systems and other shapes: the portfolio stays correct
+/// whether the walk handles them or reports `unsupported`.
+#[test]
+fn rev_portfolio_m4_and_infinity() {
+    for (a, n, m) in [(0u8, 7u32, 4usize), (1, 7, 4)] {
+        let Some(kc) = KoblitzCurve::new(a, n) else {
+            continue;
+        };
+        let Some(fb) = build_frobenius_factor_base(&kc, 0) else {
+            continue;
+        };
+        let index_of = fb.index_map();
+        let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        let mut tg = rev_random_targets(&kc, 6, 4242);
+        tg.push(BinaryPoint::Infinity);
+        for target in tg {
+            let (cdcl, _) = sat_decompose(&kc, &fb, &index_of, &st, &target, m, 4096, None);
+            let o = WalkSatDecompositionOptions::default();
+            let (p, ps) = walksat_then_sat_decompose(
+                &kc,
+                &fb,
+                &index_of,
+                &st,
+                &target,
+                m,
+                4096,
+                None,
+                SatDecompositionOptions::default(),
+                &o,
+            );
+            assert_eq!(p.is_some(), cdcl.is_some(), "K{a}/2^{n} m={m}");
+            assert_eq!(ps.spurious, 0);
+            if let Some(idxs) = &p {
+                assert_eq!(rev_group_sum(&kc, &fb, idxs), target);
+            }
+        }
+    }
+}
+
+/// The `WalkSat` strategy returns the same discrete logs as `Sat`.
+#[test]
+fn rev_walksat_strategy_dlp_matches_sat_over_many_secrets() {
+    for (a, n) in [(0u8, 9u32), (1, 9), (0, 11), (1, 11)] {
+        let Some(kc) = KoblitzCurve::new(a, n) else {
+            eprintln!("skip K{a}/2^{n}: no curve");
+            continue;
+        };
+        let g = kc.generator().clone();
+        let Some(fb) = build_frobenius_factor_base(&kc, 0) else {
+            eprintln!("skip K{a}/2^{n}: no factor base");
+            continue;
+        };
+        for d in [2u32, 3, 17, 53, 101, 255] {
+            let d = BigUint::from(d);
+            let q = kc.mul(&g, &d);
+            let run = |strategy| {
+                koblitz_index_calculus_dlp_with_factor_base(
+                    &kc,
+                    &q,
+                    &fb,
+                    &KoblitzIcOptions {
+                        strategy,
+                        ..KoblitzIcOptions::default()
+                    },
+                )
+            };
+            let (w, s) = (
+                run(DecompositionStrategy::WalkSat),
+                run(DecompositionStrategy::Sat),
+            );
+            match (w, s) {
+                (Some(w), Some(s)) => {
+                    assert_eq!(w.log, s.log, "K{a}/2^{n} d={d}");
+                    assert_eq!(w.sat_invalid_models, 0);
+                    let _ = (w.relations, s.relations);
+                }
+                (w, s) => assert_eq!(w.is_some(), s.is_some(), "K{a}/2^{n} d={d}"),
+            }
+        }
+    }
+}
+
+/// AnfWalk on adversarial shapes: duplicated equations, equations that
+/// are products with no common root, blocks of every root.
+#[test]
+fn rev_anf_blocked_everything_and_duplicates() {
+    let x = |i: u32| F2BoolMono::var(i);
+    let one = F2BoolMono::one();
+    // x0 x1 + x0 = 0 twice, plus x2 + 1: roots: (x0=0 or x1=1) & x2=1.
+    let p1 = F2BoolPoly::from_monos(vec![x(0).mul(x(1)), x(0)], 3);
+    let p2 = F2BoolPoly::from_monos(vec![x(2), one], 3);
+    let eqs = vec![p1.clone(), p1, p2];
+    let truth = brute_roots(3, &eqs);
+    assert_eq!(truth.len(), 3);
+    let mut w = AnfWalk::new(3, &eqs);
+    let mut seen = BTreeSet::new();
+    for _ in 0..3 {
+        assert_eq!(w.solve(&opts(1, 8, 2000)), WalkResult::Sat);
+        assert!(seen.insert(w.model()));
+        w.block(w.model());
+    }
+    assert_eq!(seen, truth);
+    assert_eq!(w.solve(&opts(1, 8, 2000)), WalkResult::Unknown);
+}
+
+/// Cost probe (not an assertion): portfolio vs CDCL on random targets,
+/// split by whether the target decomposes.  `REV_MODE=cdcl|port|both`.
+#[test]
+#[ignore = "review probe: prints timings"]
+fn rev_overhead_probe() {
+    let mode = std::env::var("REV_MODE").unwrap_or_else(|_| "both".into());
+    let cells: Vec<(u8, u32, usize)> = match std::env::var("REV_CELL").ok().as_deref() {
+        Some("m3") => vec![(0, 9, 3), (1, 9, 3)],
+        Some("n15") => vec![(0, 15, 2)],
+        Some("n11") => vec![(0, 11, 2), (1, 11, 2), (0, 9, 2), (1, 9, 2)],
+        _ => vec![(0, 13, 2), (1, 13, 2)],
+    };
+    for (a, n, m) in cells {
+        let Some(kc) = KoblitzCurve::new(a, n) else {
+            eprintln!("skip K{a}/2^{n}");
+            continue;
+        };
+        let Some(fb) = build_frobenius_factor_base(&kc, 0) else {
+            eprintln!("skip K{a}/2^{n} fb");
+            continue;
+        };
+        let index_of = fb.index_map();
+        let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        let targets = rev_random_targets(&kc, 40, 31337 + n as u64);
+        let o = WalkSatDecompositionOptions::default();
+        let (mut t_c_dec, mut t_c_und, mut t_p_dec, mut t_p_und) = (0f64, 0f64, 0f64, 0f64);
+        let (mut nd, mut nu, mut walk_miss_dec) = (0, 0, 0);
+        for t in &targets {
+            let mut dec = false;
+            if mode != "port" {
+                let s = std::time::Instant::now();
+                let (c, _) = sat_decompose(&kc, &fb, &index_of, &st, t, m, 4096, None);
+                let e = s.elapsed().as_secs_f64();
+                dec = c.is_some();
+                if dec {
+                    t_c_dec += e
+                } else {
+                    t_c_und += e
+                }
+            }
+            if mode != "cdcl" {
+                let s = std::time::Instant::now();
+                let (p, _) = walksat_then_sat_decompose(
+                    &kc,
+                    &fb,
+                    &index_of,
+                    &st,
+                    t,
+                    m,
+                    4096,
+                    None,
+                    SatDecompositionOptions::default(),
+                    &o,
+                );
+                let e = s.elapsed().as_secs_f64();
+                if mode == "port" {
+                    dec = p.is_some();
+                }
+                if dec {
+                    t_p_dec += e
+                } else {
+                    t_p_und += e
+                }
+                let (w, _) = walksat_decompose(&kc, &fb, &index_of, &st, t, m, &o);
+                if dec && w.is_none() {
+                    walk_miss_dec += 1;
+                }
+            }
+            if dec {
+                nd += 1
+            } else {
+                nu += 1
+            }
+        }
+        eprintln!(
+            "K{a}/2^{n} m={m}: decomposable {nd} (cdcl {:.3}s, portfolio {:.3}s, walk missed {walk_miss_dec}), undecomposable {nu} (cdcl {:.3}s, portfolio {:.3}s)",
+            t_c_dec, t_p_dec, t_c_und, t_p_und
+        );
+    }
+}

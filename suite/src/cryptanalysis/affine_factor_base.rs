@@ -1150,8 +1150,8 @@ pub enum AffineDispatch {
     /// The existing generic oracle on the hull-based base
     /// ([`AffineFrobeniusFactorBase::fb`]), unchanged: `Groebner`
     /// (default engine, unlimited budget), `Sat`, `Crossbred`,
-    /// `Enumerate`, `PairTable` (`m ≤ 4`).  `Wdsat` and `MqFes` are not
-    /// dispatched here and return `None`.
+    /// `Enumerate`, `PairTable` (`m ≤ 4`).  `Wdsat`, `MqFes` and `WalkSat`
+    /// are not dispatched here and return `None`.
     Generic(DecompositionStrategy),
 }
 
@@ -1202,7 +1202,9 @@ pub fn affine_koblitz_decompose(
                 DecompositionStrategy::PairTable => {
                     PairSumTable::build(kc, &afb.fb)?.decompose(kc, &afb.fb, target, m)
                 }
-                DecompositionStrategy::Wdsat | DecompositionStrategy::MqFes => None,
+                DecompositionStrategy::Wdsat
+                | DecompositionStrategy::MqFes
+                | DecompositionStrategy::WalkSat => None,
             }
         }
     }

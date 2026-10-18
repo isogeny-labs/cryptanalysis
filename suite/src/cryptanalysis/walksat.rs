@@ -51,6 +51,23 @@
 //! ([`sat_decompose_with`]) decides the target.  Its verdicts are exactly
 //! the CDCL verdicts; a refutation always comes from the CDCL fallback.
 //!
+//! # Cost and sameness caveats
+//!
+//! * On targets that do **not** decompose the portfolio is slower than
+//!   CDCL alone: the walk spends its whole budget (4 tries x 4000 flips
+//!   by default) before the fallback runs.  Measured on `K1/2^9`, `m = 3`,
+//!   40 random undecomposable targets: 0.043 s (CDCL) against 0.065 s
+//!   (portfolio), about +50%, in one noisy probe.  The walk wins when most
+//!   targets decompose.
+//! * The walk and CDCL may return different, equally valid decompositions
+//!   of the same target, so the duplicate and dependent relations
+//!   collected downstream can differ: relation counts are not guaranteed
+//!   equal between [`DecompositionStrategy::WalkSat`](crate::cryptanalysis::koblitz_index_calculus::DecompositionStrategy)
+//!   and `Sat`, only the discrete logarithms.
+//! * The CNF + native-XOR engine ([`WalkSat`]) is slower than CDCL on the
+//!   measured cells; [`AnfWalk`] is the only engine the default dispatch
+//!   uses.
+//!
 //! # References
 //!
 //! - **B. Selman, H. Kautz, B. Cohen**, *Noise strategies for improving

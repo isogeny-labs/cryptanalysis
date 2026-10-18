@@ -25,14 +25,14 @@ mod gf2_la;
 mod pdp;
 mod relation;
 mod sat;
-mod spec_fes_chain;
+mod sat_spec;
+mod spec_affine;
 mod spec_blocks;
 mod spec_descent;
-mod spec_sym_m5;
-mod spec_affine;
-mod sat_spec;
+mod spec_fes_chain;
 mod spec_m4;
 mod spec_s5;
+mod spec_sym_m5;
 mod suite_extra;
 mod walksat;
 
