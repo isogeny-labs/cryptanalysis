@@ -15,9 +15,10 @@
 #                tables equal those operators
 #      -m model  runs every gate through the bitwise model of lop3 with its
 #                table (the form in which the device executes it)
-#   3. with -n NVCC (or $NVCC), the CUDA kernel is compiled to a cubin and PTX
-#      for $PS5_ARCHS (default sm_80) with ptxas' register and spill report.
-#      The report is a compile check; nothing is ever run on a device here.
+#   3. with -n NVCC (or $NVCC), the CUDA kernel is compiled to PTX (nvcc -ptx)
+#      and assembled by ptxas for $PS5_ARCHS (default sm_80) with its register
+#      and spill report; with $NVDISASM the cubin's SASS is counted.  This is
+#      a compile check; nothing is ever run on a device here.
 #
 # Host compilers do not finish the 65,000-100,000 local variables of the
 # device form in minutes, so the host build keeps the wires in an array and the
@@ -70,22 +71,38 @@ for prog in "$@"; do
     echo "l=$l: host emulation built ($MODE)"
 
     if [ -n "$NVCC" ]; then
+        # nvcc's own pipeline is cicc (to PTX) then ptxas (to SASS); run apart so that each is timed.
+        ptx="$OUT/pdp_ps5_l$l.ptx"
+        t0=$(date +%s)
+        "$NVCC" -arch=compute_80 -O3 -ptx -I"$OUT/gen" -I"$DIR" -DPS5_PARAMS_H="\"pdp_ps5_l$l.h\"" \
+            -o "$ptx" "$DIR/pdp_ps5_kernel.cu"
+        echo "l=$l ptx: $ptx ($(grep -c 'lop3.b32' "$ptx") lop3.b32 instructions; nvcc -ptx took $(( $(date +%s) - t0 )) s)"
+        PTXAS=$(dirname "$NVCC")/ptxas
+        [ -x "$PTXAS" ] || PTXAS=ptxas
         for arch in ${PS5_ARCHS:-sm_80}; do
             cubin="$OUT/pdp_ps5_l${l}_$arch.cubin"
-            log=$("$NVCC" -arch="$arch" -O3 -Xptxas -v -cubin -I"$OUT/gen" -I"$DIR" \
-                -DPS5_PARAMS_H="\"pdp_ps5_l$l.h\"" -o "$cubin" "$DIR/pdp_ps5_kernel.cu" 2>&1) || {
+            t0=$(date +%s)
+            log=$("$PTXAS" -arch="$arch" -O3 -v -o "$cubin" "$ptx" 2>&1) || {
                 echo "$log" | tail -20
-                echo "l=$l $arch: compile failed"
+                echo "l=$l $arch: ptxas failed"
                 status=1
                 continue
             }
             echo "$log" > "$OUT/log/ptxas_l${l}_$arch.txt"
-            echo "l=$l $arch: $(echo "$log" | grep -E 'registers|spill' | sed 's/ptxas info *: //' | tr '\n' ' ')"
+            echo "l=$l $arch: $(echo "$log" | grep -E 'registers|spill' | sed 's/ptxas info *: //' | tr '\n' ' ') (ptxas took $(( $(date +%s) - t0 )) s)"
             [ -s "$cubin" ] || { echo "l=$l $arch: no cubin"; status=1; }
+            if [ -n "${NVDISASM:-}" ]; then
+                "$NVDISASM" -c "$cubin" | grep -E '^[[:space:]]+/\*[0-9a-f]{4,}\*/[[:space:]]+(@!?U?P[0-9T][[:space:]]+)?[A-Z]' \
+                    | sed -E 's/^[[:space:]]+\/\*[0-9a-f]+\*\/[[:space:]]+(@!?U?P[0-9T][[:space:]]+)?//' > "$OUT/log/sass_l${l}_$arch.txt"
+                { echo "sass instructions: $(wc -l < "$OUT/log/sass_l${l}_$arch.txt")"
+                  awk '{ op=$1; sub(/[;,].*/,"",op); split(op,b,"."); c[b[1]]++ } END { for (k in c) print c[k], k }' \
+                      "$OUT/log/sass_l${l}_$arch.txt" | sort -rn
+                  echo "LOP3 tables:"
+                  grep '^LOP3' "$OUT/log/sass_l${l}_$arch.txt" | sed -E 's/.*, (0x[0-9a-f]+), !?[A-Z]+ ;.*/\1/' | sort | uniq -c | sort -rn
+                } > "$OUT/log/sass_hist_l${l}_$arch.txt"
+                echo "l=$l $arch: SASS histogram in $OUT/log/sass_hist_l${l}_$arch.txt"
+            fi
         done
-        "$NVCC" -arch=compute_80 -O3 -ptx -I"$OUT/gen" -I"$DIR" -DPS5_PARAMS_H="\"pdp_ps5_l$l.h\"" \
-            -o "$OUT/pdp_ps5_l$l.ptx" "$DIR/pdp_ps5_kernel.cu"
-        echo "l=$l ptx: $OUT/pdp_ps5_l$l.ptx ($(grep -c 'lop3.b32' "$OUT/pdp_ps5_l$l.ptx") lop3.b32 instructions)"
     fi
 done
 exit $status

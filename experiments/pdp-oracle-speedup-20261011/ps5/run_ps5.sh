@@ -4,7 +4,8 @@
 #
 #   run_ps5.sh manifest            hardware/toolchain manifest -> raw/manifest.json
 #   run_ps5.sh build  [MODE]       unpack + hash-check programs, emit, build (MODE plain|model; default plain)
-#   run_ps5.sh selftest L [REPS]   truth tables, every wire, the function (raw/selftest_lL.jsonl)
+#                                  $PS5_RUNGS picks the rungs (default "8 9 10 11 12")
+#   run_ps5.sh selftest L [REPS] [MODE]   truth tables, every wire, the function (raw/selftest_lL[_model].jsonl)
 #   run_ps5.sh parity   L [THREADS] [MODE]   corpus replay (raw/parity_lL[_model].jsonl)
 #   run_ps5.sh nvcc   L            compile the CUDA kernel (needs $NVCC; no device is used)
 #
@@ -68,13 +69,18 @@ build)
     LIST=
     for l in ${PS5_RUNGS:-8 9 10 11 12}; do LIST="$LIST $OUT/prog/pdp_slp_l${l}_b8.slp"; done
     # shellcheck disable=SC2086
-    OUT=$OUT "$REPO/suite/cuda/build_pdp_ps5.sh" -o "$OUT" -m "$MODE" $LIST 2>&1 | tee "$RAW/build_$MODE.log"
+    OUT=$OUT "$REPO/suite/cuda/build_pdp_ps5.sh" -o "$OUT" -m "$MODE" $LIST 2>&1 \
+        | tee "$RAW/build_${MODE}_l$(echo "${PS5_RUNGS:-8 9 10 11 12}" | tr ' ' '-').log"
+    mkdir -p "$RAW/emit"
+    for l in ${PS5_RUNGS:-8 9 10 11 12}; do cp "$OUT/log/emit_l$l.json" "$RAW/emit/"; done
     ;;
 selftest)
     L=$1
     REPS=${2:-100}
-    "$OUT/bin/pdp_ps5_selftest_l$L" --corpus "$HERE/corpus/corpus_l$L.txt" \
-        --program "$OUT/prog/pdp_slp_l${L}_b8.slp" --reps "$REPS" | tee -a "$RAW/selftest_l$L.jsonl"
+    MODE=${3:-plain}
+    SUF=; [ "$MODE" = model ] && SUF=_model
+    "$OUT/bin/pdp_ps5_selftest_l$L$SUF" --corpus "$HERE/corpus/corpus_l$L.txt" \
+        --program "$OUT/prog/pdp_slp_l${L}_b8.slp" --reps "$REPS" | tee -a "$RAW/selftest_l$L$SUF.jsonl"
     ;;
 parity)
     L=$1

@@ -154,7 +154,8 @@ static PS5_UNUSED int ps5_lift(const Ps5Gf *f, const Ps5As *as, uint64_t x, uint
 /* The four candidate third abscissae of the pair (P1, P2) and target R:
  * x(P1+P2+R), x(P1+P2-R), x(P1-P2+R), x(P1-P2-R); ok[k] = 0 where the sum is
  * the point at infinity. */
-static PS5_UNUSED void ps5_thirds(const Ps5Gf *f, Ps5Pt p1, Ps5Pt p2, Ps5Pt r, uint64_t t[4], int ok[4])
+static PS5_UNUSED void ps5_thirds(const Ps5Gf *f, Ps5Pt p1, Ps5Pt p2, Ps5Pt r, uint64_t t[4],
+                                  int ok[4])
 {
     Ps5Pt zs[2] = {ps5_add(f, p1, p2), ps5_add(f, p1, ps5_neg(p2))};
     Ps5Pt rs[2] = {r, ps5_neg(r)};
@@ -230,13 +231,19 @@ static PS5_UNUSED int ps5_read_corpus(const char *text, Ps5Corpus *c)
         p = eol ? eol + 1 : p + len;
         char a[64], b[64], d[64], e[64], g[64], h[64], i[64], j[64];
         unsigned u0;
-        if (strncmp(line, "l ", 2) == 0) c->l = atoi(line + 2);
-        else if (strncmp(line, "n ", 2) == 0) c->n = atoi(line + 2);
-        else if (strncmp(line, "modulus ", 8) == 0) c->modulus = strtoull(line + 8, NULL, 16);
-        else if (strncmp(line, "digest_verdicts ", 16) == 0) strncpy(c->digest_verdicts, line + 16, 64);
-        else if (strncmp(line, "digest_roots ", 13) == 0) strncpy(c->digest_roots, line + 13, 64);
+        if (strncmp(line, "l ", 2) == 0)
+            c->l = atoi(line + 2);
+        else if (strncmp(line, "n ", 2) == 0)
+            c->n = atoi(line + 2);
+        else if (strncmp(line, "modulus ", 8) == 0)
+            c->modulus = strtoull(line + 8, NULL, 16);
+        else if (strncmp(line, "digest_verdicts ", 16) == 0)
+            strncpy(c->digest_verdicts, line + 16, 64);
+        else if (strncmp(line, "digest_roots ", 13) == 0)
+            strncpy(c->digest_roots, line + 13, 64);
         else if (line[0] == 'T' && line[1] == ' ') {
-            if (sscanf(line, "T %u %63s %63s %63s %63s %63s %63s %63s", &u0, a, b, d, e, g, h, i) < 8)
+            if (sscanf(line, "T %u %63s %63s %63s %63s %63s %63s %63s", &u0, a, b, d, e, g, h, i) <
+                8)
                 return -2;
             if (c->n_targets == cap_t) {
                 cap_t *= 2;

@@ -41,11 +41,11 @@
 #include "pdp_ps5_device.cuh"
 
 int pdp_ps5_emulate(const ps5_u32 *jobs, ps5_u32 first, ps5_u32 count, const ps5_u32 *xb,
-                    const ps5_u32 *yb, const ps5_u64 *rows, ps5_u32 m, ps5_u32 nblk,
-                    ps5_u32 *nhits, Ps5Hit *hits, ps5_u32 cap);
+                    const ps5_u32 *yb, const ps5_u64 *rows, ps5_u32 m, ps5_u32 nblk, ps5_u32 *nhits,
+                    Ps5Hit *hits, ps5_u32 cap);
 void pdp_ps5_info(ps5_u32 out[8], const char **sha256);
 
-#define HIT_CAP (1u << 15)
+#define HIT_CAP    (1u << 15)
 #define CHUNK_JOBS 16u
 
 static double now_s(void)
@@ -63,7 +63,7 @@ typedef struct {
     ps5_u32 n_jobs, m, nblk;
     pthread_mutex_t mu;
     ps5_u32 next;
-    Ps5Hit *out;     /* concatenated records */
+    Ps5Hit *out; /* concatenated records */
     size_t n_out, cap_out;
     unsigned overflow;
 } Launch;
@@ -83,7 +83,8 @@ static void *worker(void *arg)
         pdp_ps5_emulate(L->jobs, first, count, L->xb, L->yb, L->rows, L->m, L->nblk, &nh, buf,
                         HIT_CAP);
         pthread_mutex_lock(&L->mu);
-        if (nh > HIT_CAP) L->overflow++;
+        if (nh > HIT_CAP)
+            L->overflow++;
         else {
             if (L->n_out + nh > L->cap_out) {
                 L->cap_out = (L->n_out + nh) * 2 + 64;
@@ -126,20 +127,27 @@ int main(int argc, char **argv)
     int threads = 1;
     long max_targets = -1;
     for (int i = 1; i + 1 < argc; i += 2) {
-        if (!strcmp(argv[i], "--corpus")) corpus_path = argv[i + 1];
-        else if (!strcmp(argv[i], "--threads")) threads = atoi(argv[i + 1]);
-        else if (!strcmp(argv[i], "--max-targets")) max_targets = atol(argv[i + 1]);
-        else if (!strcmp(argv[i], "--expect-verdicts")) exp_v = argv[i + 1];
-        else if (!strcmp(argv[i], "--expect-roots")) exp_r = argv[i + 1];
-        else if (!strcmp(argv[i], "--expect-program-sha")) exp_p = argv[i + 1];
+        if (!strcmp(argv[i], "--corpus"))
+            corpus_path = argv[i + 1];
+        else if (!strcmp(argv[i], "--threads"))
+            threads = atoi(argv[i + 1]);
+        else if (!strcmp(argv[i], "--max-targets"))
+            max_targets = atol(argv[i + 1]);
+        else if (!strcmp(argv[i], "--expect-verdicts"))
+            exp_v = argv[i + 1];
+        else if (!strcmp(argv[i], "--expect-roots"))
+            exp_r = argv[i + 1];
+        else if (!strcmp(argv[i], "--expect-program-sha"))
+            exp_p = argv[i + 1];
         else {
             fprintf(stderr, "unknown option %s\n", argv[i]);
             return 2;
         }
     }
     if (!corpus_path || threads < 1) {
-        fprintf(stderr, "usage: %s --corpus FILE [--threads T] [--max-targets K] "
-                        "[--expect-verdicts HEX] [--expect-roots HEX] [--expect-program-sha HEX]\n",
+        fprintf(stderr,
+                "usage: %s --corpus FILE [--threads T] [--max-targets K] "
+                "[--expect-verdicts HEX] [--expect-roots HEX] [--expect-program-sha HEX]\n",
                 argv[0]);
         return 2;
     }
@@ -171,12 +179,14 @@ int main(int argc, char **argv)
         return 2;
     }
     if (corp.l != PS5_L || corp.n != PS5_N) {
-        fprintf(stderr, "corpus is l=%d n=%d, program is l=%d n=%d\n", corp.l, corp.n, PS5_L, PS5_N);
+        fprintf(stderr, "corpus is l=%d n=%d, program is l=%d n=%d\n", corp.l, corp.n, PS5_L,
+                PS5_N);
         return 2;
     }
     Ps5Gf gf = {corp.n, corp.modulus};
     if (!((corp.modulus >> corp.n) & 1u) || (corp.modulus >> (corp.n + 1)) != 0) {
-        fprintf(stderr, "modulus 0x%llx is not of degree %d\n", (unsigned long long)corp.modulus, corp.n);
+        fprintf(stderr, "modulus 0x%llx is not of degree %d\n", (unsigned long long)corp.modulus,
+                corp.n);
         return 2;
     }
 
@@ -200,8 +210,10 @@ int main(int argc, char **argv)
     ps5_u32 *yb = (ps5_u32 *)calloc((size_t)nblk * PS5_N, sizeof(ps5_u32));
     for (ps5_u32 q = 0; q < m; ++q)
         for (int i = 0; i < PS5_N; ++i) {
-            xb[(size_t)(q / PS5_LANES) * PS5_N + i] |= (ps5_u32)((bx[q] >> i) & 1u) << (q % PS5_LANES);
-            yb[(size_t)(q / PS5_LANES) * PS5_N + i] |= (ps5_u32)((by[q] >> i) & 1u) << (q % PS5_LANES);
+            xb[(size_t)(q / PS5_LANES) * PS5_N + i] |= (ps5_u32)((bx[q] >> i) & 1u)
+                                                       << (q % PS5_LANES);
+            yb[(size_t)(q / PS5_LANES) * PS5_N + i] |= (ps5_u32)((by[q] >> i) & 1u)
+                                                       << (q % PS5_LANES);
         }
 
     /* Jobs: row i1 against blocks i1/32 ... nblk-1, PS5_TASKS blocks at a time. */
@@ -220,7 +232,8 @@ int main(int argc, char **argv)
     uint64_t valid_pairs = 0;
     for (size_t j = 0; j < n_jobs; ++j)
         for (ps5_u32 k = 0; k < PS5_TASKS; ++k)
-            valid_pairs += (uint64_t)__builtin_popcount(ps5_valid(jobs[2 * j], jobs[2 * j + 1] + k, m));
+            valid_pairs +=
+                (uint64_t)__builtin_popcount(ps5_valid(jobs[2 * j], jobs[2 * j + 1] + k, m));
     const uint64_t want_pairs = (uint64_t)m * (m + 1u) / 2u;
     int tiling_ok = valid_pairs == want_pairs;
     if (!tiling_ok) ++mismatches;
@@ -243,9 +256,9 @@ int main(int argc, char **argv)
     ps5_sha_init(&sr);
     size_t n_targets = corp.n_targets;
     if (max_targets >= 0 && (size_t)max_targets < n_targets) n_targets = (size_t)max_targets;
-    uint64_t hit_lanes = 0, hit_confirmed = 0, hit_unconfirmed = 0, exc_lanes = 0, exc_with_root = 0,
-             records = 0, roots_total = 0, root_set_mismatch = 0, verdict_mismatch = 0,
-             unsupported = 0, found_targets = 0, pairs_run = 0;
+    uint64_t hit_lanes = 0, hit_confirmed = 0, hit_unconfirmed = 0, exc_lanes = 0,
+             exc_with_root = 0, records = 0, roots_total = 0, root_set_mismatch = 0,
+             verdict_mismatch = 0, unsupported = 0, found_targets = 0, pairs_run = 0;
     double emu_secs = 0;
     uint64_t overflow = 0;
 
@@ -261,7 +274,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "target %u is not on the curve\n", t->idx);
             bad_target = 1;
         }
-        uint64_t (*roots)[3] = NULL;
+        uint64_t(*roots)[3] = NULL;
         size_t n_roots = 0, cap_roots = 16;
         roots = (uint64_t(*)[3])malloc(cap_roots * sizeof(uint64_t[3]));
         if (!bad_target) {
@@ -314,12 +327,25 @@ int main(int argc, char **argv)
                             any = 1;
                             if (n_roots == cap_roots) {
                                 cap_roots *= 2;
-                                roots = (uint64_t(*)[3])realloc(roots, cap_roots * sizeof(uint64_t[3]));
+                                roots =
+                                    (uint64_t(*)[3])realloc(roots, cap_roots * sizeof(uint64_t[3]));
                             }
                             uint64_t a = bx[h->i1], b = bx[i2], c = th3[q], tmp;
-                            if (a > b) { tmp = a; a = b; b = tmp; }
-                            if (b > c) { tmp = b; b = c; c = tmp; }
-                            if (a > b) { tmp = a; a = b; b = tmp; }
+                            if (a > b) {
+                                tmp = a;
+                                a = b;
+                                b = tmp;
+                            }
+                            if (b > c) {
+                                tmp = b;
+                                b = c;
+                                c = tmp;
+                            }
+                            if (a > b) {
+                                tmp = a;
+                                a = b;
+                                b = tmp;
+                            }
                             roots[n_roots][0] = a;
                             roots[n_roots][1] = b;
                             roots[n_roots][2] = c;
@@ -327,8 +353,10 @@ int main(int argc, char **argv)
                         }
                         if (pass == 0) {
                             ++hit_lanes;
-                            if (any) ++hit_confirmed;
-                            else ++hit_unconfirmed;
+                            if (any)
+                                ++hit_confirmed;
+                            else
+                                ++hit_unconfirmed;
                         } else {
                             ++exc_lanes;
                             if (any) ++exc_with_root;
@@ -339,7 +367,8 @@ int main(int argc, char **argv)
             qsort(roots, n_roots, sizeof(uint64_t[3]), ps5_cmp3);
             size_t w = 0;
             for (size_t r = 0; r < n_roots; ++r)
-                if (w == 0 || ps5_cmp3(roots[w - 1], roots[r]) != 0) memcpy(roots[w++], roots[r], sizeof(uint64_t[3]));
+                if (w == 0 || ps5_cmp3(roots[w - 1], roots[r]) != 0)
+                    memcpy(roots[w++], roots[r], sizeof(uint64_t[3]));
             n_roots = w;
         }
         /* Compare with the corpus. */
@@ -376,39 +405,46 @@ int main(int argc, char **argv)
     const int dr_corpus = full && strcmp(dr, corp.digest_roots) == 0;
     const int dv_expect = exp_v ? strcmp(dv, exp_v) == 0 : -1;
     const int dr_expect = exp_r ? strcmp(dr, exp_r) == 0 : -1;
-    mismatches += (unsigned)(root_set_mismatch + verdict_mismatch + unsupported + hit_unconfirmed + overflow);
+    mismatches +=
+        (unsigned)(root_set_mismatch + verdict_mismatch + unsupported + hit_unconfirmed + overflow);
     if (full && (!dv_corpus || !dr_corpus)) ++mismatches;
     if (dv_expect == 0 || dr_expect == 0) ++mismatches;
 
-    printf("{\"tool\":\"pdp_ps5_parity\",\"what\":\"CPU emulation of the PS-5 kernel; not a device result\","
-           "\"l\":%d,\"n\":%d,\"program_sha256\":\"%s\",\"corpus\":\"%s\",\"corpus_sha256\":\"%s\","
-           "\"targets\":%zu,\"targets_in_corpus\":%zu,\"base_points\":%u,\"blocks\":%u,\"jobs\":%zu,"
-           "\"lane_slots\":%llu,\"valid_pairs_per_target\":%llu,\"pairs_replayed\":%llu,"
-           "\"tiling_covers_each_pair_once\":%s,\"records\":%llu,\"hit_lanes\":%llu,"
-           "\"hit_lanes_confirmed\":%llu,\"hit_lanes_unconfirmed\":%llu,\"exceptional_lanes\":%llu,"
-           "\"exceptional_lanes_with_root\":%llu,\"roots_found\":%llu,\"targets_with_roots\":%llu,"
-           "\"root_set_mismatches\":%llu,\"verdict_mismatches\":%llu,\"unsupported_targets\":%llu,"
-           "\"hit_list_overflows\":%llu,\"digest_verdicts\":\"%s\",\"digest_verdicts_corpus_file\":\"%s\","
-           "\"digest_roots\":\"%s\",\"digest_roots_corpus_file\":\"%s\",\"digest_verdicts_equal_corpus\":%s,"
-           "\"digest_roots_equal_corpus\":%s,\"digest_verdicts_equal_expected\":%d,"
-           "\"digest_roots_equal_expected\":%d,\"gates_fused_per_run\":%u,\"gates_unfused_per_run\":%u,"
-           "\"bitops_fused_per_lane_slot\":%.4f,\"bitops_unfused_per_lane_slot\":%.4f,"
-           "\"lane_utilisation\":%.6f,\"bitops_fused_per_valid_pair\":%.4f,"
-           "\"bitops_unfused_per_valid_pair\":%.4f,\"lop3_thread_instructions_per_valid_pair\":%.4f,"
-           "\"threads\":%d,\"emulation_secs\":%.3f,\"mismatches\":%u}\n",
-           PS5_L, PS5_N, prog_sha, corpus_path, corpus_sha, n_targets, corp.n_targets, m, nblk, n_jobs,
-           (unsigned long long)lane_slots, (unsigned long long)want_pairs, (unsigned long long)pairs_run,
-           tiling_ok ? "true" : "false", (unsigned long long)records, (unsigned long long)hit_lanes,
-           (unsigned long long)hit_confirmed, (unsigned long long)hit_unconfirmed,
-           (unsigned long long)exc_lanes, (unsigned long long)exc_with_root, (unsigned long long)roots_total,
-           (unsigned long long)found_targets, (unsigned long long)root_set_mismatch,
-           (unsigned long long)verdict_mismatch, (unsigned long long)unsupported,
-           (unsigned long long)overflow, dv, corp.digest_verdicts, dr, corp.digest_roots,
-           dv_corpus ? "true" : "false", dr_corpus ? "true" : "false", dv_expect, dr_expect,
-           info[4], info[5],
-           (double)info[4] / PS5_TASKS, (double)info[5] / PS5_TASKS, (double)want_pairs / (double)lane_slots,
-           (double)info[4] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
-           (double)info[5] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
-           (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, mismatches);
+    printf(
+        "{\"tool\":\"pdp_ps5_parity\",\"what\":\"CPU emulation of the PS-5 kernel; not a device "
+        "result\","
+        "\"l\":%d,\"n\":%d,\"program_sha256\":\"%s\",\"corpus\":\"%s\",\"corpus_sha256\":\"%s\","
+        "\"targets\":%zu,\"targets_in_corpus\":%zu,\"base_points\":%u,\"blocks\":%u,\"jobs\":%zu,"
+        "\"lane_slots\":%llu,\"valid_pairs_per_target\":%llu,\"pairs_replayed\":%llu,"
+        "\"tiling_covers_each_pair_once\":%s,\"records\":%llu,\"hit_lanes\":%llu,"
+        "\"hit_lanes_confirmed\":%llu,\"hit_lanes_unconfirmed\":%llu,\"exceptional_lanes\":%llu,"
+        "\"exceptional_lanes_with_root\":%llu,\"roots_found\":%llu,\"targets_with_roots\":%llu,"
+        "\"root_set_mismatches\":%llu,\"verdict_mismatches\":%llu,\"unsupported_targets\":%llu,"
+        "\"hit_list_overflows\":%llu,\"digest_verdicts\":\"%s\",\"digest_verdicts_corpus_file\":\"%"
+        "s\","
+        "\"digest_roots\":\"%s\",\"digest_roots_corpus_file\":\"%s\",\"digest_verdicts_equal_"
+        "corpus\":%s,"
+        "\"digest_roots_equal_corpus\":%s,\"digest_verdicts_equal_expected\":%d,"
+        "\"digest_roots_equal_expected\":%d,\"gates_fused_per_run\":%u,\"gates_unfused_per_run\":%"
+        "u,"
+        "\"bitops_fused_per_lane_slot\":%.4f,\"bitops_unfused_per_lane_slot\":%.4f,"
+        "\"lane_utilisation\":%.6f,\"bitops_fused_per_valid_pair\":%.4f,"
+        "\"bitops_unfused_per_valid_pair\":%.4f,\"lop3_thread_instructions_per_valid_pair\":%.4f,"
+        "\"threads\":%d,\"emulation_secs\":%.3f,\"mismatches\":%u}\n",
+        PS5_L, PS5_N, prog_sha, corpus_path, corpus_sha, n_targets, corp.n_targets, m, nblk, n_jobs,
+        (unsigned long long)lane_slots, (unsigned long long)want_pairs,
+        (unsigned long long)pairs_run, tiling_ok ? "true" : "false", (unsigned long long)records,
+        (unsigned long long)hit_lanes, (unsigned long long)hit_confirmed,
+        (unsigned long long)hit_unconfirmed, (unsigned long long)exc_lanes,
+        (unsigned long long)exc_with_root, (unsigned long long)roots_total,
+        (unsigned long long)found_targets, (unsigned long long)root_set_mismatch,
+        (unsigned long long)verdict_mismatch, (unsigned long long)unsupported,
+        (unsigned long long)overflow, dv, corp.digest_verdicts, dr, corp.digest_roots,
+        dv_corpus ? "true" : "false", dr_corpus ? "true" : "false", dv_expect, dr_expect, info[4],
+        info[5], (double)info[4] / PS5_TASKS, (double)info[5] / PS5_TASKS,
+        (double)want_pairs / (double)lane_slots,
+        (double)info[4] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
+        (double)info[5] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
+        (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, mismatches);
     return mismatches ? 1 : 0;
 }

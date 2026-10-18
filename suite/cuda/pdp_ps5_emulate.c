@@ -17,8 +17,8 @@
 /* Jobs [first, first + count) with a private counter and record list.
  * Returns 0. */
 int pdp_ps5_emulate(const ps5_u32 *jobs, ps5_u32 first, ps5_u32 count, const ps5_u32 *xb,
-                    const ps5_u32 *yb, const ps5_u64 *rows, ps5_u32 m, ps5_u32 nblk,
-                    ps5_u32 *nhits, Ps5Hit *hits, ps5_u32 cap)
+                    const ps5_u32 *yb, const ps5_u64 *rows, ps5_u32 m, ps5_u32 nblk, ps5_u32 *nhits,
+                    Ps5Hit *hits, ps5_u32 cap)
 {
     for (ps5_u32 job = first; job < first + count; ++job)
         ps5_job(job, jobs, xb, yb, rows, m, nblk, nhits, hits, cap);

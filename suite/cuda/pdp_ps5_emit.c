@@ -37,8 +37,10 @@ int main(int argc, char **argv)
         return 2;
     }
     for (int i = 3; i + 1 < argc; i += 2) {
-        if (strcmp(argv[i], "--expect-sha256") == 0) expect = argv[i + 1];
-        else if (strcmp(argv[i], "--chunk") == 0) chunk = atol(argv[i + 1]);
+        if (strcmp(argv[i], "--expect-sha256") == 0)
+            expect = argv[i + 1];
+        else if (strcmp(argv[i], "--chunk") == 0)
+            chunk = atol(argv[i + 1]);
         else {
             fprintf(stderr, "unknown option %s\n", argv[i]);
             return 2;
@@ -95,7 +97,7 @@ int main(int argc, char **argv)
                 p.n_inputs, p.count[PS5_T_INPUT], inputs, 6 * n * tasks, p.n_outs, 2 * tasks);
         return 1;
     }
-    {   /* every input number exactly once */
+    { /* every input number exactly once */
         unsigned char *seen = (unsigned char *)calloc((size_t)inputs, 1);
         for (size_t i = 0; i < p.n_ops; ++i) {
             if (p.ops[i].tag != PS5_T_INPUT) continue;
@@ -133,11 +135,18 @@ int main(int argc, char **argv)
         case PS5_T_ZERO: fprintf(inc, "PS5_DEF(%zu, 0u);\n", i); break;
         case PS5_T_ONES: fprintf(inc, "PS5_DEF(%zu, ~0u);\n", i); break;
         case PS5_T_NOT: fprintf(inc, "PS5_DEF(%zu, PS5_NOT(PS5_W(%u)));\n", i, o->a); break;
-        case PS5_T_XOR: fprintf(inc, "PS5_DEF(%zu, PS5_XOR(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b); break;
-        case PS5_T_AND: fprintf(inc, "PS5_DEF(%zu, PS5_AND(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b); break;
-        case PS5_T_OR: fprintf(inc, "PS5_DEF(%zu, PS5_OR(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b); break;
+        case PS5_T_XOR:
+            fprintf(inc, "PS5_DEF(%zu, PS5_XOR(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b);
+            break;
+        case PS5_T_AND:
+            fprintf(inc, "PS5_DEF(%zu, PS5_AND(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b);
+            break;
+        case PS5_T_OR:
+            fprintf(inc, "PS5_DEF(%zu, PS5_OR(PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b);
+            break;
         case PS5_T_XAND:
-            fprintf(inc, "PS5_DEF(%zu, PS5_XAND(PS5_W(%u), PS5_W(%u), PS5_W(%u)));\n", i, o->a, o->b, o->c);
+            fprintf(inc, "PS5_DEF(%zu, PS5_XAND(PS5_W(%u), PS5_W(%u), PS5_W(%u)));\n", i, o->a,
+                    o->b, o->c);
             break;
         }
         if ((i + 1) % (size_t)chunk == 0 || i + 1 == p.n_ops) {
@@ -186,7 +195,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    printf("{\"tool\":\"pdp_ps5_emit\",\"program\":\"%s\",\"sha256\":\"%s\",\"sidecar_sha256_equal\":true,"
+    printf("{\"tool\":\"pdp_ps5_emit\",\"program\":\"%s\",\"sha256\":\"%s\",\"sidecar_sha256_"
+           "equal\":true,"
            "\"n\":%lld,\"l\":%lld,\"tasks\":%lld,\"inputs\":%lld,\"outputs\":%zu,\"ops\":%zu,"
            "\"xor\":%zu,\"and\":%zu,\"or\":%zu,\"not\":%zu,\"xand\":%zu,\"zero\":%zu,\"ones\":%zu,"
            "\"lop3_per_run\":%zu,\"two_input_ops_per_run\":%zu}\n",

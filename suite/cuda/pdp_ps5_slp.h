@@ -199,7 +199,16 @@ static PS5_UNUSED int ps5_json_str(const char *text, const char *key, char *out,
 
 /* ── the program ─────────────────────────────────────────────────────── */
 
-enum { PS5_T_INPUT = 0, PS5_T_ZERO, PS5_T_ONES, PS5_T_NOT, PS5_T_XOR, PS5_T_AND, PS5_T_OR, PS5_T_XAND };
+enum {
+    PS5_T_INPUT = 0,
+    PS5_T_ZERO,
+    PS5_T_ONES,
+    PS5_T_NOT,
+    PS5_T_XOR,
+    PS5_T_AND,
+    PS5_T_OR,
+    PS5_T_XAND
+};
 
 typedef struct {
     uint8_t tag;
@@ -216,16 +225,20 @@ typedef struct {
 } Ps5Prog;
 
 /* Parses and validates (wires refer only to earlier wires).  0 on success. */
-static PS5_UNUSED int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, char *err, size_t errcap)
+static PS5_UNUSED int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, char *err,
+                                    size_t errcap)
 {
     memset(p, 0, sizeof *p);
     size_t cap = 1024, pos = 0;
     p->ops = (Ps5Op *)malloc(cap * sizeof(Ps5Op));
     if (!p->ops) return snprintf(err, errcap, "out of memory"), -1;
-#define PS5_FAIL(...) \
-    do { snprintf(err, errcap, __VA_ARGS__); return -1; } while (0)
-#define PS5_U32(at) \
-    ((uint32_t)buf[at] | ((uint32_t)buf[(at) + 1] << 8) | ((uint32_t)buf[(at) + 2] << 16) | \
+#define PS5_FAIL(...)                                                                              \
+    do {                                                                                           \
+        snprintf(err, errcap, __VA_ARGS__);                                                        \
+        return -1;                                                                                 \
+    } while (0)
+#define PS5_U32(at)                                                                                \
+    ((uint32_t)buf[at] | ((uint32_t)buf[(at) + 1] << 8) | ((uint32_t)buf[(at) + 2] << 16) |        \
      ((uint32_t)buf[(at) + 3] << 24))
     for (;;) {
         if (pos >= len) PS5_FAIL("missing end marker (tag 255)");
@@ -241,9 +254,12 @@ static PS5_UNUSED int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, 
         if (na >= 3) op.c = PS5_U32(pos + 8);
         pos += 4u * (size_t)na;
         if (tag != PS5_T_INPUT) {
-            if (na >= 1 && op.a >= p->n_ops) PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.a);
-            if (na >= 2 && op.b >= p->n_ops) PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.b);
-            if (na >= 3 && op.c >= p->n_ops) PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.c);
+            if (na >= 1 && op.a >= p->n_ops)
+                PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.a);
+            if (na >= 2 && op.b >= p->n_ops)
+                PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.b);
+            if (na >= 3 && op.c >= p->n_ops)
+                PS5_FAIL("op %zu uses wire %u not yet defined", p->n_ops, op.c);
         } else if (op.a + 1u > p->n_inputs) {
             p->n_inputs = op.a + 1u;
         }
@@ -262,7 +278,8 @@ static PS5_UNUSED int ps5_slp_parse(const uint8_t *buf, size_t len, Ps5Prog *p, 
     if (!p->outs) PS5_FAIL("out of memory");
     for (size_t i = 0; i < p->n_outs; ++i) {
         p->outs[i] = PS5_U32(pos + 4 * i);
-        if (p->outs[i] >= p->n_ops) PS5_FAIL("output %zu names wire %u, past the program", i, p->outs[i]);
+        if (p->outs[i] >= p->n_ops)
+            PS5_FAIL("output %zu names wire %u, past the program", i, p->outs[i]);
     }
 #undef PS5_U32
 #undef PS5_FAIL
