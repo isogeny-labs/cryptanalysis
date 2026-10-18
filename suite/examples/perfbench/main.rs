@@ -30,6 +30,7 @@ mod spec_blocks;
 mod spec_descent;
 mod spec_sym_m5;
 mod spec_affine;
+mod sat_spec;
 mod suite_extra;
 mod walksat;
 
@@ -40,6 +41,7 @@ fn registry() -> Vec<harness::Kernel> {
     fp_gb::register(&mut kernels);
     sat::register(&mut kernels);
     spec_blocks::register(&mut kernels);
+    sat_spec::register(&mut kernels);
     pdp::register(&mut kernels);
     field_ec::register(&mut kernels);
     relation::register(&mut kernels);

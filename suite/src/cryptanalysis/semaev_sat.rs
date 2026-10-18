@@ -588,7 +588,7 @@ pub fn encode_semaev_s4_with(
 /// carry a `1`.
 ///
 /// `2l + 1` clauses per pair, all of length ≤ 4.
-fn encode_lex_le(solver: &mut Solver, a: &[u32], b: &[u32], eq: &[u32]) {
+pub(crate) fn encode_lex_le(solver: &mut Solver, a: &[u32], b: &[u32], eq: &[u32]) {
     let l = a.len();
     debug_assert!(b.len() == l && eq.len() == l);
     if l == 0 {
@@ -640,7 +640,7 @@ fn parity_cnf_aux_count(w: usize) -> usize {
 /// literals at a time, each fold consuming one auxiliary, and the
 /// trailing one or two literals are closed by a direct expansion — so
 /// the count is `⌊w / 3⌋`.
-fn xor_chain_aux_needed(effective_lits: usize) -> usize {
+pub(crate) fn xor_chain_aux_needed(effective_lits: usize) -> usize {
     if effective_lits <= 4 {
         0
     } else {
@@ -715,7 +715,7 @@ fn collect_xor_lits(
 /// be measured against each other.  [`XorEncoding::Native`] hands the
 /// same constraint to the solver's Gauss-Jordan engine instead, which
 /// costs no auxiliary variables and no clauses at all.
-fn encode_xor_eq_zero(
+pub(crate) fn encode_xor_eq_zero(
     solver: &mut Solver,
     lits: &[Lit],
     target_parity: bool,

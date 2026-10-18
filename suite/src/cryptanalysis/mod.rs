@@ -244,6 +244,7 @@ pub mod semaev_decomp;
 pub mod semaev_higher;
 pub mod semaev_leading_form;
 pub mod semaev_sat;
+pub mod semaev_sat_s5;
 pub mod sha1_differential;
 pub mod shor;
 pub mod signal_ratchet;
