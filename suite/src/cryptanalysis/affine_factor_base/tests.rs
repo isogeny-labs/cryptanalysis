@@ -177,6 +177,87 @@ fn check_routes(
     (nonempty, total)
 }
 
+/// `affine_koblitz_decompose` never reports an unsearched or cut-short
+/// call as "no decomposition": a `None` with `complete = true` is final.
+#[test]
+fn dispatch_reports_incomplete_answers() {
+    let mut checked = 0;
+    for (a, n) in [(0u8, 7u32), (1, 7), (0, 9), (1, 9)] {
+        let Some(kc) = KoblitzCurve::new(a, n) else {
+            continue;
+        };
+        let fc = FastCurve::new(&kc.curve).unwrap();
+        for idx in 0..invariant_factors(&kc).len() {
+            let Some((basis, _)) = subspace_basis_for_factors(&kc, &[idx]) else {
+                continue;
+            };
+            for shift in frobenius_invariant_shifts(&kc, &basis) {
+                let Some(afb) = build_affine_frobenius_factor_base(&kc, &basis, &shift) else {
+                    continue;
+                };
+                let dec = affine_koblitz_decomposer(&kc, &afb).unwrap();
+                let pts = &afb.fb.points;
+                let t = fc.lower(fc.add(fc.lift(&pts[0]), fc.lift(&pts[pts.len() - 1])));
+                if matches!(t, BinaryPoint::Infinity) {
+                    continue;
+                }
+                let run = |target: &BinaryPoint, m: usize, d: AffineDispatch| {
+                    affine_koblitz_decompose(&kc, &afb, &dec, target, m, d)
+                };
+                let canonical = dec.decompose(&t, 2, AffineRoute::Enumerate);
+                assert!(canonical.is_some(), "planted target has no decomposition");
+                // The reference answers, completely.
+                let reference = run(
+                    &t,
+                    2,
+                    AffineDispatch::Generic(DecompositionStrategy::Enumerate),
+                );
+                assert_eq!(reference.decomposition, canonical);
+                assert!(reference.complete);
+                // Strategies this dispatch does not run.
+                for s in [
+                    DecompositionStrategy::WalkSat,
+                    DecompositionStrategy::Wdsat,
+                    DecompositionStrategy::MqFes,
+                ] {
+                    let got = run(&t, 2, AffineDispatch::Generic(s));
+                    assert_eq!(got.decomposition, None, "{s:?}");
+                    assert!(!got.complete, "{s:?} reported a final None");
+                }
+                // A route that does not apply to `m`.
+                let got = run(&t, 3, AffineDispatch::Specialised(AffineRoute::S3Solve));
+                assert!(got.decomposition.is_none() && !got.complete);
+                // An exhausted budget.
+                for route in [
+                    AffineRoute::Algebraic {
+                        engine: SolverEngine::default(),
+                        node_budget: 1,
+                    },
+                    AffineRoute::Sat { conflict_budget: 0 },
+                ] {
+                    let got = run(&t, 2, AffineDispatch::Specialised(route));
+                    if got.decomposition.is_none() {
+                        assert!(!got.complete, "{route:?} reported a final None");
+                    }
+                }
+                // `R = O` is outside every route's domain.
+                let got = run(
+                    &BinaryPoint::Infinity,
+                    2,
+                    AffineDispatch::Specialised(AffineRoute::Auto),
+                );
+                assert!(got.decomposition.is_none() && !got.complete);
+                // `Auto` at `m = 1` is the base-point lookup.
+                let got = run(&pts[0], 1, AffineDispatch::Specialised(AffineRoute::Auto));
+                assert_eq!(got.decomposition, Some(vec![0]));
+                assert!(got.complete);
+                checked += 1;
+            }
+        }
+    }
+    assert!(checked >= 2, "only {checked} bases");
+}
+
 #[test]
 fn affine_subspace_is_canonical_and_exact() {
     let mut rng = StdRng::seed_from_u64(0xAFF1);
@@ -412,7 +493,8 @@ fn koblitz_affine_routes_return_the_enumerated_decompositions() {
                                 m,
                                 AffineDispatch::Specialised(AffineRoute::Auto),
                             );
-                            assert_eq!(spec.as_ref(), all.first());
+                            assert_eq!(spec.decomposition.as_ref(), all.first());
+                            assert_eq!(spec.complete, !matches!(target, BinaryPoint::Infinity));
                             if !matches!(target, BinaryPoint::Infinity) {
                                 let generic = affine_koblitz_decompose(
                                     &kc,
@@ -1131,7 +1213,8 @@ mod review {
                                     m,
                                     AffineDispatch::Generic(strat),
                                 );
-                                match got {
+                                assert!(got.complete, "{strat:?} incomplete");
+                                match got.decomposition {
                                     Some(d) => assert!(
                                         all.decompositions.contains(&d),
                                         "{} l={l} m={m} {strat:?}: {d:?} not in set",
@@ -1154,7 +1237,8 @@ mod review {
                                 m,
                                 AffineDispatch::Specialised(AffineRoute::Auto),
                             );
-                            assert_eq!(spec.as_ref(), all.first());
+                            assert!(spec.complete);
+                            assert_eq!(spec.decomposition.as_ref(), all.first());
                         }
                     }
                 }

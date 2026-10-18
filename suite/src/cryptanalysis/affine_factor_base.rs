@@ -525,7 +525,8 @@ pub fn affine_summand_word(coset: &AffineSubspace, ell: usize, root: u64, i: usi
 /// Which oracle answers "which `m`-tuples of base points sum to `R`?".
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum AffineRoute {
-    /// The specialised route for `m`: [`Self::S3Solve`] for `m = 2`,
+    /// The specialised route for `m`: [`Self::Enumerate`] for `m = 1`,
+    /// [`Self::S3Solve`] for `m = 2`,
     /// [`Self::S4PairsAndSolve`] for `m = 3`, otherwise
     /// [`Self::Algebraic`] with the default engine when the system fits
     /// [`MAX_VARS`], else [`Self::Enumerate`].
@@ -685,6 +686,7 @@ impl AffineDecomposer {
             return route;
         }
         match m {
+            1 => AffineRoute::Enumerate,
             2 => AffineRoute::S3Solve,
             3 => AffineRoute::S4PairsAndSolve,
             _ if m * self.coset.dim() as usize + m.saturating_sub(2) * self.fc.n as usize
@@ -1150,9 +1152,34 @@ pub enum AffineDispatch {
     /// The existing generic oracle on the hull-based base
     /// ([`AffineFrobeniusFactorBase::fb`]), unchanged: `Groebner`
     /// (default engine, unlimited budget), `Sat`, `Crossbred`,
-    /// `Enumerate`, `PairTable` (`m ≤ 4`).  `Wdsat`, `MqFes` and `WalkSat`
-    /// are not dispatched here and return `None`.
+    /// `Enumerate`, `PairTable` (`2 ≤ m ≤ 5`).  `Wdsat`, `MqFes` and
+    /// `WalkSat` are not dispatched here: they answer `None` with
+    /// `complete = false`.
     Generic(DecompositionStrategy),
+}
+
+/// What [`affine_koblitz_decompose`] found, and whether a `None` is final.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct AffineAnswer {
+    /// A decomposition, re-checked in the group by the route that found it.
+    pub decomposition: Option<Vec<usize>>,
+    /// The search covered its whole space.  With `decomposition = None`
+    /// this proves there is no decomposition in the tuples the route
+    /// covers (see the module documentation); `false` means `None` is
+    /// inconclusive: the strategy is not dispatched here, `m` or the
+    /// system is outside its range, a budget ran out, or `R = O`.  A
+    /// specialised `Some` with `complete = false` may not be the canonical
+    /// (lexicographically smallest) decomposition.
+    pub complete: bool,
+}
+
+impl AffineAnswer {
+    fn inconclusive() -> Self {
+        AffineAnswer {
+            decomposition: None,
+            complete: false,
+        }
+    }
 }
 
 /// **Decompose a target over an affine Koblitz base**, specialised or
@@ -1163,6 +1190,8 @@ pub enum AffineDispatch {
 /// `afb.fb` (for `Enumerate` the same lexicographically smallest tuple;
 /// for the algebraic and SAT strategies the first root that lifts, which
 /// the differential tests check is a member of the specialised set).
+/// [`AffineAnswer::complete`] tells "no decomposition" apart from "not
+/// searched to the end".
 pub fn affine_koblitz_decompose(
     kc: &KoblitzCurve,
     afb: &AffineFrobeniusFactorBase,
@@ -1170,18 +1199,36 @@ pub fn affine_koblitz_decompose(
     target: &BinaryPoint,
     m: usize,
     dispatch: AffineDispatch,
-) -> Option<Vec<usize>> {
+) -> AffineAnswer {
+    if matches!(target, BinaryPoint::Infinity) {
+        return AffineAnswer::inconclusive();
+    }
     match dispatch {
-        AffineDispatch::Specialised(route) => decomposer.decompose(target, m, route),
+        AffineDispatch::Specialised(route) => {
+            let all = decomposer.decompositions(target, m, route);
+            AffineAnswer {
+                decomposition: all.decompositions.into_iter().next(),
+                complete: all.stats.complete,
+            }
+        }
         AffineDispatch::Generic(strategy) => {
             let index_of = afb.fb.index_map();
             let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+            // `build_decomposition_system`'s range on the hull base: past
+            // it the algebraic and SAT entry points return `None` unsolved.
+            let fits =
+                m >= 2 && m * afb.fb.subspace_basis.len() + (m - 2) * kc.n as usize <= MAX_VARS;
+            let solved = |decomposition: Option<Vec<usize>>, exhausted: bool| AffineAnswer {
+                complete: decomposition.is_some() || (fits && !exhausted),
+                decomposition,
+            };
             match strategy {
-                DecompositionStrategy::Enumerate => {
-                    enumerate_decompose(kc, &afb.fb, &index_of, target, m)
-                }
+                DecompositionStrategy::Enumerate => AffineAnswer {
+                    decomposition: enumerate_decompose(kc, &afb.fb, &index_of, target, m),
+                    complete: true,
+                },
                 DecompositionStrategy::Groebner => {
-                    groebner_decompose(
+                    let (decomposition, stats) = groebner_decompose(
                         kc,
                         &afb.fb,
                         &index_of,
@@ -1190,21 +1237,38 @@ pub fn affine_koblitz_decompose(
                         m,
                         SolverEngine::default(),
                         usize::MAX,
-                    )
-                    .0
+                    );
+                    solved(decomposition, stats.exhausted)
                 }
                 DecompositionStrategy::Sat => {
-                    sat_decompose(kc, &afb.fb, &index_of, &st, target, m, usize::MAX, None).0
+                    let (decomposition, stats) =
+                        sat_decompose(kc, &afb.fb, &index_of, &st, target, m, usize::MAX, None);
+                    // Only a final UNSAT proves there is none.
+                    AffineAnswer {
+                        complete: decomposition.is_some() || stats.refuted,
+                        decomposition,
+                    }
                 }
                 DecompositionStrategy::Crossbred => {
-                    crossbred_decompose(kc, &afb.fb, &index_of, &st, target, m, None).0
+                    let (decomposition, stats) =
+                        crossbred_decompose(kc, &afb.fb, &index_of, &st, target, m, None);
+                    solved(decomposition, stats.exhausted)
                 }
                 DecompositionStrategy::PairTable => {
-                    PairSumTable::build(kc, &afb.fb)?.decompose(kc, &afb.fb, target, m)
+                    if !(2..=5).contains(&m) {
+                        return AffineAnswer::inconclusive();
+                    }
+                    match PairSumTable::build(kc, &afb.fb) {
+                        Some(table) => AffineAnswer {
+                            decomposition: table.decompose(kc, &afb.fb, target, m),
+                            complete: true,
+                        },
+                        None => AffineAnswer::inconclusive(),
+                    }
                 }
                 DecompositionStrategy::Wdsat
                 | DecompositionStrategy::MqFes
-                | DecompositionStrategy::WalkSat => None,
+                | DecompositionStrategy::WalkSat => AffineAnswer::inconclusive(),
             }
         }
     }
