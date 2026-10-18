@@ -141,14 +141,17 @@ def ensure_group(ec2, cidrs):
         group = found["SecurityGroups"][0]
         tags = {t["Key"]: t["Value"] for t in group.get("Tags", [])}
         if tags.get(TAG) != "1":
-            sys.exit(f"security group {group['GroupId']} is named {GROUP} but is not launcher-managed")
+            sys.exit(f"security group {group['GroupId']} is named {GROUP} but is not "
+                     "launcher-managed")
         for permission in group.get("IpPermissions", []):
             if (permission.get("IpProtocol") != "tcp" or permission.get("FromPort") != 22 or
                     permission.get("ToPort") != 22 or permission.get("Ipv6Ranges") or
                     permission.get("PrefixListIds") or permission.get("UserIdGroupPairs")):
-                sys.exit(f"security group {group['GroupId']} has non-SSH ingress; refusing to use it")
+                sys.exit(f"security group {group['GroupId']} has non-SSH ingress; "
+                         "refusing to use it")
             if any(r.get("CidrIp") == "0.0.0.0/0" for r in permission.get("IpRanges", [])):
-                sys.exit(f"security group {group['GroupId']} opens SSH to the internet; refusing to use it")
+                sys.exit(f"security group {group['GroupId']} opens SSH to the internet; "
+                         "refusing to use it")
     else:
         gid = ec2.create_security_group(
             GroupName=GROUP, VpcId=vpc, Description="ssh to experiment instances",
