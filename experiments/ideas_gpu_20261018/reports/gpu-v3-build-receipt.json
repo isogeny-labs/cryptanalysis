@@ -1,0 +1,52 @@
+[
+  {
+    "argv": [
+      "dot",
+      "-Tsvg",
+      "run-flow.dot",
+      "-o",
+      "run-flow.svg"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "dot",
+      "-Tpng",
+      "-Gdpi=150",
+      "run-flow.dot",
+      "-o",
+      "run-flow.png"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "dot",
+      "-Tsvg",
+      "gpu-v3-flow.dot",
+      "-o",
+      "gpu-v3-flow.svg"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "argv": [
+      "dot",
+      "-Tpng",
+      "-Gdpi=150",
+      "gpu-v3-flow.dot",
+      "-o",
+      "gpu-v3-flow.png"
+    ],
+    "returncode": 0,
+    "stderr": "Fontconfig error: No writable cache directories\n"
+  },
+  {
+    "pdf_returncode": 0,
+    "overfull": []
+  }
+]

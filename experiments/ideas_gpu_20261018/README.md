@@ -1,8 +1,8 @@
 # Bounded GPU continuation: items 7 and 13
 
-Status: **prepared; no remote GPU result yet**. Root owns provisioning,
-credential handling, evidence fetch and deletion of one dedicated two-hour
-RunPod pod. This workstream does not alter existing pods or campaign stores.
+Latest separate GPU-v3 attempt: **CUDA build passed, device initialization failed; no GPU walk executed**. Its effective125GB RAM also failed the192GB frontier gate. The CPU-v3 request was capacity-refused without allocating a pod. See [GPU-v3 addendum](GPU_V3_RESULTS.md); that pod was fetched/deleted and absence verified.
+
+Status after recovered run1: **GPU correctness control executed; original ingestion failed; original memory-frontier attempt censored**. See [run1 results](RUN1_RESULTS.md), [run0 failure](RUN0_RESULTS.md), [current PDF](reports/report.pdf), and [independent archive audit](diagnostics/run1-audit/receipt.json). Root fetched the dedicated pod's evidence, deleted it and verified absence. No challenge slice or complete benchmark ran. The additive local v2 checker validates retained control reports without changing the original pipeline failure. Later allocation attempts are separate records.
 
 The [frozen protocol](PROTOCOL.md) and [native launch script](remote_launch.sh)
 bind a public ECC2K-130 sigma client to the pinned source snapshot at
@@ -41,9 +41,7 @@ Local correctness checks completed before remote dispatch:
 Raw local receipts are in `local_checks/`. These are CPU correctness
 checks, not GPU coverage or performance measurements.
 
-The pending remote gates require CUDA 13.3.73 build/device compatibility,
-native KAT, GPU golden-model replays, health and exact checkpoint-restart
-record equality before challenge collection. The bounded challenge slice
+The protocol requires CUDA13.3.73 build/device compatibility, native KAT, GPU golden-model replays, health and exact checkpoint-restart record equality before challenge collection. Run1 passed build/device/KAT and the short GPU control (3,145,728 iterations,1719DP,3 client replays,0dropped). Original ingestion v1 then rejected six native-valid zero-length reports. Health, restart, benchmark and challenge stages did not run. A separately frozen local v2 qualification checks all1719 reports and replays all6zero plus8positive trails;1705positive trails remain unreplayed. See [qualification details](diagnostics/ingestion-zero/README.md). The bounded challenge slice
 is two 180-second periods with graceful stop/restart and DP32 cutoff 32.
 All full reports receive independent curve, weight, namespace and encoding
 checks; long challenge trails are not fully replayed on the CPU. Native
@@ -57,14 +55,6 @@ heavy censoring and baseline-control limitations. The four-arm L32 native
 replay here preserves that deviation and does not close the full contract.
 The challenge sigma client is not relabelled as its prime-field experiment.
 
-The frontier component is documented separately in `frontier-binding.md`.
-Its original memory-wall input and actual closure runner must pass their
-runtime and resource gates; a row-reduction kernel alone cannot measure D.
+The frontier component is documented separately in `frontier-binding.md`. Run1 passed its tiny SAT/UNSAT controls and attempted the original n19/m3/ell7,draw0,degree5 closure. It failed allocation after748.35s at77,709,264KiB peak RSS under an80GB address-space cap. Actual exit134/signal6 governs the outcome despite the contradictory GNU-time `%x` field0. Degree remains unmeasured. This is CPU XL/MutantXL closure on a GPU host, not GPU/distributed F4.
 
-No result in this package currently changes the IC leaderboard or the
-existing campaign rates/forecast figures. Checked graph sources include
-`papers/ecdlp-constant/sec-ecc2k-campaign.tex` and
-`papers/ecdlp-constant/sec-ecc2k-gpu.tex`: no new GPU datum exists to replace
-their historical measurements. The [run-flow diagram](reports/run-flow.svg)
-marks every remote stage pending. The [report PDF](reports/report.pdf)
-contains the same preparation status and explicit remaining criteria.
+No result in this package changes the IC leaderboard or historical campaign rates/forecasts. Checked graph sources include `papers/ecdlp-constant/sec-ecc2k-campaign.tex` and `papers/ecdlp-constant/sec-ecc2k-gpu.tex`: the short DP46 correctness control does not supersede their campaign benchmarks. The [updated run-flow](reports/run-flow.svg), [recorded validation/memory plot](reports/run1-validation-memory.svg) and [report PDF](reports/report.pdf) distinguish actual passes, original failures, additive local qualification and unrun stages. Full challenge completion, complete negation contract and distributed/GPU F4 remain open.

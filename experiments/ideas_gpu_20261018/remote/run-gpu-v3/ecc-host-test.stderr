@@ -1,0 +1,17 @@
+In file included from src/cputest.cpp:21:
+src/cpuwalk.h: In member function ‘void ec2k_cpu::CpuEngine::runSlice(int, int, Local*)’:
+src/cpuwalk.h:326:21: warning: ‘prod’ may be used uninitialized [-Wmaybe-uninitialized]
+  326 |             upTo[0] = prod[0];
+      |             ~~~~~~~~^~~~~~~~~
+src/cpuwalk.h:297:18: note: ‘prod’ declared here
+  297 |             F131 prod[kChains];
+      |                  ^~~~
+In file included from src/cputest.cpp:21:
+src/cpuwalk.h: In member function ‘void ec2k_cpu::CpuEngine::runSlice(int, int, Local*)’:
+src/cpuwalk.h:326:21: warning: ‘prod’ may be used uninitialized [-Wmaybe-uninitialized]
+  326 |             upTo[0] = prod[0];
+      |             ~~~~~~~~^~~~~~~~~
+src/cpuwalk.h:297:18: note: ‘prod’ declared here
+  297 |             F131 prod[kChains];
+      |                  ^~~~
+report does not re-walk on the golden model: seed 1195424226090156034, 0 iterations
