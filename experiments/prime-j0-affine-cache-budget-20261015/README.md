@@ -64,6 +64,14 @@ outcomes remain evidence. The online interval measures fresh-input
 128-output batch throughput; table construction and point verification are
 reported separately.
 
+The raw arms record child CPU user/system time and cgroup memory high-water
+and usage counters, but do not record process-attributable peak RSS. General
+memory reporting is therefore incomplete at process-memory granularity; the
+retained-table byte counts remain available as a separate implementation
+footprint measure. This reporting gap does not change the predeclared Tier 1
+timing gates or the timing result, and this panel makes no process-specific
+memory comparison.
+
 Job `1b1489f47213478b9aab096de03ce244` completed with 96 valid arms,
 48 valid pairs, stable artifact hashes, and no A/A ratio outside
 `[0.90, 1.11]`. The independent [audit](tier1-affine-stream-cpu40-audit.json)
