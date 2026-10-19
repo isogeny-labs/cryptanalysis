@@ -73,6 +73,8 @@ A/A gate passing. A separate serial replay checked all **12,288** outputs in
 each graph arm. Pinned Lean checks the lattice-edge identity and its transfer
 through an additive point map; the native arithmetic bridge is tested by the
 replay and remains an explicit formal refinement obligation.
+The [source-linked report](DIGIT_GRAPH_REPORT_2026-10-19.md) adds the method
+diagram, paired timing graph, PDF, and exact proof/evidence boundaries.
 
 The [rotated radix step](ROTATED_RADIX_STEP.md) evaluates `31+32τ` as
 `63−32ω`, replacing the explicit `τ` formula in each Horner step with an
