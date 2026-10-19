@@ -1,0 +1,19 @@
+digraph UnitBasis {
+  graph [rankdir=LR, bgcolor="white", pad="0.24", nodesep="0.4", ranksep="0.62", fontname="DejaVu Sans", label="Unit-basis split for one 140−τ digit and terminal pair", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fb", color="#3d6f91", fontname="DejaVu Sans", fontsize=12, margin="0.16,0.11"];
+  edge [color="#405b70", fontname="DejaVu Sans", fontsize=11, arrowsize=0.8];
+  digit [label="selected a+bτ\n|a+b|, |b| ≤ 92"];
+  split [label="identity\na+bτ = (a+b) − b(1−τ)"];
+  bucket1 [label="bucket X\npositive multiples of each πⁱG"];
+  bucket2 [label="bucket Y\npositive multiples of each πⁱG"];
+  rotate [label="one (1−τ) unit-map rotation\nnegate terms by affine sign"];
+  join [label="join X and rotated Y\nthen add terminal pair"];
+  out [label="same scalar multiple\nverified by independent replay"];
+  digit -> split -> bucket1;
+  split -> bucket2;
+  bucket1 -> rotate;
+  bucket2 -> rotate;
+  rotate -> join -> out;
+  note [shape=note, fillcolor="#fff5d9", color="#bd8f32", label="145,808 retained bytes vs 4,178,836 orbit\n0.7366 split/orbit hot-table throughput"];
+  join -> note [style=dashed, arrowhead=none];
+}
