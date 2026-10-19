@@ -4,7 +4,7 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 experiments=$(cd "$here/.." && pwd)
 export ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1
-build_dir=$(mktemp -d /private/tmp/lean268.XXXXXX)
+build_dir=$(mktemp -d "${TMPDIR:-/tmp}/lean268.XXXXXX")
 trap 'rm -rf "$build_dir"' EXIT
 
 version=$(lean --version)
