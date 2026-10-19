@@ -1,0 +1,15 @@
+digraph OrbitRolling {
+  graph [rankdir=LR, bgcolor="white", pad="0.24", nodesep="0.4", ranksep="0.62", fontname="DejaVu Sans", label="Six-unit orbit coding and rolling accumulation (18-position case)", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fb", color="#3d6f91", fontname="DejaVu Sans", fontsize=12, margin="0.16,0.11"];
+  edge [color="#405b70", fontname="DejaVu Sans", fontsize=11, arrowsize=0.8];
+  residue [label="quotient residue r\nnearest digit d=(a,b)"];
+  code [label="orbit code\n(seed index, power j∈{0,1,2}, sign)"];
+  seed [label="unrotated seed point\nPₛ = aₛB + bₛτ(B)"];
+  action [label="apply unit ωʲ and sign\nto obtain the digit point"];
+  buckets [label="sum digit points by unit class\nS₀, S₁, S₂; add terminal point"];
+  roll [label="one accumulator\nS₀ + ω(S₁ + ωS₂)"];
+  result [label="same scalar multiple\n≤ 2 aggregate rotations"];
+  residue -> code -> seed -> action -> buckets -> roll -> result;
+  note [shape=note, fillcolor="#fff5d9", color="#bd8f32", label="Screen: 12,211 residues; 2,036 digit seeds; 699 terminal seeds\nNative table retained: 2,448,196 bytes"];
+  code -> note [style=dashed, arrowhead=none];
+}
