@@ -126,9 +126,9 @@ the one-restart worker path, whose separate A/A gate failed.
 The reuse run did not capture process peak RSS. Its retained-byte fields
 measure the tables and plans reported by each implementation, so peak RSS
 is still unknown. The failed A/A controls at counts 1 and 8 also prevent a
-qualified crossover between those counts and 32. The next dedicated-host
-reuse panel must retain all four counts on the same 32 Q points and scalar
-prefixes, alternate the three arms, and keep an A/A decision for each count.
+qualified crossover between those counts and 32. The follow-up protocol
+specified all four counts on the same 32 Q points and scalar prefixes,
+alternating the three arms, with an A/A decision for each count.
 Record each child process's peak RSS in addition to the existing table bytes,
 Q-dependent preparation, evaluation, and complete target-charged time. Use a
 per-child Linux `wait4` resource receipt or an equivalent verified child-only
@@ -136,8 +136,11 @@ peak measurement; the cumulative `RUSAGE_CHILDREN.ru_maxrss` value cannot be
 subtracted to obtain an arm's peak. Freeze the runner, source and binary
 hashes, host allocation, and measurement method before timing. Run this panel
 serially after the fresh-target worker confirmation on the same isolated host.
-Preserve the earlier 1/8 failures and report the crossover only from counts
-whose new A/A gates pass.
+The actual EC2 dispatch below ran the arithmetic confirmation and reuse
+panels before the worker confirmation. The panels were serialized, and each
+retained its own frozen input, host, and A/A receipts. Preserve the earlier
+1/8 failures and report the crossover only from counts whose new A/A gates
+pass.
 
 The versioned [peak-RSS runner](run_tier1_rho_reuse_peak.py) uses `wait4`
 for one child at a time and records `child_peak_rss_kib` with the method
@@ -225,13 +228,14 @@ were 20.725 and 4.057 seconds, respectively. The setup median was about
 0.165 seconds for either path; the descriptive time difference is
 concentrated in walk additions rather than restart construction.
 
-The next selection test is the
+The next selection test was the
 [prospective fresh-target confirmation](https://github.com/aburan28/crypto/blob/9097133972/experiments/rho-worker-phase-profile-20261017/tier0-ec2-20261019/CONFIRMATION_PLAN.md).
 Its new 32-Q fixture has zero target overlap and all 4,096 expected
 outputs independently replayed. The new aggregate A/A rule was written
 after inspecting r5 and applies only to a new full panel. Source, binary,
 allocation, and dispatch hashes must be frozen before timing on another
-dedicated host. The AWS quota request remains open. The integration gate
+dedicated host. The user then selected a separate 16-vCPU EC2 instance for
+Tier 1 runs instead of waiting on the bare-metal quota. The integration gate
 still requires exact replay, host and memory acceptance, and a 32-Q paired
 95% lower speedup bound above 1.05.
 
