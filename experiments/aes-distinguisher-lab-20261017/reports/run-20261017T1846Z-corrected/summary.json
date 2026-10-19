@@ -1,0 +1,500 @@
+{
+  "all_controls_passed": true,
+  "families": [
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 1
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r1",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 2
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 10
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r10",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 2
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r2",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 2
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": true,
+        "key_bits": 128,
+        "rounds": 3
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r3-mix",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 3
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r3",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 4
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r4",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 6
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r6",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 7
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes128-r7",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 192,
+        "rounds": 12
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes192-r12",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 256,
+        "rounds": 14
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "aes256-r14",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "aes",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 1
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "prp-r1",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "random",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    },
+    {
+      "alpha": 0.0005,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 10
+      },
+      "control_pass": true,
+      "discovery_keys": 2,
+      "frozen_events": 2,
+      "keys": 8,
+      "label": "prp-r10",
+      "pairs_per_event_per_key": 4096,
+      "primary_oracle": "random",
+      "searched_input_differences": 16,
+      "validated_events": 0
+    }
+  ],
+  "integrals": [
+    {
+      "all_bytes_balanced": 16,
+      "all_bytes_balanced_in_permutation": 0,
+      "cipher": {
+        "final_mix_columns": true,
+        "key_bits": 128,
+        "rounds": 3
+      },
+      "label": "integral128-r3-mix",
+      "structures": 16
+    },
+    {
+      "all_bytes_balanced": 16,
+      "all_bytes_balanced_in_permutation": 0,
+      "cipher": {
+        "final_mix_columns": false,
+        "key_bits": 128,
+        "rounds": 3
+      },
+      "label": "integral128-r3",
+      "structures": 16
+    },
+    {
+      "all_bytes_balanced": 0,
+      "all_bytes_balanced_in_permutation": 0,
+      "cipher": {
+        "final_mix_columns": true,
+        "key_bits": 128,
+        "rounds": 4
+      },
+      "label": "integral128-r4-mix",
+      "structures": 16
+    },
+    {
+      "all_bytes_balanced": 16,
+      "all_bytes_balanced_in_permutation": 0,
+      "cipher": {
+        "final_mix_columns": true,
+        "key_bits": 192,
+        "rounds": 3
+      },
+      "label": "integral192-r3-mix",
+      "structures": 16
+    },
+    {
+      "all_bytes_balanced": 16,
+      "all_bytes_balanced_in_permutation": 0,
+      "cipher": {
+        "final_mix_columns": true,
+        "key_bits": 256,
+        "rounds": 3
+      },
+      "label": "integral256-r3-mix",
+      "structures": 16
+    }
+  ],
+  "quartet_component": {
+    "accepted_nondegenerate_quartets": 64552,
+    "aes_output_linear_affine_undone_matches": 64552,
+    "formula": "CR(a,b,c,d)=((a+c)*(b+d))/((a+d)*(b+c)) in GF(256), distinct inputs, x xor input_key != 0",
+    "generated_quartets": 65536,
+    "inversion_poles_skipped": 984,
+    "key_wrapped_inversion_matches": 64552,
+    "random_bijection_matches": 243,
+    "raw_aes_sbox_matches": 277,
+    "schema": "aes-discover/cross-ratio-component/v1",
+    "scope": "known local projective identity and affine-layer ablation only; no reproduction of the complete 2026/1549 attack or whole-round invariant",
+    "seed": 910171
+  },
+  "recorded_alpha_sum": 0.006000000000000002,
+  "recorded_processes": 41,
+  "run_directory": "experiments/aes-distinguisher-lab-20261017/runs/20261017-first-suite",
+  "schema": "aes-discover/recorded-summary/v1",
+  "scope": "descriptive counts derived from recorded JSON only; no new trials, statistical tests, scientific promotion, speed comparison or full-AES claim",
+  "source_bindings": [
+    {
+      "file": "aes128-r1-validation.json",
+      "sha256": "ca4ed140bf6f286d33112803c9f57ec39b74ed7c264f589b29860855b230c987"
+    },
+    {
+      "file": "aes128-r1-discovery.json",
+      "sha256": "7d1b55475fc3d47350f467131b01ee96727d70799cd4d6bfe5dbd7606869456c"
+    },
+    {
+      "file": "aes128-r10-validation.json",
+      "sha256": "dfa7379e2eeb7594c4ac2970739d5f1640e7171fe5dce66b4ca6bc309b2a9678"
+    },
+    {
+      "file": "aes128-r10-discovery.json",
+      "sha256": "1277a486f3ca333adfe62f8b447d58f1f22320322bc2b7febcf1223e85842cdb"
+    },
+    {
+      "file": "aes128-r2-validation.json",
+      "sha256": "b7c9a9fbdac0081ac5c62dc2794c73e39085781caf1517691d49fad5899ff40b"
+    },
+    {
+      "file": "aes128-r2-discovery.json",
+      "sha256": "4f40010b3ec5e8938ac5f416d07917a1da3803841eb0dd45781a3f903ec542ea"
+    },
+    {
+      "file": "aes128-r3-mix-validation.json",
+      "sha256": "7bc8b043d26ab00543d697a348e9933c5e7ddb8a9d5d4e0cc29eafa5f5f8a65b"
+    },
+    {
+      "file": "aes128-r3-mix-discovery.json",
+      "sha256": "2eb9ef92d18a5d263b0bd8ddb182a27d73ee1f086bb2adbe8bbf2efb4ad6bf9e"
+    },
+    {
+      "file": "aes128-r3-validation.json",
+      "sha256": "21caacb28fe2bc22fb3b57164ea05ed2fe970a309e553e1bba34bb688388ec91"
+    },
+    {
+      "file": "aes128-r3-discovery.json",
+      "sha256": "9eafc87729e272bf2c227bf5c26c4153b48f887c2fdae53dc40d0473b9441141"
+    },
+    {
+      "file": "aes128-r4-validation.json",
+      "sha256": "37ea32038c1cf0b4782d510ab9001db98a0f7fc4f72581c2a551ebea529f8149"
+    },
+    {
+      "file": "aes128-r4-discovery.json",
+      "sha256": "3f27a020964c2da5b33945d1cb65ffff78ceef3e6120cef967898e8e80694636"
+    },
+    {
+      "file": "aes128-r6-validation.json",
+      "sha256": "555ceb278be086876c3b7a12c8734552eae8c29e7d99938e3c3134955ffbcc5c"
+    },
+    {
+      "file": "aes128-r6-discovery.json",
+      "sha256": "921ec12d1dc5713e5475c957c7949b9d8bc4b9d8c8db6903aaabd7ba3cad0136"
+    },
+    {
+      "file": "aes128-r7-validation.json",
+      "sha256": "865c2f95076a27f6b252da901f612b26f9b49f491dfe81e0cbee65600f6c4374"
+    },
+    {
+      "file": "aes128-r7-discovery.json",
+      "sha256": "1219b2c5c3c01c70ea64c53b1b2bc9a31e82fb3d4de7103239907d758ed22b5f"
+    },
+    {
+      "file": "aes192-r12-validation.json",
+      "sha256": "86096fc67e7c0c1c3a4cf6902bce8e46a6303f82ad809475f3d8b6c0d841b8be"
+    },
+    {
+      "file": "aes192-r12-discovery.json",
+      "sha256": "44d717dca923dfcb6341dc01174bf50d042d44a550817806574c8dfc33128b8c"
+    },
+    {
+      "file": "aes256-r14-validation.json",
+      "sha256": "cc7033937ecacfb9ce034ec0d927a0a65c6973d097d3a72ad1031c08ddb446be"
+    },
+    {
+      "file": "aes256-r14-discovery.json",
+      "sha256": "3ed04975efbd3e2080334b66418243cf304a75fd47455f9226232c7e67d04741"
+    },
+    {
+      "file": "integral128-r3-mix.json",
+      "sha256": "61eec70fdb1adf8ed82a5368e771ecb3815b763333af6f8fe606346b3d949c25"
+    },
+    {
+      "file": "integral128-r3.json",
+      "sha256": "e5dd0f194b8df9670975da2680bb9cd80cedc336e2a8fe9692c9e49cd82adac1"
+    },
+    {
+      "file": "integral128-r4-mix.json",
+      "sha256": "098ba918e283d2228b80ac68b5623aeced7556062375dcbae59a06bc693a812f"
+    },
+    {
+      "file": "integral192-r3-mix.json",
+      "sha256": "4fc49b2615fabbab86d9d17eccb3dbfdf5160894a91936963d0f1fe263fc7a90"
+    },
+    {
+      "file": "integral256-r3-mix.json",
+      "sha256": "c1be28df33e30d51fa9054b08fa25dc44306ebfb790002f12c12bc0ff0545b55"
+    },
+    {
+      "file": "prp-r1-validation.json",
+      "sha256": "6258703d3a484de5553f25220756bf688347ffb2e096a492c1368812c10cd1dc"
+    },
+    {
+      "file": "prp-r1-discovery.json",
+      "sha256": "1ed9eef0bf59b4891e8105f098f88c5a9765e39fa9d8162b921b0ba6668da06d"
+    },
+    {
+      "file": "prp-r10-validation.json",
+      "sha256": "733c47aa806bd77a5b0ac52ff5aa8184bf6c045adeae51e4cdfeef5e77bd406d"
+    },
+    {
+      "file": "prp-r10-discovery.json",
+      "sha256": "f9e53b19e1268a4f764deb8f8bf7bd21fc23f99c90c14f76ea20ae11a0b70623"
+    },
+    {
+      "file": "quartets.json",
+      "sha256": "996d94b74656fd09ef4efe9ea69ba75584f99ce91825cf737f193875a20dc99e"
+    },
+    {
+      "file": "environment.txt",
+      "sha256": "e7a7c0382f719f792fdfde147fa9f4c90b131cc735317fd8f0028e36436a195c"
+    },
+    {
+      "file": "status.tsv",
+      "sha256": "15acdd697d51be621c48f49bbec8d5e68a954aa41ee2655457b54a7632a82a5b"
+    },
+    {
+      "file": "statistical-recheck.json",
+      "sha256": "68a3291cc7d1d06127e8ab4995ab41aabd659c975630ca9bd546d2cf8ab932fa"
+    }
+  ],
+  "source_revision": "8a3ee1d85cbb32b0fb78aa8b92cc363e3e0caffd",
+  "statistical_recheck": {
+    "families": [
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 2,
+        "label": "aes128-r1",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r10",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 2,
+        "label": "aes128-r2",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r3-mix",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r3",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r4",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r6",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes128-r7",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes192-r12",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "aes256-r14",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "prp-r1",
+        "random_control_passed": true
+      },
+      {
+        "classification_unchanged": true,
+        "corrected_validated_candidates": 0,
+        "label": "prp-r10",
+        "random_control_passed": true
+      }
+    ],
+    "file": "statistical-recheck.json",
+    "method": "two-sided Bernoulli Chernoff bound with separate lower and upper KL divergences, plus the original finite-query PRP coupling slack and Bonferroni family correction",
+    "scope": "reanalysis of preserved counts only; no cipher calls, new samples, search, or experiment replay",
+    "sha256": "68a3291cc7d1d06127e8ab4995ab41aabd659c975630ca9bd546d2cf8ab932fa"
+  },
+  "successful_processes": 41
+}
