@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/private/tmp/ecc2k130-w34-fourpair-20261019/audit_sage.py", line 4, in <module>
+    from sage.all import EllipticCurve,GF,PolynomialRing
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/all.py", line 335, in <module>
+    sage.misc.lazy_import.save_cache_file()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "sage/misc/lazy_import.pyx", line 1169, in sage.misc.lazy_import.save_cache_file
+    with atomic_write(cache_file, binary=True) as f:
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/misc/temporary_file.py", line 396, in __exit__
+    self.tempfile.flush()
+    ~~~~~~~~~~~~~~~~~~~^^
+OSError: [Errno 28] No space left on device
+Exception ignored while finalizing file <_io.BufferedRandom name='/Volumes/SSD990/cryptanalysis/.sage-build-tmp/runtime/cache/tmpolj0solm'>:
+OSError: [Errno 28] No space left on device
