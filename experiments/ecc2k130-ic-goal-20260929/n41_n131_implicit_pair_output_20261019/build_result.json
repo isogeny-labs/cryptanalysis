@@ -1,0 +1,40 @@
+{
+  "archived_field_kernel_sha256": "2a1aedf14e0e04ad21b43f9ce6ebff2f6c275056df82d57d663aa3b4f058db97",
+  "archived_field_source_sha256": "4bedc7d0012a0bcf5b006594d50924ca78b8956e3f99a615516c37564f86ee7a",
+  "candidate_id": null,
+  "compiler_version": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "entries": {
+    "implicit_pair": {
+      "binary_sha256": "a72f687130ce796003a9e64548ec74939bc86c6d2d255cc8051da6b4b6435513",
+      "command": [
+        "clang++",
+        "-O3",
+        "-std=c++17",
+        "-I",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w15_rotated_fouratom_inverse_20261010",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_implicit_pair_output_20261019/implicit_pair.cpp",
+        "-o",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_implicit_pair_output_20261019/implicit_pair"
+      ],
+      "source_sha256": "d6f19b6063342810e3c68d95639df52484e0a00598aefbe7e19293694d6c1959",
+      "status": "SUCCESS_WITH_ARCHIVED_INCLUDE_WARNING"
+    },
+    "terminal": {
+      "binary_sha256": "9e1be451c592342cfe00230ed2b0f486d41b33d9f0f1b06ac8698280eaa9520d",
+      "command": [
+        "clang++",
+        "-O3",
+        "-std=c++17",
+        "-I",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w15_rotated_fouratom_inverse_20261010",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_implicit_pair_output_20261019/terminal.cpp",
+        "-o",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_implicit_pair_output_20261019/terminal"
+      ],
+      "source_sha256": "b4e9adf4cdea1bbfce3672eb6d896e00f8b6deb67a55ee8d9677eb44a7a2278b",
+      "status": "SUCCESS_WITH_ARCHIVED_INCLUDE_WARNING"
+    }
+  },
+  "status": "PASS_NATIVE_BUILDS",
+  "warning": "The imported archived main, renamed and unused, emits a non-void return-path warning; both new mains compiled successfully."
+}
