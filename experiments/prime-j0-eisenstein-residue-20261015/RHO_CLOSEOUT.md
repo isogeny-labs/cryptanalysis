@@ -278,5 +278,15 @@ The observed order changes at eight restarts, so these measurements do not
 show a monotone crossover. All three modes had median child peak RSS of
 11,748 KiB at each count; the raw audit retains the per-arm measurements
 and target-preparation, evaluation, and retained-byte splits. The
-one-restart selection gate remains open while the fresh-Q full-worker
-confirmation in crypto PR #2137 runs.
+one-restart selection gate remains unknown after its A/A failure. In the
+[fresh-Q full-worker panels](https://github.com/aburan28/crypto/pull/2137),
+the 32-walker check-in-eight comparison completed 384 exact-output pairs
+but had one A/A ratio of 1.437258 outside its frozen band. The separate
+check-in-32 panel completed 768 arms and 384 pairs, of which 383 were
+valid; one batch A/A reference arm recorded one CPU-steal tick. Its
+comparison-only 32-Q ratio was 4.4912 with diagnostic interval
+[4.4069, 4.6637], while its qualified interval is null. Both audited
+aggregate statuses are `unknown_gate_failed`, so the worker default stays
+serial. A separately frozen 128-walker, check-in-64 production panel is
+running serially on the same host under the unchanged 1.05 lower-bound,
+exact-output, host, A/A, and memory gates.
