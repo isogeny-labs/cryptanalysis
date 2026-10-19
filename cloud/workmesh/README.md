@@ -1,6 +1,6 @@
 # Workmesh
 
-One downloadable Bash script to install and launch your research tools, Cairn node/host agent, Tailscale, Conductor integration, and coding CLIs. It supports Linux amd64/arm64 and macOS Intel/Apple Silicon; Windows uses WSL2. It uses Bash 3.2+ and Python 3.9+.
+One downloadable Bash script to install and launch research tools, a Cairn node/host agent, Tailscale, Conductor integration, and optional coding CLIs. It supports Linux amd64/arm64 and macOS Intel/Apple Silicon; Windows uses WSL2. It uses Bash 3.2+ and Python 3.9+.
 
 This was built from the connected `aburan28/crypto`, `cryptanalysis`, `cairn`, `conductor`, `crypto-autoresearcher`, `crypto-lean`, and `ecdlp-cost-challenge` sources. The repo references identify **Cairn**, PARI/GP, and both custom F4/F5 implementations and external msolve. `dependency-inventory.json` records the evidence and limits of the review.
 
@@ -35,9 +35,11 @@ The ordinary `bootstrap` path offers vendor login when stdin is a terminal. Pipe
 
 | Profile | Tools |
 | --- | --- |
-| `minimal` | C/C++, CMake/Ninja, native arithmetic build prerequisites, Rust, Go, Node, coding CLIs, cloud SDKs, node binaries, Tailscale, Docker CLI/host setup, runsc |
+| `minimal` | C/C++, CMake/Ninja, native arithmetic build prerequisites, Rust, Go, Node, optional coding CLIs, cloud SDKs, node binaries, Tailscale, Docker CLI/host setup, runsc |
 | `research` | Minimal plus a conda-forge Python environment, stock Sage if selected, PARI/GP, Singular, pinned msolve built from source, FLINT/NTL/fplll, lattice bindings, science/plotting packages, JupyterLab, SAT/SMT backends, ruff/mypy |
 | `full` | Research plus the cryptanalysis lint/debug gates, cargo-deny, staticcheck/govulncheck, Typst, and Linux APT LaTeX/PDF packages |
+
+Vendor coding CLIs are opt-in (`INSTALL_CLIS=yes`). Enabling this fetches and runs the current Claude, Cursor, and Elan installer scripts and installs npm package versions selected by the configured version variables. Review those upstream installers and choose explicit versions where reproducibility matters before enabling them.
 
 Optional flags add Lean at the repo's `v4.35.0` pin, a separate JAX `0.4.35` environment, a separate NVIDIA CUDA toolkit environment, or the `crypto-autoresearcher` API-direct LangGraph stack (`INSTALL_AGENT_STACK=yes`, invoked with `api-agent-python`). CUDA drivers and NVIDIA container device support belong to the host/provider. cuPQC, Magma, proprietary FGb builds, TPU `libtpu`, and FPGA vendor toolchains require their own matching SDK/license/hardware setup. OpenCode installs its documented `opencode-ai` v1 package; a v2 migration is a separate version choice.
 
