@@ -18,16 +18,16 @@ RULES = json.loads((HERE / "tier1-rules.json").read_text())
 
 
 def diagram():
-    fig, ax = plt.subplots(figsize=(11.8, 4.4))
+    fig, ax = plt.subplots(figsize=(12.0, 5.7))
     ax.set_xlim(0, 12)
-    ax.set_ylim(0, 4.5)
+    ax.set_ylim(0, 6)
     ax.axis("off")
     labels = [
-        (0.25, 2.4, 2.0, 1.1, "Prime norm radix\n268−τ; N=71,023"),
-        (2.65, 2.4, 2.0, 1.1, "Finite selector\n35,512 canonical residues"),
-        (5.05, 2.4, 2.0, 1.1, "15 contractions\nterminal norm < 82²"),
-        (7.45, 2.4, 2.0, 1.1, "Independent checks\n388 affine; 128 native"),
-        (9.85, 2.4, 1.9, 1.1, "Frozen Tier 1 panel\n48 pairs; 16 repeats"),
+        (0.25, 4.45, 2.0, 1.1, "Prime norm radix\n268−τ; N=71,023"),
+        (2.65, 4.45, 2.0, 1.1, "Finite selector\n35,512 canonical residues"),
+        (5.05, 4.45, 2.0, 1.1, "15 contractions\nterminal norm < 82²"),
+        (7.45, 4.45, 2.0, 1.1, "Independent checks\n388 affine; 128 native"),
+        (9.85, 4.45, 1.9, 1.1, "Frozen Tier 1 panel\n48 pairs; 16 repeats"),
     ]
     for x, y, w, h, label in labels:
         ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.08",
@@ -38,13 +38,31 @@ def diagram():
         nx = labels[i + 1][0]
         ax.add_patch(FancyArrowPatch((x + w + 0.08, y + h / 2), (nx - 0.08, y + h / 2),
                                      arrowstyle="-|>", mutation_scale=12, color="#526b7b"))
-    ax.text(6, 1.35,
+    ax.text(6, 3.55,
             "Proof scope: integer recoding and runtime tie rule; candidate-specific secp256k1 group bridge remains open",
             ha="center", va="center", fontsize=10, color="#7a3e20",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="#fff3e7", edgecolor="#c27642"))
-    ax.text(6, 0.55,
+    ax.text(6, 3.0,
             "The throughput result covers repeated hot-table scalar multiplication plus affine recovery; preparation and memory are reported separately.",
             ha="center", va="center", fontsize=9, color="#333333")
+    history = FancyBboxPatch((0.35, 0.45), 5.1, 1.8, boxstyle="round,pad=0.10",
+                             facecolor="#fff3e7", edgecolor="#c27642", linewidth=1.4)
+    ax.add_patch(history)
+    ax.text(2.9, 1.35,
+            "Historical panel: source e195374… and per-child RSS missing\n"
+            "Throughput remains qualified; original acceptance criteria are open",
+            ha="center", va="center", fontsize=9, color="#713d22")
+    rebuild = FancyBboxPatch((6.5, 0.45), 5.1, 1.8, boxstyle="round,pad=0.10",
+                             facecolor="#eef4fb", edgecolor="#345b7e", linewidth=1.4)
+    ax.add_patch(rebuild)
+    ax.text(9.05, 1.35,
+            "Reconstruction protocol v1: pinned recoverable source + frozen fingerprints\n"
+            "Future separate build; per-process RSS required; not run",
+            ha="center", va="center", fontsize=9, color="#263f54")
+    ax.add_patch(FancyArrowPatch((5.55, 1.35), (6.45, 1.35), arrowstyle="-|>",
+                                 mutation_scale=12, color="#526b7b"))
+    ax.text(6, 1.75, "new snapshot", ha="center", va="center", fontsize=7.5,
+            color="#526b7b", bbox=dict(facecolor="white", edgecolor="none", pad=1))
     fig.tight_layout()
     fig.savefig(OUT / "radix15-evidence-flow.svg", bbox_inches="tight")
     fig.savefig(OUT / "radix15-evidence-flow.pdf", bbox_inches="tight")
