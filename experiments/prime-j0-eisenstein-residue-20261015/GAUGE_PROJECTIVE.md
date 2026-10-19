@@ -49,8 +49,8 @@ and gauge comparison against the two-x table retains its independent
 **unknown after gate** status; the present same-gauge comparison does not
 repair that earlier panel's failed controls.
 
-The [raw panel](792dca682b8d4aa799e4745fb7dd1ce9/) and its
-[archive](792dca682b8d4aa799e4745fb7dd1ce9.tar.gz) retain every arm.
+The [raw panel archive](792dca682b8d4aa799e4745fb7dd1ce9.tar.gz)
+retains every arm.
 The raw archive SHA-256 is
 `34fb7b4b152f5ef0a5aa18790a3f59dfd0367640fc2b8e721e6166b7a8a52c43`.
 The [source and binary provenance archive](eisenstein-gauge-projective-native-provenance.tar.gz)

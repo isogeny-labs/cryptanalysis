@@ -206,7 +206,7 @@ repetitions and adjacent A/A gates from the
 [predeclared rules](tier1-eisenstein-reducer-cpu40-rules.json). Its RunPod
 job is `16ad0015d96b497ca15cc3de3ce090e6`.
 
-The completed [panel](16ad0015d96b497ca15cc3de3ce090e6/summary.json)
+The completed [panel archive](16ad0015d96b497ca15cc3de3ce090e6.tar.gz)
 contains 96 valid arms and all 48 planned pairs, with stable artifacts.
 Every adjacent A/A ratio passed `[0.90,1.11]`. The
 [audit](tier1-eisenstein-reducer-cpu40-audit.json) matched every raw output,
@@ -302,7 +302,7 @@ and [acceptance rules](tier1-eisenstein-montgomery-cpu40-rules.json) pair
 the fixed-limb Solinas and Montgomery kernels on 512 common scalars in
 16 alternating repetitions, with adjacent A/A controls on CPU 40. The
 serial RunPod job is `273359b6d2724700ad59ea1ddc978da8`.
-The completed [panel](273359b6d2724700ad59ea1ddc978da8/summary.json)
+The completed [panel archive](273359b6d2724700ad59ea1ddc978da8.tar.gz)
 contains all 96 valid arms and 48 valid pairs with stable source and binary
 artifacts. Every A/A ratio passed its frozen `[0.90,1.11]` gate. The
 [independent audit](tier1-eisenstein-montgomery-cpu40-audit.json) checked
@@ -413,3 +413,23 @@ replayed 12,288 points with the same norm-110557 table; their diagnostics
 were close to the all-affine path and are retained as stage evidence. The
 [source-linked report and phase-cost graph](HYBRID_TREE_REPORT_2026-10-19.md)
 keep their timing limits and source provenance explicit.
+
+## Raw receipt packaging for review
+
+Seven historical per-arm output directories were byte-for-byte duplicates
+of raw archives already committed with this study. Before removing the
+expanded copies from the PR, every regular file path and SHA-256 digest was
+compared against the corresponding tar member; all seven comparisons were
+exact, including empty stderr files. The archives retain the original job
+directory names and all manifests, preflights, arm outputs, pair ledgers and
+summaries.
+
+| Job directory | Raw archive | Files checked |
+| --- | --- | ---: |
+| `1068b7066ae148de9edfab8aff9075c0` | [archive](1068b7066ae148de9edfab8aff9075c0.tar.gz) | 261 |
+| `16ad0015d96b497ca15cc3de3ce090e6` | [archive](16ad0015d96b497ca15cc3de3ce090e6.tar.gz) | 197 |
+| `273359b6d2724700ad59ea1ddc978da8` | [archive](273359b6d2724700ad59ea1ddc978da8.tar.gz) | 197 |
+| `51a80dfd759e4d5e8d5196a0a031aa78` | [archive](alt-radix-tier1-raw.tar.gz) | 197 |
+| `792dca682b8d4aa799e4745fb7dd1ce9` | [archive](792dca682b8d4aa799e4745fb7dd1ce9.tar.gz) | 197 |
+| `c325c7ff36a74f0c8cd85db3024432f8` | [archive](c325c7ff36a74f0c8cd85db3024432f8.tar.gz) | 197 |
+| `e0d10d9a14e4406684212690eb680518` | [archive](cache10-tier1-raw.tar.gz) | 197 |

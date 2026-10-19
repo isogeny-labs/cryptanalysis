@@ -53,8 +53,7 @@ archive, and validated every raw arm. Its predeclared adjacent A/A gate was
 the `cal_after` ratio in repetition 10 was **1.1260534**. Both fall outside
 the gate, so each aggregate timing result is **unknown after the Tier 1
 gate**. Every arm and failed control is retained in the
-[raw result](1068b7066ae148de9edfab8aff9075c0/) and its
-[archive](1068b7066ae148de9edfab8aff9075c0.tar.gz).
+[raw archive](1068b7066ae148de9edfab8aff9075c0.tar.gz).
 
 | Same 12,288 scalar stream | Full two-x reference mean | Candidate mean | Descriptive paired reference/candidate median | Aggregate |
 | --- | ---: | ---: | ---: | --- |
