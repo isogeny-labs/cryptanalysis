@@ -7,7 +7,7 @@ This was built from the connected `aburan28/crypto`, `cryptanalysis`, `cairn`, `
 Download `bootstrap.sh` and keep your configuration outside the checkout. This branch exposes the standalone script at the URL below:
 
 ```bash
-BOOTSTRAP_URL=https://raw.githubusercontent.com/aburan28/cryptanalysis/refs/heads/codex/workmesh-bootstrap-20261019/cloud/workmesh/bootstrap.sh
+BOOTSTRAP_URL=https://raw.githubusercontent.com/aburan28/cryptanalysis/4e541abaf64b754f5f4f64057234ebcab4f4192a/cloud/workmesh/bootstrap.sh
 curl --fail --location --proto '=https' "$BOOTSTRAP_URL" -o bootstrap.sh
 chmod +x bootstrap.sh
 # Copy config.example.sh to ~/.config/workmesh.sh and edit the leader/peer settings.
@@ -16,7 +16,7 @@ bash bootstrap.sh bootstrap --config "$HOME/.config/workmesh.sh" --work-dir "$PW
 source "$HOME/.local/share/workmesh/env.sh"
 ```
 
-The branch URL follows updates during review. Replace the branch reference with a reviewed commit SHA for reproducible downloads. From a clone, run `bash cloud/workmesh/bootstrap.sh`; the script is self-contained. The companion files are documentation, platform adapters, an audit tool, and tests.
+The example pins this reviewed bootstrap commit. Update the URL only after reviewing the new source and choosing its immutable commit SHA. From a clone, run `bash cloud/workmesh/bootstrap.sh`; the script is self-contained. The companion files are documentation, platform adapters, an audit tool, and tests.
 
 `research` installs several GB of tools. Build an image once, then use `up` or `run` on subsequent starts:
 
