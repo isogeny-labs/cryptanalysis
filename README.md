@@ -734,6 +734,17 @@ host emulator; **it has not yet been run on a physical GPU**, because this
 development container has neither a device nor a complete CUDA toolkit. See
 the end of [docs/GPU.md](docs/GPU.md) for exactly what that means.
 
+### `ca volcano --jobs` performance evidence
+
+The PR's original 0.205 s and 0.101 s observations remain unverified because
+their curve, command, host and paired raw data were not retained; see the
+[historical evidence audit](docs/perf/volcano-jobs-historical-observation.md).
+The new, independent
+[native campaign protocol v1](experiments/volcano-jobs-native-v1/protocol.md)
+pins fresh KAT workloads and both code revisions. It has not been timed: the
+current container fails the required host-isolation preflight. The new campaign
+must not be described as recovery of the old timings.
+
 Not implemented (documented in `docs/ALGORITHMS.md`): the number field
 sieve (the state of the art for `F_p` above ~100 bits), index calculus on
 curves over extension fields (Semaev/Gaudry/Diem summation polynomials,

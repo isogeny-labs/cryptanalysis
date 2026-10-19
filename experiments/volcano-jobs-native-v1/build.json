@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "protocol": "volcano-jobs-native-v1",
+  "build_environment": {
+    "architecture": "x86_64",
+    "compiler": "cc (Debian 14.2.0-19) 14.2.0",
+    "cmake": "cmake version 4.4.4",
+    "build_type": "Release",
+    "c_flags_release": "-O3 -DNDEBUG",
+    "ca_native": false,
+    "command": "cmake -S <source> -B <build> -DCMAKE_BUILD_TYPE=Release -DCA_NATIVE=OFF -DCMAKE_C_FLAGS_RELEASE=-O3 -DNDEBUG; cmake --build <build> --target ca -j2"
+  },
+  "baseline": {
+    "commit": "b3d9c4fdece5ff698581c478d646a50c61eef029",
+    "build_path": "/workspace/cryptanalysis-pr963-bench-base-build",
+    "binary": "/workspace/cryptanalysis-pr963-bench-base-build/ca",
+    "binary_sha256": "917cfb812a6db653f6fb770f4030db53eead56a44e6d4fd65ff4755bfdc72adc",
+    "tools_ca_cli_c_sha256": "8e6dcfbe097380de4446ff357b291e7a5681c924708b46668b5277c37af4acb8",
+    "src_group_ec_c_sha256": "480fef577a6491035df302d4fe366971789127606857c26d54823dcdf1660c65",
+    "src_rho_c_sha256": "f70185777c179275343313e451a18ccb5c06f863fb3b34f4db96ec3b00f34199",
+    "src_volcano_c_sha256": "be4a7b750510cb42600b11eb70b131c9300c690bf2a1a7f677a3b55bd528584b"
+  },
+  "candidate": {
+    "commit": "d805fe6036bfefad6eabc74130df48366d4ae354",
+    "build_path": "/workspace/cryptanalysis-pr963/build-pr963",
+    "binary": "/workspace/cryptanalysis-pr963/build-pr963/ca",
+    "binary_sha256": "3faef0d9d99742cb6be2cbf02216dbaa62cb41c588920bdfdd70070288f59cf8",
+    "tools_ca_cli_c_sha256": "c47bb39ea98274b9a78819708d520c2ae560334a469bf051c7974b02e2e4b987",
+    "src_group_ec_c_sha256": "480fef577a6491035df302d4fe366971789127606857c26d54823dcdf1660c65",
+    "src_rho_c_sha256": "f70185777c179275343313e451a18ccb5c06f863fb3b34f4db96ec3b00f34199",
+    "src_volcano_c_sha256": "be4a7b750510cb42600b11eb70b131c9300c690bf2a1a7f677a3b55bd528584b"
+  },
+  "base_ref_note": "At setup, the target branch tip was b3d9c4f. The GitHub PR object reported base SHA 2215b23, an ancestor; commits since that SHA changed research/Lean/suite files but not the native CLI, group EC, rho, or volcano source files listed above."
+}

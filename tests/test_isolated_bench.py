@@ -25,6 +25,28 @@ class IsolatedBenchTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 bench.cpu_set(bad)
 
+    def test_execution_cpu_set_defaults_to_anchor_and_allows_isolated_workers(self):
+        self.assertEqual(bench.execution_cpu_set({"execution_cpu": 4}), {4})
+        self.assertEqual(bench.execution_cpu_set({"execution_cpu": 4,
+                                                   "execution_cpus": "4-7"}),
+                         {4, 5, 6, 7})
+        with self.assertRaises(ValueError):
+            bench.execution_cpu_set({"execution_cpu": 4, "execution_cpus": [4, 5]})
+
+    def test_frozen_expected_fields_and_result_are_enforced(self):
+        case = {"expected_fields": {"workload_id": "case-0", "solves": 36},
+                "expected_result": 17}
+        manifest = {"result_field": "answer"}
+        row = {"fields": {"workload_id": "case-0", "solves": "36", "answer": "17"}}
+        self.assertEqual(bench.expected_output_issues(row, case, manifest), [])
+        row["fields"]["answer"] = "18"
+        self.assertEqual(bench.expected_output_issues(row, case, manifest),
+                         ["expected result mismatch: answer"])
+        row["fields"]["workload_id"] = "wrong"
+        self.assertEqual(bench.expected_output_issues(row, case, manifest),
+                         ["expected field mismatch: workload_id",
+                          "expected result mismatch: answer"])
+
     def test_noise_invalidates_throttle_irq_steal_and_switch(self):
         before = {"cpu_stat": {"nr_throttled": 0, "throttled_usec": 0},
                   "memory_events": {"oom": 0, "oom_kill": 0},
@@ -107,10 +129,11 @@ class IsolatedBenchTests(unittest.TestCase):
             manifest["pair_fields"] = []
             with self.assertRaises(ValueError):
                 bench.require_manifest(manifest)
-            with bench.only_worker(root):
-                with self.assertRaises(RuntimeError):
-                    with bench.only_worker(root):
-                        pass
+            with mock.patch.object(bench, "WORKER_LOCK_PATH", root / "worker-global.lock"):
+                with bench.only_worker(root):
+                    with self.assertRaises(RuntimeError):
+                        with bench.only_worker(root):
+                            pass
 
     def test_tier1_manifest_is_explicit_and_receipt_is_hashed(self):
         with tempfile.TemporaryDirectory() as dirname:
@@ -140,6 +163,14 @@ class IsolatedBenchTests(unittest.TestCase):
                 change(altered)
                 with self.assertRaises(ValueError):
                     bench.require_manifest(altered)
+
+            multi = copy.deepcopy(manifest)
+            multi["isolation"] = {"cpus": "4-7", "execution_cpu": 4,
+                                  "execution_cpus": "4-7"}
+            self.assertEqual(bench.require_manifest(multi), ({4, 5, 6, 7}, set(), None))
+            multi["isolation"]["execution_cpus"] = "4-8"
+            with self.assertRaisesRegex(ValueError, "execution_cpus"):
+                bench.require_manifest(multi)
 
     def test_tier1_counter_events_invalidate_and_irq_is_observed(self):
         before = {"cpu_stat": {"nr_throttled": 0},
@@ -172,7 +203,7 @@ class IsolatedBenchTests(unittest.TestCase):
             self.assertTrue(result["ok"], result["problems"])
             self.assertEqual(result["evidence"]["container_effective_cpus"], [2, 13])
             effective = "2"
-            self.assertIn("execution CPU is outside container effective cpuset",
+            self.assertIn("execution CPUs are outside container effective cpuset",
                           bench.preflight_tier1(manifest)["problems"])
             effective = ""
             self.assertIn("container effective cpuset unavailable",
@@ -262,7 +293,8 @@ class IsolatedBenchTests(unittest.TestCase):
                            (job_id, "queued", 1 if job_id == "a" else 2,
                             json.dumps(manifest)))
             db.close()
-            bench.serve(root, once=True)
+            with mock.patch.object(bench, "WORKER_LOCK_PATH", root / "worker-global.lock"):
+                bench.serve(root, once=True)
             db = bench.database(root)
             self.assertEqual(db.execute("SELECT status FROM jobs WHERE id='a'").fetchone()[0], "rejected")
             self.assertEqual(db.execute("SELECT status FROM jobs WHERE id='b'").fetchone()[0], "queued")
