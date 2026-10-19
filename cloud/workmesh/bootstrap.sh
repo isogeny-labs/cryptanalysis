@@ -1120,7 +1120,7 @@ case "$COMMAND" in
   login) load_secrets; login_tools ;;
   remote) ensure_dirs; load_secrets; start_remote ;;
   doctor) load_secrets; [ ! -S "$STATE_DIR/tailscale/tailscaled.sock" ] || TS_SOCKET=$STATE_DIR/tailscale/tailscaled.sock; doctor ;;
-  stop) stop_all ;;
+  stop) stop_all all ;;
   export-peer)
     cairn seeds publish --identity "$STATE_DIR/cairn/node.identity.json" --out "$STATE_DIR/public-peer"
     ;;
