@@ -34,7 +34,8 @@ The Lean theorems formalize the norm and kernel implications. The exact
 binary-curve group-law translation, Frobenius rotation, finite source
 polynomials, field encoding, polynomial GCD implementation, exceptional
 factor removal, and subgroup point checks remain finite implementation
-bridges. The [eight-key census](../n41_implicit_pair_oracle_20261019/keys.json)
-and two independently enumerated exceptional controls provide group-law
-replay for the N41 instances. A generic Lean proof tying the Sage curve
-objects to the symbolic coordinate algebra remains open.
+bridges. The [eight-key census](../n41_implicit_pair_oracle_20261019/keys.json),
+the [diverse holdout](diverse_keys.json), and two independently enumerated
+exceptional controls provide group-law replay for the N41 instances. A
+generic Lean proof tying the Sage curve objects to the symbolic coordinate
+algebra remains open.

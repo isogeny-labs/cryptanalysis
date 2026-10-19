@@ -10,6 +10,12 @@ second point has `x=0`. A nine-term linearized annihilator represents the
 second-family source-product condition without its degree-142 dense point
 polynomial.
 
+A separately frozen [eight-key holdout](diverse_keys.json) spreads its four
+known members across first-state IDs `0, 71, 142, 213` and draws four
+public-query misses from the same four third-state IDs. The sparse method
+returned each archived member witness and GCD degree zero for every miss.
+This checks the first panel's concentration on first-state ID `0`.
+
 ## Exact construction
 
 The curve is `EC1N41Ckb1h7d5e80d3c4d0` over
@@ -41,6 +47,11 @@ finite implementation bridge.
 | Dense blocked evaluation, 12-coefficient blocks | 0.606 s | 35.785 s | 2.638–5.957 s | Same results and witnesses |
 | Sparse nine-term annihilator | 0.267 s | 23.866 s | 2.134–4.638 s | Same results and witnesses |
 | Prior direct 284-state scan | See prior receipt | 2.549 s | 0.211–0.543 s | Same eight exact labels |
+
+On the [diverse holdout](diverse_result.json), the sparse arm's eight
+query intervals totaled 22.334 seconds, with a 1.727–4.113-second range.
+Each member's GCD had degree one and matched its independently enumerated
+source-state pair; each nonmember's GCD had degree zero.
 
 These are ordinary-host algorithmic diagnostics with separate process
 runs, not a qualified CPU speedup comparison. The sparse run's raw maximum
@@ -84,7 +95,8 @@ online and same-point rho comparison remains downstream of that relation
 gate. `candidate_id` remains `null`.
 
 Run `python3 audit.py` to replay the [terminal audit](terminal_audit.json)
-over eight frozen protocols, 43 source hashes, the three ordinary-key
-arms, two exceptional controls, and three checked Lean theorems. All local
+over ten frozen protocols, 55 source hashes, the three original-key arms,
+the diverse holdout, two exceptional controls, and three checked Lean
+theorems. All local
 Sage runs used `/Volumes/SSD990/cryptanalysis/sage -python` and the
 [runtime receipt](sage_runtime_info.json) was captured before the queries.

@@ -19,6 +19,7 @@ protocols = ('protocol.json', 'bsgs_protocol.json', 'sparse_protocol.json',
              'special_prepare_protocol.json', 'special_protocol.json',
              'sparse_special_protocol.json',
              'zero_second_prepare_protocol.json', 'zero_second_protocol.json')
+protocols += ('diverse_prepare_protocol.json', 'diverse_protocol.json')
 source_count = 0
 for name in protocols:
     item = read(name)
@@ -41,6 +42,8 @@ special = read('special_result.json')
 sparse_special = read('sparse_special_result.json')
 zero_keys = read('zero_second_keys.json')
 zero = read('zero_second_result.json')
+diverse_keys = read('diverse_keys.json')
+diverse = read('diverse_result.json')
 assert len(keys) == 8
 assert original['first_x_count'] == original['second_x_count'] == 142
 assert original['first_polynomial_sha256'] == blocked['first_polynomial_sha256'] == special['first_polynomial_sha256']
@@ -70,6 +73,21 @@ assert zero_keys['status'] == 'PASS_N41_ZERO_SECOND_X_KEY_CENSUS'
 assert zero_keys['keys'][0]['exact_member'] == False
 assert zero['rows'][0]['zero_second_x_gcd_degree'] == 1
 assert zero['rows'][0]['oracle_member'] == False
+assert diverse_keys['status'] == 'PASS_N41_DIVERSE_KEY_CENSUS'
+assert diverse_keys['left_entries'] == diverse_keys['distinct_left_keys'] == 79424
+assert [key['reference_witness'][0] for key in diverse_keys['keys'][:4]] == [0, 71, 142, 213]
+assert [key['public_probe_state_ids'][0] for key in diverse_keys['keys'][4:]] == [0, 71, 142, 213]
+assert len(diverse['rows']) == len(diverse_keys['keys']) == 8
+assert diverse['annihilator_sha256'] == sparse['annihilator_sha256']
+for key, row in zip(diverse_keys['keys'], diverse['rows']):
+    assert row['key_id'] == key['key_id']
+    assert row['status'] == 'PASS_EXACT_KEY_AGREEMENT'
+    assert row['oracle_member'] == row['exact_member'] == key['exact_member']
+    assert row['norm_gcd_degree'] == (1 if key['exact_member'] else 0)
+    if key['exact_member']:
+        assert key['reference_witness'] in row['witnesses']
+    else:
+        assert not row['witnesses']
 lean = (HERE / 'lean.stdout').read_text()
 for theorem in ('norm_identity', 'norm_zero_iff_branch'):
     assert f"'QuadraticNorm.{theorem}' depends on axioms: [propext, Classical.choice, Quot.sound]" in lean
@@ -85,6 +103,7 @@ result = {'status': 'PASS_N41_JOINT_NORM_GCD_TERMINAL_AUDIT',
           'candidate_id': None, 'protocols_verified': len(protocols),
           'source_hashes_verified': source_count,
           'ordinary_keys_verified_in_each_arm': len(keys),
+          'diverse_holdout_keys_verified': len(diverse['rows']),
           'special_keys_verified': len(special['rows']) + len(zero['rows']),
           'first_attempt_status': failure['status'],
           'script_sha256': sha(__file__)}
