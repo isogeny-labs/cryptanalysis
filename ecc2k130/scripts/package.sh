@@ -24,10 +24,11 @@ case "$(uname -m)" in
     *) echo "unsupported machine $(uname -m)" >&2; exit 1 ;;
 esac
 
-# Ampere, Ada, Hopper, Blackwell datacentre and Blackwell workstation/consumer
-# as machine code, and compute_120 as PTX so that a newer part's driver can
-# compile it.  clmad exists from sm_80, so nothing older can run the kernel.
-ARCH="-gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 \
+# Turing, Ampere, Ada, Hopper, Blackwell datacentre and Blackwell
+# workstation/consumer as machine code, and compute_120 as PTX so that a newer
+# part's driver can compile it.  clmad exists from sm_80; the sm_75 slice takes
+# packed131.h's software carry-less product instead (ECC_USE_CLMAD_INSN).
+ARCH="-gencode arch=compute_75,code=sm_75 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_86,code=sm_86 \
 -gencode arch=compute_89,code=sm_89 -gencode arch=compute_90,code=sm_90 \
 -gencode arch=compute_100,code=sm_100 -gencode arch=compute_120,code=sm_120 \
 -gencode arch=compute_120,code=compute_120"
@@ -72,7 +73,7 @@ cryptanalysis $VERSION, linux-$MACHINE
 source: $(git rev-parse HEAD 2>/dev/null || echo unknown)
 ECC2K-130 walk: sigma
 nvcc: $("$NVCC" --version | tail -1)
-arch: sm_80 sm_86 sm_89 sm_90 sm_100 sm_120, compute_120 PTX
+arch: sm_75 sm_80 sm_86 sm_89 sm_90 sm_100 sm_120, compute_120 PTX
 EOF
 "$CANONICAL_STAGE/bin/cryptanalysis" rho --curve ecc2k130 --check \
     --kat "$CANONICAL_STAGE/share/cryptanalysis/campaign-kat.hex"
@@ -90,7 +91,7 @@ cat >"$STAGE/VERSION" <<EOF
 ec2k-gpu $VERSION, linux-$MACHINE, walk sigma (the ecc2k-130 campaign's)
 source: $(git rev-parse HEAD 2>/dev/null || echo unknown)
 nvcc: $("$NVCC" --version | tail -1)
-arch: sm_80 sm_86 sm_89 sm_90 sm_100 sm_120, compute_120 PTX
+arch: sm_75 sm_80 sm_86 sm_89 sm_90 sm_100 sm_120, compute_120 PTX
 EOF
 tar -C "$OUT" -czf "$OUT/$NAME.tar.gz" "$NAME"
 (cd "$OUT" && sha256sum "$NAME.tar.gz" >"$NAME.tar.gz.sha256")

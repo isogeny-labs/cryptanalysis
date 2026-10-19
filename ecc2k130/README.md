@@ -63,7 +63,7 @@ and every check is equality, not equivalence up to a basis change -- and
 
 Each [release](https://github.com/aburan28/cryptanalysis/releases) tagged
 `ec2k-gpu-v*` ships `ec2k-gpu` for Linux x86_64 and aarch64. Each binary is
-built for sm_80, 86, 89, 90, 100 and 120, with the CUDA runtime linked in, and
+built for sm_75, 80, 86, 89, 90, 100 and 120, with the CUDA runtime linked in, and
 needs only an NVIDIA driver recent enough for CUDA 13.3:
 
 ```sh

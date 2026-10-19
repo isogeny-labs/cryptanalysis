@@ -76,7 +76,22 @@ python3 experiments/fb-archive/compact_orbit_base_archive.py --verify-only
 
 The focused verify-only command checks all six archives against the committed
 source point sets and index rows. The repository-wide `fbarchive.py verify`
-currently reports three older unindexed archive files outside this family.
+reports no unindexed files (2,681 archives, 0 problems, 2026-10-16). Three
+older `.json.gz` files outside this family (`EC1N23...` `geomtraceu` l12 and
+l13 seed 1, `EC1N41...` `geomtraceu` l15 seed 1) were committed beside their
+indexed `.json.xz` archives but never indexed. Their decompressed content is
+byte-identical to the indexed `.xz` rows (same `content_sha256` and
+`factor_base_sha256`). Their gzip bytes are exactly what `fbarchive.py`'s
+`compress()` writes (level 9, `mtime` 0) except header byte 9, the OS byte:
+re-compressing each payload under Python 3.13 gives the same length and the
+same bytes apart from that byte (3 in the files, 255 from 3.13's
+`gzip.compress`). OS byte 3 does not mark another writer: 2,568 of the 2,664
+indexed `.json.gz` archives carry it (96 carry 255), so it reflects the Python
+/ zlib version that wrote them (checked 2026-10-17 for sheriff re-audit
+SHF-20261017-e4d7f6, K-N3, which corrected an earlier sentence here). Sheriff case
+SHF-20261016-3caa6f (finding X2) asked for them to be indexed or removed; they
+were indexed as new rows with their own `bytes` and `file_sha256`, which is the
+append-only route (no row or file was changed or deleted).
 
 `verify` rechecks every digest and count, and flags files that are not in the index.
 `--rebuild` also regenerates ordinary bases from their recipes and requires

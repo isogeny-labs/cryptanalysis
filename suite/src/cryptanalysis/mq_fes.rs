@@ -455,6 +455,7 @@ pub fn wide_lanes() -> Option<usize> {
 /// unrolled chunk and `n − k ≤ 32`.  Returns `None` when the host has
 /// neither AVX-512 nor AVX2 or the system does not fit, and otherwise the
 /// solutions (bit `i` = `x_i`, in no particular order) and the lane count.
+#[cfg_attr(not(target_arch = "x86_64"), allow(unused_variables, unused_mut))]
 pub fn gray_find_all_wide(
     forms: &[QuadraticForm],
     max_solutions: usize,

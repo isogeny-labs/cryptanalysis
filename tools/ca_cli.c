@@ -25,6 +25,10 @@
  *            (--ga GA --gad GAD | --alpha X)
  *   ca ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C]
  *            [--threads T] [--seed S] [--verbose]
+ *   ca crypto <args...>        dispatch to the Rust crypto CLI
+ *   ca crax <args...>          dispatch to the unified cryptanalysis CLI
+ *   ca icx <args...>           dispatch to the Rust elliptic-curve IC CLI
+ *   ca isogeny-walk <args...>  dispatch to the Rust isogeny walker
  *   ca num <op>   the number-theory surface of ca_modarith.h:
  *            powmod --base B --exp E --mod M | invmod --a A --mod M
  *            gcd --a A --b B | isqrt --n N | iroot --n N --k K
@@ -53,8 +57,9 @@
  * The coordinator itself is a separate service, in Go:
  * bindings/go/cmd/ca-coordinator (Helm chart in deploy/helm).
  *
- * Elements: Z_p^* "123"; E(F_p) "x,y" or "inf".  Output is one JSON object
- * on stdout; errors go to stderr.
+ * Elements: Z_p^* "123"; E(F_p) "x,y" or "inf". Native commands write one
+ * JSON object on stdout; delegated Rust commands retain their own format.
+ * Errors go to stderr.
  *
  * Exit status distinguishes three outcomes, so a shell caller can branch on
  * them without parsing the JSON:
@@ -181,6 +186,9 @@ static _Noreturn void usage(void)
         "  ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C] [--threads T] "
         "[--verbose]\n"
         "        index calculus in the multiplicative group of a prime field\n"
+        "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
+        "        delegate to the corresponding Rust CLI (binary override: CA_CRYPTO_BIN,\n"
+        "        CA_CRAX_BIN, CA_ICX_BIN, or CA_ISOGENY_WALK_BIN)\n"
         "  num   powmod|invmod|gcd|isqrt|iroot|sqrtmod|legendre|crt|next-prime|order|\n"
         "        primitive-root|sieve|mont  (see the header comment for each op's options)\n"
         "  group exp|div|order|generator|random|lift-x --group zp|ec --p P [--a A --b B] ...\n"
@@ -191,6 +199,37 @@ static _Noreturn void usage(void)
         "            [--lease-secs S] [--idle-when-solved]\n"
         "  coord-status [--coordinator URL] [--token-file F]\n");
     exit(2);
+}
+
+/* Keep the C number-theory API distinct while making the sibling Rust
+ * analysis tools reachable from the ca front door. execvp forwards the
+ * argument vector directly: no shell, quoting change, or copied credentials.
+ * The child owns stdout, stderr, and the exit status. */
+static int delegate_cli(const char *env_name, const char *default_binary)
+{
+    const char *configured = getenv(env_name);
+    const char *binary = configured && *configured ? configured : default_binary;
+    char **child = calloc((size_t)argc_g, sizeof(*child));
+    if (!child) {
+        fprintf(stderr, "error: cannot allocate argument vector\n");
+        return 2;
+    }
+    child[0] = malloc(strlen(binary) + 1);
+    if (!child[0]) {
+        free(child);
+        fprintf(stderr, "error: cannot allocate binary name\n");
+        return 2;
+    }
+    strcpy(child[0], binary);
+    for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
+    child[argc_g - 1] = NULL;
+    execvp(binary, child);
+    int saved_errno = errno;
+    fprintf(stderr, "error: cannot execute %s for %s: %s\n", binary, env_name,
+            strerror(saved_errno));
+    free(child[0]);
+    free(child);
+    return saved_errno == ENOENT ? 127 : 126;
 }
 
 static void make_group(ca_group *g)
@@ -1338,6 +1377,11 @@ int main(int argc, char **argv)
     argv_g = argv;
     if (argc < 2) usage();
     const char *cmd = argv[1];
+    if (!strcmp(cmd, "crypto")) return delegate_cli("CA_CRYPTO_BIN", "crypto");
+    if (!strcmp(cmd, "crax")) return delegate_cli("CA_CRAX_BIN", "crax");
+    if (!strcmp(cmd, "icx")) return delegate_cli("CA_ICX_BIN", "icx");
+    if (!strcmp(cmd, "isogeny-walk"))
+        return delegate_cli("CA_ISOGENY_WALK_BIN", "isogeny_walk");
     if (!strcmp(cmd, "version")) {
         printf("{\"version\":\"%s\"}\n", ca_version());
         return 0;

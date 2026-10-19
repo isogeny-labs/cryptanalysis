@@ -90,6 +90,19 @@ static uint64_t ec_hash(const ca_group *g, const ca_elem *a)
     return ca_mix64(FX(a) * 0x9E3779B97F4A7C15ULL ^ ca_mix64(FY(a)));
 }
 
+/* Montgomery product with the modulus and -(-p^{-1}) = p^{-1} passed in
+ * registers; the reduction of ca_mont_redc, so the same result. */
+static inline uint64_t bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+{
+    ca_u128 t = (ca_u128)a * b;
+    uint64_t u = (uint64_t)t * pinv_pos;
+    uint64_t hi = (uint64_t)(t >> 64);
+    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
+    uint64_t rr = hi - mh;
+    if (hi < mh) rr += p;
+    return rr;
+}
+
 /*
  * Batched affine addition with Montgomery's simultaneous inversion trick:
  * one field inversion for n additions at the cost of 3(n-1) extra
@@ -100,39 +113,62 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
                         size_t n, uint64_t *scratch)
 {
     if (n == 0) return;
+    /* The field constants go into locals first.  The stores below (r, and
+     * den/pre in scratch) are all uint64_t lvalues, so the compiler must
+     * assume each may overwrite g->p or g->mont and would reload them, and
+     * recompute -pinv, at every multiplication.  Same Montgomery reduction as
+     * ca_mont_redc, so the same residues. */
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
+    const uint64_t one = g->mont.r1;
+#define BM(x, y) bmul((x), (y), P, NPI)
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
     uint64_t *den = scratch;       /* n denominators */
     uint64_t *pre = scratch + n;   /* n prefix products */
-    const uint64_t one = g->mont.r1;
     for (size_t i = 0; i < n; i++) {
         uint64_t d;
         if (FINF(&a[i]) || FINF(&b[i])) d = one;
         else if (FX(&a[i]) == FX(&b[i])) {
-            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0) d = fadd(g, FY(&a[i]), FY(&a[i]));
+            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0)
+                d = BA(FY(&a[i]), FY(&a[i]));
             else d = one;
-        } else d = fsub(g, FX(&b[i]), FX(&a[i]));
+        } else
+            d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
-        pre[i] = i ? fmul(g, pre[i - 1], d) : d;
+        pre[i] = i ? BM(pre[i - 1], d) : d;
     }
     uint64_t inv = finv(g, pre[n - 1]);
     for (size_t i = n; i-- > 0;) {
-        uint64_t di = i ? fmul(g, inv, pre[i - 1]) : inv; /* den[i]^{-1} */
-        inv = fmul(g, inv, den[i]);
+        uint64_t di = i ? BM(inv, pre[i - 1]) : inv; /* den[i]^{-1} */
+        inv = BM(inv, den[i]);
         const ca_elem *A = &a[i], *B = &b[i];
         if (FINF(A)) { r[i] = *B; continue; }
         if (FINF(B)) { r[i] = *A; continue; }
-        if (FX(A) == FX(B)) {
-            if (FY(A) == FY(B) && FY(A) != 0) {
-                uint64_t x2 = fsqr(g, FX(A));
-                uint64_t num = fadd(g, fadd(g, fadd(g, x2, x2), x2), g->a_mont);
-                ec_add_with_inv(g, &r[i], A, A, fmul(g, num, di));
+        const uint64_t ax = FX(A), ay = FY(A);
+        uint64_t lam;
+        if (ax == FX(B)) {
+            if (ay == FY(B) && ay != 0) {
+                uint64_t x2 = bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
             } else {
                 ec_identity(g, &r[i]);
+                continue;
             }
-            continue;
+        } else {
+            lam = BM(BS(FY(B), ay), di);
         }
-        uint64_t lam = fmul(g, fsub(g, FY(B), FY(A)), di);
-        ec_add_with_inv(g, &r[i], A, B, lam);
+        const uint64_t bx = FX(B);
+        uint64_t x3 = BS(BS(bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
     }
+#undef BM
+#undef BA
+#undef BS
 }
 
 static int ec_on_curve_words(const ca_group *g, uint64_t x, uint64_t y)
@@ -365,6 +401,24 @@ void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed)
 
 /* ---- Mestre's point counting ------------------------------------------ */
 
+/* Fill consecutive multiples with one batched inversion per prefix
+ * expansion, plus its offset doubling.  Preserve affine-addition order. */
+static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
+                         size_t count, uint64_t *scratch)
+{
+    ec_identity(g, &out[0]);
+    if (count == 1) return;
+    out[1] = *base;
+    ca_elem addends[64];
+    for (size_t span = 2; span < count; span *= 2) {
+        ca_elem offset;
+        ec_dbl(g, &offset, &out[span / 2]);
+        size_t n = count - span < span ? count - span : span;
+        for (size_t i = 0; i < n; i++) addends[i] = offset;
+        ec_batch_op(g, out + span, out, addends, n, scratch);
+    }
+}
+
 /* All k in [lo, lo+width) with k*P == T, appended to out (up to cap).
  * Returns the number found (may exceed cap; only cap are stored). */
 static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem *T, uint64_t lo,
@@ -384,10 +438,11 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
     uint64_t small_order = 0;
     {
         const uint64_t first = m < EC_LANES ? m : EC_LANES;
-        ec_identity(g, &lane[0]);
-        for (uint64_t c = 1; c < first; c++) ec_op(g, &lane[c], &lane[c - 1], P);
-        ca_group_mul(g, &stride[0], P, EC_LANES, NULL);
-        for (int c = 1; c < EC_LANES; c++) stride[c] = stride[0];
+        ec_multiples(g, lane, P, (size_t)first, scratch);
+        if (m > EC_LANES) {
+            ec_dbl(g, &stride[0], &lane[EC_LANES / 2]);
+            for (int c = 1; c < EC_LANES; c++) stride[c] = stride[0];
+        }
         uint64_t steps_done = m;
         for (uint64_t j0 = 0; j0 < m && !small_order; j0 += EC_LANES) {
             const uint64_t n = m - j0 < EC_LANES ? m - j0 : EC_LANES;
@@ -442,9 +497,8 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
     uint64_t steps = m ? width / m + 1 : 1;
     /* giant[k] = k (-m P); a block is R + giant[k] for k < EC_LANES */
     ca_elem giant[EC_LANES], block_step, Rrep[EC_LANES];
-    ec_identity(g, &giant[0]);
-    for (int k = 1; k < EC_LANES; k++) ec_op(g, &giant[k], &giant[k - 1], &negmP);
-    ec_op(g, &block_step, &giant[EC_LANES - 1], &negmP);
+    ec_multiples(g, giant, &negmP, (size_t)(steps < EC_LANES ? steps : EC_LANES), scratch);
+    if (steps > EC_LANES) ec_dbl(g, &block_step, &giant[EC_LANES / 2]);
     for (uint64_t i0 = 0; i0 < steps; i0 += EC_LANES) {
         const uint64_t n = steps - i0 < EC_LANES ? steps - i0 : EC_LANES;
         for (uint64_t k = 0; k < n; k++) Rrep[k] = R;

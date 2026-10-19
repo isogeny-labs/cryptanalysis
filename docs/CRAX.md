@@ -15,13 +15,15 @@ The same binary is built by `make suite`.
 
 **Conventions:**
 
-- Every command accepts `--json`. It then prints exactly one JSON object on
-  stdout.
-- A command that reports an answer has checked that answer independently of
+- Every command accepts `--json`. Native `crax` commands return structured
+  fields. Older research commands return one JSON envelope with their native
+  output in `report_text`, diagnostics in `diagnostics_text`, and an exit code.
+- Native solver commands check any answer they mark solved independently of
   the solver that produced it. For a discrete log, one scalar multiplication
   or exponentiation checks it. For a factor, a multiplication checks it. For a
-  message, re-encryption checks it. The report says `"verified": true`, and an
-  unverified answer exits non-zero.
+  message, re-encryption checks it. Their report says `"verified": true`, and
+  an unverified answer exits non-zero. Older research commands retain their
+  own report and verification conventions.
 - Problems can be given completely (`--g`, `--h`, `--q`), or generated from a
   planted secret (`--x`). With a planted secret, the report also says whether
   the planted value was recovered.
@@ -41,17 +43,79 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
+| sibling crypto integration | `ic solve-prime \| solve-cubic`, `icx solve-prime \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
-| symmetric and hash | `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
+| symmetric and hash | `aes-attack`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
 | isogenies | `isogeny` |
 | distributed rho | `rho-collab` |
 | demos and research bench | `visual-all`, `aes-visual-demo`, `bench`, `ec-challenges` |
 
-The last five rows and `ic`/`icx` are the older research command lines:
+The symmetric, lattice, isogeny, distributed rho, and demo rows, plus native
+`ic`/`icx`, are the older research command lines:
 `ca-suite`, `ca-ic` and `ca-icx`. `crax` passes their arguments through to
 them unchanged, and their `--help`, flags and report formats are their own.
 The old binary names still work.
+
+The sibling crypto commands above execute the corresponding installed
+`ic`, `icx`, `isogeny_walk`, or `crypto` binary. Set `CRAX_IC_BIN`, `CRAX_ICX_BIN`,
+`CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN` to an explicit path when those
+executables are not on `PATH`. `crax` forwards arguments directly, preserves
+the child exit status, and wraps its JSON or text report when `--json` is
+requested. The native `crax icx` catalog and run commands remain in the suite.
+
+For an explicit public EC target, install the sibling `ic` executable or
+set `CRAX_IC_BIN`, then run:
+
+```sh
+crax --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
+  --gx 3 --gy 7 --qx 231 --qy 54
+```
+
+The bridge also accepts `solve-cubic`; `crax icx` accepts both commands too. Use
+`crax store` for the content-addressed S3 push, verify and pull commands, and
+`crax isogeny-walk` for route enumeration and verification.
+
+## SHA and AES commands
+
+```sh
+crax --json hash --algorithm sha256 --text abc
+crax --json hash --algorithm sha3-384 --hex 616263
+crax hash --algorithm shake256 --text abc --output-bytes 32
+crax --json aes-attack --technique differential --samples 4096
+crax --json aes-attack --technique linear --samples 4096
+crax --json aes-attack --technique square
+crax --json hash-auto --hash sha256
+crax --json hash-auto --hash sha3-256
+```
+
+`hash` accepts a single `--text`, `--hex`, or `--file` input and supports
+SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `--output-bytes` is required for
+SHAKE and bounded to 1 MiB. `hash-auto` runs a length-extension demonstration
+against SHA-256; SHA-3 uses a sponge, so that particular attack is not
+applicable. Its truncated birthday and differential-bias measurements remain
+available. `aes-attack` runs verified key recovery on the implemented
+AES-128 reduced-round differential (2), linear (1), or integral (4) models.
+These commands do not imply key recovery against full-round AES-128 or a
+collision against full-output SHA-2 or SHA-3.
+
+## Coverage of the cross-repository CLI path
+
+| Requested surface | Available command | Current boundary |
+| --- | --- | --- |
+| SHA-256, SHA-3, and related digests | `crax hash` | Native byte, text, and file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
+| Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 length extension, 32-bit truncated birthday search, and differential-bias measurements. SHA-3 has the generic measurements but no Merkle-Damgård length-extension step. |
+| AES differential and linear analysis | `crax aes-attack`, `crax sbox`, `crax auto` | Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
+| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic Gaudry factor base requires a counted full prime-order curve. `crax ic zp` remains multiplicative-group index calculus. |
+| Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime IC command checks point transport along a selected route. Cubic-field route transport is not implemented. |
+| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Small public-artifact round trips passed on `setec-astronomy-artifacts`; live multipart recovery is unverified. |
+
+The native cryptanalysis commands and the sibling bridges have separate build
+dependencies. Install the sibling `crypto`, `ic`, and `isogeny_walk` binaries
+or set their `CRAX_*_BIN` paths before using the corresponding rows. The
+explicit field ranges and reproducible public inputs are documented in the
+sibling `crypto:docs/ic/EXTERNAL_TARGET_CLI.md`; its
+`crypto:docs/store/README.md` defines the Setec S3 prefix and receipts.
 
 ## Discrete logarithms on the C library
 

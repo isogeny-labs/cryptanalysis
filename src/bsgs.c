@@ -80,8 +80,15 @@ ca_status ca_bsgs_table_new(const ca_group *g, const ca_elem *base, uint64_t m, 
     }
     for (uint64_t j0 = 0; j0 < m; j0 += BSGS_LANES) {
         const uint64_t n = m - j0 < BSGS_LANES ? m - j0 : BSGS_LANES;
+        /* hash the block first and request its slots together, so the
+         * table's cache misses overlap instead of queueing one by one */
+        uint64_t hs[BSGS_LANES];
         for (uint64_t c = 0; c < n; c++) {
-            int rc = ca_htab1_insert(&t->tab, ca_group_hash(g, &lane[c]), j0 + c, NULL);
+            hs[c] = ca_group_hash(g, &lane[c]);
+            ca_htab1_prefetch(&t->tab, hs[c]);
+        }
+        for (uint64_t c = 0; c < n; c++) {
+            int rc = ca_htab1_insert(&t->tab, hs[c], j0 + c, NULL);
             if (rc < 0) {
                 ca_bsgs_table_free(t);
                 return CA_ERR_NOMEM;
@@ -140,10 +147,15 @@ static ca_status bsgs_table_solve_impl(const ca_bsgs_table *t, const ca_elem *ta
         const uint64_t n = steps - i0 < BSGS_LANES ? steps - i0 : BSGS_LANES;
         for (uint64_t k = 0; k < n; k++) Rrep[k] = R;
         ca_group_batch_op(g, Rs, Rrep, t->giant, n, scratch);
+        uint64_t hs[BSGS_LANES];
+        for (uint64_t k = 0; k < n; k++) {
+            hs[k] = ca_group_hash(g, &Rs[k]);
+            ca_htab1_prefetch(&t->tab, hs[k]);
+        }
         for (uint64_t k = 0; k < n; k++) {
             const uint64_t i = i0 + k;
             uint64_t j;
-            if (ca_htab1_find(&t->tab, ca_group_hash(g, &Rs[k]), &j)) {
+            if (ca_htab1_find(&t->tab, hs[k], &j)) {
                 ca_u128 cand = (ca_u128)lo + (ca_u128)i * m + j;
                 if (cand <= hi) {
                     uint64_t cx = (uint64_t)cand;

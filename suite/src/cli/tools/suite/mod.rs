@@ -95,16 +95,16 @@ enum Cmd {
     /// --ignored --nocapture`, but from the command line.)
     Bench,
     /// Auto-run every applicable hash-function attack (length
-    /// extension, birthday collision, Joux multicollision,
-    /// differential bias) against the named hash.  Targets: md4, md5, sha1.
+    /// extension where applicable, truncated birthday collision, and
+    /// differential bias) against the named hash. Targets include SHA-256 and SHA3-256.
     HashAuto {
-        /// Hash identifier: `md4`, `md5`, or `sha1`.
+        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha3-256`.
         #[arg(long)]
         hash: String,
     },
     /// Length-extension attack demo against a Merkle-Damgård hash.
     LengthExtension {
-        /// Hash identifier: `md4`, `md5`, or `sha1`.
+        /// Hash identifier: `md4`, `md5`, `sha1`, or `sha256`.
         #[arg(long)]
         hash: String,
         /// Length (in bytes) of the unknown secret prefix.
@@ -635,11 +635,35 @@ fn run(op: Cmd) {
             digest_hex,
         } => {
             use crate::cryptanalysis::hash_attacks::{
-                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1,
+                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1, Sha256,
             };
-            let message = from_hex(&message_hex).expect("bad message hex");
-            let suffix = from_hex(&suffix_hex).expect("bad suffix hex");
-            let digest = from_hex(&digest_hex).expect("bad digest hex");
+            let parse_hex = |value: &str, flag: &str| {
+                from_hex(value).unwrap_or_else(|e| {
+                    eprintln!("error: invalid {flag}: {e}");
+                    std::process::exit(2);
+                })
+            };
+            let message = parse_hex(&message_hex, "--message-hex");
+            let suffix = parse_hex(&suffix_hex, "--suffix-hex");
+            let digest = parse_hex(&digest_hex, "--digest-hex");
+            let expected_digest_bytes = match hash.as_str() {
+                "md4" | "md5" => 16,
+                "sha1" => 20,
+                "sha256" | "sha-256" => 32,
+                other => {
+                    eprintln!(
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        other
+                    );
+                    std::process::exit(2);
+                }
+            };
+            if digest.len() != expected_digest_bytes {
+                eprintln!(
+                    "error: --digest-hex for {hash} must encode {expected_digest_bytes} bytes"
+                );
+                std::process::exit(2);
+            }
             let prefix_len = secret_len + message.len();
             fn report_lex<H: MerkleDamgardHash>(
                 hash: &H,
@@ -671,8 +695,12 @@ fn run(op: Cmd) {
                 "md4" => report_lex(&Md4, &digest, prefix_len, &message, &suffix),
                 "md5" => report_lex(&Md5, &digest, prefix_len, &message, &suffix),
                 "sha1" => report_lex(&Sha1, &digest, prefix_len, &message, &suffix),
+                "sha256" | "sha-256" => report_lex(&Sha256, &digest, prefix_len, &message, &suffix),
                 other => {
-                    eprintln!("error: unknown hash '{}' (try md4, md5, sha1)", other);
+                    eprintln!(
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        other
+                    );
                     std::process::exit(1);
                 }
             }
