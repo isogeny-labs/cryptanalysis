@@ -1,0 +1,1630 @@
+{
+ "first_exploratory_runs": {
+  "files": [
+   "prof_run1 (default)",
+   "run_prof_bin / run_prof_bin_clmul (3 rounds each)"
+  ],
+  "note": "two earlier 3-round runs of 20,000 states (same harness); the VM's per-round spread is large (production padd 247-322 ns per probe), so the 15-round medians above are the reported diagnostic"
+ },
+ "label": "LOCAL DIAGNOSTIC (cloud-agent VM, shared 4-vCPU Intel Xeon @ 2.1 GHz, transparent huge pages madvise, rustc 1.97.0); not timing evidence",
+ "lift_scan_alternative": {
+  "note": "standalone microbenchmark (rustc -O, same VM): a u128 branch-free rewrite of lift2::lift_scan_wide, checked equal to lift_scan and to the full scan on 65,536 random words, took 46-54 ns against 55-63 ns per word (about 1.15x); not pursued: no large exact cut of the key derivation"
+ },
+ "runs": {
+  "prof_bin": {
+   "build": "default build (the frozen build flags)",
+   "median_cumulative_ns_per_probe_frame_loop": {
+    "fold_rebuild": 0.35,
+    "plus_batched_inversion": 35.09,
+    "plus_lambda_maps_and_partners": 71.61,
+    "plus_lift_scan_keys": 133.91,
+    "plus_lookups": 233.23,
+    "plus_prefetch_and_key_store": 183.58,
+    "plus_prefix_products": 13.12,
+    "plus_root_xy": 3.79
+   },
+   "median_cumulative_ns_per_probe_rankcut_loop": {
+    "fold_rebuild": 0.35,
+    "plus_batched_inversion": 50.01,
+    "plus_inputs_maps_and_prefix_products": 29.33,
+    "plus_lambda_maps_and_partners": 89.13,
+    "plus_lift_scan_keys": 143.38,
+    "plus_lookups": 258.03,
+    "plus_prefetch_and_key_store": 200.52,
+    "plus_root_y": 4.07
+   },
+   "median_increment_ns_per_probe_frame_loop": {
+    "fold_rebuild": 0.35,
+    "plus_batched_inversion": 21.98,
+    "plus_lambda_maps_and_partners": 36.52,
+    "plus_lift_scan_keys": 62.3,
+    "plus_lookups": 49.64,
+    "plus_prefetch_and_key_store": 49.67,
+    "plus_prefix_products": 9.33,
+    "plus_root_xy": 3.45
+   },
+   "median_increment_ns_per_probe_rankcut_loop": {
+    "fold_rebuild": 0.35,
+    "plus_batched_inversion": 20.69,
+    "plus_inputs_maps_and_prefix_products": 25.25,
+    "plus_lambda_maps_and_partners": 39.12,
+    "plus_lift_scan_keys": 54.25,
+    "plus_lookups": 57.5,
+    "plus_prefetch_and_key_store": 57.15,
+    "plus_root_y": 3.72
+   },
+   "median_micro_ns_per_op": {
+    "invert128": 432.76,
+    "lift_scan": 40.81,
+    "mul": 16.86,
+    "rotate": 1.16,
+    "sqr": 14.97,
+    "to_normal_map": 14.61,
+    "to_poly_map": 14.34
+   },
+   "median_production_ns_per_probe": {
+    "compact_s3": 387.81,
+    "frame": 233.22,
+    "padd": 268.23
+   },
+   "padd_over_frame_per_round": {
+    "max": 1.4322,
+    "median": 1.1055,
+    "min": 0.8979
+   },
+   "production_probes_equal_across_loops": true,
+   "production_relations_found": [
+    1,
+    1,
+    1
+   ],
+   "raw_rounds": [
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3303207831325301,
+      "plus_batched_inversion": 31.676733935742973,
+      "plus_lambda_maps_and_partners": 65.72914357429718,
+      "plus_lift_scan_keys": 125.95343825301205,
+      "plus_lookups": 302.3514653614458,
+      "plus_prefetch_and_key_store": 174.7881144578313,
+      "plus_prefix_products": 12.991553714859437,
+      "plus_root_xy": 3.790352911646586
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.6042203815261045,
+      "plus_batched_inversion": 55.67646485943775,
+      "plus_inputs_maps_and_prefix_products": 45.58913805220884,
+      "plus_lambda_maps_and_partners": 97.11720130522089,
+      "plus_lift_scan_keys": 141.07225753012048,
+      "plus_lookups": 233.97567419678714,
+      "plus_prefetch_and_key_store": 188.24263704819276,
+      "plus_root_y": 5.745338353413654
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 427.1945037841797,
+      "lift_scan": 39.7349853515625,
+      "mul": 16.85062026977539,
+      "rotate": 1.1073455810546875,
+      "sqr": 14.204540252685547,
+      "to_normal_map": 15.267524719238281,
+      "to_poly_map": 14.340290069580078
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 344.8929486481072,
+      "frame": 233.21776040335615,
+      "padd": 273.0172336142842
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 0,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.34208534136546187,
+      "plus_batched_inversion": 35.09241064257028,
+      "plus_lambda_maps_and_partners": 77.76736495983936,
+      "plus_lift_scan_keys": 125.40817218875502,
+      "plus_lookups": 233.22866767068274,
+      "plus_prefetch_and_key_store": 210.58167620481927,
+      "plus_prefix_products": 15.482564257028113,
+      "plus_root_xy": 3.773192269076305
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.4039503012048193,
+      "plus_batched_inversion": 48.10764106425703,
+      "plus_inputs_maps_and_prefix_products": 28.768586847389557,
+      "plus_lambda_maps_and_partners": 93.00108684738956,
+      "plus_lift_scan_keys": 142.65732279116466,
+      "plus_lookups": 233.60068674698795,
+      "plus_prefetch_and_key_store": 200.52391315261045,
+      "plus_root_y": 3.9599211847389557
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 531.8249626159668,
+      "lift_scan": 42.53787612915039,
+      "mul": 20.49597930908203,
+      "rotate": 1.327301025390625,
+      "sqr": 14.677013397216797,
+      "to_normal_map": 14.800045013427734,
+      "to_poly_map": 19.200130462646484
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 399.59652435696535,
+      "frame": 239.19215600427577,
+      "padd": 258.45566099928254
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 1,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.34422791164658634,
+      "plus_batched_inversion": 35.53791516064257,
+      "plus_lambda_maps_and_partners": 69.71839457831325,
+      "plus_lift_scan_keys": 133.6131420682731,
+      "plus_lookups": 211.5401480923695,
+      "plus_prefetch_and_key_store": 181.9915903614458,
+      "plus_prefix_products": 12.672331325301204,
+      "plus_root_xy": 3.5033729919678716
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3245276104417671,
+      "plus_batched_inversion": 51.539388052208835,
+      "plus_inputs_maps_and_prefix_products": 29.32505672690763,
+      "plus_lambda_maps_and_partners": 94.84152409638554,
+      "plus_lift_scan_keys": 170.30865763052208,
+      "plus_lookups": 233.02682128514056,
+      "plus_prefetch_and_key_store": 201.83276656626506,
+      "plus_root_y": 3.933117469879518
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 474.10427474975586,
+      "lift_scan": 46.970977783203125,
+      "mul": 16.46379852294922,
+      "rotate": 8.220108032226562,
+      "sqr": 18.504150390625,
+      "to_normal_map": 14.14630126953125,
+      "to_poly_map": 13.814216613769531
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 347.18670585618537,
+      "frame": 260.88031464751776,
+      "padd": 258.3431610055586
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 2,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.5128504016064257,
+      "plus_batched_inversion": 32.17679769076305,
+      "plus_lambda_maps_and_partners": 89.10201154618474,
+      "plus_lift_scan_keys": 145.0523172690763,
+      "plus_lookups": 223.4943855421687,
+      "plus_prefetch_and_key_store": 186.720359437751,
+      "plus_prefix_products": 14.276079819277108,
+      "plus_root_xy": 5.034287650602409
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.39123644578313255,
+      "plus_batched_inversion": 47.301645080321286,
+      "plus_inputs_maps_and_prefix_products": 28.24059487951807,
+      "plus_lambda_maps_and_partners": 78.87998343373494,
+      "plus_lift_scan_keys": 138.74000451807228,
+      "plus_lookups": 241.68643624497992,
+      "plus_prefetch_and_key_store": 189.09466817269077,
+      "plus_root_y": 4.0864994979919675
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 543.0225563049316,
+      "lift_scan": 51.073326110839844,
+      "mul": 21.190261840820312,
+      "rotate": 1.1764411926269531,
+      "sqr": 19.026424407958984,
+      "to_normal_map": 25.867603302001953,
+      "to_poly_map": 17.84469223022461
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 416.76535443033526,
+      "frame": 238.8927683990824,
+      "padd": 267.0895044356825
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 3,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.34659036144578315,
+      "plus_batched_inversion": 36.096647088353414,
+      "plus_lambda_maps_and_partners": 76.96099347389558,
+      "plus_lift_scan_keys": 145.72384337349396,
+      "plus_lookups": 287.1583945783133,
+      "plus_prefetch_and_key_store": 215.67236295180723,
+      "plus_prefix_products": 12.869674698795182,
+      "plus_root_xy": 3.688136044176707
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.4221531124497992,
+      "plus_batched_inversion": 53.39631977911647,
+      "plus_inputs_maps_and_prefix_products": 35.03794929718875,
+      "plus_lambda_maps_and_partners": 96.76237248995984,
+      "plus_lift_scan_keys": 164.66974598393574,
+      "plus_lookups": 227.53313353413654,
+      "plus_prefetch_and_key_store": 200.81040261044177,
+      "plus_root_y": 4.021914156626506
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 424.5889701843262,
+      "lift_scan": 39.9868049621582,
+      "mul": 22.16687774658203,
+      "rotate": 1.3774528503417969,
+      "sqr": 21.662006378173828,
+      "to_normal_map": 27.412124633789062,
+      "to_poly_map": 28.138442993164062
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 422.0753144692771,
+      "frame": 330.38759464956627,
+      "padd": 319.8022161090411
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 4,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.47876455823293174,
+      "plus_batched_inversion": 44.50323644578313,
+      "plus_lambda_maps_and_partners": 99.7949578313253,
+      "plus_lift_scan_keys": 133.91089407630523,
+      "plus_lookups": 280.80950903614456,
+      "plus_prefetch_and_key_store": 225.37442068273091,
+      "plus_prefix_products": 18.43693875502008,
+      "plus_root_xy": 5.630307228915663
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3692113453815261,
+      "plus_batched_inversion": 56.231662148594374,
+      "plus_inputs_maps_and_prefix_products": 28.38675050200803,
+      "plus_lambda_maps_and_partners": 108.29725552208835,
+      "plus_lift_scan_keys": 165.43880672690764,
+      "plus_lookups": 355.58812700803213,
+      "plus_prefetch_and_key_store": 264.80149447791166,
+      "plus_root_y": 3.8974969879518073
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 493.5722351074219,
+      "lift_scan": 40.808284759521484,
+      "mul": 17.224384307861328,
+      "rotate": 1.202056884765625,
+      "sqr": 15.725605010986328,
+      "to_normal_map": 15.561904907226562,
+      "to_poly_map": 15.540885925292969
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 523.7460030155311,
+      "frame": 224.34002095708718,
+      "padd": 286.3757659955947
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 5,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.49403714859437753,
+      "plus_batched_inversion": 42.71037901606426,
+      "plus_lambda_maps_and_partners": 91.30008734939759,
+      "plus_lift_scan_keys": 155.77673493975902,
+      "plus_lookups": 302.3787715863454,
+      "plus_prefetch_and_key_store": 248.5908925702811,
+      "plus_prefix_products": 17.97461797188755,
+      "plus_root_xy": 4.993057228915663
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.389339859437751,
+      "plus_batched_inversion": 60.834766064257025,
+      "plus_inputs_maps_and_prefix_products": 30.523103915662652,
+      "plus_lambda_maps_and_partners": 84.29704467871485,
+      "plus_lift_scan_keys": 156.9749091365462,
+      "plus_lookups": 274.9593378514056,
+      "plus_prefetch_and_key_store": 223.42834136546185,
+      "plus_root_y": 4.073325803212851
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 468.3519477844238,
+      "lift_scan": 46.03966522216797,
+      "mul": 20.224777221679688,
+      "rotate": 1.1198997497558594,
+      "sqr": 22.666988372802734,
+      "to_normal_map": 14.606319427490234,
+      "to_poly_map": 21.567062377929688
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 424.6620310701118,
+      "frame": 219.10275499839582,
+      "padd": 313.7959686477156
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 6,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.33420130522088354,
+      "plus_batched_inversion": 31.010668172690764,
+      "plus_lambda_maps_and_partners": 64.76329919678714,
+      "plus_lift_scan_keys": 123.23214558232932,
+      "plus_lookups": 218.15094628514055,
+      "plus_prefetch_and_key_store": 188.37625853413655,
+      "plus_prefix_products": 12.54025251004016,
+      "plus_root_xy": 3.443120481927711
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3246089357429719,
+      "plus_batched_inversion": 49.21439809236948,
+      "plus_inputs_maps_and_prefix_products": 35.35423795180723,
+      "plus_lambda_maps_and_partners": 93.22596285140563,
+      "plus_lift_scan_keys": 146.67455170682732,
+      "plus_lookups": 347.06817921686746,
+      "plus_prefetch_and_key_store": 198.15317570281124,
+      "plus_root_y": 3.937737449799197
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 505.8931999206543,
+      "lift_scan": 45.21198272705078,
+      "mul": 30.10175323486328,
+      "rotate": 1.8680458068847656,
+      "sqr": 22.943431854248047,
+      "to_normal_map": 14.425239562988281,
+      "to_poly_map": 15.177082061767578
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 409.4919442744324,
+      "frame": 232.22552617401612,
+      "padd": 324.47882877296604
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 7,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.49627008032128517,
+      "plus_batched_inversion": 36.46076355421687,
+      "plus_lambda_maps_and_partners": 88.2754357429719,
+      "plus_lift_scan_keys": 140.53290512048193,
+      "plus_lookups": 201.76277459839358,
+      "plus_prefetch_and_key_store": 162.40647088353413,
+      "plus_prefix_products": 15.709935240963855,
+      "plus_root_xy": 4.397226907630522
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3379181726907631,
+      "plus_batched_inversion": 57.78067771084337,
+      "plus_inputs_maps_and_prefix_products": 42.82104267068273,
+      "plus_lambda_maps_and_partners": 85.63739809236948,
+      "plus_lift_scan_keys": 171.89076656626506,
+      "plus_lookups": 318.9615592369478,
+      "plus_prefetch_and_key_store": 247.1477048192771,
+      "plus_root_y": 4.162213353413654
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 427.8767395019531,
+      "lift_scan": 39.70733642578125,
+      "mul": 16.552040100097656,
+      "rotate": 1.1537818908691406,
+      "sqr": 14.257041931152344,
+      "to_normal_map": 13.583595275878906,
+      "to_poly_map": 13.740516662597656
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 356.5426630362471,
+      "frame": 235.04561957213198,
+      "padd": 233.1796158938469
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 8,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3207771084337349,
+      "plus_batched_inversion": 32.01061495983936,
+      "plus_lambda_maps_and_partners": 65.72383032128513,
+      "plus_lift_scan_keys": 124.39164206827309,
+      "plus_lookups": 284.1282921686747,
+      "plus_prefetch_and_key_store": 165.34841666666668,
+      "plus_prefix_products": 12.750854919678714,
+      "plus_root_xy": 3.4420341365461846
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.35416516064257025,
+      "plus_batched_inversion": 48.60155823293173,
+      "plus_inputs_maps_and_prefix_products": 28.920991465863455,
+      "plus_lambda_maps_and_partners": 78.28641917670683,
+      "plus_lift_scan_keys": 140.35407078313253,
+      "plus_lookups": 247.8094482931727,
+      "plus_prefetch_and_key_store": 192.54875100401605,
+      "plus_root_y": 4.4047525100401606
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 432.34218978881836,
+      "lift_scan": 40.9562873840332,
+      "mul": 16.861339569091797,
+      "rotate": 1.104736328125,
+      "sqr": 14.695098876953125,
+      "to_normal_map": 14.119964599609375,
+      "to_poly_map": 14.039131164550781
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 387.8072319523781,
+      "frame": 228.37708748705245,
+      "padd": 252.461233154373
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 9,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3169151606425703,
+      "plus_batched_inversion": 32.4647781124498,
+      "plus_lambda_maps_and_partners": 66.16106375502008,
+      "plus_lift_scan_keys": 139.26298192771085,
+      "plus_lookups": 296.57939106425704,
+      "plus_prefetch_and_key_store": 198.89153162650604,
+      "plus_prefix_products": 13.004851907630522,
+      "plus_root_xy": 3.7915210843373495
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3359272088353414,
+      "plus_batched_inversion": 47.79136445783133,
+      "plus_inputs_maps_and_prefix_products": 36.46931977911647,
+      "plus_lambda_maps_and_partners": 88.84872841365461,
+      "plus_lift_scan_keys": 137.13958985943776,
+      "plus_lookups": 290.4194312248996,
+      "plus_prefetch_and_key_store": 275.67930722891566,
+      "plus_root_y": 4.5640110441767066
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 595.6231727600098,
+      "lift_scan": 53.71172332763672,
+      "mul": 21.94176483154297,
+      "rotate": 2.1868057250976562,
+      "sqr": 25.54184341430664,
+      "to_normal_map": 25.751392364501953,
+      "to_poly_map": 25.779151916503906
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 420.7374308940804,
+      "frame": 280.9151318303209,
+      "padd": 274.4024483742191
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 10,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3539156626506024,
+      "plus_batched_inversion": 31.483008534136545,
+      "plus_lambda_maps_and_partners": 64.78504417670683,
+      "plus_lift_scan_keys": 123.15179016064258,
+      "plus_lookups": 218.05545130522088,
+      "plus_prefetch_and_key_store": 170.6306752008032,
+      "plus_prefix_products": 13.117323795180724,
+      "plus_root_xy": 3.4809367469879517
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.4798990963855422,
+      "plus_batched_inversion": 50.296548192771084,
+      "plus_inputs_maps_and_prefix_products": 50.445698795180725,
+      "plus_lambda_maps_and_partners": 89.12717319277108,
+      "plus_lift_scan_keys": 206.44850702811246,
+      "plus_lookups": 278.8988534136546,
+      "plus_prefetch_and_key_store": 318.35535240963856,
+      "plus_root_y": 5.505954317269076
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 417.87296295166016,
+      "lift_scan": 40.394588470458984,
+      "mul": 16.529186248779297,
+      "rotate": 1.1491661071777344,
+      "sqr": 14.261844635009766,
+      "to_normal_map": 13.618385314941406,
+      "to_poly_map": 13.713340759277344
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 344.97920960551573,
+      "frame": 298.74495767160437,
+      "padd": 268.22989733838966
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 11,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.33368975903614456,
+      "plus_batched_inversion": 43.28094879518072,
+      "plus_lambda_maps_and_partners": 81.49318775100402,
+      "plus_lift_scan_keys": 138.58260542168674,
+      "plus_lookups": 222.4996470883534,
+      "plus_prefetch_and_key_store": 183.58446837349396,
+      "plus_prefix_products": 15.730854919678714,
+      "plus_root_xy": 4.270906124497992
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.33469628514056227,
+      "plus_batched_inversion": 50.011446285140565,
+      "plus_inputs_maps_and_prefix_products": 27.046868473895582,
+      "plus_lambda_maps_and_partners": 92.5520095381526,
+      "plus_lift_scan_keys": 138.85387851405622,
+      "plus_lookups": 266.6603027108434,
+      "plus_prefetch_and_key_store": 193.19677660642571,
+      "plus_root_y": 3.674535642570281
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 428.1856803894043,
+      "lift_scan": 40.6003532409668,
+      "mul": 16.73633575439453,
+      "rotate": 1.1206436157226562,
+      "sqr": 14.388263702392578,
+      "to_normal_map": 17.201618194580078,
+      "to_poly_map": 14.283332824707031
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 341.0766123626731,
+      "frame": 218.14509895872297,
+      "padd": 239.1918095646459
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 12,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.34523343373493975,
+      "plus_batched_inversion": 32.510684738955824,
+      "plus_lambda_maps_and_partners": 69.06231927710843,
+      "plus_lift_scan_keys": 127.07188052208835,
+      "plus_lookups": 242.57594628514056,
+      "plus_prefetch_and_key_store": 175.27158634538154,
+      "plus_prefix_products": 13.090451807228916,
+      "plus_root_xy": 3.733050702811245
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3196661646586345,
+      "plus_batched_inversion": 46.12156676706827,
+      "plus_inputs_maps_and_prefix_products": 27.58125,
+      "plus_lambda_maps_and_partners": 77.73136144578314,
+      "plus_lift_scan_keys": 141.8482575301205,
+      "plus_lookups": 225.81401556224898,
+      "plus_prefetch_and_key_store": 188.1250346385542,
+      "plus_root_y": 3.665086847389558
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 432.75658416748047,
+      "lift_scan": 39.611480712890625,
+      "mul": 16.503528594970703,
+      "rotate": 1.1554450988769531,
+      "sqr": 14.965396881103516,
+      "to_normal_map": 13.622936248779297,
+      "to_poly_map": 13.767494201660156
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 375.8508943916445,
+      "frame": 215.9110589052809,
+      "padd": 264.2671295568736
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 13,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.36654819277108436,
+      "plus_batched_inversion": 36.97669779116466,
+      "plus_lambda_maps_and_partners": 71.61014959839358,
+      "plus_lift_scan_keys": 136.4706480923695,
+      "plus_lookups": 211.15857429718875,
+      "plus_prefetch_and_key_store": 178.43376355421688,
+      "plus_prefix_products": 16.51848544176707,
+      "plus_root_xy": 4.149050200803213
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3254969879518072,
+      "plus_batched_inversion": 46.14031576305221,
+      "plus_inputs_maps_and_prefix_products": 27.621258032128512,
+      "plus_lambda_maps_and_partners": 78.77945833333334,
+      "plus_lift_scan_keys": 143.37844477911648,
+      "plus_lookups": 258.02745080321284,
+      "plus_prefetch_and_key_store": 192.20195080321284,
+      "plus_root_y": 4.084640060240964
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 428.0101776123047,
+      "lift_scan": 39.79486846923828,
+      "mul": 16.63233184814453,
+      "rotate": 1.1504364013671875,
+      "sqr": 14.257274627685547,
+      "to_normal_map": 13.62148666381836,
+      "to_poly_map": 13.781414031982422
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 343.37372049551914,
+      "frame": 226.63241048175695,
+      "padd": 296.176478857894
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 14,
+     "states": 6000
+    }
+   ],
+   "rounds": 15,
+   "states_per_round": 6000
+  },
+  "prof_bin_clmul": {
+   "build": "RUSTFLAGS=-C target-feature=+pclmulqdq (inlined carry-less multiply; not a candidate build)",
+   "median_cumulative_ns_per_probe_frame_loop": {
+    "fold_rebuild": 0.34,
+    "plus_batched_inversion": 29.12,
+    "plus_lambda_maps_and_partners": 67.66,
+    "plus_lift_scan_keys": 130.12,
+    "plus_lookups": 232.22,
+    "plus_prefetch_and_key_store": 185.45,
+    "plus_prefix_products": 12.7,
+    "plus_root_xy": 3.78
+   },
+   "median_cumulative_ns_per_probe_rankcut_loop": {
+    "fold_rebuild": 0.38,
+    "plus_batched_inversion": 44.32,
+    "plus_inputs_maps_and_prefix_products": 28.72,
+    "plus_lambda_maps_and_partners": 78.21,
+    "plus_lift_scan_keys": 137.26,
+    "plus_lookups": 241.66,
+    "plus_prefetch_and_key_store": 201.59,
+    "plus_root_y": 4.15
+   },
+   "median_increment_ns_per_probe_frame_loop": {
+    "fold_rebuild": 0.34,
+    "plus_batched_inversion": 16.42,
+    "plus_lambda_maps_and_partners": 38.54,
+    "plus_lift_scan_keys": 62.46,
+    "plus_lookups": 46.77,
+    "plus_prefetch_and_key_store": 55.33,
+    "plus_prefix_products": 8.92,
+    "plus_root_xy": 3.44
+   },
+   "median_increment_ns_per_probe_rankcut_loop": {
+    "fold_rebuild": 0.38,
+    "plus_batched_inversion": 15.6,
+    "plus_inputs_maps_and_prefix_products": 24.56,
+    "plus_lambda_maps_and_partners": 33.89,
+    "plus_lift_scan_keys": 59.05,
+    "plus_lookups": 40.08,
+    "plus_prefetch_and_key_store": 64.33,
+    "plus_root_y": 3.78
+   },
+   "median_micro_ns_per_op": {
+    "invert128": 441.52,
+    "lift_scan": 40.3,
+    "mul": 11.12,
+    "rotate": 1.15,
+    "sqr": 14.64,
+    "to_normal_map": 14.04,
+    "to_poly_map": 14.93
+   },
+   "median_production_ns_per_probe": {
+    "compact_s3": 349.69,
+    "frame": 257.06,
+    "padd": 286.92
+   },
+   "padd_over_frame_per_round": {
+    "max": 1.4971,
+    "median": 1.0993,
+    "min": 0.8774
+   },
+   "production_probes_equal_across_loops": true,
+   "production_relations_found": [
+    1,
+    1,
+    1
+   ],
+   "raw_rounds": [
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.34837399598393576,
+      "plus_batched_inversion": 27.90350251004016,
+      "plus_lambda_maps_and_partners": 61.464451305220884,
+      "plus_lift_scan_keys": 122.97302008032129,
+      "plus_lookups": 238.60662248995985,
+      "plus_prefetch_and_key_store": 187.76816465863453,
+      "plus_prefix_products": 12.774742469879518,
+      "plus_root_xy": 3.532006526104418
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.419120983935743,
+      "plus_batched_inversion": 40.366322791164656,
+      "plus_inputs_maps_and_prefix_products": 26.26152359437751,
+      "plus_lambda_maps_and_partners": 71.11214759036145,
+      "plus_lift_scan_keys": 131.6049467871486,
+      "plus_lookups": 258.1990326305221,
+      "plus_prefetch_and_key_store": 201.5871782128514,
+      "plus_root_y": 3.682663654618474
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 477.4583206176758,
+      "lift_scan": 39.682029724121094,
+      "mul": 11.119705200195312,
+      "rotate": 1.1071319580078125,
+      "sqr": 14.636127471923828,
+      "to_normal_map": 14.369922637939453,
+      "to_poly_map": 14.106834411621094
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 414.4141761088202,
+      "frame": 229.3760105116813,
+      "padd": 252.1523490866295
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 0,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.31060090361445786,
+      "plus_batched_inversion": 29.369095381526105,
+      "plus_lambda_maps_and_partners": 62.97902309236948,
+      "plus_lift_scan_keys": 125.6915251004016,
+      "plus_lookups": 237.51790512048194,
+      "plus_prefetch_and_key_store": 178.0241375502008,
+      "plus_prefix_products": 12.899699297188755,
+      "plus_root_xy": 3.9820396586345383
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.30894076305220886,
+      "plus_batched_inversion": 60.34815361445783,
+      "plus_inputs_maps_and_prefix_products": 29.74023343373494,
+      "plus_lambda_maps_and_partners": 98.48344779116466,
+      "plus_lift_scan_keys": 131.03698192771085,
+      "plus_lookups": 240.79148845381525,
+      "plus_prefetch_and_key_store": 180.9151701807229,
+      "plus_root_y": 4.375598393574297
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 441.5206718444824,
+      "lift_scan": 41.15869903564453,
+      "mul": 10.871456146240234,
+      "rotate": 1.1077766418457031,
+      "sqr": 14.65114974975586,
+      "to_normal_map": 14.827411651611328,
+      "to_poly_map": 17.176746368408203
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 305.85881078823047,
+      "frame": 229.74879411394048,
+      "padd": 218.07055167749584
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 1,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3239738955823293,
+      "plus_batched_inversion": 28.546829819277107,
+      "plus_lambda_maps_and_partners": 65.57750652610441,
+      "plus_lift_scan_keys": 130.11698142570282,
+      "plus_lookups": 231.6610481927711,
+      "plus_prefetch_and_key_store": 164.3727625502008,
+      "plus_prefix_products": 12.626582831325301,
+      "plus_root_xy": 3.5701516064257026
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3566059236947791,
+      "plus_batched_inversion": 52.292308232931724,
+      "plus_inputs_maps_and_prefix_products": 28.272652108433736,
+      "plus_lambda_maps_and_partners": 85.07167168674698,
+      "plus_lift_scan_keys": 180.63190712851406,
+      "plus_lookups": 237.92236144578314,
+      "plus_prefetch_and_key_store": 179.19691214859438,
+      "plus_root_y": 3.950733935742972
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 669.5460548400879,
+      "lift_scan": 55.02436828613281,
+      "mul": 21.088764190673828,
+      "rotate": 2.185863494873047,
+      "sqr": 25.79702377319336,
+      "to_normal_map": 26.608596801757812,
+      "to_poly_map": 25.849979400634766
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 346.1605396224009,
+      "frame": 229.4644274281778,
+      "padd": 285.77591883070096
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 2,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3350848393574297,
+      "plus_batched_inversion": 27.77451857429719,
+      "plus_lambda_maps_and_partners": 77.9650391566265,
+      "plus_lift_scan_keys": 164.9913157630522,
+      "plus_lookups": 268.0171576305221,
+      "plus_prefetch_and_key_store": 245.71970632530122,
+      "plus_prefix_products": 12.366465863453815,
+      "plus_root_xy": 3.8744503012048193
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.483675702811245,
+      "plus_batched_inversion": 42.60028915662651,
+      "plus_inputs_maps_and_prefix_products": 28.717008032128515,
+      "plus_lambda_maps_and_partners": 81.31428212851405,
+      "plus_lift_scan_keys": 137.96609437751005,
+      "plus_lookups": 232.6170813253012,
+      "plus_prefetch_and_key_store": 188.00107881526105,
+      "plus_root_y": 6.211639056224899
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 448.1447219848633,
+      "lift_scan": 46.31482696533203,
+      "mul": 17.64913558959961,
+      "rotate": 2.085712432861328,
+      "sqr": 20.08770751953125,
+      "to_normal_map": 20.879711151123047,
+      "to_poly_map": 20.856292724609375
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 383.03080049144216,
+      "frame": 332.4532449594289,
+      "padd": 361.98187568440653
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 3,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.33454317269076306,
+      "plus_batched_inversion": 31.683645582329316,
+      "plus_lambda_maps_and_partners": 71.58501004016064,
+      "plus_lift_scan_keys": 141.60613102409638,
+      "plus_lookups": 232.22141265060242,
+      "plus_prefetch_and_key_store": 201.7606234939759,
+      "plus_prefix_products": 12.535615461847389,
+      "plus_root_xy": 3.5525135542168673
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3832781124497992,
+      "plus_batched_inversion": 43.44484236947791,
+      "plus_inputs_maps_and_prefix_products": 29.965605421686746,
+      "plus_lambda_maps_and_partners": 78.92944176706827,
+      "plus_lift_scan_keys": 143.58212048192772,
+      "plus_lookups": 238.11494929718876,
+      "plus_prefetch_and_key_store": 194.88973142570282,
+      "plus_root_y": 4.358229919678715
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 419.43237686157227,
+      "lift_scan": 39.497135162353516,
+      "mul": 11.571292877197266,
+      "rotate": 1.1473770141601562,
+      "sqr": 14.12082290649414,
+      "to_normal_map": 13.684394836425781,
+      "to_poly_map": 13.724403381347656
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 350.51351742164564,
+      "frame": 245.91865396655803,
+      "padd": 270.45585731507276
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 4,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3400637550200803,
+      "plus_batched_inversion": 41.34706124497992,
+      "plus_lambda_maps_and_partners": 96.09344176706827,
+      "plus_lift_scan_keys": 146.62602560240964,
+      "plus_lookups": 217.51285190763053,
+      "plus_prefetch_and_key_store": 185.44870532128513,
+      "plus_prefix_products": 14.917204317269077,
+      "plus_root_xy": 3.7434086345381528
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3355401606425703,
+      "plus_batched_inversion": 44.320657630522085,
+      "plus_inputs_maps_and_prefix_products": 27.12013002008032,
+      "plus_lambda_maps_and_partners": 72.39297791164658,
+      "plus_lift_scan_keys": 130.48618373493977,
+      "plus_lookups": 241.66465863453814,
+      "plus_prefetch_and_key_store": 191.92433684738955,
+      "plus_root_y": 3.7820145582329316
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 440.70544815063477,
+      "lift_scan": 40.29195785522461,
+      "mul": 10.712974548339844,
+      "rotate": 1.2684669494628906,
+      "sqr": 14.195220947265625,
+      "to_normal_map": 14.043472290039062,
+      "to_poly_map": 14.932544708251953
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 314.1192224288029,
+      "frame": 219.23914325981616,
+      "padd": 294.6172203592027
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 5,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.32176957831325304,
+      "plus_batched_inversion": 27.790202309236946,
+      "plus_lambda_maps_and_partners": 60.894420682730924,
+      "plus_lift_scan_keys": 123.33545983935743,
+      "plus_lookups": 225.03924146586346,
+      "plus_prefetch_and_key_store": 180.32298995983936,
+      "plus_prefix_products": 12.701091867469879,
+      "plus_root_xy": 3.726253012048193
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.377691265060241,
+      "plus_batched_inversion": 45.47218172690763,
+      "plus_inputs_maps_and_prefix_products": 30.962640562248996,
+      "plus_lambda_maps_and_partners": 78.20758483935742,
+      "plus_lift_scan_keys": 137.25863403614457,
+      "plus_lookups": 230.91672841365462,
+      "plus_prefetch_and_key_store": 236.27303313253012,
+      "plus_root_y": 4.154829819277109
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 415.65486907958984,
+      "lift_scan": 39.349754333496094,
+      "mul": 10.87137222290039,
+      "rotate": 1.1535720825195312,
+      "sqr": 13.651939392089844,
+      "to_normal_map": 13.666374206542969,
+      "to_poly_map": 13.752471923828125
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 326.2041116861116,
+      "frame": 202.87934110194914,
+      "padd": 229.36613999474818
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 6,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3703714859437751,
+      "plus_batched_inversion": 42.85180722891566,
+      "plus_lambda_maps_and_partners": 73.25541365461848,
+      "plus_lift_scan_keys": 142.37770130522088,
+      "plus_lookups": 239.1659497991968,
+      "plus_prefetch_and_key_store": 208.92069176706826,
+      "plus_prefix_products": 15.66934889558233,
+      "plus_root_xy": 3.8633930722891567
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3315527108433735,
+      "plus_batched_inversion": 40.29450502008032,
+      "plus_inputs_maps_and_prefix_products": 26.055411144578315,
+      "plus_lambda_maps_and_partners": 70.97660943775101,
+      "plus_lift_scan_keys": 128.8128393574297,
+      "plus_lookups": 264.29649347389557,
+      "plus_prefetch_and_key_store": 230.28469628514057,
+      "plus_root_y": 3.6310988955823293
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 419.8177070617676,
+      "lift_scan": 40.30434799194336,
+      "mul": 10.8907470703125,
+      "rotate": 1.1100883483886719,
+      "sqr": 13.632686614990234,
+      "to_normal_map": 13.760143280029297,
+      "to_poly_map": 13.781261444091797
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 360.13543379513567,
+      "frame": 307.60360176714335,
+      "padd": 333.14419721151245
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 7,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.47773343373493976,
+      "plus_batched_inversion": 40.30797841365462,
+      "plus_lambda_maps_and_partners": 96.366875,
+      "plus_lift_scan_keys": 160.55730722891568,
+      "plus_lookups": 225.1356234939759,
+      "plus_prefetch_and_key_store": 230.39189959839356,
+      "plus_prefix_products": 17.24853112449799,
+      "plus_root_xy": 5.182737951807229
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3407670682730924,
+      "plus_batched_inversion": 41.51485140562249,
+      "plus_inputs_maps_and_prefix_products": 26.820551204819278,
+      "plus_lambda_maps_and_partners": 76.13071385542169,
+      "plus_lift_scan_keys": 139.40640261044177,
+      "plus_lookups": 242.95392269076305,
+      "plus_prefetch_and_key_store": 220.15505421686748,
+      "plus_root_y": 3.763542168674699
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 595.0764122009277,
+      "lift_scan": 44.81838607788086,
+      "mul": 13.461063385009766,
+      "rotate": 1.1130752563476562,
+      "sqr": 17.086803436279297,
+      "to_normal_map": 15.295135498046875,
+      "to_poly_map": 15.6376953125
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 349.68972465078633,
+      "frame": 257.05988334524113,
+      "padd": 298.3825511914762
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 8,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.4938363453815261,
+      "plus_batched_inversion": 37.49528714859438,
+      "plus_lambda_maps_and_partners": 61.92324497991968,
+      "plus_lift_scan_keys": 119.46400251004016,
+      "plus_lookups": 248.6613529116466,
+      "plus_prefetch_and_key_store": 171.40179016064258,
+      "plus_prefix_products": 19.30688453815261,
+      "plus_root_xy": 5.805427208835342
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.46559738955823293,
+      "plus_batched_inversion": 69.46108935742971,
+      "plus_inputs_maps_and_prefix_products": 50.238340361445786,
+      "plus_lambda_maps_and_partners": 85.01307981927711,
+      "plus_lift_scan_keys": 133.65904969879517,
+      "plus_lookups": 278.70586345381525,
+      "plus_prefetch_and_key_store": 258.18733534136544,
+      "plus_root_y": 5.756151104417671
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 418.1339454650879,
+      "lift_scan": 39.45851516723633,
+      "mul": 10.744991302490234,
+      "rotate": 1.1197433471679688,
+      "sqr": 13.659553527832031,
+      "to_normal_map": 13.60354995727539,
+      "to_poly_map": 13.780593872070312
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 348.24116465974356,
+      "frame": 279.63436912088184,
+      "padd": 245.34576733616544
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 9,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.36810793172690764,
+      "plus_batched_inversion": 27.188934738955822,
+      "plus_lambda_maps_and_partners": 60.924227409638554,
+      "plus_lift_scan_keys": 118.07892921686746,
+      "plus_lookups": 208.6444924698795,
+      "plus_prefetch_and_key_store": 159.01107379518072,
+      "plus_prefix_products": 12.166475903614458,
+      "plus_root_xy": 3.618620983935743
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3318780120481928,
+      "plus_batched_inversion": 41.33432730923695,
+      "plus_inputs_maps_and_prefix_products": 28.11075953815261,
+      "plus_lambda_maps_and_partners": 73.00557329317269,
+      "plus_lift_scan_keys": 153.68882128514056,
+      "plus_lookups": 218.43349598393576,
+      "plus_prefetch_and_key_store": 228.22707128514057,
+      "plus_root_y": 3.6275567269076303
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 491.66902923583984,
+      "lift_scan": 45.58730697631836,
+      "mul": 17.256072998046875,
+      "rotate": 1.8522262573242188,
+      "sqr": 19.15290069580078,
+      "to_normal_map": 20.803176879882812,
+      "to_poly_map": 20.740638732910156
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 305.96848353332274,
+      "frame": 313.01492050214665,
+      "padd": 286.92348353583316
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 10,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.38,
+      "plus_batched_inversion": 28.049932730923693,
+      "plus_lambda_maps_and_partners": 67.66104267068273,
+      "plus_lift_scan_keys": 125.45838052208835,
+      "plus_lookups": 227.0098810240964,
+      "plus_prefetch_and_key_store": 179.59250301204818,
+      "plus_prefix_products": 12.513781626506024,
+      "plus_root_xy": 3.8064864457831327
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.47827911646586346,
+      "plus_batched_inversion": 49.54908534136546,
+      "plus_inputs_maps_and_prefix_products": 38.789137550200806,
+      "plus_lambda_maps_and_partners": 95.35936596385542,
+      "plus_lift_scan_keys": 171.08002208835342,
+      "plus_lookups": 231.98783383534138,
+      "plus_prefetch_and_key_store": 250.4029748995984,
+      "plus_root_y": 4.374363955823293
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 581.2017593383789,
+      "lift_scan": 55.27875518798828,
+      "mul": 20.861942291259766,
+      "rotate": 2.1967506408691406,
+      "sqr": 23.805118560791016,
+      "to_normal_map": 13.703472137451172,
+      "to_poly_map": 17.46636962890625
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 370.83020190401214,
+      "frame": 211.91220717692372,
+      "padd": 317.2490092579715
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 11,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3224859437751004,
+      "plus_batched_inversion": 28.019934738955822,
+      "plus_lambda_maps_and_partners": 62.2353202811245,
+      "plus_lift_scan_keys": 136.56849146586345,
+      "plus_lookups": 268.254593373494,
+      "plus_prefetch_and_key_store": 230.30026054216867,
+      "plus_prefix_products": 12.691531124497992,
+      "plus_root_xy": 3.5765863453815263
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.5161897590361446,
+      "plus_batched_inversion": 49.67791616465863,
+      "plus_inputs_maps_and_prefix_products": 50.65528965863454,
+      "plus_lambda_maps_and_partners": 77.2022545180723,
+      "plus_lift_scan_keys": 132.94152560240963,
+      "plus_lookups": 247.38777259036144,
+      "plus_prefetch_and_key_store": 213.15127409638555,
+      "plus_root_y": 5.55809437751004
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 544.4614028930664,
+      "lift_scan": 47.12411117553711,
+      "mul": 17.513439178466797,
+      "rotate": 2.249286651611328,
+      "sqr": 22.19692611694336,
+      "to_normal_map": 24.209716796875,
+      "to_poly_map": 25.205116271972656
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 490.25355514841925,
+      "frame": 303.4550173244919,
+      "padd": 309.7423031407012
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 12,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.33368724899598395,
+      "plus_batched_inversion": 36.35090763052209,
+      "plus_lambda_maps_and_partners": 81.07226807228916,
+      "plus_lift_scan_keys": 122.8473860441767,
+      "plus_lookups": 201.54799899598393,
+      "plus_prefetch_and_key_store": 163.1589658634538,
+      "plus_prefix_products": 12.479283634538152,
+      "plus_root_xy": 4.052593373493976
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.46232479919678715,
+      "plus_batched_inversion": 67.82876455823293,
+      "plus_inputs_maps_and_prefix_products": 45.610266064257026,
+      "plus_lambda_maps_and_partners": 120.79849397590361,
+      "plus_lift_scan_keys": 155.87704417670682,
+      "plus_lookups": 244.9462123493976,
+      "plus_prefetch_and_key_store": 174.73730973895582,
+      "plus_root_y": 5.228038152610441
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 419.3538284301758,
+      "lift_scan": 39.4914665222168,
+      "mul": 10.819900512695312,
+      "rotate": 1.3115348815917969,
+      "sqr": 13.692398071289062,
+      "to_normal_map": 13.737541198730469,
+      "to_poly_map": 13.89669418334961
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 302.20872586031254,
+      "frame": 290.86843026195356,
+      "padd": 356.6464272283474
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 13,
+     "states": 6000
+    },
+    {
+     "cumulative_ns_per_probe_frame": {
+      "fold_rebuild": 0.3230025100401606,
+      "plus_batched_inversion": 29.121000502008034,
+      "plus_lambda_maps_and_partners": 72.61052409638555,
+      "plus_lift_scan_keys": 143.8526982931727,
+      "plus_lookups": 252.3949186746988,
+      "plus_prefetch_and_key_store": 244.58264357429718,
+      "plus_prefix_products": 12.739641064257029,
+      "plus_root_xy": 3.7779041164658635
+     },
+     "cumulative_ns_per_probe_rankcut": {
+      "fold_rebuild": 0.3251355421686747,
+      "plus_batched_inversion": 40.28887600401607,
+      "plus_inputs_maps_and_prefix_products": 26.200162650602408,
+      "plus_lambda_maps_and_partners": 71.23825050200803,
+      "plus_lift_scan_keys": 129.54621134538152,
+      "plus_lookups": 273.6285190763052,
+      "plus_prefetch_and_key_store": 181.87272389558234,
+      "plus_root_y": 3.66780421686747
+     },
+     "keys": 1992000.0,
+     "micro_ns_per_op": {
+      "invert128": 417.07848739624023,
+      "lift_scan": 39.48350524902344,
+      "mul": 10.868663787841797,
+      "rotate": 1.1247787475585938,
+      "sqr": 13.676013946533203,
+      "to_normal_map": 13.772396087646484,
+      "to_poly_map": 14.008441925048828
+     },
+     "production_found": [
+      1,
+      1,
+      1
+     ],
+     "production_ns_per_probe": {
+      "compact_s3": 368.52442374286346,
+      "frame": 277.4969008715718,
+      "padd": 283.6307259818174
+     },
+     "production_probes": [
+      1991689,
+      1991689,
+      1991689
+     ],
+     "prof3_round": 14,
+     "states": 6000
+    }
+   ],
+   "rounds": 15,
+   "states_per_round": 6000
+  }
+ },
+ "setup": "the rank-probe producer with the env-guarded KIC_PROF3 block of smoke/profile.patch (a scratch copy, not a frozen producer), rank-stage configuration (compact table, folded index, lift_scan, Feistel), K600 base, the first rank target of rank seed 201; the same Feistel-ordered, fold-deduplicated states re-scanned with stages added one at a time (keys_level<L, FRAME>); ns per probe = elapsed / (4 n keys per state); production loops = scan_state128_select with PIPE_COMPACT (S3), PIPE_PADD (rank cut) and PIPE_FRAME (candidate) on the same states; micro = independent operations on 4,096 random words"
+}

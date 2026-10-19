@@ -260,95 +260,95 @@
         "r": 8569786107849059,
         "log2_r": 52.93
       },
-      "experiment": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016 (branch claude/n83-rankcut)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019 (branch claude/n83-rankprobe)",
       "pipeline": {
-        "name": "the rank-cut producer (arms cR / kR): the stacked producer (B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600, lift_scan x Feistel + prefetched probes + 16-byte compact root slots + folded S3 root index, 14,940,300 stored states) with the rank stage's partner roots by point addition (KIC_RANK_SOLVE=padd: x(T+R), x(T-R) from each stored root's recovered y and one batched inversion, exact S3 order resolved at every root-table hit); cold path identical to the stack's (cR)",
+        "name": "the rank-probe producer (arms cP / kP): the rank-cut producer (B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600, lift_scan x Feistel + prefetched probes + 16-byte compact root slots + folded S3 root index, 14,940,300 stored states; rank stage's partner roots by point addition) with the rank stage's loop in the target's Frobenius frame (KIC_RANK_SOLVE=frame: x(T +- phi^s(R_k)) = phi^s(x(T_s +- R_k)) with T_s = phi^(-s)(T) tabulated once per attempt, so the two per-candidate normal-to-polynomial maps of the conjugate root are gone; same partner words, keys, probes and exact S3 order resolved at every root-table hit); cold path identical to the rank-cut producer's (cP)",
         "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
         "candidate_id_status": "B's ID for the same base and recipe; no new IC1 manifest was written",
-        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 53a1fb58a8cae9968875f5c1e61170dbe457de51",
-        "protocol": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/protocol.json",
-        "run": "GitHub Actions 38891404048, one ubuntu-24.04 runner (runnervm8k3b6), one pinned CPU"
+        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 8a82e4edd9fcccfb024b140d1c7858501e206d23",
+        "protocol": "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/protocol.json",
+        "run": "GitHub Actions 39214027289, one ubuntu-24.04 runner (runnervm8k3b6), one pinned CPU"
       },
-      "targets": "20 new public points (rankcut-cold-v1; one fresh pinned process per arm per point), four rank blocks (rank seeds 201-204, 600 attempts each), Q0 in one block",
-      "unit": "one rT770 rho step as measured in this run (281.006 ns), per sqrt(r) (26,013.6 ms); end-to-end cold = mean rank stage over four blocks + mean cold (setup + one-target online, cached table) over the points",
-      "s_ic_cold": 7.5228,
-      "s_ic_online": 0.011453,
-      "s_ic_setup": 7.5113,
-      "s_ic_rank_stage": 6.6562,
-      "s_ic_setup_without_rank_stage": 0.8552,
-      "s_ic_cold_without_rank_stage": 0.8666,
-      "s_ic_setup_derivation": "result.json (run 38891404048): rho_ms_per_step 2.81006e-4 ms x sqrt(r) = 26,013.6 ms per unit; rank stage mean(kR rank_stage_ms) 173,150.92 ms = 6.65617 -> 6.6562; setup mean_setup_ms.cR 22,245.80 ms = 0.85516 -> 0.8552 (cached-table load and verification included); s_ic_setup = 6.65617 + 0.85516 = 7.51133 -> 7.5113 = s_ic_cold 7.52278 - s_ic_online 0.011453. Every S is rounded once from the unrounded quotient. S_cold_without_rank.cR 0.8666 is setup without the rank stage plus online.",
+      "targets": "20 new public points (rankprobe-cold-v1; one fresh pinned process per arm per point), four rank blocks (rank seeds 301-304, 600 attempts each), Q0 in one block",
+      "unit": "one rT770 rho step as measured in this run (280.644 ns), per sqrt(r) (25,980.1 ms); end-to-end cold = mean rank stage over four blocks + mean cold (setup + one-target online, cached table) over the points",
+      "s_ic_cold": 6.3897,
+      "s_ic_online": 0.011692,
+      "s_ic_setup": 6.378,
+      "s_ic_rank_stage": 5.5314,
+      "s_ic_setup_without_rank_stage": 0.8466,
+      "s_ic_cold_without_rank_stage": 0.8583,
+      "s_ic_setup_derivation": "result.json (run 39214027289): rho_ms_per_step 2.80644e-04 ms x sqrt(r) = 25,980.1 ms per unit; rank stage mean(kP rank_stage_ms) 143,706.65 ms = 5.53141 -> 5.5314; setup mean_setup_ms.cP 21,994.97 ms = 0.84661 -> 0.8466 (cached-table load and verification included); s_ic_setup = 5.53141 + 0.84661 = 6.37802 -> 6.378 = s_ic_cold 6.38971 - s_ic_online 0.011692. Every S is rounded once from the unrounded quotient. S_cold_without_rank.cP 0.8583 is setup without the rank stage plus online.",
       "wall_ms": {
-        "e2e_cold_mean": 195694.6,
-        "rank_stage_mean": 173150.9,
-        "cold_without_rank_mean": 22543.7,
-        "setup_mean": 22245.8,
-        "index_build_mean": 19876.5,
-        "ic_online_mean": 297.9,
-        "rho_online_mean": 2707.0,
-        "rho_cold": 2980.2
+        "e2e_cold_mean": 166005.4,
+        "rank_stage_mean": 143706.7,
+        "cold_without_rank_mean": 22298.7,
+        "setup_mean": 21995.0,
+        "index_build_mean": 19667.2,
+        "ic_online_mean": 303.8,
+        "rho_online_mean": 2353.3,
+        "rho_cold": 2593.9
       },
       "reference_rho": {
         "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
         "is_tuned_rho_rT770": true,
-        "s_rho_cold": 0.11456,
-        "s_rho_online": 0.10406
+        "s_rho_cold": 0.09984,
+        "s_rho_online": 0.09058
       },
       "gap_cold_ic_over_rho": {
-        "value": 65.6656,
+        "value": 63.9977,
         "ci95": [
-          55.3831,
-          80.2071
+          53.7363,
+          78.0148
         ],
         "statistic": "end-to-end cold: mean rank stage + mean cold over mean rho cold, bootstrap over blocks, attempts and points; wall time on one host class, factor-base construction excluded; the section 5a band is not computable (section_5a_band)"
       },
       "gap_online_ic_over_rho": {
-        "value": 0.1101,
+        "value": 0.1291,
         "ci95": [
-          0.059,
-          0.1744
+          0.0847,
+          0.183
         ],
-        "note": "inverse of tuned rho / cR 9.0864"
+        "note": "inverse of tuned rho / cP 7.7474"
       },
-      "gap_tuned_rho": "measured on this row: end-to-end cold 65.7 [55.4, 80.2]; online 0.110",
+      "gap_tuned_rho": "measured on this row: end-to-end cold 64.0 [53.7, 78.0]; online 0.129",
       "gap_bernstein_lange": {
         "kind": "not measured on this row",
         "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
       },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
-      "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes and root calls across kS, kR, kRaa and kRX in every block, 600 exact S3-resolved hits per kR block; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
-      "source_figure": "end-to-end cold kS+cS / kR+cR 1.3336 [1.3300, 1.3377] in wall time on one host class (promoted over the stacked producer, same cold code); rank stage per attempt kS / kR 1.3770 [1.3735, 1.3813]; per-probe wall ns 221.85 -> 161.10 with identical probes and root calls (operation-count ratio 1.0000); cold without rank cS / cR 1.0018 [0.9988, 1.0055]; online cS / cR 1.0056 [0.9974, 1.0121]; rank stage 88.5% of end-to-end cold",
+      "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes, root calls and point-addition counters across kR, kP, kPaa and kPX in every block, 600 exact S3-resolved hits per rank block, one frame per attempt in kP, kPaa and kPX; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
+      "source_figure": "end-to-end cold kR+cR / kP+cP 1.1033 [1.1010, 1.1056] in wall time on one host class (promoted over the rank-cut producer, same cold code); rank stage per attempt kR / kP 1.1194 [1.1175, 1.1214]; per-probe wall ns 158.45 -> 141.54 with identical probes and root calls (operation-count ratio 1.0000); cold without rank cR / cP 0.9997 [0.9982, 1.0011]; online cR / cP 0.9975 [0.9952, 1.0002]; rank stage 86.6% of end-to-end cold",
       "headline_scope": {
-        "metric": "wall time: the frozen primary R = E2E(kS, cS) / E2E(kR, cR) = 1.3336 [1.3300, 1.3377], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
+        "metric": "wall time: the frozen primary R = E2E(kR, cR) / E2E(kP, cP) = 1.1033 [1.1010, 1.1056], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
         "operation_counts": {
           "rank_stage_probes": {
-            "kS": 4296071100,
-            "kR": 4296071100,
-            "ratio_kS_over_kR": 1.0,
-            "note": "4 blocks x 600 attempts x mean 1,790,029.625 probes; identical per attempt in every rank arm (gated); the saving is per-probe work, not fewer probes"
+            "kR": 4057548696,
+            "kP": 4057548696,
+            "ratio_kR_over_kP": 1.0,
+            "note": "4 blocks x 600 attempts x mean 1,690,645.29 probes; identical per attempt in every rank arm (gated); the saving is per-probe work, not fewer probes"
           },
-          "rank_stage_root_calls": "identical across kS, kR, kRaa and kRX in every block (gated: rank_root_calls_total)",
-          "rank_stage_wall_decomposition": "rank-stage wall ratio 1.3768 = 1.0 (probes and root calls, equal) x 1.3768 (per-probe wall time: 221.85 vs 161.10 ns, measured on this one host). The cut replaces the batched S3 root solve (11 field multiplications, 6 table maps per candidate) by point addition (5 and 4) with the exact S3 order resolved at root-table hits; the kRX planted control (302.05 ns per probe) puts the removed work at about 141 ns per probe. The factor is wall time on this host and has not been replayed on another host class.",
+          "rank_stage_root_calls": "identical across kR, kP, kPaa and kPX in every block (gated: rank_root_calls_total, with the point-addition counters)",
+          "rank_stage_wall_decomposition": "rank-stage wall ratio 1.1193 = 1.0 (probes and root calls, equal) x 1.1193 (per-probe wall time: 158.45 vs 141.54 ns, measured on this one host). The change computes the conjugate root's candidates in the target's Frobenius frame (one frame of T_s tabulated per attempt) instead of mapping each candidate between the normal and polynomial bases twice; the kPX planted control (278.82 ns per probe) puts the removed work at about 137 ns per probe. The factor is wall time on this host and has not been replayed on another host class.",
           "index_stored_states": {
-            "cS": 14940300,
             "cR": 14940300,
+            "cP": 14940300,
             "ratio": 1.0
           },
-          "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the rank stage is 91.3% (kS) and 88.5% (kR) of end-to-end cold wall time"
+          "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the rank stage is 87.8% (kR) and 86.6% (kP) of end-to-end cold wall time"
         },
-        "derivation": "recomputed 2026-10-19 from run_github_38891404048/panel/result.json (statistics.rank_stage, primary_e2e_kS_cS_over_kR_cR, e2e_ms) and detail.rank_padd_counters"
+        "derivation": "recomputed 2026-10-19 from run_github_39214027289/panel/result.json (statistics.rank_stage, primary_e2e_kR_cR_over_kP_cP, e2e_ms) and detail.rank_padd_counters, detail.rank_frame_counters"
       },
       "uncharged_phases": {
-        "factor_base_construction": "Not charged to either arm: every IC process loads the K600 base from base_n83_K600.jsonl; its construction was not timed in this run. The omission is common to both arms, so R > 1 holds for any X >= 0 and falls with X. X was measured on another host class (427.524 ms, koblitz-n83-replay-20261017, run 39007026856): at that X, R 1.3328 and cold S 7.5392 (illustrative, mixes hosts). So 1.3336 is an upper bound on the every-phase ratio and S 7.5228 a lower bound on the every-phase cold S.",
+        "factor_base_construction": "Not charged to either arm: every IC process loads the K600 base from base_n83_K600.jsonl; its construction was not timed in this run. The omission is common to both arms, so R > 1 holds for any X >= 0 and falls with X. X was measured on another host class (427.524 ms, koblitz-n83-replay-20261017, run 39007026856): adding it to both arms' E2E gives R 1.1030 and cold S 6.4062 (illustrative, mixes hosts). So 1.1033 is an upper bound on the every-phase ratio and S 6.3897 a lower bound on the every-phase cold S.",
         "linear_algebra": "represented by the verified load of the cached factor-log table in cS and cR"
       },
-      "section_5a_band": "Not computable from this run. The IC arms emit rank-stage probes and root calls, online probes and stored states, but no group additions, scalar multiplications, canonicalizations, fold rotations or index inserts, so the unpriced native work cannot be priced at 0, 0.1 and 1 GAE per operation and the IC / rho gap (65.7) has no band. The gap holds as a wall-time figure on this one host only.",
-      "replication": "Not replayed. This run (98 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py, and the gates make every relation, per-attempt probe count and root call equal across kS, kR, kRaa and kRX, but no second host class has timed the rank-cut arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the same caution applies to the 1.3336 here.",
-      "next_improvement": "The rank stage is still 173.2 s of the 195.7 s end-to-end cold cost (88.5%) and the saving came from per-probe work only (probes unchanged at 1,790,030 per attempt): cut the per-probe cost further (the root-table lookup and the partner-pair canonicalization) or the number of probes per relation; then setup (lift_scan in the index build, cRI, 1.34x faster cold without rank, E2E 1.3735 over the stack). Gap to the tuned rho is still 66x; the BL arm has not been re-run on this producer.",
+      "section_5a_band": "Not computable from this run. The IC arms emit rank-stage probes and root calls, online probes and stored states, but no group additions, scalar multiplications, canonicalizations, fold rotations or index inserts, so the unpriced native work cannot be priced at 0, 0.1 and 1 GAE per operation and the IC / rho gap (64.0) has no band. The gap holds as a wall-time figure on this one host only.",
+      "replication": "Not replayed. This run (98 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py, and the gates make every relation, per-attempt probe count, root call and point-addition counter equal across kR, kP, kPaa and kPX, but no second host class has timed the rank-probe arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the same caution applies to the 1.1033 here.",
+      "next_improvement": "The rank stage is still 143.7 s of the 166.0 s end-to-end cold cost (86.6%) and the saving came from per-probe work only (probes unchanged at 1,690,645 per attempt): cut the per-probe cost further (the root-table lookup and the partner-pair canonicalization) or the number of probes per relation; then setup (lift_scan in the index build, cPI, 1.34x faster cold without rank, E2E 1.1424 over the rank-cut producer). Gap to the tuned rho is still 64x; the BL arm has not been re-run on this producer.",
       "sources": [
-        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/README.md (branch claude/n83-rankcut)",
-        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/run_github_38891404048/panel/result.json (branch claude/n83-rankcut)",
-        "cryptanalysis:experiments/koblitz-n83-stacked-20261016/ (the baseline replaced)"
+        "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/README.md (branch claude/n83-rankprobe)",
+        "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/run_github_39214027289/panel/result.json (branch claude/n83-rankprobe)",
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/ (the baseline replaced)"
       ]
     }
   ],
@@ -958,6 +958,107 @@
         "cryptanalysis:experiments/koblitz-n83-stacked-20261016/README.md (branch claude/n83-stacked)",
         "cryptanalysis:experiments/koblitz-n83-stacked-20261016/run_github_38862448935/panel/result.json (branch claude/n83-stacked)",
         "cryptanalysis:experiments/koblitz-n83-replay-20261017/RESULTS.md and run_github_39007026856/ (K1 replay on another host class; construction time X)"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "previous baseline (the rank-cut producer, arms cR / kR), superseded by the rank-probe producer (one experiment; not combined with another row)",
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
+      "experiment": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016 (branch claude/n83-rankcut)",
+      "pipeline": {
+        "name": "the rank-cut producer (arms cR / kR): the stacked producer (B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600, lift_scan x Feistel + prefetched probes + 16-byte compact root slots + folded S3 root index, 14,940,300 stored states) with the rank stage's partner roots by point addition (KIC_RANK_SOLVE=padd: x(T+R), x(T-R) from each stored root's recovered y and one batched inversion, exact S3 order resolved at every root-table hit); cold path identical to the stack's (cR)",
+        "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
+        "candidate_id_status": "B's ID for the same base and recipe; no new IC1 manifest was written",
+        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 53a1fb58a8cae9968875f5c1e61170dbe457de51",
+        "protocol": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/protocol.json",
+        "run": "GitHub Actions 38891404048, one ubuntu-24.04 runner (runnervm8k3b6), one pinned CPU"
+      },
+      "targets": "20 new public points (rankcut-cold-v1; one fresh pinned process per arm per point), four rank blocks (rank seeds 201-204, 600 attempts each), Q0 in one block",
+      "unit": "one rT770 rho step as measured in this run (281.006 ns), per sqrt(r) (26,013.6 ms); end-to-end cold = mean rank stage over four blocks + mean cold (setup + one-target online, cached table) over the points",
+      "s_ic_cold": 7.5228,
+      "s_ic_online": 0.011453,
+      "s_ic_setup": 7.5113,
+      "s_ic_rank_stage": 6.6562,
+      "s_ic_setup_without_rank_stage": 0.8552,
+      "s_ic_cold_without_rank_stage": 0.8666,
+      "s_ic_setup_derivation": "result.json (run 38891404048): rho_ms_per_step 2.81006e-4 ms x sqrt(r) = 26,013.6 ms per unit; rank stage mean(kR rank_stage_ms) 173,150.92 ms = 6.65617 -> 6.6562; setup mean_setup_ms.cR 22,245.80 ms = 0.85516 -> 0.8552 (cached-table load and verification included); s_ic_setup = 6.65617 + 0.85516 = 7.51133 -> 7.5113 = s_ic_cold 7.52278 - s_ic_online 0.011453. Every S is rounded once from the unrounded quotient. S_cold_without_rank.cR 0.8666 is setup without the rank stage plus online.",
+      "wall_ms": {
+        "e2e_cold_mean": 195694.6,
+        "rank_stage_mean": 173150.9,
+        "cold_without_rank_mean": 22543.7,
+        "setup_mean": 22245.8,
+        "index_build_mean": 19876.5,
+        "ic_online_mean": 297.9,
+        "rho_online_mean": 2707.0,
+        "rho_cold": 2980.2
+      },
+      "reference_rho": {
+        "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
+        "is_tuned_rho_rT770": true,
+        "s_rho_cold": 0.11456,
+        "s_rho_online": 0.10406
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 65.6656,
+        "ci95": [
+          55.3831,
+          80.2071
+        ],
+        "statistic": "end-to-end cold: mean rank stage + mean cold over mean rho cold, bootstrap over blocks, attempts and points; wall time on one host class, factor-base construction excluded; the section 5a band is not computable (section_5a_band)"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.1101,
+        "ci95": [
+          0.059,
+          0.1744
+        ],
+        "note": "inverse of tuned rho / cR 9.0864"
+      },
+      "gap_tuned_rho": "measured on this row: end-to-end cold 65.7 [55.4, 80.2]; online 0.110",
+      "gap_bernstein_lange": {
+        "kind": "not measured on this row",
+        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+      },
+      "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
+      "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes and root calls across kS, kR, kRaa and kRX in every block, 600 exact S3-resolved hits per kR block; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
+      "source_figure": "end-to-end cold kS+cS / kR+cR 1.3336 [1.3300, 1.3377] in wall time on one host class (promoted over the stacked producer, same cold code); rank stage per attempt kS / kR 1.3770 [1.3735, 1.3813]; per-probe wall ns 221.85 -> 161.10 with identical probes and root calls (operation-count ratio 1.0000); cold without rank cS / cR 1.0018 [0.9988, 1.0055]; online cS / cR 1.0056 [0.9974, 1.0121]; rank stage 88.5% of end-to-end cold",
+      "headline_scope": {
+        "metric": "wall time: the frozen primary R = E2E(kS, cS) / E2E(kR, cR) = 1.3336 [1.3300, 1.3377], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
+        "operation_counts": {
+          "rank_stage_probes": {
+            "kS": 4296071100,
+            "kR": 4296071100,
+            "ratio_kS_over_kR": 1.0,
+            "note": "4 blocks x 600 attempts x mean 1,790,029.625 probes; identical per attempt in every rank arm (gated); the saving is per-probe work, not fewer probes"
+          },
+          "rank_stage_root_calls": "identical across kS, kR, kRaa and kRX in every block (gated: rank_root_calls_total)",
+          "rank_stage_wall_decomposition": "rank-stage wall ratio 1.3768 = 1.0 (probes and root calls, equal) x 1.3768 (per-probe wall time: 221.85 vs 161.10 ns, measured on this one host). The cut replaces the batched S3 root solve (11 field multiplications, 6 table maps per candidate) by point addition (5 and 4) with the exact S3 order resolved at root-table hits; the kRX planted control (302.05 ns per probe) puts the removed work at about 141 ns per probe. The factor is wall time on this host and has not been replayed on another host class.",
+          "index_stored_states": {
+            "cS": 14940300,
+            "cR": 14940300,
+            "ratio": 1.0
+          },
+          "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the rank stage is 91.3% (kS) and 88.5% (kR) of end-to-end cold wall time"
+        },
+        "derivation": "recomputed 2026-10-19 from run_github_38891404048/panel/result.json (statistics.rank_stage, primary_e2e_kS_cS_over_kR_cR, e2e_ms) and detail.rank_padd_counters"
+      },
+      "uncharged_phases": {
+        "factor_base_construction": "Not charged to either arm: every IC process loads the K600 base from base_n83_K600.jsonl; its construction was not timed in this run. The omission is common to both arms, so R > 1 holds for any X >= 0 and falls with X. X was measured on another host class (427.524 ms, koblitz-n83-replay-20261017, run 39007026856): at that X, R 1.3328 and cold S 7.5392 (illustrative, mixes hosts). So 1.3336 is an upper bound on the every-phase ratio and S 7.5228 a lower bound on the every-phase cold S.",
+        "linear_algebra": "represented by the verified load of the cached factor-log table in cS and cR"
+      },
+      "section_5a_band": "Not computable from this run. The IC arms emit rank-stage probes and root calls, online probes and stored states, but no group additions, scalar multiplications, canonicalizations, fold rotations or index inserts, so the unpriced native work cannot be priced at 0, 0.1 and 1 GAE per operation and the IC / rho gap (65.7) has no band. The gap holds as a wall-time figure on this one host only.",
+      "replication": "Not replayed. This run (98 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py, and the gates make every relation, per-attempt probe count and root call equal across kS, kR, kRaa and kRX, but no second host class has timed the rank-cut arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the same caution applies to the 1.3336 here.",
+      "next_improvement": "The rank stage is still 173.2 s of the 195.7 s end-to-end cold cost (88.5%) and the saving came from per-probe work only (probes unchanged at 1,790,030 per attempt): cut the per-probe cost further (the root-table lookup and the partner-pair canonicalization) or the number of probes per relation; then setup (lift_scan in the index build, cRI, 1.34x faster cold without rank, E2E 1.3735 over the stack). Gap to the tuned rho is still 66x; the BL arm has not been re-run on this producer.",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/README.md (branch claude/n83-rankcut)",
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/run_github_38891404048/panel/result.json (branch claude/n83-rankcut)",
+        "cryptanalysis:experiments/koblitz-n83-stacked-20261016/ (the baseline replaced)"
       ]
     },
     {
@@ -1597,6 +1698,70 @@
         "reading": "cold gap 1.33x smaller; online gap unchanged (cS / cR online 1.0056 [0.9974, 1.0121], same code)",
         "source": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/run_github_38891404048/panel/result.json statistics.e2e_cold_gap_kS_cS_over_rT, e2e_cold_gap_kR_cR_over_rT, online_gap_cS_over_rT, online_gap_cR_over_rT"
       }
+    },
+    {
+      "n": 83,
+      "from": "the rank-cut producer (arms kR + cR), same run 39214027289, points and rT770",
+      "to": "rank-probe producer (arms kP + cP): the rank-cut loop in the target's Frobenius frame (run 39214027289)",
+      "cold_gap": [
+        70.6064,
+        63.9977
+      ],
+      "online_gap": [
+        0.12875,
+        0.12908
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps (same run, points and rT770)",
+      "baseline_row_replaced": "the rank-cut producer (run 38891404048)",
+      "cross_run_context_from": "the rank-cut row as landed (run 38891404048: 281.01 ns step, its own points)",
+      "cross_run_context_cold_gap": [
+        65.6656,
+        63.9977
+      ],
+      "cross_run_context_online_gap": [
+        0.1101,
+        0.1291
+      ],
+      "cross_run_context_note": "context only: different runs, instance sets and step times; not a delta of this step",
+      "cold_speedup": "end-to-end cold kR+cR / kP+cP 1.1033 [1.1010, 1.1056] in wall time on one host class, factor-base construction excluded, against the rank-cut producer (20 points, four rank blocks); operation counts unchanged (probes, root calls and point-addition counters equal), the saving is 1.1194x per rank attempt [1.1175, 1.1214] from cheaper per-probe work",
+      "class": "engineering; promoted by its own frozen primary; baseline row replaced. cold_gap / online_gap are paired within the promoting run.",
+      "paired_within_run": {
+        "from": "the rank-cut producer (kR + cR), same run, points and rT770",
+        "cold_gap": [
+          {
+            "value": 70.6064,
+            "ci95": [
+              59.3076,
+              86.2551
+            ]
+          },
+          {
+            "value": 63.9977,
+            "ci95": [
+              53.7363,
+              78.0148
+            ]
+          }
+        ],
+        "online_gap": [
+          {
+            "value": 0.12875,
+            "ci95": [
+              0.08364,
+              0.18163
+            ]
+          },
+          {
+            "value": 0.12908,
+            "ci95": [
+              0.08475,
+              0.18298
+            ]
+          }
+        ],
+        "reading": "cold gap 1.10x smaller; online gap unchanged (cR / cP online 0.9975 [0.9952, 1.0002], same code)",
+        "source": "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/run_github_39214027289/panel/result.json statistics.e2e_cold_gap_kR_cR_over_rT, e2e_cold_gap_kP_cP_over_rT, online_gap_cR_over_rT, online_gap_cP_over_rT"
+      }
     }
   ],
   "corrections": [
@@ -1658,7 +1823,7 @@
     "n=83: the probe pipeline is promoted over the combined producer (1.4001 [1.3971, 1.4032]); the combination itself was not_separated against its better single arm in cryptanalysis#929, and the baseline row and its cold S are not decided here",
     "n=83: the two-level root table is promoted over the probe-pipeline producer by 1.0633 [1.0589, 1.0679], almost all of it from the 16-byte slot; cold cost is unchanged to 1% (setup dominates); which pipeline the baseline row names is not decided here",
     "n=83: the folded index is promoted over the combined producer on cold setup + online (1.8372 [1.8216, 1.8528]); the rank stage is still the dominant cold cost, and which pipeline the baseline row names is not decided here",
-    "n=83: the rank-cut producer (point-addition partner roots in the rank stage) is promoted end to end over the stacked producer by 1.3336 [1.3300, 1.3377] (koblitz-n83-rankcut-20261016, run 38891404048, wall time on one host class, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 7.52 against the tuned rho 0.115 (gap 65.7 [55.4, 80.2]); the rank stage is still 88.5% of cold cost. The stacked producer (promoted over the probe-pipeline producer by 3.2391 [2.9809, 3.5240], run 38862448935) moved to other_records; the rank-cut run has no cross-host replay and no BL re-run",
+    "n=83: the rank-probe producer (the rank-cut loop in the target's Frobenius frame) is promoted end to end over the rank-cut producer by 1.1033 [1.1010, 1.1056] (koblitz-n83-rankprobe-20261019, run 39214027289, wall time on one host class, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.39 against the tuned rho 0.100 (gap 64.0 [53.7, 78.0]); the rank stage is still 86.6% of cold cost. The rank-cut producer (promoted over the stacked producer by 1.3336 [1.3300, 1.3377], run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the rank-probe run has no cross-host replay and no BL re-run",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]
