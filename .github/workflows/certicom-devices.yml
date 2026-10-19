@@ -1,0 +1,101 @@
+name: Certicom CPU and GPU correctness
+on:
+  pull_request:
+    paths:
+      - 'gpu/certicom/**'
+      - 'src/cryptanalysis/certicom_dlp/**'
+      - 'src/cryptanalysis/certicom_dlp_cli.rs'
+      - 'suite/src/cryptanalysis/certicom_dlp/**'
+      - 'suite/src/cryptanalysis/certicom_dlp_cli.rs'
+      - 'tests/certicom_solvers.rs'
+      - 'suite/tests/certicom_solvers.rs'
+      - '.github/workflows/certicom-devices.yml'
+  workflow_dispatch:
+    inputs:
+      hardware_backend:
+        description: Backend to qualify on an existing GPU runner
+        type: choice
+        options: [cuda, metal]
+        default: cuda
+      hardware_runner:
+        description: Existing runner label for real-device tests; empty skips hardware execution
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  cpu-cross-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - id: crate
+        shell: bash
+        run: |
+          if [[ -f suite/Cargo.toml ]]; then
+            echo 'manifest=suite/Cargo.toml' >> "$GITHUB_OUTPUT"
+            echo 'workspace=suite' >> "$GITHUB_OUTPUT"
+          else
+            echo 'manifest=Cargo.toml' >> "$GITHUB_OUTPUT"
+            echo 'workspace=.' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ steps.crate.outputs.workspace }} -> target
+      - name: Cross-check the shared device source against independent Rust arithmetic
+        env:
+          CARGO_BUILD_JOBS: '2'
+        run: cargo test --manifest-path '${{ steps.crate.outputs.manifest }}' --release --lib certicom_dlp -- --test-threads=2
+  cuda-build:
+    runs-on: ubuntu-24.04
+    container: nvidia/cuda:12.9.1-devel-ubuntu24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile native CUDA workers; this job does not execute GPU kernels
+        shell: bash
+        run: |
+          for arch in sm_70 sm_80 sm_90; do
+            nvcc -O2 -std=c++17 -arch="$arch" gpu/certicom/cuda.cu -o "/tmp/certicom_cuda_$arch"
+          done
+  metal-build:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile native Metal shader and worker; hardware execution is separate
+        run: make -C gpu/certicom metal
+  hardware:
+    if: github.event_name == 'workflow_dispatch' && inputs.hardware_runner != ''
+    runs-on: ${{ inputs.hardware_runner || 'ubuntu-24.04' }}
+    timeout-minutes: 45
+    env:
+      CERTICOM_TEST_BACKEND: ${{ inputs.hardware_backend }}
+      CARGO_BUILD_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build and probe the requested real GPU backend
+        shell: bash
+        run: |
+          make -C gpu/certicom "$CERTICOM_TEST_BACKEND"
+          worker="$GITHUB_WORKSPACE/gpu/certicom/certicom_$CERTICOM_TEST_BACKEND"
+          "$worker" --probe | tee certicom-device-probe.log
+          echo "CERTICOM_TEST_WORKER=$worker" >> "$GITHUB_ENV"
+      - name: Verify full-width arithmetic and all three solvers on both exact curves
+        shell: bash
+        run: |
+          manifest=Cargo.toml
+          if [[ -f suite/Cargo.toml ]]; then manifest=suite/Cargo.toml; fi
+          cargo test --manifest-path "$manifest" --release --lib certicom_dlp::device_tests -- --test-threads=1 --nocapture | tee certicom-device-tests.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: certicom-${{ inputs.hardware_backend }}-device-correctness
+          path: certicom-device-*.log
+          if-no-files-found: error

@@ -17,8 +17,14 @@ use crate::binary_ecc::F2mElement;
 use crate::ecc::{certicom, CurveParams, Point};
 
 mod index;
-pub use index::{index_calculus, IndexInput, IndexReport};
+pub use index::{index_calculus, index_calculus_on_device, IndexInput, IndexReport};
+mod gpu;
+pub use gpu::{bsgs_on_device, rho_on_device};
+pub mod worker;
+use worker::ExecutionReport;
 
+#[cfg(all(test, unix))]
+mod device_tests;
 #[cfg(test)]
 mod tests;
 
@@ -147,6 +153,15 @@ impl ChallengeGroup {
     }
 
     pub fn point(&self, x: &BigUint, y: &BigUint) -> Result<ChallengePoint, String> {
+        let point = self.point_on_curve(x, y)?;
+        self.validate(&point)?;
+        Ok(point)
+    }
+
+    // Device proposals must be canonical and on-curve. Final answers and IC
+    // relations receive independent CPU scalar replay; table points need not
+    // each incur an additional full subgroup scalar multiplication.
+    fn point_on_curve(&self, x: &BigUint, y: &BigUint) -> Result<ChallengePoint, String> {
         let point = match &self.curve {
             Curve::Prime(c) if x < &c.p && y < &c.p => ChallengePoint::Prime(Point::Affine {
                 x: c.fe(x.clone()),
@@ -160,12 +175,14 @@ impl ChallengeGroup {
             }
             _ => return Err("point coordinates are outside the exact challenge field".into()),
         };
-        self.validate(&point)?;
+        if !self.on_curve(&point) {
+            return Err("point is not on the selected exact curve".into());
+        }
         Ok(point)
     }
 
-    pub fn validate(&self, point: &ChallengePoint) -> Result<(), String> {
-        let on_curve = match (&self.curve, point) {
+    fn on_curve(&self, point: &ChallengePoint) -> bool {
+        match (&self.curve, point) {
             (Curve::Prime(c), ChallengePoint::Prime(p @ Point::Affine { x, y })) => {
                 x.modulus == c.p
                     && y.modulus == c.p
@@ -179,8 +196,11 @@ impl ChallengeGroup {
             (Curve::Prime(_), ChallengePoint::Prime(Point::Infinity))
             | (Curve::Binary(_), ChallengePoint::Binary(BinaryPoint::Infinity)) => true,
             _ => false,
-        };
-        if !on_curve {
+        }
+    }
+
+    pub fn validate(&self, point: &ChallengePoint) -> Result<(), String> {
+        if !self.on_curve(point) {
             return Err("point is not on the selected challenge curve".into());
         }
         if self.mul(point, self.order()) != self.identity() {
@@ -261,6 +281,7 @@ pub struct SolveReport {
     pub table_entries: usize,
     pub index_calculus: Option<IndexReport>,
     pub reason: Option<String>,
+    pub execution: ExecutionReport,
 }
 
 impl SolveReport {
@@ -277,6 +298,7 @@ impl SolveReport {
             table_entries: 0,
             index_calculus: None,
             reason: None,
+            execution: ExecutionReport::default(),
         }
     }
 

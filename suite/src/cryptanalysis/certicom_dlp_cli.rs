@@ -25,6 +25,22 @@ pub struct SolveArgs {
     pub curve: String,
     #[arg(long, value_enum)]
     pub method: Method,
+    /// Portable CPU, NVIDIA CUDA, Apple Metal, auto discovery, or host emulation.
+    #[arg(long, value_enum, default_value = "cpu")]
+    pub backend: dlp::worker::Backend,
+    /// Persistent native worker executable built from gpu/certicom.
+    #[arg(long)]
+    pub gpu_worker: Option<PathBuf>,
+    #[arg(long, default_value_t = 0)]
+    pub gpu_device: u32,
+    #[arg(long, default_value_t = 128)]
+    pub gpu_batch_size: usize,
+    /// Parallel Floyd walks; max-iterations and max-restarts apply to each walk.
+    #[arg(long, default_value_t = 32)]
+    pub gpu_rho_walks: usize,
+    /// Deadline for the whole worker session, including setup and host work.
+    #[arg(long, default_value_t = 120)]
+    pub gpu_timeout_seconds: u64,
     /// Load the published unknown-log challenge point Q.
     #[arg(long)]
     pub challenge: bool,
@@ -127,9 +143,21 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
     if args.method != Method::IndexCalculus && args.preparation.is_some() {
         return Err("--preparation applies to index-calculus only".into());
     }
+    let device_options = dlp::worker::DeviceOptions {
+        backend: args.backend,
+        worker: args.gpu_worker.clone(),
+        device: args.gpu_device,
+        batch_size: args.gpu_batch_size,
+        rho_walks: args.gpu_rho_walks,
+        timeout_seconds: args.gpu_timeout_seconds,
+    };
+    let (mut worker, execution) = dlp::worker::select(&group, &target, &device_options)?;
     let mut preparation_label = None;
-    let report = match args.method {
-        Method::Rho => dlp::rho(&group, &target, &opts)?,
+    let mut report = match args.method {
+        Method::Rho => match worker.as_mut() {
+            Some(worker) => dlp::rho_on_device(&group, &target, &opts, worker)?,
+            None => dlp::rho(&group, &target, &opts)?,
+        },
         Method::Bsgs => {
             let lo = args
                 .interval_lo
@@ -146,7 +174,10 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
                 .map(parse_uint)
                 .transpose()?
                 .unwrap_or_else(|| group.order() - &lo);
-            dlp::bsgs(&group, &target, &lo, &width, &opts)?
+            match worker.as_mut() {
+                Some(worker) => dlp::bsgs_on_device(&group, &target, &lo, &width, &opts, worker)?,
+                None => dlp::bsgs(&group, &target, &lo, &width, &opts)?,
+            }
         }
         Method::IndexCalculus => {
             let input = match &args.preparation {
@@ -179,9 +210,17 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
                 }
                 None => None,
             };
-            dlp::index_calculus(&group, &target, &opts, input.as_ref())?
+            match worker.as_mut() {
+                Some(worker) => {
+                    dlp::index_calculus_on_device(&group, &target, &opts, input.as_ref(), worker)?
+                }
+                None => dlp::index_calculus(&group, &target, &opts, input.as_ref())?,
+            }
         }
     };
+    if worker.is_none() {
+        report.execution = execution;
+    }
     let matches_planted = planted
         .as_ref()
         .map(|k| report.scalar_value.as_ref() == Some(k));
@@ -193,7 +232,8 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
     value["planted_scalar"] = json!(planted.map(|k| k.to_string()));
     value["planted_recovered"] = json!(matches_planted);
     value["preparation_label"] = json!(preparation_label);
-    value["limits"] = json!({"max_iterations": opts.max_iterations, "max_restarts": opts.max_restarts, "max_table_entries": opts.max_table_entries, "max_matrix_entries": opts.max_matrix_entries, "factor_base_size": opts.factor_base_size, "max_base_candidates": opts.max_base_candidates});
+    value["requested_backend"] = json!(args.backend.name());
+    value["limits"] = json!({"max_iterations": opts.max_iterations, "max_restarts": opts.max_restarts, "max_table_entries": opts.max_table_entries, "max_matrix_entries": opts.max_matrix_entries, "factor_base_size": opts.factor_base_size, "max_base_candidates": opts.max_base_candidates,"seed":opts.seed,"gpu_batch_size":args.gpu_batch_size,"gpu_rho_walks":args.gpu_rho_walks,"gpu_timeout_seconds":args.gpu_timeout_seconds,"gpu_device":args.gpu_device});
     Ok(value)
 }
 
@@ -204,6 +244,14 @@ pub fn display(report: &Value) {
         report["method"].as_str().unwrap_or("?"),
         report["parameters"]["field_bits"],
         report["parameters"]["field_type"].as_str().unwrap_or("?")
+    );
+    println!(
+        "backend: {}{}",
+        report["execution"]["backend"].as_str().unwrap_or("?"),
+        report["execution"]["device"]
+            .as_str()
+            .map(|d| format!(" ({d})"))
+            .unwrap_or_default()
     );
     if report["verified"] == true {
         println!(

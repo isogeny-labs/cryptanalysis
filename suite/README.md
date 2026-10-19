@@ -380,3 +380,21 @@ exact curves with a BSGS scalar above `2^100`, the special rho target `Q = -G`,
 and a constructed IC workload that learns three base logs and descends a new
 target. They establish correctness of the executed paths; they are not
 natural-target yield or speed measurements.
+
+All three exact-curve methods support portable CPUs, NVIDIA CUDA and Apple
+Metal. CPU execution is the default. From the repository root:
+
+```sh
+make -C gpu/certicom cuda ARCH=sm_80
+suite/target/release/ca-icx solve ECCp-130 --method rho --challenge --max-iterations 16 --max-restarts 0 --backend cuda --gpu-worker gpu/certicom/certicom_cuda --json
+# On a Mac with Metal:
+make -C gpu/certicom metal
+suite/target/release/ca-icx solve ECC2-130 --method bsgs --secret 12345 --interval-width 65536 --backend metal --gpu-worker gpu/certicom/certicom_metal --json
+```
+
+Explicit GPU selection fails on unavailable hardware. `--backend auto` may
+choose CPU and records that choice; `gpu-emulator` is labelled host execution.
+GPU rho runs parallel walks, BSGS batches points, and IC offloads point queries
+and decomposition. Modular linear algebra and independent scalar verification
+stay on CPU. See [GPU setup and hardware qualification](../gpu/certicom/README.md)
+for device selection, resource budgets, deadlines and tests.

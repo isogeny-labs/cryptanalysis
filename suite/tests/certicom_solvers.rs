@@ -14,7 +14,27 @@ fn binary() -> Command {
 }
 
 fn run(args: &[&str], success: bool) -> Value {
-    let output = binary().args(args).arg("--json").output().unwrap();
+    let mut command = binary();
+    command.args(args).arg("--json");
+    // A hardware qualification run uses the same assertions and exact inputs.
+    // Default runs retain the portable CPU path.
+    if !args.contains(&"--backend") {
+        if let Ok(backend) = std::env::var("CERTICOM_TEST_BACKEND") {
+            let worker = std::env::var("CERTICOM_TEST_WORKER")
+                .expect("backend test requires its native worker");
+            command.args([
+                "--backend",
+                &backend,
+                "--gpu-worker",
+                &worker,
+                "--gpu-rho-walks",
+                "4",
+                "--gpu-batch-size",
+                "16",
+            ]);
+        }
+    }
+    let output = command.output().unwrap();
     assert_eq!(
         output.status.success(),
         success,
@@ -23,6 +43,66 @@ fn run(args: &[&str], success: bool) -> Value {
         String::from_utf8_lossy(&output.stderr)
     );
     serde_json::from_slice(&output.stdout).unwrap()
+}
+
+#[test]
+fn cpu_auto_and_explicit_gpu_selection_report_the_actual_backend() {
+    let cpu = run(
+        &[
+            "solve",
+            "ECCp-130",
+            "--method",
+            "bsgs",
+            "--secret",
+            "42",
+            "--interval-width",
+            "256",
+            "--backend",
+            "cpu",
+        ],
+        true,
+    );
+    assert_eq!(cpu["execution"]["backend"], "cpu");
+    assert_eq!(cpu["execution"]["kernel_launches"], 0);
+    let automatic = run(
+        &[
+            "solve",
+            "ECC2-130",
+            "--method",
+            "bsgs",
+            "--secret",
+            "42",
+            "--interval-width",
+            "256",
+            "--backend",
+            "auto",
+        ],
+        true,
+    );
+    assert!(["cpu", "cuda", "metal"].contains(&automatic["execution"]["backend"].as_str().unwrap()));
+    let missing =
+        std::env::temp_dir().join(format!("certicom-missing-worker-{}", std::process::id()));
+    for backend in ["cuda", "metal"] {
+        let error = run(
+            &[
+                "solve",
+                "ECCp-130",
+                "--method",
+                "bsgs",
+                "--secret",
+                "42",
+                "--interval-width",
+                "256",
+                "--backend",
+                backend,
+                "--gpu-worker",
+                missing.to_str().unwrap(),
+            ],
+            false,
+        );
+        assert_eq!(error["status"], "error");
+        assert!(error.get("scalar").is_none());
+    }
 }
 
 #[test]

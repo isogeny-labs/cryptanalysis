@@ -10,6 +10,7 @@ use num_traits::{One, Zero};
 use rand::{rngs::StdRng, SeedableRng};
 use serde::Serialize;
 
+use super::worker::DeviceWorker;
 use super::{ChallengeGroup, ChallengePoint, Curve, SolveReport, SolverOptions};
 use crate::binary_ecc::curve::BinaryPoint;
 use crate::binary_ecc::F2mElement;
@@ -41,6 +42,7 @@ pub struct IndexReport {
     pub rank: usize,
     pub factor_base_logs_verified: bool,
     pub descent_queries: u64,
+    pub linear_algebra_backend: &'static str,
 }
 
 fn build_factor_base(
@@ -181,6 +183,55 @@ impl<'a> Decomposer<'a> {
         }
         None
     }
+
+    fn row_on_device(
+        &self,
+        target: &ChallengePoint,
+        worker: &mut DeviceWorker,
+    ) -> Result<Option<Vec<BigUint>>, String> {
+        if self.lookup.contains_key(&self.group.key(target)) {
+            return Ok(self.row(target));
+        }
+        let mut lefts = Vec::with_capacity(2 * self.base.len());
+        for p in self.base {
+            lefts.push(p.clone());
+            lefts.push(self.group.neg(p));
+        }
+        let pairs: Vec<_> = lefts
+            .iter()
+            .map(|p| (target.clone(), self.group.neg(p)))
+            .collect();
+        let right_candidates = worker.add(self.group, &pairs)?;
+        for (position, candidate) in right_candidates.iter().enumerate() {
+            let Some(&(j, negative)) = self.lookup.get(&self.group.key(candidate)) else {
+                continue;
+            };
+            let right = if negative {
+                self.group.neg(&self.base[j])
+            } else {
+                self.base[j].clone()
+            };
+            if self.group.add(&lefts[position], &right) != *target {
+                return Err("device decomposition fails independent CPU point replay".into());
+            }
+            let n = self.group.order();
+            let mut row = vec![BigUint::zero(); self.base.len()];
+            row[position / 2] = if position % 2 == 0 {
+                BigUint::one()
+            } else {
+                n - BigUint::one()
+            };
+            row[j] = (&row[j]
+                + if negative {
+                    n - BigUint::one()
+                } else {
+                    BigUint::one()
+                })
+                % n;
+            return Ok(Some(row));
+        }
+        Ok(None)
+    }
 }
 
 /// Run an actual IC pipeline on the named curve, using either cofactor-cleared
@@ -192,10 +243,41 @@ pub fn index_calculus(
     opts: &SolverOptions,
     input: Option<&IndexInput>,
 ) -> Result<SolveReport, String> {
+    index_impl(group, target, opts, input, None)
+}
+
+/// GPU-assisted IC: point generation and signed-pair decomposition execute on
+/// the selected device. Factor-base lifting, BigUint LA and replay stay on CPU.
+pub fn index_calculus_on_device(
+    group: &ChallengeGroup,
+    target: &ChallengePoint,
+    opts: &SolverOptions,
+    input: Option<&IndexInput>,
+    worker: &mut DeviceWorker,
+) -> Result<SolveReport, String> {
+    worker.check_binding(group, target)?;
+    let mut report = index_impl(group, target, opts, input, Some(worker))?;
+    report.execution = worker.execution();
+    let note="Factor-base lifting, modular linear algebra and verification run on CPU; point generation and decomposition run on the selected backend";
+    report.execution.note = Some(match report.execution.note {
+        Some(previous) => format!("{previous}; {note}"),
+        None => note.into(),
+    });
+    Ok(report)
+}
+
+fn index_impl(
+    group: &ChallengeGroup,
+    target: &ChallengePoint,
+    opts: &SolverOptions,
+    input: Option<&IndexInput>,
+    mut device: Option<&mut DeviceWorker>,
+) -> Result<SolveReport, String> {
     group.validate(target)?;
     let mut report = SolveReport::pending(group, "index-calculus");
     let mut stages = IndexReport {
         decomposition: "signed-two-summand-mitm",
+        linear_algebra_backend: "cpu-biguint",
         ..IndexReport::default()
     };
     if *target == group.identity() {
@@ -259,10 +341,24 @@ pub fn index_calculus(
             None => rng.gen_biguint_below(n),
         };
         stages.relation_queries += 1;
-        let query = group.mul(&generator, &a);
-        let Some(row) = decomposer.row(&query) else {
+        let query = if let Some(worker) = device.as_deref_mut() {
+            worker
+                .mul(group, &[(generator.clone(), a.clone())])?
+                .remove(0)
+        } else {
+            group.mul(&generator, &a)
+        };
+        let row = if let Some(worker) = device.as_deref_mut() {
+            decomposer.row_on_device(&query, worker)?
+        } else {
+            decomposer.row(&query)
+        };
+        let Some(row) = row else {
             continue;
         };
+        if device.is_some() && group.mul(&generator, &a) != query {
+            return Err("device relation query fails independent CPU scalar replay".into());
+        }
         if row.iter().all(|v| v.is_zero()) {
             stages.trivial_relations += 1;
             continue;
@@ -312,8 +408,20 @@ pub fn index_calculus(
                 None => rng.gen_biguint_below(n),
             };
             stages.descent_queries += 1;
-            let query = group.add(target, &group.mul(&generator, &a));
-            let Some(row) = decomposer.row(&query) else {
+            let query = if let Some(worker) = device.as_deref_mut() {
+                let shift = worker
+                    .mul(group, &[(generator.clone(), a.clone())])?
+                    .remove(0);
+                worker.add(group, &[(target.clone(), shift)])?.remove(0)
+            } else {
+                group.add(target, &group.mul(&generator, &a))
+            };
+            let row = if let Some(worker) = device.as_deref_mut() {
+                decomposer.row_on_device(&query, worker)?
+            } else {
+                decomposer.row(&query)
+            };
+            let Some(row) = row else {
                 continue;
             };
             let sum = row

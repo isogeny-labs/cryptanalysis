@@ -15,7 +15,7 @@ fn options() -> SolverOptions {
 // Constructed full-width known-answer preparation. The solver receives only
 // public points and query scalars k_i+k_j, not the individual k_i or target log.
 // This checks the complete IC data path; it is not a natural-yield experiment.
-fn index_fixture(group: &ChallengeGroup) -> (IndexInput, BigUint) {
+pub(super) fn index_fixture(group: &ChallengeGroup) -> (IndexInput, BigUint) {
     let k0 = (BigUint::one() << 100u32) + BigUint::from(17u32);
     let k1 = (BigUint::one() << 107u32) + BigUint::from(53u32);
     let k2 = (BigUint::one() << 113u32) + BigUint::from(91u32);
