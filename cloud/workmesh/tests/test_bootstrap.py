@@ -76,6 +76,11 @@ class BootstrapTests(unittest.TestCase):
         self.assertFalse(self.root.exists())
         self.assertNotIn("SYNTHETIC-DO-NOT-PRINT", out.stdout + out.stderr)
 
+    def test_vendor_cli_installation_is_opt_in_by_default(self):
+        self.env.pop("INSTALL_CLIS", None)
+        out = self.call("plan")
+        self.assertIn("Coding CLIs: no;", out.stdout)
+
     def test_cli_overrides_config(self):
         config = self.base / "trusted config.sh"
         config.write_text("PROFILE=full\nCONDUCTOR_MODE=local\n")
