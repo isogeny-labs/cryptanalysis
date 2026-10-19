@@ -312,3 +312,26 @@ BLS12-381 modules, and the speed-oriented PQC benchmarks.  Those are either
 research records, or primitives no attack here reaches, or a parallel
 campaign this repository already has production versions of (`cuda/`,
 `fpga/`, `orchestrator/`); they stay upstream.
+
+## Certicom ECC2-131 and ECCp-131
+
+The Rust curve catalog includes the random binary ECC2-131 and prime-field
+ECCp-131 challenges. `ECC2-130` and `ECCp-130` are accepted aliases for the
+published names. These are distinct from the Koblitz ECC2K-130 challenge.
+[`src/ecc/certicom.rs`](src/ecc/certicom.rs) provides `binary_challenge` and
+`prime_challenge`, each returning exact curve parameters and the published
+target Q from [Certicom's parameter list](https://www.certicom.com/en/curves-list).
+
+From `suite/`:
+
+```sh
+cargo run --release --bin ca-icx -- inspect ECC2-130 --json
+cargo run --release --bin ca-icx -- inspect ECCp-130 --json
+cargo test --release --lib ecc::certicom
+```
+
+The tests check the published generators and targets against their curve
+equations and verify `[n]G = [n]Q = O`. Both catalogs retain the published
+131-bit parameters. The root C library remains limited to 64-bit moduli;
+these challenges use the Rust suite's full-width arithmetic. Parameter
+coverage does not establish a full-width challenge solution or an IC speedup.

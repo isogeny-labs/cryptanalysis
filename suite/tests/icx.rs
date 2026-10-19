@@ -42,6 +42,20 @@ fn list_reports_every_family() {
 }
 
 #[test]
+fn certicom_130_aliases_inspect_as_distinct_prime_and_binary_challenges() {
+    for (alias, canonical, family) in [
+        ("ECC2-130", "ecc2-131", "binary"),
+        ("ECCp-130", "eccp-131", "prime"),
+    ] {
+        let report = run_json(&["inspect", alias]);
+        assert_eq!(report["verified"], true);
+        assert_eq!(report["curve"]["name"], canonical);
+        assert_eq!(report["curve"]["family"], family);
+        assert_eq!(report["curve"]["field"]["bits"], 131);
+    }
+}
+
+#[test]
 fn inspect_verifies_every_catalog_curve() {
     // The load-bearing gate: run `icx inspect` on EVERY curve the catalog
     // lists, and require each to verify. This is what "run icx against every
