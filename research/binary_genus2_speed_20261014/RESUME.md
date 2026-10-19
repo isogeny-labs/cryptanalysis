@@ -1,5 +1,38 @@
 # Live worker and exact resumption
 
+## Continuation session observed 2026-10-19
+
+The original PID 21441 was absent when the environment reconnected. Its last
+retained progress is from 2026-10-17 01:20:27 UTC; the exact disappearance time
+is unknown. After confirming that no campaign worker remained, the original
+immutable binary resumed the existing public jobs and complete checkpoints.
+All 16 public job files byte-match `run-20261014T2250Z`; no target or held-out
+witness was regenerated or supplied.
+
+The resumed process is **PID 641**, start tick **23288**, comm
+`cover_rho-campa`, with actual affinity `[4]`. It acknowledged
+`paused_with_checkpoints` at Unix 1792381583. CPU time and all three a=0 work
+streams then advanced. Use actual command/start tick/affinity and advancing
+work/timestamps for future health checks; neither this PID nor `active.json`
+alone establishes health. See the [dated maintenance record](maintenance/20261019-resume-ci/README.md)
+and [machine receipt](maintenance/20261019-resume-ci/resume.json).
+
+The unchanged controller reloads the completed a=1 Q_7 checkpoint once per
+arm on process restart and repeats its external verification. Consequently,
+`completed.jsonl` now has **27 rows but 24 unique (a,index,arm) completions**.
+The three extra Q_7 rows are verification replays, not new solves or targets.
+Original completion rows and pre-resume Q_7 files were retained. The native
+summary reads one checkpoint per target/arm, so these append-only replay rows
+do not add checkpoint observations.
+
+The a=0 work remains censored. Later active-search counters span execution
+sessions and cannot extend the original process's continuous-host timing
+claim. Full checkpoints remain workspace-local; durable retention is still
+unresolved. The a=0 compute and ecbench-adapter exit criteria remain unmet.
+Use the same pause/checkpoint/resume procedure below before heavy local work.
+
+## Original session record (retained)
+
 The current-workspace worker was launched as PID 21441, using the immutable
 binary `/workspace/measurements/binary-genus2-speed-20261014/bin/cover_rho-campaign`.
 Its source is crypto dbd33f00da0a0ac35f285603ec168ad9d91a1d79. A PID or the
