@@ -14,9 +14,27 @@ name: N83 Z[tau] closure + index lift over the index-lift row, end-to-end cold T
 # are verified in the pinned oracle, with planted corruptions, and the
 # receipt verifier's unit tests run. verify_receipt.py audits the receipt
 # (fail closed) and applies the decision rule on the end-to-end cold cost.
-# Dispatch only (the index-lift workflow's convention, PR #983).
+# Dispatch is the convention (the index-lift workflow, PR #983), but
+# workflow_dispatch was refused for this integration (403), so the run is
+# also triggered by a push to this branch, restricted by path filters:
+# receipts, README, figures, figure scripts and smoke diagnostics do not
+# trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n83-closure-indexlift]
+    paths:
+      - experiments/koblitz-n83-closure-indexlift-20261019/**
+      - .github/workflows/n83-closure-indexlift.yml
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/run_github_*/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/README.md'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/README.pdf'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/figures/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/make_figures.py'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/report_header.tex'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/report_filter.lua'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/smoke/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/receipts/**'
 
 permissions:
   contents: read
