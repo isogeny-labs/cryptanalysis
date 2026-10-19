@@ -55,11 +55,16 @@ enumeration shows that explicit root resolution is fast once pair outputs
 are known; the expanded SAT representation did not transmit that advantage
 through the solver in this configuration.
 
-The next iteration should keep S3 roots out of the Boolean search and test
-an exact target-conditioned filter on *families* of pair outputs. A useful
-filter must reject partial-sum families before enumerating their Cartesian
-product, preserve every valid five-output relation, and report rejection,
-lookup cost, memory, and natural public-query yield under frozen inputs.
+The existing [N41 two-plus-one indexed join](../n41_target_conditioned_2p1_join_20261018/RESULT.md)
+already supplies an exact target-conditioned family filter: a missing
+left-pair sum key rejects an entire family before witness expansion. Its
+N41 public relation was independently replayed. The next iteration should
+replace that join's explicit left-pair table with an **implicit exact
+membership and witness oracle** for the key, then measure rejection,
+lookup cost, memory, and natural public-query yield on its frozen keys.
+The direct S3 result here provides a fast final check after candidate pair
+outputs are identified; the unresolved step is finding those pair outputs
+without a quadratic table or a broad Boolean search.
 Only a successful ordinary N41 query with independent replay opens the
 frozen N131 promotion gate. The later single-target comparison will charge
 all target-dependent IC work and pair it with same-point rho.
