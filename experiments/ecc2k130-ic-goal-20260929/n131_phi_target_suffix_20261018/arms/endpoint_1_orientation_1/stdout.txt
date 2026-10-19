@@ -1,0 +1,70 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --maxtime=20 --printsol=1 --verb=1 --xor=0 --maxmatrixrows=10000 --maxmatrixcols=15000 --maxnummatrices=10 --random=2026101814 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_target_suffix_20261018/arms/endpoint_1_orientation_1/query.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_target_suffix_20261018/arms/endpoint_1_orientation_1/query.xcnf'
+c o -- header says num vars:         282598
+c o -- header says num clauses:      434592
+c -- clauses added: 225809
+c -- xor clauses added: 208783
+c -- vars added 282598
+c Parsing time: 0.09 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 133262 GJ matrices: 0 T: 0.01
+c [find&init matx] performing matrix init
+c [matrix] Too many rows in matrix: 25903 -> set usage to NO
+c [matrix] UNused matrix     25903 x27073  density:0.0003  xorlen avg:  8.69
+c [matrix] Good   matrix  0c [matrix] disabling SLS since matrix is found
+   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  1   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  2   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  3   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  4   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  5   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  6   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  7   9543 x13720  density:0.0002  xorlen avg:  3.00
+c [matrix] Good   matrix  8   6224 x 9205  density:0.0003  xorlen avg:  3.00
+c [matrix] Good   matrix  9   2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2808 x 4118  density:0.0007  xorlen avg:  3.00
+c [matrix] UNused matrix      2019 x 2540  density:0.0012  xorlen avg:  3.00
+c [matrix] UNused matrix         6 x   13  density:0.2308  xorlen avg:  3.00
+c [matrix] unused matrices: 206 of which too few rows: 169
+c [matrix] Using 10 matrices recovered from 47886 xors T: 0.03 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   111  184137   48K  101K    3.64    2.53     1     1   109     0  736.57  736.57
+c rst  geom  stb   vs     2   234  184137   48K  101K    3.64    2.53     1     1   232     0  478.86  478.86
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   368  184137   48K  101K    3.64    2.53     1     1   366     0  816.71  816.71
+c rst  geom  stb   vs     4   516  184137   48K  101K    3.64    2.53     1     1   514     0  869.88  869.88
+c rst  geom  stb   vs     5   678  184137   48K  101K    3.64    2.53     1     1   676     0  875.88  875.88
+c rst  geom  stb   vs     6   856  184137   48K  101K    3.64    2.53     1     1   854     0  801.12  801.12
+c [g  <3] Disabling GJ-elim in this round.  Usefulness was: 10.1773%  over 367533 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs     7  1050  184137   48K  101K    3.64    2.53     1     1  1048     0  740.59  740.59
+c rst  geom  stb   vs     8  1264  184137   48K  101K    3.64    2.53     1     1  1262     0  696.89  696.89
+c rst  geom  stb   vs     9  1498  184137   48K  101K    3.64    2.53     1     1  1496     0  715.81  715.81
+c rst  geom  stb   vs    10  1755  184137   48K  101K    3.64    2.53     1     1  1753     0  729.12  729.12
+c rst  geom  stb   vs    11  2038  184137   48K  101K    3.64    2.53     2     1  2035     0  706.00  706.00
+c [g  <3] Disabling GJ-elim in this round.  Usefulness was: 6.2329%  over 655702 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    12  2349  184137   48K  101K    3.64    2.53     2     1  2346     0  700.40  700.40
+c rst  geom  stb   vs    13  2690  184137   48K  101K    3.64    2.53     2     1  2687     0  746.34  746.34
+c rst  geom  stb   vs    14  3064  184137   48K  101K    3.64    2.53     2    26  3036     0  715.00  715.00
+c [g  <3] Disabling GJ-elim in this round.  Usefulness was: 6.3481%  over 695826 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    15  3475  184137   48K  101K    3.64    2.53     2    75  3398     0  706.35  706.35
+c rst  geom  stb   vs    16  3925  184137   48K  101K    3.64    2.53    44   128  3753     0  694.71  694.71
+c [g  <3] Disabling GJ-elim in this round.  Usefulness was: 6.3084%  over 732980 calls
+c TODO disable matrix, performing badly
