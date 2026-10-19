@@ -16,6 +16,21 @@ from the archived run 38520305068 or from the run above is a **local
 diagnostic** from the cloud-agent VM (counts and exactness checks, not timing
 evidence). See [`smoke/`](smoke/README.md).
 
+**Root cause (found later, 2026-10-19; this protocol and its archive are
+unchanged).** The S0 failure came from the native side, and only from this
+directory's `arm.sage` ctypes binding. It read `run.sage`'s `MODULUS`
+(lowest degree first) as highest degree first, so it passed the
+**reciprocal** field polynomial to the native context. The native brute
+force shares that context, which is why native equalled brute force on 300 of
+300. `tau.sage` and `lib.rs` are correct, and the archived n = 19 baseline
+is not affected. The seven systems, the evidence and the fix are in
+[`../volcano-n19-native-tau6-v2-20261019/diagnosis/`](../volcano-n19-native-tau6-v2-20261019/diagnosis/README.md).
+The successor protocol is
+[`../volcano-n19-native-tau6-v2-20261019/`](../volcano-n19-native-tau6-v2-20261019/README.md)
+(protocol v2). The "local exactness" checks below used a different binding
+(`smoke/local_replay.py`) that passes the modulus correctly, so none of them
+exercised this one.
+
 ## Question
 
 The n = 19 row of `docs/ic/BASELINES.md` is the volcano-ic τ-orbit dim-6
@@ -304,10 +319,10 @@ is unchanged.
 - **Not claimed.** This run is not evidence that the native solve is faster,
   slower, or wrong in production. It shows only that the frozen S0 gate
   failed on this host.
-- **Next.** Find the seven S0 systems (re-run S0 with the systems recorded),
-  decide whether the Sage reference or the native code is wrong, and, if a
-  change is needed, freeze a new protocol before any new timing. The run is
-  not re-run under the same protocol.
+- **Next (done).** The seven S0 systems are found, and the native binding
+  of `arm.sage` is wrong (see the root-cause note at the top). A new
+  protocol, v2, is frozen in `../volcano-n19-native-tau6-v2-20261019/`. The
+  run is not re-run under this protocol.
 
 ![S0 and schedule status of run 39307409409. Vector:
 [figures/result.svg](figures/result.svg).](figures/result.png)

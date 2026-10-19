@@ -18,9 +18,13 @@
 //! checked for all 2^k w by a Gray-code walk. Nothing is pruned: every
 //! (u, w) is decided, so the output is the whole variety.
 //!
-//! Output order: ascending in u, then in w (each solution is written as
-//! u | w << k). The order matters only when a system has two or more
-//! solutions (see ../smoke/multi_survey.json and multi_calls.json).
+//! Output order (v2): ascending in w, then in u, i.e. ascending in the
+//! written word u | w << k. This is Sage's order: tau.sage's
+//! ideal(...).variety() returned every one of the 2,375 multi-solution
+//! systems over this field (all (xR, j)) in exactly this order (Sage 10.10,
+//! the baseline image; ../diagnosis/sage_run_39329564781). v1 returned
+//! ascending (u, w), which differs from Sage on 2,199 of them. The order
+//! matters only when a system has two or more solutions.
 
 #![allow(clippy::missing_safety_doc)]
 
@@ -101,7 +105,7 @@ impl Ctx {
     }
 
     /// Every (u, w) with S3(x1(u), sigma^j(x2(w)), xr) = 0, as u | (w << k),
-    /// ascending in u, then in w. Returns the count (all of them are
+    /// ascending in that word (w, then u: Sage's order). Returns the count (all of them are
     /// written when cap allows; the count is returned either way).
     ///
     /// a = u^2 + xr^2, c = xr u and d = (xr u)^2 + b are affine in the bits
@@ -143,7 +147,7 @@ impl Ctx {
             let mut acc = 0u64;
             let mut w = 0u32;
             if acc == d {
-                keys[nk] = u << k;
+                keys[nk] = u;
                 nk += 1;
             }
             for t in 1u32..(1u32 << k) {
@@ -151,23 +155,23 @@ impl Ctx {
                 acc ^= g[l];
                 w ^= 1 << l;
                 if acc == d {
-                    keys[nk] = (u << k) | w;
+                    keys[nk] = u | (w << k);
                     nk += 1;
                 }
             }
         }
         let keys = &mut keys[..nk];
         keys.sort_unstable();
-        let mask = (1u32 << k) - 1;
         for (idx, &key) in keys.iter().enumerate() {
             if idx < out.len() {
-                out[idx] = (key >> k) | ((key & mask) << k);
+                out[idx] = key;
             }
         }
         nk
     }
 
-    /// The direct form (per u: a, c, d and g_l by multiplication). Tests only.
+    /// The direct form (per u: a, c, d and g_l by multiplication), ascending
+    /// (u, w). Tests only; compared with solve as a set.
     pub fn solve_direct(&self, xr: u64, j: u32, out: &mut [u32]) -> usize {
         let k = self.k as usize;
         let base = (j % self.n) as usize * k;
@@ -338,10 +342,12 @@ mod tests {
             let xr = st & ((1 << 19) - 1);
             let j = ((st >> 32) % 19) as u32;
             let nsol = ctx.solve(xr, j, &mut buf);
-            let want = solve_bruteforce(MODULUS, 19, 6, 1, xr, j);
+            let mut want = solve_bruteforce(MODULUS, 19, 6, 1, xr, j);
+            want.sort_unstable();
             assert_eq!(&buf[..nsol], &want[..], "xr {xr} j {j}");
             let mut buf2 = vec![0u32; 4096];
             let n2 = ctx.solve_direct(xr, j, &mut buf2);
+            buf2[..n2].sort_unstable();
             assert_eq!(&buf2[..n2], &want[..], "direct xr {xr} j {j}");
             if nsol > 0 {
                 nonempty += 1;
@@ -357,8 +363,11 @@ mod tests {
         let mut buf = vec![0u32; 4096];
         for &(xr, a, b) in &[(66302u64, 46u32, 49u32), (283919, 18, 28), (295497, 36, 37), (320460, 8, 18)] {
             let nsol = ctx.solve(xr, 0, &mut buf);
-            assert_eq!(&buf[..nsol], &[a | (b << 6), b | (a << 6)], "xr {xr}");
-            assert_eq!(&buf[..nsol], &solve_bruteforce(MODULUS, 19, 6, 1, xr, 0)[..]);
+            // a < b, so (u, w) = (b, a) has the smaller w and comes first (Sage's order).
+            assert_eq!(&buf[..nsol], &[b | (a << 6), a | (b << 6)], "xr {xr}");
+            let mut bf = solve_bruteforce(MODULUS, 19, 6, 1, xr, 0);
+            bf.sort_unstable();
+            assert_eq!(&buf[..nsol], &bf[..]);
         }
     }
 
@@ -449,6 +458,35 @@ mod tests {
             let nsol = ctx.solve(xr, j, &mut buf);
             assert_eq!(pairs(&buf[..nsol]), want.to_vec(), "t {t}");
             assert_eq!(third(rec, xr, j), want.to_vec(), "third t {t}");
+        }
+    }
+
+    /// Sage's variety order on systems with three or four solutions and on the
+    /// non-swap systems the v2 panel meets (../diagnosis/sage_run_39329564781).
+    #[test]
+    fn sage_variety_order() {
+        let ctx = Ctx::new(MODULUS, 19, 6, 1).unwrap();
+        let mut buf = vec![0u32; 4096];
+        let cases: &[(u64, u32, &[(u32, u32)])] = &[
+            (325837, 0, &[(5, 3), (17, 3), (3, 5), (3, 17)]),
+            (378617, 0, &[(2, 2), (16, 4), (4, 16)]),
+            (427179, 0, &[(4, 2), (16, 2), (2, 4), (2, 16)]),
+            (479374, 0, &[(3, 3), (17, 5), (5, 17)]),
+            (139828, 1, &[(21, 4), (16, 7), (51, 61)]),
+            (378617, 1, &[(16, 2), (4, 4), (4, 16)]),
+            (479374, 1, &[(17, 3), (5, 5), (5, 17)]),
+            (294794, 18, &[(7, 16), (4, 21), (61, 51)]),
+            (325837, 18, &[(5, 5), (17, 5), (3, 17)]),
+            (427179, 18, &[(4, 4), (16, 4), (2, 16)]),
+            (187574, 3, &[(40, 23), (39, 39)]),
+            (306698, 16, &[(34, 12), (60, 32)]),
+            (264110, 18, &[(61, 15), (40, 40)]),
+            (1, 0, &[(1, 0), (0, 1)]),
+            (899, 0, &[(46, 30), (30, 46)]),
+        ];
+        for &(xr, j, want) in cases {
+            let nsol = ctx.solve(xr, j, &mut buf);
+            assert_eq!(pairs(&buf[..nsol]), want.to_vec(), "xr {xr} j {j}");
         }
     }
 

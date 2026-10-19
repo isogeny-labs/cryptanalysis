@@ -64,7 +64,7 @@ def main():
     s = {'systems': n, 'v1_systems': sum(d['src'] == 'v1' for d in detail),
          'modulus': m, 'modulus_bin': bin(m),
          'fixed_equals_third': sum(sorted(d['native']) == sorted(d['third']) for d in detail),
-         'bruteforce_equal': sum(d['native'] == d['bruteforce'] for d in detail),
+         'bruteforce_equal': sum(sorted(d['native']) == sorted(d['bruteforce']) for d in detail),
          'nonempty_native': sum(bool(d['native']) for d in detail),
          'nonempty_third': sum(bool(d['third']) for d in detail),
          'multi_native': sum(len(d['native']) > 1 for d in detail),
