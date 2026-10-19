@@ -1,0 +1,14 @@
+digraph RadixFold {
+  graph [rankdir=LR, bgcolor="white", pad="0.24", nodesep="0.4", ranksep="0.62", fontname="DejaVu Sans", label="Six-unit prime-norm radix recoding on the secp256k1 GLV lattice", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fb", color="#3d6f91", fontname="DejaVu Sans", fontsize=12, margin="0.16,0.11"];
+  edge [color="#405b70", fontname="DejaVu Sans", fontsize=11, arrowsize=0.8];
+  scalar [label="scalar k\nGLV coefficient lattice"];
+  step [label="16 nearest-norm steps\nπ = T − τ; T=233 or 190"];
+  code [label="digit residue\n→ six-unit orbit seed + code"];
+  table [label="per-position seed points\nplus terminal seeds"];
+  fold [label="apply signed unit action\nand accumulate point terms"];
+  result [label="verified fixed-base point\nindependent binary replay"];
+  scalar -> step -> code -> table -> fold -> result;
+  note [shape=note, fillcolor="#fff5d9", color="#bd8f32", label="233−τ: 16 positions, 9,363,076 retained bytes\n190−τ: 16 positions, 6,829,948 retained bytes"];
+  table -> note [style=dashed, arrowhead=none];
+}
