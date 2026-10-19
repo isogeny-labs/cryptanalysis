@@ -51,3 +51,7 @@ python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py
 python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py --job fe00f695389443f08d6cbf003f1a8b7e
 python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py --job 251bb8443cad471ab3e6162307fd0c46
 ```
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) summarize all three retained panels, including the failed A/A gates and the qualified CPU-40 result. The graph generator `visuals.py` reads each committed audit JSON so the figures show the failed-gate attempts alongside the qualified panel.
