@@ -1,0 +1,8 @@
+series,metric,low,high,unit,source,status
+C library,single-thread PI,1.013,1.144,x,PR #880 body; point 1.099; five paired rounds,exploratory historical; raw rows absent
+C library,two-thread rho ratio,1.144,1.169,x,PR #880 body; point 1.152,exploratory historical; raw rows absent
+C library,Callgrind instruction PI,1.089,1.089,x,PR #880 body,deterministic summary only; raw record absent
+ECC2K CPU,original one-worker throughput,5.07,6.23,M it/s,PR #880 body; three interleaved rounds,exploratory historical; raw rows absent
+ECC2K CPU,candidate one-worker throughput,7.13,7.96,M it/s,PR #880 body; three interleaved rounds,exploratory historical; raw rows absent
+ECC2K CPU,claimed startup change,0.10,1.41,s,PR #880 body; originally 1.41 to 0.10,exploratory historical; command and raw rows absent
+ECC2K CPU,claimed check change,0.19,1.48,s,PR #880 body; originally 1.48 to 0.19,exploratory historical; command and raw rows absent
