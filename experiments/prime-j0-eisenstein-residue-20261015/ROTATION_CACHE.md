@@ -25,3 +25,5 @@ The completed job `e0d10d9a14e4406684212690eb680518` preserved all [raw arms and
 | Mean timed 12,288-scalar interval | 67.807406 ms | 65.714195 ms |
 
 The descriptive median paired seven-row/ten-row ratio was `1.028614`; its paired bootstrap 95% interval was `[1.014163,1.046736]`. The A/A ratios at repeat 1 after comparison and repeat 2 before comparison were `1.203446` and `1.201942`, outside `[0.90,1.11]`. Under the frozen gate the qualified ratio is `null` and the aggregate status is `unknown_after_tier_gate`. These failed controls remain in the result; a further timing panel needs a newly frozen environment and manifest.
+
+The [dated source-linked report](ROTATION_CACHE_REPORT_2026-10-19.md) adds the training/held-out method diagram, transfer and timing graphs, and [PDF](ROTATION_CACHE_REPORT_2026-10-19.pdf). Figure source and SVGs are in [`rotation_cache_report_2026-10-19.py`](rotation_cache_report_2026-10-19.py) and [`rotation-cache-figures/`](rotation-cache-figures/).

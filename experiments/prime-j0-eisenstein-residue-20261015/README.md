@@ -362,6 +362,8 @@ profile found that per-seed hot entries do not transfer to the held-out
 fixture, so the ten-row mask uses evenly spaced rows. Its serial Tier 1
 panel completed all 96 arms, but two A/A controls exceeded the frozen
 range; the timing aggregate remains unknown with all raw receipts retained.
+The [source-linked transfer and panel report](ROTATION_CACHE_REPORT_2026-10-19.md)
+visualizes the held-out hot-seed coverage and gated timing result.
 
 The [norm-110557 alternate radix](ALT_RADIX.md) uses fifteen full two-x
 digit rows and a small terminal set, retaining 27,429,548 bytes under the
