@@ -5,11 +5,14 @@ date: 2026-10-19
 
 # n = 83 K600 index lift: lift_scan in the root-index build, end-to-end cold
 
-**Status (2026-10-19): protocol frozen; Tier 1 [run 39290913632](https://github.com/aburan28/cryptanalysis/actions/runs/39290913632) started on commit `8d06c09d`; no result yet.**
+**Status (2026-10-19): Tier 1 [run 39290913632](https://github.com/aburan28/cryptanalysis/actions/runs/39290913632) finished; verdict improvement.**
 The [protocol](protocol.json) (frozen 2026-10-19T17:02:53Z) and the [schedule](schedule.json)
-were committed before any Tier 1 timing. Every number below that is not
-quoted from an archived run comes from the cloud-agent VM; those are
-**local diagnostics**, not timing evidence (see [`smoke/`](smoke/README.md)).
+were committed before any Tier 1 timing (the run started on commit `8d06c09d`),
+and the run is archived in [`run_github_39290913632/`](run_github_39290913632/).
+The frozen primary is R = E2E(cP) / E2E(cPI) = **1.0344 [1.0324, 1.0364]**.
+See "Result". The numbers outside "Result" that are not from the archived
+run come from the cloud-agent VM; those are **local diagnostics**, not timing
+evidence (see [`smoke/`](smoke/README.md)).
 
 ## Question
 
@@ -272,6 +275,119 @@ See [`smoke/README.md`](smoke/README.md). In short:
   archived cPI as candidate, R = 1.0354 [1.0337, 1.0372], "improvement";
   with a copy of the baseline, 1.0000 [0.9998, 1.0002], "not separated".
 
+## Result
+
+All gates pass: all 130 scheduled rows are present and valid (130 valid, 0
+invalid, 0 skipped by the time guard; 20/20 points, 3/3 rank blocks), one
+scalar per point across every IC process and the tuned rho (replayed in the
+pinned oracle), one relation and one probe count per point across every IC
+process, Q0 equal to the archived Feistel identity (1,987,852 probes) in all
+four Q0 arms, every rank process's factor-log table equal to B's archived
+table, and identical rank relations, per-attempt probe vectors, root-call
+totals and point-addition counters across kP and kPI in every block (600
+resolved hits per block, 0 fallback states, 0 irregular inputs; 311, 304 and
+330 swapped pairs in blocks K1 to K3, the same in both arms; one frame per
+attempt, 600 builds per block, in both). **The layout gate holds in every one
+of the 110 IC processes (cP, cPI, cPIT and cPIX on 21 points each, cPaa on 20,
+kP and kPI three each):** `stored_states_blake3` `d8cfe443...` and
+`table_slots_blake3` `5f53764e...`, the frozen values, and B's logical-state
+and table-map digests. cPIX checked 29,880,600 roots against the selected
+canonicalizer (every other process none) and found no difference. No
+contention flags. All controls pass. `verify_receipt.py` re-run on the archive
+reproduces `panel/result.json` and `panel/result_table.md` byte for byte.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_figures.py`](make_figures.py)).](figures/result.png)
+
+### Primary (frozen rule)
+
+Improvement iff the 95% lower bound of R = E2E(cP) / E2E(cPI) exceeds 1, with
+the shared rank stage K.
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E(cP) / E2E(cPI)**, shared K (20 points, 3 rank blocks x 600 attempts) | **1.0344 [1.0324, 1.0364]** | **improvement** (lower bound above 1) |
+| A/A E2E cP / cPaa | 0.9999 [0.9998, 1.0001] | pass (inside [0.97, 1.03]) |
+| A/A cold cP / cPaa | 0.9996 [0.9982, 1.0007] | pass (inside [0.97, 1.03]) |
+| sharing: rank per attempt kPI / kP (n=1800) | 0.9981 [0.9966, 0.9994] | pass (inside [0.97, 1.03]) |
+| planted cold cPIX / cPI | 1.4081 [1.4033, 1.4120] | pass (lower bound above 1) |
+
+End-to-end cold means (shared rank stage K = 148.4 s, plus mean cold over 20
+points): cP 148.4 + 22.5 = 170.9 s; cPI 148.4 + 16.8 = 165.2 s. Because the
+gates make the stored states, the table slots, every relation and every probe
+count the baseline's, this is a pure index-build saving. It is close to the
+expected 1.0355 (not an input), and the 95% interval is narrow because K is
+shared.
+
+### Secondaries (none changes the verdict)
+
+| Quantity | cP (baseline) | cPI (candidate) | Ratio cP / cPI [95%] |
+| --- | ---: | ---: | :--- |
+| end-to-end, own rank stage: (kP + cP) / (kPI + cPI) | 171.0 s | 165.1 s | 1.0361 [1.0346, 1.0377] |
+| cold without rank (ms) | 22,488.9 | 16,812.5 | 1.3376 [1.3340, 1.3406] |
+| setup (ms) | 22,096.3 | 16,420.2 | 1.3457 [1.3442, 1.3471] |
+| index build (ms) | 19,778.4 | 14,106.3 | 1.4021 [1.4004, 1.4036] |
+| online (ms) | 392.57 | 392.33 | 1.0006 [0.9982, 1.0040] |
+| peak RSS (MiB) | 1,788.3 | 1,788.5 | 0.9999 [0.9998, 1.0000] |
+| scan self-test (ms) | 1,872.1 | 1,868.3 | 1.0020 [0.9984, 1.0059] |
+| rank per attempt kP / kPI (ms) | 247.33 | 246.86 | 1.0019 (kPI / kP 0.9981) |
+| rank stage's share of E2E | 86.8% | 89.8% | |
+
+- **Pre-registered secondary cPIT** (cPI with the Feistel scan order's
+  exhaustive self-test replaced by the sampled one; never decides, and
+  removing a check is engineering only if the check is redundant). E2E
+  cP / cPIT 1.0460 [1.0435, 1.0488] (163.4 s); cold without rank cPI / cPIT
+  1.1233 [1.1202, 1.1261] and cP / cPIT 1.5025 [1.4956, 1.5087] (14,967.7
+  against 22,488.9 ms); scan self-test 1,868.3 against 2.39 ms (781.6x);
+  online cPI / cPIT 0.9960 [0.9911, 0.9992].
+- **Planted arm cPIX.** Cold without rank cPIX / cP 1.0527 [1.0517, 1.0537]:
+  the keys checked against the selected canonicalizer cost 1,185 ms on top of
+  cP, so lift_scan removes about that much per index build, consistent with
+  the 5,672 ms cP-to-cPI index-build saving.
+- **S** (cost over this run's measured rT770 step, 280.33 ns, per sqrt(r);
+  one unit is 25,950.6 ms):
+
+  | Arm | E2E cold | cold without rank | online |
+  | --- | ---: | ---: | ---: |
+  | cP | 6.5845 | 0.8666 | 0.015128 |
+  | cPaa | | 0.8670 | 0.015126 |
+  | cPI | 6.3658 | 0.6479 | 0.015118 |
+  | cPIT | 6.2947 | 0.5768 | 0.015180 |
+  | cPIX | | 0.9123 | 0.015148 |
+
+  The shared rank stage is 5.7179. Delta S end-to-end cold cP to cPI =
+  -0.2187. The tuned rho's own `S` in this run: cold 0.10113, online 0.09077
+  (mean rT770 cold 2,624.5 ms, online 2,355.6 ms).
+- **Gap to tuned rho rT770** (IC / rho; 20 points; distance remaining, not a
+  gate). End-to-end cold: cP 65.11 [53.93, 80.98]; cPI 62.94 [52.47, 78.53];
+  cPIT 62.24 [51.73, 77.02]. Online: cP / rT 0.1667 [0.0926, 0.2808]; cPI /
+  rT 0.1666 [0.0914, 0.2830].
+- **Rank stage.** kP and kPI give the same relations, probes (mean 1,746,508
+  per attempt), root calls and counters; per probe 141.61 and 141.35 ns. The
+  rank stage is 89.8% of the end-to-end cold cost after the change (148.4 of
+  165.2 s).
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner (`runnervm8k3b6`, 4 vCPUs, one pinned
+  CPU), 20 cold points, three rank blocks, one fresh process per arm per
+  point. The primary's narrow interval is over points, blocks and the 600
+  paired attempts per block, with K shared; it does not include any rank-stage
+  difference between arms, which the sharing control bounds (kPI / kP 0.9981
+  [0.9966, 0.9994]).
+- The gain is 1.034x end to end because the rank stage is 86.8% of the
+  baseline's end-to-end cold cost. The cold path itself is 1.3376x faster.
+- This run's rT770 step (280.33 ns), rank stage (148.4 s) and baseline
+  (170.9 s, S 6.58) differ from run 39214027289's (280.64 ns; 143.7 s;
+  166.0 s, S 6.39), a different run, instance set, rank seeds and runner
+  state; the online means also differ (392.6 ms here against 303.8 ms), so
+  `S` and the gaps are not comparable across the two runs. The paired ratio R
+  is within this run.
+- Factor-base construction is charged to neither arm (common to both, so
+  R > 1 holds for any X; 1.0344 is an upper bound on the every-phase ratio).
+  Not replayed on another host class.
+
 ## Files
 
 | File | Role |
@@ -286,6 +402,7 @@ See [`smoke/README.md`](smoke/README.md). In short:
 | `arm.py`, `run_schedule.py` | one arm per pinned process; the schedule runner |
 | `verify_receipt.py` | gates, statistics, decision rule; `result.json`, `result_table.md` |
 | `figures/design.*` | design diagram (TikZ source, PDF, PNG) |
-| `make_figures.py` | result figure, once the run is archived |
+| `run_github_39290913632/` | the archived artifact: allocation, builds, raw runs, `panel/result.json` |
+| `make_figures.py`, `figures/result.*` | result figure (TikZ source, PDF, PNG) |
 | `smoke/` | local diagnostics: exactness of every index mode on Q0 and of full rank stages, tests, verifier check |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
