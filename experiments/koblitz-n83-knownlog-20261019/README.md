@@ -7,7 +7,9 @@ date: 2026-10-19
 
 **Status (2026-10-19): protocol frozen, Tier 1 run started; no result yet.**
 The [protocol](protocol.json) and the [schedule](schedule.json) were
-committed before any Tier 1 timing. Every number below comes from one of
+committed before any Tier 1 timing, in commit `c04026fa6`, which carries the
+whole experiment directory and the workflow. The Tier 1 run is
+[39307634508](https://github.com/aburan28/cryptanalysis/actions/runs/39307634508). Every number below comes from one of
 three places, and each is labelled:
 
 - an archived run (39214027289, the n = 83 baseline row's run);
