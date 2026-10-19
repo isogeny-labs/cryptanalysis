@@ -1,0 +1,168 @@
+{
+  "beat_id": "koblitz.compact_orbit.n83_single_target",
+  "disjoint_from": [
+    "q0",
+    "eval (B's panel_b, 16 points)",
+    "scanorder-heldout (384 points)",
+    "combined-primary-v1 (576 points)",
+    "probepipe-primary-v1 (384 points)",
+    "statefold-cold-v1 (16 points)",
+    "tablefilter-primary-v1 (384 points)",
+    "stacked-cold-v1 (20 points)",
+    "rankcut-cold-v1 (20 points)",
+    "eval (64 points)",
+    "rankprobe-cold-v1 (20 points)",
+    "indexlift-cold-v1 (20 points)",
+    "k899-cold-v1 (20 points)",
+    "rotkey-cold-v1 (20 points)",
+    "onlineframe-v1 (64 points)"
+  ],
+  "domain": "kic-n83-single-target-public-point-v1",
+  "input_law": "public hash-to-curve: x = SHA-256('kic-n83-single-target-public-point-v1|closure-cold-v1|<seed>|<counter>')[0:8] little-endian mod 2^n for the first counter whose x lifts; y by half-trace, sign by bit 0 of digest byte 8; Q = [h]P. No scalar is known to either arm.",
+  "points": [
+    {
+      "point": [
+        "4867718126101593245055319",
+        "6110111094915799111125619"
+      ],
+      "seed": 0
+    },
+    {
+      "point": [
+        "7023416935529132383296288",
+        "9460555418209828810611454"
+      ],
+      "seed": 1
+    },
+    {
+      "point": [
+        "7093742734686568462133300",
+        "605704134005131712953999"
+      ],
+      "seed": 2
+    },
+    {
+      "point": [
+        "3856537891527707011316022",
+        "8284762691890283599849116"
+      ],
+      "seed": 3
+    },
+    {
+      "point": [
+        "4807301712701856047780115",
+        "8756879359362279786872666"
+      ],
+      "seed": 4
+    },
+    {
+      "point": [
+        "1856741184251520507818858",
+        "462531133542767953140184"
+      ],
+      "seed": 5
+    },
+    {
+      "point": [
+        "8890109159119458091933250",
+        "1066501647239819819659462"
+      ],
+      "seed": 6
+    },
+    {
+      "point": [
+        "4217368669950517076541928",
+        "8810976893760335586367060"
+      ],
+      "seed": 7
+    },
+    {
+      "point": [
+        "2454572132130151689727598",
+        "3641807585628067431135085"
+      ],
+      "seed": 8
+    },
+    {
+      "point": [
+        "8007751800622713112545307",
+        "8776380858172482646529900"
+      ],
+      "seed": 9
+    },
+    {
+      "point": [
+        "7757372085323765073862650",
+        "7991819418410762696521707"
+      ],
+      "seed": 10
+    },
+    {
+      "point": [
+        "3028721520756834325653713",
+        "8514733140815996782532930"
+      ],
+      "seed": 11
+    },
+    {
+      "point": [
+        "9332271252347347472493183",
+        "8078622889741273761837345"
+      ],
+      "seed": 12
+    },
+    {
+      "point": [
+        "8165526347505160099692393",
+        "1160692496503026801178012"
+      ],
+      "seed": 13
+    },
+    {
+      "point": [
+        "2470217801751205943465074",
+        "6336952386170451368539602"
+      ],
+      "seed": 14
+    },
+    {
+      "point": [
+        "6737958058480505506440260",
+        "8244254710084660097871607"
+      ],
+      "seed": 15
+    },
+    {
+      "point": [
+        "1373871155646508866894957",
+        "8659283991085328066605215"
+      ],
+      "seed": 16
+    },
+    {
+      "point": [
+        "520392635224795682809903",
+        "9409013788786001006828785"
+      ],
+      "seed": 17
+    },
+    {
+      "point": [
+        "4857396836895555079102711",
+        "7060942174487726361912724"
+      ],
+      "seed": 18
+    },
+    {
+      "point": [
+        "6034431257148966830835686",
+        "8012252209742680687729923"
+      ],
+      "seed": 19
+    }
+  ],
+  "role": "closure-cold-v1",
+  "scalar_known_to_anyone": false,
+  "schema": 1,
+  "sized_by": "fixed 20 (power_check.py checks the design)"
+}
