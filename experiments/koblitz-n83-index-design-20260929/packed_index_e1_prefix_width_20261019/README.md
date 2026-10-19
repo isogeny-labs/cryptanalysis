@@ -1,5 +1,10 @@
 # N83 reversible-prefix width panel
 
+The [15-call result](RESULT.md) shows a monotone reduction in lookup
+comparisons as the directory widens to 23 bits, while target-stage time
+retains a cache/memory tradeoff. All raw calls and the independent audit
+are archived here.
+
 This panel varies the directory width of the exact 83-bit-reversed packed
 root index across 20, 21, 22, and 23 bits, with the open-addressed hash
 index as a same-point reference. The key reversal is bijective; the record
