@@ -5,19 +5,107 @@ date: 2026-10-19
 
 # n = 83 K600: the Bernstein–Lange gap on the rank-probe producer (a measurement)
 
-**Status (2026-10-19): protocol frozen, Tier 1 run pending.** The
+**Status (2026-10-19): Tier 1 run [39307708909](https://github.com/aburan28/cryptanalysis/actions/runs/39307708909)
+complete; reading `bl_online_faster_than_ic`.** The
 [protocol](protocol.json) and the [schedule](schedule.json) were committed
-before any n = 83 timing of this experiment. Nothing below is a result of it.
+before any n = 83 timing of this experiment. The result is in "Result" below.
 The figures in "Power" come from a model-based prior; they size the panel
 and are not measurements. The local checks used Python only (see "Local
 checks"): the cloud-agent VM had about 2 GB of free disk, so nothing was
-built here and the runner builds both crates.
+built there and the runner built both crates.
 
 **This is a measurement, not an index-calculus improvement.** It changes no
 IC code and never replaces or promotes a baseline row. It measures the
 distance from the current n = 83 baseline to Bernstein–Lange precomputation
 rho (AGENTS.md, "Success criterion", "Distance to rho"), which fills the n = 83
 row's "Online / BL" column in `docs/ic/BASELINES.md`.
+
+## Result
+
+Run [39307708909](https://github.com/aburan28/cryptanalysis/actions/runs/39307708909)
+(one ubuntu-24.04 runner, one pinned CPU, CPU-only), frozen rule applied as
+written by `verify_receipt.py`. Reading: **`bl_online_faster_than_ic`**. It
+is a measurement of the distance from the rank-probe producer (arms cP / kP,
+the n = 83 baseline row when this experiment was frozen) to Bernstein–Lange,
+not an index-calculus improvement.
+
+**Primary.** G = mean cP online / mean BL online = **22.55 [16.23, 31.44]**
+over the 64 cold points (10,000 bootstrap draws, seed 2026101990). The lower
+bound is above 1, so the frozen reading is `bl_online_faster_than_ic`. BL was
+faster than cP on 60 of the 64 points. Mean online: cP 428.79 ms, BL 19.01 ms
+(medians 289.7 ms and 11.3 ms). The online gap measured on this host class is
+smaller than B's 235 [61, 645] (a different run, producer, host and
+instances), so the two are not combined.
+
+**Gates and controls: all pass, nothing skipped.**
+
+- All 328 scheduled rows are present and valid, 0 skipped by the time guard,
+  64/64 points and 4/4 rank blocks complete, no contention flags, no
+  problems.
+- One scalar per point across every arm (replayed in the pinned oracle), one
+  relation and one probe count per point across every IC process; Q0 equal to
+  the archived Feistel identity and every Q0 arm recovers the sidecar scalar;
+  the rank tables equal B's archived table; every BL row loaded this job's
+  table; BL and BLaa took identical steps on every point; the BLplain step
+  identity at Q0, seed 831000 holds.
+- IC A/A: cold cP / cPaa 0.9994 [0.9979, 1.001] (inside [0.97, 1.03]);
+  online 1.000 [0.9976, 1.003] (inside [0.95, 1.05]).
+- BL A/A: geometric mean BL / BLaa online 0.9996 [0.9947, 1.004] (inside
+  [0.9, 1.1]).
+- BL positive control `pc69-rT770`: PASS, rows byte-identical to the archived
+  run's.
+- BL precompute at this job's P_IC: PASS, 172,921.8 ms against a budget of
+  172,919.8 ms (1.0000112); the three table checks PASS.
+- `verify_receipt.py` re-run on the archive reproduces `result.json` and
+  `result_table.md` byte for byte.
+
+**Secondaries (none decides).**
+
+| statistic | estimate [95%] |
+| --- | --- |
+| rho / BL online (rT770 / BL) | 118.8 [90.52, 159.2] |
+| online gap cP / rT770 | 0.1899 [0.1432, 0.2453] |
+| online gap BL / rT770 | 0.008419 [0.006242, 0.01104] |
+| end-to-end cold gap IC / rT770 | 67.74 [59.99, 77.46] |
+| end-to-end cold gap BL / rT770 | 68.79 [61.30, 78.33] |
+| cold IC / BL | 0.9847 [0.9481, 1.022] |
+
+- **End-to-end cold `S`** (this run's rT770 step, 253.96 ns): IC (kP + cP)
+  7.417, BL 7.532, rT770 0.1095. Online `S`: cP 0.01824, BL 0.000809, rT770
+  0.09605. End-to-end cold in ms: IC 174,368 (mean rank stage 151,362), BL
+  177,072 (precompute 172,922 + median process setup 4,131 + online 19),
+  rT770 2,574.
+- **Cold IC / BL is about 1 by construction** (BL's precomputation is
+  matched to the IC's rank stage plus setup); its interval contains 1.
+- **Matched fraction** P_IC / (E2E(kP, cP) − mean cP online): 0.9941.
+- **The table:** 10,282,240 entries, alpha 1.275e-05, 648,782,602 covered
+  points, 4,154 duplicate walk ends, 266.7 ns per step.
+- **BL model check** (secondary): mean BL steps 74,794 against the model's
+  83,659 at this table's covered count, measured / model 0.894. All 128 BL
+  and BLaa rows were solved by the precomputed table, none by an online
+  self-collision.
+- **Host class** (new `scripts/host_cpu_record.py` record): `INTEL(R) XEON(R)
+  PLATINUM 8573C | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y`, model 207
+  stepping 2, microcode `0xffffffff` (the hypervisor does not expose it), 4
+  logical CPUs on 2 cores, L1d 48K, L2 2048K, L3 266240K, kernel
+  6.17.0-1022-azure. The rank-probe run measured its row on an AMD EPYC 7763
+  and B's on an AMD EPYC 9V45, so this measurement's host class differs from
+  both; the rT770 step here is 253.96 ns against 280.64 ns there and cP's
+  mean online 428.8 ms against 303.8 ms. G is therefore a figure for this
+  host class only.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_result_figure.py`](figures/make_result_figure.py)).](figures/result.png)
+
+**Scope.** One run, one host class, one pinned CPU, instance scoped. It
+measures the BL gap on the rank-probe producer at this experiment's matched
+budget; it is not a speed of either method in general and does not transfer
+to ECC2K-130 or to E_0 over GF(2^83). At the time of this result the n = 83
+baseline row had moved on to the index-lift producer (run 39290913632), so
+the figure fills a record of the rank-probe producer, not the current
+baseline row. The archive is `run_github_39307708909/` (the BL table, 411 MB,
+stays an Actions artifact).
 
 ## Question
 
@@ -364,7 +452,7 @@ that were building.
   - the IC relation and probe identities;
   - the factor-log tables.
 - **Comparative (measurement):** G, rho/BL, the cold `S` and the gaps, read
-  by the frozen rule with their intervals. None exists yet.
+  by the frozen rule with their intervals. See "Result".
 - **Heuristic estimate:** the power prior, the BL model and the runtime
   estimate.
 - **Out of scope:**
@@ -417,5 +505,7 @@ The receipt is `$RUNNER_TEMP/n83-bl-rankprobe/`. It holds:
 | `verify_receipt.py` | gates, controls, the primary and the secondaries |
 | `smoke/synthetic_check.py`, `smoke/synthetic_check.json` | the synthetic verifier check |
 | `figures/` | the design diagram and the sizing figure (TeX sources, PDF, PNG) |
+| `run_github_39307708909/` | the archived artifact: allocation, host record, builds, controls, budget, BL receipt and table checks, raw runs, `result.json` |
+| `figures/result.*`, `figures/make_result_figure.py` | result figure (TikZ source, PDF, PNG) |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
 | `../../scripts/host_cpu_record.py` | the M5 host CPU record (shared helper) |

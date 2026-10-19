@@ -1124,8 +1124,74 @@
       },
       "gap_tuned_rho": "measured on this row: end-to-end cold 64.0 [53.7, 78.0]; online 0.129",
       "gap_bernstein_lange": {
-        "kind": "not measured on this row",
-        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+        "kind": "measured by a later experiment on this producer (not this row's own run)",
+        "experiment": "cryptanalysis:experiments/koblitz-n83-bl-rankprobe-20261019 (branch claude/n83-bl-rankprobe), GitHub Actions 39307708909",
+        "producer_measured": "the rank-probe producer (arms cP / kP)",
+        "ic_online_over_bl": {
+          "value": 22.55,
+          "ci95": [
+            16.23,
+            31.44
+          ],
+          "reading": "bl_online_faster_than_ic",
+          "rows_bl_faster": "60/64"
+        },
+        "rho_online_over_bl": {
+          "value": 118.8,
+          "ci95": [
+            90.52,
+            159.2
+          ]
+        },
+        "ic_cold_over_bl_cold": {
+          "value": 0.9847,
+          "ci95": [
+            0.9481,
+            1.022
+          ]
+        },
+        "online_gap_ic_over_rt770": {
+          "value": 0.1899,
+          "ci95": [
+            0.1432,
+            0.2453
+          ]
+        },
+        "online_gap_bl_over_rt770": {
+          "value": 0.008419,
+          "ci95": [
+            0.006242,
+            0.01104
+          ]
+        },
+        "e2e_cold_gap_ic_over_rt770": {
+          "value": 67.74,
+          "ci95": [
+            59.99,
+            77.46
+          ]
+        },
+        "e2e_cold_gap_bl_over_rt770": {
+          "value": 68.79,
+          "ci95": [
+            61.3,
+            78.33
+          ]
+        },
+        "s_cold": {
+          "ic": 7.417,
+          "bl": 7.532,
+          "rt770": 0.1095
+        },
+        "s_online": {
+          "cp": 0.01824,
+          "bl": 0.000809,
+          "rt770": 0.09605
+        },
+        "matched_fraction": 0.9941,
+        "bl_model_check_measured_over_model": 0.894,
+        "host_class": "INTEL(R) XEON(R) PLATINUM 8573C | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+        "note": "a measurement, not an IC improvement; 64 new points, one run, Tier 1, one host class; the unit is that run's rT770 step (253.96 ns), not this row's (280.64 ns), and its host class differs from this row's own run (AMD EPYC 7763), so it is not a delta of this row's figures; BL precomputation matched to P_IC = 172,919.8 ms (10,282,240 entries); all gates and controls pass, 328 rows, none skipped; the baseline row at that time was already the index-lift producer, so no baseline row's BL column was filled"
       },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
       "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes, root calls and point-addition counters across kR, kP, kPaa and kPX in every block, 600 exact S3-resolved hits per rank block, one frame per attempt in kP, kPaa and kPX; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
@@ -1160,7 +1226,8 @@
       "sources": [
         "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/README.md (branch claude/n83-rankprobe)",
         "cryptanalysis:experiments/koblitz-n83-rankprobe-20261019/run_github_39214027289/panel/result.json (branch claude/n83-rankprobe)",
-        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/ (the baseline replaced)"
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/ (the baseline replaced)",
+        "cryptanalysis:experiments/koblitz-n83-bl-rankprobe-20261019/run_github_39307708909/result.json (branch claude/n83-bl-rankprobe)"
       ]
     },
     {
@@ -1985,7 +2052,7 @@
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
     "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
     "n=19: no IC1 candidate manifest; online S not separable",
-    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run",
+    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run; the BL gap was measured on the rank-probe producer instead (koblitz-n83-bl-rankprobe-20261019, run 39307708909: online cP / BL 22.55 [16.23, 31.44], other_records)",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]
