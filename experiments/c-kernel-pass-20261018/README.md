@@ -2,7 +2,18 @@
 
 Class: **engineering** (identical counted operations, wall time only). No speedup claim beyond that label.
 All timing ratios here are **exploratory, unisolated (no tier)**: cloud VM, no isolation, `taskset -c 1` only.
-No number in docs/BENCHMARKS.md is changed. Working tree only; nothing committed.
+The report and raw outputs in this directory are committed. The benchmark index and figures remain unchanged because these exploratory stage measurements do not meet the isolated comparison gates, and no end-to-end index-calculus metric changed.
+
+## Benchmark and graph audit
+
+Checked `docs/BENCHMARKS.md`, `docs/perf/PERFORMANCE_INDEX.md`,
+`docs/ic/baselines.json`, `docs/ic/BASELINES.pdf`, and
+`docs/ic/figures/baselines_gap.tex` and its rendered PDF/PNG. This pass reports
+only noisy stage-level C-kernel timings and deterministic instruction counts;
+it does not measure an end-to-end index-calculus `S` or a tier-qualified
+performance-index comparison. The BSGS timing is explicitly exploratory, and
+the batch-add instruction count has no corresponding canonical graph. Those
+figures therefore remain current; no performance row or graph was changed.
 
 ## Question
 Do the C library kernels (rho, kangaroo, bsgs, grumpy, precomp, modarith, group_*, pohlig, indexcalc, linalg, util) contain correctness bugs, and can they run faster with identical counted ops and results?
