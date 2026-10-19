@@ -1,0 +1,50 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "one_index_digest_set_every_ic_process": true,
+  "one_probe_count_per_point_every_ic_process": true,
+  "one_relation_per_point_every_ic_process": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "q0_matches_archived_feistel_identity": true,
+  "rank_relations_probes_root_calls_and_counters_identical_per_block": true,
+  "rank_tables_equal_archived": true,
+  "receipt_matches_schedule": true
+ },
+ "detail": {
+  "invalid_rows": [],
+  "probe_failures": [],
+  "rank_failures": [],
+  "rank_frame_counters": {
+   "K1/kP": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "K1/kPI": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_padd_counters": {
+   "K1/kP": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 311
+   },
+   "K1/kPI": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 311
+   }
+  },
+  "relation_failures": [],
+  "scalar_failures": [],
+  "units_seen": 2
+ },
+ "problems": [],
+ "rows": 12
+}
