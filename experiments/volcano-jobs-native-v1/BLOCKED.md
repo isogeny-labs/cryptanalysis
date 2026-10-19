@@ -38,6 +38,10 @@ missing cgroup, IRQ, and topology checks.
 No timed command was started. The frozen protocol, workloads, binaries,
 correctness harness, and commands remain ready for a host that passes the
 same Tier 0 checks. This failed probe is retained as qualification evidence,
-not as a measurement. No graph, performance index entry, or benchmark mirror
-is generated from it. The planned canonical impact audit remains pending
-until qualified campaign results exist.
+not as a measurement. No campaign graph, performance index entry, or
+benchmark mirror is generated from it. This PR changes CLI job scheduling;
+it does not change curve data, isogeny structure, ECDLP results, or
+library-kernel measurements. With no qualified campaign metric changed, the
+existing canonical curve/volcano research graphs and dashboards remain
+current. The campaign-specific plots, benchmark mirror, supplemental index
+row, and formal impact audit remain pending until qualified results exist.
