@@ -114,6 +114,8 @@ pub mod boolean;
 pub mod boomerang;
 pub mod bsgs_fast;
 pub mod canonical_lift;
+pub mod certicom_dlp;
+pub mod certicom_dlp_cli;
 pub mod cga_hnc;
 pub mod cheon_attack;
 pub mod cipher_registry;

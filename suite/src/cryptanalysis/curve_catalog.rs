@@ -352,6 +352,14 @@ pub fn names() -> Vec<&'static str> {
 }
 
 fn prime_curves(v: &mut Vec<CatalogCurve>) {
+    let (curve, _) = crate::ecc::certicom::prime_challenge("eccp-131").unwrap();
+    v.push(CatalogCurve {
+        name: "eccp-131",
+        aliases: &["eccp-130"],
+        family: Family::Prime,
+        standard: "Certicom ECC Challenge",
+        object: CurveObject::Prime(curve),
+    });
     // Core standardized prime curves (src/ecc/curve.rs).
     let core: &[(&str, &[&str], &str, fn() -> CurveParams)] = &[
         (
@@ -528,6 +536,14 @@ fn prime_curves(v: &mut Vec<CatalogCurve>) {
 }
 
 fn binary_curves(v: &mut Vec<CatalogCurve>) {
+    let (curve, _) = crate::ecc::certicom::binary_challenge("ecc2-131").unwrap();
+    v.push(CatalogCurve {
+        name: "ecc2-131",
+        aliases: &["ecc2-130"],
+        family: Family::BinaryRandom,
+        standard: "Certicom ECC Challenge",
+        object: CurveObject::Binary(Box::new(curve)),
+    });
     // Binary curves the crate already carries (src/binary_ecc/curve.rs).
     // sect163k1 is a Koblitz curve; the sect*r* curves are random binary
     // curves; Oakley Group 3 is a subgroup curve (its generator has order
