@@ -1,0 +1,20 @@
+# Example for a prepared EC2/Linux host. Install the tools as this same user
+# before enabling it; configure system Tailscale and Docker separately as needed.
+[Unit]
+Description=Research workspace and private mesh services
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=workspace
+WorkingDirectory=/workspace
+EnvironmentFile=-/etc/workmesh.env
+ExecStart=/usr/local/bin/workmesh run --config /etc/workmesh.sh -- sleep infinity
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+TimeoutStopSec=45
+
+[Install]
+WantedBy=multi-user.target

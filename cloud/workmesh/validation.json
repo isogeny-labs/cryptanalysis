@@ -1,0 +1,25 @@
+{
+  "validated_at": "2026-10-19",
+  "checks": [
+    {
+      "check": "Bash syntax for all shell files",
+      "exit_code": 0
+    },
+    {
+      "check": "ShellCheck -S warning for all shell files",
+      "exit_code": 0
+    },
+    {
+      "check": "Complete 19-test suite at the repository integration path",
+      "exit_code": 0
+    }
+  ],
+  "behavioral_tests_passed": 19,
+  "bootstrap_sha256": "8ccacba6008478ea8b523773b64f8800ce62b77bbf4eefba51f446d5c5aedd24",
+  "limits": [
+    "Local behavior uses temporary state, fake vendor CLIs, real processes and loopback HTTP",
+    "No full cloud image provisioning or deployment",
+    "No live OAuth, tailnet enrollment, GPU or remote peer validation",
+    "No complete distro/architecture matrix"
+  ]
+}

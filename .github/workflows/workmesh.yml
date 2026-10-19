@@ -1,0 +1,47 @@
+name: workmesh
+
+on:
+  pull_request:
+    paths:
+      - "cloud/workmesh/**"
+      - ".github/workflows/workmesh.yml"
+  push:
+    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
+    paths:
+      - "cloud/workmesh/**"
+      - ".github/workflows/workmesh.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+    working-directory: cloud/workmesh
+
+jobs:
+  bootstrap:
+    name: Syntax, shell lint and local behavior
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install lint and discovery tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends shellcheck ripgrep
+      - name: Check Bash syntax and lint
+        run: |
+          for sourcefile in bootstrap.sh config.example.sh platforms/*.sh; do
+            bash -n "$sourcefile"
+          done
+          shellcheck -S warning bootstrap.sh config.example.sh platforms/*.sh
+      - name: Verify distribution checksums
+        run: sha256sum -c SHA256SUMS
+      - name: Test local behavior with fake vendors
+        run: python3 -m unittest discover -s tests -v
