@@ -1,5 +1,9 @@
 # N83 one-slot compact root hash
 
+The [nine-call result](RESULT.md) saved one-third of hash-table allocation
+with exact first-witness and operation-count equivalence. Its local target
+stage remained slower than the separate key/value hash.
+
 This experiment stores each canonical N83 S3 root key and its first-witness
 descriptor in one 16-byte open-addressed slot. The low 83 bits hold the
 exact root. The high 45 bits hold a state-vector offset below `2^38` and a
