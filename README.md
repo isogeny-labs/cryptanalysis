@@ -5,6 +5,10 @@ Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust
 attack suite (symmetric, hash, ECDLP, nonce, lattice and post-quantum
 cryptanalysis) that grew up alongside it.
 
+[Lean retrospective, 2026-10-18](research/lean_retrospective_20261018/README.md):
+checked rho collision-recovery formulas and a zero-denominator counterexample,
+with explicit assumptions and implementation gaps.
+
 > **Status note on ECC2K-130 and isogeny-volcano work (as of 2026-10-01).**
 > This repository contains no ECDLP speedup, and none is claimed. The
 > volcano / descendant-curve experiments (`experiments/volcano-ic`, and the

@@ -1,0 +1,91 @@
+{
+  "schema": "lean-retrospective.proof-map.v1",
+  "baseline": "1f04dfdff100e7df5ca815b7ed5ba269bcf35f26",
+  "scope": "Only the listed declarations. This map does not certify all historical claims.",
+  "declarations": [
+    {
+      "declaration": "Retrospective.Rho.recover",
+      "file": "research/lean_retrospective_20261018/lean/Retrospective/RhoCollision.lean",
+      "sha256": "2092dd0958c51c829f0562864389db79e5b341bfe3c6cee0f26c254dc95fd317",
+      "source": {
+        "repository": "aburan28/cryptanalysis",
+        "revision": "1f04dfdff100e7df5ca815b7ed5ba269bcf35f26",
+        "path": "src/rho.c#L176"
+      },
+      "claim": "Ordinary rho collision recovery",
+      "hypotheses": [
+        "Field F",
+        "a1 + b1*x = a2 + b2*x",
+        "b1 differs from b2"
+      ],
+      "limitations": "Prime-order scalar-field case; no implementation refinement.",
+      "verification_status": "machine_verified",
+      "semantic_review": "pending",
+      "axiom_evidence": "axioms.log",
+      "verification_evidence": "verification.log"
+    },
+    {
+      "declaration": "Retrospective.Rho.recover_negated",
+      "file": "research/lean_retrospective_20261018/lean/Retrospective/RhoCollision.lean",
+      "sha256": "2092dd0958c51c829f0562864389db79e5b341bfe3c6cee0f26c254dc95fd317",
+      "source": {
+        "repository": "aburan28/cryptanalysis",
+        "revision": "1f04dfdff100e7df5ca815b7ed5ba269bcf35f26",
+        "path": "src/rho.c#L190"
+      },
+      "claim": "Negation-orbit collision recovery",
+      "hypotheses": [
+        "Field F",
+        "a1+b1*x = -(a2+b2*x)",
+        "b1+b2 nonzero"
+      ],
+      "limitations": "No composite-modulus candidate enumeration proof.",
+      "verification_status": "machine_verified",
+      "semantic_review": "pending",
+      "axiom_evidence": "axioms.log",
+      "verification_evidence": "verification.log"
+    },
+    {
+      "declaration": "Retrospective.Rho.group_collision_recover",
+      "file": "research/lean_retrospective_20261018/lean/Retrospective/RhoCollision.lean",
+      "sha256": "2092dd0958c51c829f0562864389db79e5b341bfe3c6cee0f26c254dc95fd317",
+      "source": {
+        "repository": "aburan28/cryptanalysis",
+        "revision": "1f04dfdff100e7df5ca815b7ed5ba269bcf35f26",
+        "path": "src/rho.c#L176"
+      },
+      "claim": "Group collision yields the recovery formula",
+      "hypotheses": [
+        "Prime p",
+        "AddCommGroup A",
+        "Injective additive encoding from ZMod p into A",
+        "Collision equality and distinct b coefficients"
+      ],
+      "limitations": "Construction of that encoding from generator order is not formalized here.",
+      "verification_status": "machine_verified",
+      "semantic_review": "pending",
+      "axiom_evidence": "axioms.log",
+      "verification_evidence": "verification.log"
+    },
+    {
+      "declaration": "Retrospective.Rho.zero_coefficient_not_injective",
+      "file": "research/lean_retrospective_20261018/lean/Retrospective/RhoCollision.lean",
+      "sha256": "2092dd0958c51c829f0562864389db79e5b341bfe3c6cee0f26c254dc95fd317",
+      "source": {
+        "repository": "aburan28/cryptanalysis",
+        "revision": "1f04dfdff100e7df5ca815b7ed5ba269bcf35f26",
+        "path": "src/rho.c#L195"
+      },
+      "claim": "Counterexample to recovery without a nonzero coefficient",
+      "hypotheses": [
+        "ZMod 7",
+        "Map x to 0+0*x"
+      ],
+      "limitations": "A proves-too-much control, not a claim of a defect in rho.c.",
+      "verification_status": "machine_verified",
+      "semantic_review": "pending",
+      "axiom_evidence": "axioms.log",
+      "verification_evidence": "verification.log"
+    }
+  ]
+}

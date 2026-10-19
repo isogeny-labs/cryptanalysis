@@ -1,6 +1,6 @@
 # Lean proof gate
 
-This is a copy of `tools/lean/` in [aburan28/crypto](https://github.com/aburan28/crypto/tree/main/tools/lean), which is the source of truth. Change it there first and copy it here. This repository has no Lean proofs yet, so CI runs only the self-test until the first Lean target lands.
+The gate implementation is copied from `tools/lean/` in [aburan28/crypto](https://github.com/aburan28/crypto/tree/main/tools/lean), which is the source of truth. Change the implementation there first and copy it here. The [2026-10-18 retrospective](../../research/lean_retrospective_20261018/README.md) adds this repository's first research Lake project; CI discovers and checks it in addition to the gate self-test.
 
 `proof-gate.sh` checks every Lean target in the repository. CI runs it through
 [`lean-proof-gate.yml`](../../.github/workflows/lean-proof-gate.yml): on any
@@ -9,7 +9,7 @@ and weekly.
 
 | target | how it is checked |
 |:--|:--|
-| Lake project (directory with `lakefile.toml` / `lakefile.lean`) | `lake exe cache get` if it uses Mathlib, then `lake build`, then an audit of every module the project built |
+| Lake project (directory with `lakefile.toml` / `lakefile.lean`) | `lake exe cache get` if it uses Mathlib, then `lake build` plus each tracked proof source as an explicit Lake source target, then an audit of every module the project built |
 | standalone `.lean` file outside any Lake project | `lean -o` against the core library under its directory's `lean-toolchain`, then an audit of that module |
 
 The audit, [`AuditAxioms.lean`](AuditAxioms.lean), imports the modules and
@@ -58,3 +58,12 @@ Only add an entry when the study itself records the decision to trust the
 compiler, for example a registered replay. Never add one for a theorem a
 report or paper states as proved. Prefer `decide` or `decide +kernel` when
 they finish in reasonable time.
+
+The gate checks tracked project sources omitted by default targets. Unregistered
+source targets compile directly with the project environment into private
+olean output and receive the same axiom audit; frozen Lakefiles need no edits. `sources.log` records the inventory. Nested projects are
+checked separately; Lake configuration and gate code/fixtures under
+`tools/lean` or `tools/selftest` are explicit exclusions. Untracked files
+are outside repository discovery. The self-test exercises unconfigured true/false and configured
+positive/negative project modules. A green default build alone
+is insufficient.
