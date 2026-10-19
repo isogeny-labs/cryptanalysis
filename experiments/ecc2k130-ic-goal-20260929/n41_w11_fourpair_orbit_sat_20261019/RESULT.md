@@ -1,0 +1,22 @@
+# W11 four-pair orbit census and target-conditioned SAT search
+
+An exact group join enumerated **32 distinct-column four-pair relations** for the frozen N41 public target across **23 of its 41 Frobenius orientations**. An independent checked-Sage replay reconstructed all 32 eight-point sums and their transport to the raw target. On the same source and target, the shared-orbit Boolean circuit accepted a complete public relation assignment, but its unpinned one-thread CryptoMiniSat search reached the 590.024 s parent wall cap without a terminal answer. This paired observation identifies Boolean search, rather than relation scarcity on this instance, as the immediate bottleneck.
+
+The curve is `EC1N41Ckb1h7d5e80d3c4d0` over `GF(2)[u]/(u^41+u^3+1)`, with `y²+xy=x³+1`, cofactor 4, subgroup order `549756390943`, and raw public point `(1936680952394, 910597499030)`. The W11 source has 281 eligible codes, 1,124 distinct subgroup-usable factor-base points, and 557 sign/Frobenius folded columns. Four pair slots use rotations `[0,12,24,36]`. The archived orientation-3 witness has codes `[525,479,7,803]`. Its construction and earlier replay are in the neighboring `n41_w11_fourpair_public_20261019` archive; the source input SHA-256 is `f5c7c7937fed33bebe83a4b342f5a77065fb90d9c96d1f048bbeb23a8bc1c5dd`.
+
+The circuit makes ten source-code bits free per pair slot, derives the two source coordinates, and uses a shared inverse to enforce pair eligibility. It imposes the exact pair-output reciprocal quadratic and three balanced S3 links, checks distinct codes and all 286 forbidden folded-column code pairs, then selects one of the 41 target reciprocals with six Boolean bits. The archived orientation-3 assignment satisfied every one of the 40,810 CNF clauses and 2,342 native XOR rows. An independent gate audit checked all 64 selector settings: 41 selected the corresponding target reciprocal and 23 were excluded.
+
+| Frozen measurement | Exact group census | Shared-orbit SAT |
+| --- | ---: | ---: |
+| Target orientations | 41 | 41 |
+| Output | All 32 labeled relations; 23 orientations hit | `WALL_CAP`; no terminal SAT/UNSAT line |
+| Search work | 51,607,520 candidate hash probes; 32 collisions; 0 rejected | 16,224 variables; 13,426 AND gates; 40,810 clauses; 2,342 XOR rows |
+| Parent wall | 38.246 s | 590.024 s |
+| Sampled combined peak RSS | 140,083,200 B | 393,969,664 B |
+| Cap | One worker; 600 s; 4 GiB | One solver thread; `--maxtime=560`; 590 s parent; 4 GiB |
+
+The census ran to completion; its `TOTAL_HITS` line records 32 hits after all 41 orientations. Its independent Sage audit returned `PASS_INDEPENDENT_N41_W11_ORBIT_CENSUS`, with 32 witnesses and 23 orientations. The SAT supervisor terminated CryptoMiniSat at the declared parent cap (exit `-15`), preserving the unpinned search as censored. Circuit construction took 0.086 s and complete-assignment checking 0.027 s outside solver wall. Both are ordinary-host component diagnostics. The join materializes its finite N41 source, so its completion time is not an N131 extrapolation. `candidate_id` remains `null` because this is a point-decomposition component rather than a complete IC pipeline.
+
+The frozen protocols, checked Sage runtime, source and binary hashes, C++ census binary, raw census transcript, independent Sage audit, circuit, formula, SAT transcript, and result receipts are in this directory. The SAT stdout is gzip-compressed; `archive_verify.py` checks its decompressed SHA-256 against the query receipt. Run `python3 archive_verify.py` here and `python3 census/archive_verify.py` for the independently replayed 32 census lines. Both returned `PASS_ARCHIVE_VERIFICATION` after relocation. Lean checks and their scope are recorded in `PROOF_MAP.md`.
+
+The next experiment should reject incompatible source-code families before expanding four independent code spaces in a Boolean solver. At N41, the exact join supplies all 32 positive controls and 51.6 million tested candidates; a proposed pruning rule can be checked for zero false rejections against those controls and compared by actual retained-family count and search cost. Only a rule that retains the public relations while materially shrinking search should advance to an unpinned N131 W33/W34 query under the one-worker, 600 s, 4 GiB gate. The N131 ordinary relation, useful rank, factor-base logs, target recovery, and same-point rho comparison remain subsequent goal stages.
