@@ -1,6 +1,6 @@
 # Native AES laboratory: recorded suite
 
-Status: 41/41 recorded commands exited successfully. Raw directory: `experiments/aes-distinguisher-lab-20261017/runs/runs/20261017-first-suite`.
+Status: 41/41 recorded commands exited successfully. Raw directory: `experiments/aes-distinguisher-lab-20261017/runs/20261017-first-suite`.
 
 ## Differential endpoints
 
