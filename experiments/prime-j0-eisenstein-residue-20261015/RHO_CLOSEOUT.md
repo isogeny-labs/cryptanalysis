@@ -291,6 +291,25 @@ valid; one batch A/A reference arm recorded one CPU-steal tick. Its
 comparison-only 32-Q ratio was 4.4912 with diagnostic interval
 [4.4069, 4.6637], while its qualified interval is null. Both audited
 aggregate statuses are `unknown_gate_failed`, so the worker default stays
-serial. A separately frozen 128-walker, check-in-64 production panel is
-running serially on the same host under the unchanged 1.05 lower-bound,
-exact-output, host, A/A, and memory gates.
+serial. The separately frozen 128-walker, check-in-64 production panel
+completed on the same host under the unchanged 1.05 lower-bound,
+exact-output, host, A/A, and memory gates. Its
+[raw archive and independent audit](https://github.com/aburan28/crypto/blob/5b6f64f63b/experiments/rho-worker-phase-profile-20261017/tier1-ec2-20261019/README.md)
+retain all 768 arms and 384 pairs. Reference arm 691 of `q19-comparison`,
+repetition 3, recorded one CPU-steal tick, leaving 383 valid pairs. The
+prespecified A/A policy passed with two permitted outliers, and no memory
+gate failed, but the all-pair host gate did not pass. The audit reports
+`unknown_gate_failed`, with qualified speedup and interval null. The
+comparison-only median ratio was 4.9216; it is a diagnostic, not an
+integration result.
+
+At 128 walkers, median charged serial time was 12.930 seconds and median
+setup was 0.103 seconds, about 0.8% of the interval. Even eliminating that
+setup would improve this observed serial interval by only about 1.008x;
+halving it would give about 1.004x, assuming the measured phase mix holds.
+The walk consumed the other roughly 99.2%. These phase measurements and
+the reuse panel direct the next arithmetic effort to the walk addition,
+not the restart scalar construction. The exact-output batch implementation
+is available behind an explicit secp256k1 option in
+[crypto PR #2307](https://github.com/aburan28/crypto/pull/2307). Default
+routing remains serial because the qualified worker threshold is unresolved.
