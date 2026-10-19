@@ -49,6 +49,9 @@ with a qualified paired **16.7364×** reference/candidate ratio and all A/A
 controls passing. The candidate also checked all **12,288** frozen outputs
 in each of two serial full-fixture replay arms. Those arms took about 33.9 s
 each, exposing the cost of rebuilding selected points for every scalar.
+The [source-linked report](ON_DEMAND_DIGITS_REPORT_2026-10-19.md) separates
+the qualified cold panel from the full-stream correctness replay and flags
+the scalar-dependent implementation as non-constant-time.
 
 The [native projective digit path](PROJECTIVE_DIGITS.md) builds the selected
 points with a shared dyadic basis in `U256Jacobian`. Corrected same-input Tier 1
