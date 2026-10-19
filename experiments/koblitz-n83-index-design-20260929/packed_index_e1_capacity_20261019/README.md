@@ -1,5 +1,10 @@
 # N83 four-million-state root-index capacity gate
 
+The [four-call result](RESULT.md) shows the exact split slot indexing and
+scanning all 4,000,000 states under the sampled 1,024 MiB RSS gate, while
+both separate-hash calls stopped at 3,235,840 index states. Raw receipts
+and an independent audit are retained in this directory.
+
 This panel tests whether the exact 16-byte split-slot root hash carries
 4,000,000 sampled quotient-pair states through a 1,024 MiB process peak-RSS
 gate where the separate key/value hash may reach that gate. The two layouts
