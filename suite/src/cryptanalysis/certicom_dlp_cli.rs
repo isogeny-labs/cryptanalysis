@@ -218,6 +218,9 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
             }
         }
     };
+    if let Some(worker) = &worker {
+        worker.ensure_active()?;
+    }
     if worker.is_none() {
         report.execution = execution;
     }
@@ -234,6 +237,9 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
     value["preparation_label"] = json!(preparation_label);
     value["requested_backend"] = json!(args.backend.name());
     value["limits"] = json!({"max_iterations": opts.max_iterations, "max_restarts": opts.max_restarts, "max_table_entries": opts.max_table_entries, "max_matrix_entries": opts.max_matrix_entries, "factor_base_size": opts.factor_base_size, "max_base_candidates": opts.max_base_candidates,"seed":opts.seed,"gpu_batch_size":args.gpu_batch_size,"gpu_rho_walks":args.gpu_rho_walks,"gpu_timeout_seconds":args.gpu_timeout_seconds,"gpu_device":args.gpu_device});
+    if let Some(worker) = &worker {
+        worker.ensure_active()?;
+    }
     Ok(value)
 }
 

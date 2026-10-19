@@ -16,6 +16,7 @@ fn binary() -> Command {
 fn run(args: &[&str], success: bool) -> Value {
     let mut command = binary();
     command.args(args).arg("--json");
+    let mut injected_backend = None;
     // A hardware qualification run uses the same assertions and exact inputs.
     // Default runs retain the portable CPU path.
     if !args.contains(&"--backend") {
@@ -32,6 +33,7 @@ fn run(args: &[&str], success: bool) -> Value {
                 "--gpu-batch-size",
                 "16",
             ]);
+            injected_backend = Some(backend);
         }
     }
     let output = command.output().unwrap();
@@ -42,7 +44,17 @@ fn run(args: &[&str], success: bool) -> Value {
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
-    serde_json::from_slice(&output.stdout).unwrap()
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    if let Some(backend) = injected_backend {
+        if report["status"] != "error" {
+            let execution = &report["execution"];
+            assert_eq!(execution["backend"], backend);
+            if success {
+                assert!(execution["kernel_launches"].as_u64().unwrap() > 0);
+            }
+        }
+    }
+    report
 }
 
 #[test]
@@ -103,6 +115,70 @@ fn cpu_auto_and_explicit_gpu_selection_report_the_actual_backend() {
         assert_eq!(error["status"], "error");
         assert!(error.get("scalar").is_none());
     }
+}
+
+#[test]
+#[cfg(unix)]
+fn host_preparation_expiry_cannot_return_a_verified_scalar() {
+    use std::io::Write;
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory =
+        std::env::temp_dir().join(format!("certicom-cli-deadline-{}", std::process::id()));
+    std::fs::create_dir_all(&directory).unwrap();
+    let worker = directory.join("worker.sh");
+    std::fs::write(
+        &worker,
+        "#!/bin/sh\nprintf 'CERTICOM_WORKER 1 gpu-emulator deadline-control\\n'\nexec sleep 10\n",
+    )
+    .unwrap();
+    std::fs::set_permissions(&worker, std::fs::Permissions::from_mode(0o700)).unwrap();
+    let preparation = directory.join("preparation.fifo");
+    assert!(Command::new("mkfifo")
+        .arg(&preparation)
+        .status()
+        .unwrap()
+        .success());
+    let path = preparation.clone();
+    let (done, completed) = std::sync::mpsc::channel();
+    let writer = std::thread::spawn(move || {
+        // Opening the FIFO waits until the CLI has opened its worker and then
+        // begins reading preparation. Expire the session during that host I/O.
+        let mut file = std::fs::OpenOptions::new().write(true).open(path).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(1100));
+        file.write_all(
+            br#"{"curve":"ECCp-130","factor_base":[],"relation_queries":[],"descent_shifts":[]}"#,
+        )
+        .unwrap();
+        done.send(()).unwrap();
+    });
+    let report = run(
+        &[
+            "solve",
+            "ECCp-130",
+            "--method",
+            "index-calculus",
+            "--secret",
+            "0",
+            "--backend",
+            "gpu-emulator",
+            "--gpu-worker",
+            worker.to_str().unwrap(),
+            "--gpu-timeout-seconds",
+            "1",
+            "--preparation",
+            preparation.to_str().unwrap(),
+        ],
+        false,
+    );
+    completed
+        .recv_timeout(std::time::Duration::from_secs(5))
+        .expect("CLI did not read the controlled preparation input");
+    writer.join().unwrap();
+    std::fs::remove_dir_all(directory).unwrap();
+    assert_eq!(report["status"], "error");
+    assert!(report.to_string().contains("deadline"));
+    assert!(report.get("scalar").is_none());
 }
 
 #[test]

@@ -17,6 +17,7 @@ pub fn bsgs_on_device(
     opts: &SolverOptions,
     worker: &mut DeviceWorker,
 ) -> Result<SolveReport, String> {
+    worker.ensure_active()?;
     group.validate(target)?;
     worker.check_binding(group, target)?;
     if width.is_zero() || lo >= group.order() || lo + width > *group.order() {
@@ -28,8 +29,7 @@ pub fn bsgs_on_device(
     let mut report = SolveReport::pending(group, "bsgs");
     if opts.max_iterations == 0 {
         report.reason = Some("BSGS giant-step budget is zero".into());
-        report.execution = worker.execution();
-        return Ok(report);
+        return worker.finish(report);
     }
     let root = width.sqrt();
     let m = (if &root * &root < *width {
@@ -51,6 +51,7 @@ pub fn bsgs_on_device(
             .map(|j| (generator.clone(), BigUint::from(j)))
             .collect();
         for (j, baby) in (start..end).zip(worker.mul(group, &requests)?) {
+            worker.ensure_active()?;
             table.insert(group.key(&baby), j);
         }
     }
@@ -80,13 +81,13 @@ pub fn bsgs_on_device(
             .map(|p| (target.clone(), group.neg(p)))
             .collect();
         for (i, current) in worker.add(group, &pairs)?.iter().enumerate() {
+            worker.ensure_active()?;
             if let Some(j) = table.get(&group.key(current)) {
                 let candidate = &offset + &stride * BigUint::from(i) + BigUint::from(*j);
                 if candidate < *width {
                     report.iterations = Some(giants + i as u64 + 1);
                     report.recover(group, target, lo + candidate)?;
-                    report.execution = worker.execution();
-                    return Ok(report);
+                    return worker.finish(report);
                 }
             }
         }
@@ -100,8 +101,7 @@ pub fn bsgs_on_device(
     } else {
         report.reason = Some("BSGS giant-step budget exhausted".into());
     }
-    report.execution = worker.execution();
-    Ok(report)
+    worker.finish(report)
 }
 
 fn seed_states(
@@ -115,6 +115,7 @@ fn seed_states(
     let mut tags = Vec::with_capacity(count);
     let mut requests = Vec::with_capacity(2 * count);
     for i in 0..count {
+        worker.ensure_active()?;
         let (a, b) = if classical_start && i == 0 {
             (BigUint::one(), BigUint::zero())
         } else {
@@ -158,18 +159,17 @@ pub fn rho_on_device(
     opts: &SolverOptions,
     worker: &mut DeviceWorker,
 ) -> Result<SolveReport, String> {
+    worker.ensure_active()?;
     group.validate(target)?;
     worker.check_binding(group, target)?;
     let mut report = SolveReport::pending(group, "rho");
     if *target == group.identity() {
         report.recover(group, target, BigUint::zero())?;
-        report.execution = worker.execution();
-        return Ok(report);
+        return worker.finish(report);
     }
     if opts.max_iterations == 0 {
         report.reason = Some("rho iteration budget is zero".into());
-        report.execution = worker.execution();
-        return Ok(report);
+        return worker.finish(report);
     }
     let mut rng = StdRng::seed_from_u64(opts.seed);
     let walks = worker.rho_walks;
@@ -196,6 +196,7 @@ pub fn rho_on_device(
         // Account for every lane already executed, including speculative work
         // after another lane's eventual successful collision.
         for ((id, old), new) in ids.iter().zip(&input).zip(&output) {
+            worker.ensure_active()?;
             let delta = iterations(new)
                 .checked_sub(iterations(old))
                 .ok_or("GPU rho counter regressed")?;
@@ -224,6 +225,7 @@ pub fn rho_on_device(
         worker.execution.device_rho_iterations = total;
         let mut reseed = Vec::new();
         for id in ids {
+            worker.ensure_active()?;
             let state = &states[id];
             if state[44] == 1 {
                 let n = group.order();
@@ -234,8 +236,7 @@ pub fn rho_on_device(
                         .ok_or("noninvertible GPU rho collision")?;
                     report.recover(group, target, numerator * inverse % n)?;
                     report.iterations = Some(total);
-                    report.execution = worker.execution();
-                    return Ok(report);
+                    return worker.finish(report);
                 }
                 if !numerator.is_zero() {
                     return Err("inconsistent sterile GPU rho collision".into());
@@ -260,6 +261,5 @@ pub fn rho_on_device(
     report.iterations = Some(total);
     report.reason =
         Some("parallel rho exhausted per-walk iteration or sterile-restart budgets".into());
-    report.execution = worker.execution();
-    Ok(report)
+    worker.finish(report)
 }

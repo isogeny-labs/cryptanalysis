@@ -65,11 +65,42 @@ jobs:
           done
   metal-build:
     runs-on: macos-14
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Compile native Metal shader and worker; hardware execution is separate
+      - name: Compile native Metal shader and worker
         run: make -C gpu/certicom metal
+      - name: Probe whether this macOS runner exposes a Metal device
+        id: probe
+        shell: bash
+        run: |
+          set +e
+          gpu/certicom/certicom_metal --probe > certicom-device-probe.log 2>&1
+          status=$?
+          set -e
+          cat certicom-device-probe.log
+          if [[ "$status" == 0 ]]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          elif [[ "$status" == 3 ]] && [[ $(cat certicom-device-probe.log) == 'certicom worker: no Metal device at requested ordinal' ]]; then
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo 'Metal compiled, but this runner exposes no Metal device. Hardware qualification remains open.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            exit "$status"
+          fi
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.probe.outputs.available == 'true'
+      - name: Qualify Metal arithmetic and all three solvers through the library and CLI
+        if: steps.probe.outputs.available == 'true'
+        env:
+          CERTICOM_TEST_BACKEND: metal
+          CARGO_BUILD_JOBS: '2'
+        run: bash gpu/certicom/qualify.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: certicom-metal-hosted-device-observation
+          path: certicom-device-*.log
+          if-no-files-found: error
   hardware:
     if: github.event_name == 'workflow_dispatch' && inputs.hardware_runner != ''
     runs-on: ${{ inputs.hardware_runner || 'ubuntu-24.04' }}
@@ -80,19 +111,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: Build and probe the requested real GPU backend
+      - name: Qualify the requested device through the library and release CLI
         shell: bash
-        run: |
-          make -C gpu/certicom "$CERTICOM_TEST_BACKEND"
-          worker="$GITHUB_WORKSPACE/gpu/certicom/certicom_$CERTICOM_TEST_BACKEND"
-          "$worker" --probe | tee certicom-device-probe.log
-          echo "CERTICOM_TEST_WORKER=$worker" >> "$GITHUB_ENV"
-      - name: Verify full-width arithmetic and all three solvers on both exact curves
-        shell: bash
-        run: |
-          manifest=Cargo.toml
-          if [[ -f suite/Cargo.toml ]]; then manifest=suite/Cargo.toml; fi
-          cargo test --manifest-path "$manifest" --release --lib certicom_dlp::device_tests -- --test-threads=1 --nocapture | tee certicom-device-tests.log
+        run: bash gpu/certicom/qualify.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

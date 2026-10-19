@@ -5,13 +5,20 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::JoinHandle;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use clap::ValueEnum;
 use num_bigint::BigUint;
 use serde::Serialize;
 
-use super::{ChallengeGroup, ChallengePoint};
+use super::{ChallengeGroup, ChallengePoint, SolveReport};
+
+pub(super) fn check_deadline(deadline: Option<Instant>) -> Result<(), String> {
+    if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+        return Err("device worker session deadline exceeded".into());
+    }
+    Ok(())
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum Backend {
@@ -158,6 +165,7 @@ pub struct DeviceWorker {
     output: BufReader<ChildStdout>,
     stop: Arc<(Mutex<bool>, Condvar)>,
     watchdog: Option<JoinHandle<()>>,
+    deadline: Instant,
     curve: Vec<u32>,
     batch_size: usize,
     pub(super) rho_walks: usize,
@@ -172,6 +180,9 @@ impl DeviceWorker {
         path: &Path,
         expected: Backend,
     ) -> Result<Self, String> {
+        let deadline = Instant::now()
+            .checked_add(Duration::from_secs(opts.timeout_seconds))
+            .ok_or("worker session timeout exceeds this host's monotonic clock range")?;
         group.validate(target)?;
         if !matches!(
             expected,
@@ -188,6 +199,7 @@ impl DeviceWorker {
                 "GPU batch size and rho walks must be 1..4096; timeout must be positive".into(),
             );
         }
+        check_deadline(Some(deadline))?;
         let mut command = Command::new(path);
         command
             .args(["--device", &opts.device.to_string()])
@@ -218,12 +230,15 @@ impl DeviceWorker {
         let watchdog = {
             let child = Arc::clone(&child);
             let stop = Arc::clone(&stop);
-            let timeout = Duration::from_secs(opts.timeout_seconds);
             std::thread::spawn(move || {
                 let (lock, cv) = &*stop;
                 let guard = lock.lock().unwrap_or_else(|e| e.into_inner());
                 let (guard, _) = cv
-                    .wait_timeout_while(guard, timeout, |done| !*done)
+                    .wait_timeout_while(
+                        guard,
+                        deadline.saturating_duration_since(Instant::now()),
+                        |done| !*done,
+                    )
                     .unwrap_or_else(|e| e.into_inner());
                 if !*guard {
                     let mut child = child.lock().unwrap_or_else(|e| e.into_inner());
@@ -242,11 +257,13 @@ impl DeviceWorker {
             output,
             stop,
             watchdog: Some(watchdog),
+            deadline,
             curve,
             batch_size: opts.batch_size,
             rho_walks: opts.rho_walks,
             execution: ExecutionReport::default(),
         };
+        worker.ensure_active()?;
         let mut greeting = Vec::new();
         (&mut worker.output)
             .take(4097)
@@ -273,7 +290,26 @@ impl DeviceWorker {
             worker.execution.note =
                 Some("Device source executed on the CPU; no GPU hardware was used".into());
         }
+        worker.ensure_active()?;
         Ok(worker)
+    }
+
+    /// Reject work and results once the whole session's monotonic deadline passes.
+    /// The watchdog also kills blocked native I/O; this check covers host work
+    /// and solver paths that do not make another device request.
+    pub fn ensure_active(&self) -> Result<(), String> {
+        check_deadline(Some(self.deadline))
+    }
+
+    pub(super) fn deadline(&self) -> Instant {
+        self.deadline
+    }
+
+    pub(super) fn finish(&self, mut report: SolveReport) -> Result<SolveReport, String> {
+        self.ensure_active()?;
+        report.execution = self.execution();
+        self.ensure_active()?;
+        Ok(report)
     }
 
     pub fn execution(&self) -> ExecutionReport {
@@ -285,10 +321,11 @@ impl DeviceWorker {
         group: &ChallengeGroup,
         target: &ChallengePoint,
     ) -> Result<(), String> {
+        self.ensure_active()?;
         if self.curve != curve_words(group, target)? {
             return Err("device worker belongs to a different exact curve or target".into());
         }
-        Ok(())
+        self.ensure_active()
     }
 
     pub(super) fn batch_size(&self) -> usize {
@@ -303,6 +340,7 @@ impl DeviceWorker {
         payload: &[u32],
         output_words: usize,
     ) -> Result<Vec<u32>, String> {
+        self.ensure_active()?;
         if count == 0 || count > 4096 {
             return Err("invalid device request count".into());
         }
@@ -314,6 +352,7 @@ impl DeviceWorker {
         {
             bytes.extend(value.to_le_bytes());
         }
+        self.ensure_active()?;
         self.input
             .write_all(&bytes)
             .map_err(|e| format!("worker write: {e}"))?;
@@ -322,6 +361,7 @@ impl DeviceWorker {
         self.output
             .read_exact(&mut header)
             .map_err(|e| format!("worker stopped, timed out, or truncated its reply: {e}"))?;
+        self.ensure_active()?;
         let word = |i| u32::from_le_bytes(header[i..i + 4].try_into().unwrap());
         if word(0) != 0x43435231 {
             return Err("worker reply protocol mismatch".into());
@@ -347,6 +387,7 @@ impl DeviceWorker {
         self.output
             .read_exact(&mut bytes)
             .map_err(|e| format!("truncated worker payload: {e}"))?;
+        self.ensure_active()?;
         self.execution.kernel_launches += 1;
         Ok(bytes
             .chunks(4)
@@ -359,6 +400,7 @@ impl DeviceWorker {
         group: &ChallengeGroup,
         pairs: &[(ChallengePoint, ChallengePoint)],
     ) -> Result<Vec<ChallengePoint>, String> {
+        self.ensure_active()?;
         let mut result = Vec::with_capacity(pairs.len());
         for batch in pairs.chunks(self.batch_size) {
             let payload: Vec<_> = batch
@@ -370,11 +412,15 @@ impl DeviceWorker {
             result.extend(
                 words
                     .chunks(11)
-                    .map(|w| decode_point(group, w))
+                    .map(|w| {
+                        self.ensure_active()?;
+                        decode_point(group, w)
+                    })
                     .collect::<Result<Vec<_>, _>>()?,
             );
             self.execution.device_point_additions += batch.len() as u64;
         }
+        self.ensure_active()?;
         Ok(result)
     }
 
@@ -383,6 +429,7 @@ impl DeviceWorker {
         group: &ChallengeGroup,
         requests: &[(ChallengePoint, BigUint)],
     ) -> Result<Vec<ChallengePoint>, String> {
+        self.ensure_active()?;
         let mut result = Vec::with_capacity(requests.len());
         for batch in requests.chunks(self.batch_size) {
             let mut payload: Vec<_> = batch.iter().flat_map(|(p, _)| point(group, p)).collect();
@@ -393,11 +440,15 @@ impl DeviceWorker {
             result.extend(
                 words
                     .chunks(11)
-                    .map(|w| decode_point(group, w))
+                    .map(|w| {
+                        self.ensure_active()?;
+                        decode_point(group, w)
+                    })
                     .collect::<Result<Vec<_>, _>>()?,
             );
             self.execution.device_point_multiplications += batch.len() as u64;
         }
+        self.ensure_active()?;
         Ok(result)
     }
 
@@ -406,12 +457,14 @@ impl DeviceWorker {
         states: &[[u32; 45]],
         steps: u32,
     ) -> Result<Vec<[u32; 45]>, String> {
+        self.ensure_active()?;
         let mut result = Vec::with_capacity(states.len());
         for batch in states.chunks(self.batch_size) {
             let payload: Vec<_> = batch.iter().flat_map(|s| s.iter().copied()).collect();
             let words = self.request(3, batch.len(), steps, &payload, batch.len() * 45)?;
             result.extend(words.chunks(45).map(|w| <[u32; 45]>::try_from(w).unwrap()));
         }
+        self.ensure_active()?;
         Ok(result)
     }
 }

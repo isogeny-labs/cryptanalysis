@@ -102,8 +102,31 @@ controls, not natural-target cost or relation-yield measurements.
 
 The checked-in CLI integration tests also accept `CERTICOM_TEST_BACKEND` and
 `CERTICOM_TEST_WORKER` to run the same assertions through the real release CLI.
+Run them with `bash gpu/certicom/test-cli.sh` (requires Cargo, rustc, and jq).
+The launcher builds only this task's release
+library and CLI, then links the checked-in tests against Cargo's reported
+artifacts. In cryptanalysis it replays every case through both `ca-icx` and
+the real `crax icx` executable. It also works for CPU checks with those backend
+variables unset.
 CPU and emulation tests do not establish physical GPU execution. The dedicated
 `Certicom CPU and GPU correctness` workflow separately cross-checks the device
 source and compile-checks CUDA/Metal. Its optional hardware job requires an
-existing GPU runner label and runs these tests with explicit CUDA or Metal
+existing GPU runner label and runs the library and CLI tests with explicit CUDA or Metal
 selection; a skipped hardware job provides no device-execution evidence.
+The macOS build job also probes its runner: if Metal is exposed it runs the
+same qualification; an unavailable device is recorded without claiming a
+hardware pass. Other probe or execution errors fail the job.
+
+On an existing GPU host, `CERTICOM_TEST_BACKEND=cuda bash gpu/certicom/qualify.sh`
+(or `metal`) builds/probes the native worker, runs library and release CLI
+tests, and saves `certicom-device-*.log` with revision, device/toolchain identity
+and binary hashes. CUDA builds for the host's detected architecture by default;
+`CERTICOM_CUDA_ARCH=sm_80` can explicitly select another supported target.
+
+One monotonic deadline covers worker setup, device requests, host phases and
+result acceptance. The watchdog kills blocked worker I/O; host computation checks
+the deadline between bounded operations and before accepting every report.
+An expired session returns an error even on identity and zero-work paths.
+
+The remaining physical-device access and acceptance requirements are tracked in
+the [cross-repository hardware qualification record](https://github.com/aburan28/crypto/blob/codex/certicom-130-coverage/problems/certicom-130-gpu-hardware-qualification.md).

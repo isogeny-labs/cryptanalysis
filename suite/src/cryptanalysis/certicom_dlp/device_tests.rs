@@ -250,6 +250,53 @@ fn worker_backend_binding_encoding_and_candidate_checks_fail_closed() {
 }
 
 #[test]
+fn expired_sessions_reject_no_io_results_for_every_solver() {
+    for name in ["ECC2-130", "ECCp-130"] {
+        let group = ChallengeGroup::by_name(name).unwrap();
+        let target = group.identity();
+        let device_opts = DeviceOptions {
+            backend: Backend::GpuEmulator,
+            timeout_seconds: 1,
+            ..DeviceOptions::default()
+        };
+        let mut worker = DeviceWorker::open(
+            &group,
+            &target,
+            &device_opts,
+            &emulator(),
+            Backend::GpuEmulator,
+        )
+        .unwrap();
+        std::thread::sleep(Duration::from_millis(1100));
+        let opts = SolverOptions {
+            max_iterations: 0,
+            ..SolverOptions::default()
+        };
+        for result in [
+            rho_on_device(&group, &target, &opts, &mut worker),
+            bsgs_on_device(
+                &group,
+                &target,
+                &BigUint::zero(),
+                &BigUint::one(),
+                &opts,
+                &mut worker,
+            ),
+            index_calculus_on_device(&group, &target, &opts, None, &mut worker),
+        ] {
+            assert!(
+                matches!(result, Err(ref error) if error.contains("deadline")),
+                "{name}: expired session accepted a report: {result:?}"
+            );
+        }
+        assert!(worker.mul(&group, &[]).is_err());
+        assert!(worker.add(&group, &[]).is_err());
+        assert!(worker.rho(&[], 1).is_err());
+    }
+}
+
+#[test]
+#[cfg(unix)]
 fn worker_exit_and_deadline_cannot_hang_or_return_a_solution() {
     use std::os::unix::fs::PermissionsExt;
     let group = ChallengeGroup::by_name("ECCp-130").unwrap();
