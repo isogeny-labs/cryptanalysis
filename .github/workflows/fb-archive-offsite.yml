@@ -41,7 +41,7 @@ jobs:
     # archives over 1 MiB are not in git; --rebuild-missing regenerates them (largest: n = 47, 8.4M points)
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -67,7 +67,7 @@ jobs:
       matrix:
         sweep: [volcano-ic, volcano-m83, ecc2k130-isogeny-class]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
