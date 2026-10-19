@@ -27,3 +27,10 @@ The native overlay checks parent source SHA-256 `e195374c4e6fde368bdba106c769c63
 The Tier 1 manifest pairs this binary directly with the 17-position orbit binary on the same 128 scalars and cloud allocation. It freezes CPU 13, 96 passes per arm, 16 alternating repetitions, adjacent A/A gates [0.90,1.11], artifact hashes, and complete raw receipt retention. Table preparation and retained bytes are reported separately from sustained hot-table throughput. This is an instance-tier measurement; host-wide physical isolation is not established by the pod's affinity mask.
 
 All 96 arms and 48 pairs completed with verified points and stable artifacts, and every adjacent A/A control passed the frozen gate. The paired median split/orbit throughput ratio was **0.736576** with repeat-bootstrap interval **[0.734478,0.738656]**. Mean online costs were **11.947 versus 16.303 microseconds per scalar** for orbit and split, respectively, over 12,288 operations per arm. Mean table preparation was **733.50 versus 90.61 ms** in the same order. Every raw arm, stderr, host counter, pair, and manifest is retained; the bootstrap interval describes variation across 16 repetitions on this one allocation.
+
+## Visual report and graph audit
+
+The dated [evidence report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf)
+show the unit-basis split and the measured time-memory tradeoff. Editable sources
+and vector renderings are in [`visuals/`](visuals/); the plot generator reads the
+committed analysis JSON and does not start a benchmark.
