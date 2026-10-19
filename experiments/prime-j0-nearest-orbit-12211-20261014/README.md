@@ -1,5 +1,10 @@
 # Rolling unit-orbit table for 18-position scalar multiplication
 
+The dated, source-linked [evidence report](REPORT-2026-10-19.md) includes the
+algorithm diagram and quantitative panel plot; its [PDF](REPORT-2026-10-19.pdf)
+embeds both figures. The analysis script in `visuals/` regenerates the plot
+from the committed panel analysis.
+
 A descending unit-class accumulator evaluates all selected digits from
 their unrotated table seeds, then rotates the accumulated point at most
 twice. On the frozen case-0 public point it replaces **10 affine `x`
