@@ -1,6 +1,7 @@
 """The EC2 requests deploy/aws/launch.py would send; no service is called."""
 import datetime
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -59,10 +60,37 @@ class ParseTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             launch.parse(["launch", "--allow-cidr", "1.2.3.4/32", "--gpu", "--type", "c7i.large"])
 
+    def test_lifetime_must_be_finite_positive_and_representable(self):
+        for value in ("nan", "inf", "-inf", "0", "-1", "1e100"):
+            with self.subTest(hours=value), self.assertRaises(SystemExit):
+                launch.parse(["launch", "--allow-cidr", "1.2.3.4/32", f"--hours={value}"])
+        self.assertEqual(launch.lifetime_minutes(1.5), 90)
+        self.assertEqual(launch.lifetime_minutes(0.001), 1)
+
     def test_run_keeps_the_command_and_outputs(self):
         args = launch.parse(["run", "exp", "--out", "a/b.json", "--", "make", "&&", "ls"])
         self.assertEqual(args.command, ["make", "&&", "ls"])
         self.assertEqual(args.out, ["a/b.json"])
+
+    def test_run_output_paths_cannot_escape_the_checkout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            outside = Path(tmp) / "outside"
+            root.mkdir()
+            outside.mkdir()
+            old_repo = launch.REPO
+            launch.REPO = root
+            try:
+                self.assertEqual(launch.repo_output_path("results/run.json"), "results/run.json")
+                (root / "escape").symlink_to(outside, target_is_directory=True)
+                for path in ("../outside/run.json", str(outside / "run.json"),
+                             "escape/run.json", "", "."):
+                    with self.subTest(path=path), self.assertRaises(ValueError):
+                        launch.repo_output_path(path)
+                with self.assertRaises(SystemExit):
+                    launch.parse(["run", "exp", "--out", "../outside/run.json", "--", "true"])
+            finally:
+                launch.REPO = old_repo
 
 
 class RequestTest(unittest.TestCase):

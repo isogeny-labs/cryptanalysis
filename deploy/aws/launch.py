@@ -33,6 +33,7 @@ import argparse
 import datetime
 import hashlib
 import ipaddress
+import math
 import os
 import shlex
 import subprocess
@@ -59,6 +60,7 @@ AMIS = {
            "base-oss-nvidia-driver-gpu-ubuntu-24.04/latest/ami-id",
 }
 LIVE = ["pending", "running", "stopping", "stopped"]
+MAX_SHUTDOWN_MINUTES = (1 << 31) - 1
 
 # User data, as root at first boot: the lifetime cap first, so that nothing
 # later can leave the instance running past it; then the toolchain the
@@ -91,6 +93,34 @@ echo "host: $(nproc) vCPU, $(free -g | awk '/^Mem/ {print $2}') GB"
 
 def region(args):
     return args.region or os.environ.get("AWS_REGION") or "us-east-1"
+
+
+def lifetime_minutes(hours):
+    """Validate a finite lifetime that `shutdown -h +MINUTES` can represent."""
+    if not math.isfinite(hours) or hours <= 0 or hours > MAX_SHUTDOWN_MINUTES / 60:
+        raise ValueError(f"--hours must be finite, positive, and at most {MAX_SHUTDOWN_MINUTES / 60:g}")
+    minutes = max(1, round(hours * 60))
+    if minutes > MAX_SHUTDOWN_MINUTES:
+        raise ValueError(f"--hours exceeds shutdown's {MAX_SHUTDOWN_MINUTES}-minute limit")
+    return minutes
+
+
+def repo_output_path(path):
+    """Normalize a run --out path and ensure it stays inside this checkout."""
+    if not path or "\0" in path:
+        raise ValueError("--out needs a non-empty repository-relative path")
+    relative = Path(path)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"--out must stay inside the repository: {path}")
+    root = REPO.resolve()
+    target = (root / relative).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"--out resolves outside the repository: {path}") from exc
+    if target == root:
+        raise ValueError("--out must name a file inside the repository")
+    return relative.as_posix()
 
 
 def client(args, service):
@@ -193,13 +223,14 @@ def image(ec2, ssm, instance_type):
 def run_request(args, ami, key_name, group_id, root="/dev/sda1", min_disk=0, now=None):
     """The run_instances arguments for `args`; no service is called."""
     now = now or datetime.datetime.now(datetime.timezone.utc)
-    deadline = now + datetime.timedelta(hours=args.hours)
+    minutes = lifetime_minutes(args.hours)
+    deadline = now + datetime.timedelta(minutes=minutes)
     tags = [{"Key": "Name", "Value": args.name}, {"Key": TAG, "Value": "1"},
             {"Key": "ca:deadline", "Value": deadline.strftime("%Y-%m-%dT%H:%M:%SZ")}]
     request = {
         "ImageId": ami, "InstanceType": args.type, "MinCount": 1, "MaxCount": 1,
         "KeyName": key_name, "SecurityGroupIds": [group_id],
-        "UserData": USER_DATA.format(minutes=max(1, round(args.hours * 60)), user=USER),
+        "UserData": USER_DATA.format(minutes=minutes, user=USER),
         "InstanceInitiatedShutdownBehavior": "terminate",
         "MetadataOptions": {"HttpTokens": "required", "HttpEndpoint": "enabled"},
         "BlockDeviceMappings": [{"DeviceName": root, "Ebs": {
@@ -302,14 +333,19 @@ def cmd_run(args):
     command = " ".join(args.command)
     if not command:
         sys.exit("run needs a command after --")
+    try:
+        out_paths = [repo_output_path(path) for path in args.out]
+    except ValueError as exc:
+        sys.exit(str(exc))
     instance = need(client(args, "ec2"), args.name)
     if sync(args, instance) != 0:
         return 1
     script = f"{BOOTSTRAP}\n{command}"
     rc = subprocess.run([*ssh_args(args, instance), f"bash -c {shlex.quote(script)}"],
                         check=False).returncode
-    for path in args.out:
-        if fetch(args, instance, f"{REMOTE}/{path}", REPO / Path(path).parent) != 0:
+    for path in out_paths:
+        destination = (REPO / path).resolve()
+        if fetch(args, instance, f"{REMOTE}/{path}", destination.parent) != 0:
             print(f"could not fetch {path}", file=sys.stderr)
             rc = rc or 1
     return rc
@@ -367,7 +403,8 @@ def parse(argv=None):
                                        "with --gpu)")
     launch.add_argument("--gpu", action="store_true", help=f"shorthand for --type {GPU_TYPE}")
     launch.add_argument("--spot", action="store_true")
-    launch.add_argument("--hours", type=float, default=6.0, help="lifetime cap (default 6)")
+    launch.add_argument("--hours", type=float, default=6.0,
+                        help=f"lifetime cap (default 6; max {MAX_SHUTDOWN_MINUTES / 60:g})")
     launch.add_argument("--disk", type=int, default=100, help="root volume GB (default 100)")
     launch.add_argument("--wait", type=int, default=0, metavar="SECONDS",
                         help="also wait this long for ssh and the toolchain")
@@ -392,8 +429,10 @@ def parse(argv=None):
         if args.gpu and args.type and not is_gpu(args.type):
             ap.error(f"--gpu with a non-GPU --type {args.type}")
         args.type = args.type or (GPU_TYPE if args.gpu else CPU_TYPE)
-        if args.hours <= 0:
-            ap.error("--hours must be positive")
+        try:
+            lifetime_minutes(args.hours)
+        except ValueError as exc:
+            ap.error(str(exc))
         for cidr in args.allow_cidr:
             if "/" not in cidr:
                 ap.error(f"--allow-cidr {cidr}: give a range, e.g. {cidr}/32")
@@ -404,6 +443,11 @@ def parse(argv=None):
             if network.prefixlen == 0:
                 ap.error(f"--allow-cidr {cidr} opens ssh to the whole internet")
     args.command = getattr(args, "words", []) + command
+    if args.cmd == "run":
+        try:
+            args.out = [repo_output_path(path) for path in args.out]
+        except ValueError as exc:
+            ap.error(str(exc))
     return args
 
 

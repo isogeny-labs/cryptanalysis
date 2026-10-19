@@ -34,6 +34,9 @@ python3 deploy/aws/launch.py terminate exp
 
 Every command takes `--region` (default `AWS_REGION`, else `us-east-1`) and
 `--key` (default `~/.ssh/id_ed25519`, created when missing).
+`launch --hours` must be a finite positive duration representable by the
+shutdown timer, and `run --out` accepts only paths that resolve inside this
+checkout.
 
 ## What it creates
 
