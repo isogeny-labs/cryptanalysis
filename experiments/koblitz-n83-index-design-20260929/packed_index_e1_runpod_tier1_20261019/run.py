@@ -26,7 +26,7 @@ PROPOSAL_ID = "Q2026101906"
 STATE_CAP = 4_000_000
 MEMORY_CAP_MIB = 1024
 CRYPTO_COMMIT = "46416a4129c299dad4b1fd62d1a620dbd0d34317"
-RUNPOD_POD_ID = "thyvmdqmzsz5ik"
+RUNPOD_POD_ID = "r6r84q42t4ji5j"
 
 
 def digest(path: Path) -> str:

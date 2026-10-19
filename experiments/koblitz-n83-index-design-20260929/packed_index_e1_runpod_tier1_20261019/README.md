@@ -1,7 +1,7 @@
 # N83 E-1 capacity replay on a Tier 1 RunPod CPU Pod
 
 This replay runs the same four-million-state, 1,024 MiB sampled peak-RSS
-gate on the stopped RunPod CPU Pod `thyvmdqmzsz5ik` once it is resumed.
+gate on the RunPod CPU Pod `r6r84q42t4ji5j`.
 The RunPod API reported 8 vCPUs, 16 GiB memory, zero GPUs and $0.24 per
 running hour for that allocation. The protocol caps active Pod time at
 5,400 seconds, an estimated $0.36 compute charge at that reported rate,
@@ -36,7 +36,7 @@ On the Pod, check out the pinned public repositories in the declared
 locations, install the locked Rust toolchain, and run:
 
 ```sh
-RUNPOD_POD_ID=thyvmdqmzsz5ik python3 run.py --run
+RUNPOD_POD_ID=r6r84q42t4ji5j python3 run.py --run
 ```
 
 Save all raw files and the host receipt before stopping the Pod. The
