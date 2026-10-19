@@ -12,6 +12,10 @@ The scalar recoding and requested seeds are identical; this is an
 arithmetic-operation result, with
 wall-time comparison assigned to the isolated Tier 1 panel.
 
+The [source-linked report](Q_SEED_SCHEDULING_REPORT_2026-10-19.md) diagrams
+the selected graph, plots the pinned source-formula counts, and keeps the
+unmeasured Tier 1 wall-time gate explicit.
+
 Two auxiliary coefficient vertices lower the source-level Q-seed
 `add_projective` count from 62 to **25** for the frozen one-restart stream.
 Low-rotation ordering lowers the 128-restart count from 667 to **660** with
