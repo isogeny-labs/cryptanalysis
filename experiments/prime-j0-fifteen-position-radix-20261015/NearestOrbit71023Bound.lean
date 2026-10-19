@@ -9,7 +9,43 @@ theorem norm_trial_division :
 
 theorem norm_sqrt_cap : 266*266 < 71023 ∧ 71023 < 267*267 := by decide
 
-theorem norm_prime : Nat.Prime 71023 := by decide
+-- Core Lean does not define Mathlib's Nat.Prime. State the exact divisor
+-- characterization and derive it from the checked square-root trial range.
+theorem norm_prime : 2 ≤ (71023 : Nat) ∧
+    ∀ d : Nat, d ∣ 71023 → d = 1 ∨ d = 71023 := by
+  have no_small (d : Nat) (lo : 2 ≤ d) (hi : d ≤ 266) : ¬ d ∣ 71023 := by
+    have h := List.all_eq_true.mp norm_trial_division (d-2)
+      (List.mem_range.mpr (by omega))
+    have he : d-2+2 = d := by omega
+    simp only [he, bne_iff_ne] at h
+    intro hd
+    exact h (Nat.mod_eq_zero_of_dvd hd)
+  constructor
+  · decide
+  · intro d hd
+    obtain ⟨k, hk⟩ := hd
+    by_cases h1 : d = 1
+    · exact Or.inl h1
+    by_cases hk1 : k = 1
+    · right; simpa [hk1] using hk.symm
+    have dpos : 2 ≤ d := by
+      by_cases hz : d = 0
+      · simp [hz] at hk
+      · omega
+    have kpos : 2 ≤ k := by
+      by_cases hz : k = 0
+      · simp [hz] at hk
+      · omega
+    have dhi : 267 ≤ d := by
+      by_cases h : d ≤ 266
+      · exact False.elim (no_small d dpos h ⟨k, hk⟩)
+      · omega
+    have khi : 267 ≤ k := by
+      by_cases h : k ≤ 266
+      · exact False.elim (no_small k kpos h ⟨d, by simpa [Nat.mul_comm] using hk⟩)
+      · omega
+    have bound := Nat.mul_le_mul dhi khi
+    omega
 
 theorem radix_norm_identity (x y : Int) :
     nrm (268*x+3*y) (-x+265*y) = 71023*nrm x y := by
