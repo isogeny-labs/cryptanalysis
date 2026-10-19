@@ -14,6 +14,7 @@
 #   multi  every system with two or more solutions (diagnosis/multi_systems.json),
 #          for Sage's order of a multi-solution variety.
 # No interval is timed; nothing here is a measurement.
+# Workflow: .github/workflows/n19-native-s0-diagnostic.yml (a push changing this file runs it).
 
 import json
 import os

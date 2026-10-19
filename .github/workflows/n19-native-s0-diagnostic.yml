@@ -6,8 +6,14 @@ name: N19 native S0 diagnostic (untimed)
 # in the baseline run's Sage image: per shift system, Sage's variety, the
 # native variety through the v2 and the v1 binding, and a direct S3 evaluation
 # in Sage's field. No interval is timed and nothing here is a measurement.
-# Dispatch only.
+# Dispatch, or a push that changes diagnosis/sage_diag.sage itself (the API
+# refused workflow_dispatch from the agent session with 403); nothing else
+# triggers it.
 on:
+  push:
+    branches: [claude/n19-native-solve]
+    paths:
+      - experiments/volcano-n19-native-tau6-v2-20261019/diagnosis/sage_diag.sage
   workflow_dispatch:
 
 permissions:
