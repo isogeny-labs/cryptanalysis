@@ -1,0 +1,97 @@
+{
+ "bases": [
+  {
+   "base_hash": "730744637b87219e72d77e7a391e11845fdacc9b45357fcc16474a853b63fa3f",
+   "base_sha256": "8d2f3152432b235f64ccb448b38956c3d214456d9237830382cad0d7f3477a10",
+   "checker": "pinned pure-Python oracle (crypto 770f6a69 oracle.py) and hashlib; shares no code with the generator or the producer",
+   "checks": {
+    "base_hash_recomputed": true,
+    "every_label_is_plus_minus_lambda_power": true,
+    "every_point_is_its_signed_frobenius_conjugate": true,
+    "frobenius_eigenvalue": true,
+    "frozen_digests": true,
+    "header_kind_n_a_r_modulus": true,
+    "log_table_base_hash": true,
+    "log_table_every_log_maps_G_to_its_representative": true,
+    "log_table_kind": true,
+    "log_table_n_a_r": true,
+    "log_table_range": true,
+    "log_table_width": true,
+    "logs_equal_declared_scalar_rule": true,
+    "orbits_distinct": true,
+    "widths": true
+   },
+   "detail": {
+    "bad_columns": [],
+    "bad_labels": [],
+    "bad_points": [],
+    "recomputed_base_hash": "730744637b87219e72d77e7a391e11845fdacc9b45357fcc16474a853b63fa3f"
+   },
+   "log_table_sha256": "bf4aca722328f5524bb0ccc9ad3b0bc3e6b6e6ea333425727c9c6f8b8a1deb6e",
+   "orbit_columns": 600,
+   "status": "PASS"
+  },
+  {
+   "base_hash": "e2b8d13f75587f7ae9a2dfa06a9760ed36deb7fed9dcc2bd6ccadeb8218bd088",
+   "base_sha256": "1045de01def6535ecf255435f92a9929cd7aa1ce794b8736034c18871e4c930c",
+   "checker": "pinned pure-Python oracle (crypto 770f6a69 oracle.py) and hashlib; shares no code with the generator or the producer",
+   "checks": {
+    "base_hash_recomputed": true,
+    "every_label_is_plus_minus_lambda_power": true,
+    "every_point_is_its_signed_frobenius_conjugate": true,
+    "frobenius_eigenvalue": true,
+    "frozen_digests": true,
+    "header_kind_n_a_r_modulus": true,
+    "log_table_base_hash": true,
+    "log_table_every_log_maps_G_to_its_representative": true,
+    "log_table_kind": true,
+    "log_table_n_a_r": true,
+    "log_table_range": true,
+    "log_table_width": true,
+    "logs_equal_declared_scalar_rule": true,
+    "orbits_distinct": true,
+    "widths": true
+   },
+   "detail": {
+    "bad_columns": [],
+    "bad_labels": [],
+    "bad_points": [],
+    "recomputed_base_hash": "e2b8d13f75587f7ae9a2dfa06a9760ed36deb7fed9dcc2bd6ccadeb8218bd088"
+   },
+   "log_table_sha256": "a567436a7f3076a858d30a5873e11c9e898a638fba5d39e52ace8ed7935ed6bc",
+   "orbit_columns": 220,
+   "status": "PASS"
+  }
+ ],
+ "every_frozen_base_checked": true,
+ "planted": {
+  "cases": {
+   "label_coefficient_changed_point_7": {
+    "detected": true,
+    "failed_checks": [
+     "base_hash_recomputed",
+     "every_label_is_plus_minus_lambda_power"
+    ],
+    "status": "FAIL"
+   },
+   "log_off_by_one_column_1": {
+    "detected": true,
+    "failed_checks": [
+     "log_table_every_log_maps_G_to_its_representative",
+     "logs_equal_declared_scalar_rule"
+    ],
+    "status": "FAIL"
+   },
+   "orbit_point_replaced_point_9": {
+    "detected": true,
+    "failed_checks": [
+     "base_hash_recomputed",
+     "every_point_is_its_signed_frobenius_conjugate"
+    ],
+    "status": "FAIL"
+   }
+  },
+  "status": "PASS"
+ },
+ "status": "PASS"
+}

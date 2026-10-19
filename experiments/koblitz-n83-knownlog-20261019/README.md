@@ -5,14 +5,14 @@ date: 2026-10-19
 
 # n = 83 known-log reference row: seeded scalar orbits at K600 and K220, end-to-end cold
 
-**Status (2026-10-19): protocol frozen, Tier 1 run started; no result yet.**
-The [protocol](protocol.json) and the [schedule](schedule.json) were
-committed before any Tier 1 timing, in commit `c04026fa6`, which carries the
-whole experiment directory and the workflow. The Tier 1 run is
-[39307634508](https://github.com/aburan28/cryptanalysis/actions/runs/39307634508). Every number below comes from one of
-three places, and each is labelled:
+**Status (2026-10-19): Tier 1 run complete and valid; reading "measured above
+rho".** The [protocol](protocol.json) and the [schedule](schedule.json) were
+committed before any Tier 1 timing, in commit `c04026fa6`. The Tier 1 run is
+[39307634508](https://github.com/aburan28/cryptanalysis/actions/runs/39307634508),
+archived in [`run_github_39307634508/`](run_github_39307634508/). Every number
+below comes from one of three places, and each is labelled:
 
-- an archived run (39214027289, the n = 83 baseline row's run);
+- the archived run (39307634508, Tier 1), for **measurements**;
 - the cost model, which gives **predictions**;
 - the cloud-agent VM, which gives **local diagnostics**
   ([`smoke/`](smoke/README.md)).
@@ -37,6 +37,108 @@ Exactness results are exact wherever they were run.
 > `research/lit2026_w3_ggm_audit_20261011/README.md:177-183`), and it can
 > never beat rho. This measurement prices that limit on the baseline's own
 > code. It says nothing about relation-based index calculus.
+
+## Result (Tier 1, run 39307634508)
+
+The run completed with exit 0, executed all 209 scheduled rows, and skipped
+none under the time guard. `verify_receipt.py`, re-run on the archive,
+reproduces `result.json` and `result_table.md` byte for byte. All 16 gates and
+all 3 controls pass, so the run is valid. The frozen reading rule gives
+**measured above rho**.
+
+**Primary (pre-registered), 40 cold points, 95% paired bootstrap:**
+
+| Quantity | Estimate [95%] | Reading |
+| --- | ---: | :--- |
+| G = E2E(cL220) / cold(rT770) | **2.1919 [1.8584, 2.5893]** | **above rho** (lower bound above 1) |
+| end-to-end cold S of cL220 (this run's rT770 step, 29,512.9 ms per r^(1/2)) | 0.2303 [0.2059, 0.2577] | |
+
+This is not an IC improvement and does not replace the n = 83 baseline row.
+The reading does not contradict the DKM bound: the known-log base is generic
+BSGS on the Frobenius quotient and sits above rho, as the bound requires. The
+"below rho" case, which would have signalled an accounting error, did not
+occur.
+
+![Result. End-to-end cold gap to the tuned rho rT770 for the IC baseline
+(kP+cP), the known-log base at K600 and the primary cL220; REFERENCE ROW, not
+an IC improvement. Source: [figures/result.tex](figures/result.tex), vector:
+[figures/result.pdf](figures/result.pdf).](figures/result.png)
+
+**Secondaries (reference, not an IC improvement):**
+
+| Quantity | Estimate [95%] |
+| --- | ---: |
+| E2E(kP+cP) / E2E(cL220) | 27.9894 [24.7842, 31.5336] |
+| E2E(kP+cP) / E2E(cL600) | 7.1801 [6.8893, 7.4867] |
+
+Means: kP+cP 190,268 ms (rank stage 163,779 ms + cP cold 26,490 ms), cL600
+26,500 ms, cL220 6,798 ms. The baseline pair was run by the rank-probe
+experiment's `arm.py` unchanged, and its cP charges no base construction.
+The known-log arms charge generation.
+
+**Descriptive.**
+
+| Quantity | Estimate [95%] |
+| --- | ---: |
+| E2E cold gap kP+cP / rT | 61.35 [53.26, 71.28] |
+| E2E cold gap cL600 / rT | 8.5446 [7.4573, 9.8800] |
+| E2E cL600 / cL220 | 3.8982 [3.4860, 4.3638] |
+| online gap cL220 / rT | 1.1235 [0.8527, 1.4457] |
+| online gap cL600 / rT | 0.1410 [0.0951, 0.1951] |
+| online gap cP / rT | 0.1775 [0.1200, 0.2504] |
+| cold cP / cL600 | 0.9996 [0.9894, 1.0109] |
+
+End-to-end cold S: kP+cP 6.447, cL600 0.8979, cL220 0.2303. Online S: cP
+0.01722, cL600 0.01368, cL220 0.10898.
+
+Phases (means, ms):
+
+| Arm | gen | base load | index | scan self-test | log verify | online | E2E |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cL220 | 78.8 | 285.4 | 3,074.6 | 77.9 | 33.3 | 3,216.2 | 6,797.9 |
+| cL600 | 177.3 | 315.4 | 23,228.3 | 2,213.8 | 91.6 | 403.7 | 26,499.6 |
+
+ns per online probe: cL220 258.4, cL600 258.3, cP 260.7 (the model assumed
+221.4).
+
+**Prediction against measurement.** Model A predicted E2E 6.04 s at K220 and
+22.6 s at K600, and a gap of 2.33 at K220. Model B predicted 5.15 s at K220.
+The measurement is 6.80 s and 26.5 s, and G = 2.19. K220 is slower than both
+models in absolute time (the per-probe cost is 258 ns against the assumed 221
+ns, and the index build is 3.07 s against about 2.9 s). rT770's mean cold time
+in this run is 3.10 s against the archived 2.59 s, which brings the gap down to
+2.19, near model A's 2.33.
+
+**Gates (all pass).**
+
+- Every scheduled row valid and present; all 40 points and all 4 rank blocks
+  complete; the receipt matches the schedule; zero rows skipped by the time
+  guard; no contention flags.
+- Independent verification of every base log (`check_knownlog.py`), and the
+  verifier detects its three planted corruptions.
+- Every known-log process ran the verified files.
+- One scalar per point across every IC process and rT, replayed in the oracle;
+  one relation and one probe count per point within each base.
+- Q0 matches the archived and frozen identities.
+- The producer refuses the planted table (cLX).
+- The rank tables equal the archived ones.
+- Probes inside the law band (mean over the law: cL220 0.968, cL600 0.905, cP
+  1.128; maximum over the law 3.80, 3.51, 4.72, all below 20).
+
+**Controls (all pass).**
+
+- A/A: E2E cL220 / cLaa = 1.0005 [0.9954, 1.0067], inside [0.97, 1.03].
+- Planted: the producer refuses the off-by-one table, and the verifier detects
+  all three of its planted corruptions.
+
+**What this does and does not say.** Without relations, the known-log base is
+BSGS on the Frobenius quotient, and 2.19 times rho is the price of that
+construction on the baseline's own code at its best orbit count. It is about
+28 times cheaper end to end than the IC baseline in this session only because
+the baseline pays a 164 s rank stage to find the logs that this construction
+gets by construction. The ratio says nothing about relation-based index
+calculus, and the owner's decision on whether this row may ever hold the IC
+row is pending the L1 multiplier-closure result (`claude/n83-closure`).
 
 ## Question
 
@@ -312,5 +414,6 @@ See [`smoke/README.md`](smoke/README.md). In short:
 | `cost_model.py`, `analysis/cost_model.json`, `make_cost_figure.py`, `figures/cost_model.*` | the K choice (prediction) and its graph |
 | `power_check.py`, `analysis/power.json` | precision of the primary, the panel size |
 | `figures/design.*` | design diagram (TikZ source, PDF, PNG) |
+| `run_github_39307634508/`, `figures/make_result_figure.py`, `figures/result.*` | the archived Tier 1 run (`panel/result.json`, `result_table.md`), and the result figure |
 | `smoke/` | local diagnostics |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
