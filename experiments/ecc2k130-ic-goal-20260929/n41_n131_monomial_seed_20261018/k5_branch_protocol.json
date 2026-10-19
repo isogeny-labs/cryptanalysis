@@ -1,0 +1,86 @@
+{
+  "branch_policy": "first source mask low eight bits fixed to 3; same prefix and public point as baseline branch",
+  "branch_prefix_value": 3,
+  "branch_prefix_width": 8,
+  "candidate_id": null,
+  "combined_rss_cap_bytes": 4294967296,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "mask_bit_positions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "mask_variable_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "parent_wall_cap_seconds": 600,
+  "public_target": [
+    1052727368764798954359115163823647684025,
+    2071227447786120917960296877345506689833
+  ],
+  "raw_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "seed_mask": 528,
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=580",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1"
+  ],
+  "sources": {
+    "baseline_branch_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w29_entropy_branch_20261018/result.json",
+      "sha256": "418c8c7951d3838cc8f7eb1c3b886d0dbfeef18acaea91b0af9b4547674fb5cb"
+    },
+    "build_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/build_k5_result.json",
+      "sha256": "8344d9bf7f0eed756a400bd58a87cc9af140ec11eeb72b95e717429f3f2f5c2d"
+    },
+    "builder": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/build_k5.py",
+      "sha256": "e058871eb4a77725cec9c0c653aaf75651a05d4295f87dd73ca911eb69b077ef"
+    },
+    "circuit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fivepair_w9_w29_20261017/circuit_n131_3p2.py",
+      "sha256": "64726b2d09367a24843f25e0cf24a74e2b7cc8516a145cdccaf5e53b0e3ebfd3"
+    },
+    "k5_prefix_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/prefix_audit_k5_result.json",
+      "sha256": "af861aa006362b8368ceddb1eca849f5462e5153d15f8199ed9ba516f61202d5"
+    },
+    "original_xcnf": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/n131_k5_public.xcnf",
+      "sha256": "bed56b195dcff751085d6359c7ad0b2f236e914ff494c436ad962a0a62a1ba40"
+    },
+    "run": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/run_k5_branch.py",
+      "sha256": "aa3ac8a86e9beb32dd6d3472f240225a9415447f54195b45602cf83801b57d9c"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "solver": {
+      "path": "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+      "sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+    }
+  },
+  "status": "FROZEN_BEFORE_BRANCH",
+  "worker_count": 1,
+  "workload_id": "cc09e7eb202a"
+}

@@ -1,0 +1,42 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "raw_target": [
+    1476947961888,
+    1253336411133
+  ],
+  "rotations": [
+    0,
+    6,
+    12,
+    18,
+    24
+  ],
+  "seed_mask": 36,
+  "source_rule": "all nonzero 9-bit masks satisfying both endpoint traces; canonical a < a XOR seed; distinct folded source columns; four signed states per edge",
+  "sources": {
+    "fresh_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_fresh_2p1_join_20261018/audit_result.json",
+      "sha256": "4460971e65a17bf2bb2821e5c7fac607ecaeac89cae3bd8910c783ac4d70f3f7"
+    },
+    "fresh_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_fresh_2p1_join_20261018/protocol.json",
+      "sha256": "6179fcfe7a4da0294477a5616fb0144b6e9797ef1c6fc7a8bd1ab64d71ed3a22"
+    },
+    "make_states_sage": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/make_states_sage.py",
+      "sha256": "a22844e33f383b1a924bd7bbce056bcff690db9babcfddde4551baa241b70d5f"
+    },
+    "old_source_builder": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fivepair_w9_w29_20261017/prepare_n41.py",
+      "sha256": "557bd06b3b0b1bdf8b4dc1ad5a1e493fb455a33886ede2f55db6e130e040bca9"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    }
+  },
+  "status": "FROZEN_BEFORE_SOURCE",
+  "width": 9,
+  "worker_count": 1
+}

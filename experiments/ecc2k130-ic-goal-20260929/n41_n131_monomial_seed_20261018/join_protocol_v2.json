@@ -1,0 +1,59 @@
+{
+  "candidate_id": null,
+  "combined_rss_cap_bytes": 4294967296,
+  "compile_command": "clang++ -O3 -std=c++17 -Wall -Wextra -o join_2p1_v2 join_2p1_v2.cpp",
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "input_law": "same previously generated independent subgroup point as frozen fresh W9 join; monomial seed fixed before this join",
+  "join_rule": "exact two-plus-one left-pair lookup, all five state ids free, 41 Frobenius orientations",
+  "parent_wall_cap_seconds": 600,
+  "raw_target": [
+    1476947961888,
+    1253336411133
+  ],
+  "seed_mask": 36,
+  "sources": {
+    "binary": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/join_2p1_v2",
+      "sha256": "a4696793cd480427e26728c5114804945602e5aa14df23a364699f0ad7c628ff"
+    },
+    "binary_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/join_2p1_v2.cpp",
+      "sha256": "cad872fb965bb270b6ce52e83d35cca2cf0b6c8b0c965055d1a0a0552e8e95b6"
+    },
+    "fresh_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_fresh_2p1_join_20261018/protocol.json",
+      "sha256": "6179fcfe7a4da0294477a5616fb0144b6e9797ef1c6fc7a8bd1ab64d71ed3a22"
+    },
+    "input": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/join_input.tsv",
+      "sha256": "b067796e73f2b84e3305f530af1e852e236cd3f063c26d1a7afd62120b1ea8fa"
+    },
+    "old_join_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_target_conditioned_2p1_join_20261018/join_2p1.cpp",
+      "sha256": "80183164a087256efb4e84934e2f440d852107c15ff79ba888126ecd7653f56d"
+    },
+    "run_join": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/run_join_v2.py",
+      "sha256": "c9d1722841d92ff6f2a64f5b4643ce3bf92d652c27c97d9edb0892f22b2931b5"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "source_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/source_protocol.json",
+      "sha256": "98bdc684d4f23d913ad5d1864782b7514996f4829ff99f47abebbbf16be6cfce"
+    },
+    "states": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_monomial_seed_20261018/states.json",
+      "sha256": "dec8412221701edeb53d60cbe89130c8d79510f2d978c7453f5829a56f34da8e"
+    }
+  },
+  "states_per_slot": 248,
+  "status": "FROZEN_BEFORE_JOIN",
+  "supersedes_failed_attempt": {
+    "error": "hardcoded prior seed mask 56 rejected seed 36 rows",
+    "result_sha256": "87235532e402a85286660eb02db1e52cba904a4124bc80f89b8237ebc6255705"
+  },
+  "worker_count": 1
+}
