@@ -131,6 +131,8 @@ under an explicit inverse and isolates the denominator's exceptional locus
 to `x=0`. Quadratic reciprocity excludes that locus for secp256k1; the
 reciprocity step is recorded as written mathematics and a numeric check
 while its full Lean formalization remains open.
+The [source-linked checkpoint report](CHECKPOINTED_RADIX32_REPORT_2026-10-19.md)
+adds the schedule diagram, four-workload ratio graph, PDF, and crossover limits.
 
 The secp256k1 prime splits in the Eisenstein integers. An exact norm-
 `p` element

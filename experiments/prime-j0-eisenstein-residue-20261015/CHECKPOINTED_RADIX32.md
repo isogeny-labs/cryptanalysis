@@ -30,3 +30,5 @@ The direct cold batch [manifest](tier1-tau32cp5-batch1cold-cpu40-manifest.json),
 The smaller direct cold batch [manifest](tier1-tau32cp5-batch4096cold-cpu40-manifest.json), [rules](tier1-tau32cp5-batch4096cold-cpu40-rules.json), [launch](tier1-tau32cp5-batch4096cold-cpu40-launch.json), [auditor](analyze_tier1_tau32cp5_batch4096cold.py), [audit](tier1-tau32cp5-batch4096cold-cpu40-audit.json), and [raw archive](tau32cp5-batch4096cold-tier1-raw.tar.gz) preserve job `10d5b7daf9cf4712879d046e951a4a26`. It passed all 96 arms, 48 pairs, artifact and A/A gates while charging preparation and evaluation of the first 4,096 distinct frozen points in each arm. The raw archive SHA-256 is `612d1729d561f1dff24326f27ba924ec96f2d613db1af4fee7accbf26830e974`.
 
 The direct cold panels bracket the crossover between 4,096 and 12,288 outputs on this frozen instance. A panel inside that interval can narrow the admission point for a batch-size selector.
+
+The [source-linked report](CHECKPOINTED_RADIX32_REPORT_2026-10-19.md) adds the checkpoint diagram, qualified workload-ratio graph, PDF, and exact proof and measurement boundaries.
