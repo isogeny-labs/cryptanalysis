@@ -67,3 +67,10 @@ The first direct 18-position versus `190−τ` panel also verified all 96 arms a
 That 8,192-operation direct panel completed all 96 arms and 48 pairs with stable artifacts and every adjacent A/A control in [0.90,1.11]. The paired median 18-position/`190−τ` throughput ratio was **1.0492** with a repeat-level bootstrap interval of **[1.0382,1.0608]**. Mean online cost was 12.35 versus 11.77 microseconds per scalar in this repeated workload. Mean target-independent preparation was 506 versus 1,285 ms; retained bytes were 2,448,196 versus 6,829,948. The 2,048-operation direct panel above remains recorded with its failed gate. A repeat-bootstrap interval describes variation across the 16 repetitions on this one cloud allocation and frozen scalar law.
 
 The next measurement is a fresh-allocation Tier 1 replication of the 8,192-operation direct panel, followed by a separately gated one-call latency study. Keep the frozen scalar law, table setup and memory accounting, source and binary hashes, alternating A/A controls, and all raw arms. The current RunPod service serializes jobs on its pod; it does not establish physical-host isolation.
+
+## Visual report and graph audit
+
+The dated [evidence report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf)
+contain the recoding diagram and data plot. The editable sources and SVG/PDF
+figures are in [`visuals/`](visuals/); `make_graph.py` reads the committed
+A/A-qualified analysis JSON files and does not launch a benchmark.

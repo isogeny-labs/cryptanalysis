@@ -38,3 +38,10 @@ The Lean modules prove the norm-19,183 radix identity, 17 numeric contractions, 
 | secp256k1 point action for this radix | Candidate-specific Lean declaration pending | Fixed curve, generator, and τ eigenvalue bridge; independent Python and Rust point replays checked |
 
 Run `bash check_lean140.sh` with Lean 4.34.1 to rebuild these declarations from source and print each theorem's axiom audit. The script also rebuilds its imported split-prime dependencies in a fresh temporary directory.
+
+## Visual report and graph audit
+
+The dated [evidence report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf)
+contain the recoding diagram and quantitative plot. Editable sources and SVG/PDF
+figures are in [`visuals/`](visuals/). The plot generator reads only committed
+A/A-qualified panel analysis and does not launch a benchmark.
