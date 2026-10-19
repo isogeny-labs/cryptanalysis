@@ -7,6 +7,10 @@ set_option maxRecDepth 100000 in
 theorem norm_trial_division :
     (List.range 265).all (fun i => 71023 % (i+2) != 0) = true := by decide
 
+theorem norm_sqrt_cap : 266*266 < 71023 ∧ 71023 < 267*267 := by decide
+
+theorem norm_prime : Nat.Prime 71023 := by decide
+
 theorem radix_norm_identity (x y : Int) :
     nrm (268*x+3*y) (-x+265*y) = 71023*nrm x y := by
   unfold nrm
@@ -128,6 +132,8 @@ theorem selected_terminal_bound (scalar : Int) (state digit : Nat → Int × Int
     (initial_radius_from_cell _ _ hcell) hstep hdigit
 
 #print axioms norm_trial_division
+#print axioms norm_sqrt_cap
+#print axioms norm_prime
 #print axioms radix_norm_identity
 #print axioms radius_checks
 #print axioms selected_terminal_bound
