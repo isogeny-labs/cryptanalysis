@@ -20,6 +20,18 @@ The user selected full-subgroup solves and a longer compute campaign. The
 [protocol](PROTOCOL.md) was pushed before target generation. This is not an
 interval-log experiment, and m=83 was retained throughout.
 
+## Continuation status (2026-10-19)
+
+After an infrastructure interruption, the same immutable binary resumed the
+original full checkpoints and all 16 unchanged public jobs. There are still
+24 unique verified a=1 completions and no a=0 recovery. Three repeated Q_7
+verification rows make the live log 27 rows; they add no solved target.
+[Current process and checkpoint instructions](RESUME.md) and the
+[maintenance receipt](maintenance/20261019-resume-ci/README.md) separate the new
+execution session from the immutable performance snapshots. Later partial
+counters remain censored across sessions; no continuous-host timing,
+priced-cost, speedup or ecbench qualification is added.
+
 ## Exact objects and inputs
 
 Field: GF(2^83), polynomial basis `z^83+z^45+z²+z+1`.
