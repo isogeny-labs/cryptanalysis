@@ -73,6 +73,19 @@ Linux build, test, failed first compile, sizing screen, and source files;
 its SHA-256 is
 `3f4473284c867dda7a8d7963e8b2588dfe25747c5c0507c2ed2fb009651649e5`.
 
+The provenance archive contains the post-overlay Rust source snapshot and
+Cargo lock, but not the pinned input sources (`f3c3b072…` and `cecb27d0…`)
+or their originating repository/revision. A local build from the archive
+also stops before compilation because the sources reference 33 external
+absolute-path include files that are not included. The captured source
+hashes, build/test logs, and receipt audit remain available, but the native
+overlay/build is not independently reproducible from this PR alone.
+
+The raw receipts record a cgroup memory high-water value of 2,184,867,840
+bytes, shared by the container, but no per-process peak RSS. This leaves the
+general hardware-reporting field incomplete; it is separate from the
+explicit Tier 1 timing criteria, which this panel passes.
+
 ## Report and figures
 
 The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) capture the panel result, its proof boundary, costs and claim limits. `visuals.py` regenerates the committed dataflow and throughput figures from the audited JSON.
