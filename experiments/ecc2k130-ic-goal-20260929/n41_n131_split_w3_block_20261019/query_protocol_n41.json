@@ -1,0 +1,47 @@
+{
+  "binary": {
+    "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_interleaved_block_macaulay_20261019/interleaved_block",
+    "sha256": "f80197d814049fba3719c0d41b9dc043426abd6bf2dea306d34f75ef1e24fdd1"
+  },
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "dependencies": {
+    "prep": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_split_w3_block_20261019/prepare_result.json",
+      "sha256": "bdd61a943de5cd73a2b4de6145a1f2e7fc0c451df7986adbfe66a3bcb95a3d19"
+    },
+    "prior_n41_verification": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_interleaved_block_macaulay_20261019/verify_n41.stdout",
+      "sha256": "0dc220ebd8dcd3f857d85f9389c55fc23f1772b0fd586f1128712a29bfaee4ef"
+    },
+    "prior_positive": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_interleaved_block_macaulay_20261019/n41_t0_a252.receipt.json",
+      "sha256": "8b4662604bd6f9136431753d642f96afcb3ad75e9158624e832382bb56d1125d"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_split_w3_block_20261019/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "sage_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_split_w3_block_20261019/audit_result.json",
+      "sha256": "f098601fa93283d70de3602305a5b5b9a6e3571c608893a5960e1769512c03a9"
+    }
+  },
+  "expected_first_status": "REJECT_CERTIFICATE",
+  "inputs": {
+    "n41_t1_a4": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_split_w3_block_20261019/n41_t1_a4.eqs",
+      "sha256": "41b1eaf9ad81058e9bf9e9b26ffe5462bce198eb2771a1e96b748562ebc8a592"
+    }
+  },
+  "labels": [
+    "n41_t1_a4"
+  ],
+  "protocol_name": "query_protocol_n41.json",
+  "rss_cap_bytes": 4294967296,
+  "status": "FROZEN_BEFORE_SPARSE_BLOCK_N41",
+  "stop_after_nonterminal": true,
+  "supervisor_sha256": "18f2fbe4c6f9887af3af2026cfcb1518eccf41482db9879143064a4ae4654664",
+  "wall_cap_seconds": 180,
+  "worker_count": 1
+}

@@ -1,0 +1,65 @@
+{
+  "binary": {
+    "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/guided_block",
+    "sha256": "2d2cd4089da923ed4f9f03a1aabb8818b9116a0b44246e9f292e32efe2f78f04"
+  },
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "dependencies": {
+    "build": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/build_result.json",
+      "sha256": "a847c90025d4c0ba59313f7c1e71363756a16e245525470d1a67b5baa410efce"
+    },
+    "input_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_block_macaulay_20261019/audit_result.json",
+      "sha256": "807c256fc37298f5817ce1fc4f13e18aca7f17027d12bc85fbc2704132bc90fd"
+    },
+    "prior_w3_controls": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_block_macaulay_20261019/control_verification.json",
+      "sha256": "9d2583f8d89d4f08b5f826772c8aa14dbaf32b854f0a9b2545e105817b1f5b84"
+    },
+    "runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "schedule_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/schedule_protocol.json",
+      "sha256": "85e243851a674f0b5d7bff0ac7dfc1ecbaf648c4fc32483dcb82ecc1d8d93c5e"
+    },
+    "schedule_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/schedule_result.json",
+      "sha256": "f3b73df0f1c0977c9f1394c0581e9e46d3d79b91e96af55bf42d0e57e5e7b20e"
+    },
+    "source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/guided_block.cpp",
+      "sha256": "f7c9ac42f2b4065d2b2f8b31c419553149d260dcddbcfa6a0e63bd912c4f2259"
+    }
+  },
+  "inputs": {
+    "n41_t0_a248_w3": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_block_macaulay_20261019/n41_t0_a248_w3.eqs",
+      "sha256": "d9890158562628cd853b61e4736f4e163b162e07addf3a7b41e81cbe499a8c5f"
+    },
+    "n41_t1_a0_w3": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_block_macaulay_20261019/n41_t1_a0_w3.eqs",
+      "sha256": "86bc9d39660ec340efa341e2789a8c4b75046907f3e9ed11c16d91d058315a81"
+    }
+  },
+  "labels": [
+    "n41_t0_a248_w3",
+    "n41_t1_a0_w3"
+  ],
+  "left_free_bits": 3,
+  "protocol_name": "query_protocol_n41.json",
+  "row_order": "certificate_guided_factor_then_field_coordinate",
+  "rss_cap_bytes": 4294967296,
+  "schedule": {
+    "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_wide3_guided_schedule_20261019/n41.factor_order",
+    "sha256": "5849517308e1267de073d72aabb017c788b6c1247668a83df1a5afa2c29085b5"
+  },
+  "status": "FROZEN_BEFORE_SPARSE_BLOCK_N41",
+  "stop_after_nonterminal": false,
+  "supervisor_sha256": "93a1df10236ae28bab4edd633ce21c2d8c85997f7f90084ecbbef534ef244f2c",
+  "wall_cap_seconds": 120,
+  "worker_count": 1
+}
