@@ -1,0 +1,50 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "protocol_sha256": "c293203d7f39f9fc3102fdecbec620ae1dc0949a6bec3f113931c72bce255e0a",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=10",
+        "--zero-exit-status",
+        "--verb=0",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_implicit_pair_oracle_20261019/P0_table.xcnf"
+      ],
+      "exact_member": true,
+      "key_id": "P0",
+      "rss_samples": 212,
+      "sampled_peak_combined_rss_bytes": 175144960,
+      "solver_exit_code": -15,
+      "status": "BOUNDED_UNKNOWN",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stop_reason": "WALL_CAP",
+      "wall_seconds": 12.014414083998417
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=10",
+        "--zero-exit-status",
+        "--verb=0",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_implicit_pair_oracle_20261019/N1_table.xcnf"
+      ],
+      "exact_member": false,
+      "key_id": "N1",
+      "rss_samples": 215,
+      "sampled_peak_combined_rss_bytes": 213417984,
+      "solver_exit_code": -15,
+      "status": "BOUNDED_UNKNOWN",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stop_reason": "WALL_CAP",
+      "wall_seconds": 12.031654165999498
+    }
+  ],
+  "status": "N41_TWO_PAIR_TABLE_ABLATION_QUERY"
+}
