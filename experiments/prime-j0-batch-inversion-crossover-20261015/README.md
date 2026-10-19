@@ -17,11 +17,11 @@ The direct screen used 96 passes over the same 128 frozen scalars for every chun
 | 64 | 2 | 61.925214 |
 | 128 | 1 | 61.657853 |
 
-Each row returned `verified=1`, `count=12288`, the same fixture hash and final point, and 26,035,988 retained table bytes. The screen's stdout and stderr are frozen in the serial job artifacts.
+Each row returned `verified=1`, `count=12288`, the same fixture hash and final point, and 26,035,988 retained table bytes. The manifests reference the screen's 16 stdout/stderr paths, but those files are absent from this PR; the screen values are uncalibrated context and were not independently replayed in this review.
 
 ## Frozen Tier 1 gate
 
-The two manifests freeze size 1 and size 2 against the same individual-inversion reference used in the parent panel. Each has 16 repetitions of A/A, comparison, A/A, with alternating reference/candidate arm order. Every arm computes the same 12,288 outputs, and output replay occurs after the online interval. The accepted comparison needs all arms valid, both adjacent A/A ratios in `[0.90,1.11]`, and a paired bootstrap 95% interval wholly on one side of one. The job runner records the exposed CPU topology, pinning, cgroup pressure and throttling, steal time, frequency, memory, source and binary hashes, and per-arm outputs. The container reports Tier 1 instance conditions; physical-host exclusivity is unverified.
+The two manifests freeze size 1 and size 2 against the same individual-inversion reference used in the parent panel. Each has 16 repetitions of A/A, comparison, A/A, with alternating reference/candidate arm order. Every arm computes the same 12,288 outputs, and output replay occurs after the online interval. The accepted comparison needs all arms valid, both adjacent A/A ratios in `[0.90,1.11]`, and a paired bootstrap 95% interval wholly on one side of one. The job runner records the exposed CPU topology, pinning, cgroup pressure and throttling, steal time, frequency, memory, source and binary hashes, and per-arm outputs. The container reports Tier 1 instance conditions; physical-host exclusivity is unverified. Receipts contain process user/system CPU and cgroup memory counters but omit per-process peak RSS; the cgroup peak is container-wide and does not substitute for process RSS. General Hardware reporting is incomplete, while the explicit Tier 1 timing criteria remain met.
 
 The parent Lean proof `BatchInverse.prefix_reverse_identity` covers an arbitrary finite prefix, so varying the chunk length adds no new mathematical assumption. The chunked command's native holdout and 12,288-output replay provide implementation checks for each selected size.
 
