@@ -422,7 +422,9 @@ def statistics_block(runs, protocol):
 
 
 def decide(checks, stats):
-    gates_ok = all(v is not False for v in checks.values())
+    # Required checks are three-state so partial receipts can report unknown.
+    # Unknown is useful in the diagnostic output, but it cannot satisfy a gate.
+    gates_ok = all(v is True for v in checks.values())
     aa_e2e, aa_cold = stats.get("aa_e2e_shared_cP_over_cPaa"), stats.get("aa_cold_cP_over_cPaa")
     sharing = stats.get("sharing_rank_attempt_kPI_over_kP")
     planted, primary = stats.get("planted_cold_cPIX_over_cPI"), stats.get("primary_e2e_shared_cP_over_cPI")
