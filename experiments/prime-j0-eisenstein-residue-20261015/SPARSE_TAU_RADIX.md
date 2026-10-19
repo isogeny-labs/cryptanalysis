@@ -37,3 +37,5 @@ The [prepared-table manifest](tier1-sparse-vs-prefetch-online-cpu40-manifest.jso
 | 122,880 outputs, prepared table | 562.36 ms | 6048.44 ms | 0.092706 |
 
 The two rows answer different workload questions and cannot be divided into a shared per-scalar estimate. The next design gate is a checkpointed or other mixed schedule that reduces the sparse path's repeated radix actions while preserving much of its single-scalar preparation and memory advantage. Any claimed intermediate point needs its own exact replay and matched cold and prepared-table panels.
+
+The dated [source-linked sparse-radix report](SPARSE_TAU_RADIX_REPORT_2026-10-19.md) includes the recoding diagram, audit-derived Tier 1 comparison graph, editable figure source, and [PDF](SPARSE_TAU_RADIX_REPORT_2026-10-19.pdf). It keeps finite fixture and native-panel evidence separate from the conditional Lean point-map theorem.

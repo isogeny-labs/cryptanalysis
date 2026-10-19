@@ -9,6 +9,9 @@ path in a qualified matched Tier 1 panel. Direct panels against full two-x
 prefetch measured a 12.36× one-scalar cold-start advantage for the sparse
 path and a 10.8× prepared-table throughput cost; the linked notes retain
 the distinct workload boundaries and raw receipts.
+The [source-linked radix report](SPARSE_TAU_RADIX_REPORT_2026-10-19.md)
+adds an audited recoding diagram, paired timing graph, and PDF while making
+the finite-screen and conditional-proof boundaries explicit.
 The five-row checkpoint schedule gave a qualified 1.270× prepared-table
 gain over sparse Horner on 12,288 outputs, with 9.94 MB retained. A three-row
 variant gave a qualified 1.143× gain with 6.29 MB retained. Their one-scalar
