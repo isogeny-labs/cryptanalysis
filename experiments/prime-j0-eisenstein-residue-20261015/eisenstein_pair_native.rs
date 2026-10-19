@@ -122,7 +122,8 @@ impl F {
         let mask = (BigUint::one() << 129) - BigUint::one();
         let coordinate = |word: BigUint| -> BigInt {
             let negative = (&word >> 128) == BigUint::one();
-            let mag = word & ((BigUint::one() << 128) - BigUint::one());
+            let mag: BigUint = word & ((BigUint::one() << 128) - BigUint::one());
+            assert!(!(negative && mag.is_zero()), "negative zero encoding");
             let result = BigInt::from(mag);
             if negative { -result } else { result }
         };
@@ -223,4 +224,23 @@ fn main() {
         assert!(output.matches_affine(&expected_x, &expected_y, &ctx));
     }
     println!("scheme=eisenstein_pair_bigint reducer={} count={count} online_ms={online_ms:.6} verified=1 packed_x_bytes=33",args[3]);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::F;
+
+    #[test]
+    fn unpack33_rejects_negative_zero_in_lower_coordinate() {
+        let mut packed = [0u8; 33];
+        packed[16] = 1;
+        assert!(std::panic::catch_unwind(|| F::unpack33(&packed)).is_err());
+    }
+
+    #[test]
+    fn unpack33_rejects_negative_zero_in_upper_coordinate() {
+        let mut packed = [0u8; 33];
+        packed[32] = 2;
+        assert!(std::panic::catch_unwind(|| F::unpack33(&packed)).is_err());
+    }
 }
