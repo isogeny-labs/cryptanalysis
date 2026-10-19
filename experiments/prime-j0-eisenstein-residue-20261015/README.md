@@ -433,3 +433,9 @@ summaries.
 | `792dca682b8d4aa799e4745fb7dd1ce9` | [archive](792dca682b8d4aa799e4745fb7dd1ce9.tar.gz) | 197 |
 | `c325c7ff36a74f0c8cd85db3024432f8` | [archive](c325c7ff36a74f0c8cd85db3024432f8.tar.gz) | 197 |
 | `e0d10d9a14e4406684212690eb680518` | [archive](cache10-tier1-raw.tar.gz) | 197 |
+
+The independent [retained-panel ledger audit](AUDIT_COVERAGE_2026-10-19.md)
+recomputes paired ratios and checks declared A/A bounds across the supported
+raw panels. It records exact supported and unsupported archive inventories
+and the A/A failures found; it does not replace each panel's specialized
+source, fixture, host, or bootstrap audit.
