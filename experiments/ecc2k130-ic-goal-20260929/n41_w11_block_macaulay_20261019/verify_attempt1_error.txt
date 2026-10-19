@@ -1,0 +1,3 @@
+The first read-only verifier failed at its block-status assertion because
+Python parsed `reject == pair != positive_pair` as a chained comparison.
+The corrected verifier parenthesizes `(pair != positive_pair)` explicitly.
