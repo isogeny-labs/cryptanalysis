@@ -382,4 +382,6 @@ preserve the exact run limits and figure sources.
 The [hybrid reduction screen](HYBRID_TREE.md) moves the final one or two
 affine tree layers to XYZZ joins and batch-normalizes outputs. Both variants
 replayed 12,288 points with the same norm-110557 table; their diagnostics
-were close to the all-affine path and are retained as stage evidence.
+were close to the all-affine path and are retained as stage evidence. The
+[source-linked report and phase-cost graph](HYBRID_TREE_REPORT_2026-10-19.md)
+keep their timing limits and source provenance explicit.

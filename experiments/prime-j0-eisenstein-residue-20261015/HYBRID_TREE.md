@@ -9,3 +9,5 @@ The [hash-guarded overlay](native_alt_hybrid_overlay.py) adds both paths to the 
 | Timed interval | 62.978376 ms | 60.953218 ms | 60.181416 ms |
 
 The hybrid diagnostics are close to the earlier all-affine value and to the observed Tier 1 noise. They establish correctness and the cost shape, not a qualified ranking. The three-level variant removes only the final affine layer and adds XYZZ pair joining plus final batch normalization; the two-level variant moves two final layers to XYZZ. Neither diagnostic points to a large reduction in group-operation cost.
+
+The [dated source-linked report](HYBRID_TREE_REPORT_2026-10-19.md) adds the tree diagram, phase-cost graphs, and [PDF](HYBRID_TREE_REPORT_2026-10-19.pdf); figure source and SVGs are in [`hybrid_tree_report_2026-10-19.py`](hybrid_tree_report_2026-10-19.py) and [`hybrid-tree-figures/`](hybrid-tree-figures/).
