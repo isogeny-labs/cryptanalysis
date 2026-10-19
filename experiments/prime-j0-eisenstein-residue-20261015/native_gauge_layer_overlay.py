@@ -20,7 +20,7 @@ def main(root: Path) -> None:
     end = w.index("fn affine_layer_reduce(", begin)
     leaf = w[begin:end]
     leaf = leaf.replace("split_prime_affine_leaves", "split_prime_gauge_affine_leaves")
-    leaf = leaf.replace("-> [Option<U256Affine>; SPLIT_PRIME_STEPS+1]", 
+    leaf = leaf.replace("-> [Option<U256Affine>; SPLIT_PRIME_STEPS+1]",
                         "-> [Vec<Option<U256Affine>>; 3]")
     leaf = leaf.replace("let mut leaves = [None; SPLIT_PRIME_STEPS+1];",
                         "let mut leaves: [Vec<Option<U256Affine>>;3] = std::array::from_fn(|_| Vec::new());")
