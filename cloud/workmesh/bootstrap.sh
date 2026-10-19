@@ -644,6 +644,18 @@ conductor_api() {
   else conductor "$@"; fi
 }
 
+validate_remote_conductor_endpoint() {
+  case "$1" in
+    https://?*) ;;
+    *)
+      # Match the whole loopback authority. A prefix/glob would also accept
+      # URL userinfo such as http://localhost:80@attacker.example.
+      if [[ "$1" =~ ^http://(localhost|127\.0\.0\.1|\[::1\])(:[0-9]{1,5})?/?$ ]]; then return 0; fi
+      die 'remote Conductor endpoints must use HTTPS; HTTP is allowed only on loopback'
+      ;;
+  esac
+}
+
 write_mcp_launcher() {
   local program=$BIN_DIR/conductor-mcp real=$TOOLS_DIR/conductor-mcp.real proxy=$CONDUCTOR_HTTP_PROXY
   [ -x "$program" ] || return 0
@@ -910,6 +922,7 @@ start_conductor() {
   have conductor || die 'Conductor is not installed'
   if [ "$CONDUCTOR_MODE" = client ]; then
     [ -n "${CONDUCTOR_ENDPOINT:-}" ] || die 'client mode requires CONDUCTOR_ENDPOINT'
+    validate_remote_conductor_endpoint "$CONDUCTOR_ENDPOINT"
     export CONDUCTOR_ENDPOINT
     # Login via an injected token or existing saved CLI credentials. Avoid --token.
     conductor_api status >/dev/null || die 'Conductor client cannot reach/authenticate to the leader; run login or inject CONDUCTOR_TOKEN_FILE'
@@ -946,6 +959,7 @@ PY
     # Peer CA is also the API trust root; no TLS verification bypass.
     export CONDUCTOR_CA_CERT=$CONDUCTOR_PEER_CA
     CONDUCTOR_ENDPOINT=${CONDUCTOR_ENDPOINT:-https://$WB_NODE_NAME:$CONDUCTOR_PORT}
+    validate_remote_conductor_endpoint "$CONDUCTOR_ENDPOINT"
     export CONDUCTOR_ENDPOINT
     conductor_api status >/dev/null || die 'peer started; bootstrap its project/login with existing organization credentials before integrating tools'
     conductor_api login --endpoint "$CONDUCTOR_ENDPOINT" --project "$CONDUCTOR_PROJECT"

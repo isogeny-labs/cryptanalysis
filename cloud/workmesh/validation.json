@@ -6,16 +6,20 @@
       "exit_code": 0
     },
     {
-      "check": "ShellCheck -S warning for all shell files",
+      "check": "Focused Conductor endpoint security tests",
       "exit_code": 0
     },
     {
-      "check": "Complete 19-test suite at the repository integration path",
+      "check": "Complete 22-test suite at the repository integration path",
       "exit_code": 0
+    },
+    {
+      "check": "ShellCheck -S warning for all shell files",
+      "status": "pending CI; shellcheck is unavailable locally"
     }
   ],
-  "behavioral_tests_passed": 19,
-  "bootstrap_sha256": "8ccacba6008478ea8b523773b64f8800ce62b77bbf4eefba51f446d5c5aedd24",
+  "behavioral_tests_passed": 22,
+  "bootstrap_sha256": "26b45a10c96c1e245e4365e33499674e0aa3201b14ddffc2765b9c488d97d21c",
   "limits": [
     "Local behavior uses temporary state, fake vendor CLIs, real processes and loopback HTTP",
     "No full cloud image provisioning or deployment",

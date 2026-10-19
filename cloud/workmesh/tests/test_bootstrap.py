@@ -194,6 +194,37 @@ with open({str(log)!r}, 'a') as f:
                          ["claude", "codex", "cursor", "opencode"])
         self.assertNotIn(token.read_text(), log.read_text() + result.stdout + result.stderr)
 
+    def test_remote_conductor_rejects_plain_http_before_authentication(self):
+        log = self.base / "conductor.jsonl"
+        self.vendor("conductor", f"open({str(log)!r},'a').write('called\\n')\\n")
+        self.env.update(CONDUCTOR_MODE="client", CONDUCTOR_ENDPOINT="http://leader.example:18081",
+                        CONDUCTOR_TOKEN="SYNTHETIC-CONDUCTOR-TOKEN")
+        result = self.call("up", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("remote Conductor endpoints must use HTTPS", result.stderr)
+        self.assertFalse(log.exists(), "credentials must not be sent before endpoint validation")
+
+    def test_conductor_client_allows_loopback_http(self):
+        log = self.base / "conductor.jsonl"
+        self.vendor("conductor", f"""with open({str(log)!r}, 'a') as f:
+ f.write('called\\n')
+""")
+        self.env.update(CONDUCTOR_MODE="client", CONDUCTOR_ENDPOINT="http://127.0.0.1:18081")
+        self.call("up")
+        self.assertIn("called", log.read_text())
+
+    def test_loopback_http_userinfo_cannot_bypass_tls_guard(self):
+        log = self.base / "conductor.jsonl"
+        self.vendor("conductor", f"""with open({str(log)!r}, 'a') as f:
+ f.write('called\\n')
+""")
+        self.env.update(CONDUCTOR_MODE="client", CONDUCTOR_ENDPOINT="http://localhost:18081@leader.example",
+                        CONDUCTOR_TOKEN="SYNTHETIC-CONDUCTOR-TOKEN")
+        result = self.call("up", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("CONDUCTOR_ENDPOINT must not contain credentials", result.stderr)
+        self.assertFalse(log.exists(), "credentials must not be sent to a userinfo-parsed remote host")
+
     def test_gateway_keeps_secret_reference_and_scoped_proxy(self):
         token = self.base / "gateway token"
         token.write_text("SYNTHETIC-GATEWAY-TOKEN")
