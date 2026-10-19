@@ -24,6 +24,7 @@ import urllib.request
 import uuid
 
 CGROUP_ROOT = Path("/sys/fs/cgroup")
+WORKER_LOCK_PATH = Path("/run/lock/cryptanalysis-isolated-bench.lock")
 
 
 def cpu_set(value):
@@ -48,6 +49,17 @@ def cpu_set(value):
 
 def format_set(values):
     return ",".join(str(x) for x in sorted(values))
+
+
+def execution_cpu_set(isolation):
+    """Return the allowed execution CPUs; legacy manifests stay single-CPU."""
+    anchor = isolation.get("execution_cpu")
+    values = isolation.get("execution_cpus")
+    if values is None:
+        return {anchor} if isinstance(anchor, int) else set()
+    if not isinstance(values, str):
+        raise ValueError("execution_cpus must be a CPU list string")
+    return cpu_set(values)
 
 
 def read(path):
@@ -88,6 +100,9 @@ def require_manifest(manifest):
     run_cpu = isolation.get("execution_cpu")
     if not isinstance(run_cpu, int) or run_cpu not in cpus:
         raise ValueError("execution_cpu must be one declared CPU")
+    run_cpus = execution_cpu_set(isolation)
+    if not run_cpus or not run_cpus <= cpus or run_cpu not in run_cpus:
+        raise ValueError("execution_cpus must be a nonempty subset of cpus containing execution_cpu")
     cgroup = None
     if tier == "tier0_host":
         cgroup = Path(isolation["cgroup"])
@@ -132,6 +147,12 @@ def require_manifest(manifest):
                 raise ValueError("command must begin with an executable absolute file: " + argv[0])
             if binary.name == "sage" and binary != workdir / "sage":
                 raise ValueError("Sage commands must use this repository's absolute ./sage launcher")
+        if "expected_fields" in case and not isinstance(case["expected_fields"], dict):
+            raise ValueError("expected_fields must be an object")
+        if "expected_result" in case and not isinstance(case["expected_result"], (str, int)):
+            raise ValueError("expected_result must be a string or integer")
+        if "expected_result" in case and not manifest.get("result_field"):
+            raise ValueError("result_field is required when expected_result is present")
     if not isinstance(manifest.get("measurement_boundary"), str) or not manifest["measurement_boundary"]:
         raise ValueError("measurement_boundary must describe the benchmark's internal timer")
     if not isinstance(manifest.get("pair_fields"), list) or not manifest["pair_fields"]:
@@ -268,6 +289,7 @@ def preflight_tier1(manifest):
     evidence["timestamp_ns"] = time.time_ns()
     evidence["measurement_tier"] = "tier1_instance"
     evidence["allocation"] = manifest["allocation"]
+    evidence["execution_cpus"] = sorted(execution_cpu_set(manifest["isolation"]))
     evidence["observed_cgroup"] = str(tier1_cgroup()) if sys.platform == "linux" else None
     evidence["cpu_model"] = next((line.split(":", 1)[1].strip() for line in
                                   (read("/proc/cpuinfo") or "").splitlines()
@@ -287,8 +309,9 @@ def preflight_tier1(manifest):
                 problems.append("container effective cpuset invalid: " + effective)
             else:
                 evidence["container_effective_cpus"] = sorted(allowed)
-                if manifest["isolation"]["execution_cpu"] not in allowed:
-                    problems.append("execution CPU is outside container effective cpuset")
+                run_cpus = execution_cpu_set(manifest["isolation"])
+                if not run_cpus <= allowed:
+                    problems.append("execution CPUs are outside container effective cpuset")
         sampled = tier1_counters(cpus)
         evidence["counter_probe"] = sampled
         if sampled is None or not all(cpu in sampled["per_cpu"] for cpu in cpus):
@@ -315,6 +338,7 @@ def preflight(manifest):
                                    (read("/proc/cpuinfo") or "").splitlines()
                                    if line.startswith(("model name", "Hardware", "Processor"))), None),
                 "cpus": sorted(cpus), "execution_cpu": manifest["isolation"]["execution_cpu"],
+                "execution_cpus": sorted(execution_cpu_set(manifest["isolation"])),
                 "mem_nodes": sorted(nodes),
                 "cgroup": str(cgroup), "topology": {}, "frequency": {},
                 "irq_affinity_overlap": []}
@@ -563,6 +587,20 @@ def output_fields(stdout):
     return {}
 
 
+def expected_output_issues(row, case, manifest):
+    """Check one command against its frozen known-answer fields, if supplied."""
+    fields = row.get("fields", {})
+    issues = []
+    for key, expected in case.get("expected_fields", {}).items():
+        if fields.get(key) != str(expected):
+            issues.append("expected field mismatch: " + str(key))
+    if "expected_result" in case:
+        result_field = manifest["result_field"]
+        if fields.get(result_field) != str(case["expected_result"]):
+            issues.append("expected result mismatch: " + result_field)
+    return issues
+
+
 def benchmark_env():
     env = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C", "LC_ALL": "C",
            "TZ": "UTC", "PYTHONHASHSEED": "0", "OMP_NUM_THREADS": "1",
@@ -587,13 +625,14 @@ def one_run(argv, manifest, cpus, nodes, cgroup, folder, serial):
     usage_before = resource.getrusage(resource.RUSAGE_CHILDREN)
     begin = time.monotonic_ns()
     run_cpu = manifest["isolation"]["execution_cpu"]
+    run_cpus = execution_cpu_set(manifest["isolation"])
     launcher = ([shutil.which("numactl"), "--membind=" + format_set(nodes),
-                 "--physcpubind=" + str(run_cpu), "--"] + argv) if tier == "tier0_host" else argv
+                 "--physcpubind=" + format_set(run_cpus), "--"] + argv) if tier == "tier0_host" else argv
     def child_setup():
         if tier == "tier0_host":
             with (cgroup / "cgroup.procs").open("w") as stream:
                 stream.write(str(os.getpid()))
-        os.sched_setaffinity(0, {run_cpu})
+        os.sched_setaffinity(0, run_cpus)
     try:
         proc = subprocess.Popen(launcher, cwd=manifest["workdir"], env=benchmark_env(),
                                 stdout=subprocess.PIPE,
@@ -704,6 +743,10 @@ def execute(manifest, output):
                                   output, len(rows) + 1)
                     row.update({"case": case["id"], "repeat": repeat, "variant": variant,
                                 "measurement_tier": tier})
+                    expected_issues = expected_output_issues(row, case, manifest)
+                    if expected_issues:
+                        row["status"] = "invalid"
+                        row["issues"].extend(expected_issues)
                     pair[variant] = row
                     rows.append(row)
                     ledger.write(json.dumps(row, sort_keys=True) + "\n")
@@ -781,7 +824,7 @@ def only_worker(queue_root):
     with contextlib.ExitStack() as stack:
         lock_paths = [queue_root / "worker.lock"]
         if sys.platform == "linux":
-            lock_paths.append(Path("/run/lock/cryptanalysis-isolated-bench.lock"))
+            lock_paths.append(WORKER_LOCK_PATH)
         for path in lock_paths:
             lock = stack.enter_context(path.open("a+"))
             try:

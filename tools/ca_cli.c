@@ -8,7 +8,7 @@
  *   ca gen   --group zp|ec --p P [--a A --b B] [--order N] [--x X] [--seed S]
  *   ca gpu-info
  *   ca volcano --p P --a A --b B [--order N] [--ell 2|3] [--seed S] [--trials T]
- *            [--per-level L] [--controls C] [--radius R] [--threads T]
+ *            [--per-level L] [--controls C] [--radius R] [--threads T] [--jobs J]
  *            [--no-negation] [--automorphisms] [--diagram FILE] [--trials-out FILE]
  *            one ECDLP instance carried by Velu isogenies to every curve of
  *            the l-volcano; rho on each; min / mean / max per curve and level
@@ -38,7 +38,7 @@
  *            order --a A --p P | primitive-root --p P | sieve --bound B
  *            mont --p P --a A --b B
  *   ca group <op> --group zp|ec --p P [--a A --b B] [--order N] ... :
- *            exp --elem X --k K | div --a A --b B | order --elem X
+ *            exp --elem X --k K | div --lhs A --rhs B (zp: --a A --b B) | order --elem X
  *            generator [--seed S] | random [--seed S] | lift-x --x X
  *
  *   ca coord-job  --group zp|ec --p P [--a A --b B] --order N --g G --h H
@@ -77,10 +77,12 @@
 #include "ca_device.cuh"
 #include "ca_internal.h" /* ca_now: the CLI already links the static library */
 
+#include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdatomic.h>
 #include <time.h>
 #include <inttypes.h>
 #include <math.h>
@@ -117,14 +119,116 @@ static int flag(const char *name)
     return 0;
 }
 
+/* A whole 64-bit unsigned integer and nothing else: strtoull alone accepts
+ * "12abc", a leading minus sign (wrapping it) and values beyond 2^64 - 1
+ * (saturating them), all of which would turn a typo into a wrong instance. */
+static int parse_u64(const char *v, uint64_t *out)
+{
+    if (!v || !*v) return 0;
+    while (*v == ' ' || *v == '\t') v++;
+    if (*v == '-' || *v == '+') return 0;
+    char *end = NULL;
+    errno = 0;
+    unsigned long long u = strtoull(v, &end, 0);
+    if (end == v || *end != '\0' || errno == ERANGE) return 0;
+    *out = (uint64_t)u;
+    return 1;
+}
+
 static uint64_t opt_u64(const char *name, uint64_t def)
 {
     const char *v = opt(name);
     if (!v) return def;
-    char *end = NULL;
-    unsigned long long u = strtoull(v, &end, 0);
-    if (end == v || *end != '\0') die("option value is not an integer");
-    return (uint64_t)u;
+    uint64_t u;
+    if (!parse_u64(v, &u)) {
+        char msg[96];
+        snprintf(msg, sizeof(msg), "%s is not an unsigned 64-bit integer", name);
+        die(msg);
+    }
+    return u;
+}
+
+/* The narrower parameter types, checked rather than cast: a silent
+ * truncation turns --ell 4294967298 into --ell 2 and --k 4294967298 into a
+ * square root, both of which run and answer a different question. */
+static uint64_t opt_u64_max(const char *name, uint64_t def, uint64_t max)
+{
+    uint64_t u = opt_u64(name, def);
+    if (u > max) {
+        char msg[128];
+        snprintf(msg, sizeof(msg), "%s must be at most %" PRIu64, name, max);
+        die(msg);
+    }
+    return u;
+}
+
+static uint32_t opt_u32(const char *name, uint32_t def)
+{
+    return (uint32_t)opt_u64_max(name, def, UINT32_MAX);
+}
+
+static int bitlen_u64(uint64_t n)
+{
+    int l = 0;
+    while (n) {
+        n >>= 1;
+        l++;
+    }
+    return l;
+}
+
+/* --dp-bits: absent means the solver's own choice (-1).  Given, it must
+ * leave distinguished points reachable: with 2^dp above the group order no
+ * walk ever reports one, and a solver without an operation limit (precomp's
+ * table build, volcano's rho) then never returns. */
+static int32_t opt_dp_bits(uint64_t order)
+{
+    if (!opt("--dp-bits")) return -1;
+    uint64_t dp = opt_u64_max("--dp-bits", 0, 62);
+    if (order && (int)dp > bitlen_u64(order) - 2) {
+        char msg[128];
+        snprintf(msg, sizeof(msg), "--dp-bits must be at most %d for a group of order %" PRIu64,
+                 bitlen_u64(order) - 2 < 0 ? 0 : bitlen_u64(order) - 2, order);
+        die(msg);
+    }
+    return (int32_t)dp;
+}
+
+/* A JSON string literal, escaped, for the values a caller chose (a path, a
+ * node name): a quote or a backslash in them must not break the one object
+ * this program promises on stdout. */
+static void print_json_str(const char *str)
+{
+    putchar('"');
+    for (const unsigned char *c = (const unsigned char *)str; *c; c++) {
+        if (*c == '"' || *c == '\\')
+            printf("\\%c", *c);
+        else if (*c < 0x20)
+            printf("\\u%04x", *c);
+        else
+            putchar(*c);
+    }
+    putchar('"');
+}
+
+/* fclose after a write, with the write's own errors: a full disk is reported
+ * as an error, not as a file "written". */
+static int close_written(FILE *f)
+{
+    int bad = ferror(f);
+    return fclose(f) == 0 && !bad;
+}
+
+/* fgets may fill cap - 1 bytes without telling whether that was the whole
+ * line or a truncated prefix.  Peek one byte to distinguish an exact-size
+ * final line (or newline) from a genuinely overlong value. */
+static int line_overflow(FILE *f, const char *buf, size_t cap)
+{
+    size_t len = strlen(buf);
+    if (len < cap - 1 || (len && buf[len - 1] == '\n')) return 0;
+    int next = fgetc(f);
+    if (next == '\n' || next == EOF) return ferror(f) ? -1 : 0;
+    return 1;
 }
 
 /* strtod, not atof: atof cannot report a malformed value (cert-err34-c). */
@@ -133,8 +237,13 @@ static double opt_f(const char *name, double def)
     const char *v = opt(name);
     if (!v) return def;
     char *end = NULL;
+    errno = 0;
     double d = strtod(v, &end);
-    if (end == v || *end != '\0') die("option value is not a number");
+    if (end == v || *end != '\0' || errno == ERANGE || !isfinite(d)) {
+        char msg[96];
+        snprintf(msg, sizeof(msg), "%s is not a finite number", name);
+        die(msg);
+    }
     return d;
 }
 
@@ -144,10 +253,15 @@ static _Noreturn void die(const char *msg)
     exit(2);
 }
 
+/* A library refusal.  CA_ERR_INVALID is the library rejecting what the
+ * command line described (a composite modulus, a scalar out of range, an
+ * empty interval): a malformed invocation, exit 2, with nothing on stdout.
+ * Every other status is an answer about a well-posed question, exit 1. */
 static _Noreturn void die_status(ca_status rc)
 {
     const char *m = ca_last_error();
     fprintf(stderr, "error: %s%s%s\n", ca_status_string(rc), m && *m ? ": " : "", m ? m : "");
+    if (rc == CA_ERR_INVALID) exit(2);
     printf("{\"status\":\"%s\"}\n", ca_status_string(rc));
     exit(1);
 }
@@ -164,8 +278,8 @@ static _Noreturn void usage(void)
         "        --check [--kat F] checks the selected backend (KAT: cuda only)\n"
         "  version | factor N | prime N | ec-order --p P --a A --b B | gpu-info\n"
         "  volcano --p P --a A --b B [--order N] [--ell 2|3] [--seed S] [--trials T]\n"
-        "        [--per-level L] [--controls C] [--automorphisms] [--diagram FILE]\n"
-        "        [--trials-out FILE]\n"
+        "        [--per-level L] [--controls C] [--jobs J] [--automorphisms]\n"
+        "        [--diagram FILE] [--trials-out FILE]\n"
         "  gen   --group zp|ec --p P [--a A --b B] [--order N] [--x X] [--seed S]\n"
         "  solve --alg bsgs|rho|kangaroo|grumpy|precomp|glv|dlog|gpu-rho --group zp|ec --p P [--a "
         "A "
@@ -210,14 +324,19 @@ static void parse_elem(const ca_group *g, const char *s, ca_elem *e)
     uint64_t w[4] = {0, 0, 0, 0};
     if (!s) die("missing element");
     if (g->kind == CA_GROUP_ZP) {
-        w[0] = strtoull(s, NULL, 0);
+        if (!parse_u64(s, &w[0])) die("Z_p element must be an unsigned integer");
     } else if (strcmp(s, "inf") == 0 || strcmp(s, "O") == 0) {
         w[2] = 1;
     } else {
-        char *end;
-        w[0] = strtoull(s, &end, 0);
-        if (*end != ',') die("EC element must be x,y or inf");
-        w[1] = strtoull(end + 1, NULL, 0);
+        const char *comma = strchr(s, ',');
+        if (!comma) die("EC element must be x,y or inf");
+        char xs[48];
+        size_t xl = (size_t)(comma - s);
+        if (xl == 0 || xl >= sizeof(xs)) die("EC element must be x,y or inf");
+        memcpy(xs, s, xl);
+        xs[xl] = '\0';
+        if (!parse_u64(xs, &w[0]) || !parse_u64(comma + 1, &w[1]))
+            die("EC element must be x,y or inf");
     }
     if (!ca_group_encode(g, e, w)) die("element is not in the group");
 }
@@ -261,7 +380,9 @@ static int cmd_gen(void)
     if (rc != CA_OK) die_status(rc);
     uint64_t x = opt("--x") ? opt_u64("--x", 0) : 0;
     if (!opt("--x"))
-        ca_group_random_power(&g, &h, &gen, seed ? seed + 1 : 0, &x);
+        /* seed + 1, as before, except that 2^64 - 1 must not wrap to 0, which
+         * means "draw one from the OS" and makes the instance unrepeatable. */
+        ca_group_random_power(&g, &h, &gen, seed ? (seed + 1 ? seed + 1 : 1) : 0, &x);
     else
         ca_group_mul(&g, &h, &gen, x, NULL);
     printf("{\"status\":\"ok\",\"group\":\"%s\",\"p\":%" PRIu64 ",",
@@ -288,17 +409,17 @@ static int cmd_solve(const char *selected_alg)
     uint64_t lo = opt_u64("--lo", 0), hi = opt_u64("--hi", 0);
     ca_dlog_params dp;
     ca_dlog_params_default(&dp);
-    dp.rho.threads = (uint32_t)opt_u64("--threads", 1);
+    dp.rho.threads = opt_u32("--threads", 1);
     dp.rho.seed = dp.kangaroo.seed = opt_u64("--seed", 0);
-    dp.rho.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-    dp.rho.r = (uint32_t)opt_u64("--r", 0);
-    dp.rho.walks_per_thread = (uint32_t)opt_u64("--walks", 0);
+    dp.rho.dp_bits = opt_dp_bits(g.order);
+    dp.rho.r = opt_u32("--r", 0);
+    dp.rho.walks_per_thread = opt_u32("--walks", 0);
     dp.rho.negation_map = !flag("--no-negation");
     dp.rho.max_ops = dp.bsgs.max_ops = dp.kangaroo.max_ops = dp.grumpy.max_ops =
         opt_u64("--max-ops", 0);
     dp.bsgs.table_size = opt_u64("--table", 0);
-    dp.kangaroo.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-    dp.kangaroo.herd_size = (uint32_t)opt_u64("--herd", 0);
+    dp.kangaroo.dp_bits = dp.rho.dp_bits;
+    dp.kangaroo.herd_size = opt_u32("--herd", 0);
     dp.grumpy.m = opt_u64("--m", 0);
     dp.grumpy.alpha = opt_f("--alpha", 0.7);
     const char *solver = opt("--solver");
@@ -333,12 +454,12 @@ static int cmd_solve(const char *selected_alg)
             else
                 die("--backend must be auto, cuda or emulate");
         }
-        gp.device = (int32_t)opt_u64("--device", 0);
-        gp.threads_per_block = (uint32_t)opt_u64("--tpb", 0);
-        gp.blocks = (uint32_t)opt_u64("--blocks", 0);
-        gp.steps_per_launch = (uint32_t)opt_u64("--steps", 0);
-        gp.r = (uint32_t)opt_u64("--r", 0);
-        gp.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
+        gp.device = (int32_t)opt_u64_max("--device", 0, INT32_MAX);
+        gp.threads_per_block = opt_u32("--tpb", 0);
+        gp.blocks = opt_u32("--blocks", 0);
+        gp.steps_per_launch = opt_u32("--steps", 0);
+        gp.r = opt_u32("--r", 0);
+        gp.dp_bits = opt_dp_bits(g.order);
         gp.negation_map = !flag("--no-negation");
         gp.seed = opt_u64("--seed", 0);
         gp.max_ops = opt_u64("--max-ops", 0);
@@ -358,6 +479,10 @@ static int cmd_solve(const char *selected_alg)
     }
     if (!strcmp(alg, "glv")) {
         if (g.kind != CA_GROUP_EC) die("--alg glv needs --group ec");
+        /* ca_curve_solve takes a seed and nothing else; an option it would
+         * silently ignore is refused rather than reported as honoured. */
+        if (opt("--max-ops") || opt("--threads"))
+            die("--alg glv takes no --max-ops or --threads (ca_curve_solve has neither)");
         ca_group cg;
         ca_curve_info info;
         rc = ca_curve_group(&cg, g.p, g.a, g.b, g.order, &info);
@@ -386,12 +511,12 @@ static int cmd_solve(const char *selected_alg)
         ca_precomp_params pp;
         ca_precomp_params_default(&pp);
         pp.seed = opt_u64("--seed", 0);
-        pp.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-        pp.r = (uint32_t)opt_u64("--r", 0);
+        pp.dp_bits = opt_dp_bits(g.order);
+        pp.r = opt_u32("--r", 0);
         pp.table_size = opt_u64("--table", 0);
         pp.coverage = opt_f("--coverage", 0);
-        pp.threads = (uint32_t)opt_u64("--threads", 1);
-        pp.walks = (uint32_t)opt_u64("--walks", 0);
+        pp.threads = opt_u32("--threads", 1);
+        pp.walks = opt_u32("--walks", 0);
         pp.early_abort = flag("--early-abort") ? 1 : (flag("--no-early-abort") ? 0 : -1);
         pp.max_precomp_ops = opt_u64("--max-precomp-ops", 0);
         pp.max_online_ops = opt_u64("--max-online-ops", 0);
@@ -438,6 +563,7 @@ static int cmd_solve(const char *selected_alg)
         rc = ca_pohlig_hellman(&g, &base, &target, &dp, &x, &st);
     else
         die("unknown --alg");
+    if (rc == CA_ERR_INVALID) die_status(rc);
     if (rc != CA_OK) {
         printf("{\"status\":\"%s\",\"alg\":\"%s\",", ca_status_string(rc), alg);
         print_stats(&st);
@@ -551,10 +677,13 @@ static int cmd_ic(void)
     ca_ic_params pr;
     ca_ic_params_default(&pr);
     const char *m = opt("--method");
-    if (m && !strcmp(m, "rexp")) pr.method = CA_IC_RANDOM_EXPONENT;
-    pr.factor_base_bound = (uint32_t)opt_u64("--B", 0);
-    pr.sieve_radius = (uint32_t)opt_u64("--C", 0);
-    pr.threads = (uint32_t)opt_u64("--threads", 1);
+    if (m && !strcmp(m, "rexp"))
+        pr.method = CA_IC_RANDOM_EXPONENT;
+    else if (m && strcmp(m, "lsieve"))
+        die("--method must be lsieve or rexp");
+    pr.factor_base_bound = opt_u32("--B", 0);
+    pr.sieve_radius = opt_u32("--C", 0);
+    pr.threads = opt_u32("--threads", 1);
     pr.seed = opt_u64("--seed", 0);
     pr.verbose = flag("--verbose") || flag("-v");
     uint64_t x = 0;
@@ -615,7 +744,7 @@ static int cmd_num(void)
         return 0;
     }
     if (!strcmp(op, "iroot")) {
-        unsigned k = (unsigned)opt_u64("--k", 2);
+        unsigned k = (unsigned)opt_u64_max("--k", 2, 64);
         if (k == 0) die("--k must be positive");
         printf("{\"result\":\"%" PRIu64 "\"}\n", ca_iroot(opt_u64("--n", 0), k));
         return 0;
@@ -685,7 +814,7 @@ static int cmd_num(void)
         uint64_t bound = opt_u64("--bound", 100);
         /* The table is sized from the bound, so an absurd bound becomes an
          * absurd allocation.  Refusing with a message beats a failing calloc. */
-        if (bound > (1ULL << 32)) die("--bound above 2^32 needs a segmented sieve");
+        if (bound >= (1ULL << 32)) die("--bound at or above 2^32 needs a segmented sieve");
         /* pi(x) < 1.3 x / ln x for x >= 17, and the +16 covers the small cases
          * where that bound has not kicked in yet. */
         size_t cap = (size_t)(bound / 2) + 16;
@@ -753,9 +882,19 @@ static int cmd_group(void)
         return 0;
     }
     if (!strcmp(op, "div")) {
+        /* --lhs / --rhs: on a curve --a and --b are the coefficients, so
+         * the operands need names of their own.  --a/--b still work for
+         * Z_p^*, where the old form was usable. */
         ca_elem a, b, r;
-        parse_elem(&g, opt("--a"), &a);
-        parse_elem(&g, opt("--b"), &b);
+        const char *lhs = opt("--lhs"), *rhs = opt("--rhs");
+        if (g.kind == CA_GROUP_ZP) {
+            if (!lhs) lhs = opt("--a");
+            if (!rhs) rhs = opt("--b");
+        } else if (!lhs || !rhs) {
+            die("group div on a curve takes --lhs X --rhs Y (--a/--b are the coefficients)");
+        }
+        parse_elem(&g, lhs, &a);
+        parse_elem(&g, rhs, &b);
         ca_group_div(&g, &r, &a, &b);
         printf("{\"result\":");
         print_elem(&g, &r);
@@ -826,8 +965,12 @@ static const char *coord_token(void)
         FILE *f = fopen(path, "r");
         if (!f) die("cannot read --token-file");
         const char *got = fgets(buf, sizeof(buf), f);
+        int overflow = got ? line_overflow(f, buf, sizeof(buf)) : 0;
         fclose(f);
         if (!got) die("--token-file is empty");
+        if (overflow < 0) die("cannot read --token-file");
+        if (overflow)
+            die("--token-file holds a token longer than 255 bytes");
         buf[strcspn(buf, "\r\n")] = 0;
         if (!buf[0]) die("--token-file is empty");
         return buf;
@@ -886,7 +1029,10 @@ static void coord_print_job(const ca_coord_job *job, const ca_coord_ctx *ctx, co
            ",\"expected_steps\":%.6e,\"expected_dps\":%.6e",
            job->id, job->order, (int)job->dp_bits, job->r, (int)job->negation_map, job->unit_size,
            ca_coord_expected_steps(ctx), ca_coord_expected_dps(ctx));
-    if (out) printf(",\"written\":\"%s\"", out);
+    if (out) {
+        printf(",\"written\":");
+        print_json_str(out);
+    }
     printf("}\n");
 }
 
@@ -899,11 +1045,9 @@ static int cmd_coord_job(void)
     parse_elem(&g, opt("--h"), &target);
 
     ca_coord_job job;
-    ca_status rc = ca_coord_job_init(
-        &job, &g, &base, &target,
-        (int32_t)opt_u64("--dp-bits", (uint64_t)-1) == -1 ? -1 : (int32_t)opt_u64("--dp-bits", 0),
-        (uint32_t)opt_u64("--r", 0), flag("--negation"), opt_u64("--unit-size", 0),
-        opt_u64("--seed", 0));
+    ca_status rc =
+        ca_coord_job_init(&job, &g, &base, &target, opt_dp_bits(g.order), opt_u32("--r", 0),
+                          flag("--negation"), opt_u64("--unit-size", 0), opt_u64("--seed", 0));
     if (rc != CA_OK) die_status(rc);
     /* How many hubs the point space is split across.  It goes into the
      * document, so it goes into the id: a fleet cannot half-agree about
@@ -933,8 +1077,7 @@ static int cmd_coord_job(void)
             close(fd);
             die("cannot write --out");
         }
-        fprintf(f, "%s\n", line);
-        fclose(f);
+        if (fprintf(f, "%s\n", line) < 0 || !close_written(f)) die("cannot write --out");
     } else {
         fprintf(stderr, "%s\n", line);
     }
@@ -954,8 +1097,12 @@ static ca_coord_ctx *coord_load(int allow_remote)
         if (!f) die("cannot read --job");
         char line[CA_COORD_LINE_MAX];
         const char *got = fgets(line, sizeof(line), f);
+        int overflow = got ? line_overflow(f, line, sizeof(line)) : 0;
         fclose(f);
         if (!got) die("--job is empty");
+        if (overflow < 0) die("cannot read --job");
+        if (overflow)
+            die("--job line is longer than a job document can be");
         line[strcspn(line, "\r\n")] = 0;
         ca_status rc = ca_coord_job_decode(&job, line);
         if (rc != CA_OK) die_status(rc);
@@ -1248,19 +1395,23 @@ static int cmd_work(void)
         as.rejected += one.rejected;
         as.reconnects += one.reconnects;
     }
-    printf("{\"status\":\"ok\",\"solved\":%s,\"x\":%" PRIu64 ",\"node\":\"%s\",\"lanes\":%" PRIu64
-           ",\"walkers\":%" PRIu64 ",\"steps\":%" PRIu64 ",\"dps\":%" PRIu64
+    printf("{\"status\":\"ok\",\"solved\":%s,\"x\":%" PRIu64 ",\"node\":", have ? "true" : "false",
+           x);
+    print_json_str(node);
+    printf(",\"lanes\":%" PRIu64 ",\"walkers\":%" PRIu64 ",\"steps\":%" PRIu64 ",\"dps\":%" PRIu64
            ",\"seconds\":%.3f,\"received\":%" PRIu64 ",\"sent\":%" PRIu64 ",\"connects\":%" PRIu64
            ",\"flushed\":%s,\"shards\":%u}\n",
-           have ? "true" : "false", x, node, threads, walkers, steps, dps, ca_now() - start,
-           as.received, as.sent, as.connects, flushed ? "true" : "false", shards);
+           threads, walkers, steps, dps, ca_now() - start, as.received, as.sent, as.connects,
+           flushed ? "true" : "false", shards);
     for (size_t i = 0; i < fleet.count; i++) ca_coord_agent_stop(fleet.agent[i]);
     free(fleet.agent);
     for (size_t i = 0; i < nurl; i++) free(urls[i]);
     free(lanes);
     ca_coord_state_free(st);
     ca_coord_ctx_close(ctx);
-    return have ? 0 : 3;
+    /* Stopped without the logarithm (a time limit, a signal): a well-posed
+     * run with no answer yet, exit 1 like every other "none found". */
+    return have ? 0 : 1;
 }
 
 static int cmd_coord_status(void)
@@ -1331,7 +1482,7 @@ static int cmd_curve(void)
  *
  * ca volcano --p P --a A --b B [--order N] [--ell 2|3] [--seed S] [--trials T]
  *            [--per-level L] [--controls C] [--radius R] [--max-vertices M]
- *            [--threads T] [--dp-bits D] [--r R] [--no-negation]
+ *            [--threads T] [--jobs J] [--dp-bits D] [--r R] [--no-negation]
  *            [--diagram FILE] [--trials-out FILE]
  *
  * Counts #E (unless --order), takes n the largest prime factor, draws P of
@@ -1392,6 +1543,52 @@ typedef struct varm {
     uint32_t aut_order; /* > 0: solved by the automorphism-folded rho (ca_curve_solve) */
 } varm;
 
+/* The solves of one `ca volcano` run, handed out trial-major to --jobs
+ * threads.  Every (trial, arm) pair owns distinct slots of ops/secs, and the
+ * seed is a function of (seed, trial) alone, so the numbers do not depend on
+ * how many threads ran them or in what order. */
+typedef struct volcano_pool {
+    varm *arms;
+    size_t na;
+    uint64_t trials, seed, k;
+    const ca_group *gs;
+    const ca_elem *eP, *eQ;
+    ca_rho_params rp;
+    uint64_t *solve_ops; /* exact group-operation counts, trial-major */
+    atomic_uint_fast64_t next;
+    atomic_size_t wrong;
+} volcano_pool;
+
+static uint64_t volcano_trial_seed(uint64_t seed, uint64_t t)
+{
+    return ca_mix64(seed * 0x9E3779B97F4A7C15ULL + t) | 1;
+}
+
+static void *volcano_worker(void *arg)
+{
+    volcano_pool *c = arg;
+    uint64_t total = c->trials * c->na;
+    ca_rho_params rp = c->rp;
+    for (;;) {
+        uint64_t idx = atomic_fetch_add(&c->next, 1);
+        if (idx >= total) break;
+        uint64_t t = idx / c->na;
+        size_t i = (size_t)(idx % c->na);
+        varm *m = &c->arms[i];
+        rp.seed = volcano_trial_seed(c->seed, t);
+        ca_stats st = {0};
+        uint64_t x = 0;
+        ca_status rc = m->aut_order
+                           ? ca_curve_solve(&c->gs[i], &c->eP[i], &c->eQ[i], rp.seed, &x, NULL, &st)
+                           : ca_rho_solve(&c->gs[i], &c->eP[i], &c->eQ[i], &rp, &x, &st);
+        if (rc != CA_OK || x != c->k) atomic_fetch_add(&c->wrong, 1);
+        m->ops[t] = (double)st.group_ops;
+        m->secs[t] = st.seconds;
+        c->solve_ops[idx] = st.group_ops;
+    }
+    return NULL;
+}
+
 static void table_row(const char *name, const char *lv, vstat o, vstat s)
 {
     fprintf(stderr, "%-10s%6s%12.0f%12.0f%12.0f%11.2f\n", name, lv, o.min, o.mean, o.max,
@@ -1402,7 +1599,7 @@ static int cmd_volcano(void)
 {
     uint64_t p = opt_u64("--p", 0), a = opt_u64("--a", 0), b = opt_u64("--b", 0);
     if (!p) die("volcano needs --p P --a A --b B");
-    unsigned ell = (unsigned)opt_u64("--ell", 3);
+    unsigned ell = (unsigned)opt_u64_max("--ell", 3, 3);
     uint64_t seed = opt_u64("--seed", 1), trials = opt_u64("--trials", 20);
     uint64_t per_level = opt_u64("--per-level", 10), controls = opt_u64("--controls", 3);
     uint64_t order = opt_u64("--order", 0);
@@ -1435,10 +1632,9 @@ static int cmd_volcano(void)
     if (n % ell == 0) die("l divides the subgroup order n; use the other --ell");
     if (n < 5) die("the curve has no prime-order subgroup of order >= 5");
 
-    uint32_t radius = (uint32_t)opt_u64("--radius", 2 * depth + 2);
+    uint32_t radius = opt_u32("--radius", 2 * depth + 2);
     ca_volcano vo;
-    rc = ca_volcano_walk(p, a, b, order, ell, radius, (uint32_t)opt_u64("--max-vertices", 20000),
-                         &vo);
+    rc = ca_volcano_walk(p, a, b, order, ell, radius, opt_u32("--max-vertices", 20000), &vo);
     if (rc != CA_OK) die_status(rc);
     for (uint32_t i = 0; i < vo.count; i++) { /* an edge moves at most one level */
         const ca_volcano_vertex *v = &vo.v[i];
@@ -1499,7 +1695,15 @@ static int cmd_volcano(void)
 
     /* Arms: the root, up to per_level curves of each level, the controls. */
     int with_aut = flag("--automorphisms");
-    size_t cap = 2 * (1 + (depth + 1) * per_level) + controls, na = 0;
+    /* There can be at most one base arm per volcano vertex plus each
+     * requested control, and automorphism folding can at most double that.
+     * Size from the graph we actually have: --per-level is only a selection
+     * limit and must not drive an overflowing or needlessly huge allocation. */
+    if (controls > (uint64_t)(SIZE_MAX - (size_t)vo.count))
+        die("--controls is too large for the volcano graph");
+    size_t base_cap = (size_t)vo.count + (size_t)controls;
+    if (base_cap > SIZE_MAX / 2) die("--controls is too large for the volcano graph");
+    size_t cap = 2 * base_cap, na = 0;
     varm *arms = calloc(cap, sizeof(*arms));
     if (!arms) die("out of memory");
     uint32_t *found = calloc(depth + 1, sizeof(*found));
@@ -1561,13 +1765,20 @@ static int cmd_volcano(void)
     /* Rho: trial-major, so every curve sees the same seeds in turn. */
     ca_rho_params rp;
     ca_rho_params_default(&rp);
-    rp.threads = (uint32_t)opt_u64("--threads", 1);
-    rp.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-    rp.r = (uint32_t)opt_u64("--r", 0);
+    rp.threads = opt_u32("--threads", 1);
+    rp.dp_bits = opt_dp_bits(n);
+    rp.r = opt_u32("--r", 0);
     rp.negation_map = !flag("--no-negation");
     ca_group *gs = calloc(na, sizeof(*gs));
     ca_elem *eP = calloc(na, sizeof(*eP)), *eQ = calloc(na, sizeof(*eQ));
     if (!gs || !eP || !eQ) die("out of memory");
+    /* These products size the worker's trial-major buffers and index them as
+     * uint64_t/size_t.  Check before the per-arm calloc calls so neither the
+     * work count nor a later byte-size multiplication can wrap. */
+    if (na == 0 || trials > UINT64_MAX / na ||
+        trials > SIZE_MAX / sizeof(double) || trials * na > SIZE_MAX / sizeof(uint64_t) ||
+        trials * na > SIZE_MAX / sizeof(double))
+        die("--trials is too large for the number of volcano arms");
     for (size_t i = 0; i < na; i++) {
         arms[i].ops = calloc(trials, sizeof(double));
         arms[i].secs = calloc(trials, sizeof(double));
@@ -1585,32 +1796,72 @@ static int cmd_volcano(void)
         tf = fopen(tpath, "w");
         if (!tf) die("cannot open --trials-out");
     }
-    if (tf) fprintf(tf, "arm,vertex,level,trial,seed,ops,seconds\n");
+    /* Solves are independent: every (trial, arm) pair has its own seed, so
+     * running them on several threads changes no number.  --jobs defaults
+     * to the online CPUs when each solve is single-threaded; otherwise the
+     * solver's own threads take the cores.  Per-solve seconds are then
+     * measured under concurrent load; group operations are unaffected. */
+    uint64_t total = trials * na;
+    uint64_t jobs = opt_u64("--jobs", 0);
+    if (!jobs) {
+        long online = rp.threads > 1 ? 1 : sysconf(_SC_NPROCESSORS_ONLN);
+        jobs = online > 0 ? (uint64_t)online : 1;
+    }
+    if (jobs > total) jobs = total;
+    if (jobs > 256) jobs = 256;
     fprintf(stderr,
             "volcano: %" PRIu32 " curves, %" PRIu32 " edges verified, depth %u; rho: %zu "
-            "curves x %" PRIu64 " trials\n",
-            vo.count, verified, depth, na, trials);
-    size_t wrong = 0;
+            "curves x %" PRIu64 " trials on %" PRIu64 " job(s)\n",
+            vo.count, verified, depth, na, trials, jobs);
+    volcano_pool pool;
+    memset(&pool, 0, sizeof(pool));
+    pool.arms = arms;
+    pool.na = na;
+    pool.trials = trials;
+    pool.seed = seed;
+    pool.k = k;
+    pool.gs = gs;
+    pool.eP = eP;
+    pool.eQ = eQ;
+    pool.rp = rp;
+    uint64_t *solve_ops = calloc(total, sizeof(*solve_ops));
+    pool.solve_ops = solve_ops;
+    if (!solve_ops) die("out of memory");
+    atomic_init(&pool.next, 0);
+    atomic_init(&pool.wrong, 0);
     double t0 = ca_now();
-    for (uint64_t t = 0; t < trials; t++) {
-        rp.seed = ca_mix64(seed * 0x9E3779B97F4A7C15ULL + t) | 1;
-        for (size_t i = 0; i < na; i++) {
-            ca_stats st = {0};
-            uint64_t x = 0;
-            rc = arms[i].aut_order ? ca_curve_solve(&gs[i], &eP[i], &eQ[i], rp.seed, &x, NULL, &st)
-                                   : ca_rho_solve(&gs[i], &eP[i], &eQ[i], &rp, &x, &st);
-            if (rc != CA_OK || x != k) wrong++;
-            arms[i].ops[t] = (double)st.group_ops;
-            arms[i].secs[t] = st.seconds;
-            arms[i].n = t + 1;
-            if (tf)
-                fprintf(tf, "%s,%" PRId32 ",%" PRId32 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%.9f\n",
-                        arms[i].label, arms[i].vertex, arms[i].level, t, rp.seed, st.group_ops,
-                        st.seconds);
-        }
+    if (jobs <= 1) {
+        volcano_worker(&pool);
+    } else {
+        pthread_t *tids = calloc(jobs, sizeof(*tids));
+        if (!tids) die("out of memory");
+        uint64_t started = 0;
+        for (uint64_t j = 0; j < jobs; j++)
+            if (pthread_create(&tids[j], NULL, volcano_worker, &pool) == 0)
+                started++;
+            else
+                break;
+        if (!started) volcano_worker(&pool); /* could not spawn: run inline */
+        for (uint64_t j = 0; j < started; j++) pthread_join(tids[j], NULL);
+        free(tids);
     }
     double wall = ca_now() - t0;
-    if (tf) fclose(tf);
+    size_t wrong = atomic_load(&pool.wrong);
+    for (size_t i = 0; i < na; i++) arms[i].n = trials;
+    if (tf) {
+        /* Written after the run, trial-major, so the file reads the same
+         * whatever the job count. */
+        fprintf(tf, "arm,vertex,level,trial,seed,ops,seconds\n");
+        for (uint64_t t = 0; t < trials; t++) {
+            uint64_t ts = volcano_trial_seed(seed, t);
+            for (size_t i = 0; i < na; i++)
+                fprintf(tf, "%s,%" PRId32 ",%" PRId32 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%.9f\n",
+                        arms[i].label, arms[i].vertex, arms[i].level, t, ts, solve_ops[t * na + i],
+                        arms[i].secs[t]);
+        }
+        if (!close_written(tf)) die("cannot write --trials-out");
+    }
+    free(solve_ops);
 
     /* Pools: by level (isogenous curves), all isogenous, controls. */
     size_t npool = depth + 4; /* levels, all isogenous, controls, automorphism arms */
@@ -1653,9 +1904,9 @@ static int cmd_volcano(void)
            vo.count, vo.edges, verified, vo.special_j, radius);
     for (unsigned lv = 0; lv <= depth; lv++) printf("%s%" PRIu32, lv ? "," : "", found[lv]);
     printf("]},\"rho\":{\"trials\":%" PRIu64 ",\"seed\":%" PRIu64 ",\"threads\":%" PRIu32
-           ",\"negation_map\":%s,\"solves\":%" PRIu64 ",\"wrong\":%zu,\"wall_seconds\":%.3f,"
-           "\"expected_ops\":%.1f},\"curves\":[",
-           trials, seed, rp.threads ? rp.threads : 1, rp.negation_map ? "true" : "false",
+           ",\"jobs\":%" PRIu64 ",\"negation_map\":%s,\"solves\":%" PRIu64 ",\"wrong\":%zu,"
+           "\"wall_seconds\":%.3f,\"expected_ops\":%.1f},\"curves\":[",
+           trials, seed, rp.threads ? rp.threads : 1, jobs, rp.negation_map ? "true" : "false",
            (uint64_t)na * trials, wrong, wall,
            sqrt(pi * (double)n / (rp.negation_map ? 4.0 : 2.0)));
     for (size_t i = 0; i < na; i++) {
@@ -1769,7 +2020,7 @@ static int cmd_volcano(void)
             first = 0;
         }
         fprintf(df, "]}\n");
-        fclose(df);
+        if (!close_written(df)) die("cannot write --diagram");
     }
 
     for (size_t q = 0; q < npool; q++) {
@@ -1810,7 +2061,8 @@ int main(int argc, char **argv)
     }
     if (!strcmp(cmd, "factor")) {
         if (argc < 3) usage();
-        uint64_t n = strtoull(argv[2], NULL, 0);
+        uint64_t n;
+        if (!parse_u64(argv[2], &n)) die("N is not an unsigned 64-bit integer");
         ca_factorization f;
         if (ca_factorize(n, &f) != CA_OK) die("cannot factor 0");
         printf("{\"n\":%" PRIu64 ",\"factors\":[", n);
@@ -1821,7 +2073,8 @@ int main(int argc, char **argv)
     }
     if (!strcmp(cmd, "prime")) {
         if (argc < 3) usage();
-        uint64_t n = strtoull(argv[2], NULL, 0);
+        uint64_t n;
+        if (!parse_u64(argv[2], &n)) die("N is not an unsigned 64-bit integer");
         printf("{\"n\":%" PRIu64 ",\"is_prime\":%s,\"next_prime\":%" PRIu64 "}\n", n,
                ca_is_prime(n) ? "true" : "false", ca_next_prime(n));
         return 0;

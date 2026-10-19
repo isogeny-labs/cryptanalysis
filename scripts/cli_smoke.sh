@@ -74,6 +74,19 @@ want_fail() {
   fi
 }
 
+# Assert that `ca $*` is rejected as malformed: exit status 2 and nothing on
+# stdout, so a caller branching on the status never also reads a half answer.
+want_malformed() {
+  checks=$((checks + 1))
+  local out rc=0
+  out=$("$CA" "$@" 2>/dev/null) || rc=$?
+  if [ "$rc" -ne 2 ] || [ -n "$out" ]; then
+    printf 'FAIL (wanted exit 2 and no stdout, got %d) %s\n  %s\n' "$rc" "$*" "$out" >&2
+    fail=$((fail + 1))
+  fi
+}
+
+
 # ── information ─────────────────────────────────────────────────────────────
 want '"version"' version
 want '"cuda_compiled"' gpu-info
@@ -118,6 +131,49 @@ want_fail num nonsense
 # ── factorisation and primality ─────────────────────────────────────────────
 want '"is_prime":true' prime 1000003
 want '"is_prime":false' prime 1000001
+# Numbers are whole unsigned 64-bit integers or nothing: a trailing letter, a
+# sign, or a value past 2^64 - 1 is a malformed invocation (exit 2), not a
+# silently truncated, wrapped or saturated one.
+want '"n":18446744073709551615' prime 18446744073709551615
+want_malformed prime 18446744073709551616
+want_malformed prime -5
+want_malformed factor 12abc
+want_malformed num gcd --a 99999999999999999999 --b 3
+want_malformed num powmod --base 3 --exp 1e3 --mod 1000003
+want_malformed solve --alg bsgs --group zp --p 1000003 --order 1000002 --g 2x --h 3
+want_malformed solve --alg bsgs --group ec --p 1000003 --a 1 --b 1 --order 1 --g 1,x --h inf
+want_malformed solve --alg bsgs --group ec --p 1000003 --a 1 --b 1 --order 1 --g ,1 --h inf
+want_malformed solve --alg grumpy --group zp --p 1000003 --order 1000002 --g 2 --h 3 --alpha nan
+want_malformed solve --alg grumpy --group zp --p 1000003 --order 1000002 --g 2 --h 3 --alpha inf
+# Narrower parameters are range-checked, never truncated: 4294967298 is not 2.
+want_malformed num iroot --n 100 --k 4294967298
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --ell 4294967298
+want_malformed solve --alg rho --group zp --p 1000003 --order 1000002 --g 2 --h 3 --threads 4294967297
+# What the library rejects as an invalid argument is a malformed invocation
+# too: exit 2 and no half answer on stdout.
+want_malformed solve --alg bsgs --group zp --p 10 --order 1 --g 2 --h 3
+want_malformed solve --alg bsgs --group zp --p 1000003 --order 1000002 --g 2 --h 3 --lo 100 --hi 50
+want_malformed ic --p 1000003 --g 2 --h 3 --method bogus
+# --dp-bits past the group order would leave every solver without a
+# distinguished point, and precomp's table build without a stop.
+want_malformed solve --alg precomp --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 40
+want_malformed solve --alg rho --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 64
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --dp-bits 64
+# Count products and arm capacities must be checked before allocation or work.
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 18446744073709551615 --per-level 1 --controls 0
+want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 18446744073709551615
+# A selection limit larger than the actual graph is harmless and must not
+# size an arm buffer from the user-supplied value.
+want '"radius":0' volcano --p 1000033 --a 5 --b 17 --radius 0 --max-vertices 1 \
+  --trials 1 --per-level 18446744073709551615 --controls 0 --jobs 1
+# A seed of 2^64 - 1 must not wrap the derived seed to 0 ("random"): two
+# runs give the same instance.
+checks=$((checks + 1))
+if [ "$("$CA" gen --group zp --p 1000003 --seed 18446744073709551615)" != \
+     "$("$CA" gen --group zp --p 1000003 --seed 18446744073709551615)" ]; then
+  printf 'FAIL gen --seed 2^64-1 is not reproducible\n' >&2
+  fail=$((fail + 1))
+fi
 # 2^32 - 1 = 3 * 5 * 17 * 257 * 65537.
 want '65537' factor 4294967295
 
@@ -195,6 +251,14 @@ want '"endomorphism":"none"' curve --name generic-26
 want '"aut_order":6' curve --group ec --p 67108933 --a 0 --b 7 --order 16773703
 want '"curves"' curve --list
 want_no '"status":"not found"' curve --name no-such-curve
+# ca_curve_solve takes a seed only; an option it would ignore is refused.
+J0=(--group ec --p 1000003 --a 1 --b 7 --order 2777)
+want '"status":"ok"' solve --alg glv "${J0[@]}" --g 21275,723123 --h 218870,126385 --seed 1
+want_malformed solve --alg glv "${J0[@]}" --g 21275,723123 --h 218870,126385 --max-ops 1
+# On a curve --a and --b are its coefficients, so div's operands are --lhs
+# and --rhs; (21275,723123) - (218870,126385) = (708584,675974).
+want '"result":"708584,675974"' group div "${J0[@]}" --lhs 21275,723123 --rhs 218870,126385
+want_malformed group div "${J0[@]}" --lhs 21275,723123
 CJ0=(--group ec --p 67108933 --a 0 --b 7 --order 16773703)
 GJ0=$("$CA" group generator "${CJ0[@]}" | sed 's/.*"generator":"\([^"]*\)".*/\1/')
 HJ0=$("$CA" group exp "${CJ0[@]}" --elem "$GJ0" --k 424242 | sed 's/.*"result":"\([^"]*\)".*/\1/')
@@ -224,6 +288,21 @@ want '"job_id"' coord-job "${ZP[@]}" --g 858101 --h "$H" --dp-bits 4 --unit-size
   --seed 42 --out "$tmp/job.txt"
 want_fail coord-job "${ZP[@]}" --g 858101            # --h is required
 want_fail coord-job "${ZP[@]}" --g 858101 --h "$H" --r 2   # r must be in [4, 4096]
+
+# A token exactly 255 bytes fits the documented bound even when the newline is
+# the byte after fgets' buffer; 256 bytes must be refused before connecting.
+printf '%0255d\n' 0 > "$tmp/token255"
+checks=$((checks + 1))
+rc=0
+"$CA" work --job "$tmp/job.txt" --token-file "$tmp/token255" \
+  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test >/dev/null 2>&1 || rc=$?
+if [ "$rc" -eq 2 ]; then
+  printf 'FAIL: a 255-byte --token-file was rejected as overlong\n' >&2
+  fail=$((fail + 1))
+fi
+printf '%0256d\n' 0 > "$tmp/token256"
+want_malformed work --job "$tmp/job.txt" --token-file "$tmp/token256" \
+  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test
 
 # The same job twice is the same id: that is what lets two agents agree
 # without exchanging anything.
@@ -269,6 +348,20 @@ want_fail volcano --p 1000033 --a 5 --b 17 --order 1000034 --trials 1
 # A j = 0 root also runs the automorphism-folded rho (order-6 automorphism).
 want '"aut_order":6,' volcano --p 1000033 --a 0 --b 11 --ell 2 --trials 3 --per-level 1 --controls 0 --automorphisms
 want_fail volcano --p 1000033 --a 5 --b 17 --ell 5
+# The solves are handed to --jobs threads trial-major with one deterministic
+# seed per trial shared across arms, so every operation count is the same on
+# one job and on three; only the timings and the job count may differ.
+checks=$((checks + 1))
+"$CA" volcano --p 1000033 --a 5 --b 17 --trials 4 --per-level 2 --controls 1 --seed 9 \
+  --jobs 1 --trials-out "$tmp/v1.csv" >/dev/null 2>&1
+"$CA" volcano --p 1000033 --a 5 --b 17 --trials 4 --per-level 2 --controls 1 --seed 9 \
+  --jobs 3 --trials-out "$tmp/v3.csv" >/dev/null 2>&1
+if [ "$(wc -l <"$tmp/v1.csv")" -ne 25 ] ||
+   ! cmp -s <(cut -d, -f1-6 "$tmp/v1.csv") <(cut -d, -f1-6 "$tmp/v3.csv"); then
+  printf 'FAIL volcano --jobs 3 did not reproduce --jobs 1 operation counts\n' >&2
+  fail=$((fail + 1))
+fi
+want '"jobs":1,' volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --jobs 1
 
 # ── usage and unknown commands ──────────────────────────────────────────────
 want_fail

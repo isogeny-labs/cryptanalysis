@@ -15,7 +15,7 @@ with a narrower, explicit claim.
 | Tier | Environment | Result the receipt can support |
 | --- | --- | --- |
 | `tier0_host` | Physical Linux host with audited exclusive CPU and NUMA partition, fixed frequency, and IRQ routing | Host-isolated paired wall-time result. |
-| `tier1_instance` | Linux cloud instance or Pod with one pinned exposed CPU, recorded allocation receipt, observable cgroup throttle and memory-failure counters, and repeated matched pairs | Instance-scoped paired wall-time result, qualified by the recorded confidence interval. Host exclusivity remains unverified. |
+| `tier1_instance` | Linux cloud instance or Pod with a pinned exposed CPU set, recorded allocation receipt, observable cgroup throttle and memory-failure counters, and repeated matched pairs | Instance-scoped paired wall-time result, qualified by the recorded confidence interval. Host exclusivity remains unverified. |
 
 Legacy schema-1 manifests without `measurement_tier` remain Tier 0. Tier 1
 must be requested explicitly; failure of a Tier 0 preflight never silently
@@ -46,11 +46,13 @@ control, an empty cgroup v2 `cpuset.cpus.partition=isolated` partition whose
 exclusive effective CPU and NUMA sets match the manifest, full SMT sibling
 coverage, `nohz_full` on those CPUs, a fixed CPU frequency, no CPU
 quota, no overlapping effective IRQ affinity, a housekeeping-only service
-affinity, and `numactl`. Version 1 pins each benchmark process and all its
-threads to **one declared logical CPU** inside the isolated partition and
-binds memory to **one declared NUMA node**. This supports the single-thread
-rho comparison; multiworker experiments need an extension that proves each
-worker's thread affinity. Every run is invalidated by CPU
+affinity, and `numactl`. A manifest may pin a process to one logical CPU or
+declare `execution_cpus` as a subset of the isolated CPUs. The latter permits
+multiworker benchmarks to schedule their worker threads across an exclusively
+reserved set; it does not claim fixed worker-to-core placement. The legacy
+`execution_cpu` remains required as an anchor and must belong to that set.
+When `execution_cpus` is omitted, the runner preserves the original single-CPU
+behavior. Memory is bound to **one declared NUMA node**. Every run is invalidated by CPU
 throttling, OOM, IRQ or softirq time, interrupt-count changes, steal time,
 involuntary context switches, timeout, nonzero exit, or missing
 `verified=1`/`online_ms`. Raw failures are retained.
@@ -269,7 +271,10 @@ source/build artifacts and each executable. For example:
 ```
 
 The CPU and NUMA IDs above are examples; choose them from verified host
-topology. All paths must be absolute paths on the benchmark host. The
+topology. For an isolated multiworker run, reserve the complete worker set in
+`cpus` and set `execution_cpus` to that set, for example:
+`{"cpus":"4-7","execution_cpu":4,"execution_cpus":"4-7"}`.
+All paths must be absolute paths on the benchmark host. The
 benchmark's internal online timer and correctness replay need source review:
 this service cannot infer their boundaries or prove `verified=1` on its own.
 For Sage manifests, use the absolute checked repository `sage` launcher and
