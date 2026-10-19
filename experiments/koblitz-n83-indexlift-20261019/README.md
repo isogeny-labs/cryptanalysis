@@ -5,7 +5,7 @@ date: 2026-10-19
 
 # n = 83 K600 index lift: lift_scan in the root-index build, end-to-end cold
 
-**Status (2026-10-19): protocol frozen; Tier 1 run started on push, no result yet.**
+**Status (2026-10-19): protocol frozen; Tier 1 [run 39290913632](https://github.com/aburan28/cryptanalysis/actions/runs/39290913632) started on commit `8d06c09d`; no result yet.**
 The [protocol](protocol.json) (frozen 2026-10-19T17:02:53Z) and the [schedule](schedule.json)
 were committed before any Tier 1 timing. Every number below that is not
 quoted from an archived run comes from the cloud-agent VM; those are
