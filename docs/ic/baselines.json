@@ -1166,6 +1166,123 @@
     {
       "n": 83,
       "a": 1,
+      "role": "promoted over the rank-probe producer at K600, on the rank-probe producer's code (K899 base, arms kP899 / cP899); baseline row not replaced (the row names the index-lift producer) (one experiment; not combined with another row)",
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
+      "experiment": "cryptanalysis:experiments/koblitz-n83-k899-20261019 (branch claude/n83-k899)",
+      "run": "GitHub Actions 39306394645, one ubuntu-24.04 runner (runnervm8k3b6, AMD EPYC 7763), one pinned CPU",
+      "pipeline": "the rank-probe producer (run 39214027289) unchanged, digest d4394df3; K is the base file: the nested K899 base, whose first 600 columns are the K600 base, with the frozen K899 factor-log table (re-verified in the oracle); 4 x 33,541,591 stored states in 2^27 slots",
+      "targets": "20 new public points (k899-cold-v1; one fresh pinned process per arm per point), four rank blocks (rank seeds 401-404; 600 attempts per block at K600, 899 at K899), Q0 per K",
+      "promoted": "yes, over the rank-probe producer at K600, by the frozen primary R = E2E(kP600, cP600) / E2E(kP899, cP899) = 1.1873 [1.1247, 1.2523]; the n=83 baseline row is the index-lift producer, so the row was not replaced",
+      "unit": "one rT770 rho step as measured in this run (280.43 ns), per sqrt(r) (25,960.4 ms)",
+      "measured": {
+        "s_e2e_cold": {
+          "kP600+cP600": 6.6945,
+          "kP899+cP899": 5.6385,
+          "kP600+cPI600": 6.4753,
+          "kP899+cPI899": 5.145
+        },
+        "s_online": {
+          "cP600": 0.016793,
+          "cP899": 0.008104
+        },
+        "s_rho": {
+          "cold": 0.10352,
+          "online": 0.09316
+        },
+        "wall_ms": {
+          "e2e_cold_kP600_cP600": 173790.4,
+          "e2e_cold_kP899_cP899": 146377.7,
+          "rank_stage_mean_K600": 151314.0,
+          "rank_stage_mean_K899": 99703.4,
+          "cold_without_rank_K600": 22476.4,
+          "cold_without_rank_K899": 46674.3,
+          "index_build_K600": 19659.8,
+          "index_build_K899": 44263.4,
+          "online_K600": 436.0,
+          "online_K899": 210.4,
+          "rho_cold": 2687.5,
+          "rho_online": 2418.4
+        },
+        "mean_probes_per_attempt": {
+          "K600": 1772065.09,
+          "K899": 754089.28
+        },
+        "ns_per_probe": {
+          "K600": 142.19,
+          "K899": 146.52
+        },
+        "probe_law_ratio": {
+          "K600": 1.0256,
+          "K899": 0.9798
+        },
+        "peak_rss_mib": {
+          "cP600": 1788.3,
+          "cP899": 3704.1
+        },
+        "ratios": {
+          "rank_stage_kP600_over_kP899": "1.5176 [1.4149, 1.6235]",
+          "cold_without_rank_cP899_over_cP600": "2.0766 [2.0555, 2.0954]",
+          "index_build": "2.2515 [2.2461, 2.2577]",
+          "e2e_cPI_pair_kP600_cPI600_over_kP899_cPI899": "1.2586 [1.1888, 1.3330]",
+          "aa_e2e": "0.9988 [0.9966, 1.0008]",
+          "aa_cold": "0.9997 [0.9966, 1.0026]",
+          "planted_rank_per_attempt": "1.9353 [1.9321, 1.9397]"
+        }
+      },
+      "gap_cold_ic_over_tuned_rho": {
+        "kP899+cP899": {
+          "value": 54.4666,
+          "ci95": [
+            45.3135,
+            68.2024
+          ]
+        },
+        "kP600+cP600": {
+          "value": 64.6668,
+          "ci95": [
+            53.7966,
+            81.2794
+          ]
+        },
+        "kP899+cPI899": {
+          "value": 49.6998,
+          "ci95": [
+            41.4644,
+            62.0781
+          ]
+        }
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "cP899": {
+          "value": 0.087,
+          "ci95": [
+            0.0583,
+            0.1265
+          ]
+        },
+        "cP600": {
+          "value": 0.1803,
+          "ci95": [
+            0.0978,
+            0.3116
+          ]
+        }
+      },
+      "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class; power 0.16 at the diagnostic's R 1.036 and 0.91 at 1.10, the measured effect was larger",
+      "verified": "138/138 rows valid, 0 skipped by the time guard; all gates and controls pass; verify_receipt.py reproduces result.json and result_table.md byte for byte",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-k899-20261019/README.md (branch claude/n83-k899)",
+        "cryptanalysis:experiments/koblitz-n83-k899-20261019/run_github_39306394645/panel/result.json (branch claude/n83-k899)"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
       "unit": "online interval only; no cold S measured in this experiment",
       "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
       "role": "promoted single improvement over B: two-limb lift_scan canonicalizer (one experiment; not combined)",
@@ -1928,6 +2045,72 @@
         "reading": "cold gap 1.03x smaller; online gap unchanged (cP / cPI online 1.0006 [0.9982, 1.0040], same online code)",
         "source": "cryptanalysis:experiments/koblitz-n83-indexlift-20261019/run_github_39290913632/panel/result.json statistics.e2e_cold_gap_cP_over_rT, e2e_cold_gap_cPI_over_rT, online_gap_cP_over_rT, online_gap_cPI_over_rT"
       }
+    },
+    {
+      "n": 83,
+      "from": "the rank-probe producer at K600 (arms kP600 + cP600), same run 39306394645, points and rT770",
+      "to": "the rank-probe producer at K899, the nested 899-column base (arms kP899 + cP899; run 39306394645)",
+      "cold_gap": [
+        64.6668,
+        54.4666
+      ],
+      "online_gap": [
+        0.18027,
+        0.08699
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps (same run, points and rT770)",
+      "baseline_row_replaced": false,
+      "baseline_row_not_replaced_reason": "the n=83 baseline row on main names the index-lift producer (run 39290913632), not the rank-probe producer; the ratchet replaces the row only when it still names the producer the result improves on. Recorded as promoted over the rank-probe producer.",
+      "cross_run_context_from": "the rank-probe row as landed (run 39214027289: 280.64 ns step, its own points and rank seeds 301-304)",
+      "cross_run_context_cold_gap": [
+        63.9977,
+        54.4666
+      ],
+      "cross_run_context_online_gap": [
+        0.1291,
+        0.08699
+      ],
+      "cross_run_context_note": "context only: different runs, instance sets, rank seeds and step times; not a delta of this step",
+      "cold_speedup": "end-to-end cold kP600+cP600 / kP899+cP899 1.1873 [1.1247, 1.2523] in wall time on one host class, factor-base construction excluded, rank-probe producer code unchanged, K is the base file (20 points, four rank blocks); the rank stage is 1.5176x [1.4149, 1.6235] faster (mean probes per attempt 1,772,065 -> 754,089, ns per probe 142.19 -> 146.52), cold without rank 2.0766x slower, peak RSS 2.0713x; K600 arm 173.79 s, K899 arm 146.38 s",
+      "class": "advance (a change of K, code unchanged); promoted by its own frozen primary over the rank-probe producer; baseline row not replaced. cold_gap / online_gap are paired within the promoting run.",
+      "power_note": "design power 0.16 at the diagnostic's expected R of 1.036 and 0.91 at the model's 1.10; the measured R is above both",
+      "paired_within_run": {
+        "from": "the rank-probe producer at K600 (kP600 + cP600), same run, points and rT770",
+        "cold_gap": [
+          {
+            "value": 64.6668,
+            "ci95": [
+              53.7966,
+              81.2794
+            ]
+          },
+          {
+            "value": 54.4666,
+            "ci95": [
+              45.3135,
+              68.2024
+            ]
+          }
+        ],
+        "online_gap": [
+          {
+            "value": 0.18027,
+            "ci95": [
+              0.09783,
+              0.31156
+            ]
+          },
+          {
+            "value": 0.08699,
+            "ci95": [
+              0.05827,
+              0.12649
+            ]
+          }
+        ],
+        "reading": "cold gap 1.19x smaller; online time cP899 / cP600 0.4825 [0.2688, 0.8733]",
+        "source": "cryptanalysis:experiments/koblitz-n83-k899-20261019/run_github_39306394645/panel/result.json statistics.e2e_cold_gap_kP600_cP600_over_rT, e2e_cold_gap_kP899_cP899_over_rT, online_gap_cP600_over_rT, online_gap_cP899_over_rT"
+      }
     }
   ],
   "corrections": [
@@ -1985,7 +2168,7 @@
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
     "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
     "n=19: no IC1 candidate manifest; online S not separable",
-    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run",
+    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run; the nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523], gap 64.7 -> 54.5 in that run) but is not the baseline row, which names the index-lift producer; next: a frozen protocol for the index-lift producer at K899 against the current row",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]

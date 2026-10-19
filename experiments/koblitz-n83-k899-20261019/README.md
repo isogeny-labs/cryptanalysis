@@ -5,10 +5,13 @@ date: 2026-10-19
 
 # n = 83 K899: the nested 899-column factor base under the rank-probe producer, end-to-end cold
 
-**Status (2026-10-19): protocol frozen; Tier 1 run started on branch
-`claude/n83-k899`; no result yet.** The [protocol](protocol.json) (frozen
-2026-10-19T18:48:09Z) and the [schedule](schedule.json) were committed
-before any Tier 1 timing. The go/no-go diagnostic ran on a GitHub runner
+**Status (2026-10-19): Tier 1 run landed, verdict improvement.** The
+[protocol](protocol.json) (frozen 2026-10-19T18:48:09Z) and the
+[schedule](schedule.json) were committed before any Tier 1 timing. The Tier 1
+run ([39306394645](https://github.com/aburan28/cryptanalysis/actions/runs/39306394645),
+archived in [`run_github_39306394645/`](run_github_39306394645/)) gave
+R = 1.1873 [1.1247, 1.2523]; see [Result](#result). The go/no-go diagnostic
+ran on a GitHub runner
 ([run 39292460576](https://github.com/aburan28/cryptanalysis/actions/runs/39292460576),
 archived in [`diag/run_github_39292460576/`](diag/run_github_39292460576/)).
 It is one process per arm with one rank seed, on Q0. It is a diagnostic,
@@ -238,6 +241,143 @@ diagnostic's 1.036. If the runner's 15% per-probe penalty holds, a
 `not_separated` verdict is the likely outcome. The design keeps the four
 blocks it was asked for.
 
+## Result
+
+**Verdict (frozen rule, applied as written): improvement.** R = E2E(kP600,
+cP600) / E2E(kP899, cP899) = **1.1873 [1.1247, 1.2523]** (20 points, 4 rank
+blocks); the 95% lower bound is above 1. Every gate and both controls pass.
+The run is valid.
+
+The [run](https://github.com/aburan28/cryptanalysis/actions/runs/39306394645)
+([archive](run_github_39306394645/), artifact digest
+`c5ef1991...c18b3`) finished with conclusion `success`: 138 scheduled rows,
+138 valid, 0 invalid, 0 skipped by the time guard, guard not tripped. One
+runner (`runnervm8k3b6`, AMD EPYC 7763, 4 vCPUs, one pinned CPU, kernel
+6.17.0-1022-azure), the same host and kernel as the rank-probe run
+39214027289; the go/no-go diagnostic ran on another host
+(`runnervmxehtw`, kernel 7.0.0-1017-azure). No contention flags.
+
+**Power caveat, stated before and kept.** The frozen design had power 0.16 at
+the diagnostic's expected R of about 1.036 and 0.91 at the model's 1.10, so a
+`not_separated` verdict was the likely outcome and would have been an honest
+one. It did not happen: the measured effect is larger than both. The reason
+is the rank stage, not the cold path (see below). The diagnostic's 1.036 came
+from a single process on a different host (121.5 ns per probe at K899 there,
+146.5 ns here). This is one run on one runner; the interval is over points,
+blocks and attempts, not over hosts.
+
+### Gates and controls
+
+| Gate or control | Result |
+| --- | --- |
+| every scheduled row present and valid; no time-guard skip | pass (138 / 138) |
+| one scalar per point across every IC process of both K and rT, oracle replay | pass |
+| one relation and one probe count per point and K | pass |
+| Q0 equal to the archived K600 identity and the frozen K899 identity | pass |
+| every rank table equal to its K's frozen table (K899 table re-verified in the oracle, first 600 logs equal B's) | pass |
+| kP899, kP899aa, kPX899: identical relations, probe vectors, root calls and counters per block | pass |
+| probe law band [0.90, 1.10], both K | pass (K600 1.0256, K899 0.9798) |
+| A/A E2E kP899+cP899 / kP899aa+cP899aa | 0.9988 [0.9966, 1.0008], inside [0.97, 1.03] |
+| A/A cold cP899 / cP899aa | 0.9997 [0.9966, 1.0026], inside [0.97, 1.03] |
+| planted kPX899 / kP899 per attempt (paired) | 1.9353 [1.9321, 1.9397], lower bound above 1 |
+| rank A/A kP899 / kP899aa per attempt | 0.9984 [0.9957, 1.0012] |
+
+Every rank arm resolved all of its attempts (600 per block at K600, 899 at
+K899; 0 fallback states, 0 irregular inputs). kP899, kP899aa and kPX899 have
+the same swapped-pair counts per block; kPX899 compared 326 to 358 million
+inputs per block with the rank-cut keys, the others none.
+`verify_receipt.py` re-run on the archive reproduces `panel/result.json` and
+`panel/result_table.md` byte for byte.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_figures.py`](make_figures.py)).](figures/result.png)
+
+### Primary and secondaries (none of the secondaries decides)
+
+End-to-end cold means (mean rank stage over four blocks + mean cold over 20
+points): kP600+cP600 151.31 + 22.48 = 173.79 s; kP899+cP899 99.70 + 46.67 =
+146.38 s. The K600 arm's rank stage is 87.1% of its end-to-end cost, the
+K899 arm's 68.1%.
+
+| Quantity | K600 | K899 | Ratio [95%] |
+| --- | ---: | ---: | :--- |
+| **E2E cold R = kP600+cP600 / kP899+cP899** (s) | 173.79 | 146.38 | **1.1873 [1.1247, 1.2523]** |
+| rank stage, whole (mean per block, s) | 151.31 | 99.70 | 1.5176 [1.4149, 1.6235] |
+| rank stage per block (s) | 143.7, 148.0, 156.5, 157.1 | 100.0, 97.3, 96.3, 105.3 | |
+| attempts per block / mean probes per attempt | 600 / 1,772,065 | 899 / 754,089 | |
+| ns per probe (all attempts) | 142.19 | 146.52 | 0.9705 |
+| ns per probe, first 50 attempts per block | 141.4 to 142.8 | 145.9 to 146.8 | |
+| cold without rank stage (s) | 22.476 | 46.674 | 2.0766 [2.0555, 2.0954] |
+| setup (s) | 22.040 | 46.464 | 2.1081 [2.1012, 2.1157] |
+| index build (s) | 19.660 | 44.263 | 2.2515 [2.2461, 2.2577] |
+| one-target online (ms) | 436.0 | 210.4 | 0.4825 [0.2688, 0.8733] (cP899 / cP600) |
+| peak RSS (MiB) | 1,788 | 3,704 | 2.0713 [2.0711, 2.0716] |
+| probe law, probes per attempt over r / (166 E) | 1.0256 (se 0.0214) | 0.9798 (se 0.0168) | band [0.90, 1.10] |
+
+- **Probe law.** Mean probes per attempt fall from 1.772 million at K600 to
+  754 thousand at K899, as the law r / (166 E) with E ~ 83 K^2 predicts
+  (ratios 1.026 and 0.980). The rank stage is faster because each attempt
+  needs 2.35 times fewer probes, 899 attempts instead of 600 cost 1.50 times
+  more, and the per-probe cost rises only 3% (142.19 to 146.52 ns). The
+  slot cliff is not crossed: 4 x 33,541,591 stored states fit in 2^27 slots.
+- **The cold path pays for K899.** Cold without rank, setup, index build and
+  RSS all about double (2.08, 2.11, 2.25, 2.07). The cold path is 12.9% of
+  end-to-end cost at K600 and 31.9% at K899. Online time falls to 0.48
+  (more factor-base columns, fewer probes).
+- **Pre-registration model.** The model's 1.10x end to end (K899 about 151 s
+  [142, 165]) was below the measured 146.4 s and its 1.187. The point
+  estimate of R is also helped by the probe-count draw: the two arms ran
+  different attempts (K600 at 1.026 of the law, K899 at 0.980), a 4.7%
+  spread in the rank stage's probe counts that would lower R by roughly 4% if
+  both were at the law. The bootstrap carries that sampling noise in
+  its interval; the seeds 401-404 K600 arm also reads 173.8 s against the
+  archived 166.0 s (seeds 301-304, 1,690,645 probes per attempt).
+- **S** (cost over this run's rT770 step, 280.43 ns, per sqrt(r)):
+
+  | Arm | E2E cold | cold without rank | online |
+  | --- | ---: | ---: | ---: |
+  | kP600+cP600 | 6.694 | 0.8658 | 0.016793 |
+  | kP899+cP899 | 5.639 | 1.7979 | 0.008104 |
+  | kP600+cPI600 | 6.475 | 0.6467 | 0.016741 |
+  | kP899+cPI899 | 5.145 | 1.3044 | 0.008038 |
+
+  Delta S end-to-end cold K600 to K899 = -1.056. The tuned rho's own S in
+  this run: cold 0.10352, online 0.09316 (mean rT770 cold 2,687.5 ms,
+  online 2,418.4 ms).
+- **Gap to the tuned rho rT770** (IC / rho, 20 points; distance remaining,
+  not a gate). End-to-end cold: kP600+cP600 64.67 [53.80, 81.28]; kP899+cP899
+  54.47 [45.31, 68.20]; kP600+cPI600 62.55 [51.60, 78.47]; kP899+cPI899
+  49.70 [41.46, 62.08]. Online: cP600 / rT 0.1803 [0.0978, 0.3116]; cP899 /
+  rT 0.0870 [0.0583, 0.1265].
+- **cPI pair** (lift_scan in the index build; pre-registered, never
+  decides). Cold without rank cP600 / cPI600 1.3389 [1.3340, 1.3437]; cP899 /
+  cPI899 1.3783 [1.3734, 1.3833]. E2E kP600+cPI600 / kP899+cPI899 1.2586
+  [1.1888, 1.3330] (168.10 s to 133.57 s); kP600+cP600 / kP899+cPI899 1.3011
+  [1.2304, 1.3747]. The last is a cross-arm figure (it changes both K and the
+  index build); it is not a promoted pipeline.
+- **Planted control.** kPX899 / kP899 per attempt 1.9353 [1.9321, 1.9397]
+  (283.55 against 146.52 ns per probe); whole stage 1.9318.
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner, one pinned CPU, 20 cold points, four
+  rank blocks, one fresh process per arm per point. It was not replayed on
+  another host class. The diagnostic's host ran about 1.2x faster per probe.
+- The effect is a wall-time ratio. The probe count falls with K by the law;
+  the saving is real work, not per-probe speed (ns per probe rose 3%).
+- The two K draw different attempts, so R carries probe-count sampling noise
+  (above); the interval is the frozen bootstrap's and is wider than the
+  K600-versus-K600 comparisons of earlier runs because of it.
+- Factor-base construction is charged to neither arm (both load a base file);
+  it is larger at K899, so the ratio is an upper bound on the every-phase
+  ratio.
+- The producer is the rank-probe producer. The index-lift producer
+  (run 39290913632, now the n=83 baseline row) was not run at K899 as a
+  primary; only its index build is in the cPI secondaries.
+- The power caveat above stands: the design could not have promised this
+  verdict; it is reported as measured.
+
 ## Files
 
 | File | Role |
@@ -251,5 +391,6 @@ blocks it was asked for.
 | `inputs/factor_logs_n83_K899.json` | the K899 factor-log table |
 | `diag/` | the go/no-go diagnostic script, workflow `.github/workflows/n83-k899-diag.yml`, archived runner output |
 | `smoke/` | local records: the contended VM diagnostic, the THP rank pair, the O1 smoke through `run_schedule.py` (correctness only) |
-| `make_figures.py`, `figures/` | design figure; `make_figures.py result <result.json>` after the run |
+| `run_github_39306394645/` | the archived Tier 1 artifact: allocation, builds, raw runs, `panel/result.json`, `panel/result_table.md` |
+| `make_figures.py`, `figures/` | design figure and result figure (`figures/result.*`, from `result.json`) |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |

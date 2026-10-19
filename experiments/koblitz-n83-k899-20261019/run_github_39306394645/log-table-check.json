@@ -1,0 +1,41 @@
+{
+ "k600_base_is_prefix_of_k899_base": true,
+ "k899_first_600_logs_equal_k600": true,
+ "status": "PASS",
+ "tables": {
+  "600": {
+   "bad_columns": [],
+   "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+   "checks": {
+    "base_hash": true,
+    "every_log_maps_G_to_its_representative": true,
+    "kind": true,
+    "n_a_r": true,
+    "range": true,
+    "width": true
+   },
+   "columns": 600,
+   "logs_sha256": "785e298f63de76636f6dc98203c4d483b3ecae5fb97ce18b8c3a989e8e65c0a6",
+   "status": "PASS",
+   "table": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+   "table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e"
+  },
+  "899": {
+   "bad_columns": [],
+   "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+   "checks": {
+    "base_hash": true,
+    "every_log_maps_G_to_its_representative": true,
+    "kind": true,
+    "n_a_r": true,
+    "range": true,
+    "width": true
+   },
+   "columns": 899,
+   "logs_sha256": "c665235067ab457e23a710cfe97b7bffe4a8726c72a8fa59580e01555c07492a",
+   "status": "PASS",
+   "table": "/home/runner/work/cryptanalysis/cryptanalysis/experiments/koblitz-n83-k899-20261019/inputs/factor_logs_n83_K899.json",
+   "table_sha256": "92dfb9d20bd477af7bdd2d0bf9bf20489729d1beba92cf1c44d89564848045b8"
+  }
+ }
+}
