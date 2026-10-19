@@ -1,0 +1,175 @@
+{
+ "check_log_table": {
+  "K600": "PASS",
+  "M10": "PASS",
+  "M38": "PASS",
+  "status": "PASS"
+ },
+ "label": "LOCAL smoke (cloud-agent VM): correctness only, never timing evidence",
+ "rows": [
+  {
+   "arm": "cM10",
+   "issues": [],
+   "point": "q0",
+   "seed": 7,
+   "serial": 1,
+   "status": "valid"
+  },
+  {
+   "arm": "cP",
+   "issues": [],
+   "point": "q0",
+   "seed": 7,
+   "serial": 2,
+   "status": "valid"
+  },
+  {
+   "arm": "cM38",
+   "issues": [],
+   "point": "q0",
+   "seed": 7,
+   "serial": 3,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "point": "s000",
+   "seed": 910000,
+   "serial": 4,
+   "status": "valid"
+  },
+  {
+   "arm": "cM38aa",
+   "issues": [],
+   "point": "s000",
+   "seed": 7,
+   "serial": 5,
+   "status": "valid"
+  },
+  {
+   "arm": "cP",
+   "issues": [],
+   "point": "s000",
+   "seed": 7,
+   "serial": 6,
+   "status": "valid"
+  },
+  {
+   "arm": "cM38",
+   "issues": [],
+   "point": "s000",
+   "seed": 7,
+   "serial": 7,
+   "status": "valid"
+  },
+  {
+   "arm": "cM10",
+   "issues": [],
+   "point": "s000",
+   "seed": 7,
+   "serial": 8,
+   "status": "valid"
+  },
+  {
+   "arm": "kM10",
+   "issues": [],
+   "point": "s002",
+   "seed": 803,
+   "serial": 26,
+   "status": "valid"
+  },
+  {
+   "arm": "kM38",
+   "issues": [],
+   "point": "s002",
+   "seed": 803,
+   "serial": 27,
+   "status": "valid"
+  },
+  {
+   "arm": "kM38aa",
+   "issues": [],
+   "point": "s002",
+   "seed": 803,
+   "serial": 28,
+   "status": "valid"
+  },
+  {
+   "arm": "kM10",
+   "issues": [],
+   "point": "s000",
+   "seed": 801,
+   "serial": 9,
+   "status": "valid"
+  },
+  {
+   "arm": "kM38X",
+   "issues": [],
+   "point": "s000",
+   "seed": 801,
+   "serial": 10,
+   "status": "valid"
+  },
+  {
+   "arm": "kM38aa",
+   "issues": [],
+   "point": "s000",
+   "seed": 801,
+   "serial": 11,
+   "status": "valid"
+  },
+  {
+   "arm": "kP",
+   "issues": [],
+   "point": "s000",
+   "seed": 801,
+   "serial": 12,
+   "status": "valid"
+  },
+  {
+   "arm": "kM38",
+   "issues": [],
+   "point": "s000",
+   "seed": 801,
+   "serial": 13,
+   "status": "valid"
+  }
+ ],
+ "segments_run": [
+  "O1",
+  "C1",
+  "K3",
+  "K1"
+ ],
+ "verify_receipt_correctness_only": {
+  "checks": {
+   "all_executed_rows_valid": true,
+   "one_probe_count_per_point_and_base": true,
+   "one_relation_per_point_and_base": true,
+   "one_scalar_per_point_ic_and_rho": true,
+   "oracle_replay": true,
+   "pre_timing_tables_and_closure_bases_verified": true,
+   "primary_probe_law_inside_frozen_band": true,
+   "q0_matches_archived_and_frozen_identities": true,
+   "rank_relations_probes_root_calls_and_counters_identical_per_block": true,
+   "rank_tables_equal_frozen_verified_tables": true,
+   "receipt_matches_schedule": true
+  },
+  "note": "the probe-law band is sized for 256 (kM38) and 480 (kM10) attempts; these rows hold 32 and 120",
+  "probe_law_gate_on_these_rows": {
+   "kM10": false,
+   "kM38": true
+  },
+  "rows_without_gain": {
+   "K1/kM10": 0,
+   "K1/kM38": 0,
+   "K1/kM38X": 0,
+   "K1/kM38aa": 0,
+   "K1/kP": 0,
+   "K3/kM10": 0,
+   "K3/kM38": 0,
+   "K3/kM38aa": 0
+  }
+ }
+}
