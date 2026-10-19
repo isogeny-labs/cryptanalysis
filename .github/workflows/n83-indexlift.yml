@@ -13,20 +13,6 @@ name: N83 index lift (lift_scan in the index build), end-to-end cold Tier 1
 # Receipts, README, figures, figure scripts and smoke diagnostics do not
 # trigger a run.
 on:
-  push:
-    branches: [claude/n83-indexlift]
-    paths:
-      - experiments/koblitz-n83-indexlift-20261019/**
-      - .github/workflows/n83-indexlift.yml
-      - '!experiments/koblitz-n83-indexlift-20261019/run_github_*/**'
-      - '!experiments/koblitz-n83-indexlift-20261019/README.md'
-      - '!experiments/koblitz-n83-indexlift-20261019/README.pdf'
-      - '!experiments/koblitz-n83-indexlift-20261019/figures/**'
-      - '!experiments/koblitz-n83-indexlift-20261019/make_figures.py'
-      - '!experiments/koblitz-n83-indexlift-20261019/report_header.tex'
-      - '!experiments/koblitz-n83-indexlift-20261019/report_filter.lua'
-      - '!experiments/koblitz-n83-indexlift-20261019/smoke/**'
-      - '!experiments/koblitz-n83-indexlift-20261019/receipts/**'
   workflow_dispatch:
 
 permissions:
