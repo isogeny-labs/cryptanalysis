@@ -34,6 +34,7 @@ planted cPIX; rank kP and kPI), the shared rank stage and new seeds.
 
 import argparse
 import base64
+import hashlib
 import json
 import math
 import random
@@ -53,11 +54,33 @@ def jsonl(path):
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
 
 
-def raw_record(receipt, row):
-    for line in (receipt / row["stdout_file"]).read_text().splitlines():
-        if line.startswith("raw_b64="):
-            return json.loads(base64.b64decode(line[len("raw_b64="):]))
-    return None
+def raw_record(receipt, row, scheduled, kind):
+    lines = (receipt / row["stdout_file"]).read_text().splitlines()
+    encoded = next((line[len("raw_b64="):]
+                    for line in lines if line.startswith("raw_b64=")), None)
+    if encoded is None:
+        return None, ["no raw producer record"]
+    try:
+        raw_bytes = base64.b64decode(encoded, validate=True)
+        raw = json.loads(raw_bytes)
+    except (ValueError, json.JSONDecodeError) as error:
+        return None, ["raw producer record is not valid base64 JSON: %s" % error]
+
+    receipt_line = next((line for line in reversed(lines) if "raw_result_sha256=" in line), None)
+    if receipt_line is None:
+        return raw, ["producer summary has no raw-result digest"]
+    summary = dict(word.split("=", 1) for word in receipt_line.split() if "=" in word)
+    actual_sha256 = hashlib.sha256(raw_bytes).hexdigest()
+    issues = []
+    if summary.get("raw_result_sha256") != actual_sha256:
+        issues.append("raw producer record digest differs from wrapper summary")
+
+    expected = {"arm": scheduled["arm"], "kind": kind, "panel": scheduled["point_id"],
+                "point": [str(value) for value in scheduled["point"]], "seed": scheduled["seed"]}
+    for key, value in expected.items():
+        if raw.get(key) != value:
+            issues.append("raw producer record %s differs from the frozen schedule" % key)
+    return raw, issues
 
 
 def oracle():
@@ -89,11 +112,15 @@ def load(receipt, schedule, protocol, partial):
                 "status": row["status"], "issues": list(row.get("issues", [])),
                 "contention": row.get("contention_flags", [])}
         if row["status"] != "skipped_time_guard":
-            raw = raw_record(receipt, row)
+            expected_kind = protocol["arms"][run["arm"]]["kind"]
+            raw, raw_issues = raw_record(receipt, row, run, expected_kind)
             if raw is None:
-                item["issues"].append("no raw producer record")
+                item["issues"] += raw_issues
                 item["status"] = "invalid"
             else:
+                if raw_issues:
+                    item["issues"] += raw_issues
+                    item["status"] = "invalid"
                 if raw.get("issues"):
                     item["issues"] += ["arm: " + issue for issue in raw["issues"]]
                     item["status"] = "invalid"
