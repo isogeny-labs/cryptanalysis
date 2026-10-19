@@ -43,3 +43,16 @@ Lean 4.34.1 proves the exact divisor characterization of primality for 71,023, w
 | Unconditional selected trajectory | `NearestOrbit71023Complete.canonical_scheme_terminal_bound` | Every integer scalar; 15 selected radix steps; checked |
 | Runtime tie rule | `NearestOrbit71023Tie.score_selected_eq` | Canonical residues `r<35512`; checked; axioms `propext`, `Quot.sound` |
 | Concrete point action | Candidate-specific Lean group theorem pending | Fixed secp256k1 curve, generator, and τ eigenvalue; 388 affine and 128 native independent point replays passed |
+
+## Fourteen-position follow-on
+
+The subsequent [`fourteen-position comparison`](../prime-j0-fourteen-position-mixed-radix-20261015/REPORT-2026-10-19.md)
+records a separate Tier 1 comparison of fixed `371−τ` against this
+15-position `268−τ` evaluator: reference/candidate online time was 1.020033×
+with 95% interval [1.016715, 1.023710] over 48 pairs. The fixed-14 evaluator
+retains 26,035,988 bytes versus 12,336,756 bytes and prepares its table in
+3,953.993 ms versus 2,103.098 ms. A separate integer screen found the local
+ordered schedule `394−τ, 380−τ, 380−τ, (371−τ)×11` with 22,267,136 bytes of
+direct point payload; its native execution remains unmeasured. The comparison
+report links its [editable visual source](../prime-j0-fourteen-position-mixed-radix-20261015/visuals.py),
+quantitative graphs, and [PDF](../prime-j0-fourteen-position-mixed-radix-20261015/REPORT-2026-10-19.pdf).
