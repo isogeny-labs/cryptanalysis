@@ -13,4 +13,11 @@ The fresh receipts are:
 - [Sparse radix family](sparse-radix-family-lean-check.json) and [sparse τ radix](sparse-tau-lean-check.json).
 - [Triple-243](triple243-lean-check.json), [triple-81 digit](triple81-digit-lean-check.json), and [triple mixed radix](triple-mixed-lean-check.json).
 
+After the matching Lean 4.34.1 builtin `leanchecker` became available, all 26
+research modules were rebuilt in dependency order and replayed by the kernel
+checker. The fresh [kernel-replay record](leanchecker-kernel-replay/README.md)
+preserves the module source hashes, toolchain hashes, build output, and checker
+output. This is builtin kernel replay; `lean4checker --fresh` remains
+unavailable, and no external-checker claim is made.
+
 These checks verify the committed Lean statements and their recorded dependencies. They do not establish a source-level refinement from the native Rust field/point operations to the abstract point maps, nor do they close any curve-wide group-law proof gap.

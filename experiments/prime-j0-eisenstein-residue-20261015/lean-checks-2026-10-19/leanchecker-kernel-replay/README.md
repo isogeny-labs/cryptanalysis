@@ -1,0 +1,9 @@
+# Lean 4.34.1 kernel replay
+
+All 26 Lean modules in the parent research directory were rebuilt in import order with Lean 4.34.1, then checked using the builtin `leanchecker --verbose` on their generated `.olean` modules. The build used a temporary `LEAN_PATH` and temporary `.olean` directory, so it did not overwrite the original receipts or leave generated compiler artifacts in the repository.
+
+The [toolchain record](toolchain.txt) gives the Lean and `leanchecker` binary hashes. [Source hashes](source-sha256.txt) bind the check to every `.lean` file in the parent directory. [Build output](build.log) contains the fresh compiler and `#print axioms` output; [kernel replay output](kernel-replay.log) lists all 26 modules, each of which was replayed. [RESULT.txt](RESULT.txt) records successful completion.
+
+Rebuild order was: `AlternateRadix`, `EisensteinResidue`, `EisensteinMontgomery`, `EisensteinGaugeLayer`, `HornerRadix`, `SparseTauRadix`, `RotatedRadixStep`, `Radix4033`, `Radix4033Bounds`, `Radix4033Selector`, `DigitGraph`, `JointSeedGraph`, `JointHorner`, `JointHorner4033`, `Triple81Radix`, `Triple81Digit`, `Triple243Radix`, `Triple243Digit`, `TripleMixedRadix`, `CheckpointedSparse`, `SparseRadixFamily`, `CheckpointedRadixFamily`, `Secp256k1ScalarRadix`, `Secp256k1TauFormula`, `Secp256k1TauNormalize`, and `Secp256k1TauDenominator`. Each source was compiled with `lean -o "$tmpdir/Module.olean" Module.lean`, using `$tmpdir` as `LEAN_PATH`; the final invocation was `leanchecker --verbose` followed by the same 26 module names.
+
+No `sorryAx` or `unsafe` declaration appeared in the fresh compiler output. This kernel replay validates the compiled Lean declarations and their imports. It does not bridge the abstract point-map assumptions to the native Rust secp256k1 group implementation. It also is not the unavailable external `lean4checker --fresh` check.

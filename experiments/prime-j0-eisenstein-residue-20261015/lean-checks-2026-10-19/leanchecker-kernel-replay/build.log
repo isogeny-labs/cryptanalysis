@@ -1,0 +1,771 @@
+'AlternateRadix.quotient_step' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.pair_norm_nonnegative' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.pair_norm_weighted' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.multiply_prime_norm' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.norm_334' does not depend on any axioms
+'AlternateRadix.selector_corner_coordinate_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.selector_initial_norm_bound' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.digit_candidate_norm_identity' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.nearest_digit_rounding_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.rounded_digit_norm_below_prime' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.selected_digit_norm_below_prime' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.quotient_norm_step' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.quotient_norm_step_from_selected_digit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.norm_334_no_small_divisor' does not depend on any axioms
+'AlternateRadix.norm_334_prime_factors' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.fifteen_step_numeric_bound' does not depend on any axioms
+'AlternateRadix.terminal_norm_below_table_limit' does not depend on any axioms
+'AlternateRadix.terminal_from_recurrence' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.terminal_from_prime_norm_digits' depends on axioms: [propext, Quot.sound]
+'AlternateRadix.terminal_for_selector_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'AlternateRadix.terminal_from_verified_digit_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+EisensteinResidue.lean:48:51: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.add_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:49:15: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:49:27: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:49:39: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.sub_mul, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:63:51: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.add_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:64:15: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:64:27: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:64:39: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.sub_mul, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinResidue.lean:103:15: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+EisensteinResidue.lean:107:17: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+EisensteinResidue.lean:107:30: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+EisensteinResidue.lean:110:17: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+EisensteinResidue.lean:110:30: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+'EisensteinResidue.rotate_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'EisensteinResidue.pi_norm_eq_prime' does not depend on any axioms
+'EisensteinResidue.beta_cubic' does not depend on any axioms
+'EisensteinResidue.pi_in_kernel' does not depend on any axioms
+'EisensteinResidue.basis_x_width' does not depend on any axioms
+'EisensteinResidue.basis_y_width' does not depend on any axioms
+'EisensteinResidue.eval_rotate_mod' depends on axioms: [propext, Quot.sound]
+'EisensteinResidue.eval_mul_mod' depends on axioms: [propext, Quot.sound]
+'EisensteinResidue.solinas_one_correction' depends on axioms: [propext, Classical.choice, Quot.sound]
+EisensteinMontgomery.lean:11:52: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:12:13: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:12:37: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:12:49: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:18:52: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:19:13: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:19:37: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:19:49: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [adjX, adjY, norm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:69:41: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:69:53: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:70:29: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:70:41: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:71:35: warning: This simp argument is unused:
+  Int.mul_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm, Int.one_mul] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:71:47: warning: This simp argument is unused:
+  Int.one_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm, Int.mul_one] at hnx hix ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:93:41: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:93:53: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:94:29: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:94:41: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one, Int.one_mul] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:95:35: warning: This simp argument is unused:
+  Int.mul_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm, Int.one_mul] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:95:47: warning: This simp argument is unused:
+  Int.one_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm, Int.mul_one] at hny hiy hdist ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:126:39: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm] at hhy ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:126:51: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_neg, Int.neg_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm] at hhy ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:127:27: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm] at hhy ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+EisensteinMontgomery.lean:127:39: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_neg, Int.neg_mul, Int.mul_comm,
+    Int.mul_left_comm] at hhy ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'EisensteinMontgomery.adjugate_x' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.adjugate_y' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.montgomery_numerators_divisible' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.inverse_mod_witness' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.quotient_mod_witness' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.montgomery_divisible_from_congruences' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.montgomery_field_semantics' depends on axioms: [propext, Quot.sound]
+'EisensteinMontgomery.norm_pi' does not depend on any axioms
+'EisensteinMontgomery.prime_inverse_radix' does not depend on any axioms
+'EisensteinMontgomery.pi_kernel' does not depend on any axioms
+'EisensteinMontgomery.omega_pi_kernel' does not depend on any axioms
+'EisensteinMontgomery.secp_montgomery_divisible' depends on axioms: [propext, Quot.sound]
+'EisensteinGaugeLayer.rotate_list_sum' does not depend on any axioms
+'EisensteinGaugeLayer.rotate_twice_list_sum' depends on axioms: [propext]
+'HornerRadix.valid_trace_evaluates' depends on axioms: [propext]
+'HornerRadix.map_evaluatePairs' depends on axioms: [propext]
+'HornerRadix.point_horner_of_valid_trace' depends on axioms: [propext]
+'SparseTauRadix.sparse_pair_shortcut' depends on axioms: [propext, Quot.sound]
+'SparseTauRadix.sparse_norm' does not depend on any axioms
+'SparseTauRadix.tau_residue' does not depend on any axioms
+'SparseTauRadix.tau_residue_polynomial' does not depend on any axioms
+'SparseTauRadix.sparse_residue_multiple' depends on axioms: [propext, Quot.sound]
+'SparseTauRadix.sparse_pair_norm' depends on axioms: [propext, Quot.sound]
+'SparseTauRadix.quotient_step' depends on axioms: [propext, Quot.sound]
+'SparseTauRadix.valid_trace_evaluates' depends on axioms: [propext]
+'SparseTauRadix.map_evaluatePairs' depends on axioms: [propext]
+'SparseTauRadix.point_horner_of_valid_trace' depends on axioms: [propext]
+'RotatedRadixStep.tau_is_one_minus_omega' depends on axioms: [propext, Quot.sound]
+'RotatedRadixStep.rotated_radix_identity' depends on axioms: [propext, Quot.sound]
+'RotatedRadixStep.mapped_rotated_radix_identity' depends on axioms: [propext, Quot.sound]
+'Radix4033.radix_norm' does not depend on any axioms
+'Radix4033.adjugate_first' depends on axioms: [propext, Quot.sound]
+'Radix4033.adjugate_second' depends on axioms: [propext, Quot.sound]
+'Radix4033.exact_quotient' depends on axioms: [propext, Quot.sound]
+'Radix4033.radix_as_rotation' depends on axioms: [propext, Quot.sound]
+'Radix4033Bounds.nearest_rounding_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Bounds.digit_norm_identity' depends on axioms: [propext, Quot.sound]
+'Radix4033Bounds.rounded_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Bounds.selected_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Bounds.quotient_norm_step' depends on axioms: [propext, Quot.sound]
+'Radix4033Bounds.twenty_two_step_numeric_bound' does not depend on any axioms
+'Radix4033Bounds.terminal_from_recurrence' depends on axioms: [propext, Quot.sound]
+'Radix4033Bounds.terminal_coordinates' depends on axioms: [propext, Quot.sound]
+'Radix4033Bounds.terminal_from_verified_digit_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Selector.rounded_in_center_window' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.rounded_candidate_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Selector.choose_le_best' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.choose_le_next' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.foldl_choose_le_member' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.selected_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Selector.selected_pair_congruent' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.selected_exact_quotient' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.signed_selected_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Radix4033Selector.signed_selected_congruent' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.signed_exact_quotient' depends on axioms: [propext, Quot.sound]
+'Radix4033Selector.total_selected_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DigitGraph.parent_plus_displacement' depends on axioms: [propext, Quot.sound]
+'DigitGraph.mapped_graph_edge' depends on axioms: [propext, Quot.sound]
+'DigitGraph.root_displacement' depends on axioms: [propext]
+'JointSeedGraph.extend_edge' depends on axioms: [propext]
+'JointSeedGraph.omega_square_q_coefficient' does not depend on any axioms
+'JointSeedGraph.unit_root_value' does not depend on any axioms
+'JointSeedGraph.extend_direct' depends on axioms: [propext]
+'JointSeedGraph.extend_unit_edge' depends on axioms: [propext]
+'JointSeedGraph.extend_unit_sum' depends on axioms: [propext]
+'JointSeedGraph.certifiedStep_valid' depends on axioms: [propext]
+'JointSeedGraph.certifiedTrace_valid' depends on axioms: [propext]
+'JointSeedGraph.requested_seed_values' depends on axioms: [propext]
+'JointSeedGraph.requested_projection' depends on axioms: [propext, Quot.sound]
+'JointSeedGraph.four_neighbor_steps' depends on axioms: [propext, Classical.choice, Quot.sound]
+'JointSeedGraph.repeated_digit_affine_dominates' depends on axioms: [propext, Classical.choice, Quot.sound]
+'JointSeedGraph.singleton_digit_projective_dominates' depends on axioms: [propext, Classical.choice, Quot.sound]
+'JointHorner.combine_horner' does not depend on any axioms
+'JointHorner.two_scalar_horner' depends on axioms: [propext]
+'JointHorner.two_scalar_horner_from_graph' depends on axioms: [propext, Quot.sound]
+'JointHorner4033.joint_eq_sum' does not depend on any axioms
+'JointHorner4033.joint_of_valid_traces' depends on axioms: [propext]
+Triple81Radix.lean:48:13: warning: This simp argument is unused:
+  Prod.fst
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Prod.snd] at hdigit hweight ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Triple81Radix.lean:48:23: warning: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Prod.fst] at hdigit hweight ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Triple81Radix.prime_norm81' does not depend on any axioms
+'Triple81Radix.quotient_norm_step' depends on axioms: [propext, Quot.sound]
+'Triple81Radix.twenty_step_terminal_bound' depends on axioms: [propext, Quot.sound]
+'Triple81Radix.twenty_quotients_terminal' depends on axioms: [propext, Quot.sound]
+'Triple81Radix.conjugate_primePair81' depends on axioms: [propext, Quot.sound]
+'Triple81Radix.quotient_step' depends on axioms: [propext, Quot.sound]
+'Triple81Radix.valid_trace_evaluates' depends on axioms: [propext]
+'Triple81Radix.point_horner81' depends on axioms: [propext]
+'Triple81Radix.two_scalar_horner81' depends on axioms: [propext]
+'Triple81Digit.rounding_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple81Digit.rounded_in_native_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple81Digit.norm_identity' depends on axioms: [propext, Quot.sound]
+'Triple81Digit.rounded_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple81Digit.selected_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple81Digit.exact_quotient' depends on axioms: [propext, Quot.sound]
+Triple243Radix.lean:48:13: warning: This simp argument is unused:
+  Prod.fst
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Prod.snd] at hdigit hweight ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Triple243Radix.lean:48:23: warning: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Prod.fst] at hdigit hweight ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Triple243Radix.prime_norm243' does not depend on any axioms
+'Triple243Radix.quotient_norm_step' depends on axioms: [propext, Quot.sound]
+'Triple243Radix.sixteen_step_terminal_bound' depends on axioms: [propext, Quot.sound]
+'Triple243Radix.sixteen_quotients_terminal' depends on axioms: [propext, Quot.sound]
+'Triple243Radix.conjugate_primePair243' depends on axioms: [propext, Quot.sound]
+'Triple243Radix.quotient_step' depends on axioms: [propext, Quot.sound]
+'Triple243Radix.valid_trace_evaluates' depends on axioms: [propext]
+'Triple243Radix.point_horner243' depends on axioms: [propext]
+'Triple243Radix.two_scalar_horner243' depends on axioms: [propext]
+'Triple243Digit.rounding_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple243Digit.rounded_in_native_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple243Digit.norm_identity' depends on axioms: [propext, Quot.sound]
+'Triple243Digit.rounded_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple243Digit.selected_digit_norm_below_radix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Triple243Digit.exact_quotient' depends on axioms: [propext, Quot.sound]
+TripleMixedRadix.lean:41:10: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [pairNorm, Int.mul_add, Int.add_mul, Int.mul_sub, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:49:41: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [pairNorm, Int.mul_add, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:54:57: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:66:27: warning: This simp argument is unused:
+  Int.mul_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_sub, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:66:41: warning: This simp argument is unused:
+  Int.mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_sub, Int.mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:77:41: warning: This simp argument is unused:
+  Int.mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_sub, Int.mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:90:14: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+TripleMixedRadix.lean:90:43: warning: This simp argument is unused:
+  Int.mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Int.mul_assoc, Int.mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'TripleMixedRadix.equilateral_basis' does not depend on any axioms
+'TripleMixedRadix.floor_corner_norm_bound' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.selected_initial_norm_bound' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_76_step_terminal_bound' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_76_quotients_terminal' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_76_terminal_coordinates_in_table' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.two_scalar_mixed_76_horner' depends on axioms: [propext]
+'TripleMixedRadix.mixed_76_horner_tripling_count' does not depend on any axioms
+'TripleMixedRadix.mixed_77_step_terminal_bound' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_77_quotients_terminal' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_77_terminal_coordinates_in_table' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.two_scalar_mixed_77_horner' depends on axioms: [propext]
+'TripleMixedRadix.mixed_77_horner_tripling_count' does not depend on any axioms
+'TripleMixedRadix.mixed_sixteen_step_terminal_bound' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_sixteen_step_terminal_below_table' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.mixed_quotients_terminal' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.terminal_coordinates_in_table' depends on axioms: [propext, Quot.sound]
+'TripleMixedRadix.two_scalar_mixed_horner' depends on axioms: [propext]
+'TripleMixedRadix.mixed_horner_tripling_count' does not depend on any axioms
+'CheckpointedSparse.sparse_add' depends on axioms: [propext, Quot.sound]
+'CheckpointedSparse.power_add' depends on axioms: [propext, Quot.sound]
+'CheckpointedSparse.evaluate_append' depends on axioms: [propext, Quot.sound]
+'CheckpointedSparse.evaluate_blocks_flatten' depends on axioms: [propext, Quot.sound]
+'CheckpointedSparse.map_evaluate_blocks' depends on axioms: [propext]
+SparseRadixFamily.lean:19:41: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.sub_mul,
+    Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:19:54: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.add_mul,
+    Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:20:15: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.add_mul,
+    Int.sub_mul, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:23:41: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.sub_mul,
+    Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:23:54: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.add_mul,
+    Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:24:15: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyPair, pairSub, pairScale, pairAdd, tauPair, Int.mul_add, Int.mul_sub, Int.add_mul,
+    Int.sub_mul, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:30:13: warning: This simp argument is unused:
+  Int.mul_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AlternateRadix.pairNorm, familyNorm, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:30:39: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AlternateRadix.pairNorm, familyNorm, Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:31:13: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AlternateRadix.pairNorm, familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:31:42: warning: This simp argument is unused:
+  Int.mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [AlternateRadix.pairNorm, familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul,
+    Int.mul_assoc, Int.mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:37:24: warning: This simp argument is unused:
+  Int.mul_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:37:48: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:37:60: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:38:13: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:38:40: warning: This simp argument is unused:
+  Int.mul_left_comm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:43:48: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.sub_mul, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+SparseRadixFamily.lean:43:60: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [familyNorm, Int.mul_add, Int.mul_sub, Int.add_mul, Int.mul_assoc, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'SparseRadixFamily.family_shortcut' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SparseRadixFamily.family_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SparseRadixFamily.family_residue' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SparseRadixFamily.family_residue_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SparseRadixFamily.family_norm_scaling' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SparseRadixFamily.radix64_terminal_from_norm_step' depends on axioms: [propext, Quot.sound]
+'SparseRadixFamily.radix32_terminal_from_norm_step' depends on axioms: [propext, Quot.sound]
+CheckpointedRadixFamily.lean:16:46: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [familyPair, pairAdd, Int.mul_add, Int.add_mul, Int.mul_comm, Int.mul_left_comm, Int.mul_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+CheckpointedRadixFamily.lean:18:12: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [familyPair, pairAdd, Int.mul_add, Int.sub_mul, Int.add_mul, Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'CheckpointedRadixFamily.family_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CheckpointedRadixFamily.power_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CheckpointedRadixFamily.evaluate_append' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CheckpointedRadixFamily.evaluate_blocks_flatten' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CheckpointedRadixFamily.map_evaluate' does not depend on any axioms
+'CheckpointedRadixFamily.map_evaluate_blocks' depends on axioms: [propext]
+Secp256k1ScalarRadix.lean:39:15: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1ScalarRadix.lean:39:27: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1ScalarRadix.lean:39:39: warning: This simp argument is unused:
+  Int.mul_assoc
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.sub_mul, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1ScalarRadix.lean:40:33: warning: This simp argument is unused:
+  Int.mul_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.sub_mul, Int.mul_assoc,
+    Int.mul_comm, Int.mul_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1ScalarRadix.lean:58:15: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.sub_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1ScalarRadix.lean:58:27: warning: This simp argument is unused:
+  Int.sub_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.mul_neg, Int.neg_mul, Int.add_mul, Int.mul_assoc, Int.mul_comm,
+    Int.mul_left_comm, Int.mul_one]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Secp256k1ScalarRadix.lambda_root' does not depend on any axioms
+'Secp256k1ScalarRadix.scalar_add' depends on axioms: [propext, Quot.sound]
+'Secp256k1ScalarRadix.tau_scalar_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1ScalarRadix.family_scalar_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1ScalarRadix.checkpoint_scalar_reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+Secp256k1TauFormula.lean:53:25: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_assoc, Int.mul_comm, Int.mul_left_comm, Int.mul_neg]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1TauFormula.lean:82:25: warning: This simp argument is unused:
+  Int.neg_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_assoc, Int.mul_comm, Int.mul_left_comm, Int.mul_neg]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Secp256k1TauFormula.x_cross' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1TauFormula.y_cross' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1TauFormula.native_x_chord_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1TauFormula.native_y_chord_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+Secp256k1TauNormalize.lean:67:15: warning: This simp argument is unused:
+  Int.mul_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_sub, Int.add_mul, Int.sub_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1TauNormalize.lean:96:15: warning: This simp argument is unused:
+  Int.mul_add
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_sub, Int.add_mul, Int.sub_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Secp256k1TauNormalize.lean:96:39: warning: This simp argument is unused:
+  Int.add_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Int.mul_add, Int.mul_sub, Int.sub_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Secp256k1TauNormalize.inverse_square_mod' depends on axioms: [propext, Quot.sound]
+'Secp256k1TauNormalize.inverse_square_times_mod' depends on axioms: [propext, Quot.sound]
+'Secp256k1TauNormalize.inverse_cube_mod' depends on axioms: [propext, Quot.sound]
+'Secp256k1TauNormalize.normalized_x_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Secp256k1TauNormalize.normalized_y_mod' depends on axioms: [propext, Classical.choice, Quot.sound]
+Secp256k1TauDenominator.lean:29:14: warning: This simp argument is unused:
+  Int.mul_emod
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Secp256k1TauDenominator.prime_mod_28' does not depend on any axioms
+'Secp256k1TauDenominator.delta_inverse_mod' does not depend on any axioms
+'Secp256k1TauDenominator.denominator_factor' depends on axioms: [propext]
+'Secp256k1TauDenominator.denominator_zero_iff_x_zero' depends on axioms: [propext, Quot.sound]
+'Secp256k1TauDenominator.zero_denominator_curve_locus' depends on axioms: [propext, Quot.sound]
