@@ -320,6 +320,8 @@ static int glv_recover(const ca_group *g, const ca_elem *base, const ca_elem *ta
 #ifdef CA_GLV_TRACE
 #    include <stdio.h>
 #    include <stdlib.h>
+#    include <assert.h>
+#    include "glv_trace_accounting.h"
 #    define GLV_RING 64
 /* Where glv_rho_solve's group operations go, written as one JSON line per
  * solve to $CA_GLV_TRACE_FILE.  Diagnostic builds only (-DCA_GLV_TRACE); the
@@ -332,6 +334,7 @@ typedef struct glv_trace {
     uint64_t cycle_len[GLV_RING + 1];
     uint64_t cycle2_same_idx, cycle2_after_retry; /* 2-cycles whose two steps used one multiplier;
                                                      of those, entered through a retry */
+    uint64_t escape2, escape4; /* cycles left by the deterministic escape (CA_GLV_CYCLE_ESCAPE) */
 } glv_trace;
 #endif
 
@@ -339,8 +342,19 @@ typedef struct glv_walk {
     ca_elem Y;
     uint64_t a, b;
     uint64_t since_dp;
+#ifdef CA_GLV_TRACE
+    uint64_t trace_wasted_since_dp;
+#endif
     uint32_t idx;
+    uint32_t first; /* the multiplier Y's own hash selects (a function of Y alone) */
+    uint32_t tries; /* look-ahead advances taken from this Y */
     uint8_t retry;
+#ifdef CA_GLV_CYCLE_ESCAPE
+    /* the last four committed points, newest first, for 2- and 4-cycle detection */
+    ca_elem hY[4];
+    uint64_t ha[4], hb[4], hh[4];
+    uint32_t hn;
+#endif
 #ifdef CA_GLV_TRACE
     uint64_t ring[GLV_RING];
     uint32_t ring_idx[GLV_RING];
@@ -514,7 +528,13 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
         w->b = ca_mulmod(w->b, c->lam_pow[k], n);
     }
     w->since_dp = 0;
+#ifdef CA_GLV_TRACE
+    ca_glv_trace_reset_since_dp(&w->trace_wasted_since_dp);
+#endif
     w->retry = 0;
+#ifdef CA_GLV_CYCLE_ESCAPE
+    w->hn = 0;
+#endif
     return 1;
 }
 
@@ -683,7 +703,11 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     while (ops < cap) {
         for (uint32_t w = 0; w < W; w++) {
             glv_walk *wk = &walks[w];
-            if (!wk->retry) wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) % c.r);
+            if (!wk->retry) {
+                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) % c.r);
+                wk->first = wk->idx;
+                wk->tries = 0;
+            }
             B[w] = c.M[wk->idx];
             Yn[w] = wk->Y;
         }
@@ -700,8 +724,25 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             /* Fruitless-cycle look-ahead: if the reduced point would pick the
              * same multiplier we just used, advance to the next one and redo
              * the step -- a deterministic function of the class, so walks
-             * still merge (generalises the negation map's 2-cycle rule). */
-            if ((uint32_t)(ca_mix64(h) % c.r) == wk->idx) {
+             * still merge (generalises the negation map's 2-cycle rule).
+             *
+             * Also reject a candidate whose reduced point would pick the
+             * multiplier Y itself selects (wk->first).  Without that, an
+             * advance from Y onto j + 1 can land on the point the walk came
+             * from, when that point had itself been left by an advance onto
+             * j + 1: with -1 in the class, Y + M_{j+1} reduces back to it,
+             * and the two points alternate until the walk is abandoned.
+             * A traced run (experiments/glv-walk-trace-20261018) found every
+             * 2-cycle to be of this form.  Both tests depend on Y alone, so
+             * the step stays a function of the class.  Build with
+             * -DCA_GLV_LOOKAHEAD_LEGACY for the original single test. */
+            uint32_t nat = (uint32_t)(ca_mix64(h) % c.r);
+#ifdef CA_GLV_LOOKAHEAD_LEGACY
+            if (nat == wk->idx) {
+#else
+            if ((nat == wk->idx || nat == wk->first) && wk->tries + 1 < c.r) {
+                wk->tries++;
+#endif
                 wk->idx = (wk->idx + 1) % c.r;
                 wk->retry = 1;
 #ifdef CA_GLV_TRACE
@@ -726,12 +767,75 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             }
             wk->Y = Yn[w];
             wk->since_dp++;
+#ifdef CA_GLV_CYCLE_ESCAPE
+            {
+                /* Deterministic escape from fruitless 2- and 4-cycles: when the
+                 * new point equals the one two (or four) committed steps back,
+                 * the walk is cycling.  Leave from the cycle member with the
+                 * smallest hash by doubling it, so every walk that enters the
+                 * same cycle leaves it the same way and walks still merge. */
+                uint32_t L = 0;
+                if (wk->hn >= 2 && wk->hh[1] == h)
+                    L = 2;
+                else if (wk->hn >= 4 && wk->hh[3] == h)
+                    L = 4;
+                if (L) {
+                    uint32_t best = UINT32_MAX; /* UINT32_MAX: the new point itself */
+                    uint64_t best_h = h;
+                    for (uint32_t i = 0; i + 1 < L; i++)
+                        if (wk->hh[i] < best_h) {
+                            best_h = wk->hh[i];
+                            best = i;
+                        }
+                    ca_elem P = best == UINT32_MAX ? wk->Y : wk->hY[best];
+                    uint64_t pa = best == UINT32_MAX ? wk->a : wk->ha[best];
+                    uint64_t pb = best == UINT32_MAX ? wk->b : wk->hb[best];
+                    ca_group_op(g, &wk->Y, &P, &P);
+                    ops++;
+                    wk->a = ca_addmod(pa, pa, n);
+                    wk->b = ca_addmod(pb, pb, n);
+                    uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                    if (kk) {
+                        wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
+                        wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                    }
+                    h = ca_group_hash(g, &wk->Y);
+                    wk->hn = 0;
+#    ifdef CA_GLV_TRACE
+                    if (L == 2)
+                        tr.escape2++;
+                    else
+                        tr.escape4++;
+                    tr.restart_ops += 1; /* the doubling is booked with restarts */
+                    tr.abandon_wasted +=
+                        L; /* the L committed steps around the cycle were not productive */
+                    wk->trace_wasted_since_dp +=
+                        ca_glv_trace_cycle_steps_since_dp(L, wk->since_dp);
+                    assert(wk->trace_wasted_since_dp <= wk->since_dp);
+                    wk->ring_pos = 0;
+#    endif
+                } else {
+                    for (uint32_t i = 3; i > 0; i--) {
+                        wk->hY[i] = wk->hY[i - 1];
+                        wk->ha[i] = wk->ha[i - 1];
+                        wk->hb[i] = wk->hb[i - 1];
+                        wk->hh[i] = wk->hh[i - 1];
+                    }
+                    wk->hY[0] = wk->Y;
+                    wk->ha[0] = wk->a;
+                    wk->hb[0] = wk->b;
+                    wk->hh[0] = h;
+                    if (wk->hn < 4) wk->hn++;
+                }
+            }
+#endif
             if ((h & c.dp_mask) == 0) {
                 uint64_t oa, ob;
                 int ins = ca_htab_insert(&tab, h, wk->a, wk->b, &oa, &ob);
                 if (ins < 0) goto nomem;
                 wk->since_dp = 0;
 #ifdef CA_GLV_TRACE
+                ca_glv_trace_reset_since_dp(&wk->trace_wasted_since_dp);
                 tr.dps++;
 #endif
                 if (ins == 1) {
@@ -761,7 +865,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             } else if (wk->since_dp > c.abandon) {
 #ifdef CA_GLV_TRACE
                 tr.abandons++;
-                tr.abandon_wasted += wk->since_dp;
+                assert(wk->trace_wasted_since_dp <= wk->since_dp);
+                tr.abandon_wasted += ca_glv_trace_unaccounted_abandon_steps(
+                    wk->since_dp, wk->trace_wasted_since_dp);
                 { /* is the walk in a short cycle?  find the current hash among the previous ones */
                     uint32_t L = 0, have = wk->ring_pos < GLV_RING ? wk->ring_pos : GLV_RING;
                     for (uint32_t d = 1; d < have && !L; d++)
@@ -799,6 +905,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 done:
 #ifdef CA_GLV_TRACE
 {
+    assert(tr.abandon_wasted <= tr.useful_steps);
+    assert(ca_glv_trace_ops_total(tr.table_ops, tr.start_ops, tr.restart_ops, tr.step_ops) == ops);
     const char *path = getenv("CA_GLV_TRACE_FILE");
     FILE *fp = path ? fopen(path, "a") : NULL;
     if (fp) {
@@ -811,7 +919,8 @@ done:
                 "recover_fail\":%llu,"
                 "\"abandons\":%llu,\"abandon_wasted\":%llu,\"abandon_cycle\":%llu,\"abandon_"
                 "nocycle\":%llu,"
-                "\"cycle2_same_idx\":%llu,\"cycle2_after_retry\":%llu,\"cycle_len\":{",
+                "\"cycle2_same_idx\":%llu,\"cycle2_after_retry\":%llu,\"escape2\":%llu,\"escape4\":"
+                "%llu,\"cycle_len\":{",
                 c.m, (unsigned long long)n, W, c.r, c.dp_bits, (unsigned long long)c.abandon,
                 rc == CA_OK, (unsigned long long)ops, (unsigned long long)tr.table_ops,
                 (unsigned long long)tr.start_ops, (unsigned long long)tr.restart_ops,
@@ -821,7 +930,8 @@ done:
                 (unsigned long long)tr.coll_same_ab, (unsigned long long)tr.coll_recover_fail,
                 (unsigned long long)tr.abandons, (unsigned long long)tr.abandon_wasted,
                 (unsigned long long)tr.abandon_cycle, (unsigned long long)tr.abandon_nocycle,
-                (unsigned long long)tr.cycle2_same_idx, (unsigned long long)tr.cycle2_after_retry);
+                (unsigned long long)tr.cycle2_same_idx, (unsigned long long)tr.cycle2_after_retry,
+                (unsigned long long)tr.escape2, (unsigned long long)tr.escape4);
         int first = 1;
         for (int L = 1; L <= GLV_RING; L++)
             if (tr.cycle_len[L]) {
