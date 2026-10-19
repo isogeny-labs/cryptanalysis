@@ -91,3 +91,8 @@ at both ends of the transfer. The exact source, binary, tests, generator,
 fixture, and direct screen are in
 [prime-j0-affine-stream-panel-provenance.tar.gz](prime-j0-affine-stream-panel-provenance.tar.gz),
 SHA-256 `cf7f53a58eb03c856b4c7a04009893370a678398a0763a4ae7f73b5c24c51d46`.
+
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) summarize the frozen distinct-input panel, its fixture construction and correctness gates, and the limits of the result. The committed [visual generator](visuals.py) produces the fixture-flow and throughput figures from the audited JSON; see `figures/`.
