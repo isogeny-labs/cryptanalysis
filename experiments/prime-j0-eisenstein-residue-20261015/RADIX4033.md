@@ -67,3 +67,5 @@ The [matched rho restart-kernel study](RHO_RESTART.md) now measures `aG+bQ` with
 The separately [frozen manifest](tier1-radix4033-full-replay-cpu40-manifest.json) and [rules](tier1-radix4033-full-replay-cpu40-rules.json) sent two identical candidate arms through the serial queue. Job `1d3cf18c0fc94bf3b4c9646d783156f2` verified all **12,288** frozen outputs in each arm with stable artifacts. The [auditor](analyze_tier1_radix4033_full_replay.py), [launch](tier1-radix4033-full-replay-cpu40-launch.json), [audit](tier1-radix4033-full-replay-cpu40-audit.json), and [raw archive](radix4033-full-replay-raw.tar.gz) preserve the exact run. The two intervals were **3.652 s** and **3.670 s**. This A/A correctness run has a null speedup field.
 
 The one-scalar gain is measured on the recorded Tier 1 cloud instance. Replication on another allocation and source-level arithmetic refinement are the next gates for a broader algorithmic claim.
+
+The [source-linked report](RADIX4033_REPORT_2026-10-19.md) adds the method diagram, qualified and A/A-gated timing comparisons, PDF, and the exact proof and replay limits.

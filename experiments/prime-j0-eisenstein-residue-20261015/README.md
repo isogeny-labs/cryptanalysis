@@ -105,6 +105,8 @@ A third checked module models the complete five-by-five digit search and
 signed-residue branch, proving a bounded digit and exact quotient for every
 integer-pair state. The native tie order and signed-limb operations still
 need formal source refinement.
+The [source-linked report](RADIX4033_REPORT_2026-10-19.md) adds the selector
+diagram, OpenSSL and fixed-table comparisons, calibrated A/A failures, and PDF.
 
 The [four-checkpoint radix-32 path](CHECKPOINTED_RADIX32.md) stores four
 five-digit windows at selected radix powers, retaining **832,396 bytes**.
