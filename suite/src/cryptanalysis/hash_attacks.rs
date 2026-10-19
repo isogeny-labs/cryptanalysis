@@ -15,8 +15,8 @@
 //!
 //! 2. [`length_extension_attack`] — given `H(secret || m)` and `len(secret)`,
 //!    forge `H(secret || m || pad || suffix)` without knowing `secret`.
-//!    Works for **any** MD-Damgård hash without HMAC-style wrapping
-//!    (MD4, MD5, SHA-1, SHA-256, SHA-512, RIPEMD-160, …).
+//!    The current adapters support MD4, MD5, SHA-1, and SHA-256 without
+//!    HMAC-style wrapping. Other Merkle-Damgård hashes need adapters.
 //!
 //! 3. [`birthday_collision_search`] — generic √n collision finder
 //!    over an `n`-bit-truncated hash.  Useful for falsifying claims
@@ -197,6 +197,62 @@ impl MerkleDamgardHash for Sha1 {
         }
         out.extend_from_slice(&bit_len.to_be_bytes());
         out
+    }
+}
+
+/// SHA-256 with its full digest exposed as the big-endian chaining state.
+pub struct Sha256;
+impl HashFunction for Sha256 {
+    fn name(&self) -> &'static str {
+        "SHA-256"
+    }
+    fn output_bytes(&self) -> usize {
+        32
+    }
+    fn block_bytes(&self) -> usize {
+        64
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::sha256(message).to_vec()
+    }
+}
+impl MerkleDamgardHash for Sha256 {
+    fn compress(&self, state: &mut [u8], block: &[u8]) {
+        let mut words = [0u32; 8];
+        for (i, word) in words.iter_mut().enumerate() {
+            *word = u32::from_be_bytes(state[4 * i..4 * i + 4].try_into().unwrap());
+        }
+        crate::hash::sha256::compress(&mut words, block);
+        for (i, word) in words.iter().enumerate() {
+            state[4 * i..4 * i + 4].copy_from_slice(&word.to_be_bytes());
+        }
+    }
+    fn padding_for_length(&self, message_bytes: usize) -> Vec<u8> {
+        let bit_len = (message_bytes as u64).wrapping_mul(8);
+        let mut padding = vec![0x80];
+        while (message_bytes + padding.len()) % 64 != 56 {
+            padding.push(0);
+        }
+        padding.extend_from_slice(&bit_len.to_be_bytes());
+        padding
+    }
+}
+
+/// SHA-3-256 is a sponge: it supports generic measurements here, not
+/// Merkle-Damgård length extension.
+pub struct Sha3_256;
+impl HashFunction for Sha3_256 {
+    fn name(&self) -> &'static str {
+        "SHA-3-256"
+    }
+    fn output_bytes(&self) -> usize {
+        32
+    }
+    fn block_bytes(&self) -> usize {
+        136
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::sha3_256(message).to_vec()
     }
 }
 
@@ -436,9 +492,19 @@ pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
             md.push_str(&run_birthday(&Sha1, 32, 200_000));
             md.push_str(&run_differential(&Sha1));
         }
+        "sha256" | "sha-256" => {
+            md.push_str(&run_length_extension(&Sha256));
+            md.push_str(&run_birthday(&Sha256, 32, 200_000));
+            md.push_str(&run_differential(&Sha256));
+        }
+        "sha3" | "sha3-256" => {
+            md.push_str("## Length extension\n\nSHA-3-256 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
+            md.push_str(&run_birthday(&Sha3_256, 32, 200_000));
+            md.push_str(&run_differential(&Sha3_256));
+        }
         _ => {
             return Err(format!(
-                "unknown hash '{}'; try one of: md4, md5, sha1",
+                "unknown hash '{}'; try one of: md4, md5, sha1, sha256, sha3-256",
                 hash_name
             ));
         }
@@ -586,6 +652,27 @@ mod tests {
         actual_input.extend_from_slice(&glue);
         actual_input.extend_from_slice(suffix);
         assert_eq!(h.hash(&actual_input), forged);
+    }
+
+    #[test]
+    fn length_extension_sha256() {
+        let h = Sha256;
+        let secret = b"sha256-secret";
+        let msg = b"data";
+        let suffix = b"&admin=1";
+        let combined = [&secret[..], &msg[..]].concat();
+        let target = h.hash(&combined);
+        let (forged, glue) = length_extension_attack(&h, &target, combined.len(), suffix);
+        let actual_input = [&combined[..], &glue[..], &suffix[..]].concat();
+        assert_eq!(h.hash(&actual_input), forged);
+    }
+
+    #[test]
+    fn sha3_generic_adapter_matches_known_digest() {
+        assert_eq!(
+            hex(&Sha3_256.hash(b"abc")),
+            "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+        );
     }
 
     /// Birthday-attack on 24-bit-truncated MD5 finds a collision in

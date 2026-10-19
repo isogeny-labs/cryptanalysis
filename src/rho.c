@@ -58,7 +58,7 @@ typedef struct rho_walk {
     uint64_t h; /* ca_group_hash of Y, kept with it */
     uint64_t a, b;
     uint32_t idx;
-    uint8_t retry;
+    uint32_t retry; /* rejected multipliers so far for the pending step; 0 = none */
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
@@ -131,14 +131,22 @@ static void walk_step_single(rho_shared *sh, rho_walk *w, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     uint32_t i = w->retry ? w->idx : rho_index(sh, w->h);
+    uint32_t rejected = w->retry;
     for (;;) {
         ca_elem Yn;
         ca_group_op(g, &Yn, &w->Y, &sh->M[i]);
         (*ops)++;
         int neg = sh->negmap ? ca_group_canonicalize(g, &Yn) : 0;
         uint64_t h = ca_group_hash(g, &Yn);
-        if (sh->negmap && rho_index(sh, h) == i) {
+        /* Look-ahead rule, bounded: when the other r - 1 multipliers have
+         * all been rejected too, every multiplier returns to Y and the scan
+         * would repeat forever (probability r^-r per point, which a small
+         * user-chosen r makes likely).  The last candidate is then taken as
+         * it is; the 2-cycle it makes is caught by the window test.  The
+         * choice depends on the point alone, so merged walks stay merged. */
+        if (sh->negmap && rho_index(sh, h) == i && rejected + 1 < sh->r) {
             i = (i + 1) % sh->r;
+            rejected++;
             continue;
         }
         w->Y = Yn;
@@ -251,9 +259,9 @@ static void *rho_thread_main(void *arg)
             rho_walk *wk = &walks[w];
             int neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
             uint64_t h = ca_group_hash(g, &Yn[w]);
-            if (sh->negmap && rho_index(sh, h) == wk->idx) {
+            if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
                 wk->idx = (wk->idx + 1) % sh->r;
-                wk->retry = 1;
+                wk->retry++; /* bounded as in walk_step_single */
                 continue;
             }
             wk->retry = 0;
@@ -367,6 +375,12 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
 
     /* trivial cases */
     if (ca_group_is_identity(g, target)) { *x = 0; return CA_OK; }
+    if (ca_group_is_identity(g, base)) {
+        /* only the identity is a power of the identity, and the walk would
+         * never produce a collision that solves anything */
+        ca_set_error("rho: the base is the identity and the target is not");
+        return CA_ERR_NOT_FOUND;
+    }
     if (n < 64) {
         ca_elem cur;
         ca_group_identity(g, &cur);

@@ -912,6 +912,7 @@ unsafe fn lazy_axpy_avx512(acc: &mut [u64], a: u32, b: &[u32], m: u64) {
 
 /// The widest vector unit the lazy kernel can use on this CPU.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg_attr(not(target_arch = "x86_64"), allow(dead_code))]
 enum Lanes {
     Scalar,
     Avx2,

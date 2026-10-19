@@ -277,6 +277,39 @@ want_fail work --job "$tmp/sharded.txt" --coordinator http://127.0.0.1:1 --max-s
 want '"shards":4' work --job "$tmp/sharded.txt" --node solo --threads 2 --max-seconds 60
 want_fail coord-status --coordinator http://127.0.0.1:1   # nothing is listening
 
+# ── sibling Rust CLI dispatch ───────────────────────────────────────────────
+# Direct argv forwarding keeps whitespace and shell metacharacters literal,
+# and the child exit status must reach the caller unchanged.
+cat >"$tmp/forwarded" <<'SH'
+#!/bin/sh
+printf '%s\n' "$@"
+exit 7
+SH
+chmod +x "$tmp/forwarded"
+checks=$((checks + 1))
+rc=0
+out=$(CA_CRYPTO_BIN="$tmp/forwarded" "$CA" crypto 'two words' '$HOME') || rc=$?
+if [ "$rc" -ne 7 ] || [ "$out" != $'two words\n$HOME' ]; then
+  printf 'FAIL: crypto delegation changed argv or exit status (rc=%d, out=%s)\n' "$rc" "$out" >&2
+  fail=$((fail + 1))
+fi
+export CA_ICX_BIN=/bin/echo
+want 'solve-prime --p 271' icx solve-prime --p 271
+unset CA_ICX_BIN
+export CA_CRAX_BIN=/bin/echo
+want 'hash --algorithm sha256' crax hash --algorithm sha256
+unset CA_CRAX_BIN
+export CA_ISOGENY_WALK_BIN=/bin/echo
+want 'verify --dir example' isogeny-walk verify --dir example
+unset CA_ISOGENY_WALK_BIN
+checks=$((checks + 1))
+rc=0
+CA_CRYPTO_BIN="$tmp/missing" "$CA" crypto --help >/dev/null 2>&1 || rc=$?
+if [ "$rc" -ne 127 ]; then
+  printf 'FAIL: missing delegated binary returned %d, expected 127\n' "$rc" >&2
+  fail=$((fail + 1))
+fi
+
 # ── usage and unknown commands ──────────────────────────────────────────────
 want_fail
 want_fail not-a-command
