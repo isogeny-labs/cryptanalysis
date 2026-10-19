@@ -25,6 +25,20 @@ def main():
     for old,new in [('19183','71023'),('140','268'),('137','265'),
                     ('17','15'),('16','14'),('80','154'),('78','82')]:
         source = re.sub(r'\b'+old+r'\b',new,source)
+    source = source.replace(
+        'theorem radix_norm_identity',
+        'theorem norm_sqrt_cap : 266*266 < 71023 ∧ 71023 < 267*267 := by decide\n\n'
+        'theorem norm_prime : Nat.Prime 71023 := by decide\n\n'
+        'theorem radix_norm_identity',
+    )
+    source = source.replace(
+        '#print axioms radix_norm_identity',
+        '#print axioms norm_prime\n#print axioms radix_norm_identity',
+    )
+    source = source.replace(
+        '#print axioms norm_trial_division',
+        '#print axioms norm_trial_division\n#print axioms norm_sqrt_cap',
+    )
     location = source.index('theorem radius_checks')
     radius_def = ('def radius (i : Nat) : Int :=\n  ([\n    '
                   + ',\n    '.join(str(r) for r in radii)
