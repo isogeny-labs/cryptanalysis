@@ -61,6 +61,9 @@ scalar-local builder. The first dispatch accidentally compared the earlier
 builder against itself; its A/A-only receipts and the corrected frozen plans
 are retained with the result. A separate serial replay checked all **12,288**
 frozen outputs in each of two projective arms, with stable artifact hashes.
+The [source-linked report](PROJECTIVE_DIGITS_REPORT_2026-10-19.md) includes the
+pipeline diagram, paired timing graph, PDF, and the scalar-dependent timing
+limitation.
 
 The [adaptive digit graph](DIGIT_GRAPH.md) reuses already constructed
 Eisenstein digit points through short lattice displacements. Frozen Tier 1
