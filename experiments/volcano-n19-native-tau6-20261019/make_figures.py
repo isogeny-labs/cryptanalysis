@@ -91,11 +91,39 @@ def power(out):
     save(fig, os.path.join(out, 'power'))
 
 
+def invalid(r, rd, out):
+    """An invalid receipt has no primary: draw what ran and what the gates saw."""
+    rows = [json.loads(l) for l in open(os.path.join(rd, 'runs.jsonl'))]
+    ran = sum(1 for x in rows if x.get('status') == 'ran')
+    s0 = r['gates']['S0 Sage variety == native == brute force on 300 systems']['detail']
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.4, 3.2), gridspec_kw={'width_ratios': [1.3, 1]})
+    names = ['systems', 'Sage == native\n(as sets)', 'native ==\nbrute force']
+    vals = [s0['systems'], s0['set_equal'], s0['bruteforce_equal']]
+    a1.bar(range(3), vals, color=[MUTED, A2, A1])
+    for i, v in enumerate(vals):
+        a1.text(i, v + 4, str(v), ha='center', fontsize=8)
+    a1.set_xticks(range(3))
+    a1.set_xticklabels(names, fontsize=8)
+    a1.set_ylim(0, 340)
+    a1.set_title('S0 self-test (gate failed)', fontsize=9)
+    a2.bar([0, 1], [ran, len(rows) - ran], color=[A1, MUTED])
+    a2.set_xticks([0, 1])
+    a2.set_xticklabels(['ran', 'not run after\nfailed S0'], fontsize=8)
+    for i, v in enumerate([ran, len(rows) - ran]):
+        a2.text(i, v + 1, str(v), ha='center', fontsize=8)
+    a2.set_title('scheduled rows (%d)' % len(rows), fontsize=9)
+    for a in (a1, a2):
+        a.spines[['top', 'right']].set_visible(False)
+    fig.suptitle('Run 39307409409: verdict %s; no timed row ran, no ratio exists' % r['verdict'], fontsize=9, y=1.06)
+    save(fig, os.path.join(out, 'result'))
+
+
 def result(rd):
     r = json.load(open(os.path.join(rd, 'result.json')))
     out = os.path.join(rd, 'figures')
     os.makedirs(out, exist_ok=True)
     if 'per_point' not in r:
+        invalid(r, rd, out)
         return
     pts = sorted(r['per_point'])
     fig, ax = plt.subplots(figsize=(7.4, 3.6))

@@ -345,8 +345,16 @@ only once it moves an end-to-end `S` above.
   PR #918, not merged yet) are in Other verified records. The rank stage is
   90% of the end-to-end cold cost; the run was not replayed on another host
   class, and the BL gap was not re-measured on this producer.
-- **n=19:** there is no IC1 candidate manifest, and online `S` is not
-  separable.
+- **n=19:** IC1 candidate manifests now exist for the baseline and the
+  native-solve candidate (`IC1N19Ckb0fb1064PDP2polyboriRCsampleLAkernelTDpdpISO0hb41aed7ef80a`
+  and `IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e`,
+  in `experiments/volcano-n19-native-tau6-20261019/inputs/ic1_manifests.json`),
+  and online `S` is separable by definition in that protocol (setup and
+  online are timed apart). It has not been measured: the Tier 1 run
+  ([39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409))
+  is invalid, because its S0 gate failed (Sage and native varieties equal on
+  293 of 300 systems) and no timed row ran. The n=19 row, Figure 1 and the
+  ratchet history are unchanged.
 - **n=83, §5a band:** the 0 / 0.1 / 1 GAE band for the IC / rho gap is
   uncomputable on both n=83 rows, because the frozen producer emits no
   group-operation counts. The K1 replay (archived 2026-10-17) timed

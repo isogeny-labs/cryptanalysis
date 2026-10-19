@@ -5,13 +5,16 @@ date: 2026-10-19
 
 # n = 19 tau6: the per-shift Groebner solve moved out of Sage, end-to-end cold
 
-**Status (2026-10-19): protocol frozen; the Tier 1 run is pending.**
-The [protocol](protocol.json) was frozen at 2026-10-19T19:00:03Z, before any
-timing. The [schedule](schedule.json) and the [held-out panel](inputs/panel.json)
-were committed with it. Everything below that is not quoted from the archived
-run 38520305068 is a **local diagnostic** from the cloud-agent VM. These
-diagnostics are counts and exactness checks, not timing evidence. See
-[`smoke/`](smoke/README.md).
+**Status (2026-10-19): the Tier 1 run is invalid; no ratio was measured.**
+[Run 39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409)
+completed with a green job, but its first scheduled row, the S0 self-test,
+failed its gate, so the launcher stopped before O1 and before every timed
+row. The verdict under the frozen rule is **invalid**. See
+[Result](#result-run-39307409409). The [protocol](protocol.json) was frozen at
+2026-10-19T19:00:03Z, before any timing. Everything below that is not quoted
+from the archived run 38520305068 or from the run above is a **local
+diagnostic** from the cloud-agent VM (counts and exactness checks, not timing
+evidence). See [`smoke/`](smoke/README.md).
 
 ## Question
 
@@ -30,7 +33,7 @@ This experiment asks: does replacing that solve with a native enumeration of
 the same variety lower the **end-to-end cold** CPU cost of one complete,
 verified ECDLP? Every target, every shift system, every relation and every
 log must stay unchanged. This is an iteration under AGENTS.md "Success
-criterion". If it is promoted, it becomes the new n = 19 row.
+criterion". If it is promoted, it becomes the new n = 19 row (it was not: the run is invalid).
 
 ## Where the baseline's time goes (archived run; cited)
 
@@ -260,6 +263,55 @@ Two caveats:
   tau.sage has 29 nominal columns. The V′ point (1, 0) is 4-torsion and
   Frobenius-fixed, so the cofactor map sends it to O.
 
+## Result (run 39307409409)
+
+**Verdict: invalid.** No primary statistic exists, and the n = 19 baseline row
+is unchanged.
+
+- **Run.** [39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409),
+  push event on `claude/n19-native-solve` at `7db3566a7`, GitHub
+  ubuntu-24.04 (AMD EPYC 9V45, image 20261018.339.1), one runner. It queued
+  about 2 h and ran under 2 min. The job conclusion is `success`; that only
+  means the audit step ran. The launcher exited 4 (a failed gate).
+- **Archive.** [`run_github_39307409409/`](run_github_39307409409/).
+  Re-running `verify_receipt.py` on the archived `runs.jsonl`, rows and logs
+  reproduces `panel/result.json`, `panel/result_table.md` and
+  `verify-stdout.json` byte for byte.
+- **Why invalid.** S0 compares, on 300 random shift systems, the Sage variety
+  with the native variety as sets, and the native output with the native
+  brute-force enumeration of S3. Native equals brute force on 300 of 300,
+  but Sage equals native on **293 of 300**. The row also records
+  `nonempty` = 2 (Sage's variety was non-empty on 2 systems) and `multi` = 0.
+  So seven systems disagree between Sage's solve and the native enumeration.
+  The row stores only counts, not the seven systems, so the receipt does not
+  say which side is wrong, or whether the self-test harness (`sage_variety`
+  in `arm.sage`) or the exactness argument is at fault. The local
+  diagnostics did not predict this and are not explained by this receipt.
+  Per the frozen rule, a failed S0 stops the schedule; one row ran, 81 were
+  not run (`not_run_after_failed_gate:S0-selftest`), and every downstream
+  gate is reported failed because its rows are missing.
+- **Gates.** S0 fails (293/300 set-equal). O1 not run. Per-point identity,
+  relation/decomposition identity, NX checks, generator, rho and warm-batch
+  gates: not run. Library digest: one native digest, `b4c6d13d...58e1`, on
+  the one native process; `cargo test` passed (3 tests). The one-pinned-CPU
+  gate holds for the one row that ran (CPU 0).
+- **Controls.** Not run: A/A ratio N/Naa (window [0.95, 1.05]) and planted
+  NX/N lower bound > 1 have no data.
+- **Secondaries.** None exist: online `S`, setup, the repeated-batch warm
+  secondary, `S` per arm, the gap to the matched rho and the solve's share
+  were not measured, because no timed row ran. Online `S` is now separable
+  by definition (above) but has not yet been measured.
+- **Not claimed.** This run is not evidence that the native solve is faster,
+  slower, or wrong in production. It shows only that the frozen S0 gate
+  failed on this host.
+- **Next.** Find the seven S0 systems (re-run S0 with the systems recorded),
+  decide whether the Sage reference or the native code is wrong, and, if a
+  change is needed, freeze a new protocol before any new timing. The run is
+  not re-run under the same protocol.
+
+![S0 and schedule status of run 39307409409. Vector:
+[figures/result.svg](figures/result.svg).](figures/result.png)
+
 ## What is not claimed
 
 - This is engineering: the same algorithm, the same relations and the same
@@ -283,5 +335,6 @@ Two caveats:
   - `power_check.py` and `analysis/power.json`.
 - **Workflow.** `.github/workflows/n19-native-tau6.yml`.
 - **Local diagnostics.** `smoke/`.
+- **Archived run.** `run_github_39307409409/` (receipt, result, logs).
 - **Report.** `make_figures.py`, `figures/`, `README.pdf` and
   `report_header.tex`.
