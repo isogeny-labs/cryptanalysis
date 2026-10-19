@@ -5,7 +5,7 @@ date: 2026-10-19
 
 # n = 83 K600: Z[τ]-multiplier closure of the factor base, end-to-end cold
 
-**Status (2026-10-19): frozen 2026-10-19T18:44:25Z; Tier 1 run [39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093) started.**
+**Status (2026-10-19): frozen 2026-10-19T18:44:25Z; Tier 1 run [39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093) finished: improvement, R = 6.4444 [6.0993, 6.7853] over the rank-probe producer. The n = 83 baseline row is not replaced; a paired run against the index-lift row is pending.**
 The [protocol](protocol.json) and the [schedule](schedule.json) were
 committed before any Tier 1 timing. Every number below that is not from a
 Tier 1 run comes from the cloud-agent VM: it is a **local diagnostic**, not
@@ -385,7 +385,159 @@ table, the planted kM38X and kM10.
 
 ## Result
 
-Pending: [run 39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093), commit 3761fd260. `verify_receipt.py` applies the frozen rule to its artifact; `make_figures.py` renders the result figure from `result.json`.
+**Verdict: improvement.** The frozen rule (95% lower bound of R > 1) holds:
+**R = E2E(kP + cP) / E2E(kM38 + cM38) = 6.4444 [6.0993, 6.7853]** over 20
+cold points, with 4 baseline and 16 candidate rank blocks. Tier 1 run
+[39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093)
+(conclusion success, one runner `runnervm8k3b6`), commit 3761fd260, archived in
+[run_github_39305259093/](run_github_39305259093/).
+
+The baseline R is taken against is the rank-probe producer (`kP`, `cP`),
+the baseline the protocol froze. The n = 83 baseline row has since moved to
+the index-lift producer (PR #981). `docs/ic/BASELINES.md` asks for an
+improvement over the baseline on the same instances, so this result is
+recorded as a promoted improvement over the rank-probe producer and **does
+not replace the baseline row**; a paired run of the closure on top of the
+index-lift producer, against the index-lift row, is pending.
+
+All gates pass: all 151 scheduled rows are present and valid (151 valid, 0
+invalid, 0 skipped by the time guard; 20/20 points, all rank blocks
+complete), B's table and both closure headers and tables passed the
+pinned-oracle check before any timing (planted corruptions rejected), one
+scalar per point across every IC arm and the tuned rho (replayed in the pinned
+oracle), one relation and one probe count per point and base, Q0 equal to the
+archived and frozen identities, every rank process's table equal to its frozen
+verified table, identical relations, per-attempt probes, root calls and
+counters across kM38, kM38aa and kM38X in every block, and the probe-law band
+of the primary kM38 (0.9625, inside 0.80 to 1.20). No contention flags. All
+four controls pass (below). `verify_receipt.py` re-run on a copy of the
+archive's `panel/` (next to the archive's other files) reproduces
+`panel/result.json` and `panel/result_table.md` byte for byte.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_figures.py`](make_figures.py)).](figures/result.png)
+
+### Primary (frozen rule) and controls
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E(kP + cP) / E2E(kM38 + cM38)** (20 points; 4 and 16 rank blocks) | **6.4444 [6.0993, 6.7853]** | **improvement** (lower bound above 1) |
+| A/A E2E kM38+cM38 / kM38aa+cM38aa | 0.9977 [0.9940, 1.0015] | pass (inside [0.97, 1.03]) |
+| A/A cold cM38 / cM38aa | 0.9981 [0.9944, 1.0017] | pass (inside [0.97, 1.03]) |
+| planted rank per attempt kM38X / kM38 (n=64) | 1.8304 [1.7954, 1.8730] | pass (lower bound above 1) |
+| planted exactness corruptions (headers, tables) | all rejected | pass |
+| A/A rank per attempt kM38 / kM38aa (n=256; sharing, reported) | 0.9956 [0.9823, 1.0100] | inside [0.97, 1.03] |
+
+End-to-end means (ms): kP + cP 124,139.0; kM38 + cM38 19,263.2; kM10 + cM10
+27,392.7. Each is the arm's mean rank stage plus its mean cold cost without
+rank over the 20 points.
+
+### Secondaries (none changes the verdict)
+
+**M10 (60 columns, norm <= 16), the secondary closure.**
+
+- E2E kP+cP / kM10+cM10 = **4.5318 [4.1827, 4.8771]**: M10 also beats the
+  baseline, but by less than M38.
+- E2E kM10+cM10 / kM38+cM38 = **1.4220 [1.3381, 1.5204]**: M10 costs 1.42x
+  the primary end to end, because it has 60 columns (K' = 600 / 10) against
+  16, so its rank stage is 11,460.5 ms against 2,749.8 ms (4.168x).
+- Cold without rank cP / cM10 = 1.0116 [1.0008, 1.0228]; online cP / cM10 =
+  1.6329 [0.8628, 2.8370]; setup cP / cM10 = 1.0048 [0.9985, 1.0114]; index
+  build cP / cM10 = 1.0018 [0.9955, 1.0088].
+- Probe law kM10 = 1.0572 [0.9163, 1.2332] (reported, never a gate; its upper
+  bound 1.2332 lies above the 1.15 end of the 0.85 to 1.15 band the figure
+  marks, so M10's law is not shown to sit inside that band).
+- Rank-stage share of E2E: 41.8%. S: E2E cold 1.5862, cold without rank
+  0.9225, online 0.010040.
+
+**Per-phase breakdown** (means over 20 points, ms; rank stage over the arm's
+own blocks).
+
+| Arm | Rank stage | Setup | Online | Cold without rank | E2E |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| kP + cP (rank-probe) | 108,021.2 | 15,834.7 | 283.1 | 16,117.8 | 124,139.0 |
+| kM38 + cM38 (primary) | 2,749.8 | 16,153.3 | 360.2 | 16,513.4 | 19,263.2 |
+| kM10 + cM10 | 11,460.5 | 15,758.8 | 173.4 | 15,932.2 | 27,392.7 |
+| cM38aa (A/A) | 2,761.8 (kM38aa) | 16,190.1 | 355.3 | 16,545.3 | |
+
+The index build is 14,256.8 (cP), 14,599.4 (cM38) and 14,230.9 ms (cM10)
+inside setup. The gain is the rank stage: 108.0 s to 2.75 s, 39.28x
+(kM10 9.43x). Ratios cP / cM38: cold without rank **0.9760 [0.9608, 0.9888]**,
+setup 0.9803 [0.9762, 0.9845], index build 0.9765 [0.9722, 0.9809], online
+0.7860 [0.3828, 1.4402], peak RSS 0.9883 [0.9882, 0.9884]. So the M38 cold
+path alone is about 2.4% slower than the baseline's (the interval excludes 1),
+and its online phase is slower in the mean (360.2 against 283.1 ms; 2.33 M
+against 1.88 M mean point operations) but not separated from it. The
+primary's gain comes entirely from the rank stage; the closure costs a little
+on the cold and online sides.
+
+**Rank-stage share of E2E**: kP 87.0%, kM38 14.3%, kM10 41.8%.
+
+**Probe law** (mean probes per relation over the law r / (166 E); n =
+attempts):
+
+| Arm | Estimate [95%] | n | Mean probes per relation | Law | Role |
+| --- | --- | ---: | ---: | ---: | --- |
+| kP | 0.9948 [0.9376, 1.0493] | 2400 | 1,718,940 | 1,727,857 | reported |
+| kM38 | 0.9625 [0.8147, 1.1449] | 256 | 1,636,235 | 1,700,069 | **gate** (band 0.80 to 1.20): pass |
+| kM10 | 1.0572 [0.9163, 1.2332] | 480 | 1,830,068 | 1,731,124 | reported |
+
+Per probe: kP 104.63, kM38 105.03, kM10 104.37 ns (planted kM38X 192.69 ns,
+the cost of the checked canonicalizer).
+
+**S** (cost over this run's measured rT770 step, 186.55 ns per step; per
+sqrt(r)):
+
+| Arm | E2E cold | cold without rank | online |
+| --- | ---: | ---: | ---: |
+| cP / kP+cP | 7.1882 | 0.9333 | 0.016393 |
+| cM38 / kM38+cM38 | 1.1154 | 0.9562 | 0.020856 |
+| cM38aa | | 0.9580 | 0.020571 |
+| cM10 / kM10+cM10 | 1.5862 | 0.9225 | 0.010040 |
+
+Delta S E2E cold, baseline to primary = -6.0728. The tuned rho's own S in this
+run: cold 0.10656, online 0.09706 (mean rT770 cold 1,840.3 ms, online
+1,676.2 ms).
+
+**Gap to tuned rho rT770** (IC / rho; 20 points; distance remaining, not a
+gate).
+
+| | E2E cold | Online |
+| --- | --- | --- |
+| baseline (kP + cP) | 67.456 [56.398, 82.450] | 0.1689 [0.0929, 0.2612] |
+| primary (kM38 + cM38) | **10.467 [8.817, 12.688]** | 0.2149 [0.1290, 0.3123] |
+| kM10 + cM10 | 14.885 [12.238, 18.078] | 0.1034 [0.0664, 0.1516] |
+
+The closure takes the end-to-end cold gap from 67x to 10.5x of the tuned rho;
+it is still a large gap. The online phases are about 0.17x to 0.21x of the
+tuned rho's online cost, so the remaining gap is setup and the rank stage.
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner (`runnervm8k3b6`), 20 cold points, 4
+  baseline and 16 candidate rank blocks, one fresh process per cold arm per
+  point. The rank arms' blocks and attempts are different targets on different
+  bases, so the primary's interval resamples each rank arm on its own; it
+  does not include any rank-stage difference between kM38 and its A/A beyond
+  the control (0.9956 [0.9823, 1.0100]).
+- The baseline here is the rank-probe producer, not the current n = 83 row
+  (index-lift). The index lift saves about 5.7 s of cold index build on that
+  producer (PR #981) and is not part of this run; the closure's cold path is
+  slower than the rank-probe producer's by about 2.4%. Whether the two changes
+  compose, and what the ratio against the index-lift row is, is the pending
+  paired run. Do not read 6.44 as a ratio against the current row.
+- Rank-stage size differs from run 39214027289's (108.0 s here against 143.7 s
+  there for kP), a different run, runner state and rank seeds; `S` and the
+  gaps are not comparable across runs. The ratio R is within this run. The
+  protocol's own success sentence says the M38 producer "becomes the new n=83
+  end-to-end cold baseline"; the baselines ledger rule overrides that
+  because the row has moved (see above).
+- Factor-base construction is charged to no arm, the convention of every
+  existing n = 83 row. A closure header holds B's first K' orbits plus
+  (M - 1) K' images, each costing two small scalar multiplications; charging
+  them to the closure arms would lower R slightly (they are tiny against the
+  108 s rank stage). Not replayed on another host class.
 
 ## Files
 
@@ -402,6 +554,7 @@ Pending: [run 39305259093](https://github.com/aburan28/cryptanalysis/actions/run
 | `arm.py`, `run_schedule.py` | one arm per pinned process; the schedule runner |
 | `verify_receipt.py` | gates, statistics, decision rule; `result.json`, `result_table.md` |
 | `figures/design.*`, `figures/local_law.*`, `make_local_figure.py` | design diagram; local probe-law graph (TikZ source, PDF, PNG) |
-| `make_figures.py` | result figure, after the run |
+| `run_github_39305259093/` | the archived artifact: allocation, builds, raw runs, `panel/result.json` |
+| `make_figures.py`, `figures/result.*` | result figure (TikZ source, PDF, PNG) |
 | `smoke/` | local diagnostics: runner smoke, tests, verifier statistics on synthetic rows |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
