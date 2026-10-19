@@ -1,0 +1,64 @@
+{
+  "candidate_id": null,
+  "input_law": "frozen positive and ordinary target rows; 128 deterministic code-assignment checks per row",
+  "panels": [
+    {
+      "field_degree": 41,
+      "first_code_offset": 224,
+      "first_free_bits": 5,
+      "positive_first_code": 253,
+      "positive_second_code": 63,
+      "target_index": 0
+    },
+    {
+      "field_degree": 41,
+      "first_code_offset": 224,
+      "first_free_bits": 5,
+      "positive_first_code": 253,
+      "positive_second_code": 63,
+      "target_index": 1
+    },
+    {
+      "field_degree": 131,
+      "first_code_offset": 0,
+      "first_free_bits": 4,
+      "positive_first_code": 3,
+      "positive_second_code": 16722,
+      "target_index": 0
+    },
+    {
+      "field_degree": 131,
+      "first_code_offset": 0,
+      "first_free_bits": 4,
+      "positive_first_code": 3,
+      "positive_second_code": 16722,
+      "target_index": 1
+    }
+  ],
+  "rss_cap_bytes": 4294967296,
+  "sources": {
+    "n131_coefficients": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_freecode_resultant_20261018/coefficients.json",
+      "sha256": "9109e2222876f4fd8c413f16dd7dac542fd04b7ab70a4784721638301311bb60"
+    },
+    "n41_coefficients": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_freecode_resultant_20261018/resultant_input.tsv",
+      "sha256": "e0e884a501ec57685a7bed70bf168ed94bf2c278fb70a9c8d0ca9d8c8f0450c9"
+    },
+    "prior_n131_replay": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_resultant_core_20261018/replay_result.json",
+      "sha256": "8e023731df98d4279a6e217798ed9167b483ee62620af1743f5cfc5e609413f5"
+    },
+    "prior_top_rank": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_topdegree_rank_20261018/result.json",
+      "sha256": "2030d5df8fc217bd30685b297a7bcd59f47ff343118d738bc2b297531f0e9b49"
+    },
+    "runner": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_degree1_syzygy_20261019/scan.py",
+      "sha256": "9c7438860b795919dc60630acc770c285a67212c326fe1eece65d1ea73c806bd"
+    }
+  },
+  "status": "FROZEN_BEFORE_DEGREE_FALL_SCAN",
+  "wall_cap_seconds": 120,
+  "worker_count": 1
+}
