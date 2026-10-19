@@ -8,7 +8,10 @@ date: 2026-10-19
 **Status (2026-10-19): protocol frozen, Tier 1 run started; no result yet.**
 The [protocol](protocol.json) and the [schedule](schedule.json) were
 committed before any Tier 1 timing. The run is
-RUN_URL. Every number below that is not from that run comes from the
+[39299176306](https://github.com/aburan28/cryptanalysis/actions/runs/39299176306)
+(commit `1ea6159b5`). The commit before it, `b469d7ada`, carried only the
+workflow, so its run 39299129126 has no experiment directory and is not
+evidence. Every number below that is not from that run comes from the
 cloud-agent VM and is a **local diagnostic**, not timing evidence (see
 [`smoke/`](smoke/README.md)). Exactness results are exact wherever they were
 run.
