@@ -72,3 +72,7 @@ at both ends. The separate native provenance archive contains the exact
 Linux build, test, failed first compile, sizing screen, and source files;
 its SHA-256 is
 `3f4473284c867dda7a8d7963e8b2588dfe25747c5c0507c2ed2fb009651649e5`.
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) capture the panel result, its proof boundary, costs and claim limits. `visuals.py` regenerates the committed dataflow and throughput figures from the audited JSON.
