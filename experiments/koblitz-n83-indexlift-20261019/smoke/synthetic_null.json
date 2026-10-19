@@ -1,0 +1,48 @@
+{
+ "S_e2e_cold": {
+  "cP": 6.3906131651812785,
+  "cPI": 6.390847540381152,
+  "cPIT": 6.390847540381152
+ },
+ "aa_cold": 0.9997269310790465,
+ "aa_e2e": 0.9999633264291798,
+ "controls": {
+  "aa_cold_inside_0.97_1.03": true,
+  "aa_e2e_inside_0.97_1.03": true,
+  "planted_lower_bound_above_1": true,
+  "sharing_rank_attempt_inside_0.97_1.03": true
+ },
+ "decision": "not_separated",
+ "mode": "null",
+ "own_rank": {
+  "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+  "ci95": [
+   0.9984134639244208,
+   1.0011949813074676
+  ],
+  "estimate": 0.9996086486902004,
+  "n_points": 20,
+  "rank_blocks": 4
+ },
+ "planted": 1.34,
+ "primary": {
+  "bootstrap": "blocks resampled; attempts resampled within each drawn block, shared by the block's rank processes; points resampled, paired; 10000 draws",
+  "ci95": [
+   0.999764101791913,
+   1.000151701037071
+  ],
+  "estimate": 0.9999633264291798,
+  "n_points": 20,
+  "rank_blocks": 4,
+  "shared_rank_stage_ms": 143736.10023749998
+ },
+ "sharing": {
+  "attempts": 2400,
+  "bootstrap": "blocks then attempts resampled, paired across arms, 2,000 draws",
+  "ci95": [
+   0.9986546881194839,
+   1.0017683843291694
+  ],
+  "estimate": 1.0004079830499109
+ }
+}
