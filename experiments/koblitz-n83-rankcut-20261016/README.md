@@ -5,13 +5,14 @@ date: 2026-10-16
 
 # n = 83 K600 rank cut: partner roots by point addition in the rank stage, end-to-end cold
 
-**Status (2026-10-16): protocol frozen; Tier 1 run pending.** The
-[protocol](protocol.json) and [schedule](schedule.json) were committed before
-any Tier 1 timing. The workflow `.github/workflows/n83-rankcut.yml` runs them
-on one GitHub `ubuntu-24.04` runner. No result is reported here yet. The
-numbers under "Cost structure", "Local profile" and in
+**Status (2026-10-16): Tier 1 run 38891404048 finished; verdict improvement.**
+The [protocol](protocol.json) and [schedule](schedule.json) were committed
+before any Tier 1 timing, and the run is archived in
+[`run_github_38891404048/`](run_github_38891404048/). The frozen primary is
+R = E2E(kS, cS) / E2E(kR, cR) = **1.3336 [1.3300, 1.3377]**. See "Result".
+The numbers under "Cost structure", "Local profile" and in
 [`smoke/`](smoke/README.md) come either from the archived baseline run or
-from the cloud-agent VM. The VM numbers are diagnostics, not timing evidence.
+from the cloud-agent VM; the VM numbers are diagnostics, not timing evidence.
 
 ## Question
 
@@ -241,6 +242,96 @@ slower runner): rank block about 1,050 s, cold segment about 90 s.
 
 See [`smoke/README.md`](smoke/README.md).
 
+## Result
+
+All gates pass: all 98 scheduled rows are present and valid (98 valid, 0
+invalid, 0 skipped by the time guard; 20/20 points, 4/4 rank blocks), one
+scalar per point across every IC process and the tuned rho (replayed in the
+pinned oracle), one relation and one probe count per point across every IC
+process, Q0 equal to the archived Feistel identity, every rank process's
+factor-log table equal to B's archived table, and identical rank relations,
+per-attempt probe vectors and root-call totals across kS, kR, kRaa and kRX in
+every block. In kR, every one of the 600 attempts per block resolved its hit
+with the exact S3 order (600 resolved hits per block, 0 fallback states, 0
+irregular inputs); kRX compared 518.5 to 549.7 million inputs per block with
+the S3 roots and found no difference. No contention flags. Both controls pass.
+`verify_receipt.py` re-run on the archive reproduces `panel/result.json` and
+`panel/result_table.md` byte for byte.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_figures.py`](make_figures.py)).](figures/result.png)
+
+### Primary (frozen rule)
+
+Improvement iff the 95% lower bound of R = E2E(kS, cS) / E2E(kR, cR) exceeds 1.
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E kS+cS / kR+cR** (20 points, 4 rank blocks x 600 attempts) | **1.3336 [1.3300, 1.3377]** | **improvement** |
+| A/A E2E kR+cR / kRaa+cS | 0.9997 [0.9977, 1.0018] | pass (inside [0.97, 1.03]) |
+| A/A cold cR / cS (same code) | 0.9982 [0.9946, 1.0013] | pass (inside [0.97, 1.03]) |
+| planted rank per attempt kRX / kR | 1.8749 [1.8708, 1.8787] | pass (lower bound above 1) |
+
+End-to-end cold means (rank stage mean over four blocks + mean cold over 20
+points): kS+cS 238.4 + 22.6 = 261.0 s; kR+cR 173.2 + 22.5 = 195.7 s. The
+single-process end-to-end ratio is 1.3336. Because the gates make every
+relation and probe the baseline's, this is a pure per-probe saving.
+
+### Secondaries (none changes the verdict)
+
+| Quantity | kS / cS (baseline) | kR / cR (candidate) | Ratio [95%] |
+| --- | ---: | ---: | :--- |
+| rank stage per attempt kS / kR | 397.11 ms | 288.38 ms | 1.3770 [1.3735, 1.3813] (n=2400) |
+| rank stage, whole (mean per block, s) | 238.39 | 173.15 | 1.3768 |
+| rank per attempt, short / middle / long third | | | 1.3766 [1.3737, 1.3794] / 1.3772 [1.3742, 1.3811] / 1.3770 [1.3732, 1.3811] |
+| ns per probe (mean 1,790,030 probes per attempt, same in every arm) | 221.85 | 161.10 | |
+| cold without rank (ms), cS / cR | 22,584.5 | 22,543.7 | 1.0018 [0.9988, 1.0055] (same code) |
+| setup (ms), cS / cR | 22,284.9 | 22,245.8 | 1.0018 [0.9987, 1.0055] |
+| online (ms), cS / cR | 299.6 | 297.9 | 1.0056 [0.9974, 1.0121] |
+| peak RSS (MiB), cS / cR | 1,788.4 | 1,788.4 | 1.0000 [0.9998, 1.0001] |
+| rank A/A kR / kRaa per attempt | | | 0.9999 [0.9976, 1.0023] |
+| rank stage's share of E2E | 91.3% | 88.5% | |
+
+- **Optional component cRI** (lift_scan in the index build). E2E kS+cS /
+  kR+cRI 1.3735 [1.3702, 1.3772] (190.0 s for kR+cRI); cold without rank cR /
+  cRI 1.3377 [1.3337, 1.3419] (22,543.7 against 16,853.0 ms); online cR / cRI
+  0.9999 [0.9981, 1.0020]. cRI is not the primary candidate.
+- **S** (cost over this run's measured rT770 step, 281.0 ns, per sqrt(r)):
+
+  | Arm | E2E cold | cold without rank | online |
+  | --- | ---: | ---: | ---: |
+  | cS (kS) | 10.032 | 0.8682 | 0.011517 |
+  | cR (kR) | 7.523 | 0.8666 | 0.011453 |
+  | cRI (kR) | 7.304 | 0.6479 | 0.011453 |
+
+  Delta S end-to-end cold cS to cR = -2.509. The tuned rho's own `S` in this
+  run: cold 0.11456, online 0.10406 (mean rT770 cold 2,980.2 ms, online
+  2,707.0 ms).
+- **Gap to tuned rho rT770** (IC / rho; 20 points; distance remaining, not a
+  gate). End-to-end cold: kS+cS 87.5699 [74.1352, 107.2251]; kR+cR 65.6656
+  [55.3831, 80.2071]; kR+cRI 63.7561 [53.9974, 77.8282]. Online: cS / rT
+  0.1107 [0.0602, 0.1752]; cR / rT 0.1101 [0.0590, 0.1744].
+- **Rank stage.** After the cut the rank stage is still 88.5% of the
+  end-to-end cold cost (173.2 of 195.7 s). The planted control shows what the
+  removed work costs: kRX / kR whole-stage 1.8743, 302.05 ns per probe
+  against 161.10 for kR.
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner (`runnervm8k3b6`, 4 vCPUs, one pinned
+  CPU), 20 cold points, four rank blocks per rank arm (seeds 201-204), one
+  fresh process per arm per point. The primary's narrow interval is over
+  points, blocks and the 600 paired attempts per block; the gain is in the
+  per-probe cost and is the same in all three terciles of attempt length.
+- This run's rT770 step (281.0 ns) differs from the stacked run's (316.66 ns),
+  so the S values here are not comparable to that run's S without the
+  step-time change; the paired ratio R is within this run.
+- The baseline kS here is the stacked producer re-run (cS 10.03 against 9.68
+  in run 38862448935, a different run and instances); the run's own R is the
+  claim, not a difference between the two runs' S.
+- The BL arm was not re-measured on this producer.
+
 ## Files
 
 | File | Role |
@@ -254,6 +345,7 @@ See [`smoke/README.md`](smoke/README.md).
 | `arm.py`, `run_schedule.py` | one arm per pinned process; the schedule runner |
 | `verify_receipt.py` | gates, statistics, decision rule; `result.json`, `result_table.md` |
 | `figures/design.*` | design diagram (TikZ source, PDF, PNG) |
-| `make_figures.py` | result figure (after the run) |
+| `run_github_38891404048/` | the archived artifact: allocation, builds, raw runs, `panel/result.json` |
+| `make_figures.py`, `figures/result.*` | result figure (TikZ source, PDF, PNG) |
 | `smoke/` | local diagnostics: profile, exactness of full local rank stages, tests, runner smoke |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
