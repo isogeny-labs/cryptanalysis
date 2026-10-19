@@ -1,0 +1,14 @@
+digraph Radix140 {
+  graph [rankdir=LR, bgcolor="white", pad="0.24", nodesep="0.4", ranksep="0.62", fontname="DejaVu Sans", label="Seventeen-position 140−τ nearest-digit recoding", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fb", color="#3d6f91", fontname="DejaVu Sans", fontsize=12, margin="0.16,0.11"];
+  edge [color="#405b70", fontname="DejaVu Sans", fontsize=11, arrowsize=0.8];
+  scalar [label="scalar k\nsecp256k1 GLV lattice"];
+  choose [label="17 steps\nπ = 140 − τ, norm 19,183"];
+  digits [label="minimum-norm digit\nwith exact residue / tie rule"];
+  seeds [label="six-unit orbit seeds\n3,198 digit + 3,677 terminal"];
+  points [label="signed point contributions\naccumulate 17 positions + terminal"];
+  output [label="fixed-base point\nindependent binary replay"];
+  scalar -> choose -> digits -> seeds -> points -> output;
+  note [shape=note, fillcolor="#fff5d9", color="#bd8f32", label="Native retained table: 4,178,836 bytes\n96-pass qualified panels: 18-vs-17 and 16-vs-17"];
+  seeds -> note [style=dashed, arrowhead=none];
+}
