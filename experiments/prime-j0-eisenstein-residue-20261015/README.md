@@ -84,6 +84,11 @@ and **1.021×** for 128 points, with all A/A gates passing. Both arms of a
 separate full-fixture replay checked all **12,288** outputs. Pinned Lean
 checks the pair-lattice endomorphism identity and its conditional transfer
 to a point map.
+The [source-linked report](ROTATED_RADIX_STEP_REPORT_2026-10-19.md) adds the
+method diagram, paired timing graph, PDF, and exact proof/replay boundaries.
+The [dated Lean rebuild index](lean-checks-2026-10-19/README.md) links fresh
+4.34.1 build and axiom receipts for 19 pinned proof modules while preserving
+their original frozen receipts.
 
 The [norm-4033 radix](RADIX4033.md) uses `π=64+ω=65−τ` and evaluates each
 Horner step with six doublings, one x rotation, and one projective addition.

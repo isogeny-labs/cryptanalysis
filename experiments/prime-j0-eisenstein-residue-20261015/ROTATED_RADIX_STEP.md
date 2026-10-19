@@ -20,3 +20,5 @@ The [independent auditor](analyze_tier1_tau32_rotated_step.py) checked exact sou
 The separately [frozen manifest](tier1-tau32-rotated-step-full-replay-cpu40-manifest.json) and [rules](tier1-tau32-rotated-step-full-replay-cpu40-rules.json) sent two identical candidate arms through the serial worker. Job `09eeb419886a43e393492b4511a8c233` completed with stable artifacts and checked all **12,288** frozen outputs in each arm. The [auditor](analyze_tier1_tau32_rotated_step_full_replay.py), [launch](tier1-tau32-rotated-step-full-replay-cpu40-launch.json), [audit](tier1-tau32-rotated-step-full-replay-cpu40-audit.json), and [raw archive](tau32-rotated-step-full-replay-raw.tar.gz) retain the record. The two intervals were **3.699 s** and **3.712 s**. This A/A replay has a null speedup field.
 
 The measured gain is small under one cloud-instance envelope. A separately frozen replication on another allocation would test transfer before changing the default arithmetic route.
+
+The [source-linked report](ROTATED_RADIX_STEP_REPORT_2026-10-19.md) adds the method diagram, paired timing graph, PDF, and the finite proof/replay limits.
