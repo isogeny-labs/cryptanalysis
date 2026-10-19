@@ -1,0 +1,188 @@
+{
+ "aa_broken": {
+  "aa_cold": {
+   "ci95": [
+    0.9516982974111772,
+    0.9543756261074577
+   ],
+   "estimate": 0.9530003878328865,
+   "n": 20
+  },
+  "aa_e2e": {
+   "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+   "ci95": [
+    0.9587769761022987,
+    0.9619688504503449
+   ],
+   "estimate": 0.9603382088941669,
+   "n_points": 20,
+   "rank_blocks": 16
+  },
+  "controls": {
+   "aa_cold_inside_0.97_1.03": false,
+   "aa_e2e_inside_0.97_1.03": false,
+   "planted_exactness_corruptions_rejected": true,
+   "planted_lower_bound_above_1": true
+  },
+  "decision": "invalid",
+  "planted": {
+   "attempts": 64,
+   "bootstrap": "blocks then attempts resampled, paired across arms, 2,000 draws",
+   "ci95": [
+    1.6066102342143247,
+    1.7258739542119228
+   ],
+   "estimate": 1.6653878784673186
+  },
+  "primary": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    7.994844262137139,
+    8.656317059887877
+   ],
+   "estimate": 8.325350500832648,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    16
+   ]
+  },
+  "secondary_M10": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    4.060649444982317,
+    4.6929940637342185
+   ],
+   "estimate": 4.361560514825275,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    8
+   ]
+  }
+ },
+ "as_measured": {
+  "aa_cold": {
+   "ci95": [
+    0.99737362303439,
+    1.0008703586032937
+   ],
+   "estimate": 0.9991400022137447,
+   "n": 20
+  },
+  "aa_e2e": {
+   "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+   "ci95": [
+    0.9969823442163401,
+    1.0010641403566083
+   ],
+   "estimate": 0.9989993729673565,
+   "n_points": 20,
+   "rank_blocks": 16
+  },
+  "controls": {
+   "aa_cold_inside_0.97_1.03": true,
+   "aa_e2e_inside_0.97_1.03": true,
+   "planted_exactness_corruptions_rejected": true,
+   "planted_lower_bound_above_1": true
+  },
+  "decision": "improvement",
+  "planted": {
+   "attempts": 64,
+   "bootstrap": "blocks then attempts resampled, paired across arms, 2,000 draws",
+   "ci95": [
+    1.6234905623687272,
+    1.7524840967264688
+   ],
+   "estimate": 1.6897838021766476
+  },
+  "primary": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    7.988742380835491,
+    8.651126774787526
+   ],
+   "estimate": 8.317254765176443,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    16
+   ]
+  },
+  "secondary_M10": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    4.054170560444854,
+    4.689026187039896
+   ],
+   "estimate": 4.354408407787766,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    8
+   ]
+  }
+ },
+ "null": {
+  "aa_cold": {
+   "ci95": [
+    0.9985171880950574,
+    1.002797568909312
+   ],
+   "estimate": 1.0007517801178951,
+   "n": 20
+  },
+  "aa_e2e": {
+   "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+   "ci95": [
+    0.997681354331803,
+    1.0079061069339503
+   ],
+   "estimate": 1.0026748708236164,
+   "n_points": 20,
+   "rank_blocks": 16
+  },
+  "controls": {
+   "aa_cold_inside_0.97_1.03": true,
+   "aa_e2e_inside_0.97_1.03": true,
+   "planted_exactness_corruptions_rejected": true,
+   "planted_lower_bound_above_1": true
+  },
+  "decision": "not_separated",
+  "planted": {
+   "attempts": 64,
+   "bootstrap": "blocks then attempts resampled, paired across arms, 2,000 draws",
+   "ci95": [
+    1.5992565922291964,
+    1.7465516338207492
+   ],
+   "estimate": 1.6717549198767527
+  },
+  "primary": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    0.9042596034830267,
+    1.1122059349874112
+   ],
+   "estimate": 1.0,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    16
+   ]
+  },
+  "secondary_M10": {
+   "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block, on its own; points resampled, paired; 10000 draws",
+   "ci95": [
+    4.066064987875603,
+    4.707557398030934
+   ],
+   "estimate": 4.3704634187853495,
+   "n_points": 20,
+   "rank_blocks": [
+    4,
+    8
+   ]
+  }
+ }
+}
