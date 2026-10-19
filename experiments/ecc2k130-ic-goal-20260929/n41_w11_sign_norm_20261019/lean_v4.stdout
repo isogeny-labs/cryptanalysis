@@ -1,0 +1,22 @@
+SignNorm.lean:15:25: error: unsolved goals
+F : Type
+inst✝ : Field F
+a : F
+rest : List F
+ih : rest.prod ≠ 0 → ∀ (x : F), x ∈ rest → x ≠ 0
+hprod : (a :: rest).prod ≠ 0
+hz : a = 0
+⊢ 0 * rest.prod = 0
+SignNorm.lean:19:36: error: unsolved goals
+F : Type
+inst✝ : Field F
+a : F
+rest : List F
+ih : rest.prod ≠ 0 → ∀ (x : F), x ∈ rest → x ≠ 0
+hprod : (a :: rest).prod ≠ 0
+ha : a ≠ 0
+hz : rest.prod = 0
+⊢ a * 0 = 0
+'SignNorm.factor_nonzero_of_product_nonzero' depends on axioms: [propext, sorryAx]
+'SignNorm.trace_norm_excludes_each_sign' depends on axioms: [propext, sorryAx]
+'SignNorm.trace_norm_excludes_box' depends on axioms: [propext, sorryAx]
