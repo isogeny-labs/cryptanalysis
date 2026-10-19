@@ -123,6 +123,22 @@ The qualified 32- and 128-restart results locate a reuse regime where the
 mixed-76 evaluation saving exceeds its preparation cost. They do not select
 the one-restart worker path, whose separate A/A gate failed.
 
+The reuse run did not capture process peak RSS. Its retained-byte fields
+measure the tables and plans reported by each implementation, so peak RSS
+is still unknown. The failed A/A controls at counts 1 and 8 also prevent a
+qualified crossover between those counts and 32. The next dedicated-host
+reuse panel must retain all four counts on the same 32 Q points and scalar
+prefixes, alternate the three arms, and keep an A/A decision for each count.
+Record each child process's peak RSS in addition to the existing table bytes,
+Q-dependent preparation, evaluation, and complete target-charged time. Use a
+per-child Linux `wait4` resource receipt or an equivalent verified child-only
+peak measurement; the cumulative `RUSAGE_CHILDREN.ru_maxrss` value cannot be
+subtracted to obtain an arm's peak. Freeze the runner, source and binary
+hashes, host allocation, and measurement method before timing. Run this panel
+serially after the fresh-target worker confirmation on the same isolated host.
+Preserve the earlier 1/8 failures and report the crossover only from counts
+whose new A/A gates pass.
+
 The collaborative rho phase profiler in the `crypto` repository records one
 deterministic secp256k1 worker trace with 32 branch points,
 four starts, and 10,152 walk steps. Its same-state local runs show large
