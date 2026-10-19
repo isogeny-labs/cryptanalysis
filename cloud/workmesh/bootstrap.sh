@@ -108,7 +108,7 @@ CONDUCTOR_HTTP_PROXY=${CONDUCTOR_HTTP_PROXY:-}
 case "${CONDUCTOR_ENDPOINT:-}" in *'@'*|*'?'*|*'#'*) die 'CONDUCTOR_ENDPOINT must not contain credentials, query parameters or fragments' ;; esac
 CLAUDE_RC=${CLAUDE_RC:-auto}
 CODEX_RC=${CODEX_RC:-auto}
-INSTALL_CLIS=${INSTALL_CLIS:-yes}
+INSTALL_CLIS=${INSTALL_CLIS:-no}
 INSTALL_CLOUD_TOOLS=${INSTALL_CLOUD_TOOLS:-yes}
 INSTALL_LEAN=${INSTALL_LEAN:-no}
 INSTALL_TPU=${INSTALL_TPU:-no}
