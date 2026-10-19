@@ -45,3 +45,7 @@ python3 experiments/prime-j0-batch-inversion-crossover-20261015/analyze_crossove
 ```
 
 The results apply to the specified x86-64 RunPod instance, frozen 128-scalar fixture, pinned CPU 13, and listed cgroup observations. A container cannot certify physical-host exclusivity, so this is Tier 1 instance evidence. The direct eight-size screen suggests diminishing gains after size 32, but only sizes 1 and 2 passed the frozen paired gate here.
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) preserve the exploratory eight-size screen, the qualified regression at size 1, and the qualified size-2 gain. `visuals.py` generates the committed chunk-inversion diagram and paired result graph from the audit JSON.
