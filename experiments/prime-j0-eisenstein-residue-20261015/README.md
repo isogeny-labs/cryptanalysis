@@ -325,6 +325,9 @@ rotation, and pack/unpack checks. The [raw archive](273359b6d2724700ad59ea1ddc97
 has SHA-256 `2d8f889cd7ecfe2d2532b2c672bf6d51ec368ddf2002a95570fb64c90f91bc1b`;
 the provenance archive has SHA-256
 `a59b84ac34fb3e98df29b8714fd3c0b5cb3b6e74acae32655587472bfbdfcf88`.
+The [source-linked reduction report](EISENSTEIN_MONTGOMERY_REPORT_2026-10-19.md)
+adds a quotient-reduction diagram, paired Tier 1 ratio graph, PDF, and the
+formal and native refinement boundary.
 
 ## Proof map
 
