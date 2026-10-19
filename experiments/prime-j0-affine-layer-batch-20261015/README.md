@@ -2,7 +2,7 @@
 
 The candidate changes the point-addition schedule for 128 independent secp256k1 scalar outputs. After the existing `371−τ` radix-14 recoder selects up to 15 affine points per scalar, it builds a balanced tree across each scalar's selected points. At each tree level it gathers every nonzero affine-addition denominator across all 128 scalars, performs one Montgomery-style batch inversion for the level, and finishes the affine additions. A full 15-leaf batch uses at most four shared field inversions, one per level; the reference forms XYZZ accumulators and batch-inverts only their final `ZZZ` values. The table and recoder stay the same.
 
-The hash-guarded `native_affine_layer_overlay.py` applies to the source snapshot in the prior batch-size experiment. The release test `radix_136531_affine_layer_batch_matches_independent_binary` passed 128 independent frozen scalars against fixture points and a separate binary multiplier, plus zero, inverse-pair, and point-doubling cases. The source and binary hashes are in `tier1-affine-rules.json`; the Linux test and build logs are retained. A direct output-verified diagnostic returned 54.817360 ms for 12,288 outputs; it is exploratory and only selected the paired gate.
+The hash-guarded `native_affine_layer_overlay.py` applies to the source snapshot in the prior batch-size experiment. The release test `radix_136531_affine_layer_batch_matches_independent_binary` passed 128 independent frozen scalars against fixture points and a separate binary multiplier, plus zero, inverse-pair, and point-doubling cases. The source and binary hashes are in `tier1-affine-rules.json`; the Linux test and build logs are retained. A direct output-verified diagnostic returned 54.817360 ms for 12,288 outputs; it is exploratory and only selected the paired gate. The pinned Rust source bytes and their generating repository/revision are not included in this PR, so these retained build and holdout records cannot be reproduced from the submitted files alone, and the source-hash guard cannot be independently confirmed here.
 
 The frozen Tier 1 panel compares 128-output affine-layer batches with 128-output XYZZ final-inversion batches on the same 128 scalar fixture, 96 passes per arm, and 16 repeats of A/A, comparison, A/A. The serial runner alternates arm order and checks every output. The pair acceptance requires all 96 arms and 48 pairs valid, adjacent A/A ratios in `[0.90,1.11]`, and a paired bootstrap 95% interval wholly on one side of one. Table preparation and fixture loading precede the online interval; all point additions, inversions, and affine recovery are included.
 
@@ -51,3 +51,7 @@ python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py
 python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py --job fe00f695389443f08d6cbf003f1a8b7e
 python3 experiments/prime-j0-affine-layer-batch-20261015/analyze_affine_tier1.py --job 251bb8443cad471ab3e6162307fd0c46
 ```
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) summarize all three retained panels, including the failed A/A gates and the qualified CPU-40 result. The graph generator `visuals.py` reads each committed audit JSON so the figures show the failed-gate attempts alongside the qualified panel.
