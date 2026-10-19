@@ -1,0 +1,27 @@
+{
+  "arm": "baseline",
+  "codes": null,
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=20",
+    "--printsol=1",
+    "--verb=1",
+    "--xor=0",
+    "--maxmatrixrows=10000",
+    "--maxmatrixcols=15000",
+    "--maxnummatrices=10",
+    "--random=2026101814",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/official_q_phi_fiber_d10_m15_v1.xcnf"
+  ],
+  "exit_code": -15,
+  "protocol_sha256": "dd7618a1668b530c133f92d4a8b3b4cfd4c6ee0a2d5029dcace83474eb36dd0f",
+  "query_sha256": "0a2f4b3e3acc8e26049921567b3c3b04b2a1eace4e86ccb8a193bd4cca29fd41",
+  "sampled_peak_combined_rss_bytes": 483868672,
+  "status": "BOUNDED_UNKNOWN_ARM_WALL_CAP",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "4fea60d2239669322b26da3d714695a6b483badfcc79eec189c1fe84cd68e042",
+  "stop_reason": "ARM_WALL_CAP",
+  "units": [],
+  "wall_seconds": 25.058470667005167
+}

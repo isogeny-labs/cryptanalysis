@@ -1,0 +1,158 @@
+{
+  "baseline_control": true,
+  "campaign_parent_wall_cap_seconds": 550,
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "invalid_domain_control": [
+    0,
+    1,
+    2
+  ],
+  "leaf_variable_rule": "leaf i bit j is XCNF variable 2+10*i+j, for i=0..14 and j=0..9",
+  "ordinary_prefixes": [
+    [
+      637,
+      989,
+      110
+    ],
+    [
+      202,
+      491,
+      236
+    ],
+    [
+      20,
+      222,
+      906
+    ],
+    [
+      548,
+      179,
+      93
+    ],
+    [
+      863,
+      496,
+      273
+    ],
+    [
+      156,
+      675,
+      202
+    ],
+    [
+      1014,
+      132,
+      421
+    ],
+    [
+      525,
+      197,
+      631
+    ],
+    [
+      922,
+      414,
+      222
+    ],
+    [
+      282,
+      57,
+      2
+    ],
+    [
+      661,
+      239,
+      442
+    ],
+    [
+      807,
+      431,
+      55
+    ],
+    [
+      913,
+      31,
+      896
+    ],
+    [
+      301,
+      865,
+      356
+    ],
+    [
+      305,
+      942,
+      793
+    ],
+    [
+      39,
+      716,
+      145
+    ]
+  ],
+  "per_arm_parent_wall_cap_seconds": 25,
+  "public_point": [
+    "430759168655010015042626130972019805844",
+    "85516958922582020728685549036919229424"
+  ],
+  "rss_cap_bytes": 4294967296,
+  "sample_seed": 2026101814,
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=20",
+    "--printsol=1",
+    "--verb=1",
+    "--xor=0",
+    "--maxmatrixrows=10000",
+    "--maxmatrixcols=15000",
+    "--maxnummatrices=10",
+    "--random=2026101814"
+  ],
+  "sources": {
+    "curves.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/curves.py",
+      "sha256": "1cdf373f471e0703693e12bf1f5a9e1ef8dd7e8853951968b7efac58095ecd63"
+    },
+    "field.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/field.py",
+      "sha256": "8ddb4497c2306f5d2fb49c60124f9f0d1465efac237985685272776f7f136b67"
+    },
+    "formula": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/official_q_phi_fiber_d10_m15_v1.xcnf",
+      "sha256": "0a2f4b3e3acc8e26049921567b3c3b04b2a1eace4e86ccb8a193bd4cca29fd41"
+    },
+    "formula_receipt": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/d10_m15_formula_and_planted_control_v1.json",
+      "sha256": "b70ed45ea38718870985c270749e3171fd7331c658095b08bf72b6030d09cfa3"
+    },
+    "freeze.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_three_leaf_prefix_20261018/freeze.py",
+      "sha256": "c34f8ac54d96cf22e5a23f8688be654a37bc9abb2edeba1086e02f6c2ba7518d"
+    },
+    "geometry": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/d10_exact_geometry_v1.json",
+      "sha256": "8fae791696e014ba25c5879e468ad5e281374337d525787f657cf53d6b668cbb"
+    },
+    "run.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_three_leaf_prefix_20261018/run.py",
+      "sha256": "06d5636f960389842bbd0a6ac05c4cafc90477f9cb5de6e00172bf4c02bac926"
+    },
+    "sage_runtime_info": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_three_leaf_prefix_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "solver": {
+      "path": "/opt/homebrew/bin/cryptominisat5",
+      "sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+    },
+    "workload": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w2_m15_official_single_target_4g_r3_20261004/workload.json",
+      "sha256": "e9acc7f5709828b3a1eb350d0eb8baa68cd68c018f92cf29093798a140f6a0d0"
+    }
+  },
+  "status": "FROZEN_BEFORE_SOLVER",
+  "target_count": 1,
+  "valid_codes_sha256": "bbac66c2727de8dfe0285ff7f592cc9eb22ade1c8ee440f6787752633869ad33",
+  "workload_id": "3c1992b7c92f"
+}
