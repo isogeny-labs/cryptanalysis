@@ -32,6 +32,9 @@ def main():
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--libcrypto-path',
                         default='/usr/lib/x86_64-linux-gnu/libcrypto.so.3')
+    parser.add_argument('--fixtures', type=Path, default=FIXTURES)
+    parser.add_argument('--provider', choices=('runpod', 'aws_ec2'),
+                        default='runpod')
     parser.add_argument('--peak-rss', action='store_true',
                         help='freeze the per-child wait4 peak-RSS runner')
     args = parser.parse_args()
@@ -42,12 +45,13 @@ def main():
             '--bundle-path', args.bundle_path,
             '--libcrypto-sha256', args.libcrypto_sha256,
             '--libcrypto-path', args.libcrypto_path,
-            '--execution-cpu', args.execution_cpu, '--output-dir', temporary]
+            '--execution-cpu', args.execution_cpu, '--output-dir', temporary,
+            '--fixtures', str(args.fixtures), '--provider', args.provider]
         subprocess.run(base, check=True, capture_output=True)
         root = Path(temporary)
         manifest = json.loads((root / 'tier1-rho-closeout-one-manifest.json').read_text())
         rules = json.loads((root / 'tier1-rho-closeout-one-rules.json').read_text())
-    fixture_manifest = json.loads((FIXTURES / 'manifest.json').read_text())
+    fixture_manifest = json.loads((args.fixtures / 'manifest.json').read_text())
     binary = rules['paths']['binary']
     cases = []
     targets = {}
@@ -55,7 +59,7 @@ def main():
         for index in range(32):
             qi = f'q{index:02d}'
             entry = fixture_manifest['fixtures'][index]
-            fixture = FIXTURES / entry['path']
+            fixture = args.fixtures / entry['path']
             value = json.loads(fixture.read_text())
             expected = value['cases'][count - 1]['point_hex']
             remote_fixture = '/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/' + entry['path']

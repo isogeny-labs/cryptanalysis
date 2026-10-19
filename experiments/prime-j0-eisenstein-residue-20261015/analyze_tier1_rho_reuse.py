@@ -39,7 +39,8 @@ def interval(values, seed):
     return [draws[250], draws[9749]]
 
 
-def audit(manifest_path, rules_path, raw_path, bundle_path):
+def audit(manifest_path, rules_path, raw_path, bundle_path,
+          fixtures=FIXTURES):
     manifest = json.loads(manifest_path.read_text())
     rules = json.loads(rules_path.read_text())
     peak_rule = rules.get('peak_rss')
@@ -51,14 +52,15 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
                    '--libcrypto-sha256', rules['hashes']['libcrypto'],
                    '--libcrypto-path', rules['paths']['libcrypto'],
                    '--execution-cpu', str(rules['execution_cpu']),
-                   '--output-dir', temporary]
+                   '--output-dir', temporary, '--fixtures', str(fixtures),
+                   '--provider', manifest['allocation']['provider']]
         if peak_rule:
             command.append('--peak-rss')
         completed = subprocess.run(command, capture_output=True, text=True)
         assert completed.returncode == 0, completed.stdout + completed.stderr
         assert manifest == json.loads((Path(temporary) / MANIFEST_NAME).read_text())
         assert rules == json.loads((Path(temporary) / RULE_NAME).read_text())
-    fixture_receipt = json.loads((FIXTURES / 'full-verification.json').read_text())
+    fixture_receipt = json.loads((fixtures / 'full-verification.json').read_text())
     assert fixture_receipt['status'] == 'pass'
     assert fixture_receipt['scope'] == 'all_rows'
     assert fixture_receipt['rows_verified'] == 4096
@@ -67,7 +69,7 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
     assert len(cases) == 396 and list(cases) == rules['case_order']
     assert manifest['repetitions'] == REPETITIONS
     for case_id, target in rules['case_targets'].items():
-        path = FIXTURES / target['fixture']
+        path = fixtures / target['fixture']
         assert digest(path.read_bytes()) == target['fixture_sha256']
         fixture = json.loads(path.read_text())
         assert cases[case_id]['expected_result'] == fixture['cases'][
@@ -272,9 +274,11 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('manifest', 'rules', 'raw', 'bundle-path', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--fixtures', type=Path, default=FIXTURES)
     args = parser.parse_args()
     try:
-        result = audit(args.manifest, args.rules, args.raw, args.bundle_path)
+        result = audit(args.manifest, args.rules, args.raw, args.bundle_path,
+                       args.fixtures)
     except Exception as error:
         result = {'status': 'audit_error', 'error_type': type(error).__name__,
                   'error': str(error)}

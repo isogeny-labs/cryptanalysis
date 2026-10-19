@@ -41,9 +41,9 @@ def source_hashes(root: Path) -> dict[str, str]:
             if path.is_file() and path.name != 'source-manifest.json'}
 
 
-def main(output: Path) -> None:
-    verification = json.loads((FIXTURES / 'full-verification.json').read_text())
-    manifest_bytes = (FIXTURES / 'manifest.json').read_bytes()
+def main(output: Path, fixtures: Path = FIXTURES) -> None:
+    verification = json.loads((fixtures / 'full-verification.json').read_text())
+    manifest_bytes = (fixtures / 'manifest.json').read_bytes()
     assert verification['status'] == 'pass' and verification['scope'] == 'all_rows'
     assert verification['rows_verified'] == verification['total_rows'] == 4096
     assert verification['manifest_sha256'] == sha256(manifest_bytes).hexdigest()
@@ -81,11 +81,11 @@ def main(output: Path) -> None:
         fixture_root = closeout / 'fixtures/rho-closeout'
         fixture_root.mkdir(parents=True)
         for entry in fixture_manifest['fixtures']:
-            source = FIXTURES / entry['path']
+            source = fixtures / entry['path']
             assert sha256(source.read_bytes()).hexdigest() == entry['sha256']
             shutil.copyfile(source, fixture_root / entry['path'])
-        shutil.copyfile(FIXTURES / 'manifest.json', fixture_root / 'manifest.json')
-        shutil.copyfile(FIXTURES / 'full-verification.json',
+        shutil.copyfile(fixtures / 'manifest.json', fixture_root / 'manifest.json')
+        shutil.copyfile(fixtures / 'full-verification.json',
                         fixture_root / 'full-verification.json')
         closeout_manifest = {'schema': 1, 'parent_bundle_sha256': MIXED76_SHA256,
             'fixture_manifest_sha256': sha256(manifest_bytes).hexdigest(),
@@ -105,5 +105,6 @@ def main(output: Path) -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--fixtures', type=Path, default=FIXTURES)
     args = parser.parse_args()
-    main(args.output)
+    main(args.output, args.fixtures)

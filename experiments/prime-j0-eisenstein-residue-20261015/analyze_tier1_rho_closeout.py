@@ -26,7 +26,8 @@ def digest(data: bytes) -> str:
     return sha256(data).hexdigest()
 
 
-def regenerate(manifest: dict, rules: dict, bundle: Path) -> None:
+def regenerate(manifest: dict, rules: dict, bundle: Path,
+               fixtures: Path) -> None:
     with TemporaryDirectory(prefix='rho-closeout-audit-') as temporary:
         command = [sys.executable, str(HERE / 'make_tier1_rho_closeout_panel.py'),
                    '--instance-id', rules['instance_id'],
@@ -37,7 +38,8 @@ def regenerate(manifest: dict, rules: dict, bundle: Path) -> None:
                    '--remote-root', str(Path(rules['paths']['binary']).parents[2]),
                    '--remote-panels', str(Path(rules['paths']['bundle']).parent),
                    '--provider', manifest['allocation']['provider'],
-                   '--bundle-path', str(bundle), '--output-dir', temporary]
+                   '--bundle-path', str(bundle), '--output-dir', temporary,
+                   '--fixtures', str(fixtures)]
         result = subprocess.run(command, text=True, capture_output=True)
         assert result.returncode == 0, result.stdout + result.stderr
         root = Path(temporary)
@@ -45,15 +47,15 @@ def regenerate(manifest: dict, rules: dict, bundle: Path) -> None:
         assert rules == json.loads((root / 'tier1-rho-closeout-one-rules.json').read_text())
 
 
-def replay_first_points(rules: dict) -> None:
-    receipt = json.loads((FIXTURES / 'full-verification.json').read_text())
+def replay_first_points(rules: dict, fixtures: Path) -> None:
+    receipt = json.loads((fixtures / 'full-verification.json').read_text())
     assert receipt['status'] == 'pass' and receipt['scope'] == 'all_rows'
     assert receipt['rows_verified'] == 4096
     assert receipt['manifest_sha256'] == rules['hashes']['fixture_manifest']
-    fixture_manifest = json.loads((FIXTURES / 'manifest.json').read_text())
+    fixture_manifest = json.loads((fixtures / 'manifest.json').read_text())
     assert len(fixture_manifest['fixtures']) == 32
     for entry in fixture_manifest['fixtures']:
-        path = FIXTURES / entry['path']
+        path = fixtures / entry['path']
         assert digest(path.read_bytes()) == entry['sha256']
         fixture = json.loads(path.read_text())
         q = tuple(int(word, 16) for word in fixture['q_hex'].split(':'))
@@ -81,11 +83,11 @@ def interval(cluster_logs: list[float], rules: dict) -> list[float] | None:
 
 
 def audit(manifest_path: Path, rules_path: Path, raw_path: Path,
-          bundle_path: Path) -> dict:
+          bundle_path: Path, fixtures: Path = FIXTURES) -> dict:
     manifest = json.loads(manifest_path.read_text())
     rules = json.loads(rules_path.read_text())
-    regenerate(manifest, rules, bundle_path)
-    replay_first_points(rules)
+    regenerate(manifest, rules, bundle_path, fixtures)
+    replay_first_points(rules, fixtures)
     case_order = rules['case_order']
     cases = {case['id']: case for case in manifest['cases']}
     assert len(case_order) == len(cases) == 99
@@ -316,10 +318,12 @@ def main() -> None:
     parser.add_argument('--rules', type=Path, required=True)
     parser.add_argument('--raw', type=Path, required=True)
     parser.add_argument('--bundle-path', type=Path, required=True)
+    parser.add_argument('--fixtures', type=Path, default=FIXTURES)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     try:
-        receipt = audit(args.manifest, args.rules, args.raw, args.bundle_path)
+        receipt = audit(args.manifest, args.rules, args.raw, args.bundle_path,
+                        args.fixtures)
     except Exception as error:
         receipt = {'schema': 1, 'status': 'audit_error',
                    'error_type': type(error).__name__, 'error': str(error),

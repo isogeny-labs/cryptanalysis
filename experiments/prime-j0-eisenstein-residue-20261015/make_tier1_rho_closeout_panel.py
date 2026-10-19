@@ -28,6 +28,7 @@ def main() -> None:
     parser.add_argument('--instance-id', required=True)
     parser.add_argument('--binary-sha256', required=True)
     parser.add_argument('--bundle-path', type=Path, required=True)
+    parser.add_argument('--fixtures', type=Path, default=FIXTURES)
     parser.add_argument('--libcrypto-sha256', required=True)
     parser.add_argument('--libcrypto-path', type=Path,
                         default=Path('/usr/lib/x86_64-linux-gnu/libcrypto.so.3'))
@@ -41,20 +42,20 @@ def main() -> None:
     for value in (args.binary_sha256, args.libcrypto_sha256):
         assert re.fullmatch(r'[0-9a-f]{64}', value)
     assert args.execution_cpu >= 0
-    verification = json.loads((FIXTURES / 'full-verification.json').read_text())
-    fixture_manifest = json.loads((FIXTURES / 'manifest.json').read_text())
+    verification = json.loads((args.fixtures / 'full-verification.json').read_text())
+    fixture_manifest = json.loads((args.fixtures / 'manifest.json').read_text())
     assert verification['scope'] == 'all_rows' and verification['status'] == 'pass'
     assert verification['rows_verified'] == 4096
-    assert verification['manifest_sha256'] == digest(FIXTURES / 'manifest.json')
+    assert verification['manifest_sha256'] == digest(args.fixtures / 'manifest.json')
     assert len(fixture_manifest['fixtures']) == 32
     from build_rho_closeout_bundle import MIXED76_SHA256
     with tarfile.open(args.bundle_path, 'r:gz') as archive:
         source_manifest_bytes = archive.extractfile('source-manifest.json').read()
     source_manifest = json.loads(source_manifest_bytes)
     assert source_manifest['parent_bundle_sha256'] == MIXED76_SHA256
-    assert source_manifest['fixture_manifest_sha256'] == digest(FIXTURES / 'manifest.json')
+    assert source_manifest['fixture_manifest_sha256'] == digest(args.fixtures / 'manifest.json')
     for entry in fixture_manifest['fixtures']:
-        assert digest(FIXTURES / entry['path']) == entry['sha256']
+        assert digest(args.fixtures / entry['path']) == entry['sha256']
         name = 'fixtures/rho-closeout/' + entry['path']
         assert source_manifest['source_sha256'][name] == entry['sha256']
     binary = args.remote_root / 'target/release/eisenstein_fixed'
@@ -119,7 +120,7 @@ def main() -> None:
               'bundle': digest(args.bundle_path),
               'source_manifest': sha256(source_manifest_bytes).hexdigest(),
               'source_files': source_manifest['source_sha256'],
-              'fixture_manifest': digest(FIXTURES / 'manifest.json')}
+              'fixture_manifest': digest(args.fixtures / 'manifest.json')}
     rules = {'schema': 1, 'purpose': 'rho-closeout-one-restart',
              'tier': 'tier1_instance', 'instance_id': args.instance_id,
              'execution_cpu': args.execution_cpu,

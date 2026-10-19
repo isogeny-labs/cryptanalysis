@@ -234,3 +234,9 @@ allocation, and dispatch hashes must be frozen before timing on another
 dedicated host. The AWS quota request remains open. The integration gate
 still requires exact replay, host and memory acceptance, and a 32-Q paired
 95% lower speedup bound above 1.05.
+
+The [fresh-Q arithmetic confirmation plan](RHO_CLOSEOUT_CONFIRMATION_PLAN.md)
+uses that same independently verified fixture for a new one-restart
+OpenSSL/radix-81/mixed-76 comparison and a separate four-count reuse panel
+with process peak RSS. Its source bundle reproduced twice; concrete binary
+and host receipts remain pending AWS quota and must be frozen before timing.
