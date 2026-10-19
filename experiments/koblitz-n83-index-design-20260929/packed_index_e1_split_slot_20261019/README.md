@@ -1,5 +1,9 @@
 # N83 split-slot root hash
 
+The [nine-call result](RESULT.md) preserves exact first-witness semantics
+while reducing table allocation by one-third. Local target-stage medians
+were within 4.5 ms for the split slot and separate hash.
+
 This experiment compares three open-addressed layouts on the same Q1325
 N83 root-index stream: separate 16-byte keys and 8-byte values, one packed
 `u128` slot, and one 16-byte slot split into two `u64` halves. The split
