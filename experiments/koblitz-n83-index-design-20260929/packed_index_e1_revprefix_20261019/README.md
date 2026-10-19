@@ -1,5 +1,10 @@
 # N83 packed root index: reversible-prefix comparison
 
+The [nine-call result](RESULT.md) shows 42.45% fewer target lookup
+comparisons and a 1.174× median stage ratio against the original packed
+layout, with first-witness and operation-count equivalence checked across
+all three arms. The result is a bounded local stage diagnostic.
+
 This experiment compares three exact root-index layouts on the same Q1325
 factor base, sampled index states, and one public target: the E-1 open-addressed
 hash table, its 18-byte sorted packed records with a 20-bit prefix directory,
