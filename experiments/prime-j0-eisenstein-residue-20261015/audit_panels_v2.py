@@ -142,6 +142,10 @@ def audit_archive(archive: pathlib.Path, experiment_dir: pathlib.Path):
                 "reason": "no unique local rules file matches an archived artifact hash",
                 "runs": len(runs), "pairs": len(pairs)}
     rules_path, rules = rules_match
+    repetitions = rules.get("repetitions")
+    if (not isinstance(repetitions, int) or isinstance(repetitions, bool)
+            or repetitions <= 0):
+        raise ValueError(f"rules repetitions must be a positive integer in {rules_path.name}")
     aa_limits = rules["aa_acceptance"]
     if (not isinstance(aa_limits, list) or len(aa_limits) != 2
             or any(not isinstance(x, (int, float)) or isinstance(x, bool)
@@ -155,7 +159,8 @@ def audit_archive(archive: pathlib.Path, experiment_dir: pathlib.Path):
     run_by_serial = {}
     for run in runs:
         serial = run.get("serial")
-        if not isinstance(serial, int) or serial in run_by_serial:
+        if (not isinstance(serial, int) or isinstance(serial, bool)
+                or serial <= 0 or serial in run_by_serial):
             raise ValueError("run serials missing, noninteger, or duplicated")
         if run.get("case") not in cases or run.get("variant") not in ("reference", "candidate"):
             raise ValueError(f"run {serial} has unknown case or variant")
@@ -182,7 +187,9 @@ def audit_archive(archive: pathlib.Path, experiment_dir: pathlib.Path):
                 or key in pair_index or key[1] not in cases):
             raise ValueError(f"duplicate or unknown pair key {key!r}")
         refs = pair.get("run_serials")
-        if not isinstance(refs, dict) or set(refs) != {"reference", "candidate"}:
+        if (not isinstance(refs, dict) or set(refs) != {"reference", "candidate"}
+                or any(not isinstance(value, int) or isinstance(value, bool)
+                       for value in refs.values())):
             raise ValueError(f"pair {key!r} lacks exact reference/candidate serial mapping")
         try:
             ref = run_by_serial[refs["reference"]]
@@ -205,7 +212,7 @@ def audit_archive(archive: pathlib.Path, experiment_dir: pathlib.Path):
 
     if len(serial_uses) != len(run_by_serial) or any(n != 1 for n in serial_uses.values()):
         raise ValueError("run serials are not covered exactly once by pairs")
-    expected_keys = {(r, case) for r in range(int(rules["repetitions"])) for case in cases}
+    expected_keys = {(r, case) for r in range(repetitions) for case in cases}
     if set(pair_index) != expected_keys:
         raise ValueError(f"pair-key coverage differs from rules/manifest: expected {len(expected_keys)}, got {len(pair_index)}")
     for count_field in ("valid_pairs", "expected_pairs"):
@@ -218,7 +225,7 @@ def audit_archive(archive: pathlib.Path, experiment_dir: pathlib.Path):
                 "reason": "no calibration cases to enforce A/A", "runs": len(runs), "pairs": len(pairs)}
     aa_outside = []
     low, high = map(float, aa_limits)
-    for repeat in range(int(rules["repetitions"])):
+    for repeat in range(repetitions):
         for case in calibration:
             ratio = ratio_by_key[(repeat, case)]
             if not low <= ratio <= high:
@@ -247,7 +254,7 @@ def audit_directory(experiment_dir: pathlib.Path):
             results.append(audit_archive(archive, experiment_dir))
         except Exception as exc:
             results.append({"archive": archive.name, "supported": False,
-                            "reason": f"validation error: {type(exc).__name__}: {exc}"})
+                            "validation_error": f"{type(exc).__name__}: {exc}"})
     return results
 
 
@@ -262,12 +269,16 @@ def main():
         print(json.dumps(results, indent=2, sort_keys=True))
     else:
         supported = sum(row["supported"] for row in results)
-        print(f"archives={len(results)} supported={supported} unsupported={len(results)-supported}")
+        invalid = sum("validation_error" in row for row in results)
+        unsupported = len(results) - supported - invalid
+        print(f"archives={len(results)} supported={supported} unsupported={unsupported} invalid={invalid}")
         for row in results:
-            state = "PASS" if row["supported"] else "UNSUPPORTED"
-            detail = row.get("reason") or f"runs={row.get('runs', '?')} pairs={row.get('pairs', '?')} A/A={'pass' if row.get('aa_passed') else 'fail'}"
+            state = ("PASS" if row["supported"] else
+                     "INVALID" if "validation_error" in row else "UNSUPPORTED")
+            detail = (row.get("validation_error") or row.get("reason") or
+                      f"runs={row.get('runs', '?')} pairs={row.get('pairs', '?')} A/A={'pass' if row.get('aa_passed') else 'fail'}")
             print(f"{state}\t{row['archive']}\t{detail}")
-    return 0 if results and all(row["supported"] or "reason" in row for row in results) else 1
+    return 0 if results and all("validation_error" not in row for row in results) else 1
 
 
 if __name__ == "__main__":
