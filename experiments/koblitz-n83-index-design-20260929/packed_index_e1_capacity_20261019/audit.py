@@ -63,6 +63,7 @@ def main():
                 result["stage_protocol_sha256"] == build["protocol_sha256"] and
                 result["curve_id"] == protocol["curve_id"] and
                 result["workload_id"] == protocol["workload_id"] and
+                result["native_s3_generator_target_control"]["status"] == "PASS" and
                 result["relation"] is None and
                 result["target_table_hits"] == 0,
                 f"{stem}: raw receipt or declared cap differs")
@@ -92,13 +93,42 @@ def main():
     require(all(all(result[key] == raw[0][key] for key in fixed) for result in raw),
             "a cross-layout correctness invariant differs")
     summary = json.loads((HERE / "summary.json").read_text())
-    expected_summary = run.summarize(rows, protocol, manifest)
-    require(summary == expected_summary and not summary["invariant_mismatches"] and
+    require(summary["protocol_sha256"] == run.digest(HERE / "protocol.json") and
+            summary["source_sha256"] == protocol["inputs_sha256"]["native_source"] and
+            summary["curve_id"] == manifest["curve_id"] and
+            summary["workload_id"] == manifest["workload_id"] and
+            summary["actual_usable_points_B"] == manifest["actual_usable_points_B"] and
+            summary["folded_columns_K"] == manifest["representative_count_K"] and
+            len(summary["paired_rows"]) == len(raw) and
+            not summary["invariant_mismatches"] and
             summary["status"] == "validated_bounded_capacity_screen" and
             all(not variation for variation in summary["within_mode_variation"].values()) and
             summary["candidate_id"] is None and
             summary["online_speedup"] is None,
             "summary differs from the raw run set")
+    for number, (result, row) in enumerate(zip(raw, summary["paired_rows"]), 1):
+        require(row["sequence_number"] == number and
+                row["mode"] == result["index_mode"] and
+                row["status"] == result["status"] and
+                row["index_pair_states_examined"] ==
+                    result["index_pair_states_examined"] and
+                row["index_satisfiable_s3_states"] ==
+                    result["index_satisfiable_s3_states"] and
+                row["target_states_scanned"] == result["target_states_scanned"] and
+                row["peak_rss_bytes"] == result["peak_rss_bytes"] and
+                row["table_allocated_bytes"] ==
+                    result["root_table_allocated_bytes"] and
+                row["verified_relation"] is False,
+                f"summary row {number} differs from raw bytes")
+    for mode in ("hash", "split-hash"):
+        selected = [result for result in raw if result["index_mode"] == mode]
+        require(summary["index_satisfiable_states_by_mode"][mode] ==
+                    [result["index_satisfiable_s3_states"] for result in selected] and
+                summary["distinct_root_keys_by_mode"][mode] ==
+                    [result["index_distinct_root_keys"] for result in selected] and
+                summary["medians"][mode]["peak_rss_bytes"] ==
+                    statistics.median(result["peak_rss_bytes"] for result in selected),
+                f"{mode}: summary capacity values differ from raw bytes")
     split_ms = statistics.median(
         int(result["timing_ns"]["target_pdp_and_native_check"]) / 1e6
         for result in raw if result["index_mode"] == "split-hash")
