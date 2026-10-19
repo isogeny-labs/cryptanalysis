@@ -5,7 +5,7 @@ date: 2026-10-19
 
 # n = 83 K600: Z[τ]-multiplier closure of the factor base, end-to-end cold
 
-**Status (2026-10-19): frozen; Tier 1 run RUN_PLACEHOLDER.**
+**Status (2026-10-19): frozen 2026-10-19T18:44:25Z; Tier 1 run [39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093) started.**
 The [protocol](protocol.json) and the [schedule](schedule.json) were
 committed before any Tier 1 timing. Every number below that is not from a
 Tier 1 run comes from the cloud-agent VM: it is a **local diagnostic**, not
@@ -385,7 +385,7 @@ table, the planted kM38X and kM10.
 
 ## Result
 
-Pending (run RUN_PLACEHOLDER).
+Pending: [run 39305259093](https://github.com/aburan28/cryptanalysis/actions/runs/39305259093), commit 3761fd260. `verify_receipt.py` applies the frozen rule to its artifact; `make_figures.py` renders the result figure from `result.json`.
 
 ## Files
 
