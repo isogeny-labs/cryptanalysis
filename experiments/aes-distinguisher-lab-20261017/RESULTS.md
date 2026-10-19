@@ -1,9 +1,11 @@
 # First recorded AES laboratory suite
 
 Classification: engineering and bounded observations. Preferred report:
-[PDF](reports/run-20261017T1846Z-v2/report.pdf),
-[Markdown](reports/run-20261017T1846Z-v2/REPORT.md), and
-[machine-readable summary](reports/run-20261017T1846Z-v2/summary.json).
+[corrected Markdown](reports/run-20261017T1846Z-corrected/REPORT.md),
+[corrected PDF](reports/run-20261017T1846Z-corrected/report.pdf),
+[corrected validation chart](reports/run-20261017T1846Z-corrected/corrected-validation-events.svg), and
+[machine-readable summary](reports/run-20261017T1846Z-corrected/summary.json).
+The earlier [v2 PDF](reports/run-20261017T1846Z-v2/report.pdf) remains a historical rendering.
 The [protocol](README.md) and `run.sh` remain frozen as committed before execution.
 
 ## Post-review correction
@@ -16,8 +18,8 @@ method and [`statistical-recheck.json`](statistical-recheck.json) for a
 count-only reanalysis bound to the archived inputs. The corrected method keeps
 the family classifications unchanged: two passing events at one round, two at
 two rounds, none in the other ten families, and all twelve matched PRP controls
-non-rejected. The previously rendered reports remain historical records; use
-the correction artifact for statistical bounds.
+non-rejected. The old raw suite report and v2 PDF remain historical records; use
+the corrected report and correction artifact for statistical interpretation.
 
 ## Observations
 
@@ -83,16 +85,19 @@ From the repository root, with Rust installed:
 cargo run --release --locked --manifest-path tools/aes-discover/Cargo.toml \
   --example summarize -- \
   experiments/aes-distinguisher-lab-20261017/runs/20261017-first-suite \
-  /path/to/NEW-report-directory
+  /path/to/NEW-report-directory \
+  experiments/aes-distinguisher-lab-20261017/statistical-recheck.json
 # In that new directory:
 typst compile report.typ report.pdf
 ```
 
-The renderer launches no trial or new significance test. It binds its source
-artifacts by SHA-256. It does not independently certify a recorded receipt.
-The PDF was compiled with Typst 0.15.0, and both pages were visually inspected.
-The earlier accurate, suite-specific report is preserved in
-`reports/run-20261017T1846Z`; the generic renderer's `-v2` report is preferred.
+The renderer launches no trial or new significance test. With the optional
+recheck input it verifies each raw report hash, binds the recheck artifact by
+SHA-256, and regenerates the descriptive charts and corrected classification
+chart from frozen data. It does not independently certify a recorded receipt.
+The v2 PDF was compiled with Typst 0.15.0 and remains a historical rendering;
+the corrected Markdown, PDF, SVGs, Typst source and summary are committed in
+`reports/run-20261017T1846Z-corrected`.
 
 Receipts retain original absolute paths. In another checkout, replace only the
 original `/workspace/cryptanalysis/` prefix with that checkout's absolute path

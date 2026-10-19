@@ -34,11 +34,23 @@ fn bars(title: &str, subtitle: &str, rows: &[(String, u64)], maximum: u64) -> St
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args_os().collect();
-    if args.len() != 3 {
-        return Err("usage: summarize RUN-DIRECTORY NEW-REPORT-DIRECTORY".into());
+    if args.len() != 3 && args.len() != 4 {
+        return Err(
+            "usage: summarize RUN-DIRECTORY NEW-REPORT-DIRECTORY [STATISTICAL-RECHECK.json]".into(),
+        );
     }
     let input = Path::new(&args[1]);
     let output = Path::new(&args[2]);
+    let correction = if args.len() == 4 {
+        let bytes = fs::read(&args[3])?;
+        let value: Value = serde_json::from_slice(&bytes)?;
+        if value["schema"] != "aes-discover/statistical-recheck/v1" {
+            return Err("unsupported statistical recheck schema".into());
+        }
+        Some((value, digest(&bytes)))
+    } else {
+        None
+    };
     fs::create_dir(output)?;
     let mut paths: Vec<_> = fs::read_dir(input)?
         .map(|r| r.map(|x| x.path()))
@@ -48,6 +60,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut integrals = Vec::new();
     let mut bindings = Vec::new();
     let mut differential_bars = Vec::new();
+    let mut corrected_bars = Vec::new();
+    let mut correction_rows = Vec::new();
+    let mut raw_hashes = std::collections::BTreeMap::new();
     let mut integral_bars = Vec::new();
     let mut frozen_event_max = 0;
     let mut structure_max = 0;
@@ -60,6 +75,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             let v: Value = serde_json::from_slice(&bytes)?;
             bindings.push(json!({"file":name,"sha256":digest(&bytes)}));
             if name.ends_with("-validation.json") {
+                raw_hashes.insert(name.to_string(), digest(&bytes));
                 let count = v["validated_candidates"]
                     .as_array()
                     .ok_or("missing candidate list")?
@@ -146,6 +162,80 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     bindings.push(json!({"file":"status.tsv","sha256":digest(status.as_bytes())}));
     let all_controls_passed =
         !families.is_empty() && families.iter().all(|f| f["control_pass"] == true);
+    let correction_binding = if let Some((recheck, recheck_sha256)) = &correction {
+        let rechecked = recheck["families"]
+            .as_array()
+            .ok_or("missing recheck families")?;
+        if rechecked.len() != families.len() {
+            return Err("recheck family count does not match rendered run".into());
+        }
+        let mut seen_rechecks = std::collections::BTreeSet::new();
+        for family in rechecked {
+            let name = family["file"].as_str().ok_or("missing recheck filename")?;
+            if !seen_rechecks.insert(name) {
+                return Err(format!("duplicate recheck family {name}").into());
+            }
+            if raw_hashes.get(name).map(String::as_str) != family["raw_sha256"].as_str() {
+                return Err(format!("{name}: recheck input hash mismatch").into());
+            }
+            let label = name.trim_end_matches("-validation.json");
+            let candidates = family["corrected_validated_candidates"]
+                .as_array()
+                .ok_or("missing corrected candidate list")?
+                .len() as u64;
+            let unchanged = family["classification_unchanged"]
+                .as_bool()
+                .ok_or("missing classification comparison")?;
+            let control_pass = family["random_control_passed"]
+                .as_bool()
+                .ok_or("missing corrected control result")?;
+            let original = families
+                .iter()
+                .find(|row| row["label"].as_str() == Some(label))
+                .ok_or_else(|| format!("{name}: family is absent from rendered summary"))?;
+            if original["validated_events"].as_u64() != Some(candidates)
+                || original["control_pass"].as_bool() != Some(control_pass)
+            {
+                return Err(
+                    format!("{name}: corrected classification count/control differs").into(),
+                );
+            }
+            correction_rows.push(json!({
+                "label": label,
+                "corrected_validated_candidates": candidates,
+                "classification_unchanged": unchanged,
+                "random_control_passed": control_pass
+            }));
+            corrected_bars.push((label.to_string(), candidates));
+        }
+        if seen_rechecks.len() != raw_hashes.len() {
+            return Err("recheck omits one or more validation reports".into());
+        }
+        if correction_rows
+            .iter()
+            .any(|row| !row["classification_unchanged"].as_bool().unwrap())
+        {
+            return Err(
+                "recheck reports a changed family classification; manual report update required"
+                    .into(),
+            );
+        }
+        Some(
+            json!({"file": Path::new(&args[3]).file_name().unwrap().to_string_lossy(),
+            "sha256": recheck_sha256,
+            "method": recheck["method"],
+            "scope": recheck["scope"],
+            "families": correction_rows}),
+        )
+    } else {
+        None
+    };
+    if correction_binding.is_some() {
+        bindings.push(
+            json!({"file": Path::new(&args[3]).file_name().unwrap().to_string_lossy(),
+            "sha256": correction.as_ref().unwrap().1}),
+        );
+    }
     let alpha_sum: f64 = families
         .iter()
         .map(|f| f["alpha"].as_f64().ok_or("missing family alpha"))
@@ -162,7 +252,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let summary = json!({"schema":"aes-discover/recorded-summary/v1","run_directory":input.to_string_lossy(),
         "source_revision":source_revision,"all_controls_passed":all_controls_passed,"recorded_alpha_sum":alpha_sum,
         "recorded_processes":rows.len(),"successful_processes":successful,"families":families,"integrals":integrals,
-        "quartet_component":quartet,"source_bindings":bindings,
+        "quartet_component":quartet,"source_bindings":bindings,"statistical_recheck":correction_binding,
         "scope":"descriptive counts derived from recorded JSON only; no new trials, statistical tests, scientific promotion, speed comparison or full-AES claim"});
     write_new(
         &output.join("summary.json"),
@@ -177,6 +267,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             frozen_event_max,
         ),
     )?;
+    if correction_binding.is_some() {
+        write_new(
+            &output.join("corrected-validation-events.svg"),
+            &bars(
+                "Corrected validation classifications",
+                "Recomputed from the recorded hit counts; every family classification matches the frozen report",
+                &corrected_bars,
+                frozen_event_max,
+            ),
+        )?;
+    }
     write_new(
         &output.join("integral-structures.svg"),
         &bars(
@@ -212,8 +313,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let component_observations = format!("Of {accepted} accepted nondegenerate quartets, inversion matches: {}; raw AES S-box matches: {}; affine-undone matches: {}; random byte-bijection matches: {}. These are local component observations, not an invariant through an AES round or a reproduction of a complete published attack.",
         quartet["key_wrapped_inversion_matches"], quartet["raw_aes_sbox_matches"],
         quartet["aes_output_linear_affine_undone_matches"], quartet["random_bijection_matches"]);
-    let md=format!("# Native AES laboratory: recorded suite\n\nStatus: {successful}/{} recorded commands exited successfully. Raw directory: `{}`.\n\n## Differential endpoints\n\n{table}\n{observations}\n\nThese observations establish neither security nor a novel attack. Per-family frozen event counts, discovery-key counts, input-difference counts and validation plans are in `summary.json`. Raw reports preserve every key/event and the bound values calculated by the recorded source revision; consult that implementation before interpreting them as current conservative bounds. A failed control withholds the affected family's candidates.\n\n![Recorded differential counts](differential-events.svg)\n\n## Component controls\n\n![Recorded integral counts](integral-structures.svg)\n\n![Recorded quartet counts](quartet-component.svg)\n\n{component_observations}\n\n## Provenance and limits\n\nThe recorded source revision is `{source_revision}`. The raw directory retains executable/source/protocol hashes, source dirty state, exact argv, seeds, timestamps, stdout/stderr and statuses. `summary.json` binds the summarized JSON, discovery artifacts, environment and statuses by SHA-256. This renderer derives descriptive observations only; it does not verify that every recorded claim or receipt is truthful. Deterministic replay is not independent scientific review.\n\nNo key recovery, hardware performance comparison, solver certificate, universal key-independence, security proof or accepted scientific-goal status follows. Source for the component experiment: https://eprint.iacr.org/2026/1549 . Its complete attack is not reproduced.\n",rows.len(),input.display());
+    let correction_md = if correction_binding.is_some() {
+        "\n## Corrected statistical interpretation\n\nThe archived primary/control bound fields retain the original two-sided shortcut and are not conservative bounds. The count-only reanalysis in [`../../statistical-recheck.json`](../../statistical-recheck.json) is bound by SHA-256 in `summary.json`; it recomputes separate lower/upper Chernoff tails from archived hit counts, without new cipher calls or samples. Every family classification is unchanged. The corrected classifications are shown below; raw trial records are preserved.\n\n![Corrected validation classifications](corrected-validation-events.svg)\n\n"
+    } else {
+        ""
+    };
+    let md=format!("# Native AES laboratory: recorded suite\n\nStatus: {successful}/{} recorded commands exited successfully. Raw directory: `{}`.\n\n## Differential endpoints\n\n{table}\n{observations}\n\nThese observations establish neither security nor a novel attack. Per-family frozen event counts, discovery-key counts, input-difference counts and validation plans are in `summary.json`. Raw reports preserve every key/event and the bound values calculated by the recorded source revision; consult that implementation before interpreting them as current conservative bounds. A failed control withholds the affected family's candidates.\n\n![Recorded differential counts](differential-events.svg)\n\n{correction_md}## Component controls\n\n![Recorded integral counts](integral-structures.svg)\n\n![Recorded quartet counts](quartet-component.svg)\n\n{component_observations}\n\n## Provenance and limits\n\nThe recorded source revision is `{source_revision}`. The raw directory retains executable/source/protocol hashes, source dirty state, exact argv, seeds, timestamps, stdout/stderr and statuses. `summary.json` binds the summarized JSON, discovery artifacts, environment and statuses by SHA-256. This renderer derives descriptive observations only; it does not verify that every recorded claim or receipt is truthful. Deterministic replay is not independent scientific review.\n\nNo key recovery, hardware performance comparison, solver certificate, universal key-independence, security proof or accepted scientific-goal status follows. Source for the component experiment: https://eprint.iacr.org/2026/1549 . Its complete attack is not reproduced.\n",rows.len(),input.display());
     write_new(&output.join("REPORT.md"), &md)?;
+    let correction_typ = if correction_binding.is_some() {
+        "== Corrected statistical interpretation\n\nThe archived primary/control bound fields retain the original two-sided shortcut and are not conservative bounds. The count-only reanalysis in ../../statistical-recheck.json is bound by SHA-256 in summary.json; it recomputes separate lower/upper Chernoff tails from archived hit counts without new cipher calls or samples. Every family classification is unchanged.\n\n#image(\"corrected-validation-events.svg\", width: 100%)\n\n"
+    } else {
+        ""
+    };
     let typ = format!(
         r##"#set page(paper: "a4", margin: 18mm)
 #set text(font: "DejaVu Sans", size: 10pt)
@@ -233,6 +344,8 @@ revision; check that implementation before interpreting them as current bounds.
 A failed matched control withholds that family's candidates.
 
 #image("differential-events.svg", width: 100%)
+
+{correction_typ}
 
 This does not establish security, absence of a different distinguisher, novelty,
 key recovery, or universal key independence. All per-key counts and the original
@@ -256,7 +369,8 @@ No throughput, attack-cost gain or scientific campaign promotion follows.
 "##,
         rows.len(),
         observations_typst = serde_json::to_string(&observations)?,
-        component_typst = serde_json::to_string(&component_observations)?
+        component_typst = serde_json::to_string(&component_observations)?,
+        correction_typ = correction_typ
     );
     write_new(&output.join("report.typ"), &typ)?;
     println!("Rendered recorded observations into {}", output.display());
