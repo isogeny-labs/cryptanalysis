@@ -11,11 +11,14 @@ from tempfile import TemporaryDirectory
 
 from make_tier1_rho_closeout_panel import FIXTURES
 
+HERE = Path(__file__).resolve().parent
 COUNTS = (1, 8, 32, 128)
 REPETITIONS = 8
 RULE_NAME = 'tier1-rho-closeout-reuse-rules.json'
 MANIFEST_NAME = 'tier1-rho-closeout-reuse-manifest.json'
 REMOTE_RULE = '/workspace/isolated-bench/panels/' + RULE_NAME
+REMOTE_PEAK_RUNNER = '/workspace/isolated-bench/panels/run_tier1_rho_reuse_peak.py'
+REMOTE_BASE_RUNNER = '/workspace/isolated-bench/panels/run_tier1_rho_closeout.py'
 
 
 def write(path, value):
@@ -29,6 +32,8 @@ def main():
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--libcrypto-path',
                         default='/usr/lib/x86_64-linux-gnu/libcrypto.so.3')
+    parser.add_argument('--peak-rss', action='store_true',
+                        help='freeze the per-child wait4 peak-RSS runner')
     args = parser.parse_args()
     with TemporaryDirectory(prefix='rho-reuse-base-') as temporary:
         base = [sys.executable, str(Path(__file__).with_name(
@@ -104,6 +109,17 @@ def main():
                      'artifacts': [REMOTE_RULE if x.endswith(
                          'tier1-rho-closeout-one-rules.json') else x
                                    for x in manifest['artifacts']]})
+    if args.peak_rss:
+        method = 'linux_wait4_ru_maxrss_kib'
+        rules['peak_rss'] = {
+            'method': method,
+            'runner_path': REMOTE_PEAK_RUNNER,
+            'runner_sha256': sha256((HERE / 'run_tier1_rho_reuse_peak.py').read_bytes()).hexdigest(),
+            'dependency_path': REMOTE_BASE_RUNNER,
+            'dependency_sha256': sha256((HERE / 'run_tier1_rho_closeout.py').read_bytes()).hexdigest(),
+        }
+        manifest['peak_rss_method'] = method
+        manifest['artifacts'][-1:-1] = [REMOTE_PEAK_RUNNER, REMOTE_BASE_RUNNER]
     assert manifest['artifacts'][-1] == REMOTE_RULE
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=True)

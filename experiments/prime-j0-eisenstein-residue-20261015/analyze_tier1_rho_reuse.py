@@ -42,6 +42,7 @@ def interval(values, seed):
 def audit(manifest_path, rules_path, raw_path, bundle_path):
     manifest = json.loads(manifest_path.read_text())
     rules = json.loads(rules_path.read_text())
+    peak_rule = rules.get('peak_rss')
     with TemporaryDirectory(prefix='rho-reuse-audit-') as temporary:
         command = [sys.executable, str(HERE / 'make_tier1_rho_reuse_panel.py'),
                    '--instance-id', rules['instance_id'],
@@ -51,6 +52,8 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
                    '--libcrypto-path', rules['paths']['libcrypto'],
                    '--execution-cpu', str(rules['execution_cpu']),
                    '--output-dir', temporary]
+        if peak_rule:
+            command.append('--peak-rss')
         completed = subprocess.run(command, capture_output=True, text=True)
         assert completed.returncode == 0, completed.stdout + completed.stderr
         assert manifest == json.loads((Path(temporary) / MANIFEST_NAME).read_text())
@@ -84,7 +87,19 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
         structural = []
         if summary.get('manifest_sha256') != digest(read('manifest.json')):
             structural.append('manifest hash mismatch')
-        if summary.get('runner_sha256') != digest((HERE / 'run_tier1_rho_closeout.py').read_bytes()):
+        if peak_rule:
+            if (peak_rule.get('method') != 'linux_wait4_ru_maxrss_kib' or
+                manifest.get('peak_rss_method') != peak_rule['method'] or
+                summary.get('child_peak_rss_method') != peak_rule['method']):
+                structural.append('peak RSS method mismatch')
+            for key, name in (('runner_sha256', 'run_tier1_rho_reuse_peak.py'),
+                              ('dependency_sha256', 'run_tier1_rho_closeout.py')):
+                if (summary.get(key if key == 'runner_sha256' else
+                                'runner_dependency_sha256') != peak_rule.get(key) or
+                    digest((HERE / name).read_bytes()) != peak_rule.get(key)):
+                    structural.append(key + ' mismatch')
+        elif summary.get('runner_sha256') != digest(
+                (HERE / 'run_tier1_rho_closeout.py').read_bytes()):
             structural.append('runner source hash mismatch')
         if summary.get('measurement_tier') != 'tier1_instance':
             structural.append('tier mismatch')
@@ -98,6 +113,9 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
                for name, path in rules['source_paths'].items()},
             manifest['artifacts'][-1]: digest(rules_path.read_bytes()),
         }
+        if peak_rule:
+            expected_artifacts[peak_rule['runner_path']] = peak_rule['runner_sha256']
+            expected_artifacts[peak_rule['dependency_path']] = peak_rule['dependency_sha256']
         for path, expected in expected_artifacts.items():
             if summary.get('artifact_sha256', {}).get(path) != expected:
                 structural.append('artifact mismatch: ' + path)
@@ -156,11 +174,18 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
                               int(fields['q_table_bytes']) +
                               int(fields['plan_bytes']))
                     assert memory >= 0
+                    peak_rss = row.get('child_peak_rss_kib')
+                    if peak_rule:
+                        assert (isinstance(peak_rss, int) and peak_rss > 0 and
+                                row.get('child_peak_rss_method') == peak_rule['method'] and
+                                peak_rss * 1024 >= memory)
                     if not problems:
-                        mode_phases[target['count']][mode].append(
-                            {'online_ms': online, 'target_preparation_ms': prep,
-                             'restart_eval_ms': evaluation,
-                             'reported_retained_bytes': memory})
+                        phase = {'online_ms': online, 'target_preparation_ms': prep,
+                                 'restart_eval_ms': evaluation,
+                                 'reported_retained_bytes': memory}
+                        if peak_rule:
+                            phase['child_peak_rss_kib'] = peak_rss
+                        mode_phases[target['count']][mode].append(phase)
                 except (AssertionError, KeyError, TypeError, ValueError):
                     problems.append('phase or memory accounting invalid')
             if problems:
@@ -226,9 +251,12 @@ def audit(manifest_path, rules_path, raw_path, bundle_path):
                 'status': ('qualified_faster' if gate and bounds and bounds[0] > 1
                            else 'qualified_slower' if gate and bounds and bounds[1] < 1
                            else 'unknown_after_tier_gate')}
+        phase_keys = ('online_ms', 'target_preparation_ms', 'restart_eval_ms',
+                      'reported_retained_bytes')
+        if peak_rule:
+            phase_keys += ('child_peak_rss_kib',)
         phases = {mode: {key: median([row[key] for row in values])
-                         for key in ('online_ms', 'target_preparation_ms',
-                                     'restart_eval_ms', 'reported_retained_bytes')}
+                         for key in phase_keys}
                   for mode, values in mode_phases[count].items()}
         results[str(count)] = {'tier_gate_passed': gate,
                                'aa_failures': aa_failures[count],

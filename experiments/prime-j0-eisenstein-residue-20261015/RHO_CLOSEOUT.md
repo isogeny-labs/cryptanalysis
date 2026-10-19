@@ -139,6 +139,18 @@ serially after the fresh-target worker confirmation on the same isolated host.
 Preserve the earlier 1/8 failures and report the crossover only from counts
 whose new A/A gates pass.
 
+The versioned [peak-RSS runner](run_tier1_rho_reuse_peak.py) uses `wait4`
+for one child at a time and records `child_peak_rss_kib` with the method
+`linux_wait4_ru_maxrss_kib`. Generate the new reuse manifest with
+`make_tier1_rho_reuse_panel.py --peak-rss` after the host and binary are
+known. That mode includes both the peak runner and its base runner in the
+artifact hashes. The independent reuse auditor requires every arm's peak
+receipt and reports median peak RSS per mode and count when the peak mode is
+frozen. Peak RSS covers the child's full lifetime, including fixture load;
+the online time keeps its target-charged boundary. The earlier archive
+retains its own source hash and memory fields;
+its missing process peaks cannot be inferred from the new runner.
+
 The collaborative rho phase profiler in the `crypto` repository records one
 deterministic secp256k1 worker trace with 32 branch points,
 four starts, and 10,152 walk steps. Its same-state local runs show large
