@@ -1,0 +1,212 @@
+{
+  "branches": [
+    {
+      "partial_phi_masks": [
+        2714463327876058554830925920478112582028,
+        1655402300376639116355189354528383873823
+      ],
+      "signs": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        2714463327876058554830925920478112582028,
+        1493145707814345205348956608301849813436
+      ],
+      "signs": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        802362194027231675780854362640428109123,
+        836334024095167255487888479839782906319
+      ],
+      "signs": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        802362194027231675780854362640428109123,
+        1626235053272424672143612796171601558934
+      ],
+      "signs": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        802362194027231675780854362640428109123,
+        1626235053272424672143612796171601558934
+      ],
+      "signs": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        802362194027231675780854362640428109123,
+        836334024095167255487888479839782906319
+      ],
+      "signs": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        2714463327876058554830925920478112582028,
+        1493145707814345205348956608301849813436
+      ],
+      "signs": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "partial_phi_masks": [
+        2714463327876058554830925920478112582028,
+        1655402300376639116355189354528383873823
+      ],
+      "signs": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "campaign_parent_wall_cap_seconds": 300,
+  "candidate_id": null,
+  "codes": [
+    637,
+    989,
+    110
+  ],
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "invalid_control": {
+    "partial_phi_masks": [
+      2714463327876058554830925920478112582029,
+      1655402300376639116355189354528383873823
+    ],
+    "signs": [
+      0,
+      0,
+      0
+    ]
+  },
+  "leaf_variable_rule": "leaf i bit j = 2 + 10*i + j",
+  "partial_variable_rule": "partial i bit j = 152 + 131*i + j",
+  "per_arm_parent_wall_cap_seconds": 25,
+  "planted_prefix_control": {
+    "codes": [
+      778,
+      522,
+      857
+    ],
+    "original_model_status": "PASS",
+    "partial_phi_masks": [
+      2127968161629265754779747008786765426822,
+      505959213159218779688735228226888017257
+    ],
+    "signs": [
+      0,
+      0,
+      0
+    ]
+  },
+  "public_point": [
+    "430759168655010015042626130972019805844",
+    "85516958922582020728685549036919229424"
+  ],
+  "rss_cap_bytes": 4294967296,
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=20",
+    "--printsol=1",
+    "--verb=1",
+    "--xor=0",
+    "--maxmatrixrows=10000",
+    "--maxmatrixcols=15000",
+    "--maxnummatrices=10",
+    "--random=2026101814"
+  ],
+  "sources": {
+    "builder": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/build_d10_m15_formula.py",
+      "sha256": "1b4fa204a8791fb53211a397743e272e20abd3218fb0c674e17e4f00844326d1"
+    },
+    "curves.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/curves.py",
+      "sha256": "1cdf373f471e0703693e12bf1f5a9e1ef8dd7e8853951968b7efac58095ecd63"
+    },
+    "field.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/ecc2k130/codegen/field.py",
+      "sha256": "8ddb4497c2306f5d2fb49c60124f9f0d1465efac237985685272776f7f136b67"
+    },
+    "formula": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/official_q_phi_fiber_d10_m15_v1.xcnf",
+      "sha256": "0a2f4b3e3acc8e26049921567b3c3b04b2a1eace4e86ccb8a193bd4cca29fd41"
+    },
+    "formula_receipt": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/d10_m15_formula_and_planted_control_v1.json",
+      "sha256": "b70ed45ea38718870985c270749e3171fd7331c658095b08bf72b6030d09cfa3"
+    },
+    "freeze_sage.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_signed_prefix_20261018/freeze_sage.py",
+      "sha256": "9ae3fae2cae5760a22c619d5be17134005ebfa85f768a3fbd1688be2cf7a2d79"
+    },
+    "geometry": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m15_d10_static/d10_exact_geometry_v1.json",
+      "sha256": "8fae791696e014ba25c5879e468ad5e281374337d525787f657cf53d6b668cbb"
+    },
+    "old_mapping_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_three_leaf_prefix_20261018/mapping_audit.json",
+      "sha256": "8763d7a5b42f8a74fb3a1f81d6483b45c99090510192b21b6c88a51eb2e075ac"
+    },
+    "old_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_three_leaf_prefix_20261018/protocol.json",
+      "sha256": "dd7618a1668b530c133f92d4a8b3b4cfd4c6ee0a2d5029dcace83474eb36dd0f"
+    },
+    "run.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_signed_prefix_20261018/run.py",
+      "sha256": "14a51c397549317919cb59198116efd37824b4202a39c8c70168adf005850f58"
+    },
+    "sage_runtime_info": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_signed_prefix_20261018/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "solver": {
+      "path": "/opt/homebrew/bin/cryptominisat5",
+      "sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+    },
+    "template": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_torsion_frobenius_domains_20261005/m16_static/phi_frobenius_sat_gate_m16_sparse_seed_v1.py",
+      "sha256": "d21dafe01964a09782ada05d655806f4f789a239ee0ebdab5cc0af1fda2e983a"
+    },
+    "verify.py": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_phi_signed_prefix_20261018/verify.py",
+      "sha256": "a6302b0c6058b58299a55862a69140c31aef572dd5f3f05569f1de411a2eefa2"
+    },
+    "workload": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w2_m15_official_single_target_4g_r3_20261004/workload.json",
+      "sha256": "e9acc7f5709828b3a1eb350d0eb8baa68cd68c018f92cf29093798a140f6a0d0"
+    }
+  },
+  "status": "FROZEN_BEFORE_SOLVER",
+  "target_count": 1,
+  "workload_id": "3c1992b7c92f"
+}
