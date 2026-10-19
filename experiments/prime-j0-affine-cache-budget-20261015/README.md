@@ -91,3 +91,13 @@ at both ends of the transfer. The exact source, binary, tests, generator,
 fixture, and direct screen are in
 [prime-j0-affine-stream-panel-provenance.tar.gz](prime-j0-affine-stream-panel-provenance.tar.gz),
 SHA-256 `cf7f53a58eb03c856b4c7a04009893370a678398a0763a4ae7f73b5c24c51d46`.
+
+## Uniform-derived input follow-on
+
+The follow-on [uniform scalar report](../prime-j0-affine-uniform-20261015/REPORT-2026-10-19.md)
+compares ordinary-affine and full two-x table batches on 12,288 unique
+SHAKE256-derived scalars. Its Tier 1 median online-time ratio was 1.155612×
+with a 95% interval of [1.101903, 1.178301] across 48 paired repetitions.
+The two-x table used 11,156,960 more retained bytes; this is a batch result,
+not a single-scalar latency measurement. The source-linked PDF and generated
+graphs are available with the report.
