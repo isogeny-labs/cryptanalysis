@@ -376,7 +376,8 @@ points in Eisenstein coordinates throughout the group sum and also replayed
 all frozen points. Its 1,036.845373 ms full-stream diagnostic versus roughly
 64–68 ms for the ordinary-field cached paths falsifies direct pair-field
 accumulation as the next timing candidate; its source, binary, and receipt
-remain archived.
+remain archived. The [source-linked report and diagnostic phase graph](PAIR_ACCUMULATION_REPORT_2026-10-19.md)
+preserve the exact run limits and figure sources.
 
 The [hybrid reduction screen](HYBRID_TREE.md) moves the final one or two
 affine tree layers to XYZZ joins and batch-normalizes outputs. Both variants
