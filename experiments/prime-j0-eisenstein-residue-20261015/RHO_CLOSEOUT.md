@@ -238,5 +238,45 @@ still requires exact replay, host and memory acceptance, and a 32-Q paired
 The [fresh-Q arithmetic confirmation plan](RHO_CLOSEOUT_CONFIRMATION_PLAN.md)
 uses that same independently verified fixture for a new one-restart
 OpenSSL/radix-81/mixed-76 comparison and a separate four-count reuse panel
-with process peak RSS. Its source bundle reproduced twice; concrete binary
-and host receipts remain pending AWS quota and must be frozen before timing.
+with process peak RSS. Its source bundle reproduced twice.
+
+## Fresh-Q EC2 Tier 1 confirmation
+
+A separate `c7i.4xlarge` instance ran the panels on 2026-10-19. The
+[allocation receipt](tier1-ec2-20261019/allocation.json) fixes the source
+bundle SHA-256
+`bce58701cb4a1c40f1c6bcb14ceb900f07fdef9a98dc2a3fc8b249ff6a310ff9`,
+Linux binary SHA-256
+`2aae97f2d77999d6764984cf52faa9f5f5ee9f6a30cae6c2da625e471729e633`,
+and the CPU 4/NUMA 0 timing envelope. The 32 new Q points and 4,096
+expected affine outputs were independently verified before timing. Both
+panels used the serialized host queue; their raw archives and independent
+audits are in [the EC2 evidence directory](tier1-ec2-20261019/README.md).
+
+The one-restart panel completed all 3,168 arms and 1,584 pairs with stable
+artifacts, exact outputs, and no invalid arms or structural issues. One
+prespecified OpenSSL A/A control had ratio 1.2118446 outside [0.90, 1.11].
+Its aggregate comparisons therefore remain `unknown_after_tier_gate`.
+The descriptive Q-cluster paired radix-81/mixed-76 ratio was 1.0682 with
+95% interval [1.0494, 1.0848]; this failed-gate panel does not select a
+one-restart winner.
+
+The separate reuse panel completed all 6,336 arms and 3,168 pairs. Its
+independent audit found no invalid arm, structural issue, or A/A failure
+at any count. Linux `wait4` recorded each child's peak RSS, while the
+algorithm's retained table bytes remained separate. The charged complete
+online medians and paired radix-81/mixed-76 ratios were:
+
+| Restarts per Q | Mixed-76 ms | Radix-81 ms | OpenSSL ms | Paired radix-81/mixed-76 ratio, 95% Q-cluster interval |
+| ---: | ---: | ---: | ---: | --- |
+| 1 | 0.119478 | 0.128090 | 0.291246 | 1.0669 [1.0494, 1.0897] |
+| 8 | 0.723362 | 0.714030 | 2.255666 | 0.9916 [0.9787, 0.9959] |
+| 32 | 2.559708 | 2.680047 | 8.987540 | 1.0475 [1.0439, 1.0492] |
+| 128 | 9.799256 | 9.972769 | 35.838602 | 1.0180 [1.0169, 1.0190] |
+
+The observed order changes at eight restarts, so these measurements do not
+show a monotone crossover. All three modes had median child peak RSS of
+11,748 KiB at each count; the raw audit retains the per-arm measurements
+and target-preparation, evaluation, and retained-byte splits. The
+one-restart selection gate remains open while the fresh-Q full-worker
+confirmation in crypto PR #2137 runs.
