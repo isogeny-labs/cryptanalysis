@@ -347,8 +347,8 @@ only once it moves an end-to-end `S` above.
   PR #918, not merged yet) are in Other verified records. The rank stage is
   90% of the end-to-end cold cost; the run was not replayed on another host
   class, and the BL gap was not re-measured on this producer.
-  The online-frame experiment (`koblitz-n83-onlineframe-20261019`, run
-  39303742695) is a stage improvement over the rank-probe producer: its
+  The online-frame experiment (`koblitz-n83-onlineframe-20261019`,
+  run 39303742695) is a stage improvement over the rank-probe producer: its
   one-target online scan on the rank stage's frame loop, online cS / cF 1.5733
   [1.5714, 1.5753] over 64 points, probes and root calls unchanged, end to end
   1.0008 [1.0006, 1.0010]. It is a different stage from the index lift and
