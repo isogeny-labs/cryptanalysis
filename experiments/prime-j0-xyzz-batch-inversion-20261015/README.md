@@ -23,3 +23,7 @@ The batch operation shares an inversion across 128 **independent outputs** in ea
 The paired median individual/shared online ratio is **2.209114**. This is a 128-output batch-throughput result; it does not describe one-call latency. The declared cloud-instance Tier 1 gate passed on one RunPod allocation, while physical-host Tier 0 isolation was not established.
 
 Lean 4.34.1 checks `BatchInverse.prefix_reverse_identity`: for an associative, commutative multiplication, exact forward prefix products, one final inverse witness, and the reverse recurrence used by the native path, every emitted factor-wise inverse witness multiplies its factor to the unit. The theorem is quantified over every batch length and every factor sequence, with the final inverse property stated explicitly. `#print axioms` reports only `propext` and `Quot.sound`. The concrete Montgomery-field bridge and point-output checks are supplied by the native 128-case and identity replay; a full Lean model of the native field remains open.
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) summarize the proof boundary, correctness checks, exact Tier 1 scope and measured costs. `visuals.py` regenerates the committed dataflow and throughput figures from the audit JSON.
