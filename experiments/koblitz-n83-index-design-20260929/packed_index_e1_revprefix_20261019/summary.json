@@ -1,0 +1,207 @@
+{
+  "actual_usable_points_B": 30977592,
+  "candidate_id": null,
+  "complete_target_dlp": false,
+  "cpu_timing_claim": "exploratory stage costs only; no host isolation receipt",
+  "curve_id": "EC1N83Ckb1h876c2921cb64",
+  "distinct_root_keys": 4000000,
+  "folded_columns_K": 186612,
+  "ic_online_ms": null,
+  "index_satisfiable_states": 2000000,
+  "invariant_mismatches": {},
+  "kind": "n83_packed_root_index_stage_comparison",
+  "medians": {
+    "hash": {
+      "index_build_ns": 1798287000,
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692928512,
+      "table_allocated_bytes": 201326592,
+      "target_stage_ns": 3988359042
+    },
+    "packed": {
+      "index_build_ns": 1337153542,
+      "peak_rss_bytes": 538083328,
+      "rss_after_index_bytes": 471334912,
+      "table_allocated_bytes": 80388616,
+      "target_stage_ns": 5213292959
+    },
+    "packed-rev": {
+      "index_build_ns": 1349590542,
+      "peak_rss_bytes": 538050560,
+      "rss_after_index_bytes": 471351296,
+      "table_allocated_bytes": 80388616,
+      "target_stage_ns": 4441588708
+    }
+  },
+  "online_speedup": null,
+  "paired_rows": [
+    {
+      "index_build_ns": 2860731833,
+      "mode": "hash",
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692928512,
+      "sequence_number": 1,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 6332711125,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 2485633041,
+      "mode": "packed",
+      "peak_rss_bytes": 538083328,
+      "rss_after_index_bytes": 471318528,
+      "sequence_number": 2,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 58251024,
+      "target_stage_ns": 7706942708,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1408698708,
+      "mode": "packed-rev",
+      "peak_rss_bytes": 538050560,
+      "rss_after_index_bytes": 471351296,
+      "sequence_number": 3,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 33522387,
+      "target_stage_ns": 4886768417,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1162030500,
+      "mode": "packed",
+      "peak_rss_bytes": 538083328,
+      "rss_after_index_bytes": 471351296,
+      "sequence_number": 4,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 58251024,
+      "target_stage_ns": 4900641458,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1146645541,
+      "mode": "packed-rev",
+      "peak_rss_bytes": 538132480,
+      "rss_after_index_bytes": 471351296,
+      "sequence_number": 5,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 33522387,
+      "target_stage_ns": 4371923875,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1798287000,
+      "mode": "hash",
+      "peak_rss_bytes": 759660544,
+      "rss_after_index_bytes": 692928512,
+      "sequence_number": 6,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 3638187792,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1349590542,
+      "mode": "packed-rev",
+      "peak_rss_bytes": 538034176,
+      "rss_after_index_bytes": 471334912,
+      "sequence_number": 7,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 33522387,
+      "target_stage_ns": 4441588708,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1778674667,
+      "mode": "hash",
+      "peak_rss_bytes": 759644160,
+      "rss_after_index_bytes": 692944896,
+      "sequence_number": 8,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 201326592,
+      "table_slots_or_records": 8388608,
+      "target_lookup_comparisons_or_probes": 18616995,
+      "target_stage_ns": 3988359042,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 1337153542,
+      "mode": "packed",
+      "peak_rss_bytes": 538066944,
+      "rss_after_index_bytes": 471334912,
+      "sequence_number": 9,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 80388616,
+      "table_slots_or_records": 4000000,
+      "target_lookup_comparisons_or_probes": 58251024,
+      "target_stage_ns": 5213292959,
+      "verified_relation": false
+    }
+  ],
+  "proposal_id": "Q2026101901",
+  "protocol_sha256": "6aa7503a2faa6953bd0e32db018c19c98a93532a552fb87eba1182ba8d32f3b4",
+  "ranges": {
+    "hash": {
+      "index_build_ns": [
+        1778674667,
+        2860731833
+      ],
+      "peak_rss_bytes": [
+        759644160,
+        759660544
+      ],
+      "target_stage_ns": [
+        3638187792,
+        6332711125
+      ]
+    },
+    "packed": {
+      "index_build_ns": [
+        1162030500,
+        2485633041
+      ],
+      "peak_rss_bytes": [
+        538066944,
+        538083328
+      ],
+      "target_stage_ns": [
+        4900641458,
+        7706942708
+      ]
+    },
+    "packed-rev": {
+      "index_build_ns": [
+        1146645541,
+        1408698708
+      ],
+      "peak_rss_bytes": [
+        538034176,
+        538132480
+      ],
+      "target_stage_ns": [
+        4371923875,
+        4886768417
+      ]
+    }
+  },
+  "rho_online_ms": null,
+  "run_id": null,
+  "source_sha256": "fa273714ec486700268bdd7ad4e89cf03d245c104222cdc414ac67c74c52b2fe",
+  "status": "validated_stage_comparison",
+  "workload_id": "981ac530e67e"
+}
