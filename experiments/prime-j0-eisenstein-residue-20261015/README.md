@@ -38,6 +38,9 @@ further, from 93.50 ms for `k=6` to 52.67 ms (qualified paired gain
 625.23 versus 645.93 ms. Both panels passed the Tier 1 artifact, pairing,
 and A/A gates. Lean also checks a conditional 20-step terminal norm bound
 for `k=5`.
+The [family report](SPARSE_RADIX_FAMILY_REPORT_2026-10-19.md) adds an
+audited recoding diagram and four separate cold/prepared paired comparisons,
+keeping the finite screen and conditional proof hypotheses distinct.
 
 The [scalar-local digit path](ON_DEMAND_DIGITS.md) recodes one scalar before
 materializing only its selected radix-32 points. Its frozen same-point Tier 1
