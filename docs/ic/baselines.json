@@ -1,6 +1,6 @@
 {
   "schema": "ic-baselines/v1",
-  "as_of": "2026-10-17",
+  "as_of": "2026-10-19",
   "what_this_is": "The index-calculus baseline ledger (the ratchet). For each curve and size, the current best verified IC pipeline with its protocol, receipts and end-to-end S, and its distance to the matched rho and to Bernstein-Lange. One row, one experiment: no row combines numbers from two experiments. Human view: BASELINES.md.",
   "rule": "AGENTS.md, 'Success criterion: iterative improvement of the index-calculus baseline' (owner, 2026-10-15; cryptanalysis#919, crypto#1908). Every verified, measured improvement over a baseline row is a success; a landed improvement replaces the row and the old row moves to ratchet_history with its delta. The gap to rho is the distance remaining, not a gate.",
   "conventions": {
@@ -13,12 +13,22 @@
     "evidence_tiers": "Tier 0 / Tier 1 as in AGENTS.md 'CPU performance evidence tiers'. 'crypto isolated_bench container' means one cloud container through crypto's isolation tool (pinned CPU, PSI gate, contended runs re-run), without a provider allocation receipt: it is neither Tier 0 nor Tier 1 here. 'exploratory' has no pinned CPU or allocation receipt.",
     "tuned_rho": "'Tuned rho' means A's tuned StrongRhoG worker rT770 (Fold field kernel, 64 lanes, DP 6, escape off; crypto 770f6a69 examples/n83_rho_optimization_eval.rs with research/n83_evaluation_20261012/optimization/selected_config.json), the fastest correct n=83 reference found by experiments/koblitz-n83-reconcile-20261014. It has been run at n=83 only. ParallelRho (crypto ic price) is crypto's own 'tuned signed-Frobenius walk' (64 lanes in lockstep); it is reported where it is the matched rho, and it is not rT770."
   },
-  "sizes": [19, 41, 53, 61, 83],
+  "sizes": [
+    19,
+    41,
+    53,
+    61,
+    83
+  ],
   "baselines": [
     {
       "n": 19,
       "a": 1,
-      "curve": {"curve_id": "EC1N19Ckb1h01617b86df6c", "alias": "E0/F_2^19 (volcano-ic surface curve)", "r": 130873},
+      "curve": {
+        "curve_id": "EC1N19Ckb1h01617b86df6c",
+        "alias": "E0/F_2^19 (volcano-ic surface curve)",
+        "r": 130873
+      },
       "experiment": "cryptanalysis:experiments/volcano-ic/rho-arm-20261014",
       "pipeline": {
         "name": "tau-orbit dim-6 factor base, Sage Groebner decomposition, volcano-ic IC (arm tau6)",
@@ -39,10 +49,20 @@
         "s_rho_cold": 0.2603,
         "steps_over_floor": 0.997
       },
-      "gap_cold_ic_over_rho": {"value": 1.94e4, "ci95": [1.69e4, 2.23e4], "statistic": "geometric mean of CPU per complete ECDLP"},
+      "gap_cold_ic_over_rho": {
+        "value": 19400.0,
+        "ci95": [
+          16900.0,
+          22300.0
+        ],
+        "statistic": "geometric mean of CPU per complete ECDLP"
+      },
       "gap_online_ic_over_rho": null,
       "gap_tuned_rho": "no tuned-rho comparison exists at n=19; the matched rho is a step-count-faithful (0.997x floor) Python/Sage walk, not a wall-time-tuned one",
-      "gap_bernstein_lange": {"kind": "none", "note": "not measured or modelled at n=19"},
+      "gap_bernstein_lange": {
+        "kind": "none",
+        "note": "not measured or modelled at n=19"
+      },
       "evidence_tier": "exploratory (GitHub-hosted VM, no allocation receipt, no pinned CPU)",
       "verified": "10/10 scalars, all three arms; 640/640 rho logs",
       "source_figure": "tau-orbit base / rho 1.94e4 (1.69e4-2.23e4); baseline base / rho 1.77e5; baseline / tau-orbit 9.124 (8.122-10.270)",
@@ -56,7 +76,12 @@
     {
       "n": 41,
       "a": 0,
-      "curve": {"curve_id": "EC1N41Ce0he09550ab560a", "icv1": "icv1-f2m41-tm2308219-7f48b14a", "r": 549756390943, "log2_r": 39.0},
+      "curve": {
+        "curve_id": "EC1N41Ce0he09550ab560a",
+        "icv1": "icv1-f2m41-tm2308219-7f48b14a",
+        "r": 549756390943,
+        "log2_r": 39.0
+      },
       "experiment": "crypto:research/ic_tool_program/rule/v3",
       "pipeline": {
         "name": "ic price --single-target at IC programme baseline v3: subgroup-orbit base (6,560 points, 80 columns), aimed m=3 collection, m=2 pair-table descent",
@@ -77,10 +102,26 @@
         "s_rho_online": 1.3184,
         "ns_per_step_over_strong_walk": 0.562
       },
-      "gap_cold_ic_over_rho": {"value": 7.657, "ci95": [6.900, 8.613]},
-      "gap_online_ic_over_rho": {"value": 0.0915, "ci95": [0.0706, 0.1159]},
+      "gap_cold_ic_over_rho": {
+        "value": 7.657,
+        "ci95": [
+          6.9,
+          8.613
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0915,
+        "ci95": [
+          0.0706,
+          0.1159
+        ]
+      },
       "gap_tuned_rho": "measured in a separate experiment, not combined with this row: see other_records (koblitz-s23-tuned-rho-20261015, run 38777903922, PR #923); online IC/tuned 0.09, cold IC/tuned 6.6",
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 2.209, "note": "Bernstein-Lange given the IC's own setup as budget; a model, no BL walk ran"},
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 2.209,
+        "note": "Bernstein-Lange given the IC's own setup as budget; a model, no BL walk ran"
+      },
       "break_even_targets": 9.22,
       "evidence_tier": "crypto isolated_bench container (68 processes, 0 contended, 0 failed)",
       "verified": "68/68 rows pass validate_claim at vs_rho; both certificates replayed out of process; logarithms equal ledger section 23's",
@@ -95,7 +136,12 @@
     {
       "n": 53,
       "a": 0,
-      "curve": {"curve_id": "EC1N53Ce0hb097de99be9a", "icv1": "icv1-f2m53-tm56619371-dac20a85", "r": 21044858204113, "log2_r": 44.3},
+      "curve": {
+        "curve_id": "EC1N53Ce0hb097de99be9a",
+        "icv1": "icv1-f2m53-tm56619371-dac20a85",
+        "r": 21044858204113,
+        "log2_r": 44.3
+      },
       "experiment": "crypto:research/ic_tool_program/rule/v3",
       "pipeline": {
         "name": "ic price --single-target at IC programme baseline v3: subgroup-orbit base (27,984 points, 264 columns), aimed m=3 collection, m=2 pair-table descent",
@@ -116,10 +162,26 @@
         "s_rho_online": 1.2358,
         "ns_per_step_over_strong_walk": 0.527
       },
-      "gap_cold_ic_over_rho": {"value": 13.24, "ci95": [11.75, 15.01]},
-      "gap_online_ic_over_rho": {"value": 0.0466, "ci95": [0.0362, 0.0593]},
+      "gap_cold_ic_over_rho": {
+        "value": 13.24,
+        "ci95": [
+          11.75,
+          15.01
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0466,
+        "ci95": [
+          0.0362,
+          0.0593
+        ]
+      },
       "gap_tuned_rho": "measured in a separate experiment, not combined with this row: see other_records (koblitz-s23-tuned-rho-20261015, run 38777903922, PR #923); online IC/tuned 0.0423, cold IC/tuned 10.6",
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 1.771, "note": "model; no BL walk ran"},
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 1.771,
+        "note": "model; no BL walk ran"
+      },
       "break_even_targets": 14.36,
       "evidence_tier": "crypto isolated_bench container (68 processes, 0 contended, 0 failed)",
       "verified": "68/68 rows pass validate_claim at vs_rho; certificates replayed; logarithms equal section 23's",
@@ -133,7 +195,12 @@
     {
       "n": 61,
       "a": 0,
-      "curve": {"curve_id": "EC1N61Ce0hd8c15448081e", "icv1": "icv1-f2m61-t158598901-ab42b6c5", "r": 162888033982417, "log2_r": 47.2},
+      "curve": {
+        "curve_id": "EC1N61Ce0hd8c15448081e",
+        "icv1": "icv1-f2m61-t158598901-ab42b6c5",
+        "r": 162888033982417,
+        "log2_r": 47.2
+      },
       "experiment": "crypto:research/ic_tool_program/rule/v3",
       "pipeline": {
         "name": "ic price --single-target at IC programme baseline v3: subgroup-orbit base (39,040 points, 320 columns), aimed m=3 collection, m=2 pair-table descent",
@@ -154,10 +221,26 @@
         "s_rho_online": 1.1681,
         "ns_per_step_over_strong_walk": 0.497
       },
-      "gap_cold_ic_over_rho": {"value": 20.97, "ci95": [18.60, 23.84]},
-      "gap_online_ic_over_rho": {"value": 0.0675, "ci95": [0.0506, 0.0882]},
+      "gap_cold_ic_over_rho": {
+        "value": 20.97,
+        "ci95": [
+          18.6,
+          23.84
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0675,
+        "ci95": [
+          0.0506,
+          0.0882
+        ]
+      },
       "gap_tuned_rho": "measured in a separate experiment, not combined with this row: see other_records (koblitz-s23-tuned-rho-20261015, run 38777903922, PR #923); online IC/tuned 0.0687, cold IC/tuned 18.9",
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 3.517, "note": "model; no BL walk ran"},
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 3.517,
+        "note": "model; no BL walk ran"
+      },
       "break_even_targets": 22.82,
       "evidence_tier": "crypto isolated_bench container (68 processes, 0 contended, 0 failed)",
       "verified": "68/68 rows pass validate_claim at vs_rho; certificates replayed; logarithms equal section 23's",
@@ -171,7 +254,615 @@
     {
       "n": 83,
       "a": 1,
-      "curve": {"curve_id": "EC1N83Ce1h35c7ced6b497", "icv1": "icv1-f2m83-t6151469093347-9eba6cd5", "r": 8569786107849059, "log2_r": 52.93},
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
+      "experiment": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016 (branch claude/n83-rankcut)",
+      "pipeline": {
+        "name": "the rank-cut producer (arms cR / kR): the stacked producer (B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600, lift_scan x Feistel + prefetched probes + 16-byte compact root slots + folded S3 root index, 14,940,300 stored states) with the rank stage's partner roots by point addition (KIC_RANK_SOLVE=padd: x(T+R), x(T-R) from each stored root's recovered y and one batched inversion, exact S3 order resolved at every root-table hit); cold path identical to the stack's (cR)",
+        "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
+        "candidate_id_status": "B's ID for the same base and recipe; no new IC1 manifest was written",
+        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 53a1fb58a8cae9968875f5c1e61170dbe457de51",
+        "protocol": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/protocol.json",
+        "run": "GitHub Actions 38891404048, one ubuntu-24.04 runner (runnervm8k3b6), one pinned CPU"
+      },
+      "targets": "20 new public points (rankcut-cold-v1; one fresh pinned process per arm per point), four rank blocks (rank seeds 201-204, 600 attempts each), Q0 in one block",
+      "unit": "one rT770 rho step as measured in this run (281.006 ns), per sqrt(r) (26,013.6 ms); end-to-end cold = mean rank stage over four blocks + mean cold (setup + one-target online, cached table) over the points",
+      "s_ic_cold": 7.5228,
+      "s_ic_online": 0.011453,
+      "s_ic_setup": 7.5113,
+      "s_ic_rank_stage": 6.6562,
+      "s_ic_setup_without_rank_stage": 0.8552,
+      "s_ic_cold_without_rank_stage": 0.8666,
+      "s_ic_setup_derivation": "result.json (run 38891404048): rho_ms_per_step 2.81006e-4 ms x sqrt(r) = 26,013.6 ms per unit; rank stage mean(kR rank_stage_ms) 173,150.92 ms = 6.65617 -> 6.6562; setup mean_setup_ms.cR 22,245.80 ms = 0.85516 -> 0.8552 (cached-table load and verification included); s_ic_setup = 6.65617 + 0.85516 = 7.51133 -> 7.5113 = s_ic_cold 7.52278 - s_ic_online 0.011453. Every S is rounded once from the unrounded quotient. S_cold_without_rank.cR 0.8666 is setup without the rank stage plus online.",
+      "wall_ms": {
+        "e2e_cold_mean": 195694.6,
+        "rank_stage_mean": 173150.9,
+        "cold_without_rank_mean": 22543.7,
+        "setup_mean": 22245.8,
+        "index_build_mean": 19876.5,
+        "ic_online_mean": 297.9,
+        "rho_online_mean": 2707.0,
+        "rho_cold": 2980.2
+      },
+      "reference_rho": {
+        "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
+        "is_tuned_rho_rT770": true,
+        "s_rho_cold": 0.11456,
+        "s_rho_online": 0.10406
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 65.6656,
+        "ci95": [
+          55.3831,
+          80.2071
+        ],
+        "statistic": "end-to-end cold: mean rank stage + mean cold over mean rho cold, bootstrap over blocks, attempts and points; wall time on one host class, factor-base construction excluded; the section 5a band is not computable (section_5a_band)"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.1101,
+        "ci95": [
+          0.059,
+          0.1744
+        ],
+        "note": "inverse of tuned rho / cR 9.0864"
+      },
+      "gap_tuned_rho": "measured on this row: end-to-end cold 65.7 [55.4, 80.2]; online 0.110",
+      "gap_bernstein_lange": {
+        "kind": "not measured on this row",
+        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+      },
+      "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
+      "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes and root calls across kS, kR, kRaa and kRX in every block, 600 exact S3-resolved hits per kR block; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
+      "source_figure": "end-to-end cold kS+cS / kR+cR 1.3336 [1.3300, 1.3377] in wall time on one host class (promoted over the stacked producer, same cold code); rank stage per attempt kS / kR 1.3770 [1.3735, 1.3813]; per-probe wall ns 221.85 -> 161.10 with identical probes and root calls (operation-count ratio 1.0000); cold without rank cS / cR 1.0018 [0.9988, 1.0055]; online cS / cR 1.0056 [0.9974, 1.0121]; rank stage 88.5% of end-to-end cold",
+      "headline_scope": {
+        "metric": "wall time: the frozen primary R = E2E(kS, cS) / E2E(kR, cR) = 1.3336 [1.3300, 1.3377], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
+        "operation_counts": {
+          "rank_stage_probes": {
+            "kS": 4296071100,
+            "kR": 4296071100,
+            "ratio_kS_over_kR": 1.0,
+            "note": "4 blocks x 600 attempts x mean 1,790,029.625 probes; identical per attempt in every rank arm (gated); the saving is per-probe work, not fewer probes"
+          },
+          "rank_stage_root_calls": "identical across kS, kR, kRaa and kRX in every block (gated: rank_root_calls_total)",
+          "rank_stage_wall_decomposition": "rank-stage wall ratio 1.3768 = 1.0 (probes and root calls, equal) x 1.3768 (per-probe wall time: 221.85 vs 161.10 ns, measured on this one host). The cut replaces the batched S3 root solve (11 field multiplications, 6 table maps per candidate) by point addition (5 and 4) with the exact S3 order resolved at root-table hits; the kRX planted control (302.05 ns per probe) puts the removed work at about 141 ns per probe. The factor is wall time on this host and has not been replayed on another host class.",
+          "index_stored_states": {
+            "cS": 14940300,
+            "cR": 14940300,
+            "ratio": 1.0
+          },
+          "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the rank stage is 91.3% (kS) and 88.5% (kR) of end-to-end cold wall time"
+        },
+        "derivation": "recomputed 2026-10-19 from run_github_38891404048/panel/result.json (statistics.rank_stage, primary_e2e_kS_cS_over_kR_cR, e2e_ms) and detail.rank_padd_counters"
+      },
+      "uncharged_phases": {
+        "factor_base_construction": "Not charged to either arm: every IC process loads the K600 base from base_n83_K600.jsonl; its construction was not timed in this run. The omission is common to both arms, so R > 1 holds for any X >= 0 and falls with X. X was measured on another host class (427.524 ms, koblitz-n83-replay-20261017, run 39007026856): at that X, R 1.3328 and cold S 7.5392 (illustrative, mixes hosts). So 1.3336 is an upper bound on the every-phase ratio and S 7.5228 a lower bound on the every-phase cold S.",
+        "linear_algebra": "represented by the verified load of the cached factor-log table in cS and cR"
+      },
+      "section_5a_band": "Not computable from this run. The IC arms emit rank-stage probes and root calls, online probes and stored states, but no group additions, scalar multiplications, canonicalizations, fold rotations or index inserts, so the unpriced native work cannot be priced at 0, 0.1 and 1 GAE per operation and the IC / rho gap (65.7) has no band. The gap holds as a wall-time figure on this one host only.",
+      "replication": "Not replayed. This run (98 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py, and the gates make every relation, per-attempt probe count and root call equal across kS, kR, kRaa and kRX, but no second host class has timed the rank-cut arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the same caution applies to the 1.3336 here.",
+      "next_improvement": "The rank stage is still 173.2 s of the 195.7 s end-to-end cold cost (88.5%) and the saving came from per-probe work only (probes unchanged at 1,790,030 per attempt): cut the per-probe cost further (the root-table lookup and the partner-pair canonicalization) or the number of probes per relation; then setup (lift_scan in the index build, cRI, 1.34x faster cold without rank, E2E 1.3735 over the stack). Gap to the tuned rho is still 66x; the BL arm has not been re-run on this producer.",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/README.md (branch claude/n83-rankcut)",
+        "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/run_github_38891404048/panel/result.json (branch claude/n83-rankcut)",
+        "cryptanalysis:experiments/koblitz-n83-stacked-20261016/ (the baseline replaced)"
+      ]
+    }
+  ],
+  "other_records": [
+    {
+      "n": 41,
+      "a": 0,
+      "role": "previous baseline (v0); superseded by rule v3",
+      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
+      "pipeline": "ic price --single-target at crypto 0bf67f169f0762c8bd225760196803379cabdcb9; IC1N41Ckb0fb6560PDP3pairtableRCaimedLAsparseTDwalkISO0he13eaebe8e18",
+      "reference_rho": "ParallelRho, same process",
+      "unit": "batched addition of section 23's processes (2.3-3.2x dearer than v3's; S not comparable with v3's)",
+      "s_ic_cold": 5.5806,
+      "s_ic_online": 0.0665,
+      "s_rho_cold": 0.6937,
+      "s_rho_online": 0.6244,
+      "gap_cold_ic_over_rho": {
+        "value": 8.044,
+        "ci95": [
+          7.26,
+          9.011
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.1066,
+        "ci95": [
+          0.0825,
+          0.1346
+        ]
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 2.501
+      },
+      "evidence_tier": "crypto isolated_bench container",
+      "sources": [
+        "crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)",
+        "crypto:research/ic_single_target_20260930/analysis.json"
+      ]
+    },
+    {
+      "n": 53,
+      "a": 0,
+      "role": "previous baseline (v0); superseded by rule v3",
+      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
+      "pipeline": "ic price --single-target at crypto 0bf67f16; IC1N53Ckb0fb27984PDP3pairtableRCaimedLAsparseTDwalkISO0hea53259919c9",
+      "reference_rho": "ParallelRho, same process",
+      "unit": "batched addition of section 23's processes",
+      "s_ic_cold": 7.3988,
+      "s_ic_online": 0.0277,
+      "s_rho_cold": 0.5032,
+      "s_rho_online": 0.4848,
+      "gap_cold_ic_over_rho": {
+        "value": 14.7,
+        "ci95": [
+          13.06,
+          16.66
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0572,
+        "ci95": [
+          0.0443,
+          0.0734
+        ]
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 2.021
+      },
+      "evidence_tier": "crypto isolated_bench container",
+      "sources": [
+        "crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)",
+        "crypto:research/ic_single_target_20260930/analysis.json"
+      ]
+    },
+    {
+      "n": 61,
+      "a": 0,
+      "role": "previous baseline (v0); superseded by rule v3",
+      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
+      "pipeline": "ic price --single-target at crypto 0bf67f16; IC1N61Ckb0fb39040PDP3pairtableRCaimedLAsparseTDwalkISO0h031e95eb18e6",
+      "reference_rho": "ParallelRho, same process",
+      "unit": "batched addition of section 23's processes",
+      "s_ic_cold": 15.149,
+      "s_ic_online": 0.0527,
+      "s_rho_cold": 0.4794,
+      "s_rho_online": 0.4658,
+      "gap_cold_ic_over_rho": {
+        "value": 31.6,
+        "ci95": [
+          28.18,
+          35.72
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.1131,
+        "ci95": [
+          0.0843,
+          0.1478
+        ]
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 8.042
+      },
+      "evidence_tier": "crypto isolated_bench container",
+      "sources": [
+        "crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)",
+        "crypto:research/ic_single_target_20260930/analysis.json"
+      ]
+    },
+    {
+      "n": 41,
+      "a": 0,
+      "role": "other verified pipeline (complete cold CPU, one target)",
+      "experiment": "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001 (hosted run 36803331080)",
+      "pipeline": "compact-orbit W64 policy, K85, unfiltered, fresh complete process (factor base, full rank, LA, descent, check); crypto 38c173072e16f580237447c93b085634275ba048",
+      "reference_rho": "fresh 32-walk signed-Frobenius Kuhn-Struik normal-basis rho, same public points (not rT770)",
+      "unit": "child user+system CPU seconds; S unset by the source",
+      "gap_cold_ic_over_rho": {
+        "value": 13.378,
+        "ci95": [
+          9.367,
+          18.491
+        ],
+        "statistic": "paired compact/rho CPU, geometric mean, log-t interval"
+      },
+      "gap_online_ic_over_rho": null,
+      "gap_bernstein_lange": {
+        "kind": "none"
+      },
+      "evidence_tier": "hosted run with A/A and quiet-host gates passed and a second-host replay; not a Tier 1 allocation receipt",
+      "sources": [
+        "crypto:docs/ic/BOUNDARY_TARGETS.md (complete cold compact-orbit panel)",
+        "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001/RESULT.md"
+      ]
+    },
+    {
+      "n": 53,
+      "a": 0,
+      "role": "other verified pipeline (complete cold CPU, one target)",
+      "experiment": "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001 (hosted run 36803331080)",
+      "pipeline": "compact-orbit W64 policy, K220, unfiltered; crypto 38c17307",
+      "reference_rho": "fresh 32-walk signed-Frobenius normal-basis rho, same public points (not rT770)",
+      "unit": "child CPU seconds; S unset by the source",
+      "gap_cold_ic_over_rho": {
+        "value": 22.675,
+        "ci95": [
+          17.904,
+          31.595
+        ]
+      },
+      "gap_online_ic_over_rho": null,
+      "gap_bernstein_lange": {
+        "kind": "none"
+      },
+      "evidence_tier": "hosted run with A/A and quiet-host gates passed and a second-host replay; not a Tier 1 allocation receipt",
+      "sources": [
+        "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001/RESULT.md"
+      ]
+    },
+    {
+      "n": 61,
+      "a": 0,
+      "role": "other verified pipeline (one target, online and cold)",
+      "experiment": "crypto autolab run 20261012T202048Z-5521627904 (x86_64 gvisor host); boundary ledger vs_rho record",
+      "pipeline": "compact-orbit IC, K=500 (61,000 base points, 500 orbit columns); IC1N61Ckb0fb61000PDP4s3rootindexRCguidedLAdenseTDsingleISO0h1e817ac07994; crypto e3090cbc98c657106fef10020da8ccc19be49a3f",
+      "reference_rho": "strong rho rung 3 (koblitz_rho_batch_ks_strong_online, 32 lanes, DP 4), same public point (not rT770)",
+      "unit": "wall ms; S unset by the source",
+      "gap_cold_ic_over_rho": {
+        "value": 83.373,
+        "ci95": null,
+        "statistic": "median of per-workload cold ratios"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0717,
+        "ci95": [
+          0.0523,
+          0.102
+        ],
+        "statistic": "inverse of the median per-workload online speedup 13.94 [9.81, 19.13]"
+      },
+      "gap_bernstein_lange": {
+        "kind": "none"
+      },
+      "evidence_tier": "taskset-pinned container with a CPU-isolation receipt (cpus_allowed_list 2); 64 workloads, claim check PASS 64/64",
+      "sources": [
+        "crypto:docs/ic/BOUNDARY_TARGETS.md (Regime B vs_rho)",
+        "crypto:docs/ic/boundary_targets.json (regimes.koblitz.records.vs_rho.current)"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "same pipeline as the n=83 baseline, earlier experiment (merged)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-reconcile-20261014 (GitHub run 38617911080, AMD EPYC 7763)",
+      "pipeline": "iB770c: koblitz_orbit_dlp_fast_online + ic_log_cache.patch, cached K600 table; crypto 770f6a69",
+      "reference_rho": "rT770 tuned (Fold/64/DP6), seeds 830000+w and 202610061+w averaged per point",
+      "unit": "wall ms; S in rT770 steps (280.3 ns in this run) per sqrt(r)",
+      "s_ic_online": 0.0783,
+      "s_rho_online": 0.0849,
+      "gap_cold_ic_over_rho": {
+        "value": 313.3,
+        "ci95": null,
+        "statistic": "(fresh-rank IC setup on Q0, arm iB770f, + mean IC online) / (median rT770 setup + mean rT770 online)"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.923,
+        "ci95": [
+          0.279,
+          1.779
+        ],
+        "reading": "not separated from parity",
+        "statistic": "mean IC / mean rT770 over 16 fresh points"
+      },
+      "gap_bernstein_lange": {
+        "kind": "none"
+      },
+      "evidence_tier": "Tier 1 (instance scoped)",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-reconcile-20261014/README.md",
+        "cryptanalysis:experiments/koblitz-n83-reconcile-20261014/run_github_38617911080/panel/result.json"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "same pipeline, first Tier 1 run, against a weaker rho",
+      "experiment": "cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014 (GitHub run 38523707244, AMD EPYC 9V74)",
+      "pipeline": "koblitz_orbit_dlp_fast_online + ic_log_cache.patch; IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7; crypto 770f6a69",
+      "reference_rho": "strong rho rung 3 (32 lanes, DP 4): 618 vs 490 ns per step against StrongRhoG on one CPU (reconcile), so not the matched tuned rho",
+      "unit": "wall ms; S unset by the source",
+      "gap_cold_ic_over_rho": {
+        "value": 134,
+        "ci95": null,
+        "statistic": "Panel B"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.361,
+        "ci95": [
+          0.111,
+          0.657
+        ],
+        "statistic": "inverse of Panel B's section 23 figure 2.769 [1.521, 8.990]"
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 33.5,
+        "note": "the model the BL arm later measured at 235"
+      },
+      "evidence_tier": "Tier 1 (instance scoped); replicate run 38532240007 agrees",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014/README.md",
+        "cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/"
+      ]
+    },
+    {
+      "n": 41,
+      "a": 0,
+      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
+      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
+      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=41 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
+      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
+      "unit": "S = wall ms / (tuned rho median ms per step, 107.3 ns) / sqrt(r); this row's own unit",
+      "s_ic_cold": 1.1,
+      "s_ic_online": 0.014,
+      "s_rho_cold": 0.166,
+      "s_rho_online": 0.155,
+      "gap_cold_ic_over_rho": {
+        "value": 6.6,
+        "ci95": [
+          5.91,
+          7.4
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.09,
+        "ci95": [
+          0.0715,
+          0.111
+        ]
+      },
+      "source_figure": "online rho/IC 11.1 [9, 14]; break-even 7.67 targets",
+      "other_references_same_run": {
+        "parallel": {
+          "gap_online_ic_over_rho": 0.112,
+          "gap_cold_ic_over_rho": 7.83
+        },
+        "strong": {
+          "gap_online_ic_over_rho": 0.0876,
+          "gap_cold_ic_over_rho": 6.43
+        },
+        "strong_wide": {
+          "gap_online_ic_over_rho": 0.0337,
+          "gap_cold_ic_over_rho": 2.54
+        }
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 0.53,
+        "note": "BL model with the tuned rho's ms/step; no BL walk ran"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
+      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"
+      ]
+    },
+    {
+      "n": 53,
+      "a": 0,
+      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
+      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
+      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=53 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
+      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
+      "unit": "S = wall ms / (tuned rho median ms per step, 109.7 ns) / sqrt(r); this row's own unit",
+      "s_ic_cold": 1.35,
+      "s_ic_online": 0.00527,
+      "s_rho_cold": 0.128,
+      "s_rho_online": 0.124,
+      "gap_cold_ic_over_rho": {
+        "value": 10.6,
+        "ci95": [
+          9.45,
+          12.0
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0423,
+        "ci95": [
+          0.0325,
+          0.0534
+        ]
+      },
+      "source_figure": "online rho/IC 23.6 [18.7, 30.8]; break-even 11.3 targets",
+      "other_references_same_run": {
+        "parallel": {
+          "gap_online_ic_over_rho": 0.0478,
+          "gap_cold_ic_over_rho": 11.8
+        },
+        "strong": {
+          "gap_online_ic_over_rho": 0.0367,
+          "gap_cold_ic_over_rho": 9.2
+        },
+        "strong_wide": {
+          "gap_online_ic_over_rho": 0.0119,
+          "gap_cold_ic_over_rho": 3.01
+        }
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 0.322,
+        "note": "BL model with the tuned rho's ms/step; no BL walk ran"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
+      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"
+      ]
+    },
+    {
+      "n": 61,
+      "a": 0,
+      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
+      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
+      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=61 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
+      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
+      "unit": "S = wall ms / (tuned rho median ms per step, 113 ns) / sqrt(r); this row's own unit",
+      "s_ic_cold": 2.02,
+      "s_ic_online": 0.00723,
+      "s_rho_cold": 0.107,
+      "s_rho_online": 0.105,
+      "gap_cold_ic_over_rho": {
+        "value": 18.9,
+        "ci95": [
+          16.7,
+          21.5
+        ]
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.0687,
+        "ci95": [
+          0.051,
+          0.0903
+        ]
+      },
+      "source_figure": "online rho/IC 14.5 [11.1, 19.6]; break-even 20.5 targets",
+      "other_references_same_run": {
+        "parallel": {
+          "gap_online_ic_over_rho": 0.0711,
+          "gap_cold_ic_over_rho": 19.4
+        },
+        "strong": {
+          "gap_online_ic_over_rho": 0.0496,
+          "gap_cold_ic_over_rho": 13.7
+        },
+        "strong_wide": {
+          "gap_online_ic_over_rho": 0.0159,
+          "gap_cold_ic_over_rho": 4.42
+        }
+      },
+      "gap_bernstein_lange": {
+        "kind": "model",
+        "ic_online_over_bl": 0.759,
+        "note": "BL model with the tuned rho's ms/step; no BL walk ran"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
+      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "previous baseline (B, the BL-arm row); superseded by the stacked producer (one experiment; not combined with another row)",
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
+      "experiment": "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014 (PR #918, branch claude/n83-bl-arm, not yet merged)",
+      "pipeline": {
+        "name": "koblitz_orbit_dlp_fast_online + ic_log_cache.patch: compact-orbit K600 base (99,600 points, 600 orbit columns), S3 root index, verified cached factor-log table",
+        "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
+        "candidate_id_status": "the ID of B's claims (experiments/koblitz-single-target-n83-tier1-20261014) for the same producer, base and recipe",
+        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 507c1ec4eba542f6e4ca584370a53c6e6c05072c",
+        "protocol": "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/protocol.json (sha256 b8e28e7121d4404fc0f02adcbcf521f41d0c319ce8327e3d595dfb4e16f598c1)",
+        "run": "GitHub Actions 38689817618, one ubuntu-24.04 runner (AMD EPYC 9V45), one pinned CPU"
+      },
+      "targets": "B's 16 fresh public points (one pinned process each), plus Q0 in 4 blocks",
+      "unit": "one rT770 rho step as measured in this run (180.82 ns), per sqrt(r); derived from wall ms of this run only",
+      "s_ic_cold": 32.931,
+      "s_ic_online": 0.083,
+      "s_ic_setup": 32.848,
+      "s_ic_rank_stage": 31.114,
+      "s_ic_setup_without_rank_stage": 1.734,
+      "s_ic_setup_derivation": "P_IC 549,847.1 ms = rank stage 520,825 + per-process setup 29,022 ms, at 16,739.3 ms per unit (ic_cold 551,237.0 ms / s_ic_cold 32.931); split added 2026-10-16 (corrections), values unchanged",
+      "uncharged_phases": {
+        "factor_base_construction": "Not charged. B's IC process loads the K600 base from base_n83_K600.jsonl (base_source retained_header; base_load 179.7 ms is parsing only); construction was not timed. B's README lists it ('The IC budget leaves out base construction. That favours the IC'). So cold S 32.931 is a lower bound on the every-phase cold S.",
+        "linear_algebra": "Not charged. P_IC = timing_ms.rank_stage 520,825.4 + timing_ms.setup_total 29,021.7 ms (setup_total = base_load 179.7 + index_build 28,836.6 + normal_basis_and_selftest 5.4), which leaves out timing_ms.linear_algebra 51.3 ms (relation_la; the log table), although B's P_IC_definition names the linear algebra.",
+        "setup_input_control": "Not charged: cold_phase_ms.setup_input_control 32.3 ms.",
+        "size": "LA and input control together are 83.7 ms, 0.0050 in this row's unit (0.015% of P_IC); recorded 2026-10-17 from run_github_38689817618/ic_precompute/precompute_receipt.json and summary.jsonl (corrections). Values unchanged."
+      },
+      "wall_ms": {
+        "ic_online_mean": 1389.91,
+        "ic_cold": 551237.0,
+        "P_IC": 549847.1,
+        "P_IC_rank_stage": 520825,
+        "P_IC_per_process_setup": 29022,
+        "rho_online_mean": 1372.72,
+        "rho_cold": 1529.48,
+        "bl_online_mean": 5.914,
+        "bl_cold": 558407.5
+      },
+      "reference_rho": {
+        "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
+        "is_tuned_rho_rT770": true,
+        "s_rho_cold": 0.0914,
+        "s_rho_online": 0.082
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 360.4,
+        "ci95": null,
+        "statistic": "(P_IC + mean IC online) / (median rho setup + mean rho online)"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 1.0125,
+        "ci95": [
+          0.304,
+          2.116
+        ],
+        "reading": "not_separated"
+      },
+      "gap_tuned_rho": "measured on this row: online not separated from parity, cold 360x",
+      "gap_bernstein_lange": {
+        "kind": "measured",
+        "ic_online_over_bl": {
+          "value": 235.0,
+          "ci95": [
+            61.4,
+            644.8
+          ],
+          "reading": "bl_online_faster_than_ic",
+          "rows_bl_faster": "16/16"
+        },
+        "ic_cold_over_bl_cold": 0.987,
+        "s_bl_online": 0.000353,
+        "note": "BL precomputation matched to P_IC in wall ms on the same CPU (1.6e-6); T = 48,180,186 points (1.93 GB)"
+      },
+      "evidence_tier": "Tier 1 (instance scoped; GitHub-hosted runner; one pinned exposed CPU)",
+      "verified": "81/81 runs valid; every scalar replayed in oracle.py; positive controls, three table checks, step identity, IC work identity and the A/A passed",
+      "source_figure": "IC online / BL online 235 [61, 645]; rho online / IC online 0.988 [0.473, 3.29]; cold IC / rho 360; cold IC / BL 0.987",
+      "next_improvement": "The rank stage is 520.8 s of the 549.8 s precomputation (95% of cold S). Replace the sequential rank stage with the guided minimum-rank policy (eta 1/10 reached rank = columns in exactly that many rows at n=53) on the K600 base, then re-run this BL protocol; online, cut S3-root probes per target.",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/README.md (branch claude/n83-bl-arm)",
+        "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/run_github_38689817618/result.json (branch claude/n83-bl-arm)"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "previous baseline (the stacked producer, arms cS / kS), superseded by the rank-cut producer (one experiment; not combined with another row)",
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
       "experiment": "cryptanalysis:experiments/koblitz-n83-stacked-20261016 (branch claude/n83-stacked)",
       "pipeline": {
         "name": "the stacked producer: B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (99,600 points, 600 orbit columns), lift_scan x Feistel + prefetched probes + 16-byte compact root slots + folded S3 root index (14,940,300 stored states, 2^26 slots); rank stage on the stack's own probe loop (lift_scan, Feistel order, KIC_RANK_PROBE=target), verified cached factor-log table (arms cS / kS)",
@@ -190,27 +881,66 @@
       "s_ic_setup_without_rank_stage": 0.8725,
       "s_ic_cold_without_rank_stage": 0.8856,
       "s_ic_setup_derivation": "result.json (run 38862448935): rho_ms_per_step 3.16660e-4 ms x sqrt(r) = 29,314.2 ms per unit; rank stage mean(kS rank_stage_ms) 257,814.27 ms = 8.79486 -> 8.7949; setup mean_setup_ms.cS 25,575.25 ms = 0.87245 -> 0.8725 (cached-table load and verification included); s_ic_setup = 8.79486 + 0.87245 = 9.66731 -> 9.6673 = s_ic_cold 9.68045 - s_ic_online 0.013137. Every S here is rounded once from the unrounded quotient, so rounded parts need not add up (8.7949 + 0.8725 = 9.6674, while the unrounded sum rounds to 9.6673). s_ic_rank_stage read 8.7948 until 2026-10-17 (a rounding slip, corrections); S_cold_without_rank.cS 0.8856 is setup without the rank stage plus online. This row first landed with s_ic_setup 0.8856, setup without the rank stage plus online, which is not the field's meaning (see corrections).",
-      "wall_ms": {"e2e_cold_mean": 283774.6, "rank_stage_mean": 257814.3, "cold_without_rank_mean": 25960.4, "setup_mean": 25575.2, "index_build_mean": 22991.2, "ic_online_mean": 385.1, "rho_online_mean": 2768.1, "rho_cold": 3005.6},
+      "wall_ms": {
+        "e2e_cold_mean": 283774.6,
+        "rank_stage_mean": 257814.3,
+        "cold_without_rank_mean": 25960.4,
+        "setup_mean": 25575.2,
+        "index_build_mean": 22991.2,
+        "ic_online_mean": 385.1,
+        "rho_online_mean": 2768.1,
+        "rho_cold": 3005.6
+      },
       "reference_rho": {
         "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
         "is_tuned_rho_rT770": true,
         "s_rho_cold": 0.10253,
         "s_rho_online": 0.09443
       },
-      "gap_cold_ic_over_rho": {"value": 94.4168, "ci95": [73.5188, 125.2922], "statistic": "end-to-end cold: mean rank stage + mean cold over mean rho cold, bootstrap over points and rank attempts; wall time on one host class, factor-base construction excluded; the section 5a band is not computable (section_5a_band)"},
-      "gap_online_ic_over_rho": {"value": 0.1391, "ci95": [0.0773, 0.2368], "note": "inverse of tuned rho / cS 7.1879 [4.1981, 12.9440]"},
+      "gap_cold_ic_over_rho": {
+        "value": 94.4168,
+        "ci95": [
+          73.5188,
+          125.2922
+        ],
+        "statistic": "end-to-end cold: mean rank stage + mean cold over mean rho cold, bootstrap over points and rank attempts; wall time on one host class, factor-base construction excluded; the section 5a band is not computable (section_5a_band)"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.1391,
+        "ci95": [
+          0.0773,
+          0.2368
+        ],
+        "note": "inverse of tuned rho / cS 7.1879 [4.1981, 12.9440]"
+      },
       "gap_tuned_rho": "measured on this row: end-to-end cold 94.4 [73.5, 125.3]; online 0.139",
-      "gap_bernstein_lange": {"kind": "not measured on this row", "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"},
+      "gap_bernstein_lange": {
+        "kind": "not measured on this row",
+        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+      },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, AMD EPYC 9V74, one pinned exposed CPU; CPU-only, no GPU device); one run; rank block K1 replayed on another host class (INTEL(R) XEON(R) PLATINUM 8573C, run 39007026856): exact determinism pass, wall time host-dependent (replication)",
       "verified": "192/192 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, A/A and planted control passed; verify_receipt.py reproduces result.json byte for byte",
       "source_figure": "end-to-end cold cP / cS 3.2391 [2.9809, 3.5240] in wall time on one host class (promoted over the probe-pipeline producer pP, whose rank stage is B's); host-independent operation counts beside it: rank-stage probes and root calls kP / kS 1.4773; cold without rank 1.9019; online 0.9562 (stack about 4.6% slower online); rank stage per attempt kP / kS 3.3749 [3.0914, 3.6806]",
       "headline_scope": {
         "metric": "wall time: the frozen primary R = E2E(kP, cP) / E2E(kS, cS) = 3.2391 [2.9809, 3.5240], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner, AMD EPYC 9V74, one pinned CPU, CPU-only), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
         "operation_counts": {
-          "rank_stage_probes": {"kP": 2976293514, "kS": 2014683345, "ratio_kP_over_kS": 1.4773, "note": "totals over the two rank processes (1,200 attempts per arm); mean per attempt 2,480,244.6 vs 1,678,902.8; deterministic in the rank seed"},
-          "rank_stage_root_calls": {"kP": 1488248100, "kS": 1007441716, "ratio_kP_over_kS": 1.4773},
+          "rank_stage_probes": {
+            "kP": 2976293514,
+            "kS": 2014683345,
+            "ratio_kP_over_kS": 1.4773,
+            "note": "totals over the two rank processes (1,200 attempts per arm); mean per attempt 2,480,244.6 vs 1,678,902.8; deterministic in the rank seed"
+          },
+          "rank_stage_root_calls": {
+            "kP": 1488248100,
+            "kS": 1007441716,
+            "ratio_kP_over_kS": 1.4773
+          },
           "rank_stage_wall_decomposition": "rank-stage wall ratio 3.3737 = 1.4773 (fewer probes; a count, deterministic in the rank seed) x 2.2837 (per-probe wall time: wall ns per probe 584.48 vs 255.94, measured on this one host). The 2.2837 is not a host-speed factor: a kP probe (full canonicalization, base table, sequential) and a kS probe (lift_scan, compact table, prefetch loop) are not the same work, so it mixes cheaper per-probe work with host and memory-system effects; until field operations per probe are emitted it cannot be split into the two.",
-          "index_stored_states": {"cP": 29880000, "cS": 14940300, "ratio": 2.0},
+          "index_stored_states": {
+            "cP": 29880000,
+            "cS": 14940300,
+            "ratio": 2.0
+          },
           "online_probes_cP_over_cS": 1.000133,
           "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the rank stage is 94.6% (pP) and 90.9% (stack) of end-to-end cold wall time"
         },
@@ -229,252 +959,671 @@
         "cryptanalysis:experiments/koblitz-n83-stacked-20261016/run_github_38862448935/panel/result.json (branch claude/n83-stacked)",
         "cryptanalysis:experiments/koblitz-n83-replay-20261017/RESULTS.md and run_github_39007026856/ (K1 replay on another host class; construction time X)"
       ]
-    }
-  ],
-  "other_records": [
-    {
-      "n": 41, "a": 0,
-      "role": "previous baseline (v0); superseded by rule v3",
-      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
-      "pipeline": "ic price --single-target at crypto 0bf67f169f0762c8bd225760196803379cabdcb9; IC1N41Ckb0fb6560PDP3pairtableRCaimedLAsparseTDwalkISO0he13eaebe8e18",
-      "reference_rho": "ParallelRho, same process",
-      "unit": "batched addition of section 23's processes (2.3-3.2x dearer than v3's; S not comparable with v3's)",
-      "s_ic_cold": 5.5806, "s_ic_online": 0.0665, "s_rho_cold": 0.6937, "s_rho_online": 0.6244,
-      "gap_cold_ic_over_rho": {"value": 8.044, "ci95": [7.260, 9.011]},
-      "gap_online_ic_over_rho": {"value": 0.1066, "ci95": [0.0825, 0.1346]},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 2.501},
-      "evidence_tier": "crypto isolated_bench container",
-      "sources": ["crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)", "crypto:research/ic_single_target_20260930/analysis.json"]
-    },
-    {
-      "n": 53, "a": 0,
-      "role": "previous baseline (v0); superseded by rule v3",
-      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
-      "pipeline": "ic price --single-target at crypto 0bf67f16; IC1N53Ckb0fb27984PDP3pairtableRCaimedLAsparseTDwalkISO0hea53259919c9",
-      "reference_rho": "ParallelRho, same process",
-      "unit": "batched addition of section 23's processes",
-      "s_ic_cold": 7.3988, "s_ic_online": 0.0277, "s_rho_cold": 0.5032, "s_rho_online": 0.4848,
-      "gap_cold_ic_over_rho": {"value": 14.70, "ci95": [13.06, 16.66]},
-      "gap_online_ic_over_rho": {"value": 0.0572, "ci95": [0.0443, 0.0734]},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 2.021},
-      "evidence_tier": "crypto isolated_bench container",
-      "sources": ["crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)", "crypto:research/ic_single_target_20260930/analysis.json"]
-    },
-    {
-      "n": 61, "a": 0,
-      "role": "previous baseline (v0); superseded by rule v3",
-      "experiment": "crypto:research/ic_single_target_20260930 (ledger section 23)",
-      "pipeline": "ic price --single-target at crypto 0bf67f16; IC1N61Ckb0fb39040PDP3pairtableRCaimedLAsparseTDwalkISO0h031e95eb18e6",
-      "reference_rho": "ParallelRho, same process",
-      "unit": "batched addition of section 23's processes",
-      "s_ic_cold": 15.1490, "s_ic_online": 0.0527, "s_rho_cold": 0.4794, "s_rho_online": 0.4658,
-      "gap_cold_ic_over_rho": {"value": 31.60, "ci95": [28.18, 35.72]},
-      "gap_online_ic_over_rho": {"value": 0.1131, "ci95": [0.0843, 0.1478]},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 8.042},
-      "evidence_tier": "crypto isolated_bench container",
-      "sources": ["crypto:research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md (section 23.4)", "crypto:research/ic_single_target_20260930/analysis.json"]
-    },
-    {
-      "n": 41, "a": 0,
-      "role": "other verified pipeline (complete cold CPU, one target)",
-      "experiment": "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001 (hosted run 36803331080)",
-      "pipeline": "compact-orbit W64 policy, K85, unfiltered, fresh complete process (factor base, full rank, LA, descent, check); crypto 38c173072e16f580237447c93b085634275ba048",
-      "reference_rho": "fresh 32-walk signed-Frobenius Kuhn-Struik normal-basis rho, same public points (not rT770)",
-      "unit": "child user+system CPU seconds; S unset by the source",
-      "gap_cold_ic_over_rho": {"value": 13.378, "ci95": [9.367, 18.491], "statistic": "paired compact/rho CPU, geometric mean, log-t interval"},
-      "gap_online_ic_over_rho": null,
-      "gap_bernstein_lange": {"kind": "none"},
-      "evidence_tier": "hosted run with A/A and quiet-host gates passed and a second-host replay; not a Tier 1 allocation receipt",
-      "sources": ["crypto:docs/ic/BOUNDARY_TARGETS.md (complete cold compact-orbit panel)", "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001/RESULT.md"]
-    },
-    {
-      "n": 53, "a": 0,
-      "role": "other verified pipeline (complete cold CPU, one target)",
-      "experiment": "crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001 (hosted run 36803331080)",
-      "pipeline": "compact-orbit W64 policy, K220, unfiltered; crypto 38c17307",
-      "reference_rho": "fresh 32-walk signed-Frobenius normal-basis rho, same public points (not rT770)",
-      "unit": "child CPU seconds; S unset by the source",
-      "gap_cold_ic_over_rho": {"value": 22.675, "ci95": [17.904, 31.595]},
-      "gap_online_ic_over_rho": null,
-      "gap_bernstein_lange": {"kind": "none"},
-      "evidence_tier": "hosted run with A/A and quiet-host gates passed and a second-host replay; not a Tier 1 allocation receipt",
-      "sources": ["crypto:research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001/RESULT.md"]
-    },
-    {
-      "n": 61, "a": 0,
-      "role": "other verified pipeline (one target, online and cold)",
-      "experiment": "crypto autolab run 20261012T202048Z-5521627904 (x86_64 gvisor host); boundary ledger vs_rho record",
-      "pipeline": "compact-orbit IC, K=500 (61,000 base points, 500 orbit columns); IC1N61Ckb0fb61000PDP4s3rootindexRCguidedLAdenseTDsingleISO0h1e817ac07994; crypto e3090cbc98c657106fef10020da8ccc19be49a3f",
-      "reference_rho": "strong rho rung 3 (koblitz_rho_batch_ks_strong_online, 32 lanes, DP 4), same public point (not rT770)",
-      "unit": "wall ms; S unset by the source",
-      "gap_cold_ic_over_rho": {"value": 83.373, "ci95": null, "statistic": "median of per-workload cold ratios"},
-      "gap_online_ic_over_rho": {"value": 0.0717, "ci95": [0.0523, 0.1020], "statistic": "inverse of the median per-workload online speedup 13.94 [9.81, 19.13]"},
-      "gap_bernstein_lange": {"kind": "none"},
-      "evidence_tier": "taskset-pinned container with a CPU-isolation receipt (cpus_allowed_list 2); 64 workloads, claim check PASS 64/64",
-      "sources": ["crypto:docs/ic/BOUNDARY_TARGETS.md (Regime B vs_rho)", "crypto:docs/ic/boundary_targets.json (regimes.koblitz.records.vs_rho.current)"]
-    },
-    {
-      "n": 83, "a": 1,
-      "role": "same pipeline as the n=83 baseline, earlier experiment (merged)",
-      "experiment": "cryptanalysis:experiments/koblitz-n83-reconcile-20261014 (GitHub run 38617911080, AMD EPYC 7763)",
-      "pipeline": "iB770c: koblitz_orbit_dlp_fast_online + ic_log_cache.patch, cached K600 table; crypto 770f6a69",
-      "reference_rho": "rT770 tuned (Fold/64/DP6), seeds 830000+w and 202610061+w averaged per point",
-      "unit": "wall ms; S in rT770 steps (280.3 ns in this run) per sqrt(r)",
-      "s_ic_online": 0.0783, "s_rho_online": 0.0849,
-      "gap_cold_ic_over_rho": {"value": 313.3, "ci95": null, "statistic": "(fresh-rank IC setup on Q0, arm iB770f, + mean IC online) / (median rT770 setup + mean rT770 online)"},
-      "gap_online_ic_over_rho": {"value": 0.923, "ci95": [0.279, 1.779], "reading": "not separated from parity", "statistic": "mean IC / mean rT770 over 16 fresh points"},
-      "gap_bernstein_lange": {"kind": "none"},
-      "evidence_tier": "Tier 1 (instance scoped)",
-      "sources": ["cryptanalysis:experiments/koblitz-n83-reconcile-20261014/README.md", "cryptanalysis:experiments/koblitz-n83-reconcile-20261014/run_github_38617911080/panel/result.json"]
-    },
-    {
-      "n": 83, "a": 1,
-      "role": "same pipeline, first Tier 1 run, against a weaker rho",
-      "experiment": "cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014 (GitHub run 38523707244, AMD EPYC 9V74)",
-      "pipeline": "koblitz_orbit_dlp_fast_online + ic_log_cache.patch; IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7; crypto 770f6a69",
-      "reference_rho": "strong rho rung 3 (32 lanes, DP 4): 618 vs 490 ns per step against StrongRhoG on one CPU (reconcile), so not the matched tuned rho",
-      "unit": "wall ms; S unset by the source",
-      "gap_cold_ic_over_rho": {"value": 134, "ci95": null, "statistic": "Panel B"},
-      "gap_online_ic_over_rho": {"value": 0.361, "ci95": [0.111, 0.657], "statistic": "inverse of Panel B's section 23 figure 2.769 [1.521, 8.990]"},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 33.5, "note": "the model the BL arm later measured at 235"},
-      "evidence_tier": "Tier 1 (instance scoped); replicate run 38532240007 agrees",
-      "sources": ["cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014/README.md", "cryptanalysis:experiments/koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/"]
-    },
-    {
-      "n": 41,
-      "a": 0,
-      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
-      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
-      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=41 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
-      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
-      "unit": "S = wall ms / (tuned rho median ms per step, 107.3 ns) / sqrt(r); this row's own unit",
-      "s_ic_cold": 1.1,
-      "s_ic_online": 0.014,
-      "s_rho_cold": 0.166,
-      "s_rho_online": 0.155,
-      "gap_cold_ic_over_rho": {"value": 6.6, "ci95": [5.91, 7.4]},
-      "gap_online_ic_over_rho": {"value": 0.09, "ci95": [0.0715, 0.111]},
-      "source_figure": "online rho/IC 11.1 [9, 14]; break-even 7.67 targets",
-      "other_references_same_run": {"parallel": {"gap_online_ic_over_rho": 0.112, "gap_cold_ic_over_rho": 7.83}, "strong": {"gap_online_ic_over_rho": 0.0876, "gap_cold_ic_over_rho": 6.43}, "strong_wide": {"gap_online_ic_over_rho": 0.0337, "gap_cold_ic_over_rho": 2.54}},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 0.53, "note": "BL model with the tuned rho's ms/step; no BL walk ran"},
-      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
-      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
-      "sources": ["cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md", "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"]
-    },
-    {
-      "n": 53,
-      "a": 0,
-      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
-      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
-      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=53 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
-      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
-      "unit": "S = wall ms / (tuned rho median ms per step, 109.7 ns) / sqrt(r); this row's own unit",
-      "s_ic_cold": 1.35,
-      "s_ic_online": 0.00527,
-      "s_rho_cold": 0.128,
-      "s_rho_online": 0.124,
-      "gap_cold_ic_over_rho": {"value": 10.6, "ci95": [9.45, 12.0]},
-      "gap_online_ic_over_rho": {"value": 0.0423, "ci95": [0.0325, 0.0534]},
-      "source_figure": "online rho/IC 23.6 [18.7, 30.8]; break-even 11.3 targets",
-      "other_references_same_run": {"parallel": {"gap_online_ic_over_rho": 0.0478, "gap_cold_ic_over_rho": 11.8}, "strong": {"gap_online_ic_over_rho": 0.0367, "gap_cold_ic_over_rho": 9.2}, "strong_wide": {"gap_online_ic_over_rho": 0.0119, "gap_cold_ic_over_rho": 3.01}},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 0.322, "note": "BL model with the tuned rho's ms/step; no BL walk ran"},
-      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
-      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
-      "sources": ["cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md", "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"]
-    },
-    {
-      "n": 61,
-      "a": 0,
-      "role": "gap to the tuned rho (one experiment; not combined with the baseline row)",
-      "experiment": "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015 (branch claude/ic-s23-tuned-rho, PR #923), run 38777903922",
-      "pipeline": "ic price --single-target at crypto 995ea207 rebuilt with rustc 1.99.0 (same source as the n=61 baseline row, not its binary), 64 public points T01-T64 of section 23 plus 4 A/A, 1 process each",
-      "reference_rho": "tuned: rT770 configuration (64 lanes, DP 6, escape off) on the one-word Gf2 kernel (no Gf2_128 for n<=64), external worker rho/s23_strong_rho_eval.rs; the same run also measured ParallelRho, default StrongRhoG (one-word) and rA770 (WideGf2)",
-      "unit": "S = wall ms / (tuned rho median ms per step, 113 ns) / sqrt(r); this row's own unit",
-      "s_ic_cold": 2.02,
-      "s_ic_online": 0.00723,
-      "s_rho_cold": 0.107,
-      "s_rho_online": 0.105,
-      "gap_cold_ic_over_rho": {"value": 18.9, "ci95": [16.7, 21.5]},
-      "gap_online_ic_over_rho": {"value": 0.0687, "ci95": [0.051, 0.0903]},
-      "source_figure": "online rho/IC 14.5 [11.1, 19.6]; break-even 20.5 targets",
-      "other_references_same_run": {"parallel": {"gap_online_ic_over_rho": 0.0711, "gap_cold_ic_over_rho": 19.4}, "strong": {"gap_online_ic_over_rho": 0.0496, "gap_cold_ic_over_rho": 13.7}, "strong_wide": {"gap_online_ic_over_rho": 0.0159, "gap_cold_ic_over_rho": 4.42}},
-      "gap_bernstein_lange": {"kind": "model", "ic_online_over_bl": 0.759, "note": "BL model with the tuned rho's ms/step; no BL walk ran"},
-      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU; host exclusivity not certified)",
-      "verified": "64/64 rows, 0 flagged; section 23 claims 408/408 and external-rho claims 1152/1152 pass; verify_receipt.py reproduces result.json byte for byte",
-      "sources": ["cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/README.md", "cryptanalysis:experiments/koblitz-s23-tuned-rho-20261015/run_github_38777903922/panel/result.json"]
     },
     {
       "n": 83,
       "a": 1,
-      "role": "previous baseline (B, the BL-arm row); superseded by the stacked producer (one experiment; not combined with another row)",
-      "curve": {"curve_id": "EC1N83Ce1h35c7ced6b497", "icv1": "icv1-f2m83-t6151469093347-9eba6cd5", "r": 8569786107849059, "log2_r": 52.93},
-      "experiment": "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014 (PR #918, branch claude/n83-bl-arm, not yet merged)",
-      "pipeline": {
-        "name": "koblitz_orbit_dlp_fast_online + ic_log_cache.patch: compact-orbit K600 base (99,600 points, 600 orbit columns), S3 root index, verified cached factor-log table",
-        "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
-        "candidate_id_status": "the ID of B's claims (experiments/koblitz-single-target-n83-tier1-20261014) for the same producer, base and recipe",
-        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis 507c1ec4eba542f6e4ca584370a53c6e6c05072c",
-        "protocol": "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/protocol.json (sha256 b8e28e7121d4404fc0f02adcbcf521f41d0c319ce8327e3d595dfb4e16f598c1)",
-        "run": "GitHub Actions 38689817618, one ubuntu-24.04 runner (AMD EPYC 9V45), one pinned CPU"
+      "unit": "online interval only; no cold S measured in this experiment",
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "role": "promoted single improvement over B: two-limb lift_scan canonicalizer (one experiment; not combined)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-liftscan-20261015 (branch claude/n83-liftscan, PR #926)",
+      "run": "GitHub Actions 38776966036",
+      "promoted": true,
+      "measured": {
+        "online_full_over_lift_fresh16": {
+          "value": 1.5152,
+          "ci95": [
+            1.5061,
+            1.5247
+          ]
+        },
+        "online_full_over_lift_Q0": {
+          "value": 1.5309,
+          "ci95": [
+            1.5093,
+            1.5336
+          ]
+        },
+        "probes": "unchanged"
       },
-      "targets": "B's 16 fresh public points (one pinned process each), plus Q0 in 4 blocks",
-      "unit": "one rT770 rho step as measured in this run (180.82 ns), per sqrt(r); derived from wall ms of this run only",
-      "s_ic_cold": 32.931,
-      "s_ic_online": 0.0830,
-      "s_ic_setup": 32.848,
-      "s_ic_rank_stage": 31.114,
-      "s_ic_setup_without_rank_stage": 1.734,
-      "s_ic_setup_derivation": "P_IC 549,847.1 ms = rank stage 520,825 + per-process setup 29,022 ms, at 16,739.3 ms per unit (ic_cold 551,237.0 ms / s_ic_cold 32.931); split added 2026-10-16 (corrections), values unchanged",
-      "uncharged_phases": {
-        "factor_base_construction": "Not charged. B's IC process loads the K600 base from base_n83_K600.jsonl (base_source retained_header; base_load 179.7 ms is parsing only); construction was not timed. B's README lists it ('The IC budget leaves out base construction. That favours the IC'). So cold S 32.931 is a lower bound on the every-phase cold S.",
-        "linear_algebra": "Not charged. P_IC = timing_ms.rank_stage 520,825.4 + timing_ms.setup_total 29,021.7 ms (setup_total = base_load 179.7 + index_build 28,836.6 + normal_basis_and_selftest 5.4), which leaves out timing_ms.linear_algebra 51.3 ms (relation_la; the log table), although B's P_IC_definition names the linear algebra.",
-        "setup_input_control": "Not charged: cold_phase_ms.setup_input_control 32.3 ms.",
-        "size": "LA and input control together are 83.7 ms, 0.0050 in this row's unit (0.015% of P_IC); recorded 2026-10-17 from run_github_38689817618/ic_precompute/precompute_receipt.json and summary.jsonl (corrections). Values unchanged."
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.6705,
+        "ci95": [
+          0.1944,
+          1.3755
+        ],
+        "note": "inverse of tuned rho / IC lift_scan 1.4914 [0.7270, 5.1445] on B's 16 fresh points; not separated from parity"
       },
-      "wall_ms": {"ic_online_mean": 1389.91, "ic_cold": 551237.0, "P_IC": 549847.1, "P_IC_rank_stage": 520825, "P_IC_per_process_setup": 29022, "rho_online_mean": 1372.72, "rho_cold": 1529.48, "bl_online_mean": 5.914, "bl_cold": 558407.5},
-      "reference_rho": {
-        "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
-        "is_tuned_rho_rT770": true,
-        "s_rho_cold": 0.0914,
-        "s_rho_online": 0.0820
-      },
-      "gap_cold_ic_over_rho": {"value": 360.4, "ci95": null, "statistic": "(P_IC + mean IC online) / (median rho setup + mean rho online)"},
-      "gap_online_ic_over_rho": {"value": 1.0125, "ci95": [0.304, 2.116], "reading": "not_separated"},
-      "gap_tuned_rho": "measured on this row: online not separated from parity, cold 360x",
-      "gap_bernstein_lange": {"kind": "measured", "ic_online_over_bl": {"value": 235.0, "ci95": [61.4, 644.8], "reading": "bl_online_faster_than_ic", "rows_bl_faster": "16/16"}, "ic_cold_over_bl_cold": 0.987, "s_bl_online": 0.000353, "note": "BL precomputation matched to P_IC in wall ms on the same CPU (1.6e-6); T = 48,180,186 points (1.93 GB)"},
-      "evidence_tier": "Tier 1 (instance scoped; GitHub-hosted runner; one pinned exposed CPU)",
-      "verified": "81/81 runs valid; every scalar replayed in oracle.py; positive controls, three table checks, step identity, IC work identity and the A/A passed",
-      "source_figure": "IC online / BL online 235 [61, 645]; rho online / IC online 0.988 [0.473, 3.29]; cold IC / rho 360; cold IC / BL 0.987",
-      "next_improvement": "The rank stage is 520.8 s of the 549.8 s precomputation (95% of cold S). Replace the sequential rank stage with the guided minimum-rank policy (eta 1/10 reached rank = columns in exactly that many rows at n=53) on the K600 base, then re-run this BL protocol; online, cut S3-root probes per target.",
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role",
       "sources": [
-        "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/README.md (branch claude/n83-bl-arm)",
-        "cryptanalysis:experiments/koblitz-n83-bl-arm-20261014/run_github_38689817618/result.json (branch claude/n83-bl-arm)"
+        "cryptanalysis:experiments/koblitz-n83-liftscan-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-liftscan-20261015/run_github_38776966036/panel/result.json"
       ]
     },
-    {"n": 83, "a": 1, "unit": "online interval only; no cold S measured in this experiment", "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "role": "promoted single improvement over B: two-limb lift_scan canonicalizer (one experiment; not combined)", "experiment": "cryptanalysis:experiments/koblitz-n83-liftscan-20261015 (branch claude/n83-liftscan, PR #926)", "run": "GitHub Actions 38776966036", "promoted": true, "measured": {"online_full_over_lift_fresh16": {"value": 1.5152, "ci95": [1.5061, 1.5247]}, "online_full_over_lift_Q0": {"value": 1.5309, "ci95": [1.5093, 1.5336]}, "probes": "unchanged"}, "gap_online_ic_over_tuned_rho": {"value": 0.6705, "ci95": [0.1944, 1.3755], "note": "inverse of tuned rho / IC lift_scan 1.4914 [0.7270, 5.1445] on B's 16 fresh points; not separated from parity"}, "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role", "sources": ["cryptanalysis:experiments/koblitz-n83-liftscan-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-liftscan-20261015/run_github_38776966036/panel/result.json"]},
-    {"n": 83, "a": 1, "unit": "online interval only; no cold S measured in this experiment", "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "role": "promoted single improvement over B: Feistel scan order (one experiment; not combined)", "experiment": "cryptanalysis:experiments/koblitz-n83-scanorder-20261015 (branch claude/n83-scan-order, PR #927)", "run": "GitHub Actions 38786433493", "promoted": true, "measured": {"online_left_major_over_feistel_fresh16": {"value": 3.4287, "ci95": [1.009, 7.4215]}, "online_left_major_over_feistel_heldout384": {"value": 1.4507, "ci95": [1.2023, 1.7424]}, "online_left_major_over_feistel_Q0": {"value": 4.3257, "ci95": [4.2837, 4.4547]}}, "gap_online_ic_over_tuned_rho": {"value": 0.2909, "ci95": [0.1628, 0.4814], "note": "inverse of tuned rho / IC feistel 3.4370 [2.0774, 6.1418] on B's 16 fresh points"}, "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role", "sources": ["cryptanalysis:experiments/koblitz-n83-scanorder-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-scanorder-20261015/run_github_38786433493/panel/result.json"]},
-    {"n": 83, "a": 1, "unit": "online interval only; no cold S measured in this experiment", "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "role": "NOT promoted: lift_scan x Feistel order combined (one experiment; frozen primary not_separated)", "experiment": "cryptanalysis:experiments/koblitz-n83-combined-20261015 (branch claude/n83-combined)", "run": "GitHub Actions 38803625711", "promoted": false, "measured": {"primary_R_m_better_single_over_combined": {"value": 1.2363, "ci95": [1.0671, 1.4276]}, "primary_R_g_better_single_over_combined": {"value": 1.0611, "ci95": [0.9083, 1.243]}, "primary_verdict": "not_separated (R_g lower bound below 1)", "combined_vs_B_means": {"value": 1.9992, "ci95": [1.7285, 2.309]}, "combined_vs_B_geomeans": {"value": 1.7143, "ci95": [1.4646, 2.008]}, "n_points": 576, "S_rho_online": {"B": 0.04137, "lift_only": 0.02558, "feistel_only": 0.0331, "combined": 0.02069}}, "gap_online_ic_over_tuned_rho": {"value": 0.2145, "ci95": [0.1949, 0.2353], "note": "inverse of tuned rho / combined 4.6628 [4.2501, 5.1308] on means, 576 points; geometric means 7.2786 [6.5115, 8.1684]"}, "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role", "sources": ["cryptanalysis:experiments/koblitz-n83-combined-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-combined-20261015/run_github_38803625711/panel/result.json"], "note": "Combined beats B and Feistel alone clearly, and beats lift_scan alone on means only. The baseline row is unchanged."},
-    {"n": 83, "a": 1, "role": "promoted improvement over the combined producer: software-pipelined, prefetched root-table probes (one experiment; not combined with another row)", "experiment": "cryptanalysis:experiments/koblitz-n83-probepipe-20261015 (branch claude/n83-probe-pipeline)", "run": "GitHub Actions 38822490448", "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan + Feistel order + KIC_PROBE_PIPELINE=prefetch; baseline arm pC is the combined producer's loop (the lift_scan x Feistel combination whose own frozen primary was not_separated, cryptanalysis#929)", "targets": "384 new public points, 6 slices of 64, 1 process per arm per slice", "promoted": true, "unit": "online interval only; S_rho in this run's rT770 steps (275.5 ns); no cold S measured", "measured": {"R_m_combined_over_pipeline": {"value": 1.4001, "ci95": [1.3971, 1.4032]}, "R_g": {"value": 1.4002, "ci95": [1.3974, 1.403]}, "slice_bootstrap_R_m": {"value": 1.4001, "ci95": [1.385, 1.417]}, "probe_ratio": 1.0, "ns_per_probe": {"pC": 302.1, "pP": 215.8}, "S_rho_online": {"combined": 0.02062, "pipeline": 0.01473, "delta": -0.00589}}, "gap_online_ic_over_tuned_rho": {"value": 0.1462, "ci95": [0.1307, 0.1626], "note": "inverse of tuned rho / pipeline 6.8396 [6.1494, 7.6526] on means; the combined producer is 0.2047 (inverse of 4.8852 [4.3824, 5.4682]); online only"}, "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "sources": ["cryptanalysis:experiments/koblitz-n83-probepipe-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-probepipe-20261015/run_github_38822490448/panel/result.json"]},
-    {"n": 83, "a": 1, "role": "promoted improvement over the probe-pipeline producer: two-level root table, 32 MiB filter + 16-byte slots (one experiment; not combined with another row)", "experiment": "cryptanalysis:experiments/koblitz-n83-tablefilter-20261015 (branch claude/n83-table-filter)", "run": "GitHub Actions 38829449594", "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan + Feistel order + prefetched probes (the probe-pipeline producer, pP) vs the same with KIC_ROOT_TABLE=filter (pT)", "targets": "384 new public points, 6 slices of 64, 1 process per arm per slice", "promoted": true, "unit": "online interval; S_rho in this run's rT770 steps (318.3 ns); cold = slice setup + online", "measured": {"R_m_pipeline_over_filter": {"value": 1.0633, "ci95": [1.0589, 1.0679]}, "R_g": {"value": 1.0611, "ci95": [1.0579, 1.0644]}, "slice_bootstrap_R_m": {"value": 1.0633, "ci95": [1.0428, 1.0882]}, "probe_ratio": 1.0, "ns_per_probe": {"pP": 253.8, "pT": 238.7, "pK": 239.8, "pT29": 238.0}, "pP_over_pK_compact_only": {"value": 1.0581, "ci95": [1.0536, 1.0627]}, "pK_over_pT": {"value": 1.0049, "ci95": [1.0035, 1.0066]}, "pT_over_pT29": {"value": 1.0029, "ci95": [1.0019, 1.0039]}, "setup_ms": {"pP": 51081, "pT": 50593, "pK": 49288, "pT29": 50705}, "filter_build_ms": {"pT": 1304, "pT29": 1439}, "peak_rss_gib": {"pP": 5.41, "pT": 3.45}, "cold_pP_over_pT": {"value": 1.0101, "ci95": [1.009, 1.0113]}, "S_rho_online": {"pP": 0.01605, "pT": 0.0151, "delta": -0.00096}, "S_rho_cold": {"pP": 1.74985, "pT": 1.73231, "delta": -0.01754}}, "gap_online_ic_over_tuned_rho": {"value": 0.1523, "ci95": [0.1358, 0.1709], "note": "inverse of tuned rho / pT 6.5642 [5.8533, 7.3649]; the pipeline is 0.1620 (inverse of 6.1734); online only"}, "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "sources": ["cryptanalysis:experiments/koblitz-n83-tablefilter-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-tablefilter-20261015/run_github_38829449594/panel/result.json"]},
-    {"n": 83, "a": 1, "role": "promoted improvement over the combined producer: folded S3 root index, cold (one experiment; not combined with another row)", "experiment": "cryptanalysis:experiments/koblitz-n83-state-fold-20261015 (branch claude/n83-state-fold)", "run": "GitHub Actions 38819494806", "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan x Feistel; cB is the combined producer (its own frozen primary was not_separated, cryptanalysis#929), cF stores each unordered pair once (14,940,300 of 29,880,000 states; table 2^26 slots)", "targets": "16 new public points, one fresh pinned process per arm per point", "promoted": true, "unit": "cold = setup + one-target online, rank stage excluded; S in this run's rT770 steps (279.8 ns) per sqrt(r)", "measured": {"cold_cB_over_cF": {"value": 1.8372, "ci95": [1.8216, 1.8528]}, "setup_ms": {"cB": 41485.8, "cF": 22342.9}, "index_build_ratio": {"value": 1.9554, "ci95": [1.9463, 1.9666]}, "online_cB_over_cF": {"value": 0.949, "ci95": [0.9405, 0.9548], "note": "online about 5% slower"}, "peak_rss_ratio": {"value": 1.9715, "ci95": [1.9714, 1.9717]}, "S_cold": {"cB": 1.6196, "cF": 0.8816, "delta": -0.738}, "rank_stage": {"per_attempt_kB_over_kN": {"value": 2.2451, "ci95": [2.0517, 2.465]}, "S_cold_with_rank": {"old_kB_plus_cB": 30.855, "fold_only_kB_plus_cF": 30.117, "fold_and_rank_kN_plus_cF": 13.906}, "cold_gap_with_rank": {"old": 243.3, "fold_only": 237.4, "fold_and_rank": 109.6}}}, "gap_cold_ic_over_tuned_rho": {"value": 6.9501, "ci95": [5.5342, 9.014], "note": "setup + online, rank stage excluded; cB 12.7687 [10.1256, 16.5895]"}, "gap_online_ic_over_tuned_rho": {"value": 0.1633, "ci95": [0.0902, 0.2408], "note": "inverse of tuned rho / cF 6.1232 [4.1522, 11.0853]"}, "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)", "sources": ["cryptanalysis:experiments/koblitz-n83-state-fold-20261015/README.md", "cryptanalysis:experiments/koblitz-n83-state-fold-20261015/run_github_38819494806/panel/result.json"]}
+    {
+      "n": 83,
+      "a": 1,
+      "unit": "online interval only; no cold S measured in this experiment",
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "role": "promoted single improvement over B: Feistel scan order (one experiment; not combined)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-scanorder-20261015 (branch claude/n83-scan-order, PR #927)",
+      "run": "GitHub Actions 38786433493",
+      "promoted": true,
+      "measured": {
+        "online_left_major_over_feistel_fresh16": {
+          "value": 3.4287,
+          "ci95": [
+            1.009,
+            7.4215
+          ]
+        },
+        "online_left_major_over_feistel_heldout384": {
+          "value": 1.4507,
+          "ci95": [
+            1.2023,
+            1.7424
+          ]
+        },
+        "online_left_major_over_feistel_Q0": {
+          "value": 4.3257,
+          "ci95": [
+            4.2837,
+            4.4547
+          ]
+        }
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.2909,
+        "ci95": [
+          0.1628,
+          0.4814
+        ],
+        "note": "inverse of tuned rho / IC feistel 3.4370 [2.0774, 6.1418] on B's 16 fresh points"
+      },
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-scanorder-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-scanorder-20261015/run_github_38786433493/panel/result.json"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "unit": "online interval only; no cold S measured in this experiment",
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "role": "NOT promoted: lift_scan x Feistel order combined (one experiment; frozen primary not_separated)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-combined-20261015 (branch claude/n83-combined)",
+      "run": "GitHub Actions 38803625711",
+      "promoted": false,
+      "measured": {
+        "primary_R_m_better_single_over_combined": {
+          "value": 1.2363,
+          "ci95": [
+            1.0671,
+            1.4276
+          ]
+        },
+        "primary_R_g_better_single_over_combined": {
+          "value": 1.0611,
+          "ci95": [
+            0.9083,
+            1.243
+          ]
+        },
+        "primary_verdict": "not_separated (R_g lower bound below 1)",
+        "combined_vs_B_means": {
+          "value": 1.9992,
+          "ci95": [
+            1.7285,
+            2.309
+          ]
+        },
+        "combined_vs_B_geomeans": {
+          "value": 1.7143,
+          "ci95": [
+            1.4646,
+            2.008
+          ]
+        },
+        "n_points": 576,
+        "S_rho_online": {
+          "B": 0.04137,
+          "lift_only": 0.02558,
+          "feistel_only": 0.0331,
+          "combined": 0.02069
+        }
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.2145,
+        "ci95": [
+          0.1949,
+          0.2353
+        ],
+        "note": "inverse of tuned rho / combined 4.6628 [4.2501, 5.1308] on means, 576 points; geometric means 7.2786 [6.5115, 8.1684]"
+      },
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69); the one change named in the role",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-combined-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-combined-20261015/run_github_38803625711/panel/result.json"
+      ],
+      "note": "Combined beats B and Feistel alone clearly, and beats lift_scan alone on means only. The baseline row is unchanged."
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "promoted improvement over the combined producer: software-pipelined, prefetched root-table probes (one experiment; not combined with another row)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-probepipe-20261015 (branch claude/n83-probe-pipeline)",
+      "run": "GitHub Actions 38822490448",
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan + Feistel order + KIC_PROBE_PIPELINE=prefetch; baseline arm pC is the combined producer's loop (the lift_scan x Feistel combination whose own frozen primary was not_separated, cryptanalysis#929)",
+      "targets": "384 new public points, 6 slices of 64, 1 process per arm per slice",
+      "promoted": true,
+      "unit": "online interval only; S_rho in this run's rT770 steps (275.5 ns); no cold S measured",
+      "measured": {
+        "R_m_combined_over_pipeline": {
+          "value": 1.4001,
+          "ci95": [
+            1.3971,
+            1.4032
+          ]
+        },
+        "R_g": {
+          "value": 1.4002,
+          "ci95": [
+            1.3974,
+            1.403
+          ]
+        },
+        "slice_bootstrap_R_m": {
+          "value": 1.4001,
+          "ci95": [
+            1.385,
+            1.417
+          ]
+        },
+        "probe_ratio": 1.0,
+        "ns_per_probe": {
+          "pC": 302.1,
+          "pP": 215.8
+        },
+        "S_rho_online": {
+          "combined": 0.02062,
+          "pipeline": 0.01473,
+          "delta": -0.00589
+        }
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.1462,
+        "ci95": [
+          0.1307,
+          0.1626
+        ],
+        "note": "inverse of tuned rho / pipeline 6.8396 [6.1494, 7.6526] on means; the combined producer is 0.2047 (inverse of 4.8852 [4.3824, 5.4682]); online only"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-probepipe-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-probepipe-20261015/run_github_38822490448/panel/result.json"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "promoted improvement over the probe-pipeline producer: two-level root table, 32 MiB filter + 16-byte slots (one experiment; not combined with another row)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-tablefilter-20261015 (branch claude/n83-table-filter)",
+      "run": "GitHub Actions 38829449594",
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan + Feistel order + prefetched probes (the probe-pipeline producer, pP) vs the same with KIC_ROOT_TABLE=filter (pT)",
+      "targets": "384 new public points, 6 slices of 64, 1 process per arm per slice",
+      "promoted": true,
+      "unit": "online interval; S_rho in this run's rT770 steps (318.3 ns); cold = slice setup + online",
+      "measured": {
+        "R_m_pipeline_over_filter": {
+          "value": 1.0633,
+          "ci95": [
+            1.0589,
+            1.0679
+          ]
+        },
+        "R_g": {
+          "value": 1.0611,
+          "ci95": [
+            1.0579,
+            1.0644
+          ]
+        },
+        "slice_bootstrap_R_m": {
+          "value": 1.0633,
+          "ci95": [
+            1.0428,
+            1.0882
+          ]
+        },
+        "probe_ratio": 1.0,
+        "ns_per_probe": {
+          "pP": 253.8,
+          "pT": 238.7,
+          "pK": 239.8,
+          "pT29": 238.0
+        },
+        "pP_over_pK_compact_only": {
+          "value": 1.0581,
+          "ci95": [
+            1.0536,
+            1.0627
+          ]
+        },
+        "pK_over_pT": {
+          "value": 1.0049,
+          "ci95": [
+            1.0035,
+            1.0066
+          ]
+        },
+        "pT_over_pT29": {
+          "value": 1.0029,
+          "ci95": [
+            1.0019,
+            1.0039
+          ]
+        },
+        "setup_ms": {
+          "pP": 51081,
+          "pT": 50593,
+          "pK": 49288,
+          "pT29": 50705
+        },
+        "filter_build_ms": {
+          "pT": 1304,
+          "pT29": 1439
+        },
+        "peak_rss_gib": {
+          "pP": 5.41,
+          "pT": 3.45
+        },
+        "cold_pP_over_pT": {
+          "value": 1.0101,
+          "ci95": [
+            1.009,
+            1.0113
+          ]
+        },
+        "S_rho_online": {
+          "pP": 0.01605,
+          "pT": 0.0151,
+          "delta": -0.00096
+        },
+        "S_rho_cold": {
+          "pP": 1.74985,
+          "pT": 1.73231,
+          "delta": -0.01754
+        }
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.1523,
+        "ci95": [
+          0.1358,
+          0.1709
+        ],
+        "note": "inverse of tuned rho / pT 6.5642 [5.8533, 7.3649]; the pipeline is 0.1620 (inverse of 6.1734); online only"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-tablefilter-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-tablefilter-20261015/run_github_38829449594/panel/result.json"
+      ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "promoted improvement over the combined producer: folded S3 root index, cold (one experiment; not combined with another row)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-state-fold-20261015 (branch claude/n83-state-fold)",
+      "run": "GitHub Actions 38819494806",
+      "pipeline": "B's koblitz_orbit_dlp_fast_online + ic_log_cache.patch, K600 (crypto 770f6a69), lift_scan x Feistel; cB is the combined producer (its own frozen primary was not_separated, cryptanalysis#929), cF stores each unordered pair once (14,940,300 of 29,880,000 states; table 2^26 slots)",
+      "targets": "16 new public points, one fresh pinned process per arm per point",
+      "promoted": true,
+      "unit": "cold = setup + one-target online, rank stage excluded; S in this run's rT770 steps (279.8 ns) per sqrt(r)",
+      "measured": {
+        "cold_cB_over_cF": {
+          "value": 1.8372,
+          "ci95": [
+            1.8216,
+            1.8528
+          ]
+        },
+        "setup_ms": {
+          "cB": 41485.8,
+          "cF": 22342.9
+        },
+        "index_build_ratio": {
+          "value": 1.9554,
+          "ci95": [
+            1.9463,
+            1.9666
+          ]
+        },
+        "online_cB_over_cF": {
+          "value": 0.949,
+          "ci95": [
+            0.9405,
+            0.9548
+          ],
+          "note": "online about 5% slower"
+        },
+        "peak_rss_ratio": {
+          "value": 1.9715,
+          "ci95": [
+            1.9714,
+            1.9717
+          ]
+        },
+        "S_cold": {
+          "cB": 1.6196,
+          "cF": 0.8816,
+          "delta": -0.738
+        },
+        "rank_stage": {
+          "per_attempt_kB_over_kN": {
+            "value": 2.2451,
+            "ci95": [
+              2.0517,
+              2.465
+            ]
+          },
+          "S_cold_with_rank": {
+            "old_kB_plus_cB": 30.855,
+            "fold_only_kB_plus_cF": 30.117,
+            "fold_and_rank_kN_plus_cF": 13.906
+          },
+          "cold_gap_with_rank": {
+            "old": 243.3,
+            "fold_only": 237.4,
+            "fold_and_rank": 109.6
+          }
+        }
+      },
+      "gap_cold_ic_over_tuned_rho": {
+        "value": 6.9501,
+        "ci95": [
+          5.5342,
+          9.014
+        ],
+        "note": "setup + online, rank stage excluded; cB 12.7687 [10.1256, 16.5895]"
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.1633,
+        "ci95": [
+          0.0902,
+          0.2408
+        ],
+        "note": "inverse of tuned rho / cF 6.1232 [4.1522, 11.0853]"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-state-fold-20261015/README.md",
+        "cryptanalysis:experiments/koblitz-n83-state-fold-20261015/run_github_38819494806/panel/result.json"
+      ]
+    }
   ],
   "ratchet_history": [
-    {"n": 41, "from": "section 23 (v0, crypto 0bf67f16)", "to": "rule v3 (crypto 995ea207)", "cold_gap": [8.044, 7.657], "online_gap": [0.1066, 0.0915], "class": "engineering (the IC programme's rounds R03, R05, R07); measured as the rule's comparison, class accounting in that comparison itself", "note": "paired cold-time ratios between baselines are in IC_TOOL_PROGRAM.md section 7; S is not compared across the two units"},
-    {"n": 53, "from": "section 23 (v0)", "to": "rule v3", "cold_gap": [14.70, 13.24], "online_gap": [0.0572, 0.0466], "class": "engineering"},
-    {"n": 61, "from": "section 23 (v0)", "to": "rule v3", "cold_gap": [31.60, 20.97], "online_gap": [0.1131, 0.0675], "class": "engineering"},
-    {"n": 83, "from": "B (BL-arm baseline row)", "to": "lift_scan canonicalizer (PR #926, run 38776966036)", "cold_gap": null, "online_gap": null, "online_speedup": "1.5152 [1.5061, 1.5247] (fresh 16)", "class": "engineering; promoted by its own frozen rule; baseline row not replaced here (cold S not measured)"},
-    {"n": 83, "from": "B", "to": "Feistel scan order (PR #927, run 38786433493)", "cold_gap": null, "online_gap": null, "online_speedup": "1.4507 [1.2023, 1.7424] (held-out 384); fresh primary 3.4287 [1.0090, 7.4215]", "class": "advance (probe count); promoted; baseline row not replaced here (cold S not measured)"},
-    {"n": 83, "from": "better single arm (lift_scan)", "to": "lift_scan x Feistel (run 38803625711)", "cold_gap": null, "online_gap": null, "online_speedup": "R_m 1.2363 [1.0671, 1.4276]; R_g 1.0611 [0.9083, 1.2430]", "class": "NOT promoted: frozen primary not_separated"},
-    {"n": 83, "from": "lift_scan x Feistel combined producer", "to": "software-pipelined, prefetched probes (run 38822490448)", "cold_gap": null, "online_gap": [0.2047, 0.1462], "online_speedup": "1.4001 [1.3971, 1.4032] (384 points)", "class": "engineering; promoted by its own frozen rule (probes identical); baseline row not replaced here (cold S not measured)"},
-    {"n": 83, "from": "probe-pipeline producer", "to": "two-level root table (run 38829449594)", "cold_gap": null, "online_gap": [0.162, 0.1523], "online_speedup": "1.0633 [1.0589, 1.0679] (384 points); most of it from the 16-byte slot (pK 1.0581)", "class": "engineering; promoted by its own frozen rule (probes identical); baseline row not replaced here (cold S not measured; cold ratio 1.0101)"},
-    {"n": 83, "from": "lift_scan x Feistel combined producer", "to": "folded S3 root index (run 38819494806)", "cold_gap": [12.7687, 6.9501], "online_gap": null, "cold_speedup": "1.8372 [1.8216, 1.8528] (16 points, rank stage excluded)", "class": "engineering; promoted by its own frozen rule; baseline row not replaced here (rank stage still 95% of cold cost with the fold alone)"},
-    {"n": 83, "from": "pP, the probe-pipeline producer with B's rank stage (arms kP + cP), same run 38862448935, points and rT770", "to": "stacked producer (run 38862448935)", "cold_gap": [305.8238, 94.4168], "online_gap": [0.13304, 0.13912], "gap_fields": "cold_gap and online_gap hold the paired within-run gaps, as in entries 6-8; changed 2026-10-17 (corrections) from the cross-run figures now under cross_run_context_*", "baseline_row_replaced": "B (BL-arm baseline row, run 38689817618)", "cross_run_context_from": "B (BL-arm baseline row, run 38689817618: 180.82 ns step, median rho setup, B's points)", "cross_run_context_cold_gap": [360.4, 94.4168], "cross_run_context_online_gap": [1.0125, 0.1391], "cross_run_context_note": "context only: different runs, instance sets and step times; not a delta of this step", "cold_speedup": "end-to-end cold cP / cS 3.2391 [2.9809, 3.5240] in wall time on one host class, factor-base construction excluded, against the probe-pipeline producer pP (B's rank stage; 20 points, two rank blocks); host-independent rank-stage probes and root calls 1.4773x fewer", "class": "engineering; promoted by its own frozen primary; baseline row replaced (first n=83 end-to-end cold S measured after B). cold_gap / online_gap are paired within the promoting run; the cross_run_context_* figures (B's run) come from different runs, instance sets and step times.", "paired_within_run": {"from": "pP, the probe-pipeline producer with B's rank stage (arms kP + cP), same run, points and rT770", "cold_gap": [{"value": 305.8238, "ci95": [237.4977, 403.7772]}, {"value": 94.4168, "ci95": [73.5188, 125.2922]}], "online_gap": [{"value": 0.13304, "ci95": [0.07207, 0.22914]}, {"value": 0.13912, "ci95": [0.07727, 0.23675]}], "reading": "the step's own delta: cold gap 3.24x smaller; online gap 4.6% larger (this step made online slower). The same values, without intervals, are in this entry's cold_gap and online_gap; B's cross-run figures are under cross_run_context_* (context only); added 2026-10-16, gap fields aligned 2026-10-17 (corrections)", "source": "cryptanalysis:experiments/koblitz-n83-stacked-20261016/run_github_38862448935/panel/result.json statistics.e2e_cold_gap_cP_over_rT, e2e_cold_gap_cS_over_rT, online_gap_cP_over_rT, online_gap_cS_over_rT"}}
+    {
+      "n": 41,
+      "from": "section 23 (v0, crypto 0bf67f16)",
+      "to": "rule v3 (crypto 995ea207)",
+      "cold_gap": [
+        8.044,
+        7.657
+      ],
+      "online_gap": [
+        0.1066,
+        0.0915
+      ],
+      "class": "engineering (the IC programme's rounds R03, R05, R07); measured as the rule's comparison, class accounting in that comparison itself",
+      "note": "paired cold-time ratios between baselines are in IC_TOOL_PROGRAM.md section 7; S is not compared across the two units"
+    },
+    {
+      "n": 53,
+      "from": "section 23 (v0)",
+      "to": "rule v3",
+      "cold_gap": [
+        14.7,
+        13.24
+      ],
+      "online_gap": [
+        0.0572,
+        0.0466
+      ],
+      "class": "engineering"
+    },
+    {
+      "n": 61,
+      "from": "section 23 (v0)",
+      "to": "rule v3",
+      "cold_gap": [
+        31.6,
+        20.97
+      ],
+      "online_gap": [
+        0.1131,
+        0.0675
+      ],
+      "class": "engineering"
+    },
+    {
+      "n": 83,
+      "from": "B (BL-arm baseline row)",
+      "to": "lift_scan canonicalizer (PR #926, run 38776966036)",
+      "cold_gap": null,
+      "online_gap": null,
+      "online_speedup": "1.5152 [1.5061, 1.5247] (fresh 16)",
+      "class": "engineering; promoted by its own frozen rule; baseline row not replaced here (cold S not measured)"
+    },
+    {
+      "n": 83,
+      "from": "B",
+      "to": "Feistel scan order (PR #927, run 38786433493)",
+      "cold_gap": null,
+      "online_gap": null,
+      "online_speedup": "1.4507 [1.2023, 1.7424] (held-out 384); fresh primary 3.4287 [1.0090, 7.4215]",
+      "class": "advance (probe count); promoted; baseline row not replaced here (cold S not measured)"
+    },
+    {
+      "n": 83,
+      "from": "better single arm (lift_scan)",
+      "to": "lift_scan x Feistel (run 38803625711)",
+      "cold_gap": null,
+      "online_gap": null,
+      "online_speedup": "R_m 1.2363 [1.0671, 1.4276]; R_g 1.0611 [0.9083, 1.2430]",
+      "class": "NOT promoted: frozen primary not_separated"
+    },
+    {
+      "n": 83,
+      "from": "lift_scan x Feistel combined producer",
+      "to": "software-pipelined, prefetched probes (run 38822490448)",
+      "cold_gap": null,
+      "online_gap": [
+        0.2047,
+        0.1462
+      ],
+      "online_speedup": "1.4001 [1.3971, 1.4032] (384 points)",
+      "class": "engineering; promoted by its own frozen rule (probes identical); baseline row not replaced here (cold S not measured)"
+    },
+    {
+      "n": 83,
+      "from": "probe-pipeline producer",
+      "to": "two-level root table (run 38829449594)",
+      "cold_gap": null,
+      "online_gap": [
+        0.162,
+        0.1523
+      ],
+      "online_speedup": "1.0633 [1.0589, 1.0679] (384 points); most of it from the 16-byte slot (pK 1.0581)",
+      "class": "engineering; promoted by its own frozen rule (probes identical); baseline row not replaced here (cold S not measured; cold ratio 1.0101)"
+    },
+    {
+      "n": 83,
+      "from": "lift_scan x Feistel combined producer",
+      "to": "folded S3 root index (run 38819494806)",
+      "cold_gap": [
+        12.7687,
+        6.9501
+      ],
+      "online_gap": null,
+      "cold_speedup": "1.8372 [1.8216, 1.8528] (16 points, rank stage excluded)",
+      "class": "engineering; promoted by its own frozen rule; baseline row not replaced here (rank stage still 95% of cold cost with the fold alone)"
+    },
+    {
+      "n": 83,
+      "from": "pP, the probe-pipeline producer with B's rank stage (arms kP + cP), same run 38862448935, points and rT770",
+      "to": "stacked producer (run 38862448935)",
+      "cold_gap": [
+        305.8238,
+        94.4168
+      ],
+      "online_gap": [
+        0.13304,
+        0.13912
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps, as in entries 6-8; changed 2026-10-17 (corrections) from the cross-run figures now under cross_run_context_*",
+      "baseline_row_replaced": "B (BL-arm baseline row, run 38689817618)",
+      "cross_run_context_from": "B (BL-arm baseline row, run 38689817618: 180.82 ns step, median rho setup, B's points)",
+      "cross_run_context_cold_gap": [
+        360.4,
+        94.4168
+      ],
+      "cross_run_context_online_gap": [
+        1.0125,
+        0.1391
+      ],
+      "cross_run_context_note": "context only: different runs, instance sets and step times; not a delta of this step",
+      "cold_speedup": "end-to-end cold cP / cS 3.2391 [2.9809, 3.5240] in wall time on one host class, factor-base construction excluded, against the probe-pipeline producer pP (B's rank stage; 20 points, two rank blocks); host-independent rank-stage probes and root calls 1.4773x fewer",
+      "class": "engineering; promoted by its own frozen primary; baseline row replaced (first n=83 end-to-end cold S measured after B). cold_gap / online_gap are paired within the promoting run; the cross_run_context_* figures (B's run) come from different runs, instance sets and step times.",
+      "paired_within_run": {
+        "from": "pP, the probe-pipeline producer with B's rank stage (arms kP + cP), same run, points and rT770",
+        "cold_gap": [
+          {
+            "value": 305.8238,
+            "ci95": [
+              237.4977,
+              403.7772
+            ]
+          },
+          {
+            "value": 94.4168,
+            "ci95": [
+              73.5188,
+              125.2922
+            ]
+          }
+        ],
+        "online_gap": [
+          {
+            "value": 0.13304,
+            "ci95": [
+              0.07207,
+              0.22914
+            ]
+          },
+          {
+            "value": 0.13912,
+            "ci95": [
+              0.07727,
+              0.23675
+            ]
+          }
+        ],
+        "reading": "the step's own delta: cold gap 3.24x smaller; online gap 4.6% larger (this step made online slower). The same values, without intervals, are in this entry's cold_gap and online_gap; B's cross-run figures are under cross_run_context_* (context only); added 2026-10-16, gap fields aligned 2026-10-17 (corrections)",
+        "source": "cryptanalysis:experiments/koblitz-n83-stacked-20261016/run_github_38862448935/panel/result.json statistics.e2e_cold_gap_cP_over_rT, e2e_cold_gap_cS_over_rT, online_gap_cP_over_rT, online_gap_cS_over_rT"
+      }
+    },
+    {
+      "n": 83,
+      "from": "the stacked producer (arms kS + cS), same run 38891404048, points and rT770",
+      "to": "rank-cut producer (arms kR + cR): partner roots by point addition in the rank stage (run 38891404048)",
+      "cold_gap": [
+        87.5699,
+        65.6656
+      ],
+      "online_gap": [
+        0.11067,
+        0.11005
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps (same run, points and rT770)",
+      "baseline_row_replaced": "the stacked producer (run 38862448935)",
+      "cross_run_context_from": "the stacked row as landed (run 38862448935: 316.66 ns step, its own points)",
+      "cross_run_context_cold_gap": [
+        94.4168,
+        65.6656
+      ],
+      "cross_run_context_online_gap": [
+        0.1391,
+        0.1101
+      ],
+      "cross_run_context_note": "context only: different runs, instance sets and step times; not a delta of this step",
+      "cold_speedup": "end-to-end cold kS+cS / kR+cR 1.3336 [1.3300, 1.3377] in wall time on one host class, factor-base construction excluded, against the stacked producer (20 points, four rank blocks); operation counts unchanged (probes and root calls equal), the saving is 1.3770x per rank attempt [1.3735, 1.3813] from cheaper per-probe work",
+      "class": "engineering; promoted by its own frozen primary; baseline row replaced. cold_gap / online_gap are paired within the promoting run.",
+      "paired_within_run": {
+        "from": "the stacked producer (kS + cS), same run, points and rT770",
+        "cold_gap": [
+          {
+            "value": 87.5699,
+            "ci95": [
+              74.1352,
+              107.2251
+            ]
+          },
+          {
+            "value": 65.6656,
+            "ci95": [
+              55.3831,
+              80.2071
+            ]
+          }
+        ],
+        "online_gap": [
+          {
+            "value": 0.11067,
+            "ci95": [
+              0.06022,
+              0.17521
+            ]
+          },
+          {
+            "value": 0.11005,
+            "ci95": [
+              0.05899,
+              0.17444
+            ]
+          }
+        ],
+        "reading": "cold gap 1.33x smaller; online gap unchanged (cS / cR online 1.0056 [0.9974, 1.0121], same code)",
+        "source": "cryptanalysis:experiments/koblitz-n83-rankcut-20261016/run_github_38891404048/panel/result.json statistics.e2e_cold_gap_kS_cS_over_rT, e2e_cold_gap_kR_cR_over_rT, online_gap_cS_over_rT, online_gap_cR_over_rT"
+      }
+    }
   ],
   "corrections": [
-    {"date": "2026-10-16", "source": "sheriff case SHF-20261016-3caa6f, findings K3 (major) and K4 (minor), crypto-autoresearcher research/sheriff/SHF-20261016-3caa6f/", "class": "accounting correction; no measurement changed and no row is promoted or demoted", "what": "n=83 baseline row (stacked producer): s_ic_setup 0.8856 -> 9.6673. 0.8856 was S of cold without the rank stage (setup + online); every other row's s_ic_setup is s_ic_cold - s_ic_online, rank stage included (B's 32.848 = P_IC, rank stage 520.8 s + setup 29.0 s). Read row to row, the old value showed a 37x 'setup' drop that was an accounting change: on B's definition setup went 32.848 -> 9.6673 (different runs and step times; S compares inside a row only). conventions.setup now states the one meaning; the n=83 row and B's row carry the optional split s_ic_rank_stage + s_ic_setup_without_rank_stage. The B -> stack ratchet entry gains paired_within_run (cold gap 305.8 -> 94.4, online gap 0.133 -> 0.139); its cross-run figures stay as context."},
-    {"date": "2026-10-16", "source": "sheriff case SHF-20261016-3caa6f, findings K1, K2 and R1 (minor), crypto-autoresearcher research/sheriff/SHF-20261016-3caa6f/", "class": "disclosure; no number changed, no row promoted or demoted, nothing relabelled as an improvement", "what": "n=83 baseline row (stacked producer): (K1) the headline 3.2391 and every S are now labelled wall time on one host class (EPYC 9V74, one pinned CPU, CPU-only), with the host-independent operation-count ratio beside it: rank-stage probes and root calls kP / kS 1.4773; the rank-stage wall ratio 3.3737 = 1.4773 x 2.2837 per-probe wall time (headline_scope; recomputed from result.json and the rank records). (K2) factor-base construction is charged to neither arm, so 3.2391 is an upper bound on the every-phase ratio and S 9.6805 a lower bound (uncharged_phases); the section 5a 0 / 0.1 / 1 GAE band is not computable from this run because the IC arms emit no group-addition counts (section_5a_band). (R1) the row states that the run was not replayed on another host class (replication, evidence_tier). conventions.cold notes that a row names any phase its experiment did not charge."},
-    {"date": "2026-10-17", "source": "sheriff re-audit SHF-20261017-e4d7f6, findings K-N1, K-N2, K-N4 (minor), crypto-autoresearcher research/sheriff/SHF-20261017-e4d7f6/", "class": "wording, field-placement and rounding correction; no measurement changed, no row promoted or demoted, nothing relabelled as an improvement", "what": "(K-N1) conventions.setup said s_ic_setup is 'all reusable work' on every row; it now says it is the work the row charged less the phases named in uncharged_phases, and lists them: both n=83 rows exclude factor-base construction, and B's row (other_records) now has uncharged_phases naming factor-base construction, linear algebra 51.3 ms and setup input control 32.3 ms (from B's precompute receipt and summary; 0.015% of P_IC; values unchanged). The construction time stays unmeasured until the preregistered replay (koblitz-n83-replay-20261017) is archived, and the section 5a band stays uncomputable without emitted group-operation counts (open). (K-N2) ratchet_history[9] cold_gap / online_gap now hold the paired within-run gaps [305.8238, 94.4168] / [0.13304, 0.13912], as entries 6-8 do; B's cross-run [360.4, 94.4168] / [1.0125, 0.1391] moved to cross_run_context_cold_gap / cross_run_context_online_gap, and from now names pP. (K-N4) n=83 s_ic_rank_stage 8.7948 -> 8.7949 (8.79486); the derivation states that every S is rounded once from its unrounded quotient (8.7949 + 0.8725 = 9.6674 against 9.6673 = round(9.66731)); the 2.2837 per-probe factor is described as per-probe wall time, not host speed (a kP probe and a kS probe are not the same work)."},
-    {"date": "2026-10-17", "source": "archived K1 replay, cryptanalysis:experiments/koblitz-n83-replay-20261017 (protocol commit 863f6090; https://github.com/aburan28/cryptanalysis/actions/runs/39007026856; RESULTS.md)", "class": "evidence added: replication and one previously unmeasured phase; no row promoted or demoted, no figure of the row changed, nothing relabelled as an improvement", "what": "n=83 baseline row (stacked producer): replication now records the replay on another host class (INTEL(R) XEON(R) PLATINUM 8573C against AMD EPYC 9V74): replay_pass, rank-stage probes per attempt and relations identical, per-probe wall ratio kP / kS 2.6583 on the Intel host against 2.2905 (K1) on the EPYC, so the wall-time headline is host-dependent and the operation-count ratio 1.4773 stands; evidence_tier names it. uncharged_phases.measurement_status now holds the measured construction time X = 427.524 ms (65.541 ms over the retained load), with the illustrative every-phase R 3.2357 and cold S 9.6950; the open item 'construction time X unmeasured' is resolved; the section 5a band item stays open."}
+    {
+      "date": "2026-10-16",
+      "source": "sheriff case SHF-20261016-3caa6f, findings K3 (major) and K4 (minor), crypto-autoresearcher research/sheriff/SHF-20261016-3caa6f/",
+      "class": "accounting correction; no measurement changed and no row is promoted or demoted",
+      "what": "n=83 baseline row (stacked producer): s_ic_setup 0.8856 -> 9.6673. 0.8856 was S of cold without the rank stage (setup + online); every other row's s_ic_setup is s_ic_cold - s_ic_online, rank stage included (B's 32.848 = P_IC, rank stage 520.8 s + setup 29.0 s). Read row to row, the old value showed a 37x 'setup' drop that was an accounting change: on B's definition setup went 32.848 -> 9.6673 (different runs and step times; S compares inside a row only). conventions.setup now states the one meaning; the n=83 row and B's row carry the optional split s_ic_rank_stage + s_ic_setup_without_rank_stage. The B -> stack ratchet entry gains paired_within_run (cold gap 305.8 -> 94.4, online gap 0.133 -> 0.139); its cross-run figures stay as context."
+    },
+    {
+      "date": "2026-10-16",
+      "source": "sheriff case SHF-20261016-3caa6f, findings K1, K2 and R1 (minor), crypto-autoresearcher research/sheriff/SHF-20261016-3caa6f/",
+      "class": "disclosure; no number changed, no row promoted or demoted, nothing relabelled as an improvement",
+      "what": "n=83 baseline row (stacked producer): (K1) the headline 3.2391 and every S are now labelled wall time on one host class (EPYC 9V74, one pinned CPU, CPU-only), with the host-independent operation-count ratio beside it: rank-stage probes and root calls kP / kS 1.4773; the rank-stage wall ratio 3.3737 = 1.4773 x 2.2837 per-probe wall time (headline_scope; recomputed from result.json and the rank records). (K2) factor-base construction is charged to neither arm, so 3.2391 is an upper bound on the every-phase ratio and S 9.6805 a lower bound (uncharged_phases); the section 5a 0 / 0.1 / 1 GAE band is not computable from this run because the IC arms emit no group-addition counts (section_5a_band). (R1) the row states that the run was not replayed on another host class (replication, evidence_tier). conventions.cold notes that a row names any phase its experiment did not charge."
+    },
+    {
+      "date": "2026-10-17",
+      "source": "sheriff re-audit SHF-20261017-e4d7f6, findings K-N1, K-N2, K-N4 (minor), crypto-autoresearcher research/sheriff/SHF-20261017-e4d7f6/",
+      "class": "wording, field-placement and rounding correction; no measurement changed, no row promoted or demoted, nothing relabelled as an improvement",
+      "what": "(K-N1) conventions.setup said s_ic_setup is 'all reusable work' on every row; it now says it is the work the row charged less the phases named in uncharged_phases, and lists them: both n=83 rows exclude factor-base construction, and B's row (other_records) now has uncharged_phases naming factor-base construction, linear algebra 51.3 ms and setup input control 32.3 ms (from B's precompute receipt and summary; 0.015% of P_IC; values unchanged). The construction time stays unmeasured until the preregistered replay (koblitz-n83-replay-20261017) is archived, and the section 5a band stays uncomputable without emitted group-operation counts (open). (K-N2) ratchet_history[9] cold_gap / online_gap now hold the paired within-run gaps [305.8238, 94.4168] / [0.13304, 0.13912], as entries 6-8 do; B's cross-run [360.4, 94.4168] / [1.0125, 0.1391] moved to cross_run_context_cold_gap / cross_run_context_online_gap, and from now names pP. (K-N4) n=83 s_ic_rank_stage 8.7948 -> 8.7949 (8.79486); the derivation states that every S is rounded once from its unrounded quotient (8.7949 + 0.8725 = 9.6674 against 9.6673 = round(9.66731)); the 2.2837 per-probe factor is described as per-probe wall time, not host speed (a kP probe and a kS probe are not the same work)."
+    },
+    {
+      "date": "2026-10-17",
+      "source": "archived K1 replay, cryptanalysis:experiments/koblitz-n83-replay-20261017 (protocol commit 863f6090; https://github.com/aburan28/cryptanalysis/actions/runs/39007026856; RESULTS.md)",
+      "class": "evidence added: replication and one previously unmeasured phase; no row promoted or demoted, no figure of the row changed, nothing relabelled as an improvement",
+      "what": "n=83 baseline row (stacked producer): replication now records the replay on another host class (INTEL(R) XEON(R) PLATINUM 8573C against AMD EPYC 9V74): replay_pass, rank-stage probes per attempt and relations identical, per-probe wall ratio kP / kS 2.6583 on the Intel host against 2.2905 (K1) on the EPYC, so the wall-time headline is host-dependent and the operation-count ratio 1.4773 stands; evidence_tier names it. uncharged_phases.measurement_status now holds the measured construction time X = 427.524 ms (65.541 ms over the retained load), with the illustrative every-phase R 3.2357 and cold S 9.6950; the open item 'construction time X unmeasured' is resolved; the section 5a band item stays open."
+    }
   ],
   "stage_results": [
     {
@@ -484,7 +1633,9 @@
       "result": "five exact canonicalizers on [u64; 3]; cachegrind Ir per uniform word: lift_scan 513.6, gap_scan 1,434.9, exhaustive 1,849.6, exhaustive_bf 3,664.0, refine_bf 4,510.0 (0 mismatches on 10M uniform and every structured family)",
       "evidence_tier": "deterministic instruction counts; wall times exploratory",
       "pipeline_effect": "none yet: a stage improvement becomes a pipeline improvement only once it moves end-to-end S",
-      "sources": ["cryptanalysis:experiments/canon-n131-20261014/README.md"]
+      "sources": [
+        "cryptanalysis:experiments/canon-n131-20261014/README.md"
+      ]
     },
     {
       "stage": "the same five canonicalizers inside a decomposition-style loop",
@@ -493,19 +1644,21 @@
       "result": "lift_scan fastest on all four workloads; 16/16 primary contrasts resolve at the Bonferroni level, ratios 1.83-3.81; in-loop Ir per key over the loop floor: lift_scan 519, gap_scan 1,760, exhaustive 2,883",
       "evidence_tier": "Tier 1 (instance scoped) for the timing; cachegrind counts local and deterministic",
       "pipeline_effect": "none yet (no n=131 pipeline exists); at n=53 the isolated ranking did not survive the loop (papers/frobenius-orbits section 4/7)",
-      "sources": ["cryptanalysis:experiments/canon-n131-loop-20261014/README.md"]
+      "sources": [
+        "cryptanalysis:experiments/canon-n131-loop-20261014/README.md"
+      ]
     }
   ],
   "open": [
     "n=41, 53, 61: the gap to the tuned rho is measured by koblitz-s23-tuned-rho-20261015 (run 38777903922, PR #923; also n=47, 57, 59) on the one-word Gf2 kernel, because Gf2_128 does not exist for n<=64; a rho tuned on that kernel is not measured. Accounting only: no IC change, so no baseline row moves",
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
-    "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) moved to other_records when the stacked producer replaced it",
+    "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
     "n=19: no IC1 candidate manifest; online S not separable",
     "n=83: lift_scan and the Feistel order are each promoted over B, and the combination is not promoted over the better single arm (R_g 1.06 [0.91, 1.24]). Which pipeline is the baseline row, and its cold S, are not decided here",
     "n=83: the probe pipeline is promoted over the combined producer (1.4001 [1.3971, 1.4032]); the combination itself was not_separated against its better single arm in cryptanalysis#929, and the baseline row and its cold S are not decided here",
     "n=83: the two-level root table is promoted over the probe-pipeline producer by 1.0633 [1.0589, 1.0679], almost all of it from the 16-byte slot; cold cost is unchanged to 1% (setup dominates); which pipeline the baseline row names is not decided here",
     "n=83: the folded index is promoted over the combined producer on cold setup + online (1.8372 [1.8216, 1.8528]); the rank stage is still the dominant cold cost, and which pipeline the baseline row names is not decided here",
-    "n=83: the stacked producer (probe pipeline + 16-byte slots + folded index + rank stage on its own probe loop) is promoted end to end over the probe-pipeline producer by 3.2391 [2.9809, 3.5240] (koblitz-n83-stacked-20261016, run 38862448935) and is the baseline row; its end-to-end cold S is 9.68 against the tuned rho 0.103 (gap 94.4 [73.5, 125.3]); the rank stage is still 91% of cold cost",
+    "n=83: the rank-cut producer (point-addition partner roots in the rank stage) is promoted end to end over the stacked producer by 1.3336 [1.3300, 1.3377] (koblitz-n83-rankcut-20261016, run 38891404048, wall time on one host class, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 7.52 against the tuned rho 0.115 (gap 65.7 [55.4, 80.2]); the rank stage is still 88.5% of cold cost. The stacked producer (promoted over the probe-pipeline producer by 3.2391 [2.9809, 3.5240], run 38862448935) moved to other_records; the rank-cut run has no cross-host replay and no BL re-run",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]
