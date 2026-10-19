@@ -1,0 +1,309 @@
+{
+ "bases": {
+  "M10": {
+   "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+   "blocks": [
+    {
+     "attempts": 60,
+     "failures": 0,
+     "index_build_ms": 28315.992209,
+     "mean_probes_over_law": 0.9171834956325225,
+     "ns_per_probe": 233.72972104872687,
+     "rank": 60,
+     "rank_stage_ms": 22267.191848,
+     "rows_without_gain": 0,
+     "seed": 301
+    },
+    {
+     "attempts": 60,
+     "failures": 0,
+     "index_build_ms": 29712.662132999998,
+     "mean_probes_over_law": 1.0274210569533788,
+     "ns_per_probe": 229.63679432834098,
+     "rank": 60,
+     "rank_stage_ms": 24506.576332,
+     "rows_without_gain": 0,
+     "seed": 302
+    },
+    {
+     "attempts": 60,
+     "failures": 0,
+     "index_build_ms": 28960.539881,
+     "mean_probes_over_law": 1.1761792985707291,
+     "ns_per_probe": 231.70906037019788,
+     "rank": 60,
+     "rank_stage_ms": 28307.917913,
+     "rows_without_gain": 0,
+     "seed": 303
+    },
+    {
+     "attempts": 60,
+     "failures": 0,
+     "index_build_ms": 27867.382107,
+     "mean_probes_over_law": 0.8840187003226221,
+     "ns_per_probe": 228.68666129046716,
+     "rank": 60,
+     "rank_stage_ms": 20998.935813,
+     "rows_without_gain": 0,
+     "seed": 304
+    },
+    {
+     "attempts": 60,
+     "failures": 0,
+     "index_build_ms": 29343.765477,
+     "mean_probes_over_law": 0.848947031961367,
+     "ns_per_probe": 226.81531464585618,
+     "rank": 60,
+     "rank_stage_ms": 20000.914095,
+     "rows_without_gain": 0,
+     "seed": 305
+    }
+   ],
+   "closure_logs_equal_B_first_K_logs": true,
+   "columns": 60,
+   "distinct_index_digests_over_seeds": 1,
+   "distinct_log_tables_over_seeds": 1,
+   "header_sha256": "ba99464a8f85e41aa188ff698c987cc093a3c9fa98e1fee74640b8554df2b598",
+   "index_digest": {
+    "accounting": "after the last target; outside setup and every online interval",
+    "logical_states": 29880000,
+    "logical_states_blake3": "ebf4f41e7ce806b47303e25fc566ce0059f999af3f5b7a338ab586e3ebf79c27",
+    "table_entries": 29821794,
+    "table_map_sum64": "5c80db078213e8a5",
+    "table_map_xor64": "76c9935ff0965caf"
+   },
+   "law_probes_per_relation": 1731123.805535073,
+   "norm_cap": 16,
+   "pooled_attempts": 300,
+   "pooled_mean_probes_over_law": 0.9707499166881239,
+   "pooled_se": 0.06119184974895236,
+   "q0": {
+    "identical_over_seeds": true,
+    "probes": 2130165,
+    "relation": [
+     48498,
+     93721,
+     54127,
+     78333
+    ],
+    "scalar": "3141592653589793"
+   },
+   "root_table_entries": 29821794,
+   "verify_closure": {
+    "base_check": {
+     "checks": {
+      "all_x_distinct": true,
+      "base_hash": true,
+      "column_representatives_are_B_first_K": true,
+      "every_member_and_label": true,
+      "every_orbit_in_prime_order_subgroup": true,
+      "every_orbit_is_alpha_of_its_column": true,
+      "identity": true,
+      "multipliers": true,
+      "orbits_distinct_up_to_sign_and_frobenius": true
+     },
+     "notes": {
+      "orbits": 600,
+      "orbits_per_column": 10,
+      "repeated_orbits": []
+     },
+     "status": "PASS"
+    },
+    "planted_controls": {
+     "caught": {
+      "duplicated_orbit": true,
+      "label_coefficient_off_by_one": true,
+      "log_off_by_one": true
+     },
+     "status": "PASS"
+    },
+    "table_check": {
+     "base_hash": true,
+     "every_column_log_maps_G_to_R_c": true,
+     "every_orbit_log_maps_G_to_its_representative": true,
+     "kind": true,
+     "n_a_r": true,
+     "range": true,
+     "width": true
+    }
+   }
+  },
+  "M38": {
+   "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+   "blocks": [
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 30328.100035,
+     "mean_probes_over_law": 0.719491623846346,
+     "ns_per_probe": 230.1952642489043,
+     "rank": 16,
+     "rank_stage_ms": 4505.331454,
+     "rows_without_gain": 0,
+     "seed": 301
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 29340.421013,
+     "mean_probes_over_law": 1.3465567526168831,
+     "ns_per_probe": 226.56524674414146,
+     "rank": 16,
+     "rank_stage_ms": 8298.757164999999,
+     "rows_without_gain": 0,
+     "seed": 302
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 29164.939018999998,
+     "mean_probes_over_law": 1.1369986185703842,
+     "ns_per_probe": 217.55805458482095,
+     "rank": 16,
+     "rank_stage_ms": 6728.711098,
+     "rows_without_gain": 0,
+     "seed": 303
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 27803.285929,
+     "mean_probes_over_law": 0.8305438755110691,
+     "ns_per_probe": 225.50206102204598,
+     "rank": 16,
+     "rank_stage_ms": 5094.634016999999,
+     "rows_without_gain": 0,
+     "seed": 304
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 27618.892261999998,
+     "mean_probes_over_law": 0.7057007091401017,
+     "ns_per_probe": 234.80304168097317,
+     "rank": 16,
+     "rank_stage_ms": 4507.410349,
+     "rows_without_gain": 0,
+     "seed": 305
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 26568.412564,
+     "mean_probes_over_law": 1.0053877838130445,
+     "ns_per_probe": 216.70299206696004,
+     "rank": 16,
+     "rank_stage_ms": 5926.484912,
+     "rows_without_gain": 0,
+     "seed": 306
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 28482.662639000002,
+     "mean_probes_over_law": 0.9438298974314547,
+     "ns_per_probe": 222.55213886788127,
+     "rank": 16,
+     "rank_stage_ms": 5713.795529999999,
+     "rows_without_gain": 0,
+     "seed": 307
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 27066.127312,
+     "mean_probes_over_law": 0.5766908357200977,
+     "ns_per_probe": 241.28378287665868,
+     "rank": 16,
+     "rank_stage_ms": 3785.104667,
+     "rows_without_gain": 0,
+     "seed": 308
+    },
+    {
+     "attempts": 16,
+     "failures": 0,
+     "index_build_ms": 27216.549200999998,
+     "mean_probes_over_law": 1.0787433564200848,
+     "ns_per_probe": 240.27785855039645,
+     "rank": 16,
+     "rank_stage_ms": 7050.64507,
+     "rows_without_gain": 0,
+     "seed": 309
+    }
+   ],
+   "closure_logs_equal_B_first_K_logs": true,
+   "columns": 16,
+   "distinct_index_digests_over_seeds": 1,
+   "distinct_log_tables_over_seeds": 1,
+   "header_sha256": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca",
+   "index_digest": {
+    "accounting": "after the last target; outside setup and every online interval",
+    "logical_states": 30682112,
+    "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+    "table_entries": 30366551,
+    "table_map_sum64": "83d519abd1686b4d",
+    "table_map_xor64": "d98ecf6236b9d814"
+   },
+   "law_probes_per_relation": 1700068.523328942,
+   "norm_cap": 64,
+   "pooled_attempts": 144,
+   "pooled_mean_probes_over_law": 0.9271048281188294,
+   "pooled_se": 0.08193622461756023,
+   "q0": {
+    "identical_over_seeds": true,
+    "probes": 1612533,
+    "relation": [
+     81344,
+     53967,
+     13071,
+     42373
+    ],
+    "scalar": "3141592653589793"
+   },
+   "root_table_entries": 30366551,
+   "verify_closure": {
+    "base_check": {
+     "checks": {
+      "all_x_distinct": true,
+      "base_hash": true,
+      "column_representatives_are_B_first_K": true,
+      "every_member_and_label": true,
+      "every_orbit_in_prime_order_subgroup": true,
+      "every_orbit_is_alpha_of_its_column": true,
+      "identity": true,
+      "multipliers": true,
+      "orbits_distinct_up_to_sign_and_frobenius": true
+     },
+     "notes": {
+      "orbits": 608,
+      "orbits_per_column": 38,
+      "repeated_orbits": []
+     },
+     "status": "PASS"
+    },
+    "planted_controls": {
+     "caught": {
+      "duplicated_orbit": true,
+      "label_coefficient_off_by_one": true,
+      "log_off_by_one": true
+     },
+     "status": "PASS"
+    },
+    "table_check": {
+     "base_hash": true,
+     "every_column_log_maps_G_to_R_c": true,
+     "every_orbit_log_maps_G_to_its_representative": true,
+     "kind": true,
+     "n_a_r": true,
+     "range": true,
+     "width": true
+    }
+   }
+  }
+ },
+ "label": "LOCAL diagnostic (cloud-agent VM, shared 4-vCPU Xeon, two processes at a time); not timing evidence",
+ "producer": "ic_online_closure_r770 built from this directory's derivation (online_source_sha256 in protocol.json), rustc 1.97.0 local",
+ "rank_solve": "frame (the baseline kP loop)",
+ "schema": 1,
+ "target": "Q0 after the rank stage (archived scalar 3141592653589793)"
+}
