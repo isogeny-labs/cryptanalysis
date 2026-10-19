@@ -88,7 +88,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         with:
           version: v3.16.3
       - name: helm lint, both modes
@@ -182,7 +182,7 @@ jobs:
             --binary /fakes/ec2k-gpu --nvidia-smi /fakes/nvidia-smi --seconds 2 \
             --json-out /state/report.json
           python3 -c "import json,sys; r=json.load(open(sys.argv[1])); assert r['verdict'] == 'pass', r" "$state/report.json"
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         if: matrix.arch == 'amd64'
         with:
           version: v3.16.3
