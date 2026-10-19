@@ -1,0 +1,50 @@
+{
+  "batch_size": 1024,
+  "candidate_id": null,
+  "compiler_command": "clang++ -O1 -std=c++17 -Wall -Wextra native_batch.cpp -o native_batch",
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "rss_cap_bytes": 4294967296,
+  "sample_count": 1048576,
+  "sample_target_index": 1,
+  "sources": {
+    "baseline_output": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/baseline_run.stdout",
+      "sha256": "73e0457923dacdb93c751564b3713f7d17cf152ab944d7dfd59eaa508cde9e13"
+    },
+    "baseline_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/baseline_protocol.json",
+      "sha256": "6b3016f4dc4c21b92439445e2966a994f103ddd27d5f7d764562363bc18c69db"
+    },
+    "binary": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/native_batch",
+      "sha256": "00debf5136014003eeff3aa71c97417d6e3275b98da4acf61611b1bf5f75075d"
+    },
+    "compiler": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/compiler_version.txt",
+      "sha256": "8b9ffbbb441d63746c134ceca11585f336632283b11435cd06f92c82a86497e7"
+    },
+    "field": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_fixedseed_threeleaf_full_20261016/field.hpp",
+      "sha256": "d85b70e38a1cae4ca68b5b6a3ed708d7578166daa13b987cac44988960710649"
+    },
+    "field_fast": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w15_native_field_20261011/field_fast.hpp",
+      "sha256": "2a1aedf14e0e04ad21b43f9ce6ebff2f6c275056df82d57d663aa3b4f058db97"
+    },
+    "input": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/input_extended.tsv",
+      "sha256": "fe91149daf3b62005f65b9db06842eeac1d6cacdca2fdc116493010cdc442602"
+    },
+    "native_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/native_batch.cpp",
+      "sha256": "bf4c1b23eadf4fe71c8ffa29d0f38b3a79d4e255f14a541c36792e840500c028"
+    },
+    "sage_reference": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_native_quartic_filter_20261019/reference_result.json",
+      "sha256": "735183560cf10fb9deebd605164867a2c1f6a7147fba23f5ccee19a0ea1b9e5a"
+    }
+  },
+  "status": "FROZEN_BEFORE_N131_NATIVE_BATCH",
+  "wall_cap_seconds": 120,
+  "worker_count": 1
+}
