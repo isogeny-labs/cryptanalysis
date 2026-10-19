@@ -101,3 +101,7 @@ with a 95% interval of [1.101903, 1.178301] across 48 paired repetitions.
 The two-x table used 11,156,960 more retained bytes; this is a batch result,
 not a single-scalar latency measurement. The source-linked PDF and generated
 graphs are available with the report.
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) summarize the frozen distinct-input panel, its fixture construction and correctness gates, and the limits of the result. The committed [visual generator](visuals.py) produces the fixture-flow and throughput figures from the audited JSON; see `figures/`.
