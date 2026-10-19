@@ -34,3 +34,7 @@ The fixed `371−τ` native evaluator tests fourteen positions before changing t
 | Retained native bytes | 26,035,988 | 12,336,756 |
 
 The paired median reference/candidate online ratio is **1.020033**, with repeat-bootstrap 95% interval **[1.016715,1.023710]**. The exact online interval is Rust `Instant` around 96 passes over the same 128 point multiplications and affine recovery after table preparation; all outputs were checked after that interval. This is a sustained hot-table throughput result on one cloud allocation. It does not transfer to one-call latency or the unimplemented ordered schedule. The physical host isolation requirements of Tier 0 were not established by this Pod.
+
+## Native ordered-format follow-up
+
+The [ordered native evaluator report](../prime-j0-ordered-native-20261015/REPORT-2026-10-19.md) records the qualified same-point CPU result for `394−τ, 380−τ, 380−τ, (371−τ)×11`: 0.985551× the fixed format's throughput (95% interval `[0.979842, 0.988419]`). This is a qualified regression, so the fixed `371−τ` format remains the stronger measured option under that Tier 1 workload. The native evidence is linked separately and does not change the fixed-format shape screen.

@@ -20,3 +20,7 @@ The overlay requires source SHA-256 `aff42df465e44e2f3fe1d10c524b6a336a76c509179
 The paired median reference/candidate online ratio is **0.985551**. The online interval is Rust `Instant` around 96 passes over the same 128 frozen point multiplications and affine recovery after table preparation; all outputs were checked afterward. This result is sustained hot-table throughput on one cloud allocation. The physical-host Tier 0 conditions and one-call latency are separate gates. The fixed format is the stronger measured option under this resource envelope.
 
 The [exact shape screen, affine replay, and checked Lean radius theorem](../prime-j0-fourteen-position-mixed-radix-20261015/README.md) specify the ordered mathematical format. The current native tests cover concrete outputs and digit conditions; a candidate-specific Lean theorem connecting all selected digits to the secp256k1 point action remains the formalization step.
+
+## Report and figures
+
+The [source-linked report](REPORT-2026-10-19.md) and [PDF](REPORT-2026-10-19.pdf) record the native correctness checks and the qualified throughput regression. The SVG/PDF figures are regenerated from the committed audit JSON by `visuals.py`.
