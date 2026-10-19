@@ -65,7 +65,7 @@ TAILNET_FORWARDS=()
 
 CLAUDE_RC=auto                          # yes requires login; no disables
 CODEX_RC=auto
-INSTALL_CLIS=yes                        # Claude, Codex, Cursor CLI, OpenCode v1
+INSTALL_CLIS=no                         # set yes to install vendor coding CLIs
 INSTALL_CLOUD_TOOLS=yes                  # Modal, RunPod, AWS, Hugging Face
 INSTALL_AGENT_STACK=no                  # crypto-autoresearcher API-direct stack, separate venv
 INSTALL_CUDA=no                         # yes: separate conda CUDA toolkit, no driver
