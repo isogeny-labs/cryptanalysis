@@ -101,6 +101,39 @@ class ScopeTests(unittest.TestCase):
                     job_if = re.search(r"^    if: (.+)$", block, re.M).group(1)
                     self.assertNotIn("fromJSON", job_if)
 
+    def test_unselected_macos_jobs_do_not_take_a_macos_runner(self):
+        # Steps of a deselected matrix job are skipped, but GitHub still
+        # allocates its runner first, and hosted macOS runners are the scarce
+        # pool. Workflows that trigger on every PR route a job whose selector
+        # output is exactly false to ubuntu-latest. Only that case changes, so
+        # check names, the failure fallback and selected jobs are unchanged.
+        routed = 0
+        for workflow, jobs in SCOPES.items():
+            text = (REPO / ".github/workflows" / workflow).read_text()
+            if "  pull_request:\n    paths:" in text:
+                continue
+            for job in jobs:
+                start = text.find("  " + job + ":\n")
+                if start < 0:
+                    continue
+                rest = text[start:]
+                end = re.search(r"\n  [a-zA-Z][a-zA-Z0-9_-]*:\n", rest[1:])
+                block = rest[:end.start() + 1] if end else rest
+                if "macos" not in block or "    runs-on: " not in block:
+                    continue
+                runs_on = re.search(r"^    runs-on: (.+)$", block, re.M).group(1)
+                if "matrix.os" not in runs_on:
+                    continue
+                with self.subTest(workflow=workflow, job=job):
+                    self.assertEqual(
+                        runs_on,
+                        "${{ (needs.changes.result == 'success' && toJSON(fromJSON("
+                        "needs.changes.outputs.selected || '{}')." + job + ") == 'false')"
+                        " && 'ubuntu-latest' || matrix.os }}",
+                    )
+                    routed += 1
+        self.assertGreaterEqual(routed, 24)
+
 
 class GitDiffTests(unittest.TestCase):
     def test_multi_commit_push_deleted_paths_and_merge_group(self):

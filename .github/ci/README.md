@@ -52,7 +52,15 @@ all configured jobs. Existing narrowly filtered workflows keep their filters.
 The 29 previously unfiltered workflows still trigger for every PR and merge
 group; their irrelevant work is skipped within the workflow. Matrix jobs gate
 each step, because GitHub evaluates a job's `if` before expanding its matrix.
-This retains existing check names. Only an explicit boolean `false` permits a
+This retains existing check names. A skipped step still holds the runner that
+GitHub allocated before the job started, and hosted macOS runners are the
+scarce pool (on 2026-10-12, `portable (macos-15)` of run 38312946764 waited
+about 2 h 22 min for a runner while its `ubuntu-24.04` sibling waited 11 min).
+So a matrix job in a workflow that triggers on every PR runs on `ubuntu-latest`
+only when the selector succeeded and its output for that job is exactly `false`;
+every other case keeps `matrix.os`, so selected work, failure fallbacks and
+check names are unchanged. `test_ci_scope.py` enforces the expression. Only an
+explicit boolean `false` permits a
 skip; missing selector outputs run the work, and invalid JSON fails the check.
 An unsuccessful selector also runs the work. Cancelled workflows do not start
 new dependent builds; retained-artifact steps still run for an actual failure.

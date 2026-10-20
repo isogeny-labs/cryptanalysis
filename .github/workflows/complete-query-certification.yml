@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-15]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ (needs.changes.result == 'success' && toJSON(fromJSON(needs.changes.outputs.selected || '{}').portable) == 'false') && 'ubuntu-latest' || matrix.os }}
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}
     steps:
       - uses: actions/checkout@v7

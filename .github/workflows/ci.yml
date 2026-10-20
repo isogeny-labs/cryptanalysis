@@ -58,7 +58,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() }}
     name: ${{ matrix.os }} / ${{ matrix.cc }} / ${{ matrix.build_type }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ (needs.changes.result == 'success' && toJSON(fromJSON(needs.changes.outputs.selected || '{}').build) == 'false') && 'ubuntu-latest' || matrix.os }}
     timeout-minutes: 25
     strategy:
       fail-fast: false
