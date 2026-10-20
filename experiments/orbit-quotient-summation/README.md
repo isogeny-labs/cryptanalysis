@@ -178,3 +178,25 @@ Scope: toy exact arithmetic plus a sample-derived n=131 projection. No
 degree-131 relation was found, no DLP was solved, no attack exponent is
 claimed, and the interpolation result is not a lower bound on other algebraic
 representations.
+
+## Lean proof map (2026-10-20)
+
+[`lean/OrbitPairIndex.lean`](lean/OrbitPairIndex.lean) pins Lean 4.34.1 and
+proves `OrbitQuotient.triple_matches_iff_pair_lookup`: for any modulus `r`,
+target `t`, and three finite lists of **already enumerated scalar
+representatives**, a three-summand match modulo `r` exists exactly when the
+two-slot residue index contains a sum completed by a representative from the
+third list. `mem_pairTotals_iff` proves that the index contains exactly the
+enumerated pair residues. The proof uses Lean's kernel and `Nat.mod_add_mod`;
+it introduces no custom axioms or native evaluation. Check it with
+`experiments/orbit-quotient-summation/lean/check.sh`; this builds the pinned
+Lake project and audits both declarations against the exact allowed axiom
+set (`propext`, `Quot.sound`). The focused PR workflow repeats that check.
+
+This is the algebraic correctness obligation behind `pair_index` and
+`m3_truths`, whose small-modulus implementation bridge is checked by
+`test_pair_index_matches_direct_triple_enumeration`. It does not certify the
+curve arithmetic, construction of the representative lists, four-summand
+counts, Boolean interpolation, the sample-based degree-131 projection, or a
+cryptanalytic performance claim. Those retain the empirical and projected
+labels above.
