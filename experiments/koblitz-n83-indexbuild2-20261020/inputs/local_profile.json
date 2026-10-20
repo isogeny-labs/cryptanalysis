@@ -1,0 +1,209 @@
+{
+ "base": "M38 closure header: 608 orbits, 15341360 stored states, 30682720 roots, 30366551 entries, 67108864 slots of 16 B",
+ "bench_rounds_ms": {
+  "block32_lift": [
+   3590.694785,
+   3679.180397,
+   3789.930768,
+   3514.8820189999997,
+   3575.1880140000003
+  ],
+  "block32_linear": [
+   2676.780285,
+   2685.502778,
+   2557.871522,
+   2624.996383,
+   2769.7385639999998
+  ],
+  "block64_linear": [
+   2797.7695540000004,
+   2682.996353,
+   2714.630209,
+   2613.0987800000003,
+   2682.703214
+  ],
+  "pipe32_lift": [
+   4206.870584,
+   4026.796492,
+   3790.80063,
+   4004.8554999999997,
+   3413.670745
+  ],
+  "pipe32_linear": [
+   3026.511939,
+   2619.8277669999998,
+   2365.077834,
+   3030.8222539999997,
+   2668.3134429999996
+  ],
+  "pipe32_linear_lanes8": [
+   2747.2635450000002,
+   2513.902581,
+   2744.848095,
+   2546.774196,
+   2478.248534
+  ],
+  "selftest_branchfree": [
+   1413.4629869999999,
+   1658.221219,
+   1352.691552,
+   1498.265032,
+   1425.1406829999999
+  ],
+  "selftest_producer": [
+   1487.794662,
+   1666.435528,
+   1465.715522,
+   1473.164441,
+   1556.894399
+  ],
+  "states_c9": [
+   4855.20677,
+   7022.693346,
+   4947.955074,
+   6531.553428,
+   5385.672705
+  ],
+  "states_producer": [
+   8057.331656,
+   6055.6155340000005,
+   7203.833243,
+   5661.306187,
+   7073.639230000001
+  ]
+ },
+ "breakdown_median_ms": {
+  "bench_insert_pipeline_prefaulted_ms (producer, median of 5)": 4004.8554999999997,
+  "bench_scan_selftest_ms (producer, 2 keys, median of 5)": 1487.794662,
+  "bench_state_loop_ms (producer, median of 5)": 7073.639230000001,
+  "canonicalization_lift_scan_alone_ms": 1921.0959490000002,
+  "first_touch_faults_alone_ms (1 GiB, read then write per page)": 876.108379,
+  "index_build_minor_faults": 704071,
+  "index_build_total_ms": 14572.022611,
+  "insert_alone_no_prefetch_ms (incl. faults)": 5646.242605,
+  "insert_alone_prefetch32_ms (incl. faults)": 2136.37574,
+  "producer_insert_pipeline_ms (incl. faults)": 4707.953955,
+  "state_loop_ms": 8230.558663,
+  "state_split_ms (instrumented copy, per-row timers)": {
+   "finish_ms": 1858.067212,
+   "montgomery_invert_ms": 1016.678937,
+   "prepare_ms": 1174.182982,
+   "to_normal_push_ms": 4061.4188110000005,
+   "total_ms": 8137.948355
+  }
+ },
+ "candidates": {
+  "C6_bucketed_insert": {
+   "per_bucket_count": {
+    "log2_buckets_10": {
+     "equal": true,
+     "insert_ms": 4989.640327,
+     "minflt": 674108,
+     "partition_ms": 805.6075000000001,
+     "spills": 195
+    },
+    "log2_buckets_12": {
+     "equal": true,
+     "insert_ms": 2448.4372780000003,
+     "minflt": 674108,
+     "partition_ms": 1040.717296,
+     "spills": 783
+    },
+    "log2_buckets_14": {
+     "equal": true,
+     "insert_ms": 3334.599685,
+     "minflt": 674108,
+     "partition_ms": 1737.592171,
+     "spills": 3138
+    }
+   },
+   "producer_insert_alone_prefetch32_ms": 2136.37574,
+   "status": "rejected (exact with the spill carry, but partition plus bucket inserts cost more than the prefetched insert)"
+  },
+  "C7_linear_canon_lanes8": {
+   "also": {
+    "block32_lift": 3590.694785,
+    "block32_linear": 2676.780285,
+    "block64_linear": 2682.996353,
+    "pipe32_linear": 2668.3134429999996
+   },
+   "bench_pipeline_ms": 2546.774196,
+   "modelled_saving_ms": 1458.0813039999998,
+   "producer_bench_pipeline_ms": 4004.8554999999997,
+   "status": "implemented"
+  },
+  "C8_pclmul_codegen": {
+   "profile_runs_ms": {
+    "c9_tf": [
+     5045.577751,
+     5164.790609
+    ],
+    "parent_loop_tf": [
+     5820.128082,
+     6205.814234
+    ]
+   },
+   "status": "rejected (no saving over the same loops without it)"
+  },
+  "C9_sum_inverse_states": {
+   "bench_state_loop_ms": 5385.672705,
+   "modelled_saving_ms": 1687.9665250000007,
+   "producer_bench_state_loop_ms": 7073.639230000001,
+   "profile_runs_ms": {
+    "c9": [
+     5270.82122,
+     4956.506228
+    ],
+    "producer": [
+     5384.80896,
+     6028.997338
+    ]
+   },
+   "status": "implemented"
+  },
+  "S3_branchfree_selftest": {
+   "bench_ms": 1425.1406829999999,
+   "producer_bench_ms": 1487.794662,
+   "status": "rejected (no saving beyond noise)"
+  }
+ },
+ "canonicalizers_ms (all 30.7 M roots, median of 3; equal to lift_scan on every root: True)": {
+  "full_scan_1of16": 489.21792200000004,
+  "lift_lanes8": 1349.8869,
+  "lift_scan": 1921.0959490000002,
+  "linear": 1189.7385590000001,
+  "linear_lanes8": 1298.846432,
+  "linear_sel10": 1691.241502
+ },
+ "host": "4 vCPU Intel Xeon @ 2.10 GHz, hypervisor guest, taskset -c 2, THP madvise, rustc 1.97",
+ "label": "LOCAL DIAGNOSTIC (shared cloud-agent VM): ranks candidates and sizes the design; not evidence",
+ "local_cold_pairs_s000": {
+  "A_cM38IB_index_ms": [
+   14149.836741,
+   13956.281224999999,
+   13146.831786
+  ],
+  "A_cold_ms": [
+   16714.870811,
+   17050.958532,
+   15984.262701
+  ],
+  "B_cM38IC_index_ms": [
+   10051.134631,
+   9942.612974,
+   10093.410611
+  ],
+  "B_cold_ms": [
+   12692.356431,
+   13239.45119,
+   12677.893349
+  ],
+  "order": "A then B, three times, one fresh pinned process each"
+ },
+ "modelled": {
+  "index_build_factor": 0.7293334997103167,
+  "scan_selftest_factor": 1.0,
+  "source": "round-2 index build over the row's in the alternating local cold pairs (s000)"
+ },
+ "schema": 1
+}
