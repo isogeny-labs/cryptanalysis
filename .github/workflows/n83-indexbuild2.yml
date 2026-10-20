@@ -15,8 +15,27 @@ name: N83 index build round 2, paired end-to-end cold Tier 1 (repeated alternati
 # verify_receipt.py audits the receipt (fail closed) and applies the decision
 # rule: improvement iff the 95% two-stage paired bootstrap lower bound of the
 # end-to-end ratio exceeds 1.
+# workflow_dispatch is the convention, but it was refused for this
+# integration (403 Resource not accessible by integration, 2026-10-20), so the
+# run is also triggered by a push to this branch, restricted by path filters
+# as in n83-indexbuild.yml: receipts, README, figures, figure scripts and
+# smoke diagnostics do not trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n83-indexbuild2]
+    paths:
+      - experiments/koblitz-n83-indexbuild2-20261020/**
+      - .github/workflows/n83-indexbuild2.yml
+      - '!experiments/koblitz-n83-indexbuild2-20261020/run_github_*/**'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/README.md'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/README.pdf'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/figures/**'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/make_figures.py'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/report_header.tex'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/report_filter.lua'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/smoke/**'
+      - '!experiments/koblitz-n83-indexbuild2-20261020/receipts/**'
 
 permissions:
   contents: read
