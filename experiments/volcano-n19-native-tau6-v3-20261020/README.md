@@ -147,7 +147,17 @@ vector: [figures/design.svg](figures/design.svg).](figures/design.png)
 
 The workflow is
 [`.github/workflows/n19-native-tau6-v3.yml`](../../.github/workflows/n19-native-tau6-v3.yml).
-Run URL: see the Launch record below.
+
+- **Dispatch was tried first and refused.** `gh workflow run` returned
+  404, because the workflow is not on the default branch, and the GitHub
+  integration returned 403 ("Resource not accessible by integration").
+- **The push trigger launched it.** It is path-limited to this branch and
+  this experiment's non-report paths, the owner-approved pattern from v2.
+  The push of commit `92d85f14` started
+  [run 39384735073](https://github.com/aburan28/cryptanalysis/actions/runs/39384735073):
+  first job `sage-smoke`, then job `timed`, which needs it.
+- No result has been read. This README, the figures and the smoke and
+  diagnosis files do not trigger a run.
 
 ## Files
 
