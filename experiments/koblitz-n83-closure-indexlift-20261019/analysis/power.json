@@ -1,0 +1,178 @@
+{
+ "aa_process_factors": 16,
+ "baseline_blocks": 4,
+ "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block (independently across arms); cold points resampled, paired; 300 draws per simulation (10,000 in the frozen verifier)",
+ "candidates": {
+  "M10": {
+   "blocks": 8,
+   "cells": {
+    "1.00": {
+     "attempt_cost_factor": 9.438005660468997,
+     "mc_se": 0.009899494936611665,
+     "median_estimate": 1.0037756123671149,
+     "power": 0.02
+    },
+    "1.10": {
+     "attempt_cost_factor": 8.485516238737274,
+     "mc_se": 0.031573327350787724,
+     "median_estimate": 1.0962388844659428,
+     "power": 0.275
+    },
+    "1.50": {
+     "attempt_cost_factor": 5.945544447452682,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 1.4933045474693234,
+     "power": 1.0
+    },
+    "2.00": {
+     "attempt_cost_factor": 4.199313840944525,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 1.9981463852288912,
+     "power": 1.0
+    },
+    "4.00": {
+     "attempt_cost_factor": 1.5799679311822876,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 3.9668629456500515,
+     "power": 1.0
+    },
+    "law_gate": {
+     "archived_attempts": 480,
+     "archived_ratio_cv": 1.0744875045537265,
+     "archived_ratio_mean": 1.0571562701438393,
+     "attempts": 480,
+     "band": [
+      0.85,
+      1.15
+     ],
+     "pass_rate_true_law": 0.9585,
+     "reject_rate_law_1.5x_worse": 1.0
+    },
+    "modelled": {
+     "attempt_cost_factor": 1.0,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 5.134627977921776,
+     "power": 1.0
+    }
+   },
+   "columns": 60,
+   "e2e_ms_modelled": {
+    "baseline": 120070.74006836793,
+    "candidate": 23371.256756754014
+   },
+   "expected_ratio_at_prior_means": 5.1375388717026915,
+   "mean_attempt_ms_prior": 190.9998784125,
+   "mean_cold_ms_modelled": {
+    "M10": 11910.799787629014,
+    "cPI": 12049.558362617932
+   }
+  },
+  "M38": {
+   "blocks": 16,
+   "cells": {
+    "1.00": {
+     "attempt_cost_factor": 39.1774139178844,
+     "mc_se": 0.004987484335815001,
+     "median_estimate": 1.0076906334657765,
+     "power": 0.005
+    },
+    "1.10": {
+     "attempt_cost_factor": 35.207670303147374,
+     "mc_se": 0.025248762345905194,
+     "median_estimate": 1.0911249493116264,
+     "power": 0.15
+    },
+    "1.50": {
+     "attempt_cost_factor": 24.621687330515297,
+     "mc_se": 0.004987484335815003,
+     "median_estimate": 1.5140235040459051,
+     "power": 0.995
+    },
+    "2.00": {
+     "attempt_cost_factor": 17.34382403683074,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 2.026979143599527,
+     "power": 1.0
+    },
+    "4.00": {
+     "attempt_cost_factor": 6.42702909630391,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 4.004093829413342,
+     "power": 1.0
+    },
+    "law_gate": {
+     "archived_attempts": 256,
+     "archived_ratio_cv": 1.098440692039133,
+     "archived_ratio_mean": 0.9624525934819681,
+     "attempts": 256,
+     "band": [
+      0.8,
+      1.2
+     ],
+     "pass_rate_true_law": 0.9955,
+     "reject_rate_law_1.5x_worse": 0.9965
+    },
+    "modelled": {
+     "attempt_cost_factor": 1.0,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 7.975781855664412,
+     "power": 1.0
+    }
+   },
+   "columns": 16,
+   "e2e_ms_modelled": {
+    "baseline": 120070.74006836793,
+    "candidate": 15095.095476944181
+   },
+   "expected_ratio_at_prior_means": 7.954288215782441,
+   "mean_attempt_ms_prior": 171.8549559453125,
+   "mean_cold_ms_modelled": {
+    "M38": 12345.329935444182,
+    "cPI": 12049.558362617932
+   }
+  }
+ },
+ "indexlift_cold_factor_L": 0.7475930938420711,
+ "mean_rank_stage_ms_prior_kP": 108021.18170575,
+ "min_delta": 1.5,
+ "points": 20,
+ "power_at_min_delta": {
+  "M10": 1.0,
+  "M38": 0.995
+ },
+ "prior": "inputs/power_prior.json",
+ "prior_sources": {
+  "closure": {
+   "archive": "koblitz-n83-closure-20261019/run_github_39305259093/panel",
+   "arms": [
+    "kP",
+    "kM38",
+    "kM38aa",
+    "kM10",
+    "cP",
+    "cM38",
+    "cM38aa",
+    "cM10"
+   ],
+   "run": 39305259093,
+   "runs_jsonl_sha256": "e6c895bec8e94b479c357ddd1988a521aec924ae45304d335eddb8d6734d676c"
+  },
+  "indexlift": {
+   "archive": "koblitz-n83-indexlift-20261019/run_github_39290913632/panel",
+   "arms": [
+    "cP",
+    "cPI"
+   ],
+   "run": 39290913632,
+   "runs_jsonl_sha256": "0b91393ab7b5b7c466413cda407e4b64e33bb3e5d694eca0f42fd49a66722174"
+  }
+ },
+ "quick": false,
+ "schema": 1,
+ "simulations": 200,
+ "statistic": "R = E2E(kPI, cPI) / E2E(kM38I, cM38I), 95% lower bound > 1",
+ "type_i_at_1.00": {
+  "M10": 0.02,
+  "M38": 0.005
+ }
+}
