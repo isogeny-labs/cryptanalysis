@@ -1,0 +1,49 @@
+name: prime-j0-lean-replay
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/prime-j0-lean-replay.yml"
+      - "experiments/prime-j0-eisenstein-residue-20261015/*.lean"
+      - "experiments/prime-j0-eisenstein-residue-20261015/lean-toolchain"
+      - "experiments/prime-j0-eisenstein-residue-20261015/lean-checks-2026-10-19/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kernel-replay:
+    name: Pinned Lean 26-module kernel replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan for the pinned Lean toolchain
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Verify source hashes and replay all modules
+        working-directory: experiments/prime-j0-eisenstein-residue-20261015
+        run: |
+          set -euo pipefail
+          lean --version
+          sha256sum -c lean-checks-2026-10-19/leanchecker-kernel-replay/source-sha256.txt
+          proof_dir="$RUNNER_TEMP/eisenstein-lean-replay"
+          mkdir -p "$proof_dir"
+          export LEAN_PATH="$proof_dir"
+          modules=(
+            AlternateRadix EisensteinResidue EisensteinMontgomery EisensteinGaugeLayer
+            HornerRadix SparseTauRadix RotatedRadixStep Radix4033 Radix4033Bounds
+            Radix4033Selector DigitGraph JointSeedGraph JointHorner JointHorner4033
+            Triple81Radix Triple81Digit Triple243Radix Triple243Digit TripleMixedRadix
+            CheckpointedSparse SparseRadixFamily CheckpointedRadixFamily
+            Secp256k1ScalarRadix Secp256k1TauFormula Secp256k1TauNormalize
+            Secp256k1TauDenominator
+          )
+          for module in "${modules[@]}"; do
+            lean -o "$proof_dir/$module.olean" "$module.lean"
+          done
+          leanchecker --verbose "${modules[@]}"
