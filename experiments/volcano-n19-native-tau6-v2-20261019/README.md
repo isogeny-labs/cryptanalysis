@@ -1,18 +1,21 @@
 ---
-title: "n = 19 tau6 native per-shift solve, protocol v2 (frozen, not run)"
-date: 2026-10-19
+title: "n = 19 tau6 native per-shift solve, protocol v2 (run 39376405326: invalid)"
+date: 2026-10-20
 ---
 
-# n = 19 tau6 native per-shift solve, protocol v2 (frozen, not run)
+# n = 19 tau6 native per-shift solve, protocol v2 (run 39376405326: invalid)
 
-**Status (2026-10-19): frozen; no timed run has been launched.** This
-protocol replaces [v1](../volcano-n19-native-tau6-20261019/README.md). Its
-Tier 1 run, [39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409),
-was invalid because its S0 self-test failed. v1's protocol and archive are
-unchanged. The workflow
+**Status (2026-10-20): run, invalid.** The Tier 1 run
+[39376405326](https://github.com/aburan28/cryptanalysis/actions/runs/39376405326)
+passed S0 and the field check but all 64 timed IC rows crashed, so there is
+no ratio. See [Result](#result-run-39376405326). This protocol replaces
+[v1](../volcano-n19-native-tau6-20261019/README.md), whose Tier 1 run
+[39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409)
+was invalid because its S0 self-test failed. v1's and v2's protocols and
+archives are unchanged. The workflow
 [`n19-native-tau6-v2.yml`](../../.github/workflows/n19-native-tau6-v2.yml)
-has `workflow_dispatch` as its only trigger, so committing never launches a
-run. The owner decides when to dispatch it.
+has `workflow_dispatch` as its only trigger on `main`, so committing never
+launches a run. The owner decides when to dispatch it.
 
 ## Why v1 failed, and what v2 changes
 
@@ -97,6 +100,68 @@ See [`diagnosis/README.md`](diagnosis/README.md#a-second-finding-sages-order-of-
   seed 20261020). With 16 points, power is 1.00 at a true ratio of 1.20, and
   the rejection rate with no effect is 0.035.
 
+## Result (run 39376405326)
+
+**Verdict: invalid.** No primary statistic exists, and the n = 19 baseline
+row is unchanged.
+
+- **Run.** [39376405326](https://github.com/aburan28/cryptanalysis/actions/runs/39376405326),
+  push event on `claude/n19-native-solve` at `c432d184c`, GitHub
+  ubuntu-24.04 (AMD EPYC 7763, image 20261012.334.1), one runner. The
+  schedule step ran 43 min (05:45 to 06:28 UTC). The job conclusion is
+  `success`; that only means the audit step ran. The launcher exited 0, and
+  the audit reports `invalid`.
+- **Archive.** [`run_github_39376405326/`](run_github_39376405326/) (artifact
+  digest `sha256:b187660f...f5ec`). Re-running `verify_receipt.py` on a copy
+  of the receipt (`runs.jsonl`, rows and logs) reproduces `panel/result.json`
+  and `panel/result_table.md` byte for byte.
+- **Why invalid.** All 82 scheduled rows ran; none was skipped by the time
+  guard. S0 and O1 exited 0 and the 16 rho rows exited 0. **All 64 timed IC
+  rows (16 points x B, N, Naa, NX) exited 1** with the same error, before
+  writing a result:
+  `TypeError: Object of type Integer is not JSON serializable`, raised in
+  `arm.sage`'s `relation_digests` while hashing `rows`
+  (`row.get(col, 0)` and the sum under Sage's preparser). The ordered and
+  canonical hashes, built from `int(...)`, did not fail. This is the
+  receipt's traceback; the preparser explanation is an inference from it,
+  not tested here. v2's local pure-Python smoke test has no preparser, so it
+  could not meet it.
+- **Gates.** 37 of 118 pass.
+  - **Pass.** S0: Sage = native = brute force, and Sage's order = native's,
+    on all 2,682 systems (7 v1, 300 new, 2,375 multi-solution; direct S3 =
+    native on 307 of 307; 4 evaluators agree). O1: counts and logs of run
+    38520305068 reproduced on all 10 scalars. Field check: native modulus and
+    256 products equal Sage's in every native process. One pinned CPU, one
+    native digest (`d92534fa...87f2`), 64 rho reps verified on each of 16
+    points, ordered decompositions (vacuous: no rows), `cargo test` 7 of 7.
+  - **Fail.** The scheduled-rows gate, and for each of the 16 points the
+    counts and log, relation rows, NX-versus-Sage, generator and warm-batch
+    gates (5 x 16 = 80), all because the rows are missing.
+- **Controls.** A/A ratio N/Naa (window [0.95, 1.05]) and planted NX/N lower
+  bound > 1 have no data.
+- **Primary.** R = mean cold CPU(B) / mean cold CPU(N), and its 95% paired
+  bootstrap interval: not computed. No improvement is claimed.
+- **Secondaries.** None exist: online `S`, setup, the repeated-batch warm
+  secondary, `S` per arm, the gap to the matched rho and the solve's share
+  were not measured. Online `S` is separable by definition (above) and is
+  still unmeasured.
+- **Tier 1 qualification.** Whatever the verdict, this protocol has one
+  process per arm per point, not the repeated alternating pairs
+  AGENTS.md's Tier 1 CPU isolation gate requires. A completed run would not
+  have been a qualified Tier 1 speedup on that criterion.
+- **What the run does show.** S0, with the order gate, passes on the full
+  2,682 systems, and the field check passes: the v1 binding fault and the
+  order fault are fixed. The remaining fault is in `arm.sage`'s digest code.
+- **Not claimed.** This run is not evidence that the native solve is faster,
+  slower, or wrong in production.
+- **Next.** Fixing `relation_digests` changes a frozen source
+  (`arm.sage`), so it needs a new protocol (v3). This run is not re-run, and
+  `protocol.json`, `schedule.json` and the sources are untouched.
+
+![Rows and gates of run 39376405326. Source:
+[make_result_figure.py](figures/make_result_figure.py); vector:
+[figures/result.svg](figures/result.svg).](figures/result.png)
+
 ## Files
 
 - **Code.** `native/` (solve and tests), `native_binding.py`, `arm.sage`,
@@ -108,4 +173,4 @@ See [`diagnosis/README.md`](diagnosis/README.md#a-second-finding-sages-order-of-
   `diagnosis/sage_diag.sage`, run by
   `.github/workflows/n19-native-s0-diagnostic.yml`.
 - **Timed workflow.** `.github/workflows/n19-native-tau6-v2.yml` (dispatch only).
-- **Report.** `make_figures.py`, `figures/`, `README.pdf` and `report_header.tex`.
+- **Report.** `make_figures.py`, `figures/make_result_figure.py`, `figures/`, `README.pdf` and `report_header.tex`.

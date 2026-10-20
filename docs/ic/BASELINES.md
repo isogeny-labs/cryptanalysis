@@ -433,11 +433,18 @@ only once it moves an end-to-end `S` above.
   and `IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e`,
   in `experiments/volcano-n19-native-tau6-20261019/inputs/ic1_manifests.json`),
   and online `S` is separable by definition in that protocol (setup and online
-  are timed apart). It has not been measured: the Tier 1 run
+  are timed apart). It has not been measured. The v1 Tier 1 run
   ([39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409))
-  is invalid, because its S0 gate failed (Sage and native varieties equal on
-  293 of 300 systems) and no timed row ran. The n=19 row, Figure 1 and the
-  ratchet history are unchanged.
+  is invalid: its S0 gate failed (Sage and native varieties equal on 293 of
+  300 systems) and no timed row ran. The v2 run
+  ([39376405326](https://github.com/aburan28/cryptanalysis/actions/runs/39376405326))
+  is invalid too: S0 (2,682 systems, order included) and the field check
+  pass, but all 64 timed IC rows crashed in `arm.sage`'s relation digest
+  (`TypeError`, Sage Integer not JSON serializable), so there is no ratio.
+  Its protocol has one process per arm per point, not the repeated
+  alternating pairs the Tier 1 CPU isolation gate requires, so a completed
+  run would not have been a qualified Tier 1 speedup on that criterion. The
+  n=19 row, Figure 1 and the ratchet history are unchanged.
 - **n=83, §5a band:** the 0 / 0.1 / 1 GAE band for the IC / rho gap is
   uncomputable on both n=83 rows, because the frozen producer emits no
   group-operation counts. The K1 replay (archived 2026-10-17) timed
