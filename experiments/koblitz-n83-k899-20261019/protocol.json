@@ -1,0 +1,471 @@
+{
+ "arms": {
+  "cP600": {
+   "K": 600,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "baseline cold: the rank-probe producer's cold path at K600 (koblitz-n83-rankprobe-20261019 arm cP, the n=83 baseline), setup + one-target online with B's verified cached factor-log table",
+   "table": "compact"
+  },
+  "cP899": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "candidate cold: the same producer and code on the nested K899 base (the K600 base is its exact prefix), with the frozen K899 factor-log table",
+   "table": "compact"
+  },
+  "cP899aa": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "A/A control: a second cold process of cP899 on the same point",
+   "table": "compact"
+  },
+  "cPI600": {
+   "K": 600,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "role": "pre-registered secondary (never decides): cP600 with lift_scan in the index build",
+   "table": "compact"
+  },
+  "cPI899": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "role": "pre-registered secondary (never decides): cP899 with lift_scan in the index build",
+   "table": "compact"
+  },
+  "kP600": {
+   "K": 600,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "baseline rank stage: the rank-probe producer's at K600 (arm kP of run 39214027289)",
+   "table": "compact"
+  },
+  "kP899": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "candidate rank stage: the same loop on the K899 index, 899 columns, then one target",
+   "table": "compact"
+  },
+  "kP899aa": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "A/A control: a second process of kP899 (same seed, attempts)",
+   "table": "compact"
+  },
+  "kPX899": {
+   "K": 899,
+   "binary": "ic_online_rankprobe_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame_plant",
+   "role": "planted positive control at K899: kP899 plus the work the frame loop removes, redone (the rank-cut key derivation on every candidate of every state, compared field by field with kP899's keys, panic on any difference, discarded); a known extra cost the instrument must see at K899, and an exactness check of the frame keys at K899",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "controls_pass_rule": {
+  "aa": "E2E(kP899, cP899) / E2E(kP899aa, cP899aa) (attempts paired) and cold cP899 / cP899aa point estimates both inside [0.97, 1.03]",
+  "otherwise": "verdict invalid",
+  "planted": "rank stage kPX899 / kP899 per attempt (attempts paired within blocks), 95% bootstrap lower bound above 1"
+ },
+ "cost_model": {
+  "probe_law": "mean probes per rank attempt = r / (166 E), E = root-table entries ~ 83 K^2",
+  "slot_cliff": "K899: 4 x 33,541,591 stored states < 2^27 slots; K900 needs 2^28",
+  "source": "pre-registration analysis (not a result): E2E(K) ~ 146.9/a + 21.6 a^2 + 0.31 a + 0.38/a^2 s with a = K/600; K899 about 151 s [142, 165], about 1.10x"
+ },
+ "current_baseline": "the rank-probe producer (koblitz-n83-rankprobe-20261019, run 39214027289, PR #980): K600, end-to-end cold 166.0 s (rank stage 143.7 s + cold 22.3 s), S 6.39, gap to rT770 64.0 [53.7, 78.0]. The index-lift run (claude/n83-indexlift, run 39290913632) had not landed when this protocol froze, so the baseline is the rank-probe producer; its lift_scan index build is the pre-registered secondary pair cPI600 / cPI899",
+ "decision_rule": {
+  "improvement": "R lower bound > 1 (K899 becomes the new n=83 end-to-end cold baseline)",
+  "invalid": "any gate or control fails, or any scheduled row is missing (including time-guard skips)",
+  "not_separated": "otherwise",
+  "regression": "R upper bound < 1"
+ },
+ "design": {
+  "cold_arms": [
+   "cP600",
+   "cP899",
+   "cP899aa",
+   "cPI600",
+   "cPI899",
+   "rT"
+  ],
+  "cold_points": 20,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cP600",
+   "cP899"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_arms": [
+   "kP600",
+   "kP899",
+   "kP899aa",
+   "kPX899"
+  ],
+  "rank_blocks": [
+   {
+    "id": "K1",
+    "rank_seed": 401,
+    "unit": "s000"
+   },
+   {
+    "id": "K2",
+    "rank_seed": 402,
+    "unit": "s001"
+   },
+   {
+    "id": "K3",
+    "rank_seed": 403,
+    "unit": "s002"
+   },
+   {
+    "id": "K4",
+    "rank_seed": 404,
+    "unit": "s003"
+   }
+  ],
+  "rank_seeds_note": "401-404 are new (stacked 101-102, rank cut 201-204, rank probe 301-304, the K899 diagnostic 8991); each seed fixes the rank targets [a]G - R_j of both K",
+  "rho_seed_base": 890000,
+  "segment_order": [
+   "O1",
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "K1",
+   "C6",
+   "C7",
+   "C8",
+   "C9",
+   "C10",
+   "K2",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "K3",
+   "C16",
+   "C17",
+   "C18",
+   "C19",
+   "C20",
+   "K4"
+  ],
+  "segment_upper_estimate_s": {
+   "C": 232,
+   "K": 881,
+   "O": 88
+  },
+  "time_budget": {
+   "build_min_allowance": 20,
+   "estimate_source": "diagnostic process walls (runner, https://github.com/aburan28/cryptanalysis/actions/runs/39292460576); planted rank stage at 1.97x kP899's; 1.5x margin",
+   "expected_total_min": 111.4,
+   "guard_min": 300,
+   "job_limit_min": 350,
+   "upper_estimate_total_min": 157.5
+  },
+  "time_guard": "skip a segment (rows skipped_time_guard) if elapsed + its estimate exceeds 300 min",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 2400,
+   "rho_tuned": 600
+  },
+  "within_segment_order": "random.Random(2026101930 + block).shuffle (C), random.Random(2026102030 + block) (K), random.Random(2026102130) (O)"
+ },
+ "diagnostic": {
+  "derived": {
+   "first50_ms_K600": 10229.185402,
+   "first50_ms_K899": 4461.939031,
+   "index_ms_cold_K600": 15696.874808,
+   "index_ms_cold_K899": 37915.275624500006,
+   "index_ms_lift_K600": 12737.221185999999,
+   "index_ms_lift_K899": 31071.486707999997,
+   "index_ms_rank_K600": 15021.987808,
+   "index_ms_rank_K899": 35666.174490000005,
+   "ns_per_probe_all_K600": 105.624422969089,
+   "ns_per_probe_all_K899": 121.4565123533696,
+   "ns_per_probe_first50_K600": 103.74121948519102,
+   "ns_per_probe_first50_K899": 119.98853534485127,
+   "probes_mean_over_law_K600": 1.0192007690253568,
+   "probes_mean_over_law_K899": 1.016137354276595,
+   "rank_stage_ms_K600": 111714.77756,
+   "rank_stage_ms_K899": 85702.50552400001,
+   "setup_ms_cold_K600": 17234.1100695,
+   "setup_ms_cold_K899": 39005.8160485,
+   "setup_ms_lift_K600": 14273.063274,
+   "setup_ms_lift_K899": 32122.262562
+  },
+  "file": "inputs/k899_identity.json",
+  "gates": {
+   "every_process_exit0_one_target_q0_scalar_oracle": true,
+   "index_build_K899_le_55s": true,
+   "k600_written_equal_B_K600": true,
+   "k899_first600_equal_B_K600": true,
+   "k899_table_oracle_pass": true,
+   "ns_per_probe_K899_le_150": true
+  },
+  "run_url": "https://github.com/aburan28/cryptanalysis/actions/runs/39292460576",
+  "where": "runner"
+ },
+ "exactness_argument": "K changes no code: the producer reads the base file and sizes the fold, the state array, the root table (slots = (4 x stored states).next_power_of_two()), the echelon and the factor-log table from its orbit columns; the 16-byte slot's four 11-bit fields hold K < 2048. Exactness at K899 cannot mean the K600 probes; it means: (1) the K899 factor-log table is self-consistent and verified (the producer checks [L_j]G = R_j for every column before any target; check_log_table.py re-checks every log in the pinned pure-Python oracle; the K600 base is an exact prefix of the K899 base and discrete logs of fixed points are unique mod r, so its first 600 logs equal B's); (2) every target's scalar is the same in every K600 process, every K899 process and rT, and replays in the oracle; (3) within K899, the rank arms agree attempt for attempt, and the planted arm checks the frame keys against the rank-cut keys on every candidate; (4) the probes per rank attempt fall in the frozen band around the law.",
+ "frozen_at_utc": "2026-10-19T18:48:09+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row valid (exit 0, verified, schedule match, no memory event)",
+  "every IC process: lift_scan targets, Feistel, prefetch; the 16-byte compact table over the folded index; its K's base hash, orbit columns, logical and stored states, slot count (2^26 at K600, 2^27 at K899), root-table entries and index digests equal online.k.<K>; no root bloom",
+  "per point: one scalar across every IC process of both K and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point and K: one relation (point indices) and one probe count across the IC processes of that K",
+  "Q0 (O1): cP600 gives the archived K600 Feistel identity, cP899 the frozen K899 identity (relation, probes, scalar)",
+  "rank arms: full rank (K), the arm's KIC_RANK_SOLVE recorded, the written factor-log table equal to the K's frozen table log for log (B's at K600; at K899 inputs/factor_logs_n83_K899.json, every log re-verified in the pinned oracle by check_log_table.py in the job, its first 600 logs equal to B's)",
+  "per rank block: kP899, kP899aa and kPX899 with one rank_relations_blake3, one per-attempt probe vector, one rank_root_calls_total and one set of point-addition counters",
+  "frame counters: every rank arm builds exactly one frame per attempt; kPX899 checks every candidate (rank_frame_plant_checked_inputs > 0), the others check none",
+  "probe law band (law_band) at both K"
+ ],
+ "kind": "n83-k899-e2e-cold-tier1",
+ "law_band": {
+  "band": [
+   0.9,
+   1.1
+  ],
+  "diagnostic_ratios": {
+   "kP600": {
+    "law_mean": 1727856.7188981916,
+    "probes_mean": 1761032.8966666667,
+    "ratio": 1.0192007690253568
+   },
+   "kP899": {
+    "law_mean": 769630.4280394781,
+    "probes_mean": 782050.2269187986,
+    "ratio": 1.016137354276595
+   }
+  },
+  "statistic": "per K: mean probes per rank attempt pooled over the rank blocks of kP600 / kP899, divided by r / (166 E_K), E_K the K's frozen root-table entries",
+  "why": "a gate, not a decision: 2,400 (K600) and 3,596 (K899) attempts give a standard error of about 2.0% and 1.6% (per-attempt CV 0.97); the archived Feistel-order K600 ratios are 0.978 (run 39214027289) and 1.036 (run 38891404048); +-10% is about five standard errors and admits both"
+ },
+ "multiplicity": "one primary statistic; every secondary (cPI included) is descriptive and never changes the verdict",
+ "online": {
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role k899-cold-v1; disjoint from Q0, B's panel and every earlier n=83 panel of the law, rankprobe-cold-v1 and indexlift-cold-v1 included)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "k": {
+   "600": {
+    "base": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+    "base_file_sha256": "0d290b14a350db6271c9a49f0cd6ba246edd8c9bc6754387ad1ceebf08ec0c09",
+    "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+    "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+    "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+    "index_digest": {
+     "logical_states": 29880000,
+     "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+     "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+     "table_entries": 29878182,
+     "table_map_sum64": "be14a80705232396",
+     "table_map_xor64": "8132bdcfd619010f"
+    },
+    "orbit_columns": 600,
+    "q0_identity": {
+     "probes_folded": 1987852,
+     "relation": [
+      77273,
+      22971,
+      54962,
+      62539
+     ],
+     "scalar": "3141592653589793",
+     "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+    },
+    "regular_states": 29880000,
+    "root_table_entries": 29878182,
+    "root_table_slots_folded": 67108864,
+    "stored_states_folded": 14940300
+   },
+   "899": {
+    "base": "../n83-compact-orbit-k899-20261012/runs/K899/base.jsonl",
+    "base_file_sha256": "f12b5f46025af318f5c863c07357af82da7ecc6c46bf95f65d912cd74861be16",
+    "base_hash": "1e9fc6008c1c4c9bac078eb8034dbccb74b1f39574d05f7c6e8afee55cadfa8c",
+    "factor_log_table": "inputs/factor_logs_n83_K899.json",
+    "factor_log_table_sha256": "92dfb9d20bd477af7bdd2d0bf9bf20489729d1beba92cf1c44d89564848045b8",
+    "index_digest": {
+     "logical_states": 67080683,
+     "logical_states_blake3": "37bcb5c734a309b6b3fa8f914bbafe4439a33858318a25a64306ac0c2a368703",
+     "source": "diagnostic https://github.com/aburan28/cryptanalysis/actions/runs/39292460576 (every K899 process of it agrees)",
+     "table_entries": 67077932,
+     "table_map_sum64": "bc470170d755264c",
+     "table_map_xor64": "5b23485cc83e238e"
+    },
+    "orbit_columns": 899,
+    "q0_identity": {
+     "probes_folded": 486779,
+     "relation": [
+      69918,
+      46431,
+      52870,
+      61057
+     ],
+     "scalar": "3141592653589793",
+     "source": "diagnostic https://github.com/aburan28/cryptanalysis/actions/runs/39292460576, cP899 and kP899 on Q0"
+    },
+    "regular_states": 67080683,
+    "root_table_entries": 67077932,
+    "root_table_slots_folded": 134217728,
+    "stored_states_folded": 33540791
+   }
+  },
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target",
+  "sqrt_r": 92573139.235,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "blocks": 4,
+  "by_effect": {
+   "1.000": {
+    "mc_se": 0.006556247020971678,
+    "power": 0.0175
+   },
+   "1.030": {
+    "mc_se": 0.01734935157289747,
+    "power": 0.14
+   },
+   "1.036": {
+    "mc_se": 0.01833030277982336,
+    "power": 0.16
+   },
+   "1.050": {
+    "mc_se": 0.024206145913796356,
+    "power": 0.375
+   },
+   "1.070": {
+    "mc_se": 0.023887431318582585,
+    "power": 0.6475
+   },
+   "1.100": {
+    "mc_se": 0.014486523910172518,
+    "power": 0.9075
+   }
+  },
+  "file": "analysis/power.json",
+  "information_only_other_block_counts": {
+   "12": {
+    "1.000": {
+     "mc_se": 0.0035266839949164713,
+     "power": 0.005
+    },
+    "1.036": {
+     "mc_se": 0.024979991993593593,
+     "power": 0.48
+    },
+    "1.050": {
+     "mc_se": 0.01981003533565753,
+     "power": 0.805
+    }
+   },
+   "8": {
+    "1.000": {
+     "mc_se": 0.0035266839949164713,
+     "power": 0.005
+    },
+    "1.036": {
+     "mc_se": 0.023642850399222173,
+     "power": 0.3375
+    },
+    "1.050": {
+     "mc_se": 0.024106210299422844,
+     "power": 0.6325
+    }
+   }
+  },
+  "min_delta": 1.05,
+  "note": "the rank stage's own work is random (probes per attempt geometric, CV 0.97) and the two K run different attempts, so the primary's interval is set mostly by the 2,400 + 3,596 attempts, not by timing noise. Four blocks (the design) detect 1.10 with power 0.91 but the diagnostic's predicted 1.036 only with 0.16 (1.05: 0.38): a not_separated verdict is the likely outcome if the diagnostic's per-probe ratio holds",
+  "predicted_e2e_ratio_from_diagnostic": 1.0357093986144787,
+  "rejection_rate_at_no_effect": 0.0175
+ },
+ "question": "Does the nested K899 factor base (899 orbit columns, the largest K whose folded root table keeps 2^27 16-byte slots, 2 GiB) lower the END-TO-END cold cost (setup + index build + rank stage + linear algebra + one-target online) of the n=83 a=1 rank-probe producer against K600, the baseline, on new targets and new rank seeds, with every answer verified, the factor-log table of each K verified in the pinned oracle and the rank-stage probes inside the frozen band around the law r / (166 E)?",
+ "schema": 1,
+ "sources": {
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "local_sha256": {
+   "arm_wrapper": "e218b5129443ca01ac7f2b74c3282198f41b443ec68d0ca7cd59fb4531d3ab97",
+   "cold_targets": "84d0b0a23f38cd7f34576521304d093b282af3326c719dca27ce715b0347eee7",
+   "combined_derivation": "1a62eabf4a86417c5777fdc69ab2812eaea872b92031eb9ed60af2364ce15356",
+   "diagnostic": "af44c1d80bd298185d6c24ec05109823974544be252ea99f28e4cb7753dd7417",
+   "k899_base": "f12b5f46025af318f5c863c07357af82da7ecc6c46bf95f65d912cd74861be16",
+   "k899_factor_log_table": "92dfb9d20bd477af7bdd2d0bf9bf20489729d1beba92cf1c44d89564848045b8",
+   "k899_identity": "4e68a155c071c3933626b742a5299304bd9553bc5bc0f5bc61d7f21570c1fc8c",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "lift2_manifest": "77b04fcaa11a3f9f015619612b3e36c1f31a1b20d76116c929e5429e46dc271c",
+   "lift2_tests": "69561fbf09e2137ad1490d5795df54f6f9a5646aeebf3ecf12f1af55a495c566",
+   "log_table_check": "f971a43ee9958df2a3b656652f459fc42a60b4dc1822e1a78df9d084421d6185",
+   "online_derivation": "804cc965882c44f85502afb927cc4f04c79d3ccff85d9aa73226dfc2c5ec2b0d",
+   "online_lock": "4ab42526cf441473572b61f5ea54f2035aff8815f9467a48b5135d7ca4c4a74a",
+   "online_manifest": "61a4264f30546ed5c6a7ad2eef0390ebb1250713a389ea8c98f1bb5a1939aff7",
+   "power_check": "a544e00a13a9a7885ee5f61f6e0d080d1aa9a5382a916b7ac995e9b768840e1b",
+   "power_prior": "589ad528db5239a6292279a93bc0c04a10b21987e8137a5b32020c904e065452",
+   "power_prior_builder": "a1b8f9a1b8003bad51194fb6e9048bbe2e628d857ff018ccd3012df5b305abd6",
+   "power_result": "0fc6825defa32f125312cd497b43c64c65ed49b49b0cc1dc7618bdaf0e332713",
+   "probepipe_derivation": "ce72f3e906d85c58ccc02b0e5d455e97c69c370e357162fbda166423ab8ce7f2",
+   "protocol_builder": "cde8d6e4ea67b50b33f62bbe982ef0e848ac8fca35ea184df42b9e0f3740e4d5",
+   "rankcut_derivation": "7e81a642ebccf9570dd2d882360e99925d5754357c83bb1aff5a8635ac1cf011",
+   "receipt_verifier": "073d99c15a2cff3c4b3a0e4d3f4825c00400a0dcf8ea4ced9db53c4690e7650d",
+   "schedule_builder": "3b971c41d933db082a415abb573e12befed0e876bc07c1299dbb0b9af75fee62",
+   "schedule_runner": "a7d62635d52b04b7702d016be6fc39142f35cb49394dccb10473c10d34ea595a",
+   "stacked_derivation": "a2011ef804becc5b01f3027cf47ec6f7cb154f510e468e2a261c66e09f830aab",
+   "tablefilter_derivation": "3b2aa83df4d1bf70a107464a0b7fdd1f8ac133683b23cf19dd22bfecf12095ab",
+   "targets_builder": "a2450fff52ea4383ab5cd8b98857f596d59d023b6bde5b360a5334c5b0b8e16a"
+  },
+  "online_source_sha256": "d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5",
+  "producer": "the rank-probe producer, unchanged: koblitz-n83-rankprobe-20261019 make_online_source.py (verbatim here with its five verbatim parents), output sha256 d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5, the digest that experiment froze"
+ },
+ "statistics": {
+  "end_to_end_cold": "E2E(k, c) = mean over the rank blocks of timing_ms.rank_stage of rank arm k + mean over the cold points of cold_in_process_ms of cold arm c",
+  "primary": "R = E2E(kP600, cP600) / E2E(kP899, cP899). Bootstrap, 10,000 draws: the rank blocks resampled with replacement (the same drawn ids for both arms); within each drawn block the attempts of each arm resampled with replacement independently (the two K run different attempts), each process's non-attempt time kept; the cold points resampled, paired across cP600 and cP899",
+  "primary_is": "the END-TO-END cold ratio; the rank-stage, cold and online ratios are co-reported and never decide",
+  "secondary": [
+   "rank stage kP600 / kP899 (whole stage), ns per probe per arm (all attempts and the first 50), probes per attempt against the law",
+   "cold without rank, setup, index build, online and peak RSS cP899 / cP600 (paired by point)",
+   "pre-registered secondary pair cPI600 / cPI899 (lift_scan in the index build): E2E(kP600, cPI600) / E2E(kP899, cPI899) and E2E(kP600, cP600) / E2E(kP899, cPI899); never decide",
+   "rho ms/step from rT; S = cost / (rho ms/step) / sqrt(r) for E2E cold, cold and online per arm; delta S K600 to K899; E2E cold gaps to rT, online gaps"
+  ]
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'"
+}

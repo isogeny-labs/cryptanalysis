@@ -1,0 +1,22 @@
+\documentclass[border=4pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=11cm,height=10.8cm,xlabel={ratio (log$_2$ scale; 0 = parity)},ytick={11,10,9,8,7,6,5,4,3,2,1},yticklabels={{PRIMARY e2e cold kP600+cP600 / kP899+cP899},{rank stage kP600 / kP899},{cold without rank cP899 / cP600},{index build cP899 / cP600},{online cP899 / cP600},{secondary e2e kP600+cPI600 / kP899+cPI899},{secondary e2e kP600+cP600 / kP899+cPI899},{A/A e2e kP899+cP899 / kP899aa+cP899aa},{A/A cold cP899 / cP899aa},{A/A rank per attempt kP899 / kP899aa},{planted rank per attempt kPX899 / kP899}},
+ yticklabel style={font=\scriptsize},ymin=0.3,ymax=11.7,grid=major]
+\addplot[orange,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(0.24765,11) +- (0,0) -= (0.07805,0) += (0.07695,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(0.60183,10) +- (0,0) -= (0.10109,0) += (0.09729,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(1.05422,9) +- (0,0) -= (0.01470,0) += (0.01298,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(1.17086,8) +- (0,0) -= (0.00341,0) += (0.00397,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(-1.05127,7) +- (0,0) -= (0.84391,0) += (0.85590,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(0.33177,6) +- (0,0) -= (0.08224,0) += (0.08288,0)};
+\addplot[blue,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(0.37979,5) +- (0,0) -= (0.08066,0) += (0.07936,0)};
+\addplot[gray,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(-0.00177,4) +- (0,0) -= (0.00312,0) += (0.00295,0)};
+\addplot[gray,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(-0.00048,3) +- (0,0) -= (0.00445,0) += (0.00418,0)};
+\addplot[gray,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(-0.00237,2) +- (0,0) -= (0.00386,0) += (0.00405,0)};
+\addplot[gray,thick,mark=*,error bars/.cd,x dir=both,x explicit] coordinates {(0.95257,1) +- (0,0) -= (0.00242,0) += (0.00330,0)};
+\draw[dashed] (axis cs:0,0.3) -- (axis cs:0,11.7);
+\end{axis}
+\end{tikzpicture}
+\end{document}
