@@ -2342,6 +2342,100 @@
         "cryptanalysis:experiments/koblitz-n83-rotkey-20261019/run_github_39299176306/panel/result.json"
       ],
       "note": "Not separated from the rank-probe producer end to end. The same-code rank A/A differs by 2.2% (0.9779 [0.9538, 0.9995]), as large as the candidate-baseline difference. The baseline row is the index-lift producer and is unchanged."
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "role": "promoted improvement over the rank-probe producer: the one-target online scan on the rank stage's frame loop, KIC_ONLINE_SOLVE=frame (one experiment; not combined with another row)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-onlineframe-20261019 (branch claude/n83-onlineframe)",
+      "run": "GitHub Actions 39303742695, one ubuntu-24.04 runner (runnervm8k3b6), one pinned CPU",
+      "pipeline": "the rank-probe producer's cold path (cS, online scan on the batched S3 solve) vs the same with KIC_ONLINE_SOLVE=frame (cF): the online scan on the rank stage's point-addition loop in the target's Frobenius frame; K600, crypto 770f6a69; probes, root calls and relations unchanged",
+      "targets": "64 new public points (onlineframe-v1), one fresh pinned process per arm per point, one shared rank stage K (one block), Q0",
+      "promoted": true,
+      "unit": "online interval and end-to-end cold with the shared rank stage; S in this run's rT770 step (280.387 ns) per sqrt(r)",
+      "measured": {
+        "primary_R_on_online_cS_over_cF": {
+          "value": 1.5733,
+          "ci95": [
+            1.5714,
+            1.5753
+          ]
+        },
+        "e2e_cS_over_cF_shared_rank_stage": {
+          "value": 1.0008,
+          "ci95": [
+            1.0006,
+            1.001
+          ]
+        },
+        "aa_online_cF_over_cFaa": {
+          "value": 0.9986,
+          "ci95": [
+            0.9975,
+            0.9998
+          ]
+        },
+        "aa_cold_cF_over_cFaa": {
+          "value": 0.9999,
+          "ci95": [
+            0.9989,
+            1.0008
+          ]
+        },
+        "planted_online_cFX_over_cF": {
+          "value": 2.7052,
+          "ci95": [
+            2.6979,
+            2.7127
+          ]
+        },
+        "mean_online_ms": {
+          "cS": 399.07,
+          "cF": 253.65
+        },
+        "online_ns_per_probe": {
+          "cS": 222.76,
+          "cF": 141.58
+        },
+        "S_online": {
+          "cS": 0.015375,
+          "cF": 0.009772,
+          "delta": -0.005602
+        },
+        "S_e2e_cold": {
+          "cS": 6.5827,
+          "cF": 6.5776,
+          "delta": -0.005134
+        },
+        "e2e_ms": {
+          "cS": 170862.7,
+          "cF": 170729.5,
+          "rank_stage_K": 148552.6
+        },
+        "n_points": 64
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "value": 0.1089,
+        "ci95": [
+          0.0791,
+          0.1449
+        ],
+        "note": "cF / rT770 online in this run; cS 0.1714 [0.1249, 0.2273]"
+      },
+      "gap_cold_ic_over_tuned_rho": {
+        "value": 66.4685,
+        "ci95": [
+          58.2375,
+          76.5783
+        ],
+        "note": "end-to-end cold with the shared rank stage, cF; cS 66.5204 [58.2510, 76.5390]; the rank-probe producer's cold path without the index lift"
+      },
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU); one run; not replayed on another host class",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-onlineframe-20261019/README.md (branch claude/n83-onlineframe)",
+        "cryptanalysis:experiments/koblitz-n83-onlineframe-20261019/run_github_39303742695/panel/result.json"
+      ],
+      "note": "A stage improvement; end-to-end lower bound above 1 (a 0.08% pipeline move, the rank stage is 87.0% of the cost). The baseline row is unchanged: this stage stacks with the index lift and the closure, and the combined run is pending."
     }
   ],
   "ratchet_history": [
@@ -2908,6 +3002,61 @@
       "baseline_row_replaced": "none: not promoted",
       "cold_speedup": "end-to-end cold kP+cP / kK+cK 0.9983 [0.9701, 1.0227] in wall time on one host class (not separated); rank per attempt kP / kK 1.0156 [0.9820, 1.0450]",
       "class": "NOT promoted: frozen primary not_separated; every gate and both controls pass; baseline row not replaced"
+    },
+    {
+      "n": 83,
+      "from": "the rank-probe producer's one-target online scan on the batched S3 loop (arm cS), same run 39303742695, points and rT770",
+      "to": "online frame: the one-target online scan on the rank stage's frame loop (arm cF, KIC_ONLINE_SOLVE=frame), run 39303742695",
+      "cold_gap": [
+        66.5204,
+        66.4685
+      ],
+      "online_gap": [
+        0.1714,
+        0.10894
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps (same run, points, shared rank stage and rT770)",
+      "baseline_row_replaced": "none: baseline row not changed: stacks with index-lift and the closure; combined run pending",
+      "cross_run_context_note": "context only: different runs, instance sets and step times (online means 392.3 ms in the index-lift run, 399.1 ms (cS) and 253.7 ms (cF) here); the index-lift row is not changed by this step",
+      "cold_speedup": "online cS / cF 1.5733 [1.5714, 1.5753] in wall time on one host class (64 points), 222.76 -> 141.58 ns per probe, probes, root calls and relations unchanged; end-to-end cold with the shared rank stage 1.0008 [1.0006, 1.0010] (the online stage is 0.15% of the end-to-end cost)",
+      "class": "stage improvement (online) over the rank-probe producer; promoted by its own frozen primary; the end-to-end secondary's lower bound is above 1 (pipeline improvement of 0.08% by the frozen reading); baseline row not changed: stacks with index-lift and the closure; combined run pending. cold_gap / online_gap are paired within the promoting run.",
+      "paired_within_run": {
+        "from": "the rank-probe producer's online scan on the S3 loop (cS), same run, points and rT770",
+        "cold_gap": [
+          {
+            "value": 66.5204,
+            "ci95": [
+              58.251,
+              76.539
+            ]
+          },
+          {
+            "value": 66.4685,
+            "ci95": [
+              58.2375,
+              76.5783
+            ]
+          }
+        ],
+        "online_gap": [
+          {
+            "value": 0.1714,
+            "ci95": [
+              0.12488,
+              0.22729
+            ]
+          },
+          {
+            "value": 0.10894,
+            "ci95": [
+              0.0791,
+              0.14493
+            ]
+          }
+        ],
+        "reading": "online gap 1.57x smaller; end-to-end cold gap unchanged to 0.08% (shared rank stage 87.0% of the cost)",
+        "source": "cryptanalysis:experiments/koblitz-n83-onlineframe-20261019/run_github_39303742695/panel/result.json statistics.online_gap_cS_over_rT, online_gap_cF_over_rT, e2e_cold_gap_cS_over_rT, e2e_cold_gap_cF_over_rT"
+      }
     }
   ],
   "corrections": [
@@ -2965,7 +3114,7 @@
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
     "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
     "n=19: no IC1 candidate manifest; online S not separable",
-    "n=83: the baseline row is the closure + index-lift producer (koblitz-n83-closure-indexlift-20261019, run 39335956567): the index-lift producer with the Z[tau]-multiplier closure of the K600 base (16 columns, M38), promoted end to end over the index-lift row by 7.6558 [7.2192, 8.1103] (wall time on one host class; 20 points, 4 and 16 rank blocks; rank stage 143.7 s -> 4.01 s; the cold path is not improved, cPI / cM38I 0.9931 [0.9837, 1.0035]; layout digests, probes per relation and scalars verified, probe law pass). Its end-to-end cold S is 0.806 against the tuned rho's 0.1175 (gap 6.86 [5.80, 8.19]); the cold path is now 80.9% of the end-to-end cold cost; factor-base construction is charged to no arm. The index-lift producer (1.0344 [1.0324, 1.0364] over the rank-probe producer, run 39290913632), the rank-probe producer (1.1033 [1.1010, 1.1056] over the rank-cut producer, run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048), the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) and B's row (experiment on PR #918, not merged yet) are in Other verified records; the run has no cross-host replay and no BL re-run. The closure's earlier comparison (koblitz-n83-closure-20261019, run 39305259093: 6.4444 [6.0993, 6.7853] over the rank-probe producer) is superseded by this paired result. The nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523]) but has not been combined with this producer; next: a frozen protocol for K899 (or the cold path, the index build and setup) on the closure + index-lift producer against the current row, with the K899 index build (44.3 s) and the slot cliff at K900 in view. The rotation-key producer (koblitz-n83-rotkey-20261019, run 39299176306) is not promoted: against the rank-probe producer its end-to-end cold ratio is 0.9983 [0.9701, 1.0227], not separated, with every gate and both controls passing; there is nothing to stack on index-lift or the closure, and no combined run is pending for it.",
+    "n=83: the baseline row is the closure + index-lift producer (koblitz-n83-closure-indexlift-20261019, run 39335956567): the index-lift producer with the Z[tau]-multiplier closure of the K600 base (16 columns, M38), promoted end to end over the index-lift row by 7.6558 [7.2192, 8.1103] (wall time on one host class; 20 points, 4 and 16 rank blocks; rank stage 143.7 s -> 4.01 s; the cold path is not improved, cPI / cM38I 0.9931 [0.9837, 1.0035]; layout digests, probes per relation and scalars verified, probe law pass). Its end-to-end cold S is 0.806 against the tuned rho's 0.1175 (gap 6.86 [5.80, 8.19]); the cold path is now 80.9% of the end-to-end cold cost; factor-base construction is charged to no arm. The index-lift producer (1.0344 [1.0324, 1.0364] over the rank-probe producer, run 39290913632), the rank-probe producer (1.1033 [1.1010, 1.1056] over the rank-cut producer, run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048), the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) and B's row (experiment on PR #918, not merged yet) are in Other verified records; the run has no cross-host replay and no BL re-run. The closure's earlier comparison (koblitz-n83-closure-20261019, run 39305259093: 6.4444 [6.0993, 6.7853] over the rank-probe producer) is superseded by this paired result. The nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523]) but has not been combined with this producer; next: a frozen protocol for K899 (or the cold path, the index build and setup) on the closure + index-lift producer against the current row, with the K899 index build (44.3 s) and the slot cliff at K900 in view. The rotation-key producer (koblitz-n83-rotkey-20261019, run 39299176306) is not promoted: against the rank-probe producer its end-to-end cold ratio is 0.9983 [0.9701, 1.0227], not separated, with every gate and both controls passing; there is nothing to stack on index-lift or the closure, and no combined run is pending for it. Stacking note: the online-frame stage (koblitz-n83-onlineframe-20261019, run 39303742695: online cS / cF 1.5733 [1.5714, 1.5753] over 64 points, end-to-end 1.0008 [1.0006, 1.0010], a stage improvement over the rank-probe producer) is a different producer stage from the index lift (the one-target online scan's probe loop, not the index build) and from the closure; it stacks with them and is recorded in other_records, not in this row, until a combined run is made.",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]
