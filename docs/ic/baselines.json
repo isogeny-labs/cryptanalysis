@@ -2119,6 +2119,101 @@
     {
       "n": 83,
       "a": 1,
+      "role": "REFERENCE ROW, not an IC improvement and not the baseline: known-log base (K=220 seeded scalar orbits, no relations, LAnone) is BSGS on the Frobenius quotient. The cited DKM theorem is an asymptotic non-adaptive generic-DLOG time-space lower bound; it does not prove finite-instance runtime dominance over rho. One primary cL220/rT770 observation per point; not a qualified Tier 1 speedup. See reviews/pr-986-knownlog-qualification-20261020/QUALIFICATION.md. The n=83 IC row is unchanged.",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-knownlog-20261019 (branch claude/n83-knownlog)",
+      "run": "GitHub Actions 39307634508",
+      "promoted": false,
+      "reference_row": true,
+      "pipeline": "rank-probe producer (digest d4394df3) unchanged, reading a retained known-log header: 220 seeded scalar orbits (splitmix64 seed 20261019), logs known by construction, no rank stage, no linear algebra; generation charged end to end; crypto 770f6a69",
+      "targets": "40 new public points (knownlog-cold-v1), one fresh pinned process per arm per point, Q0, four rank blocks for the baseline pair (seeds 901-904)",
+      "reference_rho": "rT770 (Fold/64/DP6), same points, same session",
+      "unit": "end-to-end cold wall time = generation + cold in-process; S in this run's rT770 step (29,512.88 ms per sqrt(r))",
+      "s_ic_cold": 0.2303,
+      "s_rho_cold": 0.10508,
+      "measured": {
+        "primary_gap_cL220_over_rT": {
+          "value": 2.1919,
+          "ci95": [
+            1.8584,
+            2.5893
+          ],
+          "reading": "measured_above_rho"
+        },
+        "primary_S_e2e_cold_cL220": {
+          "value": 0.2303,
+          "ci95": [
+            0.2059,
+            0.2577
+          ]
+        },
+        "reference_not_ic_improvement_e2e_kP_cP_over_cL220": {
+          "value": 27.9894,
+          "ci95": [
+            24.7842,
+            31.5336
+          ]
+        },
+        "reference_not_ic_improvement_e2e_kP_cP_over_cL600": {
+          "value": 7.1801,
+          "ci95": [
+            6.8893,
+            7.4867
+          ]
+        },
+        "e2e_cold_gap_cL600_over_rT": {
+          "value": 8.5446,
+          "ci95": [
+            7.4573,
+            9.88
+          ]
+        },
+        "e2e_cold_gap_kP_cP_over_rT": {
+          "value": 61.3504,
+          "ci95": [
+            53.2618,
+            71.2778
+          ]
+        },
+        "online_gap_cL220_over_rT": {
+          "value": 1.1235,
+          "ci95": [
+            0.8527,
+            1.4457
+          ]
+        },
+        "aa_e2e_cL220_over_cLaa": {
+          "value": 1.0005,
+          "ci95": [
+            0.9954,
+            1.0067
+          ]
+        },
+        "e2e_ms": {
+          "cL220": 6797.86,
+          "cL600": 26499.57,
+          "kP+cP": 190268.33
+        },
+        "n_points": 40
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 2.1919,
+        "ci95": [
+          1.8584,
+          2.5893
+        ],
+        "note": "known-log reference row cL220 over rT770, end-to-end cold; reference only"
+      },
+      "evidence_tier": "One-run instance-scoped reference timing record; one primary pair per point, no Tier 1 speedup claim; not replayed on another host class",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/README.md",
+        "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/run_github_39307634508/panel/result.json",
+        "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/protocol.json"
+      ],
+      "note": "Valid archived run: all 16 gates and 3 controls pass, no rows skipped. Primary G=2.1919 [1.8584, 2.5893] is measured above rT770 for this run. Separate A/A controls are not repeated alternating primary pairs; under current policy this is not a qualified Tier 1 speedup. The DKM citation is an asymptotic lower bound for non-adaptive generic DLOG; it is not a finite-cost dominance theorem against rho for this implementation. Reference-only, not an IC improvement; baseline row and Figure 1 unchanged. See reviews/pr-986-knownlog-qualification-20261020/QUALIFICATION.md."
+    },
+    {
+      "n": 83,
+      "a": 1,
       "unit": "end-to-end cold (setup + one-target online, with the rank stage), wall time on one host class, factor-base construction charged to no arm",
       "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
       "role": "NOT promoted: rotation-key probe, the rank-stage table key rotkey(v) = v^83 in F2[X]/(X^83+1) in place of lift_scan (one experiment; frozen primary not_separated; baseline row not replaced)",
