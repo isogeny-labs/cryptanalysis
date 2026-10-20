@@ -1,0 +1,73 @@
+% Editable source for result.pdf, written by make_figures.py from run_github_39299176306/panel/result.json
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage[T1]{fontenc}
+\begin{document}
+\begin{tikzpicture}[font=\sffamily\footnotesize,x=9mm,y=-5.6mm]
+\draw[gray!35] (-1.0000,-0.6) -- (-1.0000,13); \node[gray] at (-1.0000,13.5) {0.5};
+\draw[gray!35] (0.0000,-0.6) -- (0.0000,13); \node[gray] at (0.0000,13.5) {1};
+\draw[gray!35] (1.0000,-0.6) -- (1.0000,13); \node[gray] at (1.0000,13.5) {2};
+\draw[gray!35] (2.0000,-0.6) -- (2.0000,13); \node[gray] at (2.0000,13.5) {4};
+\draw[gray!35] (3.0000,-0.6) -- (3.0000,13); \node[gray] at (3.0000,13.5) {8};
+\draw[gray!35] (4.0000,-0.6) -- (4.0000,13); \node[gray] at (4.0000,13.5) {16};
+\draw[gray!35] (5.0000,-0.6) -- (5.0000,13); \node[gray] at (5.0000,13.5) {32};
+\draw[gray!35] (6.0000,-0.6) -- (6.0000,13); \node[gray] at (6.0000,13.5) {64};
+\draw[gray!35] (7.0000,-0.6) -- (7.0000,13); \node[gray] at (7.0000,13.5) {128};
+\draw[gray!35] (8.0000,-0.6) -- (8.0000,13); \node[gray] at (8.0000,13.5) {256};
+\draw[gray!35] (9.0000,-0.6) -- (9.0000,13); \node[gray] at (9.0000,13.5) {512};
+\draw[red!70!black,dashed] (0,-0.6) -- (0,13);
+\node at (0,14.3) {ratio (log scale); bars: estimate; whiskers: 95\% bootstrap (20 points; rank rows: blocks x 600 paired attempts)};
+\node[anchor=west,font=\sffamily\bfseries] at (-13.5,-1.5) {Primary verdict: not\_separated};
+\node[anchor=east] at (-1.1000,0) {PRIMARY end-to-end cold kP+cP / kK+cK};
+\fill[orange!60] (0,-0.300000) rectangle (-0.0024,0.300000);
+\draw (-0.0439,0) -- (0.0323,0); \draw (-0.0439,-0.150000) -- (-0.0439,0.150000); \draw (0.0323,-0.150000) -- (0.0323,0.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,0) {0.9983 [0.9701, 1.0227]};
+\node[anchor=east] at (-1.1000,1) {rank per attempt kP / kK};
+\fill[blue!30] (0,0.700000) rectangle (0.0224,1.300000);
+\draw (-0.0262,1) -- (0.0635,1); \draw (-0.0262,0.850000) -- (-0.0262,1.150000); \draw (0.0635,0.850000) -- (0.0635,1.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,1) {1.0156 [0.9820, 1.0450]};
+\node[anchor=east] at (-1.1000,2) {rank per attempt kP / kK, short third};
+\fill[blue!30] (0,1.700000) rectangle (0.0401,2.300000);
+\draw (-0.0099,2) -- (0.0907,2); \draw (-0.0099,1.850000) -- (-0.0099,2.150000); \draw (0.0907,1.850000) -- (0.0907,2.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,2) {1.0282 [0.9932, 1.0649]};
+\node[anchor=east] at (-1.1000,3) {rank per attempt kP / kK, middle third};
+\fill[blue!30] (0,2.700000) rectangle (0.0311,3.300000);
+\draw (-0.0175,3) -- (0.0776,3); \draw (-0.0175,2.850000) -- (-0.0175,3.150000); \draw (0.0776,2.850000) -- (0.0776,3.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,3) {1.0218 [0.9880, 1.0552]};
+\node[anchor=east] at (-1.1000,4) {rank per attempt kP / kK, long third};
+\fill[blue!30] (0,3.700000) rectangle (0.0176,4.300000);
+\draw (-0.0316,4) -- (0.0569,4); \draw (-0.0316,3.850000) -- (-0.0316,4.150000); \draw (0.0569,3.850000) -- (0.0569,4.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,4) {1.0122 [0.9783, 1.0402]};
+\node[anchor=east] at (-1.1000,5) {cold without rank cP / cK (same code)};
+\fill[blue!30] (0,4.700000) rectangle (-0.0017,5.300000);
+\draw (-0.0145,5) -- (0.0101,5); \draw (-0.0145,4.850000) -- (-0.0145,5.150000); \draw (0.0101,4.850000) -- (0.0101,5.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,5) {0.9988 [0.9900, 1.0070]};
+\node[anchor=east] at (-1.1000,6) {online cP / cK (same code)};
+\fill[blue!30] (0,5.700000) rectangle (-0.0368,6.300000);
+\draw (-0.0743,6) -- (0.0074,6); \draw (-0.0743,5.850000) -- (-0.0743,6.150000); \draw (0.0074,5.850000) -- (0.0074,6.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,6) {0.9748 [0.9498, 1.0052]};
+\node[anchor=east] at (-1.1000,7) {A/A e2e kK+cK / kKaa+cP};
+\fill[gray!45] (0,6.700000) rectangle (-0.0272,7.300000);
+\draw (-0.0555,7) -- (0.0001,7); \draw (-0.0555,6.850000) -- (-0.0555,7.150000); \draw (0.0001,6.850000) -- (0.0001,7.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,7) {0.9813 [0.9622, 1.0001]};
+\node[anchor=east] at (-1.1000,8) {A/A cold cK / cP};
+\fill[gray!45] (0,7.700000) rectangle (0.0017,8.300000);
+\draw (-0.0107,8) -- (0.0143,8); \draw (-0.0107,7.850000) -- (-0.0107,8.150000); \draw (0.0143,7.850000) -- (0.0143,8.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,8) {1.0012 [0.9926, 1.0100]};
+\node[anchor=east] at (-1.1000,9) {A/A rank per attempt kK / kKaa};
+\fill[gray!45] (0,8.700000) rectangle (-0.0322,9.300000);
+\draw (-0.0683,9) -- (-0.0007,9); \draw (-0.0683,8.850000) -- (-0.0683,9.150000); \draw (-0.0007,8.850000) -- (-0.0007,9.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,9) {0.9779 [0.9538, 0.9995]};
+\node[anchor=east] at (-1.1000,10) {planted rank per attempt kKX / kK};
+\fill[gray!45] (0,9.700000) rectangle (1.6108,10.300000);
+\draw (1.5602,10) -- (1.6658,10); \draw (1.5602,9.850000) -- (1.5602,10.150000); \draw (1.6658,9.850000) -- (1.6658,10.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,10) {3.0543 [2.9489, 3.1728]};
+\node[anchor=east] at (-1.1000,11) {e2e cold gap kP+cP / tuned rho};
+\fill[blue!30] (0,10.700000) rectangle (6.1168,11.300000);
+\draw (5.7145,11) -- (6.5471,11); \draw (5.7145,10.850000) -- (5.7145,11.150000); \draw (6.5471,10.850000) -- (6.5471,11.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,11) {69.3962 [52.5093, 93.5124]};
+\node[anchor=east] at (-1.1000,12) {e2e cold gap kK+cK / tuned rho};
+\fill[blue!30] (0,11.700000) rectangle (6.1192,12.300000);
+\draw (5.7124,12) -- (6.5395,12); \draw (5.7124,11.850000) -- (5.7124,12.150000); \draw (6.5395,11.850000) -- (6.5395,12.150000);
+\node[anchor=west,font=\sffamily\scriptsize] at (9.1000,12) {69.5122 [52.4311, 93.0225]};
+\end{tikzpicture}
+\end{document}
