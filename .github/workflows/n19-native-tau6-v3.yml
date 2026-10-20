@@ -68,6 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           rd="$RUNNER_TEMP/n19v3"
+          export N19_RD="$rd"  # $GITHUB_ENV only reaches later steps
           mkdir -p "$rd/lib"
           {
             echo "N19_JOB_START=$(date +%s)"
@@ -180,6 +181,7 @@ jobs:
         run: |
           set -euo pipefail
           rd="$RUNNER_TEMP/n19v3t"
+          export N19_RD="$rd"  # $GITHUB_ENV only reaches later steps
           mkdir -p "$rd"
           {
             echo "N19_JOB_START=$(date +%s)"
