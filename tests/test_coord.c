@@ -1675,14 +1675,42 @@ static double ingest_n(size_t n)
     return (double)(t1.tv_sec - t0.tv_sec) + (double)(t1.tv_nsec - t0.tv_nsec) / 1e9;
 }
 
+static double median3(double a, double b, double c)
+{
+    if (a > b) { double tmp = a; a = b; b = tmp; }
+    if (b > c) { double tmp = b; b = c; c = tmp; }
+    if (a > b) { double tmp = a; a = b; b = tmp; }
+    return b;
+}
+
 static void test_ingest_is_subquadratic(void)
 {
-    double t10 = ingest_n(10000);
-    double t40 = ingest_n(40000);
-    /* 4x the input.  Linear ingest is ~4x the time, quadratic ~16x.  Assert
-     * comfortably below quadratic (8x) with a floor so a fast machine's
-     * near-zero t10 does not make the ratio meaningless. */
-    if (t10 > 0.005) CHECK(t40 < t10 * 8.0);
+    const size_t small_n = 20000;
+    const size_t large_n = 80000;
+    double ratios[3];
+
+    /* Warm up allocation and caches before collecting the paired timings. */
+    (void)ingest_n(large_n);
+
+    /* Alternate order to reduce systematic drift, then compare medians so a
+     * single scheduler pause does not dominate this complexity check. */
+    for (size_t i = 0; i < 3; i++) {
+        double small, large;
+        if (i & 1) {
+            large = ingest_n(large_n);
+            small = ingest_n(small_n);
+        } else {
+            small = ingest_n(small_n);
+            large = ingest_n(large_n);
+        }
+        ratios[i] = large / small;
+    }
+    double ratio = median3(ratios[0], ratios[1], ratios[2]);
+
+    /* 4x the input. Linear ingest is about 4x the time, quadratic about 16x.
+     * Keep the 8x gate while using a larger workload and repeated medians so
+     * ordinary CI scheduling noise cannot turn a linear pass into a failure. */
+    CHECK(ratio < 8.0);
 }
 
 int main(void)
