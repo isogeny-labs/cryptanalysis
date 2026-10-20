@@ -1,13 +1,17 @@
 ---
-title: "n = 19 tau6 native per-shift solve, protocol v3 (run 39384735073: invalid)"
+title: "n = 19 tau6 native per-shift solve, protocol v3 (run 39387473809: improvement)"
 date: 2026-10-20
 ---
 
-# n = 19 tau6 native per-shift solve, protocol v3 (run 39384735073: invalid)
+# n = 19 tau6 native per-shift solve, protocol v3 (run 39387473809: improvement)
 
-**Status (2026-10-20): run, invalid.** Run 39384735073 failed in its first
-job before any experiment code ran, so there is no ratio. See
-[Result](#result-run-39384735073). Protocol v3 was frozen before any timing. v3 replaces
+**Status (2026-10-20): run, valid, improvement.** The first run,
+39384735073, was invalid: a workflow defect failed its first job before any
+experiment code ran. Commit `4ef371544` fixed the defect and the workflow was
+launched again as [run 39387473809](https://github.com/aburan28/cryptanalysis/actions/runs/39387473809). All 24 gates passed, both
+controls passed and the time guard skipped nothing: cold CPU B / N is
+141.02 [136.75, 144.95]. See [Result](#result-run-39387473809); the first run's
+record is kept under [History](#history-the-first-run-39384735073-invalid). Protocol v3 was frozen before any timing. v3 replaces
 [v2](../volcano-n19-native-tau6-v2-20261019/README.md). v2's Tier 1 run,
 [39376405326](https://github.com/aburan28/cryptanalysis/actions/runs/39376405326),
 was invalid: S0 on 2,682 systems, O1 and the field check passed, but every
@@ -18,7 +22,8 @@ unchanged. The workflow is
 
 ## Root cause of v2's crash
 
-See [`diagnosis/README.md`](diagnosis/README.md) for the full account. In
+**Confirmed in Sage** by run 39387473809's smoke job (see
+[the result](#root-cause-of-v2s-crash-confirmed)). See [`diagnosis/README.md`](diagnosis/README.md) for the full account. In
 short, the Sage preparser turns the literal `0` in
 `row.get(col, 0)` into a Sage `Integer`. Every value of the relation-rows
 digest was therefore an `Integer`, and `json.dumps` refused it:
@@ -30,8 +35,9 @@ digest was therefore an `Integer`, and `json.dumps` refused it:
   ([`diagnosis/emulate_preparser.py`](diagnosis/emulate_preparser.py)) runs
   v2's own function. In plain Python it succeeds. With integer literals made
   `Integer`, it fails exactly as on the runner.
-- The smoke job reruns v2's `arm.sage` on rows p00-N and p00-B in the pinned
-  image ([`diagnosis/digest_repro.sage`](diagnosis/digest_repro.sage)).
+- The smoke job reran v2's `arm.sage` on rows p00-N and p00-B in the pinned
+  image ([`diagnosis/digest_repro.sage`](diagnosis/digest_repro.sage)): both
+  failed with the same `TypeError` (run 39387473809, below).
 - v2's local checks were pure Python, and no Sage check before the timed
   rows ever wrote an IC row.
 
@@ -157,15 +163,229 @@ The workflow is
   The push of commit `92d85f14` started
   [run 39384735073](https://github.com/aburan28/cryptanalysis/actions/runs/39384735073):
   first job `sage-smoke`, then job `timed`, which needs it.
+- **First run invalid, then fixed.** Run 39384735073 failed in step 3 of
+  `sage-smoke` (a `KeyError`, below). Commit `4ef371544` added the missing
+  `export` of `N19_RD` in the step that sets it, in both jobs. It changed one
+  file, `.github/workflows/n19-native-tau6-v3.yml` (2 lines added), and **no
+  frozen file**: `protocol.json`, `schedule.json`, `inputs/`, the sources
+  and `diagnosis/digest_repro.sage` are the ones the receipt's
+  `frozen.sha256` lists, and the gate `runner_identity_matches_frozen_files`
+  passed. Its push started [run 39387473809](https://github.com/aburan28/cryptanalysis/actions/runs/39387473809) on
+  `4ef371544`.
 - This README, the figures and the smoke and diagnosis files do not
   trigger a run.
 
-## Result (run 39384735073)
+## Result (run 39387473809)
+
+**Verdict: improvement.** Cold CPU of the Sage Groebner solve (B) over the
+native solve (N) is **R = 141.02 [136.75, 144.95]** over 60 alternating
+pairs on 20 points (two-stage paired bootstrap, 10,000 draws, seed
+2026102003). The lower bound is far above 1, both controls passed, all 24
+gates passed and the time guard skipped no segment.
+
+![Result. Source: [figures/make_result_figure.py](figures/make_result_figure.py);
+vector: [figures/result.svg](figures/result.svg).](figures/result.png)
+
+- **What ran.** Run
+  [39387473809](https://github.com/aburan28/cryptanalysis/actions/runs/39387473809)
+  on `4ef371544`, a push-triggered re-launch. Job `sage-smoke` queued about
+  26 min, ran 08:01 to 08:08 UTC and passed all 20 smoke gates. Job `timed`
+  ran 08:24 to 09:43 UTC (the timed step took 76 min, inside the 2 to 2.6 h
+  estimate) and its 302 rows are all valid.
+- **Archive.** [`run_github_39387473809/`](run_github_39387473809/) holds both
+  artifacts, unpacked: `smoke/` (the smoke receipt, `lib/libtau6native.so`,
+  `diagnosis/`) and `timed/` (`panel/` with `result.json`, `result_table.md`,
+  302 rows and logs, `allocation.json`, `host-probe.json`, the workflow's
+  verifier output). The first run's archive is unchanged.
+- **Receipt re-verified.** `verify_receipt.py --part timed` was run on a
+  copy of both artifacts, with the copy's `result.json` and
+  `result_table.md` deleted first. It regenerated both files, and both are
+  **byte-for-byte identical** to the CI's (`result.json` sha256
+  `b4abac3037b3b6a4...`). The smoke part also re-verifies on a copy.
+- **Hosts.** The timed job ran on runner `GitHub Actions 1000365175`
+  (AMD EPYC 9V74, Hyper-V, kernel 7.0.0-1017-azure, 4 vCPU). The smoke job
+  ran on another host (EPYC 9V45); its times are never used and the library
+  it built is the one the timed job ran (one sha256, `d92534fa...`, before
+  and after every process).
+
+### Frozen rule, as applied
+
+| item | outcome |
+| --- | --- |
+| primary R = sum cold CPU(B) / sum cold CPU(N), 60 pairs, 95% two-stage paired bootstrap | **141.02 [136.75, 144.95]**; improvement iff the lower bound exceeds 1: **yes** |
+| geometric mean of the pair ratios (secondary) | 140.05 [135.85, 144.13] |
+| A/A N / Naa in [0.95, 1.05] | **1.0003 [0.9964, 1.0035]** over 60 pairs: inside |
+| planted NX / N lower bound above 1 | **140.8 [136.6, 144.6]** over 20 pairs: 136.6 above 1 |
+| gates | **24 of 24 true**; gate-name audit: none unknown, missing, non-true or differing from `protocol.json` |
+| smoke gate | 20 of 20 true, `smoke_exit=0` |
+| time guard | 0 segments skipped, guard not tripped |
+| verdict | **improvement** |
+
+### Controls
+
+- **A/A** (N against an identical Naa arm, 60 pairs): 1.0003 [0.9964,
+  1.0035]. The launcher wall ratio is 1.0047 [1.0004, 1.0113]. The arms and
+  the harness add no bias at this resolution.
+- **Planted** (NX redoes the Sage solve on every shift system and compares
+  it with the native one, 20 pairs): NX / N = 140.8 [136.6, 144.6]. The
+  detector sees a Sage-sized cost inside the N arm, and NX's cold CPU
+  (48.22 s) equals B's (48.22 s).
+- **Correctness.** S0 held on 2,982 systems (all set- and order-equal to the
+  brute force, 2,375 of them multi-solution, 607 third-checked), O1 passed,
+  the field check ran in every native process, and every B, N, Naa and NX
+  process of a point has the same counts, logs and relation digests (the
+  digests were recomputed by the verifier). rho 64/64.
+
+### Secondaries
+
+| quantity | estimate [95%, two-stage paired bootstrap] |
+| --- | --- |
+| online CPU B / N | 206.7 [203.3, 209.8] |
+| setup CPU B / N | 1.29 [1.279, 1.297] |
+| cold wall B / N | 141.2 [137.1, 145.2] |
+| Groebner CPU B / N (`gb_cpu`) | 911.3 [908.9, 913.7] |
+| launcher wall B / N (includes Sage start-up) | 12.96 [12.39, 13.52] |
+| child CPU B / N | 12.81 [12.20, 13.42] |
+| N cold gap to the matched rho (geometric mean of pairs) | 117.9 [113.4, 122.6] |
+
+- **Online `S`, setup, and `S` per arm** (the unit is this run's rho group
+  operation, 3.0095e-5 s of CPU; `S` = CPU per ECDLP in that unit per
+  sqrt(r)):
+
+  | arm | cold | online | setup |
+  | --- | ---: | ---: | ---: |
+  | B (Sage Groebner) | 4,429.3 | 4,416.4 | 12.96 |
+  | N (native) | 31.42 | 21.40 | 10.02 |
+  | Naa | 31.42 | 21.43 | 9.99 |
+  | NX (planted) | 4,428.8 | 4,415.7 | 13.05 |
+  | matched rho | 0.2661 | not separable | none |
+
+  In seconds of CPU per process (means): B cold 48.22 (setup 0.141, online
+  48.08), N cold 0.3421 (setup 0.1091, online 0.2330).
+- **Gap to the matched rho.** N's cold gap is 117.9 [113.4, 122.6] (60
+  pairs). The ratio of the means is 31.42 / 0.2661 = 118.1. B's, from the
+  same run's means, is 16,647 (no interval); the first ledger row read
+  1.94e4 in another run, host and unit. The gap is not closed: the rho is a
+  Python/Sage walk at 0.997 of the floor in steps, not tuned for wall time.
+  An online gap is not computed: online `S` 21.40 against the rho's 0.2661 is
+  about 80 as a ratio of point estimates, with no interval.
+- **The solve's share.** B's Groebner solve is 99.1% of its cold CPU
+  (47.79 of 48.22 s; 8.775 ms per call over 5,446 calls per point). N's native
+  solve is 0.0525 s, 15.4% of N's cold CPU (0.0096 ms per call). The rest of
+  N is setup 31.9% (0.1091 s) and the remaining online stage 52.7% (relation
+  assembly and linear algebra). Past this change the solve is not the cost.
+- **Per-pair spread.** The 60 pair ratios run from 114.8 to 161.0 (mean
+  140.4, sd 9.5). The spread is between points: the 20 per-point means run
+  from 115.3 (p14) to 158.4 (p11), sd 9.6, while the three pairs inside a
+  point differ by sd 1.2 on average (0.8%; at most 3.4). N's cold CPU per
+  pair is 0.286 to 0.402 s.
+- **Order effect.** The start order (B first or N first) is fixed within a
+  point: 9 points start with B and 11 with N, so it is confounded with the
+  point. The ratio is 143.1 when B was first against 139.2 when N was first
+  (2.8%); the between-point sd of 9.6 over 9 and 11 points gives a standard
+  error near 4.3, so this is not separable and the receipt computes no
+  interval. By position within the point's three pairs the ratio is 141.6,
+  140.5, 141.0: flat.
+
+### Root cause of v2's crash: confirmed
+
+`diagnosis/digest_repro.sage` **ran, in Sage 10.10 (release 2026-09-28) in
+the pinned image, and exited 0**
+(`{"v2_reproduced": true, "mechanism_ok": true, "fix_ok": true, "ok": true}`).
+It reproduced v2's TypeError and it recorded these types:
+
+- **v2's calls.** v2's own `arm.sage` was run on rows p00-N and p00-B. Both
+  exited 1 at the relation digest, after `through_relation_digests` and
+  before any row file was written (`row_file_written: false`), with the last
+  line `TypeError: Object of type Integer is not JSON serializable`. The
+  traceback ends in the `json.dumps` inside `h = lambda o: hashlib.sha256(...)`.
+- **The mechanism.** The literal `0` in a Sage file has type `Integer`
+  (the preparser rewrites `row.get(col, 0)` to `row.get(col, Integer(0))`),
+  and `Integer(0) + sg * pow(int, int, int) % int` is again `Integer`. So
+  every element of the relation rows was an `Integer`, which `json.dumps`
+  refuses.
+- **v3's strict conversion** (`relation_digest.plain`): `Integer` becomes
+  `int` (7), a real literal becomes a float (`RealLiteral` 0.5) and a
+  `bool` stays a `bool`; it rejects, by design, a GF(2^19) element
+  (`FiniteField_ntl_gf2eElement`), a `Rational` and a `RealDoubleElement_gsl`.
+- **The fix is neutral.** The relation digests computed from Sage `Integer`
+  rows and from plain `int` rows are equal (rows
+  `26f65746...`, canonical `72d9c7de...`, ordered `fe85060d...`).
+
+This confirms the root cause stated above. It is no longer an inference from
+a traceback and an emulation without Sage.
+
+### Tier 1 isolation assessment
+
+**What the receipt establishes.**
+
+- Every one of the 302 timed processes was pinned (`Cpus_allowed_list` 0
+  inside a 4-CPU container affinity), the host CPU identity is unchanged
+  from start to end, and `/proc/schedstat`, `/proc/stat`, `getrusage` and
+  the `isolated_bench` counters were recorded for each process.
+- No process raised a contention flag.
+- The library digest is the same before and after every process, and the
+  frozen files match.
+- The comparison is repeated alternating pairs, with an A/A and a planted
+  control, on one host class.
+
+**Gaps, all of them.**
+
+1. **Placement, not exclusivity.** A container affinity mask pins a vCPU; it
+   does not make the host exclusive. The runner is a Hyper-V VM
+   (`virtualization: microsoft`) whose other vCPUs and neighbours on the
+   physical host are not observed. No CPU is isolated (`cgroup_isolated_cpus`
+   and `nohz_full_cpus` are empty) and the whole job sits in one cgroup
+   (`hosted-compute-agent.service`).
+2. **One runner, one host class, no replay.** The timed job ran on one
+   EPYC 9V74 runner. No second machine or host class has reproduced it.
+3. **Two different hosts.** The smoke job ran on an EPYC 9V45 and the timed
+   job on a 9V74. The library is digest-pinned across them and the smoke
+   times are not used, but the smoke gate did not run on the timing host.
+4. **Microcode unreadable.** The record shows `0xffffffff`, which is what a
+   VM exposes; the CPU model and flags are uniform across the vCPUs.
+5. **CPU only.** No GPU arm, and the numbers are CPU time of a pinned Sage
+   process; they exclude Sage start-up. Seen from the launcher, the ratio
+   is 12.96 [12.39, 13.52]: start-up (about 2.2 s per N process) dominates
+   N's wall time, so the 141 is a CPU-in-process ratio, not what a user waits.
+6. **Order is confounded with the point** (above), so an order effect cannot
+   be separated.
+7. **The matched rho is not wall-time tuned**, so the gap of 117.9 compares
+   a native IC with a Python/Sage walk.
+8. **The B arm is this protocol's tau6 arm**, with counts, logs and relations
+   checked equal to N's at every point; it is not the first ledger row's
+   run, host or unit.
+
+None of these is closed. The improvement stands as a Tier 1 result with these
+gaps named.
+
+### Frozen files and the workflow fix
+
+The workflow fix (`4ef371544`) changed **no frozen file**. It changed only
+`.github/workflows/n19-native-tau6-v3.yml` (an `export` of `N19_RD` in the
+step that sets it, in both jobs). `protocol.json`, `schedule.json`,
+`inputs/panel.json`, `inputs/multi_systems.json`, `arm.sage`,
+`native_binding.py`, `relation_digest.py`, `run_schedule.py`,
+`verify_receipt.py`, `stats.py`, the native sources and
+`diagnosis/digest_repro.sage` are the ones in the receipt's `frozen.sha256`,
+and `runner_identity_matches_frozen_files` passed.
+
+### Ledger
+
+The verdict is an improvement, so `docs/ic/BASELINES.md` and `baselines.json`
+apply the ratchet to the n = 19 row: the native-solve producer replaces the
+tau6 Sage-Groebner row, carrying this run's paired R as its Tier 1
+qualification. The old row moved to Other verified records, a ratchet-history
+row was added, the n = 19 open note was updated (online `S` measured, IC1
+manifests exist) and Figure 1 was re-rendered.
+
+
+## History: the first run (39384735073, invalid)
 
 **Verdict: invalid. No improvement, regression or null result is claimed.**
 
-![Run outcome. Source: [figures/make_result_figure.py](figures/make_result_figure.py);
-vector: [figures/result.svg](figures/result.svg).](figures/result.png)
+![First run outcome. Source: [figures/make_invalid_run1_figure.py](figures/make_invalid_run1_figure.py);
+vector: [figures/invalid_run1.svg](figures/invalid_run1.svg).](figures/invalid_run1.png)
 
 - **What happened.** Job `sage-smoke` queued about 20 min, started at
   07:29:16 UTC and failed at 07:30:20 in step 3, "Freeze runner and source
@@ -195,7 +415,7 @@ vector: [figures/result.svg](figures/result.svg).](figures/result.png)
   (`0xffffffff`), the whole job in one cgroup of the hosted-compute agent.
   Nothing was timed on it.
 
-### Frozen rule, as applied
+### Frozen rule, as applied (first run)
 
 | item | outcome |
 | --- | --- |
@@ -206,20 +426,20 @@ vector: [figures/result.svg](figures/result.svg).](figures/result.png)
 | gates | sage-smoke failed; all other gates unevaluated, so false |
 | time guard | not reached |
 
-### Secondaries
+### Secondaries (first run)
 
 Online S, setup, S per arm, the gap to the matched rho, the solve's share,
 the per-pair spread and the order effect were all not measured. No number is
 reported for them.
 
-### Root cause of v2's crash
+### Root cause of v2's crash (first run)
 
 **Not confirmed and not refuted.** `diagnosis/digest_repro.sage` never ran,
 so there is no Sage output and no recorded types. The standing support is
 unchanged: v2's archived tracebacks and the preparser emulation in
 [`diagnosis/`](diagnosis/README.md), neither of which ran Sage.
 
-### Tier 1 isolation assessment
+### Tier 1 isolation assessment (first run)
 
 No Tier 1 claim exists, since nothing was timed. The gaps that remain for a
 future run are the ones in the frozen design: a container affinity mask
@@ -229,11 +449,10 @@ machine; CPU-only. The workflow defect above is a further gap: the smoke
 gate has now never executed, so no run has shown that the v3 smoke path
 (Sage image, 20 smoke gates) works end to end.
 
-### Next step
+### Next step (done)
 
-Fix step 3 in the workflow, re-freeze nothing in `protocol.json` or
-`schedule.json`, and launch a new run. Not done here: the task was to
-collect this run, not to re-run it.
+Step 3 was fixed in `4ef371544` with nothing re-frozen; the re-launch is run
+39387473809, below.
 
 ## Files
 
