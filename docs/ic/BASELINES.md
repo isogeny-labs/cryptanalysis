@@ -300,6 +300,14 @@ source gives one ([source](figures/baselines_gap.tex),
 These rows are kept for context and as the history behind the baselines.
 None is combined with another row.
 
+
+The rank-probe Bernstein-Lange record preserves its frozen point-paired estimate
+and reading. It is not a qualified Tier 1 speedup: the primary has one cP/BL
+observation per point rather than repeated alternating primary pairs. Its receipt
+records `child_peak_rss_kb_cumulative`, a cumulative child high-water mark, not
+per-process peak RSS; cgroup counters are group-level. These reporting limits do
+not alter the archived timing estimate.
+
 | n | role | experiment | reference | cold gap, IC / ref [95%] | online gap, IC / ref [95%] | BL | tier |
 |--:|:-------|:----------------|:---------|-------:|-------:|:-----|:-------|
 | 41 | previous baseline (v0) | ledger §23, crypto `0bf67f16` | ParallelRho, same process | 8.04 [7.26, 9.01] | 0.107 [0.082, 0.135] | model 2.50 | crypto isolated_bench container |
@@ -314,7 +322,7 @@ None is combined with another row.
 | 83 | previous baseline (B, the BL-arm row), superseded by the stacked producer | `koblitz-n83-bl-arm-20261014`, run 38689817618 (PR #918, not merged yet) | rT770, B's 16 fresh points + Q0 x4 | 360 (no interval; S 32.93 / 0.083 in that run's rT770 steps) | 1.01 [0.30, 2.12], not separated | **measured: 235** [61, 645], 16/16 points BL faster; cold IC/BL 0.987 by construction | Tier 1 |
 | 83 | previous baseline (the stacked producer, arms cS / kS), superseded by the rank-cut producer | `koblitz-n83-stacked-20261016`, run 38862448935 (PR #938) | rT770, 20 new points, two rank blocks, Q0 | 94.4 [73.5, 125.3] (end-to-end cold; S 9.680 / 0.01314 in that run's rT770 steps, 316.66 ns) | 0.139 [0.077, 0.237] | none on this row | Tier 1 |
 | 83 | previous baseline (the rank-cut producer, arms cR / kR), superseded by the rank-probe producer | `koblitz-n83-rankcut-20261016`, run 38891404048 (PR #970) | rT770, 20 new points, four rank blocks, Q0 | 65.7 [55.4, 80.2] (end-to-end cold; S 7.523 / 0.01145 in that run's rT770 steps, 281.01 ns) | 0.110 [0.059, 0.174] | none on this row | Tier 1 |
-| 83 | previous baseline (the rank-probe producer, arms cP / kP), superseded by the index-lift producer | `koblitz-n83-rankprobe-20261019`, run 39214027289 (PR #980) | rT770, 20 new points, four rank blocks, Q0 | 64.0 [53.7, 78.0] (end-to-end cold; S 6.390 / 0.01169 in that run's rT770 steps, 280.64 ns) | 0.129 [0.085, 0.183] | none on this row | Tier 1 |
+| 83 | previous baseline (the rank-probe producer, arms cP / kP), superseded by the index-lift producer | `koblitz-n83-rankprobe-20261019`, run 39214027289 (PR #980) | rT770, 20 new points, four rank blocks, Q0 | 64.0 [53.7, 78.0] (end-to-end cold; S 6.390 / 0.01169 in that run's rT770 steps, 280.64 ns) | 0.129 [0.085, 0.183] | measured later on this producer: online cP / BL 22.55 [16.23, 31.44], `bl_online_faster_than_ic`; cold IC/BL 0.985 by construction (run 39307708909). Historical instance-scoped estimate, not Tier 1 speedup-qualified | Tier 1 instance; not speedup-qualified |
 | 83 | previous baseline (the index-lift producer, arms cPI / kPI), superseded by the closure + index-lift producer | `koblitz-n83-indexlift-20261019`, run 39290913632 (PR #981) | rT770, 20 new points, three rank blocks, Q0 | 62.9 [52.5, 78.5] (end-to-end cold; S 6.366 / 0.01512 in that run's rT770 steps, 280.33 ns) | 0.167 [0.091, 0.283] | none on this row | Tier 1 |
 | 83 | promoted over the rank-probe producer at K600, on the rank-probe producer's code (K899 base, arms kP899 / cP899); **baseline row not replaced** (the row names the index-lift producer; this run never ran it as a primary) | `koblitz-n83-k899-20261019`, run 39306394645 (PR pending) | rT770, 20 new points, four rank blocks (seeds 401-404), Q0 | 54.5 [45.3, 68.2] (end-to-end cold; S 5.639 / 0.008104 in that run's rT770 steps, 280.43 ns); the K600 arm in the same run reads 64.7 [53.8, 81.3] (S 6.694) | 0.087 [0.058, 0.126] (K600 arm 0.180 [0.098, 0.312]) | none on this row | Tier 1 |
 | 83 | same pipeline as the baseline (merged) | `koblitz-n83-reconcile-20261014`, run 38617911080 | rT770, two seeds per point | 313 (fresh-rank setup) | 0.92 [0.28, 1.78], not separated | none | Tier 1 |
