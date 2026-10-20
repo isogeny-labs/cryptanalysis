@@ -312,12 +312,13 @@ never patched.
 
 ## Trigger
 
-The run is the workflow `n83-closure-indexlift-rep.yml`, dispatched with
-`workflow_dispatch` on ref `claude/n83-closure-indexlift-rep`. If dispatch is
-refused for the integration, a push trigger is added. It is restricted to
-this branch and to the experiment's non-receipt paths, as in
-`n83-closure-indexlift.yml`. The run URL is recorded in the result once the
-receipt is archived.
+The run is the workflow `n83-closure-indexlift-rep.yml`. A
+`workflow_dispatch` call (ref `claude/n83-closure-indexlift-rep`) returned
+**403** ("Resource not accessible by integration"). The workflow therefore
+also has a push trigger. It is restricted to this branch and to the
+experiment's non-receipt paths, as in `n83-closure-indexlift.yml`, and the
+push that added it started the run at the frozen protocol and schedule. The
+run URL is recorded in the result once the receipt is archived.
 
 ## Not included
 
