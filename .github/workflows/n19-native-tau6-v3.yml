@@ -21,8 +21,27 @@ name: N19 native tau6 solve, Sage smoke gate + repeated-pair Tier 1 (protocol v3
 #               the smoke gate, audits the receipt (fail closed) and applies the
 #               decision rule: improvement iff the 95% two-stage paired
 #               bootstrap lower bound of cold CPU B / N exceeds 1.
+# workflow_dispatch is the convention, but it was refused for this
+# integration on 2026-10-20 (gh: 404 "not found on the default branch";
+# GitHub MCP: 403 "Resource not accessible by integration"), so the run is
+# also triggered by a push to this branch, restricted by path filters (the
+# owner-approved pattern of n19 v2): receipts, README, figures, figure
+# scripts, smoke and diagnosis do not trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n19-native-v3]
+    paths:
+      - experiments/volcano-n19-native-tau6-v3-20261020/**
+      - .github/workflows/n19-native-tau6-v3.yml
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/run_github_*/**'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/README.md'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/README.pdf'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/figures/**'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/make_figures.py'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/report_header.tex'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/smoke/**'
+      - '!experiments/volcano-n19-native-tau6-v3-20261020/diagnosis/**'
 
 permissions:
   contents: read
