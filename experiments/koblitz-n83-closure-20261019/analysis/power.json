@@ -1,0 +1,119 @@
+{
+ "baseline_blocks": 4,
+ "bootstrap": "each rank arm's blocks resampled, then its attempts within each drawn block (independently across arms); cold points resampled, paired; 300 draws per simulation (10,000 in the frozen verifier)",
+ "candidates": {
+  "M10": {
+   "blocks": 8,
+   "cells": {
+    "1.00": {
+     "attempt_cost_factor": 10.008246990212548,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 0.9936625050867735,
+     "power": 0.0
+    },
+    "1.10": {
+     "attempt_cost_factor": 8.957154704536876,
+     "mc_se": 0.03505531343462785,
+     "median_estimate": 1.103073233184897,
+     "power": 0.435
+    },
+    "1.50": {
+     "attempt_cost_factor": 6.154241942735089,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 1.502868532903859,
+     "power": 1.0
+    },
+    "2.00": {
+     "attempt_cost_factor": 4.227239418996359,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 2.020981275300377,
+     "power": 1.0
+    },
+    "law_gate": {
+     "archived_ratio_cv": 0.972945826485458,
+     "archived_ratio_mean": 0.9784638225547311,
+     "attempts": 480,
+     "band": [
+      0.85,
+      1.15
+     ],
+     "pass_rate_true_law": 0.9985,
+     "reject_rate_law_1.5x_worse": 1.0
+    },
+    "modelled": {
+     "attempt_cost_factor": 1.0,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 4.520349927337007,
+     "power": 1.0
+    }
+   },
+   "columns": 60
+  },
+  "M38": {
+   "blocks": 16,
+   "cells": {
+    "1.00": {
+     "attempt_cost_factor": 37.53092621329706,
+     "mc_se": 0.009899494936611665,
+     "median_estimate": 1.0089125518710027,
+     "power": 0.02
+    },
+    "1.10": {
+     "attempt_cost_factor": 33.58933014201328,
+     "mc_se": 0.02975735203273302,
+     "median_estimate": 1.104491820773255,
+     "power": 0.23
+    },
+    "1.50": {
+     "attempt_cost_factor": 23.078407285256585,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 1.505845464209461,
+     "power": 1.0
+    },
+    "2.00": {
+     "attempt_cost_factor": 15.852147821236349,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 2.010227899109949,
+     "power": 1.0
+    },
+    "law_gate": {
+     "archived_ratio_cv": 0.972945826485458,
+     "archived_ratio_mean": 0.9784638225547311,
+     "attempts": 256,
+     "band": [
+      0.8,
+      1.2
+     ],
+     "pass_rate_true_law": 0.9985,
+     "reject_rate_law_1.5x_worse": 0.9985
+    },
+    "modelled": {
+     "attempt_cost_factor": 1.0,
+     "mc_se": 7.071067811865476e-08,
+     "median_estimate": 6.334348159692945,
+     "power": 1.0
+    }
+   },
+   "columns": 16
+  }
+ },
+ "mean_attempt_ms_prior": 239.29706868458334,
+ "mean_cold_ms_prior": 22298.7298545,
+ "mean_rank_stage_ms_prior": 143706.65004575,
+ "min_delta": 1.5,
+ "points": 20,
+ "power_at_min_delta": {
+  "M10": 1.0,
+  "M38": 1.0
+ },
+ "prior": "inputs/power_prior.json",
+ "prior_source": "koblitz-n83-rankprobe-20261019/run_github_39214027289 (arms kP, kPaa, cP, cR)",
+ "quick": false,
+ "schema": 1,
+ "simulations": 200,
+ "statistic": "R = E2E(kP, cP) / E2E(kC, cC), 95% lower bound > 1",
+ "type_i_at_1.00": {
+  "M10": 0.0,
+  "M38": 0.02
+ }
+}
