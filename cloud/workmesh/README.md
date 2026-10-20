@@ -7,7 +7,7 @@ This was built from the connected `aburan28/crypto`, `cryptanalysis`, `cairn`, `
 Download `bootstrap.sh` and keep your configuration outside the checkout. This branch exposes the standalone script at the URL below:
 
 ```bash
-BOOTSTRAP_URL=https://raw.githubusercontent.com/aburan28/cryptanalysis/4e541abaf64b754f5f4f64057234ebcab4f4192a/cloud/workmesh/bootstrap.sh
+BOOTSTRAP_URL=https://raw.githubusercontent.com/aburan28/cryptanalysis/ed7643fb052ae963375f57d48850a7b7bfe526fd/cloud/workmesh/bootstrap.sh
 curl --fail --location --proto '=https' "$BOOTSTRAP_URL" -o bootstrap.sh
 chmod +x bootstrap.sh
 # Copy config.example.sh to ~/.config/workmesh.sh and edit the leader/peer settings.
@@ -39,9 +39,9 @@ The ordinary `bootstrap` path offers vendor login when stdin is a terminal. Pipe
 | `research` | Minimal plus a conda-forge Python environment, stock Sage if selected, PARI/GP, Singular, pinned msolve built from source, FLINT/NTL/fplll, lattice bindings, science/plotting packages, JupyterLab, SAT/SMT backends, ruff/mypy |
 | `full` | Research plus the cryptanalysis lint/debug gates, cargo-deny, staticcheck/govulncheck, Typst, and Linux APT LaTeX/PDF packages |
 
-Vendor coding CLIs are opt-in (`INSTALL_CLIS=yes`). Enabling this fetches and runs the current Claude, Cursor, and Elan installer scripts and installs npm package versions selected by the configured version variables. Review those upstream installers and choose explicit versions where reproducibility matters before enabling them.
+Vendor coding CLIs are opt-in (`INSTALL_CLIS=yes`). Enabling this fetches and runs the current Claude and Cursor installer scripts and installs npm package versions selected by the configured version variables. Review those upstream installers and choose explicit versions where reproducibility matters before enabling them.
 
-Optional flags add Lean at the repo's `v4.35.0` pin, a separate JAX `0.4.35` environment, a separate NVIDIA CUDA toolkit environment, or the `crypto-autoresearcher` API-direct LangGraph stack (`INSTALL_AGENT_STACK=yes`, invoked with `api-agent-python`). CUDA drivers and NVIDIA container device support belong to the host/provider. cuPQC, Magma, proprietary FGb builds, TPU `libtpu`, and FPGA vendor toolchains require their own matching SDK/license/hardware setup. OpenCode installs its documented `opencode-ai` v1 package; a v2 migration is a separate version choice.
+Lean is independently opt-in with `INSTALL_LEAN=yes` and uses the repo's `v4.35.0` toolchain pin. It downloads and runs the current upstream [`elan-init.sh`](https://github.com/leanprover/elan/blob/master/elan-init.sh); review that installer before enabling it. This flag works whether or not `INSTALL_CLIS=yes` is set. Other optional flags add a separate JAX `0.4.35` environment, a separate NVIDIA CUDA toolkit environment, or the `crypto-autoresearcher` API-direct LangGraph stack (`INSTALL_AGENT_STACK=yes`, invoked with `api-agent-python`). CUDA drivers and NVIDIA container device support belong to the host/provider. cuPQC, Magma, proprietary FGb builds, TPU `libtpu`, and FPGA vendor toolchains require their own matching SDK/license/hardware setup. OpenCode installs its documented `opencode-ai` v1 package; a v2 migration is a separate version choice.
 
 Existing Rust, Go 1.21+ (with automatic toolchain selection), and sufficiently recent Node installations are retained by default. Older Go installations are upgraded locally so they can load Conductor's newer module/toolchain directives. Cargo and Go resolve repo-specific dependencies from their manifests/locks when you build those repos. The installer does not build your experiments or run repository hooks. Use the repo's own locked build commands after entering its directory.
 
