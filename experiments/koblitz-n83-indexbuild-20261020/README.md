@@ -5,11 +5,13 @@ date: 2026-10-20
 
 # n = 83: a faster root-index build for the closure + index-lift row (Tier 1 design)
 
-**Status (2026-10-20): design frozen, run launched; no result yet.** Nothing
-below is a measured speedup. The profile and the candidate savings come from
-the shared cloud-agent VM. They are **local diagnostics**, used only to rank
-the candidates and size the design. The verdict will come from the frozen
-Tier 1 run (see [Trigger](#trigger)).
+**Status (2026-10-20): result in. Verdict: improvement; every gate passes and
+the run is valid.** R = E2E(A) / E2E(B) = **1.7406 [1.7129, 1.7676]** over 36
+alternating pairs (12 points x 3 pairs), run 39383739494, Tier 1, instance
+scope. The design sections below are the frozen text, unchanged; the profile
+and the candidate savings in them come from the shared cloud-agent VM and are
+local diagnostics, used only to rank the candidates and size the design. The
+[Result](#result) section was added with the archived receipt.
 
 ## Why this run
 
@@ -421,9 +423,241 @@ A `workflow_dispatch` call (ref `claude/n83-indexbuild`) returned **403**
 push trigger. It is restricted to this branch and to the experiment's
 non-receipt paths, as in `n83-closure-indexlift-rep.yml`, and the push that
 added it started the run at the frozen protocol (`3073d0c5...`) and schedule
-(`5b1db827...`). The run URL is recorded here once the receipt is archived;
-the result will be added in its own section, leaving the design text above
+(`5b1db827...`). The run is
+[39383739494](https://github.com/aburan28/cryptanalysis/actions/runs/39383739494);
+the result is in its own [section](#result), leaving the design text above
 unchanged.
+
+## Result
+
+Run [39383739494](https://github.com/aburan28/cryptanalysis/actions/runs/39383739494)
+(workflow `n83-indexbuild.yml`, push trigger, frozen commit `290fb65a`, attempt
+1, conclusion success) on one GitHub-hosted `ubuntu-24.04` runner
+(`runnervm8k3b6`, image 20261012.334.1, 4 vCPUs, AMD EPYC 9V74, kernel
+6.17.0-1022-azure, execution CPU 0). The run queued for 17 min (created 07:00,
+started 07:17 UTC); the job ran 07:17 to 08:50 UTC (1 h 33 min); the runner's
+schedule took 77.9 min against the 165-minute guard. The receipt is archived in
+[`run_github_39383739494/`](run_github_39383739494/).
+
+**All gates pass; the run is valid.** The runner executed all 282 scheduled
+rows (`schedule-exit.txt`: 0): 282 valid, 0 invalid, **0 skipped by the time
+guard**, guard not tripped, all 36 primary pairs, 24 A/A pairs and 12 planted
+pairs complete, 13 units seen (12 points and Q0).
+
+- Before timing: K600 and M38 tables and both closure bases re-verified by the
+  pinned pure-Python oracle (`log-table-check.json`), planted closure
+  corruptions rejected; the verifier's 29 unit tests, `cargo test` of `lift2`
+  and `online` all ran in the job (`verifier-tests.txt`, `cargo-test-*.txt`).
+- Build-pipeline gate: every B process recorded `index_build_pipeline`
+  `row_batched_inverse+lookahead32_prefetch+selftest_lanes8`, every A process
+  none; the full scan self-test ran in every process.
+- One scalar per point across every IC process and rT, replayed in the oracle;
+  one relation and one probe count per point and base.
+- Layout gate: one index and layout digest set per base (K600, M38, M10), each
+  equal to the frozen one (`stored_states_blake3`, `table_slots_blake3`, and
+  the logical-state and table-map digests); Q0 equal to the archived
+  identities; rank tables equal to the frozen verified tables.
+- Planted index check: all 12 cM38IBX processes reported
+  `index_plant_checked_inputs` = **30,682,720** (2 x 15,341,360 stored states),
+  kept the frozen layout digests and recovered the scalar; every other arm
+  reported 0 (`arm.py` gate, 0 issues).
+- Per rank seed (36 seeds, 1401-1436): identical relation digests, probe
+  vectors, root calls and counters across kM38I, kM38IB and kM38IBaa (0 rows
+  without gain, 0 rank-seed failures).
+- Probe law gate: kM38I 0.9937 [0.8859, 1.1074] and kM38IB 0.9937 [0.8861,
+  1.1062] over 576 attempts (36 blocks), inside the frozen band [0.80, 1.20]
+  (pass). The mean probes per relation are identical (1,689,309.2) because the
+  arms share rank seeds.
+- Runner identity equals the frozen files, binaries unchanged
+  (`binaries.sha256`), CPU record unchanged start to end, every process placed
+  on CPU 0 (`Cpus_allowed_list` 0, 282/282), `receipt_matches_schedule`, no
+  contention flags, no problems.
+
+`verify_receipt.py` re-run on a **copy of the whole receipt directory** (with
+`result.json`, `result_table.md` and `verify-stdout.json` removed first; the
+gitignored `snapshots/r770` oracle restored by
+`restore.py --crypto-repo /home/user/crypto`, read only) reproduces
+`panel/result.json`, `panel/result_table.md` and the verifier's stdout **byte
+for byte**.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), [SVG](figures/result.svg),
+rendered by the script listed under Files).](figures/result.png)
+
+### Primary and controls (frozen rule)
+
+Improvement iff the 95% lower bound of R = sum E2E(A) / sum E2E(B) over the 36
+alternating pairs exceeds 1, with a two-stage paired bootstrap (points, then
+pairs within points; 10,000 draws), and both A/A ratios lie in [0.97, 1.03]
+and the planted index-build lower bound exceeds 1. A = kM38I + cM38I (the
+current n = 83 row, closure + index lift), B = kM38IB + cM38IB (the derived
+index-build producer).
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E(A) / E2E(B)** (36 pairs, 12 points) | **1.7406 [1.7129, 1.7676]** | **improvement** (lower bound above 1) |
+| geometric mean of the 36 pair ratios | 1.7448 [1.7185, 1.7708] | reported |
+| A/A E2E B / Baa (24 pairs) | 0.9998 [0.9984, 1.0011] | pass (inside [0.97, 1.03]) |
+| A/A cold cM38IB / cM38IBaa (24 pairs) | 0.9994 [0.9977, 1.0010] | pass (inside [0.97, 1.03]) |
+| planted index build cM38IBX / cM38IB (12 pairs) | 2.0847 [2.0812, 2.0876] | pass (lower bound above 1) |
+| planted exactness corruptions | rejected before timing | pass |
+
+Mean E2E per side: A 24,736.5 ms (4,433.5 rank stage + 20,303.0 cold),
+B 14,211.6 ms (4,429.9 rank stage + 9,781.7 cold), a saving of 10,524.9 ms per
+target. The saving is the cold path (10,521.3 ms); the rank stage is unchanged.
+
+### Secondaries (none changes the verdict)
+
+**Per-phase breakdown** (means over the 36 pairs; A over B, above 1 = B
+faster):
+
+| Phase | A (kM38I + cM38I) | B (kM38IB + cM38IB) | A / B [95%] |
+| --- | ---: | ---: | :--- |
+| index-build stage (ms) | 17,084.8 | 7,247.2 | 2.3574 [2.3539, 2.3611] |
+| scan self-test (ms) | 2,233.6 | 1,531.6 | 1.4583 [1.4480, 1.4708] |
+| setup (ms) | 19,719.4 | 9,195.0 | 2.1446 [2.1404, 2.1493] |
+| cold = setup + online (ms) | 20,303.0 | 9,781.7 | 2.0756 [2.0299, 2.1139] |
+| rank stage (ms) | 4,433.5 | 4,429.9 | 1.0008 [0.9982, 1.0032] |
+| online (ms) | 583.60 | 586.69 | 0.9947 [0.9888, 1.0006] |
+| process CPU time (ms) | 49,371.9 | 28,283.9 | 1.7456 [1.7240, 1.7658] |
+| process wall (ms) | 49,380.1 | 28,289.6 | 1.7455 [1.7238, 1.7662] |
+| cold minor faults | 27,904 | 25,421 | 1.0977 [1.0896, 1.1056] |
+| peak RSS (bytes) | 1,897,379,157 | 1,895,541,191 | 1.0010 [1.0009, 1.0011] |
+| index build in the rank process (ms) | 17,080.5 | 7,250.2 | 2.3559 [2.3490, 2.3617] |
+
+Of the 10,524.9 ms saved in setup, 9,837.6 ms (93.5%) is the root-index build
+(state loop and insert loop), 702.0 ms (6.7%) the lane-wise self-test, and the
+rest of setup (base load, linear algebra, input control; about 401 ms in A and
+416 ms in B) is 15 ms slower. The index build is 86.6% of A's setup and 78.8%
+of B's. The online phase shows no difference (0.9947, interval [0.9888, 1.0006] contains 1). The rank stage and the online phase run the same code in both arms, so their ratios near 1 are the control for the unchanged stages. The process CPU ratio (1.7456) equals the E2E ratio (1.7406) to 0.3%,
+and the end-to-end saving is not explained by an off-CPU effect.
+
+**Rank-stage share of E2E cold:** A 17.9% (4,433.5 / 24,736.5), B 31.2%
+(4,429.9 / 14,211.6); cold is 82.1% of A and 68.8% of B. Rank-stage ns per
+probe: kM38I 164.02, kM38IB 163.94, kM38IBaa 163.90; mean per attempt 277.09,
+274.24 and 270.13 ms (kM38IB and kM38IBaa also include the 24 A/A processes).
+The per-probe code is the same across arms.
+
+**Probe law** (mean probes per relation over the law value):
+
+| Arm | Estimate [95%] | Attempts | Role |
+| --- | --- | ---: | --- |
+| kM38I | 0.9937 [0.8859, 1.1074] | 576 (36 blocks) | reported |
+| kM38IB | 0.9937 [0.8861, 1.1062] | 576 (36 blocks) | gate, band [0.80, 1.20]: pass |
+
+**S** (cost over this run's measured rT770 step, 317.40 ns, per sqrt(r); one
+unit is 29,382.9 ms): end-to-end cold S(A) = 0.84187, S(B) = 0.48367
+(delta S = -0.35820); rank stage 0.15089 (A) and 0.15076 (B); setup 0.67112 (A)
+and 0.31294 (B); cold without rank 0.69098 (A) and 0.33291 (B); online S(A) =
+0.019862, S(B) = 0.019967. The tuned rho's own S: cold 0.11632 (mean rT770
+cold 3,417.8 ms, online 3,179.3 ms; 0.10820 online).
+
+**Gap to tuned rho rT770** (IC time over rT time, point estimates from
+`result.json`; no interval is computed for the gaps, distance remaining, not a
+gate):
+
+| Arm | End-to-end cold | Online |
+| --- | ---: | ---: |
+| A = kM38I + cM38I (current row) | 7.2375 | 0.1836 (583.60 / 3,179.28 ms) |
+| B = kM38IB + cM38IB (candidate) | 4.1581 | 0.1845 (586.69 / 3,179.28 ms) |
+
+The gap is distance remaining: B is 4.16 times the tuned rho end to end, and
+no arm beats it. Compared with the parent's runs (6.86 in #997, 8.43 in #1002)
+these absolute gaps are not a delta: runner, host class and the rT770 step
+(317.40 ns here, 246.64 ns in #1002, 281.09 ns in #997) differ, so only the
+paired within-run figures are comparable.
+
+**Per-pair ratio spread** (36 pairs): minimum 1.608, median 1.755, mean 1.746,
+maximum 1.891, standard deviation 0.0655, quartile positions (9th and 27th of
+36 sorted) 1.695 and 1.789. Per point (12 points): 1.683 to 1.791. By pair
+position within the point: 1.747 (first), 1.746 (second), 1.729 (third). By
+order: A first (21 pairs) 1.7238, B first (15 pairs) 1.7654, a 2.4% order
+effect, with the larger ratio when B runs first. The alternation balances it
+only approximately (the start was drawn per point), and it is far inside the
+interval's distance from 1.
+
+### Host and isolation records
+
+From `host-cpu.json`, `allocation.json`, `panel/runner_start.json`,
+`panel/runner_end.json` and the 282 per-row records in `panel/runs.jsonl`:
+
+| Record | Observed |
+| --- | --- |
+| provider, instance | GitHub Actions, run 39383739494 attempt 1, instance id `gh-39383739494-1-indexbuild`, runner `runnervm8k3b6` ("GitHub Actions 1000364632"), advertised 4 vCPU / 16 GB, image 20261012.334.1; allocation receipt `allocation.json` |
+| CPU | AMD EPYC 9V74 80-Core (family 25, model 17, stepping 1), **no AVX-512 flag exposed** (`avx512=n`; the runner of #1002 exposed AVX-512), 4 vCPUs = 2 cores x 2 threads, 1 socket, 1 NUMA node; Microsoft hypervisor; L2 1 MiB shared by vCPUs 0-1, L3 32 MiB shared by 0-3 |
+| microcode | `0xffffffff` (not readable inside the guest), uniform across CPUs, same at start and end |
+| frequency | nominal `cpu_mhz` 2799.6 at start, 2861.1 at end; `scaling_cur_freq` not exposed (null), not fixed |
+| placement | every process on CPU 0 (`Cpus_allowed_list` 0), 282/282 |
+| cgroup | `/system.slice/hosted-compute-agent.service`, `cpu.max` quota none, `isolcpus`/`nohz_full` empty |
+| steal | 0 ticks in every row (`/proc/stat`), total 0 |
+| throttling | `nr_throttled` 0 and `throttled_usec` 0 in every row |
+| memory failures | `memory.events` max and oom_kill deltas 0; 0 major faults |
+| scheduling | run-queue wait 1.602 s against 4,671.8 s on CPU (0.034%); 93,842 timeslices; 46,766 involuntary switches in total (at most 411 in one process), 2,784 voluntary |
+| CPU pressure | `cpu.pressure` some-delta per row 473 to 6,973 us |
+| contention flags | none |
+| transparent hugepages | `enabled` always, `defrag` madvise (the runner of #1002 had `enabled` madvise) |
+
+### AGENTS.md Tier 1 assessment
+
+AGENTS.md Tier 1 (cloud instance) requires: a frozen provider allocation
+receipt and instance ID; both variants on the same pinned exposed CPU with the
+same workload and limits; code and workload hashes, paired order, raw
+failures, correctness, process CPU time, memory, cgroup throttling and memory
+failures, steal time and scheduling counters; repeated alternating pairs and a
+95% paired interval whose lower bound exceeds 1.
+
+**Met:** the allocation record and instance ID (`allocation.json`); one pinned
+CPU for all 282 processes with the same workload, binaries and no CPU quota;
+code and workload hashes (protocol, schedule, arm wrapper, runner, binaries,
+log tables, `frozen.sha256`); paired alternating order from the frozen
+schedule; raw failures (0) and correctness (every gate above); process CPU
+time, peak RSS, cgroup throttling (0), memory events (0), steal (0) and
+`/proc/schedstat` counters per row; 36 alternating pairs and a lower bound of
+1.7129.
+
+**Gaps (named, none changes the verdict, all limit the claim):**
+
+1. No host-wide exclusivity. CPU affinity records placement inside the VM; the
+   cgroup is the runner agent's service, and the other three vCPUs, the agent
+   and the hypervisor's other tenants are not controlled. Steal of 0 in the
+   guest does not prove an unshared physical core.
+2. The SMT sibling is not excluded. CPU 0 shares its core and its L1/L2 with
+   vCPU 1 (cache `shared_cpu_list` 0-1); the sibling thread was not offlined
+   or shown idle.
+3. Microcode is unreadable (`0xffffffff`), so the CPU identity rests on the
+   model name, flags and the unchanged record, not on a microcode revision.
+4. The frequency is neither fixed nor observable (`scaling_cur_freq` not
+   exposed); only nominal `cpu_mhz` is recorded, and it differed between start
+   and end (2799.6 and 2861.1 MHz).
+5. No IRQ routing control, no `isolcpus`/`nohz_full`, no NUMA memory policy
+   beyond the single node.
+6. One instance only (instance scope): another runner may differ; this run's
+   host class exposes no AVX-512 and its transparent-hugepage setting is
+   `always`, unlike the runner of #1002, so the absolute times, the rT770 step
+   and the gaps to it are not comparable across runs, only the paired ratios.
+
+The result is a **Tier 1, instance-scoped** paired wall-time comparison, not
+host-isolated (Tier 2).
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner, 12 cold points, 3 alternating pairs per
+  point, one fresh process per arm per pair. The interval covers points and
+  pairs; it does not cover another host class.
+- Wall time on one host class. The saving is the root-index build (state loop
+  and insert loop, 9.84 s of 10.52 s) and the self-test (0.70 s); the rank
+  stage and the online phase are the parent's code and are unchanged. The
+  absolute saving may differ on a host with other memory latency (the
+  prefetched insert loop) or with AVX-512.
+- **Factor-base construction is charged to no arm** (the n = 83 convention),
+  so 1.7406 is an upper bound on the every-phase ratio and the cold S a lower
+  bound.
+- The gap to rT770 is a point estimate from one run with no interval; the
+  rT770 step differs across runs.
+- The probe law passes its band with a wide interval ([0.8861, 1.1062]); both
+  arms read the same value because the rank seeds are shared.
+- The section 5a band is not computable (the IC arms emit no group-operation
+  counts). Not replayed on another host class.
 
 ## Files
 
@@ -440,5 +674,7 @@ unchanged.
 | `make_power_prior.py`, `inputs/power_prior.json`, `power_check.py`, `analysis/power.json` | power prior (run 39359922687), simulation and result |
 | `make_*_source.py` (other), `make_online_source.py`, `online/`, `lift2/`, `make_closure_base.py`, `verify_closure.py`, `check_log_table.py`, `inputs/factor_logs_*`, `inputs/*` (parent) | the parent's files, byte for byte (except `online/Cargo.toml`: one added `[[bin]]`) |
 | `figures/profile.*`, `figures/power.*`, `make_figures.py`, `figures/design.*` | profile and power figures (SVG, PDF, PNG); design diagram (TikZ source, PDF, PNG) |
+| `run_github_39383739494/` | the archived receipt: `panel/result.json`, `panel/result_table.md`, `verify-stdout.json`, host and allocation records, 282 per-row records |
+| `figures/result.*`, `figures/make_result_figure.py` | result figure (TikZ source, PDF, SVG, PNG), drawn from `result.json` |
 | `smoke/` | local correctness smoke of the frozen schedule |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |

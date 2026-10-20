@@ -1,4 +1,4 @@
-% Distance to rho per baseline row of docs/ic/baselines.json (2026-10-20).
+% Distance to rho per baseline row of docs/ic/baselines.json (2026-10-20; n=83 row: index-build producer, run 39383739494, point estimates).
 % Every value is copied from that file's "baselines" rows; each row is one
 % experiment. Build: pdflatex baselines_gap.tex; pdftoppm -png -r 160 -singlefile baselines_gap.pdf baselines_gap
 \documentclass[border=4pt]{standalone}
@@ -34,7 +34,7 @@
     (7.657,2)
     (13.24,3)
     (20.97,4)
-    (6.856,5)
+    (4.158,5)
   };
 \addlegendentry{cold, IC / matched rho}
 % intervals drawn explicitly (log axis): [lo, hi]
@@ -42,16 +42,15 @@
 \addplot[red!70!black, forget plot] coordinates {(6.900,2) (8.613,2)};
 \addplot[red!70!black, forget plot] coordinates {(11.75,3) (15.01,3)};
 \addplot[red!70!black, forget plot] coordinates {(18.60,4) (23.84,4)};
-\addplot[red!70!black, forget plot] coordinates {(5.799,5) (8.193,5)};
+% n=83: point estimate from run 39383739494, no interval computed for the gap in that run
 
 % online gap IC/rho
 \addplot[only marks, mark=square, mark size=2.6pt, color=blue!70!black]
-  coordinates {(0.0915,2.18) (0.0466,3.18) (0.0675,4.18) (0.0925,5.18)};
+  coordinates {(0.0915,2.18) (0.0466,3.18) (0.0675,4.18) (0.1845,5.18)};
 \addlegendentry{online, IC / matched rho}
 \addplot[blue!70!black, forget plot] coordinates {(0.0706,2.18) (0.1159,2.18)};
 \addplot[blue!70!black, forget plot] coordinates {(0.0362,3.18) (0.0593,3.18)};
 \addplot[blue!70!black, forget plot] coordinates {(0.0506,4.18) (0.0882,4.18)};
-\addplot[blue!70!black, forget plot] coordinates {(0.0594,5.18) (0.1352,5.18)};
 
 % online IC / Bernstein-Lange: a model at n=19, 41, 53, 61; not measured on the n=83 row
 \addplot[only marks, mark=triangle, mark size=3pt, color=green!45!black]
