@@ -14,6 +14,7 @@ explain the gap and what would let the work move past it.
 | [ECC2K-130 public gateway activation and device validation](ecc2k130-public-gateway-activation.md) | Open | Global contributor endpoint and live CUDA/RDS path after image publication | Approved cloud resources and a pinned end-to-end device receipt |
 | [KernelAgent bridge to the ECC2K-130 CUDA walk](ecc2k130-kernelagent-cuda-bridge.md) | Investigating | Direct KernelAgent optimization of the production compatible CUDA walk | Verified same-workload input, provider, and accessible GPU profiling |
 | [ECC2K-130 Frobenius GPU critical path](ecc2k130-frobenius-gpu-critical-path.md) | Investigating | A confirmed production-compatible useful-update speedup after bounded arithmetic and barrier screens | Source-correlated stall attribution, a targeted candidate, and matched correctness and timing confirmation |
+| [Historical radix-15 native panel provenance and RSS](prime-j0-radix15-native-provenance.md) | Open | Exact historical radix-15 source/binary reproduction and per-arm memory-evidence compliance | Recover the `e195374…` source snapshot and raw per-child RSS receipts; otherwise a new versioned build can only support a new panel |
 
 ## Add or update a problem
 
