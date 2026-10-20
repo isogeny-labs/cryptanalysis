@@ -2007,6 +2007,138 @@
         "cryptanalysis:experiments/koblitz-n83-k899-20261019/README.md (branch claude/n83-k899)",
         "cryptanalysis:experiments/koblitz-n83-k899-20261019/run_github_39306394645/panel/result.json (branch claude/n83-k899)"
       ]
+    },
+    {
+      "n": 83,
+      "a": 1,
+      "unit": "end-to-end cold (setup + one-target online, with the rank stage), wall time on one host class, factor-base construction charged to no arm",
+      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU)",
+      "role": "NOT promoted: rotation-key probe, the rank-stage table key rotkey(v) = v^83 in F2[X]/(X^83+1) in place of lift_scan (one experiment; frozen primary not_separated; baseline row not replaced)",
+      "experiment": "cryptanalysis:experiments/koblitz-n83-rotkey-20261019 (branch claude/n83-rotkey)",
+      "run": "GitHub Actions 39299176306, one ubuntu-24.04 runner (GitHub Actions 1000358069, AMD EPYC 9V74), one pinned CPU",
+      "promoted": false,
+      "baseline_row_replaced": false,
+      "compared_against": "the rank-probe producer (arms kP / cP), the baseline the protocol froze",
+      "measured": {
+        "primary_R_e2e_kP_cP_over_kK_cK": {
+          "value": 0.9983,
+          "ci95": [
+            0.9701,
+            1.0227
+          ]
+        },
+        "primary_verdict": "not_separated (lower bound below 1, upper bound above 1)",
+        "rank_attempt_kP_over_kK": {
+          "value": 1.0156,
+          "ci95": [
+            0.982,
+            1.045
+          ]
+        },
+        "aa_e2e_kK_cK_over_kKaa_cP": {
+          "value": 0.9813,
+          "ci95": [
+            0.9622,
+            1.0001
+          ]
+        },
+        "aa_cold_cK_over_cP": {
+          "value": 1.0012,
+          "ci95": [
+            0.9926,
+            1.01
+          ]
+        },
+        "planted_rank_attempt_kKX_over_kK": {
+          "value": 3.0543,
+          "ci95": [
+            2.9489,
+            3.1728
+          ]
+        },
+        "cold_without_rank_cP_over_cK": {
+          "value": 0.9988,
+          "ci95": [
+            0.99,
+            1.007
+          ]
+        },
+        "online_cP_over_cK": {
+          "value": 0.9748,
+          "ci95": [
+            0.9498,
+            1.0052
+          ]
+        },
+        "e2e_ms": {
+          "kP+cP": 171019.9,
+          "kK+cK": 171305.8
+        },
+        "rank_stage_share": {
+          "kP": 0.8617,
+          "kK": 0.8618
+        },
+        "ns_per_probe": {
+          "kP": 143.55,
+          "kK": 141.35,
+          "kKaa": 144.54,
+          "kKX": 431.71
+        },
+        "rotation_key_table_build_ms_mean_kK": 2522.2,
+        "peak_rss_bytes_cold_mean": {
+          "cP": 1875148800,
+          "cK": 1875149004.8
+        },
+        "S_e2e_cold": {
+          "cP": 7.453,
+          "cK": 7.4654
+        },
+        "S_rho_cold": 0.1074,
+        "S_rho_online": 0.09932,
+        "n_points": 20,
+        "rank_blocks": 4,
+        "attempts_per_block": 600
+      },
+      "gap_e2e_cold_ic_over_tuned_rho": {
+        "cP": {
+          "value": 69.3962,
+          "ci95": [
+            52.5093,
+            93.5124
+          ]
+        },
+        "cK": {
+          "value": 69.5122,
+          "ci95": [
+            52.4311,
+            93.0225
+          ]
+        },
+        "note": "paired within-run gaps (same run, points and rT770 step 247.87 ns)"
+      },
+      "gap_online_ic_over_tuned_rho": {
+        "cP": {
+          "value": 0.1658,
+          "ci95": [
+            0.1041,
+            0.2628
+          ]
+        },
+        "cK": {
+          "value": 0.1701,
+          "ci95": [
+            0.1045,
+            0.272
+          ]
+        }
+      },
+      "pipeline": "the rank-probe producer (digest d4394df3 checked) plus KIC_RANK_SOLVE=rotkey: a rotation-key copy of the compact table built inside the rank-stage interval, keys of a state's partners in one carry-less batch, lift_scan only at a hit; crypto 770f6a69",
+      "gates": "all 78 scheduled rows valid, 0 skipped by the time guard; every rank relation, probe vector, root-call total and point-addition counter identical per block across kP, kK, kKaa, kKX; 0 collisions on 29,878,182 stored keys; both controls pass",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-rotkey-20261019/README.md",
+        "cryptanalysis:experiments/koblitz-n83-rotkey-20261019/run_github_39299176306/panel/result.json"
+      ],
+      "note": "Not separated from the rank-probe producer end to end. The same-code rank A/A differs by 2.2% (0.9779 [0.9538, 0.9995]), as large as the candidate-baseline difference. The baseline row is the index-lift producer and is unchanged."
     }
   ],
   "ratchet_history": [
@@ -2492,6 +2624,23 @@
         "reading": "cold gap 1.19x smaller; online time cP899 / cP600 0.4825 [0.2688, 0.8733]",
         "source": "cryptanalysis:experiments/koblitz-n83-k899-20261019/run_github_39306394645/panel/result.json statistics.e2e_cold_gap_kP600_cP600_over_rT, e2e_cold_gap_kP899_cP899_over_rT, online_gap_cP600_over_rT, online_gap_cP899_over_rT"
       }
+    },
+    {
+      "n": 83,
+      "from": "the rank-probe producer (arms kP + cP), same run 39299176306, points and rT770",
+      "to": "rotation-key producer (arms kK + cK): rank-stage table keyed by v^83 in F2[X]/(X^83+1), lift_scan only at a hit (run 39299176306)",
+      "cold_gap": [
+        69.3962,
+        69.5122
+      ],
+      "online_gap": [
+        0.1658,
+        0.1701
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gaps (same run, points and rT770)",
+      "baseline_row_replaced": "none: not promoted",
+      "cold_speedup": "end-to-end cold kP+cP / kK+cK 0.9983 [0.9701, 1.0227] in wall time on one host class (not separated); rank per attempt kP / kK 1.0156 [0.9820, 1.0450]",
+      "class": "NOT promoted: frozen primary not_separated; every gate and both controls pass; baseline row not replaced"
     }
   ],
   "corrections": [
@@ -2549,7 +2698,7 @@
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
     "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
     "n=19: no IC1 candidate manifest; online S not separable",
-    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run. The nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523], gap 64.7 -> 54.5 in that run) but is not the baseline row, which names the index-lift producer; next: a frozen protocol for the index-lift producer at K899 against the current row. The closure producer (koblitz-n83-closure-20261019, run 39305259093: Z[tau]-multiplier closure of the K600 base, 16 columns) is promoted over the rank-probe producer by 6.4444 [6.0993, 6.7853] (end-to-end cold, wall time on one host class; rank stage 108.0 s -> 2.75 s; gap to the tuned rho 67.5 -> 10.5 in that run); that run compared against the rank-probe producer, not the index-lift row, so the baseline row is not replaced: paired run against the index-lift row pending (a closure + index-lift run). Factor-base construction is charged to no arm, as in the existing rows.",
+    "n=83: the index-lift producer (lift_scan in the root-index build, the rank-probe producer otherwise) is promoted end to end over the rank-probe producer by 1.0344 [1.0324, 1.0364] (koblitz-n83-indexlift-20261019, run 39290913632, wall time on one host class, stored states and table slots byte-identical, probes and root calls unchanged) and is the baseline row; its end-to-end cold S is 6.37 against the tuned rho 0.101 (gap 62.9 [52.5, 78.5]); the rank stage is still 89.8% of cold cost. The rank-probe producer (promoted over the rank-cut producer by 1.1033 [1.1010, 1.1056], run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048) and the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) moved to other_records; the index-lift run has no cross-host replay and no BL re-run. The nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523], gap 64.7 -> 54.5 in that run) but is not the baseline row, which names the index-lift producer; next: a frozen protocol for the index-lift producer at K899 against the current row. The closure producer (koblitz-n83-closure-20261019, run 39305259093: Z[tau]-multiplier closure of the K600 base, 16 columns) is promoted over the rank-probe producer by 6.4444 [6.0993, 6.7853] (end-to-end cold, wall time on one host class; rank stage 108.0 s -> 2.75 s; gap to the tuned rho 67.5 -> 10.5 in that run); that run compared against the rank-probe producer, not the index-lift row, so the baseline row is not replaced: paired run against the index-lift row pending (a closure + index-lift run). Factor-base construction is charged to no arm, as in the existing rows. The rotation-key producer (koblitz-n83-rotkey-20261019, run 39299176306) is not promoted: against the rank-probe producer its end-to-end cold ratio is 0.9983 [0.9701, 1.0227], not separated, with every gate and both controls passing; there is nothing to stack on index-lift or the closure, and no combined run is pending for it.",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
   ]
