@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage.py", line 462, in <module>
+    main()
+  File "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage.py", line 437, in main
+    row.update(ic_row(arm, s, opt('--rng-seed'), lib))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage.py", line 272, in ic_row
+    'relations_digest': relation_digests(RELS, lam, cur.p),
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage.py", line 228, in relation_digests
+    return {'ordered_sha256': h(ordered), 'canonical_sha256': h(canon), 'rows_sha256': h(rows),
+                                                                                       ^^^^^^^
+  File "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage.py", line 227, in <lambda>
+    h = lambda o: hashlib.sha256(json.dumps(o, separators=(',', ':')).encode()).hexdigest()
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type Integer is not JSON serializable

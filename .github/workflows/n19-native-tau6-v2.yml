@@ -11,9 +11,24 @@ name: N19 native tau6 solve, end-to-end cold Tier 1 (protocol v2)
 # receipt and applies the decision rule.
 # Protocol v2 (experiments/volcano-n19-native-tau6-v2-20261019/protocol.json)
 # replaces v1, whose run 39307409409 failed S0 (see the v2 diagnosis/README.md).
-# Dispatch only: no push or path triggers it, so committing or editing the
-# experiment never launches a timed run.
+# Dispatch, or a push to this branch that changes the frozen experiment or
+# this workflow (the API refused workflow_dispatch from the agent session with
+# 403; the owner approved this path-limited push trigger). README, figures,
+# smoke, diagnosis and receipts do not trigger a run.
 on:
+  push:
+    branches: [claude/n19-native-solve]
+    paths:
+      - experiments/volcano-n19-native-tau6-v2-20261019/**
+      - .github/workflows/n19-native-tau6-v2.yml
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/run_github_*/**'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/README.md'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/README.pdf'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/figures/**'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/make_figures.py'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/report_header.tex'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/smoke/**'
+      - '!experiments/volcano-n19-native-tau6-v2-20261019/diagnosis/**'
   workflow_dispatch:
 
 permissions:
