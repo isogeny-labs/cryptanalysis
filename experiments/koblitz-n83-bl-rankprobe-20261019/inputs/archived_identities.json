@@ -1,0 +1,30 @@
+{
+ "b_factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+ "bl_positive_control": {
+  "id": "pc69-rT770",
+  "rows_jsonl_sha256": "3397ade042d653d214a1a03f79557f423ba323cfe765be486af5c9209dacd779",
+  "source": "koblitz-n83-bl-arm-20261014/smoke/control/pc69-rT770/rows.jsonl and run 38689817618 control/pc69-rT770/rows.jsonl (identical bytes)"
+ },
+ "bl_step_identity": {
+  "binary": "bl_sg --field fold, 64 lanes, DP 6, --reference-jumps (bl_plain_sg)",
+  "point": "q0",
+  "seed": 831000,
+  "source": "koblitz-n83-bl-arm-20261014 README 'Step identity' and run 38689817618 bl_plain row (12,592,070); the reconciliation smoke's rT770 count at seed 831000",
+  "walk_steps": 12592070
+ },
+ "q0_ic": {
+  "probes_folded": 1987852,
+  "probes_unfolded": 1988184,
+  "relation": [
+   77273,
+   22971,
+   54962,
+   62539
+  ],
+  "scalar": "3141592653589793",
+  "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here",
+  "source_protocol": "koblitz-n83-rankprobe-20261019/protocol.json online.q0_identity"
+ },
+ "q0_scalar": "3141592653589793",
+ "schema": 1
+}

@@ -1124,8 +1124,74 @@
       },
       "gap_tuned_rho": "measured on this row: end-to-end cold 64.0 [53.7, 78.0]; online 0.129",
       "gap_bernstein_lange": {
-        "kind": "not measured on this row",
-        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+        "kind": "measured by a later experiment on this producer (not this row's own run)",
+        "experiment": "cryptanalysis:experiments/koblitz-n83-bl-rankprobe-20261019 (branch claude/n83-bl-rankprobe), GitHub Actions 39307708909",
+        "producer_measured": "the rank-probe producer (arms cP / kP)",
+        "ic_online_over_bl": {
+          "value": 22.55,
+          "ci95": [
+            16.23,
+            31.44
+          ],
+          "reading": "bl_online_faster_than_ic",
+          "rows_bl_faster": "60/64"
+        },
+        "rho_online_over_bl": {
+          "value": 118.8,
+          "ci95": [
+            90.52,
+            159.2
+          ]
+        },
+        "ic_cold_over_bl_cold": {
+          "value": 0.9847,
+          "ci95": [
+            0.9481,
+            1.022
+          ]
+        },
+        "online_gap_ic_over_rt770": {
+          "value": 0.1899,
+          "ci95": [
+            0.1432,
+            0.2453
+          ]
+        },
+        "online_gap_bl_over_rt770": {
+          "value": 0.008419,
+          "ci95": [
+            0.006242,
+            0.01104
+          ]
+        },
+        "e2e_cold_gap_ic_over_rt770": {
+          "value": 67.74,
+          "ci95": [
+            59.99,
+            77.46
+          ]
+        },
+        "e2e_cold_gap_bl_over_rt770": {
+          "value": 68.79,
+          "ci95": [
+            61.3,
+            78.33
+          ]
+        },
+        "s_cold": {
+          "ic": 7.417,
+          "bl": 7.532,
+          "rt770": 0.1095
+        },
+        "s_online": {
+          "cp": 0.01824,
+          "bl": 0.000809,
+          "rt770": 0.09605
+        },
+        "matched_fraction": 0.9941,
+        "bl_model_check_measured_over_model": 0.894,
+        "host_class": "INTEL(R) XEON(R) PLATINUM 8573C | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+        "note": "a measurement, not an IC improvement; 64 new points, one run, Tier 1, one host class; the unit is that run's rT770 step (253.96 ns), not this row's (280.64 ns), and its host class differs from this row's own run (AMD EPYC 7763), so it is not a delta of this row's figures; BL precomputation matched to P_IC = 172,919.8 ms (10,282,240 entries); all frozen experiment gates and controls pass, 328 rows, none skipped; the baseline row at that time was already the index-lift producer, so no baseline row's BL column was filled; this is a historical instance-scoped estimate, not a qualified Tier 1 speedup because cP and BL were each measured once per point with randomized order rather than repeated alternating primary pairs; child_peak_rss_kb_cumulative is a cumulative child high-water mark, not per-process peak RSS, and cgroup counters are group-level, so the archive has no per-process peak RSS result; qualified disclosure: this is a historical instance-scoped estimate, not a qualified Tier 1 speedup because cP and BL were measured once per point rather than repeated alternating primary pairs; child_peak_rss_kb_cumulative is cumulative child high-water mark, not per-process peak RSS, and cgroup counters are group-level"
       },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
       "verified": "98/98 rows valid, 0 skipped by the time guard; probe identities, one relation and one scalar per point (oracle replay), Q0 equal to the archived Feistel identity, rank tables equal to B's archived table, identical rank relations, per-attempt probes, root calls and point-addition counters across kR, kP, kPaa and kPX in every block, 600 exact S3-resolved hits per rank block, one frame per attempt in kP, kPaa and kPX; A/A and planted control passed; verify_receipt.py reproduces result.json and result_table.md byte for byte",
