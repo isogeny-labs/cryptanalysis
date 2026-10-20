@@ -1,0 +1,867 @@
+{
+ "all_pass": true,
+ "checks": {
+  "K600": {
+   "exit_0_and_group_verified": true,
+   "index_canonicalizers": true,
+   "index_digest_equals_frozen_parent": true,
+   "layout_equals_indexlift_frozen": true,
+   "no_planted_index_check": true,
+   "one_layout_across_canonicalizers": true,
+   "q0_equals_frozen_parent": true,
+   "root_table_entries_equal_frozen_parent": true
+  },
+  "M10": {
+   "exit_0_and_group_verified": true,
+   "index_canonicalizers": true,
+   "index_digest_equals_frozen_parent": true,
+   "no_planted_index_check": true,
+   "one_layout_across_canonicalizers": true,
+   "q0_equals_frozen_parent": true,
+   "root_table_entries_equal_frozen_parent": true
+  },
+  "M38": {
+   "exit_0_and_group_verified": true,
+   "index_canonicalizers": true,
+   "index_digest_equals_frozen_parent": true,
+   "no_planted_index_check": true,
+   "one_layout_across_canonicalizers": true,
+   "q0_equals_frozen_parent": true,
+   "root_table_entries_equal_frozen_parent": true
+  }
+ },
+ "host": "cloud-agent VM (diagnostic only; two processes at a time)",
+ "layout_digest_lift": {
+  "K600": {
+   "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+   "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+  },
+  "M10": {
+   "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+   "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+  },
+  "M38": {
+   "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+   "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+  }
+ },
+ "processes": {
+  "K600_lift": {
+   "base": "K600",
+   "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+   "closure": null,
+   "diagnostic_ms": {
+    "cold": 21948.889568,
+    "index_build": 18193.847444,
+    "online": 678.834698,
+    "rank_stage": 0.030468000000000002,
+    "setup_complete": 21270.05487
+   },
+   "group_verified": true,
+   "index_canonicalizer": "lift",
+   "index_digest": {
+    "logical_states": 29880000,
+    "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_entries": 29878182,
+    "table_map_sum64": "be14a80705232396",
+    "table_map_xor64": "8132bdcfd619010f",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "index_orbits": 600,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 600,
+   "probes": 1987852,
+   "regular_states": 29880000,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "returncode": 0,
+   "root_table_entries": 29878182,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2488.0372620000003,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  },
+  "K600_selected": {
+   "base": "K600",
+   "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+   "closure": null,
+   "diagnostic_ms": {
+    "cold": 30220.792676999998,
+    "index_build": 26826.810788,
+    "online": 645.128704,
+    "rank_stage": 0.030085999999999998,
+    "setup_complete": 29575.663973
+   },
+   "group_verified": true,
+   "index_canonicalizer": "selected",
+   "index_digest": {
+    "logical_states": 29880000,
+    "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_entries": 29878182,
+    "table_map_sum64": "be14a80705232396",
+    "table_map_xor64": "8132bdcfd619010f",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "index_orbits": 600,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 600,
+   "probes": 1987852,
+   "regular_states": 29880000,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "returncode": 0,
+   "root_table_entries": 29878182,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2221.626424,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  },
+  "M10_lift": {
+   "base": "M10",
+   "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+   "closure": {
+    "column_representatives": "the first 60 representatives of B's K600 header",
+    "columns": 60,
+    "construction": "orbit (c, alpha) = signed Frobenius orbit of alpha(R_c) = [a]R_c + [b]phi(R_c); label of +-phi^k(alpha(R_c)) is (c, +-(a + b lambda) lambda^k mod r)",
+    "generator": "make_closure_base.py (pinned oracle.py arithmetic)",
+    "multipliers": [
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      1,
+      -1,
+      2
+     ],
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      -2,
+      7
+     ],
+     [
+      3,
+      -1,
+      8
+     ],
+     [
+      3,
+      0,
+      9
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      3,
+      -2,
+      11
+     ],
+     [
+      3,
+      1,
+      14
+     ],
+     [
+      1,
+      -3,
+      16
+     ]
+    ],
+    "norm": "a^2 + ab + 2b^2 (tau^2 - tau + 2 = 0)",
+    "norm_cap": 16,
+    "orbits": 600,
+    "orbits_per_column": 10,
+    "source_base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7"
+   },
+   "diagnostic_ms": {
+    "cold": 21348.556273,
+    "index_build": 17940.646872999998,
+    "online": 684.827809,
+    "rank_stage": 0.029109,
+    "setup_complete": 20663.728464
+   },
+   "group_verified": true,
+   "index_canonicalizer": "lift",
+   "index_digest": {
+    "logical_states": 29880000,
+    "logical_states_blake3": "ebf4f41e7ce806b47303e25fc566ce0059f999af3f5b7a338ab586e3ebf79c27",
+    "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+    "table_entries": 29821794,
+    "table_map_sum64": "5c80db078213e8a5",
+    "table_map_xor64": "76c9935ff0965caf",
+    "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+   },
+   "index_orbits": 600,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 60,
+   "probes": 2130165,
+   "regular_states": 29880000,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "returncode": 0,
+   "root_table_entries": 29821794,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2261.041733,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  },
+  "M10_selected": {
+   "base": "M10",
+   "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+   "closure": {
+    "column_representatives": "the first 60 representatives of B's K600 header",
+    "columns": 60,
+    "construction": "orbit (c, alpha) = signed Frobenius orbit of alpha(R_c) = [a]R_c + [b]phi(R_c); label of +-phi^k(alpha(R_c)) is (c, +-(a + b lambda) lambda^k mod r)",
+    "generator": "make_closure_base.py (pinned oracle.py arithmetic)",
+    "multipliers": [
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      1,
+      -1,
+      2
+     ],
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      -2,
+      7
+     ],
+     [
+      3,
+      -1,
+      8
+     ],
+     [
+      3,
+      0,
+      9
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      3,
+      -2,
+      11
+     ],
+     [
+      3,
+      1,
+      14
+     ],
+     [
+      1,
+      -3,
+      16
+     ]
+    ],
+    "norm": "a^2 + ab + 2b^2 (tau^2 - tau + 2 = 0)",
+    "norm_cap": 16,
+    "orbits": 600,
+    "orbits_per_column": 10,
+    "source_base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7"
+   },
+   "diagnostic_ms": {
+    "cold": 30158.329904,
+    "index_build": 26788.726635,
+    "online": 693.88678,
+    "rank_stage": 0.030071,
+    "setup_complete": 29464.443124
+   },
+   "group_verified": true,
+   "index_canonicalizer": "selected",
+   "index_digest": {
+    "logical_states": 29880000,
+    "logical_states_blake3": "ebf4f41e7ce806b47303e25fc566ce0059f999af3f5b7a338ab586e3ebf79c27",
+    "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+    "table_entries": 29821794,
+    "table_map_sum64": "5c80db078213e8a5",
+    "table_map_xor64": "76c9935ff0965caf",
+    "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+   },
+   "index_orbits": 600,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 60,
+   "probes": 2130165,
+   "regular_states": 29880000,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "returncode": 0,
+   "root_table_entries": 29821794,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2199.65941,
+    "states": 29880000
+   },
+   "stderr_tail": "",
+   "stored_states": 14940300
+  },
+  "M38_lift": {
+   "base": "M38",
+   "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+   "closure": {
+    "column_representatives": "the first 16 representatives of B's K600 header",
+    "columns": 16,
+    "construction": "orbit (c, alpha) = signed Frobenius orbit of alpha(R_c) = [a]R_c + [b]phi(R_c); label of +-phi^k(alpha(R_c)) is (c, +-(a + b lambda) lambda^k mod r)",
+    "generator": "make_closure_base.py (pinned oracle.py arithmetic)",
+    "multipliers": [
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      1,
+      -1,
+      2
+     ],
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      -2,
+      7
+     ],
+     [
+      3,
+      -1,
+      8
+     ],
+     [
+      3,
+      0,
+      9
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      3,
+      -2,
+      11
+     ],
+     [
+      3,
+      1,
+      14
+     ],
+     [
+      1,
+      -3,
+      16
+     ],
+     [
+      3,
+      -3,
+      18
+     ],
+     [
+      1,
+      3,
+      22
+     ],
+     [
+      5,
+      -1,
+      22
+     ],
+     [
+      3,
+      2,
+      23
+     ],
+     [
+      5,
+      -2,
+      23
+     ],
+     [
+      5,
+      0,
+      25
+     ],
+     [
+      5,
+      -3,
+      28
+     ],
+     [
+      1,
+      -4,
+      29
+     ],
+     [
+      3,
+      -4,
+      29
+     ],
+     [
+      5,
+      1,
+      32
+     ],
+     [
+      3,
+      3,
+      36
+     ],
+     [
+      1,
+      4,
+      37
+     ],
+     [
+      5,
+      -4,
+      37
+     ],
+     [
+      5,
+      2,
+      43
+     ],
+     [
+      7,
+      -2,
+      43
+     ],
+     [
+      3,
+      -5,
+      44
+     ],
+     [
+      7,
+      -1,
+      44
+     ],
+     [
+      1,
+      -5,
+      46
+     ],
+     [
+      7,
+      -3,
+      46
+     ],
+     [
+      7,
+      0,
+      49
+     ],
+     [
+      5,
+      -5,
+      50
+     ],
+     [
+      3,
+      4,
+      53
+     ],
+     [
+      7,
+      -4,
+      53
+     ],
+     [
+      1,
+      5,
+      56
+     ],
+     [
+      5,
+      3,
+      58
+     ],
+     [
+      7,
+      1,
+      58
+     ],
+     [
+      3,
+      -6,
+      63
+     ],
+     [
+      7,
+      -5,
+      64
+     ]
+    ],
+    "norm": "a^2 + ab + 2b^2 (tau^2 - tau + 2 = 0)",
+    "norm_cap": 64,
+    "orbits": 608,
+    "orbits_per_column": 38,
+    "source_base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7"
+   },
+   "diagnostic_ms": {
+    "cold": 21854.899952,
+    "index_build": 18609.0121,
+    "online": 561.354986,
+    "rank_stage": 0.024182,
+    "setup_complete": 21293.544966
+   },
+   "group_verified": true,
+   "index_canonicalizer": "lift",
+   "index_digest": {
+    "logical_states": 30682112,
+    "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_entries": 30366551,
+    "table_map_sum64": "83d519abd1686b4d",
+    "table_map_xor64": "d98ecf6236b9d814",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "index_orbits": 608,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 16,
+   "probes": 1612533,
+   "regular_states": 30682112,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "returncode": 0,
+   "root_table_entries": 30366551,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2216.687156,
+    "states": 30682112
+   },
+   "stderr_tail": "",
+   "stored_states": 15341360
+  },
+  "M38_selected": {
+   "base": "M38",
+   "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+   "closure": {
+    "column_representatives": "the first 16 representatives of B's K600 header",
+    "columns": 16,
+    "construction": "orbit (c, alpha) = signed Frobenius orbit of alpha(R_c) = [a]R_c + [b]phi(R_c); label of +-phi^k(alpha(R_c)) is (c, +-(a + b lambda) lambda^k mod r)",
+    "generator": "make_closure_base.py (pinned oracle.py arithmetic)",
+    "multipliers": [
+     [
+      1,
+      0,
+      1
+     ],
+     [
+      1,
+      -1,
+      2
+     ],
+     [
+      1,
+      1,
+      4
+     ],
+     [
+      1,
+      -2,
+      7
+     ],
+     [
+      3,
+      -1,
+      8
+     ],
+     [
+      3,
+      0,
+      9
+     ],
+     [
+      1,
+      2,
+      11
+     ],
+     [
+      3,
+      -2,
+      11
+     ],
+     [
+      3,
+      1,
+      14
+     ],
+     [
+      1,
+      -3,
+      16
+     ],
+     [
+      3,
+      -3,
+      18
+     ],
+     [
+      1,
+      3,
+      22
+     ],
+     [
+      5,
+      -1,
+      22
+     ],
+     [
+      3,
+      2,
+      23
+     ],
+     [
+      5,
+      -2,
+      23
+     ],
+     [
+      5,
+      0,
+      25
+     ],
+     [
+      5,
+      -3,
+      28
+     ],
+     [
+      1,
+      -4,
+      29
+     ],
+     [
+      3,
+      -4,
+      29
+     ],
+     [
+      5,
+      1,
+      32
+     ],
+     [
+      3,
+      3,
+      36
+     ],
+     [
+      1,
+      4,
+      37
+     ],
+     [
+      5,
+      -4,
+      37
+     ],
+     [
+      5,
+      2,
+      43
+     ],
+     [
+      7,
+      -2,
+      43
+     ],
+     [
+      3,
+      -5,
+      44
+     ],
+     [
+      7,
+      -1,
+      44
+     ],
+     [
+      1,
+      -5,
+      46
+     ],
+     [
+      7,
+      -3,
+      46
+     ],
+     [
+      7,
+      0,
+      49
+     ],
+     [
+      5,
+      -5,
+      50
+     ],
+     [
+      3,
+      4,
+      53
+     ],
+     [
+      7,
+      -4,
+      53
+     ],
+     [
+      1,
+      5,
+      56
+     ],
+     [
+      5,
+      3,
+      58
+     ],
+     [
+      7,
+      1,
+      58
+     ],
+     [
+      3,
+      -6,
+      63
+     ],
+     [
+      7,
+      -5,
+      64
+     ]
+    ],
+    "norm": "a^2 + ab + 2b^2 (tau^2 - tau + 2 = 0)",
+    "norm_cap": 64,
+    "orbits": 608,
+    "orbits_per_column": 38,
+    "source_base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7"
+   },
+   "diagnostic_ms": {
+    "cold": 30206.274162,
+    "index_build": 26950.269595,
+    "online": 515.064432,
+    "rank_stage": 0.035712,
+    "setup_complete": 29691.20973
+   },
+   "group_verified": true,
+   "index_canonicalizer": "selected",
+   "index_digest": {
+    "logical_states": 30682112,
+    "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_entries": 30366551,
+    "table_map_sum64": "83d519abd1686b4d",
+    "table_map_xor64": "d98ecf6236b9d814",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "index_orbits": 608,
+   "index_plant_checked_inputs": 0,
+   "orbit_columns": 16,
+   "probes": 1612533,
+   "regular_states": 30682112,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "returncode": 0,
+   "root_table_entries": 30366551,
+   "root_table_slots": 67108864,
+   "scalar": 3141592653589793,
+   "scan_order_selftest": {
+    "accounting": "setup (setup_input_control), before setup_complete",
+    "bijection": true,
+    "keys": 2,
+    "mode": "full",
+    "ms": 2277.207476,
+    "states": 30682112
+   },
+   "stderr_tail": "",
+   "stored_states": 15341360
+  }
+ },
+ "what": "cold"
+}

@@ -1,0 +1,88 @@
+{
+ "archive_kP": {
+  "padd": {
+   "rank_padd_fallback_states": 0,
+   "rank_padd_irregular_inputs": 0,
+   "rank_padd_plant_checked_inputs": 0,
+   "rank_padd_resolved_hits": 600,
+   "rank_padd_swapped_pairs": 308
+  },
+  "rank_relations_blake3": "6c99bff2dd802cdbc5aadbf60a352e78508f4db8948cbd1c61e9034c43770942",
+  "rank_root_calls_total": 491547414,
+  "rank_stage_s_runner": 139.265038446,
+  "scalar": 29550818704994,
+  "target_probes": 2385634,
+  "target_relation": [
+   52563,
+   90300,
+   13948,
+   94652
+  ]
+ },
+ "arms": {
+  "frame": {
+   "attempts": 600,
+   "exit": "exit 0",
+   "factor_log_table_equal_B": true,
+   "frame_counters": {
+    "rank_frame_builds": 600,
+    "rank_frame_plant_checked_inputs": 0
+   },
+   "index_digest_equal_archive": true,
+   "ns_per_probe_diagnostic": 309.7199215112817,
+   "padd_counters_equal_archive_except_plant": true,
+   "per_attempt_probes_equal_archive": true,
+   "probes": 982994775,
+   "rank": 600,
+   "rank_solve": "frame",
+   "rank_stage_s_diagnostic": 304.648603197,
+   "relations_digest_equal_archive": true,
+   "root_calls_equal_archive": true,
+   "rotkey_counters": {
+    "rank_rotkey_build_ms": 0.0,
+    "rank_rotkey_builds": 0,
+    "rank_rotkey_clmul": 0,
+    "rank_rotkey_collisions": 0,
+    "rank_rotkey_compact_entries": 0,
+    "rank_rotkey_hit_verifies": 0,
+    "rank_rotkey_kernel": "pclmulqdq",
+    "rank_rotkey_plant_checked_probes": 0,
+    "rank_rotkey_table_entries": 0
+   },
+   "target_equal_archive": true
+  },
+  "rotkey": {
+   "attempts": 600,
+   "exit": "exit 0",
+   "factor_log_table_equal_B": true,
+   "frame_counters": {
+    "rank_frame_builds": 600,
+    "rank_frame_plant_checked_inputs": 0
+   },
+   "index_digest_equal_archive": true,
+   "ns_per_probe_diagnostic": 270.01254937189265,
+   "padd_counters_equal_archive_except_plant": true,
+   "per_attempt_probes_equal_archive": true,
+   "probes": 982994775,
+   "rank": 600,
+   "rank_solve": "rotkey",
+   "rank_stage_s_diagnostic": 274.407285048,
+   "relations_digest_equal_archive": true,
+   "root_calls_equal_archive": true,
+   "rotkey_counters": {
+    "rank_rotkey_build_ms": 8772.677643,
+    "rank_rotkey_builds": 1,
+    "rank_rotkey_clmul": 1,
+    "rank_rotkey_collisions": 0,
+    "rank_rotkey_compact_entries": 29878182,
+    "rank_rotkey_hit_verifies": 600,
+    "rank_rotkey_kernel": "pclmulqdq",
+    "rank_rotkey_plant_checked_probes": 0,
+    "rank_rotkey_table_entries": 29878182
+   },
+   "target_equal_archive": true
+  }
+ },
+ "inputs": "rank seed 301, point s000 of rankprobe-cold-v1: the inputs of run 39214027289 block K1 (archived kP serial 24)",
+ "label": "LOCAL DIAGNOSTIC (cloud-agent VM, concurrent processes); times are not timing evidence"
+}
