@@ -1,0 +1,96 @@
+{
+  "aws_instance_snapshot": {
+    "AvailabilityZone": "us-east-2c",
+    "BlockDeviceMappings": [
+      {
+        "DeviceName": "/dev/xvda",
+        "Ebs": {
+          "AttachTime": "2026-10-19T19:45:39+00:00",
+          "DeleteOnTermination": true,
+          "Status": "attached",
+          "VolumeId": "vol-0a27ac12d0f2cc4c8"
+        }
+      }
+    ],
+    "ImageId": "ami-0d31a22b09ceec4db",
+    "InstanceId": "i-0dff25746b9b36970",
+    "InstanceType": "c7i.4xlarge",
+    "KeyName": "rootkey",
+    "LaunchTime": "2026-10-19T19:45:39+00:00",
+    "MetadataOptions": {
+      "HttpEndpoint": "enabled",
+      "HttpProtocolIpv6": "disabled",
+      "HttpPutResponseHopLimit": 1,
+      "HttpTokens": "required",
+      "InstanceMetadataTags": "disabled",
+      "State": "applied"
+    },
+    "PrivateIpAddress": "172.31.34.53",
+    "PublicIpAddress": "3.15.201.90",
+    "SecurityGroupIds": [
+      "sg-0798cd32b3d66f360"
+    ],
+    "State": "running",
+    "SubnetId": "subnet-09342db00f6592d1f"
+  },
+  "benchmark_processes_at_once": 1,
+  "binary_sha256": {
+    "arith": "2aae97f2d77999d6764984cf52faa9f5f5ee9f6a30cae6c2da625e471729e633",
+    "worker": "f19422b3d6567dd7d6dfb069b48051e9bc5b6439d33ad98c6b63b1e72d0ff4b4"
+  },
+  "execution_cpu": 4,
+  "fresh_fixture_manifest_sha256": "546fe0b842a2f559395c9ac5d74ced12b96ce366e41322387eb0baec5dcb3adc",
+  "host_exclusivity": "dedicated_ec2_instance_physical_host_unproven",
+  "housekeeping_cpu": 0,
+  "instance_id": "i-0dff25746b9b36970",
+  "instance_type": "c7i.4xlarge",
+  "launch_time": "2026-10-19T19:45:39+00:00",
+  "libcrypto_sha256": "575fccb86289cbadcc22e764e4075aa451e67a1d0d660f065fd1803e714256f4",
+  "measurement_tier": "tier1_instance",
+  "numa_node": 0,
+  "protocol_amendment": {
+    "concurrency": "one timed arm or calibration task at a time under shared host lock",
+    "panel_order": [
+      "fresh-Q one-restart arithmetic",
+      "fresh-Q 1-8-32-128 reuse",
+      "fresh-Q full worker"
+    ],
+    "reason": "User authorized a separate smaller cloud host instead of waiting for 128-vCPU quota; physical-host Tier 0 cannot be established on this VM.",
+    "selection": "preserve original frozen arithmetic A/A and 32-Q gates; no worker default change without a separately frozen Tier 1 same-trace gate with lower 95 percent bound above 1.05",
+    "tier": "tier1_instance"
+  },
+  "provider": "aws_ec2",
+  "region": "us-east-2",
+  "schema": "rho-tier1-ec2-allocation-v1",
+  "source_bundle_sha256": {
+    "arith": "bce58701cb4a1c40f1c6bcb14ceb900f07fdef9a98dc2a3fc8b249ff6a310ff9",
+    "worker": "a99b5c752cc3bb1c2e02d83482f127b8c76894b8afb4100b16de6e667227e75c"
+  },
+  "state_at_freeze": "running",
+  "visible_cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "worker_envelope": {
+    "batch_width": 32,
+    "checkin_every": 64,
+    "dp_bits": 12,
+    "serial_width": 1,
+    "step_cap": 8192,
+    "walkers": 128
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "completed_arms": 6336,
+  "completed_pairs": 3168,
+  "counts": {
+    "1": {
+      "aa_failures": [
+        {
+          "case": "n001_q31_cal_after",
+          "ratio": 0.796806530144637,
+          "repeat": 2
+        },
+        {
+          "case": "n001_q31_cal_after",
+          "ratio": 1.1318686636502213,
+          "repeat": 4
+        }
+      ],
+      "comparison": {
+        "81_vs_76": {
+          "cluster_bootstrap95": [
+            1.0333546520365329,
+            1.079061850103258
+          ],
+          "descriptive_paired_ratio": 1.0466812789340525,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_76": {
+          "cluster_bootstrap95": [
+            2.392453913778632,
+            2.470839051873283
+          ],
+          "descriptive_paired_ratio": 2.436809669571562,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_81": {
+          "cluster_bootstrap95": [
+            2.2512248429964163,
+            2.3216445456575046
+          ],
+          "descriptive_paired_ratio": 2.274282243521642,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        }
+      },
+      "median_phase_and_memory": {
+        "mixed76": {
+          "online_ms": 0.08990200000000001,
+          "reported_retained_bytes": 4916.0,
+          "restart_eval_ms": 0.047523499999999996,
+          "target_preparation_ms": 0.0428995
+        },
+        "openssl": {
+          "online_ms": 0.21906799999999998,
+          "reported_retained_bytes": 0.0,
+          "restart_eval_ms": 0.217154,
+          "target_preparation_ms": 0.001844
+        },
+        "radix81": {
+          "online_ms": 0.0945005,
+          "reported_retained_bytes": 5908.0,
+          "restart_eval_ms": 0.052899,
+          "target_preparation_ms": 0.042609999999999995
+        }
+      },
+      "tier_gate_passed": false
+    },
+    "128": {
+      "aa_failures": [],
+      "comparison": {
+        "81_vs_76": {
+          "cluster_bootstrap95": [
+            1.0312651855416939,
+            1.0339459828985758
+          ],
+          "descriptive_paired_ratio": 1.0327429221060567,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_76": {
+          "cluster_bootstrap95": [
+            3.6439848020357415,
+            3.654260768228733
+          ],
+          "descriptive_paired_ratio": 3.6465535119228805,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_81": {
+          "cluster_bootstrap95": [
+            3.5292574674397996,
+            3.5374861610241233
+          ],
+          "descriptive_paired_ratio": 3.5330605784242017,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        }
+      },
+      "median_phase_and_memory": {
+        "mixed76": {
+          "online_ms": 7.409434,
+          "reported_retained_bytes": 526918.0,
+          "restart_eval_ms": 5.9441109999999995,
+          "target_preparation_ms": 1.4666000000000001
+        },
+        "openssl": {
+          "online_ms": 27.1072995,
+          "reported_retained_bytes": 0.0,
+          "restart_eval_ms": 27.1054965,
+          "target_preparation_ms": 0.001753
+        },
+        "radix81": {
+          "online_ms": 7.6632765,
+          "reported_retained_bytes": 442517.0,
+          "restart_eval_ms": 6.6905355,
+          "target_preparation_ms": 0.974283
+        }
+      },
+      "tier_gate_passed": true
+    },
+    "32": {
+      "aa_failures": [],
+      "comparison": {
+        "81_vs_76": {
+          "cluster_bootstrap95": [
+            1.0275955415859865,
+            1.0317733552981125
+          ],
+          "descriptive_paired_ratio": 1.0289213781551299,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_76": {
+          "cluster_bootstrap95": [
+            3.5311244458313222,
+            3.543520768335958
+          ],
+          "descriptive_paired_ratio": 3.536960016196417,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_81": {
+          "cluster_bootstrap95": [
+            3.4564751222143797,
+            3.4757465938385836
+          ],
+          "descriptive_paired_ratio": 3.467880296179886,
+          "status": "qualified_faster",
+          "valid_q_clusters": 32
+        }
+      },
+      "median_phase_and_memory": {
+        "mixed76": {
+          "online_ms": 1.925224,
+          "reported_retained_bytes": 139196.0,
+          "restart_eval_ms": 1.480105,
+          "target_preparation_ms": 0.44564899999999996
+        },
+        "openssl": {
+          "online_ms": 6.851931,
+          "reported_retained_bytes": 0.0,
+          "restart_eval_ms": 6.850223,
+          "target_preparation_ms": 0.001753
+        },
+        "radix81": {
+          "online_ms": 1.970508,
+          "reported_retained_bytes": 148278.0,
+          "restart_eval_ms": 1.621584,
+          "target_preparation_ms": 0.350413
+        }
+      },
+      "tier_gate_passed": true
+    },
+    "8": {
+      "aa_failures": [
+        {
+          "case": "n008_q00_cal_before",
+          "ratio": 0.8804620487519524,
+          "repeat": 2
+        }
+      ],
+      "comparison": {
+        "81_vs_76": {
+          "cluster_bootstrap95": [
+            0.976205950448291,
+            0.9886255847650408
+          ],
+          "descriptive_paired_ratio": 0.9829847396326014,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_76": {
+          "cluster_bootstrap95": [
+            3.0605137625794434,
+            3.083386453260334
+          ],
+          "descriptive_paired_ratio": 3.0732604141616693,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        },
+        "openssl_vs_81": {
+          "cluster_bootstrap95": [
+            3.1221581022491223,
+            3.1453957478568357
+          ],
+          "descriptive_paired_ratio": 3.131031615655146,
+          "status": "unknown_after_tier_gate",
+          "valid_q_clusters": 32
+        }
+      },
+      "median_phase_and_memory": {
+        "mixed76": {
+          "online_ms": 0.53999,
+          "reported_retained_bytes": 35678.0,
+          "restart_eval_ms": 0.36338099999999995,
+          "target_preparation_ms": 0.176744
+        },
+        "openssl": {
+          "online_ms": 1.654816,
+          "reported_retained_bytes": 0.0,
+          "restart_eval_ms": 1.653047,
+          "target_preparation_ms": 0.001754
+        },
+        "radix81": {
+          "online_ms": 0.5299665,
+          "reported_retained_bytes": 41628.0,
+          "restart_eval_ms": 0.4026695,
+          "target_preparation_ms": 0.1273015
+        }
+      },
+      "tier_gate_passed": false
+    }
+  },
+  "invalid_arms": [],
+  "job_id": "3aef1656dbb845bb9d19bcebed30b024",
+  "raw_archive_sha256": "f462ec66d9a11a79944afc1d5be29f10bb70ef80a76bc9b70d9040909100822d",
+  "schema": 1,
+  "structural_issues": []
+}

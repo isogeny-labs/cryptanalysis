@@ -1,0 +1,2040 @@
+{
+  "allocation": {
+    "instance_id": "lu2jj7z7kedvg5",
+    "provider": "runpod",
+    "receipt": "/workspace/isolated-bench/panels/allocation.json"
+  },
+  "artifacts": [
+    "/workspace/isolated-bench/panels/allocation.json",
+    "/workspace/isolated-bench/panels/host-probe.json",
+    "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+    "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+    "/workspace/isolated-bench/panels/rho-closeout-source-20261017.tar.gz",
+    "/workspace/bench-sources/rho-closeout/source-manifest.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/manifest.json",
+    "/workspace/bench-sources/rho-closeout/Cargo.lock",
+    "/workspace/bench-sources/rho-closeout/Cargo.toml",
+    "/workspace/bench-sources/rho-closeout/fixtures/mixed77-independent-fixture.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/full-verification.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+    "/workspace/bench-sources/rho-closeout/fixtures/rho-restart-first128-fixture.json",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/ct_bignum.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed76.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed77.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_mixed78.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_norm4033.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/joint_norm58807.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/eisenstein_fixed/unit_orbit_windows.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/mixed640_bench_fixture.json",
+    "/workspace/bench-sources/rho-closeout/src/bin/mixed640_stream_fixture.json",
+    "/workspace/bench-sources/rho-closeout/src/bin/mixed640_uniform_fixture.json",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_hybrid.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint243.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed76.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed77.rs",
+    "/workspace/bench-sources/rho-closeout/src/bin/rho_restart_joint_mixed78.rs",
+    "/workspace/isolated-bench/panels/tier1-rho-closeout-one-rules.json"
+  ],
+  "cases": [
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "3d608837352a7b5abaf4545be4e89081d513d0261957c1c3969d24e82ec39277:3158474dd4ac4abfbee17b47b8970a5ff8288ca9ba77909406d1ee8695cddc4e",
+      "id": "cal_before",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "3d608837352a7b5abaf4545be4e89081d513d0261957c1c3969d24e82ec39277:3158474dd4ac4abfbee17b47b8970a5ff8288ca9ba77909406d1ee8695cddc4e",
+      "id": "q00_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "3d608837352a7b5abaf4545be4e89081d513d0261957c1c3969d24e82ec39277:3158474dd4ac4abfbee17b47b8970a5ff8288ca9ba77909406d1ee8695cddc4e",
+      "id": "q00_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "3d608837352a7b5abaf4545be4e89081d513d0261957c1c3969d24e82ec39277:3158474dd4ac4abfbee17b47b8970a5ff8288ca9ba77909406d1ee8695cddc4e",
+      "id": "q00_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q00.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4429f4c644898530731f8cd8f65a00d847da8efdc7edd3388c11b977774286bf:abc5ee6500a66f7bf4baa5da5e0bfea9a9cec8237c3e85ebd97afb66cd0fa0ee",
+      "id": "q01_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4429f4c644898530731f8cd8f65a00d847da8efdc7edd3388c11b977774286bf:abc5ee6500a66f7bf4baa5da5e0bfea9a9cec8237c3e85ebd97afb66cd0fa0ee",
+      "id": "q01_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4429f4c644898530731f8cd8f65a00d847da8efdc7edd3388c11b977774286bf:abc5ee6500a66f7bf4baa5da5e0bfea9a9cec8237c3e85ebd97afb66cd0fa0ee",
+      "id": "q01_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q01.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "f1089a6078c8705bab4f15a76868ab36a18433d58a8c148d2d58f69d186eab82:d3034d1e42729f14c6a90a0486e9d686a6684cf9224db36b0f9a6e466654a50a",
+      "id": "q02_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "f1089a6078c8705bab4f15a76868ab36a18433d58a8c148d2d58f69d186eab82:d3034d1e42729f14c6a90a0486e9d686a6684cf9224db36b0f9a6e466654a50a",
+      "id": "q02_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "f1089a6078c8705bab4f15a76868ab36a18433d58a8c148d2d58f69d186eab82:d3034d1e42729f14c6a90a0486e9d686a6684cf9224db36b0f9a6e466654a50a",
+      "id": "q02_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q02.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "98518d066fea28a71890baeca0cfb2385ff8e5e02bf5e02eb19d1089429ea8a8:f3caa8ce1157f78328bcfe649c0f487ecaa19aac1d973d5895c10c7727eae276",
+      "id": "q03_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "98518d066fea28a71890baeca0cfb2385ff8e5e02bf5e02eb19d1089429ea8a8:f3caa8ce1157f78328bcfe649c0f487ecaa19aac1d973d5895c10c7727eae276",
+      "id": "q03_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "98518d066fea28a71890baeca0cfb2385ff8e5e02bf5e02eb19d1089429ea8a8:f3caa8ce1157f78328bcfe649c0f487ecaa19aac1d973d5895c10c7727eae276",
+      "id": "q03_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q03.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6109f392470a7d864226f0b5fb161a6e0143cbfff1b80fe5edbe86c0c02dc137:17d7878ebaedf1e2090aa3535fde7b0ef982c10bd66f89aa9f55726f79b25de7",
+      "id": "q04_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6109f392470a7d864226f0b5fb161a6e0143cbfff1b80fe5edbe86c0c02dc137:17d7878ebaedf1e2090aa3535fde7b0ef982c10bd66f89aa9f55726f79b25de7",
+      "id": "q04_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6109f392470a7d864226f0b5fb161a6e0143cbfff1b80fe5edbe86c0c02dc137:17d7878ebaedf1e2090aa3535fde7b0ef982c10bd66f89aa9f55726f79b25de7",
+      "id": "q04_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q04.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "cde79cd2bf1d462b8a10be6d96bb6274dea03f7685c5e8b924f48ad79153e094:97b1519cda8a260105f2cfb045efbe53282c02893e478d065b06a563c267ac5c",
+      "id": "q05_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "cde79cd2bf1d462b8a10be6d96bb6274dea03f7685c5e8b924f48ad79153e094:97b1519cda8a260105f2cfb045efbe53282c02893e478d065b06a563c267ac5c",
+      "id": "q05_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "cde79cd2bf1d462b8a10be6d96bb6274dea03f7685c5e8b924f48ad79153e094:97b1519cda8a260105f2cfb045efbe53282c02893e478d065b06a563c267ac5c",
+      "id": "q05_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q05.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0d46ab4079bbeb30c12a313c6f98b598ffe37d24df088aa74d8aeed54b0e99e:5cfd057ca228ea24e742c2fa131835862ec54e65fd6f63725949573c14293d89",
+      "id": "q06_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0d46ab4079bbeb30c12a313c6f98b598ffe37d24df088aa74d8aeed54b0e99e:5cfd057ca228ea24e742c2fa131835862ec54e65fd6f63725949573c14293d89",
+      "id": "q06_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0d46ab4079bbeb30c12a313c6f98b598ffe37d24df088aa74d8aeed54b0e99e:5cfd057ca228ea24e742c2fa131835862ec54e65fd6f63725949573c14293d89",
+      "id": "q06_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q06.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2fc6a7c4c49bbea22c82e31deb8283a0247ce881234a2aeed279b19e93ed92e4:5acc0575803b485430e9c7b251e18e98a9a2cde19980fea7277290c74e778d07",
+      "id": "q07_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2fc6a7c4c49bbea22c82e31deb8283a0247ce881234a2aeed279b19e93ed92e4:5acc0575803b485430e9c7b251e18e98a9a2cde19980fea7277290c74e778d07",
+      "id": "q07_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2fc6a7c4c49bbea22c82e31deb8283a0247ce881234a2aeed279b19e93ed92e4:5acc0575803b485430e9c7b251e18e98a9a2cde19980fea7277290c74e778d07",
+      "id": "q07_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q07.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0db763fb792ec7e97874c034569f57e92d9e4f57eb4077f8c39c93c8473e8ed5:07d662239375adbdc8673ac68c2e4d0471eada2140fa588ca5146d0ada17a5d3",
+      "id": "q08_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0db763fb792ec7e97874c034569f57e92d9e4f57eb4077f8c39c93c8473e8ed5:07d662239375adbdc8673ac68c2e4d0471eada2140fa588ca5146d0ada17a5d3",
+      "id": "q08_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0db763fb792ec7e97874c034569f57e92d9e4f57eb4077f8c39c93c8473e8ed5:07d662239375adbdc8673ac68c2e4d0471eada2140fa588ca5146d0ada17a5d3",
+      "id": "q08_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q08.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "c9ac8fbb97e99dd3cf32a8870c0d4e391bb6850f2e765d14ce215a9a92c5688a:43b47c7ec9ada8095112b99f004c02ce4df781db350e5ff2fa77a498ce82e0e8",
+      "id": "q09_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "c9ac8fbb97e99dd3cf32a8870c0d4e391bb6850f2e765d14ce215a9a92c5688a:43b47c7ec9ada8095112b99f004c02ce4df781db350e5ff2fa77a498ce82e0e8",
+      "id": "q09_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "c9ac8fbb97e99dd3cf32a8870c0d4e391bb6850f2e765d14ce215a9a92c5688a:43b47c7ec9ada8095112b99f004c02ce4df781db350e5ff2fa77a498ce82e0e8",
+      "id": "q09_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q09.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "97aef22643c272352b30d88eb8208b9cb4b52d6ae068047eae50d606dac133f3:9d99a4ca8cd5b04ddb5b3f65421df9c4b8c1878370024f1e2a5e6dbcf1af9ab2",
+      "id": "q10_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "97aef22643c272352b30d88eb8208b9cb4b52d6ae068047eae50d606dac133f3:9d99a4ca8cd5b04ddb5b3f65421df9c4b8c1878370024f1e2a5e6dbcf1af9ab2",
+      "id": "q10_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "97aef22643c272352b30d88eb8208b9cb4b52d6ae068047eae50d606dac133f3:9d99a4ca8cd5b04ddb5b3f65421df9c4b8c1878370024f1e2a5e6dbcf1af9ab2",
+      "id": "q10_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q10.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "60f517d2e8365aef1cb52554c072eb94b1f85d09cffadf435558622a5bb19085:4c2ed9d03b5cfc1706706da7a75ecd1961ec3612af802802be149cd79d219ac5",
+      "id": "q11_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "60f517d2e8365aef1cb52554c072eb94b1f85d09cffadf435558622a5bb19085:4c2ed9d03b5cfc1706706da7a75ecd1961ec3612af802802be149cd79d219ac5",
+      "id": "q11_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "60f517d2e8365aef1cb52554c072eb94b1f85d09cffadf435558622a5bb19085:4c2ed9d03b5cfc1706706da7a75ecd1961ec3612af802802be149cd79d219ac5",
+      "id": "q11_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q11.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "7a06a7058a008f1956136c859a9e44bdc5b8206e197680dd069c34171590524a:4048a446d4eebe4dbf479df3af1a63958db51394a05a929961fd2456d38d45e5",
+      "id": "q12_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "7a06a7058a008f1956136c859a9e44bdc5b8206e197680dd069c34171590524a:4048a446d4eebe4dbf479df3af1a63958db51394a05a929961fd2456d38d45e5",
+      "id": "q12_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "7a06a7058a008f1956136c859a9e44bdc5b8206e197680dd069c34171590524a:4048a446d4eebe4dbf479df3af1a63958db51394a05a929961fd2456d38d45e5",
+      "id": "q12_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q12.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0f6cc4502da95366cbea79dcec125b5fe6017d84a0a6c452f067b96e5ce125f8:da1a86547f7b734770ac7215e240ac438f5652e99d813f65859855faa2279fd9",
+      "id": "q13_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0f6cc4502da95366cbea79dcec125b5fe6017d84a0a6c452f067b96e5ce125f8:da1a86547f7b734770ac7215e240ac438f5652e99d813f65859855faa2279fd9",
+      "id": "q13_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0f6cc4502da95366cbea79dcec125b5fe6017d84a0a6c452f067b96e5ce125f8:da1a86547f7b734770ac7215e240ac438f5652e99d813f65859855faa2279fd9",
+      "id": "q13_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q13.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0943ecfa2ec0f034ed609118a903827f93a88a60ff72efefd42b653de8066ac:e127ec52ed41ed4a55e326aec2d1a3e85046efddcae0ee9c504fa161bd3f8c01",
+      "id": "q14_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0943ecfa2ec0f034ed609118a903827f93a88a60ff72efefd42b653de8066ac:e127ec52ed41ed4a55e326aec2d1a3e85046efddcae0ee9c504fa161bd3f8c01",
+      "id": "q14_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b0943ecfa2ec0f034ed609118a903827f93a88a60ff72efefd42b653de8066ac:e127ec52ed41ed4a55e326aec2d1a3e85046efddcae0ee9c504fa161bd3f8c01",
+      "id": "q14_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q14.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "322df50d17ce6eeaa476f3babe503e133963aa99625a4ac34ec7fb83b4f92746:cd5ca5bd8a44fe23aa2408fd710236ff1ad9a389a18549c4944560bc4276bfb9",
+      "id": "q15_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "322df50d17ce6eeaa476f3babe503e133963aa99625a4ac34ec7fb83b4f92746:cd5ca5bd8a44fe23aa2408fd710236ff1ad9a389a18549c4944560bc4276bfb9",
+      "id": "q15_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "322df50d17ce6eeaa476f3babe503e133963aa99625a4ac34ec7fb83b4f92746:cd5ca5bd8a44fe23aa2408fd710236ff1ad9a389a18549c4944560bc4276bfb9",
+      "id": "q15_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q15.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "e2a4c7f3feefae31e2fa988326bb2ce5187042bbf5ed93af0f46c98cae9ab807:7f1f392ba3b4df52fa9584444be3966b2bc540c640e00722568a80ade66b32a0",
+      "id": "cal_mid",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "e2a4c7f3feefae31e2fa988326bb2ce5187042bbf5ed93af0f46c98cae9ab807:7f1f392ba3b4df52fa9584444be3966b2bc540c640e00722568a80ade66b32a0",
+      "id": "q16_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "e2a4c7f3feefae31e2fa988326bb2ce5187042bbf5ed93af0f46c98cae9ab807:7f1f392ba3b4df52fa9584444be3966b2bc540c640e00722568a80ade66b32a0",
+      "id": "q16_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "e2a4c7f3feefae31e2fa988326bb2ce5187042bbf5ed93af0f46c98cae9ab807:7f1f392ba3b4df52fa9584444be3966b2bc540c640e00722568a80ade66b32a0",
+      "id": "q16_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q16.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0c3f5f8d88ccd52b0ed2e3fd8c200660fe412741d76b6ddc277062726cb71951:c5ae0df3fa6782b52c99d1f44ec63d42afd9206f881004a811625d10fc5689c6",
+      "id": "q17_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0c3f5f8d88ccd52b0ed2e3fd8c200660fe412741d76b6ddc277062726cb71951:c5ae0df3fa6782b52c99d1f44ec63d42afd9206f881004a811625d10fc5689c6",
+      "id": "q17_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "0c3f5f8d88ccd52b0ed2e3fd8c200660fe412741d76b6ddc277062726cb71951:c5ae0df3fa6782b52c99d1f44ec63d42afd9206f881004a811625d10fc5689c6",
+      "id": "q17_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q17.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "9cac39d35d38b70b5c9192e55dad90bde840c37e076012c3a5223932b4f4543c:28627a93410621e6f0712e3c777b71813e7a4b510e91deba00a49130f83d3aa3",
+      "id": "q18_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "9cac39d35d38b70b5c9192e55dad90bde840c37e076012c3a5223932b4f4543c:28627a93410621e6f0712e3c777b71813e7a4b510e91deba00a49130f83d3aa3",
+      "id": "q18_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "9cac39d35d38b70b5c9192e55dad90bde840c37e076012c3a5223932b4f4543c:28627a93410621e6f0712e3c777b71813e7a4b510e91deba00a49130f83d3aa3",
+      "id": "q18_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q18.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "825efe875d0c0be57acccf465f3f03b6a57ce08cea82a5ab459dfbab4a560883:956bc0e3233b6e91b51edfcb6ebc98008f53a8b6e8f9aa0baf13f1fa3216758a",
+      "id": "q19_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "825efe875d0c0be57acccf465f3f03b6a57ce08cea82a5ab459dfbab4a560883:956bc0e3233b6e91b51edfcb6ebc98008f53a8b6e8f9aa0baf13f1fa3216758a",
+      "id": "q19_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "825efe875d0c0be57acccf465f3f03b6a57ce08cea82a5ab459dfbab4a560883:956bc0e3233b6e91b51edfcb6ebc98008f53a8b6e8f9aa0baf13f1fa3216758a",
+      "id": "q19_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q19.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "19d7e02bbc562b10b44c3e0f3087637f4c446e47f9b2572f91d396883a0eed02:2e6ed19e1242db8f22949ac47df8ceb4b1f91f5c7fe18b7e7e8b2647cc88aec8",
+      "id": "q20_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "19d7e02bbc562b10b44c3e0f3087637f4c446e47f9b2572f91d396883a0eed02:2e6ed19e1242db8f22949ac47df8ceb4b1f91f5c7fe18b7e7e8b2647cc88aec8",
+      "id": "q20_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "19d7e02bbc562b10b44c3e0f3087637f4c446e47f9b2572f91d396883a0eed02:2e6ed19e1242db8f22949ac47df8ceb4b1f91f5c7fe18b7e7e8b2647cc88aec8",
+      "id": "q20_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q20.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b73d90938ad496d36e5d94a7c8fcf4f8eabb98acd418f30617d88c37e6e75883:45a45e0b4bb308f2bb7712ba9d33f03022804d81acd7f958e19c2270bbc9a3d5",
+      "id": "q21_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b73d90938ad496d36e5d94a7c8fcf4f8eabb98acd418f30617d88c37e6e75883:45a45e0b4bb308f2bb7712ba9d33f03022804d81acd7f958e19c2270bbc9a3d5",
+      "id": "q21_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "b73d90938ad496d36e5d94a7c8fcf4f8eabb98acd418f30617d88c37e6e75883:45a45e0b4bb308f2bb7712ba9d33f03022804d81acd7f958e19c2270bbc9a3d5",
+      "id": "q21_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q21.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "48c670b6829039091b2d948ef920226441318def2c2a8bd30a86de92a960209e:6ef745d9c7edc0a9df3e51f0aa686aad40103ffbc7dc3193601fac5dfc18b16d",
+      "id": "q22_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "48c670b6829039091b2d948ef920226441318def2c2a8bd30a86de92a960209e:6ef745d9c7edc0a9df3e51f0aa686aad40103ffbc7dc3193601fac5dfc18b16d",
+      "id": "q22_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "48c670b6829039091b2d948ef920226441318def2c2a8bd30a86de92a960209e:6ef745d9c7edc0a9df3e51f0aa686aad40103ffbc7dc3193601fac5dfc18b16d",
+      "id": "q22_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q22.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "95d262124d8e0c36ddadc6d59b484da7a7cda051191f89b19a25de6e0f82a8ab:ebe2e7b998d398d4e09e658e601b54cd0024cdbe52817c27dae59552325117a5",
+      "id": "q23_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "95d262124d8e0c36ddadc6d59b484da7a7cda051191f89b19a25de6e0f82a8ab:ebe2e7b998d398d4e09e658e601b54cd0024cdbe52817c27dae59552325117a5",
+      "id": "q23_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "95d262124d8e0c36ddadc6d59b484da7a7cda051191f89b19a25de6e0f82a8ab:ebe2e7b998d398d4e09e658e601b54cd0024cdbe52817c27dae59552325117a5",
+      "id": "q23_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q23.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2e362b0e71690754ee7069fe494524628fe30db44a909eaa9d24667e70dfa45b:1163b4332a54cb10a80c581a2f5d0c33f3c372b517501a7c2479d3a651008dbe",
+      "id": "q24_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2e362b0e71690754ee7069fe494524628fe30db44a909eaa9d24667e70dfa45b:1163b4332a54cb10a80c581a2f5d0c33f3c372b517501a7c2479d3a651008dbe",
+      "id": "q24_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "2e362b0e71690754ee7069fe494524628fe30db44a909eaa9d24667e70dfa45b:1163b4332a54cb10a80c581a2f5d0c33f3c372b517501a7c2479d3a651008dbe",
+      "id": "q24_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q24.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "23b45118940615670b88a23794d07c350ad7c793807d2bf918217403e912417c:ec26acf322b41b41639106f7e42fbb33d2e696e3039f242544d6f18ded975397",
+      "id": "q25_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "23b45118940615670b88a23794d07c350ad7c793807d2bf918217403e912417c:ec26acf322b41b41639106f7e42fbb33d2e696e3039f242544d6f18ded975397",
+      "id": "q25_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "23b45118940615670b88a23794d07c350ad7c793807d2bf918217403e912417c:ec26acf322b41b41639106f7e42fbb33d2e696e3039f242544d6f18ded975397",
+      "id": "q25_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q25.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "a5a0a3528671a983a0d8e26264d8d79bb25122c998563d84c702f42741354a3b:46189b2b01dfbce2e2a92f701c678cb1a784d6aff44ebe053fd1b7a036490ffa",
+      "id": "q26_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "a5a0a3528671a983a0d8e26264d8d79bb25122c998563d84c702f42741354a3b:46189b2b01dfbce2e2a92f701c678cb1a784d6aff44ebe053fd1b7a036490ffa",
+      "id": "q26_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "a5a0a3528671a983a0d8e26264d8d79bb25122c998563d84c702f42741354a3b:46189b2b01dfbce2e2a92f701c678cb1a784d6aff44ebe053fd1b7a036490ffa",
+      "id": "q26_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q26.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "29ff7ba62ec9c07605a731ab78e1316797ad6e4254cc20fc4845dfe915f365da:54e573ae2f02c3ed377df3989002bf267d8c5a3525bcb874d1f203f0731abbc9",
+      "id": "q27_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "29ff7ba62ec9c07605a731ab78e1316797ad6e4254cc20fc4845dfe915f365da:54e573ae2f02c3ed377df3989002bf267d8c5a3525bcb874d1f203f0731abbc9",
+      "id": "q27_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "29ff7ba62ec9c07605a731ab78e1316797ad6e4254cc20fc4845dfe915f365da:54e573ae2f02c3ed377df3989002bf267d8c5a3525bcb874d1f203f0731abbc9",
+      "id": "q27_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q27.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4a1a13364b56ac5d42d73a2c21ca2630bde0d4b551324a876e64d920650dd765:687f59ff503c11372e4381440e4aaf924a29da30bd8073ad4273b01762bda9a1",
+      "id": "q28_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4a1a13364b56ac5d42d73a2c21ca2630bde0d4b551324a876e64d920650dd765:687f59ff503c11372e4381440e4aaf924a29da30bd8073ad4273b01762bda9a1",
+      "id": "q28_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "4a1a13364b56ac5d42d73a2c21ca2630bde0d4b551324a876e64d920650dd765:687f59ff503c11372e4381440e4aaf924a29da30bd8073ad4273b01762bda9a1",
+      "id": "q28_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q28.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "743e44b8cbd652799334b463ede3801aef353d75d5510fdb6e3ded9612b5e3bc:391a9216b4b333f4a1d87ba3a2be3e5e39b3f5f43b4b49df62003006e2dea3fa",
+      "id": "q29_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "743e44b8cbd652799334b463ede3801aef353d75d5510fdb6e3ded9612b5e3bc:391a9216b4b333f4a1d87ba3a2be3e5e39b3f5f43b4b49df62003006e2dea3fa",
+      "id": "q29_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "743e44b8cbd652799334b463ede3801aef353d75d5510fdb6e3ded9612b5e3bc:391a9216b4b333f4a1d87ba3a2be3e5e39b3f5f43b4b49df62003006e2dea3fa",
+      "id": "q29_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q29.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "76c6dfa15786d62e4f732ad4e5c4ce09f3e940cf8c27ac1cc2cc9119ca982e4f:9b1c29c1a9dad44c17b4d9e225b32c00f08a9644063d3440a6b9ee49a701dff5",
+      "id": "q30_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "76c6dfa15786d62e4f732ad4e5c4ce09f3e940cf8c27ac1cc2cc9119ca982e4f:9b1c29c1a9dad44c17b4d9e225b32c00f08a9644063d3440a6b9ee49a701dff5",
+      "id": "q30_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "76c6dfa15786d62e4f732ad4e5c4ce09f3e940cf8c27ac1cc2cc9119ca982e4f:9b1c29c1a9dad44c17b4d9e225b32c00f08a9644063d3440a6b9ee49a701dff5",
+      "id": "q30_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q30.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "575b0f764123ecf68277393526e2639b6ceadce0cc690571a8f60d698adf9561:d8bfee590085afd03cabd6de2f77d718460d7cd4839025af14f66367131f1f5c",
+      "id": "q31_81_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "575b0f764123ecf68277393526e2639b6ceadce0cc690571a8f60d698adf9561:d8bfee590085afd03cabd6de2f77d718460d7cd4839025af14f66367131f1f5c",
+      "id": "q31_openssl_vs_76",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "575b0f764123ecf68277393526e2639b6ceadce0cc690571a8f60d698adf9561:d8bfee590085afd03cabd6de2f77d718460d7cd4839025af14f66367131f1f5c",
+      "id": "q31_openssl_vs_81",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "575b0f764123ecf68277393526e2639b6ceadce0cc690571a8f60d698adf9561:d8bfee590085afd03cabd6de2f77d718460d7cd4839025af14f66367131f1f5c",
+      "id": "cal_after",
+      "reference": [
+        "/workspace/bench-sources/rho-closeout/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_globalwarm",
+        "/workspace/bench-sources/rho-closeout/fixtures/rho-closeout/q31.json",
+        "1"
+      ]
+    }
+  ],
+  "comparison_variant": "rho-closeout-one-restart",
+  "isolation": {
+    "cpus": "24",
+    "execution_cpu": 24
+  },
+  "measurement_boundary": "One supplied public Q and one frozen (a,b) pair per case. Fixture loading, Q-independent curve/group initialization, generator-only OpenSSL warmup, reusable G-table preparation, and scalar-plan compilation are outside online time. OpenSSL globalwarm times Q point setup, first target EC_POINT_mul, and affine output. Joint radix-81 and mixed-76 time Q-table construction, Horner evaluation, and affine output. Each arm verifies the same point.",
+  "measurement_tier": "tier1_instance",
+  "outer_repeats": 1,
+  "pair_fields": [
+    "count",
+    "point"
+  ],
+  "repetitions": 16,
+  "schema": 1,
+  "timeout_s": 30,
+  "workdir": "/workspace/bench-sources/rho-closeout"
+}
