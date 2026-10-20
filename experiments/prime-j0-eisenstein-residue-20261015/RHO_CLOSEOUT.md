@@ -1,0 +1,315 @@
+# Joint-scalar rho arithmetic closeout
+
+The closeout compares complete target-charged `aG+bQ` restart work across
+32 frozen secp256k1 targets. A generator-only-warmed OpenSSL arm now charges
+its target `Q` setup and first joint multiplication. Fixed radix-81 and
+mixed-76 charge their target Q tables, Horner evaluation, and affine output.
+This closes the warmup boundary left open by the earlier one-point panel.
+
+## Frozen inputs and source
+
+The [fixture generator](make_rho_closeout_fixtures.py) uses a recorded
+32-byte seed to create 32 Q points and 128 public `(a,b)` pairs per Q. The
+manifest SHA-256 is
+`f46ad43788b7f9241927904541cbeb03ea70a96ca95aa84d527a9b22ba8d12b8`.
+The [independent affine verifier](verify_rho_closeout_fixtures.py) checked
+all 32 Q points and all 4,096 expected `aG+bQ` points; its
+[receipt](rho-closeout-fixtures/full-verification.json) records the full
+scope. All scalar hex strings are 32 bytes, as required by the native
+OpenSSL helper. Counts 1, 8, 32, and 128 use prefixes of each Q's same
+scalar stream.
+
+The [closeout overlay](native_rho_closeout_overlay.py) applies only after
+the previous mixed-76 source bundle, SHA-256
+`aa194966c8ce274f53b169c836baf16ff52c5d94ba384cec9994d72f65f02e8b`,
+is reconstructed and checked. The [bundle builder](build_rho_closeout_bundle.py)
+reproduced the closeout source bundle twice at SHA-256
+`8f69f5c4f11d9a3b5d0771d1edef3cb5eca111e540f99e621bece5a98522ffd5`.
+The local macOS ARM64 binary SHA-256 is
+`fa5765521ecbfa51be525d715eaeddad4bba5fc9962d16e595519ec02b06a467`.
+Every compiled Rust/Cargo source file matched the new bundle manifest.
+The [native replay](rho-closeout-native-local-replay.json) checked 384
+commands and 16,224 exact point outputs across all Q points, all four
+counts, and the three modes. Its elapsed fields are local diagnostics.
+
+The Linux x86-64 Pod rebuilt the frozen source with Rust/Cargo 1.93.1 and
+OpenSSL 3.0.13. The benchmark binary SHA-256 is
+`1ba810d3ad19b3c5153bf0345c736acec87a25d725aab9efffc4a55243c1202d`;
+linked `libcrypto.so.3` is
+`6866ed711dab8927e1bf82bf1cd30e828bdfc34f3cc1e83b1c9eb01ce6c37d9a`.
+The allocation exposed an AMD EPYC 4564P, eight cgroup v1 CPUs, one NUMA
+node, no CPU quota, and a 16-GB memory limit. The service ran on CPU 2;
+measured children ran on CPU 8 or 24. The Pod did not prove physical-host
+exclusivity, and its governor reported `powersave`. The
+[source bundle](rho-closeout-evidence/source-bundle.tar.gz),
+[allocation receipt](rho-closeout-evidence/allocation.json), and
+[build log](rho-closeout-evidence/linux-build.log) are retained.
+
+## One-restart Tier 1 selection
+
+The [manifest generator](make_tier1_rho_closeout_panel.py) freezes 99 cases
+per repetition: 32 Q points with direct OpenSSL/radix-81,
+radix-81/mixed-76, and OpenSSL/mixed-76 pairs, plus three bracketing
+OpenSSL A/A controls. Sixteen alternating repetitions give 1,584 pairs.
+The first two comparisons are primary; the direct OpenSSL/mixed-76 pair is
+secondary. Each case checks exactly the same public point. A/A ratios must
+stay in `[0.90,1.11]`. The primary paired interval uses the median of each
+Q's 16 log ratios, then a prespecified 10,000-draw cluster bootstrap over
+the 32 Q points. Source, binary, fixture, linked `libcrypto`, host receipts,
+raw arm order, and output points are checked by the
+[independent auditor](analyze_tier1_rho_closeout.py).
+
+The local manifest dry run generated all 99 cases and 1,584 planned pairs.
+Its binary hash belongs to the macOS build and must be replaced with the
+actual Linux binary hash before dispatch. A zero-pair raw dry run confirmed
+that the auditor records all 48 missing A/A controls and leaves the Tier 1
+gate false. The previous RunPod CPU Pod was observed `EXITED` on
+2026-10-17. Its restart failed because its host lacked free memory. A
+replacement 8-vCPU, 16-GB CPU Pod (`wfr1v86uyxt5q1`) was created, but its
+assigned SSH port timed out despite a ready container and was stopped. The
+next 8-vCPU, 16-GB CPU Pod (`lu2jj7z7kedvg5`) accepted SSH; its host receipt
+and benchmark status are recorded in the run archives. Its Pod-scoped control
+key accepted a stop request after the panels completed.
+
+The [first CPU-8 archive](rho-closeout-evidence/one-cpu8/raw.tar.gz) and
+[CPU-24 replication](rho-closeout-evidence/one-cpu24/raw.tar.gz) each contain
+3,168 arms and 1,584 same-point pairs. The independent audits found no
+structural errors or invalid arms. The CPU-8 run failed one OpenSSL A/A
+control (ratio 0.822); CPU-24 failed four (0.860, 1.328, 0.561, 1.129).
+Both aggregate speedup statuses therefore remain unknown. A preceding
+[preflight rejection](rho-closeout-evidence/preflight-rejected.tar.gz), with
+zero executed arms, is also retained: the first runner revision mistook its
+housekeeping affinity for the Pod's full cgroup allocation.
+
+| One restart, 32 Q points | CPU-8 descriptive paired ratio | CPU-24 descriptive paired ratio | Tier 1 status |
+| --- | ---: | ---: | --- |
+| OpenSSL globalwarm / radix-81 | 2.272 | 2.273 | Unknown: A/A gate failed in both runs |
+| Radix-81 / mixed-76 | 1.048 | 1.048 | Unknown: A/A gate failed in both runs |
+| OpenSSL globalwarm / mixed-76 | 2.422 | 2.425 | Unknown: A/A gate failed in both runs |
+
+These ratios use the median paired log ratio within each Q, followed by the
+median across 32 Q points. The full audits retain their cluster bootstrap
+intervals and every A/A observation. The earlier single-Q OpenSSL `nowarm`
+comparison reported 12.302x against mixed-76 under a different boundary;
+charging only target-Q setup and evaluation after generator-only warmup
+changes the descriptive ratio to about 2.4x here. The multi-Q radix-81 /
+mixed-76 direction also differs from the earlier single-Q result, which is
+why one exposed point cannot select the implementation.
+
+## Reuse and worker decision
+
+The separate [reuse panel](rho-closeout-evidence/reuse-cpu24/raw.tar.gz)
+measured 1, 8, 32, and 128 restarts per Q with 32 Q points and eight
+alternating repetitions, 6,336 arms and 3,168 pairs. Its
+[auditor](analyze_tier1_rho_reuse.py) checked every exact output, source and
+binary artifact, phase sum, and execution order. Counts 32 and 128 passed
+their A/A controls; counts 1 and 8 failed two and one controls respectively.
+Each retained-byte value below is the algorithm's reported G/Q table plus
+scalar-plan allocation, not process peak RSS. OpenSSL reports zero retained
+table bytes; this does not measure its internal allocation.
+
+| Restarts per Q | OpenSSL median online ms | Radix-81 median online ms | Mixed-76 median online ms | Radix-81 / mixed-76 paired ratio, 95% Q-cluster interval | Gate |
+| ---: | ---: | ---: | ---: | --- | --- |
+| 1 | 0.219 | 0.095 | 0.090 | 1.047 [1.033, 1.079] | A/A failed |
+| 8 | 1.655 | 0.530 | 0.540 | 0.983 [0.976, 0.989] | A/A failed |
+| 32 | 6.852 | 1.971 | 1.925 | 1.029 [1.028, 1.032] | Tier 1 passed |
+| 128 | 27.107 | 7.663 | 7.409 | 1.033 [1.031, 1.034] | Tier 1 passed |
+
+At 32 restarts the target-preparation medians were 0.002, 0.350, and
+0.446 ms for OpenSSL, radix-81, and mixed-76; corresponding restart
+evaluation medians were 6.850, 1.622, and 1.480 ms. At 128 restarts,
+mixed-76 reported 526,918 retained bytes versus 442,517 for radix-81.
+The qualified 32- and 128-restart results locate a reuse regime where the
+mixed-76 evaluation saving exceeds its preparation cost. They do not select
+the one-restart worker path, whose separate A/A gate failed.
+
+The reuse run did not capture process peak RSS. Its retained-byte fields
+measure the tables and plans reported by each implementation, so peak RSS
+is still unknown. The failed A/A controls at counts 1 and 8 also prevent a
+qualified crossover between those counts and 32. The follow-up protocol
+specified all four counts on the same 32 Q points and scalar prefixes,
+alternating the three arms, with an A/A decision for each count.
+Record each child process's peak RSS in addition to the existing table bytes,
+Q-dependent preparation, evaluation, and complete target-charged time. Use a
+per-child Linux `wait4` resource receipt or an equivalent verified child-only
+peak measurement; the cumulative `RUSAGE_CHILDREN.ru_maxrss` value cannot be
+subtracted to obtain an arm's peak. Freeze the runner, source and binary
+hashes, host allocation, and measurement method before timing. Run this panel
+serially after the fresh-target worker confirmation on the same isolated host.
+The actual EC2 dispatch below ran the arithmetic confirmation and reuse
+panels before the worker confirmation. The panels were serialized, and each
+retained its own frozen input, host, and A/A receipts. Preserve the earlier
+1/8 failures and report the crossover only from counts whose new A/A gates
+pass.
+
+The versioned [peak-RSS runner](run_tier1_rho_reuse_peak.py) uses `wait4`
+for one child at a time and records `child_peak_rss_kib` with the method
+`linux_wait4_ru_maxrss_kib`. Generate the new reuse manifest with
+`make_tier1_rho_reuse_panel.py --peak-rss` after the host and binary are
+known. That mode includes both the peak runner and its base runner in the
+artifact hashes. The independent reuse auditor requires every arm's peak
+receipt and reports median peak RSS per mode and count when the peak mode is
+frozen. Peak RSS covers the child's full lifetime, including fixture load;
+the online time keeps its target-charged boundary. The earlier archive
+retains its own source hash and memory fields;
+its missing process peaks cannot be inferred from the new runner.
+
+The collaborative rho phase profiler in the `crypto` repository records one
+deterministic secp256k1 worker trace with 32 branch points,
+four starts, and 10,152 walk steps. Its same-state local runs show large
+wall-time variation, so its phase fractions are diagnostics. Its measured
+per-step rate extrapolates to roughly 0.09% setup-plus-start time for 256
+walkers with a 20-bit distinguished-point rule; that extrapolation must be
+tested on the isolated runner. If setup and starts remain too small a
+fraction, the worker experiment should direct effort to the walk addition.
+
+Worker integration requires exact replay of branch points and walk states,
+an explicit secp256k1 curve check, and a qualified paired throughput
+improvement whose 95% lower bound exceeds 1.05 without unacceptable peak
+memory growth. Otherwise the result closes as a measured arithmetic
+finding with the default worker unchanged. The generic C rho path uses a
+64-bit group order; the full-size target is the Rust collaborative worker.
+
+The current decision is to leave the default worker unchanged. The
+one-restart Tier 1 gate did not pass. The short deterministic worker trace
+contains 32 branch constructions, four starts, and 10,152 walk additions;
+its setup/start fraction varied widely under local contention. The longer
+trace in [crypto PR #2137](https://github.com/aburan28/crypto/pull/2137)
+independently replayed 32 starts and 106,327 walk steps. Its locally observed
+setup/start share was 3.61%. A repaired-main replay of the same walk
+transcript observed 7.01%; both are local diagnostics. The opt-in batch walk
+lane in that PR matched serial ordered check-ins and work counts on all 32
+frozen Q points at `dp_bits=12` and an 8,192-step
+cap: 64/64 arms and 32/32 pairs completed. These receipts focus the next
+qualified test on the walk addition. The frozen Tier 1 panel has 384 pairs,
+including two A/A controls per Q and four repetitions. Default routing
+changes only after its independent audit passes exact replay, host and
+memory gates, and a Q-cluster 95% lower paired speedup bound above 1.05.
+
+The worker branch has since been rebased onto repaired `crypto` main commit
+`abee07ee7337d04a7e734333669ca1bacd6c763a`. The
+[rebased-main validation receipt](https://github.com/aburan28/crypto/blob/ceddefda1ea16c99cb3b0cf3d3e8db4c9065f44f/experiments/rho-worker-phase-profile-20261017/rebased-main-validation.json)
+pins that revision's source bundle rebuilt identically twice at SHA-256
+`abd7a2eaeebca050dcf0a9f2290c02b116dbdd4b0bfb43cb45bf4be1ca5f7025`.
+Its clean extraction built a byte-identical release benchmark and passed an
+independent q00 serial/batch replay. On the complete checkout, 4,396 release
+library tests passed with zero failures and 118 ignored; all 64 long replay
+arms across the 32 frozen Q points matched in 32 serial/batch pairs. These
+are build and correctness receipts, not qualified throughput evidence.
+
+The current [shared-lock source receipt](https://github.com/aburan28/crypto/blob/3e3b055b6/experiments/rho-worker-phase-profile-20261017/shared-lock-source-validation.json)
+pins the revised runner and auditor at source-bundle SHA-256
+`ccc4c83128510e145bed6e8c04b26eb9a63f617bb2d3665826856ccd91902904`.
+The bundle reproduced twice, built cleanly from extraction, and produced the
+same binary; its q00 serial/batch outputs matched. The runner serializes
+benchmark requests sharing the Pod's persistent queue root. A two-process
+lock check passed, and the auditor rejects a container-local lock receipt.
+This scope does not establish physical-host exclusivity.
+
+The [repaired-main phase receipt](https://github.com/aburan28/crypto/blob/130890bec/experiments/rho-worker-phase-profile-20261017/rebased-main-phase-validation.json)
+pins the current-source binary and transcript. On its local trace, a twofold
+setup/start improvement would improve the profiled total by 1.036x, while
+eliminating the phase would give an upper bound of 1.075x. The source and
+timing conditions changed between the two traces; neither phase share can
+bound the worker on a qualified host.
+
+The subsequent [physical-host worker panel](https://github.com/aburan28/crypto/blob/8bec74a5be/experiments/rho-worker-phase-profile-20261017/tier0-ec2-20261019/README.md)
+ran on a dedicated `m5zn.metal` core with NUMA, IRQ, frequency, exclusive
+cgroup, and per-arm noise receipts. The
+[independent audit](https://github.com/aburan28/crypto/blob/8bec74a5be/experiments/rho-worker-phase-profile-20261017/tier0-ec2-20261019/audit-r5.json)
+verified 768/768 arms and 384/384 same-point pairs, with no structural,
+arm, pair, or memory failures. One of 256 frozen A/A controls had ratio
+1.123159, above the 1.11 limit. The qualified aggregate status is
+`unknown_gate_failed`; the default worker stays serial. The
+[diagnostic computation](https://github.com/aburan28/crypto/blob/8bec74a5be/experiments/rho-worker-phase-profile-20261017/tier0-ec2-20261019/diagnostic-r5.json)
+reports a comparison-only median Q-cluster ratio of 5.110, with diagnostic
+95% interval `[5.041, 5.165]`. Median charged serial and batch arms
+were 20.725 and 4.057 seconds, respectively. The setup median was about
+0.165 seconds for either path; the descriptive time difference is
+concentrated in walk additions rather than restart construction.
+
+The next selection test was the
+[prospective fresh-target confirmation](https://github.com/aburan28/crypto/blob/9097133972/experiments/rho-worker-phase-profile-20261017/tier0-ec2-20261019/CONFIRMATION_PLAN.md).
+Its new 32-Q fixture has zero target overlap and all 4,096 expected
+outputs independently replayed. The new aggregate A/A rule was written
+after inspecting r5 and applies only to a new full panel. Source, binary,
+allocation, and dispatch hashes must be frozen before timing on another
+dedicated host. The user then selected a separate 16-vCPU EC2 instance for
+Tier 1 runs instead of waiting on the bare-metal quota. The integration gate
+still requires exact replay, host and memory acceptance, and a 32-Q paired
+95% lower speedup bound above 1.05.
+
+The [fresh-Q arithmetic confirmation plan](RHO_CLOSEOUT_CONFIRMATION_PLAN.md)
+uses that same independently verified fixture for a new one-restart
+OpenSSL/radix-81/mixed-76 comparison and a separate four-count reuse panel
+with process peak RSS. Its source bundle reproduced twice.
+
+## Fresh-Q EC2 Tier 1 confirmation
+
+A separate `c7i.4xlarge` instance ran the panels on 2026-10-19. The
+[allocation receipt](tier1-ec2-20261019/allocation.json) fixes the source
+bundle SHA-256
+`bce58701cb4a1c40f1c6bcb14ceb900f07fdef9a98dc2a3fc8b249ff6a310ff9`,
+Linux binary SHA-256
+`2aae97f2d77999d6764984cf52faa9f5f5ee9f6a30cae6c2da625e471729e633`,
+and the CPU 4/NUMA 0 timing envelope. The 32 new Q points and 4,096
+expected affine outputs were independently verified before timing. Both
+panels used the serialized host queue; their raw archives and independent
+audits are in [the EC2 evidence directory](tier1-ec2-20261019/README.md).
+
+The one-restart panel completed all 3,168 arms and 1,584 pairs with stable
+artifacts, exact outputs, and no invalid arms or structural issues. One
+prespecified OpenSSL A/A control had ratio 1.2118446 outside [0.90, 1.11].
+Its aggregate comparisons therefore remain `unknown_after_tier_gate`.
+The descriptive Q-cluster paired radix-81/mixed-76 ratio was 1.0682 with
+95% interval [1.0494, 1.0848]; this failed-gate panel does not select a
+one-restart winner.
+
+The separate reuse panel completed all 6,336 arms and 3,168 pairs. Its
+independent audit found no invalid arm, structural issue, or A/A failure
+at any count. Linux `wait4` recorded each child's peak RSS, while the
+algorithm's retained table bytes remained separate. The charged complete
+online medians and paired radix-81/mixed-76 ratios were:
+
+| Restarts per Q | Mixed-76 ms | Radix-81 ms | OpenSSL ms | Paired radix-81/mixed-76 ratio, 95% Q-cluster interval |
+| ---: | ---: | ---: | ---: | --- |
+| 1 | 0.119478 | 0.128090 | 0.291246 | 1.0669 [1.0494, 1.0897] |
+| 8 | 0.723362 | 0.714030 | 2.255666 | 0.9916 [0.9787, 0.9959] |
+| 32 | 2.559708 | 2.680047 | 8.987540 | 1.0475 [1.0439, 1.0492] |
+| 128 | 9.799256 | 9.972769 | 35.838602 | 1.0180 [1.0169, 1.0190] |
+
+The observed order changes at eight restarts, so these measurements do not
+show a monotone crossover. All three modes had median child peak RSS of
+11,748 KiB at each count; the raw audit retains the per-arm measurements
+and target-preparation, evaluation, and retained-byte splits. The
+one-restart selection gate remains unknown after its A/A failure. In the
+[fresh-Q full-worker panels](https://github.com/aburan28/crypto/pull/2137),
+the 32-walker check-in-eight comparison completed 384 exact-output pairs
+but had one A/A ratio of 1.437258 outside its frozen band. The separate
+check-in-32 panel completed 768 arms and 384 pairs, of which 383 were
+valid; one batch A/A reference arm recorded one CPU-steal tick. Its
+comparison-only 32-Q ratio was 4.4912 with diagnostic interval
+[4.4069, 4.6637], while its qualified interval is null. Both audited
+aggregate statuses are `unknown_gate_failed`, so the worker default stays
+serial. The separately frozen 128-walker, check-in-64 production panel
+completed on the same host under the unchanged 1.05 lower-bound,
+exact-output, host, A/A, and memory gates. Its
+[raw archive and independent audit](https://github.com/aburan28/crypto/blob/5b6f64f63b/experiments/rho-worker-phase-profile-20261017/tier1-ec2-20261019/README.md)
+retain all 768 arms and 384 pairs. Reference arm 691 of `q19-comparison`,
+repetition 3, recorded one CPU-steal tick, leaving 383 valid pairs. The
+prespecified A/A policy passed with two permitted outliers, and no memory
+gate failed, but the all-pair host gate did not pass. The audit reports
+`unknown_gate_failed`, with qualified speedup and interval null. The
+comparison-only median ratio was 4.9216; it is a diagnostic, not an
+integration result.
+
+At 128 walkers, median charged serial time was 12.930 seconds and median
+setup was 0.103 seconds, about 0.8% of the interval. Even eliminating that
+setup would improve this observed serial interval by only about 1.008x;
+halving it would give about 1.004x, assuming the measured phase mix holds.
+The walk consumed the other roughly 99.2%. These phase measurements and
+the reuse panel direct the next arithmetic effort to the walk addition,
+not the restart scalar construction. The exact-output batch implementation
+is available behind an explicit secp256k1 option in
+[crypto PR #2307](https://github.com/aburan28/crypto/pull/2307). Default
+routing remains serial because the qualified worker threshold is unresolved.

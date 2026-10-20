@@ -1,0 +1,67 @@
+{
+  "evidence": {
+    "affinity": [
+      2
+    ],
+    "allocated_cpus": [
+      2,
+      8,
+      11,
+      13,
+      18,
+      24,
+      27,
+      29
+    ],
+    "allocation": {
+      "instance_id": "lu2jj7z7kedvg5",
+      "provider": "runpod",
+      "receipt": "/workspace/isolated-bench/panels/allocation.json"
+    },
+    "architecture": "x86_64",
+    "counter_probe": {
+      "cgroup_v1_cpu_stat": {
+        "burst_time": 0,
+        "nr_bursts": 0,
+        "nr_periods": 0,
+        "nr_throttled": 0,
+        "throttled_time": 0
+      },
+      "cgroup_v1_memory_failcnt": "0",
+      "cgroup_v2_cpu_stat": {},
+      "cgroup_v2_memory_events": {},
+      "cpu_times": [
+        476033235,
+        14050169,
+        45618160,
+        5017722146,
+        1087748,
+        0,
+        1053665,
+        0,
+        476784,
+        0
+      ],
+      "frequency_khz": "545000",
+      "local_irq_count": 65596612,
+      "thermal_throttle": null,
+      "timestamp_ns": 1792284401542751886
+    },
+    "cpu_model": "AMD EPYC 4564P 16-Core Processor",
+    "cpu_period_us": "100000",
+    "cpu_quota_us": "-1",
+    "cpuset_cpus": "2,8,11,13,18,24,27,29",
+    "host": "7501b1c7d2e9",
+    "host_exclusivity": "unproven_container_allocation",
+    "kernel": "6.8.0-51-generic",
+    "measurement_tier": "tier1_instance",
+    "memory_limit_bytes": "16000000000",
+    "memory_nodes": "0",
+    "selected_cpu": 8,
+    "self_cgroup": "13:freezer:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n12:perf_event:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n11:memory:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n10:cpu,cpuacct:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n9:net_cls,net_prio:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n8:pids:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n7:blkio:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n6:hugetlb:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n5:cpuset:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n4:misc:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n3:rdma:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n2:devices:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n1:name=systemd:/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0\n0::/docker/7501b1c7d2e93983ffde5d2279668467af8e8e26baa593e9146d3383aead99e0",
+    "system": "Linux",
+    "timestamp_ns": 1792284401541535312
+  },
+  "ok": true,
+  "problems": []
+}
