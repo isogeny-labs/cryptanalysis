@@ -1,0 +1,552 @@
+{
+ "arms": {
+  "cM38I": {
+   "base": "M38",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "replication_source": "the parent's arm cM38I, verbatim",
+   "role": "PRIMARY candidate cold: the same code on the M38 closure header (16 columns, 608 orbits in the root index, lift_scan index build) with its verified 16-log table",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "cM38Iaa": {
+   "base": "M38",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "replication_source": "the parent's arm cM38Iaa, verbatim",
+   "role": "A/A control: a second cold process of cM38I",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "cPI": {
+   "base": "K600",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "replication_source": "the parent's arm cPI, verbatim",
+   "role": "BASELINE cold: the index-lift row's cold path (koblitz-n83-indexlift-20261019 arm cPI: lift_scan index build) on B's K600 header with B's verified table",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kM38I": {
+   "base": "M38",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "replication_source": "the parent's arm kM38I, verbatim",
+   "role": "PRIMARY candidate rank stage: the same loop on the M38 closure header: 16 guided attempts [a]G - R_c to full rank 16",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kM38IX": {
+   "base": "M38",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame_plant",
+   "replication_source": "the parent's arm kM38IX, verbatim",
+   "role": "planted positive control: kM38I with the rank-probe producer's frame_plant (the rank-cut loop's key derivation redone and compared on every candidate), a known per-attempt cost of about 1.8x (closure run 39305259093: 1.830 [1.795, 1.873]) that the timing must detect",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kM38Iaa": {
+   "base": "M38",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "replication_source": "the parent's arm kM38Iaa, verbatim",
+   "role": "A/A control: a second rank process of kM38I",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kPI": {
+   "base": "K600",
+   "binary": "ic_online_closure_indexlift_r770",
+   "fold": true,
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "replication_source": "the parent's arm kPI, verbatim",
+   "role": "BASELINE rank stage: the index-lift row's rank process (arm kPI: frame loop, lift_scan, Feistel, 16-byte compact table over the lift_scan-built folded index), 600 guided attempts on B's K600 header",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "replication_source": "the parent's arm rT, verbatim",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "bootstrap": {
+  "draws": 10000,
+  "seed": 20261020
+ },
+ "controls_pass_rule": {
+  "aa": "over the 20 A/A pairs: E2E(B) / E2E(Baa) and cold cM38I / cM38Iaa, the same ratio of sums, point estimates both inside [0.97, 1.03]",
+  "otherwise": "verdict invalid",
+  "planted": "kM38IX / kM38I per attempt over the 10 planted pairs (attempts paired within pairs), 95% bootstrap lower bound above 1",
+  "planted_exactness": "the three planted corruptions rejected by verify_closure.py on both closure bases before timing"
+ },
+ "decision_rule": {
+  "improvement": "R lower bound > 1: a qualified Tier 1 end-to-end speedup of the M38I producer over the index-lift row",
+  "invalid": "any gate or control fails or is unknown, or any scheduled row is missing (time-guard skips included)",
+  "not_separated": "otherwise",
+  "regression": "R upper bound < 1"
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "aa_rule": "an A/A pair is one B side and one Baa side with the same point and the rank seed of primary pair j (j = 1..K_AA). The 2 K_AA sides alternate strictly, with the start drawn from the same generator",
+  "order_seed0": 2026102000,
+  "pair_rule": "a primary pair is one A side and one B side with the same point and the same rank seed. Each point's K pairs run as 2K sides in strict alternation, ABAB... or BABA..., and the starting side is drawn from random.Random(ORDER_SEED0 + i). Pair j is sides 2j-1 and 2j",
+  "planted_pairs_per_point": 1,
+  "planted_rule": "a planted pair is kM38I and kM38IX, rank processes only, with the rank seed of primary pair K. They alternate, and the start is drawn from the same generator",
+  "points": 10,
+  "primary_pairs_per_point": 3,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cPI",
+   "cM38I"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_seed0": 1200,
+  "rank_seeds": {
+   "s000": [
+    1201,
+    1202,
+    1203
+   ],
+   "s001": [
+    1204,
+    1205,
+    1206
+   ],
+   "s002": [
+    1207,
+    1208,
+    1209
+   ],
+   "s003": [
+    1210,
+    1211,
+    1212
+   ],
+   "s004": [
+    1213,
+    1214,
+    1215
+   ],
+   "s005": [
+    1216,
+    1217,
+    1218
+   ],
+   "s006": [
+    1219,
+    1220,
+    1221
+   ],
+   "s007": [
+    1222,
+    1223,
+    1224
+   ],
+   "s008": [
+    1225,
+    1226,
+    1227
+   ],
+   "s009": [
+    1228,
+    1229,
+    1230
+   ]
+  },
+  "rank_seeds_note": "1201-1230 are new on n=83. Used before: 7, 29, 101-102, 201-204, 301-309, 401-404, 501-504, 701, 801-816, 901-904 and 1101-1116 (every protocol on origin and in the scratch worktrees). Each seed fixes K' new rank targets [a]G - R_c on each base",
+  "rho_rule": "one rT process per point, seed rho_seed_base + point seed",
+  "rho_seed_base": 1020000,
+  "runtime_estimate": "power.json runtime: about 163 min for the job (149 min schedule), about 243 min on a 1.5x slower host; the job limit is 300 min",
+  "segment_rule": "O1: Q0 on cPI and cM38I, shuffled by random.Random(ORDER_SEED0 + 99). Then one segment P<i> per point i = 1..POINTS in panel order. Its four sub-blocks (primary, aa, planted, rho) run in an order shuffled by the point's generator",
+  "segment_upper_estimate_s": {
+   "O": 300,
+   "P": 1300
+  },
+  "side_rule": "a side is two fresh processes run back to back, its rank process and then its cold process, both on the pair's point. The rank process runs the rank stage with the pair's rank seed and then solves the point. The cold process loads the base's verified table and solves the point",
+  "sides": {
+   "A": [
+    "kPI",
+    "cPI"
+   ],
+   "B": [
+    "kM38I",
+    "cM38I"
+   ],
+   "Baa": [
+    "kM38Iaa",
+    "cM38Iaa"
+   ]
+  },
+  "time_guard": "before each segment: skip it (rows skipped_time_guard) if the elapsed job time plus the larger of its upper estimate and 1.1x the longest segment of its panel so far exceeds 285 min. A skipped row makes the run invalid",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 1800,
+   "rho_tuned": 600
+  }
+ },
+ "exactness_argument": "Frobenius phi acts on the prime-order subgroup as multiplication by lambda (lambda^2 - lambda + 2 = 0 mod r), so for alpha = a + b tau, alpha(R) = [a]R + [b]phi(R) = [(a + b lambda) mod r]R, and every member +-phi^k(alpha(R_c)) of orbit (c, alpha) has discrete log +-(a + b lambda) lambda^k log R_c. The header carries exactly these labels; verify_closure.py re-derives every member and label from the orbit representative and checks each representative against [w]R_c and, with the table, against [w L_c]G, in the pinned oracle. A relation found by the unchanged S3 search is checked in the group by the unchanged lift (four base points summing to the attempt's point), so its row sum_i coeff_i L_{c_i} = a (+ L_c for the guided column) holds exactly; full rank gives the unique logs, checked [L_c]G = R_c in process and equal to B's archived logs of the same R_c. A target's scalar is checked [d]G = Q in process and replayed in the oracle, and must equal the baseline's and the tuned rho's. The root index, probe loop and scan are the rank-probe producer's code, built from the closure's orbit representatives. With KIC_INDEX_CANON=lift the index build keys every stored state's two normal-basis roots with lift_scan instead of the selected canonicalizer; both return the least rotation of the 83-bit word and the least shift reaching it, the stored states are computed before and independently of that call, so the table receives the same inserts in the same order and its slot array is the same word for word (index-lift's argument). The layout digests gate this per process on every base, so every relation, probe count, rank table and scalar of a lift-built index is the selected-built index's.",
+ "expected_effect": "about 7.66 end to end at the parent run's means (power_check.py expected_ratio_at_prior_means; an estimate, not a claim)",
+ "frozen_at_utc": "2026-10-20T02:20:27+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row present and valid (exit 0, verified, schedule match, no memory event), no time-guard skip",
+  "receipt integrity (verify_receipt.py, fail closed): every executed row's raw producer record decodes, its SHA-256 equals the wrapper summary's raw_result_sha256, and its arm, kind, panel, point and seed equal the frozen schedule's. Each row's serial, arm, point, seed, segment, command line and stdout file equal the schedule's. Rows ran in schedule order. runner_start.json records this protocol's, this schedule's, arm.py's and run_schedule.py's SHA-256 and no smoke subset. Every row ran the binary runner_start.json records, unchanged at the end. An unknown gate is a failure",
+  "placement: every process's Cpus_allowed_list, read from /proc while it ran, is the one execution CPU",
+  "host identity: the CPU record (scripts/host_cpu_record.py) at the start and the end of the schedule has the same model, microcode and flags",
+  "before any timing: check_log_table.py (verbatim). B's table is re-verified in the pinned oracle. Both closure headers are regenerated to their frozen SHA-256 and pass verify_closure.py, and the three planted corruptions are rejected. Each closure table passes [L_c]G = R_c and [w L_c]G = alpha(R_c), and the closure logs equal B's archived logs",
+  "every IC process (arm.py, verbatim): KIC_INDEX_CANON=lift; 0 index roots checked against the selected canonicalizer; the full scan self-test; its base's frozen base hash, columns, orbits, states, slots, root entries, logical-state and table-map digests; and its base's frozen LAYOUT digests (stored_states_blake3, table_slots_blake3)",
+  "per point: one scalar across every IC process (both bases, cold and rank) and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point and base: one relation and one probe count across every IC process",
+  "per base: one index and layout digest set, equal to the frozen one",
+  "Q0 (O1): cPI gives B's archived identity (1,987,852 probes); cM38I gives the closure protocol's frozen identity",
+  "rank arms: full rank, 0 failed attempts, one frame per attempt, and the written factor-log table equal to the base's frozen verified table, log for log",
+  "per M38 rank seed: rank_relations_blake3, the per-attempt probe vector, root calls and point-addition counters identical across every kM38I, kM38Iaa and kM38IX process with that seed",
+  "probe law: kM38I's pooled probes per relation over its 30 distinct seeds (480 attempts) over r / (166 E) inside [0.80, 1.20]"
+ ],
+ "kind": "n83-closure-indexlift-replication-paired-e2e-tier1",
+ "multiplicity": "one primary statistic; every secondary is descriptive and never changes the verdict",
+ "online": {
+  "base_construction": "not charged to any arm (the convention of both n=83 rows: B's header is loaded, and so is each closure header; each closure header holds B's first K' orbits plus (M - 1) K' images alpha(R_c), two small scalar multiplications each, |a| <= 7, |b| <= 6)",
+  "bases": {
+   "K600": {
+    "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+    "factor_base_points": 99600,
+    "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+    "factor_log_table_check": "check_log_table.py (B's table in the pinned oracle, as the rank-probe run)",
+    "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+    "header_sha256": "0d290b14a350db6271c9a49f0cd6ba246edd8c9bc6754387ad1ceebf08ec0c09",
+    "index_digest": {
+     "logical_states": 29880000,
+     "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+     "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+     "table_entries": 29878182,
+     "table_map_sum64": "be14a80705232396",
+     "table_map_xor64": "8132bdcfd619010f"
+    },
+    "index_orbits": 600,
+    "layout_digest": {
+     "source": "koblitz-n83-indexlift-20261019 protocol.json online.layout_digest (frozen there, reproduced in all 110 IC processes of run 39290913632); reproduced here with both index canonicalizers on Q0 (inputs/local_layout_test.json)",
+     "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+     "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+    },
+    "norm_cap": null,
+    "orbit_columns": 600,
+    "path": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+    "q0_identity": {
+     "probes_folded": 1987852,
+     "probes_unfolded": 1988184,
+     "relation": [
+      77273,
+      22971,
+      54962,
+      62539
+     ],
+     "scalar": "3141592653589793",
+     "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+    },
+    "regular_states": 29880000,
+    "replication_source": "koblitz-n83-closure-indexlift-20261019 protocol.json online.bases.K600 (sha256 ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1), verbatim",
+    "role": "B's K600 header: 600 columns, one signed Frobenius orbit each (the baseline: the index-lift row)",
+    "root_table_entries": 29878182,
+    "root_table_slots": 67108864,
+    "stored_states_folded": 14940300
+   },
+   "M10": {
+    "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+    "builder": "make_closure_base.py --columns 60 --norm 16 (from B's K600 header, in restore.py)",
+    "factor_base_points": 99600,
+    "factor_log_table": "inputs/factor_logs_n83_closure_M10.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): the base's every orbit, member and label, [L_c]G = R_c for every column, [w L_c]G = alpha(R_c) for every orbit; and the logs equal B's archived logs of R_0..R_{K'-1}",
+    "factor_log_table_sha256": "353e124a86189fb5e593ed9ddbf995c7e7d4e01db12696798b5a4f3bc5c66a5e",
+    "header_sha256": "ba99464a8f85e41aa188ff698c987cc093a3c9fa98e1fee74640b8554df2b598",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 29880000,
+     "logical_states_blake3": "ebf4f41e7ce806b47303e25fc566ce0059f999af3f5b7a338ab586e3ebf79c27",
+     "source": "the local decisive test (inputs/local_decisive_test.json): identical over 5 local rank processes (seeds 301-305); a function of the orbit representatives only",
+     "table_entries": 29821794,
+     "table_map_sum64": "5c80db078213e8a5",
+     "table_map_xor64": "76c9935ff0965caf"
+    },
+    "index_orbits": 600,
+    "law_band": [
+     0.85,
+     1.15
+    ],
+    "law_probes_per_relation": 1731123.805535073,
+    "layout_digest": {
+     "source": "the local layout test (inputs/local_layout_test.json): Q0, KIC_INDEX_CANON = selected and lift, one process each, identical; the same processes reproduce the closure protocol's frozen logical-state and table-map digests, root entries and Q0 identity",
+     "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+     "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+    },
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 16,
+    "orbit_columns": 60,
+    "orbits_per_column": 10,
+    "path": "snapshots/closure/base_n83_closure_M10.jsonl",
+    "q0_identity": {
+     "probes_folded": 2130165,
+     "relation": [
+      48498,
+      93721,
+      54127,
+      78333
+     ],
+     "scalar": "3141592653589793",
+     "source": "the local decisive test (rank process, seeds 301-305, identical)"
+    },
+    "regular_states": 29880000,
+    "replication_note": "not timed in this replication; kept because check_log_table.py (verbatim) verifies both closure bases and their planted corruptions before timing",
+    "replication_source": "koblitz-n83-closure-indexlift-20261019 protocol.json online.bases.M10 (sha256 ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1), verbatim",
+    "role": "Z[tau]-multiplier closure: 60 columns x 10 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 16); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 29821794,
+    "root_table_slots": 67108864,
+    "source": "koblitz-n83-closure-20261019 protocol.json online.bases.M10 (commit 3761fd260), verbatim",
+    "stored_states_folded": 14940300
+   },
+   "M38": {
+    "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+    "builder": "make_closure_base.py --columns 16 --norm 64 (from B's K600 header, in restore.py)",
+    "factor_base_points": 100928,
+    "factor_log_table": "inputs/factor_logs_n83_closure_M38.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): the base's every orbit, member and label, [L_c]G = R_c for every column, [w L_c]G = alpha(R_c) for every orbit; and the logs equal B's archived logs of R_0..R_{K'-1}",
+    "factor_log_table_sha256": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+    "header_sha256": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 30682112,
+     "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+     "source": "the local decisive test (inputs/local_decisive_test.json): identical over 9 local rank processes (seeds 301-309); a function of the orbit representatives only",
+     "table_entries": 30366551,
+     "table_map_sum64": "83d519abd1686b4d",
+     "table_map_xor64": "d98ecf6236b9d814"
+    },
+    "index_orbits": 608,
+    "law_band": [
+     0.8,
+     1.2
+    ],
+    "law_probes_per_relation": 1700068.523328942,
+    "layout_digest": {
+     "source": "the local layout test (inputs/local_layout_test.json): Q0, KIC_INDEX_CANON = selected and lift, one process each, identical; the same processes reproduce the closure protocol's frozen logical-state and table-map digests, root entries and Q0 identity",
+     "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+     "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+    },
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 64,
+    "orbit_columns": 16,
+    "orbits_per_column": 38,
+    "path": "snapshots/closure/base_n83_closure_M38.jsonl",
+    "q0_identity": {
+     "probes_folded": 1612533,
+     "relation": [
+      81344,
+      53967,
+      13071,
+      42373
+     ],
+     "scalar": "3141592653589793",
+     "source": "the local decisive test (rank process, seeds 301-309, identical)"
+    },
+    "regular_states": 30682112,
+    "replication_source": "koblitz-n83-closure-indexlift-20261019 protocol.json online.bases.M38 (sha256 ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1), verbatim",
+    "role": "Z[tau]-multiplier closure: 16 columns x 38 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 64); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 30366551,
+    "root_table_slots": 67108864,
+    "source": "koblitz-n83-closure-20261019 protocol.json online.bases.M38 (commit 3761fd260), verbatim",
+    "stored_states_folded": 15341360
+   }
+  },
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role closureindexlift-rep-cold-v1, 10 points). It is disjoint from Q0, B's panel and every n=83 panel of the law on origin and in the scratch worktrees (make_targets.py EARLIER_ROLES; role-agnostic x-coordinate scan in inputs/panel_disjointness.json)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "lambda": "2998004823950457",
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target",
+  "sqrt_r": 92573139.235,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "aa_control": {
+   "band": [
+    0.97,
+    1.03
+   ],
+   "cold_point_estimate_inside_band_rate": 1.0,
+   "e2e_point_estimate_inside_band_rate": 1.0,
+   "median_e2e_estimate": 1.0000221260159385,
+   "pairs": 20
+  },
+  "expected_ratio_at_prior_means": 7.655777746545535,
+  "file": "analysis/power.json",
+  "law_gate": {
+   "archived_pooled_ratio": 1.0304338859315478,
+   "attempts": 480,
+   "band": [
+    0.8,
+    1.2
+   ],
+   "pass_rate_at_archived_law": 1.0,
+   "rejection_rate_for_law_1.5x_worse": 1.0
+  },
+  "min_delta": 1.5,
+  "modelled": {
+   "attempt_cost_factor": 1.0,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0620043121507297,
+   "median_estimate": 7.675464130563993,
+   "power": 1.0
+  },
+  "planted_control": {
+   "archived_attempt_ratio": 1.9607417615150635,
+   "lower_bound_above_1_rate": 1.0,
+   "pairs": 10
+  },
+  "power_at_min_delta": 1.0,
+  "rejection_rate_at_no_effect": 0.0175
+ },
+ "question": "Replication of PR #997 under the Tier 1 rule. Is the closure + index-lift M38I producer's END-TO-END cold cost (setup + index build + rank stage + linear algebra + one-target online) lower than the index-lift row's on new held-out points and new rank seeds? The test uses repeated alternating pairs and a 95% paired confidence interval whose lower bound must exceed 1 (AGENTS.md, 'CPU performance isolation gate', Tier 1). Every relation is checked in the group, every column log and scalar verified, the probe law kept, and the index-lift layout reproduced byte for byte.",
+ "replicates": {
+  "experiment": "koblitz-n83-closure-indexlift-20261019",
+  "merge": "e55510070",
+  "parent_primary": "7.6558 [7.2192, 8.1103] (one observation per point and arm)",
+  "parent_protocol_sha256": "ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1",
+  "pr": 997,
+  "run": "https://github.com/aburan28/cryptanalysis/actions/runs/39335956567"
+ },
+ "schema": 1,
+ "sources": {
+  "closure_producer": "koblitz-n83-closure-20261019 make_online_source.py (make_closure_source.py here, verbatim; branch claude/n83-closure, commit 3761fd260), output sha256 8916e034b4e24a027079019e4988f1dc6fbf74ec1c2349befa9aa8eea7ce330a",
+  "code_change": "none: the producer, the derivation, arm.py and check_log_table.py are the parent's bytes",
+  "composition": "make_online_source.py: the closure's four counted replacements (closure_edits, imported) applied to the index-lift text, plus one header comment; the two edit sets commute up to the header comments (checked on every derivation)",
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "indexlift_producer": "koblitz-n83-indexlift-20261019 make_online_source.py (make_indexlift_source.py here, verbatim; PR #981), output sha256 7df72603a443239fe0c86ea121d34ed67cd36119af83f1969862e68163eb281f",
+  "local_sha256": {
+   "archived_identities": "7ed7e056e8d883378e4d4033ad9bf93acc84cb5441e6410fee70ac67cae258db",
+   "arm_wrapper": "be8a1cbe3dcedf6740b6c03b21b92251587c37291eccf4d03c6f5ee4de1dbe8a",
+   "closure_base_builder": "92a5e5720b5eb9e38020c3bf5b9358c6ffc074fa784a5cd1939de83643787dfe",
+   "closure_derivation": "ebc9be93f67b0b53d8d94edce489770151c765d2c3a3d77665cdebf65545055b",
+   "closure_local_decisive_test": "f5304230d06075127339fabe67e064ab5dea2127e667d18a37390153b5e68c97",
+   "closure_log_table_M10": "353e124a86189fb5e593ed9ddbf995c7e7d4e01db12696798b5a4f3bc5c66a5e",
+   "closure_log_table_M38": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+   "closure_verifier": "b8406366cba6bd5d0e832d63a3381c64a941834ecc98633e8f90398afac97ff4",
+   "cold_targets": "67b942a1b45be48968889e0c27decd6568b9787d9d3270f7e9693c7d6c0bffd3",
+   "combined_derivation": "1a62eabf4a86417c5777fdc69ab2812eaea872b92031eb9ed60af2364ce15356",
+   "figures_builder": "d5472a3273b29670550849e8e120a3f9d5157674cb64d485370b71b372cd5664",
+   "host_cpu_record": "3cef3cc370e9e42e6123ae7dc3114cd8c661234b7a7d055b1661746b65896da9",
+   "indexlift_derivation": "394cfe847c84506d326db2ffdaf2d256af71bde1e637b1015ac1b70055ba2f7b",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "lift2_manifest": "77b04fcaa11a3f9f015619612b3e36c1f31a1b20d76116c929e5429e46dc271c",
+   "lift2_tests": "69561fbf09e2137ad1490d5795df54f6f9a5646aeebf3ecf12f1af55a495c566",
+   "local_layout_test": "ef131ce0f7bffd611d10527922d657920d06cc933a61bffa6b1886cefd18ef5f",
+   "log_table_check": "c09617820ad6699f317b57ddd23dcbdc85c8c50f7912a8102b047cfaec326646",
+   "online_derivation": "735058d349b46f7e5560236c9920eefc44ffdd9cc144fcf8d287e4d13cee7e2a",
+   "online_lock": "2373ea9535ef8b0f145a102086382ec790389fbae27f76bcef3f293a66f8bdbd",
+   "online_manifest": "a04468ed0deacb22308ae1d1619f040c4b64323db6ed2d6e75a20a63a12deed7",
+   "panel_disjointness": "f28d19c300062d937491a493310e000086f74f127dd719160592fbf458e4c61a",
+   "panel_scanner": "4b0f3d522ce04f0f0a302be3788f81e45397e2a3d052a303225c74a431f49fab",
+   "parent_closure_protocol": "de78ec74258e9273f7a100f45942a7643faa84ce3c73393bfbb98e2e2ee7c578",
+   "power_check": "d4a05f00107618d65abcfa6f1f13f3aefb015be4834bfb30acd044e78767d0f6",
+   "power_prior": "4f31c867a823816f250295e4a86ca5eb124d2a74cfafd82a0681275539cd61b6",
+   "power_prior_builder": "41586d9fe4aa5b358164a774f0cc89afa2fdb334013606aa4b41946675e9925d",
+   "power_result": "07188095b489d1a8b8a8d4748a4cb124f5eb01cbc8ce3789cade6f11d6f8eb67",
+   "probepipe_derivation": "ce72f3e906d85c58ccc02b0e5d455e97c69c370e357162fbda166423ab8ce7f2",
+   "protocol_builder": "b446733eef95d99d52209f4b201996bbe6ac7a8821764337185e48247220876d",
+   "rankcut_derivation": "7e81a642ebccf9570dd2d882360e99925d5754357c83bb1aff5a8635ac1cf011",
+   "rankprobe_derivation": "804cc965882c44f85502afb927cc4f04c79d3ccff85d9aa73226dfc2c5ec2b0d",
+   "receipt_verifier": "9cfd673987f3fb6a1ae87d5a801dc67e2e5d3bab0d373100ab9ea8758dd3a0bb",
+   "receipt_verifier_tests": "3d5922067fe7a9494ebb21363c9d471784bf2af35e1e064ca4c685592ed2cebd",
+   "schedule_builder": "2921e6d6800f3ea52e261d6041025977c66282c08c1eaafbe8f67206743cee58",
+   "schedule_runner": "4d29005f1f38a701041b6eaa80f66b02dab95f56e459594bed21d328559e9672",
+   "stacked_derivation": "a2011ef804becc5b01f3027cf47ec6f7cb154f510e468e2a261c66e09f830aab",
+   "tablefilter_derivation": "3b2aa83df4d1bf70a107464a0b7fdd1f8ac133683b23cf19dd22bfecf12095ab",
+   "targets_builder": "84b3ab516c56c97462ea2f3b2ecfee1ddb0b23096dce9534809035f4e962abe8"
+  },
+  "online_source_sha256": "1d328b2e461a299f8daa2cdc79ca67568173504c569e94165f88c5acba79f0ea",
+  "online_source_sha256_parent": "1d328b2e461a299f8daa2cdc79ca67568173504c569e94165f88c5acba79f0ea",
+  "parent_protocol_sha256": "ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1",
+  "rankprobe_producer": "koblitz-n83-rankprobe-20261019 make_online_source.py (make_rankprobe_source.py here, verbatim with its five parents), output sha256 d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5",
+  "verbatim_from_parent": [
+   "online_manifest",
+   "online_lock",
+   "online_derivation",
+   "indexlift_derivation",
+   "closure_derivation",
+   "parent_closure_protocol",
+   "rankprobe_derivation",
+   "rankcut_derivation",
+   "stacked_derivation",
+   "tablefilter_derivation",
+   "probepipe_derivation",
+   "combined_derivation",
+   "closure_base_builder",
+   "closure_verifier",
+   "closure_log_table_M38",
+   "closure_log_table_M10",
+   "closure_local_decisive_test",
+   "local_layout_test",
+   "lift2_lib",
+   "lift2_tests",
+   "lift2_manifest",
+   "lift2_lock",
+   "arm_wrapper",
+   "archived_identities",
+   "log_table_check"
+  ]
+ },
+ "statistics": {
+  "e2e_per_side": "E2E(side) = timing_ms.rank_stage of the side's rank process + cold_in_process_ms of the side's cold process. The cold process holds setup + index build + online, the rank stage holds the rank attempts and the linear algebra. So E2E = setup + index build + rank stage + linear algebra + one-target online, the row's definition",
+  "pairing_basis": "AGENTS.md Tier 1: 'run both variants on the same pinned exposed CPU with the same workload and limits' and 'require repeated alternating pairs'. A pair is the two variants on the same point with the same rank seed, adjacent in time on one CPU, in alternating order. docs/IC_BENCHMARK_TIERS.md uses the same unit (the same point, alternating order, one allocation)",
+  "primary": "R = sum over the 30 primary pairs of E2E(A) / sum over the same pairs of E2E(B). 95% percentile interval from a two-stage paired bootstrap, 10000 draws, random.Random(20261020): the points drawn with replacement, then each drawn point's pairs drawn with replacement; A and B of a pair are always drawn together",
+  "primary_is": "the paired END-TO-END ratio; the rank-stage and cold ratios are co-reported and never decide",
+  "secondary": [
+   "geometric mean of the per-pair ratios E2E(A)/E2E(B), with the same bootstrap",
+   "rank stage kPI / kM38I and cold cPI / cM38I, both paired, with the same bootstrap",
+   "E2E process CPU time (user + system of both processes of each side) A / B, with the same bootstrap",
+   "E2E process wall time (both processes of each side) A / B, with the same bootstrap",
+   "per-point ratio, and the ratio by pair position in the sequence (first, second, ...) and by side order",
+   "setup, index build, online and peak RSS cPI / cM38I over the primary pairs",
+   "probe law of kPI and kM38I; rows without gain; point-addition counters",
+   "rho ms/step from rT; S per arm; E2E cold gap IC / rT"
+  ]
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'",
+ "tier_rule": "AGENTS.md 'CPU performance evidence tiers', Tier 1: same pinned exposed CPU, same workload and limits; code and workload hashes, paired order, raw failures, correctness, process CPU time, memory, cgroup throttling and memory failures, steal time and scheduling counters recorded; repeated alternating pairs and a 95% paired confidence interval whose lower bound exceeds 1",
+ "why_this_run": "PR #997 (merged e55510070) made this producer the n=83 a=1 row: 7.6558 [7.2192, 8.1103], run 39335956567. Its primary had one cM38I and one cPI cold observation per point (20 points) and separate rank blocks (4 kPI, 16 kM38I). Neither the cold arms nor the rank arms were repeated alternating primary pairs, so the row does not rest on a qualified Tier 1 speedup (the owner's qualification notes on claude/n83-knownlog and claude/n83-onlineframe make the same point for PRs #986 and #988). This run replicates it properly."
+}
