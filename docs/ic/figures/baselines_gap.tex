@@ -1,4 +1,4 @@
-% Distance to rho per baseline row of docs/ic/baselines.json (2026-10-20; n=83 row: index-build producer, run 39383739494, point estimates).
+% Distance to rho per baseline row of docs/ic/baselines.json (2026-10-20; n=19 row: native-solve producer, run 39387473809; n=83 row: index-build producer, run 39383739494, point estimates).
 % Every value is copied from that file's "baselines" rows; each row is one
 % experiment. Build: pdflatex baselines_gap.tex; pdftoppm -png -r 160 -singlefile baselines_gap.pdf baselines_gap
 \documentclass[border=4pt]{standalone}
@@ -12,7 +12,7 @@
   ymin=0.4, ymax=5.6,
   ytick={1,2,3,4,5},
   yticklabels={
-    {$n=19$ (E0, tau6, exploratory)},
+    {$n=19$ (E0, tau6 native solve, Tier 1)},
     {$n=41$ (v3, ParallelRho)},
     {$n=53$ (v3, ParallelRho)},
     {$n=61$ (v3, ParallelRho)},
@@ -30,7 +30,7 @@
 % cold gap IC/rho (95% intervals where the source gives one)
 \addplot[only marks, mark=*, mark size=2.6pt, color=red!70!black]
   coordinates {
-    (19400,1)
+    (117.9,1)
     (7.657,2)
     (13.24,3)
     (20.97,4)
@@ -38,7 +38,7 @@
   };
 \addlegendentry{cold, IC / matched rho}
 % intervals drawn explicitly (log axis): [lo, hi]
-\addplot[red!70!black, forget plot] coordinates {(16900,1) (22300,1)};
+\addplot[red!70!black, forget plot] coordinates {(113.4,1) (122.6,1)};
 \addplot[red!70!black, forget plot] coordinates {(6.900,2) (8.613,2)};
 \addplot[red!70!black, forget plot] coordinates {(11.75,3) (15.01,3)};
 \addplot[red!70!black, forget plot] coordinates {(18.60,4) (23.84,4)};

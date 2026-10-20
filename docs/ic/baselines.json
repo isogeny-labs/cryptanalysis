@@ -29,48 +29,62 @@
         "alias": "E0/F_2^19 (volcano-ic surface curve)",
         "r": 130873
       },
-      "experiment": "cryptanalysis:experiments/volcano-ic/rho-arm-20261014",
+      "experiment": "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020 (branch claude/n19-native-v3, PR #1005)",
       "pipeline": {
-        "name": "tau-orbit dim-6 factor base, Sage Groebner decomposition, volcano-ic IC (arm tau6)",
-        "candidate_id": null,
-        "candidate_id_status": "no IC1 manifest was written for this arm",
-        "commit": "cryptanalysis 3f722e2e4897d956438c6bdf2becaf62dbde2f9e",
-        "protocol": "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/protocol.json (sha256 e474ff26af62188cf267db119ae59f1d74addd107bcd4008d41f0f62227d96ed)",
-        "run": "GitHub Actions 38520305068 (sagemath/sagemath:10.10, AMD EPYC 9V45)"
+        "name": "tau-orbit dim-6 factor base with the per-shift Groebner solve in native code (tauDlp with tauRelationNative, arm N); base, shifts, relations and linear algebra are the tau6 arm's; volcano-ic IC",
+        "candidate_id": "IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e",
+        "candidate_id_status": "IC1 manifest in experiments/volcano-n19-native-tau6-20261019/inputs/ic1_manifests.json; the previous row's pipeline is IC1N19Ckb0fb1064PDP2polyboriRCsampleLAkernelTDpdpISO0hb41aed7ef80a",
+        "commit": "cryptanalysis 4ef371544ba1d1e5ea57db25db1a4d4f6043066a (workflow-only fix over the frozen 92d85f14; no frozen file changed)",
+        "protocol": "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/protocol.json (sha256 db9089bb31309beb7e59072fcc50534e280fee07cffe6f1a4bbbd2b882309c22)",
+        "run": "GitHub Actions 39387473809 (sagemath/sagemath:10.10, timed job on runner GitHub Actions 1000365175, AMD EPYC 9V74, one pinned CPU)"
       },
-      "targets": "10 planted scalars, each a complete ECDLP; 640 rho solves",
-      "unit": "one rho group operation of CPU time (2.170e-5 s), per sqrt(r)",
-      "s_ic_cold": 5154.13,
-      "s_ic_online": null,
-      "s_ic_online_status": "not separable: every IC run here is one complete ECDLP from an empty cache, so only cold is measured",
+      "targets": "20 new held-out scalars; 3 alternating B/N pairs (60 primary pairs), 3 N/Naa pairs, 1 NX/N pair and 1 rho process per point; one fresh pinned Sage process per run; each run one complete ECDLP per shift system batch",
+      "unit": "one rho group operation of CPU time in this run (3.0095e-5 s, host AMD EPYC 9V74), per sqrt(r); the previous row's unit was 2.170e-5 s on another host, so S is not compared across the two rows",
+      "s_ic_cold": 31.42,
+      "s_ic_online": 21.4,
+      "s_ic_setup": 10.02,
+      "s_ic_setup_derivation": "result.json (run 39387473809) statistics.S.N: cold 31.4231, online 21.4024, setup 10.0207 (cold = setup + online, CPU per process from time.process_time() inside the pinned Sage process); S of the previous arm B in the same run: cold 4,429.3, online 4,416.4, setup 12.96",
+      "s_ic_online_status": "measured: setup and online are timed apart in this protocol",
       "reference_rho": {
-        "name": "matched signed-Frobenius Pollard rho (rho_frob.py / arms.sage), same scalars, interleaved, same process",
+        "name": "matched signed-Frobenius Pollard rho, one process per point, same run and host (rho_frob arm), 64/64 logs verified",
         "is_tuned_rho_rT770": false,
-        "s_rho_cold": 0.2603,
+        "s_rho_cold": 0.2661,
         "steps_over_floor": 0.997
       },
       "gap_cold_ic_over_rho": {
-        "value": 19400.0,
+        "value": 117.9,
         "ci95": [
-          16900.0,
-          22300.0
+          113.4,
+          122.6
         ],
-        "statistic": "geometric mean of CPU per complete ECDLP"
+        "statistic": "geometric mean of per-pair N cold CPU over the matched rho, 60 pairs, two-stage paired bootstrap (points, then pairs), 10,000 draws; CPU time; the previous row read 1.94e4 [1.69e4, 2.23e4] (a different run, host and unit, context only)"
       },
-      "gap_online_ic_over_rho": null,
+      "gap_online_ic_over_rho": {
+        "value": null,
+        "ci95": null,
+        "note": "online S is now measured (N 21.40, matched rho 0.2661 cold with no separable setup); the ratio of the two point estimates is about 80 and no interval was computed for it in this run"
+      },
       "gap_tuned_rho": "no tuned-rho comparison exists at n=19; the matched rho is a step-count-faithful (0.997x floor) Python/Sage walk, not a wall-time-tuned one",
       "gap_bernstein_lange": {
         "kind": "none",
         "note": "not measured or modelled at n=19"
       },
-      "evidence_tier": "exploratory (GitHub-hosted VM, no allocation receipt, no pinned CPU)",
-      "verified": "10/10 scalars, all three arms; 640/640 rho logs",
-      "source_figure": "tau-orbit base / rho 1.94e4 (1.69e4-2.23e4); baseline base / rho 1.77e5; baseline / tau-orbit 9.124 (8.122-10.270)",
-      "next_improvement": "Move the tau6 arm's per-relation Groebner decomposition out of Sage into native code (or the subspace two-summand oracle PDP2ht) and re-run against the same rho arm and scalars; the Sage solve, not the base, is the cost.",
+      "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 Hyper-V runner, runner GitHub Actions 1000365175, one pinned exposed vCPU; CPU-only; microcode unreadable; no isolated or nohz_full CPUs); repeated alternating pairs in the promoting run; not replayed on another host class",
+      "tier1_qualification": {
+        "status": "qualified at Tier 1 in the promoting run (repeated alternating pairs), with the gaps named in the experiment README",
+        "run": "39387473809 (cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020)",
+        "ratio": "cold CPU B / N 141.02 [136.75, 144.95] over 60 alternating pairs on 20 points (two-stage paired bootstrap)",
+        "controls": "A/A N/Naa 1.0003 [0.9964, 1.0035] inside [0.95, 1.05]; planted NX/N 140.8 [136.6, 144.6], lower bound above 1",
+        "gates": "24 of 24 true; time guard skipped 0 segments; the receipt was re-verified on a copy and result.json and result_table.md reproduce byte for byte"
+      },
+      "verified": "20/20 points; every B, N, Naa and NX process has identical counts, logs and relations per point; 302/302 rows valid; rho 64/64; native library one digest (d92534fa...)",
+      "source_figure": "B/N cold CPU 141.02 [136.75, 144.95]; online B/N 206.7 [203.3, 209.8]; setup B/N 1.29 [1.279, 1.297]; N cold gap to the matched rho 117.9 [113.4, 122.6]",
+      "next_improvement": "The Groebner solve is no longer the cost: it is 15.4% of N's cold CPU. Setup (Sage start-up and base) is 31.9% and the rest of the online stage (relation assembly and linear algebra) is 52.7%; move those out of Sage, then re-run against the same rho arm. The matched rho is also still Python/Sage, so the gap of 118 mixes a native IC against a non-native rho.",
       "sources": [
-        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/README.md",
-        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/results/summary.json",
-        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/report/report.pdf"
+        "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/README.md",
+        "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/run_github_39387473809/timed/panel/result.json",
+        "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/run_github_39387473809/timed/panel/result_table.md",
+        "cryptanalysis:benchmarks/20261020-n19-native-v3/report.pdf"
       ]
     },
     {
@@ -367,6 +381,60 @@
     }
   ],
   "other_records": [
+    {
+      "n": 19,
+      "a": 1,
+      "curve": {
+        "curve_id": "EC1N19Ckb1h01617b86df6c",
+        "alias": "E0/F_2^19 (volcano-ic surface curve)",
+        "r": 130873
+      },
+      "experiment": "cryptanalysis:experiments/volcano-ic/rho-arm-20261014",
+      "pipeline": {
+        "name": "tau-orbit dim-6 factor base, Sage Groebner decomposition, volcano-ic IC (arm tau6)",
+        "candidate_id": null,
+        "candidate_id_status": "no IC1 manifest was written for this arm",
+        "commit": "cryptanalysis 3f722e2e4897d956438c6bdf2becaf62dbde2f9e",
+        "protocol": "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/protocol.json (sha256 e474ff26af62188cf267db119ae59f1d74addd107bcd4008d41f0f62227d96ed)",
+        "run": "GitHub Actions 38520305068 (sagemath/sagemath:10.10, AMD EPYC 9V45)"
+      },
+      "targets": "10 planted scalars, each a complete ECDLP; 640 rho solves",
+      "unit": "one rho group operation of CPU time (2.170e-5 s), per sqrt(r)",
+      "s_ic_cold": 5154.13,
+      "s_ic_online": null,
+      "s_ic_online_status": "not separable: every IC run here is one complete ECDLP from an empty cache, so only cold is measured",
+      "reference_rho": {
+        "name": "matched signed-Frobenius Pollard rho (rho_frob.py / arms.sage), same scalars, interleaved, same process",
+        "is_tuned_rho_rT770": false,
+        "s_rho_cold": 0.2603,
+        "steps_over_floor": 0.997
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 19400.0,
+        "ci95": [
+          16900.0,
+          22300.0
+        ],
+        "statistic": "geometric mean of CPU per complete ECDLP"
+      },
+      "gap_online_ic_over_rho": null,
+      "gap_tuned_rho": "no tuned-rho comparison exists at n=19; the matched rho is a step-count-faithful (0.997x floor) Python/Sage walk, not a wall-time-tuned one",
+      "gap_bernstein_lange": {
+        "kind": "none",
+        "note": "not measured or modelled at n=19"
+      },
+      "evidence_tier": "exploratory (GitHub-hosted VM, no allocation receipt, no pinned CPU)",
+      "verified": "10/10 scalars, all three arms; 640/640 rho logs",
+      "source_figure": "tau-orbit base / rho 1.94e4 (1.69e4-2.23e4); baseline base / rho 1.77e5; baseline / tau-orbit 9.124 (8.122-10.270)",
+      "next_improvement": "Move the tau6 arm's per-relation Groebner decomposition out of Sage into native code (or the subspace two-summand oracle PDP2ht) and re-run against the same rho arm and scalars; the Sage solve, not the base, is the cost.",
+      "sources": [
+        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/README.md",
+        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/results/summary.json",
+        "cryptanalysis:experiments/volcano-ic/rho-arm-20261014/report/report.pdf"
+      ],
+      "role": "previous baseline (the tau6 arm, Sage Groebner per-shift solve), superseded by the native-solve producer",
+      "superseded_note": "Replaced on 2026-10-20 by the native-solve producer (run 39387473809), which measured this pipeline's B arm in the same run: cold B/N 141.02 [136.75, 144.95]. The numbers here are the row as landed (run 38520305068, exploratory tier, a different host and unit)."
+    },
     {
       "n": 41,
       "a": 0,
@@ -3232,6 +3300,23 @@
         "reading": "online gap 1.57x smaller; end-to-end cold gap unchanged to 0.08% (shared rank stage 87.0% of the cost)",
         "source": "cryptanalysis:experiments/koblitz-n83-onlineframe-20261019/run_github_39303742695/panel/result.json statistics.online_gap_cS_over_rT, online_gap_cF_over_rT, e2e_cold_gap_cS_over_rT, e2e_cold_gap_cF_over_rT"
       }
+    },
+    {
+      "n": 19,
+      "from": "tau6, Sage Groebner per-shift solve (arm B in the promoting run; the row as landed was run 38520305068)",
+      "to": "native per-shift solve (arm N), run 39387473809",
+      "cold_gap": [
+        16647.0,
+        117.9
+      ],
+      "online_gap": [
+        null,
+        null
+      ],
+      "gap_fields": "cold_gap holds the paired within-run gaps to the matched rho: B 16,647 (the ratio of B's and the rho's mean cold S, 4,429.3 / 0.2661, no interval) and N 117.9 [113.4, 122.6]; online gaps were not computed. Context only: the row as landed read 1.94e4 [1.69e4, 2.23e4] in run 38520305068 (another host, unit and scalars)",
+      "baseline_row_replaced": "n=19",
+      "cold_speedup": "cold CPU B / N 141.02 [136.75, 144.95] over 60 alternating pairs; online B/N 206.7 [203.3, 209.8]; setup B/N 1.29 [1.279, 1.297]; A/A 1.0003 [0.9964, 1.0035]; planted NX/N 140.8 [136.6, 144.6]; CPU time, one GitHub-hosted host class (AMD EPYC 9V74), not replayed",
+      "class": "engineering (the per-shift Groebner solve moved from Sage to native code); promoted by its own frozen primary (95% lower bound 136.75 above 1), every gate and both controls passed; Tier 1 as qualified in the promoting run"
     }
   ],
   "corrections": [
@@ -3288,7 +3373,7 @@
     "n=41, 53, 61: the gap to the tuned rho is measured by koblitz-s23-tuned-rho-20261015 (run 38777903922, PR #923; also n=47, 57, 59) on the one-word Gf2 kernel, because Gf2_128 does not exist for n<=64; a rho tuned on that kernel is not measured. Accounting only: no IC change, so no baseline row moves",
     "n=19 and n=41-61: no Bernstein-Lange walk has run; their BL figures are models or absent",
     "n=83: B's earlier baseline row (experiment on PR #918, not yet merged) is in other_records, followed by the stacked producer's former baseline row",
-    "n=19: no IC1 candidate manifest; online S not separable",
+    "n=19: online S is now measured (run 39387473809: N online 21.40, setup 10.02, cold 31.42 in that run's unit; matched rho cold 0.2661). IC1 manifests exist for the baseline and the native-solve candidate (IC1N19Ckb0fb1064PDP2polyboriRCsampleLAkernelTDpdpISO0hb41aed7ef80a and IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e). The cold gap to the matched rho is 117.9 [113.4, 122.6]; no online gap interval and no BL measure exist, and the matched rho is Python/Sage, not tuned for wall time. The earlier runs are invalid: v1 39307409409 (S0 failed), v2 39376405326 (every timed IC row crashed in the relation digest, TypeError; the v3 smoke job reproduced it in Sage), v3 first run 39384735073 (workflow defect, KeyError N19_RD, nothing timed).",
     "n=83: the baseline row is the index-build producer (koblitz-n83-indexbuild-20261020, run 39383739494): the closure + index-lift producer with its root index built by a batched-inverse state loop, a prefetched look-ahead insert loop and a lane-wise self-test (same index, byte-identical layout digests), promoted end to end over the closure + index-lift row at Tier 1 by 1.7406 [1.7129, 1.7676] (wall time on one host class; 36 alternating pairs, 12 points; root-index build 2.3574, setup 2.1446, cold 2.0756; the rank stage and the online phase are unchanged, 1.0008 and 0.9947; layout digests, probes per relation and scalars verified, probe law pass). Its end-to-end cold S is 0.484 against the tuned rho's 0.1163 (gap 4.158, a point estimate); the cold path is still 68.8% of the end-to-end cold cost; factor-base construction is charged to no arm. The closure + index-lift producer (7.6558 [7.2192, 8.1103] over the index-lift row, run 39335956567; Tier 1 qualified 7.4133 [7.1999, 7.6362], run 39359922687), the index-lift producer (1.0344 [1.0324, 1.0364] over the rank-probe producer, run 39290913632), the rank-probe producer (1.1033 [1.1010, 1.1056] over the rank-cut producer, run 39214027289), the rank-cut producer (1.3336 [1.3300, 1.3377] over the stacked producer, run 38891404048), the stacked producer (3.2391 [2.9809, 3.5240] over the probe-pipeline producer, run 38862448935) and B's row (experiment on PR #918, not merged yet) are in Other verified records; the run has no cross-host replay and no BL re-run. The closure's earlier comparison (koblitz-n83-closure-20261019, run 39305259093: 6.4444 [6.0993, 6.7853] over the rank-probe producer) is superseded by the paired closure + index-lift result (run 39335956567). The nested K899 base under the rank-probe producer is promoted over the rank-probe producer at K600 (koblitz-n83-k899-20261019, run 39306394645: 1.1873 [1.1247, 1.2523]) but has not been combined with this producer; next: a frozen protocol for K899 (or the remaining index build, self-test and setup) on the index-build producer against the current row, with the K899 index build (44.3 s) and the slot cliff at K900 in view. The rotation-key producer (koblitz-n83-rotkey-20261019, run 39299176306) is not promoted: against the rank-probe producer its end-to-end cold ratio is 0.9983 [0.9701, 1.0227], not separated, with every gate and both controls passing; there is nothing to stack on index-lift or the closure, and no combined run is pending for it. Stacking note: the online-frame stage (koblitz-n83-onlineframe-20261019, run 39303742695: online cS / cF 1.5733 [1.5714, 1.5753] over 64 points, end-to-end 1.0008 [1.0006, 1.0010], a stage improvement over the rank-probe producer) is a different producer stage from the index lift (the one-target online scan's probe loop, not the index build) and from the closure; it stacks with them and is recorded in other_records, not in this row, until a combined run is made.",
     "n=83: the section 5a 0 / 0.1 / 1 GAE band for the IC / rho gap is uncomputable on both n=83 rows: the frozen producer emits no group-operation counts (group additions, scalar multiplications, canonicalizations, fold rotations, index inserts). It stays uncomputable after the K1 replay (koblitz-n83-replay-20261017, run 39007026856, replay_pass, archived 2026-10-17), which timed factor-base construction but used the same producer; closing it needs a producer that emits the counts, in a new protocol",
     "n=83 (resolved 2026-10-17): factor-base construction time X is measured, X = 427.5 ms (65.5 ms over the retained-file load; koblitz-n83-replay-20261017, run 39007026856, Intel Xeon 8573C). Every-phase stacked R 3.2357 and cold S 9.6950 (illustrative, mixes hosts) against the row's 3.2391 and 9.6805; the row's figures are unchanged. B's row (other_records) uses the same base and recipe; its cold S was not recomputed"
