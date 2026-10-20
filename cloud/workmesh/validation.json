@@ -1,0 +1,51 @@
+{
+  "validated_at": "2026-10-20",
+  "checks": [
+    {
+      "check": "Bash syntax for bootstrap.sh",
+      "exit_code": 0
+    },
+    {
+      "check": "ShellCheck -S warning for bootstrap.sh",
+      "exit_code": 0
+    },
+    {
+      "check": "Lean installer opt-in regressions",
+      "passed": 2,
+      "failed": 0,
+      "exit_code": 0
+    },
+    {
+      "check": "Complete bootstrap behavior suite",
+      "passed": 21,
+      "failed": 3,
+      "total": 24,
+      "exit_code": 1,
+      "failures": [
+        "test_go_older_than_toolchain_selection_is_not_retained",
+        "test_kernel_tailscale_requests_magicdns",
+        "test_userspace_tailscale_uses_key_file_and_reuses_socket"
+      ]
+    }
+  ],
+  "behavioral_tests_passed": 21,
+  "bootstrap_sha256": "545dea0a0bb25cd10a7aa179f5461edb06391543a72afc62a71b31f46082f04f",
+  "limits": [
+    "Local behavior uses temporary state, fake vendor CLIs, real processes and loopback HTTP",
+    "No full cloud image provisioning or deployment",
+    "No live OAuth, tailnet enrollment, GPU or remote peer validation",
+    "No complete distro/architecture matrix"
+  ],
+  "previous_validation_snapshot": {
+    "bootstrap_sha256": "26b45a10c96c1e245e4365e33499674e0aa3201b14ddffc2765b9c488d97d21c",
+    "behavioral_tests_passed": 22,
+    "note": "Preserved previous recorded validation; it did not match the script bytes at the reviewed PR head."
+  },
+  "current_review": {
+    "reviewed_head": "ed7643fb052ae963375f57d48850a7b7bfe526fd",
+    "bootstrap_sha256": "545dea0a0bb25cd10a7aa179f5461edb06391543a72afc62a71b31f46082f04f",
+    "test_bootstrap_sha256": "86fe5f2c7076103aa4e20cf56248e96c914749044840f509cfc8275a649afec2",
+    "README_sha256": "7b188a134cff027616bfd630b5aee6dc2847306f3caac1db080b4d7bf6c427e9",
+    "coverage": "INSTALL_LEAN works with INSTALL_CLIS=no; INSTALL_CLIS=yes does not fetch Lean when INSTALL_LEAN=no."
+  }
+}

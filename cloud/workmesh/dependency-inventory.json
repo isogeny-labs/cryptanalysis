@@ -1,0 +1,241 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-10-19",
+  "scope": "Targeted review of build manifests, existing workspace/cloud bootstrap scripts, node/mesh documentation and selected experiment imports. Not an exhaustive transitive/dynamic dependency inventory.",
+  "node_name_inference": "The user's 'Kern' is interpreted as Cairn because crypto/cryptanalysis refer to aburan28/cairn nodes and agents.",
+  "repositories": [
+    {
+      "repository": "aburan28/crypto",
+      "reference": "main",
+      "sources": [
+        {
+          "path": "Cargo.toml",
+          "blob_sha": "c9ddd0fe8c2d14eb2ac16f6f8c7c6e3abbc77383"
+        },
+        {
+          "path": "README.md",
+          "note": "Rust toolchain, Redis-backed campaign tooling, Cairn collaboration and custom F4/F5 implementations"
+        },
+        {
+          "path": "secp256k1_cm_audit/glv_hnp_common.py",
+          "note": "sympy and fpylll"
+        },
+        {
+          "path": "cd_attack/scripts/msolve_bridge.py",
+          "note": "external msolve"
+        },
+        {
+          "path": "tpu/requirements.txt",
+          "blob_sha": "9bcc6a8230959f2129521e124ae90d38e9e95ac4"
+        }
+      ]
+    },
+    {
+      "repository": "aburan28/cryptanalysis",
+      "reference": "claude/cryptanalysis-repo-setup-p59kek",
+      "sources": [
+        {
+          "path": "CMakeLists.txt",
+          "blob_sha": "13bbd9bae1ccc30c43381bdddc22ea14093f892e",
+          "note": "CMake >=3.16; C11 plus __int128; pthreads; optional CUDA/cuPQC"
+        },
+        {
+          "path": ".cursor/install.sh",
+          "blob_sha": "62a2b7c9b8ffe660ae2167644c282dc6863722a7",
+          "note": "Rust bindings, Go, SAT backends and lint/debug gates"
+        },
+        {
+          "path": "suite/python/indexcalc/requirements-sat.txt",
+          "blob_sha": "41150a4b6da812a9fd99352e092b9b6648c8568b"
+        },
+        {
+          "path": "cloud/README.md",
+          "blob_sha": "b278063d143d6b3a524163a30a541ec6af832f3c",
+          "note": "Modal, RunPod, Cursor CLI, AWS tooling and Cairn runners"
+        },
+        {
+          "path": "cloud/cairn_runner.sh",
+          "blob_sha": "e7272c2d4a5001ceb789cddff41a35d650cf63e9"
+        },
+        {
+          "path": "docs/SAGE_RELEASE.md",
+          "blob_sha": "08b3854da9ba935fffc126d13c37e1450022d779"
+        },
+        {
+          "path": "scripts/sage-release-manifest.json",
+          "blob_sha": "529919b0b0f878c1bc3b58a5063bd20f39e14e34",
+          "sage_commit": "671dfa344f4cc4a6d54f343cbfd1272ee81698c9"
+        }
+      ]
+    },
+    {
+      "repository": "aburan28/cairn",
+      "reference": "main",
+      "sources": [
+        {
+          "path": "README.md",
+          "blob_sha": "ad648a9157474568a9df80741d1044f87bb0e549"
+        },
+        {
+          "path": "Cargo.toml",
+          "blob_sha": "c8c3d62276a52330bb12bca5cb91e8d62ede9bf6",
+          "rust_minimum": "1.89"
+        },
+        {
+          "path": "docs/fleet.md",
+          "blob_sha": "4783699e5e9784f24258c400753ae4c76e696bb9"
+        },
+        {
+          "path": "docs/agent.md",
+          "blob_sha": "abc0e49dd02f843f6c3c71a07980fbeef1394280"
+        },
+        {
+          "path": "docs/two-nodes.md",
+          "blob_sha": "3ede5fdf404e1200f17854e02053da3cd9ba6659"
+        }
+      ]
+    },
+    {
+      "repository": "aburan28/conductor",
+      "reference": "d99a2bbb23d5e59862d7614886e414c95c3dfe13",
+      "sources": [
+        {
+          "path": "go.mod",
+          "blob_sha": "9b478ed5b7bc8dfeed39555865fcad53a591db30",
+          "go_directive": "1.26.9"
+        },
+        {
+          "path": "scripts/install-release.sh",
+          "blob_sha": "6e0342642134471a098c6def289ee5b457aa9993"
+        },
+        {
+          "path": "cmd/conductor/up.go",
+          "blob_sha": "50bc8f120515f16d28a7279bd65a578da9864be5"
+        },
+        {
+          "path": "cmd/conductor/integrate.go",
+          "blob_sha": "4d5e414bfa8774a076ca45f996d99d35c862c013"
+        },
+        {
+          "path": "docs/OPERATIONS.md",
+          "blob_sha": "c9e17bd072721deddc502ac2730da9ac7aa87e5e"
+        },
+        {
+          "path": "README.md",
+          "note": "Postgres 16+, shared API, mTLS peering, DNS SRV, tool integration; peers do not replicate task databases"
+        }
+      ],
+      "release_observation": {
+        "tag": "v0.1.5",
+        "assets_available": false,
+        "note": "Auto installer falls back to source; this observation can change."
+      }
+    },
+    {
+      "repository": "aburan28/crypto-autoresearcher",
+      "reference": "main",
+      "sources": [
+        {
+          "path": "requirements-dev.txt",
+          "blob_sha": "973415e121338030a4cbaa15fb981ab570269a95",
+          "requirements": [
+            "PyYAML>=6.0",
+            "sympy>=1.12",
+            "pytest>=8.0",
+            "numpy>=1.26"
+          ]
+        },
+        {
+          "path": "requirements-agent.txt",
+          "blob_sha": "954ad4643665b7655e5ed6125c3a23e1fa87986c",
+          "requirements": [
+            "langgraph>=1.0,<2",
+            "langchain-core>=1.0,<2",
+            "langgraph-checkpoint-sqlite>=3.0,<4"
+          ],
+          "installation": "INSTALL_AGENT_STACK=yes creates a separate virtual environment and api-agent-python launcher."
+        }
+      ]
+    },
+    {
+      "repository": "aburan28/crypto-lean",
+      "reference": "main",
+      "sources": [
+        {
+          "path": "lean-toolchain",
+          "blob_sha": "a6aff065db2882c535684f8c5bcd4f16e9a23915",
+          "toolchain": "leanprover/lean4:v4.35.0"
+        }
+      ]
+    },
+    {
+      "repository": "aburan28/ecdlp-cost-challenge",
+      "reference": "main",
+      "sources": [
+        {
+          "path": "README.md",
+          "blob_sha": "54cad84b86af213cd2492856551c2862b16bef02",
+          "note": "Independent Sage checks for challenge instances"
+        }
+      ]
+    }
+  ],
+  "selected_science_packages": [
+    "numpy",
+    "scipy",
+    "sympy",
+    "matplotlib",
+    "pandas",
+    "networkx",
+    "PyYAML",
+    "pytest",
+    "gmpy2",
+    "python-flint",
+    "fpylll",
+    "cypari2",
+    "cysignals",
+    "PARI/GP",
+    "Singular",
+    "FLINT",
+    "NTL",
+    "fplll",
+    "SageMath (stock optional)",
+    "JupyterLab",
+    "ruff",
+    "mypy",
+    "z3-solver"
+  ],
+  "pins": {
+    "msolve": {
+      "version": "v0.11.0",
+      "sha256": "e33928d8d0b064496ec750c7ee5ff4782fda362a0857a729d9761f93dbf259b5",
+      "source": "https://github.com/algebraic-solving/msolve/releases/tag/v0.11.0",
+      "note": "No conda-forge msolve package observed; build from source."
+    },
+    "python_sat": "1.9.dev15",
+    "pycryptosat": "5.15.0",
+    "jax": "0.4.35",
+    "jaxlib": "0.4.35"
+  },
+  "services_not_implicitly_provisioned": [
+    "Shared Redis backend used by optional crypto campaign modes",
+    "Existing Conductor mesh CA and application project credentials",
+    "Cairn fleet membership and remote peer key distribution",
+    "Host NVIDIA drivers / container runtime GPU configuration",
+    "Kata guest/kernel and hypervisor configuration"
+  ],
+  "external_or_specialized": [
+    "Licensed Magma/FGb",
+    "NVIDIA cuPQC",
+    "TPU libtpu",
+    "FPGA vendor synthesis SDKs",
+    "Custom patched Sage native extensions"
+  ],
+  "validation_limits": [
+    "No live OAuth or tailnet enrollment performed",
+    "No user cloud instances changed",
+    "Full provisioning and image build not executed",
+    "Provider examples not deployed",
+    "No exhaustive architecture/distro matrix run"
+  ]
+}
