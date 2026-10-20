@@ -1,0 +1,1882 @@
+{
+ "label": "LOCAL diagnostic on the cloud-agent VM (shared, loaded); not timing evidence",
+ "online_cS_over_cF_local": {
+  "per_point": {
+   "s000": 1.6366243034435242,
+   "s001": 1.4027514300621544,
+   "s002": 2.1081180598740845,
+   "s003": 0.6698565276485039,
+   "s004": 1.3934067399370593,
+   "s005": 1.3225609524332405
+  },
+  "points": [
+   "s000",
+   "s001",
+   "s002",
+   "s003",
+   "s004",
+   "s005"
+  ],
+  "ratio_of_means": 1.4788929456282263,
+  "receipt": "of-smoke2"
+ },
+ "points": {
+  "q0": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 1987852
+  },
+  "s000": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 4552494
+  },
+  "s001": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 3479100
+  },
+  "s002": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 110092
+  },
+  "s003": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 307324
+  },
+  "s004": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 2450614
+  },
+  "s005": {
+   "arms": [
+    "cF",
+    "cFX",
+    "cFaa",
+    "cS"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 630077
+  },
+  "s031": {
+   "arms": [
+    "kP"
+   ],
+   "identical": {
+    "ops": true,
+    "relation": true,
+    "relation_checks": true,
+    "root_calls": true,
+    "scalar": true
+   },
+   "probes": 4233162
+  }
+ },
+ "receipts": [
+  "of-smoke",
+  "of-smoke2"
+ ],
+ "rows": [
+  {
+   "arm": "cFX",
+   "issues": [
+    "nonzero exit 1",
+    "missing verified=1",
+    "ic five phases do not sum to the online interval"
+   ],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 994008,
+    "s3plant_checked_states": 5988,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 935.2274229999999,
+   "online_solve": "frame_s3plant",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030803999999999998,
+   "receipt": "of-smoke",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 1,
+   "status": "invalid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 645.056241,
+   "online_solve": "s3",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.028710000000000003,
+   "receipt": "of-smoke",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 2,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 442.46880100000004,
+   "online_solve": "frame",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.029402,
+   "receipt": "of-smoke",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 3,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 1175.343715,
+   "online_solve": "frame",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.046584,
+   "receipt": "of-smoke",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 4,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 1893.469816,
+   "point": "s000",
+   "receipt": "of-smoke",
+   "scalar": "7199358199696353",
+   "serial": 5,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 1753.683227,
+   "online_solve": "s3",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030447,
+   "receipt": "of-smoke",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 6,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [
+    "nonzero exit 1",
+    "missing verified=1",
+    "ic five phases do not sum to the online interval"
+   ],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2276358,
+    "s3plant_checked_states": 13713,
+    "s3plant_swapped_pairs": 2276358,
+    "swapped_pairs": 1
+   },
+   "online_ms": 2571.440843,
+   "online_solve": "frame_s3plant",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.031934000000000004,
+   "receipt": "of-smoke",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 7,
+   "status": "invalid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 1046.099661,
+   "online_solve": "frame",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.033488000000000004,
+   "receipt": "of-smoke",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 8,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 764.563658,
+   "online_solve": "frame",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.031256,
+   "receipt": "of-smoke",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 9,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 858.1377540000001,
+   "online_solve": "frame",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.029157,
+   "receipt": "of-smoke",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 10,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 646.205772,
+   "point": "s001",
+   "receipt": "of-smoke",
+   "scalar": "4889484062284780",
+   "serial": 11,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 1232.293332,
+   "online_solve": "s3",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032255,
+   "receipt": "of-smoke",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 12,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [
+    "nonzero exit 1",
+    "missing verified=1",
+    "ic five phases do not sum to the online interval"
+   ],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1739680,
+    "s3plant_checked_states": 10480,
+    "s3plant_swapped_pairs": 1739680,
+    "swapped_pairs": 1
+   },
+   "online_ms": 1601.590274,
+   "online_solve": "frame_s3plant",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032758,
+   "receipt": "of-smoke",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 13,
+   "status": "invalid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 32.607845000000005,
+   "online_solve": "frame",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.031633,
+   "receipt": "of-smoke",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 14,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [
+    "nonzero exit 1",
+    "missing verified=1",
+    "ic five phases do not sum to the online interval"
+   ],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 55112,
+    "s3plant_checked_states": 332,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 62.385577999999995,
+   "online_solve": "frame_s3plant",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.040665,
+   "receipt": "of-smoke",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 15,
+   "status": "invalid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 1164.147025,
+   "point": "s002",
+   "receipt": "of-smoke",
+   "scalar": "8108865342906259",
+   "serial": 16,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 56.245944,
+   "online_solve": "s3",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032143,
+   "receipt": "of-smoke",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 17,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 43.50947,
+   "online_solve": "frame",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030343000000000002,
+   "receipt": "of-smoke",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 18,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 85.555386,
+   "online_solve": "frame",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.050274,
+   "receipt": "of-smoke",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 19,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [
+    "nonzero exit 1",
+    "missing verified=1",
+    "ic five phases do not sum to the online interval"
+   ],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 153716,
+    "s3plant_checked_states": 926,
+    "s3plant_swapped_pairs": 153716,
+    "swapped_pairs": 1
+   },
+   "online_ms": 175.568228,
+   "online_solve": "frame_s3plant",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.02903,
+   "receipt": "of-smoke",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 20,
+   "status": "invalid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 103.004142,
+   "online_solve": "frame",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032448,
+   "receipt": "of-smoke",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 21,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 507.268022,
+   "point": "s003",
+   "receipt": "of-smoke",
+   "scalar": "727257369971504",
+   "serial": 22,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 120.031824,
+   "online_solve": "s3",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032495,
+   "receipt": "of-smoke",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 23,
+   "status": "valid"
+  },
+  {
+   "arm": "kP",
+   "issues": [],
+   "logs_equal_archived": true,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 1425.520248,
+   "online_solve": "s3",
+   "ops": 4233162,
+   "point": "s031",
+   "rank_frame": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "rank_padd": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 303
+   },
+   "rank_stage_ms": 255573.99613699998,
+   "receipt": "of-smoke",
+   "relation": [
+    73121,
+    3842,
+    69415,
+    86167
+   ],
+   "relation_checks": 1,
+   "root_calls": 2116666,
+   "scalar": 231777731022397,
+   "serial": 164,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 994008,
+    "s3plant_checked_states": 5988,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 1086.320084,
+   "online_solve": "frame_s3plant",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.033724,
+   "receipt": "of-smoke2",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 1,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 709.890027,
+   "online_solve": "s3",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030589,
+   "receipt": "of-smoke2",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 2,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 591.150383,
+   "online_solve": "frame",
+   "ops": 1987852,
+   "point": "q0",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.041025,
+   "receipt": "of-smoke2",
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "scalar": 3141592653589793,
+   "serial": 3,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 2267.766226,
+   "online_solve": "frame",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.048318,
+   "receipt": "of-smoke2",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 4,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 3313.927352,
+   "point": "s000",
+   "receipt": "of-smoke2",
+   "scalar": "7199358199696353",
+   "serial": 5,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 3711.48132,
+   "online_solve": "s3",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030889000000000003,
+   "receipt": "of-smoke2",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 6,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2276358,
+    "s3plant_checked_states": 13713,
+    "s3plant_swapped_pairs": 2276358,
+    "swapped_pairs": 1
+   },
+   "online_ms": 5991.197019,
+   "online_solve": "frame_s3plant",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.045225,
+   "receipt": "of-smoke2",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 7,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 2790.397125,
+   "online_solve": "frame",
+   "ops": 4552494,
+   "point": "s000",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.038741,
+   "receipt": "of-smoke2",
+   "relation": [
+    58321,
+    25888,
+    11297,
+    99164
+   ],
+   "relation_checks": 1,
+   "root_calls": 2276358,
+   "scalar": 7199358199696353,
+   "serial": 8,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 1987.369214,
+   "online_solve": "frame",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 4.069517,
+   "receipt": "of-smoke2",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 9,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 1873.94993,
+   "online_solve": "frame",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.034131999999999996,
+   "receipt": "of-smoke2",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 10,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 1259.321628,
+   "point": "s001",
+   "receipt": "of-smoke2",
+   "scalar": "4889484062284780",
+   "serial": 11,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 2787.785007,
+   "online_solve": "s3",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.03073,
+   "receipt": "of-smoke2",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 12,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1739680,
+    "s3plant_checked_states": 10480,
+    "s3plant_swapped_pairs": 1739680,
+    "swapped_pairs": 1
+   },
+   "online_ms": 4574.914785,
+   "online_solve": "frame_s3plant",
+   "ops": 3479100,
+   "point": "s001",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.034986,
+   "receipt": "of-smoke2",
+   "relation": [
+    699,
+    32193,
+    35970,
+    91008
+   ],
+   "relation_checks": 1,
+   "root_calls": 1739680,
+   "scalar": 4889484062284780,
+   "serial": 13,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 64.13095100000001,
+   "online_solve": "frame",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.040142000000000004,
+   "receipt": "of-smoke2",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 14,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 55112,
+    "s3plant_checked_states": 332,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 144.516645,
+   "online_solve": "frame_s3plant",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.04381,
+   "receipt": "of-smoke2",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 15,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 2414.051199,
+   "point": "s002",
+   "receipt": "of-smoke2",
+   "scalar": "8108865342906259",
+   "serial": 16,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 135.195616,
+   "online_solve": "s3",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.043371,
+   "receipt": "of-smoke2",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 17,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 65.44012000000001,
+   "online_solve": "frame",
+   "ops": 110092,
+   "point": "s002",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.034968,
+   "receipt": "of-smoke2",
+   "relation": [
+    19687,
+    8943,
+    3889,
+    12520
+   ],
+   "relation_checks": 1,
+   "root_calls": 55112,
+   "scalar": 8108865342906259,
+   "serial": 18,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 212.626821,
+   "online_solve": "frame",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.035639000000000004,
+   "receipt": "of-smoke2",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 19,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 153716,
+    "s3plant_checked_states": 926,
+    "s3plant_swapped_pairs": 153716,
+    "swapped_pairs": 1
+   },
+   "online_ms": 449.79881,
+   "online_solve": "frame_s3plant",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.031911,
+   "receipt": "of-smoke2",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 20,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_ms": 74.401848,
+   "online_solve": "frame",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.040242,
+   "receipt": "of-smoke2",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 21,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 564.53569,
+   "point": "s003",
+   "receipt": "of-smoke2",
+   "scalar": "727257369971504",
+   "serial": 22,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 142.429464,
+   "online_solve": "s3",
+   "ops": 307324,
+   "point": "s003",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032403,
+   "receipt": "of-smoke2",
+   "relation": [
+    67340,
+    45323,
+    23304,
+    83138
+   ],
+   "relation_checks": 1,
+   "root_calls": 153716,
+   "scalar": 727257369971504,
+   "serial": 23,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 2429.575059,
+   "point": "s004",
+   "receipt": "of-smoke2",
+   "scalar": "3625347941393307",
+   "serial": 24,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 843.6135310000001,
+   "online_solve": "s3",
+   "ops": 2450614,
+   "point": "s004",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030025000000000003,
+   "receipt": "of-smoke2",
+   "relation": [
+    88373,
+    63384,
+    19601,
+    98918
+   ],
+   "relation_checks": 1,
+   "root_calls": 1225412,
+   "scalar": 3625347941393307,
+   "serial": 25,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1225412,
+    "s3plant_checked_states": 7382,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 1271.457662,
+   "online_solve": "frame_s3plant",
+   "ops": 2450614,
+   "point": "s004",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.032871,
+   "receipt": "of-smoke2",
+   "relation": [
+    88373,
+    63384,
+    19601,
+    98918
+   ],
+   "relation_checks": 1,
+   "root_calls": 1225412,
+   "scalar": 3625347941393307,
+   "serial": 26,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 533.3149090000001,
+   "online_solve": "frame",
+   "ops": 2450614,
+   "point": "s004",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.041717,
+   "receipt": "of-smoke2",
+   "relation": [
+    88373,
+    63384,
+    19601,
+    98918
+   ],
+   "relation_checks": 1,
+   "root_calls": 1225412,
+   "scalar": 3625347941393307,
+   "serial": 27,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 605.43236,
+   "online_solve": "frame",
+   "ops": 2450614,
+   "point": "s004",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.030553999999999998,
+   "receipt": "of-smoke2",
+   "relation": [
+    88373,
+    63384,
+    19601,
+    98918
+   ],
+   "relation_checks": 1,
+   "root_calls": 1225412,
+   "scalar": 3625347941393307,
+   "serial": 28,
+   "status": "valid"
+  },
+  {
+   "arm": "cFaa",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 187.98889599999998,
+   "online_solve": "frame",
+   "ops": 630077,
+   "point": "s005",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.043615999999999995,
+   "receipt": "of-smoke2",
+   "relation": [
+    48775,
+    70861,
+    11827,
+    56378
+   ],
+   "relation_checks": 1,
+   "root_calls": 315068,
+   "scalar": 1538390862823217,
+   "serial": 29,
+   "status": "valid"
+  },
+  {
+   "arm": "rT",
+   "issues": [],
+   "online_ms": 6108.364578,
+   "point": "s005",
+   "receipt": "of-smoke2",
+   "scalar": "1538390862823217",
+   "serial": 30,
+   "status": "valid"
+  },
+  {
+   "arm": "cF",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 146.80546,
+   "online_solve": "frame",
+   "ops": 630077,
+   "point": "s005",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.043212,
+   "receipt": "of-smoke2",
+   "relation": [
+    48775,
+    70861,
+    11827,
+    56378
+   ],
+   "relation_checks": 1,
+   "root_calls": 315068,
+   "scalar": 1538390862823217,
+   "serial": 31,
+   "status": "valid"
+  },
+  {
+   "arm": "cS",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 194.159169,
+   "online_solve": "s3",
+   "ops": 630077,
+   "point": "s005",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.029332,
+   "receipt": "of-smoke2",
+   "relation": [
+    48775,
+    70861,
+    11827,
+    56378
+   ],
+   "relation_checks": 1,
+   "root_calls": 315068,
+   "scalar": 1538390862823217,
+   "serial": 32,
+   "status": "valid"
+  },
+  {
+   "arm": "cFX",
+   "issues": [],
+   "logs_equal_archived": null,
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 315068,
+    "s3plant_checked_states": 1898,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_ms": 371.711367,
+   "online_solve": "frame_s3plant",
+   "ops": 630077,
+   "point": "s005",
+   "rank_frame": null,
+   "rank_padd": null,
+   "rank_stage_ms": 0.050949,
+   "receipt": "of-smoke2",
+   "relation": [
+    48775,
+    70861,
+    11827,
+    56378
+   ],
+   "relation_checks": 1,
+   "root_calls": 315068,
+   "scalar": 1538390862823217,
+   "serial": 33,
+   "status": "valid"
+  }
+ ]
+}

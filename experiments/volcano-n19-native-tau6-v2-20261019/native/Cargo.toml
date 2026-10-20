@@ -1,0 +1,17 @@
+[package]
+name = "tau6-native"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Native per-relation solve for the n = 19 tau6 arm (no dependencies).
+# Loaded by ../native_binding.py (ctypes) from ../arm.sage. v2 of ../../volcano-n19-native-tau6-20261019/native.
+[lib]
+name = "tau6native"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = 3
+codegen-units = 1
+panic = "abort"
