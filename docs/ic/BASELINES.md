@@ -443,8 +443,16 @@ only once it moves an end-to-end `S` above.
   (`TypeError`, Sage Integer not JSON serializable), so there is no ratio.
   Its protocol has one process per arm per point, not the repeated
   alternating pairs the Tier 1 CPU isolation gate requires, so a completed
-  run would not have been a qualified Tier 1 speedup on that criterion. The
-  n=19 row, Figure 1 and the ratchet history are unchanged.
+  run would not have been a qualified Tier 1 speedup on that criterion.
+  The v3 run
+  ([39384735073](https://github.com/aburan28/cryptanalysis/actions/runs/39384735073),
+  repeated alternating pairs, Sage smoke gate) is invalid as well: its
+  untimed `sage-smoke` job failed in the third step, a workflow defect
+  (`KeyError: 'N19_RD'`, an environment variable read in the step that
+  exported it), after 2 s and before any experiment code ran; the timed job
+  was skipped. Online `S` is still not measured and the v2 crash's Sage
+  reproduction did not run. The n=19 row, Figure 1 and the ratchet history
+  are unchanged.
 - **n=83, §5a band:** the 0 / 0.1 / 1 GAE band for the IC / rho gap is
   uncomputable on both n=83 rows, because the frozen producer emits no
   group-operation counts. The K1 replay (archived 2026-10-17) timed

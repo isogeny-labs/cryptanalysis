@@ -1,12 +1,13 @@
 ---
-title: "n = 19 tau6 native per-shift solve, protocol v3 (frozen; Sage smoke gate + repeated alternating pairs)"
+title: "n = 19 tau6 native per-shift solve, protocol v3 (run 39384735073: invalid)"
 date: 2026-10-20
 ---
 
-# n = 19 tau6 native per-shift solve, protocol v3
+# n = 19 tau6 native per-shift solve, protocol v3 (run 39384735073: invalid)
 
-**Status (2026-10-20): frozen before any timing. The run is launched, and
-no result exists yet.** v3 replaces
+**Status (2026-10-20): run, invalid.** Run 39384735073 failed in its first
+job before any experiment code ran, so there is no ratio. See
+[Result](#result-run-39384735073). Protocol v3 was frozen before any timing. v3 replaces
 [v2](../volcano-n19-native-tau6-v2-20261019/README.md). v2's Tier 1 run,
 [39376405326](https://github.com/aburan28/cryptanalysis/actions/runs/39376405326),
 was invalid: S0 on 2,682 systems, O1 and the field check passed, but every
@@ -156,8 +157,83 @@ The workflow is
   The push of commit `92d85f14` started
   [run 39384735073](https://github.com/aburan28/cryptanalysis/actions/runs/39384735073):
   first job `sage-smoke`, then job `timed`, which needs it.
-- No result has been read. This README, the figures and the smoke and
-  diagnosis files do not trigger a run.
+- This README, the figures and the smoke and diagnosis files do not
+  trigger a run.
+
+## Result (run 39384735073)
+
+**Verdict: invalid. No improvement, regression or null result is claimed.**
+
+![Run outcome. Source: [figures/make_result_figure.py](figures/make_result_figure.py);
+vector: [figures/result.svg](figures/result.svg).](figures/result.png)
+
+- **What happened.** Job `sage-smoke` queued about 20 min, started at
+  07:29:16 UTC and failed at 07:30:20 in step 3, "Freeze runner and source
+  identity". Job `timed` needs it and was skipped. Steps 4 to 9 (planted
+  corruptions, toolchain and build, Sage image, `digest_repro.sage`, the
+  smoke part and the smoke gate) were skipped. Only the always-run upload
+  step ran.
+- **Cause.** Step 3 appends `N19_RD` to `$GITHUB_ENV` and, in the same
+  step, a Python heredoc reads `os.environ['N19_RD']`. A `$GITHUB_ENV` write
+  reaches later steps only, so the lookup raised `KeyError: 'N19_RD'` and the
+  step exited 1. This is a defect in
+  [`n19-native-tau6-v3.yml`](../../.github/workflows/n19-native-tau6-v3.yml),
+  not in the protocol, the solve or the verifier. The heredoc should read
+  `$rd` (for example through `os.environ.get('N19_RD', ...)` after export, or
+  by passing `rd` as an argument).
+- **Archive.** [`run_github_39384735073/`](run_github_39384735073/) holds the
+  one artifact (3,040 bytes, `smoke/host-probe.json`, sha256 `d8da435a...`),
+  `run-record.json` (jobs, steps, failure) and `verify-local-copy/`. There
+  was no `result.json` or `result_table.md` to reproduce. `verify_receipt.py`
+  was run on a copy of the archive (parts smoke and timed): both give
+  `invalid`, every data gate false, `schedule_and_panel_regenerate` true, and
+  `result_table.md` has `n/a` in every row. Those two files are the local
+  verifier's output on an incomplete archive, kept for the record; they are
+  not a CI receipt.
+- **Host seen.** AMD EPYC 7763, 4 vCPU (2 cores, 2 threads each), no AVX-512,
+  Ubuntu 24.04.5, kernel 6.17.0-1022-azure, microcode unreadable
+  (`0xffffffff`), the whole job in one cgroup of the hosted-compute agent.
+  Nothing was timed on it.
+
+### Frozen rule, as applied
+
+| item | outcome |
+| --- | --- |
+| primary R = sum cold CPU(B) / sum cold CPU(N), 60 pairs | not computed (0 of 60 pairs) |
+| improvement iff 95% lower bound > 1 | not applicable; verdict invalid |
+| A/A in [0.95, 1.05] | not measured (0 of 60 pairs) |
+| planted NX/N lower bound > 1 | not measured (0 of 20 pairs) |
+| gates | sage-smoke failed; all other gates unevaluated, so false |
+| time guard | not reached |
+
+### Secondaries
+
+Online S, setup, S per arm, the gap to the matched rho, the solve's share,
+the per-pair spread and the order effect were all not measured. No number is
+reported for them.
+
+### Root cause of v2's crash
+
+**Not confirmed and not refuted.** `diagnosis/digest_repro.sage` never ran,
+so there is no Sage output and no recorded types. The standing support is
+unchanged: v2's archived tracebacks and the preparser emulation in
+[`diagnosis/`](diagnosis/README.md), neither of which ran Sage.
+
+### Tier 1 isolation assessment
+
+No Tier 1 claim exists, since nothing was timed. The gaps that remain for a
+future run are the ones in the frozen design: a container affinity mask
+records placement, not host-wide exclusivity; one hosted runner and one host
+class (here AMD EPYC 7763); microcode unreadable; no replay on a second
+machine; CPU-only. The workflow defect above is a further gap: the smoke
+gate has now never executed, so no run has shown that the v3 smoke path
+(Sage image, 20 smoke gates) works end to end.
+
+### Next step
+
+Fix step 3 in the workflow, re-freeze nothing in `protocol.json` or
+`schedule.json`, and launch a new run. Not done here: the task was to
+collect this run, not to re-run it.
 
 ## Files
 
