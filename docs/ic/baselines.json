@@ -1945,7 +1945,7 @@
     {
       "n": 83,
       "a": 1,
-      "role": "REFERENCE ROW, not an IC improvement and not the baseline: known-log base (K=220 seeded scalar orbits, no relations, LAnone) = BSGS on the Frobenius quotient, bounded by the DKM non-adaptive line, so it can never beat rho. Whether it may hold the IC row is pending the owner's decision after the L1 multiplier-closure result (claude/n83-closure). Owner's ruling 2026-10-19: measure both, decide later.",
+      "role": "REFERENCE ROW, not an IC improvement and not the baseline: known-log base (K=220 seeded scalar orbits, no relations, LAnone) is BSGS on the Frobenius quotient. The cited DKM theorem is an asymptotic non-adaptive generic-DLOG time-space lower bound; it does not prove finite-instance runtime dominance over rho. One primary cL220/rT770 observation per point; not a qualified Tier 1 speedup. See reviews/pr-986-knownlog-qualification-20261020/QUALIFICATION.md. The n=83 IC row is unchanged.",
       "experiment": "cryptanalysis:experiments/koblitz-n83-knownlog-20261019 (branch claude/n83-knownlog)",
       "run": "GitHub Actions 39307634508",
       "promoted": false,
@@ -2029,13 +2029,13 @@
         ],
         "note": "known-log reference row cL220 over rT770, end-to-end cold; reference only"
       },
-      "evidence_tier": "Tier 1 (one GitHub-hosted ubuntu-24.04 runner, one pinned CPU); one run; not replayed on another host class",
+      "evidence_tier": "One-run instance-scoped reference timing record; one primary pair per point, no Tier 1 speedup claim; not replayed on another host class",
       "sources": [
         "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/README.md",
         "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/run_github_39307634508/panel/result.json",
         "cryptanalysis:experiments/koblitz-n83-knownlog-20261019/protocol.json"
       ],
-      "note": "Valid run: all 16 gates and 3 controls pass, no rows skipped. Without relations the method is generic BSGS on the Frobenius quotient (the pair index is the baby-step table, the target scan the giant steps), bounded by the DKM non-adaptive line (crypto research/lit2026_w3_ggm_audit_20261011/README.md:177-183). It says nothing about relation-based index calculus. The n=83 baseline row is unchanged and Figure 1 (baseline rows only) is unchanged."
+      "note": "Valid archived run: all 16 gates and 3 controls pass, no rows skipped. Primary G=2.1919 [1.8584, 2.5893] is measured above rT770 for this run. Separate A/A controls are not repeated alternating primary pairs; under current policy this is not a qualified Tier 1 speedup. The DKM citation is an asymptotic lower bound for non-adaptive generic DLOG; it is not a finite-cost dominance theorem against rho for this implementation. Reference-only, not an IC improvement; baseline row and Figure 1 unchanged. See reviews/pr-986-knownlog-qualification-20261020/QUALIFICATION.md."
     }
   ],
   "ratchet_history": [
