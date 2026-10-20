@@ -59,6 +59,21 @@ instances), so the two are not combined.
 - `verify_receipt.py` re-run on the archive reproduces `result.json` and
   `result_table.md` byte for byte.
 
+**Qualification.** The primary has one cP and one BL measurement at each of
+64 points, with their within-point order randomized. The cP/cPaa and BL/BLaa
+repetitions are separate A/A controls; they are not repeated alternating cP/BL
+pairs. The repository's Tier 1 speedup gate requires repeated alternating
+pairs, so this run does not meet that gate. Keep G, its point-bootstrap
+interval, and `bl_online_faster_than_ic` as the frozen rule's historical
+instance-scoped result, not a qualified Tier 1 speedup claim.
+
+The receipt records `child_peak_rss_kb_cumulative` from
+`RUSAGE_CHILDREN`. It is the cumulative child high-water mark, not an isolated
+peak RSS measurement for each row. Row-level cgroup counters are also retained,
+but they describe the cgroup and do not supply per-process peak RSS. This
+archive therefore has no per-process peak RSS result; that reporting limit does
+not change the recorded timing estimate or its frozen-rule decision.
+
 **Secondaries (none decides).**
 
 | statistic | estimate [95%] |

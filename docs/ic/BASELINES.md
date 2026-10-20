@@ -177,7 +177,13 @@ source gives one ([source](figures/baselines_gap.tex),
   gaps to rT770 67.74 [59.99, 77.46] (IC) and 68.79 [61.30, 78.33] (BL); cold
   IC / BL 0.9847 [0.9481, 1.022], about 1 by construction; matched fraction
   0.9941; BL model check: measured / model steps 0.894. All gates and controls
-  pass, 328 rows, none skipped. Host class: Intel Xeon Platinum 8573C
+  pass within the frozen experiment, 328 rows, none skipped. This is a
+  historical, instance-scoped estimate, not a qualified Tier 1 speedup: cP
+  and BL were measured once per point with randomized order, not in repeated
+  alternating primary pairs. The receipt's `child_peak_rss_kb_cumulative`
+  field is a cumulative child high-water mark, not per-process peak RSS; its
+  cgroup counters are group-level. The archive therefore does not report
+  per-process peak RSS. Host class: Intel Xeon Platinum 8573C
   (avx512, gfni, vpclmulqdq), not the rank-probe run's AMD EPYC 7763 or B's
   AMD EPYC 9V45, so this is not a delta of the rank-probe row's figures.
 - **n=83, the rank-cut producer (Other verified records).** `S` is derived inside the one run (38891404048): wall ms divided
@@ -281,6 +287,13 @@ source gives one ([source](figures/baselines_gap.tex),
 These rows are kept for context and as the history behind the baselines.
 None is combined with another row.
 
+The rank-probe Bernstein-Lange record below preserves its frozen, point-paired
+estimate and reading. It is not a qualified Tier 1 speedup: the primary has
+one cP/BL observation per point rather than repeated alternating primary
+pairs. Its receipt's `child_peak_rss_kb_cumulative` is a cumulative child
+high-water mark, not per-process peak RSS; cgroup counters are group-level.
+These reporting limits do not alter the archived timing estimate.
+
 | n | role | experiment | reference | cold gap, IC / ref [95%] | online gap, IC / ref [95%] | BL | tier |
 |--:|:-------|:----------------|:---------|-------:|-------:|:-----|:-------|
 | 41 | previous baseline (v0) | ledger §23, crypto `0bf67f16` | ParallelRho, same process | 8.04 [7.26, 9.01] | 0.107 [0.082, 0.135] | model 2.50 | crypto isolated_bench container |
@@ -295,7 +308,7 @@ None is combined with another row.
 | 83 | previous baseline (B, the BL-arm row), superseded by the stacked producer | `koblitz-n83-bl-arm-20261014`, run 38689817618 (PR #918, not merged yet) | rT770, B's 16 fresh points + Q0 x4 | 360 (no interval; S 32.93 / 0.083 in that run's rT770 steps) | 1.01 [0.30, 2.12], not separated | **measured: 235** [61, 645], 16/16 points BL faster; cold IC/BL 0.987 by construction | Tier 1 |
 | 83 | previous baseline (the stacked producer, arms cS / kS), superseded by the rank-cut producer | `koblitz-n83-stacked-20261016`, run 38862448935 (PR #938) | rT770, 20 new points, two rank blocks, Q0 | 94.4 [73.5, 125.3] (end-to-end cold; S 9.680 / 0.01314 in that run's rT770 steps, 316.66 ns) | 0.139 [0.077, 0.237] | none on this row | Tier 1 |
 | 83 | previous baseline (the rank-cut producer, arms cR / kR), superseded by the rank-probe producer | `koblitz-n83-rankcut-20261016`, run 38891404048 (PR #970) | rT770, 20 new points, four rank blocks, Q0 | 65.7 [55.4, 80.2] (end-to-end cold; S 7.523 / 0.01145 in that run's rT770 steps, 281.01 ns) | 0.110 [0.059, 0.174] | none on this row | Tier 1 |
-| 83 | previous baseline (the rank-probe producer, arms cP / kP), superseded by the index-lift producer | `koblitz-n83-rankprobe-20261019`, run 39214027289 (PR #980) | rT770, 20 new points, four rank blocks, Q0 | 64.0 [53.7, 78.0] (end-to-end cold; S 6.390 / 0.01169 in that run's rT770 steps, 280.64 ns) | 0.129 [0.085, 0.183] | **measured on this producer, by a later experiment** (`koblitz-n83-bl-rankprobe-20261019`, run 39307708909, 64 points, Intel Xeon Platinum 8573C): online cP / BL 22.55 [16.23, 31.44], `bl_online_faster_than_ic`; cold IC/BL 0.985 by construction | Tier 1 |
+| 83 | previous baseline (the rank-probe producer, arms cP / kP), superseded by the index-lift producer | `koblitz-n83-rankprobe-20261019`, run 39214027289 (PR #980) | rT770, 20 new points, four rank blocks, Q0 | 64.0 [53.7, 78.0] (end-to-end cold; S 6.390 / 0.01169 in that run's rT770 steps, 280.64 ns) | 0.129 [0.085, 0.183] | **measured on this producer, by a later experiment** (`koblitz-n83-bl-rankprobe-20261019`, run 39307708909, 64 points, Intel Xeon Platinum 8573C): online cP / BL 22.55 [16.23, 31.44], `bl_online_faster_than_ic`; cold IC/BL 0.985 by construction | Tier 1 instance; not speedup-qualified |
 | 83 | same pipeline as the baseline (merged) | `koblitz-n83-reconcile-20261014`, run 38617911080 | rT770, two seeds per point | 313 (fresh-rank setup) | 0.92 [0.28, 1.78], not separated | none | Tier 1 |
 | 83 | same pipeline, first Tier 1 run | `koblitz-single-target-n83-tier1-20261014`, run 38523707244 | rung 3, slower per step than StrongRhoG, so not the matched tuned rho | 134 | 0.36 [0.11, 0.66] | model 33.5 (measured later: 235) | Tier 1 |
 | 83 | promoted single improvement over B: two-limb `lift_scan` canonicalizer (this experiment only) | `koblitz-n83-liftscan-20261015`, run 38776966036 (PR #926) | rT770, B's 16 fresh points | cold not measured | IC/rho 0.67 [0.19, 1.38] (inverse of 1.4914 [0.7270, 5.1445]); online full / lift_scan 1.5152 [1.5061, 1.5247] | none | Tier 1 |
