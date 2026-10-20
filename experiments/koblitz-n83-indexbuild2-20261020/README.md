@@ -5,7 +5,7 @@ date: 2026-10-20
 
 # n = 83: round 2 of the root-index build speedup, exact changes only (Tier 1 design)
 
-**Status (2026-10-20): design frozen, run launched; no result yet.** This
+**Status (2026-10-20): design frozen, run [39464544962](https://github.com/aburan28/cryptanalysis/actions/runs/39464544962) launched; no result yet.** This
 round makes only exact, byte-identical changes. It uses no sampled
 self-test. Every profile figure and saving below comes from the shared
 cloud-agent VM. They are local diagnostics, used only to rank the candidates
@@ -512,12 +512,21 @@ fits within the 3 h budget. Any time-guard skip makes the run invalid.
 
 The run is the workflow
 [`.github/workflows/n83-indexbuild2.yml`](../../.github/workflows/n83-indexbuild2.yml)
-(`workflow_dispatch`). The trigger outcome and the run URL are recorded in
-[Run](#run).
+(`workflow_dispatch`, plus a push trigger restricted to branch
+`claude/n83-indexbuild2` and to this experiment's non-receipt paths). The
+trigger outcome and the run URL are recorded in [Run](#run).
 
 ## Run
 
-Pending: the trigger outcome and the run URL are added here once the run starts.
+A `workflow_dispatch` call (ref `claude/n83-indexbuild2`) returned **403**
+("Resource not accessible by integration"). The workflow therefore also has a
+push trigger. It is restricted to this branch and to the experiment's
+non-receipt paths, as in the parent's `n83-indexbuild.yml`. The push that
+added it (commit `d2d63308`) started the run at the frozen protocol
+(`5cee1a72...`) and schedule (`f5ac4c17...`). The run is
+[39464544962](https://github.com/aburan28/cryptanalysis/actions/runs/39464544962).
+The result will go in its own section, leaving the design text above
+unchanged.
 
 ## Files
 
