@@ -81,6 +81,43 @@ class BootstrapTests(unittest.TestCase):
         out = self.call("plan")
         self.assertIn("Coding CLIs: no;", out.stdout)
 
+    def test_lean_installer_is_independent_of_vendor_cli_flag(self):
+        fetch_log = self.base / "fetches.log"
+        install_marker = self.base / "elan-args.log"
+        self.env.update(FETCH_LOG=str(fetch_log), LEAN_INSTALL_MARKER=str(install_marker), TMPDIR=str(self.base),
+                        INSTALL_CLIS="no", INSTALL_LEAN="yes")
+        out = self.library("""
+            have() { return 1; }
+            fetch() {
+              printf '%s\\n' "$1" >> "$FETCH_LOG"
+              cat > "$2" <<'ELAN'
+#!/usr/bin/env bash
+printf '%s\\n' "$*" > "$LEAN_INSTALL_MARKER"
+ELAN
+              chmod +x "$2"
+            }
+            install_clis
+            install_lean
+        """)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(fetch_log.read_text().splitlines(), [
+            "https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh"
+        ])
+        self.assertEqual(install_marker.read_text().strip(),
+                         "-y --no-modify-path --default-toolchain leanprover/lean4:v4.35.0")
+
+    def test_vendor_cli_flag_does_not_install_lean_without_lean_opt_in(self):
+        fetch_log = self.base / "fetches.log"
+        self.env.update(FETCH_LOG=str(fetch_log), TMPDIR=str(self.base), INSTALL_CLIS="yes", INSTALL_LEAN="no")
+        out = self.library("""
+            have() { return 0; }
+            fetch() { printf '%s\\n' "$1" >> "$FETCH_LOG"; }
+            install_clis
+            install_lean
+        """)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertFalse(fetch_log.exists(), "Lean installer must remain opt-in")
+
     def test_cli_overrides_config(self):
         config = self.base / "trusted config.sh"
         config.write_text("PROFILE=full\nCONDUCTOR_MODE=local\n")

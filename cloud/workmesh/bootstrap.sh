@@ -508,7 +508,12 @@ install_clis() {
     fetch 'https://cursor.com/install' "$TMP_DIR/cursor-install.sh"
     bash "$TMP_DIR/cursor-install.sh"
   fi
-  if [ "$INSTALL_LEAN" = yes ] && ! have elan; then
+}
+
+install_lean() {
+  [ "$INSTALL_LEAN" = yes ] || return 0
+  if ! have elan; then
+    temp_dir
     fetch 'https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh' "$TMP_DIR/elan-init.sh"
     bash "$TMP_DIR/elan-init.sh" -y --no-modify-path --default-toolchain "$LEAN_TOOLCHAIN"
   fi
@@ -1081,6 +1086,7 @@ install_all() {
   install_cloud_tools
   install_agent_stack
   install_clis
+  install_lean
   install_nodes
   install_tailscale
   install_docker
