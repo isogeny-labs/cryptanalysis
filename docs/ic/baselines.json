@@ -316,6 +316,20 @@
         "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
       },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, host runnervm8k3b6, one pinned exposed CPU; CPU-only); one run; not replayed on another host class",
+      "tier1_qualification": {
+        "status": "qualified at Tier 1 by replication",
+        "run": "39359922687 (cryptanalysis:experiments/koblitz-n83-closure-indexlift-rep-20261020, repeated alternating pairs)",
+        "ratio": "end-to-end cold kPI+cPI / kM38I+cM38I 7.4133",
+        "ci95": [
+          7.1999,
+          7.6362
+        ],
+        "design": "30 repeated alternating pairs (10 new points x 3 pairs, same point and rank seed per pair, adjacent in time on one pinned CPU), two-stage paired bootstrap, frozen rule: lower bound above 1",
+        "controls": "A/A end to end 0.9991 [0.9942, 1.0049], A/A cold 0.9979 [0.9933, 1.0022] (both inside [0.97, 1.03]); planted rank per attempt 1.9418 [1.9072, 1.9747]",
+        "gates": "232/232 rows valid, 0 skipped by the time guard; every gate passed; kM38I probe law 0.9883 [0.8754, 1.1164] inside [0.80, 1.20]; receipt reproduced byte for byte by verify_receipt.py on a copy",
+        "scope": "Tier 1, instance scoped: one GitHub-hosted ubuntu-24.04 runner (runnervmxehtw), one pinned CPU, steal 0, no throttling; no host-wide exclusivity, SMT sibling not offlined, microcode unreadable, frequency not fixed; not replayed on another host class",
+        "row_numbers": "unchanged: the row's S, gaps and 7.6558 [7.2192, 8.1103] stay those of run 39335956567"
+      },
       "verified": "151/151 rows valid, 0 skipped by the time guard (guard not tripped); 20/20 points and every rank block complete; B's table and both closure headers and tables verified in the pinned oracle before timing, planted closure corruptions rejected; one scalar per point across every IC arm and rT770 (oracle replay); one relation and one probe count per point and base; one index and layout digest set per base (K600, M38, M10), each equal to the frozen one (stored_states_blake3 and table_slots_blake3, the index-lift layout gate); Q0 equal to the archived and frozen identities; rank tables equal the frozen verified tables; identical relations, per-attempt probes, root calls and counters across kM38I, kM38Iaa and kM38IX in every block; primary probe-law band pass (kM38I 1.0304 [0.8728, 1.1825] in [0.80, 1.20]); A/A and planted controls pass; no contention flags; verify_receipt.py re-run on a copy of the whole receipt directory reproduces result.json, result_table.md and its stdout byte for byte",
       "source_figure": "end-to-end cold kPI+cPI / kM38I+cM38I 7.6558 [7.2192, 8.1103] in wall time on one host class (rank stage 143.7 s -> 4.01 s, 35.83x; cold without rank cPI / cM38I 0.9931 [0.9837, 1.0035], setup 0.9830 [0.9806, 0.9855], index build 0.9753 [0.9731, 0.9776], online 1.6445 [1.0217, 2.7261]); secondary M10I: kPI+cPI / kM10I+cM10I 4.9504 [4.5846, 5.3402], kM10I+cM10I / kM38I+cM38I 1.5465 [1.4482, 1.6520]; rank-stage share of end-to-end cold 89.5% (kPI), 19.1% (kM38I), 48.4% (kM10I)",
       "headline_scope": {
@@ -349,12 +363,13 @@
         "linear_algebra": "represented by the verified load of the cached factor-log table in cPI and cM38I"
       },
       "section_5a_band": "Not computable from this run. The IC arms emit rank-stage probes and root calls, online probes and stored states, but no group additions, scalar multiplications, canonicalizations, fold rotations or index inserts, so the unpriced native work cannot be priced at 0, 0.1 and 1 GAE per operation and the IC / rho gap (6.86) has no band. The gap holds as a wall-time figure on this one host only.",
-      "replication": "Not replayed. This run (151 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py (run on a copy of the whole receipt directory), and the gates make every relation, per-attempt probe count, root call and counter equal across kM38I, kM38Iaa and kM38IX with the index layout equal to the frozen one, but no second host class has timed the closure + index-lift arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the saving here is the number of rank attempts (16 against 600), but wall time has not been replayed on another host class, so the same caution applies to the 7.6558 here.",
+      "replication": "Tier 1 replication by run 39359922687 (repeated alternating pairs; 7.4133 [7.1999, 7.6362]; see tier1_qualification). Not replayed on another host class. This run (151 rows, one runner, one pinned CPU) reproduced result.json byte for byte under verify_receipt.py (run on a copy of the whole receipt directory), and the gates make every relation, per-attempt probe count, root call and counter equal across kM38I, kM38Iaa and kM38IX with the index layout equal to the frozen one, but no second host class has timed the closure + index-lift arm. The stacked row's K1 replay (run 39007026856) found the per-probe wall ratio host-dependent; the saving here is the number of rank attempts (16 against 600), but wall time has not been replayed on another host class, so the same caution applies to the 7.6558 here.",
       "next_improvement": "The cold path is now 16.96 s of the 20.97 s end-to-end cold cost (80.9%): setup 16.70 s, of which the root-index build is 14.42 s, and it is not improved by the closure (cPI / cM38I 0.9931 [0.9837, 1.0035]); the rank stage is 4.01 s (19.1%). Cut the index build and setup (the Feistel scan order's exhaustive self-test, 1.87 s per cold process, cPIT of the index-lift run, was not promoted), then the probes per relation. Gap to the tuned rho is still 6.9x end to end; the BL arm has not been re-run on this producer. The K899 base (koblitz-n83-k899-20261019) has not been combined with this producer.",
       "sources": [
         "cryptanalysis:experiments/koblitz-n83-closure-indexlift-20261019/README.md (branch claude/n83-closure-indexlift)",
         "cryptanalysis:experiments/koblitz-n83-closure-indexlift-20261019/run_github_39335956567/panel/result.json (branch claude/n83-closure-indexlift)",
-        "cryptanalysis:experiments/koblitz-n83-indexlift-20261019/ (the baseline replaced)"
+        "cryptanalysis:experiments/koblitz-n83-indexlift-20261019/ (the baseline replaced)",
+        "cryptanalysis:experiments/koblitz-n83-closure-indexlift-rep-20261020/run_github_39359922687/panel/result.json (branch claude/n83-closure-indexlift-rep; Tier 1 replication)"
       ]
     }
   ],
@@ -2908,6 +2923,23 @@
       "baseline_row_replaced": "none: not promoted",
       "cold_speedup": "end-to-end cold kP+cP / kK+cK 0.9983 [0.9701, 1.0227] in wall time on one host class (not separated); rank per attempt kP / kK 1.0156 [0.9820, 1.0450]",
       "class": "NOT promoted: frozen primary not_separated; every gate and both controls pass; baseline row not replaced"
+    },
+    {
+      "n": 83,
+      "from": "the index-lift producer (arms kPI + cPI), same run 39359922687, points and rT770",
+      "to": "closure + index-lift producer (arms kM38I + cM38I): Tier 1 replication of #997 (run 39359922687, repeated alternating pairs)",
+      "cold_gap": [
+        62.5256,
+        8.4343
+      ],
+      "online_gap": [
+        0.1488,
+        0.1475
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gap point estimates (same run, points and rT770); no interval is computed for them in this run",
+      "baseline_row_replaced": "none: replication; the row stays and gains its Tier 1 qualification",
+      "cold_speedup": "end-to-end cold kPI+cPI / kM38I+cM38I 7.4133 [7.1999, 7.6362] over 30 alternating pairs in wall time on one host class, factor-base construction charged to no arm; rank stage 38.3338 [34.9034, 42.5698]; cold without rank 0.9788 [0.9564, 1.0023] (not separated)",
+      "class": "Tier 1 replication of #997; qualifies the row's Tier 1 status; no number of the row changes"
     }
   ],
   "corrections": [
