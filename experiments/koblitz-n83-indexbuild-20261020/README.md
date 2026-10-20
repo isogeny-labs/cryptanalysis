@@ -416,8 +416,14 @@ trigger outcome and the run URL are recorded in [Run](#run).
 
 ## Run
 
-(Filled in when the run is launched; the result is added with the archived
-receipt.)
+A `workflow_dispatch` call (ref `claude/n83-indexbuild`) returned **403**
+("Resource not accessible by integration"). The workflow therefore also has a
+push trigger. It is restricted to this branch and to the experiment's
+non-receipt paths, as in `n83-closure-indexlift-rep.yml`, and the push that
+added it started the run at the frozen protocol (`3073d0c5...`) and schedule
+(`5b1db827...`). The run URL is recorded here once the receipt is archived;
+the result will be added in its own section, leaving the design text above
+unchanged.
 
 ## Files
 
