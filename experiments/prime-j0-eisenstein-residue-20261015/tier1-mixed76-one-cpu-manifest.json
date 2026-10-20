@@ -1,0 +1,216 @@
+{
+  "allocation": {
+    "instance_id": "thyvmdqmzsz5ik",
+    "provider": "runpod",
+    "receipt": "/workspace/isolated-bench/panels/allocation.json"
+  },
+  "artifacts": [
+    "/workspace/isolated-bench/panels/allocation.json",
+    "/workspace/isolated-bench/panels/host-probe.json",
+    "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+    "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+    "/workspace/isolated-bench/panels/mixed76-portable-source-20261017.tar.gz",
+    "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+    "/workspace/bench-sources/mixed76-portable/source-manifest.json",
+    "/workspace/bench-sources/mixed76-portable/Cargo.lock",
+    "/workspace/bench-sources/mixed76-portable/Cargo.toml",
+    "/workspace/bench-sources/mixed76-portable/fixtures/mixed77-independent-fixture.json",
+    "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+    "/workspace/bench-sources/mixed76-portable/source-manifest.json",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/ct_bignum.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/joint_mixed76.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/joint_mixed77.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/joint_mixed78.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/joint_norm4033.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/joint_norm58807.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/eisenstein_fixed/unit_orbit_windows.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/mixed640_bench_fixture.json",
+    "/workspace/bench-sources/mixed76-portable/src/bin/mixed640_stream_fixture.json",
+    "/workspace/bench-sources/mixed76-portable/src/bin/mixed640_uniform_fixture.json",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_hybrid.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_joint.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_joint243.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_joint_mixed76.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_joint_mixed77.rs",
+    "/workspace/bench-sources/mixed76-portable/src/bin/rho_restart_joint_mixed78.rs",
+    "/workspace/isolated-bench/panels/tier1-mixed76-one-cpu-rules.json"
+  ],
+  "cases": [
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "cal_before",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "compare76_vs_77",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed77",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "compare76_vs_78",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed78",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "compare76_vs_243",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple243",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "compare76_vs_81",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-triple81",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart-joint-mixed76",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "compare76_vs_openssl",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "cal_mid",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    },
+    {
+      "candidate": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ],
+      "expected_fields": {
+        "count": "1"
+      },
+      "expected_result": "6503d420f2f1a5197ce21a7b54d171234fbaf7bc4a9cbe852ed7e62164f3dd09:48a5d53657b910666081a3ed4721654fb07871a4d9f3caba83af8635c928b39a",
+      "id": "cal_after",
+      "reference": [
+        "/workspace/bench-sources/mixed76-portable/target/release/eisenstein_fixed",
+        "--pilot-rho-restart",
+        "openssl_nowarm",
+        "/workspace/bench-sources/mixed76-portable/fixtures/rho-restart-first128-fixture.json",
+        "1"
+      ]
+    }
+  ],
+  "comparison_variant": "mixed76-one-target-online",
+  "isolation": {
+    "cpus": "40",
+    "execution_cpu": 40
+  },
+  "measurement_boundary": "One previously supplied Q and one frozen scalar pair. Process launch and fixture loading are outside both online intervals. OpenSSL nowarm times first EC_POINT_mul and affine output; joint paths time target Q-table construction, Horner evaluation, and affine output, excluding reusable G setup and Q-independent plan compilation. Every arm independently checks the same expected point.",
+  "measurement_tier": "tier1_instance",
+  "outer_repeats": 1,
+  "pair_fields": [
+    "count",
+    "point"
+  ],
+  "repetitions": 16,
+  "schema": 1,
+  "timeout_s": 30,
+  "workdir": "/workspace/bench-sources/mixed76-portable"
+}
