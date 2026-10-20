@@ -5,11 +5,14 @@ date: 2026-10-19
 
 # n = 83: Z[τ] closure + index lift, against the index-lift row, end-to-end cold
 
-**Status (2026-10-19): frozen; Tier 1 run pending.**
+**Status (2026-10-20): Tier 1 [run 39335956567](https://github.com/aburan28/cryptanalysis/actions/runs/39335956567) finished; verdict improvement.**
 The [protocol](protocol.json) and the [schedule](schedule.json) were
-committed before any Tier 1 timing. Every number below that is not from a
-Tier 1 run is either from the parents' archived Tier 1 runs (named each
-time) or from the cloud-agent VM, where it is a **local diagnostic**, not
+committed before any Tier 1 timing (the run started on commit `9fc17f76c`),
+and the run is archived in [`run_github_39335956567/`](run_github_39335956567/).
+The frozen primary is R = E2E(kPI, cPI) / E2E(kM38I, cM38I) =
+**7.6558 [7.2192, 8.1103]**. See "Result". Every number outside "Result" that
+is not from the parents' archived Tier 1 runs is either from the frozen
+protocol or from the cloud-agent VM, where it is a **local diagnostic**, not
 timing evidence.
 
 ## Question
@@ -281,10 +284,164 @@ O1, C1 and K1 through `run_schedule.py` and `arm.py`, then
 
 ## Result
 
-Pending: the Tier 1 run of `.github/workflows/n83-closure-indexlift.yml`
-(dispatch only), at the frozen commit. `verify_receipt.py` applies the frozen
-rule to its artifact, and `make_figures.py` renders the result figure from
-`result.json`.
+The run was started by the workflow's path-filtered push trigger (a
+`workflow_dispatch` call returned 403 for the integration that launched it),
+at the frozen commit, on one `ubuntu-24.04` runner (`runnervm8k3b6`, 4 vCPUs,
+kernel 6.17.0-1022-azure, one pinned CPU; `host-probe.json`). The run
+executed the 151 scheduled rows (`schedule-exit.txt`: 0).
+
+**All gates pass; the run is valid.** All 151 scheduled rows are present and
+valid (151 valid, 0 invalid, 0 skipped by the time guard; the guard did not
+trip; 20/20 points, 4/4 kPI blocks, 16/16 kM38I blocks, 8/8 kM10I blocks):
+
+- Before timing: B's table and both closure headers and tables re-verified in
+  the pinned oracle (`log-table-check.json`: K600, M38 and M10 all PASS), and
+  the planted closure corruptions rejected.
+- One scalar per point across every IC process (all three bases) and the
+  tuned rho, replayed in the oracle; one relation and one probe count per
+  point and base.
+- One index and layout digest set per base (K600, M38, M10), each equal to the
+  frozen one, so the index-lift layout (`stored_states_blake3`,
+  `table_slots_blake3`) is reproduced in every IC process.
+- Q0 equal to the archived identity (cPI) and to the closure protocol's frozen
+  identities (cM38I, cM10I).
+- Every rank table equal to its frozen verified table; identical relation
+  digests, probe vectors, root calls, point-addition and frame counters across
+  kM38I, kM38Iaa and kM38IX in every block (0 fallback states, 0 irregular
+  inputs, 0 rows without gain).
+- **Probe law:** kM38I pooled 1.0304 [0.8728, 1.1825] over 256 attempts, inside
+  the frozen band [0.80, 1.20] (pass).
+- Receipt integrity (fail-closed verifier), `receipt_matches_schedule`, no
+  contention flags, no problems.
+
+`verify_receipt.py` re-run on a **copy of the whole receipt directory** (with
+`result.json`, `result_table.md` and `verify-stdout.json` removed first, and
+the gitignored `snapshots/r770` oracle present) reproduces
+`panel/result.json`, `panel/result_table.md` and the verifier's stdout byte
+for byte.
+
+![Frozen ratios with 95% bootstrap intervals, all from `result.json`
+([source](figures/result.tex), [vector](figures/result.pdf), rendered by
+[`make_figures.py`](make_figures.py)).](figures/result.png)
+
+### Primary (frozen rule)
+
+Improvement iff the 95% lower bound of R = E2E(kPI, cPI) / E2E(kM38I, cM38I)
+exceeds 1.
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E(kPI,cPI) / E2E(kM38I,cM38I)** (20 points; 4 and 16 rank blocks) | **7.6558 [7.2192, 8.1103]** | **improvement** (lower bound above 1) |
+| A/A E2E kM38I+cM38I / kM38Iaa+cM38Iaa | 1.0001 [0.9979, 1.0023] | pass (inside [0.97, 1.03]) |
+| A/A cold cM38I / cM38Iaa | 1.0006 [0.9979, 1.0032] | pass (inside [0.97, 1.03]) |
+| A/A rank per attempt kM38I / kM38Iaa (n=256) | 0.9981 [0.9948, 1.0014] | reported |
+| planted rank per attempt kM38IX / kM38I (n=64) | 1.9607 [1.9470, 1.9747] | pass (lower bound above 1) |
+| planted exactness corruptions (label, duplicated orbit, log) | rejected on both closure bases before timing | pass |
+
+End-to-end cold means: kPI + cPI = 143.68 + 16.84 = 160.52 s;
+kM38I + cM38I = 4.01 + 16.96 = 20.97 s. The expected effect from the power
+check was about 8.0 (an estimate, not an input); the measured 7.66 is close.
+The saving is the rank stage (35.83x, 16 columns instead of 600); the cold path
+is unchanged.
+
+### Secondaries (none changes the verdict)
+
+**M10I** (60 columns, 8 odd blocks; never decides):
+
+| Quantity | Estimate [95%] |
+| --- | --- |
+| E2E kPI+cPI / kM10I+cM10I | 4.9504 [4.5846, 5.3402] |
+| E2E kM10I+cM10I / kM38I+cM38I | 1.5465 [1.4482, 1.6520] |
+| cold without rank cPI / cM10I | 1.0063 [0.9880, 1.0242] |
+| setup cPI / cM10I | 1.0074 [1.0038, 1.0114] |
+| index build cPI / cM10I | 1.0025 [0.9996, 1.0054] |
+| online cPI / cM10I | 0.9638 [0.5122, 1.9636] |
+| peak RSS cPI / cM10I | 0.9998 [0.9997, 1.0000] |
+| rank stage kPI / kM10I | 9.1570 |
+| rank stage kM10I / kM38I | 3.9124 |
+
+**Per-phase breakdown** (means over 20 points; ratio is cPI over the candidate
+arm, below 1 = the candidate is slower):
+
+| Phase | cPI | cM38I | cM10I | cPI / cM38I [95%] |
+| --- | ---: | ---: | ---: | :--- |
+| cold without rank (ms) | 16,839.6 | 16,956.7 | 16,734.6 | 0.9931 [0.9837, 1.0035] |
+| setup (ms) | 16,415.5 | 16,698.9 | 16,294.7 | 0.9830 [0.9806, 0.9855] |
+| index build (ms) | 14,060.7 | 14,416.6 | 14,025.1 | 0.9753 [0.9731, 0.9776] |
+| online (ms) | 424.04 | 257.85 | 439.96 | 1.6445 [1.0217, 2.7261] |
+| peak RSS (MiB) | 1,788.3 | 1,809.3 | 1,788.6 | 0.9884 [0.9883, 0.9885] |
+| online probes (mean) | 1,900,251 | 1,150,602 | 1,978,465 | |
+| rank stage, mean per arm (ms) | 143,681.3 (kPI, 4 blocks x 600) | 4,010.5 (kM38I, 16 x 16) | 15,690.9 (kM10I, 8 x 60) | 35.83x |
+
+The cold path is not improved by the closure: setup is 1.7% and the index
+build 2.5% slower at M38 (the same direction as the closure run's 0.976 cold
+without rank). The online phase is 1.64x faster at M38 (fewer mean probes,
+1,150,602 against 1,900,251), but the interval is wide ([1.02, 2.73]) and it
+does not move the verdict.
+
+**Rank-stage share of E2E cold:** kPI 89.5%, kM38I 19.1%, kM10I 48.4%.
+Rank-stage time per probe: 142.55 (kPI), 143.08 (kM38I), 143.36 (kM38Iaa),
+280.63 (kM38IX), 142.45 (kM10I) ns, so the per-probe code is the same across
+arms and the planted arm costs 1.96x per attempt.
+
+**Probe law** (pooled mean probes per relation over r / (166 E)):
+
+| Arm | Estimate [95%] | Attempts | Role |
+| --- | --- | ---: | --- |
+| kM38I | 1.0304 [0.8728, 1.1825] | 256 | gate, band [0.80, 1.20]: pass |
+| kPI | 0.9715 [0.9176, 1.0230] | 2400 | reported |
+| kM10I | 1.0605 [0.9475, 1.1930] | 480 | reported; the upper bound is above the 1.15 end of its 0.85-1.15 band |
+
+**S** (cost over this run's measured rT770 step, 281.09 ns, per sqrt(r); one
+unit is 26,021.1 ms):
+
+| Arm | E2E cold | cold without rank | online | rank stage |
+| --- | ---: | ---: | ---: | ---: |
+| kPI + cPI | 6.1689 | 0.6472 | 0.016296 | 5.5217 |
+| kM38I + cM38I | 0.8058 | 0.6517 | 0.009909 | 0.1541 |
+| kM10I + cM10I | 1.2461 | 0.6431 | 0.016908 | 0.6030 |
+| cM38Iaa | | 0.6512 | 0.009869 | |
+
+Delta S end-to-end cold, kPI + cPI to kM38I + cM38I = -5.3631. The tuned
+rho's own `S` in this run: cold 0.11753, online 0.10717 (mean rT770 cold
+3,058.2 ms, online 2,788.7 ms).
+
+**Gap to tuned rho rT770** (IC / rho; 20 points; distance remaining, not a
+gate):
+
+| Arm | End-to-end cold [95%] | Online [95%] |
+| --- | :--- | :--- |
+| kPI + cPI (baseline) | 52.49 [43.95, 63.53] | 0.1521 [0.0980, 0.2158] |
+| kM38I + cM38I (candidate) | **6.856 [5.799, 8.193]** | 0.0925 [0.0594, 0.1352] |
+| kM10I + cM10I | 10.60 [8.886, 12.83] | 0.1578 [0.0790, 0.2707] |
+
+**Host class.** `ubuntu-24.04` GitHub runner `runnervm8k3b6` (Microsoft
+virtualization, x86_64, 4 online CPUs, affinity 0-3, one pinned execution CPU
+0, kernel 6.17.0-1022-azure). The same host name as the index-lift and closure
+runs, but the runner state is a different instance, so cross-run absolute times
+differ.
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner, 20 cold points, 4, 16 and 8 rank blocks,
+  one fresh process per arm per point. The primary's interval is over points,
+  blocks and attempts; it does not cover another host class. This run was not
+  replayed.
+- Wall time on one host class. The saving is the number of rank attempts (16
+  or 60 against 600), not the per-probe cost (142.55 ns for kPI against 143.08
+  for kM38I).
+- **Factor-base construction is charged to no arm** (the n = 83 convention).
+  The closure header costs two small scalar multiplications per added
+  orbit; the omission is common to both arms, so R > 1 holds for any X >= 0,
+  but 7.6558 is an upper bound on the every-phase ratio.
+- The kM38I probe law is a 256-attempt pooled estimate with a wide interval
+  ([0.8728, 1.1825]); it passes its band but is not tight.
+- This run's baseline arm (160.5 s, S 6.17) differs from the index-lift run's
+  (165.2 s, S 6.37): a different run, instance set, rank seeds and runner
+  state. The paired ratio R is within this run.
+- The closure's earlier 6.4444 [6.0993, 6.7853] was over the rank-probe
+  producer; this paired result over the index-lift row supersedes it as the
+  comparison against the current row.
 
 ## Not included
 
@@ -309,5 +466,6 @@ rule to its artifact, and `make_figures.py` renders the result figure from
 | `make_power_prior.py`, `inputs/power_prior.json`, `power_check.py`, `analysis/power.json` | power prior (runs 39305259093 and 39290913632), simulation, result |
 | `arm.py`, `run_schedule.py` | one arm per pinned process; the schedule runner |
 | `verify_receipt.py`, `test_verify_receipt.py` | gates, statistics, fail-closed decision rule; its tests |
-| `figures/design.*`, `make_figures.py` | design diagram; result figure after the run |
+| `figures/design.*`, `make_figures.py`, `figures/result.*` | design diagram; result figure (TikZ source, PDF, PNG) |
+| `run_github_39335956567/` | the archived artifact: allocation, builds, raw runs, `panel/result.json`, `panel/result_table.md` |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
