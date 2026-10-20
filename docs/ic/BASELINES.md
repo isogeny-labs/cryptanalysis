@@ -414,12 +414,12 @@ only once it moves an end-to-end `S` above.
   protocol for K899, or for the root-index build and setup, on the closure +
   index-lift producer against the current row, with the K899 index build
   (44.3 s) and the slot cliff at K900 in view.
-  The rotation-key producer (`koblitz-n83-rotkey-20261019`, run 39299176306: the rank-stage
-  table keyed by v^83 in F2[X]/(X^83+1), lift_scan only at a hit) is not promoted: against the rank-probe
-  producer its end-to-end cold ratio is 0.9983 [0.9701, 1.0227], not separated, with every gate and
-  both controls passing. It is not an improvement, so there is nothing to stack on index-lift or the multiplier
-  closure (it changes only the rank-stage key, and the closure shrinks the rank stage to 2.75 s);
-  no combined run is pending for it.
+  The rotation-key producer (`koblitz-n83-rotkey-20261019`, run 39299176306:
+  the rank-stage table keyed by v^83 in F2[X]/(X^83+1), lift_scan only at a
+  hit) is not promoted against the rank-probe producer: end-to-end cold ratio
+  0.9983 [0.9701, 1.0227], not separated, with every gate and both controls
+  passing. It is not an improvement, so there is no stack on index-lift or the
+  multiplier closure.
   The online-frame experiment (`koblitz-n83-onlineframe-20261019`,
   run 39303742695) is a stage improvement over the rank-probe producer: its
   one-target online scan on the rank stage's frame loop, online cS / cF 1.5733
@@ -427,8 +427,16 @@ only once it moves an end-to-end `S` above.
   1.0008 [1.0006, 1.0010]. It is a different stage from the index lift and
   from the closure, so it stacks with them; it is recorded in Other verified
   records and not in this row until a combined run is made.
-- **n=19:** there is no IC1 candidate manifest, and online `S` is not
-  separable.
+- **n=19:** IC1 candidate manifests now exist for the baseline and the
+  native-solve candidate (`IC1N19Ckb0fb1064PDP2polyboriRCsampleLAkernelTDpdpISO0hb41aed7ef80a`
+  and `IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e`,
+  in `experiments/volcano-n19-native-tau6-20261019/inputs/ic1_manifests.json`),
+  and online `S` is separable by definition in that protocol (setup and online
+  are timed apart). It has not been measured: the Tier 1 run
+  ([39307409409](https://github.com/aburan28/cryptanalysis/actions/runs/39307409409))
+  is invalid, because its S0 gate failed (Sage and native varieties equal on
+  293 of 300 systems) and no timed row ran. The n=19 row, Figure 1 and the
+  ratchet history are unchanged.
 - **n=83, §5a band:** the 0 / 0.1 / 1 GAE band for the IC / rho gap is
   uncomputable on both n=83 rows, because the frozen producer emits no
   group-operation counts. The K1 replay (archived 2026-10-17) timed
