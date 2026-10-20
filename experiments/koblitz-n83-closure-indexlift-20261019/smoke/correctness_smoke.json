@@ -1,0 +1,40 @@
+{
+ "log_table_check": "PASS",
+ "note": "primary_probe_law_inside_frozen_band is false on ONE block of 16 kM38I attempts (the frozen gate pools 256 attempts over 16 blocks; per-block ratios in the closure's local test ranged 0.58-1.35); every other check passes",
+ "probe_law_one_block": {
+  "kM10I": 1.1399,
+  "kM38I": 1.5657,
+  "kPI": 0.9196
+ },
+ "rows": 13,
+ "statuses": [
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid",
+  "valid"
+ ],
+ "verify_receipt_correctness_only": {
+  "all_executed_rows_valid": true,
+  "one_index_and_layout_digest_set_per_base_equal_frozen": true,
+  "one_probe_count_per_point_and_base": true,
+  "one_relation_per_point_and_base": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "pre_timing_tables_and_closure_bases_verified": true,
+  "primary_probe_law_inside_frozen_band": false,
+  "q0_matches_archived_and_frozen_identities": true,
+  "rank_relations_probes_root_calls_and_counters_identical_per_block": true,
+  "rank_tables_equal_frozen_verified_tables": true,
+  "receipt_matches_schedule": true
+ },
+ "what": "run_schedule.py segments O1, C1, K1 on the cloud-agent VM (correctness only, never timing)"
+}
