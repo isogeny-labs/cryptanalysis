@@ -2799,6 +2799,8 @@ static int cmd_ic(void)
             precomp_path = ic_path(state_dir, "relations.ckpt.precomp");
             if (!journal_path || !precomp_path) die("out of memory");
             have_state = access(journal_path, F_OK) == 0 || access(precomp_path, F_OK) == 0;
+            if (have_state && ca_ic_checkpoint_validate(p, gg, &pr, journal_path) != CA_OK)
+                die("index-calculus checkpoint failed validation before S3 sync");
             free(journal_path); free(precomp_path);
             if (!have_state) die("no checkpoint artifacts found for --resume");
         }
@@ -2838,8 +2840,11 @@ static int cmd_ic(void)
     }
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist index-calculus result");
-    int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
-    if (pr.verbose && s3_uri) fprintf(stderr, "[ic] final S3 sync %s\n", uploaded ? "complete" : "failed");
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_NOT_FOUND || rc == CA_ERR_LIMIT;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    if (pr.verbose && s3_uri) fprintf(stderr, "[ic] final S3 sync %s\n",
+                                      !safe_to_upload ? "skipped after an invalid run" :
+                                      uploaded ? "complete" : "failed");
     if (uploaded)
         fputs(result, stdout);
     else

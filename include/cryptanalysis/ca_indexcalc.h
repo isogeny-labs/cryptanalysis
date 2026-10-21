@@ -97,6 +97,14 @@ CA_API ca_status ca_ic_solve_checkpointed(uint64_t p, uint64_t g, uint64_t h,
                                           const ca_ic_params *params, const char *checkpoint_path,
                                           uint32_t progress_interval, uint64_t *x, ca_ic_stats *st);
 
+/* Read-only validation for every present relation journal/snapshot and
+ * precomputation cache at checkpoint_path.  A partial final sieve record is
+ * accepted because replay can discard that uncommitted tail.  At least one
+ * artifact must exist.  Call before mirroring a restored local run to S3. */
+CA_API ca_status ca_ic_checkpoint_validate(uint64_t p, uint64_t g,
+                                            const ca_ic_params *params,
+                                            const char *checkpoint_path);
+
 /* Introspection */
 CA_API uint64_t ca_ic_modulus(const ca_ic_ctx *ctx);
 CA_API uint32_t ca_ic_factor_base_size(const ca_ic_ctx *ctx);

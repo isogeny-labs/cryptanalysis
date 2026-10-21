@@ -333,7 +333,12 @@ Repeat the input and collector settings with `--resume`. For rexp,
 collecting. `progress.json` reports the phase, relation count, test count, and
 elapsed collection time. A stopped process can lose the work done since the
 last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
-apply. See the `ic` section of the CLI help for the remaining arguments.
+apply. Before starting S3 sync on resume, the command checks every present
+relation journal or snapshot and precomputation cache against the run inputs,
+format, and checksum. A partial final linear-sieve record is accepted as an
+uncommitted tail; replay repairs it. Corrupt local artifacts cause resume to
+stop without replacing the remote copies. See the `ic` section of the CLI
+help for the remaining arguments.
 
 ## ECC2K-130 GPU walks
 
