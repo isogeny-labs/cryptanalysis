@@ -1,0 +1,35 @@
+name: Orbit pair-index Lean proof
+
+on:
+  pull_request:
+    paths:
+      - experiments/orbit-quotient-summation/**
+      - .github/workflows/orbit-pair-index-lean.yml
+  push:
+    branches: [main]
+    paths:
+      - experiments/orbit-quotient-summation/**
+      - .github/workflows/orbit-pair-index-lean.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof-and-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: experiments/orbit-quotient-summation/lean
+      - name: Check exact transitive axiom set
+        run: experiments/orbit-quotient-summation/lean/check.sh
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare pair lookup with direct enumeration
+        run: python -m unittest discover -s experiments/orbit-quotient-summation -p 'test_*.py' -v

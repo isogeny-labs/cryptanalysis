@@ -104,7 +104,10 @@ fn prime_profile(name: &str, c: &CurveParams) -> Parameters {
             x: hex(&c.gx),
             y: hex(&c.gy),
         }),
-        point: None,
+        point: (c.name == "ECCp-131").then(|| Coordinates {
+            x: "0x03AA6F004FC62E2DA1ED0BFB62C3FFB568".into(),
+            y: "0x009C21C284BA8A445BB2701BF55E3A67ED".into(),
+        }),
         fixture: None,
     }
 }
@@ -120,6 +123,8 @@ pub const NAMES: &[&str] = &[
     "ecc2k-130",
     "ecc2k-95",
     "sect163k1",
+    // Prime-field Certicom challenge.
+    "eccp-131",
     // SECG Koblitz (j = 0) prime-field curves.
     "secp160k1",
     "secp192k1",
@@ -225,6 +230,7 @@ pub fn named(name: &str) -> Result<Parameters, String> {
 /// that is not a prime-field profile.  Matching is case-insensitive.
 pub fn prime_curve(name: &str) -> Option<CurveParams> {
     Some(match name.to_ascii_lowercase().as_str() {
+        "eccp-131" | "eccp131" => CurveParams::eccp131(),
         "secp160k1" => CurveParams::secp160k1(),
         "secp192k1" => CurveParams::secp192k1(),
         "secp224k1" => CurveParams::secp224k1(),
@@ -256,6 +262,21 @@ pub fn prime_curve(name: &str) -> Option<CurveParams> {
         "gost-tc26-512-b" => CurveParams::gost_tc26_512_b(),
         _ => return None,
     })
+}
+
+#[cfg(test)]
+mod certicom_tests {
+    use super::*;
+
+    #[test]
+    fn eccp131_profile_checks_published_generator_and_target() {
+        let params = named("eccp-131").unwrap();
+        assert_eq!(params.name, "ECCp-131");
+        assert!(params.point.is_some());
+        let report = inspect(params, "Certicom curves list".into()).unwrap();
+        assert_eq!(report["status"], "checks_passed", "{report}");
+        assert_eq!(prime_curve("eccp131").unwrap().name, "ECCp-131");
+    }
 }
 pub fn load(path: &Path) -> Result<(Parameters, String), String> {
     let mut data = Vec::new();
