@@ -1,16 +1,29 @@
-name: N19 native relation loop (diagnostic profile of the baseline arm N, untimed)
+name: N19 native relation loop, Sage smoke gate + repeated-pair Tier 1
 
-# Phase 1 of experiments/volcano-n19-native-loop-20261021: an UNTIMED diagnostic
-# that profiles the current n = 19 row's arm N (v3 arm.sage, run 39387473809) in
-# the pinned Sage image, before the native-loop protocol is designed and
-# frozen. Nothing here is a measurement or a gate. The protocol's own jobs
-# replace this one in a later commit of this file.
+# experiments/volcano-n19-native-loop-20261021 (protocol.json, frozen before any timing).
+# Candidate N2 runs the whole n = 19 tau6 index calculus in native code (tau6dlp, no Sage
+# process); the baseline is the current row's arm N (v3 arm.sage, Sage tauDlp with the
+# native per-shift solve, run 39387473809).
 #
-# workflow_dispatch is the convention; dispatch of a workflow that is not on
-# the default branch has been refused for this integration before, so a push
-# to branch claude/n19-native-loop also triggers it, restricted by path filters
-# (the owner-approved pattern of n19 v2 / v3): receipts, README, figures,
-# figure scripts, smoke and diagnosis do not trigger a run.
+# Two jobs on fresh GitHub-hosted ubuntu-24.04 runners:
+#   sage-smoke  UNTIMED gate. Builds and tests both crates (v3 native/, unchanged, and the
+#               new native/) with the pinned toolchain, runs the verifier's planted-corruption
+#               tests and the pure-Python checks (CPython RNG, the planted arm's comparison,
+#               archived Sage identity) on the host and the RNG check in the Sage image's
+#               Python, records an untimed profile of arm N, then runs the schedule's smoke
+#               part (S0, S0b, O1, O2, v3 points p00/p01 through B, N, N2, N2aa, N2X, rho and
+#               warm N2) and requires every smoke gate. Its times are never used.
+#   timed       needs sage-smoke and runs its three artifacts. S0, S0b, O1, O2, then 24
+#               held-out points with 5 alternating N/N2 pairs, 3 N2/N2aa pairs, 1 N2X/N2 pair,
+#               B, rho and a warm N2 each, one fresh pinned process per run, Tier 1 records
+#               per run. verify_receipt.py re-derives the smoke gate, audits the receipt
+#               (fail closed) and applies the decision rule: improvement iff the 95%
+#               two-stage paired bootstrap lower bound of cold CPU N / N2 exceeds 1.
+# workflow_dispatch is the convention; dispatch of a workflow that is not on the default
+# branch has been refused for this integration before (v3: gh 404, GitHub MCP 403), so a
+# push to branch claude/n19-native-loop also triggers it, restricted by path filters (the
+# owner-approved pattern of n19 v2 / v3): receipts, README, figures, figure scripts, smoke
+# and diagnosis do not trigger a run.
 on:
   workflow_dispatch:
   push:
@@ -40,62 +53,243 @@ env:
   RUSTUP_TOOLCHAIN: 1.99.0
   CARGO_TERM_COLOR: never
   SAGE_IMAGE: sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565
+  FROZEN_LIST: >-
+    protocol.json schedule.json inputs/panel.json arm_n2x.sage n2x_compare.py run_schedule.py verify_receipt.py
+    stats.py make_schedule.py make_panel.py native/Cargo.toml native/Cargo.lock native/src/lib.rs
+    native/src/curve.rs native/src/dlp.rs native/src/ffi.rs native/src/json.rs native/src/pyrand.rs
+    native/src/util.rs native/src/testvec.rs native/src/bin/tau6dlp.rs
 
 jobs:
-  profile:
+  sage-smoke:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
 
-      - name: Record the runner and build the v3 native library (pinned toolchain)
+      - name: Freeze runner and source identity
         shell: bash
         run: |
           set -euo pipefail
-          rd="$RUNNER_TEMP/n19prof"
-          mkdir -p "$rd/lib" "$rd/profile"
-          echo "N19_RD=$rd" >> "$GITHUB_ENV"
-          export CARGO_TARGET_DIR="$RUNNER_TEMP/n19prof-cargo"
-          python3 scripts/host_cpu_record.py > "$rd/host-cpu.json" || true
-          { echo "git_sha=$GITHUB_SHA"; echo "run_id=$GITHUB_RUN_ID"; grep -m1 'model name' /proc/cpuinfo; nproc; } | tee "$rd/runner.txt"
-          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
-          rustc --version | tee "$rd/rustc.txt"
-          (cd "$V3/native" && cargo build --release --locked)
-          cp "$CARGO_TARGET_DIR/release/libtau6native.so" "$rd/lib/"
-          sha256sum "$rd/lib/libtau6native.so" "$V3/arm.sage" "$EXPERIMENT/diagnosis/profile_n.sage" \
-            "$EXPERIMENT/diagnosis/startup_probe.py" | tee "$rd/sha256.txt"
+          rd="$RUNNER_TEMP/n19nl"
+          export N19_RD="$rd"  # $GITHUB_ENV only reaches later steps
+          mkdir -p "$rd/lib"
+          {
+            echo "N19_JOB_START=$(date +%s)"
+            echo "N19_RD=$rd"
+            echo "CARGO_TARGET_DIR=$RUNNER_TEMP/n19nl-cargo"
+          } >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$rd/host-probe.json"
+          python3 scripts/host_cpu_record.py --merge-into "$rd/host-probe.json"
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          cpu = next((l.split(':', 1)[1].strip() for l in Path('/proc/cpuinfo').read_text().splitlines()
+                      if l.startswith('model name')), None)
+          rec = {'provider': 'github_actions', 'job': os.environ['GITHUB_JOB'],
+                 'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'],
+                                                     os.environ['GITHUB_JOB']),
+                 'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
+                 'image_version': os.environ.get('ImageVersion'),
+                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
+                 'sage_image': os.environ['SAGE_IMAGE'], 'git_sha': os.environ['GITHUB_SHA'],
+                 'git_ref': os.environ['GITHUB_REF'],
+                 'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'],
+                                                           os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+                 'recorded_at_utc': datetime.now(timezone.utc).isoformat()}
+          Path(os.environ['N19_RD'], 'allocation-smoke.json').write_text(json.dumps(rec, indent=2, sort_keys=True) + '\n')
+          PY
 
-      - name: Profile arm N in the pinned Sage image (untimed diagnostic)
+      - name: Check the frozen protocol, panel, schedule and verifier (planted corruptions)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/make_panel.py" --check
+          python3 "$EXPERIMENT/make_schedule.py" --check
+          python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["status"] == "frozen" and p["frozen_before_any_timing"], p["status"]' "$EXPERIMENT/protocol.json"
+          (cd "$EXPERIMENT" && python3 -m unittest -v tests/test_verify_receipt.py 2>&1 | tee "$N19_RD/verifier-tests.txt")
+          (cd "$EXPERIMENT" && sha256sum $FROZEN_LIST) | tee "$N19_RD/frozen.sha256"
+
+      - name: Install the pinned toolchain, test and build both crates
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$N19_RD/rustc.txt"
+          (cd "$V3/native" && cargo test --release --locked 2>&1 | tee "$N19_RD/cargo-test-v3.txt")
+          (cd "$V3/native" && cargo build --release --locked)
+          cp "$CARGO_TARGET_DIR/release/libtau6native.so" "$N19_RD/lib/"
+          (cd "$EXPERIMENT/native" && cargo test --release --locked 2>&1 | tee "$N19_RD/cargo-test-loop.txt")
+          (cd "$EXPERIMENT/native" && cargo build --release --locked)
+          cp "$CARGO_TARGET_DIR/release/libtau6loop.so" "$CARGO_TARGET_DIR/release/tau6dlp" "$N19_RD/lib/"
+          (cd "$N19_RD/lib" && sha256sum libtau6native.so libtau6loop.so tau6dlp) | tee "$N19_RD/binaries.sha256"
+
+      - name: Pure-Python checks on the host (CPython RNG, planted comparison, archived Sage identity)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export N19_LIB="$N19_RD/lib/libtau6loop.so" N19_BIN="$N19_RD/lib/tau6dlp"
+          python3 --version | tee "$N19_RD/python-checks.txt"
+          (cd "$EXPERIMENT" && python3 -m unittest -v tests/test_pyrand.py tests/test_n2x_compare.py \
+            tests/test_archived_identity.py 2>&1 | tee -a "$N19_RD/python-checks.txt")
+
+      - name: Pull the pinned Sage image, record its runtime, check the RNG in its Python
         shell: bash
         run: |
           set -euo pipefail
           docker pull "$SAGE_IMAGE"
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            'sage --version; sage -python -c "import sys, platform, time; print(sys.version); print(platform.platform()); print(time.get_clock_info(\"process_time\"))"; grep -m1 "model name" /proc/cpuinfo; nproc; head -2 /proc/schedstat; cat /proc/self/cgroup; ldd /rd/lib/tau6dlp' \
+            | tee "$N19_RD/sage-runtime.txt"
+          docker run --rm --user root -e N19_LIB=/rd/lib/libtau6loop.so -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w/$EXPERIMENT \
+            --entrypoint /bin/bash "$SAGE_IMAGE" -c 'sage -python -m unittest -v tests/test_pyrand.py' 2>&1 \
+            | tee "$N19_RD/sage-python-rng.txt"
+
+      - name: Profile arm N in the pinned image (untimed diagnostic, recorded, not a gate)
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "$N19_RD/profile"
           docker run --rm --user root -e V3 -e EXPERIMENT -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c '
-            set -euo pipefail
-            sage --version
             cpu=$(sage -python -c "import os; print(min(os.sched_getaffinity(0)))")
-            P=$V3/inputs/panel.json
             pin() { sage -python -c "import os,sys; os.sched_setaffinity(0,{int(sys.argv[1])}); os.execvp(sys.argv[2], sys.argv[2:])" "$cpu" "$@"; }
-            pt() { sage -python -c "import json,sys; p=json.load(open(sys.argv[1]))[\"points\"][int(sys.argv[2])]; print(p[\"id\"], p[\"scalar\"], p[\"rng_seed\"])" "$P" "$1"; }
-            for i in 0 1 2 3 4 5 6 7; do
-              read id s seed < <(pt $i)
-              pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode timers --point $id --scalar $s --rng-seed "$seed" \
-                --lib /rd/lib/libtau6native.so --out /rd/profile/timers-$id.json
-            done
-            for i in 0 1; do
-              read id s seed < <(pt $i)
-              pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode cprofile --point $id --scalar $s --rng-seed "$seed" \
-                --lib /rd/lib/libtau6native.so --out /rd/profile/cprofile-$id.json
-            done
-            sage -python $EXPERIMENT/diagnosis/startup_probe.py --cpu $cpu --reps 5 --lib /rd/lib/libtau6native.so \
+            pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode timers --point v3p00 --scalar 43903 --rng-seed n19-native-tau6-v3:00 \
+              --lib /rd/lib/libtau6native.so --out /rd/profile/timers-v3p00.json
+            pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode timers --point v3p01 --scalar 99184 --rng-seed n19-native-tau6-v3:01 \
+              --lib /rd/lib/libtau6native.so --out /rd/profile/timers-v3p01.json
+            sage -python $EXPERIMENT/diagnosis/startup_probe.py --cpu $cpu --reps 3 --lib /rd/lib/libtau6native.so \
               --out /rd/profile/startup.json
           ' 2>&1 | tee "$N19_RD/profile-stdout.txt"
 
-      - name: Preserve the diagnostic
+      - name: Run the smoke part on one pinned CPU (untimed gate)
+        shell: bash
+        run: |
+          set +e
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "cpu=\$(sage -python -c 'import os; print(min(os.sched_getaffinity(0)))'); \
+             sage -python $EXPERIMENT/run_schedule.py --part smoke --v3lib /rd/lib/libtau6native.so \
+               --lib /rd/lib/libtau6loop.so --bin /rd/lib/tau6dlp --receipt-dir /rd/smoke \
+               --cpu \$cpu --job-start-epoch $N19_JOB_START --deadline-min 65" > "$N19_RD/smoke-runner-stdout.jsonl"
+          echo "smoke_exit=$?" | tee "$N19_RD/smoke-exit.txt"
+
+      - name: Sage smoke gate (every smoke gate must pass before any timed row)
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "sage -python $EXPERIMENT/verify_receipt.py --part smoke /rd/smoke" | tee "$N19_RD/smoke-verify-stdout.json"
+
+      - name: Preserve the smoke receipt, artifacts and profile
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: n19-native-loop-profile-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/n19prof
+          name: n19-native-loop-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19nl
+          if-no-files-found: error
+          retention-days: 90
+
+  timed:
+    needs: sage-smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Freeze runner and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          rd="$RUNNER_TEMP/n19nlt"
+          export N19_RD="$rd"  # $GITHUB_ENV only reaches later steps
+          mkdir -p "$rd"
+          {
+            echo "N19_JOB_START=$(date +%s)"
+            echo "N19_RD=$rd"
+          } >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$rd/host-probe.json"
+          python3 scripts/host_cpu_record.py --merge-into "$rd/host-probe.json"
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          cpu = next((l.split(':', 1)[1].strip() for l in Path('/proc/cpuinfo').read_text().splitlines()
+                      if l.startswith('model name')), None)
+          thp = Path('/sys/kernel/mm/transparent_hugepage')
+          rec = {'provider': 'github_actions', 'job': os.environ['GITHUB_JOB'],
+                 'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'],
+                                                     os.environ['GITHUB_JOB']),
+                 'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
+                 'image_version': os.environ.get('ImageVersion'),
+                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
+                 'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
+                                                 if l.startswith('MemTotal:')), None),
+                 'transparent_hugepage': {n: (thp / n).read_text().strip() for n in ('enabled', 'defrag')
+                                          if (thp / n).exists()},
+                 'sage_image': os.environ['SAGE_IMAGE'], 'git_sha': os.environ['GITHUB_SHA'],
+                 'git_ref': os.environ['GITHUB_REF'],
+                 'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'],
+                                                           os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+                 'recorded_at_utc': datetime.now(timezone.utc).isoformat()}
+          Path(os.environ['N19_RD'], 'allocation.json').write_text(json.dumps(rec, indent=2, sort_keys=True) + '\n')
+          PY
+
+      - name: Fetch the smoke job's artifacts and receipt
+        uses: actions/download-artifact@v4
+        with:
+          name: n19-native-loop-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19nl
+
+      - name: Check the frozen files and the artifact digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/make_panel.py" --check
+          python3 "$EXPERIMENT/make_schedule.py" --check
+          python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["status"] == "frozen" and p["frozen_before_any_timing"], p["status"]' "$EXPERIMENT/protocol.json"
+          chmod +x "$RUNNER_TEMP/n19nl/lib/tau6dlp"  # artifact upload drops the mode bits
+          (cd "$RUNNER_TEMP/n19nl/lib" && sha256sum -c ../binaries.sha256) | tee "$N19_RD/binaries-check.txt"
+          cp "$RUNNER_TEMP/n19nl/binaries.sha256" "$N19_RD/"
+          (cd "$EXPERIMENT" && sha256sum $FROZEN_LIST) | tee "$N19_RD/frozen.sha256"
+          diff "$N19_RD/frozen.sha256" "$RUNNER_TEMP/n19nl/frozen.sha256"
+
+      - name: Pull the pinned Sage image and record its runtime (outside every timed interval)
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$SAGE_IMAGE"
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            'sage --version; sage -python -c "import sys, platform, time; print(sys.version); print(platform.platform()); print(time.get_clock_info(\"process_time\"))"; grep -m1 "model name" /proc/cpuinfo; nproc; head -2 /proc/schedstat; cat /proc/self/cgroup' \
+            | tee "$N19_RD/sage-runtime.txt"
+
+      - name: Run the timed part on one pinned CPU
+        shell: bash
+        run: |
+          set +e
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$RUNNER_TEMP/n19nl:/sm" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "cpu=\$(sage -python -c 'import os; print(min(os.sched_getaffinity(0)))'); \
+             sage -python $EXPERIMENT/run_schedule.py --part timed --v3lib /sm/lib/libtau6native.so \
+               --lib /sm/lib/libtau6loop.so --bin /sm/lib/tau6dlp --receipt-dir /rd/panel \
+               --cpu \$cpu --job-start-epoch $N19_JOB_START --deadline-min 175" > "$N19_RD/runner-stdout.jsonl"
+          echo "schedule_exit=$?" | tee "$N19_RD/schedule-exit.txt"
+
+      - name: Audit the receipt and apply the frozen decision rule
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$RUNNER_TEMP/n19nl:/sm" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "sage -python $EXPERIMENT/verify_receipt.py --part timed /rd/panel --smoke-receipt /sm/smoke && sage -python $EXPERIMENT/make_figures.py result /rd/panel" \
+            | tee "$N19_RD/verify-stdout.json"
+          cat "$N19_RD/panel/result_table.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve allocation, raw rows and the result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n19-native-loop-timed-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19nlt
           if-no-files-found: warn
           retention-days: 90
