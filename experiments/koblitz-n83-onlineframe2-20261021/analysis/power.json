@@ -1,0 +1,177 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "pairs": 16
+ },
+ "candidate_model": {
+  "archived_onlineframe_online_ratio": 1.5733,
+  "expected_online_ratio": 1.4832365561785636,
+  "online_factor": 0.6742012903028882,
+  "online_s3_ns_per_probe": 219.46168596986024,
+  "rank_frame_ns_per_probe": 147.96135185292704,
+  "source": "online factor f = rank-stage frame ns per probe / online S3 ns per probe, both from the prior run's row processes (same host)"
+ },
+ "cells": {
+  "1.0000": {
+   "expected_e2e_ratio": 1.0,
+   "mc_se": 0.00431385848168435,
+   "median_ci_hi_over_lo": 1.0046831917918548,
+   "median_estimate": 0.9999438502894797,
+   "online_factor": 1.0,
+   "power": 0.0075
+  },
+  "1.0025": {
+   "expected_e2e_ratio": 1.0025,
+   "mc_se": 0.024997187341779078,
+   "median_ci_hi_over_lo": 1.0050218210077009,
+   "median_estimate": 1.0024978564468998,
+   "online_factor": 0.9134309618887293,
+   "power": 0.4925
+  },
+  "1.0050": {
+   "expected_e2e_ratio": 1.005,
+   "mc_se": 0.014486523910172518,
+   "median_ci_hi_over_lo": 1.00581669349235,
+   "median_estimate": 1.0049209247454234,
+   "online_factor": 0.8272926155093505,
+   "power": 0.9075
+  },
+  "1.0075": {
+   "expected_e2e_ratio": 1.0075,
+   "mc_se": 0.0035266839949164726,
+   "median_ci_hi_over_lo": 1.007342878544724,
+   "median_estimate": 1.0075218077463437,
+   "online_factor": 0.7415817547199411,
+   "power": 0.995
+  },
+  "1.0100": {
+   "expected_e2e_ratio": 1.01,
+   "mc_se": 0.002496873044429746,
+   "median_ci_hi_over_lo": 1.008824903048968,
+   "median_estimate": 1.0098745915077316,
+   "online_factor": 0.6562952051225635,
+   "power": 0.9975
+  },
+  "1.0200": {
+   "expected_e2e_ratio": 1.02,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0157084506596776,
+   "median_estimate": 1.0199919143307978,
+   "online_factor": 0.31932971994860493,
+   "power": 1.0
+  },
+  "archived_onlineframe": {
+   "expected_e2e_ratio": 1.0106083123983012,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0091547242867052,
+   "median_estimate": 1.0105194423606272,
+   "online_factor": 0.6356066865823429,
+   "power": 1.0
+  },
+  "modelled": {
+   "expected_e2e_ratio": 1.0094740914488767,
+   "mc_se": 0.002496873044429746,
+   "median_ci_hi_over_lo": 1.0082805367133396,
+   "median_estimate": 1.009307243589625,
+   "online_factor": 0.6742012903028882,
+   "power": 0.9975
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 1,
+  "attempts_per_rank_block": 16,
+  "distinct_rank_seeds": 64,
+  "layout_pairs_per_point": 1,
+  "planted_pairs_per_point": 1,
+  "points": 16,
+  "primary_pairs": 64,
+  "primary_pairs_per_point": 4
+ },
+ "expected_cold_ratio_at_prior_means": 1.0150118582480532,
+ "expected_online_ratio": 1.4832365561785636,
+ "expected_ratio_at_prior_means": 1.0094740914488767,
+ "law_gate": {
+  "archived_attempts": 576,
+  "archived_pooled_ratio": 1.0478898400505332,
+  "attempts": 1024,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 1.0,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.005,
+ "online_share_of_e2e_A": 0.02880666853233907,
+ "planted_control": {
+  "field": "online_ms",
+  "lower_bound_above_1_rate": 1.0,
+  "modelled_online_factor": 1.5,
+  "pairs": 16
+ },
+ "power_at_min_delta": 0.9075,
+ "prior": "inputs/power_prior.json (run 39464544962, the parent's archived run, the current row's producer)",
+ "prior_means_ms": {
+  "E2E_A": 11537.473641416665,
+  "E2E_B_modelled": 11429.192427174803,
+  "cold_ms": 7321.326558305555,
+  "index_ms": 5170.840604861111,
+  "online_ms": 332.3561788888889,
+  "rank_stage_ms": 4216.147083111111,
+  "scan_selftest_ms": 1436.9416189444444
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 17.0,
+  "job_limit_min": 180,
+  "job_total_min": 89.39320721131044,
+  "job_total_min_on_a_1.5x_slower_host": 133.08981081696567,
+  "mean_process_wall_s": {
+   "cM10IC": 9.024117118,
+   "cM10OF": 8.915835903758136,
+   "cM38IC": 9.056625165835616,
+   "cM38OF": 8.948343951593753,
+   "cM38OFX": 9.331512141140168,
+   "cM38OFaa": 8.948343951593753,
+   "cM38OS": 9.056625165835616,
+   "cPIC": 9.087589966,
+   "cPOF": 8.979308751758136,
+   "kM38IC": 13.180177007833334,
+   "kM38OF": 13.071895793591471,
+   "kM38OFaa": 13.071895793591471,
+   "rT": 2.6620963540833333
+  },
+  "point_segment_s": 260.01556873003375,
+  "processes_per_point": {
+   "cM38IC": 4,
+   "cM38OF": 7,
+   "cM38OFX": 1,
+   "cM38OFaa": 1,
+   "cM38OS": 1,
+   "kM38IC": 4,
+   "kM38OF": 5,
+   "kM38OFaa": 1,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM10IC": 1,
+   "cM10OF": 1,
+   "cM38IC": 1,
+   "cM38OF": 1,
+   "cM38OFX": 1,
+   "cPIC": 1,
+   "cPOF": 1
+  },
+  "schedule_min": 70.39320721131044,
+  "time_guard_deadline_min": 165
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.0075
+}
