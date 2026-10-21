@@ -1,0 +1,24 @@
+Run at the Rust crate root: crypto/ or cryptanalysis/suite/.
+
+EFD_COVERAGE_OUT=/tmp/efd-coverage.json cargo test --release --manifest-path tools/efd/Cargo.toml
+cargo test --release --lib
+cargo test --release --example efd_binary
+cargo run --release --example efd_binary -- demo
+cargo run --release --example efd_binary -- list shortw/lambda
+cargo run --release --example efd_binary -- show shortw/extended-0/addition/madd-2005-dl
+cargo clippy --release --manifest-path tools/efd/Cargo.toml --all-targets -- -D warnings
+cargo run --release --manifest-path tools/efd/Cargo.toml -- /tmp/efd-source-cache /tmp/efd-refreshed.json
+cmp src/binary_ecc/efd/catalogue.json /tmp/efd-refreshed.json
+
+From crypto/: bash tools/efd/check-mirror.sh ../cryptanalysis/suite
+From cryptanalysis/suite/: bash tools/efd/check-mirror.sh ../../crypto
+
+Tools were installed in /workspace/.toolchains in this cloud session, with
+RUSTUP_HOME=/workspace/.toolchains/rustup
+CARGO_HOME=/workspace/.toolchains/cargo
+and /workspace/.toolchains/cargo/bin on the command path.
+
+Document rendering only (no arithmetic/research generation in Python):
+dot -Tsvg docs/efd/architecture.dot -o docs/efd/architecture.svg
+PYTHONPATH=/tmp/efd-doc-render python3 -c 'import typst; typst.compile("docs/efd/report.typ", output="docs/efd/report.pdf")'
+pdftoppm -scale-to 1400 -png -singlefile docs/efd/report.pdf /tmp/efd-report-preview

@@ -1,0 +1,13 @@
+digraph EFD {
+  graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.4"];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fc", color="#4275a8", fontname="DejaVu Sans", fontsize=11, margin="0.15,0.12"];
+  edge [color="#6c8092", arrowsize=0.7];
+  source [label="Binary EFD snapshot\n3 models / 19 formats\n135 formulas + source hashes"];
+  importer [label="Native Rust importer\nrecords + assumptions\nthree-operand programs"];
+  runtime [label="Opt-in reference evaluator\nchecked caches and restrictions\nexisting binary field backend"];
+  tests [label="Validation\naffine model laws: all 135\nexisting Weierstrass arithmetic"];
+  interop [label="Library interop\nchecked Weierstrass ADD/DBL\ntyped full / X / W projections"];
+  source -> importer -> runtime;
+  runtime -> tests;
+  runtime -> interop;
+}

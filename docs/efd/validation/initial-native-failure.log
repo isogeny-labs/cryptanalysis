@@ -1,0 +1,76 @@
+    Updating crates.io index
+     Locking 13 packages to highest compatible versions
+      Adding autocfg v1.5.1
+      Adding getrandom v0.2.17
+      Adding num-bigint v0.4.8 (available: v0.5.1)
+      Adding num-integer v0.1.47
+      Adding num-traits v0.2.19
+      Adding ppv-lite86 v0.2.21
+      Adding rand v0.8.8 (available: v0.10.3)
+      Adding rand_chacha v0.3.1
+      Adding rand_core v0.6.4
+      Adding syn v2.0.119
+      Adding wasi v0.11.1+wasi-snapshot-preview1
+      Adding zerocopy v0.8.63
+      Adding zerocopy-derive v0.8.63
+ Downloading crates ...
+  Downloaded unicode-ident v1.0.27
+  Downloaded syn v3.0.9
+  Downloaded libc v0.2.191
+  Downloaded zerocopy v0.8.63
+   Compiling version_check v0.9.5
+   Compiling proc-macro2 v1.0.107
+   Compiling libc v0.2.191
+   Compiling unicode-ident v1.0.27
+   Compiling zerocopy v0.8.63
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling autocfg v1.5.1
+   Compiling quote v1.0.47
+   Compiling cfg-if v1.0.5
+   Compiling num-traits v0.2.19
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling syn v3.0.9
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling num-integer v0.1.47
+   Compiling digest v0.10.7
+   Compiling cpufeatures v0.2.17
+   Compiling memchr v2.8.3
+   Compiling serde_derive v1.0.229
+   Compiling itoa v1.0.18
+   Compiling sha2 v0.10.9
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_chacha v0.3.1
+   Compiling rand v0.8.8
+   Compiling num-bigint v0.4.8
+   Compiling efd-import v0.1.0 (/workspace/crypto/tools/efd)
+    Finished `release` profile [optimized] target(s) in 11.34s
+     Running unittests src/lib.rs (tools/efd/target/release/deps/efd_import-2435bd2f1a6cd34d)
+
+running 7 tests
+
+thread 'efd::tests::all_135_formulas_match_affine_model_laws' (7142) panicked at src/../../../src/binary_ecc/efd/tests.rs:227:35:
+edwards/w-1/diffadd/dadd-2008-blr GF(2^4) k=0: MissingInput("w4")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test efd::tests::all_135_formulas_match_affine_model_laws ... FAILED
+test efd::tests::all_nineteen_formats_roundtrip_scaled_finite_points ... ok
+test efd::tests::preserves_lambda_costs_and_parameter_checks ... ok
+test efd::tests::handles_zero_inversion_infinity_opposites_and_lambda_chart ... ok
+test efd::tests::rejects_mixed_specialization_cache_and_field_mismatches ... ok
+test efd::tests::complete_pinned_catalogue_and_source_hashes ... ok
+test efd::tests::checked_weierstrass_formulas_match_existing_independent_arithmetic ... ok
+
+failures:
+
+failures:
+    efd::tests::all_135_formulas_match_affine_model_laws
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 41 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `--lib`

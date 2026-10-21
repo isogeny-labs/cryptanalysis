@@ -1,0 +1,19 @@
+[package]
+name = "efd-import"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+num-bigint = "0.4"
+num-traits = "0.2"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+# Match the parent crate's policy for the existing field/curve modules compiled
+# in place by this check target. No arithmetic source is forked for the tool.
+[lints.clippy]
+needless_range_loop = "allow"
+too_many_arguments = "allow"
