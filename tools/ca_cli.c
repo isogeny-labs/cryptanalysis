@@ -1213,6 +1213,21 @@ static int ic_s3_sync(const char *from, const char *to)
     return ok;
 }
 
+static int ic_s3_sync_reported(const char *from, const char *to,
+                               const char *label, int verbose)
+{
+    if (verbose) {
+        fprintf(stderr, "[%s] S3 sync started\n", label);
+        fflush(stderr);
+    }
+    double start = ca_now();
+    int ok = ic_s3_sync(from, to);
+    if (verbose)
+        fprintf(stderr, "[%s] S3 sync %s in %.1fs\n", label,
+                ok ? "complete" : "failed", ca_now() - start);
+    return ok;
+}
+
 typedef struct ic_sync_state {
     const char *dir, *uri;
     const char *label;
@@ -1230,9 +1245,7 @@ static void *ic_sync_worker(void *arg)
         if (atomic_load(&s->stop)) break;
         if (++elapsed < s->interval) continue;
         elapsed = 0;
-        int ok = ic_s3_sync(s->dir, s->uri);
-        if (s->verbose) fprintf(stderr, "[%s] S3 sync %s\n", s->label,
-                                ok ? "complete" : "failed; will retry");
+        ic_s3_sync_reported(s->dir, s->uri, s->label, s->verbose);
     }
     return NULL;
 }
@@ -3925,10 +3938,10 @@ static int cmd_work(void)
             next_progress = now + progress_every;
         }
         if (s3_uri && now >= next_sync && !storage_failed) {
-            int ok = work_journal_flush(st, journal_fd, &journaled) &&
-                     ic_s3_sync(state_dir, s3_uri);
-            if (verbose) fprintf(stderr, "[work] S3 sync %s\n",
-                                 ok ? "complete" : "failed; will retry");
+            int flushed = work_journal_flush(st, journal_fd, &journaled);
+            if (flushed) ic_s3_sync_reported(state_dir, s3_uri, "work", verbose);
+            else if (verbose)
+                fprintf(stderr, "[work] S3 sync skipped: journal flush failed; will retry\n");
             next_sync = now + sync_every;
         }
         if (coord_interrupted) work_stop = 1;
@@ -3943,7 +3956,8 @@ static int cmd_work(void)
                                      lease_secs, journaled, verbose,
                                      ca_coord_solution(st, NULL) ? "solved" : "stopped")))
         storage_failed = 1;
-    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+    if (s3_uri && !storage_failed &&
+        !ic_s3_sync_reported(state_dir, s3_uri, "work", verbose))
         storage_failed = 1;
     if (idle_when_solved && !storage_failed && !coord_interrupted &&
         ca_coord_solution(st, NULL)) {
@@ -3988,7 +4002,8 @@ static int cmd_work(void)
                                      ca_coord_solution(st, NULL) ? "solved" : "stopped")))
         storage_failed = 1;
     /* Keep the remote result as running until the journal is uploaded. */
-    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+    if (s3_uri && !storage_failed &&
+        !ic_s3_sync_reported(state_dir, s3_uri, "work", verbose))
         storage_failed = 1;
     char result[640];
     int rn = snprintf(result, sizeof(result),

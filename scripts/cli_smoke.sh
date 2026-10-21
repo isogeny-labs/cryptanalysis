@@ -864,6 +864,8 @@ work_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" work --job "$ecc_tmp/work-job.
   --s3-uri s3://test/ecc2k/work --sync-every 1 2>&1) || work_rc=$?
 if { [ "$work_rc" -ne 0 ] && [ "$work_rc" -ne 3 ]; } || \
    [[ "$work_out" != *'[work]'* ]] || \
+   [[ "$work_out" != *'[work] S3 sync started'* ]] || \
+   [[ "$work_out" != *'[work] S3 sync complete in '* ]] || \
    [ ! -s "$work_state/checkins.log" ] || \
    [ ! -s "$ecc_tmp/remote/work/checkins.log" ] || \
    [ ! -f "$ecc_tmp/remote/work/result.json" ] || \
