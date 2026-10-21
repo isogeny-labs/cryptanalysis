@@ -88,6 +88,13 @@ CA_API ca_status ca_ic_log(ca_ic_ctx *ctx, uint64_t h, uint64_t *x, ca_stats *st
 CA_API ca_status ca_ic_solve(uint64_t p, uint64_t g, uint64_t h, const ca_ic_params *params,
                              uint64_t *x, ca_ic_stats *st);
 
+/* CLI-oriented variant.  A journal path enables durable linear-sieve units
+ * and a verified precomputation cache.  NULL preserves the ordinary solve.
+ * progress_interval is in seconds (0 => 5).  The ca_ic_params ABI is unchanged. */
+CA_API ca_status ca_ic_solve_checkpointed(uint64_t p, uint64_t g, uint64_t h,
+                                          const ca_ic_params *params, const char *checkpoint_path,
+                                          uint32_t progress_interval, uint64_t *x, ca_ic_stats *st);
+
 /* Introspection */
 CA_API uint64_t ca_ic_modulus(const ca_ic_ctx *ctx);
 CA_API uint32_t ca_ic_factor_base_size(const ca_ic_ctx *ctx);

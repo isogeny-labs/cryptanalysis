@@ -217,6 +217,62 @@ want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --s
 # ── index calculus ──────────────────────────────────────────────────────────
 want '"status":"ok"' ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 want '"x":69,"check":3' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1
+ic_tmp=$(mktemp -d)
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1 --resume
+checks=$((checks + 1))
+if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" ] || \
+   [ ! -s "$ic_tmp/progress.json" ]; then
+  printf 'FAIL: ic checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+# A remote copy must never replace a local run's mismatched identity.
+ic_s3_test=$(mktemp -d)
+mkdir "$ic_s3_test/bin" "$ic_s3_test/local"
+cat > "$ic_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$CA_TEST_S3_CALLED"
+if [[ $3 == s3://* ]]; then
+  cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+fi
+AWS
+chmod +x "$ic_s3_test/bin/aws"
+printf 'another run\n' > "$ic_s3_test/local/manifest.json"
+cp "$ic_s3_test/local/manifest.json" "$ic_s3_test/original-manifest"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'run manifest does not match these arguments' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/original-manifest" "$ic_s3_test/local/manifest.json"; then
+  printf 'FAIL: mismatched local manifest was exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/manifest.json"
+printf 'preserve\n' > "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'nonempty directory without a run manifest' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || [ -e "$ic_s3_test/local/manifest.json" ]; then
+  printf 'FAIL: unidentified local files were exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+rm -rf "$ic_tmp" "$ic_s3_test"
+want_bad 'durable --state-dir currently requires --method lsieve' \
+  ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296

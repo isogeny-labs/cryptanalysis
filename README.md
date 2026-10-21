@@ -184,6 +184,53 @@ pipeline is separate and has no complete released DLP command yet.
 ./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 ```
 
+For a long `ic` linear-sieve run, `--verbose` prints stage starts, relation
+counts, sieve-unit counts, and elapsed time to stderr while stdout remains one
+JSON result. `--progress-every` sets the reporting interval in seconds.
+`--state-dir` saves completed sieve units after each durable journal write,
+then saves verified factor-base logs and the final result. Resume with the
+same arguments plus `--resume`:
+
+```sh
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --progress-every 5 \
+  --state-dir ./ic-p41
+
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --progress-every 5 \
+  --state-dir ./ic-p41 --resume
+```
+
+The directory contains `manifest.json` (exact command identity),
+`relations.ckpt` (completed linear-sieve units),
+`relations.ckpt.precomp` (verified factor-base logs), `progress.json`
+(live counts and phase), and `result.json` (`running` until the command
+finishes). A partial last journal record is
+discarded and its sieve unit is recomputed. A mismatched manifest or corrupt
+precomputation is rejected. If an interruption occurs during linear algebra
+or the individual logarithm, the next run reuses the completed relation or
+precomputation artifact and repeats the interrupted stage.
+
+To copy the state to S3, supply a dedicated empty prefix and an AWS CLI with
+credentials for that bucket. The CLI syncs during the run and again before it
+returns; a failed final sync causes exit status 1 while retaining the local
+artifacts. Resume on another host by using an empty local state directory:
+
+```sh
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --state-dir ./ic-p41 \
+  --s3-uri s3://YOUR-BUCKET/ic-p41 --sync-every 60
+
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --state-dir ./ic-p41-restored \
+  --s3-uri s3://YOUR-BUCKET/ic-p41 --resume
+```
+
+Use one writer per state directory and S3 prefix. When a matching local
+manifest exists, the local journal is the resume source; use an empty local
+directory to restore the S3 copy. `--method rexp` supports live verbose
+progress, while durable relation checkpointing is currently for `lsieve`.
+
 Each generic command prints one JSON object per invocation. The existing
 `solve --alg ...` form remains available:
 
