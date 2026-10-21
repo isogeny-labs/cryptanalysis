@@ -492,6 +492,16 @@ if [ ! -s "$kangaroo_s3_test/remote/kangaroo.ckpt" ] || \
   printf 'FAIL: kangaroo S3 mirror/restore artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
+cp "$kangaroo_s3_test/remote/kangaroo.ckpt" "$kangaroo_s3_test/kangaroo-good"
+printf X >> "$kangaroo_s3_test/local/kangaroo.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'kangaroo checkpoint failed validation before S3 sync' \
+  "${KANGAROO_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/kangaroo.ckpt" "$kangaroo_s3_test/kangaroo-good"; then
+  printf 'FAIL: corrupt kangaroo checkpoint replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
 rm -f "$kangaroo_s3_test/remote/"*
 BSGS_S3=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
   --state-dir "$kangaroo_s3_test/bsgs-local" --s3-uri s3://test/bsgs --sync-every 1)
@@ -504,6 +514,35 @@ checks=$((checks + 1))
 if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
    ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
   printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/remote/bsgs.ckpt" "$kangaroo_s3_test/bsgs-good"
+printf X >> "$kangaroo_s3_test/bsgs-local/bsgs.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'interval checkpoint failed validation before S3 sync' \
+  "${BSGS_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/bsgs.ckpt" "$kangaroo_s3_test/bsgs-good"; then
+  printf 'FAIL: corrupt bsgs checkpoint replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+GRUMPY_S3=(grumpy --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --state-dir "$kangaroo_s3_test/grumpy-local" \
+  --s3-uri s3://test/grumpy --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GRUMPY_S3[@]}" --max-ops 20
+rm -rf "$kangaroo_s3_test/grumpy-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":177' "${GRUMPY_S3[@]}" --max-ops 100000 --resume
+cp "$kangaroo_s3_test/remote/grumpy.ckpt" "$kangaroo_s3_test/grumpy-good"
+printf X >> "$kangaroo_s3_test/grumpy-local/grumpy.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'interval checkpoint failed validation before S3 sync' \
+  "${GRUMPY_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/grumpy.ckpt" "$kangaroo_s3_test/grumpy-good"; then
+  printf 'FAIL: corrupt grumpy checkpoint replaced S3 copy\n' >&2
   fail=$((fail + 1))
 fi
 rm -f "$kangaroo_s3_test/remote/"*

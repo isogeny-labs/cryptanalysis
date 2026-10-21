@@ -178,6 +178,39 @@ static int bsgs_checkpoint_load(const char *path, const bsgs_checkpoint_header *
     return ok;
 }
 
+ca_status ca_bsgs_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_bsgs_params *params,
+    const char *checkpoint_path)
+{
+    ca_bsgs_params def;
+    if (!params) { ca_bsgs_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path)
+        return CA_ERR_INVALID;
+    ca_status rc = ca_resolve_interval(g, &lo, &hi);
+    if (rc != CA_OK) return rc;
+    uint64_t requested_m = params->table_size;
+    if (!requested_m) requested_m = ca_isqrt(hi - lo) + 1;
+    if (!requested_m || requested_m > SIZE_MAX / 2) return CA_ERR_INVALID;
+    bsgs_checkpoint_header identity, saved = {0};
+    bsgs_checkpoint_identity(&identity, g, base, target, lo, hi, requested_m);
+    if (bsgs_checkpoint_probe(checkpoint_path, &identity, &saved) != 1)
+        return CA_ERR_INVALID;
+    ca_htab1 tab;
+    size_t initial = (size_t)(requested_m < 4096 ? requested_m : 4096);
+    if (ca_htab1_init(&tab, initial) != CA_OK) return CA_ERR_NOMEM;
+    int ok = bsgs_checkpoint_load(checkpoint_path, &saved, &tab);
+    ca_htab1_free(&tab);
+    if (ok && saved.phase == BSGS_PHASE_SOLVED)
+        ok = saved.result >= lo && saved.result <= hi &&
+             ca_verify_log(g, base, target, saved.result);
+    if (!ok) {
+        ca_set_error("bsgs: checkpoint failed integrity or saved-solution validation");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
 void ca_bsgs_params_default(ca_bsgs_params *p)
 {
     p->table_size = 0;

@@ -217,6 +217,45 @@ static int grumpy_checkpoint_load(const char *path, const grumpy_checkpoint_head
     return ok;
 }
 
+ca_status ca_grumpy_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
+    const char *checkpoint_path)
+{
+    ca_grumpy_params def;
+    if (!params) { ca_grumpy_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path)
+        return CA_ERR_INVALID;
+    ca_status rc = ca_resolve_interval(g, &lo, &hi);
+    if (rc != CA_OK) return rc;
+    uint64_t m = params->m;
+    if (!m) {
+        double alpha = params->alpha > 0 ? params->alpha : 0.7;
+        m = (uint64_t)(alpha * (double)(ca_isqrt(hi - lo) + 1) + 0.5);
+        if (m < 1) m = 1;
+    }
+    grumpy_ctx c = { g, base, target, lo, hi, g->order, m, 0 };
+    grumpy_checkpoint_header identity, saved = {0};
+    grumpy_checkpoint_identity(&identity, &c);
+    if (grumpy_checkpoint_probe(checkpoint_path, &identity, &saved) != 1)
+        return CA_ERR_INVALID;
+    ca_htab tab;
+    if (ca_htab_init(&tab, 4096) != CA_OK) return CA_ERR_NOMEM;
+    ca_elem walk[3];
+    int ok = grumpy_checkpoint_load(checkpoint_path, &saved, g, walk, &tab);
+    ca_htab_free(&tab);
+    if (ok && saved.solved) {
+        uint64_t candidate = saved.result;
+        ok = ca_verify_log(g, base, target, candidate) &&
+             ca_fit_interval_base(g, base, &candidate, lo, hi);
+    }
+    if (!ok) {
+        ca_set_error("grumpy: checkpoint failed integrity or saved-solution validation");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
 static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                    uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
                                    const char *checkpoint_path, uint32_t progress_interval,

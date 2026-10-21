@@ -217,6 +217,86 @@ static int k_load(const char *path, const k_checkpoint_header *saved,
     return 1;
 }
 
+static void k_resolve_geometry(const ca_group *g, uint64_t width,
+                               const ca_kangaroo_params *params,
+                               uint32_t *herd_out, uint32_t *jumps_out,
+                               int *dp_out, double *mean_out)
+{
+    uint64_t sqrt_w = ca_isqrt(width) + 1;
+    uint32_t herd = params->herd_size;
+    if (herd > CA_KANGAROO_MAX_HERD) herd = CA_KANGAROO_MAX_HERD;
+    if (!herd) {
+        herd = g->kind == CA_GROUP_EC ? 64 : 8;
+        unsigned lg = 1;
+        for (uint64_t t = g->order ? g->order : width; t > 1; t >>= 1) lg++;
+        uint64_t cap = sqrt_w / (24u * (uint64_t)lg);
+        if (cap < 1) cap = 1;
+        if (herd > cap) herd = (uint32_t)cap;
+    }
+    uint32_t total = 2 * herd;
+    double mean = (double)total * (double)sqrt_w / 4.0;
+    if (mean < 2) mean = 2;
+    uint32_t jumps = params->jumps;
+    if (!jumps) {
+        jumps = 1;
+        while (jumps < 63 &&
+               ((double)((1ULL << jumps) - 1) / (double)jumps) < mean) jumps++;
+    }
+    if (jumps > 62) jumps = 62;
+    int dp = params->dp_bits;
+    if (dp > 62) dp = 62;
+    if (dp < 0) {
+        double expected = 2.0 * (double)sqrt_w;
+        double per_roo = expected / (32.0 * total);
+        dp = 0;
+        while (per_roo >= 2.0 && dp < 40) { per_roo /= 2; dp++; }
+    }
+    *herd_out = herd; *jumps_out = jumps; *dp_out = dp; *mean_out = mean;
+}
+
+ca_status ca_kangaroo_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_kangaroo_params *params,
+    const char *checkpoint_path)
+{
+    ca_kangaroo_params def;
+    if (!params) { ca_kangaroo_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path)
+        return CA_ERR_INVALID;
+    ca_status rc = ca_resolve_interval(g, &lo, &hi);
+    if (rc != CA_OK) return rc;
+    uint32_t herd, jumps;
+    int dp;
+    double mean;
+    k_resolve_geometry(g, hi - lo, params, &herd, &jumps, &dp, &mean);
+    k_checkpoint_header identity, saved = {0};
+    k_identity(&identity, g, base, target, lo, hi, herd, jumps, dp);
+    if (k_probe(checkpoint_path, &identity, &saved, params->seed) != 1 ||
+        saved.solved > 1) return CA_ERR_INVALID;
+    uint32_t total = 2 * herd;
+    roo *roos = calloc(total, sizeof(*roos));
+    uint64_t *hs = calloc(total, sizeof(*hs));
+    ca_htab tab;
+    if (!roos || !hs || ca_htab_init(&tab, 4096) != CA_OK) {
+        free(roos); free(hs);
+        return CA_ERR_NOMEM;
+    }
+    ca_rng rng;
+    int ok = k_load(checkpoint_path, &saved, g, roos, hs, total, &tab, &rng);
+    ca_htab_free(&tab);
+    free(roos); free(hs);
+    if (ok && saved.solved) {
+        uint64_t candidate = saved.result;
+        ok = ca_verify_log(g, base, target, candidate) &&
+             ca_fit_interval_base(g, base, &candidate, lo, hi);
+    }
+    if (!ok) {
+        ca_set_error("kangaroo: checkpoint failed integrity or saved-solution validation");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
 static int k_progress(const char *path, int verbose, double elapsed,
                       uint64_t ops, uint64_t dps, uint64_t restarts,
                       size_t entries, const char *status)
@@ -285,39 +365,11 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
     }
     if (n && !ca_check_members(g, base, target, n, "kangaroo")) return CA_ERR_NOT_FOUND;
 
-    uint64_t sqrt_w = ca_isqrt(width) + 1;
-    uint32_t herd = params->herd_size;
-    /* 2 * herd must not wrap, and the herd arrays are allocated up front:
-     * CA_KANGAROO_MAX_HERD kangaroos per herd is already 64 MB of state. */
-    if (herd > CA_KANGAROO_MAX_HERD) herd = CA_KANGAROO_MAX_HERD;
-    if (herd == 0) {
-        /* each kangaroo start costs ~1.5 log2(n) operations; keep the total
-         * start-up under sqrt(width)/8 */
-        herd = (g->kind == CA_GROUP_EC) ? 64 : 8;
-        unsigned lg = 1;
-        for (uint64_t t = n ? n : width; t > 1; t >>= 1) lg++;
-        uint64_t cap = sqrt_w / (24u * (uint64_t)lg);
-        if (cap < 1) cap = 1;
-        if (herd > cap) herd = (uint32_t)cap;
-    }
+    uint32_t herd, nj;
+    int dp;
+    double mean_target;
+    k_resolve_geometry(g, width, params, &herd, &nj, &dp, &mean_target);
     uint32_t total = 2 * herd;
-    /* mean jump ~ total * sqrt(width) / 4 (vOW), realised with powers of two */
-    double mean_target = (double)total * (double)sqrt_w / 4.0;
-    if (mean_target < 2) mean_target = 2;
-    uint32_t nj = params->jumps;
-    if (nj == 0) {
-        nj = 1;
-        while (nj < 63 && ((double)((1ULL << nj) - 1) / (double)nj) < mean_target) nj++;
-    }
-    if (nj > 62) nj = 62;
-    int dp = params->dp_bits;
-    if (dp > 62) dp = 62; /* dp is a shift count for a 64-bit mask */
-    if (dp < 0) {
-        double expected = 2.0 * (double)sqrt_w; /* total jumps */
-        double per_roo = expected / (32.0 * total);
-        dp = 0;
-        while (per_roo >= 2.0 && dp < 40) { per_roo /= 2; dp++; }
-    }
     uint64_t dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     k_checkpoint_header identity, saved = {0};
     k_identity(&identity, g, base, target, lo, hi, herd, nj, dp);

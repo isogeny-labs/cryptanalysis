@@ -35,6 +35,12 @@ CA_API ca_status ca_bsgs_solve_checkpointed(
     const char *checkpoint_path, uint32_t progress_interval,
     uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
 
+/* Read-only validation of a saved interval checkpoint before remote sync. */
+CA_API ca_status ca_bsgs_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_bsgs_params *params,
+    const char *checkpoint_path);
+
 /*
  * Precomputed baby-step table for solving many logarithms to the same base
  * (amortised BSGS).  Each subsequent solve costs width / table_size ops.

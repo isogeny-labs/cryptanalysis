@@ -214,7 +214,9 @@ checksum. A resumed run recreates the jump table and continues the same
 herds. `kangaroo.ckpt.progress.json` and `result.json` provide readable
 status. Tiny intervals handled by a direct scan have only the manifest and
 result; resume recomputes them. The local/S3 sync and locking rules above
-apply to kangaroo as well.
+apply to kangaroo as well. An existing checkpoint is checked against the
+interval and walk settings, then its herd positions, table, checksum, and any
+saved answer are validated before S3 syncing begins.
 
 ## BSGS and grumpy interval searches
 
@@ -237,6 +239,8 @@ points or the giant start point when loading a checkpoint. Grumpy reports
 `grumpy.ckpt`. Each checkpoint has a checksum and binds the group, target,
 interval, and resolved algorithm settings. Both commands write a matching
 `*.progress.json`, `manifest.json`, and `result.json` in their state directory.
+On resume, each command validates its local checkpoint, including table
+entries, checksum, and any saved answer, before it can be copied to S3.
 
 ## Reusable precomputation table
 
