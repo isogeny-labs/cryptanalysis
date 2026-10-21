@@ -1,0 +1,35 @@
+   Compiling tau6-loop v0.1.0 (/home/runner/work/cryptanalysis/cryptanalysis/experiments/volcano-n19-native-loop-20261021/native)
+    Finished `release` profile [optimized] target(s) in 1.53s
+     Running unittests src/lib.rs (/home/runner/work/_temp/n19nl-cargo/release/deps/tau6loop-55138f7f44f8269a)
+
+running 15 tests
+test dlp::tests::kernel_is_kernel_and_echelon ... ok
+test dlp::tests::setup_matches_archive ... ok
+test pyrand::tests::mt19937_reference_vector ... ok
+test pyrand::tests::python_str_seed_vectors ... ok
+test util::tests::sha_and_base64_vectors ... ok
+test v3::tests::mul_is_field_mul ... ok
+test v3::tests::mul_matches_reference_and_abi ... ok
+test curve::tests::group_law ... ok
+test curve::tests::fast_mul_equals_v3_gf_mul_and_inverse ... ok
+test v3::tests::sage_variety_order ... ok
+test v3::tests::s0_v1_failure_is_the_reciprocal_modulus ... ok
+test v3::tests::two_solution_systems ... ok
+test v3::tests::s0_v1_mismatch_systems ... ok
+test dlp::tests::archived_instance_0 ... ok
+test v3::tests::solve_equals_bruteforce ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+     Running unittests src/bin/tau6dlp.rs (/home/runner/work/_temp/n19nl-cargo/release/deps/tau6dlp-591a570372357a70)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests tau6loop
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
