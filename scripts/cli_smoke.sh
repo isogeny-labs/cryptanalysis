@@ -194,9 +194,22 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
-want_bad 'live progress and resumable state require --alg rho, kangaroo, bsgs or grumpy' \
-  solve --alg dlog --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+want_bad 'live progress and resumable state require --alg' \
+  solve --alg unsupported --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
+precomp_tmp=$(mktemp -d)
+PRECOMP=(solve --alg precomp --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --seed 17 --table 64 --state-dir "$precomp_tmp")
+want '"x":177' "${PRECOMP[@]}"
+want '"x":177' "${PRECOMP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$precomp_tmp/precomp.table.ckpt" ] || \
+   [ ! -s "$precomp_tmp/precomp.online.ckpt" ] || \
+   [ ! -s "$precomp_tmp/result.json" ]; then
+  printf 'FAIL: precomp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$precomp_tmp"
 bsgs_tmp=$(mktemp -d)
 BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
   --state-dir "$bsgs_tmp" --verbose --progress-every 1)
