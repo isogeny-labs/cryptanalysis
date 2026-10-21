@@ -138,6 +138,11 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+On resume, an existing rho checkpoint is checked for group identity, seed,
+file length, checksum, table entry bounds, and any saved answer before S3
+sync can start. A damaged local checkpoint stops the command without
+replacing the remote copy. The solver checks its complete walk compatibility
+again while loading it.
 
 ## Curve-aware GLV rho
 
@@ -158,7 +163,9 @@ cryptanalysis solve --alg glv --group ec --p 67108933 --a 0 --b 7 \
 
 Resume with the same curve, points, seed, and state location. `--max-ops`
 can stop a run with a checkpoint; raise it on resume to continue. The local
-lock, final sync, and S3 restore rules above apply.
+lock, final sync, and S3 restore rules above apply. An existing GLV snapshot
+gets the same read-only preflight before S3 sync, including its saved lanes,
+table, and checksum. On a generic curve, that preflight uses the rho format.
 
 ## GPU rho
 

@@ -506,6 +506,67 @@ static int glv_checkpoint_load(const char *path, const glv_checkpoint_header *ex
     return 1;
 }
 
+ca_status ca_curve_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                        const ca_elem *target, uint64_t seed,
+                                        const char *checkpoint_path)
+{
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path || !g->order)
+        return CA_ERR_INVALID;
+    if (g->kind != CA_GROUP_EC || !g->endo_kind) {
+        ca_rho_params rp;
+        ca_rho_params_default(&rp);
+        rp.seed = seed;
+        return ca_rho_checkpoint_validate(g, base, target, &rp, checkpoint_path);
+    }
+    FILE *f = fopen(checkpoint_path, "rb");
+    if (!f) { ca_set_error("glv: cannot open checkpoint for validation"); return CA_ERR_INVALID; }
+    glv_checkpoint_header saved = {0}, wanted;
+    int ok = fread(&saved, 1, sizeof(saved), f) == sizeof(saved);
+    glv_ctx c = {0};
+    c.g = g; c.base = *base; c.target = *target;
+    c.r = saved.r; c.dp_bits = saved.dp_bits <= 48 ? (int)saved.dp_bits : 0;
+    glv_checkpoint_identity(&wanted, &c, saved.walks);
+    ok = ok && glv_checkpoint_same_run(&saved, &wanted) && saved.seed &&
+         (!seed || saved.seed == seed) && saved.solved <= 1 &&
+         saved.r >= 8 && saved.r <= 32 && (saved.r & (saved.r - 1)) == 0 &&
+         saved.walks > 0 && saved.walks <= GLV_MAX_WALKS &&
+         saved.dp_bits <= 48 && isfinite(saved.elapsed_seconds) &&
+         saved.elapsed_seconds >= 0;
+    size_t lanes_bytes = (size_t)saved.walks * sizeof(glv_walk);
+    if (ok) ok = saved.entries <= (SIZE_MAX - sizeof(saved) - lanes_bytes) /
+                                sizeof(ca_htab_entry);
+    struct stat sb;
+    if (ok) ok = fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+                 (uint64_t)sb.st_size == sizeof(saved) + lanes_bytes +
+                 saved.entries * sizeof(ca_htab_entry);
+    uint64_t checksum = saved.checksum;
+    saved.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&saved, sizeof(saved),
+                                   UINT64_C(14695981039346656037));
+    for (uint32_t i = 0; ok && i < saved.walks; i++) {
+        glv_walk walk;
+        ok = fread(&walk, 1, sizeof(walk), f) == sizeof(walk) &&
+             walk.a < g->order && walk.b < g->order &&
+             walk.idx < c.r && walk.first < c.r &&
+             walk.tries < c.r && walk.retry <= 1;
+        if (ok) hash = dlog_ckpt_hash(&walk, sizeof(walk), hash);
+    }
+    for (uint64_t i = 0; ok && i < saved.entries; i++) {
+        ca_htab_entry e;
+        ok = fread(&e, 1, sizeof(e), f) == sizeof(e) && e.key &&
+             e.v0 < g->order && e.v1 < g->order;
+        if (ok) hash = dlog_ckpt_hash(&e, sizeof(e), hash);
+    }
+    if (ok) ok = fgetc(f) == EOF && !ferror(f) && hash == checksum;
+    fclose(f);
+    if (ok && saved.solved) ok = ca_verify_log(g, base, target, saved.result);
+    if (!ok) {
+        ca_set_error("glv: checkpoint failed integrity or run-identity validation");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
 static int glv_checkpoint_save(const char *path, const glv_checkpoint_header *identity,
                                 const glv_walk *walks, const ca_htab *tab,
                                 const ca_rng *rng, uint64_t seed, uint64_t ops,

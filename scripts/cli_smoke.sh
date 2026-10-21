@@ -506,6 +506,25 @@ if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
   printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
+rm -f "$kangaroo_s3_test/remote/"*
+RHO_S3=(rho --group zp --p 1019 --order 509 --g 4 --h 818 --seed 1984 \
+  --dp-bits 0 --walks 4 --state-dir "$kangaroo_s3_test/rho-local" \
+  --s3-uri s3://test/rho --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${RHO_S3[@]}" --max-ops 20
+rm -rf "$kangaroo_s3_test/rho-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":177' "${RHO_S3[@]}" --max-ops 100000 --resume
+cp "$kangaroo_s3_test/remote/rho.dp" "$kangaroo_s3_test/rho-good"
+printf X >> "$kangaroo_s3_test/rho-local/rho.dp"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'walk checkpoint failed validation before S3 sync' \
+  "${RHO_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/rho.dp" "$kangaroo_s3_test/rho-good"; then
+  printf 'FAIL: corrupt local rho checkpoint replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
@@ -779,7 +798,8 @@ want_bad 'run manifest does not match' solve --alg glv "${CJ0[@]}" \
   --g "$GJ0" --h "$HJ0" --seed 4 --state-dir "$glv_tmp" --resume
 printf X >> "$glv_tmp/glv.ckpt"
 cp "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"
-want_no 'checkpoint is damaged or incompatible' "${GLV[@]}" --max-ops 100000 --resume
+want_bad 'walk checkpoint failed validation before S3 sync' \
+  "${GLV[@]}" --max-ops 100000 --resume
 checks=$((checks + 1))
 if ! cmp -s "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"; then
   printf 'FAIL: invalid GLV checkpoint was overwritten\n' >&2
@@ -798,6 +818,38 @@ checks=$((checks + 1))
 if [ ! -s "$kangaroo_s3_test/remote/glv.ckpt" ] || \
    ! grep -q '"x":424242' "$kangaroo_s3_test/remote/result.json"; then
   printf 'FAIL: GLV S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/remote/glv.ckpt" "$kangaroo_s3_test/glv-good"
+printf X >> "$kangaroo_s3_test/glv-local/glv.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'walk checkpoint failed validation before S3 sync' \
+  "${GLV_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/glv.ckpt" "$kangaroo_s3_test/glv-good"; then
+  printf 'FAIL: corrupt local GLV checkpoint replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+CG=(--group ec --p 67108879 --a 2 --b 3 --order 3355777)
+GG=$("$CA" group generator "${CG[@]}" | sed 's/.*"generator":"\([^"]*\)".*/\1/')
+HG=$("$CA" group exp "${CG[@]}" --elem "$GG" --k 1234 | sed 's/.*"result":"\([^"]*\)".*/\1/')
+GENERIC_S3=(solve --alg glv "${CG[@]}" --g "$GG" --h "$HG" --seed 7 \
+  --state-dir "$kangaroo_s3_test/generic-local" --s3-uri s3://test/generic \
+  --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GENERIC_S3[@]}" --max-ops 100
+rm -rf "$kangaroo_s3_test/generic-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":1234' "${GENERIC_S3[@]}" --max-ops 100000 --resume
+cp "$kangaroo_s3_test/remote/glv.ckpt" "$kangaroo_s3_test/generic-good"
+printf X >> "$kangaroo_s3_test/generic-local/glv.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'walk checkpoint failed validation before S3 sync' \
+  "${GENERIC_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/glv.ckpt" "$kangaroo_s3_test/generic-good"; then
+  printf 'FAIL: corrupt generic-curve checkpoint replaced S3 copy\n' >&2
   fail=$((fail + 1))
 fi
 rm -f "$kangaroo_s3_test/remote/"*

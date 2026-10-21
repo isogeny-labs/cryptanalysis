@@ -2023,6 +2023,10 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
             if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
                 !ca_group_is_identity(g, target))
                 die("no walk checkpoint found for --resume");
+            if (access(checkpoint, F_OK) == 0 &&
+                (glv ? ca_curve_checkpoint_validate(g, base, target, params->seed, checkpoint)
+                     : ca_rho_checkpoint_validate(g, base, target, params, checkpoint)) != CA_OK)
+                die("walk checkpoint failed validation before S3 sync");
         }
         if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist run status");
@@ -2076,8 +2080,10 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist walk result");
-    int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
     if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
+                                   !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",

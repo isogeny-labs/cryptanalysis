@@ -111,7 +111,9 @@ int main(void)
         CHECK(first.table_entries > 0);
         CHECK(access(path, F_OK) == 0);
         CHECK(access(progress, F_OK) == 0);
+        CHECK(ca_rho_checkpoint_validate(&g, &gen, &h, &rp, path) == CA_OK);
         rp.seed = 1985;
+        CHECK(ca_rho_checkpoint_validate(&g, &gen, &h, &rp, path) == CA_ERR_INVALID);
         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
                                         &got, NULL) == CA_ERR_INVALID);
         rp.seed = 1984;
@@ -120,10 +122,12 @@ int main(void)
                                         &got, &second) == CA_OK);
         CHECK_EQ_U64(got, 424242);
         CHECK(second.group_ops > first.group_ops);
+        CHECK(ca_rho_checkpoint_validate(&g, &gen, &h, &rp, path) == CA_OK);
         FILE *f = fopen(path, "ab");
         CHECK(f != NULL);
         CHECK(fputc(0, f) != EOF);
         CHECK(fclose(f) == 0);
+        CHECK(ca_rho_checkpoint_validate(&g, &gen, &h, &rp, path) == CA_ERR_INVALID);
         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
                                         &got, NULL) == CA_ERR_INVALID);
         unlink(progress);

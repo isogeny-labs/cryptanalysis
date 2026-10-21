@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -235,6 +236,59 @@ static int rho_checkpoint_load(rho_shared *sh, const rho_checkpoint_header *expe
         atomic_store(&sh->done, 1);
     }
     return 1;
+}
+
+ca_status ca_rho_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                      const ca_elem *target,
+                                      const ca_rho_params *params,
+                                      const char *checkpoint_path)
+{
+    ca_rho_params def;
+    if (!params) { ca_rho_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path ||
+        !g->order) return CA_ERR_INVALID;
+    FILE *f = fopen(checkpoint_path, "rb");
+    if (!f) { ca_set_error("rho: cannot open checkpoint for validation"); return CA_ERR_INVALID; }
+    rho_checkpoint_header saved = {0}, wanted;
+    rho_shared sh = {0};
+    sh.g = g; sh.base = *base; sh.target = *target;
+    int ok = fread(&saved, 1, sizeof(saved), f) == sizeof(saved);
+    sh.r = saved.r; sh.dp_bits = saved.dp_bits <= 58 ? (int)saved.dp_bits : 0;
+    sh.negmap = params->negation_map && ca_group_has_negation_map(g);
+    rho_checkpoint_identity(&sh, &wanted);
+    uint32_t requested_r = params->r && params->r < 4 ? 4 : params->r;
+    int requested_dp = params->dp_bits > 58 ? 58 : params->dp_bits;
+    ok = ok && rho_checkpoint_same_run(&saved, &wanted) && saved.seed != 0 &&
+         (!params->seed || saved.seed == params->seed) &&
+         (!requested_r || saved.r == requested_r) &&
+         (requested_dp < 0 || saved.dp_bits == (uint32_t)requested_dp) &&
+         saved.r >= 4 && saved.dp_bits <= 58 && saved.solved <= 1 &&
+         isfinite(saved.elapsed_seconds) && saved.elapsed_seconds >= 0 &&
+         saved.walk_ops >= saved.dps &&
+         saved.entries <= (SIZE_MAX - sizeof(saved)) / sizeof(ca_htab_entry);
+    struct stat sb;
+    if (ok) ok = fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+                 (uint64_t)sb.st_size == sizeof(saved) +
+                 saved.entries * sizeof(ca_htab_entry);
+    uint64_t checksum = saved.checksum;
+    saved.checksum = 0;
+    uint64_t hash = rho_hash_bytes(&saved, sizeof(saved),
+                                    UINT64_C(14695981039346656037));
+    for (uint64_t i = 0; ok && i < saved.entries; i++) {
+        ca_htab_entry e;
+        ok = fread(&e, 1, sizeof(e), f) == sizeof(e) && e.key &&
+             e.v0 < g->order && e.v1 < g->order;
+        if (ok) hash = rho_hash_bytes(&e, sizeof(e), hash);
+    }
+    if (ok) ok = fgetc(f) == EOF && !ferror(f) && hash == checksum;
+    fclose(f);
+    if (ok && saved.solved)
+        ok = ca_verify_log(g, base, target, saved.result);
+    if (!ok) {
+        ca_set_error("rho: checkpoint failed integrity or run-identity validation");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
 }
 
 /* The lock makes the table and solved status a single consistent image. */

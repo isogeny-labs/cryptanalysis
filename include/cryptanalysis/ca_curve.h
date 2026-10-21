@@ -84,6 +84,12 @@ CA_API ca_status ca_curve_solve_checkpointed(const ca_group *g, const ca_elem *b
                                               uint64_t *x, ca_curve_info *info,
                                               ca_stats *st);
 
+/* Read-only integrity preflight for a GLV or generic fallback rho snapshot.
+ * Full solver compatibility is checked again when the snapshot is loaded. */
+CA_API ca_status ca_curve_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                               const ca_elem *target, uint64_t seed,
+                                               const char *checkpoint_path);
+
 /* Explicit research startup backend for one-target GLV rho. The default API
  * above retains generic multiplier construction. In paired2 mode,
  * ca_stats.group_ops remains the exact generic-reference budget count used

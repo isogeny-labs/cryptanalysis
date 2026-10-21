@@ -47,6 +47,13 @@ CA_API ca_status ca_rho_solve_checkpointed(const ca_group *g, const ca_elem *bas
                                            uint32_t checkpoint_interval, int verbose,
                                            uint64_t *x, ca_stats *st);
 
+/* Read-only checkpoint integrity and run-identity preflight.  The solver
+ * still applies its full resume checks when it loads the artifact. */
+CA_API ca_status ca_rho_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                             const ca_elem *target,
+                                             const ca_rho_params *params,
+                                             const char *checkpoint_path);
+
 #ifdef __cplusplus
 }
 #endif
