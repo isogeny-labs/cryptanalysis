@@ -33,6 +33,14 @@ CA_API ca_status ca_grumpy_solve(const ca_group *g, const ca_elem *base, const c
                                  uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
                                  uint64_t *x, ca_stats *st);
 
+/* Save the three walks and collision table for an exact interval resume.
+ * NULL checkpoint_path enables live progress without persistence. */
+CA_API ca_status ca_grumpy_solve_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_grumpy_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
+
 #ifdef __cplusplus
 }
 #endif

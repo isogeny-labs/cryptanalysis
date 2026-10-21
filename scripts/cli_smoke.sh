@@ -194,9 +194,37 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
-want_bad 'live progress and resumable state currently require --alg rho or kangaroo' \
-  solve --alg bsgs --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+want_bad 'live progress and resumable state require --alg rho, kangaroo, bsgs or grumpy' \
+  solve --alg dlog --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
+bsgs_tmp=$(mktemp -d)
+BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$bsgs_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${BSGS[@]}" --max-ops 100
+want '"x":123456' "${BSGS[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$bsgs_tmp/manifest.json" ] || [ ! -s "$bsgs_tmp/bsgs.ckpt" ] || \
+   [ ! -s "$bsgs_tmp/bsgs.ckpt.progress.json" ] || [ ! -s "$bsgs_tmp/result.json" ]; then
+  printf 'FAIL: bsgs checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' bsgs "${ZP[@]}" --g 858101 --h 218146 \
+  --lo 0 --hi 1000001 --table 17 --state-dir "$bsgs_tmp" --resume
+rm -rf "$bsgs_tmp"
+grumpy_tmp=$(mktemp -d)
+GRUMPY=(grumpy --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --state-dir "$grumpy_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GRUMPY[@]}" --max-ops 20
+want '"x":177' "${GRUMPY[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$grumpy_tmp/manifest.json" ] || [ ! -s "$grumpy_tmp/grumpy.ckpt" ] || \
+   [ ! -s "$grumpy_tmp/grumpy.ckpt.progress.json" ] || [ ! -s "$grumpy_tmp/result.json" ]; then
+  printf 'FAIL: grumpy checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' grumpy --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --state-dir "$grumpy_tmp" --resume
+rm -rf "$grumpy_tmp"
 kangaroo_tmp=$(mktemp -d)
 KANGAROO=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
   --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
@@ -238,6 +266,20 @@ checks=$((checks + 1))
 if [ ! -s "$kangaroo_s3_test/remote/kangaroo.ckpt" ] || \
    ! grep -q '"x":177' "$kangaroo_s3_test/remote/result.json"; then
   printf 'FAIL: kangaroo S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+BSGS_S3=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$kangaroo_s3_test/bsgs-local" --s3-uri s3://test/bsgs --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${BSGS_S3[@]}" --max-ops 100
+rm -rf "$kangaroo_s3_test/bsgs-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":123456' "${BSGS_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
+   ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
 rm -rf "$kangaroo_s3_test"
