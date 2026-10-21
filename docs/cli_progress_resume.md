@@ -219,13 +219,14 @@ elapsed collection time. A stopped process can lose the work done since the
 last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
 apply. See the `ic` section of the CLI help for the remaining arguments.
 
-## ECC2K-130 CUDA campaign walk
+## ECC2K-130 GPU walks
 
-The packaged `rho --curve ecc2k130 --backend cuda` command delegates to a
-separate sigma-walk backend. Its managed mode keeps the backend's exact lane
-checkpoint and append-only 32-byte distinguished-point corpus in one run
-directory. The backend prints its own walk rate and report counts; the CLI
-also writes `progress.json` with elapsed time and local artifact sizes.
+The packaged `rho --curve ecc2k130 --backend cuda` command delegates to the
+sigma-walk backend. `--backend metal` runs a separate table walk on Apple
+GPUs. Each backend's managed mode keeps its exact lane checkpoint and
+append-only 32-byte distinguished-point corpus in one run directory. The
+backends print their walk rates and report counts while running; the CLI also
+writes `progress.json` with elapsed time and local artifact sizes.
 
 ```sh
 cryptanalysis rho --curve ecc2k130 --backend cuda --run-id R \
@@ -233,8 +234,10 @@ cryptanalysis rho --curve ecc2k130 --backend cuda --run-id R \
   --s3-uri s3://my-bucket/cryptanalysis/ecc2k130-R --sync-every 60
 ```
 
-Use a run ID assigned uniquely for this campaign; reusing another worker's
-ID repeats its trails. Repeat the same backend walk settings with `--resume`.
+Select `--backend metal` with a different directory and S3 prefix for the
+table walk. Use a run ID assigned uniquely to each worker in its campaign;
+reusing another worker's ID repeats its trails. Repeat the same backend and
+walk settings with `--resume`.
 The CLI checks the manifest, locks the local directory, and restores the
 corpus and checkpoint from S3 when local state is absent. During an upload it
 pins one completed checkpoint, copies the append-only corpus first, and
@@ -243,9 +246,14 @@ with an older checkpoint or a corpus ahead of it, both of which can be
 replayed. Resume discards an incomplete trailing corpus record after checking
 the checkpoint. The final upload is required for a successful managed command.
 
-The CUDA sigma corpus is separate from the Metal table-walk corpus. Metal
-still prints live backend progress and accepts `--verbose`, but managed
-state directories and S3 resume require a Metal checkpoint implementation.
+The Metal checkpoint holds each lane's point, seed, history, restart origin,
+and dead flag, plus cumulative counters. Restore checks its checksum and
+binds it to the backend's table, shader source, run ID, seeds, distinguished
+point weight, guard period, and lane geometry. The CUDA sigma and Metal table
+walks have different checkpoint formats and separate corpora; do not reuse a
+directory or S3 prefix between them. Managed resume requires the same backend
+arguments. Direct Metal checkpoint users may change the overdue restart limit;
+the backend reports that change.
 The ECC2K-130 command collects walk reports; it does not upload them into
 the live campaign's private ingest service.
 

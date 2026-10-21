@@ -206,10 +206,10 @@ static _Noreturn void usage(void)
         "        [--resume] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  rho   --curve ecc2k130 [--backend cuda|metal] [walk options]\n"
         "        cuda: campaign sigma walk; metal: separate table walk\n"
-        "        cuda walk: --run-id R [--state-dir DIR] [--resume] [--verbose]\n"
+        "        walk: --run-id R [--state-dir DIR] [--resume] [--verbose]\n"
         "        [--progress-every SEC] [--checkpoint-every SEC]\n"
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
-        "        metal: --verbose is available; managed state is pending\n"
+        "        Metal uses its own exact table-walk checkpoint format\n"
         "        --check [--kat F] checks the selected backend (KAT: cuda only)\n"
         "  version | factor N | prime N | ec-order --p P --a A --b B | gpu-info\n"
         "  gen   --group zp|ec --p P [--a A --b B] [--order N] [--x X] [--seed S]\n"
@@ -659,7 +659,7 @@ static int ecc2k_s3_upload(const char *dir, const char *uri)
     return ok;
 }
 
-static int ecc2k_progress(const char *dir, double elapsed, int verbose)
+static int ecc2k_progress(const char *dir, const char *backend, double elapsed, int verbose)
 {
     char *dp = ic_path(dir, "dps.bin"), *ck = ic_path(dir, "state.ck");
     struct stat ds = {0}, cs = {0};
@@ -667,14 +667,14 @@ static int ecc2k_progress(const char *dir, double elapsed, int verbose)
     if (stat(dp, &ds) != 0) ds.st_size = 0;
     if (stat(ck, &cs) != 0) cs.st_size = 0;
     free(dp); free(ck);
-    if (verbose) fprintf(stderr, "[ecc2k130/cuda] %.1fs dp_bytes=%" PRIu64
-                         " checkpoint_bytes=%" PRIu64 "\n", elapsed,
+    if (verbose) fprintf(stderr, "[ecc2k130/%s] %.1fs dp_bytes=%" PRIu64
+                         " checkpoint_bytes=%" PRIu64 "\n", backend, elapsed,
                          (uint64_t)ds.st_size, (uint64_t)cs.st_size);
     char body[256];
     int n = snprintf(body, sizeof(body),
-        "{\"status\":\"running\",\"backend\":\"cuda\",\"elapsed_seconds\":%.3f,"
+        "{\"status\":\"running\",\"backend\":\"%s\",\"elapsed_seconds\":%.3f,"
         "\"dp_bytes\":%" PRIu64 ",\"checkpoint_bytes\":%" PRIu64 "}\n",
-        elapsed, (uint64_t)ds.st_size, (uint64_t)cs.st_size);
+        backend, elapsed, (uint64_t)ds.st_size, (uint64_t)cs.st_size);
     return n > 0 && (size_t)n < sizeof(body) && ic_atomic_file(dir, "progress.json", body);
 }
 
@@ -693,8 +693,8 @@ static int cmd_ecc2k130_rho(void)
     if (!selected_backend ||
         (strcmp(selected_backend, "cuda") && strcmp(selected_backend, "metal")))
         die("--backend must be cuda or metal");
-    if (!strcmp(selected_backend, "metal") && (flag("--kat") || flag("--checkpoint")))
-        die("Metal table walk has no campaign KAT or CUDA checkpoint format");
+    if (!strcmp(selected_backend, "metal") && flag("--kat"))
+        die("Metal table walk has no campaign KAT");
     char self[PATH_MAX];
 #ifdef __linux__
     ssize_t n = readlink("/proc/self/exe", self, sizeof(self) - 1);
@@ -728,12 +728,12 @@ static int cmd_ecc2k130_rho(void)
     if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
     if (state_dir && (flag("--check") || flag("--bench")))
         die("--state-dir applies to ECC2K walk only");
-    if (state_dir && strcmp(selected_backend, "cuda"))
-        die("Metal table walk does not yet support checkpointed state directories");
     if (state_dir && (opt("--checkpoint") || opt("--dp-file") || opt("--dp-file64") ||
                       opt("--dp-file32")))
         die("--state-dir manages --checkpoint and --dp-file paths");
     if (state_dir && !opt("--run-id")) die("managed ECC2K walk requires --run-id");
+    if (state_dir && opt_u64("--run-id", 0) > 65535)
+        die("--run-id must be at most 65535");
     if (s3_uri) {
         if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
         const char *sep = strchr(s3_uri + 5, '/');
@@ -853,20 +853,20 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
                               fsync(fd) == 0;
                 if (fd >= 0 && close(fd) != 0) trimmed = 0;
                 if (!trimmed) die("cannot discard partial ECC2K corpus tail");
-                fprintf(stderr, "[ecc2k130/cuda] discarded %lld partial corpus bytes\n",
-                        (long long)(corpus.st_size - complete_bytes));
+                fprintf(stderr, "[ecc2k130/%s] discarded %lld partial corpus bytes\n",
+                        selected_backend, (long long)(corpus.st_size - complete_bytes));
             }
         }
         char cadence[32];
         snprintf(cadence, sizeof(cadence), "%u", checkpoint_interval);
-        args[arg_count++] = "--dp-file";
+        args[arg_count++] = strcmp(selected_backend, "metal") ? "--dp-file" : "--dp-file32";
         args[arg_count++] = dp_path;
         args[arg_count++] = "--checkpoint";
         args[arg_count++] = checkpoint;
         args[arg_count++] = "--checkpoint-every";
         args[arg_count++] = cadence;
         args[arg_count] = NULL;
-        if (!ecc2k_progress(state_dir, 0, verbose) ||
+        if (!ecc2k_progress(state_dir, selected_backend, 0, verbose) ||
             !ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist ECC2K run status");
 
@@ -900,7 +900,7 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
             sleep(1);
             double now = ca_now();
             if (now >= next_progress) {
-                if (!ecc2k_progress(state_dir, now - start, verbose)) {
+                if (!ecc2k_progress(state_dir, selected_backend, now - start, verbose)) {
                     storage_failed = 1;
                     kill(pid, SIGTERM);
                 }
@@ -908,8 +908,8 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
             }
             if (s3_uri && now >= next_sync) {
                 int ok = ecc2k_s3_upload(state_dir, s3_uri);
-                if (verbose) fprintf(stderr, "[ecc2k130/cuda] S3 sync %s\n",
-                                     ok ? "complete" : "failed; will retry");
+                if (verbose) fprintf(stderr, "[ecc2k130/%s] S3 sync %s\n",
+                                     selected_backend, ok ? "complete" : "failed; will retry");
                 next_sync = now + sync_interval;
             }
         }
@@ -926,17 +926,17 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
         if (stat(checkpoint, &final_ck) != 0) final_ck.st_size = 0;
         char result[512];
         int rn = snprintf(result, sizeof(result),
-            "{\"status\":\"%s\",\"alg\":\"ecc2k130-rho\",\"backend\":\"cuda\","
+            "{\"status\":\"%s\",\"alg\":\"ecc2k130-rho\",\"backend\":\"%s\","
             "\"exit_code\":%d,\"dp_bytes\":%" PRIu64 ",\"checkpoint_bytes\":%" PRIu64 "}\n",
             interrupted ? "interrupted" : child_code == 0 && !storage_failed ? "ok" : "error",
-            child_code,
+            selected_backend, child_code,
             (uint64_t)final_dp.st_size, (uint64_t)final_ck.st_size);
         if (rn < 0 || (size_t)rn >= sizeof(result) ||
             !ic_atomic_file(state_dir, "result.json", result))
             storage_failed = 1;
         int uploaded = !s3_uri || ecc2k_s3_upload(state_dir, s3_uri);
-        if (verbose && s3_uri) fprintf(stderr, "[ecc2k130/cuda] final S3 sync %s\n",
-                                       uploaded ? "complete" : "failed");
+        if (verbose && s3_uri) fprintf(stderr, "[ecc2k130/%s] final S3 sync %s\n",
+                                       selected_backend, uploaded ? "complete" : "failed");
         if (!uploaded || storage_failed) {
             char error_result[128];
             snprintf(error_result, sizeof(error_result),

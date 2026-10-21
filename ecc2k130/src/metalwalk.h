@@ -20,6 +20,13 @@
 
 #include "cpuwalk.h"
 
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 namespace ec2k_metal
 {
 
@@ -39,6 +46,25 @@ struct WalkArgs {
     uint32_t guardPeriod, pad;
 };
 
+inline uint64_t checkpointHash(const void *data, size_t bytes,
+                               uint64_t hash = 1469598103934665603ULL)
+{
+    const uint8_t *p = (const uint8_t *)data;
+    for (size_t i = 0; i < bytes; i++) {
+        hash ^= p[i];
+        hash *= 1099511628211ULL;
+    }
+    return hash;
+}
+
+struct MetalCheckpointHeader {
+    char magic[8];
+    uint32_t version, threads, batch, dpWeight, runId, guardPeriod;
+    uint64_t pSeed, qSeed, maxIters, iterBase, tableHash, shaderHash, payloadBytes;
+    RunTotals totals;
+    uint64_t checksum;
+};
+
 inline id<MTLDevice> pickDevice(int index)
 {
     if (index > 0) {
@@ -49,7 +75,8 @@ inline id<MTLDevice> pickDevice(int index)
 }
 
 // The library for a given lanes-per-thread; nil and a message on failure.
-inline id<MTLLibrary> compileWalkLibrary(id<MTLDevice> device, int batch, std::string *error)
+inline id<MTLLibrary> compileWalkLibrary(id<MTLDevice> device, int batch,
+                                        std::string *error, uint64_t *sourceHash = nullptr)
 {
     MTLCompileOptions *options = [MTLCompileOptions new];
     options.preprocessorMacros = @{@"ECC_BATCH" : @(batch)};
@@ -64,6 +91,10 @@ inline id<MTLLibrary> compileWalkLibrary(id<MTLDevice> device, int batch, std::s
     if (!source) {
         if (error) *error = "cannot read EC2K_METAL_SOURCE";
         return nil;
+    }
+    if (sourceHash) {
+        const char *bytes = [source UTF8String];
+        *sourceHash = checkpointHash(bytes, strlen(bytes));
     }
     id<MTLLibrary> lib = [device newLibraryWithSource:source options:options error:&err];
     if (!lib && error) *error = err ? [[err localizedDescription] UTF8String] : "unknown error";
@@ -112,13 +143,15 @@ class MetalEngine
         args_.guardPeriod = guardPeriod ? guardPeriod : 1;
         args_.pad = 0;
         runId_ = o.runId;
+        pSeed_ = o.pSeed;
+        qSeed_ = o.qSeed;
 
         device_ = pickDevice(o.device);
         if (!device_) {
             error_ = "no Metal device";
             return;
         }
-        id<MTLLibrary> lib = compileWalkLibrary(device_, batch_, &error_);
+        id<MTLLibrary> lib = compileWalkLibrary(device_, batch_, &error_, &shaderHash_);
         if (!lib) return;
         walk_ = pipelineFor(device_, lib, "walk", &error_);
         if (!walk_) return;
@@ -134,6 +167,7 @@ class MetalEngine
         dp_ = shared(size_t(args_.dpCap) * sizeof(DpRecord));
         counts_ = shared(4 * sizeof(uint32_t));
         const std::vector<uint32_t> consts = table.deviceConsts();
+        tableHash_ = checkpointHash(consts.data(), consts.size() * sizeof(uint32_t));
         tw_ = [device_ newBufferWithBytes:consts.data()
                                    length:consts.size() * sizeof(uint32_t)
                                   options:MTLResourceStorageModeShared];
@@ -142,9 +176,11 @@ class MetalEngine
             return;
         }
         memset(counts_.contents, 0, 4 * sizeof(uint32_t));
-        std::vector<size_t> all(lanes);
-        for (size_t i = 0; i < lanes; ++i) all[i] = i;
-        seedLanes(all, false);
+        if (o.checkpoint.empty() || access(o.checkpoint.c_str(), F_OK) != 0) {
+            std::vector<size_t> all(lanes);
+            for (size_t i = 0; i < lanes; ++i) all[i] = i;
+            seedLanes(all, false);
+        }
         ready_ = true;
     }
 
@@ -161,6 +197,114 @@ class MetalEngine
         snprintf(buf, sizeof(buf), ",\"threads\":%d,\"batch\":%d,\"device\":\"%s\"", threads_,
                  batch_, deviceName().c_str());
         return buf;
+    }
+
+    bool saveCheckpoint(const std::string &path, const RunTotals &totals)
+    {
+        auto arrays = stateArrays();
+        MetalCheckpointHeader h;
+        memset(&h, 0, sizeof(h));
+        memcpy(h.magic, "EC2KMCK1", 8);
+        h.version = 1;
+        h.threads = (uint32_t)threads_;
+        h.batch = (uint32_t)batch_;
+        h.dpWeight = (uint32_t)args_.dpWeight;
+        h.runId = runId_;
+        h.guardPeriod = args_.guardPeriod;
+        h.pSeed = pSeed_;
+        h.qSeed = qSeed_;
+        h.maxIters = args_.maxIters;
+        h.iterBase = args_.iterBase;
+        h.tableHash = tableHash_;
+        h.shaderHash = shaderHash_;
+        h.totals = totals;
+        for (const auto &a : arrays) h.payloadBytes += a.second;
+        uint64_t hash = checkpointHash(&h, offsetof(MetalCheckpointHeader, checksum));
+        for (const auto &a : arrays) hash = checkpointHash(a.first, a.second, hash);
+        h.checksum = hash;
+
+        std::string pattern = path + ".tmp.XXXXXX";
+        std::vector<char> tmp(pattern.begin(), pattern.end());
+        tmp.push_back('\0');
+        int fd = mkstemp(tmp.data());
+        if (fd < 0) { error_ = "cannot create checkpoint temporary file"; return false; }
+        FILE *f = fdopen(fd, "wb");
+        if (!f) {
+            close(fd);
+            unlink(tmp.data());
+            error_ = "cannot open checkpoint temporary file";
+            return false;
+        }
+        bool ok = fwrite(&h, sizeof(h), 1, f) == 1;
+        for (const auto &a : arrays)
+            if (ok) ok = fwrite(a.first, 1, a.second, f) == a.second;
+        if (ok) ok = fflush(f) == 0 && fsync(fileno(f)) == 0;
+        if (fclose(f) != 0) ok = false;
+        if (ok) ok = rename(tmp.data(), path.c_str()) == 0;
+        if (ok) {
+            size_t slash = path.find_last_of('/');
+            std::string dir = slash == std::string::npos ? "." :
+                              slash == 0 ? "/" : path.substr(0, slash);
+            int dfd = open(dir.c_str(), O_RDONLY);
+            ok = dfd >= 0 && fsync(dfd) == 0;
+            if (dfd >= 0 && close(dfd) != 0) ok = false;
+        }
+        if (!ok) {
+            unlink(tmp.data());
+            error_ = "cannot write, rename or sync checkpoint";
+        }
+        return ok;
+    }
+
+    // 1 = restored, 0 = fresh run, -1 = present but invalid.
+    int loadCheckpoint(const std::string &path, RunTotals *totals)
+    {
+        FILE *f = fopen(path.c_str(), "rb");
+        if (!f) {
+            if (errno == ENOENT) return 0;
+            error_ = "cannot open checkpoint";
+            return -1;
+        }
+        MetalCheckpointHeader h;
+        bool ok = fread(&h, sizeof(h), 1, f) == 1;
+        auto arrays = stateArrays();
+        size_t bytes = 0;
+        for (const auto &a : arrays) bytes += a.second;
+        if (!ok || memcmp(h.magic, "EC2KMCK1", 8) != 0 || h.version != 1 ||
+            h.threads != (uint32_t)threads_ || h.batch != (uint32_t)batch_ ||
+            h.dpWeight != (uint32_t)args_.dpWeight || h.runId != runId_ ||
+            h.guardPeriod != args_.guardPeriod || h.pSeed != pSeed_ ||
+            h.qSeed != qSeed_ || h.tableHash != tableHash_ ||
+            h.shaderHash != shaderHash_ || h.payloadBytes != bytes ||
+            !std::isfinite(h.totals.elapsed) || h.totals.elapsed < 0 ||
+            h.iterBase > UINT64_MAX / laneCount() ||
+            h.totals.iterations != h.iterBase * laneCount() ||
+            h.totals.verified > h.totals.reports ||
+            h.totals.badReports > h.totals.verified) {
+            fclose(f);
+            error_ = "checkpoint identity, geometry or counters do not match";
+            return -1;
+        }
+        std::vector<uint8_t> payload(bytes);
+        ok = fread(payload.data(), 1, bytes, f) == bytes && fgetc(f) == EOF;
+        if (fclose(f) != 0) ok = false;
+        uint64_t hash = checkpointHash(&h, offsetof(MetalCheckpointHeader, checksum));
+        if (ok) hash = checkpointHash(payload.data(), bytes, hash);
+        if (!ok || hash != h.checksum) {
+            error_ = "checkpoint is truncated or checksum failed";
+            return -1;
+        }
+        size_t off = 0;
+        for (const auto &a : arrays) {
+            memcpy(a.first, payload.data() + off, a.second);
+            off += a.second;
+        }
+        args_.iterBase = h.iterBase;
+        *totals = h.totals;
+        if (h.maxIters != args_.maxIters)
+            fprintf(stderr, "checkpoint restart limit changed from %llu to %llu\n",
+                    (unsigned long long)h.maxIters, (unsigned long long)args_.maxIters);
+        return 1;
     }
 
     void launch(int steps, std::vector<DpRecord> *out, LaunchCounts *counts)
@@ -213,6 +357,17 @@ class MetalEngine
     }
 
   private:
+    std::array<std::pair<void *, size_t>, 6> stateArrays() const
+    {
+        const size_t lanes = laneCount();
+        return {{{x_.contents, lanes * 5 * sizeof(uint32_t)},
+                 {y_.contents, lanes * 5 * sizeof(uint32_t)},
+                 {hist_.contents, lanes * sizeof(uint64_t)},
+                 {seed_.contents, lanes * sizeof(uint64_t)},
+                 {start_.contents, lanes * sizeof(uint64_t)},
+                 {dead_.contents, lanes * sizeof(uint32_t)}}};
+    }
+
     static ec2k_cpu::Geometry seederGeometry()
     {
         ec2k_cpu::Geometry g;
@@ -283,6 +438,7 @@ class MetalEngine
     ec2k_cpu::CpuEngine seeder_;
     WalkArgs args_{};
     unsigned runId_ = 0;
+    uint64_t pSeed_ = 0, qSeed_ = 0, tableHash_ = 0, shaderHash_ = 0;
     int threads_ = 0, batch_ = 0;
     double secondsPerStep_ = 0;
     bool ready_ = false;

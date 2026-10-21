@@ -14,6 +14,7 @@
  * nothing to hold to anything: the test says so and passes.
  */
 #include "metalwalk.h"
+#include <algorithm>
 
 using namespace ec2k_metal;
 using namespace eccPacked131;
@@ -152,6 +153,75 @@ void checkEngine(const HostTable &table, CheckResult *cr)
     for (size_t lane = 0; lane < e.laneCount(); ++lane)
         lanesOk += rewalk(table, e.laneRecord(lane), nullptr) ? 1 : 0;
     cr->note(lanesOk == (int)e.laneCount(), "every lane is where the golden model puts its seed");
+
+    const char *base = getenv("TMPDIR");
+    if (!base) base = ".";
+    char path[1024];
+    snprintf(path, sizeof(path), "%s/ec2k-metal-checkpoint.XXXXXX", base);
+    int fd = mkstemp(path);
+    cr->note(fd >= 0, "checkpoint temporary path is available");
+    if (fd < 0) return;
+    close(fd);
+    unlink(path);
+    RunTotals totals;
+    totals.iterations = counts.iterations;
+    totals.reports = reports.size();
+    totals.restarts = counts.restarts;
+    totals.dropped = counts.dropped;
+    cr->note(e.saveCheckpoint(path, totals), "Metal lane checkpoint is saved");
+    o.checkpoint = path;
+    MetalEngine restored(table, o, false, 8, 16);
+    cr->note(restored.ok(), "Metal engine for restore starts");
+    RunTotals loaded;
+    int load = restored.ok() ? restored.loadCheckpoint(path, &loaded) : -1;
+    cr->note(load == 1 && loaded.iterations == totals.iterations &&
+                 loaded.reports == totals.reports, "checkpoint counters restore");
+    if (load == 1) {
+        int sameLanes = 0;
+        for (size_t lane = 0; lane < e.laneCount(); ++lane) {
+            DpRecord a = e.laneRecord(lane), b = restored.laneRecord(lane);
+            sameLanes += memcmp(&a, &b, sizeof(a)) == 0;
+        }
+        cr->note(sameLanes == (int)e.laneCount(), "every exact lane restores");
+        std::vector<DpRecord> nextA, nextB;
+        LaunchCounts countA, countB;
+        e.launch(12, &nextA, &countA);
+        restored.launch(12, &nextB, &countB);
+        // GPU atomics may place reports in a different buffer order.
+        auto recordLess = [](const DpRecord &a, const DpRecord &b) {
+            return memcmp(&a, &b, sizeof(a)) < 0;
+        };
+        std::sort(nextA.begin(), nextA.end(), recordLess);
+        std::sort(nextB.begin(), nextB.end(), recordLess);
+        int sameNextLanes = 0;
+        for (size_t lane = 0; lane < e.laneCount(); ++lane) {
+            DpRecord a = e.laneRecord(lane), b = restored.laneRecord(lane);
+            sameNextLanes += memcmp(&a, &b, sizeof(a)) == 0;
+        }
+        cr->note(countA.iterations == countB.iterations &&
+                     countA.restarts == countB.restarts &&
+                     nextA.size() == nextB.size() &&
+                     (nextA.empty() || memcmp(nextA.data(), nextB.data(),
+                                               nextA.size() * sizeof(DpRecord)) == 0) &&
+                     sameNextLanes == (int)e.laneCount(),
+                 "restored launch matches uninterrupted launch");
+    }
+    Options wrong = o;
+    wrong.runId++;
+    MetalEngine wrongRun(table, wrong, false, 8, 16);
+    cr->note(wrongRun.ok() && wrongRun.loadCheckpoint(path, &loaded) == -1,
+             "checkpoint refuses a different run id");
+    FILE *corrupt = fopen(path, "rb+");
+    if (corrupt && fseek(corrupt, -1, SEEK_END) == 0) {
+        int c = fgetc(corrupt);
+        if (c != EOF && fseek(corrupt, -1, SEEK_END) == 0)
+            fputc(c ^ 1, corrupt);
+    }
+    if (corrupt) fclose(corrupt);
+    MetalEngine damaged(table, o, false, 8, 16);
+    cr->note(damaged.ok() && damaged.loadCheckpoint(path, &loaded) == -1,
+             "checkpoint checksum rejects corruption");
+    unlink(path);
 }
 
 } // namespace

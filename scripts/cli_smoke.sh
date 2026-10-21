@@ -285,8 +285,8 @@ want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
 want_fail rho --curve ecc2k130 --backend metal --kat fixture
 
-# Exercise the packaged CUDA wrapper without needing a CUDA device or S3
-# account. The stub uses the same checkpoint/corpus paths as the real kernel.
+# Exercise the packaged ECC2K wrappers without needing a GPU or S3 account.
+# The stub uses the same checkpoint/corpus paths as the real kernels.
 ecc_tmp=$(mktemp -d)
 mkdir -p "$ecc_tmp/pkg/bin" "$ecc_tmp/pkg/libexec/cryptanalysis" "$ecc_tmp/awsbin" "$ecc_tmp/remote"
 cp "$CA" "$ecc_tmp/pkg/bin/cryptanalysis"
@@ -298,7 +298,7 @@ shift
 dp= ck= id=
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --dp-file) dp=$2; shift 2 ;;
+    --dp-file|--dp-file32) dp=$2; shift 2 ;;
     --checkpoint) ck=$2; shift 2 ;;
     --run-id) id=$2; shift 2 ;;
     *) shift ;;
@@ -373,8 +373,44 @@ if [[ "$ecc_out" != *'backend resumed'* ]] || \
 fi
 CA="$ecc_ca" want_bad 'run manifest does not match' rho --curve ecc2k130 --backend cuda \
   --run-id 8 --resume --state-dir "$ecc_state"
-CA="$ecc_ca" want_bad 'Metal table walk does not yet support' rho --curve ecc2k130 \
-  --backend metal --run-id 7 --state-dir "$ecc_tmp/metal"
+metal_state="$ecc_tmp/metal"
+: >"$ecc_tmp/upload.log"
+checks=$((checks + 1))
+ecc_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" rho --curve ecc2k130 --backend metal \
+  --run-id 7 --verbose --progress-every 1 --state-dir "$metal_state" \
+  --s3-uri s3://test/ecc2k/metal --sync-every 1 2>&1) || {
+  printf 'FAIL: ECC2K Metal managed first run: %s\n' "$ecc_out" >&2; fail=$((fail + 1));
+}
+if [[ "$ecc_out" != *'[ecc2k130/metal]'* ]] || [ ! -f "$metal_state/state.ck" ] || \
+   [ ! -f "$ecc_tmp/remote/metal/state.ck" ] || \
+   [ "$(wc -c <"$metal_state/dps.bin")" -ne 32 ] || \
+   ! grep -q '"backend":"metal"' "$metal_state/progress.json" || \
+   ! grep -q '"backend":"metal"' "$metal_state/result.json"; then
+  printf 'FAIL: ECC2K Metal managed progress or artifacts missing\n' >&2; fail=$((fail + 1))
+fi
+checks=$((checks + 1))
+metal_dp=$(awk '/^dps.bin$/{print NR; exit}' "$ecc_tmp/upload.log")
+metal_ck=$(awk '/^state.ck$/{print NR; exit}' "$ecc_tmp/upload.log")
+if [ -z "$metal_dp" ] || [ -z "$metal_ck" ] || [ "$metal_dp" -ge "$metal_ck" ]; then
+  printf 'FAIL: ECC2K Metal S3 corpus was not uploaded before checkpoint\n' >&2
+  fail=$((fail + 1))
+fi
+printf x >>"$ecc_tmp/remote/metal/dps.bin"
+rm -rf "$metal_state"
+checks=$((checks + 1))
+ecc_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" rho --curve ecc2k130 --backend metal \
+  --run-id 7 --resume --state-dir "$metal_state" --s3-uri s3://test/ecc2k/metal 2>&1) || {
+  printf 'FAIL: ECC2K Metal S3 restore: %s\n' "$ecc_out" >&2; fail=$((fail + 1));
+}
+if [[ "$ecc_out" != *'backend resumed'* ]] || \
+   [[ "$ecc_out" != *'discarded 1 partial corpus bytes'* ]] || \
+   [ "$(wc -c <"$metal_state/dps.bin")" -ne 64 ]; then
+  printf 'FAIL: ECC2K Metal S3 restore did not continue the corpus\n' >&2; fail=$((fail + 1))
+fi
+CA="$ecc_ca" want_bad 'run manifest does not match' rho --curve ecc2k130 --backend cuda \
+  --run-id 7 --resume --state-dir "$metal_state"
+CA="$ecc_ca" want_bad '--run-id must be at most 65535' rho --curve ecc2k130 \
+  --backend metal --run-id 65536 --state-dir "$ecc_tmp/bad-id"
 
 # A solo distributed worker must retain its verified CRDT check-ins and
 # cursors across a process restart, including an S3-only restore.

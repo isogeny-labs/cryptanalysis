@@ -13,12 +13,17 @@
 
 #include "hostcheck.h"
 
+#include <limits.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace ec2k_client
@@ -37,6 +42,8 @@ struct Options {
     int rounds = 64;
     uint64_t pSeed = 1, qSeed = 2;
     std::string dpFile, dpFile32;
+    std::string checkpoint;
+    unsigned checkpointEvery = 60;
     // CPU engine: worker threads, lanes per batched inversion, batches in flight.
     int workers = 0, batch = 0, chunks = 0;
     // Metal engine: GPU threads (each owns ECC_BATCH lanes), report buffer, device.
@@ -64,7 +71,8 @@ inline bool parseOptions(int argc, char **argv, Options *o)
     o->steps = (int)optU64(argc, argv, "--steps", (unsigned long long)o->steps);
     o->launches = (int)optU64(argc, argv, "--launches", (unsigned long long)o->launches);
     o->dpWeight = (int)optU64(argc, argv, "--dp-weight", (unsigned long long)o->dpWeight);
-    o->runId = (unsigned)optU64(argc, argv, "--run-id", o->runId) & 0xFFFFu;
+    const unsigned long long runId = optU64(argc, argv, "--run-id", o->runId);
+    o->runId = (unsigned)runId;
     o->maxIters = optU64(argc, argv, "--max-iters", 0);
     o->verify = (int)optU64(argc, argv, "--verify", 0);
     o->rounds = (int)optU64(argc, argv, "--rounds", (unsigned long long)o->rounds);
@@ -78,8 +86,13 @@ inline bool parseOptions(int argc, char **argv, Options *o)
     o->dpCap = (unsigned)optU64(argc, argv, "--dp-cap", o->dpCap);
     if (const char *v = opt(argc, argv, "--dp-file")) o->dpFile = v;
     if (const char *v = opt(argc, argv, "--dp-file32")) o->dpFile32 = v;
+    if (const char *v = opt(argc, argv, "--checkpoint")) o->checkpoint = v;
+    const unsigned long long checkpointEvery = optU64(argc, argv, "--checkpoint-every", 60);
+    o->checkpointEvery = (unsigned)checkpointEvery;
     return o->steps > 0 && o->launches >= 0 && o->dpCap > 0 && o->workers >= 0 && o->batch >= 0 &&
-           o->chunks >= 0 && o->threads >= 0;
+           o->chunks >= 0 && o->threads >= 0 && runId <= 65535 &&
+           checkpointEvery > 0 && checkpointEvery <= UINT_MAX &&
+           (!opt(argc, argv, "--checkpoint-every") || !o->checkpoint.empty());
 }
 
 inline const char *commonUsage()
@@ -92,6 +105,8 @@ inline const char *commonUsage()
            "  --verify N       re-walk the first N reports on the golden model\n"
            "  --dp-file F      append 64-byte (seed, iters, x, y) records to F\n"
            "  --dp-file32 F    append fpga/host-compatible 32-byte (seed, orbit-min x) records\n"
+           "  --checkpoint F   save and restore exact Metal walk lanes (Metal only)\n"
+           "  --checkpoint-every S   seconds between checkpoints (default 60)\n"
            "  --p-seed S, --q-seed S   the base and target points, from seeds (1, 2)\n"
            "  --rounds N       check: random inputs per routine (default 64)\n";
 }
@@ -145,8 +160,24 @@ struct Corpus {
             }
             written++;
         }
-        if (f64) fflush(f64);
-        if (f32) fflush(f32);
+        if (f64 && fflush(f64) != 0) failed = true;
+        if (f32 && fflush(f32) != 0) failed = true;
+    }
+    bool sync()
+    {
+        if (f64 && (fflush(f64) != 0 || fsync(fileno(f64)) != 0)) failed = true;
+        if (f32 && (fflush(f32) != 0 || fsync(fileno(f32)) != 0)) failed = true;
+        return !failed;
+    }
+    bool sizes(unsigned long long *bytes64, unsigned long long *bytes32) const
+    {
+        struct stat s;
+        *bytes64 = *bytes32 = 0;
+        if (f64 && (fstat(fileno(f64), &s) != 0 || s.st_size < 0)) return false;
+        if (f64) *bytes64 = (unsigned long long)s.st_size;
+        if (f32 && (fstat(fileno(f32), &s) != 0 || s.st_size < 0)) return false;
+        if (f32) *bytes32 = (unsigned long long)s.st_size;
+        return true;
     }
     ~Corpus()
     {
@@ -165,6 +196,21 @@ struct LaunchCounts {
     bool exhausted = false;            // a lane used up its 16-bit restart counter
 };
 
+struct RunTotals {
+    unsigned long long iterations = 0, reports = 0, verified = 0, badReports = 0,
+                       restarts = 0, dropped = 0, corpus64Bytes = 0, corpus32Bytes = 0;
+    double elapsed = 0;
+};
+
+template <class Engine, class = void> struct HasCheckpoint : std::false_type {};
+template <class Engine>
+struct HasCheckpoint<Engine,
+    std::void_t<decltype(std::declval<Engine &>().loadCheckpoint(
+                    std::declval<const std::string &>(), std::declval<RunTotals *>())),
+                decltype(std::declval<Engine &>().saveCheckpoint(
+                    std::declval<const std::string &>(), std::declval<const RunTotals &>()))>>
+    : std::true_type {};
+
 inline int cmdCheck(const Options &o, const HostTable &table)
 {
     const CheckResult cr = crossCheck(table, o.rounds, 0x243F6A8885A308D3ULL);
@@ -181,6 +227,10 @@ inline int cmdCheck(const Options &o, const HostTable &table)
 // members of its geometry, with a leading comma).
 template <class Engine> int cmdRun(const Options &o, const HostTable &table, Engine &e, bool bench)
 {
+    if (!o.checkpoint.empty() && (bench || (o.dpFile.empty() && o.dpFile32.empty()))) {
+        fprintf(stderr, "checkpointed walk needs a report corpus and cannot benchmark\n");
+        return 2;
+    }
     Corpus corpus;
     if (!bench && !corpus.open(o)) {
         fprintf(stderr, "cannot open the corpus file for appending\n");
@@ -189,51 +239,126 @@ template <class Engine> int cmdRun(const Options &o, const HostTable &table, Eng
     signal(SIGINT, onStopSignal);
     signal(SIGTERM, onStopSignal);
 
+    RunTotals totals;
+    if (!o.checkpoint.empty()) {
+        if constexpr (HasCheckpoint<Engine>::value) {
+            int loaded = e.loadCheckpoint(o.checkpoint, &totals);
+            if (loaded < 0) {
+                fprintf(stderr, "checkpoint %s: %s\n", o.checkpoint.c_str(), e.error().c_str());
+                return 1;
+            }
+            if (loaded) fprintf(stderr, "resumed exact lanes from %s at %llu iterations\n",
+                                o.checkpoint.c_str(), totals.iterations);
+            if (loaded) {
+                unsigned long long bytes64, bytes32;
+                if (!corpus.sizes(&bytes64, &bytes32) ||
+                    bytes64 < totals.corpus64Bytes || bytes32 < totals.corpus32Bytes ||
+                    bytes64 % sizeof(DpRecord) || bytes32 % EC2K_RECORD_BYTES) {
+                    fprintf(stderr, "report corpus is shorter than checkpoint or has a partial record\n");
+                    return 1;
+                }
+            }
+        } else {
+            fprintf(stderr, "this engine does not support checkpoints\n");
+            return 2;
+        }
+    }
     const double t0 = now();
-    unsigned long long iterations = 0, reports = 0, verified = 0, badReports = 0, restarts = 0,
-                       dropped = 0;
+    const double elapsed_prior = totals.elapsed;
+    double last_checkpoint = t0;
+    bool checkpoint_dirty = false;
     std::vector<DpRecord> recs;
     for (int l = 0; (o.launches == 0 || l < o.launches) && !stopRequested(); ++l) {
         LaunchCounts counts;
         recs.clear();
         e.launch(o.steps, &recs, &counts);
-        iterations += counts.iterations;
-        reports += recs.size();
-        restarts += counts.restarts;
-        dropped += counts.dropped;
+        totals.iterations += counts.iterations;
+        totals.reports += recs.size();
+        totals.restarts += counts.restarts;
+        totals.dropped += counts.dropped;
         if (counts.exhausted) {
             fprintf(stderr, "a lane exhausted its 16-bit restart counter; use a new run id\n");
             return 1;
         }
-        for (size_t i = 0; i < recs.size() && verified < (unsigned long long)o.verify; ++i) {
-            verified++;
+        for (size_t i = 0; i < recs.size() && totals.verified < (unsigned long long)o.verify; ++i) {
+            totals.verified++;
             if (!rewalk(table, recs[i], nullptr)) {
-                badReports++;
+                totals.badReports++;
                 fprintf(stderr, "report does not re-walk: seed %llu, %llu iterations\n",
                         recs[i].seed, recs[i].iters);
             }
         }
         if (!bench) corpus.append(recs);
-        const double dt = now() - t0;
+        if (corpus.failed) {
+            fprintf(stderr, "writing the corpus failed\n");
+            return 1;
+        }
+        checkpoint_dirty = true;
+        const double t = now(), dt = elapsed_prior + t - t0;
         if (bench || (l & 7) == 7 || (o.launches && l + 1 == o.launches))
             printf("  %7.1f s  %10.3f M it/s  %llu iterations  %llu dp  %llu restarts  %llu "
                    "dropped\n",
-                   dt, dt > 0 ? (double)iterations / dt / 1e6 : 0.0, iterations, reports, restarts,
-                   dropped);
+                   dt, dt > 0 ? (double)totals.iterations / dt / 1e6 : 0.0,
+                   totals.iterations, totals.reports, totals.restarts, totals.dropped);
+        fflush(stdout);
+        if (!o.checkpoint.empty() &&
+            (t - last_checkpoint >= o.checkpointEvery || stopRequested() ||
+             (o.launches && l + 1 == o.launches))) {
+            if (!corpus.sync()) {
+                fprintf(stderr, "syncing the report corpus failed\n");
+                return 1;
+            }
+            RunTotals saved = totals;
+            saved.elapsed = dt;
+            if (!corpus.sizes(&saved.corpus64Bytes, &saved.corpus32Bytes)) {
+                fprintf(stderr, "cannot stat report corpus\n");
+                return 1;
+            }
+            if constexpr (HasCheckpoint<Engine>::value) {
+                if (!e.saveCheckpoint(o.checkpoint, saved)) {
+                    fprintf(stderr, "saving checkpoint %s failed: %s\n",
+                            o.checkpoint.c_str(), e.error().c_str());
+                    return 1;
+                }
+            }
+            fprintf(stderr, "checkpoint %s: %llu iterations, %llu reports\n",
+                    o.checkpoint.c_str(), totals.iterations, totals.reports);
+            last_checkpoint = t;
+            checkpoint_dirty = false;
+        }
     }
-    const double dt = now() - t0;
-    if (corpus.failed) {
-        fprintf(stderr, "writing the corpus failed\n");
+    const double dt = elapsed_prior + now() - t0;
+    if (!bench && !corpus.sync()) {
+        fprintf(stderr, "syncing the report corpus failed\n");
         return 1;
+    }
+    if (!o.checkpoint.empty() && checkpoint_dirty) {
+        RunTotals saved = totals;
+        saved.elapsed = dt;
+        if (!corpus.sizes(&saved.corpus64Bytes, &saved.corpus32Bytes)) {
+            fprintf(stderr, "cannot stat report corpus\n");
+            return 1;
+        }
+        if constexpr (HasCheckpoint<Engine>::value) {
+            if (!e.saveCheckpoint(o.checkpoint, saved)) {
+                fprintf(stderr, "saving checkpoint %s failed: %s\n",
+                        o.checkpoint.c_str(), e.error().c_str());
+                return 1;
+            }
+        }
+        fprintf(stderr, "checkpoint %s: %llu iterations, %llu reports\n",
+                o.checkpoint.c_str(), totals.iterations, totals.reports);
     }
     printf("{\"status\":\"%s\",\"client\":\"%s\",\"cmd\":\"%s\",\"iterations\":%llu,"
            "\"seconds\":%.3f,\"iterationsPerSecond\":%.0f,\"reports\":%llu,\"verified\":%llu,"
            "\"badReports\":%llu,\"restarts\":%llu,\"dropped\":%llu,\"lanes\":%zu,\"steps\":%d,"
            "\"dpWeight\":%d,\"runId\":%u%s}\n",
-           badReports ? "mismatch" : "ok", e.name(), bench ? "bench" : "walk", iterations, dt,
-           dt > 0 ? (double)iterations / dt : 0.0, reports, verified, badReports, restarts, dropped,
+           totals.badReports ? "mismatch" : "ok", e.name(), bench ? "bench" : "walk",
+           totals.iterations, dt, dt > 0 ? (double)totals.iterations / dt : 0.0,
+           totals.reports, totals.verified, totals.badReports, totals.restarts, totals.dropped,
            e.laneCount(), o.steps, bench ? -1 : o.dpWeight, o.runId, e.describe().c_str());
-    return badReports ? 1 : 0;
+    fflush(stdout);
+    return totals.badReports ? 1 : 0;
 }
 
 } // namespace ec2k_client
