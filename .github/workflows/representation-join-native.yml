@@ -1,0 +1,19 @@
+name: representation-join-native
+on:
+  pull_request:
+    paths:
+      - 'research/representation_join_20261021/**'
+      - '.github/workflows/representation-join-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  correctness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: research/representation_join_20261021
+      - name: Native exact-output correctness tests
+        run: sh research/representation_join_20261021/check.sh
