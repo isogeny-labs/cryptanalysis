@@ -453,6 +453,18 @@ source gives one (the n=83 gaps are point estimates: the promoting run computed 
 
 ## Other verified records
 
+The online-frame round-2 result (run 39527549698) is retained below as an
+independently verified improvement over round-2 index-build: end-to-end cold
+1.0165 [1.0110, 1.0221] over 64 alternating pairs, with all 407 receipt rows valid.
+It was not measured against or combined with the current rank-finder producer.
+The n=83 baseline and Figure 1 therefore remain unchanged. The paired cold gaps
+5.4304 to 5.3424 belong to that run alone; they are not a comparison with the
+rank-finder row's 3.924 on a different host and panel. Factor-base construction
+is uncharged in both arms, so the ratio is an upper bound on the every-phase
+ratio and cold S is a lower bound. The online-stage ratio is 1.5541
+[1.5324, 1.5766]. The existing receipt verifier was replayed on a copy of the whole
+receipt directory and reproduced result.json and result_table.md byte for byte.
+
 These rows are kept for context and as the history behind the baselines.
 None is combined with another row.
 
@@ -466,6 +478,7 @@ not alter the archived timing estimate.
 
 | n | role | experiment | reference | cold gap, IC / ref [95%] | online gap, IC / ref [95%] | BL | tier |
 |--:|:-------|:----------------|:---------|-------:|-------:|:-----|:-------|
+| 83 | online-frame round 2, verified improvement over round-2 index-build; separate from current rank-finder baseline | `koblitz-n83-onlineframe2-20261021`, run 39527549698 | matched rT770 in the same run | 5.3424 (paired prior arm 5.4304; point estimates) | 0.1490 (paired prior arm 0.2316; point estimates) | not measured | Tier 1, 64 alternating pairs, A/A and planted controls pass; one host class |
 | 19 | previous baseline (the tau6 arm, Sage Groebner per-shift solve), superseded by the native-solve producer | `volcano-ic/rho-arm-20261014`, run\ 38520305068 (cryptanalysis `3f722e2e`); the same pipeline's B arm was measured in run\ 39387473809: S cold 4,429.3 in that run's unit | matched signed-Frobenius rho, same scalars (S 0.2603 as landed; unit 2.17e-5 s) | 1.94e4 [1.69e4, 2.23e4] (CPU, geometric mean; S 5,154 as landed) | not measured | none | exploratory (GitHub VM, unpinned) |
 | 41 | previous baseline (v0) | ledger §23, crypto `0bf67f16` | ParallelRho, same process | 8.04 [7.26, 9.01] | 0.107 [0.082, 0.135] | model 2.50 | crypto isolated_bench container |
 | 53 | previous baseline (v0) | ledger §23 | ParallelRho | 14.7 [13.1, 16.7] | 0.057 [0.044, 0.073] | model 2.02 | same |
@@ -497,6 +510,64 @@ not alter the archived timing estimate.
 | 83 | promoted improvement over the rank-probe producer: Z[tau]-multiplier closure of the K600 base, M38 primary (16 columns) and M10 secondary (60 columns) (this experiment only; the comparison against the current row is superseded by the paired closure + index-lift result, run\ 39335956567) | `koblitz-n83-closure-20261019`, run\ 39305259093 | rT770, 20 new points, 16 / 4 / 8 rank blocks (kM38 / kP / kM10), Q0 | 10.5 [8.8, 12.7] (end-to-end cold kM38 + cM38; the rank-probe arm kP + cP in the same run 67.5 [56.4, 82.4]; M10 14.9 [12.2, 18.1]; S 1.115 against 7.188, rT770 step 186.55 ns; rank stage 108.0 s -> 2.75 s, 39.28x; cold without rank cP / cM38 0.9760 [0.9608, 0.9888]) | online 0.215 [0.129, 0.312] (cP 0.169; cM38 online not separated from cP, 0.7860 [0.3828, 1.4402]); primary R = E2E(kP + cP) / E2E(kM38 + cM38) 6.4444 [6.0993, 6.7853]; M10 4.5318 [4.1827, 4.8771]; factor-base construction charged to no arm | none | Tier 1 |
 | 83 | **not promoted**: rotation-key probe (the rank-stage table key rotkey(v) = v^83 in F2[X]/(X^83+1) in place of lift_scan; this experiment only; baseline row not replaced) | `koblitz-n83-rotkey-20261019`, run\ 39299176306 | rT770, 20 new points, four rank blocks (kP, kK, kKaa, kKX), Q0 | 69.40 [52.51, 93.51] (end-to-end cold kP + cP, the rank-probe producer) against 69.51 [52.43, 93.02] (kK + cK) in the same run; S 7.453 against 7.465, rT770 step 247.87 ns; rank stage 147.4 s against 147.6 s; cold without rank cP / cK 0.9988 [0.9900, 1.0070] | online 0.1658 [0.1041, 0.2628] (cP) against 0.1701 [0.1045, 0.2720] (cK); frozen primary R = E2E(kP + cP) / E2E(kK + cK) 0.9983 [0.9701, 1.0227]: `not_separated`; A/A and planted controls pass; every gate passes (0 collisions on 29,878,182 keys); rotation-key table build 2.52 s per rank process charged to kK; factor-base construction charged to no arm | none | Tier 1 |
 | 83 | promoted improvement over the rank-probe producer: the one-target online scan on the rank stage's frame loop, `KIC_ONLINE_SOLVE=frame` (this experiment only) | `koblitz-n83-onlineframe-20261019`, run\ 39303742695 | rT770, 64 new points, one shared rank stage | end-to-end cold with the shared rank stage 66.47 [58.24, 76.58] (S 6.5776; cS 66.52, S 6.5827; E2E cS / cF 1.0008 [1.0006, 1.0010]) | online 0.109 [0.079, 0.145] (cS 0.171 [0.125, 0.227]); online `S` 0.00977 (cS 0.01537); online cS / cF 1.5733 [1.5714, 1.5753], probes identical | none | Tier 1 |
+
+- **n=83, online-frame round 2 (Other verified records; compared with round-2 index-build, not the current rank-finder baseline).** `S` is derived inside the one run (39527549698): wall ms divided
+  by that run's measured rT770 step (284.79 ns) and by sqrt(r), so one unit is
+  26,363.6 ms. End-to-end cold is the mean rank stage (kM38OF, 4,431.7 ms
+  over the 64 primary blocks of 16 attempts, 0.1681) plus the mean cold (setup
+  8,137.8 ms including the verified load of the cached factor-log table,
+  0.3087, plus online 323.8 ms, 0.01228) over the 16 points: 0.4891. Setup,
+  rank stage included, is 0.4768 (0.16810 + 0.30867 = 0.47677); cold without
+  the rank stage is 0.3210. The same run's previous-row arms (kM38IC + cM38IC,
+  the former row) read 0.4971 (rank stage 0.1687, cold without rank 0.3284).
+  BL was not run on this producer.
+  - *Wall time, one host class.* The headline 1.0165 and every `S` are wall
+    time from one run on one GitHub runner, not operation counts. The index is
+    unchanged (one layout-digest set per base, equal to the frozen values), and
+    per rank seed every relation, probe vector, root call and counter is equal
+    across kM38IC, kM38OF and kM38OFaa; per point and base every IC process of
+    both binaries and all three online solves has one relation, one probe
+    count, one root-call count and one relation-check count. The saving is the
+    one-target online scan, 503.2 -> 323.8 ms (online 1.5541 [1.5324, 1.5766],
+    250.13 -> 160.17 ns per probe; 84.5% of the 212.3 ms end-to-end saving),
+    which is a stage result: online is 3.84% of the former row's end-to-end
+    cost on this host. Cold 1.0233 [1.0167, 1.0304]. The setup (1.0021
+    [0.9999, 1.0044]), index build (1.0030 [1.0007, 1.0055]), self-test (0.9984
+    [0.9937, 1.0029]) and rank stage (1.0035 [0.9964, 1.0115]) run the same
+    source in both arms: their 0.2-0.4% offsets (about 33 ms, 0.25% of
+    end-to-end) are the size of the binary-layout offset between the two
+    binaries, and the effect (1.65%, 212.3 ms) is larger than it; with those
+    stages set to equal times the ratio would be 1.0139 (descriptive, no
+    interval). The same-binary layout pair cM38OS / cM38OF (16 pairs) reads
+    online 1.5794 [1.5456, 1.6130] and cold 1.0217 [1.0124, 1.0306]. The probe
+    law is the same for both arms (1.0236, gate band 0.80-1.20, pass).
+    Controls: A/A end to end 1.0009 [0.9962, 1.0063], A/A cold 1.0006 [0.9971,
+    1.0050], planted online cM38OFX / cM38OF 2.6404 [2.6137, 2.6625] (the S3
+    loop redone on every state it reaches, no difference).
+  - *Uncharged phase.* Factor-base construction is charged to no arm (the K600
+    base and each closure header are loaded from file; common to the arms, so
+    R > 1 holds for any X; 1.0165 is an upper bound and cold `S` 0.4891 a lower
+    bound). At the X measured on another host class (427.5 ms, K600 base) the
+    every-phase figures are R 1.0159 and cold `S` 0.5053: illustrative, mixing
+    two hosts.
+  - *Section 5a band.* Not computable: the IC arms emit no group additions,
+    scalar multiplications, canonicalizations, fold rotations or index
+    inserts.
+  - *Replication.* The run is itself a Tier 1 repeated-alternating-pair
+    measurement (64 pairs, instance scope; isolation gaps in the experiment's
+    README). Not replayed on another host class (`verify_receipt.py`
+    reproduces `result.json` and `result_table.md` byte for byte on a copy of
+    the whole receipt directory).
+  - *Not comparable across runs (cross-run rho-gap artifact).* This run's
+    rT770 step (284.79 ns), runner (an AMD EPYC 7763 without AVX-512, 2 vCPUs)
+    and online mean (323.8 ms) differ from run\ 39464544962's (275.04 ns, an
+    Intel Xeon Platinum 8370C with AVX-512 exposed, 332.4 ms), so the row's `S`
+    and gaps are not a delta of the round-2 index-build row. The previous row
+    as landed read gap 4.416 and online 0.1422; its arms read 5.430 and 0.2316
+    in this run. The new row's 5.342 is therefore numerically larger than the
+    old row's landed 4.416 although it is the faster producer: only the paired
+    ratio and the paired within-run gaps (the former arms 5.430 [point
+    estimate] to 5.342, online 0.2316 to 0.1490) are a delta.
 
 ## Ratchet history
 
