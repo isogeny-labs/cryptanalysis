@@ -333,16 +333,8 @@ ca_status ca_pohlig_hellman_checkpointed(const ca_group *g, const ca_elem *base,
                          checkpoint_prefix, c.fi, c.k);
             }
             uint64_t d = 0;
-            double seconds_before_digit = acc->seconds;
-            double digit_started = ca_now();
             rc = ph_solve_digit(&sub, &gq, &hk, params, digit_path,
                                 progress_interval, checkpoint_interval, verbose, &d, acc);
-            /* Child solvers add elapsed time restored from their checkpoints.
-             * The parent wall clock covers only this invocation; retain the
-             * child's earlier time before replacing the aggregate below. */
-            double restored_seconds = acc->seconds - seconds_before_digit
-                                      - (ca_now() - digit_started);
-            if (restored_seconds > 0) prior_seconds += restored_seconds;
             free(digit_path);
             if (rc != CA_OK) goto ph_done;
             c.xk += d * c.qk;
@@ -385,6 +377,14 @@ ca_status ca_pohlig_hellman_checkpointed(const ca_group *g, const ca_elem *base,
     }
 ph_done:
     acc->seconds = prior_seconds + ca_now() - t0;
+    /* Persist the aggregate even when a digit solver stops at its operation
+     * cap.  The child checkpoint may omit the final unsaved tail; the parent
+     * owns elapsed time across whole invocations and must retain it. */
+    c.stats = *acc;
+    if (!ph_save(parent, &c)) {
+        rc = CA_ERR_INTERNAL;
+        ca_set_error("cannot persist final dlog checkpoint");
+    }
     if (rc != CA_OK)
         (void)dlog_ckpt_progress(parent, "dlog", "stopped", "stopped",
                                  acc->seconds, acc->group_ops,
