@@ -1,0 +1,38 @@
+Traceback (most recent call last):
+  File "/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py", line 313, in <module>
+    main()
+  File "/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py", line 264, in main
+    lib = os.path.abspath(opt('--lib'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 415, in abspath
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+Traceback (most recent call last):
+  File "/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py", line 313, in <module>
+    main()
+  File "/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py", line 264, in main
+    lib = os.path.abspath(opt('--lib'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 415, in abspath
+TypeError: expected str, bytes or os.PathLike object, not NoneType
+{
+ "sage -c pass": {
+  "wall_s_mean": 0.8140561343333333,
+  "child_cpu_s_mean": 0.78171,
+  "all_exit_0": true
+ },
+ "sage -python -c pass": {
+  "wall_s_mean": 0.03398345133333333,
+  "child_cpu_s_mean": 0.03343566666666642,
+  "all_exit_0": true
+ },
+ "sage -python import sage.all": {
+  "wall_s_mean": 0.7818121403333333,
+  "child_cpu_s_mean": 0.7799673333333331,
+  "all_exit_0": true
+ },
+ "sage profile_n.sage --mode load (v3 arm loads)": {
+  "wall_s_mean": 1.0997657383333335,
+  "child_cpu_s_mean": 1.0668250000000001,
+  "all_exit_0": false
+ }
+}

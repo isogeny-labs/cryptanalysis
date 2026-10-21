@@ -31,6 +31,12 @@ jobs:
         kind: [gateway, worker]
     steps:
       - uses: actions/checkout@v7
+      - name: Release unused runner toolchains for CUDA image
+        if: matrix.kind == 'worker'
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android/sdk /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          df -h /
       - name: Check gateway protocol
         if: matrix.kind == 'gateway'
         run: python3 -m unittest ecc2k130/runner/public/test_public.py -v
