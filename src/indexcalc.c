@@ -44,6 +44,11 @@ struct ca_ic_ctx {
     uint8_t *fb_known;
     ca_ic_params params;
     uint32_t progress_interval;
+    const char *checkpoint_path;
+    uint32_t progress_relations, progress_target;
+    uint32_t progress_verified;
+    uint64_t progress_work;
+    double progress_started, individual_started;
     ca_rng rng;
     pthread_mutex_t rng_lock;
 };
@@ -310,6 +315,39 @@ static char *ic_sibling_path(const char *journal, const char *name)
     memcpy(path, journal, prefix);
     strcpy(path + prefix, name);
     return path;
+}
+
+/* Relation collection has method-specific counters. Once it finishes, keep
+ * those counters visible while the remaining stages run and persist their
+ * current phase with the same atomic replacement used by the collectors. */
+static int ic_stage_progress_save(const ca_ic_ctx *ctx, const char *phase,
+                                  double stage_elapsed, uint64_t attempts)
+{
+    if (!ctx->checkpoint_path) return 1;
+    char *path = ic_sibling_path(ctx->checkpoint_path, "progress.json");
+    char *tmp = ic_sibling_path(ctx->checkpoint_path, ".progress.tmp.XXXXXX");
+    if (!path || !tmp) { free(path); free(tmp); return 0; }
+    int fd = mkstemp(tmp);
+    FILE *f = fd >= 0 ? fdopen(fd, "wb") : NULL;
+    if (!f) { if (fd >= 0) close(fd); free(path); free(tmp); return 0; }
+    int ok = fprintf(f,
+        "{\"schema\":1,\"method\":\"%s\",\"phase\":\"%s\","
+        "\"relations\":%u,\"target_relations\":%u,"
+        "\"candidates\":%" PRIu64 ",\"smooth_tests\":%" PRIu64
+        ",\"verified_logs\":%u,\"individual_attempts\":%" PRIu64
+        ",\"elapsed_seconds\":%.3f,\"stage_elapsed_seconds\":%.3f}\n",
+        ctx->params.method == CA_IC_RANDOM_EXPONENT ? "rexp" : "lsieve", phase,
+        ctx->progress_relations, ctx->progress_target,
+        ctx->params.method == CA_IC_LINEAR_SIEVE ? ctx->progress_work : UINT64_C(0),
+        ctx->params.method == CA_IC_RANDOM_EXPONENT ? ctx->progress_work : UINT64_C(0),
+        ctx->progress_verified, attempts, ca_now() - ctx->progress_started,
+        stage_elapsed) > 0 && ic_sync(f);
+    if (fclose(f) != 0) ok = 0;
+    if (ok && rename(tmp, path) != 0) ok = 0;
+    if (ok && !ic_sync_parent(path)) ok = 0;
+    if (!ok) unlink(tmp);
+    free(path); free(tmp);
+    return ok;
 }
 
 static uint64_t ic_precomp_hash(const ic_precomp_header *h, const ca_ic_ctx *ctx)
@@ -1069,6 +1107,36 @@ static void vlog(const ca_ic_params *pr, const char *fmt, ...)
     va_end(ap);
 }
 
+typedef struct ic_linalg_monitor {
+    ca_ic_ctx *ctx;
+    double started;
+    atomic_int stop, failed;
+} ic_linalg_monitor;
+
+static void *ic_linalg_heartbeat(void *arg)
+{
+    ic_linalg_monitor *m = arg;
+    double last = m->started;
+    while (!atomic_load(&m->stop)) {
+        struct timespec wait = {.tv_sec = 0, .tv_nsec = 100000000};
+        nanosleep(&wait, NULL);
+        if (atomic_load(&m->stop)) break;
+        double now = ca_now();
+        if (now - last < m->ctx->progress_interval) continue;
+        if (m->ctx->params.verbose) {
+            fprintf(stderr, "[ic] linear algebra: %u relations, %.1fs elapsed\n",
+                    m->ctx->progress_relations, now - m->started);
+            fflush(stderr);
+        }
+        if (!ic_stage_progress_save(m->ctx, "linear_algebra", now - m->started, 0)) {
+            atomic_store(&m->failed, 1);
+            break;
+        }
+        last = now;
+    }
+    return NULL;
+}
+
 static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *params,
                                     const char *checkpoint_path, uint32_t progress_interval,
                                     ca_ic_ctx **out, ca_ic_stats *st)
@@ -1100,6 +1168,8 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     ctx->g = g;
     ctx->params = *params;
     ctx->progress_interval = progress_interval ? progress_interval : 5;
+    ctx->checkpoint_path = checkpoint_path;
+    ctx->progress_started = t_start;
     ctx->zeta = ca_primitive_root(p);
     ca_rng_seed(&ctx->rng, ca_seed_or_random(params->seed));
     pthread_mutex_init(&ctx->rng_lock, NULL);
@@ -1135,6 +1205,14 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         int loaded = ic_precomp_load(checkpoint_path, ctx, B, C, st);
         if (loaded < 0) { free(fb_log2); ca_ic_free(ctx); return CA_ERR_INVALID; }
         if (loaded) {
+            ctx->progress_relations = st->relations;
+            uint32_t extra = params->extra_relations ? params->extra_relations :
+                             64 + st->unknowns / 20;
+            ctx->progress_target = extra <= UINT32_MAX - st->unknowns ?
+                                   st->unknowns + extra : st->relations;
+            ctx->progress_work = params->method == CA_IC_RANDOM_EXPONENT ?
+                                 st->smooth_tests : st->sieve_candidates;
+            ctx->progress_verified = st->verified_logs;
             ctx->ord_g = ca_mult_order(g, p);
             if (g == ctx->zeta) { ctx->log_g = 1; ctx->g_known = 1; }
             st->sieve_seconds = 0;
@@ -1160,6 +1238,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         return CA_ERR_INVALID;
     }
     uint32_t target = ncols + extra;
+    ctx->progress_target = target;
 
     /* ---- relation collection ---- */
     rel_list rels = {0};
@@ -1391,6 +1470,9 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     free(fb_log2);
     st->relations = rels.n;
     st->sieve_seconds = prior_sieve_seconds + ca_now() - t0;
+    ctx->progress_relations = rels.n;
+    ctx->progress_work = params->method == CA_IC_RANDOM_EXPONENT ?
+                         st->smooth_tests : st->sieve_candidates;
     vlog(params, "[ic] %u relations in %.2fs (%llu candidates)\n", rels.n, st->sieve_seconds,
          (unsigned long long)st->sieve_candidates);
     if (rels.n < ncols / 2) {
@@ -1415,8 +1497,26 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     uint8_t *known = malloc(ncols);
     uint64_t *small_logs = calloc(ctx->nfb, sizeof(uint64_t));
     ca_status rc = CA_OK;
+    ic_linalg_monitor monitor = {.ctx = ctx, .started = t0};
+    pthread_t heartbeat;
+    int monitoring = 0;
     if (!logs || !known || !small_logs) { rc = CA_ERR_NOMEM; goto done; }
     memset(known, 1, ncols);
+    if (!ic_stage_progress_save(ctx, "linear_algebra", 0, 0)) {
+        ca_set_error("cannot persist index-calculus linear-algebra progress");
+        rc = CA_ERR_INTERNAL;
+        goto done;
+    }
+    if (checkpoint_path || params->verbose) {
+        atomic_init(&monitor.stop, 0);
+        atomic_init(&monitor.failed, 0);
+        if (pthread_create(&heartbeat, NULL, ic_linalg_heartbeat, &monitor) != 0) {
+            ca_set_error("cannot start index-calculus progress monitor");
+            rc = CA_ERR_INTERNAL;
+            goto done;
+        }
+        monitoring = 1;
+    }
     vlog(params, "[ic] solving small subgroup logs modulo %" PRIu64 "\n", m_small);
     rc = small_part_logs(ctx, m_small, small_logs);
     if (rc != CA_OK) goto done;
@@ -1482,6 +1582,14 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         }
     }
 done:
+    if (monitoring) {
+        atomic_store(&monitor.stop, 1);
+        pthread_join(heartbeat, NULL);
+        if (atomic_load(&monitor.failed)) {
+            ca_set_error("cannot persist index-calculus linear-algebra progress");
+            rc = CA_ERR_INTERNAL;
+        }
+    }
     st->linalg_seconds = ca_now() - t0;
     free(logs); free(known); free(small_logs); free(rels.r);
     if (rc != CA_OK) { ca_ic_free(ctx); return rc; }
@@ -1491,6 +1599,12 @@ done:
     st->total_seconds = prior_sieve_seconds + ca_now() - t_start;
     if (checkpoint_path && !ic_precomp_save(checkpoint_path, ctx, B, C, st)) {
         ca_set_error("cannot persist index-calculus precomputation");
+        ca_ic_free(ctx);
+        return CA_ERR_INTERNAL;
+    }
+    ctx->progress_verified = st->verified_logs;
+    if (!ic_stage_progress_save(ctx, "factor_base_ready", st->linalg_seconds, 0)) {
+        ca_set_error("cannot persist index-calculus factor-base progress");
         ca_ic_free(ctx);
         return CA_ERR_INTERNAL;
     }
@@ -1532,16 +1646,21 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
     uint64_t cur = ca_mont_mul(&m, hm, ca_mont_pow(&m, zm, e));
     uint64_t limit = 50000000ULL;
     double started = ca_now(), last_report = started;
+    double stage_started = ctx->individual_started > 0 ? ctx->individual_started : started;
     for (uint64_t t = 0; t < limit; t++) {
         uint64_t v = ca_mont_from(&m, cur);
         relation rel;
         uint32_t cnt = 0;
         (*tries)++;
-        if (ctx->params.verbose && (t & 4095) == 0) {
+        if ((ctx->params.verbose || ctx->checkpoint_path) && (t & 4095) == 0) {
             double now = ca_now();
             if (now - last_report >= ctx->progress_interval) {
                 vlog(&ctx->params, "[ic] individual log: %" PRIu64 " attempts, %.1fs elapsed\n",
-                     t + 1, now - started);
+                     *tries, now - stage_started);
+                if (!ic_stage_progress_save(ctx, "individual_log", now - stage_started, *tries)) {
+                    ca_set_error("cannot persist index-calculus individual-log progress");
+                    return CA_ERR_INTERNAL;
+                }
                 last_report = now;
             }
         }
@@ -1569,6 +1688,7 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
 ca_status ca_ic_log(ca_ic_ctx *ctx, uint64_t h, uint64_t *x, ca_stats *st)
 {
     double t0 = ca_now();
+    ctx->individual_started = t0;
     uint64_t p = ctx->p, pm1 = p - 1;
     h %= p;
     if (h == 0) return CA_ERR_INVALID;
@@ -1624,8 +1744,19 @@ ca_status ca_ic_solve_checkpointed(uint64_t p, uint64_t g, uint64_t h,
     if (rc != CA_OK) return rc;
     double t0 = ca_now();
     if (ctx->params.verbose) fprintf(stderr, "[ic] solving individual logarithm for h=%" PRIu64 "\n", h);
-    rc = ca_ic_log(ctx, h, x, NULL);
+    if (!ic_stage_progress_save(ctx, "individual_log", 0, 0)) {
+        ca_set_error("cannot persist index-calculus individual-log progress");
+        ca_ic_free(ctx);
+        return CA_ERR_INTERNAL;
+    }
+    ca_stats log_stats = {0};
+    rc = ca_ic_log(ctx, h, x, &log_stats);
     st->total_seconds += ca_now() - t0;
+    if (rc == CA_OK && !ic_stage_progress_save(ctx, "complete", ca_now() - t0,
+                                                log_stats.iterations)) {
+        ca_set_error("cannot persist completed index-calculus progress");
+        rc = CA_ERR_INTERNAL;
+    }
     ca_ic_free(ctx);
     return rc;
 }
