@@ -1,0 +1,68 @@
+{
+ "design": {
+  "points": 24,
+  "primary_pairs_per_point": 5,
+  "aa_pairs_per_point": 3,
+  "statistic": "ratio of sums, two-stage paired bootstrap",
+  "sims": 100,
+  "bootstrap_draws": 500
+ },
+ "prior": {
+  "v3_N_cold_cpu_per_point": [
+   0.32307385157142854,
+   0.36035583757142853,
+   0.35978908828571426,
+   0.3403568414285714,
+   0.32907413957142856,
+   0.33210319357142853,
+   0.3348508952857143,
+   0.3294660538571429,
+   0.3712620107142857,
+   0.338620824,
+   0.3642287891428571,
+   0.3929203741428572,
+   0.3738338504285714,
+   0.322964878,
+   0.28707364971428573,
+   0.3252509484285714,
+   0.343036026,
+   0.31254756528571426,
+   0.33630326042857145,
+   0.3650334945714286
+  ]
+ },
+ "sigmas_log_per_process": [
+  0.05,
+  0.1,
+  0.2
+ ],
+ "deltas": [
+  1.0,
+  1.05,
+  1.1,
+  1.2
+ ],
+ "lower_bound_above_1_rate": {
+  "v3_N_cold_cpu_per_point_sigma0.05_delta1.00": 0.0,
+  "v3_N_cold_cpu_per_point_sigma0.05_delta1.05": 1.0,
+  "v3_N_cold_cpu_per_point_sigma0.05_delta1.10": 1.0,
+  "v3_N_cold_cpu_per_point_sigma0.05_delta1.20": 1.0,
+  "v3_N_cold_cpu_per_point_sigma0.10_delta1.00": 0.0,
+  "v3_N_cold_cpu_per_point_sigma0.10_delta1.05": 0.81,
+  "v3_N_cold_cpu_per_point_sigma0.10_delta1.10": 1.0,
+  "v3_N_cold_cpu_per_point_sigma0.10_delta1.20": 1.0,
+  "v3_N_cold_cpu_per_point_sigma0.20_delta1.00": 0.02,
+  "v3_N_cold_cpu_per_point_sigma0.20_delta1.05": 0.25,
+  "v3_N_cold_cpu_per_point_sigma0.20_delta1.10": 0.85,
+  "v3_N_cold_cpu_per_point_sigma0.20_delta1.20": 1.0
+ },
+ "aa_false_fail_rate": {
+  "v3_N_cold_cpu_per_point_sigma0.05": 0.0,
+  "v3_N_cold_cpu_per_point_sigma0.10": 0.0,
+  "v3_N_cold_cpu_per_point_sigma0.20": 0.12
+ },
+ "min_delta": 1.1,
+ "power_at_min_delta_worst": 0.85,
+ "rejection_rate_at_no_effect_worst": 0.02,
+ "note": "the expected effect is far above min_delta: the native solve was 15.4% of N's cold CPU in v3 run 39387473809 and N2 keeps that solve, so with the rest of N removed the ratio would be about 1 / 0.154 = 6.5 if the port cost nothing; locally (cloud VM, not timing evidence) N2 took about 60 ms per point, nearly all in the v3 solve. min_delta 1.10 is the smallest effect the design is sized to detect"
+}

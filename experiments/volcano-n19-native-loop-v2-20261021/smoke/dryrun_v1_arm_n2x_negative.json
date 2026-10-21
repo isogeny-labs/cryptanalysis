@@ -1,0 +1,61 @@
+{
+ "binary_rows_launcher_wall_s": [
+  0.0775,
+  0.0987,
+  0.2749,
+  0.0854,
+  0.088,
+  0.3212
+ ],
+ "crashed_processes": [
+  {
+   "arm": "N2X",
+   "point": "v3p00",
+   "serial": 9,
+   "stderr_last_line": "TypeError: expected str, bytes or os.PathLike object, not NoneType",
+   "why": "exit 1; no row file"
+  },
+  {
+   "arm": "N2X",
+   "point": "v3p01",
+   "serial": 16,
+   "stderr_last_line": "TypeError: expected str, bytes or os.PathLike object, not NoneType",
+   "why": "exit 1; no row file"
+  }
+ ],
+ "detail_s0b": null,
+ "failed_before_gates": true,
+ "gate_names": {
+  "missing": [],
+  "not_true": [
+   "(not evaluated)"
+  ],
+  "unknown": []
+ },
+ "gates": {},
+ "invalid_rows": null,
+ "kind": "dry run: real launcher, real tau6dlp, real verifier, stand-in sage (pure-Python model); mechanics only, no Sage, no timing",
+ "negative_control": "the same dry run with v1's arm_n2x.sage (origin/claude/n19-native-loop c8a05b59f, sha256 74e1232430ba9d25215280830587fcf3b2ea2cc45f3a8dd743d1ed1a422e9542) swapped in for this directory's, then restored; expected: both N2X processes crash as on the runner and the smoke verifier stops before the gates (exit 7)",
+ "ok": false,
+ "problems": null,
+ "proc_schedstat_present": false,
+ "rows": 18,
+ "runner_exit": 0,
+ "runner_stderr_tail": [],
+ "runner_stdout_tail": [
+  "{\"part\": \"smoke\", \"serial\": 16, \"arm\": \"N2X\", \"point\": \"v3p01\", \"role\": \"smoke\", \"status\": \"invalid\", \"issues\": [\"nonzero exit 1\", \"no row file\"], \"launcher_wall_s\": 0.12263982}",
+  "{\"part\": \"smoke\", \"serial\": 17, \"arm\": \"rho\", \"point\": \"v3p01\", \"role\": \"smoke\", \"status\": \"valid\", \"issues\": [], \"launcher_wall_s\": 0.056289114}",
+  "{\"part\": \"smoke\", \"serial\": 18, \"arm\": \"N2\", \"point\": \"v3p01\", \"role\": \"warm\", \"status\": \"valid\", \"issues\": [], \"launcher_wall_s\": 0.321203582}",
+  "{\"counts\": {\"valid\": 16, \"invalid\": 2}, \"guard_tripped\": false, \"stopped_after_gate\": null}"
+ ],
+ "statuses": [
+  "invalid",
+  "valid"
+ ],
+ "verifier_exit": 7,
+ "verifier_stderr_tail": [
+  "SMOKE FAILED BEFORE THE GATES: 2 of the scheduled smoke processes did not exit cleanly with a row file; no gate was evaluated",
+  "  serial 9 arm N2X point v3p00: exit 1; no row file | TypeError: expected str, bytes or os.PathLike object, not NoneType",
+  "  serial 16 arm N2X point v3p01: exit 1; no row file | TypeError: expected str, bytes or os.PathLike object, not NoneType"
+ ]
+}
