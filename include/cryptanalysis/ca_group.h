@@ -183,6 +183,28 @@ CA_API void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed);
 CA_API ca_status ca_ec_count_points(uint64_t p, uint64_t a, uint64_t b, uint64_t *order,
                                     ca_stats *st);
 
+typedef struct ca_ec_count_progress {
+    uint64_t work_units, group_ops, field_x, completed_trials, candidates;
+    double seconds;
+    const char *phase;
+} ca_ec_count_progress;
+
+/* Count points with a versioned atomic checkpoint.  Small-field x scans resume
+ * exactly; larger-field Mestre searches retain completed random-point trials
+ * and repeat an interrupted trial.  max_work is a cumulative cap (0 = none),
+ * checked after each x or completed trial.  NULL checkpoint_path enables
+ * progress reporting without persistence. */
+CA_API ca_status ca_ec_count_points_checkpointed(
+    uint64_t p, uint64_t a, uint64_t b, const char *checkpoint_path,
+    uint32_t progress_interval, uint32_t checkpoint_interval, int verbose,
+    uint64_t max_work, uint64_t *order, ca_stats *st,
+    ca_ec_count_progress *progress);
+/* Inspect a checkpoint before mirroring it; completed_order receives zero
+ * until point counting has finished. */
+CA_API ca_status ca_ec_count_checkpoint_validate(
+    uint64_t p, uint64_t a, uint64_t b, const char *checkpoint_path,
+    uint64_t *completed_order);
+
 #ifdef __cplusplus
 }
 #endif

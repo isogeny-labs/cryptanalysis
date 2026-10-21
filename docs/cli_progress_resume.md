@@ -33,6 +33,41 @@ The local directory lock and S3 mirror and restore rules described below
 apply. This is the CLI's 64-bit factorizer; it does not run the CADO-NFS
 factorization algorithm.
 
+## Elliptic-curve order
+
+`ec-order` reports the field scan for primes below 2000, or the baby and
+giant steps of Mestre point counting for larger fields. Once it finds the
+curve order, it reports the factorization phase too:
+
+```sh
+cryptanalysis ec-order --p 1000003 --a 2 --b 3 --verbose \
+  --progress-every 5 --state-dir ./runs/ec-order-001 \
+  --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/ec-order-001 --sync-every 60
+```
+
+`ec-order.ckpt` stores the exact small-field scan position or the completed
+random-point trials and candidate orders of the Mestre search. It also keeps
+the random state, work from completed trials, and elapsed time. A long trial reports its
+baby or giant batch progress, but an interruption during that trial repeats
+it from the last completed trial. `order-factor.ckpt` saves the factorizer's
+exact walk after point counting. Both checkpoints are atomic, checksummed,
+and bound to the input through the run manifest. Their `*.progress.json`
+files and `result.json` provide readable artifacts.
+
+`--max-work K` caps cumulative point-counting work; the small-field scan
+stops exactly at the cap, while a Mestre trial completes before the cap is
+checked. `--max-factor-steps K` caps the subsequent factorization separately.
+Raise or omit either cap on resume:
+
+```sh
+cryptanalysis ec-order --p 1000003 --a 2 --b 3 \
+  --state-dir ./runs/ec-order-001 --resume --max-work 1000000 \
+  --s3-uri s3://my-bucket/cryptanalysis/ec-order-001
+```
+
+The local directory lock and S3 mirror and restore rules below apply.
+
 ## Pollard rho
 
 ```sh
@@ -53,7 +88,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native factor,
-rho, GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
+ec-order, rho, GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),

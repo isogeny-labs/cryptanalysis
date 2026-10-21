@@ -1,6 +1,64 @@
 #include "cryptanalysis/ca_group.h"
 #include "ca_internal.h"
 #include "test_util.h"
+#include <unistd.h>
+
+static void test_count_checkpoint(void)
+{
+    char path[] = "/tmp/ca-ec-order-checkpoint-XXXXXX";
+    int fd = mkstemp(path);
+    CHECK(fd >= 0);
+    CHECK(close(fd) == 0);
+    CHECK(unlink(path) == 0);
+    uint64_t order = 0, saved_order = 0;
+    ca_stats st = {0};
+    ca_ec_count_progress progress = {0};
+    CHECK(ca_ec_count_points_checkpointed(97, 2, 3, path, 1, 1, 0, 20,
+                                           &order, &st, &progress) == CA_ERR_LIMIT);
+    CHECK_EQ_U64(progress.field_x, 20);
+    CHECK(ca_ec_count_checkpoint_validate(97, 2, 3, path, &saved_order) == CA_OK);
+    CHECK_EQ_U64(saved_order, 0);
+    CHECK(ca_ec_count_checkpoint_validate(97, 2, 4, path, NULL) == CA_ERR_INVALID);
+    CHECK(ca_ec_count_points_checkpointed(97, 2, 3, path, 1, 1, 0, 50,
+                                           &order, &st, &progress) == CA_ERR_LIMIT);
+    CHECK_EQ_U64(progress.field_x, 50);
+    CHECK(ca_ec_count_points_checkpointed(97, 2, 3, path, 1, 1, 0, 0,
+                                           &order, &st, &progress) == CA_OK);
+    CHECK_EQ_U64(order, 100);
+    CHECK_EQ_U64(progress.work_units, 97);
+    CHECK(ca_ec_count_checkpoint_validate(97, 2, 3, path, &saved_order) == CA_OK);
+    CHECK_EQ_U64(saved_order, 100);
+    CHECK(ca_ec_count_points_checkpointed(97, 2, 3, path, 1, 1, 0, 0,
+                                           &order, &st, &progress) == CA_OK);
+    FILE *bad = fopen(path, "rb+");
+    CHECK(bad != NULL);
+    CHECK(fseek(bad, -1, SEEK_END) == 0);
+    int byte = fgetc(bad);
+    CHECK(byte != EOF);
+    CHECK(fseek(bad, -1, SEEK_END) == 0);
+    CHECK(fputc(byte ^ 1, bad) != EOF);
+    CHECK(fclose(bad) == 0);
+    CHECK(ca_ec_count_checkpoint_validate(97, 2, 3, path, NULL) == CA_ERR_INVALID);
+    CHECK(unlink(path) == 0);
+    char progress_path[sizeof(path) + 20];
+    snprintf(progress_path, sizeof(progress_path), "%s.progress.json", path);
+    CHECK(unlink(progress_path) == 0);
+    order = 0; st = (ca_stats){0}; progress = (ca_ec_count_progress){0};
+    CHECK(ca_ec_count_points_checkpointed(1000003, 2, 3, NULL, 1, 1, 0, 0,
+                                           &order, &st, &progress) == CA_OK);
+    CHECK_EQ_U64(order, 999708);
+    CHECK(progress.completed_trials >= 1 && progress.group_ops > 0);
+    for (uint64_t a = 0; a < 4; a++) {
+        for (uint64_t b = 1; b < 5; b++) {
+            uint64_t ordinary = 0, durable = 0;
+            ca_status first = ca_ec_count_points(2003, a, b, &ordinary, NULL);
+            ca_status second = ca_ec_count_points_checkpointed(2003, a, b, NULL,
+                                         1, 1, 0, 0, &durable, NULL, NULL);
+            CHECK(first == second);
+            if (first == CA_OK) CHECK_EQ_U64(durable, ordinary);
+        }
+    }
+}
 
 static void test_zp(void)
 {
@@ -239,6 +297,7 @@ static void test_ec_mul_matches_affine(void)
 
 int main(void)
 {
+    test_count_checkpoint();
     test_zp();
     test_ec();
     test_count_points_larger();

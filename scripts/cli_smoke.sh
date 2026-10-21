@@ -205,6 +205,82 @@ want '"exponent"' group random "${ZP[@]}" --seed 7
 
 EC=(--group ec --p 1000003 --a 2 --b 3)
 want '"order":999708' ec-order --p 1000003 --a 2 --b 3
+want '[ec-order] complete' ec-order --p 1000003 --a 2 --b 3 --verbose
+ec_order_tmp=$(mktemp -d)
+EC_ORDER=(ec-order --p 97 --a 2 --b 3 --state-dir "$ec_order_tmp/local" \
+  --progress-every 1 --checkpoint-every 1)
+want_no '"status":"limit reached"' "${EC_ORDER[@]}" --max-work 20
+checks=$((checks + 1))
+if [ ! -s "$ec_order_tmp/local/ec-order.ckpt" ] || \
+   ! grep -q '"field_x":20' "$ec_order_tmp/local/ec-order.ckpt.progress.json"; then
+  printf 'FAIL: ec-order scan checkpoint or progress missing\n' >&2
+  fail=$((fail + 1))
+fi
+want '"order":100' "${EC_ORDER[@]}" --max-work 200 --resume
+checks=$((checks + 1))
+if [ ! -s "$ec_order_tmp/local/order-factor.ckpt" ] || \
+   ! grep -q '"count_phase":"complete"' "$ec_order_tmp/local/result.json"; then
+  printf 'FAIL: ec-order resume or factor artifact missing\n' >&2
+  fail=$((fail + 1))
+fi
+EC_ORDER_FACTOR=(ec-order --p 1000003 --a 2 --b 3 \
+  --state-dir "$ec_order_tmp/factor-local")
+want_no '"status":"limit reached"' "${EC_ORDER_FACTOR[@]}" --max-factor-steps 3
+checks=$((checks + 1))
+if [ ! -s "$ec_order_tmp/factor-local/ec-order.ckpt" ] || \
+   [ ! -s "$ec_order_tmp/factor-local/order-factor.ckpt" ]; then
+  printf 'FAIL: ec-order count or factor checkpoint missing after factor cap\n' >&2
+  fail=$((fail + 1))
+fi
+want '"order":999708' "${EC_ORDER_FACTOR[@]}" --resume
+want_bad 'run manifest does not match' ec-order --p 97 --a 2 --b 4 \
+  --state-dir "$ec_order_tmp/local" --resume
+mkdir "$ec_order_tmp/bin" "$ec_order_tmp/remote"
+cat >"$ec_order_tmp/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$ec_order_tmp/bin/aws"
+EC_ORDER_S3=(ec-order --p 97 --a 2 --b 3 --state-dir "$ec_order_tmp/s3-local" \
+  --s3-uri s3://test/ec-order --sync-every 1)
+PATH="$ec_order_tmp/bin:$PATH" CA_TEST_S3_ROOT="$ec_order_tmp/remote" \
+  want_no '"status":"limit reached"' "${EC_ORDER_S3[@]}" --max-work 20
+rm -rf "$ec_order_tmp/s3-local"
+PATH="$ec_order_tmp/bin:$PATH" CA_TEST_S3_ROOT="$ec_order_tmp/remote" \
+  want '"order":100' "${EC_ORDER_S3[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$ec_order_tmp/remote/ec-order.ckpt" ] || \
+   ! grep -q '"order":100' "$ec_order_tmp/remote/result.json"; then
+  printf 'FAIL: ec-order S3 mirror or restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$ec_order_tmp/remote/ec-order.ckpt" "$ec_order_tmp/remote-good.ckpt"
+printf X >>"$ec_order_tmp/s3-local/ec-order.ckpt"
+PATH="$ec_order_tmp/bin:$PATH" CA_TEST_S3_ROOT="$ec_order_tmp/remote" \
+  want_bad 'ec-order checkpoint failed validation before S3 sync' \
+  "${EC_ORDER_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$ec_order_tmp/remote/ec-order.ckpt" "$ec_order_tmp/remote-good.ckpt"; then
+  printf 'FAIL: invalid local ec-order checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$ec_order_tmp/remote-good.ckpt" "$ec_order_tmp/s3-local/ec-order.ckpt"
+cp "$ec_order_tmp/remote/order-factor.ckpt" "$ec_order_tmp/remote-factor-good.ckpt"
+printf X >>"$ec_order_tmp/s3-local/order-factor.ckpt"
+PATH="$ec_order_tmp/bin:$PATH" CA_TEST_S3_ROOT="$ec_order_tmp/remote" \
+  want_bad 'order factor checkpoint failed validation before S3 sync' \
+  "${EC_ORDER_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$ec_order_tmp/remote/order-factor.ckpt" "$ec_order_tmp/remote-factor-good.ckpt"; then
+  printf 'FAIL: invalid local order factor checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$ec_order_tmp"
 # x = 5 is not the x of a point of this curve; some x is, and the command must
 # distinguish the two cases rather than guessing.
 want_no '"on_curve":false' group lift-x "${EC[@]}" --x 5

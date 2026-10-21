@@ -211,7 +211,10 @@ static _Noreturn void usage(void)
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "        Metal uses its own exact table-walk checkpoint format\n"
         "        --check [--kat F] checks the selected backend (KAT: cuda only)\n"
-        "  version | prime N | ec-order --p P --a A --b B | gpu-info\n"
+        "  version | prime N | gpu-info\n"
+        "  ec-order --p P --a A --b B [--max-work K] [--max-factor-steps K]\n"
+        "        [--verbose] [--progress-every SEC] [--state-dir DIR] [--resume]\n"
+        "        [--checkpoint-every SEC] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  factor N [--max-steps K] [--verbose] [--progress-every SEC]\n"
         "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
@@ -385,6 +388,7 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
                              const ca_elem *ga, const ca_elem *gad, uint64_t d,
                              const ca_cheon_params *params);
 static int cmd_factor_durable(uint64_t n);
+static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b);
 static char *ic_path(const char *dir, const char *name);
 static int ic_atomic_file(const char *dir, const char *name, const char *body);
 static int ic_manifest_matches(const char *dir, const char *expected);
@@ -1260,6 +1264,140 @@ static int cmd_factor_durable(uint64_t n)
     if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
     if (lock_fd >= 0) close(lock_fd);
     free(checkpoint);
+    return rc == CA_OK && uploaded ? 0 : 1;
+}
+
+static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
+{
+    int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume");
+    uint32_t progress_interval = opt_u32("--progress-every", 5);
+    uint32_t checkpoint_interval = opt_u32("--checkpoint-every", 60);
+    uint32_t sync_interval = opt_u32("--sync-every", 60);
+    uint64_t max_work = opt_u64("--max-work", 0);
+    uint64_t max_factor_steps = opt_u64("--max-factor-steps", 0);
+    if (!progress_interval || !checkpoint_interval || !sync_interval)
+        die("progress, checkpoint and sync intervals must be positive");
+    if ((resume || s3_uri || opt("--checkpoint-every") || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri, --checkpoint-every and --sync-every require --state-dir");
+    if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
+    if (s3_uri) {
+        if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
+        const char *sep = strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    char manifest[256];
+    int ml = snprintf(manifest, sizeof(manifest),
+                      "{\"schema\":1,\"command\":\"ec-order\",\"p\":%" PRIu64
+                      ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 "}\n", p, a, b);
+    if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
+    int lock_fd = -1;
+    char *checkpoint = NULL, *factor_checkpoint = NULL;
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+        checkpoint = ic_path(state_dir, "ec-order.ckpt");
+        factor_checkpoint = ic_path(state_dir, "order-factor.ckpt");
+        if (!checkpoint || !factor_checkpoint) die("out of memory");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            if (!manifest_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            free(manifest_path);
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore into a nonempty directory without a run manifest");
+            if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
+                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore ec-order artifacts from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (access(checkpoint, F_OK) != 0) die("no ec-order checkpoint found for --resume");
+            uint64_t saved_order = 0;
+            if (ca_ec_count_checkpoint_validate(p, a, b, checkpoint, &saved_order) != CA_OK)
+                die("ec-order checkpoint failed validation before S3 sync");
+            if (access(factor_checkpoint, F_OK) == 0 &&
+                (!saved_order || ca_factor_checkpoint_validate(saved_order, factor_checkpoint) != CA_OK))
+                die("order factor checkpoint failed validation before S3 sync");
+        }
+        if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
+            die("cannot persist run status");
+        if (verbose) fprintf(stderr, "[ec-order] state directory: %s%s\n", state_dir,
+                             resume ? " (resume)" : "");
+    }
+    ic_sync_state sync = {0};
+    pthread_t sync_thread;
+    int syncing = 0;
+    if (s3_uri) {
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "ec-order";
+        sync.interval = sync_interval; sync.verbose = verbose;
+        atomic_init(&sync.stop, 0);
+        if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
+            die("cannot start S3 sync worker");
+        syncing = 1;
+    }
+    uint64_t order = 0;
+    ca_stats st = {0};
+    ca_ec_count_progress cp = {0};
+    ca_factor_progress fp = {0};
+    ca_factorization f = {0};
+    ca_status rc = ca_ec_count_points_checkpointed(p, a, b, checkpoint,
+                        progress_interval, checkpoint_interval, verbose,
+                        max_work, &order, &st, &cp);
+    if (rc == CA_OK)
+        rc = ca_factorize_checkpointed(order, factor_checkpoint, progress_interval,
+                                       checkpoint_interval, verbose, max_factor_steps, &f, &fp);
+    if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
+    char result[2048];
+    char order_text[32] = "null";
+    if (order) snprintf(order_text, sizeof(order_text), "%" PRIu64, order);
+    int nr = snprintf(result, sizeof(result),
+                      "{\"status\":\"%s\",\"p\":%" PRIu64
+                      ",\"order\":%s,\"factors\":[",
+                      ca_status_string(rc), p, order_text);
+    if (nr < 0 || (size_t)nr >= sizeof(result)) die("ec-order result is too long");
+    size_t pos = (size_t)nr;
+    for (unsigned i = 0; i < f.count; i++) {
+        nr = snprintf(result + pos, sizeof(result) - pos, "%s[%" PRIu64 ",%u]",
+                      i ? "," : "", f.f[i].p, f.f[i].e);
+        if (nr < 0 || (size_t)nr >= sizeof(result) - pos) die("ec-order result is too long");
+        pos += (size_t)nr;
+    }
+    nr = snprintf(result + pos, sizeof(result) - pos,
+                  "],\"count_phase\":\"%s\",\"count_work\":%" PRIu64
+                  ",\"count_trials\":%" PRIu64 ",\"factor_steps\":%" PRIu64
+                  ",\"ops\":%" PRIu64 ",\"seconds\":%.6f}\n",
+                  cp.phase ? cp.phase : "unknown", cp.work_units, cp.completed_trials,
+                  fp.steps, st.group_ops, st.seconds + fp.seconds);
+    if (nr < 0 || (size_t)nr >= sizeof(result) - pos) die("ec-order result is too long");
+    if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
+        die("cannot persist ec-order result");
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    if (verbose && s3_uri) fprintf(stderr, "[ec-order] final S3 sync %s\n",
+                                   !safe_to_upload ? "skipped after an invalid run" :
+                                   uploaded ? "complete" : "failed");
+    if (uploaded) fputs(result, stdout);
+    else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
+                ca_status_string(rc));
+    if (rc != CA_OK) fprintf(stderr, "error: %s %s\n", ca_status_string(rc), ca_last_error());
+    if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
+    if (lock_fd >= 0) close(lock_fd);
+    free(checkpoint); free(factor_checkpoint);
     return rc == CA_OK && uploaded ? 0 : 1;
 }
 
@@ -3395,8 +3533,14 @@ int main(int argc, char **argv)
     if (!strcmp(cmd, "ec-order")) {
         uint64_t p = opt_u64("--p", 0), n;
         if (!p) die("--p required");
+        uint64_t a = opt_u64("--a", 0), b = opt_u64("--b", 0);
+        if (flag("--verbose") || flag("-v") || opt("--progress-every") ||
+            opt("--checkpoint-every") || opt("--state-dir") || flag("--resume") ||
+            opt("--s3-uri") || opt("--sync-every") || opt("--max-work") ||
+            opt("--max-factor-steps"))
+            return cmd_ec_order_durable(p, a, b);
         ca_stats st = {0};
-        ca_status rc = ca_ec_count_points(p, opt_u64("--a", 0), opt_u64("--b", 0), &n, &st);
+        ca_status rc = ca_ec_count_points(p, a, b, &n, &st);
         if (rc != CA_OK) die_status(rc);
         ca_factorization f;
         ca_factorize(n, &f);

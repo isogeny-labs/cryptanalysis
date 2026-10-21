@@ -7,6 +7,10 @@
  */
 #include "cryptanalysis/ca_group.h"
 #include "ca_internal.h"
+#include "dlog_checkpoint_internal.h"
+
+#include <inttypes.h>
+#include <math.h>
 
 #define FX(e) ((e)->w[0])
 #define FY(e) ((e)->w[1])
@@ -401,6 +405,22 @@ void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed)
 
 /* ---- Mestre's point counting ------------------------------------------ */
 
+typedef struct ec_count_watch {
+    int (*report)(void *context, const char *phase, uint64_t done,
+                  uint64_t total, uint64_t group_ops);
+    void *context;
+    int failed;
+} ec_count_watch;
+
+static int ec_count_emit(ec_count_watch *watch, const char *phase, uint64_t done,
+                         uint64_t total, uint64_t current_ops)
+{
+    if (watch && !watch->failed &&
+        !watch->report(watch->context, phase, done, total, current_ops))
+        watch->failed = 1;
+    return !watch || !watch->failed;
+}
+
 /* Fill consecutive multiples with one batched inversion per prefix
  * expansion, plus its offset doubling.  Preserve affine-addition order. */
 static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
@@ -422,11 +442,15 @@ static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
 /* All k in [lo, lo+width) with k*P == T, appended to out (up to cap).
  * Returns the number found (may exceed cap; only cap are stored). */
 static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem *T, uint64_t lo,
-                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st)
+                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st,
+                              ec_count_watch *watch)
 {
     uint64_t m = ca_isqrt(width) + 1;
     ca_htab1 tab;
-    if (ca_htab1_init(&tab, (size_t)m) != CA_OK) return 0;
+    if (ca_htab1_init(&tab, (size_t)m) != CA_OK) {
+        if (watch) watch->failed = 2;
+        return 0;
+    }
     /* Baby and giant steps go EC_LANES at a time through ec_batch_op, one
      * field inversion per block; hashing, insertion, lookup and every
      * count follow the one-step loops, and elements a block computes past
@@ -448,7 +472,13 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
             const uint64_t n = m - j0 < EC_LANES ? m - j0 : EC_LANES;
             for (uint64_t c = 0; c < n; c++) {
                 uint64_t old;
-                if (ca_htab1_insert(&tab, ec_hash(g, &lane[c]), j0 + c, &old) == 1) {
+                int inserted = ca_htab1_insert(&tab, ec_hash(g, &lane[c]), j0 + c, &old);
+                if (inserted < 0) {
+                    if (watch) watch->failed = 2;
+                    ca_htab1_free(&tab);
+                    return 0;
+                }
+                if (inserted == 1) {
                     /* (j0 + c) P == old P: P has small order j0 + c - old */
                     small_order = j0 + c - old;
                     steps_done = j0 + c;
@@ -458,6 +488,11 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
             if (!small_order && j0 + EC_LANES < m) {
                 const uint64_t next = m - j0 - EC_LANES;
                 ec_batch_op(g, lane, lane, stride, next < EC_LANES ? next : EC_LANES, scratch);
+            }
+            if (!ec_count_emit(watch, "baby", small_order ? steps_done : j0 + n,
+                               m, st ? st->group_ops + (small_order ? steps_done : j0 + n) : 0)) {
+                ca_htab1_free(&tab);
+                return 0;
             }
         }
         if (st) st->group_ops += steps_done;
@@ -473,6 +508,12 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
                 break;
             }
             ec_op(g, &cur, &cur, P);
+            if ((j & 255) == 255 &&
+                !ec_count_emit(watch, "small-order", j + 1, small_order,
+                               st ? st->group_ops : 0)) {
+                ca_htab1_free(&tab);
+                return 0;
+            }
         }
         if (k0 < small_order) {
             /* smallest k >= lo with k == k0 (mod small_order) */
@@ -520,6 +561,11 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
             }
         }
         if (st) st->group_ops += n;
+        if (!ec_count_emit(watch, "giant", i0 + n, steps,
+                           st ? st->group_ops : 0)) {
+            ca_htab1_free(&tab);
+            return 0;
+        }
         if (n == EC_LANES) ec_op(g, &R, &R, &block_step);
     }
     ca_htab1_free(&tab);
@@ -557,7 +603,7 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
         ca_elem P, T;
         ca_ec_random_point(g, &P, ca_rng_next(&rng));
         ec_identity(g, &T);
-        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st);
+        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st, NULL);
         if (n == 0 || n > CAP) continue;
         if (!have) {
             memcpy(cands, cur, n * sizeof(uint64_t));
@@ -631,5 +677,357 @@ ca_status ca_ec_count_points(uint64_t p, uint64_t a, uint64_t b, uint64_t *order
     if (rc != CA_OK && (ca_u128)p + 1 + 2 * ((ca_u128)ca_isqrt(p) + 1) > (ca_u128)UINT64_MAX)
         ca_set_error("p = %llu: #E(F_p) may exceed 64 bits and was not found below 2^64",
                      (unsigned long long)p);
+    return rc;
+}
+
+enum { EC_COUNT_SMALL = 0, EC_COUNT_ORIGINAL = 1,
+       EC_COUNT_TWIST = 2, EC_COUNT_DONE = 3, EC_COUNT_FAILED = 4,
+       EC_COUNT_CAP = 4096 };
+
+typedef struct ec_count_checkpoint {
+    char magic[8];
+    uint32_t version, phase;
+    uint64_t p, a, b, next_x, small_count, order;
+    ca_rng rng;
+    uint32_t tries, have, ncand, reserved;
+    uint64_t candidates[EC_COUNT_CAP];
+    uint64_t work_units, group_ops;
+    double seconds;
+    uint64_t checksum;
+} ec_count_checkpoint;
+
+static const char *ec_count_phase_name(uint32_t phase)
+{
+    if (phase == EC_COUNT_SMALL) return "field-scan";
+    if (phase == EC_COUNT_ORIGINAL) return "original";
+    if (phase == EC_COUNT_TWIST) return "twist";
+    if (phase == EC_COUNT_FAILED) return "not-found";
+    return "complete";
+}
+
+static int ec_count_state_valid(const ec_count_checkpoint *s,
+                                uint64_t p, uint64_t a, uint64_t b)
+{
+    if (memcmp(s->magic, "CAECORD1", 8) || s->version != 1 ||
+        s->p != p || s->a != a || s->b != b || s->reserved ||
+        s->phase > EC_COUNT_FAILED || s->tries > 24 || s->have > 1 ||
+        s->ncand > EC_COUNT_CAP || (!s->have && s->ncand) ||
+        (s->have && !s->ncand) ||
+        !isfinite(s->seconds) || s->seconds < 0 || s->next_x > p ||
+        (p < 2000 && s->phase != EC_COUNT_SMALL && s->phase != EC_COUNT_DONE) ||
+        (p >= 2000 && s->phase == EC_COUNT_SMALL) ||
+        (s->phase == EC_COUNT_DONE && !s->order)) return 0;
+    if (p < 2000) {
+        if (s->work_units != s->next_x || s->group_ops ||
+            s->small_count < 1 || s->small_count > 2 * s->next_x + 1 ||
+            (s->phase == EC_COUNT_DONE &&
+             (s->next_x != p || s->order != s->small_count))) return 0;
+    } else if (s->next_x || s->work_units != s->group_ops) return 0;
+    if (s->phase == EC_COUNT_DONE) {
+        ca_u128 center = (ca_u128)p + 1;
+        ca_u128 radius = 2 * ((ca_u128)ca_isqrt(p) + 1);
+        if ((ca_u128)s->order + radius < center ||
+            (ca_u128)s->order > center + radius) return 0;
+    }
+    return 1;
+}
+
+static int ec_count_checkpoint_save(const char *path, ec_count_checkpoint *s)
+{
+    if (!path) return 1;
+    s->checksum = 0;
+    s->checksum = dlog_ckpt_hash(s, sizeof(*s), UINT64_C(14695981039346656037));
+    dlog_ckpt_file w;
+    int ok = dlog_ckpt_begin(&w, path);
+    if (ok) ok = fwrite(s, 1, sizeof(*s), w.f) == sizeof(*s);
+    ok = dlog_ckpt_finish(&w, ok);
+    if (!ok) ca_set_error("ec-order: cannot persist checkpoint");
+    return ok;
+}
+
+/* 1 = restored, 0 = fresh, -1 = invalid or unreadable. */
+static int ec_count_checkpoint_load(const char *path, uint64_t p, uint64_t a,
+                                     uint64_t b, ec_count_checkpoint *s)
+{
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("ec-order: cannot open checkpoint");
+        return -1;
+    }
+    ec_count_checkpoint got = {0};
+    int ok = fread(&got, 1, sizeof(got), f) == sizeof(got) && fgetc(f) == EOF;
+    if (ferror(f)) ok = 0;
+    fclose(f);
+    uint64_t checksum = got.checksum;
+    got.checksum = 0;
+    if (!ok || dlog_ckpt_hash(&got, sizeof(got), UINT64_C(14695981039346656037)) != checksum ||
+        !ec_count_state_valid(&got, p, a, b)) {
+        ca_set_error("ec-order: checkpoint identity, length or checksum failed");
+        return -1;
+    }
+    got.checksum = checksum;
+    *s = got;
+    return 1;
+}
+
+ca_status ca_ec_count_checkpoint_validate(uint64_t p, uint64_t a, uint64_t b,
+                                          const char *checkpoint_path,
+                                          uint64_t *completed_order)
+{
+    if (!p || !checkpoint_path) return CA_ERR_INVALID;
+    ec_count_checkpoint s;
+    int loaded = ec_count_checkpoint_load(checkpoint_path, p, a, b, &s);
+    if (loaded == 1) {
+        if (completed_order) *completed_order = s.phase == EC_COUNT_DONE ? s.order : 0;
+        return CA_OK;
+    }
+    if (!loaded) ca_set_error("ec-order: checkpoint is missing");
+    return CA_ERR_INVALID;
+}
+
+typedef struct ec_count_runtime {
+    ec_count_checkpoint *state;
+    const char *checkpoint_path;
+    double start, prior, next_progress, next_checkpoint;
+    uint32_t progress_interval, checkpoint_interval;
+    int verbose;
+} ec_count_runtime;
+
+static int ec_count_progress_write(ec_count_runtime *run, const char *status,
+                                   const char *detail, uint64_t done, uint64_t total,
+                                   uint64_t current_ops)
+{
+    ec_count_checkpoint *s = run->state;
+    double seconds = run->prior + ca_now() - run->start;
+    char phase[40];
+    int pl = snprintf(phase, sizeof(phase), "%s%s%s", ec_count_phase_name(s->phase),
+                      detail ? "-" : "", detail ? detail : "");
+    if (pl < 0 || (size_t)pl >= sizeof(phase)) return 0;
+    if (run->verbose) {
+        if (s->phase == EC_COUNT_SMALL || (s->phase == EC_COUNT_DONE && !s->tries))
+            fprintf(stderr, "[ec-order] %s x=%" PRIu64 "/%" PRIu64
+                            " work=%" PRIu64 " %.1fs\n",
+                    phase, s->next_x, s->p, s->work_units, seconds);
+        else fprintf(stderr, "[ec-order] %s trial=%u/24 batch=%" PRIu64
+                             "/%" PRIu64 " work=%" PRIu64 " ops=%" PRIu64
+                             " candidates=%u %.1fs\n",
+                     phase, s->tries, done, total, s->work_units + current_ops,
+                     s->group_ops + current_ops, s->ncand, seconds);
+    }
+    if (!run->checkpoint_path) return 1;
+    char *path = dlog_ckpt_path(run->checkpoint_path, ".progress.json");
+    if (!path) {
+        ca_set_error("ec-order: cannot allocate progress path");
+        return 0;
+    }
+    dlog_ckpt_file w;
+    int ok = dlog_ckpt_begin(&w, path);
+    if (ok) ok = fprintf(w.f,
+        "{\"status\":\"%s\",\"phase\":\"%s\",\"p\":%" PRIu64
+        ",\"a\":%" PRIu64 ",\"b\":%" PRIu64
+        ",\"batch_done\":%" PRIu64 ",\"batch_total\":%" PRIu64
+        ",\"completed_trials\":%u,\"candidates\":%u,\"field_x\":%" PRIu64
+        ",\"work_units\":%" PRIu64 ",\"group_ops\":%" PRIu64
+        ",\"elapsed_seconds\":%.3f}\n",
+        status, phase, s->p, s->a, s->b, done, total, s->tries, s->ncand,
+        s->next_x, s->work_units + current_ops, s->group_ops + current_ops,
+        seconds) > 0;
+    ok = dlog_ckpt_finish(&w, ok);
+    free(path);
+    if (!ok) ca_set_error("ec-order: cannot persist progress");
+    return ok;
+}
+
+static int ec_count_report(ec_count_runtime *run, const char *status,
+                            const char *detail, uint64_t done, uint64_t total,
+                            uint64_t current_ops, int save)
+{
+    if (save) {
+        run->state->seconds = run->prior + ca_now() - run->start;
+        if (!ec_count_checkpoint_save(run->checkpoint_path, run->state)) return 0;
+    }
+    return ec_count_progress_write(run, status, detail, done, total, current_ops);
+}
+
+static int ec_count_watch_report(void *context, const char *phase, uint64_t done,
+                                  uint64_t total, uint64_t current_ops)
+{
+    ec_count_runtime *run = context;
+    double now = ca_now();
+    if (now >= run->next_checkpoint && run->checkpoint_path) {
+        run->state->seconds = run->prior + now - run->start;
+        if (!ec_count_checkpoint_save(run->checkpoint_path, run->state)) return 0;
+        run->next_checkpoint = now + run->checkpoint_interval;
+    }
+    if (now < run->next_progress) return 1;
+    if (!ec_count_progress_write(run, "running", phase, done, total, current_ops)) return 0;
+    run->next_progress = now + run->progress_interval;
+    return 1;
+}
+
+static void ec_count_fill_progress(const ec_count_checkpoint *s,
+                                    ca_ec_count_progress *progress, double seconds)
+{
+    if (!progress) return;
+    progress->work_units = s->work_units;
+    progress->group_ops = s->group_ops;
+    progress->field_x = s->next_x;
+    progress->completed_trials = s->tries;
+    progress->candidates = s->ncand;
+    progress->seconds = seconds;
+    progress->phase = ec_count_phase_name(s->phase);
+}
+
+ca_status ca_ec_count_points_checkpointed(uint64_t p, uint64_t a, uint64_t b,
+                                          const char *checkpoint_path,
+                                          uint32_t progress_interval,
+                                          uint32_t checkpoint_interval, int verbose,
+                                          uint64_t max_work, uint64_t *order,
+                                          ca_stats *st, ca_ec_count_progress *progress)
+{
+    if (!order) return CA_ERR_INVALID;
+    ca_group g;
+    ca_status rc = ca_group_ec_init(&g, p, a, b, 0);
+    if (rc != CA_OK) return rc;
+    ec_count_checkpoint s = {0};
+    memcpy(s.magic, "CAECORD1", 8);
+    s.version = 1; s.p = p; s.a = a; s.b = b;
+    s.phase = p < 2000 ? EC_COUNT_SMALL : EC_COUNT_ORIGINAL;
+    s.small_count = 1;
+    if (p >= 2000) ca_rng_seed(&s.rng, 0x5eed5eedULL ^ p);
+    double t0 = ca_now();
+    int loaded = ec_count_checkpoint_load(checkpoint_path, p, a, b, &s);
+    if (loaded < 0) return CA_ERR_INVALID;
+    ec_count_runtime run = {0};
+    run.state = &s; run.checkpoint_path = checkpoint_path;
+    run.start = t0; run.prior = s.seconds;
+    run.progress_interval = progress_interval ? progress_interval : 5;
+    run.checkpoint_interval = checkpoint_interval ? checkpoint_interval : 60;
+    run.next_progress = t0 + run.progress_interval;
+    run.next_checkpoint = t0 + run.checkpoint_interval;
+    run.verbose = verbose;
+    if ((checkpoint_path || verbose) &&
+        !ec_count_report(&run, "running", NULL, 0, 0, 0, !loaded))
+        return CA_ERR_INTERNAL;
+    rc = s.phase == EC_COUNT_FAILED ? CA_ERR_NOT_FOUND : CA_OK;
+    if (rc == CA_ERR_NOT_FOUND)
+        ca_set_error("ec-order: saved point search ended without a 64-bit order");
+    while (s.phase != EC_COUNT_DONE && s.phase != EC_COUNT_FAILED) {
+        if (max_work && s.work_units >= max_work) {
+            ca_set_error("ec-order: work cap reached; raise --max-work to resume");
+            rc = CA_ERR_LIMIT;
+            break;
+        }
+        if (s.phase == EC_COUNT_SMALL) {
+            uint64_t x = s.next_x;
+            uint64_t rhs = ca_addmod(ca_mulmod(ca_addmod(ca_mulmod(x, x, p), a % p, p), x, p), b % p, p);
+            s.small_count += (uint64_t)(1 + ca_legendre(rhs, p));
+            s.next_x++; s.work_units++;
+            if (s.next_x == p) { s.order = s.small_count; s.phase = EC_COUNT_DONE; }
+            double now = ca_now();
+            if ((checkpoint_path || verbose) && s.phase != EC_COUNT_DONE &&
+                (now >= run.next_progress ||
+                 now >= run.next_checkpoint || (max_work && s.work_units >= max_work))) {
+                if (!ec_count_report(&run, "running", NULL, s.next_x, p, 0, 1)) {
+                    rc = CA_ERR_INTERNAL;
+                    break;
+                }
+                run.next_progress = now + run.progress_interval;
+                run.next_checkpoint = now + run.checkpoint_interval;
+            }
+            continue;
+        }
+        ca_group active = g;
+        if (s.phase == EC_COUNT_TWIST) {
+            uint64_t d = 2;
+            while (ca_legendre(d, p) != -1) d++;
+            uint64_t d2 = ca_mulmod(d, d, p), d3 = ca_mulmod(d2, d, p);
+            rc = ca_group_ec_init(&active, p, ca_mulmod(a, d2, p), ca_mulmod(b, d3, p), 0);
+            if (rc != CA_OK) break;
+        }
+        uint64_t sq = ca_isqrt(p);
+        while ((ca_u128)sq * sq < p) sq++;
+        ca_u128 lo128 = (ca_u128)p + 1 - 2 * (ca_u128)sq;
+        uint64_t lo = lo128 < 1 ? 1 : (uint64_t)lo128;
+        uint64_t width = 4 * sq + 1;
+        if (width - 1 > UINT64_MAX - lo) width = UINT64_MAX - lo + 1;
+        uint64_t *cur = malloc(EC_COUNT_CAP * sizeof(*cur));
+        if (!cur) { rc = CA_ERR_NOMEM; break; }
+        ca_rng next_rng = s.rng;
+        ca_elem P, T;
+        uint64_t point_seed = ca_rng_next(&next_rng);
+        ca_ec_random_point(&active, &P, point_seed ? point_seed : 1);
+        ec_identity(&active, &T);
+        ca_stats trial = {0};
+        ec_count_watch watch = {ec_count_watch_report, &run, 0};
+        size_t n = ec_interval_all(&active, &P, &T, lo, width, cur,
+                                    EC_COUNT_CAP, &trial, &watch);
+        if (watch.failed) {
+            free(cur);
+            rc = watch.failed == 2 ? CA_ERR_NOMEM : CA_ERR_INTERNAL;
+            break;
+        }
+        s.rng = next_rng; s.tries++;
+        s.group_ops += trial.group_ops;
+        s.work_units += trial.group_ops;
+        if (n && n <= EC_COUNT_CAP) {
+            if (!s.have) {
+                memcpy(s.candidates, cur, n * sizeof(*cur));
+                s.ncand = (uint32_t)n; s.have = 1;
+            } else {
+                uint32_t kept = 0;
+                for (uint32_t i = 0; i < s.ncand; i++)
+                    for (size_t j = 0; j < n; j++)
+                        if (s.candidates[i] == cur[j]) {
+                            s.candidates[kept++] = s.candidates[i];
+                            break;
+                        }
+                s.ncand = kept;
+            }
+        }
+        free(cur);
+        if (s.have && s.ncand == 0) { rc = CA_ERR_INTERNAL; break; }
+        if (s.ncand == 1) {
+            if (s.phase == EC_COUNT_ORIGINAL) {
+                s.order = s.candidates[0]; s.phase = EC_COUNT_DONE;
+            } else {
+                ca_u128 result = (ca_u128)2 * p + 2 - s.candidates[0];
+                if (result <= UINT64_MAX) {
+                    s.order = (uint64_t)result; s.phase = EC_COUNT_DONE;
+                } else {
+                    ca_set_error("ec-order: curve order exceeds 64 bits");
+                    rc = CA_ERR_NOT_FOUND;
+                }
+            }
+        } else if (s.tries == 24) {
+            if (s.phase == EC_COUNT_ORIGINAL && s.have && s.ncand > 1) {
+                s.phase = EC_COUNT_TWIST; s.tries = s.have = s.ncand = 0;
+                ca_rng_seed(&s.rng, 0x7715ULL ^ p);
+            } else {
+                ca_set_error("ec-order: completed point trials without a unique order");
+                rc = CA_ERR_NOT_FOUND;
+            }
+        }
+        if (rc == CA_ERR_NOT_FOUND) s.phase = EC_COUNT_FAILED;
+        if ((checkpoint_path || verbose) && s.phase != EC_COUNT_DONE &&
+            !ec_count_report(&run, rc == CA_OK ? "running" : "stopped",
+                             NULL, s.tries, 24, 0, 1)) {
+            rc = CA_ERR_INTERNAL;
+            break;
+        }
+        if (rc != CA_OK) break;
+    }
+    if ((checkpoint_path || verbose) &&
+        !ec_count_report(&run, rc == CA_OK ? "complete" : "stopped",
+                         NULL, s.phase == EC_COUNT_SMALL ? s.next_x : s.tries,
+                         s.phase == EC_COUNT_SMALL ? p : 24, 0,
+                         rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND))
+        rc = CA_ERR_INTERNAL;
+    if (rc == CA_OK) *order = s.order;
+    double elapsed = run.prior + ca_now() - t0;
+    if (st) { st->group_ops += s.group_ops; st->seconds += elapsed; }
+    ec_count_fill_progress(&s, progress, elapsed);
     return rc;
 }
