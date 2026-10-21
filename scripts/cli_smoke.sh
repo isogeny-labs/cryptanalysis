@@ -93,13 +93,25 @@ make_basic_aws_stub() {
   cat >"$1" <<'AWS'
 #!/usr/bin/env bash
 set -euo pipefail
+if [[ $1 == s3api && $2 == list-objects-v2 ]]; then
+  if [[ -d $CA_TEST_S3_ROOT ]] &&
+     [[ -n $(find "$CA_TEST_S3_ROOT" -type f -print -quit) ]]; then
+    printf '1\n'
+  else
+    printf '0\n'
+  fi
+  exit 0
+fi
 verb=$2 src=$3
 if [[ $src == s3://*//manifest.json ]]; then exit 2; fi
 if [[ $src == s3://*/manifest.json ]]; then src=$CA_TEST_S3_ROOT/manifest.json;
 elif [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
 if [[ $verb == ls ]]; then
-  if [[ -d $src ]]; then find "$src" -type f -print; fi
-  exit 0
+  if [[ -d $src && -n $(find "$src" -type f -print -quit) ]]; then
+    find "$src" -type f -print
+    exit 0
+  fi
+  exit 1
 fi
 dst=$4
 if [[ $dst == s3://*//manifest.json ]]; then exit 2; fi
@@ -698,6 +710,17 @@ cp "$ecc_tmp/pkg/libexec/cryptanalysis/ecc2k130-rho-cuda" \
 cat >"$ecc_tmp/awsbin/aws" <<'SH'
 #!/bin/sh
 set -eu
+if [ "$1" = s3api ]; then
+  [ "$2" = list-objects-v2 ] || exit 2
+  prefix=$6
+  case "$prefix" in ecc2k/*) path="$CA_TEST_S3_REMOTE/${prefix#ecc2k/}" ;; *) exit 2 ;; esac
+  if [ -d "$path" ] && [ -n "$(find "$path" -type f -print -quit)" ]; then
+    printf '1\n'
+  else
+    printf '0\n'
+  fi
+  exit 0
+fi
 [ "$1" = s3 ] || exit 2
 verb=$2; from=$3; to=$4
 case "$from" in
@@ -709,7 +732,11 @@ case "$to" in
   s3://test/ecc2k/*) to="$CA_TEST_S3_REMOTE/${to#s3://test/ecc2k/}" ;;
 esac
 if [ "$verb" = ls ]; then
-  if [ -d "$from" ]; then find "$from" -type f -print; fi
+  if [ -d "$from" ] && [ -n "$(find "$from" -type f -print -quit)" ]; then
+    find "$from" -type f -print
+  else
+    exit 1
+  fi
 elif [ "$verb" = sync ]; then
   if [ -d "$from" ]; then
     mkdir -p "$to"
@@ -1156,12 +1183,23 @@ cat > "$ic_s3_test/bin/aws" <<'AWS'
 #!/usr/bin/env bash
 set -euo pipefail
 touch "$CA_TEST_S3_CALLED"
+if [[ $1 == s3api && $2 == list-objects-v2 ]]; then
+  if [[ -n $(find "$CA_TEST_S3_FIXTURE" -type f -print -quit) ]]; then
+    printf '1\n'
+  else
+    printf '0\n'
+  fi
+  exit 0
+fi
 verb=$2 src=$3
 if [[ $src == s3://*/manifest.json ]]; then src=$CA_TEST_S3_FIXTURE/manifest.json;
 elif [[ $src == s3://* ]]; then src=$CA_TEST_S3_FIXTURE; fi
 if [[ $verb == ls ]]; then
-  if [[ -d $src ]]; then find "$src" -type f -print; fi
-  exit 0
+  if [[ -d $src && -n $(find "$src" -type f -print -quit) ]]; then
+    find "$src" -type f -print
+    exit 0
+  fi
+  exit 1
 fi
 dst=$4
 if [[ $dst == s3://*/manifest.json ]]; then dst=$CA_TEST_S3_FIXTURE/manifest.json;

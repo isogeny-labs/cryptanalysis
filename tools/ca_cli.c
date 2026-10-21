@@ -3595,10 +3595,21 @@ static int ic_remote_manifest_matches(const char *dir, const char *uri,
 
 static int ic_remote_prefix_empty(const char *uri)
 {
-    char *prefix = ecc2k_remote_path(uri, "");
-    if (!prefix) return 0;
+    /* `aws s3 ls PREFIX --recursive` exits 1 for an empty prefix. Query one
+     * key through s3api instead, where KeyCount is explicitly zero. */
+    if (strncmp(uri, "s3://", 5) != 0) return 0;
+    const char *slash = strchr(uri + 5, '/');
+    if (!slash || slash == uri + 5 || !slash[1]) return 0;
+    size_t bucket_len = (size_t)(slash - (uri + 5));
+    char *bucket = malloc(bucket_len + 1);
+    if (bucket) {
+        memcpy(bucket, uri + 5, bucket_len);
+        bucket[bucket_len] = '\0';
+    }
+    char *prefix = ecc2k_remote_path(slash + 1, "");
+    if (!bucket || !prefix) { free(bucket); free(prefix); return 0; }
     int pipe_fd[2];
-    if (pipe(pipe_fd) != 0) { free(prefix); return 0; }
+    if (pipe(pipe_fd) != 0) { free(bucket); free(prefix); return 0; }
     posix_spawn_file_actions_t actions;
     int actions_ready = posix_spawn_file_actions_init(&actions) == 0;
     int prepared = actions_ready;
@@ -3607,17 +3618,26 @@ static int ic_remote_prefix_empty(const char *uri)
                              posix_spawn_file_actions_addclose(&actions, pipe_fd[0]) == 0 &&
                              posix_spawn_file_actions_addclose(&actions, pipe_fd[1]) == 0;
     extern char **environ;
-    char *const args[] = {"aws", "s3", "ls", prefix, "--recursive", NULL};
+    char *const args[] = {"aws", "s3api", "list-objects-v2",
+                          "--bucket", bucket, "--prefix", prefix,
+                          "--max-keys", "1", "--query", "KeyCount",
+                          "--output", "text", NULL};
     pid_t pid = -1;
     int spawned = prepared && posix_spawnp(&pid, "aws", &actions, NULL, args, environ) == 0;
     if (actions_ready) posix_spawn_file_actions_destroy(&actions);
     close(pipe_fd[1]);
-    free(prefix);
-    int any = 0, read_ok = 1;
-    char buf[256];
+    free(bucket); free(prefix);
+    int read_ok = 1;
+    char output[64];
+    size_t used = 0;
     for (;;) {
+        char buf[64];
         ssize_t n = read(pipe_fd[0], buf, sizeof(buf));
-        if (n > 0) { any = 1; continue; }
+        if (n > 0) {
+            if (used + (size_t)n >= sizeof(output)) read_ok = 0;
+            else { memcpy(output + used, buf, (size_t)n); used += (size_t)n; }
+            continue;
+        }
         if (n == 0) break;
         if (errno == EINTR) continue;
         read_ok = 0;
@@ -3627,7 +3647,15 @@ static int ic_remote_prefix_empty(const char *uri)
     if (!spawned) return 0;
     int status = 0;
     while (waitpid(pid, &status, 0) < 0) if (errno != EINTR) return 0;
-    return read_ok && !any && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    if (!read_ok || !used || !WIFEXITED(status) || WEXITSTATUS(status) != 0)
+        return 0;
+    output[used] = '\0';
+    char *end = NULL;
+    errno = 0;
+    unsigned long count = strtoul(output, &end, 10);
+    if (errno || end == output) return 0;
+    while (*end == ' ' || *end == '\t' || *end == '\r' || *end == '\n') end++;
+    return count == 0 && *end == '\0';
 }
 
 static int ic_s3_upload_allowed(const char *dir, const char *uri)
