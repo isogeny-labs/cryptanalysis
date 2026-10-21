@@ -83,6 +83,7 @@
 #include <limits.h>
 #include <pthread.h>
 #include <signal.h>
+#include <spawn.h>
 #include <stdatomic.h>
 #include <time.h>
 #include <inttypes.h>
@@ -659,17 +660,18 @@ static int ic_dir_empty(const char *dir)
 
 static int ic_s3_sync(const char *from, const char *to)
 {
-    pid_t pid = fork();
-    if (pid < 0) return 0;
-    if (pid == 0) {
-        char *src = strdup(from), *dst = strdup(to);
-        if (!src || !dst) _exit(127);
-        char *const args[] = {"aws", "s3", "sync", src, dst,
-                              "--only-show-errors", "--exclude", "*.tmp",
-                              "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
-        execvp("aws", args);
-        _exit(127);
-    }
+    /* Sync can run beside allocator-using sieve threads.  Do not allocate
+     * in a forked child, where another thread may have held malloc's lock. */
+    extern char **environ;
+    char *src = strdup(from), *dst = strdup(to);
+    if (!src || !dst) { free(src); free(dst); return 0; }
+    char *const args[] = {"aws", "s3", "sync", src, dst,
+                          "--only-show-errors", "--exclude", "*.tmp",
+                          "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
+    pid_t pid;
+    int spawn_error = posix_spawnp(&pid, "aws", NULL, NULL, args, environ);
+    free(src); free(dst);
+    if (spawn_error != 0) return 0;
     int status = 0;
     while (waitpid(pid, &status, 0) < 0) {
         if (errno != EINTR) return 0;
@@ -762,6 +764,12 @@ static int cmd_ic(void)
             int have_local = access(manifest_path, F_OK) == 0;
             int have_state = access(journal_path, F_OK) == 0 || access(precomp_path, F_OK) == 0;
             free(manifest_path); free(journal_path); free(precomp_path);
+            /* Validate local ownership before a download can overwrite its
+             * manifest or state.  Only an empty directory may lack identity. */
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir))
                 die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))

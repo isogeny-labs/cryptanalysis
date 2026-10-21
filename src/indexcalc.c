@@ -189,6 +189,7 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
         off_t start = ftello(f);
         ic_journal_record r;
         size_t nr = fread(&r, 1, sizeof(r), f);
+        if (ferror(f)) goto io_error;
         if (nr == 0 && feof(f)) break;
         if (nr != sizeof(r)) {
             if (ftruncate(fileno(f), start) != 0) goto io_error;
@@ -203,6 +204,7 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
         relation *batch = calloc(r.count ? r.count : 1, sizeof(*batch));
         if (!batch) goto io_error;
         nr = fread(batch, sizeof(*batch), r.count, f);
+        if (ferror(f)) { free(batch); goto io_error; }
         if (nr != r.count) {
             free(batch);
             if (ftruncate(fileno(f), start) != 0) goto io_error;

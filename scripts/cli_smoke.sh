@@ -228,7 +228,49 @@ if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" 
   printf 'FAIL: ic checkpoint artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
-rm -rf "$ic_tmp"
+# A remote copy must never replace a local run's mismatched identity.
+ic_s3_test=$(mktemp -d)
+mkdir "$ic_s3_test/bin" "$ic_s3_test/local"
+cat > "$ic_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$CA_TEST_S3_CALLED"
+if [[ $3 == s3://* ]]; then
+  cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+fi
+AWS
+chmod +x "$ic_s3_test/bin/aws"
+printf 'another run\n' > "$ic_s3_test/local/manifest.json"
+cp "$ic_s3_test/local/manifest.json" "$ic_s3_test/original-manifest"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'run manifest does not match these arguments' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/original-manifest" "$ic_s3_test/local/manifest.json"; then
+  printf 'FAIL: mismatched local manifest was exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/manifest.json"
+printf 'preserve\n' > "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'nonempty directory without a run manifest' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || [ -e "$ic_s3_test/local/manifest.json" ]; then
+  printf 'FAIL: unidentified local files were exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+rm -rf "$ic_tmp" "$ic_s3_test"
 want_bad 'durable --state-dir currently requires --method lsieve' \
   ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
