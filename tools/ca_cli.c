@@ -227,7 +227,7 @@ static _Noreturn void usage(void)
         "[--verbose]\n"
         "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
         "        [--max-relation-tries K]  (rexp only)\n"
-        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve state)\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve or rexp state)\n"
         "        index calculus in the multiplicative group of a prime field\n"
         "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
         "        delegate to the corresponding Rust CLI (binary override: CA_CRYPTO_BIN,\n"
