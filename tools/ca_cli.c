@@ -78,16 +78,20 @@
 #include "ca_internal.h" /* ca_now: the CLI already links the static library */
 
 #include <fcntl.h>
+#include <dirent.h>
 #include <errno.h>
 #include <limits.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdatomic.h>
 #include <time.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/file.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 static int argc_g;
@@ -185,6 +189,8 @@ static _Noreturn void usage(void)
         "--alpha X)\n"
         "  ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C] [--threads T] "
         "[--verbose]\n"
+        "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve state)\n"
         "        index calculus in the multiplicative group of a prime field\n"
         "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
         "        delegate to the corresponding Rust CLI (binary override: CA_CRYPTO_BIN,\n"
@@ -587,6 +593,112 @@ static int cmd_cheon(void)
     return 0;
 }
 
+static char *ic_path(const char *dir, const char *name)
+{
+    size_t n = strlen(dir) + strlen(name) + 2;
+    char *p = malloc(n);
+    if (p) snprintf(p, n, "%s/%s", dir, name);
+    return p;
+}
+
+static int ic_atomic_file(const char *dir, const char *name, const char *body)
+{
+    char *path = ic_path(dir, name), *tmp = ic_path(dir, ".writing.tmp.XXXXXX");
+    if (!path || !tmp) { free(path); free(tmp); return 0; }
+    int fd = mkstemp(tmp);
+    size_t n = strlen(body);
+    int ok = fd >= 0;
+    size_t written = 0;
+    while (ok && written < n) {
+        ssize_t m = write(fd, body + written, n - written);
+        if (m < 0 && errno == EINTR) continue;
+        if (m <= 0) { ok = 0; break; }
+        written += (size_t)m;
+    }
+    if (ok) ok = fsync(fd) == 0;
+    if (fd >= 0 && close(fd) != 0) ok = 0;
+    if (ok && rename(tmp, path) != 0) ok = 0;
+    if (ok) {
+        int dfd = open(dir, O_RDONLY);
+        if (dfd < 0 || fsync(dfd) != 0) ok = 0;
+        if (dfd >= 0) close(dfd);
+    }
+    if (!ok) unlink(tmp);
+    free(path); free(tmp);
+    return ok;
+}
+
+static int ic_manifest_matches(const char *dir, const char *expected)
+{
+    char *path = ic_path(dir, "manifest.json");
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    free(path);
+    if (!f) return 0;
+    size_t n = strlen(expected);
+    char got[512];
+    int ok = n < sizeof(got) && fread(got, 1, n, f) == n && fgetc(f) == EOF &&
+             memcmp(got, expected, n) == 0;
+    fclose(f);
+    return ok;
+}
+
+static int ic_dir_empty(const char *dir)
+{
+    DIR *d = opendir(dir);
+    if (!d) return 0;
+    struct dirent *e;
+    int empty = 1;
+    while ((e = readdir(d))) {
+        if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..") &&
+            strcmp(e->d_name, ".run.lock")) { empty = 0; break; }
+    }
+    closedir(d);
+    return empty;
+}
+
+static int ic_s3_sync(const char *from, const char *to)
+{
+    pid_t pid = fork();
+    if (pid < 0) return 0;
+    if (pid == 0) {
+        char *src = strdup(from), *dst = strdup(to);
+        if (!src || !dst) _exit(127);
+        char *const args[] = {"aws", "s3", "sync", src, dst,
+                              "--only-show-errors", "--exclude", "*.tmp",
+                              "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
+        execvp("aws", args);
+        _exit(127);
+    }
+    int status = 0;
+    while (waitpid(pid, &status, 0) < 0) {
+        if (errno != EINTR) return 0;
+    }
+    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
+}
+
+typedef struct ic_sync_state {
+    const char *dir, *uri;
+    uint32_t interval;
+    int verbose;
+    atomic_int stop;
+} ic_sync_state;
+
+static void *ic_sync_worker(void *arg)
+{
+    ic_sync_state *s = arg;
+    uint32_t elapsed = 0;
+    while (!atomic_load(&s->stop)) {
+        sleep(1);
+        if (atomic_load(&s->stop)) break;
+        if (++elapsed < s->interval) continue;
+        elapsed = 0;
+        int ok = ic_s3_sync(s->dir, s->uri);
+        if (s->verbose) fprintf(stderr, "[ic] S3 sync %s\n", ok ? "complete" : "failed; will retry");
+    }
+    return NULL;
+}
+
 static int cmd_ic(void)
 {
     uint64_t p = opt_u64("--p", 0), gg = opt_u64("--g", 0), h = opt_u64("--h", 0);
@@ -600,19 +712,113 @@ static int cmd_ic(void)
     pr.sieve_radius = opt_u32("--C", 0);
     pr.threads = opt_u32("--threads", 1);
     pr.seed = opt_u64("--seed", 0);
-    pr.verbose = flag("--verbose") || flag("-v");
+    pr.verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
+    uint32_t progress_interval = opt_u32("--progress-every", 5);
+    if (progress_interval == 0) die("--progress-every must be positive");
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume");
+    if ((resume || s3_uri || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri and --sync-every require --state-dir");
+    if (state_dir && pr.method != CA_IC_LINEAR_SIEVE)
+        die("durable --state-dir currently requires --method lsieve");
+    if (s3_uri) {
+        if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
+        const char *sep = strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    uint32_t sync_interval = opt_u32("--sync-every", 60);
+    if (sync_interval == 0) die("--sync-every must be positive");
+    char *journal = NULL;
+    int lock_fd = -1;
+    char manifest[512];
+    int ml = snprintf(manifest, sizeof(manifest),
+                      "{\"schema\":1,\"command\":\"ic\",\"p\":%" PRIu64 ",\"g\":%" PRIu64
+                      ",\"h\":%" PRIu64 ",\"method\":\"%s\",\"B\":%u,\"C\":%u,"
+                      "\"threads\":%u,\"seed\":%" PRIu64 "}\n",
+                      p, gg, h, pr.method == CA_IC_LINEAR_SIEVE ? "lsieve" : "rexp",
+                      pr.factor_base_bound, pr.sieve_radius, pr.threads, pr.seed);
+    if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            char *journal_path = ic_path(state_dir, "relations.ckpt");
+            char *precomp_path = ic_path(state_dir, "relations.ckpt.precomp");
+            if (!manifest_path || !journal_path || !precomp_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            int have_state = access(journal_path, F_OK) == 0 || access(precomp_path, F_OK) == 0;
+            free(manifest_path); free(journal_path); free(precomp_path);
+            if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir))
+                die("cannot restore run artifacts from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            journal_path = ic_path(state_dir, "relations.ckpt");
+            precomp_path = ic_path(state_dir, "relations.ckpt.precomp");
+            if (!journal_path || !precomp_path) die("out of memory");
+            have_state = access(journal_path, F_OK) == 0 || access(precomp_path, F_OK) == 0;
+            free(journal_path); free(precomp_path);
+            if (!have_state) die("no checkpoint artifacts found for --resume");
+        }
+        journal = ic_path(state_dir, "relations.ckpt");
+        if (!journal) die("out of memory");
+        if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
+            die("cannot persist run status");
+        if (pr.verbose) fprintf(stderr, "[ic] state directory: %s%s\n", state_dir, resume ? " (resume)" : "");
+    }
+    ic_sync_state sync = {0};
+    pthread_t sync_thread;
+    int syncing = 0;
+    if (s3_uri) {
+        sync.dir = state_dir; sync.uri = s3_uri; sync.interval = sync_interval; sync.verbose = pr.verbose;
+        atomic_init(&sync.stop, 0);
+        if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
+            die("cannot start S3 sync worker");
+        syncing = 1;
+    }
     uint64_t x = 0;
     ca_ic_stats st;
-    ca_status rc = ca_ic_solve(p, gg, h, &pr, &x, &st);
-    if (rc != CA_OK) die_status(rc);
-    printf("{\"status\":\"ok\",\"x\":%" PRIu64 ",\"check\":%" PRIu64
-           ",\"factor_base\":%u,\"unknowns\":%u,"
-           "\"relations\":%u,\"verified_logs\":%u,\"sieve_seconds\":%.3f,\"linalg_seconds\":%.3f,"
-           "\"total_seconds\":%.3f,\"lanczos_iterations\":%u,\"threads\":%u}\n",
-           x, ca_powmod(gg, x, p), st.factor_base_size, st.unknowns, st.relations, st.verified_logs,
-           st.sieve_seconds, st.linalg_seconds, st.total_seconds, st.lanczos_iterations,
-           st.threads);
-    return 0;
+    ca_status rc = ca_ic_solve_checkpointed(p, gg, h, &pr, journal, progress_interval, &x, &st);
+    if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
+    char result[1024];
+    if (rc == CA_OK) {
+        snprintf(result, sizeof(result),
+                 "{\"status\":\"ok\",\"x\":%" PRIu64 ",\"check\":%" PRIu64
+                 ",\"factor_base\":%u,\"unknowns\":%u,"
+                 "\"relations\":%u,\"verified_logs\":%u,\"sieve_seconds\":%.3f,\"linalg_seconds\":%.3f,"
+                 "\"total_seconds\":%.3f,\"lanczos_iterations\":%u,\"threads\":%u}\n",
+                 x, ca_powmod(gg, x, p), st.factor_base_size, st.unknowns, st.relations, st.verified_logs,
+                 st.sieve_seconds, st.linalg_seconds, st.total_seconds, st.lanczos_iterations,
+                 st.threads);
+    } else {
+        snprintf(result, sizeof(result), "{\"status\":\"%s\"}\n", ca_status_string(rc));
+    }
+    if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
+        die("cannot persist index-calculus result");
+    int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
+    if (pr.verbose && s3_uri) fprintf(stderr, "[ic] final S3 sync %s\n", uploaded ? "complete" : "failed");
+    if (uploaded)
+        fputs(result, stdout);
+    else
+        printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n", ca_status_string(rc));
+    if (rc != CA_OK) fprintf(stderr, "error: %s %s\n", ca_status_string(rc), ca_last_error());
+    if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
+    if (lock_fd >= 0) close(lock_fd);
+    free(journal);
+    return rc == CA_OK && uploaded ? 0 : 1;
 }
 
 /* ---------------------------------------------------------------- num ----

@@ -217,6 +217,20 @@ want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --s
 # ── index calculus ──────────────────────────────────────────────────────────
 want '"status":"ok"' ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 want '"x":69,"check":3' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1
+ic_tmp=$(mktemp -d)
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1 --resume
+checks=$((checks + 1))
+if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" ] || \
+   [ ! -s "$ic_tmp/progress.json" ]; then
+  printf 'FAIL: ic checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$ic_tmp"
+want_bad 'durable --state-dir currently requires --method lsieve' \
+  ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
