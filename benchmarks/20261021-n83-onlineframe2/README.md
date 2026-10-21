@@ -1,5 +1,8 @@
 # n = 83 online frame, round 2 (Tier 1, repeated alternating pairs)
 
+> Integration note, 2026-10-21: this frozen experiment compares online-frame round 2 with the round-2 index-build producer. The newer rank-finder result landed separately in #1013. This result is retained in `docs/ic/baselines.json` under `other_records`; it does not replace the current rank-finder baseline, and no combined or cross-host delta is claimed. References to the current row in the frozen report mean the row at protocol freeze. Independent replay of the complete retained receipt reproduces `result.json` and `result_table.md` byte for byte.
+
+
 Copies of the inspected report and result graph. The raw receipt, protocol and
 verifier are in `experiments/koblitz-n83-onlineframe2-20261021/` (run
 39527549698).
