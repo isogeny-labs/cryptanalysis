@@ -5,7 +5,9 @@ date: 2026-10-21
 
 # n = 83: the online frame loop in the current producer, exact change only (Tier 1 design)
 
-**Status (2026-10-21): design frozen; no Tier 1 timing yet.** The
+**Status (2026-10-21): design frozen; Tier 1 run
+[39527549698](https://github.com/aburan28/cryptanalysis/actions/runs/39527549698)
+started; no result yet.** The
 [protocol](protocol.json) (SHA-256 `50e50718...`) and the
 [schedule](schedule.json) (`6c84dfe5...`) were committed before any Tier 1
 timing. Every number in this document that is not from an archived run is a
@@ -392,7 +394,9 @@ The workflow therefore also has the owner-approved push trigger. It is
 restricted to branch `claude/n83-onlineframe2` and to this experiment's
 non-receipt paths, as in the parent's `n83-indexbuild2.yml`. The push that
 added it starts the run at the frozen protocol (`50e50718...`) and schedule
-(`6c84dfe5...`). The run URL is recorded in the commit that follows it.
+(`6c84dfe5...`). The push of commit `3b66377d` started run
+[39527549698](https://github.com/aburan28/cryptanalysis/actions/runs/39527549698)
+(queued 2026-10-21 01:28 UTC).
 
 ## Files
 
