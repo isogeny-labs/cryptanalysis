@@ -1027,13 +1027,13 @@ if [ -e "$ic_s3_test/called" ] || \
 fi
 rm -rf "$ic_tmp" "$ic_s3_test"
 rexp_tmp=$(mktemp -d)
-want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
-  --state-dir "$rexp_tmp" --progress-every 1
-want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
-  --state-dir "$rexp_tmp" --progress-every 1 --resume
 rexp_s3=$(mktemp -d)
-mkdir "$rexp_s3/bin" "$rexp_s3/remote"
-cp "$rexp_tmp/"* "$rexp_s3/remote/"
+mkdir "$rexp_s3/bin" "$rexp_s3/remote" "$rexp_s3/local"
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_s3/local" --progress-every 1
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_s3/local" --progress-every 1 --resume
+cp "$rexp_s3/local/"* "$rexp_s3/remote/"
 cat > "$rexp_s3/bin/aws" <<'AWS'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -1041,12 +1041,12 @@ touch "$CA_TEST_S3_CALLED"
 if [[ $3 == s3://* ]]; then cp "$CA_TEST_S3_ROOT/"* "$4/"; fi
 AWS
 chmod +x "$rexp_s3/bin/aws"
-printf X >> "$rexp_tmp/relations.ckpt"
+printf X >> "$rexp_s3/local/relations.ckpt"
 PATH="$rexp_s3/bin:$PATH" CA_TEST_S3_ROOT="$rexp_s3/remote" \
   CA_TEST_S3_CALLED="$rexp_s3/called" \
   want_bad 'checkpoint failed validation before S3 sync' \
   ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --resume \
-  --state-dir "$rexp_tmp" --s3-uri s3://test/rexp
+  --state-dir "$rexp_s3/local" --s3-uri s3://test/rexp
 checks=$((checks + 1))
 if [ -e "$rexp_s3/called" ]; then
   printf 'FAIL: corrupt local IC rexp snapshot reached S3\n' >&2
