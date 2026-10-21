@@ -1,0 +1,4 @@
+import OrbitPairIndex
+
+#print axioms OrbitQuotient.mem_pairTotals_iff
+#print axioms OrbitQuotient.triple_matches_iff_pair_lookup
