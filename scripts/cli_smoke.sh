@@ -194,8 +194,8 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
-want_bad 'live progress and resumable state require --alg rho, kangaroo, bsgs or grumpy' \
-  solve --alg dlog --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+want_bad 'live progress and resumable state require --alg rho, glv, kangaroo, bsgs, grumpy, precomp or dlog' \
+  solve --alg gpu-rho --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
 bsgs_tmp=$(mktemp -d)
 BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
@@ -282,7 +282,6 @@ if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
   printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
-rm -rf "$kangaroo_s3_test"
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
@@ -315,6 +314,53 @@ GJ0=$("$CA" group generator "${CJ0[@]}" | sed 's/.*"generator":"\([^"]*\)".*/\1/
 HJ0=$("$CA" group exp "${CJ0[@]}" --elem "$GJ0" --k 424242 | sed 's/.*"result":"\([^"]*\)".*/\1/')
 want '"x":424242' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3
 want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3
+glv_tmp=$(mktemp -d)
+GLV=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
+  --state-dir "$glv_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GLV[@]}" --max-ops 1000
+want '"x":424242' "${GLV[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$glv_tmp/glv.ckpt" ] || [ ! -s "$glv_tmp/glv.ckpt.progress.json" ] || \
+   ! grep -q '"x":424242' "$glv_tmp/result.json"; then
+  printf 'FAIL: GLV checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cold_glv=$(
+  "$CA" solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 --max-ops 100000
+)
+cold_steps=$(printf '%s\n' "$cold_glv" | sed 's/.*"iterations":\([0-9]*\).*/\1/')
+resumed_steps=$(sed 's/.*"iterations":\([0-9]*\).*/\1/' "$glv_tmp/result.json")
+checks=$((checks + 1))
+if [ "$cold_steps" != "$resumed_steps" ]; then
+  printf 'FAIL: resumed GLV steps differ from uninterrupted walk\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' solve --alg glv "${CJ0[@]}" \
+  --g "$GJ0" --h "$HJ0" --seed 4 --state-dir "$glv_tmp" --resume
+printf X >> "$glv_tmp/glv.ckpt"
+cp "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"
+want_no 'checkpoint is damaged or incompatible' "${GLV[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"; then
+  printf 'FAIL: invalid GLV checkpoint was overwritten\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$glv_tmp"
+rm -f "$kangaroo_s3_test/remote/"*
+GLV_S3=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
+  --state-dir "$kangaroo_s3_test/glv-local" --s3-uri s3://test/glv --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GLV_S3[@]}" --max-ops 1000
+rm -rf "$kangaroo_s3_test/glv-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":424242' "${GLV_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/glv.ckpt" ] || \
+   ! grep -q '"x":424242' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: GLV S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test"
 
 # ── index calculus ──────────────────────────────────────────────────────────
 want '"status":"ok"' ic --p 1099511627791 --g 3 --h 123456789 --threads 2
@@ -373,8 +419,12 @@ PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
   want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
   --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
 rm -rf "$ic_tmp" "$ic_s3_test"
-want_bad 'durable --state-dir currently requires --method lsieve' \
-  ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
+rexp_tmp=$(mktemp -d)
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_tmp" --progress-every 1
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_tmp" --progress-every 1 --resume
+rm -rf "$rexp_tmp"
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
