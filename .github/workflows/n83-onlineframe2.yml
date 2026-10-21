@@ -16,12 +16,28 @@ name: N83 online frame round 2, paired end-to-end cold Tier 1 (repeated alternat
 # verify_receipt.py audits the receipt (fail closed) and applies the decision
 # rule: improvement iff the 95% two-stage paired bootstrap lower bound of the
 # end-to-end ratio exceeds 1.
-# workflow_dispatch is the convention. If it is refused for this integration
-# (403), the owner-approved fallback is a push to this branch, restricted by
-# path filters as in n83-indexbuild2.yml: receipts, README, figures, figure
-# scripts and smoke diagnostics do not trigger a run.
+# workflow_dispatch is the convention, but it was refused for this
+# integration (gh: 404 not on the default branch; GitHub MCP: 403 Resource not
+# accessible by integration, 2026-10-21), so the run is also triggered by the
+# owner-approved push trigger, restricted to this branch and to the
+# experiment's non-receipt paths as in n83-indexbuild2.yml: receipts, README,
+# figures, figure scripts and smoke diagnostics do not trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n83-onlineframe2]
+    paths:
+      - experiments/koblitz-n83-onlineframe2-20261021/**
+      - .github/workflows/n83-onlineframe2.yml
+      - '!experiments/koblitz-n83-onlineframe2-20261021/run_github_*/**'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/README.md'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/README.pdf'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/figures/**'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/make_figures.py'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/report_header.tex'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/report_filter.lua'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/smoke/**'
+      - '!experiments/koblitz-n83-onlineframe2-20261021/receipts/**'
 
 permissions:
   contents: read

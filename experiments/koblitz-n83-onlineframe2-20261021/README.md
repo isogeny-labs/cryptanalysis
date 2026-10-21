@@ -382,9 +382,17 @@ fits within the 3 h budget. Any time-guard skip makes the run invalid.
 
 ## Run
 
-The run is the workflow
-[`.github/workflows/n83-onlineframe2.yml`](../../.github/workflows/n83-onlineframe2.yml).
-The trigger outcome and the run URL are recorded here when the run starts.
+A `workflow_dispatch` call (ref `claude/n83-onlineframe2`) was refused:
+
+- `gh workflow run`: 404, because the workflow is not on the default branch;
+- the GitHub integration: **403** ("Resource not accessible by
+  integration").
+
+The workflow therefore also has the owner-approved push trigger. It is
+restricted to branch `claude/n83-onlineframe2` and to this experiment's
+non-receipt paths, as in the parent's `n83-indexbuild2.yml`. The push that
+added it starts the run at the frozen protocol (`50e50718...`) and schedule
+(`6c84dfe5...`). The run URL is recorded in the commit that follows it.
 
 ## Files
 
