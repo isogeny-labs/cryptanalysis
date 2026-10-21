@@ -56,6 +56,7 @@
 
 pub mod cover_transfer;
 pub mod curve;
+pub mod efd;
 pub mod f2m;
 pub mod hyperelliptic;
 pub mod poly_f2m;

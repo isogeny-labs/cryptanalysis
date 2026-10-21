@@ -1,0 +1,3011 @@
+{
+  "characteristic": 2,
+  "formulas": [
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w-1/diffadd/dadd-2008-blr",
+      "name": "dadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "05bbc5c729a607dbdcff7e2fb61a733266e55400d1fe2d3efd5f686ee1f46e80",
+        "text": "R = w2*w3\nS = R^2\nt0 = 1+w2\nt1 = t0+w3\nt2 = R*t1\nT = t2+S\nt3 = d2overd1plus1*S\nt4 = d1+T\nt5 = t4+t3\nt6 = 1/t5\nt7 = T*t6\nw5 = t7+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/diffadd/dadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "6033e352e501cb84f0891e4088ed4d793d0c9429876921fc02110f1731e35b96",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute R = w2 w3\ncompute S = R^2\ncompute T = R(1+w2+w3)+S\ncompute w5 = T/(d1+T+d2overd1plus1 S)+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/diffadd/dadd-2008-blr"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/diffadd/dadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w-1/diffadd/dadd-2008-blr-1",
+      "name": "dadd-2008-blr-1",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "1ba435c5867454e0033d6fa1eb7424c57c2ff372bbbf0f0833a6afe5de227867",
+        "text": "A = w2^2\nB = A+w2\nC = w3^2\nD = C+w3\nt0 = B*D\nt1 = d1+t0\nt2 = 1/t1\nt3 = d1*t2\nt4 = 1+t3\nw5 = t4+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/diffadd/dadd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "8dd7aed1f6123cf4d5468a4a661ea6142a010b75cbc76359e96b9e3d157f58cd",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto w-1\ncompute A = w2^2\ncompute B = A+w2\ncompute C = w3^2\ncompute D = C+w3\ncompute w5 = 1+d1/(d1+B D)+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/diffadd/dadd-2008-blr-1"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/diffadd/dadd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w-1/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "0181296a4f1584d89ad6c07586091a2940059a04958c717e49130b1716473365",
+        "text": "A = w1^2\nJ = A^2\nK = A+J\nt0 = d2overd1plus1*J\nt1 = d1+K\nt2 = t1+t0\nt3 = 1/t2\nw3 = K*t3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "d98a021aa12ffdf79239175788baecf936a49041f43fb51c4567f98ec2bbff1d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute A = w1^2\ncompute J = A^2\ncompute K = A+J\ncompute w3 = K/(d1+K+d2overd1plus1 J)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w-1/doubling/dbl-2008-blr-1",
+      "name": "dbl-2008-blr-1",
+      "operation": "doubling",
+      "program": {
+        "sha256": "ffd2c89538008a1f5716054dca6e06838b011737da30a24679eac8d982537e94",
+        "text": "A = w1^2\nB = A+w1\nt0 = B^2\nt1 = d1+t0\nt2 = 1/t1\nt3 = d1*t2\nw3 = 1+t3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/doubling/dbl-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "19a0d89488aa1e0e0b3d0b13ea144a69da2c550b41a8f71570271678563530a8",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto w-1\ncompute A = w1^2\ncompute B = A+w1\ncompute w3 = 1+d1/(d1+B^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/doubling/dbl-2008-blr-1"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/doubling/dbl-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w-1/ladder/ladd-2008-blr",
+      "name": "ladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "5bfc410816bc859408ba61981dab689ac5695c8ab33738efe3a771a864319650",
+        "text": "R = w2*w3\nS = R^2\nt0 = 1+w2\nt1 = t0+w3\nt2 = R*t1\nT = t2+S\nt3 = d2overd1plus1*S\nt4 = d1+T\nt5 = t4+t3\nt6 = 1/t5\nt7 = T*t6\nw5 = t7+w1\nA = w2^2\nJ = A^2\nK = A+J\nt8 = d2overd1plus1*J\nt9 = d1+K\nt10 = t9+t8\nt11 = 1/t10\nw4 = K*t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/ladder/ladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "66ec478f0489d40f2f9d055996e93188f26cf05e340d411d26bbad0954fb3e02",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute R = w2 w3\ncompute S = R^2\ncompute T = R(1+w2+w3)+S\ncompute w5 = T/(d1+T+d2overd1plus1 S)+w1\ncompute A = w2^2\ncompute J = A^2\ncompute K = A+J\ncompute w4 = K/(d1+K+d2overd1plus1 J)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/ladder/ladd-2008-blr"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/ladder/ladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w-1/ladder/ladd-2008-blr-1",
+      "name": "ladd-2008-blr-1",
+      "operation": "ladder",
+      "program": {
+        "sha256": "224f783c233e51c74b2fe75f514dd2eb8197bb877acde2ed1d5e01f6b684acf7",
+        "text": "A = w2^2\nB = A+w2\nC = w3^2\nD = C+w3\nt0 = B^2\nt1 = d1+t0\nt2 = 1/t1\nt3 = d1*t2\nw4 = 1+t3\nt4 = B*D\nt5 = d1+t4\nt6 = 1/t5\nt7 = d1*t6\nt8 = 1+t7\nw5 = t8+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/ladder/ladd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "44f26aa190216589f0fbe79fecd08acaf3dfa0a3cfbca54a9907068751228107",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto w-1\ncompute A = w2^2\ncompute B = A+w2\ncompute C = w3^2\ncompute D = C+w3\ncompute w4 = 1+d1/(d1+B^2)\ncompute w5 = 1+d1/(d1+B D)+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/ladder/ladd-2008-blr-1"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/ladder/ladd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w-1/scaling/copy",
+      "name": "copy",
+      "operation": "scaling",
+      "program": {
+        "sha256": "f2e36dd5a7c4ec4341cd44e138ac0a227786d1104597b9a245aa1b853f72225f",
+        "text": "w3 = w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w-1/scaling/copy.op3"
+      },
+      "record": {
+        "sha256": "3572c082af113212b2a0c8bc18cc381e2ed943df3499035cf94f86b67718a298",
+        "text": "compute w3 = w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/scaling/copy"
+      },
+      "representation": "edwards/w-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w-1/scaling/copy.sage"
+    },
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w/diffadd/dadd-2008-blr",
+      "name": "dadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "05bbc5c729a607dbdcff7e2fb61a733266e55400d1fe2d3efd5f686ee1f46e80",
+        "text": "R = w2*w3\nS = R^2\nt0 = 1+w2\nt1 = t0+w3\nt2 = R*t1\nT = t2+S\nt3 = d2overd1plus1*S\nt4 = d1+T\nt5 = t4+t3\nt6 = 1/t5\nt7 = T*t6\nw5 = t7+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w/diffadd/dadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "6033e352e501cb84f0891e4088ed4d793d0c9429876921fc02110f1731e35b96",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute R = w2 w3\ncompute S = R^2\ncompute T = R(1+w2+w3)+S\ncompute w5 = T/(d1+T+d2overd1plus1 S)+w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w/diffadd/dadd-2008-blr"
+      },
+      "representation": "edwards/w",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w/diffadd/dadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "0181296a4f1584d89ad6c07586091a2940059a04958c717e49130b1716473365",
+        "text": "A = w1^2\nJ = A^2\nK = A+J\nt0 = d2overd1plus1*J\nt1 = d1+K\nt2 = t1+t0\nt3 = 1/t2\nw3 = K*t3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "d98a021aa12ffdf79239175788baecf936a49041f43fb51c4567f98ec2bbff1d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute A = w1^2\ncompute J = A^2\ncompute K = A+J\ncompute w3 = K/(d1+K+d2overd1plus1 J)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/w",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "d2overd1plus1 = d2/d1 + 1"
+      ],
+      "id": "edwards/w/ladder/ladd-2008-blr",
+      "name": "ladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "5bfc410816bc859408ba61981dab689ac5695c8ab33738efe3a771a864319650",
+        "text": "R = w2*w3\nS = R^2\nt0 = 1+w2\nt1 = t0+w3\nt2 = R*t1\nT = t2+S\nt3 = d2overd1plus1*S\nt4 = d1+T\nt5 = t4+t3\nt6 = 1/t5\nt7 = T*t6\nw5 = t7+w1\nA = w2^2\nJ = A^2\nK = A+J\nt8 = d2overd1plus1*J\nt9 = d1+K\nt10 = t9+t8\nt11 = 1/t10\nw4 = K*t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w/ladder/ladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "66ec478f0489d40f2f9d055996e93188f26cf05e340d411d26bbad0954fb3e02",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2overd1plus1\nassume d2overd1plus1 = d2/d1 + 1\ncompute R = w2 w3\ncompute S = R^2\ncompute T = R(1+w2+w3)+S\ncompute w5 = T/(d1+T+d2overd1plus1 S)+w1\ncompute A = w2^2\ncompute J = A^2\ncompute K = A+J\ncompute w4 = K/(d1+K+d2overd1plus1 J)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w/ladder/ladd-2008-blr"
+      },
+      "representation": "edwards/w",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w/ladder/ladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w/scaling/copy",
+      "name": "copy",
+      "operation": "scaling",
+      "program": {
+        "sha256": "f2e36dd5a7c4ec4341cd44e138ac0a227786d1104597b9a245aa1b853f72225f",
+        "text": "w3 = w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/w/scaling/copy.op3"
+      },
+      "record": {
+        "sha256": "3572c082af113212b2a0c8bc18cc381e2ed943df3499035cf94f86b67718a298",
+        "text": "compute w3 = w1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w/scaling/copy"
+      },
+      "representation": "edwards/w",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/w/scaling/copy.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz-1/diffadd/dadd-2008-blr",
+      "name": "dadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "b8fe762603c11f96ebe7a004631338bb020750a3544bb0932124f5e0a4cd63f8",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt2 = f*F\nt3 = e*E\nt4 = t3+t2\nt5 = t4^2\nU = V+t5\nt6 = U*W1\nt7 = V*Z1\nW5 = t7+t6\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/dadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "e7f9749f61f60b18c0b4d74dc23f030a4ee91c38335770f4458eb5fff2da83f9",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (e E + f F)^2\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/dadd-2008-blr"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/dadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz-1/diffadd/dadd-2008-blr-1",
+      "name": "dadd-2008-blr-1",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "5db4217d17dd82c2a1bdb1775d7ee1384ee2709af8256773e4bab00c12b3da04",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nV = C*D\nt2 = E^2\nt3 = d1*t2\nU = V+t3\nt4 = U*W1\nt5 = V*Z1\nW5 = t5+t4\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/dadd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "755ef4ed5b23f5d548010f2d114fba5df0f7afc7c43d740dbb228f49341390ab",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto wz-1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute V = C D\ncompute U = V + d1 E^2\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/dadd-2008-blr-1"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/dadd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz-1/diffadd/dadd-2008-blr-2",
+      "name": "dadd-2008-blr-2",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "9ac65b554cffe024557445b0703eedd471dc4a512cfefcb0335e3f7afed78278",
+        "text": "A = W2*W3\nB = Z2*Z3\nt0 = W2+Z2\nt1 = W3+Z3\nC = t0*t1\nt2 = C+A\nt3 = t2+B\nt4 = t3^2\nt5 = d1*t4\nW5 = Z1*t5\nt6 = f*A\nt7 = e*B\nt8 = t7+t6\nt9 = t8^2\nt10 = A*C\nt11 = t10+t9\nZ5 = W1*t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/dadd-2008-blr-2.op3"
+      },
+      "record": {
+        "sha256": "5c56faee779947aa8e61eb7a5c7c9b758ebee23f6438d724f7ce1e553262579f",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\ncompute A = W2 W3\ncompute B = Z2 Z3\ncompute C = (W2+Z2)(W3+Z3)\ncompute W5 = Z1(d1(C+A+B)^2)\ncompute Z5 = W1(A C+(e B+f A)^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/dadd-2008-blr-2"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/dadd-2008-blr-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz-1/diffadd/dadd-2008-blr-3",
+      "name": "dadd-2008-blr-3",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "38b501130693570ad266e1fdbafcbff93904f2c23e32180bfc970f2af176504a",
+        "text": "A = W2*W3\nB = Z2*Z3\nt0 = W2+Z2\nt1 = W3+Z3\nC = t0*t1\nt2 = C+A\nt3 = t2+B\nt4 = t3^2\nt5 = d1*t4\nW5 = Z1*t5\nt6 = B^2\nt7 = d1*t6\nt8 = A*C\nt9 = t8+t7\nZ5 = W1*t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/dadd-2008-blr-3.op3"
+      },
+      "record": {
+        "sha256": "a37375fd78b7ce32678493f1bb1a8be0653c75b8565f14bcea87b09118eac32c",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto wz-1\ncompute A = W2 W3\ncompute B = Z2 Z3\ncompute C = (W2+Z2)(W3+Z3)\ncompute W5 = Z1(d1(C+A+B)^2)\ncompute Z5 = W1(A C+d1 B^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/dadd-2008-blr-3"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/dadd-2008-blr-3.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1",
+        "Z1 = 1"
+      ],
+      "id": "edwards/wz-1/diffadd/mdadd-2008-blr",
+      "name": "mdadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "8ac76e8b1eb4a42f4766a6dac17c51c63ef5f895ba818e750fc1371833dd1a2a",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt2 = f*F\nt3 = e*E\nt4 = t3+t2\nt5 = t4^2\nU = V+t5\nt6 = W1*U\nW5 = V+t6\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/mdadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "d44476f6cba4b96364c0d197abef6dfd394cd086f235c77b6e71f7ba21f58e52",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\nassume Z1 = 1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (e E + f F)^2\ncompute W5 = V + W1 U\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/mdadd-2008-blr"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/mdadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "edwards/wz-1/diffadd/mdadd-2008-blr-1",
+      "name": "mdadd-2008-blr-1",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "190378daf91fc6fe788186b961ecb106d9218356fb290a6fc14994e3852bfa0d",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nV = C*D\nt2 = E^2\nt3 = d1*t2\nU = V+t3\nt4 = W1*U\nW5 = V+t4\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/diffadd/mdadd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "bf32a772cb0fbde89eea0a48f7bc45192cf714b92756f00b91342d3be00a976e",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto wz-1\nassume Z1 = 1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute V = C D\ncompute U = V + d1 E^2\ncompute W5 = V + W1 U\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/diffadd/mdadd-2008-blr-1"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/diffadd/mdadd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz-1/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "bce0e94bc9b936399980a7a2fa6fb7b01997925ced264b1b237f2efbcf2d7679",
+        "text": "t0 = Z1+W1\nC = W1*t0\nW3 = C^2\nt1 = f*W1\nt2 = e*Z1\nt3 = t2+t1\nt4 = t3^2\nt5 = t4^2\nZ3 = W3+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "c825cca08445e7142bce4f0e85a5e48d90b2ad3b8a713c6afad4313fe164824d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\ncompute C = W1(Z1+W1)\ncompute W3 = C^2\ncompute Z3 = W3 + ((e Z1 + f W1)^2)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz-1/doubling/dbl-2008-blr-1",
+      "name": "dbl-2008-blr-1",
+      "operation": "doubling",
+      "program": {
+        "sha256": "a5f9c715f3af5bde044b9781d63dc88a748a4d884a651792fdba42d84ab2fd2e",
+        "text": "t0 = Z1+W1\nC = W1*t0\nW3 = C^2\nt1 = Z1^2\nt2 = t1^2\nt3 = d1*t2\nZ3 = t3+W3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/doubling/dbl-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "77d513e45fc7be38a153724a848663797372cc607d2e39e7e1137dda6260e81b",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto wz-1\ncompute C = W1(Z1+W1)\ncompute W3 = C^2\ncompute Z3 = d1 (Z1^2)^2 + W3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/doubling/dbl-2008-blr-1"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/doubling/dbl-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1",
+        "ee = e e",
+        "ff = f f"
+      ],
+      "id": "edwards/wz-1/ladder/ladd-2008-blr",
+      "name": "ladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "5101100da5aaac5d9730162cab55b18788f47dbf73b7436361f2bee8a54c0ba4",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nW4 = C^2\nt2 = f*W2\nt3 = e*Z2\nt4 = t3+t2\nt5 = t4^2\nt6 = t5^2\nZ4 = W4+t6\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt7 = ff*F\nt8 = ee*E\nt9 = t8+t7\nt10 = t9^2\nU = V+t10\nt11 = U*W1\nt12 = V*Z1\nW5 = t12+t11\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/ladder/ladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "951d263f84ce6a78ebf070de1bfb6cc8d7891013141b36a84e6830d84be1b82d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter ee\nparameter f\nparameter ff\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\nassume ee = e e\nassume ff = f f\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute W4 = C^2\ncompute Z4 = W4 + ((e Z2 + f W2)^2)^2\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (ee E + ff F)^2\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/ladder/ladd-2008-blr"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/ladder/ladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz-1/ladder/ladd-2008-blr-1",
+      "name": "ladd-2008-blr-1",
+      "operation": "ladder",
+      "program": {
+        "sha256": "6b94259698f6052a9ef429b42b039a40b46c4d1f0ab8e69c755bc3ea01d2f5a5",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nt2 = W3*t1\nV = C*t2\nt3 = Z2*Z3\nt4 = t3^2\nt5 = d1*t4\nU = V+t5\nW4 = C^2\nt6 = Z2^2\nt7 = t6^2\nt8 = d1*t7\nZ4 = t8+W4\nt9 = U*W1\nt10 = V*Z1\nW5 = t10+t9\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/ladder/ladd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "2a848dd9c44339f58343c268e9d5276e827a33cac2f715bcf223ea3843046794",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto wz-1\ncompute C = W2(Z2+W2)\ncompute V = C W3(Z3+W3)\ncompute U = V + d1 (Z2 Z3)^2\ncompute W4 = C^2\ncompute Z4 = d1 (Z2^2)^2 + W4\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/ladder/ladd-2008-blr-1"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/ladder/ladd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1",
+        "ee = e e",
+        "ff = f f"
+      ],
+      "id": "edwards/wz-1/ladder/mladd-2008-blr",
+      "name": "mladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "8851aa544f1b7419223121d730e5977b007a976719cea43f1fb6871e866c39e9",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nW4 = C^2\nt2 = f*W2\nt3 = e*Z2\nt4 = t3+t2\nt5 = t4^2\nt6 = t5^2\nZ4 = W4+t6\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt7 = ff*F\nt8 = ee*E\nt9 = t8+t7\nt10 = t9^2\nU = V+t10\nt11 = U*W1\nW5 = V+t11\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/ladder/mladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "4f7ba846daa71eef75694620ed483afc83d4472292efad089c28df6a436adc81",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nassume Z1 = 1\nparameter e\nparameter ee\nparameter f\nparameter ff\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\nassume ee = e e\nassume ff = f f\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute W4 = C^2\ncompute Z4 = W4 + ((e Z2 + f W2)^2)^2\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (ee E + ff F)^2\ncompute W5 = V + U W1\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/ladder/mladd-2008-blr"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/ladder/mladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "edwards/wz-1/ladder/mladd-2008-blr-1",
+      "name": "mladd-2008-blr-1",
+      "operation": "ladder",
+      "program": {
+        "sha256": "bd91f7e4007df89e7e03410fe742139c5577bf92f315a689ad2ae4dd3f606063",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nt2 = W3*t1\nV = C*t2\nt3 = Z2*Z3\nt4 = t3^2\nt5 = d1*t4\nU = V+t5\nW4 = C^2\nt6 = Z2^2\nt7 = t6^2\nt8 = d1*t7\nZ4 = t8+W4\nt9 = U*W1\nW5 = V+t9\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/ladder/mladd-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "225be377a9f6f074dce6be07f617ef864b944280ab54a8a9d165d99fa622f26d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nassume Z1 = 1\nappliesto wz-1\ncompute C = W2(Z2+W2)\ncompute V = C W3(Z3+W3)\ncompute U = V + d1 (Z2 Z3)^2\ncompute W4 = C^2\ncompute Z4 = d1 (Z2^2)^2 + W4\ncompute W5 = V + U W1\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/ladder/mladd-2008-blr-1"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/ladder/mladd-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz-1/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "23d2c3c673d8dbd23494633db29b345b764d577c76b608f05c76da2cce2cebe3",
+        "text": "t0 = 1/Z1\nW3 = W1*t0\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz-1/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "5bbd20767582b75cf3bcba655b1cd9ce237e5acbbf7f0fed2cc7fd8c4b3e25d0",
+        "text": "compute W3 = W1/Z1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/scaling/scale"
+      },
+      "representation": "edwards/wz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz-1/scaling/scale.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz/diffadd/dadd-2008-blr",
+      "name": "dadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "b8fe762603c11f96ebe7a004631338bb020750a3544bb0932124f5e0a4cd63f8",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt2 = f*F\nt3 = e*E\nt4 = t3+t2\nt5 = t4^2\nU = V+t5\nt6 = U*W1\nt7 = V*Z1\nW5 = t7+t6\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/diffadd/dadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "e7f9749f61f60b18c0b4d74dc23f030a4ee91c38335770f4458eb5fff2da83f9",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (e E + f F)^2\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/diffadd/dadd-2008-blr"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/diffadd/dadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz/diffadd/dadd-2008-blr-2",
+      "name": "dadd-2008-blr-2",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "9ac65b554cffe024557445b0703eedd471dc4a512cfefcb0335e3f7afed78278",
+        "text": "A = W2*W3\nB = Z2*Z3\nt0 = W2+Z2\nt1 = W3+Z3\nC = t0*t1\nt2 = C+A\nt3 = t2+B\nt4 = t3^2\nt5 = d1*t4\nW5 = Z1*t5\nt6 = f*A\nt7 = e*B\nt8 = t7+t6\nt9 = t8^2\nt10 = A*C\nt11 = t10+t9\nZ5 = W1*t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/diffadd/dadd-2008-blr-2.op3"
+      },
+      "record": {
+        "sha256": "5c56faee779947aa8e61eb7a5c7c9b758ebee23f6438d724f7ce1e553262579f",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\ncompute A = W2 W3\ncompute B = Z2 Z3\ncompute C = (W2+Z2)(W3+Z3)\ncompute W5 = Z1(d1(C+A+B)^2)\ncompute Z5 = W1(A C+(e B+f A)^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/diffadd/dadd-2008-blr-2"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/diffadd/dadd-2008-blr-2.sage"
+    },
+    {
+      "assumptions": [
+        "e^2 = d1",
+        "f^2 = d2/d1 + 1",
+        "Z1 = 1"
+      ],
+      "id": "edwards/wz/diffadd/mdadd-2008-blr",
+      "name": "mdadd-2008-blr",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "8ac76e8b1eb4a42f4766a6dac17c51c63ef5f895ba818e750fc1371833dd1a2a",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt2 = f*F\nt3 = e*E\nt4 = t3+t2\nt5 = t4^2\nU = V+t5\nt6 = W1*U\nW5 = V+t6\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/diffadd/mdadd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "d44476f6cba4b96364c0d197abef6dfd394cd086f235c77b6e71f7ba21f58e52",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^2 = d1\nassume f^2 = d2/d1 + 1\nassume Z1 = 1\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (e E + f F)^2\ncompute W5 = V + W1 U\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/diffadd/mdadd-2008-blr"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/diffadd/mdadd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1"
+      ],
+      "id": "edwards/wz/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "bce0e94bc9b936399980a7a2fa6fb7b01997925ced264b1b237f2efbcf2d7679",
+        "text": "t0 = Z1+W1\nC = W1*t0\nW3 = C^2\nt1 = f*W1\nt2 = e*Z1\nt3 = t2+t1\nt4 = t3^2\nt5 = t4^2\nZ3 = W3+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "c825cca08445e7142bce4f0e85a5e48d90b2ad3b8a713c6afad4313fe164824d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter f\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\ncompute C = W1(Z1+W1)\ncompute W3 = C^2\ncompute Z3 = W3 + ((e Z1 + f W1)^2)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1",
+        "ee = e e",
+        "ff = f f"
+      ],
+      "id": "edwards/wz/ladder/ladd-2008-blr",
+      "name": "ladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "5101100da5aaac5d9730162cab55b18788f47dbf73b7436361f2bee8a54c0ba4",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nW4 = C^2\nt2 = f*W2\nt3 = e*Z2\nt4 = t3+t2\nt5 = t4^2\nt6 = t5^2\nZ4 = W4+t6\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt7 = ff*F\nt8 = ee*E\nt9 = t8+t7\nt10 = t9^2\nU = V+t10\nt11 = U*W1\nt12 = V*Z1\nW5 = t12+t11\nZ5 = U*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/ladder/ladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "951d263f84ce6a78ebf070de1bfb6cc8d7891013141b36a84e6830d84be1b82d",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter e\nparameter ee\nparameter f\nparameter ff\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\nassume ee = e e\nassume ff = f f\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute W4 = C^2\ncompute Z4 = W4 + ((e Z2 + f W2)^2)^2\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (ee E + ff F)^2\ncompute W5 = V Z1 + U W1\ncompute Z5 = U Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/ladder/ladd-2008-blr"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/ladder/ladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "e^4 = d1",
+        "f^4 = d2/d1 + 1",
+        "ee = e e",
+        "ff = f f"
+      ],
+      "id": "edwards/wz/ladder/mladd-2008-blr",
+      "name": "mladd-2008-blr",
+      "operation": "ladder",
+      "program": {
+        "sha256": "8851aa544f1b7419223121d730e5977b007a976719cea43f1fb6871e866c39e9",
+        "text": "t0 = Z2+W2\nC = W2*t0\nt1 = Z3+W3\nD = W3*t1\nW4 = C^2\nt2 = f*W2\nt3 = e*Z2\nt4 = t3+t2\nt5 = t4^2\nt6 = t5^2\nZ4 = W4+t6\nE = Z2*Z3\nF = W2*W3\nV = C*D\nt7 = ff*F\nt8 = ee*E\nt9 = t8+t7\nt10 = t9^2\nU = V+t10\nt11 = U*W1\nW5 = V+t11\nZ5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/ladder/mladd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "4f7ba846daa71eef75694620ed483afc83d4472292efad089c28df6a436adc81",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nassume Z1 = 1\nparameter e\nparameter ee\nparameter f\nparameter ff\nassume e^4 = d1\nassume f^4 = d2/d1 + 1\nassume ee = e e\nassume ff = f f\ncompute C = W2(Z2+W2)\ncompute D = W3(Z3+W3)\ncompute W4 = C^2\ncompute Z4 = W4 + ((e Z2 + f W2)^2)^2\ncompute E = Z2 Z3\ncompute F = W2 W3\ncompute V = C D\ncompute U = V + (ee E + ff F)^2\ncompute W5 = V + U W1\ncompute Z5 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/ladder/mladd-2008-blr"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/ladder/mladd-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "23d2c3c673d8dbd23494633db29b345b764d577c76b608f05c76da2cce2cebe3",
+        "text": "t0 = 1/Z1\nW3 = W1*t0\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/wz/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "5bbd20767582b75cf3bcba655b1cd9ce237e5acbbf7f0fed2cc7fd8c4b3e25d0",
+        "text": "compute W3 = W1/Z1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/scaling/scale"
+      },
+      "representation": "edwards/wz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/wz/scaling/scale.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy-1/addition/add-2008-blr",
+      "name": "add-2008-blr",
+      "operation": "addition",
+      "program": {
+        "sha256": "7d993a5aa0833bb40060607a0234499cd4d4fb393b974df19774168aa8db012b",
+        "text": "w1 = X1+Y1\nw2 = X2+Y2\nt0 = X1^2\nA = t0+X1\nt1 = Y1^2\nB = t1+Y1\nt2 = w1*w2\nC = d2*t2\nD = X2*Y2\nt3 = w1+X2\nt4 = D+X2\nt5 = A*w2\nt6 = A*t4\nt7 = d1*t3\nt8 = C+t7\nt9 = t8+t6\nt10 = d1+t5\nt11 = 1/t10\nt12 = t9*t11\nX3 = Y1+t12\nt13 = w1+Y2\nt14 = D+Y2\nt15 = B*w2\nt16 = B*t14\nt17 = d1*t13\nt18 = C+t17\nt19 = t18+t16\nt20 = d1+t15\nt21 = 1/t20\nt22 = t19*t21\nY3 = X1+t22\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy-1/addition/add-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "828a4ca7c362afa5cf6d8e35e9d031cb3144ebad4a7f6a71d0587c41531917af",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\ncompute w1 = X1+Y1\ncompute w2 = X2+Y2\ncompute A = X1^2+X1\ncompute B = Y1^2+Y1\ncompute C = d2 w1 w2\ncompute D = X2 Y2\ncompute X3 = Y1 + (C + d1 (w1+X2) + A (D+X2)) / (d1 + A w2)\ncompute Y3 = X1 + (C + d1 (w1+Y2) + B (D+Y2)) / (d1 + B w2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/addition/add-2008-blr"
+      },
+      "representation": "edwards/xy-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy-1/addition/add-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy-1/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "a5ca1d98a19d54c704013a05802b982df781898606d15231cf51d7b106d13acf",
+        "text": "t0 = X1^2\nt1 = Y1^2\nt2 = X1^4\nt3 = Y1^4\nt4 = 1/d1\nt5 = d2*t4\nt6 = t0+t1\nt7 = t2+t3\nt8 = Y1^2\nt9 = Y1^4\nt10 = X1^2\nt11 = Y1^2\nt12 = t5*t7\nt13 = d2*t6\nt14 = d1+t13\nt15 = t14+t8\nt16 = t15+t9\nt17 = d1+t10\nt18 = t17+t11\nt19 = t18+t12\nt20 = 1/t19\nt21 = t16*t20\nX3 = 1+t21\nt22 = X1^2\nt23 = Y1^2\nt24 = X1^4\nt25 = Y1^4\nt26 = 1/d1\nt27 = d2*t26\nt28 = t22+t23\nt29 = t24+t25\nt30 = X1^2\nt31 = X1^4\nt32 = X1^2\nt33 = Y1^2\nt34 = t27*t29\nt35 = d2*t28\nt36 = d1+t35\nt37 = t36+t30\nt38 = t37+t31\nt39 = d1+t32\nt40 = t39+t33\nt41 = t40+t34\nt42 = 1/t41\nt43 = t38*t42\nY3 = 1+t43\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy-1/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "1fd5886f356ad45e392aa262a396cc97c53575f54702fe2ceaaa247d504ff680",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\ncompute X3 = 1 + (d1 + d2(X1^2+Y1^2) + Y1^2+Y1^4)/(d1 + X1^2 + Y1^2 + (d2/d1)(X1^4+Y1^4))\ncompute Y3 = 1 + (d1 + d2(X1^2+Y1^2) + X1^2+X1^4)/(d1 + X1^2 + Y1^2 + (d2/d1)(X1^4+Y1^4))\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/xy-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy-1/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy-1/doubling/dbl-2008-blr+1",
+      "name": "dbl-2008-blr+1",
+      "operation": "doubling",
+      "program": {
+        "sha256": "baf1a5789e43af97c5d39d633507b091540647aec2bb819e3f6be34dedb6fd3d",
+        "text": "A = X1^2\nB = A^2\nC = Y1^2\nD = C^2\nE = A+C\nt0 = d1+E\nt1 = t0+B\nt2 = t1+D\nF = 1/t2\nt3 = d1*E\nt4 = t3+A\nt5 = t4+B\nX3 = t5*F\nt6 = d1*F\nt7 = X3+1\nY3 = t7+t6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy-1/doubling/dbl-2008-blr+1.op3"
+      },
+      "record": {
+        "sha256": "a1036d197ae2a2c2384441c540c82f5193439c35be49ddea4f1cf4e0c94c0873",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nappliesto xy-1\ncompute A = X1^2\ncompute B = A^2\ncompute C = Y1^2\ncompute D = C^2\ncompute E = A + C\ncompute F = 1/(d1 + E + B + D)\ncompute X3 = (d1 E + A + B) F\ncompute Y3 = X3 + 1 + d1 F\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/doubling/dbl-2008-blr+1"
+      },
+      "representation": "edwards/xy-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy-1/doubling/dbl-2008-blr+1.sage"
+    },
+    {
+      "assumptions": [
+        "d2d1 = d2/d1"
+      ],
+      "id": "edwards/xy-1/doubling/dbl-2008-blr+cse",
+      "name": "dbl-2008-blr+cse",
+      "operation": "doubling",
+      "program": {
+        "sha256": "eaace454156f9055a69913e727b49cf29b630bb63904b81fa5d41daebb666bee",
+        "text": "A = X1^2\nB = A^2\nC = Y1^2\nD = C^2\nE = A+C\nF = B+D\nt0 = d2d1*F\nt1 = d1+E\nt2 = t1+t0\nG = 1/t2\nt3 = d2*E\nt4 = d1+t3\nt5 = t4+C\nt6 = t5+D\nt7 = t6*G\nX3 = 1+t7\nt8 = E+F\nt9 = t8*G\nY3 = X3+t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy-1/doubling/dbl-2008-blr+cse.op3"
+      },
+      "record": {
+        "sha256": "b39c98a02cf1eb88ac35640170379558e9c2c79bb7fe14063879dcd041e62d92",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2d1\nassume d2d1 = d2/d1\ncompute A = X1^2\ncompute B = A^2\ncompute C = Y1^2\ncompute D = C^2\ncompute E = A + C\ncompute F = B + D\ncompute G = 1/(d1 + E + d2d1 F)\ncompute X3 = 1 + (d1 + d2 E + C+D) G\ncompute Y3 = X3 + (E+F) G\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/doubling/dbl-2008-blr+cse"
+      },
+      "representation": "edwards/xy-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy-1/doubling/dbl-2008-blr+cse.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy-1/scaling/copy",
+      "name": "copy",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7c602ca965ea5cea12f7b18d28bf8e0fc4b7c797f2367e020acde698a121204f",
+        "text": "X3 = X1\nY3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy-1/scaling/copy.op3"
+      },
+      "record": {
+        "sha256": "778fd0e2a3e869b927d3633c37a6e862df71bc7e9d753398bd8e338e3959adfb",
+        "text": "compute X3 = X1\ncompute Y3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/scaling/copy"
+      },
+      "representation": "edwards/xy-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy-1/scaling/copy.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy/addition/add-2008-blr",
+      "name": "add-2008-blr",
+      "operation": "addition",
+      "program": {
+        "sha256": "7d993a5aa0833bb40060607a0234499cd4d4fb393b974df19774168aa8db012b",
+        "text": "w1 = X1+Y1\nw2 = X2+Y2\nt0 = X1^2\nA = t0+X1\nt1 = Y1^2\nB = t1+Y1\nt2 = w1*w2\nC = d2*t2\nD = X2*Y2\nt3 = w1+X2\nt4 = D+X2\nt5 = A*w2\nt6 = A*t4\nt7 = d1*t3\nt8 = C+t7\nt9 = t8+t6\nt10 = d1+t5\nt11 = 1/t10\nt12 = t9*t11\nX3 = Y1+t12\nt13 = w1+Y2\nt14 = D+Y2\nt15 = B*w2\nt16 = B*t14\nt17 = d1*t13\nt18 = C+t17\nt19 = t18+t16\nt20 = d1+t15\nt21 = 1/t20\nt22 = t19*t21\nY3 = X1+t22\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy/addition/add-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "828a4ca7c362afa5cf6d8e35e9d031cb3144ebad4a7f6a71d0587c41531917af",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\ncompute w1 = X1+Y1\ncompute w2 = X2+Y2\ncompute A = X1^2+X1\ncompute B = Y1^2+Y1\ncompute C = d2 w1 w2\ncompute D = X2 Y2\ncompute X3 = Y1 + (C + d1 (w1+X2) + A (D+X2)) / (d1 + A w2)\ncompute Y3 = X1 + (C + d1 (w1+Y2) + B (D+Y2)) / (d1 + B w2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy/addition/add-2008-blr"
+      },
+      "representation": "edwards/xy",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy/addition/add-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "a5ca1d98a19d54c704013a05802b982df781898606d15231cf51d7b106d13acf",
+        "text": "t0 = X1^2\nt1 = Y1^2\nt2 = X1^4\nt3 = Y1^4\nt4 = 1/d1\nt5 = d2*t4\nt6 = t0+t1\nt7 = t2+t3\nt8 = Y1^2\nt9 = Y1^4\nt10 = X1^2\nt11 = Y1^2\nt12 = t5*t7\nt13 = d2*t6\nt14 = d1+t13\nt15 = t14+t8\nt16 = t15+t9\nt17 = d1+t10\nt18 = t17+t11\nt19 = t18+t12\nt20 = 1/t19\nt21 = t16*t20\nX3 = 1+t21\nt22 = X1^2\nt23 = Y1^2\nt24 = X1^4\nt25 = Y1^4\nt26 = 1/d1\nt27 = d2*t26\nt28 = t22+t23\nt29 = t24+t25\nt30 = X1^2\nt31 = X1^4\nt32 = X1^2\nt33 = Y1^2\nt34 = t27*t29\nt35 = d2*t28\nt36 = d1+t35\nt37 = t36+t30\nt38 = t37+t31\nt39 = d1+t32\nt40 = t39+t33\nt41 = t40+t34\nt42 = 1/t41\nt43 = t38*t42\nY3 = 1+t43\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "1fd5886f356ad45e392aa262a396cc97c53575f54702fe2ceaaa247d504ff680",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\ncompute X3 = 1 + (d1 + d2(X1^2+Y1^2) + Y1^2+Y1^4)/(d1 + X1^2 + Y1^2 + (d2/d1)(X1^4+Y1^4))\ncompute Y3 = 1 + (d1 + d2(X1^2+Y1^2) + X1^2+X1^4)/(d1 + X1^2 + Y1^2 + (d2/d1)(X1^4+Y1^4))\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/xy",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "d2d1 = d2/d1"
+      ],
+      "id": "edwards/xy/doubling/dbl-2008-blr+cse",
+      "name": "dbl-2008-blr+cse",
+      "operation": "doubling",
+      "program": {
+        "sha256": "eaace454156f9055a69913e727b49cf29b630bb63904b81fa5d41daebb666bee",
+        "text": "A = X1^2\nB = A^2\nC = Y1^2\nD = C^2\nE = A+C\nF = B+D\nt0 = d2d1*F\nt1 = d1+E\nt2 = t1+t0\nG = 1/t2\nt3 = d2*E\nt4 = d1+t3\nt5 = t4+C\nt6 = t5+D\nt7 = t6*G\nX3 = 1+t7\nt8 = E+F\nt9 = t8*G\nY3 = X3+t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy/doubling/dbl-2008-blr+cse.op3"
+      },
+      "record": {
+        "sha256": "b39c98a02cf1eb88ac35640170379558e9c2c79bb7fe14063879dcd041e62d92",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nparameter d2d1\nassume d2d1 = d2/d1\ncompute A = X1^2\ncompute B = A^2\ncompute C = Y1^2\ncompute D = C^2\ncompute E = A + C\ncompute F = B + D\ncompute G = 1/(d1 + E + d2d1 F)\ncompute X3 = 1 + (d1 + d2 E + C+D) G\ncompute Y3 = X3 + (E+F) G\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy/doubling/dbl-2008-blr+cse"
+      },
+      "representation": "edwards/xy",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy/doubling/dbl-2008-blr+cse.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy/scaling/copy",
+      "name": "copy",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7c602ca965ea5cea12f7b18d28bf8e0fc4b7c797f2367e020acde698a121204f",
+        "text": "X3 = X1\nY3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xy/scaling/copy.op3"
+      },
+      "record": {
+        "sha256": "778fd0e2a3e869b927d3633c37a6e862df71bc7e9d753398bd8e338e3959adfb",
+        "text": "compute X3 = X1\ncompute Y3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy/scaling/copy"
+      },
+      "representation": "edwards/xy",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xy/scaling/copy.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xyz-1/addition/add-2008-blr-1",
+      "name": "add-2008-blr-1",
+      "operation": "addition",
+      "program": {
+        "sha256": "902762de25035900b5fa0e928c20775ec8288f15ec58d0aa8a0614f50d78cb0d",
+        "text": "W1 = X1+Y1\nW2 = X2+Y2\nt0 = X1+Z1\nA = X1*t0\nt1 = Y1+Z1\nB = Y1*t1\nC = Z1*Z2\nD = W2*Z2\nt2 = C^2\nE = d1*t2\nt3 = d2*W2\nt4 = d1*Z2\nt5 = t4+t3\nt6 = W1*C\nH = t5*t6\nt7 = C*Z1\nI = d1*t7\nt8 = A*D\nU = E+t8\nt9 = B*D\nV = E+t9\nS = U*V\nt10 = Y2+Z2\nt11 = A*t10\nt12 = I+t11\nt13 = X2*t12\nt14 = H+t13\nt15 = V*Z1\nt16 = t14*t15\nt17 = S*Y1\nX3 = t17+t16\nt18 = X2+Z2\nt19 = B*t18\nt20 = I+t19\nt21 = Y2*t20\nt22 = H+t21\nt23 = U*Z1\nt24 = t22*t23\nt25 = S*X1\nY3 = t25+t24\nZ3 = S*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/add-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "78e406c3d96b4afab83f3f7c456c9123b956e12f697b270522c9d0d250643767",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\ncompute W1 = X1 + Y1\ncompute W2 = X2 + Y2\ncompute A = X1(X1+Z1)\ncompute B = Y1(Y1+Z1)\ncompute C = Z1 Z2\ncompute D = W2 Z2\ncompute E = d1 C^2\ncompute H = (d1 Z2 + d2 W2)W1 C\ncompute I = d1 C Z1\ncompute U = E + A D\ncompute V = E + B D\ncompute S = U V\ncompute X3 = S Y1 + (H + X2(I + A(Y2+Z2)))V Z1\ncompute Y3 = S X1 + (H + Y2(I + B(X2+Z2)))U Z1\ncompute Z3 = S Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/add-2008-blr-1"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/add-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "d2plusd1 = d2 + d1",
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz-1/addition/add-2008-blr-2",
+      "name": "add-2008-blr-2",
+      "operation": "addition",
+      "program": {
+        "sha256": "409db77a5e0152a2d3b2572b40975b05d45de415f275fdbca6ebf068f49bb64d",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = d1d1*E\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = K*t8\nt10 = d1*t9\nt11 = F+t10\nU = C*t11\nt12 = A*B\nt13 = G*H\nt14 = d1*E\nt15 = t14+t13\nt16 = t15+t12\nt17 = I*J\nt18 = d2plusd1*t17\nt19 = d2*t16\nt20 = t19+t18\nt21 = K*t20\nt22 = D*F\nt23 = U+t22\nV = t23+t21\nt24 = A+D\nt25 = G+D\nt26 = t24*t25\nt27 = D*t26\nX3 = V+t27\nt28 = B+D\nt29 = H+D\nt30 = t28*t29\nt31 = D*t30\nY3 = V+t31\nt32 = K^2\nt33 = C*t32\nt34 = d2plusd1*t33\nZ3 = U+t34\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/add-2008-blr-2.op3"
+      },
+      "record": {
+        "sha256": "e8eeed299c40cf585a06bcf2c52560a33142033ddc30472d29a20f629230ac8a",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2plusd1\nassume d2plusd1 = d2 + d1\nparameter d1d1\nassume d1d1 = d1^2\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = d1d1 E\ncompute G = (X1 + Z1)(X2 + Z2)\ncompute H = (Y1 + Z1)(Y2 + Z2)\ncompute I = A + G\ncompute J = B + H\ncompute K = (X1 + Y1)(X2 + Y2)\ncompute U = C(F + d1 K(K + I + J + C))\ncompute V = U + D F + K(d2(d1 E + G H + A B) + d2plusd1 I J)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U + d2plusd1 C K^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/add-2008-blr-2"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/add-2008-blr-2.sage"
+    },
+    {
+      "assumptions": [
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz-1/addition/add-2008-blr-3",
+      "name": "add-2008-blr-3",
+      "operation": "addition",
+      "program": {
+        "sha256": "ab5c77e199f53bd5281a1a4039e31d561f25f2034cd1042c5b3a877321281371",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = d1d1*E\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nL = d1*K\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = L*t8\nt10 = F+t9\nU = C*t10\nt11 = A*B\nt12 = G*H\nt13 = d1*E\nt14 = t13+t12\nt15 = t14+t11\nt16 = L*t15\nt17 = D*F\nt18 = U+t17\nV = t18+t16\nt19 = A+D\nt20 = G+D\nt21 = t19*t20\nt22 = D*t21\nX3 = V+t22\nt23 = B+D\nt24 = H+D\nt25 = t23*t24\nt26 = D*t25\nY3 = V+t26\nZ3 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/add-2008-blr-3.op3"
+      },
+      "record": {
+        "sha256": "7c30aca17f2830febcc9e9253dc07caf41ce83e88e928c3f10c72fe22271c14b",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d1d1\nassume d1d1 = d1^2\nappliesto xyz-1\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = d1d1 E\ncompute G = (X1+Z1)(X2+Z2)\ncompute H = (Y1+Z1)(Y2+Z2)\ncompute I = A+G\ncompute J = B+H\ncompute K = (X1+Y1)(X2+Y2)\ncompute L = d1 K\ncompute U = C(F+L(K+I+J+C))\ncompute V = U+D F + L(d1 E + G H + A B)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/add-2008-blr-3"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/add-2008-blr-3.sage"
+    },
+    {
+      "assumptions": [
+        "d2plusd1 = d2 + d1",
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz-1/addition/add-2008-blr-4",
+      "name": "add-2008-blr-4",
+      "operation": "addition",
+      "program": {
+        "sha256": "734a967a96659b5f40093c4e3db2cd4f2af94f88514655db66bf30aadcfc7ef4",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = D^2\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = K*t8\nt10 = d1*t9\nt11 = F+t10\nU = C*t11\nt12 = A*B\nt13 = G*H\nt14 = d1*E\nt15 = t14+t13\nt16 = t15+t12\nt17 = I*J\nt18 = d2plusd1*t17\nt19 = d2*t16\nt20 = t19+t18\nt21 = K*t20\nt22 = D*F\nt23 = U+t22\nV = t23+t21\nt24 = A+D\nt25 = G+D\nt26 = t24*t25\nt27 = D*t26\nX3 = V+t27\nt28 = B+D\nt29 = H+D\nt30 = t28*t29\nt31 = D*t30\nY3 = V+t31\nt32 = K^2\nt33 = C*t32\nt34 = d2plusd1*t33\nZ3 = U+t34\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/add-2008-blr-4.op3"
+      },
+      "record": {
+        "sha256": "4a684fbdccd68f65f30af8a1ab48504f44b30aaf3cd84028c3c483c4c9be14da",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2plusd1\nassume d2plusd1 = d2 + d1\nparameter d1d1\nassume d1d1 = d1^2\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = D^2\ncompute G = (X1 + Z1)(X2 + Z2)\ncompute H = (Y1 + Z1)(Y2 + Z2)\ncompute I = A + G\ncompute J = B + H\ncompute K = (X1 + Y1)(X2 + Y2)\ncompute U = C(F + d1 K(K + I + J + C))\ncompute V = U + D F + K(d2(d1 E + G H + A B) + d2plusd1 I J)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U + d2plusd1 C K^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/add-2008-blr-4"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/add-2008-blr-4.sage"
+    },
+    {
+      "assumptions": [
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz-1/addition/add-2008-blr-5",
+      "name": "add-2008-blr-5",
+      "operation": "addition",
+      "program": {
+        "sha256": "0ec084b30112a38258e1c95cb45e753c963361f29082cd94f8a47351a10fdb52",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = D^2\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nL = d1*K\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = L*t8\nt10 = F+t9\nU = C*t10\nt11 = A*B\nt12 = G*H\nt13 = d1*E\nt14 = t13+t12\nt15 = t14+t11\nt16 = L*t15\nt17 = D*F\nt18 = U+t17\nV = t18+t16\nt19 = A+D\nt20 = G+D\nt21 = t19*t20\nt22 = D*t21\nX3 = V+t22\nt23 = B+D\nt24 = H+D\nt25 = t23*t24\nt26 = D*t25\nY3 = V+t26\nZ3 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/add-2008-blr-5.op3"
+      },
+      "record": {
+        "sha256": "18d9275c1d2534b7af7e726f3d120f8ba20271aa6121bd0ebaa090add4fa4cf2",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d1d1\nassume d1d1 = d1^2\nappliesto xyz-1\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = D^2\ncompute G = (X1+Z1)(X2+Z2)\ncompute H = (Y1+Z1)(Y2+Z2)\ncompute I = A+G\ncompute J = B+H\ncompute K = (X1+Y1)(X2+Y2)\ncompute L = d1 K\ncompute U = C(F+L(K+I+J+C))\ncompute V = U+D F + L(d1 E + G H + A B)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/add-2008-blr-5"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/add-2008-blr-5.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "edwards/xyz-1/addition/madd-2008-blr",
+      "name": "madd-2008-blr",
+      "operation": "addition",
+      "program": {
+        "sha256": "eacdf5b8825026b8956fd17db1f603c137140dd3ab865b9baae6f5b10c77b1a2",
+        "text": "W1 = X1+Y1\nw2 = X2+Y2\nt0 = X2^2\nA = t0+X2\nt1 = Y2^2\nB = t1+Y2\nD = W1*Z1\nt2 = Z1^2\nE = d1*t2\nt3 = d2*D\nt4 = E+t3\nH = t4*w2\nI = d1*Z1\nt5 = A*D\nU = E+t5\nt6 = B*D\nV = E+t6\nZ3 = U*V\nt7 = Y1+Z1\nt8 = A*t7\nt9 = I+t8\nt10 = X1*t9\nt11 = H+t10\nt12 = t11*V\nt13 = Z3*Y2\nX3 = t13+t12\nt14 = X1+Z1\nt15 = B*t14\nt16 = I+t15\nt17 = Y1*t16\nt18 = H+t17\nt19 = t18*U\nt20 = Z3*X2\nY3 = t20+t19\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/addition/madd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "7a24d1610a35ff46dc61f7c10ef104f86abcd43dda9da69a1ecf3123748f3bbb",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nassume Z2 = 1\ncompute W1 = X1 + Y1\ncompute w2 = X2 + Y2\ncompute A = X2^2 + X2\ncompute B = Y2^2 + Y2\ncompute D = W1 Z1\ncompute E = d1 Z1^2\ncompute H = (E + d2 D) w2\ncompute I = d1 Z1\ncompute U = E + A D\ncompute V = E + B D\ncompute Z3 = U V\ncompute X3 = Z3 Y2 + (H + X1(I + A(Y1 + Z1))) V\ncompute Y3 = Z3 X2 + (H + Y1(I + B(X1 + Z1))) U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/addition/madd-2008-blr"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/addition/madd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "d2d1 = d2/d1"
+      ],
+      "id": "edwards/xyz-1/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "53d6b23929fa9b9d6c3b4cf678887431c73410301a70c9f7593b02e8a32ab6e9",
+        "text": "A = X1^2\nB = A^2\nC = Y1^2\nD = C^2\nE = Z1^2\nt0 = E^2\nF = d1*t0\nt1 = B+D\nG = d2d1*t1\nH = A*E\nI = C*E\nJ = H+I\nt2 = d2*J\nK = G+t2\nt3 = F+J\nZ3 = t3+G\nt4 = K+H\nX3 = t4+D\nt5 = K+I\nY3 = t5+B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "048c89e064e6c8e010b533f6786416836096e5ed65083c2936f4985917f53005",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2d1\nassume d2d1 = d2/d1\ncompute A = X1^2\ncompute B = A^2\ncompute C = Y1^2\ncompute D = C^2\ncompute E = Z1^2\ncompute F = d1 E^2\ncompute G = d2d1(B+D)\ncompute H = A E\ncompute I = C E\ncompute J = H+I\ncompute K = G+d2 J\ncompute Z3 = F+J+G\ncompute X3 = K+H+D\ncompute Y3 = K+I+B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "sqrtd1^2 = d1"
+      ],
+      "id": "edwards/xyz-1/doubling/dbl-2008-blr-2",
+      "name": "dbl-2008-blr-2",
+      "operation": "doubling",
+      "program": {
+        "sha256": "dd116499c24044838285a2edfc3b78b73da56202dce12363ff84a4a9dd61f781",
+        "text": "W1 = X1+Y1\nt0 = W1+Z1\nt1 = W1*t0\nE = t1^2\nt2 = sqrtd1*W1\nt3 = t2+X1\nt4 = X1^2\nt5 = t3*Z1\nt6 = t5+t4\nX3 = t6^2\nY3 = X3+E\nt7 = Z1^2\nt8 = t7^2\nt9 = d1*t8\nZ3 = E+t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/doubling/dbl-2008-blr-2.op3"
+      },
+      "record": {
+        "sha256": "ad4ab764906c69b37bc2f3a608ed79fef6196f424f10efc0f4c646712363e451",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter sqrtd1\nassume sqrtd1^2 = d1\nappliesto xyz-1\ncompute W1 = X1 + Y1\ncompute E = (W1(W1 + Z1))^2\ncompute X3 = ((sqrtd1 W1 + X1)Z1 + X1^2)^2\ncompute Y3 = X3 + E\ncompute Z3 = E + d1(Z1^2)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/doubling/dbl-2008-blr-2"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/doubling/dbl-2008-blr-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xyz-1/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7d5fd98afbf2878ab0b601479afe78dbe3092c13d81f5fc14e0f512d493ff631",
+        "text": "A = 1/Z1\nX3 = A*X1\nY3 = A*Y1\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz-1/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "da7589baacbb11d7e75506297820a57d8c0a53fdb780d74a8bba4e536f029739",
+        "text": "compute A = 1/Z1\ncompute X3 = A X1\ncompute Y3 = A Y1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/scaling/scale"
+      },
+      "representation": "edwards/xyz-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz-1/scaling/scale.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xyz/addition/add-2008-blr-1",
+      "name": "add-2008-blr-1",
+      "operation": "addition",
+      "program": {
+        "sha256": "902762de25035900b5fa0e928c20775ec8288f15ec58d0aa8a0614f50d78cb0d",
+        "text": "W1 = X1+Y1\nW2 = X2+Y2\nt0 = X1+Z1\nA = X1*t0\nt1 = Y1+Z1\nB = Y1*t1\nC = Z1*Z2\nD = W2*Z2\nt2 = C^2\nE = d1*t2\nt3 = d2*W2\nt4 = d1*Z2\nt5 = t4+t3\nt6 = W1*C\nH = t5*t6\nt7 = C*Z1\nI = d1*t7\nt8 = A*D\nU = E+t8\nt9 = B*D\nV = E+t9\nS = U*V\nt10 = Y2+Z2\nt11 = A*t10\nt12 = I+t11\nt13 = X2*t12\nt14 = H+t13\nt15 = V*Z1\nt16 = t14*t15\nt17 = S*Y1\nX3 = t17+t16\nt18 = X2+Z2\nt19 = B*t18\nt20 = I+t19\nt21 = Y2*t20\nt22 = H+t21\nt23 = U*Z1\nt24 = t22*t23\nt25 = S*X1\nY3 = t25+t24\nZ3 = S*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/addition/add-2008-blr-1.op3"
+      },
+      "record": {
+        "sha256": "78e406c3d96b4afab83f3f7c456c9123b956e12f697b270522c9d0d250643767",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\ncompute W1 = X1 + Y1\ncompute W2 = X2 + Y2\ncompute A = X1(X1+Z1)\ncompute B = Y1(Y1+Z1)\ncompute C = Z1 Z2\ncompute D = W2 Z2\ncompute E = d1 C^2\ncompute H = (d1 Z2 + d2 W2)W1 C\ncompute I = d1 C Z1\ncompute U = E + A D\ncompute V = E + B D\ncompute S = U V\ncompute X3 = S Y1 + (H + X2(I + A(Y2+Z2)))V Z1\ncompute Y3 = S X1 + (H + Y2(I + B(X2+Z2)))U Z1\ncompute Z3 = S Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/addition/add-2008-blr-1"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/addition/add-2008-blr-1.sage"
+    },
+    {
+      "assumptions": [
+        "d2plusd1 = d2 + d1",
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz/addition/add-2008-blr-2",
+      "name": "add-2008-blr-2",
+      "operation": "addition",
+      "program": {
+        "sha256": "409db77a5e0152a2d3b2572b40975b05d45de415f275fdbca6ebf068f49bb64d",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = d1d1*E\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = K*t8\nt10 = d1*t9\nt11 = F+t10\nU = C*t11\nt12 = A*B\nt13 = G*H\nt14 = d1*E\nt15 = t14+t13\nt16 = t15+t12\nt17 = I*J\nt18 = d2plusd1*t17\nt19 = d2*t16\nt20 = t19+t18\nt21 = K*t20\nt22 = D*F\nt23 = U+t22\nV = t23+t21\nt24 = A+D\nt25 = G+D\nt26 = t24*t25\nt27 = D*t26\nX3 = V+t27\nt28 = B+D\nt29 = H+D\nt30 = t28*t29\nt31 = D*t30\nY3 = V+t31\nt32 = K^2\nt33 = C*t32\nt34 = d2plusd1*t33\nZ3 = U+t34\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/addition/add-2008-blr-2.op3"
+      },
+      "record": {
+        "sha256": "e8eeed299c40cf585a06bcf2c52560a33142033ddc30472d29a20f629230ac8a",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2plusd1\nassume d2plusd1 = d2 + d1\nparameter d1d1\nassume d1d1 = d1^2\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = d1d1 E\ncompute G = (X1 + Z1)(X2 + Z2)\ncompute H = (Y1 + Z1)(Y2 + Z2)\ncompute I = A + G\ncompute J = B + H\ncompute K = (X1 + Y1)(X2 + Y2)\ncompute U = C(F + d1 K(K + I + J + C))\ncompute V = U + D F + K(d2(d1 E + G H + A B) + d2plusd1 I J)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U + d2plusd1 C K^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/addition/add-2008-blr-2"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/addition/add-2008-blr-2.sage"
+    },
+    {
+      "assumptions": [
+        "d2plusd1 = d2 + d1",
+        "d1d1 = d1^2"
+      ],
+      "id": "edwards/xyz/addition/add-2008-blr-4",
+      "name": "add-2008-blr-4",
+      "operation": "addition",
+      "program": {
+        "sha256": "734a967a96659b5f40093c4e3db2cd4f2af94f88514655db66bf30aadcfc7ef4",
+        "text": "A = X1*X2\nB = Y1*Y2\nC = Z1*Z2\nD = d1*C\nE = C^2\nF = D^2\nt0 = X1+Z1\nt1 = X2+Z2\nG = t0*t1\nt2 = Y1+Z1\nt3 = Y2+Z2\nH = t2*t3\nI = A+G\nJ = B+H\nt4 = X1+Y1\nt5 = X2+Y2\nK = t4*t5\nt6 = K+I\nt7 = t6+J\nt8 = t7+C\nt9 = K*t8\nt10 = d1*t9\nt11 = F+t10\nU = C*t11\nt12 = A*B\nt13 = G*H\nt14 = d1*E\nt15 = t14+t13\nt16 = t15+t12\nt17 = I*J\nt18 = d2plusd1*t17\nt19 = d2*t16\nt20 = t19+t18\nt21 = K*t20\nt22 = D*F\nt23 = U+t22\nV = t23+t21\nt24 = A+D\nt25 = G+D\nt26 = t24*t25\nt27 = D*t26\nX3 = V+t27\nt28 = B+D\nt29 = H+D\nt30 = t28*t29\nt31 = D*t30\nY3 = V+t31\nt32 = K^2\nt33 = C*t32\nt34 = d2plusd1*t33\nZ3 = U+t34\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/addition/add-2008-blr-4.op3"
+      },
+      "record": {
+        "sha256": "4a684fbdccd68f65f30af8a1ab48504f44b30aaf3cd84028c3c483c4c9be14da",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2plusd1\nassume d2plusd1 = d2 + d1\nparameter d1d1\nassume d1d1 = d1^2\ncompute A = X1 X2\ncompute B = Y1 Y2\ncompute C = Z1 Z2\ncompute D = d1 C\ncompute E = C^2\ncompute F = D^2\ncompute G = (X1 + Z1)(X2 + Z2)\ncompute H = (Y1 + Z1)(Y2 + Z2)\ncompute I = A + G\ncompute J = B + H\ncompute K = (X1 + Y1)(X2 + Y2)\ncompute U = C(F + d1 K(K + I + J + C))\ncompute V = U + D F + K(d2(d1 E + G H + A B) + d2plusd1 I J)\ncompute X3 = V + D(A+D)(G+D)\ncompute Y3 = V + D(B+D)(H+D)\ncompute Z3 = U + d2plusd1 C K^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/addition/add-2008-blr-4"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/addition/add-2008-blr-4.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "edwards/xyz/addition/madd-2008-blr",
+      "name": "madd-2008-blr",
+      "operation": "addition",
+      "program": {
+        "sha256": "eacdf5b8825026b8956fd17db1f603c137140dd3ab865b9baae6f5b10c77b1a2",
+        "text": "W1 = X1+Y1\nw2 = X2+Y2\nt0 = X2^2\nA = t0+X2\nt1 = Y2^2\nB = t1+Y2\nD = W1*Z1\nt2 = Z1^2\nE = d1*t2\nt3 = d2*D\nt4 = E+t3\nH = t4*w2\nI = d1*Z1\nt5 = A*D\nU = E+t5\nt6 = B*D\nV = E+t6\nZ3 = U*V\nt7 = Y1+Z1\nt8 = A*t7\nt9 = I+t8\nt10 = X1*t9\nt11 = H+t10\nt12 = t11*V\nt13 = Z3*Y2\nX3 = t13+t12\nt14 = X1+Z1\nt15 = B*t14\nt16 = I+t15\nt17 = Y1*t16\nt18 = H+t17\nt19 = t18*U\nt20 = Z3*X2\nY3 = t20+t19\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/addition/madd-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "7a24d1610a35ff46dc61f7c10ef104f86abcd43dda9da69a1ecf3123748f3bbb",
+        "text": "source 2008 Bernstein--Lange--Rezaeian Farashahi\nassume Z2 = 1\ncompute W1 = X1 + Y1\ncompute w2 = X2 + Y2\ncompute A = X2^2 + X2\ncompute B = Y2^2 + Y2\ncompute D = W1 Z1\ncompute E = d1 Z1^2\ncompute H = (E + d2 D) w2\ncompute I = d1 Z1\ncompute U = E + A D\ncompute V = E + B D\ncompute Z3 = U V\ncompute X3 = Z3 Y2 + (H + X1(I + A(Y1 + Z1))) V\ncompute Y3 = Z3 X2 + (H + Y1(I + B(X1 + Z1))) U\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/addition/madd-2008-blr"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/addition/madd-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "d2d1 = d2/d1"
+      ],
+      "id": "edwards/xyz/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "53d6b23929fa9b9d6c3b4cf678887431c73410301a70c9f7593b02e8a32ab6e9",
+        "text": "A = X1^2\nB = A^2\nC = Y1^2\nD = C^2\nE = Z1^2\nt0 = E^2\nF = d1*t0\nt1 = B+D\nG = d2d1*t1\nH = A*E\nI = C*E\nJ = H+I\nt2 = d2*J\nK = G+t2\nt3 = F+J\nZ3 = t3+G\nt4 = K+H\nX3 = t4+D\nt5 = K+I\nY3 = t5+B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "048c89e064e6c8e010b533f6786416836096e5ed65083c2936f4985917f53005",
+        "text": "source 2008 Bernstein-–Lange-–Rezaeian Farashahi\nparameter d2d1\nassume d2d1 = d2/d1\ncompute A = X1^2\ncompute B = A^2\ncompute C = Y1^2\ncompute D = C^2\ncompute E = Z1^2\ncompute F = d1 E^2\ncompute G = d2d1(B+D)\ncompute H = A E\ncompute I = C E\ncompute J = H+I\ncompute K = G+d2 J\ncompute Z3 = F+J+G\ncompute X3 = K+H+D\ncompute Y3 = K+I+B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/doubling/dbl-2008-blr"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xyz/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7d5fd98afbf2878ab0b601479afe78dbe3092c13d81f5fc14e0f512d493ff631",
+        "text": "A = 1/Z1\nX3 = A*X1\nY3 = A*Y1\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/edwards/xyz/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "da7589baacbb11d7e75506297820a57d8c0a53fdb780d74a8bba4e536f029739",
+        "text": "compute A = 1/Z1\ncompute X3 = A X1\ncompute Y3 = A Y1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/scaling/scale"
+      },
+      "representation": "edwards/xyz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/edwards/xyz/scaling/scale.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/addition/add",
+      "name": "add",
+      "operation": "addition",
+      "program": {
+        "sha256": "f6b833435308aa3d1b5b73e07723d87d50beb2deff05b120befb79b2c3b72e35",
+        "text": "t0 = Y1^2\nt1 = Y2^2\nt2 = Z1*X1\nt3 = t1*t2\nt4 = Z2*X2\nt5 = t0*t4\nX3 = t5-t3\nt6 = X1^2\nt7 = X2^2\nt8 = Y1*Z1\nt9 = t7*t8\nt10 = Y2*Z2\nt11 = t6*t10\nY3 = t11-t9\nt12 = Z1^2\nt13 = Z2^2\nt14 = X1*Y1\nt15 = t13*t14\nt16 = X2*Y2\nt17 = t12*t16\nZ3 = t17-t15\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/addition/add.op3"
+      },
+      "record": {
+        "sha256": "539a4746313da31d45247f082ff2f3793bb60d48d663b13a98fbfc9ec8f488d5",
+        "text": "compute X3 = Y1^2 Z2 X2-Y2^2 Z1 X1\ncompute Y3 = X1^2 Y2 Z2-X2^2 Y1 Z1\ncompute Z3 = Z1^2 X2 Y2-Z2^2 X1 Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/addition/add"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/addition/add.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/addition/add-2001-jq",
+      "name": "add-2001-jq",
+      "operation": "addition",
+      "program": {
+        "sha256": "242c69d441c4abb6bae717eb1be1fb7f2ad2f5477d1358093d04f322fa5443f7",
+        "text": "T1 = X1\nT2 = Y1\nT3 = Z1\nT4 = X2\nT5 = Y2\nT6 = Z2\nT7 = T1*T6\nT1 = T1*T5\nT5 = T3*T5\nT3 = T3*T4\nT4 = T2*T4\nT2 = T2*T6\nT6 = T2*T7\nT2 = T2*T4\nT4 = T3*T4\nT3 = T3*T5\nT5 = T1*T5\nT1 = T1*T7\nT1 = T1-T4\nT2 = T2-T5\nT3 = T3-T6\nX3 = T2\nY3 = T1\nZ3 = T3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/addition/add-2001-jq.op3"
+      },
+      "record": {
+        "sha256": "da8b1bffe18349a14a5961d5e05ab3a0d54c7d8c67789e7dcde2a44c7fd489d2",
+        "text": "source 2001 Joye--Quisquater \"Hessian elliptic curves and side-channel attacks\"\ncompute T1 = X1\ncompute T2 = Y1\ncompute T3 = Z1\ncompute T4 = X2\ncompute T5 = Y2\ncompute T6 = Z2\ncompute T7 = T1 T6\ncompute T1 = T1 T5\ncompute T5 = T3 T5\ncompute T3 = T3 T4\ncompute T4 = T2 T4\ncompute T2 = T2 T6\ncompute T6 = T2 T7\ncompute T2 = T2 T4\ncompute T4 = T3 T4\ncompute T3 = T3 T5\ncompute T5 = T1 T5\ncompute T1 = T1 T7\ncompute T1 = T1-T4\ncompute T2 = T2-T5\ncompute T3 = T3-T6\ncompute X3 = T2\ncompute Y3 = T1\ncompute Z3 = T3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/addition/add-2001-jq"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/addition/add-2001-jq.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/addition/add2",
+      "name": "add2",
+      "operation": "addition",
+      "program": {
+        "sha256": "46543186207f26a930ef9eb8517b2b71cb93c402c99278810ad3835f72a057b3",
+        "text": "X1Y2 = X1*Y2\nX1Z2 = X1*Z2\nY1Z2 = Y1*Z2\nY1X2 = Y1*X2\nZ1X2 = Z1*X2\nZ1Y2 = Z1*Y2\nt0 = Z1Y2*X1Y2\nt1 = Y1X2*Y1Z2\nX3 = t1-t0\nt2 = Y1X2*Z1X2\nt3 = X1Z2*X1Y2\nY3 = t3-t2\nt4 = X1Z2*Y1Z2\nt5 = Z1Y2*Z1X2\nZ3 = t5-t4\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/addition/add2.op3"
+      },
+      "record": {
+        "sha256": "18305a8b1f82084e57f8872e0ac76ad5688e5906699ad2ed11644fbe32c8dbca",
+        "text": "compute X1Y2 = X1 Y2\ncompute X1Z2 = X1 Z2\ncompute Y1Z2 = Y1 Z2\ncompute Y1X2 = Y1 X2\ncompute Z1X2 = Z1 X2\ncompute Z1Y2 = Z1 Y2\ncompute X3 = Y1X2 Y1Z2-Z1Y2 X1Y2\ncompute Y3 = X1Z2 X1Y2-Y1X2 Z1X2\ncompute Z3 = Z1Y2 Z1X2-X1Z2 Y1Z2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/addition/add2"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/addition/add2.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "hessian/standard/addition/madd",
+      "name": "madd",
+      "operation": "addition",
+      "program": {
+        "sha256": "cfa5aa11525c2131e65497464326e5475d6f9334812b6bf6029a6b7a8ba87423",
+        "text": "X1Y2 = X1*Y2\nY1X2 = Y1*X2\nZ1X2 = Z1*X2\nZ1Y2 = Z1*Y2\nt0 = Z1Y2*X1Y2\nt1 = Y1X2*Y1\nX3 = t1-t0\nt2 = Y1X2*Z1X2\nt3 = X1*X1Y2\nY3 = t3-t2\nt4 = X1*Y1\nt5 = Z1Y2*Z1X2\nZ3 = t5-t4\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/addition/madd.op3"
+      },
+      "record": {
+        "sha256": "218fe967e3659de067f24a623d89c2f2b6ba607d8e604474dd31eda883ff3bac",
+        "text": "assume Z2 = 1\ncompute X1Y2 = X1 Y2\ncompute Y1X2 = Y1 X2\ncompute Z1X2 = Z1 X2\ncompute Z1Y2 = Z1 Y2\ncompute X3 = Y1X2 Y1-Z1Y2 X1Y2\ncompute Y3 = X1 X1Y2-Y1X2 Z1X2\ncompute Z3 = Z1Y2 Z1X2-X1 Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/addition/madd"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/addition/madd.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "Z2 = 1"
+      ],
+      "id": "hessian/standard/addition/mmadd",
+      "name": "mmadd",
+      "operation": "addition",
+      "program": {
+        "sha256": "39d8a47607987477fc7a5e0b1c169a63a97425d867b5c2238e99b154e586580b",
+        "text": "X1Y2 = X1*Y2\nY1X2 = Y1*X2\nt0 = Y2*X1Y2\nt1 = Y1X2*Y1\nX3 = t1-t0\nt2 = Y1X2*X2\nt3 = X1*X1Y2\nY3 = t3-t2\nt4 = X1*Y1\nt5 = Y2*X2\nZ3 = t5-t4\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/addition/mmadd.op3"
+      },
+      "record": {
+        "sha256": "e04cc4d7caf80a750a0311f5c7dfbfc3bc5eafbad85a97dbdc17c3c1cb90252f",
+        "text": "assume Z1 = 1\nassume Z2 = 1\ncompute X1Y2 = X1 Y2\ncompute Y1X2 = Y1 X2\ncompute X3 = Y1X2 Y1-Y2 X1Y2\ncompute Y3 = X1 X1Y2-Y1X2 X2\ncompute Z3 = Y2 X2-X1 Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/addition/mmadd"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/addition/mmadd.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/doubling/dbl",
+      "name": "dbl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "7c2d74b79e832ec21fc8e2c0811996d3c8497c0926b62046f2d76470c84f60f4",
+        "text": "t0 = Z1^3\nt1 = X1^3\nt2 = t0-t1\nX3 = Y1*t2\nt3 = Y1^3\nt4 = Z1^3\nt5 = t3-t4\nY3 = X1*t5\nt6 = X1^3\nt7 = Y1^3\nt8 = t6-t7\nZ3 = Z1*t8\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/doubling/dbl.op3"
+      },
+      "record": {
+        "sha256": "96e2ed7893b384dfd27c11323f7a3a37d6345dd941af99a62fbab9e4ec0aa83f",
+        "text": "compute X3 = Y1(Z1^3-X1^3)\ncompute Y3 = X1(Y1^3-Z1^3)\ncompute Z3 = Z1(X1^3-Y1^3)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/doubling/dbl"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/doubling/dbl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/doubling/dbl-2001-jq",
+      "name": "dbl-2001-jq",
+      "operation": "doubling",
+      "program": {
+        "sha256": "0337e1214d02eeada6a4a78bbabcfe582270c1985c2a18beaf95ed470ee20dea",
+        "text": "T1 = Z1\nT2 = X1\nT3 = Y1\nT4 = Y1\nT5 = Z1\nT6 = X1\nT7 = T1*T6\nT1 = T1*T5\nT5 = T3*T5\nT3 = T3*T4\nT4 = T2*T4\nT2 = T2*T6\nT6 = T2*T7\nT2 = T2*T4\nT4 = T3*T4\nT3 = T3*T5\nT5 = T1*T5\nT1 = T1*T7\nT1 = T1-T4\nT2 = T2-T5\nT3 = T3-T6\nX3 = T2\nY3 = T1\nZ3 = T3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/doubling/dbl-2001-jq.op3"
+      },
+      "record": {
+        "sha256": "a53e822a9b6b647fb181d817c815844527e5161070b6f48c0613125578caa431",
+        "text": "source 2001 Joye--Quisquater \"Hessian elliptic curves and side-channel attacks\", applying the addition formulas to permuted input coordinates\ncompute T1 = Z1\ncompute T2 = X1\ncompute T3 = Y1\ncompute T4 = Y1\ncompute T5 = Z1\ncompute T6 = X1\ncompute T7 = T1 T6\ncompute T1 = T1 T5\ncompute T5 = T3 T5\ncompute T3 = T3 T4\ncompute T4 = T2 T4\ncompute T2 = T2 T6\ncompute T6 = T2 T7\ncompute T2 = T2 T4\ncompute T4 = T3 T4\ncompute T3 = T3 T5\ncompute T5 = T1 T5\ncompute T1 = T1 T7\ncompute T1 = T1-T4\ncompute T2 = T2-T5\ncompute T3 = T3-T6\ncompute X3 = T2\ncompute Y3 = T1\ncompute Z3 = T3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/doubling/dbl-2001-jq"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/doubling/dbl-2001-jq.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/doubling/dbl-2007-hcd",
+      "name": "dbl-2007-hcd",
+      "operation": "doubling",
+      "program": {
+        "sha256": "5e1c0312bf5cc2b2aaf2f716a3c81714127d2bb863f3ba6a3be2330618a01fe4",
+        "text": "A = X1^2\nt0 = X1+Y1\nB = Y1*t0\nC = A+B\nt1 = Z1+X1\nD = Z1*t1\nE = A+D\nt2 = X1-Y1\nF = C*t2\nt3 = Z1-X1\nG = E*t3\nZ3 = F*Z1\nt4 = F+G\nt5 = t4*X1\nY3 = -t5\nX3 = G*Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/doubling/dbl-2007-hcd.op3"
+      },
+      "record": {
+        "sha256": "97c392ff578bde82139b489be7b420725d903c8616502f77396117cd8ebb3d4f",
+        "text": "source 2007 Hisil--Carter--Dawson\ncompute A = X1^2\ncompute B = Y1(X1+Y1)\ncompute C = A + B\ncompute D = Z1(Z1+X1)\ncompute E = A + D\ncompute F = C(X1-Y1)\ncompute G = E(Z1-X1)\ncompute Z3 = F Z1\ncompute Y3 = -(F+G)X1\ncompute X3 = G Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/doubling/dbl-2007-hcd"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/doubling/dbl-2007-hcd.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/doubling/dbl-2007-hcd-2",
+      "name": "dbl-2007-hcd-2",
+      "operation": "doubling",
+      "program": {
+        "sha256": "8ac3a6db258211e2efc4e162875362aa9699cd31cbb850d54237a82220a2b75c",
+        "text": "R0 = X1^2\nR1 = X1+Y1\nR1 = Y1*R1\nR2 = Z1+X1\nR2 = Z1*R2\nR2 = R0+R2\nR1 = R0+R1\nR0 = X1-Y1\nR0 = R1*R0\nZ3 = R0*Z1\nR1 = Z1-X1\nR1 = R2*R1\nX3 = R1*Y1\nt0 = R0+R1\nR2 = -t0\nY3 = R2*X1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/doubling/dbl-2007-hcd-2.op3"
+      },
+      "record": {
+        "sha256": "6743b50aa544adb03371b602dc5e5636a7dd98fdd6f33b95b2f36935f85579d6",
+        "text": "source 2007 Hisil--Carter--Dawson\ncompute R0 = X1^2\ncompute R1 = X1+Y1\ncompute R1 = Y1 R1\ncompute R2 = Z1+X1\ncompute R2 = Z1 R2\ncompute R2 = R0+R2\ncompute R1 = R0+R1\ncompute R0 = X1-Y1\ncompute R0 = R1 R0\ncompute Z3 = R0 Z1\ncompute R1 = Z1-X1\ncompute R1 = R2 R1\ncompute X3 = R1 Y1\ncompute R2 = -(R0+R1)\ncompute Y3 = R2 X1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/doubling/dbl-2007-hcd-2"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/doubling/dbl-2007-hcd-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/doubling/dbl2",
+      "name": "dbl2",
+      "operation": "doubling",
+      "program": {
+        "sha256": "b7d05bb387a84dcc137deda1bfcfde8d0c47b10fc215b17367660ffe812440d8",
+        "text": "XX = X1^2\nXXX = X1*XX\nYY = Y1^2\nYYY = Y1*YY\nZZ = Z1^2\nZZZ = Z1*ZZ\nt0 = ZZZ-XXX\nX3 = Y1*t0\nt1 = YYY-ZZZ\nY3 = X1*t1\nt2 = XXX-YYY\nZ3 = Z1*t2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/doubling/dbl2.op3"
+      },
+      "record": {
+        "sha256": "682ea595cec6de2f93e276a80269ced061b26fc0e1689b0a83c17cf6ec4f65c4",
+        "text": "compute XX = X1^2\ncompute XXX = X1 XX\ncompute YY = Y1^2\ncompute YYY = Y1 YY\ncompute ZZ = Z1^2\ncompute ZZZ = Z1 ZZ\ncompute X3 = Y1(ZZZ-XXX)\ncompute Y3 = X1(YYY-ZZZ)\ncompute Z3 = Z1(XXX-YYY)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/doubling/dbl2"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/doubling/dbl2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/scaling/z",
+      "name": "z",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7d5fd98afbf2878ab0b601479afe78dbe3092c13d81f5fc14e0f512d493ff631",
+        "text": "A = 1/Z1\nX3 = A*X1\nY3 = A*Y1\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/scaling/z.op3"
+      },
+      "record": {
+        "sha256": "da7589baacbb11d7e75506297820a57d8c0a53fdb780d74a8bba4e536f029739",
+        "text": "compute A = 1/Z1\ncompute X3 = A X1\ncompute Y3 = A Y1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/scaling/z"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/scaling/z.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard/tripling/tpl-2007-hcd",
+      "name": "tpl-2007-hcd",
+      "operation": "tripling",
+      "program": {
+        "sha256": "8d875d050b9b31671fcd4dbcbad920e527f6655c7e5863ca335acb8879cf810a",
+        "text": "t0 = Z1^3\nt1 = X1^3\nt2 = X1^3\nt3 = Y1^3\nt4 = Y1^3\nt5 = Z1^3\nt6 = Y1^3\nt7 = Z1^3\nt8 = t0-t1\nt9 = t2-t3\nt10 = t4-t5\nt11 = t6-t7\nt12 = Y1^3\nt13 = X1^3\nt14 = t10*t11\nt15 = t13*t14\nt16 = t8*t9\nt17 = t12*t16\nt18 = t17-t15\nt19 = d*t18\nX3 = 3*t19\nt20 = Y1^3\nt21 = Z1^3\nt22 = X1^3\nt23 = Y1^3\nt24 = Z1^3\nt25 = X1^3\nt26 = Z1^3\nt27 = X1^3\nt28 = t20-t21\nt29 = t22-t23\nt30 = t24-t25\nt31 = t26-t27\nt32 = X1^3\nt33 = Y1^3\nt34 = t30*t31\nt35 = t33*t34\nt36 = t28*t29\nt37 = t32*t36\nt38 = t37-t35\nt39 = d*t38\nY3 = 3*t39\nt40 = Y1^3\nt41 = Z1^3\nt42 = Z1^3\nt43 = X1^3\nt44 = X1^3\nt45 = Y1^3\nt46 = t40-t41\nt47 = t42-t43\nt48 = t44-t45\nt49 = X1^3\nt50 = Y1^3\nt51 = Z1^3\nt52 = t48^2\nt53 = t46*t47\nt54 = t49+t50\nt55 = t54+t51\nt56 = t53-t52\nZ3 = t55*t56\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/tripling/tpl-2007-hcd.op3"
+      },
+      "record": {
+        "sha256": "f0c3e01306567a93e3ca411b1e010981938fb643d611fb04987499fb660428af",
+        "text": "source 2007 Hisil--Carter--Dawson\ncompute X3 = 3 d(Y1^3 (Z1^3 - X1^3) (X1^3 - Y1^3)- X1^3 (Y1^3 - Z1^3) (Y1^3 - Z1^3))\ncompute Y3 = 3 d(X1^3 (Y1^3 - Z1^3) (X1^3 - Y1^3)- Y1^3 (Z1^3 - X1^3) (Z1^3 - X1^3))\ncompute Z3 = (X1^3 + Y1^3 + Z1^3) ((Y1^3 - Z1^3) (Z1^3 - X1^3)-(X1^3 - Y1^3)^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/tripling/tpl-2007-hcd"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/tripling/tpl-2007-hcd.sage"
+    },
+    {
+      "assumptions": [
+        "a = 3 d"
+      ],
+      "id": "hessian/standard/tripling/tpl-2007-hcd-2",
+      "name": "tpl-2007-hcd-2",
+      "operation": "tripling",
+      "program": {
+        "sha256": "1f97d1fb40ae515c2c499ab87faba3044566fbb6bfd33ee73442142b3e423ce4",
+        "text": "XX = X1^2\nA = XX*X1\nYY = Y1^2\nB = YY*Y1\nZZ = Z1^2\nC = ZZ*Z1\nAB = A-B\nBC = B-C\nCA = C-A\nU = B*CA\nV = A*BC\nt0 = V*BC\nt1 = U*AB\nt2 = t1-t0\nX3 = a*t2\nt3 = U*CA\nt4 = V*AB\nt5 = t4-t3\nY3 = a*t5\nt6 = AB^2\nt7 = BC*CA\nt8 = A+B\nt9 = t8+C\nt10 = t7-t6\nZ3 = t9*t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/hessian/standard/tripling/tpl-2007-hcd-2.op3"
+      },
+      "record": {
+        "sha256": "5f43afaa00dfe22af0022d41d8a73b3abc10d089602ee6be3f369d07c2e636ff",
+        "text": "source 2007 Hisil--Carter--Dawson, plus elimination of common subexpressions\nparameter a\nassume a = 3 d\ncompute XX = X1^2\ncompute A = XX X1\ncompute YY = Y1^2\ncompute B = YY Y1\ncompute ZZ = Z1^2\ncompute C = ZZ Z1\ncompute AB = A-B\ncompute BC = B-C\ncompute CA = C-A\ncompute U = B CA\ncompute V = A BC\ncompute X3 = a(U AB-V BC)\ncompute Y3 = a(V AB-U CA)\ncompute Z3 = (A+B+C)(BC CA-AB^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/tripling/tpl-2007-hcd-2"
+      },
+      "representation": "hessian/standard",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/hessian/standard/tripling/tpl-2007-hcd-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/affine/addition/add",
+      "name": "add",
+      "operation": "addition",
+      "program": {
+        "sha256": "8f9fb2e1cb30002b0525f16ae0a06fdc988268f3c3f3857f026e3713b133e0d0",
+        "text": "t0 = Y1+Y2\nt1 = X1+X2\nt2 = 1/t1\nlambda = t0*t2\nt3 = lambda^2\nt4 = t3+lambda\nt5 = t4+X1\nt6 = t5+X2\nX3 = t6+a2\nt7 = X1+X3\nt8 = lambda*t7\nt9 = t8+X3\nY3 = t9+Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/affine/addition/add.op3"
+      },
+      "record": {
+        "sha256": "68ced3256e050b9b31fff035f12b684c755c774fbb6b0100a281cd4c8c480f61",
+        "text": "compute lambda = (Y1 + Y2)/(X1 + X2)\ncompute X3 = lambda^2 + lambda + X1 + X2 + a2\ncompute Y3 = lambda(X1 + X3) + X3 + Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/affine/addition/add"
+      },
+      "representation": "shortw/affine",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/affine/addition/add.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/affine/doubling/dbl",
+      "name": "dbl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "32bb4bf05ec8281d102aae70fe858889b7e4a786276a9af87af8349512e5d7df",
+        "text": "t0 = 1/X1\nt1 = Y1*t0\nlambda = X1+t1\nt2 = lambda^2\nt3 = t2+lambda\nX3 = t3+a2\nt4 = X1+X3\nt5 = lambda*t4\nt6 = t5+X3\nY3 = t6+Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/affine/doubling/dbl.op3"
+      },
+      "record": {
+        "sha256": "f30d5fc5c9676586a4d1fd1ce422fcaf433734e4d16654dc064e55503456f683",
+        "text": "compute lambda = X1 + Y1/X1\ncompute X3 = lambda^2 + lambda + a2\ncompute Y3 = lambda (X1 + X3) +X3 +Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/affine/doubling/dbl"
+      },
+      "representation": "shortw/affine",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/affine/doubling/dbl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/affine/scaling/copy",
+      "name": "copy",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7c602ca965ea5cea12f7b18d28bf8e0fc4b7c797f2367e020acde698a121204f",
+        "text": "X3 = X1\nY3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/affine/scaling/copy.op3"
+      },
+      "record": {
+        "sha256": "778fd0e2a3e869b927d3633c37a6e862df71bc7e9d753398bd8e338e3959adfb",
+        "text": "compute X3 = X1\ncompute Y3 = Y1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/affine/scaling/copy"
+      },
+      "representation": "shortw/affine",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/affine/scaling/copy.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/extended-0/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "3a9dd3b9bd53d63fc87fda35a18bb5c412f445750a75d038aea6f1e005971434",
+        "text": "A = X1*Z2\nB = X2*Z1\nC = A^2\nD = B^2\nE = A+B\nF = C+D\nG = Y1*ZZ2\nH = Y2*ZZ1\nI = G+H\nJ = I*E\nt0 = Z1*Z2\nZ3 = F*t0\nt1 = H+D\nt2 = C+G\nt3 = B*t2\nt4 = A*t1\nX3 = t4+t3\nt5 = F*G\nt6 = A*J\nt7 = t6+t5\nt8 = J+Z3\nt9 = t8*X3\nt10 = t7*F\nY3 = t10+t9\nZZ3 = Z3^2\nXZ3 = X3*Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-0/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "f24ea75ca146560c5ff4dbbe88c3c73d6ffb7216f3f785fa1f36ec69c00bea50",
+        "text": "source 2005 Doche--Lange / Higuchi Takagi; modified to compute and use ZZ,XZ\ncompute A = X1 Z2\ncompute B = X2 Z1\ncompute C = A^2\ncompute D = B^2\ncompute E = A + B\ncompute F = C + D\ncompute G = Y1 ZZ2\ncompute H = Y2 ZZ1\ncompute I = G + H\ncompute J = I E\ncompute Z3 = F Z1 Z2\ncompute X3 = A (H + D) + B (C+G)\ncompute Y3 = (A J + F G) F + (J + Z3) X3\ncompute ZZ3 = Z3^2\ncompute XZ3 = X3 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-0/addition/add-2005-dl"
+      },
+      "representation": "shortw/extended-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-0/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/extended-0/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "5a788f45fa092bedffa77c2e523d17d20ba5ec5e00ce68493421f24a3d65b0c9",
+        "text": "t0 = Y2*ZZ1\nA = Y1+t0\nt1 = X2*Z1\nB = X1+t1\nC = B*Z1\nZ3 = C^2\nZZ3 = Z3^2\nD = X2*Z3\nt2 = B^2\nt3 = a2*C\nt4 = A+t2\nt5 = t4+t3\nt6 = A^2\nt7 = C*t5\nX3 = t6+t7\nt8 = A*C\nt9 = D+X3\nt10 = t8+Z3\nt11 = Y2+X2\nt12 = t11*ZZ3\nt13 = t9*t10\nY3 = t13+t12\nXZ3 = X3*Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-0/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "8f3d26d753b61ef3607b1f7afdeaf5fed27553ecf829740f424b4aabe862cf8a",
+        "text": "source 2005 Doche--Lange / Al-Daoud et al 2002; modified to compute and use ZZ,XZ\nassume Z2 = 1\ncompute A = Y1 + Y2 ZZ1\ncompute B = X1 + X2 Z1\ncompute C = B Z1\ncompute Z3 = C^2\ncompute ZZ3 = Z3^2\ncompute D = X2 Z3\ncompute X3 = A^2 + C (A + B^2 + a2 C)\ncompute Y3 = (D + X3) (A C + Z3) + (Y2 + X2) ZZ3\ncompute XZ3 = X3 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-0/addition/madd-2005-dl"
+      },
+      "representation": "shortw/extended-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-0/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/extended-0/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "b4963fabb7bc478d6cc324caf125cb45fd7d4ddfbf8a5f98656e4fe7b36de6ea",
+        "text": "A = X1^2\nB = Y1^2\nZ3 = XZ1^2\nt0 = sqrta6*ZZ1\nt1 = A+t0\nX3 = t1^2\nZZ3 = Z3^2\nXZ3 = X3*Z3\nt2 = B+X3\nt3 = t2+Z3\nt4 = a6*ZZ3\nt5 = B*t3\nt6 = t5+t4\nY3 = t6+XZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-0/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "33b86dce233c5ce8c02d7878c7fab80955fe57ace40bf226d525b2552ad29ffa",
+        "text": "source 2008 Bernstein--Lange--Rezaeian-Farashahi \"Binary Edwards Curves\"\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X1^2\ncompute B = Y1^2\ncompute Z3 = XZ1^2\ncompute X3 = (A + sqrta6 ZZ1)^2\ncompute ZZ3 = Z3^2\ncompute XZ3 = X3 Z3\ncompute Y3 = B (B + X3 + Z3) + a6 ZZ3 + XZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-0/doubling/dbl-2008-blr"
+      },
+      "representation": "shortw/extended-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-0/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/extended-0/doubling/mdbl-2008-blr",
+      "name": "mdbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "acb1006b02a10b306240e33003e2620184b4cf59195d01ce131261158ca46cff",
+        "text": "A = X1^2\nB = Y1^2\nZ3 = A\nZZ3 = A^2\nX3 = ZZ3+a6\nXZ3 = X3*Z3\nt0 = B+X3\nt1 = t0+Z3\nt2 = a6*ZZ3\nt3 = B*t1\nt4 = t3+t2\nY3 = t4+XZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-0/doubling/mdbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "cb46e6c349c0fb74c3904de0cb45cde0db54619f6972faf141a4a04284d197d6",
+        "text": "source 2008 Bernstein--Lange--Rezaeian-Farashahi \"Binary Edwards Curves\", plus specialization to Z1=1, plus simplification\nassume Z1 = 1\ncompute A = X1^2\ncompute B = Y1^2\ncompute Z3 = A\ncompute ZZ3 = A^2\ncompute X3 = ZZ3 + a6\ncompute XZ3 = X3 Z3\ncompute Y3 = B (B + X3 + Z3) + a6 ZZ3 + XZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-0/doubling/mdbl-2008-blr"
+      },
+      "representation": "shortw/extended-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-0/doubling/mdbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/extended-1/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "2a76d6a8ef2d7865359069f350ece106ea03036a939235ac0040b3c66ba5ca3e",
+        "text": "A = X1*Z2\nB = X2*Z1\nC = A^2\nD = B^2\nE = A+B\nF = C+D\nG = Y1*ZZ2\nH = Y2*ZZ1\nI = G+H\nJ = I*E\nt0 = Z1*Z2\nZ3 = F*t0\nZZ3 = Z3^2\nt1 = H+D\nt2 = C+G\nt3 = B*t2\nt4 = A*t1\nX3 = t4+t3\nt5 = F*G\nt6 = A*J\nt7 = t6+t5\nt8 = J+Z3\nt9 = t8*X3\nt10 = t7*F\nY3 = t10+t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-1/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "7af4260ff8f83d444c942ebfe8c10fcf9c2327c4b3bdd50c9ce282c85bc1e850",
+        "text": "source 2005 Doche--Lange / Higuchi Takagi; modified to compute and use Z^2\ncompute A = X1 Z2\ncompute B = X2 Z1\ncompute C = A^2\ncompute D = B^2\ncompute E = A + B\ncompute F = C + D\ncompute G = Y1 ZZ2\ncompute H = Y2 ZZ1\ncompute I = G + H\ncompute J = I E\ncompute Z3 = F Z1 Z2\ncompute ZZ3 = Z3^2\ncompute X3 = A (H + D) + B (C+G)\ncompute Y3 = (A J + F G) F + (J + Z3) X3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/addition/add-2005-dl"
+      },
+      "representation": "shortw/extended-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-1/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/extended-1/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "afcc10b54e8d0deff07b39d68949f95a7ccb5b453ad039a3dc0b7180276c2e45",
+        "text": "t0 = Y2*ZZ1\nA = Y1+t0\nt1 = X2*Z1\nB = X1+t1\nC = B*Z1\nZ3 = C^2\nZZ3 = Z3^2\nD = X2*Z3\nt2 = B^2\nt3 = a2*C\nt4 = A+t2\nt5 = t4+t3\nt6 = A^2\nt7 = C*t5\nX3 = t6+t7\nt8 = A*C\nt9 = D+X3\nt10 = t8+Z3\nt11 = Y2+X2\nt12 = t11*ZZ3\nt13 = t9*t10\nY3 = t13+t12\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-1/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "1b721e4e7f3856b229c45898e844266d42d12eabde1c620e2727b0f64a416e1b",
+        "text": "source 2005 Doche--Lange / Al-Daoud et al 2002; modified to compute and use Z^2\nassume Z2 = 1\ncompute A = Y1 + Y2 ZZ1\ncompute B = X1 + X2 Z1\ncompute C = B Z1\ncompute Z3 = C^2\ncompute ZZ3 = Z3^2\ncompute D = X2 Z3\ncompute X3 = A^2 + C (A + B^2 + a2 C)\ncompute Y3 = (D + X3) (A C + Z3) + (Y2 + X2) ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/addition/madd-2005-dl"
+      },
+      "representation": "shortw/extended-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-1/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/extended-1/addition/madd-2007-kk",
+      "name": "madd-2007-kk",
+      "operation": "addition",
+      "program": {
+        "sha256": "8fac2b8a637809aef905592e05cffe779a5cc75f079fb5f4169d2a76aceaf8a6",
+        "text": "t0 = X2*Z1\nA = X1+t0\nt1 = Y2*ZZ1\nB = Y1+t1\nC = A*Z1\nt2 = B+C\nD = C*t2\nZ3 = C^2\nZZ3 = Z3^2\nt3 = B^2\nt4 = A^2\nt5 = C*t4\nt6 = t3+t5\nX3 = t6+D\nt7 = X2*Z3\nt8 = X3+t7\nt9 = X2+Y2\nt10 = t9*ZZ3\nt11 = t8*D\nY3 = t11+t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-1/addition/madd-2007-kk.op3"
+      },
+      "record": {
+        "sha256": "9dd4b0a957dc3c38992349e9e3375cd516aca4f75fb9d3f5e87192276c11784d",
+        "text": "source 2007(?) Kim--Kim \"A New Method for Speeding Up Arithmetic on Elliptic Curves over Binary Fields\"\nassume Z2 = 1\ncompute A = X1 + X2 Z1\ncompute B = Y1 + Y2 ZZ1\ncompute C = A Z1\ncompute D = C (B + C)\ncompute Z3 = C^2\ncompute ZZ3 = Z3^2\ncompute X3 = B^2+ C  A^ 2 + D\ncompute Y3 = (X3 + X2 Z3) D + (X2 + Y2) ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/addition/madd-2007-kk"
+      },
+      "representation": "shortw/extended-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-1/addition/madd-2007-kk.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/extended-1/doubling/dbl-2007-kk",
+      "name": "dbl-2007-kk",
+      "operation": "doubling",
+      "program": {
+        "sha256": "297ccdfd8b5dd0cfb55732d5567b45232872cd7a341cd536528dd5dbee9aaead",
+        "text": "A = X1^2\nB = Y1^2\nZ3 = ZZ1*A\nZZ3 = Z3^2\nt0 = A^2\nt1 = ZZ1^2\nt2 = a6*t1\nX3 = t0+t2\nt3 = B+X3\nt4 = t3+Z3\nt5 = a6*ZZ3\nt6 = B*t4\nt7 = t6+t5\nY3 = t7+ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-1/doubling/dbl-2007-kk.op3"
+      },
+      "record": {
+        "sha256": "7ca121816ca9b4d0e86e4b284ff5ed7db92141a526a8f800648a0e478f82e10b",
+        "text": "source 2007(?) Kim--Kim \"A New Method for Speeding Up Arithmetic on Elliptic Curves over Binary Fields\"\ncompute A = X1^2\ncompute B = Y1^2\ncompute Z3 = ZZ1 A\ncompute ZZ3 = Z3^2\ncompute X3 = A^2 + a6 ZZ1^2\ncompute Y3 = B (B + X3 + Z3) + a6 ZZ3 + ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/doubling/dbl-2007-kk"
+      },
+      "representation": "shortw/extended-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-1/doubling/dbl-2007-kk.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/extended-1/doubling/dbl-2008-blr",
+      "name": "dbl-2008-blr",
+      "operation": "doubling",
+      "program": {
+        "sha256": "f4cdbd0842a33aba20388fcce394dbff534ac38b4e951ca93fd8f5347df84732",
+        "text": "A = X1^2\nB = Y1^2\nZ3 = ZZ1*A\nZZ3 = Z3^2\nt0 = sqrta6*ZZ1\nt1 = A+t0\nX3 = t1^2\nt2 = B+X3\nt3 = t2+Z3\nt4 = a6*ZZ3\nt5 = B*t3\nt6 = t5+t4\nY3 = t6+ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/extended-1/doubling/dbl-2008-blr.op3"
+      },
+      "record": {
+        "sha256": "d6e826a732911810d84ddb9ce059d9b3bcbf50c20331a136d2e43eb01b5372fc",
+        "text": "source 2008 Bernstein--Lange--Rezaeian-Farashahi \"Binary Edwards Curves\"\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X1^2\ncompute B = Y1^2\ncompute Z3 = ZZ1 A\ncompute ZZ3 = Z3^2\ncompute X3 = (A+ sqrta6 ZZ1)^2\ncompute Y3 = B (B + X3 + Z3) + a6 ZZ3 + ZZ3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/doubling/dbl-2008-blr"
+      },
+      "representation": "shortw/extended-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/extended-1/doubling/dbl-2008-blr.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/jacobian/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "16d9754a390f479d5a751d45389e318fbf81389b3fe6f0720aeed0e3a238a4f5",
+        "text": "O1 = Z1^2\nO2 = Z2^2\nA = X1*O2\nB = X2*O1\nt0 = O2*Z2\nC = Y1*t0\nt1 = O1*Z1\nD = Y2*t1\nE = A+B\nF = C+D\nG = E*Z1\nt2 = G*Y2\nt3 = F*X2\nH = t3+t2\nZ3 = G*Z2\nI = F+Z3\nt4 = Z3^2\nt5 = E^2\nt6 = E*t5\nt7 = F*I\nt8 = a2*t4\nt9 = t8+t7\nX3 = t9+t6\nt10 = G^2\nt11 = t10*H\nt12 = I*X3\nY3 = t12+t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/jacobian/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "91e595b43a73329a92d296ef262c8b4a0759d0e1e362ea1346f6e9d0fbb0a177",
+        "text": "source 2005 Doche--Lange\ncompute O1 = Z1^2\ncompute O2 = Z2^2\ncompute A = X1 O2\ncompute B = X2 O1\ncompute C = Y1 O2 Z2\ncompute D = Y2 O1 Z1\ncompute E = A + B\ncompute F = C + D\ncompute G = E Z1\ncompute H = F X2 + G Y2\ncompute Z3 = G Z2\ncompute I = F + Z3\ncompute X3 = a2 Z3^2 + F I + E E^2\ncompute Y3 = I X3 + G^2 H\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/addition/add-2005-dl"
+      },
+      "representation": "shortw/jacobian",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/jacobian/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2=1"
+      ],
+      "id": "shortw/jacobian/addition/madd-2008-bl",
+      "name": "madd-2008-bl",
+      "operation": "addition",
+      "program": {
+        "sha256": "fd0237434d1067ebbcfdb39229c16da4e4221e02221d9764f4a0db1b0f3f8635",
+        "text": "O1 = Z1^2\nB = X2*O1\nt0 = O1*Z1\nD = Y2*t0\nE = X1+B\nF = Y1+D\nZ3 = E*Z1\nt1 = Z3*Y2\nt2 = F*X2\nH = t2+t1\nI = F+Z3\nG = Z3^2\nt3 = E^2\nt4 = E*t3\nt5 = F*I\nt6 = a2*G\nt7 = t6+t5\nX3 = t7+t4\nt8 = G*H\nt9 = I*X3\nY3 = t9+t8\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/jacobian/addition/madd-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "5577e34e490dcde2c20ba269b60abe2c984affa23fe8b28b639c6c7026b0f0fa",
+        "text": "source 2005 Doche--Lange\nassume Z2=1\ncompute O1 = Z1^2\ncompute B = X2 O1\ncompute D = Y2 O1 Z1\ncompute E = X1 + B\ncompute F = Y1 + D\ncompute Z3 = E Z1\ncompute H = F X2 + Z3 Y2\ncompute I = F + Z3\ncompute G = Z3^2\ncompute X3 = a2 G + F I + E E^2\ncompute Y3 = I X3 + G H\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/addition/madd-2008-bl"
+      },
+      "representation": "shortw/jacobian",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/jacobian/addition/madd-2008-bl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/jacobian/doubling/dbl-2005-dl",
+      "name": "dbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "1dedcd491f6cc17473fc4948bbc6eed5dc98d43c2bf1527812c7bdd9a372c35d",
+        "text": "A = X1^2\nB = A^2\nC = Z1^2\nD = C^2\nt0 = D^2\nt1 = a6*t0\nX3 = B+t1\nZ3 = X1*C\nt2 = Y1*Z1\nt3 = A+t2\nt4 = t3+Z3\nt5 = t4*X3\nt6 = B*Z3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/jacobian/doubling/dbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "2688a2aa052e02c0061e52bbd8232e11b8719cbedbfbce50e3af84b8311ffbc5",
+        "text": "source 2005 Doche--Lange\ncompute A = X1^2\ncompute B = A^2\ncompute C = Z1^2\ncompute D = C^2\ncompute X3 = B + a6 D^2\ncompute Z3 = X1 C\ncompute Y3 = B Z3 + (A + Y1 Z1 + Z3) X3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/doubling/dbl-2005-dl"
+      },
+      "representation": "shortw/jacobian",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/jacobian/doubling/dbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1=1"
+      ],
+      "id": "shortw/jacobian/doubling/mdbl-2008-bl",
+      "name": "mdbl-2008-bl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "acb741253ca056ba255e3933ea5865a76a2a5760ea374f867fd695ba56a7b55e",
+        "text": "A = X1^2\nB = A^2\nX3 = B+a6\nZ3 = X1\nt0 = A+Y1\nt1 = t0+Z3\nt2 = A+Y1\nt3 = t2*B\nt4 = a6*t1\nY3 = t4+t3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/jacobian/doubling/mdbl-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "4b376cf6d1304497b9966dbd6ac0574a01f53f554b51bf0ba9a5ba681516c403",
+        "text": "source 2008 Bernstein--Lange\nassume Z1=1\ncompute A = X1^2\ncompute B = A^2\ncompute X3 = B + a6 \ncompute Z3 = X1 \ncompute Y3 = a6 (A + Y1 + Z3) + (A +Y1) B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/doubling/mdbl-2008-bl"
+      },
+      "representation": "shortw/jacobian",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/jacobian/doubling/mdbl-2008-bl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/jacobian/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "a4537cb1c6d039f08fabe5112a6f5905fafb8901eca7771984a7c467d08bebd5",
+        "text": "A = 1/Z1\nB = A^2\nX3 = B*X1\nt0 = B*Y1\nY3 = A*t0\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/jacobian/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "0833215cba6c6e67166e70850e3cc822475c524515cb1af3762b99c0badcd8c1",
+        "text": "compute A = 1/Z1\ncompute B = A^2\ncompute X3 = B X1\ncompute Y3 = A B Y1\ncompute Z3 = 1\n\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/scaling/scale"
+      },
+      "representation": "shortw/jacobian",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/jacobian/scaling/scale.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lambda/addition/add-2013-olar",
+      "name": "add-2013-olar",
+      "operation": "addition",
+      "program": {
+        "sha256": "e214467ae10f0ca61ae6f26ee1f55561b5ec94e3f3fbe8ce926df18bfd20a33d",
+        "text": "A = L1*Z2\nB = L2*Z1\nC = A+B\nD = X1*Z2\nE = X2*Z1\nF = D+E\nG = F^2\nH = C*D\nI = C*E\nJ = C*G\nK = J*Z2\nX3 = H*I\nt0 = I+G\nt1 = L1+Z1\nt2 = t0^2\nt3 = K*t1\nL3 = t2+t3\nZ3 = K*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lambda/addition/add-2013-olar.op3"
+      },
+      "record": {
+        "sha256": "bdaeed2a086df22c36e31f2e1681488bda83509b321a0da7b1235504a8663417",
+        "text": "source 2013 Oliveira--López--Aranha--Rodríguez-Henríquez \"Lambda coordinates for binary elliptic curves\"; database entry contributed by Chitchanok Chuengsatiansup\ncompute A = L1 Z2\ncompute B = L2 Z1\ncompute C = A + B\ncompute D = X1 Z2\ncompute E = X2 Z1\ncompute F = D + E\ncompute G = F^2\ncompute H = C D\ncompute I = C E\ncompute J = C G\ncompute K = J Z2\ncompute X3 = H I\ncompute L3 = (I + G)^2 + K (L1 + Z1)\ncompute Z3 = K Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lambda/addition/add-2013-olar"
+      },
+      "representation": "shortw/lambda",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lambda/addition/add-2013-olar.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lambda/doubling/dbl-2013-olar",
+      "name": "dbl-2013-olar",
+      "operation": "doubling",
+      "program": {
+        "sha256": "166d338aaedf892fe6010c5587aaeaf956d414ab6d29ed327212dfffd5ae72d1",
+        "text": "A = Z1^2\nB = L1^2\nC = L1*Z1\nD = a2*A\nt0 = B+C\nE = t0+D\nF = X1*Z1\nX3 = E^2\nZ3 = E*A\nt1 = F^2\nt2 = E*C\nt3 = t1+X3\nt4 = t3+t2\nL3 = t4+Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lambda/doubling/dbl-2013-olar.op3"
+      },
+      "record": {
+        "sha256": "d0ab28986f7c8a7d61fb1e52d24b1bcfd41e15ca13df9bfa2280c4523afd75c5",
+        "text": "source 2013 Oliveira--López--Aranha--Rodríguez-Henríquez \"Lambda coordinates for binary elliptic curves\"; database entry contributed by Chitchanok Chuengsatiansup\ncompute A = Z1^2\ncompute B = L1^2\ncompute C = L1 Z1\ncompute D = a2 A\ncompute E = B + C + D\ncompute F = X1 Z1\ncompute X3 = E^2\ncompute Z3 = E A\ncompute L3 = F^2 + X3 + E C + Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lambda/doubling/dbl-2013-olar"
+      },
+      "representation": "shortw/lambda",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lambda/doubling/dbl-2013-olar.sage"
+    },
+    {
+      "assumptions": [
+        "a21 = a2 + 1",
+        "a226 = a2^2 + a6"
+      ],
+      "id": "shortw/lambda/doubling/dbl-2013-olar-2",
+      "name": "dbl-2013-olar-2",
+      "operation": "doubling",
+      "program": {
+        "sha256": "f8419a1f6b547d53c44f9e1f2c8e7bde82c05b0c0b8918c200f6f53b51fe2586",
+        "text": "A = Z1^2\nB = L1+Z1\nC = L1*B\nD = a2*A\nE = C+D\nF = L1+X1\nG = F^2\nH = A^2\nX3 = E^2\nZ3 = E*A\nt0 = G+E\nt1 = t0+A\nt2 = a21*Z3\nt3 = a226*H\nt4 = G*t1\nt5 = t4+t3\nt6 = t5+X3\nL3 = t6+t2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lambda/doubling/dbl-2013-olar-2.op3"
+      },
+      "record": {
+        "sha256": "807baa084422a15d9cdd7ac9f3dc326179a3f1fec3df3fa3cc92db2babf04b9c",
+        "text": "source 2013 Oliveira--López--Aranha--Rodríguez-Henríquez \"Lambda coordinates for binary elliptic curves\"; database entry contributed by Chitchanok Chuengsatiansup\nparameter a21\nassume a21 = a2 + 1\nparameter a226\nassume a226 = a2^2 + a6\ncompute A = Z1^2\ncompute B = L1 + Z1\ncompute C = L1 B\ncompute D = a2 A\ncompute E = C + D\ncompute F = L1 + X1\ncompute G = F^2\ncompute H = A^2\ncompute X3 = E^2\ncompute Z3 = E A\ncompute L3 = G (G + E + A) + a226 H + X3 + a21 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lambda/doubling/dbl-2013-olar-2"
+      },
+      "representation": "shortw/lambda",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lambda/doubling/dbl-2013-olar-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-0/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "6c0f67071569405926f2b0b3c9cb6b36bcf5200e08c379fa1da9409cd1253e7d",
+        "text": "A = X1*Z2\nB = X2*Z1\nC = A^2\nD = B^2\nE = A+B\nF = C+D\nt0 = Z2^2\nG = Y1*t0\nt1 = Z1^2\nH = Y2*t1\nI = G+H\nJ = I*E\nt2 = Z1*Z2\nZ3 = F*t2\nt3 = H+D\nt4 = C+G\nt5 = B*t4\nt6 = A*t3\nX3 = t6+t5\nt7 = F*G\nt8 = A*J\nt9 = t8+t7\nt10 = J+Z3\nt11 = t10*X3\nt12 = t9*F\nY3 = t12+t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "a2d82340d2491e502d03eec27eea652061a70010deadbaef9f744020cdef9cc7",
+        "text": "source 2005 Doche--Lange / Higuchi Takagi\ncompute A = X1 Z2\ncompute B = X2 Z1\ncompute C = A^2\ncompute D = B^2\ncompute E = A + B\ncompute F = C + D\ncompute G = Y1 Z2^2\ncompute H = Y2 Z1^2\ncompute I = G + H\ncompute J = I E\ncompute Z3 = F Z1 Z2\ncompute X3 = A (H + D) + B (C+G)\ncompute Y3 = (A J + F G) F + (J + Z3) X3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/addition/add-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab-0/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "e92a297490559f2d450b5880fa5ee9951f2f3c162d2638e056493b30caec8d50",
+        "text": "t0 = Z1^2\nt1 = Y2*t0\nA = Y1+t1\nt2 = X2*Z1\nB = X1+t2\nC = B*Z1\nZ3 = C^2\nD = X2*Z3\nt3 = B^2\nt4 = a2*C\nt5 = A+t3\nt6 = t5+t4\nt7 = A^2\nt8 = C*t6\nX3 = t7+t8\nt9 = A*C\nt10 = D+X3\nt11 = t9+Z3\nt12 = Y2+X2\nt13 = Z3^2\nt14 = t12*t13\nt15 = t10*t11\nY3 = t15+t14\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e9a63cdc347eef08a4721588670672b5376413d665475003d05fc55af35de408",
+        "text": "source 2005 Doche--Lange / Al-Daoud et al 2002 \nassume Z2 = 1\ncompute A = Y1 + Y2 Z1^2\ncompute B = X1 + X2 Z1\ncompute C = B Z1\ncompute Z3 = C^2\ncompute D = X2 Z3\ncompute X3 = A^2 + C (A + B^2 + a2 C)\ncompute Y3 = (D + X3) (A C + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/addition/madd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1 ",
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab-0/addition/mmadd-2005-dl",
+      "name": "mmadd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "1a8ec6fecde268005e2963aa996172b085b65ce8248bdda3fcd8e85c551e7477",
+        "text": "A = Y1+Y2\nB = X1+X2\nZ3 = B^2\nD = X2*Z3\nt0 = a2*B\nt1 = A+Z3\nt2 = t1+t0\nt3 = A^2\nt4 = B*t2\nX3 = t3+t4\nt5 = A*B\nt6 = D+X3\nt7 = t5+Z3\nt8 = Y2+X2\nt9 = Z3^2\nt10 = t8*t9\nt11 = t6*t7\nY3 = t11+t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/addition/mmadd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e5e73b0e1bbbf2fa58892f56497bae05e737ac4ea2bdf211d5a697b976ca6fb3",
+        "text": "source 2005 Doche--Lange\nassume Z1 = 1 \nassume Z2 = 1\ncompute A = Y1 + Y2 \ncompute B = X1 + X2 \ncompute Z3 = B^2\ncompute D = X2 Z3\ncompute X3 = A^2 + B (A + Z3 + a2 B)\ncompute Y3 = (D + X3) (A B + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/addition/mmadd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/addition/mmadd-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-0/doubling/dbl-2005-dl",
+      "name": "dbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "75afccb1c969a789e533ad3e503abcdda3b5407262ed1b850931b10ccce2a76f",
+        "text": "A = Z1^2\nt0 = A^2\nB = a6*t0\nC = X1^2\nZ3 = A*C\nt1 = C^2\nX3 = t1+B\nt2 = Y1^2\nt3 = a2*Z3\nt4 = t2+t3\nt5 = t4+B\nt6 = Z3*B\nt7 = t5*X3\nY3 = t7+t6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/doubling/dbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "18fd5e32226f16e26c1ae98fd5fa30ee6321f28c87d96bedabbdb932b9fcb9d3",
+        "text": "source 2005 Doche--Lange, following Lopez-Dahab 1998\ncompute A = Z1^2\ncompute B = a6 A^2\ncompute C =  X1^2\ncompute Z3 = A C\ncompute X3 =  C^2 + B\ncompute Y3 = (Y1^2 + a2 Z3 + B) X3 + Z3 B \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/doubling/dbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/doubling/dbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/lopezdahab-0/doubling/dbl-2005-dl-a2-0",
+      "name": "dbl-2005-dl-a2-0",
+      "operation": "doubling",
+      "program": {
+        "sha256": "5a3b8d09c26a50751cd3fbd5c49351bfd6e5933fbe568546bae709022cb7ca4f",
+        "text": "A = X1^2\nt0 = Z1^2\nB = sqrta6*t0\nC = X1*Z1\nZ3 = C^2\nt1 = A+B\nX3 = t1^2\nt2 = Y1+B\nt3 = A+B\nt4 = t2*t3\nt5 = B*C\nt6 = t5+t4\nY3 = t6^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/doubling/dbl-2005-dl-a2-0.op3"
+      },
+      "record": {
+        "sha256": "b91247b3cb443d34a1f5f4cc649ca2cdb369fe1e3e211450107cb1879422ae3f",
+        "text": "source 2005 Doche--Lange, following Lopez-Dahab\nappliesto lopezdahab-0\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X1^2\ncompute B = sqrta6 Z1^2\ncompute C = X1 Z1\ncompute Z3 = C^2\ncompute X3 = (A+B)^2\ncompute Y3 = (B C + (Y1 + B) (A + B))^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/doubling/dbl-2005-dl-a2-0"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/doubling/dbl-2005-dl-a2-0.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-0/doubling/dbl-2005-l",
+      "name": "dbl-2005-l",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d165bf3c7509d92bdf761efa18de05f98b758f4fe444fdbe642f3d162e445286",
+        "text": "A = X1*Z1\nB = X1^2\nC = B+Y1\nD = A*C\nZ3 = A^2\nt0 = C^2\nt1 = a2*Z3\nt2 = t0+D\nX3 = t2+t1\nt3 = Z3+D\nt4 = B^2\nt5 = t4*Z3\nt6 = t3*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/doubling/dbl-2005-l.op3"
+      },
+      "record": {
+        "sha256": "b51165889f0672250730e69d1a29c3ac5730aeed9b4dd0e92c3f5e25830a1b24",
+        "text": "source 2005 Lange\ncompute A = X1 Z1\ncompute B = X1^2\ncompute C = B + Y1\ncompute D = A C\ncompute Z3 = A^2\ncompute X3 = C^2 + D +a2 Z3\ncompute Y3 = (Z3+D) X3 + B^2 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/doubling/dbl-2005-l"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/doubling/dbl-2005-l.sage"
+    },
+    {
+      "assumptions": [
+        "Z1=1"
+      ],
+      "id": "shortw/lopezdahab-0/doubling/mdbl-2005-dl",
+      "name": "mdbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d4c8c7e60feff03a43c55a6d4c59f8927fdf2257d7a056d27e64e3ceaf663ea5",
+        "text": "C = X1^2\nZ3 = C\nt0 = C^2\nX3 = t0+a6\nt1 = Y1^2\nt2 = a2*Z3\nt3 = t1+t2\nt4 = t3+a6\nt5 = a6*Z3\nt6 = t4*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-0/doubling/mdbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "f99729cb4a61b27fe0f0210076bbea3fa01a45f56805c2a42a177d3da56b98f4",
+        "text": "source 2005 Doche--Lange\nassume Z1=1\ncompute C = X1^2\ncompute Z3 = C\ncompute X3 = C^2 + a6 \ncompute Y3 = (Y1^2 + a2 Z3 + a6) X3 + a6 Z3 \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/doubling/mdbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-0",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-0/doubling/mdbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-1/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "6c0f67071569405926f2b0b3c9cb6b36bcf5200e08c379fa1da9409cd1253e7d",
+        "text": "A = X1*Z2\nB = X2*Z1\nC = A^2\nD = B^2\nE = A+B\nF = C+D\nt0 = Z2^2\nG = Y1*t0\nt1 = Z1^2\nH = Y2*t1\nI = G+H\nJ = I*E\nt2 = Z1*Z2\nZ3 = F*t2\nt3 = H+D\nt4 = C+G\nt5 = B*t4\nt6 = A*t3\nX3 = t6+t5\nt7 = F*G\nt8 = A*J\nt9 = t8+t7\nt10 = J+Z3\nt11 = t10*X3\nt12 = t9*F\nY3 = t12+t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "a2d82340d2491e502d03eec27eea652061a70010deadbaef9f744020cdef9cc7",
+        "text": "source 2005 Doche--Lange / Higuchi Takagi\ncompute A = X1 Z2\ncompute B = X2 Z1\ncompute C = A^2\ncompute D = B^2\ncompute E = A + B\ncompute F = C + D\ncompute G = Y1 Z2^2\ncompute H = Y2 Z1^2\ncompute I = G + H\ncompute J = I E\ncompute Z3 = F Z1 Z2\ncompute X3 = A (H + D) + B (C+G)\ncompute Y3 = (A J + F G) F + (J + Z3) X3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/addition/add-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab-1/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "e92a297490559f2d450b5880fa5ee9951f2f3c162d2638e056493b30caec8d50",
+        "text": "t0 = Z1^2\nt1 = Y2*t0\nA = Y1+t1\nt2 = X2*Z1\nB = X1+t2\nC = B*Z1\nZ3 = C^2\nD = X2*Z3\nt3 = B^2\nt4 = a2*C\nt5 = A+t3\nt6 = t5+t4\nt7 = A^2\nt8 = C*t6\nX3 = t7+t8\nt9 = A*C\nt10 = D+X3\nt11 = t9+Z3\nt12 = Y2+X2\nt13 = Z3^2\nt14 = t12*t13\nt15 = t10*t11\nY3 = t15+t14\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e9a63cdc347eef08a4721588670672b5376413d665475003d05fc55af35de408",
+        "text": "source 2005 Doche--Lange / Al-Daoud et al 2002 \nassume Z2 = 1\ncompute A = Y1 + Y2 Z1^2\ncompute B = X1 + X2 Z1\ncompute C = B Z1\ncompute Z3 = C^2\ncompute D = X2 Z3\ncompute X3 = A^2 + C (A + B^2 + a2 C)\ncompute Y3 = (D + X3) (A C + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/addition/madd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1 ",
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab-1/addition/mmadd-2005-dl",
+      "name": "mmadd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "1a8ec6fecde268005e2963aa996172b085b65ce8248bdda3fcd8e85c551e7477",
+        "text": "A = Y1+Y2\nB = X1+X2\nZ3 = B^2\nD = X2*Z3\nt0 = a2*B\nt1 = A+Z3\nt2 = t1+t0\nt3 = A^2\nt4 = B*t2\nX3 = t3+t4\nt5 = A*B\nt6 = D+X3\nt7 = t5+Z3\nt8 = Y2+X2\nt9 = Z3^2\nt10 = t8*t9\nt11 = t6*t7\nY3 = t11+t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/addition/mmadd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e5e73b0e1bbbf2fa58892f56497bae05e737ac4ea2bdf211d5a697b976ca6fb3",
+        "text": "source 2005 Doche--Lange\nassume Z1 = 1 \nassume Z2 = 1\ncompute A = Y1 + Y2 \ncompute B = X1 + X2 \ncompute Z3 = B^2\ncompute D = X2 Z3\ncompute X3 = A^2 + B (A + Z3 + a2 B)\ncompute Y3 = (D + X3) (A B + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/addition/mmadd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/addition/mmadd-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-1/doubling/dbl-2005-dl",
+      "name": "dbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "75afccb1c969a789e533ad3e503abcdda3b5407262ed1b850931b10ccce2a76f",
+        "text": "A = Z1^2\nt0 = A^2\nB = a6*t0\nC = X1^2\nZ3 = A*C\nt1 = C^2\nX3 = t1+B\nt2 = Y1^2\nt3 = a2*Z3\nt4 = t2+t3\nt5 = t4+B\nt6 = Z3*B\nt7 = t5*X3\nY3 = t7+t6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/doubling/dbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "18fd5e32226f16e26c1ae98fd5fa30ee6321f28c87d96bedabbdb932b9fcb9d3",
+        "text": "source 2005 Doche--Lange, following Lopez-Dahab 1998\ncompute A = Z1^2\ncompute B = a6 A^2\ncompute C =  X1^2\ncompute Z3 = A C\ncompute X3 =  C^2 + B\ncompute Y3 = (Y1^2 + a2 Z3 + B) X3 + Z3 B \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/doubling/dbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/doubling/dbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/lopezdahab-1/doubling/dbl-2005-dl-a2-1",
+      "name": "dbl-2005-dl-a2-1",
+      "operation": "doubling",
+      "program": {
+        "sha256": "ed807fe3e3e8ff9d7d5df38e8853d848428a361eaf3261a2b431a8d7a6233fff",
+        "text": "A = X1^2\nt0 = Z1^2\nB = sqrta6*t0\nC = X1*Z1\nZ3 = C^2\nt1 = A+B\nX3 = t1^2\nt2 = Y1+B\nt3 = A+B\nt4 = t2*t3\nt5 = A*C\nt6 = t5+t4\nY3 = t6^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/doubling/dbl-2005-dl-a2-1.op3"
+      },
+      "record": {
+        "sha256": "dc50f1ee00f15683858700adb3a69a76c12e589bd37b02520219e66fbe9ae84f",
+        "text": "source 2005 Doche--Lange, following Lopez-Dahab\nappliesto lopezdahab-1\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X1^2\ncompute B = sqrta6 Z1^2\ncompute C = X1 Z1\ncompute Z3 = C^2\ncompute X3 = (A+B)^2\ncompute Y3 = (A C + (Y1 + B) (A + B))^2\n\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/doubling/dbl-2005-dl-a2-1"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/doubling/dbl-2005-dl-a2-1.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab-1/doubling/dbl-2005-l",
+      "name": "dbl-2005-l",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d165bf3c7509d92bdf761efa18de05f98b758f4fe444fdbe642f3d162e445286",
+        "text": "A = X1*Z1\nB = X1^2\nC = B+Y1\nD = A*C\nZ3 = A^2\nt0 = C^2\nt1 = a2*Z3\nt2 = t0+D\nX3 = t2+t1\nt3 = Z3+D\nt4 = B^2\nt5 = t4*Z3\nt6 = t3*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/doubling/dbl-2005-l.op3"
+      },
+      "record": {
+        "sha256": "b51165889f0672250730e69d1a29c3ac5730aeed9b4dd0e92c3f5e25830a1b24",
+        "text": "source 2005 Lange\ncompute A = X1 Z1\ncompute B = X1^2\ncompute C = B + Y1\ncompute D = A C\ncompute Z3 = A^2\ncompute X3 = C^2 + D +a2 Z3\ncompute Y3 = (Z3+D) X3 + B^2 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/doubling/dbl-2005-l"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/doubling/dbl-2005-l.sage"
+    },
+    {
+      "assumptions": [
+        "Z1=1"
+      ],
+      "id": "shortw/lopezdahab-1/doubling/mdbl-2005-dl",
+      "name": "mdbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d4c8c7e60feff03a43c55a6d4c59f8927fdf2257d7a056d27e64e3ceaf663ea5",
+        "text": "C = X1^2\nZ3 = C\nt0 = C^2\nX3 = t0+a6\nt1 = Y1^2\nt2 = a2*Z3\nt3 = t1+t2\nt4 = t3+a6\nt5 = a6*Z3\nt6 = t4*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab-1/doubling/mdbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "f99729cb4a61b27fe0f0210076bbea3fa01a45f56805c2a42a177d3da56b98f4",
+        "text": "source 2005 Doche--Lange\nassume Z1=1\ncompute C = X1^2\ncompute Z3 = C\ncompute X3 = C^2 + a6 \ncompute Y3 = (Y1^2 + a2 Z3 + a6) X3 + a6 Z3 \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/doubling/mdbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab-1",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab-1/doubling/mdbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "6c0f67071569405926f2b0b3c9cb6b36bcf5200e08c379fa1da9409cd1253e7d",
+        "text": "A = X1*Z2\nB = X2*Z1\nC = A^2\nD = B^2\nE = A+B\nF = C+D\nt0 = Z2^2\nG = Y1*t0\nt1 = Z1^2\nH = Y2*t1\nI = G+H\nJ = I*E\nt2 = Z1*Z2\nZ3 = F*t2\nt3 = H+D\nt4 = C+G\nt5 = B*t4\nt6 = A*t3\nX3 = t6+t5\nt7 = F*G\nt8 = A*J\nt9 = t8+t7\nt10 = J+Z3\nt11 = t10*X3\nt12 = t9*F\nY3 = t12+t11\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "a2d82340d2491e502d03eec27eea652061a70010deadbaef9f744020cdef9cc7",
+        "text": "source 2005 Doche--Lange / Higuchi Takagi\ncompute A = X1 Z2\ncompute B = X2 Z1\ncompute C = A^2\ncompute D = B^2\ncompute E = A + B\ncompute F = C + D\ncompute G = Y1 Z2^2\ncompute H = Y2 Z1^2\ncompute I = G + H\ncompute J = I E\ncompute Z3 = F Z1 Z2\ncompute X3 = A (H + D) + B (C+G)\ncompute Y3 = (A J + F G) F + (J + Z3) X3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/addition/add-2005-dl"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "e92a297490559f2d450b5880fa5ee9951f2f3c162d2638e056493b30caec8d50",
+        "text": "t0 = Z1^2\nt1 = Y2*t0\nA = Y1+t1\nt2 = X2*Z1\nB = X1+t2\nC = B*Z1\nZ3 = C^2\nD = X2*Z3\nt3 = B^2\nt4 = a2*C\nt5 = A+t3\nt6 = t5+t4\nt7 = A^2\nt8 = C*t6\nX3 = t7+t8\nt9 = A*C\nt10 = D+X3\nt11 = t9+Z3\nt12 = Y2+X2\nt13 = Z3^2\nt14 = t12*t13\nt15 = t10*t11\nY3 = t15+t14\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e9a63cdc347eef08a4721588670672b5376413d665475003d05fc55af35de408",
+        "text": "source 2005 Doche--Lange / Al-Daoud et al 2002 \nassume Z2 = 1\ncompute A = Y1 + Y2 Z1^2\ncompute B = X1 + X2 Z1\ncompute C = B Z1\ncompute Z3 = C^2\ncompute D = X2 Z3\ncompute X3 = A^2 + C (A + B^2 + a2 C)\ncompute Y3 = (D + X3) (A C + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/addition/madd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1 ",
+        "Z2 = 1"
+      ],
+      "id": "shortw/lopezdahab/addition/mmadd-2005-dl",
+      "name": "mmadd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "1a8ec6fecde268005e2963aa996172b085b65ce8248bdda3fcd8e85c551e7477",
+        "text": "A = Y1+Y2\nB = X1+X2\nZ3 = B^2\nD = X2*Z3\nt0 = a2*B\nt1 = A+Z3\nt2 = t1+t0\nt3 = A^2\nt4 = B*t2\nX3 = t3+t4\nt5 = A*B\nt6 = D+X3\nt7 = t5+Z3\nt8 = Y2+X2\nt9 = Z3^2\nt10 = t8*t9\nt11 = t6*t7\nY3 = t11+t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/addition/mmadd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "e5e73b0e1bbbf2fa58892f56497bae05e737ac4ea2bdf211d5a697b976ca6fb3",
+        "text": "source 2005 Doche--Lange\nassume Z1 = 1 \nassume Z2 = 1\ncompute A = Y1 + Y2 \ncompute B = X1 + X2 \ncompute Z3 = B^2\ncompute D = X2 Z3\ncompute X3 = A^2 + B (A + Z3 + a2 B)\ncompute Y3 = (D + X3) (A B + Z3) + (Y2 + X2) Z3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/addition/mmadd-2005-dl"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/addition/mmadd-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab/doubling/dbl-2005-dl",
+      "name": "dbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "75afccb1c969a789e533ad3e503abcdda3b5407262ed1b850931b10ccce2a76f",
+        "text": "A = Z1^2\nt0 = A^2\nB = a6*t0\nC = X1^2\nZ3 = A*C\nt1 = C^2\nX3 = t1+B\nt2 = Y1^2\nt3 = a2*Z3\nt4 = t2+t3\nt5 = t4+B\nt6 = Z3*B\nt7 = t5*X3\nY3 = t7+t6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/doubling/dbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "18fd5e32226f16e26c1ae98fd5fa30ee6321f28c87d96bedabbdb932b9fcb9d3",
+        "text": "source 2005 Doche--Lange, following Lopez-Dahab 1998\ncompute A = Z1^2\ncompute B = a6 A^2\ncompute C =  X1^2\ncompute Z3 = A C\ncompute X3 =  C^2 + B\ncompute Y3 = (Y1^2 + a2 Z3 + B) X3 + Z3 B \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/doubling/dbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/doubling/dbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab/doubling/dbl-2005-l",
+      "name": "dbl-2005-l",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d165bf3c7509d92bdf761efa18de05f98b758f4fe444fdbe642f3d162e445286",
+        "text": "A = X1*Z1\nB = X1^2\nC = B+Y1\nD = A*C\nZ3 = A^2\nt0 = C^2\nt1 = a2*Z3\nt2 = t0+D\nX3 = t2+t1\nt3 = Z3+D\nt4 = B^2\nt5 = t4*Z3\nt6 = t3*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/doubling/dbl-2005-l.op3"
+      },
+      "record": {
+        "sha256": "b51165889f0672250730e69d1a29c3ac5730aeed9b4dd0e92c3f5e25830a1b24",
+        "text": "source 2005 Lange\ncompute A = X1 Z1\ncompute B = X1^2\ncompute C = B + Y1\ncompute D = A C\ncompute Z3 = A^2\ncompute X3 = C^2 + D +a2 Z3\ncompute Y3 = (Z3+D) X3 + B^2 Z3\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/doubling/dbl-2005-l"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/doubling/dbl-2005-l.sage"
+    },
+    {
+      "assumptions": [
+        "Z1=1"
+      ],
+      "id": "shortw/lopezdahab/doubling/mdbl-2005-dl",
+      "name": "mdbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "d4c8c7e60feff03a43c55a6d4c59f8927fdf2257d7a056d27e64e3ceaf663ea5",
+        "text": "C = X1^2\nZ3 = C\nt0 = C^2\nX3 = t0+a6\nt1 = Y1^2\nt2 = a2*Z3\nt3 = t1+t2\nt4 = t3+a6\nt5 = a6*Z3\nt6 = t4*X3\nY3 = t6+t5\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/lopezdahab/doubling/mdbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "f99729cb4a61b27fe0f0210076bbea3fa01a45f56805c2a42a177d3da56b98f4",
+        "text": "source 2005 Doche--Lange\nassume Z1=1\ncompute C = X1^2\ncompute Z3 = C\ncompute X3 = C^2 + a6 \ncompute Y3 = (Y1^2 + a2 Z3 + a6) X3 + a6 Z3 \n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/doubling/mdbl-2005-dl"
+      },
+      "representation": "shortw/lopezdahab",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/lopezdahab/doubling/mdbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/addition/add-2005-dl",
+      "name": "add-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "4f2e71a3b0349a7f30b675bd578de9620aed45a3092bcaf8835affda1e688c17",
+        "text": "t0 = Z1*Y2\nt1 = Y1*Z2\nA = t1+t0\nt2 = Z1*X2\nt3 = X1*Z2\nB = t3+t2\nC = B^2\nD = Z1*Z2\nt4 = A^2\nt5 = a2*C\nt6 = A*B\nt7 = t4+t6\nt8 = t7+t5\nt9 = B*C\nt10 = t8*D\nE = t10+t9\nX3 = B*E\nt11 = Y1*B\nt12 = A*X1\nt13 = t12+t11\nt14 = A+B\nt15 = t14*E\nt16 = t13*Z2\nt17 = C*t16\nY3 = t17+t15\nt18 = B^3\nZ3 = t18*D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/add-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "59a557e60d8a6a63cd4b882510884b2a1472fe5dc5eb806a8bc74828643d8b17",
+        "text": "source 2005 Doche--Lange\ncompute A = Y1 Z2 + Z1 Y2\ncompute B = X1 Z2 + Z1 X2\ncompute C = B^2\ncompute D = Z1 Z2\ncompute E = (A^2 + A B + a2 C) D + B C\ncompute X3 = B E\ncompute Y3 = C (A X1 + Y1 B) Z2 + (A + B) E\ncompute Z3 = B^3 D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/add-2005-dl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/add-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/addition/add-2005-dl-2",
+      "name": "add-2005-dl-2",
+      "operation": "addition",
+      "program": {
+        "sha256": "8bfebea3adb9fa6b5ca10619f33308c30add3ba4f4f59ca29bc6a39c29ed6893",
+        "text": "t0 = Z1*Y2\nt1 = Y1*Z2\nA = t1+t0\nt2 = Z1*X2\nt3 = X1*Z2\nB = t3+t2\nC = B^2\nD = Z1*Z2\nE = B*C\nt4 = A^2\nt5 = a2*C\nt6 = A*B\nt7 = t4+t6\nt8 = t7+t5\nt9 = t8*D\nF = t9+E\nX3 = B*F\nt10 = Y1*B\nt11 = A*X1\nt12 = t11+t10\nt13 = A+B\nt14 = t13*F\nt15 = t12*Z2\nt16 = C*t15\nY3 = t16+t14\nZ3 = E*D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/add-2005-dl-2.op3"
+      },
+      "record": {
+        "sha256": "0fe16be2bb9e793397732f9fae5f0a22a0fc5382f33c454dd043a3a22ccccfd8",
+        "text": "source 2005 Doche--Lange, plus common-subexpression elimination\ncompute A = Y1 Z2 + Z1 Y2\ncompute B = X1 Z2 + Z1 X2\ncompute C = B^2\ncompute D = Z1 Z2\ncompute E = B C\ncompute F = (A^2 + A B + a2 C) D + E\ncompute X3 = B F\ncompute Y3 = C (A X1 + Y1 B) Z2 + (A + B) F\ncompute Z3 = E D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/add-2005-dl-2"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/add-2005-dl-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/addition/add-2008-bl",
+      "name": "add-2008-bl",
+      "operation": "addition",
+      "program": {
+        "sha256": "ae87172d0b527f86c519bb4005602975ec498b61da731d8fd9e916a9312549b0",
+        "text": "Y1Z2 = Y1*Z2\nX1Z2 = X1*Z2\nt0 = Z1*Y2\nA = Y1Z2+t0\nt1 = Z1*X2\nB = X1Z2+t1\nAB = A+B\nC = B^2\nD = Z1*Z2\nE = B*C\nt2 = a2*C\nt3 = A*AB\nt4 = t3+t2\nt5 = t4*D\nF = t5+E\nX3 = B*F\nt6 = B*Y1Z2\nt7 = A*X1Z2\nt8 = t7+t6\nt9 = AB*F\nt10 = C*t8\nY3 = t10+t9\nZ3 = E*D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/add-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "5f940dcebd2f183f1dcec44d201bbf740648c072ca58d3fd3ce0e86b1574e927",
+        "text": "source 2008 Bernstein--Lange\ncompute Y1Z2 = Y1 Z2\ncompute X1Z2 = X1 Z2\ncompute A = Y1Z2 + Z1 Y2\ncompute B = X1Z2 + Z1 X2\ncompute AB = A + B\ncompute C = B^2\ncompute D = Z1 Z2\ncompute E = B C\ncompute F = (A AB + a2 C) D + E\ncompute X3 = B F\ncompute Y3 = C (A X1Z2 + B Y1Z2) + AB F\ncompute Z3 = E D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/add-2008-bl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/add-2008-bl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1 "
+      ],
+      "id": "shortw/projective/addition/madd-2005-dl",
+      "name": "madd-2005-dl",
+      "operation": "addition",
+      "program": {
+        "sha256": "f8a9ee155041b067d637e930e6c14d3e73b3678d75519af4023ef31b2d49d728",
+        "text": "t0 = Z1*Y2\nA = Y1+t0\nt1 = Z1*X2\nB = X1+t1\nC = B^2\nE = B*C\nt2 = A^2\nt3 = a2*C\nt4 = A*B\nt5 = t2+t4\nt6 = t5+t3\nt7 = t6*Z1\nF = t7+E\nX3 = B*F\nt8 = Y1*B\nt9 = A*X1\nt10 = t9+t8\nt11 = A+B\nt12 = t11*F\nt13 = C*t10\nY3 = t13+t12\nZ3 = E*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/madd-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "de4600469724f2a2f503e929cc10ac7e6d7f2d9fe945f6bffd2d87e5e133029b",
+        "text": "source 2005 Doche--Lange\nassume Z2 = 1 \ncompute A = Y1 + Z1 Y2\ncompute B = X1 + Z1 X2\ncompute C = B^2\ncompute E = B C\ncompute F = (A^2 + A B + a2 C) Z1 + E\ncompute X3 = B F\ncompute Y3 = C (A X1 + Y1 B) + (A + B) F\ncompute Z3 = E Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/madd-2005-dl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/madd-2005-dl.sage"
+    },
+    {
+      "assumptions": [
+        "Z2 = 1"
+      ],
+      "id": "shortw/projective/addition/madd-2008-bl",
+      "name": "madd-2008-bl",
+      "operation": "addition",
+      "program": {
+        "sha256": "76270540bb74ba8e33527ae0653a216ec96e3b0302bb890238961b8ad7e76a0d",
+        "text": "t0 = Z1*Y2\nA = Y1+t0\nt1 = Z1*X2\nB = X1+t1\nAB = A+B\nC = B^2\nE = B*C\nt2 = a2*C\nt3 = A*AB\nt4 = t3+t2\nt5 = t4*Z1\nF = t5+E\nX3 = B*F\nt6 = B*Y1\nt7 = A*X1\nt8 = t7+t6\nt9 = AB*F\nt10 = C*t8\nY3 = t10+t9\nZ3 = E*Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/madd-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "b14bc750f07e33d81dce5474b27180013daabc958481d3303d0d969358daf114",
+        "text": "source 2008 Bernstein--Lange\nassume Z2 = 1\ncompute A = Y1 + Z1 Y2\ncompute B = X1 + Z1 X2\ncompute AB = A + B\ncompute C = B^2\ncompute E = B C\ncompute F = (A AB + a2 C) Z1 + E\ncompute X3 = B F\ncompute Y3 = C (A X1 + B Y1) + AB F\ncompute Z3 = E Z1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/madd-2008-bl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/madd-2008-bl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "Z2 = 1"
+      ],
+      "id": "shortw/projective/addition/mmadd-2008-bl",
+      "name": "mmadd-2008-bl",
+      "operation": "addition",
+      "program": {
+        "sha256": "d3503d9026aa657c2b4e13f123968e4f1fc771401626fc9082a0e8d38f886453",
+        "text": "A = Y1+Y2\nB = X1+X2\nAB = A+B\nC = B^2\nZ3 = B*C\nt0 = a2*C\nt1 = A*AB\nt2 = t1+t0\nF = t2+Z3\nX3 = B*F\nt3 = B*Y1\nt4 = A*X1\nt5 = t4+t3\nt6 = AB*F\nt7 = C*t5\nY3 = t7+t6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/addition/mmadd-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "09892e4a077ce4c51074def12c9292e3a4f5504c21690c4cf8594a819f32d3ad",
+        "text": "source 2008 Bernstein--Lange\nassume Z1 = 1\nassume Z2 = 1\ncompute A = Y1 + Y2\ncompute B = X1 + X2\ncompute AB = A + B\ncompute C = B^2\ncompute Z3 = B C\ncompute F = A AB + a2 C + Z3\ncompute X3 = B F\ncompute Y3 = C (A X1 + B Y1) + AB F\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/addition/mmadd-2008-bl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/addition/mmadd-2008-bl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/doubling/dbl-2005-dl",
+      "name": "dbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "6360902286d17573b578dfeaff643a5312865acddad0ad22b67832896b95d71e",
+        "text": "A = X1^2\nt0 = Y1*Z1\nB = A+t0\nC = X1*Z1\nD = C^2\nt1 = B^2\nt2 = a2*D\nt3 = B*C\nt4 = t1+t3\nE = t4+t2\nX3 = C*E\nt5 = B+C\nt6 = A^2\nt7 = t6*C\nt8 = t5*E\nY3 = t8+t7\nZ3 = C*D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/doubling/dbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "89427ea95f90457c53481b7ca65cf0a09e862f9ab601d0c95181dfd210f0eee2",
+        "text": "source 2005 Doche--Lange\ncompute A = X1^2\ncompute B = A + Y1 Z1\ncompute C = X1 Z1\ncompute D = C^2\ncompute E = (B^2 + B C + a2 D)\ncompute X3 = C E\ncompute Y3 = (B + C) E + A^2 C\ncompute Z3 = C D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/doubling/dbl-2005-dl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/doubling/dbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/doubling/dbl-2008-bl",
+      "name": "dbl-2008-bl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "77a068f4abcf2f65c7b2091b7931dd0130731ebc73e708c75a52e929541d7686",
+        "text": "A = X1^2\nt0 = Y1*Z1\nB = A+t0\nC = X1*Z1\nBC = B+C\nD = C^2\nt1 = a2*D\nt2 = B*BC\nE = t2+t1\nX3 = C*E\nt3 = A^2\nt4 = t3*C\nt5 = BC*E\nY3 = t5+t4\nZ3 = C*D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/doubling/dbl-2008-bl.op3"
+      },
+      "record": {
+        "sha256": "a7c835004cb71f3c93c6690d707bdb244713affe4906821c30affc30837f561a",
+        "text": "source 2008 Bernstein--Lange\ncompute A = X1^2\ncompute B = A + Y1 Z1\ncompute C = X1 Z1\ncompute BC = B + C\ncompute D = C^2\ncompute E = B BC + a2 D\ncompute X3 = C E\ncompute Y3 = BC E + A^2 C\ncompute Z3 = C D\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/doubling/dbl-2008-bl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/doubling/dbl-2008-bl.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/projective/doubling/mdbl-2005-dl",
+      "name": "mdbl-2005-dl",
+      "operation": "doubling",
+      "program": {
+        "sha256": "e488b003167d058a064abb84d25e1e2971b719d81deafd65e0246be58d306b7a",
+        "text": "A = X1^2\nB = A+Y1\nt0 = B^2\nt1 = a2*A\nt2 = B*X1\nt3 = t0+t2\nE = t3+t1\nX3 = X1*E\nt4 = B+X1\nt5 = A^2\nt6 = t5*X1\nt7 = t4*E\nY3 = t7+t6\nZ3 = X1*A\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/doubling/mdbl-2005-dl.op3"
+      },
+      "record": {
+        "sha256": "db85217276e41c4e67f2989e433924fdf547c7741d4d0bbaf64a5ac2d777c758",
+        "text": "source 2005 Doche--Lange\nassume Z1 = 1\ncompute A = X1^2\ncompute B = A + Y1\ncompute E = (B^2 + B X1 + a2 A)\ncompute X3 = X1 E\ncompute Y3 = (B + X1) E + A^2 X1\ncompute Z3 = X1 A\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/doubling/mdbl-2005-dl"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/doubling/mdbl-2005-dl.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "7d5fd98afbf2878ab0b601479afe78dbe3092c13d81f5fc14e0f512d493ff631",
+        "text": "A = 1/Z1\nX3 = A*X1\nY3 = A*Y1\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/projective/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "da7589baacbb11d7e75506297820a57d8c0a53fdb780d74a8bba4e536f029739",
+        "text": "compute A = 1/Z1\ncompute X3 = A X1\ncompute Y3 = A Y1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/scaling/scale"
+      },
+      "representation": "shortw/projective",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/projective/scaling/scale.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/diffadd/dadd-2003-s",
+      "name": "dadd-2003-s",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "2b5412bd1b14e23e3eb79b693772b3281b1416a635267972869364df48cc1358",
+        "text": "t0 = X2^2\nt1 = X3^2\nt2 = Z2^2\nt3 = Z3^2\nt4 = t2*t3\nt5 = a6*t4\nt6 = t0*t1\nt7 = t6+t5\nX5 = Z1*t7\nt8 = X2+Z2\nt9 = X3+Z3\nt10 = Z2*Z3\nt11 = X2*X3\nt12 = t8*t9\nt13 = t12-t11\nt14 = t13-t10\nt15 = t14^2\nZ5 = X1*t15\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/diffadd/dadd-2003-s.op3"
+      },
+      "record": {
+        "sha256": "dba0436769546bf0405db4ac9f9077933124e254ae4b218dd79e43524718991a",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6\ncompute X5 = Z1(X2^2 X3^2 + a6 Z2^2 Z3^2)\ncompute Z5 = X1((X2+Z2)(X3+Z3)-X2 X3-Z2 Z3)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/diffadd/dadd-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/diffadd/dadd-2003-s.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/diffadd/dadd-2003-s-2",
+      "name": "dadd-2003-s-2",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "b802125b30280dd048257e8ea283ea27ceba5050d726ce33095ea77426c88216",
+        "text": "A = X2*X3\nB = Z2*Z3\nt0 = A^2\nt1 = B^2\nt2 = a6*t1\nt3 = t0+t2\nX5 = Z1*t3\nt4 = X2+Z2\nt5 = X3+Z3\nt6 = t4*t5\nt7 = t6-A\nt8 = t7-B\nt9 = t8^2\nZ5 = X1*t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/diffadd/dadd-2003-s-2.op3"
+      },
+      "record": {
+        "sha256": "9fd69cd909a46def1c084acb6fc7f12c69cb88c745e2c4a3d2b7cf2c269fecb9",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus common-subexpression elimination\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute X5 = Z1(A^2 + a6 B^2)\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/diffadd/dadd-2003-s-2"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/diffadd/dadd-2003-s-2.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/xz/diffadd/mdadd-2003-s",
+      "name": "mdadd-2003-s",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "00ef04f47ab8eaccfd93db15176d25ff61696b8fa5972783f0168beb6489e1c9",
+        "text": "A = X2*Z3\nB = X3*Z2\nt0 = A+B\nZ5 = t0^2\nt1 = A*B\nt2 = X1*Z5\nX5 = t2+t1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/diffadd/mdadd-2003-s.op3"
+      },
+      "record": {
+        "sha256": "88a80f1cb358a59289324dff8885a5ab341e925ccbd1fe24b859be08d73b520d",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.1, plus Z1=1, plus common-subexpression elimination\nassume Z1 = 1\ncompute A = X2 Z3\ncompute B = X3 Z2\ncompute Z5 = (A+B)^2\ncompute X5 = X1 Z5 + A B\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/diffadd/mdadd-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/diffadd/mdadd-2003-s.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/xz/diffadd/mdadd-2003-s-2",
+      "name": "mdadd-2003-s-2",
+      "operation": "diffadd",
+      "program": {
+        "sha256": "f9adad3065f960f78c72a4e9469093abb50b1e255f814b2b23df6d7117411f01",
+        "text": "A = X2*X3\nB = Z2*Z3\nt0 = A^2\nt1 = B^2\nt2 = a6*t1\nX5 = t0+t2\nt3 = X2+Z2\nt4 = X3+Z3\nt5 = t3*t4\nt6 = t5-A\nt7 = t6-B\nt8 = t7^2\nZ5 = X1*t8\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/diffadd/mdadd-2003-s-2.op3"
+      },
+      "record": {
+        "sha256": "99539da8c858862fed5ba5ea00e1193eef82f3bb8e2a3a27ae4f5f4c716ff344",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus common-subexpression elimination, plus Z1=1\nassume Z1 = 1\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute X5 = A^2 + a6 B^2\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/diffadd/mdadd-2003-s-2"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/diffadd/mdadd-2003-s-2.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/doubling/dbl-2003-s",
+      "name": "dbl-2003-s",
+      "operation": "doubling",
+      "program": {
+        "sha256": "8b6ce8eeda2178c0e705e8eeb2c4ac3c7092f8c2d8ad4903e1c239fc08da0025",
+        "text": "t0 = X1^4\nt1 = Z1^4\nt2 = a6*t1\nX3 = t0+t2\nt3 = X1*Z1\nZ3 = t3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/doubling/dbl-2003-s.op3"
+      },
+      "record": {
+        "sha256": "e2856bfde0df512fe310d69ffc8166ebfb1bcd2baab41d8fdbabcb78d0233953",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6\ncompute X3 = X1^4 + a6 Z1^4\ncompute Z3 = (X1 Z1)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/doubling/dbl-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/doubling/dbl-2003-s.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/doubling/dbl-2003-s-2",
+      "name": "dbl-2003-s-2",
+      "operation": "doubling",
+      "program": {
+        "sha256": "cda312ad50251541a22a190548183fb812ba4d3919f82d6a67c53e9338394bb0",
+        "text": "XX1 = X1^2\nZZ1 = Z1^2\nt0 = XX1^2\nt1 = ZZ1^2\nt2 = a6*t1\nX3 = t0+t2\nZ3 = XX1*ZZ1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/doubling/dbl-2003-s-2.op3"
+      },
+      "record": {
+        "sha256": "efdf3f7f6b11ae4b06050dff2822eb462a66106a4fadb3fad59d06a1fbdd0edb",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus common-subexpression elimination\ncompute XX1 = X1^2\ncompute ZZ1 = Z1^2\ncompute X3 = XX1^2 + a6 ZZ1^2\ncompute Z3 = XX1 ZZ1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/doubling/dbl-2003-s-2"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/doubling/dbl-2003-s-2.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/xz/doubling/dbl-2003-s-3",
+      "name": "dbl-2003-s-3",
+      "operation": "doubling",
+      "program": {
+        "sha256": "9a650b292ecb2908b1ece780715a1048613c83697d4b1c1a98a81b8f0d937120",
+        "text": "XX1 = X1^2\nZZ1 = Z1^2\nt0 = sqrta6*ZZ1\nt1 = XX1+t0\nX3 = t1^2\nZ3 = XX1*ZZ1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/doubling/dbl-2003-s-3.op3"
+      },
+      "record": {
+        "sha256": "263bd36dd2e5a2d8020c63cbdd277bb8c1e29185939ca844ea8d9608bd5e05d3",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus a6 = sqrta6^2, plus common-subexpression elimination\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute XX1 = X1^2\ncompute ZZ1 = Z1^2\ncompute X3 = (XX1 + sqrta6 ZZ1)^2\ncompute Z3 = XX1 ZZ1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/doubling/dbl-2003-s-3"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/doubling/dbl-2003-s-3.sage"
+    },
+    {
+      "assumptions": [
+        "roota6^4 = a6"
+      ],
+      "id": "shortw/xz/doubling/dbl-2003-s-4",
+      "name": "dbl-2003-s-4",
+      "operation": "doubling",
+      "program": {
+        "sha256": "652d6ecad434ab11b2e30db9245868b1ec6c3415d083bd20f9426f5830fd4e38",
+        "text": "t0 = roota6*Z1\nt1 = X1+t0\nt2 = t1^2\nX3 = t2^2\nt3 = X1*Z1\nZ3 = t3^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/doubling/dbl-2003-s-4.op3"
+      },
+      "record": {
+        "sha256": "3307766cb182fbf20a13cc3b8fff3e083c31cf5484c95f7aebce16f275400bf3",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus a6 = roota6^4, plus common-subexpression elimination\nparameter roota6\nassume roota6^4 = a6\ncompute X3 = ((X1 + roota6 Z1)^2)^2\ncompute Z3 = (X1 Z1)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/doubling/dbl-2003-s-4"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/doubling/dbl-2003-s-4.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/xz/doubling/mdbl-2003-s",
+      "name": "mdbl-2003-s",
+      "operation": "doubling",
+      "program": {
+        "sha256": "9a53e936f31efcd3ef5a5b593d4466246997d02cd511e6bd05f69b302380a5fe",
+        "text": "Z3 = X1^2\nt0 = Z3^2\nX3 = t0+a6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/doubling/mdbl-2003-s.op3"
+      },
+      "record": {
+        "sha256": "12608a4e6745a767a334139ce031b05151013938d1996de91aed15c312020948",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus Z1 = 1, plus common-subexpression elimination\nassume Z1 = 1\ncompute Z3 = X1^2\ncompute X3 = Z3^2 + a6\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/doubling/mdbl-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/doubling/mdbl-2003-s.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/ladder/ladd-2003-s",
+      "name": "ladd-2003-s",
+      "operation": "ladder",
+      "program": {
+        "sha256": "41a35f528284e76ec865f4d3f181437a86cf033ca207a72451f5ce1194c0f260",
+        "text": "t0 = X2^4\nt1 = Z2^4\nt2 = a6*t1\nX4 = t0+t2\nt3 = X2*Z2\nZ4 = t3^2\nt4 = X2^2\nt5 = X3^2\nt6 = Z2^2\nt7 = Z3^2\nt8 = t6*t7\nt9 = a6*t8\nt10 = t4*t5\nt11 = t10+t9\nX5 = Z1*t11\nt12 = X2+Z2\nt13 = X3+Z3\nt14 = Z2*Z3\nt15 = X2*X3\nt16 = t12*t13\nt17 = t16-t15\nt18 = t17-t14\nt19 = t18^2\nZ5 = X1*t19\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/ladd-2003-s.op3"
+      },
+      "record": {
+        "sha256": "4aa53ee4bd99d811e241e07d66ba0511626e970e6fa8b86f3f44202bc3216bb3",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6\ncompute X4 = X2^4 + a6 Z2^4\ncompute Z4 = (X2 Z2)^2\ncompute X5 = Z1(X2^2 X3^2 + a6 Z2^2 Z3^2)\ncompute Z5 = X1((X2+Z2)(X3+Z3)-X2 X3-Z2 Z3)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/ladd-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/ladd-2003-s.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/ladder/ladd-2003-s-2",
+      "name": "ladd-2003-s-2",
+      "operation": "ladder",
+      "program": {
+        "sha256": "7622092a3ba08d56deaf68fdf91041ab24e9be87149768119e2d76240f49684e",
+        "text": "A = X2*X3\nB = Z2*Z3\nXX2 = X2^2\nZZ2 = Z2^2\nt0 = XX2^2\nt1 = ZZ2^2\nt2 = a6*t1\nX4 = t0+t2\nZ4 = XX2*ZZ2\nt3 = A^2\nt4 = B^2\nt5 = a6*t4\nt6 = t3+t5\nX5 = Z1*t6\nt7 = X2+Z2\nt8 = X3+Z3\nt9 = t7*t8\nt10 = t9-A\nt11 = t10-B\nt12 = t11^2\nZ5 = X1*t12\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/ladd-2003-s-2.op3"
+      },
+      "record": {
+        "sha256": "2a5ba31ef1c856de80a534559ab416efc88b35c483b26358e61245ddd14bc4a2",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus common-subexpression elimination\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute XX2 = X2^2\ncompute ZZ2 = Z2^2\ncompute X4 = XX2^2 + a6 ZZ2^2\ncompute Z4 = XX2 ZZ2\ncompute X5 = Z1(A^2 + a6 B^2)\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/ladd-2003-s-2"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/ladd-2003-s-2.sage"
+    },
+    {
+      "assumptions": [
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/xz/ladder/ladd-2003-s-3",
+      "name": "ladd-2003-s-3",
+      "operation": "ladder",
+      "program": {
+        "sha256": "551b4c3a86f8c8cef1fe2036f0125126c784e422d450ee491fe0faee398d15cb",
+        "text": "A = X2*X3\nB = Z2*Z3\nXX2 = X2^2\nZZ2 = Z2^2\nt0 = sqrta6*ZZ2\nt1 = XX2+t0\nX4 = t1^2\nZ4 = XX2*ZZ2\nt2 = sqrta6*B\nt3 = A+t2\nt4 = t3^2\nX5 = Z1*t4\nt5 = X2+Z2\nt6 = X3+Z3\nt7 = t5*t6\nt8 = t7-A\nt9 = t8-B\nt10 = t9^2\nZ5 = X1*t10\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/ladd-2003-s-3.op3"
+      },
+      "record": {
+        "sha256": "cddc2f5116cf7bd414bd359c34cc0a0edda99dc9932508ebed03ca34598ecd19",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus a6 = sqrta6^2, plus common-subexpression elimination\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute XX2 = X2^2\ncompute ZZ2 = Z2^2\ncompute X4 = (XX2 + sqrta6 ZZ2)^2\ncompute Z4 = XX2 ZZ2\ncompute X5 = Z1(A + sqrta6 B)^2\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/ladd-2003-s-3"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/ladd-2003-s-3.sage"
+    },
+    {
+      "assumptions": [
+        "a6 = sqrta6^2",
+        "sqrta6 = roota6^2"
+      ],
+      "id": "shortw/xz/ladder/ladd-2003-s-4",
+      "name": "ladd-2003-s-4",
+      "operation": "ladder",
+      "program": {
+        "sha256": "a36afd0b4316030a96007318a0be1fba3ace352e9af2727a3633936a7c46aa53",
+        "text": "A = X2*X3\nB = Z2*Z3\nt0 = roota6*Z2\nt1 = X2+t0\nt2 = t1^2\nX4 = t2^2\nt3 = X2*Z2\nZ4 = t3^2\nt4 = sqrta6*B\nt5 = A+t4\nt6 = t5^2\nX5 = Z1*t6\nt7 = X2+Z2\nt8 = X3+Z3\nt9 = t7*t8\nt10 = t9-A\nt11 = t10-B\nt12 = t11^2\nZ5 = X1*t12\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/ladd-2003-s-4.op3"
+      },
+      "record": {
+        "sha256": "a803cd910fa04d64f167269a13da3fc4a9becd61cb01470fe34b6aa7fe91d199",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus a6 = roota6^4, plus common-subexpression elimination\nparameter sqrta6\nassume a6 = sqrta6^2\nparameter roota6\nassume sqrta6 = roota6^2\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute X4 = ((X2 + roota6 Z2)^2)^2\ncompute Z4 = (X2 Z2)^2\ncompute X5 = Z1(A + sqrta6 B)^2\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/ladd-2003-s-4"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/ladd-2003-s-4.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1"
+      ],
+      "id": "shortw/xz/ladder/mladd-2003-s",
+      "name": "mladd-2003-s",
+      "operation": "ladder",
+      "program": {
+        "sha256": "07fd5d4a057f8f8f18eb4b2b64b2619d7f21b392f27af42fbee597c4f4066add",
+        "text": "A = X2*Z3\nB = X3*Z2\nXX2 = X2^2\nZZ2 = Z2^2\nt0 = A+B\nZ5 = t0^2\nt1 = A*B\nt2 = X1*Z5\nX5 = t2+t1\nt3 = XX2^2\nt4 = ZZ2^2\nt5 = a6*t4\nX4 = t3+t5\nZ4 = XX2*ZZ2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/mladd-2003-s.op3"
+      },
+      "record": {
+        "sha256": "34ad74ca7394b6aa7833f12a355279d256c516186cb854306d6cac462200eee7",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.1, plus Z1=1, plus common-subexpression elimination\nassume Z1 = 1\ncompute A = X2 Z3\ncompute B = X3 Z2\ncompute XX2 = X2^2\ncompute ZZ2 = Z2^2\ncompute Z5 = (A+B)^2\ncompute X5 = X1 Z5 + A B\ncompute X4 = XX2^2 + a6 ZZ2^2\ncompute Z4 = XX2 ZZ2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/mladd-2003-s"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/mladd-2003-s.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "a6 = sqrta6^2"
+      ],
+      "id": "shortw/xz/ladder/mladd-2003-s-2",
+      "name": "mladd-2003-s-2",
+      "operation": "ladder",
+      "program": {
+        "sha256": "8b224ad4a2ef28bbf47a26e46da7c484ac6183cbf17347e319e7e3f20340bd0c",
+        "text": "A = X2*Z3\nB = X3*Z2\nXX2 = X2^2\nZZ2 = Z2^2\nt0 = A+B\nZ5 = t0^2\nt1 = A*B\nt2 = X1*Z5\nX5 = t2+t1\nt3 = sqrta6*ZZ2\nt4 = XX2+t3\nX4 = t4^2\nZ4 = XX2*ZZ2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/mladd-2003-s-2.op3"
+      },
+      "record": {
+        "sha256": "381119e6c636d00a2d42bf7a22753cbb95efe6540091aa2881182f3db08cf08d",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.1, plus Z1=1, plus a6 = sqrta6^2, plus common-subexpression elimination\nassume Z1 = 1\nparameter sqrta6\nassume a6 = sqrta6^2\ncompute A = X2 Z3\ncompute B = X3 Z2\ncompute XX2 = X2^2\ncompute ZZ2 = Z2^2\ncompute Z5 = (A+B)^2\ncompute X5 = X1 Z5 + A B\ncompute X4 = (XX2 + sqrta6 ZZ2)^2\ncompute Z4 = XX2 ZZ2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/mladd-2003-s-2"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/mladd-2003-s-2.sage"
+    },
+    {
+      "assumptions": [
+        "Z1 = 1",
+        "sqrta6^2 = a6"
+      ],
+      "id": "shortw/xz/ladder/mladd-2003-s-3",
+      "name": "mladd-2003-s-3",
+      "operation": "ladder",
+      "program": {
+        "sha256": "0bf5151561a84b01ab03e412850ec9c0a2837ddd683802ef6d4ffe471abc8a68",
+        "text": "A = X2*X3\nB = Z2*Z3\nXX2 = X2^2\nZZ2 = Z2^2\nt0 = sqrta6*ZZ2\nt1 = XX2+t0\nX4 = t1^2\nZ4 = XX2*ZZ2\nt2 = sqrta6*B\nt3 = A+t2\nX5 = t3^2\nt4 = X2+Z2\nt5 = X3+Z3\nt6 = t4*t5\nt7 = t6-A\nt8 = t7-B\nt9 = t8^2\nZ5 = X1*t9\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/ladder/mladd-2003-s-3.op3"
+      },
+      "record": {
+        "sha256": "9a918e407e91ffce01e9cdb2e070eacc8bd174402cc8ca7f795934e32133b555",
+        "text": "source 2003 Stam \"On Montgomery-like representations for elliptic curves over GF(2^k)\", Section 3.2, plus a1 = 1, plus b8 = a6, plus a6 = sqrta6^2, plus common-subexpression elimination, plus Z1 = 1\nassume Z1 = 1\nparameter sqrta6\nassume sqrta6^2 = a6\ncompute A = X2 X3\ncompute B = Z2 Z3\ncompute XX2 = X2^2\ncompute ZZ2 = Z2^2\ncompute X4 = (XX2 + sqrta6 ZZ2)^2\ncompute Z4 = XX2 ZZ2\ncompute X5 = (A + sqrta6 B)^2\ncompute Z5 = X1((X2+Z2)(X3+Z3)-A-B)^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/ladder/mladd-2003-s-3"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/ladder/mladd-2003-s-3.sage"
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz/scaling/scale",
+      "name": "scale",
+      "operation": "scaling",
+      "program": {
+        "sha256": "8ac7f9cbe059c1f9f7d5cf78ee034924f0efebe4339ff2dbe8751a08a9088771",
+        "text": "t0 = 1/Z1\nX3 = X1*t0\nZ3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/auto-code/shortw/xz/scaling/scale.op3"
+      },
+      "record": {
+        "sha256": "43a348897fb70de0fe5e664c483d723fbbbacaec783d10a0cdabf752cd55a547",
+        "text": "compute X3 = X1 / Z1\ncompute Z3 = 1\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/scaling/scale"
+      },
+      "representation": "shortw/xz",
+      "upstream_verification_url": "https://www.hyperelliptic.org/EFD/g12o/auto-sage/shortw/xz/scaling/scale.sage"
+    }
+  ],
+  "models": [
+    {
+      "id": "edwards",
+      "source": {
+        "sha256": "13e669f282246260554babeae36616cf7f62867f012c4fcf965c4753d26e912d",
+        "text": "name binary Edwards curves\nparameter d1\nparameter d2\ncoordinate x\ncoordinate y\nsatisfying d1(x+y)+d2(x^2+y^2) = (x+x^2)(y+y^2)\naddition x = (d1(x1+x2)+d2(x1+y1)(x2+y2)+(x1+x1^2)(x2(y1+y2+1)+y1 y2)) / (d1+(x1+x1^2)(x2+y2))\naddition y = (d1(y1+y2)+d2(x1+y1)(x2+y2)+(y1+y1^2)(y2(x1+x2+1)+x1 x2)) / (d1+(y1+y1^2)(x2+y2))\ndoubling x = (d1(x1+x1)+d2(x1+y1)(x1+y1)+(x1+x1^2)(x1(y1+y1+1)+y1 y1)) / (d1+(x1+x1^2)(x1+y1))\ndoubling y = (d1(y1+y1)+d2(x1+y1)(x1+y1)+(y1+y1^2)(y1(x1+x1+1)+x1 x1)) / (d1+(y1+y1^2)(x1+y1))\nnegation x = y1\nnegation y = x1\ntoweierstrass u = d1(d1^2+d1+d2)(x+y)/(x y+d1(x+y))\ntoweierstrass v = d1(d1^2+d1+d2)(x/(x y+d1(x+y))+d1+1)\na0 = 1\na1 = 1\na2 = d1^2+d2\na3 = 0\na4 = 0\na6 = d1^4(d1^4+d1^2+d2^2)\nfromweierstrass x = d1(u+d1^2+d1+d2)/(u+v+(d1^2+d1)(d1^2+d1+d2))\nfromweierstrass y = d1(u+d1^2+d1+d2)/(v+(d1^2+d1)(d1^2+d1+d2))\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/coordinates"
+      }
+    },
+    {
+      "id": "hessian",
+      "source": {
+        "sha256": "d06457efd57eb274117c823bc3712ce80638d0a62af0173ca852714166626870",
+        "text": "name Hessian curves\nparameter d\ncoordinate x\ncoordinate y\nsatisfying x^3+y^3+1=3 d x y\naddition x = (y1^2 x2-y2^2 x1)/(x2 y2-x1 y1)\naddition y = (x1^2 y2-x2^2 y1)/(x2 y2-x1 y1)\ndoubling x = y1(1-x1^3)/(x1^3-y1^3)\ndoubling y = x1(y1^3-1)/(x1^3-y1^3)\nnegation x = y1\nnegation y = x1\ntoweierstrass u = x^2+x y+y^2+d(x+y)\ntoweierstrass v = (x^2+x y+y^2+d(x+y)+d^2)y\na0 = 1\na1 = d\na2 = 0\na3 = 1\na4 = d\na6 = d^3+1\nfromweierstrass x = (1+v+u d)/(u+d^2)\nfromweierstrass y = v/(u+d^2)\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/coordinates"
+      }
+    },
+    {
+      "id": "shortw",
+      "source": {
+        "sha256": "d9d6e842a01b95d3193f0e8299a11db48d132b4055b714b722746d065c084bdd",
+        "text": "name short Weierstrass curves\nparameter a2\nparameter a6\ncoordinate x\ncoordinate y\nsatisfying y^2 + x y = x^3 + a2 x^2 + a6\naddition x = ((y1+y2)/(x1+x2))^2+((y1+y2)/(x1+x2))+x1+x2+a2\naddition y = ((y1+y2)/(x1+x2))^3+(x2+a2+1)*((y1+y2)/(x1+x2))+x1+x2+a2+y1\ndoubling x = (x1+y1/x1)^2 + (x1+y1/x1) + a2\ndoubling y = (x1+y1/x1)^3 + (x1 + a2 + 1)*(x1+y1/x1) + a2 + y1\nnegation x = x1\nnegation y = x1 + y1\ntoweierstrass weierx = x\ntoweierstrass weiery = y\na0 = 1\na1 = 1\na2 = a2\na3 = 0\na4 = 0\na6 = a6\nfromweierstrass x = weierx\nfromweierstrass y = weiery\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/coordinates"
+      }
+    }
+  ],
+  "representations": [
+    {
+      "assumptions": [
+        "d1 = d2"
+      ],
+      "id": "edwards/w-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-w-1.html",
+      "relations": [
+        "x+y = w"
+      ],
+      "source": {
+        "sha256": "851c0d3820c00362f1ebc0b7c0f7cc8a1b2ab1ffb716be62a04835671c679705",
+        "text": "name w coordinates with d1=d2\nassume d1 = d2\nvariable w\nsatisfying x+y = w\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w-1/variables"
+      },
+      "variables": [
+        "w"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/w",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-w.html",
+      "relations": [
+        "x+y = w"
+      ],
+      "source": {
+        "sha256": "884db8fea480a4f61f51bf24da29d4d91d5acc6cf93db0ab2a5d3b944d9e3178",
+        "text": "name w coordinates\nvariable w\nsatisfying x+y = w\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/w/variables"
+      },
+      "variables": [
+        "w"
+      ]
+    },
+    {
+      "assumptions": [
+        "d1 = d2"
+      ],
+      "id": "edwards/wz-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-wz-1.html",
+      "relations": [
+        "x+y = W/Z"
+      ],
+      "source": {
+        "sha256": "c8c362b178c95285d751e51e05fd704dce07aed2e7b10c5d0ce4b43c2497e515",
+        "text": "name WZ coordinates with d1=d2\nassume d1 = d2\nvariable W\nvariable Z\nsatisfying x+y = W/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz-1/variables"
+      },
+      "variables": [
+        "W",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/wz",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-wz.html",
+      "relations": [
+        "x+y = W/Z"
+      ],
+      "source": {
+        "sha256": "19196a5a8e5a5f07e29d20a7fa5b75d8f640b08541a2e64489121bd0857b1bd1",
+        "text": "name WZ coordinates\nvariable W\nvariable Z\nsatisfying x+y = W/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/wz/variables"
+      },
+      "variables": [
+        "W",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [
+        "d1 = d2"
+      ],
+      "id": "edwards/xy-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-xy-1.html",
+      "relations": [
+        "x = X",
+        "y = Y"
+      ],
+      "source": {
+        "sha256": "a1d5e004f06f1ed4a1c6c7cf2826a410206e3bb08ec61b8221d34efdb14ee6d1",
+        "text": "name affine coordinates with d1=d2\nassume d1 = d2\nvariable X\nvariable Y\nsatisfying x = X\nsatisfying y = Y\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy-1/variables"
+      },
+      "variables": [
+        "X",
+        "Y"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xy",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-xy.html",
+      "relations": [
+        "x = X",
+        "y = Y"
+      ],
+      "source": {
+        "sha256": "84fbb2586154ee24c548c49f69e3b8d7ff1a5f92eff87cfed8eab805756b70b1",
+        "text": "name affine coordinates\nvariable X\nvariable Y\nsatisfying x = X\nsatisfying y = Y\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xy/variables"
+      },
+      "variables": [
+        "X",
+        "Y"
+      ]
+    },
+    {
+      "assumptions": [
+        "d1 = d2"
+      ],
+      "id": "edwards/xyz-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-xyz-1.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z"
+      ],
+      "source": {
+        "sha256": "4bc91e297be4beebc6d6e1cb9765b3e3fe92b3051761c3e2ea1030751c2dd653",
+        "text": "name projective coordinates with d1=d2\nassume d1 = d2\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz-1/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "edwards/xyz",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-edwards-xyz.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z"
+      ],
+      "source": {
+        "sha256": "98e80e201dfcd2ce48b9ff7cae60223f3230d8ae39d50bd8ae537509e509732b",
+        "text": "name projective coordinates\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/edwards/xyz/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "hessian/standard",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-hessian-standard.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z"
+      ],
+      "source": {
+        "sha256": "98e80e201dfcd2ce48b9ff7cae60223f3230d8ae39d50bd8ae537509e509732b",
+        "text": "name projective coordinates\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/hessian/standard/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/affine",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-affine.html",
+      "relations": [
+        "x = X",
+        "y = Y"
+      ],
+      "source": {
+        "sha256": "84fbb2586154ee24c548c49f69e3b8d7ff1a5f92eff87cfed8eab805756b70b1",
+        "text": "name affine coordinates\nvariable X\nvariable Y\nsatisfying x = X\nsatisfying y = Y\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/affine/variables"
+      },
+      "variables": [
+        "X",
+        "Y"
+      ]
+    },
+    {
+      "assumptions": [
+        "a2 = 0 "
+      ],
+      "id": "shortw/extended-0",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-extended-0.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/ZZ",
+        "ZZ = Z^2",
+        "XZ = X Z"
+      ],
+      "source": {
+        "sha256": "df93d8518bc25a91070f0845c032ebf82e0a44d5ced45cd3f95b03e716a6397e",
+        "text": "name extended Lopez-Dahab coordinates with a2=0\nassume a2 = 0 \nvariable X\nvariable Y\nvariable Z\nvariable ZZ\nvariable XZ\nsatisfying x = X/Z\nsatisfying y = Y/ZZ\nsatisfying ZZ = Z^2\nsatisfying XZ = X Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-0/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z",
+        "ZZ",
+        "XZ"
+      ]
+    },
+    {
+      "assumptions": [
+        "a2 = 1"
+      ],
+      "id": "shortw/extended-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-extended-1.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z^2",
+        "ZZ = Z^2"
+      ],
+      "source": {
+        "sha256": "270ac64bbd4885dd51dbb95c6c17f730419407a04371bcbae30ab60e25593c89",
+        "text": "name extended Lopez-Dahab coordinates with a2=1\nassume a2 = 1\nvariable X\nvariable Y\nvariable Z\nvariable ZZ\nsatisfying x = X/Z\nsatisfying y = Y/Z^2\nsatisfying ZZ = Z^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/extended-1/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z",
+        "ZZ"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/jacobian",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-jacobian.html",
+      "relations": [
+        "x = X/Z^2",
+        "y = Y/Z^3"
+      ],
+      "source": {
+        "sha256": "9f68870afe3a22d92f54cc0f472820eb804896c52851df89cea41dd5fedb470c",
+        "text": "name Jacobian coordinates\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z^2\nsatisfying y = Y/Z^3\n\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/jacobian/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lambda",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-lambda.html",
+      "relations": [
+        "x = X/Z",
+        "y/x = (L-X)/Z"
+      ],
+      "source": {
+        "sha256": "54b18a5e8f80e5a61a6d1c553f112e8534a425a4695e96d8741655933d251743",
+        "text": "name Lambda coordinates\nvariable X\nvariable L\nvariable Z\nsatisfying x = X/Z\nsatisfying y/x = (L-X)/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lambda/variables"
+      },
+      "variables": [
+        "X",
+        "L",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [
+        "a2 = 0"
+      ],
+      "id": "shortw/lopezdahab-0",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-lopezdahab-0.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z^2"
+      ],
+      "source": {
+        "sha256": "9607c822d76e7275974866d2056fcfefba3de88ccfe4523e3fcb9bf25396e2e7",
+        "text": "name Lopez-Dahab coordinates with a2=0\nassume a2 = 0\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-0/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [
+        "a2 = 1"
+      ],
+      "id": "shortw/lopezdahab-1",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-lopezdahab-1.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z^2"
+      ],
+      "source": {
+        "sha256": "3cced484ed72d77eb7f65306117e2cc2cd5f5ae678860dae235713362204a378",
+        "text": "name Lopez-Dahab coordinates with a2=1\nassume a2 = 1\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab-1/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/lopezdahab",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-lopezdahab.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z^2"
+      ],
+      "source": {
+        "sha256": "6ca545720add40ea990a88b1d8adcf2e2d5e719db40234021bee316df1bdbf21",
+        "text": "name Lopez-Dahab coordinates\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z^2\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/lopezdahab/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/projective",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-projective.html",
+      "relations": [
+        "x = X/Z",
+        "y = Y/Z"
+      ],
+      "source": {
+        "sha256": "98e80e201dfcd2ce48b9ff7cae60223f3230d8ae39d50bd8ae537509e509732b",
+        "text": "name projective coordinates\nvariable X\nvariable Y\nvariable Z\nsatisfying x = X/Z\nsatisfying y = Y/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/projective/variables"
+      },
+      "variables": [
+        "X",
+        "Y",
+        "Z"
+      ]
+    },
+    {
+      "assumptions": [],
+      "id": "shortw/xz",
+      "page_url": "https://www.hyperelliptic.org/EFD/g12o/auto-shortw-xz.html",
+      "relations": [
+        "x = X/Z"
+      ],
+      "source": {
+        "sha256": "c08c1e40cc002c69236cfb54436256f1cfd374f655ddd7151dbca03f9291f756",
+        "text": "name XZ coordinates\nvariable X\nvariable Z\nsatisfying x = X/Z\n",
+        "url": "https://www.hyperelliptic.org/EFD/g12o/data/shortw/xz/variables"
+      },
+      "variables": [
+        "X",
+        "Z"
+      ]
+    }
+  ],
+  "retrieved": "2026-10-21",
+  "schema": "efd-binary-catalogue/v1",
+  "source_url": "https://www.hyperelliptic.org/EFD/g12o/index.html"
+}
