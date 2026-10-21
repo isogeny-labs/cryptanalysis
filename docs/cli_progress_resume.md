@@ -140,7 +140,8 @@ manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
 On a fresh run, the CLI checks that the S3 prefix is empty without copying
 remote files into the local state directory. It uses the S3 object count for
-this check, including when the prefix has no objects.
+this check, including when the prefix has no objects, and requests only the
+first object so a large run does not require a full prefix listing.
 On restore, the CLI reads the remote manifest before downloading artifacts.
 It checks an existing local manifest for an exact match, or installs the
 remote manifest atomically in an empty state directory. The bulk download
