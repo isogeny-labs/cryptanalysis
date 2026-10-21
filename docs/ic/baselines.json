@@ -79,7 +79,7 @@
       },
       "verified": "20/20 points; every B, N, Naa and NX process has identical counts, logs and relations per point; 302/302 rows valid; rho 64/64; native library one digest (d92534fa...)",
       "source_figure": "B/N cold CPU 141.02 [136.75, 144.95]; online B/N 206.7 [203.3, 209.8]; setup B/N 1.29 [1.279, 1.297]; N cold gap to the matched rho 117.9 [113.4, 122.6]",
-      "next_improvement": "The Groebner solve is no longer the cost: it is 15.4% of N's cold CPU. Setup (Sage start-up and base) is 31.9% and the rest of the online stage (relation assembly and linear algebra) is 52.7%; move those out of Sage, then re-run against the same rho arm. The matched rho is also still Python/Sage, so the gap of 118 mixes a native IC against a non-native rho.",
+      "next_improvement": "The Groebner solve is no longer the cost: it is 15.4% of N's cold CPU. Setup (Sage start-up and base) is 31.9% and the rest of the online stage (relation assembly and linear algebra) is 52.7%; move those out of Sage, then re-run against the same rho arm. The matched rho is also still Python/Sage, so the gap of 118 mixes a native IC against a non-native rho. Run 39526183111 (N2, the whole tau6 IC in native code, against this row's arm N) was INVALID: its Sage smoke gate failed (8 of 24 gates false; the planted arm crashed on --lib option parsing) and the timed job was skipped, so there is no result and this row is unchanged. Re-freeze with the planted arm and the profile script fixed, then re-run N2 against N.",
       "sources": [
         "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/README.md",
         "cryptanalysis:experiments/volcano-n19-native-tau6-v3-20261020/run_github_39387473809/timed/panel/result.json",
