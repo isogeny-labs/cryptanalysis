@@ -7,6 +7,12 @@ of every theorem or a semantic review of every experiment in the three
 requested repositories. No scientific trial or performance measurement was
 run. [The diagram](diagram.svg) separates these validation layers.
 
+**Delivery:** Git smart HTTP returned HTTP 403 (“Your repository is disabled”)
+when pushing this branch. The local commit remains intact; the
+[access problem record](../../problems/cryptanalysis-git-remote-rejects-push.md)
+contains the exact unblock condition. No PR or remote CI result exists for
+this change yet.
+
 ## Observed inventory and correction
 
 The main tree has **93 tracked Lean files**. Before this change, 33 inherited

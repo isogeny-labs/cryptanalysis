@@ -16,6 +16,11 @@ toolchain pin, and checks source-bound proof receipts. It does not build every
 theorem or semantically review every experiment across the three requested
 repositories. No scientific trial or performance measurement was run.
 
+\textbf{Delivery.} Git smart HTTP returned HTTP 403 (``Your repository is
+disabled'') when pushing this branch. The local commit and evidence remain
+intact, but this change has no PR or remote CI result yet. The access problem
+record names the unblock condition.
+
 \section*{Inventory and correction}
 There are 93 tracked Lean files. Before this change, 33 inherited no
 \mono{lean-toolchain}. The new root pin is \mono{leanprover/lean4:v4.34.1},
