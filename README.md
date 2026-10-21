@@ -565,6 +565,20 @@ warnings`, cargo-deny, the release test suite, the Python engine's lint and
 tests).  The suite links the C library through `bindings/rust` for
 `crax`'s generic solvers; the C library does not depend on the suite.
 
+### Binary cover-candidate sweeper
+
+[`experiments/ghs-sweeper`](experiments/ghs-sweeper/README.md) is a standalone
+Rust CLI for configurable binary hyperelliptic spectral searches, resumable
+SQLite checkpoints, independent point-count checks, source matching and
+reference-backed novelty triage. It can import the earlier prototype's
+journals without running Python. Spectral matches remain provisional; explicit
+maps, subgroup transport and publication novelty require separate evidence.
+
+```sh
+cargo build --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml
+experiments/ghs-sweeper/target/release/ghs-sweeper --help
+```
+
 ## C API in one screen
 
 ```c
@@ -684,6 +698,7 @@ ecc2k130/                ECC2K-130 clients: packed GF(2^131) table walk (CUDA, C
 scripts/                 build_cuda_kernel.sh, cli_smoke.sh (every ca subcommand)
 bindings/{rust,go,python} plus bindings/rust/cryptanalysis-cuda (Rust GPU driver)
 suite/                   the attack suite: Rust crate cryptanalysis-suite, ca-suite / ca-ic / ca-curves CLIs, Python engine
+experiments/ghs-sweeper/ standalone Rust binary cover-candidate sweeper and census regression fixtures
 challenges/ecc/          elliptic-curve challenge corpus (Koblitz, CM, char 3, extensions, volcanoes)
 docs/                    ALGORITHMS.md, BENCHMARKS.md, FFI.md, GPU.md, COORDINATOR.md,
                          CLOUD_LAUNCH.md (Modal + RunPod + ingest MiG),

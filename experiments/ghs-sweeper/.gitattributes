@@ -1,0 +1,5 @@
+# Keep historical fixtures byte-identical, including the catalogue's CRLF.
+reference/* -text
+reference/prototype-catalogue.csv whitespace=cr-at-eol
+# This is captured Cargo output, including its final blank line.
+validation/tests.txt whitespace=-blank-at-eof
