@@ -16,8 +16,27 @@ name: N83 rank finder, paired end-to-end cold Tier 1 (repeated alternating pairs
 # audits the receipt (fail closed) and applies the decision rule:
 # improvement iff the 95% two-stage paired bootstrap lower bound of the
 # end-to-end ratio exceeds 1.
+# workflow_dispatch is the convention, but it was refused for this
+# integration (403 Resource not accessible by integration, 2026-10-21), so the
+# run is also triggered by a push to this branch, restricted by path filters
+# as in n83-indexbuild2.yml: receipts, README, figures, figure scripts,
+# profile records and smoke diagnostics do not trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n83-rankfinder]
+    paths:
+      - experiments/koblitz-n83-rankfinder-20261021/**
+      - .github/workflows/n83-rankfinder.yml
+      - '!experiments/koblitz-n83-rankfinder-20261021/run_github_*/**'
+      - '!experiments/koblitz-n83-rankfinder-20261021/README.md'
+      - '!experiments/koblitz-n83-rankfinder-20261021/README.pdf'
+      - '!experiments/koblitz-n83-rankfinder-20261021/figures/**'
+      - '!experiments/koblitz-n83-rankfinder-20261021/make_figures.py'
+      - '!experiments/koblitz-n83-rankfinder-20261021/report_header.tex'
+      - '!experiments/koblitz-n83-rankfinder-20261021/report_filter.lua'
+      - '!experiments/koblitz-n83-rankfinder-20261021/smoke/**'
+      - '!experiments/koblitz-n83-rankfinder-20261021/receipts/**'
 
 permissions:
   contents: read
