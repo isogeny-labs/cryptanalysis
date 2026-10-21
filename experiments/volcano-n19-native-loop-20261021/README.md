@@ -10,8 +10,8 @@ date: 2026-10-21
 The workflow is [`n19-native-loop.yml`](../../.github/workflows/n19-native-loop.yml).
 Dispatch was refused (GitHub MCP: 403 "Resource not accessible by integration"), so the
 owner-approved push trigger launched it. The trigger is limited to branch
-`claude/n19-native-loop` and to this experiment's non-report paths. The run URL is in
-[Launch](#launch).
+`claude/n19-native-loop` and to this experiment's non-report paths. It is
+[run 39526183111](https://github.com/aburan28/cryptanalysis/actions/runs/39526183111); see [Launch](#launch).
 
 ## Question
 
@@ -218,9 +218,12 @@ ABI and its tests. Only the work around the solve changes.
 - **Dispatch was tried first and refused.** `workflow_dispatch` through the GitHub
   integration returned 403 "Resource not accessible by integration"; the workflow is not on
   the default branch.
-- **The push trigger launched it.** The push of the frozen commit to
-  `claude/n19-native-loop` started the run, through the owner-approved path-limited
-  trigger.
+- **The push trigger launched it.** The push of the frozen commit `67bff8998` to
+  `claude/n19-native-loop` started
+  [run 39526183111](https://github.com/aburan28/cryptanalysis/actions/runs/39526183111),
+  through the owner-approved path-limited trigger: first job `sage-smoke`, then job `timed`,
+  which needs it. It shares a concurrency group with the phase-1 diagnostic run
+  39522833864, so it starts after that one.
 - **What does not trigger a run.** README, figures, `make_figures.py`, `report_header.tex`,
   `smoke/`, `diagnosis/` and `run_github_*/`.
 
