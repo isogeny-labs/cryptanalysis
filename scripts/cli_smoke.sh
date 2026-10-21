@@ -326,8 +326,13 @@ case "$to" in
   s3://test/ecc2k) to=$CA_TEST_S3_REMOTE ;;
   s3://test/ecc2k/*) to="$CA_TEST_S3_REMOTE/${to#s3://test/ecc2k/}" ;;
 esac
-if [ "$verb" = sync ]; then
-  [ -d "$from" ] && cp -R "$from/." "$to/" || :
+if [ "$verb" = ls ]; then
+  if [ -d "$from" ]; then find "$from" -type f -print; fi
+elif [ "$verb" = sync ]; then
+  if [ -d "$from" ]; then
+    mkdir -p "$to"
+    cp -R "$from/." "$to/"
+  fi
 else
   mkdir -p "$(dirname "$to")"
   cp "$from" "$to"
@@ -370,6 +375,67 @@ CA="$ecc_ca" want_bad 'run manifest does not match' rho --curve ecc2k130 --backe
   --run-id 8 --resume --state-dir "$ecc_state"
 CA="$ecc_ca" want_bad 'Metal table walk does not yet support' rho --curve ecc2k130 \
   --backend metal --run-id 7 --state-dir "$ecc_tmp/metal"
+
+# A solo distributed worker must retain its verified CRDT check-ins and
+# cursors across a process restart, including an S3-only restore.
+"$ecc_ca" coord-job --group zp --p 1000003 --order 1000002 --g 858101 --h 218146 \
+  --dp-bits 4 --unit-size 2 --seed 42 --out "$ecc_tmp/work-job.txt" >/dev/null
+work_state="$ecc_tmp/work-state"
+checks=$((checks + 1))
+work_rc=0
+work_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" work --job "$ecc_tmp/work-job.txt" \
+  --node fixture --max-walkers 2 --max-seconds 1 --state-dir "$work_state" \
+  --verbose --progress-every 1 --checkpoint-every 1 \
+  --s3-uri s3://test/ecc2k/work --sync-every 1 2>&1) || work_rc=$?
+if { [ "$work_rc" -ne 0 ] && [ "$work_rc" -ne 3 ]; } || \
+   [[ "$work_out" != *'[work]'* ]] || \
+   [ ! -s "$work_state/checkins.log" ] || \
+   [ ! -s "$ecc_tmp/remote/work/checkins.log" ] || \
+   [ ! -f "$ecc_tmp/remote/work/result.json" ] || \
+   ! grep -q '"units_completed":1' "$work_state/progress.json"; then
+  printf 'FAIL: work progress or S3 journal missing (rc=%d): %s\n' "$work_rc" "$work_out" >&2
+  fail=$((fail + 1))
+fi
+first_lines=$(wc -l <"$work_state/checkins.log")
+printf x >>"$ecc_tmp/remote/work/checkins.log"
+rm -rf "$work_state"
+checks=$((checks + 1))
+work_rc=0
+work_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" work --job "$ecc_tmp/work-job.txt" \
+  --node fixture --max-walkers 2 --max-seconds 1 --state-dir "$work_state" \
+  --resume --s3-uri s3://test/ecc2k/work 2>&1) || work_rc=$?
+second_lines=$(wc -l <"$work_state/checkins.log")
+if { [ "$work_rc" -ne 0 ] && [ "$work_rc" -ne 3 ]; } || \
+   [ "$second_lines" -lt "$first_lines" ] || \
+   [ ! -f "$work_state/progress.json" ] || [ ! -f "$work_state/result.json" ] || \
+   grep -q '"status":"running"' "$work_state/progress.json"; then
+  printf 'FAIL: work S3 journal restore (rc=%d): %s\n' "$work_rc" "$work_out" >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$ecc_tmp/remote/work"
+checks=$((checks + 1))
+work_rc=0
+work_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" work --job "$ecc_tmp/work-job.txt" \
+  --node fixture --max-walkers 2 --max-seconds 1 --state-dir "$work_state" \
+  --resume --s3-uri s3://test/ecc2k/work 2>&1) || work_rc=$?
+if { [ "$work_rc" -ne 0 ] && [ "$work_rc" -ne 3 ]; } || \
+   [ ! -f "$ecc_tmp/remote/work/manifest.json" ]; then
+  printf 'FAIL: work could not seed an empty S3 prefix (rc=%d): %s\n' \
+    "$work_rc" "$work_out" >&2
+  fail=$((fail + 1))
+fi
+"$ecc_ca" coord-job --group zp --p 1000003 --order 1000002 --g 858101 --h 218146 \
+  --dp-bits 4 --unit-size 2 --seed 43 --out "$ecc_tmp/other-job.txt" >/dev/null
+CA="$ecc_ca" want_bad 'work manifest does not match' work --job "$ecc_tmp/other-job.txt" \
+  --state-dir "$work_state" --resume
+printf '{"bad":true}\n' >"$ecc_tmp/remote/work/manifest.json"
+PATH="$ecc_tmp/awsbin:$PATH" CA="$ecc_ca" \
+  want_bad 'S3 work manifest is unavailable or does not match' work \
+  --job "$ecc_tmp/work-job.txt" --state-dir "$work_state" --resume \
+  --s3-uri s3://test/ecc2k/work
+printf 'not-a-checkin\n' >>"$work_state/checkins.log"
+CA="$ecc_ca" want_bad 'work check-in journal is missing or invalid' work \
+  --job "$ecc_tmp/work-job.txt" --state-dir "$work_state" --resume
 rm -rf "$ecc_tmp"
 unset CA_TEST_S3_REMOTE CA_TEST_S3_LOG
 want '"x":123456' solve --alg gpu-rho "${ZP[@]}" --g 858101 \

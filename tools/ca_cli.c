@@ -236,7 +236,10 @@ static _Noreturn void usage(void)
         "            [--negation] [--unit-size U] [--seed S] [--out FILE]\n"
         "  work      [--coordinator URL] [--token-file F] [--node NAME] [--threads T]\n"
         "            [--max-seconds S] [--max-walkers W] [--checkin-every N]\n"
-        "            [--lease-secs S] [--idle-when-solved]\n"
+        "            [--lease-secs S] [--idle-when-solved] [--verbose]\n"
+        "            [--progress-every SEC] [--checkpoint-every SEC]\n"
+        "            [--state-dir DIR] [--resume] [--s3-uri s3://BUCKET/PREFIX]\n"
+        "            [--sync-every SEC]\n"
         "  coord-status [--coordinator URL] [--token-file F]\n");
     exit(2);
 }
@@ -2556,11 +2559,238 @@ static void lane_peer(char *out, size_t cap, const char *node, uint64_t lane)
     memcpy(out + keep + (size_t)tn, suffix, (size_t)sn + 1);
 }
 
+/* The coordinator's check-in log is a replayable CRDT journal. A new process
+ * gets fresh peer identities and walks from the saved unit cursors and DPs. */
+static int work_journal_flush(ca_coord_state *st, int fd, size_t *persisted)
+{
+    size_t count = ca_coord_log_count(st);
+    for (size_t i = *persisted; i < count; i++) {
+        char line[CA_COORD_LINE_MAX];
+        if (!ca_coord_log_get(st, i, line, sizeof(line), NULL, 0, NULL)) return 0;
+        size_t len = strlen(line);
+        if (len + 1 >= sizeof(line)) return 0;
+        line[len++] = '\n';
+        size_t off = 0;
+        while (off < len) {
+            ssize_t n = write(fd, line + off, len - off);
+            if (n < 0 && errno == EINTR) continue;
+            if (n <= 0) return 0;
+            off += (size_t)n;
+        }
+        *persisted = i + 1;
+    }
+    return fsync(fd) == 0;
+}
+
+static int work_journal_load(const char *path, ca_coord_state *st,
+                             const ca_coord_ctx *ctx, size_t *loaded)
+{
+    FILE *f = fopen(path, "rb+");
+    if (!f) return 0;
+    char line[CA_COORD_LINE_MAX];
+    int ok = 1;
+    *loaded = 0;
+    for (;;) {
+        off_t start = ftello(f);
+        if (start < 0) { ok = 0; break; }
+        if (!fgets(line, sizeof(line), f)) {
+            if (ferror(f)) ok = 0;
+            break;
+        }
+        size_t len = strlen(line);
+        if (!len || line[len - 1] != '\n') {
+            if (!feof(f) || ftruncate(fileno(f), start) != 0 ||
+                fsync(fileno(f)) != 0) ok = 0;
+            break; /* an interrupted append may leave one partial line */
+        }
+        line[len - 1] = '\0';
+        ca_coord_checkin ci;
+        ca_coord_outcome outcome;
+        /* The previous process is gone: retain its unit cursor but expire
+         * its lease. Live remote peers will send fresh claims after connect. */
+        if (ca_coord_checkin_decode(&ci, line) != CA_OK ||
+            ca_coord_apply(st, ctx, &ci, 0, 1, &outcome) != CA_OK ||
+            !outcome.fresh || outcome.rejected_dps) {
+            ok = 0;
+            break;
+        }
+        (*loaded)++;
+    }
+    if (fclose(f) != 0) ok = 0;
+    return ok;
+}
+
+static int work_remote_manifest_matches(const char *dir, const char *uri,
+                                         const char *expected)
+{
+    char *remote = ecc2k_remote_path(uri, "manifest.json");
+    char *tmp = ic_path(dir, ".remote-manifest.tmp.XXXXXX");
+    if (!remote || !tmp) { free(remote); free(tmp); return 0; }
+    int fd = mkstemp(tmp);
+    if (fd < 0) { free(remote); free(tmp); return 0; }
+    close(fd);
+    int ok = ecc2k_aws_cp(remote, tmp);
+    if (ok) {
+        FILE *f = fopen(tmp, "rb");
+        size_t n = strlen(expected);
+        char *got = malloc(n ? n : 1);
+        ok = f && got && fread(got, 1, n, f) == n &&
+             fgetc(f) == EOF && memcmp(got, expected, n) == 0;
+        if (f) fclose(f);
+        free(got);
+    }
+    unlink(tmp);
+    free(remote); free(tmp);
+    return ok;
+}
+
+static int work_remote_prefix_empty(const char *uri)
+{
+    char *prefix = ecc2k_remote_path(uri, "");
+    if (!prefix) return 0;
+    int pipe_fd[2];
+    if (pipe(pipe_fd) != 0) { free(prefix); return 0; }
+    posix_spawn_file_actions_t actions;
+    int actions_ready = posix_spawn_file_actions_init(&actions) == 0;
+    int prepared = actions_ready;
+    if (prepared) prepared = posix_spawn_file_actions_adddup2(&actions, pipe_fd[1],
+                                                               STDOUT_FILENO) == 0 &&
+                             posix_spawn_file_actions_addclose(&actions, pipe_fd[0]) == 0 &&
+                             posix_spawn_file_actions_addclose(&actions, pipe_fd[1]) == 0;
+    extern char **environ;
+    char *const args[] = {"aws", "s3", "ls", prefix, "--recursive", NULL};
+    pid_t pid = -1;
+    int spawned = prepared && posix_spawnp(&pid, "aws", &actions, NULL, args, environ) == 0;
+    if (actions_ready) posix_spawn_file_actions_destroy(&actions);
+    close(pipe_fd[1]);
+    free(prefix);
+    int any = 0, read_ok = 1;
+    char buf[256];
+    for (;;) {
+        ssize_t n = read(pipe_fd[0], buf, sizeof(buf));
+        if (n > 0) { any = 1; continue; }
+        if (n == 0) break;
+        if (errno == EINTR) continue;
+        read_ok = 0;
+        break;
+    }
+    close(pipe_fd[0]);
+    if (!spawned) return 0;
+    int status = 0;
+    while (waitpid(pid, &status, 0) < 0) if (errno != EINTR) return 0;
+    return read_ok && !any && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+}
+
+static int work_progress(const char *dir, const ca_coord_ctx *ctx, ca_coord_state *st,
+                         double elapsed, uint64_t lease_secs, size_t journaled,
+                         int verbose, const char *status)
+{
+    ca_coord_progress p;
+    ca_coord_progress_get(st, ctx, (uint64_t)time(NULL), lease_secs, &p);
+    if (verbose)
+        fprintf(stderr, "[work] %.1fs steps=%" PRIu64 " dps=%" PRIu64
+                        " units=%" PRIu64 " checkins=%" PRIu64 " journaled=%zu\n",
+                elapsed, p.steps, p.dps_stored, p.units_completed, p.checkins, journaled);
+    if (!dir) return 1;
+    char body[512];
+    int n = snprintf(body, sizeof(body),
+        "{\"status\":\"%s\",\"job_id\":\"%016" PRIx64 "\","
+        "\"elapsed_seconds\":%.3f,\"steps\":%" PRIu64 ",\"dps\":%" PRIu64
+        ",\"units_completed\":%" PRIu64 ",\"units_active\":%" PRIu64
+        ",\"peers\":%" PRIu64 ",\"checkins\":%" PRIu64
+        ",\"journaled_checkins\":%zu,\"solved\":%s}\n",
+        status, ca_coord_ctx_job(ctx)->id, elapsed, p.steps, p.dps_stored,
+        p.units_completed, p.units_active, p.peers, p.checkins, journaled,
+        p.have_solution ? "true" : "false");
+    return n > 0 && (size_t)n < sizeof(body) && ic_atomic_file(dir, "progress.json", body);
+}
+
 static int cmd_work(void)
 {
     ca_coord_ctx *ctx = coord_load(1);
     ca_coord_state *st = NULL;
     if (ca_coord_state_init(&st, ctx) != CA_OK) die("out of memory");
+
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume"), verbose = flag("--verbose") || flag("-v") ||
+                                             opt("--progress-every");
+    uint32_t progress_every = opt_u32("--progress-every", 5);
+    uint32_t checkpoint_every = opt_u32("--checkpoint-every", 60);
+    uint32_t sync_every = opt_u32("--sync-every", 60);
+    if (!progress_every || !checkpoint_every || !sync_every)
+        die("progress, checkpoint and sync intervals must be positive");
+    if ((resume || s3_uri || opt("--checkpoint-every") || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri, --checkpoint-every and --sync-every require --state-dir");
+    if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
+    if (s3_uri) {
+        const char *sep = strncmp(s3_uri, "s3://", 5) ? NULL : strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    int lock_fd = -1, journal_fd = -1;
+    size_t journaled = 0;
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST)
+            die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode))
+            die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+
+        char job_line[CA_COORD_LINE_MAX];
+        if (!ca_coord_job_encode(ca_coord_ctx_job(ctx), job_line, sizeof(job_line)))
+            die("cannot encode work job");
+        char manifest[2 * CA_COORD_LINE_MAX + 160];
+        int head = snprintf(manifest, sizeof(manifest),
+                            "{\"schema\":1,\"command\":\"work\",\"job_hex\":\"");
+        if (head < 0 || (size_t)head >= sizeof(manifest)) die("work manifest is too long");
+        size_t pos = (size_t)head;
+        for (const unsigned char *p = (const unsigned char *)job_line; *p; p++) {
+            if (pos + 5 >= sizeof(manifest)) die("work manifest is too long");
+            pos += (size_t)snprintf(manifest + pos, sizeof(manifest) - pos, "%02x", *p);
+        }
+        if (pos + 4 >= sizeof(manifest)) die("work manifest is too long");
+        memcpy(manifest + pos, "\"}\n", 4);
+        manifest[pos + 4] = '\0';
+        char *journal_path = ic_path(state_dir, "checkins.log");
+        if (!journal_path) die("out of memory");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir))
+                die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest) ||
+                !ic_atomic_file(state_dir, "checkins.log", ""))
+                die("cannot create work state");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            if (!manifest_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            free(manifest_path);
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("work manifest does not match this job");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore work state into a nonempty directory");
+            if (!have_local && s3_uri && !ic_s3_sync(s3_uri, state_dir))
+                die("cannot restore work state from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("work manifest does not match this job");
+            if (have_local && s3_uri &&
+                !work_remote_manifest_matches(state_dir, s3_uri, manifest) &&
+                !work_remote_prefix_empty(s3_uri))
+                die("S3 work manifest is unavailable or does not match this job");
+            if (!work_journal_load(journal_path, st, ctx, &journaled))
+                die("work check-in journal is missing or invalid");
+        }
+        journal_fd = open(journal_path, O_WRONLY | O_APPEND);
+        free(journal_path);
+        if (journal_fd < 0) die("cannot open work check-in journal");
+    }
 
     const char *node_arg = opt("--node");
     if (!node_arg) node_arg = "node";
@@ -2663,9 +2893,43 @@ static int cmd_work(void)
     }
 
     double start = ca_now();
+    double next_progress = start + progress_every;
+    double next_checkpoint = start + checkpoint_every;
+    double next_sync = start + sync_every;
+    int storage_failed = 0;
+    if (state_dir && (!work_progress(state_dir, ctx, st, 0, lease_secs,
+                                      journaled, verbose, "running") ||
+                      !ic_atomic_file(state_dir, "result.json",
+                                      "{\"status\":\"running\"}\n")))
+        die("cannot persist initial work progress");
+    if (!state_dir && verbose)
+        work_progress(NULL, ctx, st, 0, lease_secs, 0, 1, "running");
     for (;;) {
         struct timespec ts = {0, 200 * 1000000L};
         nanosleep(&ts, NULL);
+        double now = ca_now();
+        if (state_dir && now >= next_checkpoint) {
+            if (!work_journal_flush(st, journal_fd, &journaled)) {
+                storage_failed = 1;
+                work_stop = 1;
+            }
+            next_checkpoint = now + checkpoint_every;
+        }
+        if (now >= next_progress) {
+            if (!work_progress(state_dir, ctx, st, now - start, lease_secs,
+                               journaled, verbose, "running")) {
+                storage_failed = 1;
+                work_stop = 1;
+            }
+            next_progress = now + progress_every;
+        }
+        if (s3_uri && now >= next_sync && !storage_failed) {
+            int ok = work_journal_flush(st, journal_fd, &journaled) &&
+                     ic_s3_sync(state_dir, s3_uri);
+            if (verbose) fprintf(stderr, "[work] S3 sync %s\n",
+                                 ok ? "complete" : "failed; will retry");
+            next_sync = now + sync_every;
+        }
         if (coord_interrupted) work_stop = 1;
         if (max_seconds && ca_now() - start >= (double)max_seconds) work_stop = 1;
         if (ca_coord_solution(st, NULL)) work_stop = 1;
@@ -2673,7 +2937,15 @@ static int cmd_work(void)
     }
     work_stop = 1;
     for (uint64_t i = 0; i < threads; i++) pthread_join(lanes[i].thread, NULL);
-    if (idle_when_solved && !coord_interrupted && ca_coord_solution(st, NULL)) {
+    if (state_dir && (!work_journal_flush(st, journal_fd, &journaled) ||
+                      !work_progress(state_dir, ctx, st, ca_now() - start,
+                                     lease_secs, journaled, verbose,
+                                     ca_coord_solution(st, NULL) ? "solved" : "stopped")))
+        storage_failed = 1;
+    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+        storage_failed = 1;
+    if (idle_when_solved && !storage_failed && !coord_interrupted &&
+        ca_coord_solution(st, NULL)) {
         fprintf(stderr, "[agent] solved; idling (--idle-when-solved) until stopped\n");
         while (!coord_interrupted) {
             struct timespec ts = {1, 0};
@@ -2708,19 +2980,47 @@ static int cmd_work(void)
         as.rejected += one.rejected;
         as.reconnects += one.reconnects;
     }
-    printf("{\"status\":\"ok\",\"solved\":%s,\"x\":%" PRIu64 ",\"node\":\"%s\",\"lanes\":%" PRIu64
+    for (size_t i = 0; i < fleet.count; i++) ca_coord_agent_stop(fleet.agent[i]);
+    if (state_dir && (!work_journal_flush(st, journal_fd, &journaled) ||
+                      !work_progress(state_dir, ctx, st, ca_now() - start,
+                                     lease_secs, journaled, verbose,
+                                     ca_coord_solution(st, NULL) ? "solved" : "stopped")))
+        storage_failed = 1;
+    /* Keep the remote result as running until the journal is uploaded. */
+    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+        storage_failed = 1;
+    char result[640];
+    int rn = snprintf(result, sizeof(result),
+           "{\"status\":\"ok\",\"solved\":%s,\"x\":%" PRIu64 ",\"node\":\"%s\",\"lanes\":%" PRIu64
            ",\"walkers\":%" PRIu64 ",\"steps\":%" PRIu64 ",\"dps\":%" PRIu64
            ",\"seconds\":%.3f,\"received\":%" PRIu64 ",\"sent\":%" PRIu64 ",\"connects\":%" PRIu64
            ",\"flushed\":%s,\"shards\":%u}\n",
            have ? "true" : "false", x, node, threads, walkers, steps, dps, ca_now() - start,
            as.received, as.sent, as.connects, flushed ? "true" : "false", shards);
-    for (size_t i = 0; i < fleet.count; i++) ca_coord_agent_stop(fleet.agent[i]);
+    if (rn < 0 || (size_t)rn >= sizeof(result)) storage_failed = 1;
+    if (state_dir && !storage_failed && !ic_atomic_file(state_dir, "result.json", result))
+        storage_failed = 1;
+    if (s3_uri && !storage_failed) {
+        char *local = ic_path(state_dir, "result.json");
+        char *remote = ecc2k_remote_path(s3_uri, "result.json");
+        if (!local || !remote || !ecc2k_aws_cp(local, remote)) storage_failed = 1;
+        free(local); free(remote);
+    }
+    if (storage_failed) {
+        if (state_dir) ic_atomic_file(state_dir, "result.json",
+                                      "{\"status\":\"storage error\"}\n");
+        puts("{\"status\":\"storage error\"}");
+    } else {
+        fputs(result, stdout);
+    }
     free(fleet.agent);
     for (size_t i = 0; i < nurl; i++) free(urls[i]);
     free(lanes);
+    if (journal_fd >= 0) close(journal_fd);
+    if (lock_fd >= 0) close(lock_fd);
     ca_coord_state_free(st);
     ca_coord_ctx_close(ctx);
-    return have ? 0 : 3;
+    return storage_failed ? 1 : have ? 0 : 3;
 }
 
 static int cmd_coord_status(void)
