@@ -87,6 +87,34 @@ want_bad() {
   fi
 }
 
+# Map each test's single S3 prefix to its fixture directory. Reject doubled
+# separators in object keys so trailing-slash URI handling is exercised.
+make_basic_aws_stub() {
+  cat >"$1" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+verb=$2 src=$3
+if [[ $src == s3://*//manifest.json ]]; then exit 2; fi
+if [[ $src == s3://*/manifest.json ]]; then src=$CA_TEST_S3_ROOT/manifest.json;
+elif [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $verb == ls ]]; then
+  if [[ -d $src ]]; then find "$src" -type f -print; fi
+  exit 0
+fi
+dst=$4
+if [[ $dst == s3://*//manifest.json ]]; then exit 2; fi
+if [[ $dst == s3://*/manifest.json ]]; then dst=$CA_TEST_S3_ROOT/manifest.json;
+elif [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+if [[ $verb == cp ]]; then
+  cp "$src" "$dst"
+else
+  mkdir -p "$dst"
+  if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+fi
+AWS
+  chmod +x "$1"
+}
+
 # ── information ─────────────────────────────────────────────────────────────
 want '"version"' version
 want '"cuda_compiled"' gpu-info
@@ -156,20 +184,38 @@ fi
 want_bad 'run manifest does not match' factor 1000036000100 \
   --state-dir "$factor_tmp/local" --resume
 mkdir "$factor_tmp/bin" "$factor_tmp/remote"
-cat >"$factor_tmp/bin/aws" <<'AWS'
-#!/usr/bin/env bash
-set -euo pipefail
-src=$3 dst=$4
-if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
-if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
-mkdir -p "$dst"
-if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
-AWS
-chmod +x "$factor_tmp/bin/aws"
+make_basic_aws_stub "$factor_tmp/bin/aws"
 FACTOR_S3=(factor 1000036000099 --state-dir "$factor_tmp/s3-local" \
-  --s3-uri s3://test/factor --sync-every 1)
+  --s3-uri s3://test/factor/ --sync-every 1)
 PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
   want_no '"status":"limit reached"' "${FACTOR_S3[@]}" --max-steps 3
+cp "$factor_tmp/remote/manifest.json" "$factor_tmp/remote-manifest.good"
+cp "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-checkpoint.good"
+printf 'another run\n' >"$factor_tmp/remote/manifest.json"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_bad 'S3 manifest is unavailable or does not match this run' \
+  "${FACTOR_S3[@]}" --max-steps 3 --resume
+checks=$((checks + 1))
+if ! cmp -s "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-checkpoint.good" || \
+   ! cmp -s "$factor_tmp/remote/manifest.json" <(printf 'another run\n'); then
+  printf 'FAIL: factor resume changed an unrelated S3 run\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$factor_tmp/remote/manifest.json"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_bad 'S3 manifest is unavailable or does not match this run' \
+  "${FACTOR_S3[@]}" --max-steps 3 --resume
+checks=$((checks + 1))
+cp "$factor_tmp/remote-manifest.good" "$factor_tmp/remote/manifest.json"
+rm "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote/result.json"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_no '"status":"limit reached"' "${FACTOR_S3[@]}" --max-steps 3 --resume
+checks=$((checks + 1))
+if [ ! -s "$factor_tmp/remote/factor.ckpt" ] || \
+   [ ! -s "$factor_tmp/remote/result.json" ]; then
+  printf 'FAIL: factor resume did not replenish an interrupted S3 mirror\n' >&2
+  fail=$((fail + 1))
+fi
 rm -rf "$factor_tmp/s3-local"
 PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
   want '"factors":[[1000003,1],[1000033,1]]' "${FACTOR_S3[@]}" \
@@ -236,16 +282,7 @@ want '"order":999708' "${EC_ORDER_FACTOR[@]}" --resume
 want_bad 'run manifest does not match' ec-order --p 97 --a 2 --b 4 \
   --state-dir "$ec_order_tmp/local" --resume
 mkdir "$ec_order_tmp/bin" "$ec_order_tmp/remote"
-cat >"$ec_order_tmp/bin/aws" <<'AWS'
-#!/usr/bin/env bash
-set -euo pipefail
-src=$3 dst=$4
-if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
-if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
-mkdir -p "$dst"
-if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
-AWS
-chmod +x "$ec_order_tmp/bin/aws"
+make_basic_aws_stub "$ec_order_tmp/bin/aws"
 EC_ORDER_S3=(ec-order --p 97 --a 2 --b 3 --state-dir "$ec_order_tmp/s3-local" \
   --s3-uri s3://test/ec-order --sync-every 1)
 PATH="$ec_order_tmp/bin:$PATH" CA_TEST_S3_ROOT="$ec_order_tmp/remote" \
@@ -340,16 +377,7 @@ want '"order":367' "${GEN_FACTOR[@]}" --resume
 cp "$gen_tmp/factor-local/gen.order-factor.ckpt" \
   "$gen_tmp/lag-local/gen.order-factor.ckpt"
 mkdir "$gen_tmp/bin" "$gen_tmp/remote"
-cat >"$gen_tmp/bin/aws" <<'AWS'
-#!/usr/bin/env bash
-set -euo pipefail
-src=$3 dst=$4
-if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
-if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
-mkdir -p "$dst"
-if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
-AWS
-chmod +x "$gen_tmp/bin/aws"
+make_basic_aws_stub "$gen_tmp/bin/aws"
 mkdir "$gen_tmp/remote-lag"
 GEN_LAG=(gen --group ec --p 1000003 --a 2 --b 3 --seed 1 --x 42 \
   --state-dir "$gen_tmp/lag-local" --s3-uri s3://test/gen-lag --sync-every 1)
@@ -468,16 +496,7 @@ want_bad 'run manifest does not match' kangaroo --group zp --p 1019 --order 509 
 rm -rf "$kangaroo_tmp"
 kangaroo_s3_test=$(mktemp -d)
 mkdir "$kangaroo_s3_test/bin" "$kangaroo_s3_test/remote"
-cat > "$kangaroo_s3_test/bin/aws" <<'AWS'
-#!/usr/bin/env bash
-set -euo pipefail
-src=$3 dst=$4
-if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
-if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
-mkdir -p "$dst"
-if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
-AWS
-chmod +x "$kangaroo_s3_test/bin/aws"
+make_basic_aws_stub "$kangaroo_s3_test/bin/aws"
 KANGAROO_S3=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
   --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
   --state-dir "$kangaroo_s3_test/local" --s3-uri s3://test/kangaroo --sync-every 1)
@@ -643,6 +662,20 @@ first_ck=$(awk '/^state.ck$/{print NR; exit}' "$ecc_tmp/upload.log")
 if [ -z "$first_dp" ] || [ -z "$first_ck" ] || [ "$first_dp" -ge "$first_ck" ]; then
   printf 'FAIL: ECC2K S3 corpus was not uploaded before checkpoint\n' >&2; fail=$((fail + 1))
 fi
+cp "$ecc_tmp/remote/manifest.json" "$ecc_tmp/ecc-manifest.good"
+cp "$ecc_tmp/remote/state.ck" "$ecc_tmp/ecc-checkpoint.good"
+printf 'another run\n' >"$ecc_tmp/remote/manifest.json"
+PATH="$ecc_tmp/awsbin:$PATH" CA="$ecc_ca" \
+  want_bad 'S3 manifest is unavailable or does not match this run' \
+  rho --curve ecc2k130 --backend cuda --run-id 7 --resume \
+  --state-dir "$ecc_state" --s3-uri s3://test/ecc2k
+checks=$((checks + 1))
+if ! cmp -s "$ecc_tmp/remote/state.ck" "$ecc_tmp/ecc-checkpoint.good" || \
+   ! cmp -s "$ecc_tmp/remote/manifest.json" <(printf 'another run\n'); then
+  printf 'FAIL: ECC2K resume changed an unrelated S3 run\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$ecc_tmp/ecc-manifest.good" "$ecc_tmp/remote/manifest.json"
 printf x >>"$ecc_tmp/remote/dps.bin"
 rm -rf "$ecc_state"
 checks=$((checks + 1))
@@ -1021,10 +1054,21 @@ cat > "$ic_s3_test/bin/aws" <<'AWS'
 #!/usr/bin/env bash
 set -euo pipefail
 touch "$CA_TEST_S3_CALLED"
-if [[ $3 == s3://* ]]; then
-  cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+verb=$2 src=$3
+if [[ $src == s3://*/manifest.json ]]; then src=$CA_TEST_S3_FIXTURE/manifest.json;
+elif [[ $src == s3://* ]]; then src=$CA_TEST_S3_FIXTURE; fi
+if [[ $verb == ls ]]; then
+  if [[ -d $src ]]; then find "$src" -type f -print; fi
+  exit 0
+fi
+dst=$4
+if [[ $dst == s3://*/manifest.json ]]; then dst=$CA_TEST_S3_FIXTURE/manifest.json;
+elif [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_FIXTURE; fi
+if [[ $verb == cp ]]; then
+  cp "$src" "$dst"
 else
-  cp "$3/"* "$CA_TEST_S3_FIXTURE/"
+  mkdir -p "$dst"
+  if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
 fi
 AWS
 chmod +x "$ic_s3_test/bin/aws"
@@ -1148,16 +1192,7 @@ fi
 want_bad 'run manifest does not match' cheon --group zp --p 1000003 --order 166667 \
   --g "$SUBG" --d 2 --alpha 4243 --state-dir "$cheon_tmp/local" --resume
 mkdir "$cheon_tmp/bin" "$cheon_tmp/remote"
-cat >"$cheon_tmp/bin/aws" <<'AWS'
-#!/usr/bin/env bash
-set -euo pipefail
-src=$3 dst=$4
-if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
-if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
-mkdir -p "$dst"
-if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
-AWS
-chmod +x "$cheon_tmp/bin/aws"
+make_basic_aws_stub "$cheon_tmp/bin/aws"
 CHEON_S3=(cheon --group zp --p 1000003 --order 166667 --g "$SUBG" --d 2 --alpha 4242 \
   --state-dir "$cheon_tmp/s3-local" --s3-uri s3://test/cheon --sync-every 1)
 PATH="$cheon_tmp/bin:$PATH" CA_TEST_S3_ROOT="$cheon_tmp/remote" \
