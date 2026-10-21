@@ -1,0 +1,101 @@
+name: N19 native relation loop (diagnostic profile of the baseline arm N, untimed)
+
+# Phase 1 of experiments/volcano-n19-native-loop-20261021: an UNTIMED diagnostic
+# that profiles the current n = 19 row's arm N (v3 arm.sage, run 39387473809) in
+# the pinned Sage image, before the native-loop protocol is designed and
+# frozen. Nothing here is a measurement or a gate. The protocol's own jobs
+# replace this one in a later commit of this file.
+#
+# workflow_dispatch is the convention; dispatch of a workflow that is not on
+# the default branch has been refused for this integration before, so a push
+# to branch claude/n19-native-loop also triggers it, restricted by path filters
+# (the owner-approved pattern of n19 v2 / v3): receipts, README, figures,
+# figure scripts, smoke and diagnosis do not trigger a run.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/n19-native-loop]
+    paths:
+      - experiments/volcano-n19-native-loop-20261021/**
+      - .github/workflows/n19-native-loop.yml
+      - '!experiments/volcano-n19-native-loop-20261021/run_github_*/**'
+      - '!experiments/volcano-n19-native-loop-20261021/README.md'
+      - '!experiments/volcano-n19-native-loop-20261021/README.pdf'
+      - '!experiments/volcano-n19-native-loop-20261021/figures/**'
+      - '!experiments/volcano-n19-native-loop-20261021/make_figures.py'
+      - '!experiments/volcano-n19-native-loop-20261021/report_header.tex'
+      - '!experiments/volcano-n19-native-loop-20261021/smoke/**'
+      - '!experiments/volcano-n19-native-loop-20261021/diagnosis/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n19-native-loop-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPERIMENT: experiments/volcano-n19-native-loop-20261021
+  V3: experiments/volcano-n19-native-tau6-v3-20261020
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+  SAGE_IMAGE: sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565
+
+jobs:
+  profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record the runner and build the v3 native library (pinned toolchain)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rd="$RUNNER_TEMP/n19prof"
+          mkdir -p "$rd/lib" "$rd/profile"
+          echo "N19_RD=$rd" >> "$GITHUB_ENV"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/n19prof-cargo"
+          python3 scripts/host_cpu_record.py > "$rd/host-cpu.json" || true
+          { echo "git_sha=$GITHUB_SHA"; echo "run_id=$GITHUB_RUN_ID"; grep -m1 'model name' /proc/cpuinfo; nproc; } | tee "$rd/runner.txt"
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$rd/rustc.txt"
+          (cd "$V3/native" && cargo build --release --locked)
+          cp "$CARGO_TARGET_DIR/release/libtau6native.so" "$rd/lib/"
+          sha256sum "$rd/lib/libtau6native.so" "$V3/arm.sage" "$EXPERIMENT/diagnosis/profile_n.sage" \
+            "$EXPERIMENT/diagnosis/startup_probe.py" | tee "$rd/sha256.txt"
+
+      - name: Profile arm N in the pinned Sage image (untimed diagnostic)
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$SAGE_IMAGE"
+          docker run --rm --user root -e V3 -e EXPERIMENT -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c '
+            set -euo pipefail
+            sage --version
+            cpu=$(sage -python -c "import os; print(min(os.sched_getaffinity(0)))")
+            P=$V3/inputs/panel.json
+            pin() { sage -python -c "import os,sys; os.sched_setaffinity(0,{int(sys.argv[1])}); os.execvp(sys.argv[2], sys.argv[2:])" "$cpu" "$@"; }
+            pt() { sage -python -c "import json,sys; p=json.load(open(sys.argv[1]))[\"points\"][int(sys.argv[2])]; print(p[\"id\"], p[\"scalar\"], p[\"rng_seed\"])" "$P" "$1"; }
+            for i in 0 1 2 3 4 5 6 7; do
+              read id s seed < <(pt $i)
+              pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode timers --point $id --scalar $s --rng-seed "$seed" \
+                --lib /rd/lib/libtau6native.so --out /rd/profile/timers-$id.json
+            done
+            for i in 0 1; do
+              read id s seed < <(pt $i)
+              pin sage $EXPERIMENT/diagnosis/profile_n.sage --mode cprofile --point $id --scalar $s --rng-seed "$seed" \
+                --lib /rd/lib/libtau6native.so --out /rd/profile/cprofile-$id.json
+            done
+            sage -python $EXPERIMENT/diagnosis/startup_probe.py --cpu $cpu --reps 5 --lib /rd/lib/libtau6native.so \
+              --out /rd/profile/startup.json
+          ' 2>&1 | tee "$N19_RD/profile-stdout.txt"
+
+      - name: Preserve the diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n19-native-loop-profile-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19prof
+          if-no-files-found: warn
+          retention-days: 90
