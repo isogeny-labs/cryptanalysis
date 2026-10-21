@@ -1,0 +1,133 @@
+{
+ "cpu": 0,
+ "kind": "untimed diagnostic: Sage start-up per launch (no claim)",
+ "launches": {
+  "sage -c pass": [
+   {
+    "child_cpu_s": 0.7769429999999996,
+    "child_sys_s": 0.18239799999999995,
+    "child_user_s": 0.5945449999999997,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.809059523
+   },
+   {
+    "child_cpu_s": 0.7848579999999998,
+    "child_sys_s": 0.18460900000000002,
+    "child_user_s": 0.6002489999999998,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.817038962
+   },
+   {
+    "child_cpu_s": 0.7833290000000006,
+    "child_sys_s": 0.18279299999999976,
+    "child_user_s": 0.6005360000000008,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.816069918
+   }
+  ],
+  "sage -python -c pass": [
+   {
+    "child_cpu_s": 0.033017000000000074,
+    "child_sys_s": 0.011660000000000004,
+    "child_user_s": 0.02135700000000007,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.033584511
+   },
+   {
+    "child_cpu_s": 0.03365099999999965,
+    "child_sys_s": 0.012950999999999935,
+    "child_user_s": 0.02069999999999972,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.034190544
+   },
+   {
+    "child_cpu_s": 0.03363899999999953,
+    "child_sys_s": 0.014585999999999988,
+    "child_user_s": 0.019052999999999543,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.034175299
+   }
+  ],
+  "sage -python import sage.all": [
+   {
+    "child_cpu_s": 0.779058,
+    "child_sys_s": 0.18913400000000014,
+    "child_user_s": 0.5899239999999999,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.780218275
+   },
+   {
+    "child_cpu_s": 0.7770050000000004,
+    "child_sys_s": 0.18605399999999994,
+    "child_user_s": 0.5909510000000004,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.778278889
+   },
+   {
+    "child_cpu_s": 0.7838389999999991,
+    "child_sys_s": 0.16432500000000028,
+    "child_user_s": 0.6195139999999988,
+    "returncode": 0,
+    "stderr_tail": "",
+    "wall_s": 0.786939257
+   }
+  ],
+  "sage profile_n.sage --mode load (v3 arm loads)": [
+   {
+    "child_cpu_s": 1.0647840000000004,
+    "child_sys_s": 0.23120999999999992,
+    "child_user_s": 0.8335740000000005,
+    "returncode": 1,
+    "stderr_tail": "ts/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 313, in <module>\n    main()\n  File \"/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 264, in main\n    lib = os.path.abspath(opt('--lib'))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 415, in abspath\nTypeError: expected str, bytes or os.PathLike object, not NoneType\n",
+    "wall_s": 1.097387916
+   },
+   {
+    "child_cpu_s": 1.064391,
+    "child_sys_s": 0.2335790000000002,
+    "child_user_s": 0.8308119999999999,
+    "returncode": 1,
+    "stderr_tail": "ts/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 313, in <module>\n    main()\n  File \"/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 264, in main\n    lib = os.path.abspath(opt('--lib'))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 415, in abspath\nTypeError: expected str, bytes or os.PathLike object, not NoneType\n",
+    "wall_s": 1.097250791
+   },
+   {
+    "child_cpu_s": 1.0713,
+    "child_sys_s": 0.21595999999999993,
+    "child_user_s": 0.85534,
+    "returncode": 1,
+    "stderr_tail": "ts/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 313, in <module>\n    main()\n  File \"/w/experiments/volcano-n19-native-loop-20261021/diagnosis/profile_n.sage.py\", line 264, in main\n    lib = os.path.abspath(opt('--lib'))\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 415, in abspath\nTypeError: expected str, bytes or os.PathLike object, not NoneType\n",
+    "wall_s": 1.104658508
+   }
+  ]
+ },
+ "reps": 3,
+ "summary": {
+  "sage -c pass": {
+   "all_exit_0": true,
+   "child_cpu_s_mean": 0.78171,
+   "wall_s_mean": 0.8140561343333333
+  },
+  "sage -python -c pass": {
+   "all_exit_0": true,
+   "child_cpu_s_mean": 0.03343566666666642,
+   "wall_s_mean": 0.03398345133333333
+  },
+  "sage -python import sage.all": {
+   "all_exit_0": true,
+   "child_cpu_s_mean": 0.7799673333333331,
+   "wall_s_mean": 0.7818121403333333
+  },
+  "sage profile_n.sage --mode load (v3 arm loads)": {
+   "all_exit_0": false,
+   "child_cpu_s_mean": 1.0668250000000001,
+   "wall_s_mean": 1.0997657383333335
+  }
+ }
+}
