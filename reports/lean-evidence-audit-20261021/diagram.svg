@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="460" viewBox="0 0 1120 460" role="img" aria-labelledby="title desc">
   <title id="title">Cryptanalysis Lean evidence layers</title>
-  <desc id="desc">Ninety-three tracked Lean files now have pinned toolchains; thirteen dedicated receipts match source hashes. Two representative existing modules were recompiled. Full kernel and semantic audits remain open for the corpus.</desc>
+  <desc id="desc">Ninety-three tracked Lean files have pinned toolchains and were compiled locally; thirteen dedicated receipts match source hashes. Semantic claim mapping, implementation refinement, empirical performance replay, and remote CI remain open.</desc>
   <rect width="1120" height="460" fill="#f7f9fc"/>
   <text x="44" y="50" font-family="Arial,sans-serif" font-size="26" font-weight="700" fill="#172338">Lean evidence is layered</text>
   <text x="44" y="81" font-family="Arial,sans-serif" font-size="16" fill="#4a5b72">cryptanalysis main d1a10f6d + root pin and source-receipt audit</text>
@@ -14,12 +14,12 @@
     <text x="355" y="192" font-size="17">13 / 13 hashes match</text>
     <text x="355" y="222" font-size="17">0 forbidden tokens</text>
     <rect x="626" y="121" width="450" height="139" rx="13" fill="#e4f5eb" stroke="#3c8b61" stroke-width="2"/>
-    <text x="646" y="159" font-size="20" font-weight="700">Live focused replay</text>
-    <text x="646" y="192" font-size="17">OrbitCompression + GaugeTree compiled</text>
-    <text x="646" y="222" font-size="17">OrbitPairIndex passed in PR #1008</text>
+    <text x="646" y="159" font-size="20" font-weight="700">Live local replay</text>
+    <text x="646" y="192" font-size="17">93 / 93 Lean sources compiled</text>
+    <text x="646" y="222" font-size="17">Axiom printouts within allowed set</text>
     <rect x="44" y="321" width="1032" height="97" rx="13" fill="#fff1d8" stroke="#c18c29" stroke-width="2"/>
     <text x="64" y="359" font-size="20" font-weight="700">Remaining review</text>
-    <text x="64" y="390" font-size="17">Build every theorem; map statements to claims and implementations; replay numerical evidence.</text>
+    <text x="64" y="390" font-size="17">Map statements to claims and implementations; replay performance; restore remote CI.</text>
   </g>
   <g stroke="#65778e" stroke-width="3" fill="none" stroke-linecap="round"><path d="M294 190 H330"/><path d="M585 190 H621"/><path d="M851 260 V316"/></g>
   <g fill="#65778e"><path d="M329 190 l-9 -6 v12z"/><path d="M620 190 l-9 -6 v12z"/><path d="M851 315 l-6 -9 h12z"/></g>

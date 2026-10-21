@@ -2,7 +2,7 @@
 
 - **Status:** `open`
 - **Kind:** access/tool limit; the cause is unknown
-- **Affected work:** [Lean evidence audit](../reports/lean-evidence-audit-20261021/report.md), local commit `a9d2addf364fc604f56cf005a2711248c29e1e9d`
+- **Affected work:** [Lean evidence audit and 93-file local replay](../reports/lean-evidence-audit-20261021/report.md), branch `codex/cryptanalysis-proof-audit-20261021` (initial audit commit `a9d2addf364fc604f56cf005a2711248c29e1e9d`)
 - **Next action owner:** repository administrator or GitHub support for service access; this task for the push and PR after access returns
 - **Last updated:** 2026-10-21
 
@@ -19,8 +19,9 @@ is disabled” for this repository. The reason is not established.
   `remote: Your repository is disabled` and HTTP 403 on 2026-10-21. A separate
   `git ls-remote origin refs/heads/main` received the same response. The
   GitHub REST repository read still succeeded and returned `disabled: false`.
-  The local audit script, focused Lean builds, report, diagram, and PDF remain
-  committed in the isolated worktree.
+  The local audit script, report, diagram, and PDF remain committed in the
+  isolated worktree; a subsequent local replay compiled all 93 tracked Lean
+  files and is recorded in the same branch.
 - **Derived or proved:** no theorem or repository-policy conclusion follows
   from the HTTP response.
 - **Suspected explanation:** unknown. The Git smart HTTP response and REST

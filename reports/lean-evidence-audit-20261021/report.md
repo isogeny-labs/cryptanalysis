@@ -2,10 +2,11 @@
 
 **Scope.** Audited the cryptanalysis main tree at
 `d1a10f6d537dc4e9b5aff02c1e4dcef3e2267c1b`, then added a root Lean
-toolchain pin and a read-only source/receipt audit. This is not a kernel build
-of every theorem or a semantic review of every experiment in the three
-requested repositories. No scientific trial or performance measurement was
-run. [The diagram](diagram.svg) separates these validation layers.
+toolchain pin and a read-only source/receipt audit. A subsequent local replay
+compiled all 93 tracked Lean files in this repository. It is not a semantic
+review of every theorem or experiment in the three requested repositories.
+No new scientific trial or performance measurement was run.
+[The diagram](diagram.svg) separates these validation layers.
 
 **Delivery:** Git smart HTTP returned HTTP 403 (“Your repository is disabled”)
 when pushing this branch. The local commit remains intact; the
@@ -45,14 +46,27 @@ controls for comments, strings, split tokens, and a real `sorry`; all passed.
 
 | Check | Observed result | Limit |
 |:--|:--|:--|
-| Lean 4.34.1 `lean OrbitCompression.lean` | PASS; four reported declarations, with only `propext`/`Quot.sound` on the cost formula | Abstract orbit reconstruction and tree cost model; no Rust-to-Lean refinement proof. |
-| Lean 4.34.1 `lean GaugeTree.lean` | PASS; five reported declarations, with only `propext` | Gauge-aware tree equations under the explicit group and order-three automorphism premises. |
-| Orbit pair-index project | Already built and axiom-audited in merged [PR #1008](https://github.com/aburan28/cryptanalysis/pull/1008), with four independent Python tests | Three-slot modular lookup equivalence; no full elliptic-curve or four-summand certification. |
-| Dedicated receipt source hashes | 13/13 match committed Lean bytes | Receipts were checked for source identity, not independently replayed on their original hardware or toolchains. |
-| Lean 4.24 binary-genus-2 module and remaining Lean files | **Not built in this change** | Pin and lexical checks alone are not kernel validation. |
+| Complete tracked Lean source corpus | **93/93 files compiled locally** on their effective pins; [source-by-source index](evidence/corpus/cryptanalysis-corpus-index-20261021.json) | Compilation checks the declarations in those files. Printed axiom sets were restricted to `propext`, `Classical.choice`, and `Quot.sound`; source-to-claim fidelity is separate. |
+| Pinned experiment receipt scripts | **13/13 passed**, covering 28 distinct Lean files; [run summary](evidence/corpus/experiment-checks.json) | Two scripts have no Lean source row; the other scripts build their named sources and compare pinned axiom receipts. Original hardware was not reproduced. |
+| Standalone dependency chains | **17/17 mixed-radix**, **24/24 independent core**, and **19/19 dependent split-prime** sources compiled with matching, allowed [axiom printouts](evidence/corpus/) | `SplitPrime12211NearestSelector.lean` has no local print; the dependent `ProofAudit.lean` printed its selected-bound axiom set. |
+| Direct and Lake projects | `GaugeTree` and `OrbitCompression` rebuilt; orbit project and Lean 4.24 binary-genus-2 project built; [orbit audit](evidence/corpus/cryptanalysis-orbit-audit-20261021.log) and [binary build](evidence/corpus/cryptanalysis-binary-genus2-build-20261021.log) retained | The orbit audit covers `OrbitPairIndex`; the binary theorem has a nonzero-denominator hypothesis and does not model a complete genus-two/Jacobian construction. |
+| Archived point/model receipts | **Six 512-row calibration/holdout checks matched** their frozen receipts; [orbit](evidence/corpus/cryptanalysis-hex-orbit-replay-20261021.json) and [DAG/work-depth](evidence/corpus/cryptanalysis-hex-dag-workdepth-replay-20261021.json) results retained | They check archived points and model counts, not fresh timing, independent scalar replay of all research, or attack performance. |
+| Dedicated receipt source hashes | 13/13 match committed Lean bytes | A matching hash does not prove a theorem; the live compiler replays above supply the local proof check. |
 
-The examined orbit quotient and prime-j0 work in this report did not create
-a corrected scientific measurement. The existing
+The source-bound [corpus index](evidence/corpus/cryptanalysis-corpus-index-20261021.json)
+and [raw replay scripts and logs](evidence/corpus/) document this local
+93-file check. The two files without a local axiom print were covered by
+`AxiomAudit.lean` and `ProofAudit.lean`. These gates validate compilation and
+the recorded axiom checks, not the meaning of every research theorem.
+The [initial](evidence/corpus/cryptanalysis-check-replay-20261021.json) and
+[retry](evidence/corpus/cryptanalysis-check-retry-20261021.json) traces also
+retain sparse-checkout failures and three data checkers invoked with the wrong
+`--check` interface. After the tracked helpers and native source were included,
+all 13 pinned experiment receipt checks passed; the three data checkers were
+then run with their protocol-specified fixture and row arguments.
+
+The archived point/model replays found no corrected scientific measurement.
+The existing
 [`OrbitCompression` result](../../experiments/prime-j0-hex-orbit-materialized-20261013/RESULT.md)
 explicitly leaves complete-operation wall time for an isolated host. Its
 archived numbers and the orbit quotient reference JSON were not rewritten.
@@ -63,15 +77,21 @@ performance graph. The new visual shows proof-evidence coverage only.
 
 | Requirement | Status |
 |:--|:--|
-| Faithful Lean theorems for all historical experiments in crypto, cryptanalysis, and crypto-autoresearcher | **Partial.** Existing modules were inventoried, pins and receipts checked, and three representative modules were built across the prior and current slices. Exhaustive theorem builds and semantic proof maps remain open. |
-| Legitimate implementation and archived results | **Partial.** Two proof models were replayed; the complete Rust/Python implementations and historical raw results were not independently replayed by this metadata audit. |
+| Faithful Lean theorems for all historical experiments in crypto, cryptanalysis, and crypto-autoresearcher | **Partial.** All 93 existing cryptanalysis Lean files compiled locally and their available axiom checks passed. Missing theorems for historical claims and semantic proof maps remain open; the companion autoresearcher workspace separately verified 62 present targets. |
+| Legitimate implementation and archived results | **Partial.** Six frozen 512-row point/model checks replayed, but complete Rust/Python implementation refinement and historical raw performance replay were not established. |
 | Updated graphs and performance dashboards | **Partial.** The previous autoresearcher change refreshed the nine-row N13 dashboard; this change adds an evidence diagram. Other graph sources have no verified numerical correction from this audit. |
-| Everything good to go | **Not established.** Full kernel, code-to-model, empirical replay, and cross-repository claim reviews are still required. |
+| Everything good to go | **Not established.** Code-to-model bridges, empirical performance replay, cross-repository semantic reviews, the crypto PR's full Lean CI matrix, and cryptanalysis remote CI remain open. |
 
 ## Reproduction
 
 ```sh
 python3 tools/audit_lean_evidence.py --json /tmp/cryptanalysis-lean-audit.json
+python3.12 experiments/prime-j0-axis152-20261012/check.py --check
+cd experiments/orbit-quotient-summation/lean
+lake build && lake env lean AxiomAudit.lean
+cd ../../../research/binary_genus2_cover_20261014/lean
+lake build
+cd ../../../
 cd experiments/prime-j0-hex-orbit-materialized-20261013
 elan run leanprover/lean4:v4.34.1 lean OrbitCompression.lean
 cd ../prime-j0-gauge-tree-20261012

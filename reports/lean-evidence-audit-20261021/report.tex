@@ -12,9 +12,10 @@
 \end{center}
 
 \textbf{Scope.} This change audits tracked Lean source metadata, adds a root
-toolchain pin, and checks source-bound proof receipts. It does not build every
-theorem or semantically review every experiment across the three requested
-repositories. No scientific trial or performance measurement was run.
+toolchain pin, checks source-bound proof receipts, and locally compiles all 93
+tracked Lean files in cryptanalysis. It does not semantically review every
+theorem or experiment across the three requested repositories. No new
+scientific trial or performance measurement was run.
 
 \textbf{Delivery.} Git smart HTTP returned HTTP 403 (``Your repository is
 disabled'') when pushing this branch. The local commit and evidence remain
@@ -40,9 +41,9 @@ lexical scan, or matching receipt is not a kernel theorem verdict.
 \centering\small
 \fbox{93 Lean sources; 93 pins} $\longrightarrow$
 \fbox{13/13 source receipts match} $\longrightarrow$
-\fbox{Three focused modules compiled}\\[0.7em]
+\fbox{93/93 Lean files compiled locally}\\[0.7em]
 $\Downarrow$\\[0.45em]
-\fbox{Still owed: all theorem builds, semantic proof maps, code and empirical replay}
+\fbox{Still owed: semantic maps, code refinement, performance replay, remote CI}
 \end{minipage}}
 \end{center}
 
@@ -55,26 +56,29 @@ strings, split tokens, and a real \mono{sorry} passed.
 \section*{Live proof checks and limits}
 \begin{tabular}{|p{0.42\linewidth}|p{0.48\linewidth}|}\hline
 Check & Observed result and boundary \\ \hline
-Lean 4.34.1 OrbitCompression & PASS; four reported declarations, using only standard foundations on the join-work formula. Abstract cost model only. \\ \hline
-Lean 4.34.1 GaugeTree & PASS; five reported declarations, using only \mono{propext}. Explicit group and order-three automorphism premises. \\ \hline
-OrbitPairIndex & Built and axiom-audited in merged cryptanalysis PR 1008, with four independent Python tests. Only the modular lookup bridge is proved. \\ \hline
-Dedicated receipts & 13/13 source hashes match; original hardware and all proof modules were not replayed. \\ \hline
-Binary-genus-2 and remaining modules & Pinned or inventoried, but not built in this change. \\ \hline
+Tracked Lean corpus & 93/93 files compiled on their pinned versions. Source-directed axiom printouts used only propext, Classical.choice and Quot.sound. This is no semantic proof map. \\ \hline
+Experiment receipt checks & 13/13 scripts passed, covering 28 distinct Lean source paths. Original hardware and timing were not reproduced. \\ \hline
+Standalone chains & 17 mixed-radix, 24 independent core, and 19 dependent split-prime modules compiled with matching axiom printouts. ProofAudit covered the selector without a local print. \\ \hline
+Direct and Lake projects & GaugeTree and OrbitCompression rebuilt; the orbit and Lean 4.24 binary-genus-2 projects built. The latter proves an affine equation under a nonzero denominator, not full Jacobian conformance. \\ \hline
+Archived point/model receipts & Six 512-row calibration/holdout checks matched frozen receipts. These are archived point and model comparisons, not fresh performance measurements. \\ \hline
+Dedicated receipts & 13/13 source hashes match. A matching hash alone is not a theorem verdict. \\ \hline
 \end{tabular}
 
 No corrected scientific measurement arose from this audit. The checked
 OrbitCompression result itself leaves complete-operation wall time for an
 isolated host. The existing orbit reference JSON and performance archives
 were not rewritten; this report's diagram is an evidence visual, not a
-performance graph.
+performance graph. Initial narrow sparse checkouts omitted tracked helpers;
+after those inputs were included, all 13 receipt scripts passed. The three
+archived-data checkers were run with their protocol-specified arguments.
 
 \section*{Requested scope and status}
 \begin{tabular}{|p{0.42\linewidth}|p{0.48\linewidth}|}\hline
 Requirement & Status \\ \hline
-Faithful Lean proofs for every historical experiment across three repos & Partial. Pins and receipts checked; three representative modules built across the prior and current slices. Exhaustive builds and semantic maps remain open. \\ \hline
-Legitimate code and numerical results & Partial. Two existing proof models replayed here; complete implementation and empirical replay remain. \\ \hline
+Faithful Lean proofs for every historical experiment across three repos & Partial. All existing cryptanalysis Lean files compiled locally; missing historical lemmas and semantic proof maps remain. The separate autoresearcher workspace verified 62 present targets. \\ \hline
+Legitimate code and numerical results & Partial. Six frozen point/model panels replayed; complete implementation refinement and raw performance replay remain. \\ \hline
 Graphs and performance dashboards & Partial. Prior autoresearcher PR refreshed nine N13 rows; this change adds an evidence diagram and no new performance number. \\ \hline
-Everything good to go & Not established. Full kernel, code-to-model, empirical, and cross-repository reviews remain. \\ \hline
+Everything good to go & Not established. Code-to-model, empirical, and cross-repository reviews and remote CI remain. \\ \hline
 \end{tabular}
 
 Reproduce the static audit with
