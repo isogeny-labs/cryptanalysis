@@ -24,8 +24,8 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 ```
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
-state directory. The durable flags are currently specific to native rho;
-other `solve` algorithms reject them.
+state directory. The durable flags are currently available for native rho and
+kangaroo; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -46,6 +46,26 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+
+## Pollard kangaroo
+
+For interval searches, use `kangaroo` or `solve --alg kangaroo`:
+
+```sh
+cryptanalysis kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --verbose --progress-every 5 \
+  --state-dir ./runs/kangaroo-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/kangaroo-001 --sync-every 60
+```
+
+Repeat the group, base, target, interval, seed, herd, jump, and distinguished
+point settings with `--resume`. The saved `kangaroo.ckpt` includes exact herd
+positions, RNG state, distinguished points, cumulative counters, and a
+checksum. A resumed run recreates the jump table and continues the same
+herds. `kangaroo.ckpt.progress.json` and `result.json` provide readable
+status. Tiny intervals handled by a direct scan have only the manifest and
+result; resume recomputes them. The local/S3 sync and locking rules above
+apply to kangaroo as well.
 
 ## Index calculus
 
