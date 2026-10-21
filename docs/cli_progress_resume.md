@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-GLV, kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
+GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, and dlog.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -67,6 +67,32 @@ cryptanalysis solve --alg glv --group ec --p 67108933 --a 0 --b 7 \
 Resume with the same curve, points, seed, and state location. `--max-ops`
 can stop a run with a checkpoint; raise it on resume to continue. The local
 lock, final sync, and S3 restore rules above apply.
+
+## GPU rho
+
+`solve --alg gpu-rho` reports launches, group operations, distinguished
+points, retained table entries, and walk restarts. `gpu-rho.dp` holds a
+versioned, checksummed distinguished-point corpus and cumulative counters.
+The snapshot binds the group, base, target, and resolved walk settings. On
+resume the multiplier table is rebuilt from the saved effective seed, then a
+fresh walk stream searches against the retained points. Device lane positions
+are not stored. Automatic `--steps` is fixed to the saved launch size so
+`--max-ops` can be raised without changing the run identity. One launch is
+not interruptible, so a work cap or checkpoint interval can be exceeded by
+the duration and operations of that launch.
+
+```sh
+cryptanalysis solve --alg gpu-rho --group zp --p 1000003 --order 1000002 \
+  --g 858101 --h 218146 --backend emulate --seed 3 \
+  --verbose --state-dir ./runs/gpu-rho-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/gpu-rho-001 --sync-every 60
+```
+
+`gpu-rho.dp.progress.json` and `result.json` provide readable status. Repeat
+the same backend request, curve or group, points, and walk settings with
+`--resume`. The local lock and S3 mirror and restore rules above apply. The
+emulator follows the same kernel body as CUDA; a CUDA device is needed to
+validate the device backend itself.
 
 ## Pollard kangaroo
 

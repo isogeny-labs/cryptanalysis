@@ -194,8 +194,6 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
-want_bad 'live progress and resumable state require --alg rho, glv, kangaroo, bsgs, grumpy, precomp or dlog' \
-  solve --alg gpu-rho --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
 bsgs_tmp=$(mktemp -d)
 BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
@@ -289,6 +287,32 @@ want_fail rho --curve ecc2k130 --backend metal --kat fixture
 want '"x":123456' solve --alg gpu-rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
+gpu_tmp=$(mktemp -d)
+GPU_RHO=(solve --alg gpu-rho "${ZP[@]}" --g 858101 --h 218146 \
+  --backend emulate --seed 3 --blocks 1 --tpb 4 --steps 16 --dp-bits 2 \
+  --state-dir "$gpu_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GPU_RHO[@]}" --max-ops 1000
+want '"x":123456' "${GPU_RHO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$gpu_tmp/gpu-rho.dp" ] || \
+   [ ! -s "$gpu_tmp/gpu-rho.dp.progress.json" ] || \
+   ! grep -q '"x":123456' "$gpu_tmp/result.json"; then
+  printf 'FAIL: GPU rho checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' solve --alg gpu-rho "${ZP[@]}" \
+  --g 858101 --h 218146 --backend emulate --seed 4 --blocks 1 --tpb 4 \
+  --steps 16 --dp-bits 2 --state-dir "$gpu_tmp" --resume
+printf X >> "$gpu_tmp/gpu-rho.dp"
+cp "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"
+want_no 'checkpoint is damaged or incompatible' "${GPU_RHO[@]}" \
+  --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"; then
+  printf 'FAIL: invalid GPU rho checkpoint was overwritten\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$gpu_tmp"
 want_fail solve --alg dlog --group zp --p 12x34    # malformed number
 
 # Bernstein-Lange precomputation (ca_precomp.h).  The method needs a base that
@@ -358,6 +382,21 @@ checks=$((checks + 1))
 if [ ! -s "$kangaroo_s3_test/remote/glv.ckpt" ] || \
    ! grep -q '"x":424242' "$kangaroo_s3_test/remote/result.json"; then
   printf 'FAIL: GLV S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+GPU_S3=(solve --alg gpu-rho "${ZP[@]}" --g 858101 --h 218146 \
+  --backend emulate --seed 3 --blocks 1 --tpb 4 --steps 16 --dp-bits 2 \
+  --state-dir "$kangaroo_s3_test/gpu-local" --s3-uri s3://test/gpu-rho --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GPU_S3[@]}" --max-ops 1000
+rm -rf "$kangaroo_s3_test/gpu-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":123456' "${GPU_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/gpu-rho.dp" ] || \
+   ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: GPU rho S3 mirror/restore artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
 rm -rf "$kangaroo_s3_test"
