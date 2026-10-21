@@ -133,6 +133,64 @@ want '"is_prime":true' prime 1000003
 want '"is_prime":false' prime 1000001
 # 2^32 - 1 = 3 * 5 * 17 * 257 * 65537.
 want '65537' factor 4294967295
+want_bad 'factor needs a positive uint64 N' factor -1
+want '[factor] complete' factor 97 --verbose
+want '"factors":[]' factor 1 --verbose
+factor_tmp=$(mktemp -d)
+FACTOR=(factor 1000036000099 --state-dir "$factor_tmp/local" \
+  --progress-every 1 --checkpoint-every 1)
+want_no '"status":"limit reached"' "${FACTOR[@]}" --max-steps 3
+checks=$((checks + 1))
+if [ ! -s "$factor_tmp/local/factor.ckpt" ] || \
+   ! grep -q '"phase":"rho"' "$factor_tmp/local/factor.ckpt.progress.json"; then
+  printf 'FAIL: factor partial checkpoint or phase progress missing\n' >&2
+  fail=$((fail + 1))
+fi
+want '"factors":[[1000003,1],[1000033,1]]' "${FACTOR[@]}" --max-steps 1000000 --resume
+checks=$((checks + 1))
+if ! grep -q '"phase":"complete"' "$factor_tmp/local/factor.ckpt.progress.json" || \
+   ! grep -q '"factors":\[\[1000003,1\],\[1000033,1\]\]' "$factor_tmp/local/result.json"; then
+  printf 'FAIL: factor resume did not finish and persist the result\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' factor 1000036000100 \
+  --state-dir "$factor_tmp/local" --resume
+mkdir "$factor_tmp/bin" "$factor_tmp/remote"
+cat >"$factor_tmp/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$factor_tmp/bin/aws"
+FACTOR_S3=(factor 1000036000099 --state-dir "$factor_tmp/s3-local" \
+  --s3-uri s3://test/factor --sync-every 1)
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_no '"status":"limit reached"' "${FACTOR_S3[@]}" --max-steps 3
+rm -rf "$factor_tmp/s3-local"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want '"factors":[[1000003,1],[1000033,1]]' "${FACTOR_S3[@]}" \
+  --max-steps 1000000 --resume
+checks=$((checks + 1))
+if [ ! -s "$factor_tmp/remote/factor.ckpt" ] || \
+   ! grep -q '"phase":"complete"' "$factor_tmp/remote/factor.ckpt.progress.json"; then
+  printf 'FAIL: factor S3 mirror or restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-good.ckpt"
+printf X >>"$factor_tmp/s3-local/factor.ckpt"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_bad 'factor checkpoint failed validation before S3 sync' \
+  "${FACTOR_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-good.ckpt"; then
+  printf 'FAIL: invalid local factor checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$factor_tmp"
 
 # ── groups (ca_group.h) ─────────────────────────────────────────────────────
 ZP=(--group zp --p 1000003 --order 1000002)

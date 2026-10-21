@@ -5,6 +5,34 @@ JSON result on stdout. With `--verbose`, it also prints periodic progress to
 stderr. Run state is kept in a dedicated directory and can be mirrored to an
 S3 prefix with the AWS CLI installed and configured on the host.
 
+## Integer factorization
+
+`factor N` accepts a positive 64-bit integer. Durable mode reports the active
+cofactor, Pollard-Brent seed, iteration and gcd counts, discovered prime
+factors, and pending cofactors while it runs:
+
+```sh
+cryptanalysis factor 1000036000099 --verbose --progress-every 5 \
+  --state-dir ./runs/factor-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/factor-001 --sync-every 60
+```
+
+`factor.ckpt` retains the exact Pollard-Brent walk, pending cofactors, and
+proved prime factors. `factor.ckpt.progress.json` gives readable status and
+`result.json` records the latest command outcome. The checkpoint has a
+checksum and binds the input integer. `--max-steps K` stops after K cumulative
+walk or trial-division steps; raise it or omit it on `--resume`:
+
+```sh
+cryptanalysis factor 1000036000099 --state-dir ./runs/factor-001 \
+  --resume --max-steps 1000000 \
+  --s3-uri s3://my-bucket/cryptanalysis/factor-001
+```
+
+The local directory lock and S3 mirror and restore rules described below
+apply. This is the CLI's 64-bit factorizer; it does not run the CADO-NFS
+factorization algorithm.
+
 ## Pollard rho
 
 ```sh
@@ -24,8 +52,8 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 ```
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
-state directory. The durable flags are currently available for native rho,
-GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
+state directory. The durable flags are currently available for native factor,
+rho, GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),

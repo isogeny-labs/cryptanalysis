@@ -126,6 +126,25 @@ typedef struct ca_factorization {
 /* Full factorisation of a 64-bit integer (trial division + Pollard-Brent). */
 CA_API ca_status ca_factorize(uint64_t n, ca_factorization *out);
 
+typedef struct ca_factor_progress {
+    uint64_t steps, gcds, active;
+    uint32_t pending;
+    double seconds;
+} ca_factor_progress;
+
+/* Factor with an optional atomic checkpoint and live progress.  The saved
+ * state includes the active Pollard-Brent walk, pending cofactors, and proven
+ * prime factors.  max_steps is a cumulative rho/trial-step cap (0 = none)
+ * and may be raised on resume.  NULL checkpoint_path enables live output
+ * without persistence. */
+CA_API ca_status ca_factorize_checkpointed(
+    uint64_t n, const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t max_steps,
+    ca_factorization *out, ca_factor_progress *progress);
+
+/* Verify a saved factor state before exposing it to an external mirror. */
+CA_API ca_status ca_factor_checkpoint_validate(uint64_t n, const char *checkpoint_path);
+
 /* Multiplicative order of a modulo prime p (p-1 factored internally). */
 CA_API uint64_t ca_mult_order(uint64_t a, uint64_t p);
 /* Smallest primitive root modulo prime p, or 0 if p is not prime. */

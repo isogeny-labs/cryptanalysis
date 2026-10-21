@@ -1,6 +1,57 @@
 #include "cryptanalysis/ca_modarith.h"
 #include "ca_internal.h"
 #include "test_util.h"
+#include <unistd.h>
+
+static void test_factor_checkpoint(void)
+{
+    const uint64_t n = 1000003ULL * 1000033ULL;
+    char path[] = "/tmp/ca-factor-checkpoint-XXXXXX";
+    int fd = mkstemp(path);
+    CHECK(fd >= 0);
+    CHECK(close(fd) == 0);
+    CHECK(unlink(path) == 0);
+    ca_factorization f = {0};
+    ca_factor_progress progress = {0};
+    CHECK(ca_factorize_checkpointed(n, path, 1, 1, 0, 3, &f, &progress) == CA_ERR_LIMIT);
+    CHECK_EQ_U64(progress.steps, 3);
+    CHECK(ca_factor_checkpoint_validate(n, path) == CA_OK);
+    CHECK(ca_factor_checkpoint_validate(n + 1, path) == CA_ERR_INVALID);
+    CHECK(ca_factorize_checkpointed(n, path, 1, 1, 0, 130, &f, &progress) == CA_ERR_LIMIT);
+    CHECK_EQ_U64(progress.steps, 130);
+    CHECK(ca_factorize_checkpointed(n, path, 1, 1, 0, 1000000, &f, &progress) == CA_OK);
+    CHECK_EQ_U64(f.count, 2);
+    CHECK_EQ_U64(f.f[0].p, 1000003);
+    CHECK_EQ_U64(f.f[1].p, 1000033);
+    CHECK(progress.steps > 130 && progress.gcds > 0);
+    CHECK(ca_factorize_checkpointed(n, path, 1, 1, 0, 0, &f, NULL) == CA_OK);
+    FILE *bad = fopen(path, "rb+");
+    CHECK(bad != NULL);
+    CHECK(fseek(bad, -1, SEEK_END) == 0);
+    int byte = fgetc(bad);
+    CHECK(byte != EOF);
+    CHECK(fseek(bad, -1, SEEK_END) == 0);
+    CHECK(fputc(byte ^ 1, bad) != EOF);
+    CHECK(fclose(bad) == 0);
+    CHECK(ca_factor_checkpoint_validate(n, path) == CA_ERR_INVALID);
+    CHECK(unlink(path) == 0);
+    char progress_path[sizeof(path) + 20];
+    snprintf(progress_path, sizeof(progress_path), "%s.progress.json", path);
+    CHECK(unlink(progress_path) == 0);
+    const uint64_t cases[] = {1, 97, 4294967295ULL,
+                              1000003ULL * 1000003ULL, 1000003ULL * 1000033ULL};
+    for (size_t i = 0; i < sizeof(cases) / sizeof(*cases); i++) {
+        ca_factorization ordinary = {0}, durable = {0};
+        CHECK(ca_factorize(cases[i], &ordinary) == CA_OK);
+        CHECK(ca_factorize_checkpointed(cases[i], NULL, 1, 1, 0, 0,
+                                        &durable, NULL) == CA_OK);
+        CHECK_EQ_U64(durable.count, ordinary.count);
+        for (unsigned j = 0; j < ordinary.count; j++) {
+            CHECK_EQ_U64(durable.f[j].p, ordinary.f[j].p);
+            CHECK_EQ_U64(durable.f[j].e, ordinary.f[j].e);
+        }
+    }
+}
 
 int main(void)
 {
@@ -159,6 +210,7 @@ int main(void)
     CHECK_EQ_U64(f.f[0].p, p);
     CHECK(ca_factorize(1ULL << 63, &f) == CA_OK);
     CHECK_EQ_U64(f.f[0].e, 63);
+    test_factor_checkpoint();
     /* random products */
     for (int k = 0; k < 200; k++) {
         uint64_t n = 1 + ca_rng_below(&rng, UINT64_MAX);
