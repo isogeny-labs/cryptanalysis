@@ -194,7 +194,22 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
+want_bad 'live progress and resumable state require --alg' \
+  solve --alg unsupported --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
+precomp_tmp=$(mktemp -d)
+PRECOMP=(solve --alg precomp --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --seed 17 --table 64 --state-dir "$precomp_tmp")
+want '"x":177' "${PRECOMP[@]}"
+want '"x":177' "${PRECOMP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$precomp_tmp/precomp.table.ckpt" ] || \
+   [ ! -s "$precomp_tmp/precomp.online.ckpt" ] || \
+   [ ! -s "$precomp_tmp/result.json" ]; then
+  printf 'FAIL: precomp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$precomp_tmp"
 bsgs_tmp=$(mktemp -d)
 BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
   --state-dir "$bsgs_tmp" --verbose --progress-every 1)
@@ -459,11 +474,18 @@ PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
   --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
 rm -rf "$ic_tmp" "$ic_s3_test"
 rexp_tmp=$(mktemp -d)
-want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
-  --state-dir "$rexp_tmp" --progress-every 1
-want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
-  --state-dir "$rexp_tmp" --progress-every 1 --resume
+REXP=(ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1 \
+  --state-dir "$rexp_tmp" --progress-every 1)
+want '"x":69,"check":3' "${REXP[@]}"
+want '"x":69,"check":3' "${REXP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$rexp_tmp/relations.ckpt" ] || [ ! -s "$rexp_tmp/relations.ckpt.precomp" ]; then
+  printf 'FAIL: rexp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
 rm -rf "$rexp_tmp"
+want_bad '--max-relation-tries requires --method rexp' \
+  ic --p 101 --g 2 --h 3 --method lsieve --max-relation-tries 1
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
