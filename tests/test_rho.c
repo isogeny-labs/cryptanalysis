@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run_rho(const ca_group *g, const ca_elem *gen, const ca_rho_params *p, int reps,
                     double *ratio_out)
@@ -89,6 +90,46 @@ int main(void)
     uint64_t got;
     fx_instance(&g, &gen, 424242, &h);
     CHECK(ca_rho_solve(&g, &gen, &h, &p, &got, NULL) == CA_ERR_LIMIT);
+
+    /* A capped run saves its DP corpus; a later process can raise the
+     * cumulative operation budget and continue against that corpus. */
+    {
+        char dir[] = "/tmp/ca-rho-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/rho.dp", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_rho_params rp;
+        ca_rho_params_default(&rp);
+        rp.seed = 1984;
+        rp.dp_bits = 0;
+        rp.walks_per_thread = 4;
+        rp.max_ops = 500;
+        ca_stats first = {0}, second = {0};
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, &first) == CA_ERR_LIMIT);
+        CHECK(first.table_entries > 0);
+        CHECK(access(path, F_OK) == 0);
+        CHECK(access(progress, F_OK) == 0);
+        rp.seed = 1985;
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, NULL) == CA_ERR_INVALID);
+        rp.seed = 1984;
+        rp.max_ops = 1000000;
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, &second) == CA_OK);
+        CHECK_EQ_U64(got, 424242);
+        CHECK(second.group_ops > first.group_ops);
+        FILE *f = fopen(path, "ab");
+        CHECK(f != NULL);
+        CHECK(fputc(0, f) != EOF);
+        CHECK(fclose(f) == 0);
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, NULL) == CA_ERR_INVALID);
+        unlink(progress);
+        unlink(path);
+        rmdir(dir);
+    }
     /* Regression, fuzz/crashes/rho_kangaroo_dp_bits_shift: dp_bits at or above
      * the width of the mask used to shift a 64-bit value by >= 64. */
     for (int32_t dpb = 58; dpb <= 200; dpb += 27) {
