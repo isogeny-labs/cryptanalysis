@@ -552,6 +552,54 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
     return CA_OK;
 }
 
+/* Resolve the build geometry once for both the builder and read-only resume
+ * validation. Bloom allocation can fail, so the checkpoint records whether
+ * the filter was actually present. */
+static uint64_t pc_resolve_config(ca_precomp_table *t, const ca_group *g,
+                                   const ca_elem *base, const ca_precomp_params *params,
+                                   uint64_t *bloom_bits)
+{
+    t->g = g; t->base = *base; t->n = g->order;
+    t->max_online_ops = params->max_online_ops;
+    t->bitlen = precomp_ilog2(t->n) + 1;
+    int32_t dp = params->dp_bits;
+    if (dp < 0) dp = (int32_t)(t->bitlen / 3);
+    if (dp < 0) dp = 0;
+    if (dp > 40) dp = 40;
+    t->dp_bits = dp;
+    t->dp_mask = dp ? ((1ULL << dp) - 1) : 0;
+    t->r = params->r ? params->r : PRECOMP_DEFAULT_R;
+    if (t->r < 2) t->r = 2;
+    double two_t = ldexp(1.0, dp);
+    double cf = params->coverage > 0 ? params->coverage : 1.0;
+    uint64_t chains = params->table_size;
+    if (!chains) {
+        double target_c = cf * (double)t->n / (two_t * two_t);
+        if (target_c < 1.0) target_c = 1.0;
+        if (target_c > 1e8) target_c = 1e8;
+        chains = (uint64_t)(target_c + 0.5);
+    }
+    if (chains < 1) chains = 1;
+    t->chain_limit = params->chain_limit ? params->chain_limit :
+                     (uint64_t)(20.0 * two_t) + 64;
+    uint32_t walks = params->walks;
+    if (!walks) walks = g->kind == CA_GROUP_EC ? 256u : 1u;
+    if ((uint64_t)walks > chains) walks = (uint32_t)chains;
+    if (walks < 1) walks = 1;
+    if (walks > PRECOMP_MAX_WALKS) walks = PRECOMP_MAX_WALKS;
+    t->walks = walks;
+    *bloom_bits = 0;
+    double covered_est = (double)chains * two_t;
+    int auto_on = covered_est * 8.0 >= (double)t->n;
+    if (params->early_abort == 1 || (params->early_abort < 0 && auto_on)) {
+        double bits = covered_est * 8.0 + 1024.0;
+        if (bits > (double)PRECOMP_BLOOM_MAX_BITS)
+            bits = (double)PRECOMP_BLOOM_MAX_BITS;
+        *bloom_bits = (uint64_t)bits;
+    }
+    return chains;
+}
+
 static ca_status pc_table_new(const ca_group *g, const ca_elem *base,
                               const ca_precomp_params *params, const char *checkpoint,
                               uint32_t progress_every, uint32_t checkpoint_every,
@@ -567,68 +615,21 @@ static ca_status pc_table_new(const ca_group *g, const ca_elem *base,
         return CA_ERR_INVALID;
     }
     double t0 = ca_now();
-    uint64_t n = g->order;
-
     ca_precomp_table *t = calloc(1, sizeof(*t));
     if (!t) return CA_ERR_NOMEM;
-    t->g = g;
-    t->base = *base;
-    t->n = n;
+    uint64_t bloom_bits = 0;
+    uint64_t chains = pc_resolve_config(t, g, base, params, &bloom_bits);
     t->seed = ca_seed_or_random(params->seed);
-    t->max_online_ops = params->max_online_ops;
-    t->bitlen = precomp_ilog2(n) + 1;
-
-    int32_t dp = params->dp_bits;
-    if (dp < 0) dp = (int32_t)((t->bitlen) / 3);
-    if (dp < 0) dp = 0;
-    if (dp > 40) dp = 40;
-    t->dp_bits = dp;
-    t->dp_mask = dp ? ((1ULL << dp) - 1) : 0;
-
-    t->r = params->r ? params->r : PRECOMP_DEFAULT_R;
-    if (t->r < 2) t->r = 2;
-
-    double two_t = ldexp(1.0, dp);
-    double cf = params->coverage > 0 ? params->coverage : 1.0;
-    uint64_t chains = params->table_size;
-    if (chains == 0) {
-        double target_c = cf * (double)n / (two_t * two_t);
-        if (target_c < 1.0) target_c = 1.0;
-        if (target_c > 1e8) target_c = 1e8;
-        chains = (uint64_t)(target_c + 0.5);
-    }
-    if (chains < 1) chains = 1;
-
-    t->chain_limit = params->chain_limit ? params->chain_limit : (uint64_t)(20.0 * two_t) + 64;
-
-    uint32_t W = params->walks;
-    if (W == 0) W = (g->kind == CA_GROUP_EC) ? 256u : 1u;
-    if ((uint64_t)W > chains) W = (uint32_t)chains;
-    if (W < 1) W = 1;
-    if (W > PRECOMP_MAX_WALKS) W = PRECOMP_MAX_WALKS;
-    t->walks = W;
-
-    /* Optional early-abort filter.  Auto-enable only when the table is built
-     * to cover a non-trivial fraction of the group (large coverage factor),
-     * where chains actually merge; otherwise merges are negligible and the
-     * filter would only add per-step overhead. */
     pc_bloom bloom;
     memset(&bloom, 0, sizeof(bloom));
-    int use_bloom = 0;
-    double covered_est = (double)chains * two_t;
-    int auto_on = covered_est * 8.0 >= (double)n;
-    if (params->early_abort == 1 || (params->early_abort < 0 && auto_on)) {
-        double bits = covered_est * 8.0 + 1024.0;
-        if (bits > (double)PRECOMP_BLOOM_MAX_BITS) bits = (double)PRECOMP_BLOOM_MAX_BITS;
-        if (pc_bloom_init(&bloom, (uint64_t)bits) == 0) use_bloom = 1;
-    }
+    int use_bloom = bloom_bits && pc_bloom_init(&bloom, bloom_bits) == 0;
 
     pc_build bd;
     memset(&bd, 0, sizeof(bd));
     bd.t = t;
     bd.bloom = use_bloom ? &bloom : NULL;
     bd.target_chains = chains;
-    bd.max_starts = chains * 4 + (uint64_t)W * 4 + 64;
+    bd.max_starts = chains * 4 + (uint64_t)t->walks * 4 + 64;
     bd.max_ops = params->max_precomp_ops;
     atomic_store(&bd.stored, 0);
     atomic_store(&bd.starts, 0);
@@ -854,6 +855,112 @@ static ca_status pc_online_load(const char *path, pc_online_checkpoint *c,
          sum == dlog_ckpt_hash(c, sizeof(*c), UINT64_C(14695981039346656037));
     if (!ok) {
         ca_set_error("precomp online checkpoint is damaged or belongs to another run");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
+ca_status ca_precomp_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    const ca_precomp_params *params, const char *table_path,
+    const char *online_path)
+{
+    ca_precomp_params def;
+    if (!params) { ca_precomp_params_default(&def); params = &def; }
+    if (!g || !base || !target || !g->order || !table_path || !*table_path ||
+        !online_path || !*online_path) return CA_ERR_INVALID;
+    ca_precomp_table t = {0};
+    uint64_t bloom_bits = 0;
+    uint64_t chains = pc_resolve_config(&t, g, base, params, &bloom_bits);
+    uint32_t threads = params->threads ? params->threads : 1;
+    size_t desired_bloom_words = 0;
+    if (bloom_bits) {
+        desired_bloom_words = 1;
+        while ((uint64_t)desired_bloom_words * 64 < bloom_bits)
+            desired_bloom_words <<= 1;
+    }
+    FILE *f = fopen(table_path, "rb");
+    if (!f) {
+        ca_set_error("cannot open precomp table checkpoint for validation");
+        return CA_ERR_INVALID;
+    }
+    pc_ckpt_header h = {0};
+    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
+             memcmp(h.magic, "CAPREPC1", 8) == 0 && h.version == 1 &&
+             h.ready <= 1 && h.seed && (!params->seed || h.seed == params->seed) &&
+             (h.bloom_words == 0 || h.bloom_words == desired_bloom_words) &&
+             h.identity == pc_checkpoint_identity(&t, chains, threads,
+                                                   params->max_precomp_ops,
+                                                   h.bloom_words) &&
+             h.stored >= h.count && h.starts >= h.stored &&
+             h.count <= (UINT64_MAX - sizeof(h)) / sizeof(pc_entry);
+    uint64_t entry_bytes = ok ? h.count * sizeof(pc_entry) : 0;
+    if (ok) ok = h.bloom_words <= (UINT64_MAX - sizeof(h) - entry_bytes) / sizeof(uint64_t);
+    struct stat file_info;
+    if (ok) ok = fstat(fileno(f), &file_info) == 0 && file_info.st_size >= 0 &&
+                 (uint64_t)file_info.st_size == sizeof(h) + entry_bytes +
+                 h.bloom_words * sizeof(uint64_t);
+    pc_entry *entries = NULL;
+    if (ok && h.ready) {
+        if (h.count > SIZE_MAX / sizeof(pc_entry)) {
+            ok = 0;
+        } else {
+            entries = malloc((h.count ? (size_t)h.count : 1) * sizeof(pc_entry));
+            if (!entries) { fclose(f); return CA_ERR_NOMEM; }
+            ok = fread(entries, sizeof(pc_entry), (size_t)h.count, f) == h.count;
+        }
+    }
+    uint64_t checksum = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    if (ok && h.ready) {
+        hash = dlog_ckpt_hash(entries, (size_t)entry_bytes, hash);
+        for (uint64_t i = 0; ok && i < h.count; i++)
+            ok = entries[i].exp < g->order &&
+                 (i == 0 || entries[i - 1].fp < entries[i].fp);
+    } else if (ok) {
+        pc_entry batch[1024];
+        for (uint64_t i = 0; ok && i < h.count;) {
+            size_t count = h.count - i < 1024 ? (size_t)(h.count - i) : 1024;
+            ok = fread(batch, sizeof(pc_entry), count, f) == count;
+            if (ok) hash = dlog_ckpt_hash(batch, count * sizeof(pc_entry), hash);
+            for (size_t j = 0; ok && j < count; j++) ok = batch[j].exp < g->order;
+            i += count;
+        }
+    }
+    unsigned char bytes[65536];
+    uint64_t bloom_bytes = h.bloom_words * sizeof(uint64_t);
+    while (ok && bloom_bytes) {
+        size_t count = bloom_bytes < sizeof(bytes) ? (size_t)bloom_bytes : sizeof(bytes);
+        ok = fread(bytes, 1, count, f) == count;
+        if (ok) hash = dlog_ckpt_hash(bytes, count, hash);
+        bloom_bytes -= count;
+    }
+    if (ok) ok = fgetc(f) == EOF && !ferror(f) && hash == checksum;
+    fclose(f);
+    if (!ok) {
+        free(entries);
+        ca_set_error("precomp table checkpoint failed integrity or run-identity validation");
+        return CA_ERR_INVALID;
+    }
+    struct stat online_info;
+    int have_online = stat(online_path, &online_info) == 0;
+    if (!have_online && errno != ENOENT) ok = 0;
+    if (have_online && (!S_ISREG(online_info.st_mode) || !h.ready)) ok = 0;
+    if (ok && have_online) {
+        t.seed = h.seed; t.ent = entries; t.nent = (size_t)h.count; t.chains = h.count;
+        pc_online_checkpoint c = {0};
+        ca_status rc = pc_online_load(online_path, &c, pc_online_identity(&t, target), &t);
+        ok = rc == CA_OK && c.version;
+        if (ok && c.active) {
+            ca_elem y;
+            ok = ca_group_encode(g, &y, c.y);
+        }
+        if (ok && c.done) ok = ca_verify_log(g, base, target, c.answer);
+    }
+    free(entries);
+    if (!ok) {
+        ca_set_error("precomp online checkpoint failed validation against the table");
         return CA_ERR_INVALID;
     }
     return CA_OK;

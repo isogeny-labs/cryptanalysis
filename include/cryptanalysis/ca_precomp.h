@@ -100,6 +100,13 @@ CA_API ca_status ca_precomp_table_solve_checkpointed(const ca_precomp_table *t,
                                         uint32_t progress_every, uint32_t checkpoint_every,
                                         int verbose, uint64_t *x, ca_stats *st);
 
+/* Read-only validation of the build checkpoint and, when present, the online
+ * checkpoint tied to its completed table. Call before mirroring resume state. */
+CA_API ca_status ca_precomp_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    const ca_precomp_params *params, const char *table_path,
+    const char *online_path);
+
 /* Introspection, for reporting.  Any out pointer may be NULL. */
 CA_API void ca_precomp_table_info(const ca_precomp_table *t, int32_t *dp_bits, uint64_t *chains,
                                   uint32_t *r, uint64_t *precomp_ops);

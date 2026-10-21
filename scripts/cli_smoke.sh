@@ -957,6 +957,46 @@ if ! cmp -s "$kangaroo_s3_test/remote/dlog.ckpt" "$kangaroo_s3_test/dlog-parent-
   printf 'FAIL: corrupt dlog parent replaced S3 copy\n' >&2
   fail=$((fail + 1))
 fi
+rm -f "$kangaroo_s3_test/remote/"*
+PRECOMP_S3=(solve --alg precomp "${PSUB[@]}" --g "$PBASE" --h "$PH" --seed 1 \
+  --verbose --progress-every 1 --state-dir "$kangaroo_s3_test/precomp-local" \
+  --s3-uri s3://test/precomp --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":12345' "${PRECOMP_S3[@]}"
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/precomp.table.ckpt" ] || \
+   [ ! -s "$kangaroo_s3_test/remote/precomp.online.ckpt" ] || \
+   [ ! -s "$kangaroo_s3_test/remote/precomp.table.ckpt.progress.json" ] || \
+   [ ! -s "$kangaroo_s3_test/remote/precomp.online.ckpt.progress.json" ]; then
+  printf 'FAIL: precomp S3 table, online, or progress artifact missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/remote/precomp.table.ckpt" "$kangaroo_s3_test/precomp-table-good"
+cp "$kangaroo_s3_test/remote/precomp.online.ckpt" "$kangaroo_s3_test/precomp-online-good"
+printf X >> "$kangaroo_s3_test/precomp-local/precomp.table.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'precomp checkpoint failed validation before S3 sync' \
+  "${PRECOMP_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/precomp.table.ckpt" \
+             "$kangaroo_s3_test/precomp-table-good"; then
+  printf 'FAIL: corrupt precomp table replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/precomp-table-good" "$kangaroo_s3_test/precomp-local/precomp.table.ckpt"
+printf X >> "$kangaroo_s3_test/precomp-local/precomp.online.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'precomp checkpoint failed validation before S3 sync' \
+  "${PRECOMP_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/precomp.online.ckpt" \
+             "$kangaroo_s3_test/precomp-online-good"; then
+  printf 'FAIL: corrupt precomp online state replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test/precomp-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":12345' "${PRECOMP_S3[@]}" --resume
 rm -rf "$kangaroo_s3_test"
 
 # ── index calculus ──────────────────────────────────────────────────────────

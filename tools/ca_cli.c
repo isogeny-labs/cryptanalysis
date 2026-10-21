@@ -2434,6 +2434,9 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(table_path, F_OK) != 0) die("no precomp table checkpoint found for --resume");
+            if (ca_precomp_checkpoint_validate(g, base, target, params, table_path,
+                                               online_path) != CA_OK)
+                die("precomp checkpoint failed validation before S3 sync");
         }
         if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist run status");
@@ -2477,8 +2480,10 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
     if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist precomp result");
-    int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
     if (verbose && s3_uri) fprintf(stderr, "[precomp] final S3 sync %s\n",
+                                   !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",

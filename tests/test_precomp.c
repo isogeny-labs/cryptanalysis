@@ -189,10 +189,14 @@ int main(void)
                                              &saved, &saved_stats) == CA_OK);
     CHECK(saved != NULL);
     ca_group_mul(&g, &h, &gen, 91873, NULL);
+    CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                         table_path, online_path) == CA_OK);
     if (saved) {
         CHECK(ca_precomp_table_solve_checkpointed(saved, &h, online_path, 1, 1, 0,
                                                    &got, NULL) == CA_OK);
         CHECK_EQ_U64(got, 91873);
+        CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                             table_path, online_path) == CA_OK);
         ca_precomp_table_free(saved);
     }
     CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &ea, table_path, 1, 1, 0,
@@ -205,12 +209,34 @@ int main(void)
                                                    &got, NULL) == CA_OK);
         CHECK_EQ_U64(got, 91873);
         ca_group_mul(&g, &h, &gen, 91874, NULL);
+        CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                             table_path, online_path) == CA_ERR_INVALID);
         CHECK(ca_precomp_table_solve_checkpointed(restored, &h, online_path, 1, 1, 0,
                                                    &got, NULL) == CA_ERR_INVALID);
         ca_precomp_table_free(restored);
     }
+    ca_group_mul(&g, &h, &gen, 91873, NULL);
+    FILE *online_damage = fopen(online_path, "r+b");
+    CHECK(online_damage != NULL);
+    if (online_damage) {
+        CHECK(fseek(online_damage, -1, SEEK_END) == 0);
+        int last = fgetc(online_damage);
+        CHECK(last != EOF);
+        CHECK(fseek(online_damage, -1, SEEK_END) == 0);
+        CHECK(fputc(last ^ 0xff, online_damage) != EOF);
+        CHECK(fflush(online_damage) == 0);
+        CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                             table_path, online_path) == CA_ERR_INVALID);
+        CHECK(fseek(online_damage, -1, SEEK_END) == 0);
+        CHECK(fputc(last, online_damage) != EOF);
+        CHECK(fclose(online_damage) == 0);
+    }
+    CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                         table_path, online_path) == CA_OK);
     ca_precomp_params changed = ea;
     changed.seed++;
+    CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &changed,
+                                         table_path, online_path) == CA_ERR_INVALID);
     CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &changed, table_path, 1, 1, 0,
                                              &restored, NULL) == CA_ERR_INVALID);
     FILE *damage = fopen(table_path, "r+b");
@@ -220,6 +246,8 @@ int main(void)
         CHECK(fputc(0x5a, damage) != EOF);
         CHECK(fclose(damage) == 0);
     }
+    CHECK(ca_precomp_checkpoint_validate(&g, &gen, &h, &ea,
+                                         table_path, online_path) == CA_ERR_INVALID);
     CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &ea, table_path, 1, 1, 0,
                                              &restored, NULL) == CA_ERR_INVALID);
     snprintf(progress_path, sizeof(progress_path), "%s.progress.json", table_path);

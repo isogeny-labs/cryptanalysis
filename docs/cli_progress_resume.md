@@ -268,6 +268,11 @@ counter updates. `result.json` records the final status. `--verbose` can also
 be used without a state directory.
 
 The S3 copy and restore rules described above apply to both precomp artifacts.
+On resume, the CLI validates the table checkpoint's run identity, entries,
+Bloom data, and checksum before S3 syncing starts. If an online checkpoint
+exists, it must belong to that completed table, contain a valid walk point,
+and verify any saved answer. A damaged local artifact is left in place and
+cannot replace the remote copy.
 Keep a separate run directory and prefix for each target. The table checkpoint
 can be retained as an artifact, but this command's run manifest binds it to the
 target. A later target needs a fresh run directory; a table import command is
