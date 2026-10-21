@@ -29,6 +29,19 @@ name: N19 native relation loop v2, Sage option-path check + smoke gate + repeate
 # diagnosis archives do not trigger a run.
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/n19-native-loop-v2]
+    paths:
+      - experiments/volcano-n19-native-loop-v2-20261021/**
+      - .github/workflows/n19-native-loop-v2.yml
+      - '!experiments/volcano-n19-native-loop-v2-20261021/run_github_*/**'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/README.md'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/README.pdf'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/figures/**'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/make_figures.py'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/report_header.tex'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/smoke/**'
+      - '!experiments/volcano-n19-native-loop-v2-20261021/diagnosis/run_github_*/**'
 
 permissions:
   contents: read
