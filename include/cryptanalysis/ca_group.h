@@ -135,6 +135,11 @@ CA_API void ca_group_random_power(const ca_group *g, ca_elem *r, const ca_elem *
 /* Find a generator of the order-n subgroup (Z_p^*: needs cofactor; EC:
  * random point times cofactor).  seed 0 = random. */
 CA_API ca_status ca_group_find_generator(const ca_group *g, ca_elem *gen, uint64_t seed);
+/* Reuse a verified factorization of g->order when the caller has already
+ * persisted it.  trials receives the number of tested candidates. */
+CA_API ca_status ca_group_find_generator_with_factors(
+    const ca_group *g, ca_elem *gen, uint64_t seed,
+    const ca_factorization *factors, uint64_t *trials);
 
 /* Human readable dump: writes "x" or "(x, y)" into buf. */
 CA_API void ca_group_format(const ca_group *g, const ca_elem *a, char *buf, size_t len);

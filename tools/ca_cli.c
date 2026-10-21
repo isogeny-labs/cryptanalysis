@@ -76,11 +76,13 @@
 #include "cryptanalysis/cryptanalysis.h"
 #include "ca_device.cuh"
 #include "ca_internal.h" /* ca_now: the CLI already links the static library */
+#include "dlog_checkpoint_internal.h"
 
 #include <fcntl.h>
 #include <dirent.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 #include <pthread.h>
 #include <signal.h>
 #include <spawn.h>
@@ -219,6 +221,9 @@ static _Noreturn void usage(void)
         "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  gen   --group zp|ec --p P [--a A --b B] [--order N] [--x X] [--seed S]\n"
+        "        [--max-count-work K] [--max-factor-steps K] [--verbose]\n"
+        "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
+        "        [--checkpoint-every SEC] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  solve --alg bsgs|rho|kangaroo|grumpy|precomp|glv|dlog|gpu-rho --group zp|ec --p P [--a "
         "A "
         "--b B]\n"
@@ -337,10 +342,17 @@ static void print_stats(const ca_stats *st)
            st->seconds, st->threads);
 }
 
+static int cmd_gen_durable(ca_group *g);
+
 static int cmd_gen(void)
 {
     ca_group g;
     make_group(&g);
+    if (flag("--verbose") || flag("-v") || opt("--progress-every") ||
+        opt("--checkpoint-every") || opt("--state-dir") || flag("--resume") ||
+        opt("--s3-uri") || opt("--sync-every") || opt("--max-count-work") ||
+        opt("--max-factor-steps"))
+        return cmd_gen_durable(&g);
     uint64_t seed = opt_u64("--seed", 0);
     if (g.kind == CA_GROUP_EC && g.order == 0) {
         uint64_t n;
@@ -1150,6 +1162,409 @@ static void *ic_sync_worker(void *arg)
                                 ok ? "complete" : "failed; will retry");
     }
     return NULL;
+}
+
+enum { GEN_COUNT = 0, GEN_FULL_FACTOR = 1, GEN_ORDER_FACTOR = 2,
+       GEN_COMPLETE = 3 };
+
+typedef struct gen_checkpoint {
+    char magic[8];
+    uint32_t version, phase, kind, has_x;
+    uint64_t p, a, b, requested_order, requested_seed, requested_x;
+    uint64_t effective_seed, full_order, subgroup_order, cofactor;
+    uint64_t generator[4], target[4], x, generator_trials;
+    uint64_t count_work, full_factor_steps, order_factor_steps;
+    double seconds;
+    uint64_t checksum;
+} gen_checkpoint;
+
+static const char *gen_phase_name(uint32_t phase)
+{
+    if (phase == GEN_COUNT) return "count";
+    if (phase == GEN_FULL_FACTOR) return "full-factor";
+    if (phase == GEN_ORDER_FACTOR) return "order-factor";
+    return "complete";
+}
+
+static int gen_state_valid(const gen_checkpoint *s, const ca_group *g,
+                           uint64_t requested_order, uint64_t seed,
+                           int has_x, uint64_t requested_x)
+{
+    if (memcmp(s->magic, "CAGEN001", 8) || s->version != 1 ||
+        s->phase > GEN_COMPLETE || s->kind != (uint32_t)g->kind ||
+        s->p != g->p || s->a != g->a || s->b != g->b ||
+        s->requested_order != requested_order || s->requested_seed != seed ||
+        s->has_x != (uint32_t)has_x || s->requested_x != requested_x ||
+        !s->effective_seed || !isfinite(s->seconds) || s->seconds < 0 ||
+        (g->kind == CA_GROUP_ZP && s->phase < GEN_ORDER_FACTOR) ||
+        (g->kind == CA_GROUP_EC && s->phase >= GEN_FULL_FACTOR && !s->full_order) ||
+        (s->phase >= GEN_ORDER_FACTOR &&
+         (!s->subgroup_order || !s->cofactor ||
+          (ca_u128)s->subgroup_order * s->cofactor != s->full_order)) ||
+        (s->phase == GEN_COMPLETE && !s->generator_trials)) return 0;
+    if (g->kind == CA_GROUP_ZP && s->full_order != g->p - 1) return 0;
+    if (requested_order && s->phase >= GEN_ORDER_FACTOR &&
+        s->subgroup_order != requested_order) return 0;
+    return 1;
+}
+
+static int gen_checkpoint_save(const char *path, gen_checkpoint *s)
+{
+    if (!path) return 1;
+    s->checksum = 0;
+    s->checksum = dlog_ckpt_hash(s, sizeof(*s), UINT64_C(14695981039346656037));
+    dlog_ckpt_file w;
+    int ok = dlog_ckpt_begin(&w, path);
+    if (ok) ok = fwrite(s, 1, sizeof(*s), w.f) == sizeof(*s);
+    ok = dlog_ckpt_finish(&w, ok);
+    if (!ok) ca_set_error("gen: cannot persist checkpoint");
+    return ok;
+}
+
+/* 1 = restored, 0 = fresh, -1 = invalid or unreadable. */
+static int gen_checkpoint_load(const char *path, const ca_group *g,
+                                uint64_t requested_order, uint64_t seed,
+                                int has_x, uint64_t requested_x,
+                                gen_checkpoint *s)
+{
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("gen: cannot open checkpoint");
+        return -1;
+    }
+    gen_checkpoint got = {0};
+    int ok = fread(&got, 1, sizeof(got), f) == sizeof(got) && fgetc(f) == EOF;
+    if (ferror(f)) ok = 0;
+    fclose(f);
+    uint64_t checksum = got.checksum;
+    got.checksum = 0;
+    if (!ok || dlog_ckpt_hash(&got, sizeof(got), UINT64_C(14695981039346656037)) != checksum ||
+        !gen_state_valid(&got, g, requested_order, seed, has_x, requested_x)) {
+        ca_set_error("gen: checkpoint identity, length or checksum failed");
+        return -1;
+    }
+    got.checksum = checksum;
+    *s = got;
+    return 1;
+}
+
+static int gen_report(const char *state_dir, const char *checkpoint,
+                      gen_checkpoint *s, const char *status, int verbose,
+                      double previous_seconds, double started)
+{
+    s->seconds = previous_seconds + ca_now() - started;
+    if (!gen_checkpoint_save(checkpoint, s)) return 0;
+    if (verbose) fprintf(stderr, "[gen] %s full_order=%" PRIu64
+                         " subgroup=%" PRIu64 " trials=%" PRIu64 " %.1fs\n",
+                         gen_phase_name(s->phase), s->full_order,
+                         s->subgroup_order, s->generator_trials, s->seconds);
+    if (!state_dir) return 1;
+    char progress[512];
+    int n = snprintf(progress, sizeof(progress),
+                     "{\"status\":\"%s\",\"phase\":\"%s\",\"full_order\":%" PRIu64
+                     ",\"subgroup_order\":%" PRIu64 ",\"cofactor\":%" PRIu64
+                     ",\"generator_trials\":%" PRIu64 ",\"count_work\":%" PRIu64
+                     ",\"full_factor_steps\":%" PRIu64
+                     ",\"order_factor_steps\":%" PRIu64
+                     ",\"elapsed_seconds\":%.3f}\n",
+                     status, gen_phase_name(s->phase), s->full_order,
+                     s->subgroup_order, s->cofactor, s->generator_trials,
+                     s->count_work, s->full_factor_steps,
+                     s->order_factor_steps, s->seconds);
+    if (n < 0 || (size_t)n >= sizeof(progress) ||
+        !ic_atomic_file(state_dir, "gen.progress.json", progress)) {
+        ca_set_error("gen: cannot persist progress");
+        return 0;
+    }
+    return 1;
+}
+
+static int gen_elem_json(const ca_group *g, const uint64_t words[4],
+                          char *out, size_t cap)
+{
+    ca_elem e;
+    if (!ca_group_encode(g, &e, words)) return 0;
+    uint64_t canonical[4];
+    ca_group_decode(g, canonical, &e);
+    int n;
+    if (g->kind == CA_GROUP_ZP)
+        n = snprintf(out, cap, "\"%" PRIu64 "\"", canonical[0]);
+    else if (canonical[2])
+        n = snprintf(out, cap, "\"inf\"");
+    else
+        n = snprintf(out, cap, "\"%" PRIu64 ",%" PRIu64 "\"",
+                     canonical[0], canonical[1]);
+    return n >= 0 && (size_t)n < cap;
+}
+
+static int gen_ready_valid(const ca_group *g, const gen_checkpoint *s,
+                            const ca_factorization *f)
+{
+    ca_elem gen, target, check;
+    if (!ca_group_encode(g, &gen, s->generator) ||
+        !ca_group_encode(g, &target, s->target)) return 0;
+    ca_group_mul(g, &check, &gen, s->subgroup_order, NULL);
+    if (!ca_group_is_identity(g, &check)) return 0;
+    for (unsigned i = 0; i < f->count; i++) {
+        ca_group_mul(g, &check, &gen, s->subgroup_order / f->f[i].p, NULL);
+        if (ca_group_is_identity(g, &check)) return 0;
+    }
+    ca_group_mul(g, &check, &gen, s->x, NULL);
+    return ca_group_equal(g, &check, &target);
+}
+
+static int cmd_gen_durable(ca_group *g)
+{
+    int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume"), has_x = opt("--x") != NULL;
+    uint64_t requested_order = opt_u64("--order", 0);
+    uint64_t seed = opt_u64("--seed", 0);
+    uint64_t requested_x = has_x ? opt_u64("--x", 0) : 0;
+    uint32_t progress_interval = opt_u32("--progress-every", 5);
+    uint32_t checkpoint_interval = opt_u32("--checkpoint-every", 60);
+    uint32_t sync_interval = opt_u32("--sync-every", 60);
+    uint64_t max_count_work = opt_u64("--max-count-work", 0);
+    uint64_t max_factor_steps = opt_u64("--max-factor-steps", 0);
+    if (!progress_interval || !checkpoint_interval || !sync_interval)
+        die("progress, checkpoint and sync intervals must be positive");
+    if ((resume || s3_uri || opt("--checkpoint-every") || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri, --checkpoint-every and --sync-every require --state-dir");
+    if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
+    if (s3_uri) {
+        if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
+        const char *sep = strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    char manifest[512];
+    int ml = snprintf(manifest, sizeof(manifest),
+        "{\"schema\":1,\"command\":\"gen\",\"kind\":%u,\"p\":%" PRIu64
+        ",\"a\":%" PRIu64 ",\"b\":%" PRIu64
+        ",\"requested_order\":%" PRIu64 ",\"seed\":%" PRIu64
+        ",\"has_x\":%s,\"requested_x\":%" PRIu64 "}\n",
+        (unsigned)g->kind, g->p, g->a, g->b, requested_order, seed,
+        has_x ? "true" : "false", requested_x);
+    if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
+    gen_checkpoint state = {0};
+    memcpy(state.magic, "CAGEN001", 8);
+    state.version = 1; state.kind = (uint32_t)g->kind;
+    state.p = g->p; state.a = g->a; state.b = g->b;
+    state.requested_order = requested_order; state.requested_seed = seed;
+    state.has_x = (uint32_t)has_x; state.requested_x = requested_x;
+    state.effective_seed = ca_seed_or_random(seed);
+    if (!state.effective_seed) state.effective_seed = 1;
+    if (g->kind == CA_GROUP_ZP) {
+        state.phase = GEN_ORDER_FACTOR;
+        state.full_order = g->p - 1;
+        state.subgroup_order = g->order;
+        state.cofactor = g->cofactor;
+    }
+    char *checkpoint = NULL, *count_path = NULL;
+    char *full_factor_path = NULL, *order_factor_path = NULL;
+    int lock_fd = -1;
+    int defer_s3_sync = 0;
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+        checkpoint = ic_path(state_dir, "gen.ckpt");
+        count_path = ic_path(state_dir, "gen.count.ckpt");
+        full_factor_path = ic_path(state_dir, "gen.full-factor.ckpt");
+        order_factor_path = ic_path(state_dir, "gen.order-factor.ckpt");
+        if (!checkpoint || !count_path || !full_factor_path || !order_factor_path)
+            die("out of memory");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            if (!manifest_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            free(manifest_path);
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore into a nonempty directory without a run manifest");
+            if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
+                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore gen artifacts from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (access(checkpoint, F_OK) != 0) die("no gen checkpoint found for --resume");
+            if (gen_checkpoint_load(checkpoint, g, requested_order, seed,
+                                    has_x, requested_x, &state) != 1)
+                die("gen checkpoint failed validation before S3 sync");
+            uint64_t counted_order = 0;
+            if (access(count_path, F_OK) == 0) {
+                if (g->kind != CA_GROUP_EC ||
+                    ca_ec_count_checkpoint_validate(g->p, g->a, g->b,
+                                                    count_path, &counted_order) != CA_OK ||
+                    (state.phase > GEN_COUNT && counted_order &&
+                     counted_order != state.full_order))
+                    die("gen count checkpoint failed validation before S3 sync");
+            }
+            if (access(full_factor_path, F_OK) == 0) {
+                if (requested_order) die("unexpected gen full-factor checkpoint");
+                if (state.phase < GEN_FULL_FACTOR) defer_s3_sync = 1;
+                else if (ca_factor_checkpoint_validate(state.full_order,
+                                                       full_factor_path) != CA_OK)
+                    die("gen full-factor checkpoint failed validation before S3 sync");
+            }
+            if (access(order_factor_path, F_OK) == 0) {
+                if (state.phase < GEN_ORDER_FACTOR) defer_s3_sync = 1;
+                else if (ca_factor_checkpoint_validate(state.subgroup_order,
+                                                        order_factor_path) != CA_OK)
+                    die("gen order-factor checkpoint failed validation before S3 sync");
+            }
+        }
+        if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
+            die("cannot persist run status");
+    }
+    double started = ca_now(), previous_seconds = state.seconds;
+    if (!gen_report(state_dir, checkpoint, &state, "running", verbose,
+                    previous_seconds, started)) die("cannot persist gen state");
+    ic_sync_state sync = {0};
+    pthread_t sync_thread;
+    int syncing = 0;
+    if (s3_uri && !defer_s3_sync) {
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "gen";
+        sync.interval = sync_interval; sync.verbose = verbose;
+        atomic_init(&sync.stop, 0);
+        if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
+            die("cannot start S3 sync worker");
+        syncing = 1;
+    }
+    if (defer_s3_sync && verbose)
+        fprintf(stderr, "[gen] S3 sync waits for a newer phase artifact to validate\n");
+    ca_status rc = CA_OK;
+    ca_ec_count_progress cp = {0};
+    ca_factor_progress fp = {0};
+    ca_factorization factors = {0};
+    if (state.phase == GEN_COUNT) {
+        uint64_t full = 0;
+        rc = ca_ec_count_points_checkpointed(g->p, g->a, g->b, count_path,
+                    progress_interval, checkpoint_interval, verbose,
+                    max_count_work, &full, NULL, &cp);
+        state.count_work = cp.work_units;
+        if (rc == CA_OK) {
+            state.full_order = full;
+            if (requested_order) {
+                if (full % requested_order != 0) {
+                    ca_set_error("gen: requested subgroup order does not divide curve order");
+                    rc = CA_ERR_INVALID;
+                } else {
+                    state.subgroup_order = requested_order;
+                    state.cofactor = full / requested_order;
+                    state.phase = GEN_ORDER_FACTOR;
+                }
+            } else state.phase = GEN_FULL_FACTOR;
+        }
+        if (!gen_report(state_dir, checkpoint, &state,
+                        rc == CA_OK ? "running" : "stopped", verbose,
+                        previous_seconds, started)) rc = CA_ERR_INTERNAL;
+    }
+    if (rc == CA_OK && state.phase == GEN_FULL_FACTOR) {
+        rc = ca_factorize_checkpointed(state.full_order, full_factor_path,
+                    progress_interval, checkpoint_interval, verbose,
+                    max_factor_steps, &factors, &fp);
+        state.full_factor_steps = fp.steps;
+        if (rc == CA_OK) {
+            if (!factors.count) {
+                ca_set_error("gen: curve order factorization is empty");
+                rc = CA_ERR_INTERNAL;
+            } else {
+                state.subgroup_order = factors.f[factors.count - 1].p;
+                state.cofactor = state.full_order / state.subgroup_order;
+                state.phase = GEN_ORDER_FACTOR;
+            }
+        }
+        if (!gen_report(state_dir, checkpoint, &state,
+                        rc == CA_OK ? "running" : "stopped", verbose,
+                        previous_seconds, started)) rc = CA_ERR_INTERNAL;
+    }
+    if (rc == CA_OK && state.phase >= GEN_ORDER_FACTOR) {
+        g->order = state.subgroup_order;
+        g->cofactor = state.cofactor;
+        rc = ca_factorize_checkpointed(g->order, order_factor_path,
+                    progress_interval, checkpoint_interval, verbose,
+                    max_factor_steps, &factors, &fp);
+        state.order_factor_steps = fp.steps;
+        if (rc == CA_OK && state.phase == GEN_ORDER_FACTOR) {
+            ca_elem gen, target;
+            if (verbose) fprintf(stderr, "[gen] testing subgroup generator candidates\n");
+            rc = ca_group_find_generator_with_factors(g, &gen,
+                        state.effective_seed, &factors, &state.generator_trials);
+            if (rc == CA_OK) {
+                if (has_x) {
+                    state.x = requested_x;
+                    ca_group_mul(g, &target, &gen, state.x, NULL);
+                } else {
+                    uint64_t target_seed = state.effective_seed + 1;
+                    ca_group_random_power(g, &target, &gen,
+                                          target_seed ? target_seed : 1, &state.x);
+                }
+                ca_group_decode(g, state.generator, &gen);
+                ca_group_decode(g, state.target, &target);
+                state.phase = GEN_COMPLETE;
+            } else if (rc == CA_ERR_NOT_FOUND)
+                ca_set_error("gen: generator candidates exhausted");
+        }
+        if (rc == CA_OK && state.phase == GEN_COMPLETE &&
+            !gen_ready_valid(g, &state, &factors)) {
+            ca_set_error("gen: saved generator or target failed validation");
+            rc = CA_ERR_INVALID;
+        }
+        if (!gen_report(state_dir, checkpoint, &state,
+                        rc == CA_OK ? "complete" : "stopped", verbose,
+                        previous_seconds, started)) rc = CA_ERR_INTERNAL;
+    }
+    if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
+    char gen_json[128] = "null", target_json[128] = "null", x_json[32] = "null";
+    if (rc == CA_OK && state.phase == GEN_COMPLETE) {
+        if (!gen_elem_json(g, state.generator, gen_json, sizeof(gen_json)) ||
+            !gen_elem_json(g, state.target, target_json, sizeof(target_json)))
+            die("cannot format generated elements");
+        snprintf(x_json, sizeof(x_json), "%" PRIu64, state.x);
+    }
+    char result[1024];
+    int nr = snprintf(result, sizeof(result),
+        "{\"status\":\"%s\",\"group\":\"%s\",\"p\":%" PRIu64
+        ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 ",\"order\":%" PRIu64
+        ",\"cofactor\":%" PRIu64 ",\"g\":%s,\"h\":%s,\"x\":%s"
+        ",\"phase\":\"%s\",\"generator_trials\":%" PRIu64
+        ",\"count_work\":%" PRIu64 ",\"full_factor_steps\":%" PRIu64
+        ",\"order_factor_steps\":%" PRIu64 ",\"seconds\":%.6f}\n",
+        ca_status_string(rc), g->kind == CA_GROUP_ZP ? "zp" : "ec", g->p,
+        g->a, g->b, state.subgroup_order, state.cofactor,
+        gen_json, target_json, x_json, gen_phase_name(state.phase),
+        state.generator_trials, state.count_work, state.full_factor_steps,
+        state.order_factor_steps, state.seconds);
+    if (nr < 0 || (size_t)nr >= sizeof(result)) die("gen result is too long");
+    if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
+        die("cannot persist gen result");
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    if (verbose && s3_uri) fprintf(stderr, "[gen] final S3 sync %s\n",
+                                   !safe_to_upload ? "skipped after an invalid run" :
+                                   uploaded ? "complete" : "failed");
+    if (uploaded) fputs(result, stdout);
+    else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
+                ca_status_string(rc));
+    if (rc != CA_OK) fprintf(stderr, "error: %s %s\n", ca_status_string(rc), ca_last_error());
+    if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
+    if (lock_fd >= 0) close(lock_fd);
+    free(checkpoint); free(count_path); free(full_factor_path); free(order_factor_path);
+    return rc == CA_OK && uploaded ? 0 : 1;
 }
 
 static int cmd_factor_durable(uint64_t n)

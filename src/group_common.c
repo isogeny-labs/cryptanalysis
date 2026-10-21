@@ -87,29 +87,43 @@ void ca_group_random_power(const ca_group *g, ca_elem *r, const ca_elem *gen, ui
     if (k_out) *k_out = k;
 }
 
-ca_status ca_group_find_generator(const ca_group *g, ca_elem *gen, uint64_t seed)
+ca_status ca_group_find_generator_with_factors(const ca_group *g, ca_elem *gen,
+                                                uint64_t seed,
+                                                const ca_factorization *f,
+                                                uint64_t *trials)
 {
-    if (g->order == 0) return CA_ERR_INVALID;
+    if (!g || !gen || !f || g->order == 0 || f->count > CA_MAX_FACTORS)
+        return CA_ERR_INVALID;
+    ca_u128 product = 1;
+    for (unsigned i = 0; i < f->count; i++) {
+        if (!f->f[i].e || !ca_is_prime(f->f[i].p)) return CA_ERR_INVALID;
+        for (unsigned e = 0; e < f->f[i].e; e++) {
+            product *= f->f[i].p;
+            if (product > g->order) return CA_ERR_INVALID;
+        }
+    }
+    if (product != g->order) return CA_ERR_INVALID;
+    if (trials) *trials = 0;
     ca_rng rng;
     ca_rng_seed(&rng, ca_seed_or_random(seed));
-    ca_factorization f;
-    ca_factorize(g->order, &f);
     for (int tries = 0; tries < 10000; tries++) {
+        if (trials) *trials = (uint64_t)tries + 1;
         ca_elem cand;
         if (g->kind == CA_GROUP_ZP) {
-            uint64_t x = 2 + ca_rng_below(&rng, g->p - 3);
+            uint64_t x = g->p <= 3 ? 2 : 2 + ca_rng_below(&rng, g->p - 3);
             const uint64_t words[4] = {x, 0, 0, 0};
-            ca_group_encode(g, &cand, words);
+            if (!ca_group_encode(g, &cand, words)) continue;
             if (g->cofactor > 1) ca_group_mul(g, &cand, &cand, g->cofactor, NULL);
         } else {
-            ca_ec_random_point(g, &cand, ca_rng_next(&rng));
+            uint64_t point_seed = ca_rng_next(&rng);
+            ca_ec_random_point(g, &cand, point_seed ? point_seed : 1);
             if (g->cofactor > 1) ca_group_mul(g, &cand, &cand, g->cofactor, NULL);
         }
         if (ca_group_is_identity(g, &cand)) continue;
         int ok = 1;
         ca_elem t;
-        for (unsigned i = 0; i < f.count; i++) {
-            ca_group_mul(g, &t, &cand, g->order / f.f[i].p, NULL);
+        for (unsigned i = 0; i < f->count; i++) {
+            ca_group_mul(g, &t, &cand, g->order / f->f[i].p, NULL);
             if (ca_group_is_identity(g, &t)) { ok = 0; break; }
         }
         if (ok) {
@@ -121,6 +135,15 @@ ca_status ca_group_find_generator(const ca_group *g, ca_elem *gen, uint64_t seed
         }
     }
     return CA_ERR_NOT_FOUND;
+}
+
+ca_status ca_group_find_generator(const ca_group *g, ca_elem *gen, uint64_t seed)
+{
+    if (!g || g->order == 0) return CA_ERR_INVALID;
+    ca_factorization f;
+    ca_status rc = ca_factorize(g->order, &f);
+    if (rc != CA_OK) return rc;
+    return ca_group_find_generator_with_factors(g, gen, seed, &f, NULL);
 }
 
 void ca_group_format(const ca_group *g, const ca_elem *a, char *buf, size_t len)

@@ -68,6 +68,35 @@ cryptanalysis ec-order --p 1000003 --a 2 --b 3 \
 
 The local directory lock and S3 mirror and restore rules below apply.
 
+## Generate a group instance
+
+`gen` reports curve point counting, factorization, and generator selection as
+separate phases. For EC input it counts the full curve order, then derives the
+subgroup cofactor. With no `--order`, it uses the largest prime factor of the
+full order, as in the ordinary command.
+
+```sh
+cryptanalysis gen --group ec --p 1000003 --a 2 --b 3 --seed 7 --x 42 \
+  --verbose --progress-every 5 --state-dir ./runs/gen-001 \
+  --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/gen-001 --sync-every 60
+```
+
+`gen.ckpt` records the stage, input identity, effective seed, orders, cofactor,
+and final generator and target. The count and both factorization stages have
+their own exact checkpoints and readable `*.progress.json` files. Generator
+candidate selection is deterministic from the saved effective seed; an
+interruption during that short stage replays candidate selection. A completed
+result is checked against the subgroup order and target before it is returned
+on resume. The run directory also contains `manifest.json`,
+`gen.progress.json`, and `result.json`.
+
+`--max-count-work K` caps point counting; `--max-factor-steps K` caps each
+active factorization separately. Raise or omit either cap on resume. For a
+random `--seed 0`, the effective seed is saved before work starts, so resume
+reproduces the instance. The local lock and S3 mirror and restore rules below
+apply.
+
 ## Pollard rho
 
 ```sh
@@ -88,7 +117,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native factor,
-ec-order, rho, GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
+ec-order, gen, rho, GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),

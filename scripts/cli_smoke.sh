@@ -302,6 +302,98 @@ want_fail group nonsense "${ZP[@]}"
 
 # ── key generation and the solvers ──────────────────────────────────────────
 want '"h"' gen "${ZP[@]}" --x 123456 --seed 1
+want '"generator_trials"' gen "${ZP[@]}" --x 123456 --seed 1 --verbose
+want '"cofactor":20' gen --group ec --p 97 --a 2 --b 3 --order 5 \
+  --seed 1 --x 7 --verbose
+gen_tmp=$(mktemp -d)
+GEN=(gen --group ec --p 97 --a 2 --b 3 --seed 1 --x 7 \
+  --state-dir "$gen_tmp/local" --progress-every 1 --checkpoint-every 1)
+want_no '"status":"limit reached"' "${GEN[@]}" --max-count-work 20
+checks=$((checks + 1))
+if [ ! -s "$gen_tmp/local/gen.ckpt" ] || \
+   ! grep -q '"field_x":20' "$gen_tmp/local/gen.count.ckpt.progress.json"; then
+  printf 'FAIL: gen point-count checkpoint or progress missing\n' >&2
+  fail=$((fail + 1))
+fi
+want '"order":5' "${GEN[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$gen_tmp/local/gen.full-factor.ckpt" ] || \
+   [ ! -s "$gen_tmp/local/gen.order-factor.ckpt" ] || \
+   ! grep -q '"phase":"complete"' "$gen_tmp/local/result.json"; then
+  printf 'FAIL: gen resume did not persist all phase artifacts\n' >&2
+  fail=$((fail + 1))
+fi
+want '"order":5' "${GEN[@]}" --resume
+want_bad 'run manifest does not match' gen --group ec --p 97 --a 2 --b 3 \
+  --seed 1 --x 8 --state-dir "$gen_tmp/local" --resume
+GEN_FACTOR=(gen --group ec --p 1000003 --a 2 --b 3 --seed 1 --x 42 \
+  --state-dir "$gen_tmp/factor-local")
+want_no '"status":"limit reached"' "${GEN_FACTOR[@]}" --max-factor-steps 3
+checks=$((checks + 1))
+if [ ! -s "$gen_tmp/factor-local/gen.count.ckpt" ] || \
+   [ ! -s "$gen_tmp/factor-local/gen.full-factor.ckpt" ]; then
+  printf 'FAIL: gen factor cap did not save count and factor checkpoints\n' >&2
+  fail=$((fail + 1))
+fi
+cp -R "$gen_tmp/factor-local" "$gen_tmp/lag-local"
+want '"order":367' "${GEN_FACTOR[@]}" --resume
+cp "$gen_tmp/factor-local/gen.order-factor.ckpt" \
+  "$gen_tmp/lag-local/gen.order-factor.ckpt"
+mkdir "$gen_tmp/bin" "$gen_tmp/remote"
+cat >"$gen_tmp/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$gen_tmp/bin/aws"
+mkdir "$gen_tmp/remote-lag"
+GEN_LAG=(gen --group ec --p 1000003 --a 2 --b 3 --seed 1 --x 42 \
+  --state-dir "$gen_tmp/lag-local" --s3-uri s3://test/gen-lag --sync-every 1)
+PATH="$gen_tmp/bin:$PATH" CA_TEST_S3_ROOT="$gen_tmp/remote-lag" \
+  want '"order":367' "${GEN_LAG[@]}" --resume
+checks=$((checks + 1))
+if ! grep -q '"phase":"complete"' "$gen_tmp/remote-lag/result.json"; then
+  printf 'FAIL: gen did not recover a child checkpoint ahead of its parent\n' >&2
+  fail=$((fail + 1))
+fi
+GEN_S3=(gen --group ec --p 97 --a 2 --b 3 --seed 1 --x 7 \
+  --state-dir "$gen_tmp/s3-local" --s3-uri s3://test/gen --sync-every 1)
+PATH="$gen_tmp/bin:$PATH" CA_TEST_S3_ROOT="$gen_tmp/remote" \
+  want_no '"status":"limit reached"' "${GEN_S3[@]}" --max-count-work 20
+rm -rf "$gen_tmp/s3-local"
+PATH="$gen_tmp/bin:$PATH" CA_TEST_S3_ROOT="$gen_tmp/remote" \
+  want '"order":5' "${GEN_S3[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$gen_tmp/remote/gen.ckpt" ] || \
+   ! grep -q '"phase":"complete"' "$gen_tmp/remote/result.json"; then
+  printf 'FAIL: gen S3 mirror or restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$gen_tmp/remote/gen.ckpt" "$gen_tmp/remote-good.ckpt"
+printf X >>"$gen_tmp/s3-local/gen.ckpt"
+PATH="$gen_tmp/bin:$PATH" CA_TEST_S3_ROOT="$gen_tmp/remote" \
+  want_bad 'gen checkpoint failed validation before S3 sync' "${GEN_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$gen_tmp/remote/gen.ckpt" "$gen_tmp/remote-good.ckpt"; then
+  printf 'FAIL: invalid local gen checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$gen_tmp/remote-good.ckpt" "$gen_tmp/s3-local/gen.ckpt"
+cp "$gen_tmp/remote/gen.count.ckpt" "$gen_tmp/remote-count-good.ckpt"
+printf X >>"$gen_tmp/s3-local/gen.count.ckpt"
+PATH="$gen_tmp/bin:$PATH" CA_TEST_S3_ROOT="$gen_tmp/remote" \
+  want_bad 'gen count checkpoint failed validation before S3 sync' \
+  "${GEN_S3[@]}" --resume
+checks=$((checks + 1))
+if ! cmp -s "$gen_tmp/remote/gen.count.ckpt" "$gen_tmp/remote-count-good.ckpt"; then
+  printf 'FAIL: invalid local gen count checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$gen_tmp"
 for alg in bsgs rho kangaroo grumpy dlog; do
   # x = 123456 is planted; every algorithm must find exactly it.
   want '"x":123456' solve --alg "$alg" "${ZP[@]}" --g 858101 \

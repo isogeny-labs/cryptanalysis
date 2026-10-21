@@ -83,6 +83,16 @@ static void test_zp(void)
     ca_elem gen;
     CHECK(ca_group_find_generator(&g, &gen, 1) == CA_OK);
     CHECK_EQ_U64(ca_group_elem_order(&g, &gen), 500001);
+    ca_factorization factors;
+    CHECK(ca_factorize(g.order, &factors) == CA_OK);
+    uint64_t trials = 0;
+    CHECK(ca_group_find_generator_with_factors(&g, &gen, 1,
+                                                &factors, &trials) == CA_OK);
+    CHECK(trials >= 1);
+    CHECK_EQ_U64(ca_group_elem_order(&g, &gen), g.order);
+    factors.f[0].e++;
+    CHECK(ca_group_find_generator_with_factors(&g, &gen, 1,
+                                                &factors, NULL) == CA_ERR_INVALID);
 }
 
 static void test_ec(void)
