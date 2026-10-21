@@ -51,7 +51,7 @@ impl Method {
 
 #[derive(Args, Clone, Debug)]
 pub struct EcdlpArgs {
-    /// A named curve: secp256k1, p256, sm2 (sets p, a, b, G and n).
+    /// A named curve: eccp131, secp256k1, p256, sm2 (sets p, a, b, G and n).
     #[arg(long, conflicts_with_all = ["p", "a", "b"])]
     pub curve: Option<String>,
     /// Field prime (decimal or 0x hex).
@@ -109,6 +109,7 @@ fn point(s: &str, p: &BigUint) -> Result<Point, String> {
 
 fn named(name: &str) -> Option<CurveParams> {
     match name.to_ascii_lowercase().replace('-', "").as_str() {
+        "eccp131" => Some(CurveParams::eccp131()),
         "secp256k1" => Some(CurveParams::secp256k1()),
         "p256" | "secp256r1" | "prime256v1" => Some(CurveParams::p256()),
         "sm2" => Some(CurveParams::sm2()),
@@ -121,7 +122,7 @@ impl EcdlpArgs {
         let big = |s: &Option<String>| s.as_deref().map(parse_biguint).transpose();
         let mut curve = match &self.curve {
             Some(n) => named(n).ok_or_else(|| {
-                format!("unknown curve {n:?}; known: secp256k1, p256, sm2 (or give --p --a --b)")
+                format!("unknown curve {n:?}; known: eccp131, secp256k1, p256, sm2 (or give --p --a --b)")
             })?,
             None => {
                 let p = big(&self.p)?.ok_or("--p (or --curve) is required")?;
@@ -327,6 +328,20 @@ mod tests {
             max_log2_ops: 34.0,
             seed: 1,
         }
+    }
+
+    #[test]
+    fn eccp131_published_target_is_accepted_for_analysis() {
+        let mut a = args();
+        a.curve = Some("eccp-131".into());
+        a.q = Some(
+            "0x03AA6F004FC62E2DA1ED0BFB62C3FFB568,0x009C21C284BA8A445BB2701BF55E3A67ED".into(),
+        );
+        a.analyze_only = true;
+        let inst = a.instance().unwrap();
+        let r = solve(&inst, &a, None);
+        assert_eq!(r.status, "analysed");
+        assert_eq!(r.analysis.p_bits, 131);
     }
 
     #[test]

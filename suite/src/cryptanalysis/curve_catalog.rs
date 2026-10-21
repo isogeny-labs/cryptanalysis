@@ -355,6 +355,12 @@ fn prime_curves(v: &mut Vec<CatalogCurve>) {
     // Core standardized prime curves (src/ecc/curve.rs).
     let core: &[(&str, &[&str], &str, fn() -> CurveParams)] = &[
         (
+            "eccp-131",
+            &["eccp131"],
+            "Certicom ECC Challenge",
+            CurveParams::eccp131,
+        ),
+        (
             "secp256k1",
             &["k256", "ansix9p256k1"],
             "SEC 2 v2 / Bitcoin",
