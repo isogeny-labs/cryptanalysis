@@ -1,4 +1,86 @@
 #include "test_fixtures.h"
+#include <unistd.h>
+
+static void run_checkpoint(const ca_group *g, const ca_elem *gen)
+{
+    char path[] = "/tmp/ca-cheon-checkpoint-XXXXXX";
+    int fd = mkstemp(path);
+    CHECK(fd >= 0);
+    CHECK(close(fd) == 0);
+    CHECK(unlink(path) == 0);
+    ca_elem ga, gad;
+    CHECK(ca_cheon_make_instance(g, gen, 4242, 2, &ga, &gad) == CA_OK);
+    ca_cheon_params cp;
+    ca_cheon_params_default(&cp);
+    cp.max_exps = 3;
+    uint64_t got = 0;
+    ca_stats st = {0};
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, 2, &cp,
+                                      path, 1, 1, 0, &got, &st) == CA_ERR_LIMIT);
+    CHECK(st.iterations == 3);
+    FILE *f = fopen(path, "rb");
+    CHECK(f != NULL);
+    CHECK(fclose(f) == 0);
+    CHECK(ca_cheon_checkpoint_validate(g, gen, &ga, &gad, 2, path) == CA_OK);
+
+    cp.max_exps = 295;
+    st = (ca_stats){0};
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, 2, &cp,
+                                      path, 1, 1, 0, &got, &st) == CA_ERR_LIMIT);
+    CHECK(st.iterations >= 295);
+    cp.max_exps = 1000;
+    st = (ca_stats){0};
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, 2, &cp,
+                                      path, 1, 1, 0, &got, &st) == CA_OK);
+    CHECK_EQ_U64(got, 4242);
+    CHECK(st.iterations > 3);
+    got = 0;
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, 2, &cp,
+                                      path, 1, 1, 0, &got, NULL) == CA_OK);
+    CHECK_EQ_U64(got, 4242);
+
+    ca_elem other_ga, other_gad;
+    CHECK(ca_cheon_make_instance(g, gen, 4243, 2, &other_ga, &other_gad) == CA_OK);
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &other_ga, &other_gad, 2, &cp,
+                                      path, 1, 1, 0, &got, NULL) == CA_ERR_INVALID);
+    CHECK(ca_cheon_checkpoint_validate(g, gen, &other_ga, &other_gad, 2, path) ==
+          CA_ERR_INVALID);
+    f = fopen(path, "rb+");
+    CHECK(f != NULL);
+    CHECK(fseek(f, -1, SEEK_END) == 0);
+    int byte = fgetc(f);
+    CHECK(byte != EOF);
+    CHECK(fseek(f, -1, SEEK_END) == 0);
+    CHECK(fputc(byte ^ 1, f) != EOF);
+    CHECK(fclose(f) == 0);
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, 2, &cp,
+                                      path, 1, 1, 0, &got, NULL) == CA_ERR_INVALID);
+    CHECK(ca_cheon_checkpoint_validate(g, gen, &ga, &gad, 2, path) == CA_ERR_INVALID);
+    CHECK(unlink(path) == 0);
+    char progress[sizeof(path) + 20];
+    snprintf(progress, sizeof(progress), "%s.progress.json", path);
+    CHECK(unlink(progress) == 0);
+
+    /* With d = order - 1, the second orbit is the long phase. */
+    uint64_t d2 = g->order - 1;
+    CHECK(ca_cheon_make_instance(g, gen, 4242, d2, &ga, &gad) == CA_OK);
+    cp.max_exps = 3;
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, d2, &cp,
+                                      path, 1, 1, 0, &got, NULL) == CA_ERR_LIMIT);
+    f = fopen(progress, "rb");
+    CHECK(f != NULL);
+    char phase[256] = {0};
+    CHECK(fread(phase, 1, sizeof(phase) - 1, f) > 0);
+    CHECK(strstr(phase, "second-baby") != NULL);
+    CHECK(fclose(f) == 0);
+    cp.max_exps = 1000;
+    got = 0;
+    CHECK(ca_cheon_solve_checkpointed(g, gen, &ga, &gad, d2, &cp,
+                                      path, 1, 1, 0, &got, NULL) == CA_OK);
+    CHECK_EQ_U64(got, 4242);
+    CHECK(unlink(path) == 0);
+    CHECK(unlink(progress) == 0);
+}
 
 static void run(const ca_group *g, const ca_elem *gen, uint64_t d, int reps)
 {
@@ -117,6 +199,11 @@ int main(void)
     /* invalid d */
     ca_elem ga, gad;
     uint64_t got;
+    ca_group small;
+    ca_elem small_gen;
+    CHECK(ca_group_zp_init(&small, 1000003, 166667) == CA_OK);
+    CHECK(ca_group_find_generator(&small, &small_gen, 1) == CA_OK);
+    run_checkpoint(&small, &small_gen);
     ca_group_zp_init(&g, q, p);
     ca_group_find_generator(&g, &gen, 1);
     ca_cheon_make_instance(&g, &gen, 5, 24, &ga, &gad);

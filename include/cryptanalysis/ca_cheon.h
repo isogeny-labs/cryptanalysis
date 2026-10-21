@@ -41,6 +41,23 @@ CA_API ca_status ca_cheon_solve(const ca_group *g, const ca_elem *gen, const ca_
                                 const ca_elem *g_alpha_d, uint64_t d,
                                 const ca_cheon_params *params, uint64_t *alpha, ca_stats *st);
 
+/* Run the d | p-1 attack with live phase progress and an optional atomic
+ * checkpoint.  The checkpoint retains the active exponent-orbit baby table,
+ * giant position, completed first phase, and cumulative counters.  Passing
+ * NULL for checkpoint_path prints progress without saving state.  max_exps is
+ * a per-phase cap and may be raised when resuming. */
+CA_API ca_status ca_cheon_solve_checkpointed(
+    const ca_group *g, const ca_elem *gen, const ca_elem *g_alpha,
+    const ca_elem *g_alpha_d, uint64_t d, const ca_cheon_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *alpha, ca_stats *st);
+
+/* Validate a checkpoint and its input identity without advancing the search.
+ * Useful before a caller exposes restored artifacts to an external mirror. */
+CA_API ca_status ca_cheon_checkpoint_validate(
+    const ca_group *g, const ca_elem *gen, const ca_elem *g_alpha,
+    const ca_elem *g_alpha_d, uint64_t d, const char *checkpoint_path);
+
 /* Helper for experiments: produce (alpha*g, alpha^d*g) from alpha. */
 CA_API ca_status ca_cheon_make_instance(const ca_group *g, const ca_elem *gen, uint64_t alpha,
                                         uint64_t d, ca_elem *g_alpha, ca_elem *g_alpha_d);

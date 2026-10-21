@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, and dlog.
+GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, dlog, and Cheon.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -192,6 +192,30 @@ checkpoint is versioned and checksummed and binds the group, target, and
 selection settings. Each digit checkpoint validates its own solver state.
 `dlog.ckpt.progress.json` and `result.json` provide readable status. The
 local lock and S3 sync and restore rules described above apply.
+
+## Cheon with auxiliary powers
+
+`cheon` uses `g`, `g^alpha`, and `g^(alpha^d)` in a prime-order group, with
+`d` dividing the group order minus one. It reports the baby and giant steps of
+both exponent-orbit searches as they run. Its `cheon.ckpt` retains the active
+baby table, giant position, completed first-phase residue, cumulative work,
+and elapsed time. The checkpoint has a checksum and binds the group,
+generator, auxiliary points, and `d`.
+
+```sh
+cryptanalysis cheon --group zp --p 1000003 --order 166667 \
+  --g 533154 --d 2 --alpha 4242 --verbose --progress-every 5 \
+  --state-dir ./runs/cheon-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/cheon-001 --sync-every 60
+```
+
+For an existing instance, pass `--ga` and `--gad` in place of `--alpha`.
+Repeat the same group and auxiliary points with `--resume`. `--max-exps`
+limits each search phase; raise it on resume to continue a capped phase.
+`cheon.ckpt.progress.json` records the current phase and counters, and
+`result.json` records the final status. The local lock and S3 mirror and
+restore rules above apply. These auxiliary powers are part of the input;
+this command does not derive them from an ordinary discrete-log target.
 
 ## Index calculus
 
