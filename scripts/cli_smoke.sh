@@ -1192,6 +1192,10 @@ if [[ $1 == s3api && $2 == list-objects-v2 ]]; then
   exit 0
 fi
 verb=$2 src=$3
+touch "$CA_TEST_S3_CALLED"
+if [[ $verb == sync && -n ${CA_TEST_S3_BULK:-} ]]; then
+  touch "$CA_TEST_S3_BULK"
+fi
 if [[ $src == s3://*/manifest.json ]]; then src=$CA_TEST_S3_FIXTURE/manifest.json;
 elif [[ $src == s3://* ]]; then src=$CA_TEST_S3_FIXTURE; fi
 if [[ $verb == ls ]]; then
@@ -1225,6 +1229,26 @@ if [ -e "$ic_s3_test/called" ] || \
   printf 'FAIL: mismatched local manifest was exposed to S3 restore\n' >&2
   fail=$((fail + 1))
 fi
+mkdir "$ic_s3_test/empty"
+cp "$ic_s3_test/remote/manifest.json" "$ic_s3_test/matching-manifest"
+printf 'foreign run\n' > "$ic_s3_test/remote/manifest.json"
+printf 'foreign checkpoint payload\n' > "$ic_s3_test/remote/foreign-large.ckpt"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  CA_TEST_S3_BULK="$ic_s3_test/bulk-sync-called" \
+  want_bad 'cannot restore run artifacts from S3' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/empty" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/bulk-sync-called" ] || \
+   [ -e "$ic_s3_test/empty/manifest.json" ] || \
+   [ -e "$ic_s3_test/empty/foreign-large.ckpt" ]; then
+  printf 'FAIL: mismatched remote manifest downloaded run artifacts\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$ic_s3_test/matching-manifest" "$ic_s3_test/remote/manifest.json"
+rm "$ic_s3_test/remote/foreign-large.ckpt"
+rm -f "$ic_s3_test/called" "$ic_s3_test/bulk-sync-called"
 rm "$ic_s3_test/local/manifest.json"
 printf 'preserve\n' > "$ic_s3_test/local/unrelated"
 PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \

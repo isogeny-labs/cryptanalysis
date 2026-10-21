@@ -405,7 +405,8 @@ static char *ic_path(const char *dir, const char *name);
 static int ic_atomic_file(const char *dir, const char *name, const char *body);
 static int ic_manifest_matches(const char *dir, const char *expected);
 static int ic_dir_empty(const char *dir);
-static int ic_s3_sync(const char *from, const char *to);
+static int ic_s3_sync(const char *from, const char *to,
+                      const char *expected_manifest);
 static int ic_s3_upload_allowed(const char *dir, const char *uri);
 static int ic_remote_prefix_empty(const char *uri);
 
@@ -869,7 +870,7 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
                 access(dp_path, F_OK) == 0)
                 die("local corpus has no checkpoint; restore into an empty state directory");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore ECC2K artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore ECC2K artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             struct stat corpus;
@@ -1095,12 +1096,9 @@ static int ic_atomic_file(const char *dir, const char *name, const char *body)
     return ok;
 }
 
-static int ic_manifest_matches(const char *dir, const char *expected)
+static int ic_manifest_file_matches(const char *path, const char *expected)
 {
-    char *path = ic_path(dir, "manifest.json");
-    if (!path) return 0;
     FILE *f = fopen(path, "rb");
-    free(path);
     if (!f) return 0;
     size_t n = strlen(expected);
     char *got = malloc(n ? n : 1);
@@ -1108,6 +1106,15 @@ static int ic_manifest_matches(const char *dir, const char *expected)
              memcmp(got, expected, n) == 0;
     free(got);
     fclose(f);
+    return ok;
+}
+
+static int ic_manifest_matches(const char *dir, const char *expected)
+{
+    char *path = ic_path(dir, "manifest.json");
+    if (!path) return 0;
+    int ok = ic_manifest_file_matches(path, expected);
+    free(path);
     return ok;
 }
 
@@ -1128,14 +1135,17 @@ static int ic_dir_empty(const char *dir)
 /* Return 2 for an empty prefix, 1 for a verified or installed manifest, and
  * 0 for an unavailable or incompatible remote run.  The bulk restore must
  * never replace an existing local run identity. */
-static int ic_s3_restore_manifest(const char *uri, const char *dir)
+static int ic_s3_restore_manifest(const char *uri, const char *dir,
+                                  const char *expected_manifest)
 {
+    if (!expected_manifest) return 0;
     if (ic_remote_prefix_empty(uri)) return 2;
     char *local = ic_path(dir, "manifest.json");
     if (!local) return 0;
     if (access(local, F_OK) == 0) {
+        int matches = ic_manifest_file_matches(local, expected_manifest);
         free(local);
-        return ic_s3_upload_allowed(dir, uri);
+        return matches && ic_s3_upload_allowed(dir, uri);
     }
     char *remote = ecc2k_remote_path(uri, "manifest.json");
     char *tmp = ic_path(dir, ".restore-manifest.tmp.XXXXXX");
@@ -1144,6 +1154,7 @@ static int ic_s3_restore_manifest(const char *uri, const char *dir)
     if (fd < 0) ok = 0;
     if (fd >= 0 && close(fd) != 0) ok = 0;
     if (ok) ok = ecc2k_aws_cp(remote, tmp);
+    if (ok) ok = ic_manifest_file_matches(tmp, expected_manifest);
     if (ok) {
         fd = open(tmp, O_RDONLY);
         struct stat st;
@@ -1162,11 +1173,12 @@ static int ic_s3_restore_manifest(const char *uri, const char *dir)
     return ok;
 }
 
-static int ic_s3_sync(const char *from, const char *to)
+static int ic_s3_sync(const char *from, const char *to,
+                      const char *expected_manifest)
 {
     int uploading = strncmp(to, "s3://", 5) == 0;
     if (!uploading && strncmp(from, "s3://", 5) == 0) {
-        int manifest = ic_s3_restore_manifest(from, to);
+        int manifest = ic_s3_restore_manifest(from, to, expected_manifest);
         if (manifest != 1) return manifest == 2;
     }
     if (uploading) {
@@ -1230,7 +1242,7 @@ static void *ic_sync_worker(void *arg)
         if (atomic_load(&s->stop)) break;
         if (++elapsed < s->interval) continue;
         elapsed = 0;
-        int ok = ic_s3_sync(s->dir, s->uri);
+        int ok = ic_s3_sync(s->dir, s->uri, NULL);
         if (s->verbose) fprintf(stderr, "[%s] S3 sync %s\n", s->label,
                                 ok ? "complete" : "failed; will retry");
     }
@@ -1470,7 +1482,7 @@ static int cmd_gen_durable(ca_group *g)
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore gen artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore gen artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no gen checkpoint found for --resume");
@@ -1628,7 +1640,7 @@ static int cmd_gen_durable(ca_group *g)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist gen result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[gen] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -1695,7 +1707,7 @@ static int cmd_factor_durable(uint64_t n)
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore factor artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore factor artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no factor checkpoint found for --resume");
@@ -1745,7 +1757,7 @@ static int cmd_factor_durable(uint64_t n)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist factor result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[factor] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -1815,7 +1827,7 @@ static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore ec-order artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore ec-order artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no ec-order checkpoint found for --resume");
@@ -1881,7 +1893,7 @@ static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist ec-order result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[ec-order] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -1974,7 +1986,7 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore Cheon artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore Cheon artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no Cheon checkpoint found for --resume");
@@ -2018,7 +2030,7 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist Cheon result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[cheon] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2098,7 +2110,7 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
@@ -2164,7 +2176,7 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist walk result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2246,7 +2258,7 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 4096 &&
@@ -2298,7 +2310,7 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist GPU rho result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[gpu-rho] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2383,7 +2395,7 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no interval checkpoint found for --resume");
@@ -2432,7 +2444,7 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist interval result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2517,7 +2529,7 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(table_path, F_OK) != 0 ||
                  access(online_path, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore precomp artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore precomp artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(table_path, F_OK) != 0) die("no precomp table checkpoint found for --resume");
@@ -2570,7 +2582,7 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist precomp result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[precomp] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2662,7 +2674,7 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore dlog artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore dlog artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no dlog checkpoint found for --resume");
@@ -2705,7 +2717,7 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist dlog result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[dlog] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2783,7 +2795,7 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
-                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
+                !ic_s3_sync(s3_uri, state_dir, manifest)) die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
             uint64_t effective_hi = hi ? hi : g->order ? g->order - 1 : 0;
@@ -2832,7 +2844,7 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist kangaroo result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (verbose && s3_uri) fprintf(stderr, "[kangaroo] final S3 sync %s\n",
                                    !safe_to_upload ? "skipped after an invalid run" :
                                    uploaded ? "complete" : "failed");
@@ -2916,7 +2928,7 @@ static int cmd_ic(void)
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
-            if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir))
+            if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir, manifest))
                 die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
@@ -2968,7 +2980,7 @@ static int cmd_ic(void)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist index-calculus result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_NOT_FOUND || rc == CA_ERR_LIMIT;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri, NULL);
     if (pr.verbose && s3_uri) fprintf(stderr, "[ic] final S3 sync %s\n",
                                       !safe_to_upload ? "skipped after an invalid run" :
                                       uploaded ? "complete" : "failed");
@@ -3775,7 +3787,7 @@ static int cmd_work(void)
                 die("work manifest does not match this job");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore work state into a nonempty directory");
-            if (!have_local && s3_uri && !ic_s3_sync(s3_uri, state_dir))
+            if (!have_local && s3_uri && !ic_s3_sync(s3_uri, state_dir, manifest))
                 die("cannot restore work state from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("work manifest does not match this job");
@@ -3924,7 +3936,7 @@ static int cmd_work(void)
         }
         if (s3_uri && now >= next_sync && !storage_failed) {
             int ok = work_journal_flush(st, journal_fd, &journaled) &&
-                     ic_s3_sync(state_dir, s3_uri);
+                     ic_s3_sync(state_dir, s3_uri, NULL);
             if (verbose) fprintf(stderr, "[work] S3 sync %s\n",
                                  ok ? "complete" : "failed; will retry");
             next_sync = now + sync_every;
@@ -3941,7 +3953,7 @@ static int cmd_work(void)
                                      lease_secs, journaled, verbose,
                                      ca_coord_solution(st, NULL) ? "solved" : "stopped")))
         storage_failed = 1;
-    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri, NULL))
         storage_failed = 1;
     if (idle_when_solved && !storage_failed && !coord_interrupted &&
         ca_coord_solution(st, NULL)) {
@@ -3986,7 +3998,7 @@ static int cmd_work(void)
                                      ca_coord_solution(st, NULL) ? "solved" : "stopped")))
         storage_failed = 1;
     /* Keep the remote result as running until the journal is uploaded. */
-    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri))
+    if (s3_uri && !storage_failed && !ic_s3_sync(state_dir, s3_uri, NULL))
         storage_failed = 1;
     char result[640];
     int rn = snprintf(result, sizeof(result),
