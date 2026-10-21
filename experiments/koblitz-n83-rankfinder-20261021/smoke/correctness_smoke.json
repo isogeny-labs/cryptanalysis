@@ -1,0 +1,130 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "binaries_unchanged": true,
+  "every_ic_row_ran_its_arms_rank_probe_pipeline": true,
+  "every_row_ran_its_arms_binary": true,
+  "host_cpu_identity_unchanged": true,
+  "one_index_and_layout_digest_set_per_base_equal_frozen": true,
+  "one_probe_count_per_point_and_base": true,
+  "one_relation_per_point_and_base": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "placement_pinned_every_process": true,
+  "pre_timing_tables_and_closure_bases_verified": true,
+  "primary_probe_law_inside_frozen_band": false,
+  "q0_matches_archived_and_frozen_identities": true,
+  "rank_relations_probes_root_calls_and_counters_identical_per_seed": true,
+  "rank_tables_equal_frozen_verified_tables": true,
+  "receipt_matches_schedule": true,
+  "rows_in_schedule_order": true,
+  "runner_identity_matches_frozen_files": true
+ },
+ "detail": {
+  "index_digest_sets_per_base": {
+   "K600": 1,
+   "M10": 1,
+   "M38": 1
+  },
+  "invalid_rows": [],
+  "probe_failures": [],
+  "probe_law_gate": {
+   "attempts": 48,
+   "blocks": 3,
+   "ci95": [
+    1.0342476744547426,
+    1.5974275106564075
+   ],
+   "estimate": 1.2982106131100717,
+   "law_probes_per_relation": 1700068.523328942,
+   "mean_probes_per_relation": 2207047
+  },
+  "processes_per_m38_seed": {
+   "1801": 4,
+   "1802": 4,
+   "1803": 2,
+   "7": 2
+  },
+  "rank_frame_counters": {
+   "00008/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00010/kM38RFaa": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00012/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00014/kM38RFaa": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00016/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00018/kM38IC": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00020/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00022/kM38IC": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00024/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00026/kM38IC": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00028/kM38RFX": {
+    "builds": 16,
+    "plant_checked_inputs": 12853712
+   },
+   "00029/kM38RF": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_seed_failures": [],
+  "relation_failures": [],
+  "rows_on_another_rank_probe_pipeline": [],
+  "rows_without_gain": {
+   "00008/kM38RF": 0,
+   "00010/kM38RFaa": 0,
+   "00012/kM38RF": 0,
+   "00014/kM38RFaa": 0,
+   "00016/kM38RF": 0,
+   "00018/kM38IC": 0,
+   "00020/kM38RF": 0,
+   "00022/kM38IC": 0,
+   "00024/kM38RF": 0,
+   "00026/kM38IC": 0,
+   "00028/kM38RFX": 0,
+   "00029/kM38RF": 0
+  },
+  "runner": {
+   "host_class": "Intel(R) Xeon(R) Processor @ 2.10GHz | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+   "microcode": "0x1",
+   "placement_failures": [],
+   "rows_on_another_binary": [],
+   "runner_identity": {
+    "files_equal": true,
+    "no_smoke_subset": false
+   }
+  },
+  "scalar_failures": [],
+  "units_seen": 2
+ },
+ "problems": [],
+ "rows": 29
+}
