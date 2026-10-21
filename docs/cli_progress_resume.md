@@ -218,3 +218,33 @@ collecting. `progress.json` reports the phase, relation count, test count, and
 elapsed collection time. A stopped process can lose the work done since the
 last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
 apply. See the `ic` section of the CLI help for the remaining arguments.
+
+## ECC2K-130 CUDA campaign walk
+
+The packaged `rho --curve ecc2k130 --backend cuda` command delegates to a
+separate sigma-walk backend. Its managed mode keeps the backend's exact lane
+checkpoint and append-only 32-byte distinguished-point corpus in one run
+directory. The backend prints its own walk rate and report counts; the CLI
+also writes `progress.json` with elapsed time and local artifact sizes.
+
+```sh
+cryptanalysis rho --curve ecc2k130 --backend cuda --run-id R \
+  --verbose --state-dir ./runs/ecc2k130-R --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/ecc2k130-R --sync-every 60
+```
+
+Use a run ID assigned uniquely for this campaign; reusing another worker's
+ID repeats its trails. Repeat the same backend walk settings with `--resume`.
+The CLI checks the manifest, locks the local directory, and restores the
+corpus and checkpoint from S3 when local state is absent. During an upload it
+pins one completed checkpoint, copies the append-only corpus first, and
+publishes that checkpoint last. An interrupted upload therefore leaves S3
+with an older checkpoint or a corpus ahead of it, both of which can be
+replayed. Resume discards an incomplete trailing corpus record after checking
+the checkpoint. The final upload is required for a successful managed command.
+
+The CUDA sigma corpus is separate from the Metal table-walk corpus. Metal
+still prints live backend progress and accepts `--verbose`, but managed
+state directories and S3 resume require a Metal checkpoint implementation.
+The ECC2K-130 command collects walk reports; it does not upload them into
+the live campaign's private ingest service.

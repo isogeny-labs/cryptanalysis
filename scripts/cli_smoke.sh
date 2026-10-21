@@ -284,6 +284,94 @@ want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
 want_fail rho --curve ecc2k130 --backend metal --kat fixture
+
+# Exercise the packaged CUDA wrapper without needing a CUDA device or S3
+# account. The stub uses the same checkpoint/corpus paths as the real kernel.
+ecc_tmp=$(mktemp -d)
+mkdir -p "$ecc_tmp/pkg/bin" "$ecc_tmp/pkg/libexec/cryptanalysis" "$ecc_tmp/awsbin" "$ecc_tmp/remote"
+cp "$CA" "$ecc_tmp/pkg/bin/cryptanalysis"
+cat >"$ecc_tmp/pkg/libexec/cryptanalysis/ecc2k130-rho-cuda" <<'SH'
+#!/bin/sh
+set -eu
+[ "$1" = walk ] || exit 2
+shift
+dp= ck= id=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dp-file) dp=$2; shift 2 ;;
+    --checkpoint) ck=$2; shift 2 ;;
+    --run-id) id=$2; shift 2 ;;
+    *) shift ;;
+  esac
+done
+[ "$id" = 7 ] && [ -n "$dp" ] && [ -n "$ck" ] || exit 2
+if [ -f "$ck" ]; then printf 'backend resumed\n' >&2; fi
+dd if=/dev/zero bs=32 count=1 2>/dev/null >>"$dp"
+printf 'checkpoint 7\n' >"$ck"
+sleep 2
+SH
+chmod +x "$ecc_tmp/pkg/libexec/cryptanalysis/ecc2k130-rho-cuda"
+cp "$ecc_tmp/pkg/libexec/cryptanalysis/ecc2k130-rho-cuda" \
+  "$ecc_tmp/pkg/libexec/cryptanalysis/ecc2k130-rho-metal"
+cat >"$ecc_tmp/awsbin/aws" <<'SH'
+#!/bin/sh
+set -eu
+[ "$1" = s3 ] || exit 2
+verb=$2; from=$3; to=$4
+case "$from" in
+  s3://test/ecc2k) from=$CA_TEST_S3_REMOTE ;;
+  s3://test/ecc2k/*) from="$CA_TEST_S3_REMOTE/${from#s3://test/ecc2k/}" ;;
+esac
+case "$to" in
+  s3://test/ecc2k) to=$CA_TEST_S3_REMOTE ;;
+  s3://test/ecc2k/*) to="$CA_TEST_S3_REMOTE/${to#s3://test/ecc2k/}" ;;
+esac
+if [ "$verb" = sync ]; then
+  [ -d "$from" ] && cp -R "$from/." "$to/" || :
+else
+  mkdir -p "$(dirname "$to")"
+  cp "$from" "$to"
+  printf '%s\n' "$(basename "$to")" >>"$CA_TEST_S3_LOG"
+fi
+SH
+chmod +x "$ecc_tmp/awsbin/aws"
+ecc_ca="$ecc_tmp/pkg/bin/cryptanalysis"
+ecc_state="$ecc_tmp/state"
+export CA_TEST_S3_REMOTE="$ecc_tmp/remote" CA_TEST_S3_LOG="$ecc_tmp/upload.log"
+checks=$((checks + 1))
+ecc_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" rho --curve ecc2k130 --backend cuda \
+  --run-id 7 --verbose --progress-every 1 --state-dir "$ecc_state" \
+  --s3-uri s3://test/ecc2k --sync-every 1 2>&1) || {
+  printf 'FAIL: ECC2K managed first run: %s\n' "$ecc_out" >&2; fail=$((fail + 1));
+}
+if [[ "$ecc_out" != *'dp_bytes='* ]] || [ ! -f "$ecc_state/state.ck" ] || \
+   [ ! -f "$ecc_tmp/remote/state.ck" ] || [ "$(wc -c <"$ecc_state/dps.bin")" -ne 32 ]; then
+  printf 'FAIL: ECC2K managed progress or artifacts missing\n' >&2; fail=$((fail + 1))
+fi
+checks=$((checks + 1))
+first_dp=$(awk '/^dps.bin$/{print NR; exit}' "$ecc_tmp/upload.log")
+first_ck=$(awk '/^state.ck$/{print NR; exit}' "$ecc_tmp/upload.log")
+if [ -z "$first_dp" ] || [ -z "$first_ck" ] || [ "$first_dp" -ge "$first_ck" ]; then
+  printf 'FAIL: ECC2K S3 corpus was not uploaded before checkpoint\n' >&2; fail=$((fail + 1))
+fi
+printf x >>"$ecc_tmp/remote/dps.bin"
+rm -rf "$ecc_state"
+checks=$((checks + 1))
+ecc_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" rho --curve ecc2k130 --backend cuda \
+  --run-id 7 --resume --state-dir "$ecc_state" --s3-uri s3://test/ecc2k 2>&1) || {
+  printf 'FAIL: ECC2K S3 restore: %s\n' "$ecc_out" >&2; fail=$((fail + 1));
+}
+if [[ "$ecc_out" != *'backend resumed'* ]] || \
+   [[ "$ecc_out" != *'discarded 1 partial corpus bytes'* ]] || \
+   [ "$(wc -c <"$ecc_state/dps.bin")" -ne 64 ]; then
+  printf 'FAIL: ECC2K S3 restore did not continue the corpus\n' >&2; fail=$((fail + 1))
+fi
+CA="$ecc_ca" want_bad 'run manifest does not match' rho --curve ecc2k130 --backend cuda \
+  --run-id 8 --resume --state-dir "$ecc_state"
+CA="$ecc_ca" want_bad 'Metal table walk does not yet support' rho --curve ecc2k130 \
+  --backend metal --run-id 7 --state-dir "$ecc_tmp/metal"
+rm -rf "$ecc_tmp"
+unset CA_TEST_S3_REMOTE CA_TEST_S3_LOG
 want '"x":123456' solve --alg gpu-rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
