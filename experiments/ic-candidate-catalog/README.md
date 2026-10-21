@@ -170,3 +170,14 @@ policies on the same ordinary streams and frozen row-space checkpoints.
 Build the final relation matrix and target descent only for survivors. N131
 and isogeny cells require their explicit feasibility and route gates before
 expensive runs. Preserve every rejected and censored proposal in the catalog.
+
+## Automorphism paper follow-up plan
+
+The [2026-10-21 DGM research plan](../../research/automorphism_ideas_20261021/README.md)
+records five gated follow-ups: an ablation against existing folded bases,
+auxiliary-curve symmetries, multiplicative-walk cycle audits, narrow P-192/P-224
+parameter exclusions, and characteristic-zero lifting prerequisites.
+These are planning labels, not new Q/IC1 candidates or measured attacks.
+In particular, existing fb6/two-column and fb3668/14-column profiles already
+implement the point-count/column-count distinction. Candidate IDs, cost fields,
+curve records and route evidence remain governed by their existing gates.
