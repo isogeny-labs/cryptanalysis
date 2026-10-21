@@ -23,6 +23,14 @@
 
 #include <pthread.h>
 #include <stdatomic.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
 #define RHO_WINDOW 64
 #define RHO_MAX_WALKS 4096
@@ -42,6 +50,10 @@ typedef struct rho_shared {
     uint32_t walks;
     uint64_t seed;
     uint64_t max_ops, max_table;
+    uint64_t setup_ops;
+    uint64_t setup_prior;
+    double elapsed_prior;
+    const char *checkpoint_path;
 
     pthread_mutex_t lock;
     ca_htab tab;
@@ -69,6 +81,236 @@ typedef struct rho_thread {
     uint32_t id;
     uint64_t ops;
 } rho_thread;
+
+/* Native, versioned snapshot.  A different ABI or walk format must reject
+ * the file instead of interpreting it as a compatible DP corpus. */
+typedef struct rho_checkpoint_header {
+    char magic[8];
+    uint64_t p, a, b, order, cofactor;
+    uint64_t base[4], target[4];
+    uint32_t kind, endo_kind, aut_order, r, dp_bits, negmap;
+    uint32_t entry_size, threads, walks;
+    uint64_t endo_lambda, endo_c_mont;
+    uint64_t seed, walk_ops, setup_ops, dps, restarts, entries, result;
+    double elapsed_seconds;
+    uint32_t solved;
+    uint64_t checksum;
+} rho_checkpoint_header;
+
+static uint64_t rho_hash_bytes(const void *data, size_t n, uint64_t h)
+{
+    const unsigned char *p = data;
+    for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+    return h;
+}
+
+static char *rho_path(const char *checkpoint, const char *suffix)
+{
+    size_t n = strlen(checkpoint) + strlen(suffix) + 1;
+    char *path = malloc(n);
+    if (path) snprintf(path, n, "%s%s", checkpoint, suffix);
+    return path;
+}
+
+static int rho_sync_parent(const char *path)
+{
+    char *dir = strdup(path);
+    if (!dir) return 0;
+    char *slash = strrchr(dir, '/');
+    if (slash) {
+        if (slash == dir) slash[1] = '\0';
+        else *slash = '\0';
+    } else strcpy(dir, ".");
+    int fd = open(dir, O_RDONLY);
+    int ok = fd >= 0 && fsync(fd) == 0;
+    if (fd >= 0) close(fd);
+    free(dir);
+    return ok;
+}
+
+static void rho_checkpoint_identity(const rho_shared *sh, rho_checkpoint_header *h)
+{
+    memset(h, 0, sizeof(*h));
+    memcpy(h->magic, "CARHODP2", 8);
+    h->p = sh->g->p; h->a = sh->g->a; h->b = sh->g->b;
+    h->order = sh->g->order; h->cofactor = sh->g->cofactor;
+    ca_group_decode(sh->g, h->base, &sh->base);
+    ca_group_decode(sh->g, h->target, &sh->target);
+    h->kind = sh->g->kind; h->endo_kind = sh->g->endo_kind;
+    h->aut_order = sh->g->aut_order; h->endo_lambda = sh->g->endo_lambda;
+    h->endo_c_mont = sh->g->endo_c_mont;
+    h->r = sh->r; h->dp_bits = (uint32_t)sh->dp_bits; h->negmap = (uint32_t)sh->negmap;
+    h->entry_size = sizeof(ca_htab_entry);
+}
+
+static int rho_checkpoint_same_run(const rho_checkpoint_header *a,
+                                   const rho_checkpoint_header *b)
+{
+    return memcmp(a->magic, b->magic, 8) == 0 &&
+           a->p == b->p && a->a == b->a && a->b == b->b &&
+           a->order == b->order && a->cofactor == b->cofactor &&
+           memcmp(a->base, b->base, sizeof(a->base)) == 0 &&
+           memcmp(a->target, b->target, sizeof(a->target)) == 0 &&
+           a->kind == b->kind && a->endo_kind == b->endo_kind &&
+           a->aut_order == b->aut_order && a->endo_lambda == b->endo_lambda &&
+           a->endo_c_mont == b->endo_c_mont && a->r == b->r &&
+           a->dp_bits == b->dp_bits && a->negmap == b->negmap &&
+           a->entry_size == b->entry_size;
+}
+
+static int rho_write_all(int fd, const void *data, size_t n)
+{
+    const unsigned char *p = data;
+    while (n) {
+        ssize_t m = write(fd, p, n);
+        if (m < 0 && errno == EINTR) continue;
+        if (m <= 0) return 0;
+        p += m; n -= (size_t)m;
+    }
+    return 1;
+}
+
+static int rho_checkpoint_probe(rho_shared *sh, rho_checkpoint_header *saved)
+{
+    if (!sh->checkpoint_path) return 0;
+    FILE *f = fopen(sh->checkpoint_path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("rho: cannot open checkpoint");
+        return -1;
+    }
+    rho_checkpoint_header wanted;
+    rho_checkpoint_identity(sh, &wanted);
+    int valid = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
+                rho_checkpoint_same_run(saved, &wanted) && saved->seed != 0 &&
+                saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
+                saved->walk_ops >= saved->dps && saved->elapsed_seconds >= 0;
+    fclose(f);
+    if (!valid) {
+        ca_set_error("rho: checkpoint identity or format does not match");
+        return -1;
+    }
+    if (sh->seed && sh->seed != saved->seed) {
+        ca_set_error("rho: checkpoint seed does not match");
+        return -1;
+    }
+    sh->seed = saved->seed;
+    return 1;
+}
+
+static int rho_checkpoint_load(rho_shared *sh, const rho_checkpoint_header *expected)
+{
+    FILE *f = fopen(sh->checkpoint_path, "rb");
+    if (!f) { ca_set_error("rho: cannot reopen checkpoint"); return 0; }
+    rho_checkpoint_header h = {0};
+    int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             memcmp(&h, expected, sizeof(h)) == 0;
+    uint64_t checksum = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = rho_hash_bytes(&h, sizeof(h), UINT64_C(14695981039346656037));
+    for (uint64_t i = 0; ok && i < h.entries; i++) {
+        ca_htab_entry e;
+        if (fread(&e, 1, sizeof(e), f) != sizeof(e) || !e.key ||
+            e.v0 >= sh->n || e.v1 >= sh->n) { ok = 0; break; }
+        hash = rho_hash_bytes(&e, sizeof(e), hash);
+        uint64_t a, b;
+        if (ca_htab_insert(&sh->tab, e.key, e.v0, e.v1, &a, &b) != 0) ok = 0;
+    }
+    if (ok && (fgetc(f) != EOF || hash != checksum || sh->tab.count != h.entries)) ok = 0;
+    if (ferror(f)) ok = 0;
+    fclose(f);
+    if (!ok) { ca_set_error("rho: checkpoint is truncated or corrupt"); return 0; }
+    atomic_store(&sh->total_ops, h.walk_ops);
+    atomic_store(&sh->total_dps, h.dps);
+    atomic_store(&sh->restarts, h.restarts);
+    sh->setup_prior = h.setup_ops;
+    sh->elapsed_prior = h.elapsed_seconds;
+    if (h.solved) {
+        if (!ca_verify_log(sh->g, &sh->base, &sh->target, h.result)) {
+            ca_set_error("rho: saved solution fails verification");
+            return 0;
+        }
+        sh->result = h.result;
+        sh->status = CA_OK;
+        atomic_store(&sh->done, 1);
+    }
+    return 1;
+}
+
+/* The lock makes the table and solved status a single consistent image. */
+static int rho_checkpoint_save(rho_shared *sh, double elapsed)
+{
+    if (!sh->checkpoint_path) return 1;
+    char *tmp = rho_path(sh->checkpoint_path, ".tmp.XXXXXX");
+    if (!tmp) return 0;
+    int fd = mkstemp(tmp);
+    int ok = fd >= 0;
+    pthread_mutex_lock(&sh->lock);
+    rho_checkpoint_header h;
+    rho_checkpoint_identity(sh, &h);
+    h.seed = sh->seed;
+    h.walk_ops = atomic_load(&sh->total_ops);
+    h.setup_ops = sh->setup_prior + sh->setup_ops;
+    h.dps = atomic_load(&sh->total_dps);
+    h.restarts = atomic_load(&sh->restarts);
+    h.entries = sh->tab.count;
+    h.result = sh->result;
+    h.solved = sh->status == CA_OK;
+    h.elapsed_seconds = sh->elapsed_prior + elapsed;
+    h.checksum = 0;
+    uint64_t hash = rho_hash_bytes(&h, sizeof(h), UINT64_C(14695981039346656037));
+    if (ok) ok = rho_write_all(fd, &h, sizeof(h));
+    for (size_t i = 0; ok && i < sh->tab.cap; i++) {
+        const ca_htab_entry *e = &sh->tab.e[i];
+        if (!e->key) continue;
+        hash = rho_hash_bytes(e, sizeof(*e), hash);
+        ok = rho_write_all(fd, e, sizeof(*e));
+    }
+    if (ok) {
+        h.checksum = hash;
+        ok = lseek(fd, 0, SEEK_SET) == 0 && rho_write_all(fd, &h, sizeof(h));
+    }
+    pthread_mutex_unlock(&sh->lock);
+    if (ok) ok = fsync(fd) == 0;
+    if (fd >= 0 && close(fd) != 0) ok = 0;
+    if (ok) ok = rename(tmp, sh->checkpoint_path) == 0 && rho_sync_parent(sh->checkpoint_path);
+    if (!ok) unlink(tmp);
+    free(tmp);
+    if (!ok) ca_set_error("rho: cannot persist checkpoint");
+    return ok;
+}
+
+static int rho_progress(rho_shared *sh, double elapsed, int verbose)
+{
+    uint64_t ops = atomic_load(&sh->total_ops) + sh->setup_prior + sh->setup_ops;
+    uint64_t dps = atomic_load(&sh->total_dps);
+    uint64_t restarts = atomic_load(&sh->restarts);
+    size_t entries;
+    pthread_mutex_lock(&sh->lock);
+    entries = sh->tab.count;
+    pthread_mutex_unlock(&sh->lock);
+    if (verbose) fprintf(stderr, "[rho] %.1fs ops=%" PRIu64 " dps=%" PRIu64
+                         " entries=%zu restarts=%" PRIu64 "\n",
+                         sh->elapsed_prior + elapsed, ops, dps, entries, restarts);
+    if (!sh->checkpoint_path) return 1;
+    char *path = rho_path(sh->checkpoint_path, ".progress.json");
+    char *tmp = rho_path(sh->checkpoint_path, ".progress.tmp.XXXXXX");
+    if (!path || !tmp) { free(path); free(tmp); return 0; }
+    int fd = mkstemp(tmp);
+    char body[512];
+    int n = snprintf(body, sizeof(body), "{\"status\":\"%s\",\"elapsed_seconds\":%.3f,"
+                     "\"group_ops\":%" PRIu64 ",\"distinguished_points\":%" PRIu64
+                     ",\"table_entries\":%zu,\"restarts\":%" PRIu64 "}\n",
+                     atomic_load(&sh->done) && sh->status == CA_OK ? "ok" : "running",
+                     sh->elapsed_prior + elapsed, ops, dps, entries, restarts);
+    int ok = fd >= 0 && n > 0 && (size_t)n < sizeof(body) &&
+             rho_write_all(fd, body, (size_t)n) && fsync(fd) == 0;
+    if (fd >= 0 && close(fd) != 0) ok = 0;
+    if (ok) ok = rename(tmp, path) == 0 && rho_sync_parent(path);
+    if (!ok) { unlink(tmp); ca_set_error("rho: cannot persist progress"); }
+    free(path); free(tmp);
+    return ok;
+}
 
 void ca_rho_params_default(ca_rho_params *p)
 {
@@ -244,7 +486,6 @@ static void *rho_thread_main(void *arg)
     uint64_t ops = 0;
     for (uint32_t w = 0; w < W; w++) walk_restart(sh, &walks[w], &rng, &ops);
     const uint64_t abandon = (uint64_t)24 << sh->dp_bits;
-    uint64_t local_dps = 0, local_restarts = 0;
 
     while (!atomic_load_explicit(&sh->done, memory_order_relaxed)) {
         for (uint32_t w = 0; w < W; w++) {
@@ -290,7 +531,7 @@ static void *rho_thread_main(void *arg)
                 rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
                 size_t entries = sh->tab.count;
                 pthread_mutex_unlock(&sh->lock);
-                local_dps++;
+                atomic_fetch_add(&sh->total_dps, 1);
                 if (rc < 0) {
                     pthread_mutex_lock(&sh->lock);
                     sh->status = CA_ERR_NOMEM;
@@ -303,7 +544,7 @@ static void *rho_thread_main(void *arg)
                         /* the walk merged with its own earlier trail (or an
                          * identical trail): restart */
                         walk_restart(sh, wk, &rng, &ops);
-                        local_restarts++;
+                        atomic_fetch_add(&sh->restarts, 1);
                     } else {
                         pthread_mutex_lock(&sh->lock);
                         if (!atomic_load(&sh->done) && rho_try_solve(sh, oa, ob, wk->a, wk->b)) {
@@ -314,7 +555,7 @@ static void *rho_thread_main(void *arg)
                         if (atomic_load(&sh->done)) break;
                         /* useless collision (e.g. same point, unsolvable congruence): restart */
                         walk_restart(sh, wk, &rng, &ops);
-                        local_restarts++;
+                        atomic_fetch_add(&sh->restarts, 1);
                     }
                 }
                 wk->since_dp = 0;
@@ -327,7 +568,7 @@ static void *rho_thread_main(void *arg)
                 }
             } else if (wk->since_dp > abandon) {
                 walk_restart(sh, wk, &rng, &ops);
-                local_restarts++;
+                atomic_fetch_add(&sh->restarts, 1);
             }
         }
         if (sh->max_ops) {
@@ -346,8 +587,6 @@ static void *rho_thread_main(void *arg)
         }
     }
     atomic_fetch_add(&sh->total_ops, ops);
-    atomic_fetch_add(&sh->total_dps, local_dps);
-    atomic_fetch_add(&sh->restarts, local_restarts);
     th->ops = ops;
     free(walks); free(Yn); free(B); free(scratch);
     return NULL;
@@ -360,8 +599,10 @@ static int ilog2_u64(uint64_t v)
     return l;
 }
 
-ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                       const ca_rho_params *params, uint64_t *x, ca_stats *st)
+static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca_elem *target,
+                                const ca_rho_params *params, const char *checkpoint_path,
+                                uint32_t progress_interval, uint32_t checkpoint_interval,
+                                int verbose, uint64_t *x, ca_stats *st)
 {
     ca_rho_params def;
     if (!params) { ca_rho_params_default(&def); params = &def; }
@@ -397,6 +638,7 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     sh.base = *base;
     sh.target = *target;
     sh.n = n;
+    sh.checkpoint_path = checkpoint_path;
     sh.negmap = params->negation_map && ca_group_has_negation_map(g);
     uint64_t sqrt_n = ca_isqrt(n) + 1;
     if (params->r) sh.r = params->r;
@@ -414,7 +656,7 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     if (sh.r < 4) sh.r = 4;
     if ((sh.r & (sh.r - 1)) == 0) sh.r_mask = sh.r - 1;
     else sh.r_magic = UINT64_MAX / sh.r + 1;
-    sh.seed = ca_seed_or_random(params->seed);
+    sh.seed = params->seed;
     sh.max_ops = params->max_ops;
     sh.max_table = params->max_table_entries;
     uint32_t threads = params->threads ? params->threads : 1;
@@ -449,6 +691,11 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     sh.dp_bits = dp;
     sh.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
 
+    rho_checkpoint_header saved = {0};
+    int existing = rho_checkpoint_probe(&sh, &saved);
+    if (existing < 0) return CA_ERR_INVALID;
+    sh.seed = ca_seed_or_random(sh.seed);
+
     /* multipliers */
     sh.M = calloc(sh.r, sizeof(ca_elem));
     sh.alpha = calloc(sh.r, sizeof(uint64_t));
@@ -469,6 +716,7 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
         ca_group_op(g, &sh.M[i], &t1, &t2);
         setup_ops++;
     }
+    sh.setup_ops = setup_ops;
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
         free(sh.M); free(sh.alpha); free(sh.beta);
@@ -477,6 +725,24 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     pthread_mutex_init(&sh.lock, NULL);
     atomic_store(&sh.done, 0);
     sh.status = CA_ERR_INTERNAL;
+    if (existing && !rho_checkpoint_load(&sh, &saved)) {
+        ca_htab_free(&sh.tab);
+        free(sh.M); free(sh.alpha); free(sh.beta);
+        pthread_mutex_destroy(&sh.lock);
+        return CA_ERR_INVALID;
+    }
+    int monitored = checkpoint_path != NULL || verbose;
+    if (monitored) {
+        if (!progress_interval) progress_interval = 5;
+        if (!checkpoint_interval) checkpoint_interval = 60;
+        if (!rho_checkpoint_save(&sh, ca_now() - t0) ||
+            !rho_progress(&sh, ca_now() - t0, verbose)) {
+            ca_htab_free(&sh.tab);
+            free(sh.M); free(sh.alpha); free(sh.beta);
+            pthread_mutex_destroy(&sh.lock);
+            return CA_ERR_INTERNAL;
+        }
+    }
 
     pthread_t *tids = calloc(threads, sizeof(pthread_t));
     rho_thread *ths = calloc(threads, sizeof(rho_thread));
@@ -494,30 +760,67 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     for (uint32_t t = 0; t < threads; t++) {
         ths[t].sh = &sh;
         ths[t].id = t;
-        if (threads == 1) {
+        if (atomic_load(&sh.done)) break;
+        if (threads == 1 && !monitored) {
             rho_thread_main(&ths[t]);
         } else if (pthread_create(&tids[t], NULL, rho_thread_main, &ths[t]) == 0) {
             created[t] = 1;
             started++;
         }
     }
-    if (threads > 1 && started == 0) {
+    if (threads > 1 && started == 0 && !atomic_load(&sh.done) && !monitored) {
         /* could not spawn: run inline */
         rho_thread_main(&ths[0]);
+    }
+    if (monitored && started == 0 && !atomic_load(&sh.done)) {
+        ca_set_error("rho: cannot start worker thread");
+        sh.status = CA_ERR_INTERNAL;
+        atomic_store(&sh.done, 1);
+    }
+    int storage_failed = 0;
+    if (monitored && started) {
+        double next_progress = ca_now() + progress_interval;
+        double next_checkpoint = ca_now() + checkpoint_interval;
+        while (!atomic_load(&sh.done)) {
+            struct timespec pause = { .tv_sec = 0, .tv_nsec = 100000000 };
+            nanosleep(&pause, NULL);
+            double now = ca_now();
+            if (now >= next_progress) {
+                if (!rho_progress(&sh, now - t0, verbose)) storage_failed = 1;
+                next_progress = now + progress_interval;
+            }
+            if (now >= next_checkpoint) {
+                if (!rho_checkpoint_save(&sh, now - t0)) storage_failed = 1;
+                if (verbose && checkpoint_path)
+                    fprintf(stderr, "[rho] checkpoint %s\n", storage_failed ? "failed" : "saved");
+                next_checkpoint = now + checkpoint_interval;
+            }
+            if (storage_failed) {
+                pthread_mutex_lock(&sh.lock);
+                sh.status = CA_ERR_INTERNAL;
+                atomic_store(&sh.done, 1);
+                pthread_mutex_unlock(&sh.lock);
+            }
+        }
     }
     for (uint32_t t = 0; t < threads; t++)
         if (created[t]) pthread_join(tids[t], NULL);
 
-    ca_status rc = sh.status;
+    if (monitored && !storage_failed) {
+        if (!rho_checkpoint_save(&sh, ca_now() - t0) ||
+            !rho_progress(&sh, ca_now() - t0, verbose)) storage_failed = 1;
+    }
+
+    ca_status rc = storage_failed ? CA_ERR_INTERNAL : sh.status;
     if (rc == CA_OK) *x = sh.result;
     if (st) {
-        st->group_ops += atomic_load(&sh.total_ops) + setup_ops;
+        st->group_ops += atomic_load(&sh.total_ops) + sh.setup_prior + setup_ops;
         st->iterations += atomic_load(&sh.total_dps);
         st->collisions += atomic_load(&sh.restarts);
         st->table_entries = ca_max_u64(st->table_entries, sh.tab.count);
         st->bytes_peak = ca_max_u64(st->bytes_peak, ca_htab_bytes(&sh.tab) + (uint64_t)sh.r * 48);
         st->threads = threads;
-        st->seconds += ca_now() - t0;
+        st->seconds += sh.elapsed_prior + ca_now() - t0;
     }
     free(tids);
     free(ths);
@@ -526,4 +829,20 @@ ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *ta
     free(sh.M); free(sh.alpha); free(sh.beta);
     pthread_mutex_destroy(&sh.lock);
     return rc;
+}
+
+ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
+                       const ca_rho_params *params, uint64_t *x, ca_stats *st)
+{
+    return rho_solve_impl(g, base, target, params, NULL, 0, 0, 0, x, st);
+}
+
+ca_status ca_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                    const ca_elem *target, const ca_rho_params *params,
+                                    const char *checkpoint_path, uint32_t progress_interval,
+                                    uint32_t checkpoint_interval, int verbose,
+                                    uint64_t *x, ca_stats *st)
+{
+    return rho_solve_impl(g, base, target, params, checkpoint_path, progress_interval,
+                          checkpoint_interval, verbose, x, st);
 }

@@ -181,6 +181,22 @@ want '"x":123456' bsgs "${ZP[@]}" --g 858101 \
 want '"x":123456' rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
+rho_tmp=$(mktemp -d)
+RHO=(rho --group zp --p 1019 --order 509 --g 4 --h 818 --seed 1984 \
+  --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${RHO[@]}" --max-ops 20
+want '"x":177' "${RHO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
+   [ ! -s "$rho_tmp/rho.dp.progress.json" ] || [ ! -s "$rho_tmp/result.json" ]; then
+  printf 'FAIL: rho checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
+want_bad 'live progress and resumable state currently require --alg rho' \
+  solve --alg bsgs --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+rm -rf "$rho_tmp"
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
