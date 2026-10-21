@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 int main(void)
 {
@@ -48,6 +49,84 @@ int main(void)
         CHECK(rc == CA_OK);
         CHECK_EQ_U64(got, x);
         printf("%-9s ops=%" PRIu64 " time=%.3fs\n", ca_solver_name(solvers[s]), st.group_ops, st.seconds);
+    }
+    /* The parent checkpoint retains solved factors while the selected BSGS
+     * digit checkpoint retains an incomplete baby table across a cap change. */
+    {
+        ca_group dg;
+        ca_elem db, dh;
+        CHECK(ca_group_zp_init(&dg, 1000003, 0) == CA_OK);
+        const uint64_t dw[4] = {ca_primitive_root(1000003), 0, 0, 0};
+        CHECK(ca_group_encode(&dg, &db, dw));
+        fx_instance(&dg, &db, 12345, &dh);
+        char dir[] = "/tmp/ca-dlog-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char prefix[256], file[320];
+        snprintf(prefix, sizeof(prefix), "%s/dlog", dir);
+        ca_dlog_params dp;
+        ca_dlog_params_default(&dp);
+        dp.bsgs.max_ops = 100;
+        ca_stats first = {0}, resumed = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                                              1, 1, 0, &got, &first) == CA_ERR_LIMIT);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix);
+        CHECK(access(file, F_OK) == 0);
+        snprintf(file, sizeof(file), "%s.factor2.digit0.ckpt", prefix);
+        CHECK(access(file, F_OK) == 0);
+        dp.bsgs.max_ops = 0;
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                                              1, 1, 0, &got, &resumed) == CA_OK);
+        CHECK_EQ_U64(got, 12345);
+        ca_stats again = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                                              1, 1, 0, &got, &again) == CA_OK);
+        CHECK_EQ_U64(got, 12345);
+        CHECK_EQ_U64(resumed.group_ops, again.group_ops);
+        fx_instance(&dg, &db, 12346, &dh);
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                                              1, 1, 0, &got, NULL) == CA_ERR_INVALID);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix);
+        FILE *damage = fopen(file, "r+b");
+        CHECK(damage != NULL);
+        if (damage) {
+            CHECK(fseek(damage, -1, SEEK_END) == 0);
+            int last = fgetc(damage);
+            CHECK(last != EOF);
+            CHECK(fseek(damage, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 0xff, damage) != EOF);
+            CHECK(fclose(damage) == 0);
+        }
+        fx_instance(&dg, &db, 12345, &dh);
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                                              1, 1, 0, &got, NULL) == CA_ERR_INVALID);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor2.digit0.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor2.digit0.ckpt.progress.json", prefix); unlink(file);
+        rmdir(dir);
+    }
+    {
+        /* Several digits of the same prime power exercise xk/qk recovery. */
+        ca_group dg;
+        ca_elem db, dh;
+        CHECK(ca_group_zp_init(&dg, 1009, 0) == CA_OK); /* 1008 = 2^4 * 3^2 * 7 */
+        const uint64_t dw[4] = {ca_primitive_root(1009), 0, 0, 0};
+        CHECK(ca_group_encode(&dg, &db, dw));
+        fx_instance(&dg, &db, 777, &dh);
+        char dir[] = "/tmp/ca-dlog-power-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char prefix[256], file[320];
+        snprintf(prefix, sizeof(prefix), "%s/dlog", dir);
+        ca_stats stats = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, NULL, prefix,
+                                              1, 1, 0, &got, &stats) == CA_OK);
+        CHECK_EQ_U64(got, 777);
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, NULL, prefix,
+                                              1, 1, 0, &got, NULL) == CA_OK);
+        CHECK_EQ_U64(got, 777);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
+        rmdir(dir);
     }
     /* EC group with cofactor: dlog in full group order */
     uint64_t n;
