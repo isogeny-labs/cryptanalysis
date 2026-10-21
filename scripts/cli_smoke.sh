@@ -921,6 +921,42 @@ if ! cmp -s "$kangaroo_s3_test/remote/gpu-rho.dp" "$kangaroo_s3_test/gpu-good"; 
   printf 'FAIL: corrupt GPU rho checkpoint replaced S3 copy\n' >&2
   fail=$((fail + 1))
 fi
+rm -f "$kangaroo_s3_test/remote/"*
+DLOG_S3=(solve --alg dlog --group zp --p 1000003 --order 1000002 \
+  --g 2 --h 613968 --seed 7 --solver auto \
+  --state-dir "$kangaroo_s3_test/dlog-local" --s3-uri s3://test/dlog --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${DLOG_S3[@]}" --max-ops 100
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/dlog.ckpt" ] || \
+   [ ! -s "$kangaroo_s3_test/remote/dlog.factor2.digit0.ckpt" ]; then
+  printf 'FAIL: dlog parent or active digit S3 artifact missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/remote/dlog.factor2.digit0.ckpt" "$kangaroo_s3_test/dlog-digit-good"
+printf X >> "$kangaroo_s3_test/dlog-local/dlog.factor2.digit0.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'dlog checkpoint failed validation before S3 sync' \
+  "${DLOG_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/dlog.factor2.digit0.ckpt" \
+             "$kangaroo_s3_test/dlog-digit-good"; then
+  printf 'FAIL: corrupt active dlog digit replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test/dlog-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":12345' "${DLOG_S3[@]}" --max-ops 100000 --resume
+cp "$kangaroo_s3_test/remote/dlog.ckpt" "$kangaroo_s3_test/dlog-parent-good"
+printf X >> "$kangaroo_s3_test/dlog-local/dlog.ckpt"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'dlog checkpoint failed validation before S3 sync' \
+  "${DLOG_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/dlog.ckpt" "$kangaroo_s3_test/dlog-parent-good"; then
+  printf 'FAIL: corrupt dlog parent replaced S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
 rm -rf "$kangaroo_s3_test"
 
 # ── index calculus ──────────────────────────────────────────────────────────

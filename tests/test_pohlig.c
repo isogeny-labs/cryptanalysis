@@ -73,6 +73,22 @@ int main(void)
         CHECK(access(file, F_OK) == 0);
         snprintf(file, sizeof(file), "%s.factor2.digit0.ckpt", prefix);
         CHECK(access(file, F_OK) == 0);
+        CHECK(ca_pohlig_checkpoint_validate(&dg, &db, &dh, &dp, prefix) == CA_OK);
+        FILE *digit_damage = fopen(file, "r+b");
+        CHECK(digit_damage != NULL);
+        if (digit_damage) {
+            CHECK(fseek(digit_damage, -1, SEEK_END) == 0);
+            int last = fgetc(digit_damage);
+            CHECK(last != EOF);
+            CHECK(fseek(digit_damage, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 0xff, digit_damage) != EOF);
+            CHECK(fflush(digit_damage) == 0);
+            CHECK(ca_pohlig_checkpoint_validate(&dg, &db, &dh, &dp, prefix) == CA_ERR_INVALID);
+            CHECK(fseek(digit_damage, -1, SEEK_END) == 0);
+            CHECK(fputc(last, digit_damage) != EOF);
+            CHECK(fclose(digit_damage) == 0);
+        }
+        CHECK(ca_pohlig_checkpoint_validate(&dg, &db, &dh, &dp, prefix) == CA_OK);
         dp.bsgs.max_ops = 0;
         CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
                                               1, 1, 0, &got, &resumed) == CA_OK);
@@ -82,6 +98,7 @@ int main(void)
                                               1, 1, 0, &got, &again) == CA_OK);
         CHECK_EQ_U64(got, 12345);
         CHECK_EQ_U64(resumed.group_ops, again.group_ops);
+        CHECK(ca_pohlig_checkpoint_validate(&dg, &db, &dh, &dp, prefix) == CA_OK);
         fx_instance(&dg, &db, 12346, &dh);
         CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
                                               1, 1, 0, &got, NULL) == CA_ERR_INVALID);
@@ -97,6 +114,7 @@ int main(void)
             CHECK(fclose(damage) == 0);
         }
         fx_instance(&dg, &db, 12345, &dh);
+        CHECK(ca_pohlig_checkpoint_validate(&dg, &db, &dh, &dp, prefix) == CA_ERR_INVALID);
         CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
                                               1, 1, 0, &got, NULL) == CA_ERR_INVALID);
         snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);

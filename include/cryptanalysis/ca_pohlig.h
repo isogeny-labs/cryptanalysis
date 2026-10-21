@@ -53,6 +53,12 @@ CA_API ca_status ca_pohlig_hellman_checkpointed(
     uint32_t progress_interval, uint32_t checkpoint_interval, int verbose,
     uint64_t *x, ca_stats *st);
 
+/* Read-only validation of the parent and current digit checkpoint before
+ * a resumed run mirrors local artifacts to remote storage. */
+CA_API ca_status ca_pohlig_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    const ca_dlog_params *params, const char *checkpoint_prefix);
+
 /* Solve a discrete log in a prime-order group directly with the chosen
  * solver (no Pohlig-Hellman).  lo/hi as in the interval solvers. */
 CA_API ca_status ca_dlog_prime_order(const ca_group *g, const ca_elem *base,
