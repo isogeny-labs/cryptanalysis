@@ -11,6 +11,7 @@
 #include "dlog_internal.h"
 #include "dlog_checkpoint_internal.h"
 
+#include <math.h>
 #include <stdio.h>
 
 typedef struct gpu_rho_checkpoint_header {
@@ -107,6 +108,60 @@ static int gpu_rho_checkpoint_load(const char *path,
     if (ok && h.solved) ok = ca_verify_log(g, base, target, h.result);
     if (!ok) ca_set_error("gpu rho: checkpoint is damaged or incompatible");
     return ok;
+}
+
+ca_status ca_gpu_rho_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                          const ca_elem *target,
+                                          const ca_gpu_rho_params *params,
+                                          const char *checkpoint_path)
+{
+    ca_gpu_rho_params def;
+    if (!params) { ca_gpu_rho_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_path || !*checkpoint_path || !g->order)
+        return CA_ERR_INVALID;
+    FILE *f = fopen(checkpoint_path, "rb");
+    if (!f) {
+        ca_set_error("gpu rho: cannot open checkpoint for validation");
+        return CA_ERR_INVALID;
+    }
+    gpu_rho_checkpoint_header saved = {0}, wanted;
+    int ok = fread(&saved, 1, sizeof(saved), f) == sizeof(saved);
+    uint32_t tpb = params->threads_per_block ? params->threads_per_block : 128;
+    ca_gpu_rho_args args = {0};
+    args.kind = g->kind == CA_GROUP_EC ? CA_GPU_KIND_EC : CA_GPU_KIND_ZP;
+    args.negmap = params->negation_map && g->kind == CA_GROUP_EC;
+    args.r = saved.r;
+    args.nthreads = saved.nthreads;
+    gpu_rho_checkpoint_identity(&wanted, g, base, target, &args, tpb,
+                                 params->steps_per_launch, (int)saved.dp_bits);
+    uint32_t requested_r = params->r && params->r < 4 ? 4 : params->r;
+    int requested_dp = params->dp_bits > 63 ? 63 : params->dp_bits;
+    uint64_t requested_threads = (uint64_t)params->blocks * tpb;
+    ok = ok && gpu_rho_checkpoint_same_run(&saved, &wanted) &&
+         saved.seed && (!params->seed || saved.seed == params->seed) &&
+         (!requested_r || saved.r == requested_r) &&
+         (requested_dp < 0 || saved.dp_bits == (uint32_t)requested_dp) &&
+         (!params->blocks || (requested_threads <= UINT32_MAX &&
+                              saved.nthreads == requested_threads)) &&
+         saved.r >= 4 && saved.nthreads && saved.dp_bits <= 63 &&
+         saved.resolved_steps && saved.solved <= 1 && saved.resumes < UINT64_MAX &&
+         isfinite(saved.elapsed_seconds) && saved.elapsed_seconds >= 0 &&
+         saved.ops >= saved.dps && saved.entries <= saved.dps &&
+         saved.entries <= (SIZE_MAX - sizeof(saved)) / sizeof(ca_htab_entry);
+    struct stat sb;
+    if (ok) ok = fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+                 (uint64_t)sb.st_size == sizeof(saved) +
+                 saved.entries * sizeof(ca_htab_entry);
+    fclose(f);
+    if (!ok) {
+        ca_set_error("gpu rho: checkpoint failed integrity or run-identity validation");
+        return CA_ERR_INVALID;
+    }
+    ca_htab tab;
+    if (ca_htab_init(&tab, 4096) != CA_OK) return CA_ERR_NOMEM;
+    ok = gpu_rho_checkpoint_load(checkpoint_path, &saved, &tab, g, base, target);
+    ca_htab_free(&tab);
+    return ok ? CA_OK : CA_ERR_INVALID;
 }
 
 static int gpu_rho_checkpoint_save(const char *path,

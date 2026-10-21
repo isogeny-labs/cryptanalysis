@@ -67,6 +67,13 @@ CA_API ca_status ca_gpu_rho_solve_checkpointed(const ca_group *g, const ca_elem 
                                                 int verbose, uint64_t *x,
                                                 ca_stats *st);
 
+/* Read-only integrity and run-identity check for a saved host checkpoint.
+ * Call before mirroring local resume state to remote storage. */
+CA_API ca_status ca_gpu_rho_checkpoint_validate(const ca_group *g, const ca_elem *base,
+                                                 const ca_elem *target,
+                                                 const ca_gpu_rho_params *params,
+                                                 const char *checkpoint_path);
+
 /* 1 if the library was built with the CUDA backend (CA_CUDA=ON). */
 CA_API int ca_gpu_cuda_compiled(void);
 /* Number of usable CUDA devices (0 when not compiled in or no driver). */

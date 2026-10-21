@@ -740,7 +740,7 @@ want_bad 'run manifest does not match' solve --alg gpu-rho "${ZP[@]}" \
   --steps 16 --dp-bits 2 --state-dir "$gpu_tmp" --resume
 printf X >> "$gpu_tmp/gpu-rho.dp"
 cp "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"
-want_no 'checkpoint is damaged or incompatible' "${GPU_RHO[@]}" \
+want_bad 'GPU rho checkpoint failed validation before S3 sync' "${GPU_RHO[@]}" \
   --max-ops 100000 --resume
 checks=$((checks + 1))
 if ! cmp -s "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"; then
@@ -865,6 +865,21 @@ checks=$((checks + 1))
 if [ ! -s "$kangaroo_s3_test/remote/gpu-rho.dp" ] || \
    ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
   printf 'FAIL: GPU rho S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$kangaroo_s3_test/remote/gpu-rho.dp" "$kangaroo_s3_test/gpu-good"
+gpu_ckpt="$kangaroo_s3_test/gpu-local/gpu-rho.dp"
+gpu_key_offset=$(( $(wc -c < "$gpu_ckpt") - 24 ))
+gpu_key_byte=$(od -An -tu1 -j "$gpu_key_offset" -N1 "$gpu_ckpt")
+if [ "$gpu_key_byte" -eq 1 ]; then gpu_changed_byte='\002'; else gpu_changed_byte='\001'; fi
+printf "$gpu_changed_byte" | dd of="$gpu_ckpt" bs=1 seek="$gpu_key_offset" \
+  conv=notrunc 2>/dev/null
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_bad 'GPU rho checkpoint failed validation before S3 sync' \
+  "${GPU_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$kangaroo_s3_test/remote/gpu-rho.dp" "$kangaroo_s3_test/gpu-good"; then
+  printf 'FAIL: corrupt GPU rho checkpoint replaced S3 copy\n' >&2
   fail=$((fail + 1))
 fi
 rm -rf "$kangaroo_s3_test"
