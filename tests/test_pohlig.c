@@ -128,6 +128,42 @@ int main(void)
         snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
         rmdir(dir);
     }
+    /* Repeatedly resume one capped rho digit. The parent must retain the
+     * child's checkpointed elapsed time as well as its operation counters. */
+    {
+        ca_group dg;
+        ca_elem db, dh;
+        fx_zp_safe(&dg, &db, 2000000579ULL);
+        fx_instance(&dg, &db, 424242, &dh);
+        ca_dlog_params dp;
+        ca_dlog_params_default(&dp);
+        dp.solver = CA_SOLVER_RHO;
+        dp.rho.seed = 1984;
+        dp.rho.walks_per_thread = 4;
+        dp.rho.dp_bits = 0;
+        char dir[] = "/tmp/ca-dlog-elapsed-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char prefix[256], file[320];
+        snprintf(prefix, sizeof(prefix), "%s/dlog", dir);
+        double observed = 0;
+        ca_stats resumed = {0};
+        for (unsigned attempt = 1; attempt <= 3; attempt++) {
+            dp.rho.max_ops = 500 * attempt;
+            memset(&resumed, 0, sizeof(resumed));
+            double before = ca_now();
+            CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                        1, 1, 0, &got, &resumed) == CA_ERR_LIMIT);
+            observed += ca_now() - before;
+        }
+        /* Snapshot timestamps precede their final writes; allow that small
+         * uncheckpointed tail, but not loss of whole prior invocations. */
+        CHECK(resumed.seconds + 0.02 >= observed);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor0.digit0.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor0.digit0.ckpt.progress.json", prefix); unlink(file);
+        rmdir(dir);
+    }
     /* EC group with cofactor: dlog in full group order */
     uint64_t n;
     CHECK(ca_ec_count_points(1000003, 1, 7, &n, NULL) == CA_OK);

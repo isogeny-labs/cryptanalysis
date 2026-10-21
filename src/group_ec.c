@@ -16,9 +16,9 @@
 #define FY(e) ((e)->w[1])
 #define FINF(e) ((e)->w[2])
 
-static inline uint64_t fadd(const ca_group *g, uint64_t a, uint64_t b) { return ca_addmod(a, b, g->p); }
-static inline uint64_t fsub(const ca_group *g, uint64_t a, uint64_t b) { return ca_submod(a, b, g->p); }
-static inline uint64_t fmul(const ca_group *g, uint64_t a, uint64_t b) { return ca_mont_mul(&g->mont, a, b); }
+static inline uint64_t ec_fadd(const ca_group *g, uint64_t a, uint64_t b) { return ca_addmod(a, b, g->p); }
+static inline uint64_t ec_fsub(const ca_group *g, uint64_t a, uint64_t b) { return ca_submod(a, b, g->p); }
+static inline uint64_t ec_fmul(const ca_group *g, uint64_t a, uint64_t b) { return ca_mont_mul(&g->mont, a, b); }
 static inline uint64_t fsqr(const ca_group *g, uint64_t a) { return ca_mont_sqr(&g->mont, a); }
 static inline uint64_t finv(const ca_group *g, uint64_t a) { return ca_mont_inv(&g->mont, a); }
 
@@ -40,8 +40,8 @@ static int ec_is_identity(const ca_group *g, const ca_elem *a)
 static inline void ec_add_with_inv(const ca_group *g, ca_elem *r, const ca_elem *a,
                                    const ca_elem *b, uint64_t lam)
 {
-    uint64_t x3 = fsub(g, fsub(g, fsqr(g, lam), FX(a)), FX(b));
-    uint64_t y3 = fsub(g, fmul(g, lam, fsub(g, FX(a), x3)), FY(a));
+    uint64_t x3 = ec_fsub(g, ec_fsub(g, fsqr(g, lam), FX(a)), FX(b));
+    uint64_t y3 = ec_fsub(g, ec_fmul(g, lam, ec_fsub(g, FX(a), x3)), FY(a));
     FX(r) = x3;
     FY(r) = y3;
     FINF(r) = 0;
@@ -52,9 +52,9 @@ static void ec_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
 {
     if (FINF(a) || FY(a) == 0) { ec_identity(g, r); return; }
     uint64_t x2 = fsqr(g, FX(a));
-    uint64_t num = fadd(g, fadd(g, fadd(g, x2, x2), x2), g->a_mont);
-    uint64_t den = fadd(g, FY(a), FY(a));
-    uint64_t lam = fmul(g, num, finv(g, den));
+    uint64_t num = ec_fadd(g, ec_fadd(g, ec_fadd(g, x2, x2), x2), g->a_mont);
+    uint64_t den = ec_fadd(g, FY(a), FY(a));
+    uint64_t lam = ec_fmul(g, num, finv(g, den));
     ec_add_with_inv(g, r, a, a, lam);
 }
 
@@ -67,7 +67,7 @@ static void ec_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem
         ec_identity(g, r);
         return;
     }
-    uint64_t lam = fmul(g, fsub(g, FY(b), FY(a)), finv(g, fsub(g, FX(b), FX(a))));
+    uint64_t lam = ec_fmul(g, ec_fsub(g, FY(b), FY(a)), finv(g, ec_fsub(g, FX(b), FX(a))));
     ec_add_with_inv(g, r, a, b, lam);
 }
 
@@ -179,7 +179,7 @@ static int ec_on_curve_words(const ca_group *g, uint64_t x, uint64_t y)
 {
     uint64_t xm = ca_mont_to(&g->mont, x), ym = ca_mont_to(&g->mont, y);
     uint64_t lhs = fsqr(g, ym);
-    uint64_t rhs = fadd(g, fmul(g, fadd(g, fsqr(g, xm), g->a_mont), xm), g->b_mont);
+    uint64_t rhs = ec_fadd(g, ec_fmul(g, ec_fadd(g, fsqr(g, xm), g->a_mont), xm), g->b_mont);
     return lhs == rhs;
 }
 
@@ -209,7 +209,7 @@ static int ec_is_valid(const ca_group *g, const ca_elem *a)
     if (FINF(a)) return 1;
     if (FX(a) >= g->p || FY(a) >= g->p) return 0;
     uint64_t lhs = fsqr(g, FY(a));
-    uint64_t rhs = fadd(g, fmul(g, fadd(g, fsqr(g, FX(a)), g->a_mont), FX(a)), g->b_mont);
+    uint64_t rhs = ec_fadd(g, ec_fmul(g, ec_fadd(g, fsqr(g, FX(a)), g->a_mont), FX(a)), g->b_mont);
     return lhs == rhs;
 }
 
@@ -252,17 +252,17 @@ static void ec_jac_dbl(const ca_group *g, ec_jac *r)
         return;
     }
     uint64_t xx = fsqr(g, r->x), yy = fsqr(g, r->y), yyyy = fsqr(g, yy), zz = fsqr(g, r->z);
-    uint64_t t = fadd(g, r->x, yy);
-    uint64_t s = fsub(g, fsub(g, fsqr(g, t), xx), yyyy);
-    s = fadd(g, s, s);
-    uint64_t m = fadd(g, fadd(g, fadd(g, xx, xx), xx), fmul(g, g->a_mont, fsqr(g, zz)));
-    uint64_t x3 = fsub(g, fsub(g, fsqr(g, m), s), s);
-    uint64_t y8 = fadd(g, yyyy, yyyy);
-    y8 = fadd(g, y8, y8);
-    y8 = fadd(g, y8, y8);
-    uint64_t y3 = fsub(g, fmul(g, m, fsub(g, s, x3)), y8);
-    uint64_t yz = fadd(g, r->y, r->z);
-    uint64_t z3 = fsub(g, fsub(g, fsqr(g, yz), yy), zz);
+    uint64_t t = ec_fadd(g, r->x, yy);
+    uint64_t s = ec_fsub(g, ec_fsub(g, fsqr(g, t), xx), yyyy);
+    s = ec_fadd(g, s, s);
+    uint64_t m = ec_fadd(g, ec_fadd(g, ec_fadd(g, xx, xx), xx), ec_fmul(g, g->a_mont, fsqr(g, zz)));
+    uint64_t x3 = ec_fsub(g, ec_fsub(g, fsqr(g, m), s), s);
+    uint64_t y8 = ec_fadd(g, yyyy, yyyy);
+    y8 = ec_fadd(g, y8, y8);
+    y8 = ec_fadd(g, y8, y8);
+    uint64_t y3 = ec_fsub(g, ec_fmul(g, m, ec_fsub(g, s, x3)), y8);
+    uint64_t yz = ec_fadd(g, r->y, r->z);
+    uint64_t z3 = ec_fsub(g, ec_fsub(g, fsqr(g, yz), yy), zz);
     r->x = x3;
     r->y = y3;
     r->z = z3;
@@ -279,10 +279,10 @@ static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_
         return;
     }
     uint64_t z1z1 = fsqr(g, r->z);
-    uint64_t u2 = fmul(g, x2, z1z1);
-    uint64_t s2 = fmul(g, fmul(g, y2, r->z), z1z1);
-    uint64_t h = fsub(g, u2, r->x);
-    uint64_t rr = fsub(g, s2, r->y);
+    uint64_t u2 = ec_fmul(g, x2, z1z1);
+    uint64_t s2 = ec_fmul(g, ec_fmul(g, y2, r->z), z1z1);
+    uint64_t h = ec_fsub(g, u2, r->x);
+    uint64_t rr = ec_fsub(g, s2, r->y);
     if (h == 0) {
         if (rr == 0)
             ec_jac_dbl(g, r);
@@ -290,17 +290,17 @@ static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_
             r->inf = 1;
         return;
     }
-    rr = fadd(g, rr, rr);
+    rr = ec_fadd(g, rr, rr);
     uint64_t hh = fsqr(g, h);
-    uint64_t i = fadd(g, hh, hh);
-    i = fadd(g, i, i);
-    uint64_t j = fmul(g, h, i);
-    uint64_t v = fmul(g, r->x, i);
-    uint64_t x3 = fsub(g, fsub(g, fsub(g, fsqr(g, rr), j), v), v);
-    uint64_t y1j = fmul(g, r->y, j);
-    uint64_t y3 = fsub(g, fsub(g, fmul(g, rr, fsub(g, v, x3)), y1j), y1j);
-    uint64_t zh = fadd(g, r->z, h);
-    uint64_t z3 = fsub(g, fsub(g, fsqr(g, zh), z1z1), hh);
+    uint64_t i = ec_fadd(g, hh, hh);
+    i = ec_fadd(g, i, i);
+    uint64_t j = ec_fmul(g, h, i);
+    uint64_t v = ec_fmul(g, r->x, i);
+    uint64_t x3 = ec_fsub(g, ec_fsub(g, ec_fsub(g, fsqr(g, rr), j), v), v);
+    uint64_t y1j = ec_fmul(g, r->y, j);
+    uint64_t y3 = ec_fsub(g, ec_fsub(g, ec_fmul(g, rr, ec_fsub(g, v, x3)), y1j), y1j);
+    uint64_t zh = ec_fadd(g, r->z, h);
+    uint64_t z3 = ec_fsub(g, ec_fsub(g, fsqr(g, zh), z1z1), hh);
     r->x = x3;
     r->y = y3;
     r->z = z3;
@@ -323,8 +323,8 @@ int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
         return 1;
     }
     uint64_t zi = finv(g, acc.z), zi2 = fsqr(g, zi);
-    FX(r) = fmul(g, acc.x, zi2);
-    FY(r) = fmul(g, acc.y, fmul(g, zi2, zi));
+    FX(r) = ec_fmul(g, acc.x, zi2);
+    FY(r) = ec_fmul(g, acc.y, ec_fmul(g, zi2, zi));
     FINF(r) = 0;
     r->w[3] = 0;
     return 1;
@@ -367,12 +367,12 @@ void ca_ec_endo(const ca_group *g, ca_elem *r, const ca_elem *a)
     }
     if (g->endo_kind == 1) {
         /* j = 0: psi(x, y) = (beta * x, -y), beta a cube root of unity */
-        FX(r) = fmul(g, g->endo_c_mont, FX(a));
+        FX(r) = ec_fmul(g, g->endo_c_mont, FX(a));
         FY(r) = FY(a) ? g->p - FY(a) : 0;
     } else {
         /* j = 1728: psi(x, y) = (-x, i * y), i = sqrt(-1) */
         FX(r) = FX(a) ? g->p - FX(a) : 0;
-        FY(r) = fmul(g, g->endo_c_mont, FY(a));
+        FY(r) = ec_fmul(g, g->endo_c_mont, FY(a));
     }
     FINF(r) = 0;
     r->w[3] = 0;
