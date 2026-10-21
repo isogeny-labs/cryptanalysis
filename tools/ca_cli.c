@@ -1126,7 +1126,8 @@ static int ic_dir_empty(const char *dir)
 
 static int ic_s3_sync(const char *from, const char *to)
 {
-    if (strncmp(to, "s3://", 5) == 0) {
+    int uploading = strncmp(to, "s3://", 5) == 0;
+    if (uploading) {
         if (!ic_s3_upload_allowed(from, to)) return 0;
         /* An interrupted first sync must leave the run identity available
          * so this same local run can safely finish uploading on resume. */
@@ -1141,18 +1142,32 @@ static int ic_s3_sync(const char *from, const char *to)
     extern char **environ;
     char *src = strdup(from), *dst = strdup(to);
     if (!src || !dst) { free(src); free(dst); return 0; }
-    char *const args[] = {"aws", "s3", "sync", src, dst,
-                          "--only-show-errors", "--exclude", "*.tmp",
-                          "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
+    char *const upload_args[] = {"aws", "s3", "sync", src, dst,
+                                 "--only-show-errors", "--exclude", "*.tmp",
+                                 "--exclude", "*.tmp.*", "--exclude", "*.lock",
+                                 "--exclude", "result.json", NULL};
+    char *const restore_args[] = {"aws", "s3", "sync", src, dst,
+                                  "--only-show-errors", "--exclude", "*.tmp",
+                                  "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
     pid_t pid;
-    int spawn_error = posix_spawnp(&pid, "aws", NULL, NULL, args, environ);
+    int spawn_error = posix_spawnp(&pid, "aws", NULL, NULL,
+                                  uploading ? upload_args : restore_args, environ);
     free(src); free(dst);
     if (spawn_error != 0) return 0;
     int status = 0;
     while (waitpid(pid, &status, 0) < 0) {
         if (errno != EINTR) return 0;
     }
-    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    int ok = WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    if (ok && uploading) {
+        /* A completed result must not be visible before the artifacts it
+         * describes.  Restore still downloads result.json with the rest. */
+        char *local = ic_path(from, "result.json");
+        char *remote = ecc2k_remote_path(to, "result.json");
+        ok = local && remote && ecc2k_aws_cp(local, remote);
+        free(local); free(remote);
+    }
+    return ok;
 }
 
 typedef struct ic_sync_state {

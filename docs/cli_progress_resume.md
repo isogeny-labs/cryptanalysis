@@ -142,8 +142,10 @@ Before a local run uploads to S3, the CLI checks that the destination is
 empty or has the same run manifest. A nonempty prefix with a missing or
 different manifest stops the run before its solver starts; periodic and final
 syncs repeat the check before uploading.
-Each upload writes the manifest before syncing checkpoints and results, letting
-the same local run continue after an interrupted first upload.
+Each upload writes the manifest first, syncs checkpoints and other artifacts,
+then publishes `result.json` after that sync succeeds. This lets the same
+local run continue after an interrupted first upload and prevents a new final
+result from arriving before its checkpoint or journal.
 On resume, an existing rho checkpoint is checked for group identity, seed,
 file length, checksum, table entry bounds, and any saved answer before S3
 sync can start. A damaged local checkpoint stops the command without

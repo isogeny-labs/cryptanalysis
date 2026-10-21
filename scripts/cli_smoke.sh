@@ -103,13 +103,34 @@ if [[ $verb == ls ]]; then
 fi
 dst=$4
 if [[ $dst == s3://*//manifest.json ]]; then exit 2; fi
+remote_dst=0
+if [[ $dst == s3://* ]]; then remote_dst=1; fi
+remote_name=${dst##*/}
 if [[ $dst == s3://*/manifest.json ]]; then dst=$CA_TEST_S3_ROOT/manifest.json;
 elif [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
 if [[ $verb == cp ]]; then
   cp "$src" "$dst"
+  if [[ $remote_dst == 1 && -n ${CA_TEST_S3_LOG:-} ]]; then
+    printf '%s\n' "$remote_name" >>"$CA_TEST_S3_LOG"
+  fi
 else
   mkdir -p "$dst"
-  if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+  # Deliberately copy result first if the caller forgot to exclude it.
+  excluded_result=0
+  if [[ " $* " == *' --exclude result.json '* ]]; then excluded_result=1; fi
+  if [[ -f $src/result.json && $excluded_result == 0 ]]; then
+    cp "$src/result.json" "$dst/"
+    if [[ $remote_dst == 1 && -n ${CA_TEST_S3_LOG:-} ]]; then
+      printf 'result.json\n' >>"$CA_TEST_S3_LOG"
+    fi
+  fi
+  for file in "$src/"*; do
+    [[ -f $file && $(basename "$file") != result.json ]] || continue
+    cp "$file" "$dst/"
+    if [[ $remote_dst == 1 && -n ${CA_TEST_S3_LOG:-} ]]; then
+      printf '%s\n' "$(basename "$file")" >>"$CA_TEST_S3_LOG"
+    fi
+  done
 fi
 AWS
   chmod +x "$1"
@@ -188,7 +209,17 @@ make_basic_aws_stub "$factor_tmp/bin/aws"
 FACTOR_S3=(factor 1000036000099 --state-dir "$factor_tmp/s3-local" \
   --s3-uri s3://test/factor/ --sync-every 1)
 PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  CA_TEST_S3_LOG="$factor_tmp/upload.log" \
   want_no '"status":"limit reached"' "${FACTOR_S3[@]}" --max-steps 3
+checks=$((checks + 1))
+factor_ck_upload=$(awk '/^factor.ckpt$/{n=NR} END{print n+0}' "$factor_tmp/upload.log")
+factor_result_upload=$(awk '/^result.json$/{n=NR} END{print n+0}' "$factor_tmp/upload.log")
+if [ "$factor_ck_upload" -eq 0 ] || \
+   [ "$factor_result_upload" -le "$factor_ck_upload" ]; then
+  printf 'FAIL: factor S3 result was published before its checkpoint\n' >&2
+  cat "$factor_tmp/upload.log" >&2
+  fail=$((fail + 1))
+fi
 cp "$factor_tmp/remote/manifest.json" "$factor_tmp/remote-manifest.good"
 cp "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-checkpoint.good"
 printf 'another run\n' >"$factor_tmp/remote/manifest.json"
@@ -634,7 +665,19 @@ if [ "$verb" = ls ]; then
 elif [ "$verb" = sync ]; then
   if [ -d "$from" ]; then
     mkdir -p "$to"
-    cp -R "$from/." "$to/"
+    exclude_result=0
+    case " $* " in *' --exclude result.json '*) exclude_result=1 ;; esac
+    if [ "$exclude_result" -eq 0 ] && [ -f "$from/result.json" ]; then
+      cp "$from/result.json" "$to/"
+      printf 'result.json\n' >>"$CA_TEST_S3_LOG"
+    fi
+    for file in "$from"/*; do
+      [ -f "$file" ] || continue
+      name=$(basename "$file")
+      [ "$name" = result.json ] && continue
+      cp "$file" "$to/"
+      printf '%s\n' "$name" >>"$CA_TEST_S3_LOG"
+    done
   fi
 else
   mkdir -p "$(dirname "$to")"
@@ -747,6 +790,14 @@ if { [ "$work_rc" -ne 0 ] && [ "$work_rc" -ne 3 ]; } || \
    [ ! -f "$ecc_tmp/remote/work/result.json" ] || \
    ! grep -q '"units_completed":1' "$work_state/progress.json"; then
   printf 'FAIL: work progress or S3 journal missing (rc=%d): %s\n' "$work_rc" "$work_out" >&2
+  fail=$((fail + 1))
+fi
+checks=$((checks + 1))
+work_journal_upload=$(awk '/^checkins.log$/{n=NR} END{print n+0}' "$ecc_tmp/upload.log")
+work_result_upload=$(awk '/^result.json$/{n=NR} END{print n+0}' "$ecc_tmp/upload.log")
+if [ "$work_journal_upload" -eq 0 ] || \
+   [ "$work_result_upload" -le "$work_journal_upload" ]; then
+  printf 'FAIL: work S3 result was published before its journal\n' >&2
   fail=$((fail + 1))
 fi
 first_lines=$(wc -l <"$work_state/checkins.log")
