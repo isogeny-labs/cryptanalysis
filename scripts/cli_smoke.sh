@@ -386,8 +386,19 @@ PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
   want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
   --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
 rm -rf "$ic_tmp" "$ic_s3_test"
-want_bad 'durable --state-dir currently requires --method lsieve' \
-  ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
+rexp_tmp=$(mktemp -d)
+REXP=(ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1 \
+  --state-dir "$rexp_tmp")
+want '"x":69,"check":3' "${REXP[@]}"
+want '"x":69,"check":3' "${REXP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$rexp_tmp/relations.ckpt" ] || [ ! -s "$rexp_tmp/relations.ckpt.precomp" ]; then
+  printf 'FAIL: rexp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$rexp_tmp"
+want_bad '--max-relation-tries requires --method rexp' \
+  ic --p 101 --g 2 --h 3 --method lsieve --max-relation-tries 1
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
