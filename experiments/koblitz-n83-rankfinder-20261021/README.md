@@ -427,11 +427,22 @@ See [`smoke/README.md`](smoke/README.md).
 ## Trigger
 
 The run is the workflow
-[`.github/workflows/n83-rankfinder.yml`](../../.github/workflows/n83-rankfinder.yml).
+[`.github/workflows/n83-rankfinder.yml`](../../.github/workflows/n83-rankfinder.yml)
+(`workflow_dispatch`, plus a push trigger restricted to branch
+`claude/n83-rankfinder` and to this experiment's non-receipt paths).
 
 ## Run
 
-(Recorded after the trigger.)
+A `workflow_dispatch` call (ref `claude/n83-rankfinder`) returned **403**
+("Resource not accessible by integration"); `gh workflow run` returned 404
+because the workflow is not on the default branch. The workflow therefore
+also has a push trigger, restricted to this branch and to the experiment's
+non-receipt paths, as in the parent's `n83-indexbuild2.yml`. The push that
+added it (commit `69d48f86`) started the run at the frozen protocol
+(`3209eee1...`) and schedule (`6810d403...`):
+[39527997793](https://github.com/aburan28/cryptanalysis/actions/runs/39527997793)
+(queued 2026-10-21 01:33 UTC). The result will be added in its own section,
+leaving the design text above unchanged.
 
 ## Files
 
