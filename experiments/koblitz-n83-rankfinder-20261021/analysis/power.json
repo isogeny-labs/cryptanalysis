@@ -1,0 +1,150 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "pairs": 24
+ },
+ "candidate_model": {
+  "rank_stage_factor": 0.8308057559118927,
+  "source": "inputs/local_profile.json modelled (LOCAL DIAGNOSTIC)"
+ },
+ "cells": {
+  "1.00": {
+   "mc_se": 0.006077622890571609,
+   "median_ci_hi_over_lo": 1.0060173547585831,
+   "median_estimate": 1.0000083924302068,
+   "power": 0.015,
+   "rank_stage_factor": 1.0
+  },
+  "1.01": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0062533974934367,
+   "median_estimate": 1.0099769213576921,
+   "power": 1.0,
+   "rank_stage_factor": 0.9729059707739224
+  },
+  "1.02": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0065413701919412,
+   "median_estimate": 1.0201176387401318,
+   "power": 1.0,
+   "rank_stage_factor": 0.9463431970228658
+  },
+  "1.03": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0072050804088486,
+   "median_estimate": 1.0300605856035983,
+   "power": 1.0,
+   "rank_stage_factor": 0.9202962052863931
+  },
+  "1.05": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0091183969893212,
+   "median_estimate": 1.0501197681574288,
+   "power": 1.0,
+   "rank_stage_factor": 0.8696906213412461
+  },
+  "1.10": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0144639905576605,
+   "median_estimate": 1.0994754414538706,
+   "power": 1.0,
+   "rank_stage_factor": 0.7512275498332877
+  },
+  "modelled": {
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0107055043190116,
+   "median_estimate": 1.0656332404250155,
+   "power": 1.0,
+   "rank_stage_factor": 0.8308057559118927
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "attempts_per_rank_block": 16,
+  "distinct_rank_seeds": 36,
+  "planted_pairs_per_point": 1,
+  "points": 12,
+  "primary_pairs": 36,
+  "primary_pairs_per_point": 3
+ },
+ "expected_rank_stage_ratio": 1.2036507846559148,
+ "expected_ratio_at_prior_means": 1.0659035039294884,
+ "law_gate": {
+  "archived_attempts": 576,
+  "archived_pooled_ratio": 1.0478898400505332,
+  "attempts": 576,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 0.99925,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.03,
+ "planted_control": {
+  "lower_bound_above_1_rate": 1.0,
+  "modelled_rank_stage_factor": 1.5,
+  "pairs": 12
+ },
+ "power_at_min_delta": 1.0,
+ "prior": "inputs/power_prior.json (run 39464544962, the parent's archived run, the current row's producer)",
+ "prior_means_ms": {
+  "E2E_A": 11537.473641416665,
+  "E2E_B_modelled": 10824.125822725404,
+  "cold_ms": 7321.326558305555,
+  "index_ms": 5170.840604861111,
+  "rank_stage_ms": 4216.147083111111,
+  "scan_selftest_ms": 1436.9416189444444
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 17.0,
+  "job_limit_min": 180,
+  "job_total_min": 70.49967942263814,
+  "job_total_min_on_a_1.5x_slower_host": 104.74951913395722,
+  "mean_process_wall_s": {
+   "cM10IC": 9.024117118,
+   "cM10RF": 9.024117118,
+   "cM38IC": 9.056625165835616,
+   "cM38RF": 9.056625165835616,
+   "cM38RFaa": 9.056625165835616,
+   "cPIC": 9.087589966,
+   "cPRF": 9.087589966,
+   "kM38IC": 13.180177007833334,
+   "kM38RF": 12.466829189142071,
+   "kM38RFX": 20.46682918914207,
+   "kM38RFaa": 12.466829189142071,
+   "rT": 2.6620963540833333
+  },
+  "point_segment_s": 252.97034173821814,
+  "processes_per_point": {
+   "cM38IC": 3,
+   "cM38RF": 5,
+   "cM38RFaa": 2,
+   "kM38IC": 3,
+   "kM38RF": 6,
+   "kM38RFX": 1,
+   "kM38RFaa": 2,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM10IC": 1,
+   "cM10RF": 1,
+   "cM38IC": 1,
+   "cM38RF": 1,
+   "cPIC": 1,
+   "cPRF": 1
+  },
+  "schedule_min": 51.499679422638145,
+  "time_guard_deadline_min": 165
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.015
+}
