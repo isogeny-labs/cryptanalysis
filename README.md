@@ -184,6 +184,9 @@ pipeline is separate and has no complete released DLP command yet.
 ./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 ```
 
+For live progress, local checkpoints, and S3 resume across the native
+long-running commands, see [CLI progress and resume](docs/cli_progress_resume.md).
+
 For a long `ic` linear-sieve run, `--verbose` prints stage starts, relation
 counts, sieve-unit counts, and elapsed time to stderr while stdout remains one
 JSON result. `--progress-every` sets the reporting interval in seconds.
@@ -227,9 +230,11 @@ artifacts. Resume on another host by using an empty local state directory:
 ```
 
 Use one writer per state directory and S3 prefix. When a matching local
-manifest exists, the local journal is the resume source; use an empty local
-directory to restore the S3 copy. `--method rexp` supports live verbose
-progress, while durable relation checkpointing is currently for `lsieve`.
+manifest exists, the local relation artifact is the resume source; use an
+empty local directory to restore the S3 copy. With `--method rexp`, the CLI
+saves committed relations, smoothness-test counts, and the effective seed in
+an atomic snapshot every `--progress-every` seconds. Resume starts new worker
+streams from those saved relations.
 
 Each generic command prints one JSON object per invocation. The existing
 `solve --alg ...` form remains available:
