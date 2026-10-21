@@ -333,16 +333,8 @@ ca_status ca_pohlig_hellman_checkpointed(const ca_group *g, const ca_elem *base,
                          checkpoint_prefix, c.fi, c.k);
             }
             uint64_t d = 0;
-            double seconds_before_digit = acc->seconds;
-            double digit_started = ca_now();
             rc = ph_solve_digit(&sub, &gq, &hk, params, digit_path,
                                 progress_interval, checkpoint_interval, verbose, &d, acc);
-            /* Child solvers add elapsed time restored from their checkpoints.
-             * The parent wall clock covers only this invocation; retain the
-             * child's earlier time before replacing the aggregate below. */
-            double restored_seconds = acc->seconds - seconds_before_digit
-                                      - (ca_now() - digit_started);
-            if (restored_seconds > 0) prior_seconds += restored_seconds;
             free(digit_path);
             if (rc != CA_OK) goto ph_done;
             c.xk += d * c.qk;
