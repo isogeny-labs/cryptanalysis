@@ -5,16 +5,16 @@ date: 2026-10-21
 
 # n = 83: the online frame loop in the current producer, exact change only (Tier 1 design)
 
-**Status (2026-10-21): design frozen; Tier 1 run
+**Status (2026-10-21): run
 [39527549698](https://github.com/aburan28/cryptanalysis/actions/runs/39527549698)
-started; no result yet.** The
+valid; verdict improvement, R = 1.0165 [1.0110, 1.0221] over 64 alternating
+pairs ([Result](#result)).** The
 [protocol](protocol.json) (SHA-256 `50e50718...`) and the
 [schedule](schedule.json) (`6c84dfe5...`) were committed before any Tier 1
-timing. Every number in this document that is not from an archived run is a
-design estimate or a local correctness diagnostic from the shared
-cloud-agent VM. Those diagnostics are not timing evidence. The trigger and
-the run are recorded under [Run](#run). The result will be added in its own
-section, and the design text will stay unchanged.
+timing. Every number in the design sections (Why this run to Power and
+runtime) that is not from an archived run is a design estimate or a local
+correctness diagnostic from the shared cloud-agent VM, not timing evidence.
+The result is in its own section, and the design text is unchanged.
 
 ## Why this run
 
@@ -398,6 +398,279 @@ added it starts the run at the frozen protocol (`50e50718...`) and schedule
 [39527549698](https://github.com/aburan28/cryptanalysis/actions/runs/39527549698)
 (queued 2026-10-21 01:28 UTC).
 
+## Result
+
+Run [39527549698](https://github.com/aburan28/cryptanalysis/actions/runs/39527549698)
+(workflow `n83-onlineframe2.yml`, push trigger, frozen commit `3b66377d`,
+attempt 1, conclusion success) on one GitHub-hosted `ubuntu-24.04` runner
+(`GitHub Actions 1000369729`, image 20261018.339.1, kernel 7.0.0-1017-azure,
+**AMD EPYC 7763**, 2 vCPUs = 1 core x 2 threads, execution CPU 0). The run
+queued for 43 min (created 01:28, started 02:11 UTC); the job ended 03:55 UTC
+(104 min); the runner's schedule took 82.3 min against the 165-minute guard.
+The receipt is archived in [`run_github_39527549698/`](run_github_39527549698/).
+
+**All gates pass; the run is valid.** All 407 scheduled rows ran
+(`schedule-exit.txt`: 0): 407 valid, 0 invalid, **0 skipped by the time
+guard**, guard not tripped; all 64 primary pairs, 16 A/A pairs, 16 planted
+pairs and 16 layout pairs complete; 17 units seen (16 points and Q0).
+
+- Before timing: tables and both closure bases re-verified by the pinned
+  oracle (`log-table-check.json`); the verifier's 33 unit tests and the crate
+  tests ran in the job and passed (`verifier-tests.txt`,
+  `cargo-test-*.txt`).
+- One scalar per point across every IC process and rT, replayed in the oracle.
+  One relation, one probe count, **one root-call count and one
+  relation-check count** per point and base across both binaries and all
+  three online solves (0 failures in each).
+- One index and layout digest set per base (K600, M38, M10), equal to the
+  frozen one; Q0 equal to the archived and frozen identities; rank tables
+  equal to the frozen verified tables.
+- Per rank seed (64 seeds, 2301-2364): identical relation digests, probe
+  vectors, root calls and counters across kM38IC, kM38OF and kM38OFaa (0
+  rank-seed failures, 0 rows without gain).
+- Probe law of kM38IC: 1.0236 [0.9383, 1.1083] over 1,024 attempts (64
+  blocks), inside the frozen band [0.80, 1.20] (pass). kM38OF reads the same
+  mean, because the arms share rank seeds.
+- Runner identity equals the frozen files (protocol `50e50718...`, schedule
+  `6c84dfe5...`); binaries unchanged; CPU identity unchanged start to end;
+  every process on CPU 0 (407/407); no contention flags; no problems.
+- Online counters: the row binary reports none, `frame` arms exactly one
+  frame and one resolved hit with 0 fallback states, and the Q0
+  `frame_s3plant` process compared 4,858 states and 806,428 candidates with
+  the S3 loop with no difference.
+
+`verify_receipt.py` re-run on a **copy of the whole receipt directory**
+(with the gitignored `snapshots/r770` oracle as restored in the worktree;
+`restore.py --crypto-repo /home/user/crypto` was not needed) reproduces
+`panel/result.json` and `panel/result_table.md` **byte for byte** (`cmp`)
+and the same stdout.
+
+![Frozen ratios with 95% bootstrap intervals, all from result.json. Vector
+figures/result.pdf, SVG figures/result.svg; script
+figures/make_result_figure.py.](figures/result.png)
+
+### Primary and controls (frozen rule)
+
+Improvement iff the 95% lower bound of R = sum E2E(A) / sum E2E(B) over the
+64 alternating pairs exceeds 1 (two-stage paired bootstrap, 10,000 draws),
+the A/A ratios lie in [0.97, 1.03], and the planted online lower bound
+exceeds 1. A = kM38IC + cM38IC (the current n = 83 row), B = kM38OF +
+cM38OF (the online-frame producer).
+
+| Statistic | Estimate [95%] | Reading |
+| --- | --- | --- |
+| **R = E2E(A) / E2E(B)** (64 pairs, 16 points) | **1.0165 [1.0110, 1.0221]** | **improvement** (lower bound above 1) |
+| geometric mean of the 64 pair ratios | 1.0162 [1.0110, 1.0221] | reported |
+| A/A E2E B / Baa (16 pairs) | 1.0009 [0.9962, 1.0063] | pass (inside [0.97, 1.03]) |
+| A/A cold cM38OF / cM38OFaa (16 pairs) | 1.0006 [0.9971, 1.0050] | pass (inside [0.97, 1.03]) |
+| planted online cM38OFX / cM38OF (16 pairs) | 2.6404 [2.6137, 2.6625] | pass (lower bound above 1; PR #988 read 2.71) |
+| planted exactness corruptions | rejected before timing | pass |
+
+Mean E2E per side: A 13,105.5 ms (4,447.2 rank stage + 8,658.3 cold), B
+12,893.2 ms (4,431.7 + 8,461.5), a saving of 212.3 ms per target. Of it,
+179.4 ms (84.5%) is the online interval (503.2 -> 323.8 ms), 17.4 ms the
+setup and 15.5 ms the rank stage. Setup and rank stage run the same source in
+both arms (see the layout check). The ratio 1.0165 is above the minimal
+effect of interest (1.005) and above the design's modelled 1.0095: the online
+interval is 3.84% of A's E2E on this host (503.2 of 13,105.5 ms; the model's
+2.9% came from the Xeon prior), at 250 ns per probe against the prior's 219.5.
+
+### Secondaries (none changes the verdict)
+
+**Online stage ratio (a stage result, not the primary).** Online A / B
+(cM38IC / cM38OF in the 64 primary pairs) is **1.5541 [1.5324, 1.5766]**, from
+250.13 to 160.17 ns per probe; in the rank processes' own online scan
+1.5585 [1.5426, 1.5728]. PR #988 read 1.5733 on the older producer. This is a
+stage improvement of the online scan only, and it moves the end-to-end cost by
+the 1.65% above because the online interval is 3.8% of the end-to-end cost.
+
+**Layout pair cM38OS / cM38OF (the binary-offset check, 16 pairs, descriptive).**
+Both arms run the online-frame binary; only `KIC_ONLINE_SOLVE` differs (`s3`
+against `frame`).
+
+| Quantity | cross-binary A / B (64 pairs) | same binary cM38OS / cM38OF (16 pairs) |
+| --- | --- | --- |
+| online | 1.5541 [1.5324, 1.5766] | 1.5794 [1.5456, 1.6130] |
+| cold | 1.0233 [1.0167, 1.0304] | 1.0217 [1.0124, 1.0306] |
+
+The same-binary online ratio (1.5794) is not below the cross-binary one
+(1.5541), and the two cold ratios differ by 0.16% (1.0233 against 1.0217,
+intervals overlapping). The binary-layout offset therefore does not create the
+online effect. The size of the offset on **unchanged** code is read from the
+stages that run the same source in both arms:
+
+| Unchanged stage | A / B [95%] |
+| --- | --- |
+| rank stage (ms) | 1.0035 [0.9964, 1.0115] |
+| setup (ms) | 1.0021 [0.9999, 1.0044] |
+| index build (ms) | 1.0030 [1.0007, 1.0055] |
+| scan self-test (ms) | 0.9984 [0.9937, 1.0029] |
+| index build in the rank process (ms) | 1.0043 [1.0016, 1.0075] |
+
+These are 0.2-0.4%, in total 32.9 ms of the 212.3 ms saving (15.5 ms rank
+stage, 17.4 ms setup). **The E2E effect (1.65%, 212.3 ms) is larger than the
+layout offset on unchanged stages (about 0.25% of E2E, 32.9 ms).** If the
+unchanged stages were set to equal times, R would be 1.0139 (a descriptive
+figure with no interval, not the frozen rule): the lower bound of the frozen
+rule does not rest on the offset, but about 15% of the point estimate may.
+The parent run saw 1.0046 on the rank stage and 1.0082 on online with
+unchanged code; those offsets are of the same order as the ones here.
+
+**Stage table** (means over the 64 primary pairs; A over B, above 1 = B
+faster):
+
+| Phase | A (kM38IC + cM38IC) | B (kM38OF + cM38OF) | A / B [95%] |
+| --- | ---: | ---: | :--- |
+| end to end (ms) | 13,105.5 | 12,893.2 | **1.0165 [1.0110, 1.0221]** |
+| rank stage (ms) | 4,447.2 | 4,431.7 | 1.0035 [0.9964, 1.0115] |
+| cold = setup + online (ms) | 8,658.3 | 8,461.5 | 1.0233 [1.0167, 1.0304] |
+| setup (ms) | 8,155.2 | 8,137.8 | 1.0021 [0.9999, 1.0044] |
+| index build (ms) | 6,438.7 | 6,419.3 | 1.0030 [1.0007, 1.0055] |
+| scan self-test (ms) | 1,336.6 | 1,338.8 | 0.9984 [0.9937, 1.0029] |
+| online (ms) | 503.15 | 323.75 | **1.5541 [1.5324, 1.5766]** (stage result) |
+| process CPU time (ms) | 26,005.5 | 25,621.7 | 1.0150 [1.0099, 1.0204] |
+| process wall (ms) | 26,011.6 | 25,628.0 | 1.0150 [1.0097, 1.0204] |
+| cold minor faults | 730,115 | 730,120 | 1.0000 [1.0000, 1.0000] |
+| peak RSS (bytes) | 1,895,574,464 | 1,895,633,088 | 1.0000 [1.0000, 1.0000] |
+
+The rank-stage per-probe cost is 159.72 ns (kM38IC), 159.28 ns (kM38OF) and
+159.46 ns (kM38OFaa): the rank stage runs the frame loop in all three arms.
+Rank-stage share of E2E: A 33.9%, B 34.4%.
+
+**S** (cost over this run's measured rT770 step, 284.787 ns, per sqrt(r);
+one unit is 26,363.6 ms):
+
+| Quantity | S(A) | S(B) | delta S |
+| --- | ---: | ---: | ---: |
+| end-to-end cold | 0.49711 | 0.48905 | -0.00805 |
+| rank stage | 0.16869 | 0.16810 | -0.00059 |
+| setup without the rank stage | 0.30933 | 0.30867 | -0.00066 |
+| setup with the rank stage | 0.47802 | 0.47677 | -0.00125 |
+| cold without the rank stage | 0.32842 | 0.32095 | -0.00747 |
+| online | 0.019085 | 0.012280 | -0.006805 |
+
+The tuned rho's own S: cold 0.09154 (mean rT770 cold 2,413.4 ms), online
+0.08240 (2,172.4 ms).
+
+**Gap to tuned rho rT770** (IC time over rT time, point estimates from
+`result.json`; no interval is computed for the gaps; distance remaining, not
+a gate):
+
+| Arm | End-to-end cold | Online |
+| --- | ---: | ---: |
+| A = kM38IC + cM38IC (current row) | 5.4304 | 0.2316 (503.15 / 2,172.39 ms) |
+| B = kM38OF + cM38OF (candidate) | 5.3424 | 0.1490 (323.75 / 2,172.39 ms) |
+
+B is 5.34 times the tuned rho end to end, and no arm beats it. **Cross-run
+rho-gap artifact:** the row this run would replace read 4.4164 over its own
+run's rT770 (275.04 ns step, Intel Xeon Platinum 8370C). Here the same
+producer reads 5.4304 over this run's rT770 (284.79 ns step, AMD EPYC 7763),
+and the new producer's 5.3424 is numerically larger than the landed 4.4164
+although it is paired-faster (5.4304 to 5.3424). The runs differ in host
+class, rank seeds and rT770 step (rho cold 2,413.4 ms here, 2,612.4 ms there;
+the IC's A side 13,105.5 ms here, 12,886.3 ms there), so only the paired
+within-run gap is a delta; the absolute gaps and S are not comparable across
+runs.
+
+**Per-pair ratio spread** (64 pairs): minimum 0.9917, median 1.0145, mean
+1.0163, maximum 1.0590, standard deviation 0.0139, quartile positions (16th
+and 48th of 64 sorted) 1.0052 and 1.0244. Per point (16 points): 1.0019 to
+1.0394, all above 1. By pair position within the point: 1.0162, 1.0213,
+1.0150, 1.0137 (first to fourth). By order: A first 1.0173, B first 1.0154,
+an order effect of 0.19% (the start was drawn per point), inside the
+interval's distance from 1 (lower bound 1.0110).
+
+**Probe law** (mean probes per relation over the law value, 1,024 attempts):
+kM38IC 1.0236 [0.9383, 1.1083] (gate, band [0.80, 1.20]: pass), kM38OF
+1.0236 [0.9340, 1.1156] (same mean, shared rank seeds).
+
+### Host and isolation records
+
+From `host-cpu.json`, `allocation.json`, `panel/runner_start.json`,
+`panel/runner_end.json` and the 407 per-row records in `panel/runs.jsonl`:
+
+| Record | Observed |
+| --- | --- |
+| provider, instance | GitHub Actions, run 39527549698 attempt 1, instance id `gh-39527549698-1-onlineframe2`, runner `GitHub Actions 1000369729`, advertised 4 vCPU / 16 GB (observed 2 vCPUs, 8.1 GB), image 20261018.339.1; allocation receipt `allocation.json` |
+| CPU | AMD EPYC 7763 (family 25, model 1, stepping 1), no AVX-512 flags, 2 vCPUs = 1 core x 2 threads, 1 socket, 1 NUMA node; Microsoft hypervisor; L1d 32 KiB and L2 512 KiB shared by vCPUs 0-1, L3 32 MiB |
+| microcode | `0xffffffff` (not readable inside the guest), uniform across CPUs, same at start and end; `lscpu` lists spec-rstack-overflow and TSA as "Vulnerable: no microcode" |
+| frequency | not recorded: `frequency_khz` is empty in every row; nominal `cpu_mhz` 3246.4 at start |
+| placement | every process on CPU 0 (`Cpus_allowed_list` 0), 407/407 |
+| cgroup | `/system.slice/hosted-compute-agent.service`, no CPU quota |
+| steal | 0 ticks in every row (`/proc/stat`), total 0 |
+| throttling | `nr_throttled` 0 in every row |
+| memory failures | `memory.events` max and oom_kill deltas 0; 0 major faults |
+| scheduling | 57,284 involuntary and 3,990 voluntary context switches over 407 processes (at most 405 involuntary in one process) |
+| CPU pressure | `cpu.pressure` some-delta per row 553 to 89,848 us |
+| contention flags | none |
+| transparent hugepages | `enabled` madvise, `defrag` madvise |
+
+### AGENTS.md Tier 1 assessment
+
+AGENTS.md Tier 1 (cloud instance) requires: a frozen provider allocation
+receipt and instance ID; both variants on the same pinned exposed CPU with the
+same workload and limits; code and workload hashes, paired order, raw
+failures, correctness, process CPU time, memory, cgroup throttling and memory
+failures, steal time and scheduling counters; repeated alternating pairs and a
+95% paired interval whose lower bound exceeds 1.
+
+**Met:** the allocation record and instance ID; one pinned CPU for all 407
+processes with the same workload, binaries and no CPU quota; code and workload
+hashes (protocol, schedule, arm wrapper, runner, binaries, log tables,
+`frozen.sha256`); paired alternating order from the frozen schedule; raw
+failures (0) and correctness (every gate above); process CPU time, peak RSS,
+cgroup throttling (0), memory events (0), steal (0) and scheduler counters per
+row; 64 alternating pairs and a lower bound of 1.0110.
+
+**Gaps (named; none changes the verdict, all limit the claim):**
+
+1. No host-wide exclusivity. CPU affinity records placement inside the VM; the
+   cgroup is the runner agent's service, and the other vCPU, the agent and the
+   hypervisor's other tenants are not controlled. Steal of 0 in the guest does
+   not prove an unshared physical core.
+2. The SMT sibling is not excluded. CPU 0 shares its core and its L1/L2 with
+   vCPU 1 (cache `shared_cpu_list` 0-1), which is the only other vCPU and
+   carries the runner agent; it was not offlined or shown idle.
+3. Microcode is unreadable (`0xffffffff`), so the CPU identity rests on the
+   model name, flags and the unchanged record, not on a microcode revision.
+4. The frequency is neither fixed, controlled nor observed: no per-row reading
+   exists (the parent's run at least recorded one). The pairs are adjacent in
+   time and alternate, which balances a slow drift but not a fast one.
+5. No IRQ routing control, no `isolcpus` / `nohz_full`, no NUMA memory policy
+   beyond the single node.
+6. One instance only (instance scope). This host class (AMD EPYC 7763, no
+   AVX-512, 2 vCPUs) differs from the row's run (Intel Xeon Platinum 8370C),
+   so absolute times, the rT770 step and the gaps are not comparable across
+   runs, only the paired ratios. The effect is a per-probe saving whose size
+   depends on the host (online share 3.84% of E2E here, 2.9% in the prior) and
+   has not been replayed on another host class.
+7. Binary layout. A and B are different binaries; the unchanged stages differ
+   by 0.2-0.4% (see the layout check), the same order as the effect's
+   uncertainty, so a small part of the 1.65% may be layout. The same-binary
+   layout pair is descriptive, 16 pairs.
+
+The result is a **Tier 1, instance-scoped** paired wall-time comparison, not
+host-isolated (Tier 2).
+
+### Limits of this result
+
+- Tier 1, instance scope: one runner, 16 cold points, 4 alternating pairs per
+  point, one fresh process per arm per pair. The interval covers points and
+  pairs; it does not cover another host class.
+- Wall time on one host class. The saving is the online scan (179.4 of
+  212.3 ms); the self-test, setup, index build and rank stage are the parent's
+  code. The effect is small: 1.0165, 1.65% of the end-to-end cost, with an
+  online interval that is 3.8% of A's E2E.
+- **Factor-base construction is charged to no arm** (the n = 83 convention),
+  so 1.0165 is an upper bound on the every-phase ratio and the cold S a lower
+  bound. At the construction time measured on another host class (X = 427.5
+  ms, run 39007026856, illustrative, mixes hosts) the every-phase figures are R
+  1.0159 and cold S(B) 0.50527.
+- The gap to rT770 is a point estimate from one run with no interval, and
+  differs across runs (cross-run artifact above).
+- The section 5a band is not computable (the IC arms emit no group-operation
+  counts). Not replayed on another host class.
+
 ## Files
 
 | File | Role |
@@ -411,5 +684,6 @@ added it starts the run at the frozen protocol (`50e50718...`) and schedule
 | `make_targets.py`, `check_panel_disjoint.py`, `check_seed_disjoint.py`, `inputs/` | the new panel, disjointness records, local exactness record |
 | `make_power_prior.py`, `power_check.py`, `analysis/power.json` | power prior (run 39464544962), simulation, result |
 | `summarize_exactness.py`, `smoke/` | local correctness smoke (O1, P1), crate test log, table check |
-| `make_figures.py`, `figures/` | design diagram (TikZ), power figure |
+| `make_figures.py`, `figures/` | design diagram (TikZ), power figure; `figures/make_result_figure.py`, `figures/result.*`: result figure (TikZ source, PDF, SVG, PNG) drawn from `result.json` |
+| `run_github_39527549698/` | the archived receipt: `panel/result.json`, `panel/result_table.md`, `verify-stdout.json`, host and allocation records, 407 per-row records |
 | `README.pdf` | this report: `pandoc README.md -o README.pdf --pdf-engine=pdflatex -H report_header.tex --lua-filter report_filter.lua -V geometry:margin=2cm -V fontsize=10pt -V colorlinks=true` |
