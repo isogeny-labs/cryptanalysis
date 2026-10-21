@@ -966,9 +966,16 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
         if (rn < 0 || (size_t)rn >= sizeof(result) ||
             !ic_atomic_file(state_dir, "result.json", result))
             storage_failed = 1;
+        if (verbose && s3_uri) {
+            fprintf(stderr, "[ecc2k130/%s] final S3 sync started\n", selected_backend);
+            fflush(stderr);
+        }
+        double sync_started = ca_now();
         int uploaded = !s3_uri || ecc2k_s3_upload(state_dir, s3_uri);
-        if (verbose && s3_uri) fprintf(stderr, "[ecc2k130/%s] final S3 sync %s\n",
-                                       selected_backend, uploaded ? "complete" : "failed");
+        if (verbose && s3_uri)
+            fprintf(stderr, "[ecc2k130/%s] final S3 sync %s in %.1fs\n",
+                    selected_backend, uploaded ? "complete" : "failed",
+                    ca_now() - sync_started);
         if (!uploaded || storage_failed) {
             char error_result[128];
             snprintf(error_result, sizeof(error_result),
@@ -1224,6 +1231,26 @@ static int ic_s3_sync_reported(const char *from, const char *to,
     int ok = ic_s3_sync(from, to);
     if (verbose)
         fprintf(stderr, "[%s] S3 sync %s in %.1fs\n", label,
+                ok ? "complete" : "failed", ca_now() - start);
+    return ok;
+}
+
+static int ic_s3_final_sync(const char *dir, const char *uri,
+                            const char *label, int verbose, int safe_to_upload)
+{
+    if (!uri) return 1;
+    if (!safe_to_upload) {
+        if (verbose) fprintf(stderr, "[%s] final S3 sync skipped after an invalid run\n", label);
+        return 1;
+    }
+    if (verbose) {
+        fprintf(stderr, "[%s] final S3 sync started\n", label);
+        fflush(stderr);
+    }
+    double start = ca_now();
+    int ok = ic_s3_sync(dir, uri);
+    if (verbose)
+        fprintf(stderr, "[%s] final S3 sync %s in %.1fs\n", label,
                 ok ? "complete" : "failed", ca_now() - start);
     return ok;
 }
@@ -1641,10 +1668,7 @@ static int cmd_gen_durable(ca_group *g)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist gen result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[gen] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "gen", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -1758,10 +1782,7 @@ static int cmd_factor_durable(uint64_t n)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist factor result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[factor] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "factor", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -1894,10 +1915,7 @@ static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist ec-order result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[ec-order] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "ec-order", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2031,10 +2049,7 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist Cheon result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[cheon] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "cheon", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2177,10 +2192,7 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist walk result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, alg, verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2311,10 +2323,7 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist GPU rho result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[gpu-rho] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "gpu-rho", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2445,10 +2454,7 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist interval result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, alg, verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2583,10 +2589,7 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist precomp result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[precomp] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "precomp", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2718,10 +2721,7 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist dlog result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[dlog] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "dlog", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2845,10 +2845,7 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist kangaroo result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[kangaroo] final S3 sync %s\n",
-                                   !safe_to_upload ? "skipped after an invalid run" :
-                                   uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "kangaroo", verbose, safe_to_upload);
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
                 ca_status_string(rc));
@@ -2981,10 +2978,7 @@ static int cmd_ic(void)
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
         die("cannot persist index-calculus result");
     int safe_to_upload = rc == CA_OK || rc == CA_ERR_NOT_FOUND || rc == CA_ERR_LIMIT;
-    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
-    if (pr.verbose && s3_uri) fprintf(stderr, "[ic] final S3 sync %s\n",
-                                      !safe_to_upload ? "skipped after an invalid run" :
-                                      uploaded ? "complete" : "failed");
+    int uploaded = ic_s3_final_sync(state_dir, s3_uri, "ic", pr.verbose, safe_to_upload);
     if (uploaded)
         fputs(result, stdout);
     else
