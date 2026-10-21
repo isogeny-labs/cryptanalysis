@@ -194,9 +194,53 @@ if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
 fi
 want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
   --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
-want_bad 'live progress and resumable state currently require --alg rho' \
+want_bad 'live progress and resumable state currently require --alg rho or kangaroo' \
   solve --alg bsgs --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
 rm -rf "$rho_tmp"
+kangaroo_tmp=$(mktemp -d)
+KANGAROO=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${KANGAROO[@]}" --max-ops 40
+want '"x":177' "${KANGAROO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_tmp/manifest.json" ] || [ ! -s "$kangaroo_tmp/kangaroo.ckpt" ] || \
+   [ ! -s "$kangaroo_tmp/kangaroo.ckpt.progress.json" ] || \
+   [ ! -s "$kangaroo_tmp/result.json" ]; then
+  printf 'FAIL: kangaroo checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' kangaroo --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --resume
+rm -rf "$kangaroo_tmp"
+kangaroo_s3_test=$(mktemp -d)
+mkdir "$kangaroo_s3_test/bin" "$kangaroo_s3_test/remote"
+cat > "$kangaroo_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$kangaroo_s3_test/bin/aws"
+KANGAROO_S3=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_s3_test/local" --s3-uri s3://test/kangaroo --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${KANGAROO_S3[@]}" --max-ops 40
+rm -rf "$kangaroo_s3_test/local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":177' "${KANGAROO_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/kangaroo.ckpt" ] || \
+   ! grep -q '"x":177' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: kangaroo S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test"
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
