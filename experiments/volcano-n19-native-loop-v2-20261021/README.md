@@ -5,7 +5,7 @@ date: 2026-10-21
 
 # n = 19 tau6 index calculus end to end in native code, v2: frozen protocol
 
-**Status (2026-10-21): frozen and launched; no result yet.** The protocol
+**Status (2026-10-21): frozen and launched as [run 39550687735](https://github.com/aburan28/cryptanalysis/actions/runs/39550687735); no result yet.** The protocol
 ([`protocol.json`](protocol.json)) was frozen at 2026-10-21T05:34:45Z, before any timing. The
 workflow is [`n19-native-loop-v2.yml`](../../.github/workflows/n19-native-loop-v2.yml). See
 [Launch](#launch) for the run. Nothing in this README is a timing result.
@@ -274,7 +274,17 @@ v3's A/A was 1.0003, which points to the low σ. The expected effect is far larg
 
 ## Launch
 
-**The run has not been launched yet.** This section records it once it is.
+- **Dispatch was tried first and refused.** `workflow_dispatch` returned 403 "Resource not
+  accessible by integration" from both the REST API and the GitHub MCP integration. The
+  workflow is not on the default branch. Commit `0df0df0e4` (the frozen protocol, with a
+  dispatch-only workflow) started no run.
+- **The push trigger launched it.** Commit `8482d8ba0` added the owner-approved push
+  trigger. It is limited to branch `claude/n19-native-loop-v2` and to this experiment's
+  non-report paths. Pushing that commit started
+  [run 39550687735](https://github.com/aburan28/cryptanalysis/actions/runs/39550687735): job
+  `sage-smoke` first, then job `timed`, which needs it.
+- **What does not trigger a run.** The README, the PDF, figures, `make_figures.py`,
+  `report_header.tex`, `smoke/` and `run_github_*/` archives.
 
 ## Files
 
