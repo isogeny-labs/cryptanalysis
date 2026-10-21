@@ -407,6 +407,7 @@ static int ic_manifest_matches(const char *dir, const char *expected);
 static int ic_dir_empty(const char *dir);
 static int ic_s3_sync(const char *from, const char *to);
 static int ic_s3_upload_allowed(const char *dir, const char *uri);
+static int ic_remote_prefix_empty(const char *uri);
 
 static int cmd_solve(const char *selected_alg)
 {
@@ -851,8 +852,8 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
         manifest[pos + 4] = '\0';
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest))
                 die("cannot persist run manifest");
         } else {
@@ -1124,9 +1125,50 @@ static int ic_dir_empty(const char *dir)
     return empty;
 }
 
+/* Return 2 for an empty prefix, 1 for a verified or installed manifest, and
+ * 0 for an unavailable or incompatible remote run.  The bulk restore must
+ * never replace an existing local run identity. */
+static int ic_s3_restore_manifest(const char *uri, const char *dir)
+{
+    if (ic_remote_prefix_empty(uri)) return 2;
+    char *local = ic_path(dir, "manifest.json");
+    if (!local) return 0;
+    if (access(local, F_OK) == 0) {
+        free(local);
+        return ic_s3_upload_allowed(dir, uri);
+    }
+    char *remote = ecc2k_remote_path(uri, "manifest.json");
+    char *tmp = ic_path(dir, ".restore-manifest.tmp.XXXXXX");
+    int ok = remote && tmp;
+    int fd = ok ? mkstemp(tmp) : -1;
+    if (fd < 0) ok = 0;
+    if (fd >= 0 && close(fd) != 0) ok = 0;
+    if (ok) ok = ecc2k_aws_cp(remote, tmp);
+    if (ok) {
+        fd = open(tmp, O_RDONLY);
+        struct stat st;
+        ok = fd >= 0 && fstat(fd, &st) == 0 && S_ISREG(st.st_mode) &&
+             st.st_size > 0 && fsync(fd) == 0;
+        if (fd >= 0 && close(fd) != 0) ok = 0;
+    }
+    if (ok) ok = rename(tmp, local) == 0;
+    if (ok) {
+        fd = open(dir, O_RDONLY);
+        ok = fd >= 0 && fsync(fd) == 0;
+        if (fd >= 0 && close(fd) != 0) ok = 0;
+    }
+    if (!ok && tmp) unlink(tmp);
+    free(local); free(remote); free(tmp);
+    return ok;
+}
+
 static int ic_s3_sync(const char *from, const char *to)
 {
     int uploading = strncmp(to, "s3://", 5) == 0;
+    if (!uploading && strncmp(from, "s3://", 5) == 0) {
+        int manifest = ic_s3_restore_manifest(from, to);
+        if (manifest != 1) return manifest == 2;
+    }
     if (uploading) {
         if (!ic_s3_upload_allowed(from, to)) return 0;
         /* An interrupted first sync must leave the run identity available
@@ -1148,7 +1190,8 @@ static int ic_s3_sync(const char *from, const char *to)
                                  "--exclude", "result.json", NULL};
     char *const restore_args[] = {"aws", "s3", "sync", src, dst,
                                   "--only-show-errors", "--exclude", "*.tmp",
-                                  "--exclude", "*.tmp.*", "--exclude", "*.lock", NULL};
+                                  "--exclude", "*.tmp.*", "--exclude", "*.lock",
+                                  "--exclude", "manifest.json", NULL};
     pid_t pid;
     int spawn_error = posix_spawnp(&pid, "aws", NULL, NULL,
                                   uploading ? upload_args : restore_args, environ);
@@ -1414,8 +1457,8 @@ static int cmd_gen_durable(ca_group *g)
             die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -1639,8 +1682,8 @@ static int cmd_factor_durable(uint64_t n)
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -1759,8 +1802,8 @@ static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
         if (!checkpoint || !factor_checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -1918,8 +1961,8 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2042,8 +2085,8 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2189,8 +2232,8 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest))
                 die("cannot persist run manifest");
         } else {
@@ -2327,8 +2370,8 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2460,8 +2503,8 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
         if (!table_path || !online_path) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2606,8 +2649,8 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
         if (!prefix || !checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2727,8 +2770,8 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -2856,8 +2899,8 @@ static int cmd_ic(void)
             die("state directory is already in use");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
@@ -3690,9 +3733,8 @@ static int cmd_work(void)
         if (!journal_path) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume");
-            if (s3_uri && !ic_s3_sync(s3_uri, state_dir))
-                die("cannot inspect S3 prefix");
-            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix");
+            if (s3_uri && !ic_remote_prefix_empty(s3_uri))
+                die("S3 prefix is not empty or cannot be inspected");
             if (!ic_atomic_file(state_dir, "manifest.json", manifest) ||
                 !ic_atomic_file(state_dir, "checkins.log", ""))
                 die("cannot create work state");

@@ -115,9 +115,14 @@ if [[ $verb == cp ]]; then
   fi
 else
   mkdir -p "$dst"
+  if [[ $src == "$CA_TEST_S3_ROOT" && -n ${CA_TEST_S3_FAIL_RESTORE:-} ]]; then
+    exit 1
+  fi
   # Deliberately copy result first if the caller forgot to exclude it.
   excluded_result=0
   if [[ " $* " == *' --exclude result.json '* ]]; then excluded_result=1; fi
+  excluded_manifest=0
+  if [[ " $* " == *' --exclude manifest.json '* ]]; then excluded_manifest=1; fi
   if [[ -f $src/result.json && $excluded_result == 0 ]]; then
     cp "$src/result.json" "$dst/"
     if [[ $remote_dst == 1 && -n ${CA_TEST_S3_LOG:-} ]]; then
@@ -126,6 +131,9 @@ else
   fi
   for file in "$src/"*; do
     [[ -f $file && $(basename "$file") != result.json ]] || continue
+    if [[ $(basename "$file") == manifest.json && $excluded_manifest == 1 ]]; then
+      continue
+    fi
     cp "$file" "$dst/"
     if [[ $remote_dst == 1 && -n ${CA_TEST_S3_LOG:-} ]]; then
       printf '%s\n' "$(basename "$file")" >>"$CA_TEST_S3_LOG"
@@ -222,7 +230,47 @@ if [ "$factor_ck_upload" -eq 0 ] || \
 fi
 cp "$factor_tmp/remote/manifest.json" "$factor_tmp/remote-manifest.good"
 cp "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-checkpoint.good"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_bad 'S3 prefix is not empty or cannot be inspected' factor 1000036000099 \
+  --state-dir "$factor_tmp/fresh-rejected" --s3-uri s3://test/factor/ \
+  --max-steps 3
+checks=$((checks + 1))
+if [ -e "$factor_tmp/fresh-rejected/manifest.json" ] || \
+   [ -e "$factor_tmp/fresh-rejected/factor.ckpt" ]; then
+  printf 'FAIL: fresh run downloaded artifacts from an occupied S3 prefix\n' >&2
+  fail=$((fail + 1))
+fi
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  CA_TEST_S3_FAIL_RESTORE=1 \
+  want_bad 'cannot restore factor artifacts from S3' factor 1000036000099 \
+  --state-dir "$factor_tmp/restore-staged" --s3-uri s3://test/factor/ \
+  --max-steps 3 --resume
+checks=$((checks + 1))
+if ! cmp -s "$factor_tmp/restore-staged/manifest.json" \
+             "$factor_tmp/remote-manifest.good" || \
+   [ -e "$factor_tmp/restore-staged/factor.ckpt" ]; then
+  printf 'FAIL: interrupted S3 restore did not retain only the run identity\n' >&2
+  fail=$((fail + 1))
+fi
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_no '"status":"limit reached"' factor 1000036000099 \
+  --state-dir "$factor_tmp/restore-staged" --s3-uri s3://test/factor/ \
+  --max-steps 3 --resume
+cp "$factor_tmp/remote/factor.ckpt" "$factor_tmp/remote-checkpoint.good"
+mkdir "$factor_tmp/restore-mismatch"
+cp "$factor_tmp/remote-manifest.good" "$factor_tmp/restore-mismatch/manifest.json"
 printf 'another run\n' >"$factor_tmp/remote/manifest.json"
+PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  want_bad 'cannot restore factor artifacts from S3' factor 1000036000099 \
+  --state-dir "$factor_tmp/restore-mismatch" --s3-uri s3://test/factor/ \
+  --max-steps 3 --resume
+checks=$((checks + 1))
+if ! cmp -s "$factor_tmp/restore-mismatch/manifest.json" \
+             "$factor_tmp/remote-manifest.good" || \
+   [ -e "$factor_tmp/restore-mismatch/factor.ckpt" ]; then
+  printf 'FAIL: mismatched S3 restore changed local run state\n' >&2
+  fail=$((fail + 1))
+fi
 PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
   want_bad 'S3 manifest is unavailable or does not match this run' \
   "${FACTOR_S3[@]}" --max-steps 3 --resume
@@ -667,6 +715,8 @@ elif [ "$verb" = sync ]; then
     mkdir -p "$to"
     exclude_result=0
     case " $* " in *' --exclude result.json '*) exclude_result=1 ;; esac
+    exclude_manifest=0
+    case " $* " in *' --exclude manifest.json '*) exclude_manifest=1 ;; esac
     if [ "$exclude_result" -eq 0 ] && [ -f "$from/result.json" ]; then
       cp "$from/result.json" "$to/"
       printf 'result.json\n' >>"$CA_TEST_S3_LOG"
@@ -675,6 +725,7 @@ elif [ "$verb" = sync ]; then
       [ -f "$file" ] || continue
       name=$(basename "$file")
       [ "$name" = result.json ] && continue
+      [ "$name" = manifest.json ] && [ "$exclude_manifest" -eq 1 ] && continue
       cp "$file" "$to/"
       printf '%s\n' "$name" >>"$CA_TEST_S3_LOG"
     done

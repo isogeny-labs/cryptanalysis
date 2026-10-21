@@ -138,6 +138,13 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+On a fresh run, the CLI checks that the S3 prefix is empty without copying
+remote files into the local state directory.
+On restore, the CLI reads the remote manifest before downloading artifacts.
+It checks an existing local manifest for an exact match, or installs the
+remote manifest atomically in an empty state directory. The bulk download
+cannot replace that local manifest. An interrupted download can be retried
+with `--resume` in the same directory.
 Before a local run uploads to S3, the CLI checks that the destination is
 empty or has the same run manifest. A nonempty prefix with a missing or
 different manifest stops the run before its solver starts; periodic and final
