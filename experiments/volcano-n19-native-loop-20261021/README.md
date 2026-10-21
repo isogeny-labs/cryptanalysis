@@ -5,13 +5,16 @@ date: 2026-10-21
 
 # n = 19 tau6 index calculus end to end in native code: frozen protocol
 
-**Status (2026-10-21): frozen and launched; no result yet.** The protocol
-([`protocol.json`](protocol.json)) was frozen at 2026-10-21T01:12:27Z, before any timing.
-The workflow is [`n19-native-loop.yml`](../../.github/workflows/n19-native-loop.yml).
-Dispatch was refused (GitHub MCP: 403 "Resource not accessible by integration"), so the
-owner-approved push trigger launched it. The trigger is limited to branch
-`claude/n19-native-loop` and to this experiment's non-report paths. It is
-[run 39526183111](https://github.com/aburan28/cryptanalysis/actions/runs/39526183111); see [Launch](#launch).
+**Status (2026-10-21): the run is INVALID and gives no verdict.** The protocol
+([`protocol.json`](protocol.json)) was frozen at 2026-10-21T01:12:27Z, before any timing, and
+is unchanged. The `sage-smoke` job of
+[run 39526183111](https://github.com/aburan28/cryptanalysis/actions/runs/39526183111) failed
+its Sage smoke gate (8 of 24 gates false) and the `timed` job was skipped, so there is no
+timed data. The untimed diagnostic
+[run 39522833864](https://github.com/aburan28/cryptanalysis/actions/runs/39522833864) also
+failed, so there is no function-level profile of N. Both failures trace to the same
+`--lib` option-parsing error in two Sage scripts. See [Results](#results). The workflow is
+[`n19-native-loop.yml`](../../.github/workflows/n19-native-loop.yml).
 
 ## Question
 
@@ -55,8 +58,11 @@ checks that the instrumented run reproduces the plain run's counts and digests. 
 runs cProfile, and [`diagnosis/startup_probe.py`](diagnosis/startup_probe.py) records
 Sage start-up per launch. It ran as diagnostic run
 [39522833864](https://github.com/aburan28/cryptanalysis/actions/runs/39522833864) (phase 1
-of the workflow), and the smoke job runs it again on two points; neither is a gate. Its
-record goes under `diagnosis/run_github_*` when it is available.
+of the workflow), and the smoke job runs it again on two points; neither is a gate. **Both
+crashed before measuring anything** (see [Results](#results)), so the figure above has no
+runner panel: the panel needs `profile/timers-*.json`, which was never written. The
+diagnostic's output is archived under
+[`diagnosis/run_github_39522833864/`](diagnosis/run_github_39522833864/).
 
 ## Port scope and exactness
 
@@ -227,6 +233,93 @@ ABI and its tests. Only the work around the solve changes.
 - **What does not trigger a run.** README, figures, `make_figures.py`, `report_header.tex`,
   `smoke/`, `diagnosis/` and `run_github_*/`.
 
+## Results
+
+![Smoke gates and smoke rows of run 39526183111. Source: [make_figures.py](make_figures.py)
+(`invalid`); vector: [figures/result.svg](figures/result.svg).](figures/result.png)
+
+**Verdict: INVALID. No primary, no A/A, no planted bound, no secondaries.** The frozen rule
+makes a run invalid if the smoke job or any smoke gate fails, if the timed job or any timed
+gate fails, or if the time guard skips segments. The first condition holds, and the timed
+job never started. Nothing below is a timing result, and no ratio was computed. The run
+neither supports nor refutes N2, and the ledger's n = 19 row is not changed.
+
+**Run.** [Run 39526183111](https://github.com/aburan28/cryptanalysis/actions/runs/39526183111)
+(commit `67bff8998`) queued behind the diagnostic from 2026-10-21T01:14Z and started at
+04:53Z (it was queued for about 3.5 h).
+`sage-smoke` ran 04:53 to 05:00Z and failed at its last step, `Sage smoke gate`; `timed`
+was skipped. Archive: [`run_github_39526183111/`](run_github_39526183111/) (the three
+native build products are left out; their digests are in `binaries.sha256` and
+`smoke/correctness.json`).
+
+**Smoke gates.** 16 of 24 pass, 8 fail:
+
+| gate | state |
+| --- | --- |
+| `every_scheduled_row_valid` | false: the two N2X rows (serials 9, 16) exited 1 and wrote no row |
+| `field_check_every_native_process` | false (the N2X processes ran no field check) |
+| `planted_compared_every_item` | false: N2X never ran its comparison |
+| `counts_and_log_identical_per_point` | false on v3p00 and v3p01 (N2X missing from the set) |
+| `relations_identical_per_point` | false on v3p00 and v3p01 (same) |
+| `setup_identical_per_point` | false on v3p00 and v3p01 (same) |
+| `generator_equals_archived` | false on v3p00 and v3p01 (same) |
+| `smoke_points_equal_v3_archive` | false (same) |
+
+The last five are the per-point identity gates; their failure is consistent with the missing
+N2X rows, and I did not separate it from other causes. What passed: S0 (2,982 systems,
+Sage's variety equal to the native one, the brute force and the S3 evaluation in every
+system), S0b, O1, O2, the host CPU identity, one native-artifact digest, placement, raw
+records, relation digests recomputed, rho, schedule order and regeneration, the runner
+identity against the frozen files, the Tier 1 counters, and the warm batch. The
+crate tests, the verifier's planted corruptions, the pure-Python checks and the Sage
+image's RNG check passed in earlier steps.
+
+**Cause.** `arm_n2x.sage` line 107 does `os.path.abspath(opt('--lib'))` and `opt('--lib')`
+returned `None` in both smoke N2X launches, so Python raised `TypeError` (the logs are
+`smoke/logs/smoke-009.err` and `smoke-016.err`). The command lines did contain `--lib
+/rd/lib/libtau6loop.so`. `diagnosis/profile_n.sage` fails the same way at line 264, in the
+diagnostic and again in the smoke job. I did not determine why the option is lost between
+the launcher and `sys.argv` under `sage <file>.sage`; this is a frozen-source defect and
+nothing was re-run or edited.
+
+**What the smoke rows do show (untimed, correctness only, never used for timing).** On
+v3p00 (4,780 solver calls, 0 spurious, 39 relations, log 43903) and v3p01 (5,958 calls,
+2 spurious, 39 relations, log 99184), the B, N, N2, N2aa and warm N2 rows all report the
+same counts and log. That is the same agreement the pre-freeze tests found, now on the
+runner for the arms that ran. N2X, the arm that compares N2's pipeline item by item with
+Sage's own, did not run, so the planted exactness check is untested on the runner.
+
+**Diagnostic run 39522833864 (profile).** It failed at the profile step: Sage 10.10 started
+and `profile_n.sage` died on the same line before any stage timer, cProfile or startup
+probe wrote. Only the runner record, the toolchain, the host CPU and the digests were
+kept ([`diagnosis/run_github_39522833864/`](diagnosis/run_github_39522833864/)). **There is
+no function-level profile of N on the runner.** The smoke job's startup probe did run
+([`run_github_39526183111/profile/startup.json`](run_github_39526183111/profile/startup.json),
+untimed, no claim): `sage -c pass` cost 0.782 s child CPU (0.814 s wall) per launch,
+`sage -python -c pass` 0.033 s, and `sage -python` with `import sage.all` 0.780 s. This
+supports, but does not measure, the README's statement that most of N's process-inclusive
+cost is Sage start-up. The "load the v3 arm" launch crashed on the same error (1.07 s, not
+a load time).
+
+**Reproduction of the verifier.** `verify_receipt.py --part smoke` was re-run on a copy of
+the archived `smoke/` directory (Python 3.13, no Sage needed). Its standard output
+equals `smoke-verify-stdout.json` and the regenerated `smoke/correctness.json` equals the
+archived one, byte for byte (`cmp`). There is no `result.json` or `result_table.md`, because
+the timed part never ran.
+
+**Tier 1 isolation.** Not assessable for a timed claim: nothing was timed. For the record,
+the smoke job ran on one pinned vCPU (CPU 0) of an AMD EPYC 9V74 VM with a uniform CPU
+record, the placement, host identity and Tier 1 counter gates passed, and the Sage image
+and Rust toolchain were the pinned ones.
+
+**Pre-registered secondaries.** Setup, online, solve share and linear algebra of N2,
+`S` per arm and the gap to the matched rho, per-pair spread and the order effect, the
+process-inclusive child CPU and launcher wall ratios were all unmeasured.
+
+**What follows.** A new protocol freeze is needed, because a fix to `arm_n2x.sage` and
+`diagnosis/profile_n.sage` changes frozen files (`arm_n2x.sage` is in `FROZEN_LIST`).
+Nothing was re-run here.
+
 ## Next improvement
 
 After this port the v3 solve is the cost: about 96% of N2 locally. It zero-fills a
@@ -249,5 +342,6 @@ order.
 - **Baseline, unchanged.** `../volcano-n19-native-tau6-v3-20261020/arm.sage` and its
   `native/`.
 - **Checks.** `tests/` and `smoke/`.
-- **Diagnosis.** `diagnosis/`.
+- **Diagnosis.** `diagnosis/`, with `diagnosis/run_github_39522833864/` (failed).
+- **Runs.** `run_github_39526183111/` (invalid; smoke only).
 - **Report.** `make_figures.py`, `figures/`, `README.pdf` and `report_header.tex`.

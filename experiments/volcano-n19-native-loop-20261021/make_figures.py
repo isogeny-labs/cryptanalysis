@@ -4,6 +4,8 @@
                                             (from protocol.json, schedule.json, analysis/power.json, the v3
                                             archive and, when present, diagnosis/run_github_*/profile/)
     python3 make_figures.py result RECEIPT  RECEIPT/figures/result.{svg,png} (from result.json)
+    python3 make_figures.py invalid RUN_DIR figures/result.{svg,png} (an invalid run: the smoke gate from
+                                            RUN_DIR/smoke/correctness.json and the smoke rows' status)
 """
 import glob
 import json
@@ -216,6 +218,41 @@ def result(receipt):
     save(fig, os.path.join(out, 'result'))
 
 
+def invalid(run_dir):
+    corr = json.load(open(os.path.join(run_dir, 'smoke', 'correctness.json')))
+    gates = corr['gates']
+    runs = [json.loads(l) for l in open(os.path.join(run_dir, 'smoke', 'runs.jsonl'))]
+    out = os.path.join(HERE, 'figures')
+    os.makedirs(out, exist_ok=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.6), gridspec_kw={'width_ratios': [1.5, 1]})
+    ax = axes[0]
+    names = sorted(gates, key=lambda k: (gates[k], k))
+    ax.barh(range(len(names)), [1] * len(names), color=[A3 if gates[k] else BAD for k in names])
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=6.5)
+    ax.invert_yaxis()
+    ax.set_xticks([])
+    ax.set_title('Smoke gates: %d of %d pass (red: fail)' % (sum(gates.values()), len(gates)), fontsize=9)
+    ax.spines[['top', 'right', 'bottom']].set_visible(False)
+    ax = axes[1]
+    arms = []
+    for r in runs:
+        if r['arm'] not in arms:
+            arms.append(r['arm'])
+    good = [sum(1 for r in runs if r['arm'] == a and r.get('status') == 'valid') for a in arms]
+    bad = [sum(1 for r in runs if r['arm'] == a) - g for a, g in zip(arms, good)]
+    ax.bar(range(len(arms)), good, color=A3, label='valid')
+    ax.bar(range(len(arms)), bad, bottom=good, color=BAD, label='invalid (exit 1, no row)')
+    ax.set_xticks(range(len(arms)))
+    ax.set_xticklabels(arms, fontsize=7, rotation=45)
+    ax.set_ylabel('smoke processes')
+    ax.set_title('Smoke rows by arm; timed job skipped,\nno result: run INVALID', fontsize=9)
+    ax.legend(fontsize=7, frameon=False)
+    ax.spines[['top', 'right']].set_visible(False)
+    fig.tight_layout()
+    save(fig, os.path.join(out, 'result'))
+
+
 def main():
     if sys.argv[1] == 'design':
         out = os.path.join(HERE, 'figures')
@@ -223,6 +260,8 @@ def main():
         profile(out)
         design(out)
         power(out)
+    elif sys.argv[1] == 'invalid':
+        invalid(sys.argv[2])
     elif sys.argv[1] == 'result':
         result(sys.argv[2])
 
