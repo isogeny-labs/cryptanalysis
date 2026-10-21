@@ -1,0 +1,1384 @@
+{
+ "identity_sets_per_point_and_base": {
+  "q0/K600": {
+   "arms": [
+    "cPIC",
+    "cPOF"
+   ],
+   "distinct_identities": 1
+  },
+  "q0/M10": {
+   "arms": [
+    "cM10IC",
+    "cM10OF"
+   ],
+   "distinct_identities": 1
+  },
+  "q0/M38": {
+   "arms": [
+    "cM38IC",
+    "cM38OF",
+    "cM38OFX"
+   ],
+   "distinct_identities": 1
+  },
+  "s000/M38": {
+   "arms": [
+    "cM38IC",
+    "cM38IC",
+    "cM38IC",
+    "cM38IC",
+    "cM38OF",
+    "cM38OF",
+    "cM38OF",
+    "cM38OF",
+    "cM38OF",
+    "cM38OF",
+    "cM38OF",
+    "cM38OFX",
+    "cM38OFaa",
+    "cM38OS",
+    "kM38IC",
+    "kM38IC",
+    "kM38IC",
+    "kM38IC",
+    "kM38OF",
+    "kM38OF",
+    "kM38OF",
+    "kM38OF",
+    "kM38OF",
+    "kM38OFaa"
+   ],
+   "distinct_identities": 1
+  }
+ },
+ "label": "LOCAL DIAGNOSTIC, cloud-agent VM, correctness only (no timing values)",
+ "rows": [
+  {
+   "arm": "cM38OFX",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 806428,
+    "s3plant_checked_states": 4858,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_solve": "frame_s3plant",
+   "pinned_intermediates": [
+    "3251075037921831135855207",
+    "5769263893368186249137748"
+   ],
+   "probes": 1612533,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "relation_checks": 1,
+   "root_calls": 806428,
+   "serial": 1,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "5865953781909761623446596",
+    "3254135829024717299815755",
+    "4812429036783142056932593",
+    "8695540369163582014114002"
+   ]
+  },
+  {
+   "arm": "cPOF",
+   "base": "K600",
+   "layout_digest": {
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "1312246933445753867829609",
+    "3074331483260591722817353"
+   ],
+   "probes": 1987852,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "serial": 2,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "2082252129314471344655738",
+    "5378913234883251640729967",
+    "7778583904603320805282086",
+    "8170287396569539840033367"
+   ]
+  },
+  {
+   "arm": "cPIC",
+   "base": "K600",
+   "layout_digest": {
+    "stored_states_blake3": "d8cfe443259ece37ae9af5004de0bade1d043c359a729b39ebba97cce27bf719",
+    "table_slots_blake3": "5f53764ede1a6c1e8f979ae16a842d44671e682e9f988ea2250a2d8d945aaa6d"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "1312246933445753867829609",
+    "3074331483260591722817353"
+   ],
+   "probes": 1987852,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "relation_checks": 1,
+   "root_calls": 994008,
+   "serial": 3,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "2082252129314471344655738",
+    "5378913234883251640729967",
+    "7778583904603320805282086",
+    "8170287396569539840033367"
+   ]
+  },
+  {
+   "arm": "cM10OF",
+   "base": "M10",
+   "layout_digest": {
+    "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+    "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "6119508177287646518546269",
+    "2582030701105437466928966"
+   ],
+   "probes": 2130165,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "relation_checks": 1,
+   "root_calls": 1065222,
+   "serial": 4,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "313761532631758021283231",
+    "6177217460954890787699721",
+    "7031624856351775837252250",
+    "8112511748786930615215171"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "3251075037921831135855207",
+    "5769263893368186249137748"
+   ],
+   "probes": 1612533,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "relation_checks": 1,
+   "root_calls": 806428,
+   "serial": 5,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "5865953781909761623446596",
+    "3254135829024717299815755",
+    "4812429036783142056932593",
+    "8695540369163582014114002"
+   ]
+  },
+  {
+   "arm": "cM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "3251075037921831135855207",
+    "5769263893368186249137748"
+   ],
+   "probes": 1612533,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "relation_checks": 1,
+   "root_calls": 806428,
+   "serial": 6,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "5865953781909761623446596",
+    "3254135829024717299815755",
+    "4812429036783142056932593",
+    "8695540369163582014114002"
+   ]
+  },
+  {
+   "arm": "cM10IC",
+   "base": "M10",
+   "layout_digest": {
+    "stored_states_blake3": "c90b501b11d51f089579a0e30b518ee765d75167a1c765581938d25999f0cb6c",
+    "table_slots_blake3": "4973cfe55a7d77a23deaf28eb8a33392630f9f57e2c7b38da23a493bcd67aff5"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "6119508177287646518546269",
+    "2582030701105437466928966"
+   ],
+   "probes": 2130165,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3141592653589793,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "relation_checks": 1,
+   "root_calls": 1065222,
+   "serial": 7,
+   "status": "valid",
+   "unit": "q0",
+   "x_codes": [
+    "313761532631758021283231",
+    "6177217460954890787699721",
+    "7031624856351775837252250",
+    "8112511748786930615215171"
+   ]
+  },
+  {
+   "arm": "cM38OFX",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 637440,
+    "s3plant_checked_states": 3840,
+    "s3plant_swapped_pairs": 637440,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame_s3plant",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 8,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 9,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "6a76eec0a905f5ef389b7ee83a129df4dab1f2d8ac39aca733a6adfb21e07880",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 11,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 12,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "6a76eec0a905f5ef389b7ee83a129df4dab1f2d8ac39aca733a6adfb21e07880",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 13,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 14,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "67bd4084f328a67d1aa3140ba1e1aab5eb8c9085824339f2172725052eed2f53",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 15,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 16,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "67bd4084f328a67d1aa3140ba1e1aab5eb8c9085824339f2172725052eed2f53",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 17,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 18,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "0526c1d4d831aa9c61be02e9182ac35a8bd8822d904913906ca12c4dd658caa6",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 19,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 20,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "0526c1d4d831aa9c61be02e9182ac35a8bd8822d904913906ca12c4dd658caa6",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 21,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 22,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "75a6935f283f7c79fe8e7ab24731af6de4760aead0a8764202760c3717f67418",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 23,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 24,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "75a6935f283f7c79fe8e7ab24731af6de4760aead0a8764202760c3717f67418",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 25,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38IC",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": null,
+   "online_solve": null,
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 26,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 27,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OS",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "online_solve": "s3",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 28,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "6a76eec0a905f5ef389b7ee83a129df4dab1f2d8ac39aca733a6adfb21e07880",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 29,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OF",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 30,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "kM38OFaa",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "rank_relations_blake3": "6a76eec0a905f5ef389b7ee83a129df4dab1f2d8ac39aca733a6adfb21e07880",
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 31,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  },
+  {
+   "arm": "cM38OFaa",
+   "base": "M38",
+   "layout_digest": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "online_counters": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "online_solve": "frame",
+   "pinned_intermediates": [
+    "4687820950986499159467087",
+    "5554248818347491109704350"
+   ],
+   "probes": 1274704,
+   "rank_frame": null,
+   "rank_relations_blake3": null,
+   "recovered_scalar": 3521192861675275,
+   "relation": [
+    34770,
+    61477,
+    29815,
+    45186
+   ],
+   "relation_checks": 1,
+   "root_calls": 637440,
+   "serial": 32,
+   "status": "valid",
+   "unit": "s000",
+   "x_codes": [
+    "2050096565498448998332940",
+    "978566449571042705360522",
+    "3864898988047102995724566",
+    "2437445074346131281166528"
+   ]
+  }
+ ],
+ "schema": 1,
+ "summary": {
+  "all_rows_valid": true,
+  "crate_tests": "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 77.42s",
+  "one_identity_per_point_and_base": true,
+  "planted_candidates_compared": 1443868,
+  "planted_states_compared": 8698,
+  "planted_swapped_pairs": 637440,
+  "rows": 31,
+  "verifier_checks": {
+   "all_executed_rows_valid": true,
+   "binaries_unchanged": true,
+   "every_row_ran_its_arms_binary": true,
+   "host_cpu_identity_unchanged": true,
+   "one_index_and_layout_digest_set_per_base_equal_frozen": true,
+   "one_probe_count_per_point_and_base": true,
+   "one_relation_per_point_and_base": true,
+   "one_root_call_and_relation_check_count_per_point_and_base": true,
+   "one_scalar_per_point_ic_and_rho": true,
+   "oracle_replay": true,
+   "placement_pinned_every_process": true,
+   "pre_timing_tables_and_closure_bases_verified": true,
+   "primary_probe_law_inside_frozen_band": true,
+   "q0_matches_archived_and_frozen_identities": true,
+   "rank_relations_probes_root_calls_and_counters_identical_per_seed": true,
+   "rank_tables_equal_frozen_verified_tables": true,
+   "receipt_matches_schedule": true,
+   "rows_in_schedule_order": true,
+   "runner_identity_matches_frozen_files": true
+  }
+ }
+}
