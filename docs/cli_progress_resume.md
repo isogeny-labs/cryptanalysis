@@ -148,7 +148,26 @@ local lock and S3 sync and restore rules described above apply.
 
 ## Index calculus
 
-The linear-sieve `ic` command also accepts `--verbose`, `--progress-every`,
-`--state-dir`, `--resume`, `--s3-uri`, and `--sync-every`. Its run state is a
-relation journal and precomputation artifact. Its random-exponent method does
-not support durable state. See the `ic` section of the CLI help for arguments.
+The `ic` command accepts `--verbose`, `--progress-every`, `--state-dir`,
+`--resume`, `--s3-uri`, and `--sync-every` for both relation collectors. The
+linear sieve saves completed sieve units in a journal. The random-exponent
+method saves committed relations, cumulative smoothness tests, and its
+effective random seed in an atomic snapshot at each `--progress-every`
+interval. A resumed run starts new worker streams against those saved
+relations. Both methods save verified factor-base logarithms in
+`relations.ckpt.precomp` after linear algebra; that artifact lets a later run
+skip relation collection and factor-base work.
+
+```sh
+cryptanalysis ic --p 1000003 --g 2 --h 123456 --method rexp --seed 7 \
+  --threads 2 --verbose --progress-every 5 \
+  --state-dir ./runs/ic-rexp-001 \
+  --s3-uri s3://my-bucket/cryptanalysis/ic-rexp-001 --sync-every 60
+```
+
+Repeat the input and collector settings with `--resume`. For rexp,
+`--max-relation-tries K` can bound a run; raise or omit it on resume to keep
+collecting. `progress.json` reports the phase, relation count, test count, and
+elapsed collection time. A stopped process can lose the work done since the
+last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
+apply. See the `ic` section of the CLI help for the remaining arguments.

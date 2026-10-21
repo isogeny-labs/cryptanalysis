@@ -210,6 +210,7 @@ static _Noreturn void usage(void)
         "  ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C] [--threads T] "
         "[--verbose]\n"
         "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
+        "        [--max-relation-tries K]  (rexp only)\n"
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve state)\n"
         "        index calculus in the multiplicative group of a prime field\n"
         "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
@@ -1390,6 +1391,9 @@ static int cmd_ic(void)
     pr.sieve_radius = opt_u32("--C", 0);
     pr.threads = opt_u32("--threads", 1);
     pr.seed = opt_u64("--seed", 0);
+    pr.max_relation_tries = opt_u64("--max-relation-tries", 0);
+    if (opt("--max-relation-tries") && pr.method != CA_IC_RANDOM_EXPONENT)
+        die("--max-relation-tries requires --method rexp");
     pr.verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
     uint32_t progress_interval = opt_u32("--progress-every", 5);
     if (progress_interval == 0) die("--progress-every must be positive");
@@ -1397,8 +1401,6 @@ static int cmd_ic(void)
     int resume = flag("--resume");
     if ((resume || s3_uri || opt("--sync-every")) && !state_dir)
         die("--resume, --s3-uri and --sync-every require --state-dir");
-    if (state_dir && pr.method != CA_IC_LINEAR_SIEVE)
-        die("durable --state-dir currently requires --method lsieve");
     if (s3_uri) {
         if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
         const char *sep = strchr(s3_uri + 5, '/');
