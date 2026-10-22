@@ -601,10 +601,14 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     /* The folded search space has size n/m, so all budgets scale with
      * sqrt(n/m).  Keep the r-multiplier table and the W walk start-ups (each
      * about 3 log2(n) operations) to a small fraction of it, exactly as rho
-     * does, so that the setup never dominates on small groups. */
+     * does, so that the setup never dominates on small groups.  The table
+     * grows sooner than the walk budget: a small table makes walks fall into
+     * fruitless cycles and retry the look-ahead far more often, which costs
+     * more than the extra table entries from about 28 bits up
+     * (experiments/glv-table-rule-20261022). */
     uint64_t sqrt_nm = ca_isqrt(n / c.m) + 1;
     int lg = glv_ilog2(n) + 1;
-    uint64_t rbudget = sqrt_nm / (48u * (uint64_t)lg);
+    uint64_t rbudget = sqrt_nm / (12u * (uint64_t)lg);
     uint32_t rr = 8;
     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
     c.r = rr;
