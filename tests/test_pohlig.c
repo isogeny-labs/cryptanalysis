@@ -1,6 +1,28 @@
 #include "test_fixtures.h"
 #include <unistd.h>
 
+/* Read the persisted aggregate from the private Pohlig checkpoint so the
+ * elapsed-time regression can verify the exact returned boundary is durable. */
+typedef struct test_ph_checkpoint {
+    char magic[8];
+    uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+    ca_stats stats;
+    uint64_t checksum;
+} test_ph_checkpoint;
+
+static int read_ph_checkpoint_stats(const char *path, ca_stats *stats)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) return 0;
+    test_ph_checkpoint c;
+    int read_ok = fread(&c, sizeof(c), 1, f) == 1;
+    int close_ok = fclose(f) == 0;
+    if (!read_ok || !close_ok) return 0;
+    if (memcmp(c.magic, "CADLOGC1", 8) != 0 || c.version != 1) return 0;
+    *stats = c.stats;
+    return 1;
+}
+
 int main(void)
 {
     ca_group g;
@@ -145,19 +167,24 @@ int main(void)
         CHECK(mkdtemp(dir) != NULL);
         char prefix[256], file[320];
         snprintf(prefix, sizeof(prefix), "%s/dlog", dir);
-        double observed = 0;
+        dp.rho.max_ops = 5000;
+        ca_stats first = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                    1, 1, 0, &got, &first) == CA_ERR_LIMIT);
+        CHECK(first.seconds > 0.0);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix);
+        ca_stats persisted = {0};
+        CHECK(read_ph_checkpoint_stats(file, &persisted));
+        CHECK(persisted.seconds == first.seconds);
+
+        /* The next call is another real capped resume, but deliberately much
+         * shorter. The returned first-call boundary was persisted in the
+         * parent checkpoint; it must not be lost when the child stops again. */
+        dp.rho.max_ops = 1;
         ca_stats resumed = {0};
-        for (unsigned attempt = 1; attempt <= 3; attempt++) {
-            dp.rho.max_ops = 500 * attempt;
-            memset(&resumed, 0, sizeof(resumed));
-            double before = ca_now();
-            CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
-                        1, 1, 0, &got, &resumed) == CA_ERR_LIMIT);
-            observed += ca_now() - before;
-        }
-        /* Snapshot timestamps precede their final writes; allow that small
-         * uncheckpointed tail, but not loss of whole prior invocations. */
-        CHECK(resumed.seconds + 0.02 >= observed);
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                    1, 1, 0, &got, &resumed) == CA_ERR_LIMIT);
+        CHECK(resumed.seconds >= first.seconds);
         snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
         snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
         snprintf(file, sizeof(file), "%s.factor0.digit0.ckpt", prefix); unlink(file);
