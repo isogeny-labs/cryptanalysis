@@ -60,6 +60,7 @@
 //! field sieve*, M.Sc. thesis, Virginia Tech (1998); R. Crandall and
 //! C. Pomerance, *Prime Numbers: A Computational Perspective*, §6.2.
 
+mod checkpoint;
 pub mod gnfs;
 pub mod linalg;
 pub mod poly;
@@ -75,6 +76,7 @@ use num_traits::{One, ToPrimitive, Zero};
 use rayon::prelude::*;
 use serde::Serialize;
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::time::Instant;
 
 use super::arith::{bigint_mod, decimal_digits, is_prime_u64, jacobi_u64, secs};
@@ -83,6 +85,33 @@ use linalg::{filtered_excess, find_dependencies, parity_vector, singleton_surviv
 use poly::{fp, IntPoly};
 use sieve::{sieve_segment, FactorBases, Relation, SieveConfig};
 use sqrt::SqrtStats;
+
+fn save_sieve_checkpoint(
+    path: &std::path::Path,
+    fingerprint: &str,
+    b: u64,
+    seg_lo: i64,
+    report: &NfsReport,
+    next_check: usize,
+    complete: bool,
+    relations: &[Relation],
+) -> Result<(), String> {
+    checkpoint::save(
+        path,
+        &checkpoint::Snapshot {
+            fingerprint,
+            next_b: b,
+            next_seg_lo: seg_lo,
+            lines_sieved: report.lines_sieved,
+            cells_sieved: report.cells_sieved,
+            candidates: report.candidates,
+            sieve_seconds: report.sieve_seconds,
+            next_check,
+            sieve_complete: complete,
+            relations,
+        },
+    )
+}
 
 /// Sieve and linear-algebra parameters shared by GNFS and SNFS.  `None`
 /// fields are chosen from the (effective) size of the input.
@@ -108,6 +137,15 @@ pub struct NfsParams {
     pub max_dependencies: usize,
     /// Worker threads (1 = sequential).
     pub threads: usize,
+    /// Atomic relation-sieve checkpoint. The caller owns directory locking.
+    #[serde(skip_serializing)]
+    pub checkpoint_path: Option<PathBuf>,
+    /// Require and load a matching checkpoint before sieving.
+    #[serde(skip_serializing)]
+    pub resume: bool,
+    /// Seconds between checkpoint writes; zero saves after every sieve batch.
+    #[serde(skip_serializing)]
+    pub checkpoint_every_secs: u64,
 }
 
 impl Default for NfsParams {
@@ -123,6 +161,9 @@ impl Default for NfsParams {
             surplus: 32,
             max_dependencies: 32,
             threads: 1,
+            checkpoint_path: None,
+            resume: false,
+            checkpoint_every_secs: 60,
         }
     }
 }
@@ -461,8 +502,65 @@ pub(crate) fn run_core(
     let batch = params.threads.max(1) * 4;
     let extra_cols = chars.len() + 2 + params.surplus;
     let mut next_check = (fb.rat.len() + fb.alg.len()) * 3 / 4;
+    // Delimit each identity component via JSON before hashing. Thread count,
+    // max_b, and checkpoint cadence are intentionally mutable on resume.
+    let identity = serde_json::json!({
+        "schema": 1,
+        "method": report.method,
+        "n": n.to_string(),
+        "coefficients": f.coeffs.iter().map(ToString::to_string).collect::<Vec<_>>(),
+        "m": m.to_string(),
+        "rational_bound": rb,
+        "algebraic_bound": ab,
+        "sieve_half_width": a_half,
+        "large_prime_multiplier": lp_mult,
+        "threshold_slack_bits": params.threshold_slack_bits.to_bits(),
+        "quadratic_characters": params.quadratic_characters,
+        "surplus": params.surplus,
+        "max_dependencies": params.max_dependencies,
+    });
+    let fingerprint = blake3::hash(&serde_json::to_vec(&identity).expect("NFS identity is JSON"))
+        .to_hex()
+        .to_string();
+    let mut sieve_complete = false;
+    if params.resume {
+        let Some(path) = params.checkpoint_path.as_ref() else {
+            report.failure = Some("NFS resume needs a checkpoint path".into());
+            return;
+        };
+        let loaded = match checkpoint::load(path, &fingerprint) {
+            Ok(state) => state,
+            Err(error) => {
+                report.failure = Some(error);
+                return;
+            }
+        };
+        if loaded.next_b == 0
+            || loaded.next_seg_lo < -(a_half as i64)
+            || loaded.next_seg_lo >= a_half as i64
+            || !loaded.sieve_seconds.is_finite()
+            || loaded.next_check == 0
+        {
+            report.failure = Some("invalid NFS checkpoint cursor".into());
+            return;
+        }
+        b = loaded.next_b;
+        seg_lo = loaded.next_seg_lo;
+        report.lines_sieved = loaded.lines_sieved;
+        report.cells_sieved = loaded.cells_sieved;
+        report.candidates = loaded.candidates;
+        report.sieve_seconds = loaded.sieve_seconds;
+        next_check = loaded.next_check;
+        rels = loaded.relations;
+        sieve_complete = loaded.sieve_complete;
+        for r in &rels {
+            rows.push(parity_vector(prime_columns(r, &mut keys, false)));
+        }
+    }
+    let prior_sieve_seconds = report.sieve_seconds;
     let ts = Instant::now();
-    'sieve: loop {
+    let mut last_checkpoint = Instant::now();
+    'sieve: while !sieve_complete {
         let mut items = Vec::with_capacity(batch);
         while items.len() < batch {
             if b > max_b {
@@ -481,6 +579,21 @@ pub(crate) fn run_core(
                 "sieve exhausted at b = {max_b} with {} relations",
                 rels.len()
             ));
+            if let Some(path) = params.checkpoint_path.as_deref() {
+                report.sieve_seconds = prior_sieve_seconds + secs(ts);
+                if let Err(error) = save_sieve_checkpoint(
+                    path,
+                    &fingerprint,
+                    b,
+                    seg_lo,
+                    report,
+                    next_check,
+                    false,
+                    &rels,
+                ) {
+                    report.failure = Some(error);
+                }
+            }
             break;
         }
         let outs: Vec<_> = pool.install(|| {
@@ -495,6 +608,39 @@ pub(crate) fn run_core(
             report.candidates += o.candidates;
             rels.extend(o.relations);
         }
+        for r in &rels[rows.len()..] {
+            rows.push(parity_vector(prime_columns(r, &mut keys, false)));
+        }
+        if rels.len() >= next_check {
+            let (r, c) = filtered_excess(&rows);
+            if r >= c + extra_cols {
+                sieve_complete = true;
+            } else {
+                next_check = rels.len() + (rels.len() / 20).max(100);
+            }
+        }
+        report.sieve_seconds = prior_sieve_seconds + secs(ts);
+        if let Some(path) = params.checkpoint_path.as_deref() {
+            if sieve_complete
+                || params.checkpoint_every_secs == 0
+                || last_checkpoint.elapsed().as_secs() >= params.checkpoint_every_secs
+            {
+                if let Err(error) = save_sieve_checkpoint(
+                    path,
+                    &fingerprint,
+                    b,
+                    seg_lo,
+                    report,
+                    next_check,
+                    sieve_complete,
+                    &rels,
+                ) {
+                    report.failure = Some(error);
+                    break 'sieve;
+                }
+                last_checkpoint = Instant::now();
+            }
+        }
         if let Some(cb) = progress {
             cb(&Progress {
                 stage: "sieve",
@@ -503,18 +649,8 @@ pub(crate) fn run_core(
                 seconds: secs(t0),
             });
         }
-        for r in &rels[rows.len()..] {
-            rows.push(parity_vector(prime_columns(r, &mut keys, false)));
-        }
-        if rels.len() >= next_check {
-            let (r, c) = filtered_excess(&rows);
-            if r >= c + extra_cols {
-                break 'sieve;
-            }
-            next_check = rels.len() + (rels.len() / 20).max(100);
-        }
     }
-    report.sieve_seconds = secs(ts);
+    report.sieve_seconds = prior_sieve_seconds + secs(ts);
     report.full_relations = rels.iter().filter(|r| r.large_primes(rb, ab) == 0).count();
     report.partial_relations = rels.len() - report.full_relations;
     if report.failure.is_some() {

@@ -26,6 +26,7 @@
 use num_bigint::{BigInt, BigUint, Sign};
 use num_integer::Integer;
 use num_traits::{ToPrimitive, Zero};
+use serde::{Deserialize, Serialize};
 
 use super::super::arith::{big_mod_u64, gcd_i64, inv_mod, mul_mod, primes_up_to};
 use super::poly::{fp, IntPoly};
@@ -95,7 +96,7 @@ impl FactorBases {
 }
 
 /// A relation `(a, b)` with both norms factored.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Relation {
     /// `a`.
     pub a: i64,

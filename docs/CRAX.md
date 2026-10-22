@@ -68,10 +68,39 @@ command runs and remain in the final `diagnostics_text` field. The native
 
 `crax icx run ... --verbose --json` prints stage progress to stderr and one
 final JSON document to stdout. `crax gnfs`, `snfs`, and `qs` also support
-`--verbose` stage reports. These Rust commands do not yet share the native C
-CLI's `--state-dir`, `--resume`, and `--s3-uri` checkpoint contract; passing
-their output through `crax` does not create a computation checkpoint. The
-underlying sibling commands retain their own artifact and recovery options.
+`--verbose` stage reports. GNFS and SNFS save relation-sieve checkpoints with
+`--state-dir`, continue with `--resume`, and mirror the run directory with
+`--s3-uri`. SIQS and the other Rust attack engines do not yet share that
+checkpoint contract. The underlying sibling commands retain their own
+artifact and recovery options.
+
+For example, a capped GNFS run can be continued from local or S3 state:
+
+```sh
+crax gnfs '1000000016000000063' --verbose --progress-every 5 --max-b 1 \
+  --state-dir ./runs/gnfs-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/gnfs-001 --sync-every 60
+crax gnfs '1000000016000000063' --verbose --max-b 5 \
+  --state-dir ./runs/gnfs-001 --resume \
+  --s3-uri s3://my-bucket/cryptanalysis/gnfs-001
+```
+
+The first command exits with an incomplete result at the requested sieve cap
+and leaves its checkpoint for the second command.
+
+The same options apply to `snfs`; repeat its polynomial or form arguments on
+resume. The checkpoint records completed sieve batches and relations with a
+checksum and input binding. A run interrupted during one batch repeats that
+batch. Resume can raise `--max-b` or change `--threads`; changes to the sieve
+parameters or polynomial are rejected. The matrix and square-root stages run
+again after interruption. `manifest.json`, `nfs.ckpt`, `progress.json`, and
+`result.json` are kept in the state directory. An S3-only restore uses a fresh
+local directory and the same prefix. Use a distinct directory and prefix for
+each run; the local directory is locked against another writer. With
+`--verbose`, a heartbeat reports the active stage every five seconds by
+default; `--progress-every` changes that interval. S3 syncs use completed
+checkpoints and publish `result.json` last. A successful managed command
+requires the final S3 upload to succeed.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:
