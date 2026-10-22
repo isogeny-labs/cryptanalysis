@@ -27,7 +27,8 @@
 use num_bigint::BigUint;
 use num_integer::Integer;
 use num_traits::{One, Zero};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use std::time::Instant;
 
 use super::arith::{decimal_digits, is_probable_prime, perfect_power, primes_up_to, secs};
@@ -37,10 +38,10 @@ use super::pm1::{pm1, pp1, Pm1Params, Pp1Params};
 use super::qs::{qs, QsParams};
 use super::rho_factor::{rho, RhoParams};
 use super::{serde_big, ProgressFn};
-use crate::cryptanalysis::ecm::ecm_factor_progressive;
+use crate::cryptanalysis::ecm::{ecm_factor_progressive, ecm_one_curve, EcmResult};
 
 /// The method that isolated a factor.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Method {
     /// The input (or a cofactor) was prime already.
@@ -134,7 +135,7 @@ impl Default for FactorOptions {
 }
 
 /// One prime power of the factorisation.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PrimeFactor {
     /// The prime.
     #[serde(with = "serde_big::biguint")]
@@ -148,7 +149,7 @@ pub struct PrimeFactor {
 }
 
 /// One attempted split.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Step {
     /// Method tried.
     pub method: Method,
@@ -165,7 +166,7 @@ pub struct Step {
 }
 
 /// Outcome of [`factor`].
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FactorReport {
     /// The input.
     #[serde(with = "serde_big::biguint")]
@@ -182,6 +183,36 @@ pub struct FactorReport {
     pub steps: Vec<Step>,
     /// Wall-clock seconds.
     pub total_seconds: f64,
+}
+
+/// Restart state for the automatic factoring ladder. The caller binds it to
+/// its input/options manifest and stores it with a checksum.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FactorState {
+    pub schema_version: u32,
+    pub generation: u64,
+    pub report: FactorReport,
+    pub pending: Vec<PendingPiece>,
+    pub active: Option<ActivePiece>,
+    pub seed: u64,
+    pub elapsed_seconds: f64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PendingPiece {
+    #[serde(with = "serde_big::biguint")]
+    pub n: BigUint,
+    pub multiplicity: u32,
+    pub method: Method,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ActivePiece {
+    pub piece: PendingPiece,
+    pub next_method: usize,
+    pub attempt_seed: Option<u64>,
+    pub attempt_method: Option<Method>,
+    pub ecm_next_curve: u64,
 }
 
 /// Fully factor `n`.
@@ -204,13 +235,20 @@ fn record(factors: &mut Vec<PrimeFactor>, p: BigUint, e: u32, method: Method) {
 }
 
 /// Try one method on `m`; returns a verified proper divisor.
+fn checkpoint_failure(message: &str) -> bool {
+    message.contains("checkpoint")
+        || message.contains(".ckpt")
+        || message.contains("polynomial choices")
+}
+
 fn try_method(
     method: Method,
     m: &BigUint,
     options: &FactorOptions,
     seed: u64,
     progress: ProgressFn,
-) -> Option<BigUint> {
+    checkpoint_path: Option<PathBuf>,
+) -> Result<Option<BigUint>, String> {
     let g = match method {
         Method::Rho => rho(m, &options.rho).factor,
         Method::PMinus1 => pm1(m, &options.pm1).factor,
@@ -222,16 +260,48 @@ fn try_method(
             seed,
         )
         .map(|(g, _)| g),
-        Method::Qs => qs(m, &options.qs, progress).factor,
-        Method::Gnfs => gnfs(m, &options.gnfs, progress).factor,
-        Method::Snfs => options
-            .snfs_form
-            .as_ref()
-            .and_then(|form| snfs(m, form, &options.snfs, progress).factor),
+        Method::Qs => {
+            let mut params = options.qs.clone();
+            params.resume = checkpoint_path.as_ref().is_some_and(|path| path.is_file());
+            params.checkpoint_path = checkpoint_path;
+            let result = qs(m, &params, progress);
+            if let Some(error) = result.failure.as_deref().filter(|e| checkpoint_failure(e)) {
+                return Err(format!("SIQS: {error}"));
+            }
+            result.factor
+        }
+        Method::Gnfs => {
+            let mut params = options.gnfs.clone();
+            params.nfs.resume = checkpoint_path.as_ref().is_some_and(|path| path.is_file());
+            params.nfs.checkpoint_path = checkpoint_path;
+            let result = gnfs(m, &params, progress);
+            if let Some(error) = result.failure.as_deref().filter(|e| checkpoint_failure(e)) {
+                return Err(format!("GNFS: {error}"));
+            }
+            result.factor
+        }
+        Method::Snfs => {
+            let mut params = options.snfs.clone();
+            params.nfs.resume = checkpoint_path.as_ref().is_some_and(|path| path.is_file());
+            params.nfs.checkpoint_path = checkpoint_path;
+            let result = options
+                .snfs_form
+                .as_ref()
+                .map(|form| snfs(m, form, &params, progress));
+            if let Some(result) = result {
+                if let Some(error) = result.failure.as_deref().filter(|e| checkpoint_failure(e)) {
+                    return Err(format!("SNFS: {error}"));
+                }
+                result.factor
+            } else {
+                None
+            }
+        }
         _ => None,
-    }?;
+    };
+    let Some(g) = g else { return Ok(None) };
     let (q, r) = m.div_rem(&g);
-    (r.is_zero() && !g.is_one() && &g != m && &g * &q == *m).then_some(g)
+    Ok((r.is_zero() && !g.is_one() && &g != m && &g * &q == *m).then_some(g))
 }
 
 /// Does the special form (if any) apply to the piece `m`?
@@ -256,75 +326,152 @@ pub fn factor_with_progress(
     options: &FactorOptions,
     progress: ProgressFn,
 ) -> FactorReport {
+    factor_with_state(n, options, progress, None, None, None)
+        .expect("factoring without state cannot fail at a state boundary")
+}
+
+/// Continue the full ladder from a validated checkpoint. `save` runs at
+/// completed cofactor/method boundaries; the sieve methods also use their own
+/// batch checkpoints in `checkpoint_dir`.
+pub fn factor_with_state(
+    n: &BigUint,
+    options: &FactorOptions,
+    progress: ProgressFn,
+    initial: Option<FactorState>,
+    checkpoint_dir: Option<&std::path::Path>,
+    save: Option<&dyn Fn(&FactorState) -> Result<(), String>>,
+) -> Result<FactorReport, String> {
     let t0 = Instant::now();
-    let mut report = FactorReport {
-        n: n.clone(),
-        factors: Vec::new(),
-        unfactored: Vec::new(),
-        complete: false,
-        verified: false,
-        steps: Vec::new(),
-        total_seconds: 0.0,
-    };
     if n.is_zero() {
+        let mut report = FactorReport {
+            n: n.clone(),
+            factors: Vec::new(),
+            unfactored: Vec::new(),
+            complete: false,
+            verified: false,
+            steps: Vec::new(),
+            total_seconds: 0.0,
+        };
         report.unfactored.push(("0".into(), 1));
-        return report;
+        return Ok(report);
     }
-    // 1. Trial division.
-    let mut rest = n.clone();
-    let t = Instant::now();
-    for p in primes_up_to(options.trial_bound.max(2)) {
-        let pb = BigUint::from(p);
-        if &pb * &pb > rest {
-            break;
-        }
-        let mut e = 0;
-        loop {
-            let (q, r) = rest.div_rem(&pb);
-            if !r.is_zero() {
+    let mut state = if let Some(state) = initial {
+        state
+    } else {
+        let mut report = FactorReport {
+            n: n.clone(),
+            factors: Vec::new(),
+            unfactored: Vec::new(),
+            complete: false,
+            verified: false,
+            steps: Vec::new(),
+            total_seconds: 0.0,
+        };
+        let mut rest = n.clone();
+        let t = Instant::now();
+        for p in primes_up_to(options.trial_bound.max(2)) {
+            let pb = BigUint::from(p);
+            if &pb * &pb > rest {
                 break;
             }
-            rest = q;
-            e += 1;
+            let mut e = 0;
+            loop {
+                let (q, r) = rest.div_rem(&pb);
+                if !r.is_zero() {
+                    break;
+                }
+                rest = q;
+                e += 1;
+            }
+            if e > 0 {
+                record(&mut report.factors, pb.clone(), e, Method::TrialDivision);
+                report.steps.push(Step {
+                    method: Method::TrialDivision,
+                    digits: decimal_digits(n),
+                    input: n.clone(),
+                    found: Some(pb),
+                    seconds: secs(t),
+                });
+            }
         }
-        if e > 0 {
-            record(&mut report.factors, pb.clone(), e, Method::TrialDivision);
-            report.steps.push(Step {
-                method: Method::TrialDivision,
-                digits: decimal_digits(n),
-                input: n.clone(),
-                found: Some(pb),
-                seconds: secs(t),
+        let mut pending = Vec::new();
+        if !rest.is_one() {
+            let first = if report.factors.is_empty() {
+                Method::Primality
+            } else {
+                Method::TrialDivision
+            };
+            pending.push(PendingPiece {
+                n: rest,
+                multiplicity: 1,
+                method: first,
             });
         }
-    }
-    let mut work: Vec<(BigUint, u32, Method)> = Vec::new();
-    if !rest.is_one() {
-        let first = if report.factors.is_empty() {
-            Method::Primality
-        } else {
-            Method::TrialDivision
-        };
-        work.push((rest, 1, first));
-    }
-    let mut seed = options.seed;
-    while let Some((m, mult, how)) = work.pop() {
+        FactorState {
+            schema_version: 1,
+            generation: 0,
+            report,
+            pending,
+            active: None,
+            seed: options.seed,
+            elapsed_seconds: 0.0,
+        }
+    };
+    let previous_elapsed = state.elapsed_seconds;
+    let persist = |state: &mut FactorState| -> Result<(), String> {
+        state.generation = state
+            .generation
+            .checked_add(1)
+            .ok_or("factor checkpoint generation overflow")?;
+        state.elapsed_seconds = previous_elapsed + secs(t0);
+        state.report.total_seconds = state.elapsed_seconds;
+        if let Some(callback) = save {
+            callback(state)?;
+        }
+        Ok(())
+    };
+    persist(&mut state)?;
+    while state.active.is_some() || !state.pending.is_empty() {
+        if state.active.is_none() {
+            state.active = state.pending.pop().map(|piece| ActivePiece {
+                piece,
+                next_method: 0,
+                attempt_seed: None,
+                attempt_method: None,
+                ecm_next_curve: 0,
+            });
+            persist(&mut state)?;
+        }
+        let active = state.active.as_ref().expect("active piece");
+        let m = active.piece.n.clone();
+        let mult = active.piece.multiplicity;
+        let how = active.piece.method;
         if m.is_one() {
+            state.active = None;
+            persist(&mut state)?;
             continue;
         }
         if is_probable_prime(&m) {
-            record(&mut report.factors, m, mult, how);
+            record(&mut state.report.factors, m, mult, how);
+            state.active = None;
+            persist(&mut state)?;
             continue;
         }
         if let Some((r, k)) = perfect_power(&m) {
-            report.steps.push(Step {
+            state.report.steps.push(Step {
                 method: Method::PerfectPower,
                 digits: decimal_digits(&m),
                 input: m.clone(),
                 found: Some(r.clone()),
                 seconds: 0.0,
             });
-            work.push((r, mult * k, Method::PerfectPower));
+            state.pending.push(PendingPiece {
+                n: r,
+                multiplicity: mult * k,
+                method: Method::PerfectPower,
+            });
+            state.active = None;
+            persist(&mut state)?;
             continue;
         }
         let digits = decimal_digits(&m);
@@ -352,12 +499,70 @@ pub fn factor_with_progress(
         } else {
             ladder.push(Method::Gnfs);
         }
-        let mut split = None;
-        for method in ladder {
+        while state.active.as_ref().expect("active piece").next_method < ladder.len() {
+            let index = state.active.as_ref().expect("active piece").next_method;
+            let method = ladder[index];
             let t = Instant::now();
-            seed = seed.wrapping_add(1000);
-            let g = try_method(method, &m, options, seed, progress);
-            report.steps.push(Step {
+            let seed = if let Some(seed) = state.active.as_ref().expect("active piece").attempt_seed
+            {
+                seed
+            } else {
+                state.seed = state.seed.wrapping_add(1000);
+                let seed = state.seed;
+                let active = state.active.as_mut().expect("active piece");
+                active.attempt_seed = Some(seed);
+                active.attempt_method = Some(method);
+                persist(&mut state)?;
+                seed
+            };
+            let checkpoint_path = checkpoint_dir.and_then(|dir| match method {
+                Method::Qs | Method::Gnfs | Method::Snfs => {
+                    let key = blake3::hash(format!("{m}:{method:?}:{seed}").as_bytes());
+                    Some(dir.join(format!(
+                        "factor-{}-{}.ckpt",
+                        format!("{method:?}").to_lowercase(),
+                        &key.to_hex()[..16]
+                    )))
+                }
+                _ => None,
+            });
+            let g = if method == Method::Ecm {
+                let per_level = options.ecm_curves_per_level;
+                let target = (options.ecm_b1_levels.len() as u64)
+                    .checked_mul(per_level)
+                    .ok_or("ECM curve budget overflows u64")?;
+                let mut found = None;
+                while state.active.as_ref().expect("active piece").ecm_next_curve < target {
+                    let index = state.active.as_ref().expect("active piece").ecm_next_curve;
+                    let b1 = options.ecm_b1_levels[(index / per_level) as usize];
+                    let curve_seed = seed.wrapping_add(index);
+                    if let EcmResult::Found(candidate) = ecm_one_curve(&m, b1, curve_seed) {
+                        let (q, rem) = m.div_rem(&candidate);
+                        if rem.is_zero()
+                            && !candidate.is_one()
+                            && candidate != m
+                            && &candidate * &q == m
+                        {
+                            found = Some(candidate);
+                            break;
+                        }
+                    }
+                    state.active.as_mut().expect("active piece").ecm_next_curve += 1;
+                    persist(&mut state)?;
+                    if let Some(callback) = progress {
+                        callback(&super::Progress {
+                            stage: "ecm",
+                            done: index + 1,
+                            target,
+                            seconds: previous_elapsed + secs(t0),
+                        });
+                    }
+                }
+                found
+            } else {
+                try_method(method, &m, options, seed, progress, checkpoint_path)?
+            };
+            state.report.steps.push(Step {
                 method,
                 digits,
                 input: m.clone(),
@@ -365,37 +570,58 @@ pub fn factor_with_progress(
                 seconds: secs(t),
             });
             if let Some(g) = g {
-                split = Some((g, method));
+                let q = &m / &g;
+                state.pending.push(PendingPiece {
+                    n: g,
+                    multiplicity: mult,
+                    method,
+                });
+                state.pending.push(PendingPiece {
+                    n: q,
+                    multiplicity: mult,
+                    method,
+                });
+                state.active = None;
+                persist(&mut state)?;
                 break;
             }
+            let active = state.active.as_mut().expect("active piece");
+            active.next_method += 1;
+            active.attempt_seed = None;
+            active.attempt_method = None;
+            active.ecm_next_curve = 0;
+            persist(&mut state)?;
         }
-        match split {
-            Some((g, method)) => {
-                let q = &m / &g;
-                work.push((g, mult, method));
-                work.push((q, mult, method));
-            }
-            None => report.unfactored.push((m.to_str_radix(10), mult)),
+        if state.active.is_some() {
+            state.report.unfactored.push((m.to_str_radix(10), mult));
+            state.active = None;
+            persist(&mut state)?;
         }
     }
-    report.factors.sort_by(|a, b| a.prime.cmp(&b.prime));
-    report.complete = report.unfactored.is_empty();
+    state.report.factors.sort_by(|a, b| a.prime.cmp(&b.prime));
+    state.report.complete = state.report.unfactored.is_empty();
     let mut prod = BigUint::one();
-    for f in &report.factors {
+    for f in &state.report.factors {
         prod *= num_traits::pow(f.prime.clone(), f.exponent as usize);
     }
-    for (u, e) in &report.unfactored {
+    for (u, e) in &state.report.unfactored {
         let u: BigUint = u.parse().unwrap_or_default();
         prod *= num_traits::pow(u, *e as usize);
     }
-    report.verified = &prod == n && report.factors.iter().all(|f| is_probable_prime(&f.prime));
-    report.total_seconds = secs(t0);
-    report
+    state.report.verified = &prod == n
+        && state
+            .report
+            .factors
+            .iter()
+            .all(|f| is_probable_prime(&f.prime));
+    persist(&mut state)?;
+    Ok(state.report)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::cell::RefCell;
 
     fn check(n: &BigUint, want: &[(&str, u32)]) -> FactorReport {
         let r = factor(n, &FactorOptions::default());
@@ -416,6 +642,155 @@ mod tests {
         check(&BigUint::from(2u32), &[("2", 1)]);
         check(&BigUint::from(360u32), &[("2", 3), ("3", 2), ("5", 1)]);
         check(&BigUint::from(1_000_003u32), &[("1000003", 1)]);
+    }
+
+    #[test]
+    fn ladder_resume_keeps_completed_method_attempts() {
+        let n = BigUint::from(1_000_003u64) * BigUint::from(1_000_033u64);
+        let options = FactorOptions::default();
+        let expected = factor(&n, &options);
+        let saved = RefCell::new(None);
+        let stop_after_split = |state: &FactorState| -> Result<(), String> {
+            *saved.borrow_mut() = Some(state.clone());
+            if !state.report.steps.is_empty() && !state.pending.is_empty() {
+                return Err("interrupt after completed method".into());
+            }
+            Ok(())
+        };
+        assert_eq!(
+            factor_with_state(&n, &options, None, None, None, Some(&stop_after_split)).unwrap_err(),
+            "interrupt after completed method"
+        );
+        let resumed =
+            factor_with_state(&n, &options, None, saved.into_inner(), None, None).unwrap();
+        assert_eq!(
+            serde_json::to_value(&resumed.factors).unwrap(),
+            serde_json::to_value(&expected.factors).unwrap()
+        );
+        assert_eq!(resumed.steps.len(), expected.steps.len());
+        assert!(resumed.complete && resumed.verified);
+    }
+
+    #[test]
+    fn ladder_resume_continues_after_completed_ecm_curves() {
+        let n = BigUint::from(1_000_000_007u64) * BigUint::from(1_000_000_009u64);
+        let mut options = FactorOptions::default();
+        options.trial_bound = 2;
+        options.rho.max_iterations = 1;
+        options.rho.attempts = 1;
+        options.pm1.b1 = 0;
+        options.ecm_min_digits = 0;
+        options.ecm_b1_levels = vec![2];
+        options.ecm_curves_per_level = 4;
+        let expected = factor(&n, &options);
+        let saved = RefCell::new(None);
+        let interrupt = |state: &FactorState| -> Result<(), String> {
+            if state.active.as_ref().is_some_and(|active| {
+                active.attempt_method == Some(Method::Ecm) && active.ecm_next_curve == 2
+            }) {
+                *saved.borrow_mut() = Some(state.clone());
+                return Err("interrupt after ECM curve 2".into());
+            }
+            Ok(())
+        };
+        assert_eq!(
+            factor_with_state(&n, &options, None, None, None, Some(&interrupt)).unwrap_err(),
+            "interrupt after ECM curve 2"
+        );
+        let state = saved.into_inner().unwrap();
+        assert_eq!(state.active.as_ref().unwrap().ecm_next_curve, 2);
+        let resumed = factor_with_state(&n, &options, None, Some(state), None, None).unwrap();
+        assert_eq!(
+            serde_json::to_value(&resumed.factors).unwrap(),
+            serde_json::to_value(&expected.factors).unwrap()
+        );
+        assert_eq!(resumed.steps.len(), expected.steps.len());
+        assert!(resumed.complete && resumed.verified);
+    }
+
+    #[test]
+    fn ladder_rejects_damaged_inner_sieve_checkpoint() {
+        let n = BigUint::from(1_000_003u64) * BigUint::from(1_000_033u64);
+        let mut options = FactorOptions::default();
+        options.trial_bound = 2;
+        options.rho.max_iterations = 1;
+        options.rho.attempts = 1;
+        options.pm1.b1 = 0;
+        options.ecm_curves_per_level = 0;
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir =
+            std::env::temp_dir().join(format!("crax-factor-sieve-{}-{unique}", std::process::id()));
+        std::fs::create_dir(&dir).unwrap();
+        let key = blake3::hash(format!("{n}:Qs:2001").as_bytes());
+        let path = dir.join(format!("factor-qs-{}.ckpt", &key.to_hex()[..16]));
+        std::fs::write(&path, b"broken checkpoint").unwrap();
+        let error = factor_with_state(&n, &options, None, None, Some(&dir), None).unwrap_err();
+        assert!(error.contains("checkpoint"), "{error}");
+        std::fs::remove_file(path).unwrap();
+        std::fs::remove_dir(dir).unwrap();
+    }
+
+    #[test]
+    fn ladder_resumes_from_saved_inner_siqs_batch() {
+        let n = BigUint::from(1_000_003u64) * BigUint::from(1_000_033u64);
+        let mut options = FactorOptions::default();
+        options.trial_bound = 2;
+        options.rho.max_iterations = 1;
+        options.rho.attempts = 1;
+        options.pm1.b1 = 0;
+        options.ecm_curves_per_level = 0;
+        options.qs.checkpoint_every_secs = 0;
+        let expected = factor(&n, &options);
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir =
+            std::env::temp_dir().join(format!("crax-factor-siqs-{}-{unique}", std::process::id()));
+        std::fs::create_dir(&dir).unwrap();
+        let saved = RefCell::new(None);
+        let save = |state: &FactorState| -> Result<(), String> {
+            *saved.borrow_mut() = Some(state.clone());
+            Ok(())
+        };
+        let interrupt = |progress: &super::super::Progress| {
+            if progress.stage == "sieve" {
+                panic!("interrupt after SIQS batch");
+            }
+        };
+        let stopped = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            factor_with_state(
+                &n,
+                &options,
+                Some(&interrupt),
+                None,
+                Some(&dir),
+                Some(&save),
+            )
+        }));
+        assert!(stopped.is_err());
+        let state = saved.into_inner().unwrap();
+        assert_eq!(
+            state.active.as_ref().unwrap().attempt_method,
+            Some(Method::Qs)
+        );
+        let checkpoint = std::fs::read_dir(&dir)
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .find(|path| path.extension().is_some_and(|ext| ext == "ckpt"))
+            .unwrap();
+        let resumed = factor_with_state(&n, &options, None, Some(state), Some(&dir), None).unwrap();
+        assert_eq!(
+            serde_json::to_value(&resumed.factors).unwrap(),
+            serde_json::to_value(&expected.factors).unwrap()
+        );
+        assert_eq!(resumed.steps.len(), expected.steps.len());
+        assert!(resumed.complete && resumed.verified);
+        std::fs::remove_file(checkpoint).unwrap();
+        std::fs::remove_dir(dir).unwrap();
     }
 
     #[test]

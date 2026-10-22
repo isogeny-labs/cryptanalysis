@@ -345,6 +345,13 @@ $ crax pm1 <n> --b1 100000 --b2 10000000      # --pp1 for Williams p+1
 $ crax rho-factor <n>
 ```
 
+`crax factor` accepts `--verbose --progress-every SECONDS` for live ladder
+and sieve output. Add `--state-dir DIR --s3-uri s3://BUCKET/PREFIX` to save
+cofactor, ECM-curve, and sieve checkpoints; repeat the command with `--resume`
+to continue. `--checkpoint-every` controls inner sieve batch writes and
+`--sync-every` controls S3 uploads. The [restart guide](cli_progress_resume.md)
+describes the exact boundaries and artifacts.
+
 These sieves are **educational scale**. They have no lattice sieve, no double
 large primes, no Block Lanczos and no Kleinjung polynomial selection. At every
 size both can reach, the quadratic sieve here beats GNFS, so `factor` uses the

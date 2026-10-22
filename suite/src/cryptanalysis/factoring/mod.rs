@@ -69,22 +69,33 @@ pub mod serde_big {
     /// `BigUint` as a decimal string.
     pub mod biguint {
         use num_bigint::BigUint;
-        use serde::Serializer;
+        use serde::{de::Error, Deserialize, Deserializer, Serializer};
         /// Serialise.
         pub fn serialize<S: Serializer>(x: &BigUint, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_str(&x.to_str_radix(10))
+        }
+        /// Deserialize a decimal integer.
+        pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<BigUint, D::Error> {
+            let value = String::deserialize(d)?;
+            value.parse().map_err(D::Error::custom)
         }
     }
     /// `Option<BigUint>` as a decimal string or `null`.
     pub mod opt_biguint {
         use num_bigint::BigUint;
-        use serde::Serializer;
+        use serde::{de::Error, Deserialize, Deserializer, Serializer};
         /// Serialise.
         pub fn serialize<S: Serializer>(x: &Option<BigUint>, s: S) -> Result<S::Ok, S::Error> {
             match x {
                 Some(v) => s.serialize_str(&v.to_str_radix(10)),
                 None => s.serialize_none(),
             }
+        }
+        /// Deserialize a decimal integer or null.
+        pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Option<BigUint>, D::Error> {
+            Option::<String>::deserialize(d)?
+                .map(|value| value.parse().map_err(D::Error::custom))
+                .transpose()
         }
     }
     /// `Vec<BigUint>` as a list of decimal strings.

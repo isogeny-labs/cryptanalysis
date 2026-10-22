@@ -238,6 +238,27 @@ pub struct FactorArgs {
     pub threads: usize,
     #[arg(long, default_value_t = 1)]
     pub seed: u64,
+    /// Print factoring stage changes and periodic work counts on stderr.
+    #[arg(long)]
+    pub verbose: bool,
+    /// Seconds between heartbeat lines (implies --verbose).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Dedicated directory for the full ladder and inner sieve checkpoints.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Continue saved cofactors and methods, restoring from S3 if needed.
+    #[arg(long)]
+    pub resume: bool,
+    /// Seconds between inner sieve checkpoint writes (0 saves every batch).
+    #[arg(long)]
+    pub checkpoint_every: Option<u64>,
+    /// Mirror checkpoints and final artifacts to this S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 copies; final sync is always attempted.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub sync_every: Option<u64>,
 }
 
 fn factor_text(r: &FactorReport) -> String {
@@ -289,6 +310,117 @@ fn factor_text(r: &FactorReport) -> String {
     s
 }
 
+fn factor_stage(method: factoring::Method) -> &'static str {
+    match method {
+        factoring::Method::Primality => "primality",
+        factoring::Method::TrialDivision => "trial",
+        factoring::Method::PerfectPower => "power",
+        factoring::Method::Rho => "rho",
+        factoring::Method::PMinus1 => "p-1",
+        factoring::Method::PPlus1 => "p+1",
+        factoring::Method::Ecm => "ecm",
+        factoring::Method::Qs => "qs",
+        factoring::Method::Gnfs => "gnfs",
+        factoring::Method::Snfs => "snfs",
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+struct FactorCheckpointFile {
+    checksum: String,
+    fingerprint: String,
+    payload: String,
+}
+
+fn save_factor_checkpoint(
+    path: &Path,
+    fingerprint: &str,
+    state: &factoring::auto::FactorState,
+) -> Result<(), String> {
+    let payload =
+        serde_json::to_string(state).map_err(|e| format!("serializing factor state: {e}"))?;
+    write_json_atomic(
+        path,
+        &FactorCheckpointFile {
+            checksum: blake3::hash(payload.as_bytes()).to_hex().to_string(),
+            fingerprint: fingerprint.into(),
+            payload,
+        },
+    )
+}
+
+fn load_factor_checkpoint(
+    path: &Path,
+    fingerprint: &str,
+    n: &BigUint,
+) -> Result<factoring::auto::FactorState, String> {
+    let bytes = fs::read(path).map_err(|e| format!("reading factor checkpoint: {e}"))?;
+    decode_factor_checkpoint(&bytes, fingerprint, n)
+}
+
+fn decode_factor_checkpoint(
+    bytes: &[u8],
+    fingerprint: &str,
+    n: &BigUint,
+) -> Result<factoring::auto::FactorState, String> {
+    let saved: FactorCheckpointFile =
+        serde_json::from_slice(bytes).map_err(|e| format!("invalid factor checkpoint: {e}"))?;
+    if saved.checksum != blake3::hash(saved.payload.as_bytes()).to_hex().as_str() {
+        return Err("factor checkpoint checksum mismatch".into());
+    }
+    if saved.fingerprint != fingerprint {
+        return Err("factor checkpoint parameters differ".into());
+    }
+    let state: factoring::auto::FactorState = serde_json::from_str(&saved.payload)
+        .map_err(|e| format!("invalid factor checkpoint payload: {e}"))?;
+    if state.schema_version != 1
+        || state.generation == 0
+        || &state.report.n != n
+        || !state.elapsed_seconds.is_finite()
+        || state.elapsed_seconds < 0.0
+        || !state.report.total_seconds.is_finite()
+        || state.report.total_seconds < 0.0
+        || state
+            .active
+            .as_ref()
+            .is_some_and(|active| active.attempt_seed.is_some() != active.attempt_method.is_some())
+    {
+        return Err("invalid factor checkpoint identity or time".into());
+    }
+    let mut product = BigUint::one();
+    let mut include = |piece: &BigUint, exponent: u32| -> Result<(), String> {
+        if piece.is_zero() || exponent == 0 || u64::from(exponent) > n.bits() {
+            return Err("invalid factor checkpoint piece".into());
+        }
+        product *= piece.pow(exponent);
+        if &product > n {
+            return Err("factor checkpoint pieces exceed input".into());
+        }
+        Ok(())
+    };
+    for factor in &state.report.factors {
+        include(&factor.prime, factor.exponent)?;
+    }
+    for (piece, exponent) in &state.report.unfactored {
+        include(
+            &piece
+                .parse()
+                .map_err(|_| "invalid unfactored checkpoint piece")?,
+            *exponent,
+        )?;
+    }
+    for piece in &state.pending {
+        include(&piece.n, piece.multiplicity)?;
+    }
+    if let Some(active) = &state.active {
+        include(&active.piece.n, active.piece.multiplicity)?;
+    }
+    if product != *n {
+        return Err("factor checkpoint pieces do not multiply to input".into());
+    }
+    Ok(state)
+}
+
 pub fn run_factor(out: Out, a: &FactorArgs) -> CmdResult {
     let n = parse_expr(&a.n)?;
     if n.is_zero() {
@@ -311,7 +443,136 @@ pub fn run_factor(out: Out, a: &FactorArgs) -> CmdResult {
     o.qs.threads = a.threads.max(1);
     o.gnfs.nfs.threads = a.threads.max(1);
     o.snfs.nfs.threads = a.threads.max(1);
-    let r = factoring::factor(&n, &o);
+    let cadence = a
+        .checkpoint_every
+        .unwrap_or(60)
+        .min(a.sync_every.unwrap_or(u64::MAX));
+    o.qs.checkpoint_every_secs = cadence;
+    o.gnfs.nfs.checkpoint_every_secs = cadence;
+    o.snfs.nfs.checkpoint_every_secs = cadence;
+    let manifest = serde_json::json!({
+        "schema_version": 1, "method": "factor", "n": n.to_string(),
+        "snfs_form": o.snfs_form, "prefer_nfs": a.prefer_nfs,
+        "pp1": a.pp1, "qs_max_digits": o.qs_max_digits,
+        "threads": a.threads.max(1), "seed": a.seed,
+    });
+    let fingerprint = blake3::hash(&serde_json::to_vec(&manifest).map_err(|e| e.to_string())?)
+        .to_hex()
+        .to_string();
+    let state = FactoringRun::prepare(
+        &RunOptions {
+            state_dir: a.state_dir.clone(),
+            resume: a.resume,
+            s3_uri: a.s3_uri.clone(),
+            sync_every: a.sync_every,
+            checkpoint_every: a.checkpoint_every,
+            verbose: a.verbose,
+            progress_every: a.progress_every,
+            checkpoint_name: "factor.ckpt",
+        },
+        "factor",
+        manifest,
+    )?;
+    let initial = if a.resume {
+        let dir = state.dir.as_ref().ok_or("--resume requires --state-dir")?;
+        Some(load_factor_checkpoint(
+            &dir.join("factor.ckpt"),
+            &fingerprint,
+            &n,
+        )?)
+    } else {
+        None
+    };
+    if let (Some(local), Some(uri)) = (&initial, &state.s3_uri) {
+        if s3_has_object(uri, "factor.ckpt")? {
+            let remote_bytes = aws(&[
+                "s3",
+                "cp",
+                &format!("{uri}/factor.ckpt"),
+                "-",
+                "--only-show-errors",
+            ])?
+            .stdout;
+            let remote = decode_factor_checkpoint(&remote_bytes, &fingerprint, &n)?;
+            if remote.generation > local.generation {
+                return Err(
+                    "S3 factor checkpoint is ahead of local state; restore into a fresh directory"
+                        .into(),
+                );
+            }
+            if remote.generation == local.generation {
+                let local_bytes = fs::read(state.dir.as_ref().unwrap().join("factor.ckpt"))
+                    .map_err(|e| format!("reading local factor checkpoint: {e}"))?;
+                if remote_bytes != local_bytes {
+                    return Err(
+                        "S3 and local factor checkpoints diverge at the same generation".into(),
+                    );
+                }
+            }
+        }
+    }
+    let verbose = a.verbose || a.progress_every.is_some();
+    let heartbeat = verbose.then(|| StageHeartbeat::start("factor", a.progress_every.unwrap_or(5)));
+    let progress = |p: &Progress| {
+        if let Some(print) = progress_printer(verbose) {
+            print(p);
+        }
+        if let Some(heartbeat) = &heartbeat {
+            heartbeat.update(p);
+        }
+        state.progress("factor", p);
+    };
+    let save = |checkpoint: &factoring::auto::FactorState| -> Result<(), String> {
+        let active = checkpoint.active.as_ref();
+        let stage = active
+            .and_then(|piece| piece.attempt_method)
+            .map(factor_stage)
+            .unwrap_or("cofactor");
+        let stage_progress = Progress {
+            stage,
+            done: checkpoint.report.steps.len() as u64,
+            target: 0,
+            seconds: checkpoint.elapsed_seconds,
+        };
+        if let Some(heartbeat) = &heartbeat {
+            heartbeat.update(&stage_progress);
+        }
+        if verbose {
+            eprintln!(
+                "[factor] {:.1}s stage={stage} prime-powers={} pending={} active={} method-index={}",
+                checkpoint.elapsed_seconds,
+                checkpoint.report.factors.len(),
+                checkpoint.pending.len(),
+                active.map_or_else(|| "none".into(), |p| p.piece.n.to_string()),
+                active.map_or(0, |p| p.next_method)
+            );
+        }
+        if let Some(dir) = &state.dir {
+            save_factor_checkpoint(&dir.join("factor.ckpt"), &fingerprint, checkpoint)?;
+            state.progress("factor", &stage_progress);
+            write_json_atomic(
+                &dir.join("progress.json"),
+                &serde_json::json!({
+                    "stage": stage, "active": active.map(|p| p.piece.n.to_string()),
+                    "method_index": active.map(|p| p.next_method),
+                    "prime_powers": checkpoint.report.factors.len(),
+                    "pending": checkpoint.pending.len(),
+                    "steps": checkpoint.report.steps.len(),
+                    "seconds": checkpoint.elapsed_seconds,
+                }),
+            )?;
+        }
+        Ok(())
+    };
+    let r = factoring::auto::factor_with_state(
+        &n,
+        &o,
+        (verbose || state.dir.is_some()).then_some(&progress as &dyn Fn(&Progress)),
+        initial,
+        state.dir.as_deref(),
+        Some(&save),
+    )?;
+    state.finish(&r, r.verified)?;
     out.emit(&r, || factor_text(&r))?;
     match (r.complete, r.verified) {
         (true, true) => Ok(()),
@@ -436,6 +697,8 @@ impl StageHeartbeat {
     fn start(method: &'static str, every_seconds: u64) -> Self {
         let initial = if method == "ecm" {
             "curve"
+        } else if method == "factor" {
+            "startup"
         } else {
             "polyselect"
         };
@@ -548,6 +811,33 @@ fn s3_has_objects(uri: &str) -> Result<bool, String> {
     let document: serde_json::Value =
         serde_json::from_slice(&listing.stdout).map_err(|e| format!("invalid S3 listing: {e}"))?;
     Ok(document["KeyCount"].as_u64().unwrap_or(0) > 0)
+}
+
+fn s3_has_object(uri: &str, name: &str) -> Result<bool, String> {
+    let (bucket, prefix) = uri
+        .strip_prefix("s3://")
+        .and_then(|value| value.split_once('/'))
+        .ok_or("invalid S3 prefix")?;
+    let key = format!("{prefix}/{name}");
+    let listing = aws(&[
+        "s3api",
+        "list-objects-v2",
+        "--bucket",
+        bucket,
+        "--prefix",
+        &key,
+        "--max-keys",
+        "10",
+        "--output",
+        "json",
+    ])?;
+    let document: serde_json::Value =
+        serde_json::from_slice(&listing.stdout).map_err(|e| format!("invalid S3 listing: {e}"))?;
+    Ok(document["Contents"].as_array().is_some_and(|contents| {
+        contents
+            .iter()
+            .any(|entry| entry["Key"].as_str() == Some(key.as_str()))
+    }))
 }
 
 impl FactoringRun {
@@ -727,7 +1017,22 @@ impl FactoringRun {
             }
             Ok(())
         };
-        for name in ["manifest.json", self.checkpoint_name, "progress.json"] {
+        push("manifest.json")?;
+        if self.method == "factor" {
+            let mut inner = fs::read_dir(dir)
+                .map_err(|e| format!("reading factor state for S3 sync: {e}"))?
+                .map(|entry| entry.map_err(|e| e.to_string()))
+                .collect::<Result<Vec<_>, _>>()?;
+            inner.sort_by_key(|entry| entry.file_name());
+            for entry in inner {
+                let name = entry.file_name();
+                let name = name.to_string_lossy();
+                if name.starts_with("factor-") && name.ends_with(".ckpt") {
+                    push(&name)?;
+                }
+            }
+        }
+        for name in [self.checkpoint_name, "progress.json"] {
             push(name)?;
         }
         if label == "final" {
@@ -1608,6 +1913,48 @@ mod tests {
     use super::*;
 
     #[test]
+    fn factor_checkpoint_rejects_tampered_and_missing_pieces() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path =
+            std::env::temp_dir().join(format!("crax-factor-{}-{unique}.ckpt", std::process::id()));
+        let n = BigUint::from(101u32);
+        let saved = std::cell::RefCell::new(None);
+        let save = |state: &factoring::auto::FactorState| -> Result<(), String> {
+            *saved.borrow_mut() = Some(state.clone());
+            Ok(())
+        };
+        factoring::auto::factor_with_state(
+            &n,
+            &FactorOptions::default(),
+            None,
+            None,
+            None,
+            Some(&save),
+        )
+        .unwrap();
+        let state = saved.into_inner().unwrap();
+        save_factor_checkpoint(&path, "fingerprint", &state).unwrap();
+        load_factor_checkpoint(&path, "fingerprint", &n).unwrap();
+        let mut file: FactorCheckpointFile =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        file.payload.push(' ');
+        fs::write(&path, serde_json::to_vec(&file).unwrap()).unwrap();
+        assert!(load_factor_checkpoint(&path, "fingerprint", &n)
+            .unwrap_err()
+            .contains("checksum"));
+        let mut invalid = state;
+        invalid.report.factors.clear();
+        save_factor_checkpoint(&path, "fingerprint", &invalid).unwrap();
+        assert!(load_factor_checkpoint(&path, "fingerprint", &n)
+            .unwrap_err()
+            .contains("multiply"));
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
     fn ecm_resumes_only_unfinished_curves_and_rejects_corruption() {
         let unique = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1694,6 +2041,13 @@ mod tests {
                 qs_max_digits: None,
                 threads: 1,
                 seed: 1,
+                verbose: false,
+                progress_every: None,
+                state_dir: None,
+                resume: false,
+                checkpoint_every: None,
+                s3_uri: None,
+                sync_every: None,
             },
         )
         .unwrap();

@@ -11,7 +11,7 @@ The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
 Rust executables. Their checkpoint formats and flags are independent of the
 native command described here. In particular, `crax` forwards child
 diagnostics live even with `--json`, and `crax icx run --verbose --json`
-prints stage progress on stderr. `crax gnfs`, `snfs`, `qs`, and `ecm` persist
+prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, and `ecm` persist
 completed work units locally and to S3. See [the `crax` command guide](CRAX.md) for
 details.
 
@@ -23,11 +23,12 @@ is a separate implementation with these observed interfaces:
 | Command family | Live progress | Local computation resume | S3 computation resume |
 | --- | --- | --- | --- |
 | Native `factor`, `ec-order`, `gen`, `solve` variants, `ic`, ECC2K walks, and `work` | `--verbose` | `--state-dir --resume` | `--s3-uri` with the state directory |
+| `crax factor` | `--verbose` ladder stages and heartbeat | `--state-dir --resume` for completed cofactor/method boundaries, ECM curves, and inner sieve batches | `--s3-uri` with the state directory |
 | `crax gnfs`, `snfs`, `qs` | `--verbose` stages and heartbeat | `--state-dir --resume` for completed sieve batches | `--s3-uri` with the state directory |
 | `crax ecm` | `--verbose` curve count and heartbeat | `--state-dir --resume` for completed curves | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
-| Other `crax` attacks, including generic discrete logs and the full factor ladder | Command-specific output | No shared resume contract | No shared resume contract |
+| Other `crax` attacks, including generic discrete logs | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
 Inspection and arithmetic commands such as `prime`, `num`, `group`, and
@@ -35,6 +36,25 @@ Inspection and arithmetic commands such as `prime`, `num`, `group`, and
 The rows marked without a resume contract are open coverage gaps; retaining
 their final output or publishing artifacts does not restore interrupted
 computation.
+
+`crax factor` saves `factor.ckpt` after every completed cofactor and method
+attempt, and after each ECM curve in its automatic ladder. When the ladder
+reaches SIQS, GNFS, or SNFS, it also saves that sieve's completed batches in
+separate checksummed files. A stopped rho or p-1/p+1 attempt repeats that
+attempt. The state directory contains a locked manifest, `progress.json`, and
+`result.json` after the full attempt. S3 sync uploads inner sieve files before
+the outer checkpoint, and publishes `result.json` last. An older local
+checkpoint cannot overwrite newer S3 state; resume into a fresh directory to
+restore it. One writer may use a prefix at a time; the local lock does not
+coordinate separate hosts.
+
+```sh
+crax factor '2^128+1' --verbose --progress-every 5 \
+  --state-dir ./runs/factor-128 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/crax/factor-128 --sync-every 60
+crax factor '2^128+1' --state-dir ./runs/factor-128 --resume \
+  --s3-uri s3://my-bucket/crax/factor-128 --verbose
+```
 
 `crax ecm` saves a checksummed `ecm.ckpt` after each complete curve. The
 manifest binds the input integer, stage-1 bound, and starting seed; `--curves`
