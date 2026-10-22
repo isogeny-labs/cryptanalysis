@@ -266,19 +266,30 @@ static void make_group(ca_group *g)
     if (rc != CA_OK) die_status(rc);
 }
 
+static uint64_t parse_elem_component(const char *s, char **end)
+{
+    if (!s || s[0] < '0' || s[0] > '9') die("element coordinate is not an unsigned integer");
+    errno = 0;
+    unsigned long long value = strtoull(s, end, 0);
+    if (errno == ERANGE) die("element coordinate exceeds uint64 range");
+    return (uint64_t)value;
+}
+
 static void parse_elem(const ca_group *g, const char *s, ca_elem *e)
 {
     uint64_t w[4] = {0, 0, 0, 0};
     if (!s) die("missing element");
+    char *end;
     if (g->kind == CA_GROUP_ZP) {
-        w[0] = strtoull(s, NULL, 0);
+        w[0] = parse_elem_component(s, &end);
+        if (*end != '\0') die("Zp element must be an unsigned integer");
     } else if (strcmp(s, "inf") == 0 || strcmp(s, "O") == 0) {
         w[2] = 1;
     } else {
-        char *end;
-        w[0] = strtoull(s, &end, 0);
+        w[0] = parse_elem_component(s, &end);
         if (*end != ',') die("EC element must be x,y or inf");
-        w[1] = strtoull(end + 1, NULL, 0);
+        w[1] = parse_elem_component(end + 1, &end);
+        if (*end != '\0') die("EC element must be x,y or inf");
     }
     if (!ca_group_encode(g, e, w)) die("element is not in the group");
 }
