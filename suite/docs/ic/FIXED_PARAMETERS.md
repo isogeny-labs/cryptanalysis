@@ -40,6 +40,36 @@ construction uses SQLite on disk, so it does not allocate all pair entries in
 RAM. This first implementation stores every admissible signed pair and all
 collision buckets; it does not implement the Rust folded-table representation.
 
+Add `--verbose --progress-every 5` for live stage and SQLite-size heartbeats on
+stderr, including with `--json`. Add `--s3-uri s3://BUCKET/PREFIX` to upload a
+transactionally consistent SQLite backup and `result.json` after each valid
+invocation, including `pair_budget` and `insufficient_relations` outcomes. A
+fresh directory with `--resume` restores the last complete S3 generation and
+verifies both artifact checksums before the Python engine checks campaign
+identity and saved witnesses.
+
+The fixed engine requires Python 3.10 or newer. Set `--python /path/to/python3.11`
+if the default `python3` is older. S3 artifacts use generation-specific keys;
+the head is published only after both uploads finish, so a stopped upload
+leaves the previous generation restorable.
+
+For example:
+
+```sh
+crax --json ic fixed --params docs/ic/params/k0n9-fixed.json \
+  --dir runs/k0n9-fixed --stage pairs --pair-budget 256 \
+  --verbose --s3-uri s3://my-bucket/ic/k0n9-fixed
+crax --json ic fixed --params docs/ic/params/k0n9-fixed.json \
+  --dir runs/k0n9-restored --stage pairs --pair-budget 256 \
+  --resume --verbose --s3-uri s3://my-bucket/ic/k0n9-fixed
+```
+
+The local SQLite database keeps every committed transaction during an
+invocation. S3 receives a new snapshot when that invocation exits with a valid
+campaign report. If the process stops mid-invocation, a fresh S3 restore starts
+from the previous snapshot. Use one writer per prefix; a different parameter
+file, selector model, or fixed-engine source needs a separate prefix.
+
 Use the small fixed profile to exercise the complete pipeline:
 
 ```sh

@@ -170,11 +170,16 @@ def pointKey(point):
 
 
 class Campaign:
-    def __init__(self, document, directory, solver='pairs', memory=False, selectorModel=None):
+    def __init__(self, document, directory, solver='pairs', memory=False, selectorModel=None,
+                 verbose=False, progressEvery=5):
         require(__debug__, 'run without Python -O; the shared arithmetic engine uses assertions')
+        require(type(progressEvery) is int and progressEvery > 0, 'progress interval must be positive')
         self.ledger = engine.Ledger()
         self.uses = Counter()
         self.started = time.perf_counter_ns()
+        self.verbose = verbose
+        self.progressEvery = progressEvery
+        self.lastProgress = time.monotonic()
         self.db = None
         self.lock = None
         try:
@@ -254,6 +259,17 @@ class Campaign:
     def put(self, name, value):
         self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)', (name, canonical(value)))
 
+    def progress(self, phase, force=False, **counts):
+        if not self.verbose:
+            return
+        now = time.monotonic()
+        if not force and now - self.lastProgress < self.progressEvery:
+            return
+        self.lastProgress = now
+        details = ' '.join(f'{key}={value}' for key, value in counts.items())
+        print(f'[ic fixed] {phase} elapsed={((time.perf_counter_ns() - self.started) / 1e9):.1f}s {details}',
+              file=sys.stderr, flush=True)
+
     def base(self):
         p = self.params
         with self.ledger.phase('factor_base'):
@@ -325,6 +341,10 @@ class Campaign:
                         done += 1
                         self.uses['pair_candidates_built'] += 1
                     self.put('pair_state', state)
+                self.progress('pairs', candidates=self.uses['pair_candidates_built'],
+                              records=state['serial'], cursor=f"{state['i']}:{state['j']}")
+            self.progress('pairs', force=True, candidates=self.uses['pair_candidates_built'],
+                          records=state['serial'], cursor=f"{state['i']}:{state['j']}")
             return state['i'] == size
 
     def checkPairs(self, state):
@@ -516,6 +536,10 @@ class Campaign:
                     self.db.execute('INSERT INTO attempts VALUES (?,?,?)', (stream, cursor, canonical(details)))
                 self.uses['new_attempts'] += 1
             cursor += 1
+            self.progress('collect', stream=stream, attempts=cursor,
+                          relations=self.uses['new_relations'], rank=len(matrix.rows))
+        self.progress('collect', force=True, stream=stream, attempts=cursor,
+                      relations=self.uses['new_relations'], rank=len(matrix.rows))
         return matrix
 
     def logs(self, matrix=None):
@@ -545,6 +569,7 @@ class Campaign:
     def solve(self, attempts, seconds, logs):
         results = {}
         for name, target in self.params.targets.items():
+            self.progress('solve', force=True, target=name)
             saved = self.db.execute('SELECT scalar FROM solutions WHERE id=?', (name,)).fetchone()
             if saved is not None:
                 value = integer(saved[0])
@@ -608,6 +633,9 @@ class Campaign:
         savedTargets = bool(self.params.targets) and all(self.db.execute(
             'SELECT 1 FROM solutions WHERE id=?', (name,)).fetchone() is not None for name in self.params.targets)
         replayOnly = stage in ('solve', 'all') and savedTargets
+        self.progress('stage', force=True, name=stage, saved_attempts=self.db.execute(
+            'SELECT COUNT(*) FROM attempts').fetchone()[0],
+            saved_relations=self.db.execute('SELECT COUNT(*) FROM relations').fetchone()[0])
         if self.solver in ('pairs', 'learned') and not replayOnly and stage not in ('select', 'status', 'logs'):
             ready = self.buildPairs(pairBudget)
             if not ready:
@@ -640,6 +668,8 @@ class Campaign:
         report['previous_invocations'] = self.db.execute('SELECT COUNT(*) FROM invocations').fetchone()[0]
         with self.db:
             self.db.execute('INSERT INTO invocations(report) VALUES (?)', (canonical(report),))
+        self.progress('stage complete', force=True, name=stage, status=report['status'],
+                      attempts=report['attempts_saved'], relations=report['relations_saved'])
         return report
 
 
@@ -653,9 +683,12 @@ def main():
     parser.add_argument('--attempts', type=int, default=32)
     parser.add_argument('--pair-budget', type=int, default=10000)
     parser.add_argument('--query-seconds', type=float, default=.25)
+    parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--progress-every', type=int, default=5)
     args = parser.parse_args()
     try:
-        with Campaign(readJson(args.params), args.dir, args.solver, selectorModel=args.selector_model) as campaign:
+        with Campaign(readJson(args.params), args.dir, args.solver, selectorModel=args.selector_model,
+                      verbose=args.verbose, progressEvery=args.progress_every) as campaign:
             report = campaign.run(args.stage, args.attempts, args.pair_budget, args.query_seconds)
     except (ValueError, OSError, sqlite3.Error, RuntimeError) as error:
         report = {'schema_version': 1, 'operation': 'fixed', 'status': 'error', 'message': str(error)}

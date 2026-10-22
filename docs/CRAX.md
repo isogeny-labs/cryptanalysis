@@ -84,6 +84,11 @@ own artifact and recovery options.
 artifacts to S3. A fresh `--dir` plus `--resume` restores the last complete
 S3 generation. Use a separate prefix for each worker or run.
 
+`crax ic fixed` keeps its transactional SQLite campaign in `--dir`. It accepts
+`--verbose --progress-every SECONDS` for a live heartbeat and `--s3-uri` to
+upload a consistent database snapshot and report after each invocation.
+`--resume` in a fresh directory restores the last complete S3 snapshot.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh

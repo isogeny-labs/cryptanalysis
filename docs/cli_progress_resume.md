@@ -34,7 +34,7 @@ is a separate implementation with these observed interfaces:
 | `crax bsgs`, `rho`, `kangaroo`, `grumpy`, `precomp`, `glv`, `pohlig-hellman`, `cheon`, `gpu-rho` | `--verbose` through the native solver | `--state-dir --resume` for the native solver checkpoint | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json`; sibling `icx` adds heartbeat with `--progress-every` | `--state-dir --resume` selects the sibling `icx` completed-repeat checkpoint | `--s3-uri` with the sibling state directory |
 | `crax ic workflow` | `--verbose --progress-every` stage messages and heartbeat | Existing `--dir` state, factor base, relation units, logs, and solutions | `--s3-uri --sync-every` commits checksummed artifacts after work-unit and stage boundaries |
-| `crax ic fixed` | Command-specific stage messages | Its own `--dir` workflow state | Not implemented by `crax` |
+| `crax ic fixed` | `--verbose --progress-every` stage and SQLite-size heartbeat | Its own transactional `--dir/campaign.sqlite3` | `--s3-uri --resume` commits a consistent SQLite snapshot after each valid invocation |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -43,6 +43,11 @@ Inspection and arithmetic commands such as `prime`, `num`, `group`, and
 The rows marked without a resume contract are open coverage gaps; retaining
 their final output or publishing artifacts does not restore interrupted
 computation.
+
+`crax ic fixed` requires Python 3.10 or newer (use `--python` when the default
+is older). Its S3 database and report keys include the generation number, and
+the head moves only after both artifacts are uploaded. A fresh restore loads
+and verifies the last published generation.
 
 `crax icx run` uses its in-process pipeline when run without state flags.
 `--state-dir`, `--resume`, `--s3-uri`, or `--progress-every` selects the sibling
