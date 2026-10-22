@@ -9,7 +9,9 @@ final S3 syncs so a slow transfer is visible while the command is running.
 
 The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
 Rust executables. Their checkpoint formats and flags are independent of the
-native command described here. In particular, `crax` forwards child
+native command described here, except that `crax`'s 64-bit generic DLP commands
+use the native solver's checkpointed implementation when progress or state flags
+are present. In particular, `crax` forwards child
 diagnostics live even with `--json`, and `crax icx run --verbose --json`
 prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, `ecm`,
 `rho-factor`, and `pm1` persist
@@ -29,9 +31,10 @@ is a separate implementation with these observed interfaces:
 | `crax ecm` | `--verbose` curve count and heartbeat | `--state-dir --resume` for completed curves | `--s3-uri` with the state directory |
 | `crax rho-factor` | `--verbose` attempt count and heartbeat | `--state-dir --resume` for completed Brent constants | `--s3-uri` with the state directory |
 | `crax pm1` (`--pp1`) | `--verbose` prime-batch counts and heartbeat | `--state-dir --resume` for completed p−1 or p+1 prime batches | `--s3-uri` with the state directory |
+| `crax bsgs`, `rho`, `kangaroo`, `grumpy`, `precomp`, `glv`, `pohlig-hellman`, `cheon`, `gpu-rho` | `--verbose` through the native solver | `--state-dir --resume` for the native solver checkpoint | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
-| Other `crax` attacks, including generic discrete logs | Command-specific output | No shared resume contract | No shared resume contract |
+| Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
 Inspection and arithmetic commands such as `prime`, `num`, `group`, and
@@ -39,6 +42,32 @@ Inspection and arithmetic commands such as `prime`, `num`, `group`, and
 The rows marked without a resume contract are open coverage gaps; retaining
 their final output or publishing artifacts does not restore interrupted
 computation.
+
+### `crax` generic discrete logs
+
+Install the matching native `cryptanalysis` executable beside `crax`, put it on
+`PATH`, or set `CRAX_NATIVE_BIN` to its path. When any of `--verbose`,
+`--progress-every`, `--state-dir`, `--resume`, `--checkpoint-every`, `--s3-uri`,
+or `--sync-every` is present, `crax` resolves the group and target, invokes that
+native solver, and independently verifies its answer. The native stderr stream
+remains live with `crax --json`. Without these flags, `crax` retains its direct
+library path and report behavior. Use a distinct directory and S3 prefix per
+command and instance. A stopped command resumes the native checkpoint, which
+may include walk lanes, lookup tables, or completed Pohlig–Hellman digits.
+
+```sh
+crax rho --group zp --p 2000000579 --order 1000000289 --x 123456789 \
+  --verbose --progress-every 5 --state-dir ./runs/crax-rho-001 \
+  --checkpoint-every 60 --s3-uri s3://my-bucket/crax/rho-001 --sync-every 60
+crax rho --group zp --p 2000000579 --order 1000000289 --x 123456789 \
+  --state-dir ./runs/crax-rho-001 --resume \
+  --s3-uri s3://my-bucket/crax/rho-001 --verbose
+```
+
+The native binary must come from a build containing the checkpointed solver
+paths; an older binary may reject these flags. `--max-ops` is a cumulative
+limit for applicable solvers and may be raised on resume. `crax precomp`
+reports its table-build operations separately from online operations.
 
 `crax factor` saves `factor.ckpt` after every completed cofactor and method
 attempt, and after each ECM curve in its automatic ladder. When the ladder

@@ -203,7 +203,7 @@ static _Noreturn void usage(void)
         "        [--progress-every SEC] [--checkpoint-every SEC] [--state-dir DIR]\n"
         "        [--resume] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  solve --alg dlog --group zp|ec --p P --order N --g G --h H\n"
-        "        [--solver auto|bsgs|rho|kangaroo|grumpy] [--verbose]\n"
+        "        [--solver auto|bsgs|rho|kangaroo|grumpy|brute] [--bsgs-max-prime N] [--verbose]\n"
         "        [--progress-every SEC] [--checkpoint-every SEC] [--state-dir DIR]\n"
         "        [--resume] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  rho   --curve ecc2k130 [--backend cuda|metal] [walk options]\n"
@@ -431,6 +431,7 @@ static int cmd_solve(const char *selected_alg)
     ca_dlog_params dp;
     ca_dlog_params_default(&dp);
     dp.rho.threads = (uint32_t)opt_u64("--threads", 1);
+    dp.bsgs_max_prime = opt_u64("--bsgs-max-prime", 0);
     dp.rho.seed = dp.kangaroo.seed = opt_u64("--seed", 0);
     dp.rho.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
     dp.rho.r = (uint32_t)opt_u64("--r", 0);
@@ -456,6 +457,8 @@ static int cmd_solve(const char *selected_alg)
             dp.solver = CA_SOLVER_KANGAROO;
         else if (!strcmp(solver, "grumpy"))
             dp.solver = CA_SOLVER_GRUMPY;
+        else if (!strcmp(solver, "brute"))
+            dp.solver = CA_SOLVER_BRUTE;
         else
             die("unknown --solver");
     }

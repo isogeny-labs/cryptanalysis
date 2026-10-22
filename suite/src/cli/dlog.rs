@@ -17,6 +17,8 @@
 use clap::{Args, ValueEnum};
 use libca::{Elem, Group, Kind, Options, PrecompOptions, Solver, Stats};
 use serde::Serialize;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
 
 use super::output::{ops_per_sqrt, parse_pair, parse_u64, CmdResult, Failure, Out};
 
@@ -73,6 +75,91 @@ pub struct GroupArgs {
     /// Give up after this many group operations (0: no limit).
     #[arg(long, default_value_t = 0)]
     pub max_ops: u64,
+    #[command(flatten)]
+    pub progress: ProgressArgs,
+}
+
+/// Live diagnostics and the native solver's durable checkpoint store.
+#[derive(Args, Clone, Debug, Default)]
+pub struct ProgressArgs {
+    /// Print solver phases and periodic progress to stderr.
+    #[arg(long, short = 'v')]
+    pub verbose: bool,
+    /// Seconds between live progress reports.
+    #[arg(long)]
+    pub progress_every: Option<u32>,
+    /// Directory for the solver checkpoint, manifest, and result.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Resume the exact saved solver state, restoring from S3 if needed.
+    #[arg(long)]
+    pub resume: bool,
+    /// Seconds between checkpoint writes.
+    #[arg(long)]
+    pub checkpoint_every: Option<u32>,
+    /// Mirror the state directory to an S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 sync attempts.
+    #[arg(long)]
+    pub sync_every: Option<u32>,
+}
+
+impl ProgressArgs {
+    fn enabled(&self) -> bool {
+        self.verbose
+            || self.progress_every.is_some()
+            || self.state_dir.is_some()
+            || self.resume
+            || self.checkpoint_every.is_some()
+            || self.s3_uri.is_some()
+            || self.sync_every.is_some()
+    }
+
+    fn append(&self, args: &mut Vec<String>) -> Result<(), String> {
+        if (self.resume
+            || self.checkpoint_every.is_some()
+            || self.s3_uri.is_some()
+            || self.sync_every.is_some())
+            && self.state_dir.is_none()
+        {
+            return Err(
+                "--resume, --checkpoint-every, --s3-uri and --sync-every require --state-dir"
+                    .into(),
+            );
+        }
+        if self.sync_every.is_some() && self.s3_uri.is_none() {
+            return Err("--sync-every requires --s3-uri".into());
+        }
+        for (name, value) in [
+            ("--progress-every", self.progress_every),
+            ("--checkpoint-every", self.checkpoint_every),
+            ("--sync-every", self.sync_every),
+        ] {
+            if let Some(value) = value {
+                if value == 0 {
+                    return Err(format!("{name} must be positive"));
+                }
+                args.extend([name.to_string(), value.to_string()]);
+            }
+        }
+        if self.verbose {
+            args.push("--verbose".into());
+        }
+        if let Some(dir) = &self.state_dir {
+            let dir = dir
+                .to_str()
+                .ok_or("--state-dir must be UTF-8 for the native solver")?;
+            args.extend(["--state-dir".into(), dir.into()]);
+        }
+        if self.resume {
+            args.push("--resume".into());
+        }
+        if let Some(uri) = &self.s3_uri {
+            args.extend(["--s3-uri".into(), uri.clone()]);
+        }
+        Ok(())
+    }
 }
 
 /// A problem ready for a solver.
@@ -375,6 +462,138 @@ fn lib_err(algorithm: &str) -> impl Fn(libca::Error) -> String + '_ {
     move |e| format!("{algorithm}: {e}")
 }
 
+fn native_stats(value: &serde_json::Value) -> Stats {
+    let number = |key| {
+        value
+            .get(key)
+            .and_then(serde_json::Value::as_u64)
+            .unwrap_or(0)
+    };
+    Stats {
+        group_ops: number("ops"),
+        iterations: value
+            .get("exponentiations")
+            .and_then(serde_json::Value::as_u64)
+            .unwrap_or_else(|| number("iterations")),
+        table_entries: number("table_entries"),
+        collisions: number("collisions"),
+        bytes_peak: number("bytes_peak"),
+        seconds: value
+            .get("seconds")
+            .and_then(serde_json::Value::as_f64)
+            .unwrap_or(0.0),
+        threads: number("threads") as u32,
+    }
+}
+
+fn native_binary() -> std::ffi::OsString {
+    if let Some(path) = std::env::var_os("CRAX_NATIVE_BIN") {
+        return path;
+    }
+    if let Ok(path) = std::env::current_exe() {
+        let sibling = path.with_file_name("cryptanalysis");
+        if sibling.is_file() {
+            return sibling.into_os_string();
+        }
+    }
+    "cryptanalysis".into()
+}
+
+fn run_native(args: &[String]) -> Result<(serde_json::Value, bool), String> {
+    let binary = native_binary();
+    let output = Command::new(&binary).args(args).stderr(Stdio::inherit()).output()
+        .map_err(|e| format!("starting native cryptanalysis ({:?}): {e}; install it beside crax or set CRAX_NATIVE_BIN", binary))?;
+    if output.stdout.is_empty() && !output.status.success() {
+        return Err(format!(
+            "native cryptanalysis exited with status {}; see its stderr for details",
+            output.status
+        ));
+    }
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .map_err(|e| format!("native cryptanalysis returned invalid JSON: {e}"))?;
+    Ok((report, output.status.success()))
+}
+
+fn native_group_args(pb: &Problem, group: &GroupArgs, alg: &str) -> Vec<String> {
+    let mut args = vec![
+        "solve".into(),
+        "--alg".into(),
+        alg.into(),
+        "--group".into(),
+        match pb.desc.kind {
+            GroupKind::Zp => "zp",
+            GroupKind::Ec => "ec",
+        }
+        .into(),
+        "--p".into(),
+        pb.desc.p.clone(),
+        "--order".into(),
+        pb.desc.order.clone(),
+        "--g".into(),
+        elem_string(pb.group.kind(), &pb.g).replace("infinity", "inf"),
+        "--h".into(),
+        elem_string(pb.group.kind(), &pb.h).replace("infinity", "inf"),
+        "--seed".into(),
+        group.seed.to_string(),
+        "--threads".into(),
+        group.threads.to_string(),
+        "--max-ops".into(),
+        group.max_ops.to_string(),
+    ];
+    if let (Some(a), Some(b)) = (&pb.desc.a, &pb.desc.b) {
+        args.extend(["--a".into(), a.clone(), "--b".into(), b.clone()]);
+    }
+    args
+}
+
+fn run_native_dlog(
+    out: Out,
+    pb: &Problem,
+    group: &GroupArgs,
+    alg: &str,
+    extra: Vec<String>,
+    width: f64,
+    interval: Option<(u64, u64)>,
+    mut notes: Vec<String>,
+) -> CmdResult {
+    let mut args = native_group_args(pb, group, alg);
+    args.extend(extra);
+    group.progress.append(&mut args)?;
+    let (report, success) = run_native(&args)?;
+    if !success || report.get("status").and_then(serde_json::Value::as_str) != Some("ok") {
+        let status = report
+            .get("status")
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or("error");
+        out.emit(&report, || format!("{alg}: {status}\n"))?;
+        return Err(Failure::reported(format!("{alg}: {status}")));
+    }
+    let x = report
+        .get("x")
+        .and_then(serde_json::Value::as_u64)
+        .ok_or_else(|| format!("native {alg} result is missing x"))?;
+    if alg == "precomp" {
+        if let Some(ops) = report
+            .get("precomp_ops")
+            .and_then(serde_json::Value::as_u64)
+        {
+            notes.push(format!(
+                "precomputation: {ops} group operations, in addition to online work"
+            ));
+        }
+    }
+    finish(
+        out,
+        pb,
+        if alg == "dlog" { "pohlig-hellman" } else { alg },
+        x,
+        &native_stats(&report),
+        width,
+        interval,
+        notes,
+    )
+}
+
 /// An interval `[lo, hi]` for the interval solvers.
 #[derive(Args, Clone, Debug)]
 pub struct IntervalArgs {
@@ -423,6 +642,29 @@ pub enum IntervalSolver {
 pub fn run_interval(out: Out, which: IntervalSolver, args: &IntervalArgs) -> CmdResult {
     let pb = args.group.problem()?;
     let iv = args.interval(&pb)?;
+    if args.group.progress.enabled() {
+        let alg = match which {
+            IntervalSolver::Bsgs => "bsgs",
+            IntervalSolver::Kangaroo => "kangaroo",
+            IntervalSolver::Grumpy => "grumpy",
+        };
+        let extra = vec![
+            "--lo".into(),
+            iv.0.to_string(),
+            "--hi".into(),
+            iv.1.to_string(),
+        ];
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            alg,
+            extra,
+            width(&pb, iv),
+            (iv != (0, 0)).then_some(iv),
+            Vec::new(),
+        );
+    }
     let mut opts = args.group.options();
     // A kangaroo whose target lies outside the interval never meets the tame
     // herd; bound the walk at 64 times its expected 2 sqrt(width) unless the
@@ -464,6 +706,31 @@ pub struct RhoArgs {
 
 pub fn run_rho(out: Out, args: &RhoArgs) -> CmdResult {
     let pb = args.group.problem()?;
+    if args.group.progress.enabled() {
+        let mut extra = Vec::new();
+        if let Some(bits) = args.dp_bits {
+            extra.extend(["--dp-bits".into(), bits.to_string()]);
+        }
+        if let Some(r) = args.r {
+            extra.extend(["--r".into(), r.to_string()]);
+        }
+        if let Some(w) = args.walks_per_thread {
+            extra.extend(["--walks".into(), w.to_string()]);
+        }
+        if args.no_negation {
+            extra.push("--no-negation".into());
+        }
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            "rho",
+            extra,
+            pb.group.order() as f64,
+            None,
+            Vec::new(),
+        );
+    }
     let mut opts = args.group.options();
     opts.rho_negation_map = !args.no_negation;
     if let Some(d) = args.dp_bits {
@@ -519,6 +786,35 @@ pub struct PohligArgs {
 
 pub fn run_pohlig(out: Out, args: &PohligArgs) -> CmdResult {
     let pb = args.group.problem()?;
+    if args.group.progress.enabled() {
+        let solver = match args.solver {
+            SubSolver::Auto => "auto",
+            SubSolver::Bsgs => "bsgs",
+            SubSolver::Rho => "rho",
+            SubSolver::Kangaroo => "kangaroo",
+            SubSolver::Grumpy => "grumpy",
+            SubSolver::Brute => "brute",
+        };
+        let mut extra = vec!["--solver".into(), solver.into()];
+        if let Some(m) = args.bsgs_max_prime {
+            extra.extend(["--bsgs-max-prime".into(), m.to_string()]);
+        }
+        let largest = libca::factorize(pb.group.order())
+            .iter()
+            .map(|&(q, _)| q)
+            .max()
+            .unwrap_or(1);
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            "dlog",
+            extra,
+            largest as f64,
+            None,
+            Vec::new(),
+        );
+    }
     let mut opts = args.group.options();
     opts.solver = args.solver.into();
     if let Some(m) = args.bsgs_max_prime {
@@ -572,6 +868,28 @@ pub struct PrecompArgs {
 
 pub fn run_precomp(out: Out, args: &PrecompArgs) -> CmdResult {
     let pb = args.group.problem()?;
+    if args.group.progress.enabled() {
+        let mut extra = Vec::new();
+        if let Some(bits) = args.dp_bits {
+            extra.extend(["--dp-bits".into(), bits.to_string()]);
+        }
+        if let Some(table) = args.table_size {
+            extra.extend(["--table".into(), table.to_string()]);
+        }
+        if let Some(coverage) = args.coverage {
+            extra.extend(["--coverage".into(), coverage.to_string()]);
+        }
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            "precomp",
+            extra,
+            pb.group.order() as f64,
+            None,
+            Vec::new(),
+        );
+    }
     let opts = PrecompOptions {
         dp_bits: args.dp_bits.unwrap_or(-1),
         table_size: args.table_size.unwrap_or(0),
@@ -602,6 +920,18 @@ pub fn run_glv(out: Out, args: &GlvArgs) -> CmdResult {
     let pb = args.group.problem()?;
     if pb.group.kind() != Kind::Ec {
         return Err("glv needs a curve (--curve or --a/--b)".into());
+    }
+    if args.group.progress.enabled() {
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            "glv",
+            Vec::new(),
+            pb.group.order() as f64,
+            None,
+            Vec::new(),
+        );
     }
     let (x, info, st) = pb
         .group
@@ -669,6 +999,68 @@ pub fn run_cheon(out: Out, args: &CheonArgs) -> CmdResult {
         (None, Some(a), Some(ad)) => (parse_elem(k, a)?, parse_elem(k, ad)?),
         _ => return Err("give --g-alpha and --g-alpha-d, or --alpha to plant one".into()),
     };
+    if args.group.progress.enabled() {
+        let mut native_args = native_group_args(&pb, &args.group, "cheon");
+        native_args.splice(0..3, ["cheon".into()]);
+        native_args.extend([
+            "--d".into(),
+            d.to_string(),
+            "--ga".into(),
+            elem_string(k, &g_a).replace("infinity", "inf"),
+            "--gad".into(),
+            elem_string(k, &g_ad).replace("infinity", "inf"),
+            "--max-exps".into(),
+            args.group.max_ops.to_string(),
+        ]);
+        args.group.progress.append(&mut native_args)?;
+        let (native, success) = run_native(&native_args)?;
+        if !success || native.get("status").and_then(serde_json::Value::as_str) != Some("ok") {
+            let status = native
+                .get("status")
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or("error");
+            out.emit(&native, || format!("cheon: {status}\n"))?;
+            return Err(Failure::reported(format!("cheon: {status}")));
+        }
+        let alpha = native
+            .get("alpha")
+            .and_then(serde_json::Value::as_u64)
+            .ok_or("native Cheon result is missing alpha")?;
+        let verified = pb
+            .group
+            .mul(&pb.g, alpha)
+            .map(|v| pb.group.equal(&v, &g_a))
+            .unwrap_or(false);
+        let stats = native_stats(&native);
+        let report = CheonReport {
+            status: if verified { "ok" } else { "unverified" },
+            algorithm: "cheon",
+            group: pb.desc.clone(),
+            d,
+            alpha: alpha.to_string(),
+            verified,
+            matches_planted: planted.map(|a| a % n == alpha % n),
+            estimated_exponentiations: cost,
+            stats: StatsOut::new(&stats, n as f64),
+        };
+        out.emit(&report, || {
+            format!(
+                "cheon: alpha = {alpha} ({})\n",
+                if verified {
+                    "verified: g^alpha matches"
+                } else {
+                    "NOT VERIFIED"
+                }
+            )
+        })?;
+        return if verified {
+            Ok(())
+        } else {
+            Err(Failure::reported(
+                "cheon: the recovered alpha does not reproduce g^alpha",
+            ))
+        };
+    }
     let (alpha, st) = pb
         .group
         .cheon(&pb.g, &g_a, &g_ad, d, args.group.max_ops)
@@ -739,6 +1131,32 @@ pub struct GpuRhoArgs {
 
 pub fn run_gpu_rho(out: Out, args: &GpuRhoArgs) -> CmdResult {
     let pb = args.group.problem()?;
+    if args.group.progress.enabled() {
+        let backend = match args.backend {
+            Backend::Auto => "auto",
+            Backend::Cuda => "cuda",
+            Backend::Emulate => "emulate",
+        };
+        let mut extra = vec![
+            "--backend".into(),
+            backend.into(),
+            "--device".into(),
+            args.device.to_string(),
+        ];
+        if let Some(bits) = args.dp_bits {
+            extra.extend(["--dp-bits".into(), bits.to_string()]);
+        }
+        return run_native_dlog(
+            out,
+            &pb,
+            &args.group,
+            "gpu-rho",
+            extra,
+            pb.group.order() as f64,
+            None,
+            Vec::new(),
+        );
+    }
     let opts = libca::GpuOptions {
         backend: match args.backend {
             Backend::Auto => libca::GpuBackend::Auto,
@@ -781,6 +1199,7 @@ mod tests {
             seed: 1,
             threads: 1,
             max_ops: 0,
+            progress: ProgressArgs::default(),
         }
     }
 

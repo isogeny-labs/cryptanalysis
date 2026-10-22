@@ -193,6 +193,24 @@ $ crax ic zp --p 1099511627791 --g 3 --x 99
 $ crax curve info --name glv-j0-26
 ```
 
+The generic `crax bsgs`, `rho`, `kangaroo`, `grumpy`, `precomp`, `glv`,
+`pohlig-hellman`, `cheon`, and `gpu-rho` commands accept `--verbose`,
+`--progress-every`, `--state-dir`, `--resume`, `--checkpoint-every`, `--s3-uri`,
+and `--sync-every`. These options run the matching native `cryptanalysis`
+solver and retain its exact checkpoint. Install that binary beside `crax` or
+set `CRAX_NATIVE_BIN`. For example:
+
+```sh
+crax rho --p 2000000579 --order 1000000289 --x 123456789 \
+  --verbose --state-dir ./runs/rho-001 --s3-uri s3://my-bucket/crax/rho-001
+crax rho --p 2000000579 --order 1000000289 --x 123456789 \
+  --state-dir ./runs/rho-001 --s3-uri s3://my-bucket/crax/rho-001 --resume
+```
+
+The native process writes live diagnostics to stderr even with `--json`;
+`crax` still verifies each returned answer. See the
+[restart guide](cli_progress_resume.md) for checkpoint and S3 rules.
+
 Every solver checks on entry that both elements lie in the order-n subgroup.
 A target outside ⟨g⟩ is refused at once; previously it made rho, glv, gpu-rho
 and Pohlig–Hellman run forever. `kangaroo` bounds its walk at 128·√width
