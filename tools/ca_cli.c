@@ -11,6 +11,7 @@
  *            [--per-level L] [--controls C] [--radius R] [--threads T]
  *            [--no-negation] [--automorphisms] [--diagram FILE] [--trials-out FILE]
  *            [--census-out FILE] [--edges-out FILE] [--ks K1,K2,...]
+ *            [--transport-bench FILE] [--transport-reps R]
  *            one ECDLP instance carried by Velu isogenies to every curve of
  *            the l-volcano; rho on each; min / mean / max per curve and level
  *   ca curve --name NAME | (--group ec --p P --a A --b B [--order N]) | --list
@@ -167,6 +168,7 @@ static _Noreturn void usage(void)
         "  volcano --p P --a A --b B [--order N] [--ell 2|3] [--seed S] [--trials T]\n"
         "        [--per-level L] [--controls C] [--automorphisms] [--diagram FILE]\n"
         "        [--trials-out FILE] [--census-out FILE] [--edges-out FILE] [--ks K1,K2,..]\n"
+        "        [--transport-bench FILE] [--transport-reps R]\n"
         "  gen   --group zp|ec --p P [--a A --b B] [--order N] [--x X] [--seed S]\n"
         "  solve --alg bsgs|rho|kangaroo|grumpy|precomp|glv|dlog|gpu-rho --group zp|ec --p P [--a "
         "A "
@@ -1504,6 +1506,92 @@ static int cmd_volcano(void)
         if (W[i][2] || !ca_group_is_identity(&gv, &chk))
             die("internal: a Velu map did not keep the order of P");
         verified++;
+    }
+
+    /* --transport-bench FILE [--transport-reps R]: what carrying (P, Q) from the
+     * root to each vertex costs.  For every vertex one JSON line: the tree path
+     * length, its up / down / horizontal edge counts, the Velu point maps
+     * executed (two points per edge, none when a point is O or in the kernel),
+     * the field operations those maps perform (a model counted from the
+     * formulas in ca_velu_map, not an instrumented count), and wall ns of the
+     * whole chain (mean and min of R repetitions).  The chain's result is
+     * compared with the vertex's transported (P, Q). */
+    const char *tbpath = opt("--transport-bench");
+    if (tbpath) {
+        uint64_t reps = opt_u64("--transport-reps", 200);
+        if (!reps) die("--transport-reps must be at least 1");
+        FILE *tf = fopen(tbpath, "w");
+        if (!tf) die("cannot open --transport-bench");
+        uint32_t *chain = malloc(((size_t)vo.count + 1) * sizeof(*chain));
+        if (!chain) die("out of memory");
+        for (uint32_t i = 0; i < vo.count; i++) {
+            uint32_t d = 0;
+            for (int32_t w = (int32_t)i; w > 0; w = vo.v[w].parent) chain[d++] = (uint32_t)w;
+            /* chain[d-1] is the root's child; run it forward */
+            uint32_t ups = 0, downs = 0, hor = 0;
+            for (uint32_t e = 0; e < d; e++) {
+                const ca_volcano_vertex *v = &vo.v[chain[e]], *u = &vo.v[v->parent];
+                if (v->level > u->level) downs++;
+                else if (v->level < u->level) ups++;
+                else hor++;
+            }
+            uint64_t maps = 0, muls = 0, invs = 0, sink = 0, tot = 0, tmin = UINT64_MAX;
+            int same = 1;
+            for (uint64_t r = 0; r < reps; r++) {
+                uint64_t cur[8], nxt[8];
+                memcpy(cur, W[0], sizeof(cur));
+                struct timespec t0, t1;
+                clock_gettime(CLOCK_MONOTONIC, &t0);
+                for (uint32_t e = d; e-- > 0;) {
+                    const ca_volcano_vertex *v = &vo.v[chain[e]], *u = &vo.v[v->parent];
+                    ca_velu_map(p, u->a, u->b, ell, v->kernel_x, cur, nxt);
+                    ca_velu_map(p, u->a, u->b, ell, v->kernel_x, cur + 4, nxt + 4);
+                    memcpy(cur, nxt, 3 * sizeof(uint64_t));
+                    memcpy(cur + 4, nxt + 4, 3 * sizeof(uint64_t));
+                }
+                clock_gettime(CLOCK_MONOTONIC, &t1);
+                uint64_t ns = (uint64_t)(t1.tv_sec - t0.tv_sec) * 1000000000ULL +
+                              (uint64_t)(t1.tv_nsec - t0.tv_nsec);
+                tot += ns;
+                if (ns < tmin) tmin = ns;
+                sink ^= cur[0] ^ cur[4];
+                if (cur[0] != W[i][0] || cur[1] != W[i][1] || cur[4] != W[i][4] ||
+                    cur[5] != W[i][5])
+                    same = 0;
+            }
+            /* the model count, once per path (it does not depend on r) */
+            {
+                uint64_t cur[8], nxt[8];
+                memcpy(cur, W[0], sizeof(cur));
+                for (uint32_t e = d; e-- > 0;) {
+                    const ca_volcano_vertex *v = &vo.v[chain[e]], *u = &vo.v[v->parent];
+                    for (int q = 0; q < 2; q++) {
+                        uint64_t *pt = cur + 4 * q, *ot = nxt + 4 * q;
+                        if (!(pt[2] || pt[0] == v->kernel_x % p)) {
+                            maps++;
+                            muls += ell == 2 ? 9 : 12;
+                            invs += 1;
+                        }
+                        ca_velu_map(p, u->a, u->b, ell, v->kernel_x, pt, ot);
+                    }
+                    memcpy(cur, nxt, 3 * sizeof(uint64_t));
+                    memcpy(cur + 4, nxt + 4, 3 * sizeof(uint64_t));
+                }
+            }
+            fprintf(tf,
+                    "{\"id\":%" PRIu32 ",\"level\":%" PRId32 ",\"path_len\":%" PRIu32
+                    ",\"ups\":%" PRIu32 ",\"downs\":%" PRIu32 ",\"horizontals\":%" PRIu32
+                    ",\"velu_point_maps\":%" PRIu64 ",\"field_muls_model\":%" PRIu64
+                    ",\"field_invs_model\":%" PRIu64 ",\"reps\":%" PRIu64 ",\"ns_mean\":%.1f"
+                    ",\"ns_min\":%" PRIu64 ",\"ns_per_edge_mean\":%.1f,\"matches_transported\":%s"
+                    ",\"sink\":%" PRIu64 "}\n",
+                    i, vo.v[i].level, d, ups, downs, hor, maps, muls, invs, reps,
+                    (double)tot / (double)reps, tmin == UINT64_MAX ? 0 : tmin,
+                    d ? (double)tot / (double)reps / (double)d : 0.0, same ? "true" : "false",
+                    sink);
+        }
+        free(chain);
+        fclose(tf);
     }
 
     /* --census-out / --edges-out: every vertex of the walk (not a sample) and
