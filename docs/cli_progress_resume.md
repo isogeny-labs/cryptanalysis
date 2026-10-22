@@ -11,7 +11,8 @@ The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
 Rust executables. Their checkpoint formats and flags are independent of the
 native command described here. In particular, `crax` forwards child
 diagnostics live even with `--json`, and `crax icx run --verbose --json`
-prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, and `ecm` persist
+prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, `ecm`, and
+`rho-factor` persist
 completed work units locally and to S3. See [the `crax` command guide](CRAX.md) for
 details.
 
@@ -26,6 +27,7 @@ is a separate implementation with these observed interfaces:
 | `crax factor` | `--verbose` ladder stages and heartbeat | `--state-dir --resume` for completed cofactor/method boundaries, ECM curves, and inner sieve batches | `--s3-uri` with the state directory |
 | `crax gnfs`, `snfs`, `qs` | `--verbose` stages and heartbeat | `--state-dir --resume` for completed sieve batches | `--s3-uri` with the state directory |
 | `crax ecm` | `--verbose` curve count and heartbeat | `--state-dir --resume` for completed curves | `--s3-uri` with the state directory |
+| `crax rho-factor` | `--verbose` attempt count and heartbeat | `--state-dir --resume` for completed Brent constants | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
 | Other `crax` attacks, including generic discrete logs | Command-specific output | No shared resume contract | No shared resume contract |
@@ -69,6 +71,25 @@ crax ecm '2^61-1' --b1 1000 --curves 1000 --state-dir ./runs/ecm-61 \
   --s3-uri s3://my-bucket/crax/ecm-61 --verbose --progress-every 5
 crax ecm '2^61-1' --b1 1000 --curves 2000 --state-dir ./runs/ecm-61 \
   --s3-uri s3://my-bucket/crax/ecm-61 --resume --verbose
+```
+
+`crax rho-factor` saves a checksummed `rho-factor.ckpt` after every completed
+Brent constant. The manifest binds the input integer and iterations per
+attempt. `--attempts` is a total budget and may increase on resume; a stopped
+attempt repeats. `progress.json` records the current attempt count and
+`result.json` records the outcome. S3 receives the initial checkpoint,
+periodic copies, and the final outcome. If S3 is ahead of the local checkpoint,
+resume into a fresh directory. Only one host should write a prefix at a time.
+The reported seconds add attempt computation and exclude restart and storage
+time.
+
+```sh
+crax rho-factor '1000003*1000033' --iterations 100000 --attempts 8 \
+  --state-dir ./runs/rho-001 --s3-uri s3://my-bucket/crax/rho-001 \
+  --verbose --progress-every 5
+crax rho-factor '1000003*1000033' --iterations 100000 --attempts 16 \
+  --state-dir ./runs/rho-001 --s3-uri s3://my-bucket/crax/rho-001 \
+  --resume --verbose
 ```
 
 ## Integer factorization

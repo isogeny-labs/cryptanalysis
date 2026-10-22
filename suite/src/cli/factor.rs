@@ -697,6 +697,8 @@ impl StageHeartbeat {
     fn start(method: &'static str, every_seconds: u64) -> Self {
         let initial = if method == "ecm" {
             "curve"
+        } else if method == "rho-factor" {
+            "attempt"
         } else if method == "factor" {
             "startup"
         } else {
@@ -1685,17 +1687,233 @@ pub struct RhoFactorArgs {
     /// Iterations per attempt.
     #[arg(long, default_value_t = 1 << 26)]
     pub iterations: u64,
+    /// Total constants to try; may increase on resume.
+    #[arg(long, default_value_t = 8, value_parser = clap::value_parser!(u32).range(1..))]
+    pub attempts: u32,
+    /// Print completed attempts and periodic heartbeats on stderr.
+    #[arg(long)]
+    pub verbose: bool,
+    /// Seconds between heartbeat lines (implies --verbose).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Dedicated directory for completed-attempt checkpoints and reports.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Continue completed attempts locally or restore them from S3.
+    #[arg(long)]
+    pub resume: bool,
+    /// Mirror the state directory to this S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 copies; the final copy is always attempted.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub sync_every: Option<u64>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct RhoFactorCheckpoint {
+    schema_version: u32,
+    fingerprint: String,
+    next_attempt: u32,
+    factor: Option<String>,
+    successful_c: Option<u64>,
+    iterations: u64,
+    compute_seconds: f64,
+}
+
+#[derive(Serialize, Deserialize)]
+struct RhoFactorCheckpointFile {
+    checksum: String,
+    payload: String,
+}
+
+fn save_rho_factor_checkpoint(path: &Path, state: &RhoFactorCheckpoint) -> Result<(), String> {
+    let payload =
+        serde_json::to_string(state).map_err(|e| format!("serializing rho state: {e}"))?;
+    write_json_atomic(
+        path,
+        &RhoFactorCheckpointFile {
+            checksum: blake3::hash(payload.as_bytes()).to_hex().to_string(),
+            payload,
+        },
+    )
+}
+
+fn decode_rho_factor_checkpoint(
+    bytes: &[u8],
+    fingerprint: &str,
+    n: &BigUint,
+) -> Result<RhoFactorCheckpoint, String> {
+    let file: RhoFactorCheckpointFile =
+        serde_json::from_slice(bytes).map_err(|e| format!("invalid rho-factor checkpoint: {e}"))?;
+    if file.checksum != blake3::hash(file.payload.as_bytes()).to_hex().as_str() {
+        return Err("rho-factor checkpoint checksum mismatch".into());
+    }
+    let checkpoint: RhoFactorCheckpoint = serde_json::from_str(&file.payload)
+        .map_err(|e| format!("invalid rho-factor checkpoint payload: {e}"))?;
+    if checkpoint.schema_version != 1
+        || checkpoint.fingerprint != fingerprint
+        || !checkpoint.compute_seconds.is_finite()
+        || checkpoint.compute_seconds < 0.0
+        || checkpoint.factor.is_some() != checkpoint.successful_c.is_some()
+    {
+        return Err("rho-factor checkpoint parameters or state differ".into());
+    }
+    if let Some(factor) = &checkpoint.factor {
+        let factor = factor
+            .parse::<BigUint>()
+            .map_err(|e| format!("invalid rho factor: {e}"))?;
+        if factor.is_one()
+            || &factor == n
+            || (n % &factor) != BigUint::zero()
+            || checkpoint
+                .successful_c
+                .is_some_and(|c| c > checkpoint.next_attempt as u64)
+        {
+            return Err("rho-factor checkpoint has an invalid factor".into());
+        }
+    }
+    Ok(checkpoint)
 }
 
 pub fn run_rho_factor(out: Out, a: &RhoFactorArgs) -> CmdResult {
     let n = parse_expr(&a.n)?;
-    let r = factoring::rho(
-        &n,
-        &RhoParams {
-            max_iterations: a.iterations,
-            ..RhoParams::default()
+    let params = RhoParams {
+        max_iterations: a.iterations,
+        ..RhoParams::default()
+    };
+    let manifest = serde_json::json!({
+        "schema_version": 1, "method": "rho-factor", "n": n.to_string(),
+        "iterations_per_attempt": a.iterations, "batch": params.batch,
+    });
+    let fingerprint = blake3::hash(&serde_json::to_vec(&manifest).map_err(|e| e.to_string())?)
+        .to_hex()
+        .to_string();
+    let state = FactoringRun::prepare(
+        &RunOptions {
+            state_dir: a.state_dir.clone(),
+            resume: a.resume,
+            s3_uri: a.s3_uri.clone(),
+            sync_every: a.sync_every,
+            checkpoint_every: None,
+            verbose: a.verbose,
+            progress_every: a.progress_every,
+            checkpoint_name: "rho-factor.ckpt",
         },
-    );
+        "rho-factor",
+        manifest,
+    )?;
+    let path = state.dir.as_ref().map(|dir| dir.join("rho-factor.ckpt"));
+    let mut checkpoint = if a.resume {
+        let path = path
+            .as_deref()
+            .ok_or("rho-factor resume requires --state-dir")?;
+        decode_rho_factor_checkpoint(
+            &fs::read(path).map_err(|e| format!("reading rho-factor checkpoint: {e}"))?,
+            &fingerprint,
+            &n,
+        )?
+    } else {
+        RhoFactorCheckpoint {
+            schema_version: 1,
+            fingerprint: fingerprint.clone(),
+            next_attempt: 0,
+            factor: None,
+            successful_c: None,
+            iterations: 0,
+            compute_seconds: 0.0,
+        }
+    };
+    if checkpoint.next_attempt > a.attempts {
+        return Err("rho-factor checkpoint exceeds the requested attempt budget".into());
+    }
+    if let (Some(uri), Some(local_path)) = (&state.s3_uri, &path) {
+        if a.resume && s3_has_object(uri, "rho-factor.ckpt")? {
+            let remote_bytes = aws(&[
+                "s3",
+                "cp",
+                &format!("{uri}/rho-factor.ckpt"),
+                "-",
+                "--only-show-errors",
+            ])?
+            .stdout;
+            let remote = decode_rho_factor_checkpoint(&remote_bytes, &fingerprint, &n)?;
+            if remote.next_attempt > checkpoint.next_attempt {
+                return Err("S3 rho-factor checkpoint is ahead of local state; restore into a fresh directory".into());
+            }
+            if remote.next_attempt == checkpoint.next_attempt
+                && remote_bytes
+                    != fs::read(local_path)
+                        .map_err(|e| format!("reading local rho-factor checkpoint: {e}"))?
+            {
+                return Err(
+                    "S3 and local rho-factor checkpoints diverge at the same attempt".into(),
+                );
+            }
+        }
+    }
+    if !a.resume {
+        if let Some(path) = &path {
+            save_rho_factor_checkpoint(path, &checkpoint)?;
+            state.sync("initial")?;
+        }
+    }
+    let verbose = a.verbose || a.progress_every.is_some();
+    let printer = progress_printer(verbose);
+    let heartbeat =
+        verbose.then(|| StageHeartbeat::start("rho-factor", a.progress_every.unwrap_or(5)));
+    let progress = |checkpoint: &RhoFactorCheckpoint| {
+        let update = Progress {
+            stage: "attempt",
+            done: checkpoint.next_attempt as u64,
+            target: a.attempts as u64,
+            seconds: checkpoint.compute_seconds,
+        };
+        if let Some(print) = &printer {
+            print(&update);
+        }
+        if let Some(heartbeat) = &heartbeat {
+            heartbeat.update(&update);
+        }
+        state.progress("rho-factor", &update);
+    };
+    progress(&checkpoint);
+    while checkpoint.next_attempt < a.attempts && checkpoint.factor.is_none() {
+        let c = checkpoint.next_attempt as u64 + 1;
+        let attempt = factoring::rho_factor::rho_one_attempt(&n, &params, c);
+        checkpoint.next_attempt += 1;
+        checkpoint.iterations = checkpoint.iterations.saturating_add(attempt.iterations);
+        checkpoint.compute_seconds += attempt.seconds;
+        if let Some(factor) = attempt.factor {
+            checkpoint.factor = Some(factor.to_string());
+            checkpoint.successful_c = attempt.c;
+        }
+        if let Some(path) = &path {
+            save_rho_factor_checkpoint(path, &checkpoint)?;
+        }
+        progress(&checkpoint);
+    }
+    drop(heartbeat);
+    let factor = checkpoint
+        .factor
+        .as_deref()
+        .map(str::parse::<BigUint>)
+        .transpose()
+        .map_err(|e| format!("invalid saved rho factor: {e}"))?;
+    let cofactor = factor.as_ref().map(|factor| &n / factor);
+    let verified = factor
+        .as_ref()
+        .zip(cofactor.as_ref())
+        .is_some_and(|(f, c)| f * c == n);
+    let r = factoring::RhoResult {
+        n: n.clone(),
+        factor,
+        cofactor,
+        verified,
+        iterations: checkpoint.iterations,
+        c: checkpoint.successful_c,
+        seconds: checkpoint.compute_seconds,
+    };
     let s = split(
         "pollard-brent-rho",
         &n,
@@ -1703,6 +1921,7 @@ pub fn run_rho_factor(out: Out, a: &RhoFactorArgs) -> CmdResult {
         r.seconds,
         format!("{} iterations", r.iterations),
     );
+    state.finish(&r, r.verified)?;
     out.emit(&r, || s.text())?;
     verdict(r.verified, r.factor.is_some(), "rho-factor")
 }
@@ -2007,6 +2226,61 @@ mod tests {
     }
 
     #[test]
+    fn rho_factor_resumes_completed_attempts_and_rejects_corruption() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir =
+            std::env::temp_dir().join(format!("crax-rho-factor-{}-{unique}", std::process::id()));
+        let args = RhoFactorArgs {
+            n: "101".into(),
+            iterations: 4,
+            attempts: 2,
+            verbose: false,
+            progress_every: None,
+            state_dir: Some(dir.clone()),
+            resume: false,
+            s3_uri: None,
+            sync_every: None,
+        };
+        assert!(run_rho_factor(Out { json: true }, &args).is_err());
+        let path = dir.join("rho-factor.ckpt");
+        let manifest = fs::read(dir.join("manifest.json")).unwrap();
+        let fingerprint = blake3::hash(&manifest).to_hex().to_string();
+        let first = decode_rho_factor_checkpoint(
+            &fs::read(&path).unwrap(),
+            &fingerprint,
+            &BigUint::from(101u32),
+        )
+        .unwrap();
+        assert_eq!(first.next_attempt, 2);
+        let more = RhoFactorArgs {
+            attempts: 4,
+            resume: true,
+            ..args
+        };
+        assert!(run_rho_factor(Out { json: true }, &more).is_err());
+        let second = decode_rho_factor_checkpoint(
+            &fs::read(&path).unwrap(),
+            &fingerprint,
+            &BigUint::from(101u32),
+        )
+        .unwrap();
+        assert_eq!(second.next_attempt, 4);
+        assert!(second.iterations >= first.iterations);
+        let mut file: RhoFactorCheckpointFile =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        file.payload.push(' ');
+        fs::write(&path, serde_json::to_vec(&file).unwrap()).unwrap();
+        assert!(run_rho_factor(Out { json: true }, &more)
+            .unwrap_err()
+            .message
+            .contains("checksum mismatch"));
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
     fn expressions_and_forms() {
         assert_eq!(parse_expr("2^10-1").unwrap(), BigUint::from(1023u32));
         assert_eq!(parse_expr("(2^5+1)/3").unwrap(), BigUint::from(11u32));
@@ -2056,6 +2330,13 @@ mod tests {
             &RhoFactorArgs {
                 n: n.clone(),
                 iterations: 1 << 20,
+                attempts: 8,
+                verbose: false,
+                progress_every: None,
+                state_dir: None,
+                resume: false,
+                s3_uri: None,
+                sync_every: None,
             },
         )
         .unwrap();

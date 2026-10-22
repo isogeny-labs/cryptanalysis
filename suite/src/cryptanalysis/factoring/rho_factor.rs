@@ -319,8 +319,87 @@ pub fn rho(n: &BigUint, params: &RhoParams) -> RhoResult {
     result
 }
 
+/// Run one constant of the Brent walk. A caller may checkpoint between
+/// constants; interruption within this attempt repeats the same constant.
+pub fn rho_one_attempt(n: &BigUint, params: &RhoParams, c: u64) -> RhoResult {
+    let t0 = Instant::now();
+    let mut result = RhoResult {
+        n: n.clone(),
+        factor: None,
+        cofactor: None,
+        verified: false,
+        iterations: 0,
+        c: None,
+        seconds: 0.0,
+    };
+    let found = if n <= &BigUint::from(3u32) {
+        None
+    } else if n.is_even() {
+        Some((BigUint::from(2u32), 0))
+    } else if n.bits() <= 63 {
+        let value = n.iter_u64_digits().next().unwrap_or(0);
+        brent_u64(
+            value,
+            c,
+            params.max_iterations,
+            params.batch,
+            &mut result.iterations,
+        )
+        .map(|factor| (BigUint::from(factor), c))
+    } else if n.bits() <= 127 {
+        let mut digits = n.iter_u64_digits();
+        let value = digits.next().unwrap_or(0) as u128 | (digits.next().unwrap_or(0) as u128) << 64;
+        brent_u128(
+            value,
+            c,
+            params.max_iterations,
+            params.batch,
+            &mut result.iterations,
+        )
+        .map(|factor| (BigUint::from(factor), c))
+    } else {
+        brent_big(
+            n,
+            c,
+            params.max_iterations,
+            params.batch,
+            &mut result.iterations,
+        )
+        .map(|factor| (factor, c))
+    };
+    if let Some((factor, successful_c)) = found {
+        let (cofactor, remainder) = n.div_rem(&factor);
+        if remainder.is_zero() && &factor * &cofactor == *n {
+            result.factor = Some(factor);
+            result.cofactor = Some(cofactor);
+            result.c = Some(successful_c);
+            result.verified = true;
+        }
+    }
+    result.seconds = t0.elapsed().as_secs_f64();
+    result
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
+
+    #[test]
+    fn one_attempt_matches_the_existing_first_walk() {
+        let n = BigUint::from(1_000_003u64) * BigUint::from(1_000_033u64);
+        let params = RhoParams {
+            attempts: 1,
+            ..RhoParams::default()
+        };
+        let original = rho(&n, &params);
+        let single = rho_one_attempt(&n, &params, 1);
+        assert_eq!(single.factor, original.factor);
+        assert_eq!(single.cofactor, original.cofactor);
+        assert_eq!(single.iterations, original.iterations);
+        assert_eq!(single.c, original.c);
+        assert_eq!(single.verified, original.verified);
+    }
+
     /// The plain-arithmetic walk `brent_u64` replaced.
     fn brent_u64_plain(n: u64, c: u64, max_iter: u64, batch: u64, iters: &mut u64) -> Option<u64> {
         let f = |x: u64| ((x as u128 * x as u128 + c as u128) % n as u128) as u64;
@@ -381,7 +460,7 @@ mod tests {
                 ns.push(n);
             }
         }
-        for split in [20u32, 30, 40] {
+        for split in [40u32, 45, 50] {
             for _ in 0..4 {
                 let p = (next() >> (64 - split)) | 1 | (1 << (split - 1));
                 let q = (next() >> (64 - (100 - split))) | 1 | (1 << (100 - split - 1));
@@ -426,8 +505,6 @@ mod tests {
             }
         }
     }
-
-    use super::*;
 
     #[test]
     fn rho_splits_word_sized_semiprime() {

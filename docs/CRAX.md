@@ -349,7 +349,10 @@ $ crax rho-factor <n>
 and sieve output. Add `--state-dir DIR --s3-uri s3://BUCKET/PREFIX` to save
 cofactor, ECM-curve, and sieve checkpoints; repeat the command with `--resume`
 to continue. `--checkpoint-every` controls inner sieve batch writes and
-`--sync-every` controls S3 uploads. The [restart guide](cli_progress_resume.md)
+`--sync-every` controls S3 uploads. `crax rho-factor` also accepts
+`--verbose --progress-every`, `--state-dir --resume`, and `--s3-uri` to retain
+each completed Brent attempt; `--attempts` may increase on resume. The
+[restart guide](cli_progress_resume.md)
 describes the exact boundaries and artifacts.
 
 These sieves are **educational scale**. They have no lattice sieve, no double
