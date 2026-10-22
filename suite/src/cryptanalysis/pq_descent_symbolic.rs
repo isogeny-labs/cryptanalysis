@@ -587,4 +587,126 @@ mod tests {
             assert_eq!(p.split(n, 64), base_split(&p, n, 64), "trial {trial}");
         }
     }
+
+    /// **`b = 1` and the dimensions the random-`b` check skips.**  The
+    /// truth-table cross-check above draws `b` at random, so it never
+    /// names `b = 1`, the value of every Koblitz curve, where `b²`, the
+    /// constant of `S_3`'s third term, is the identity.  This repeats it
+    /// with `b` forced to 1, at every dimension the truth table reaches
+    /// from 2 to its cap (8 at two summands, 5 at three), including
+    /// the 4 and 7 the first check leaves out.  The basis is
+    /// `1, z, …, z^{n'-1}`, the one `binary-subspace` builds.
+    #[test]
+    fn the_symbolic_descent_is_the_truth_table_descent_for_b_one() {
+        let mut rng = StdRng::seed_from_u64(0xb1);
+        for &(n, seed) in &[(7u32, 1u64), (9, 2), (11, 3), (13, 4)] {
+            let inst = random_binary_instance(n, seed, 1 << 20).expect("a curve");
+            let mut curve = curve_of(&inst).unwrap();
+            let gf = &inst.gf;
+            curve.b = gf.to_element(1);
+            for n_prime in 2..=8u32.min(n) {
+                let words = standard_basis(n_prime);
+                let elems: Vec<_> = words.iter().map(|&w| gf.to_element(w)).collect();
+                for _ in 0..2 {
+                    let x_r = rng.gen::<u64>() & gf.mask;
+                    let x_r_el = gf.to_element(x_r);
+
+                    let table = weil_descend_s3(&curve, &x_r_el, &elems);
+                    let sym = descend(gf, 1, x_r, &words, 2).unwrap();
+                    assert_eq!(sym.n_vars, table.n_vars);
+                    assert_eq!(sym.equations.len(), table.equations.len());
+                    for (j, (a, b)) in sym.equations.iter().zip(&table.equations).enumerate() {
+                        assert_eq!(
+                            sorted_masks(a),
+                            sorted_masks(b),
+                            "S3 descent, b = 1, at n = {n}, n' = {n_prime}, equation {j} differs"
+                        );
+                    }
+
+                    if n_prime <= 5 {
+                        let table = weil_descend_s4(&curve, &x_r_el, &elems);
+                        let sym = descend(gf, 1, x_r, &words, 3).unwrap();
+                        assert_eq!(sym.n_vars, table.n_vars);
+                        assert_eq!(sym.equations.len(), table.equations.len());
+                        for (j, (a, b)) in sym.equations.iter().zip(&table.equations).enumerate() {
+                            assert_eq!(
+                                sorted_masks(a),
+                                sorted_masks(b),
+                                "S4 descent, b = 1, at n = {n}, n' = {n_prime}, equation {j} differs"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// **Past the truth table's reach, at the dimensions the evaluation
+    /// check skips, and with `b = 1`.**  The check above that runs past
+    /// the old cap names only `n' = 12` (two summands) and `n' = 7`
+    /// (three) on one random-`b` curve.  Here every equation of the
+    /// descent, at random points of the subspace, gives the bit of
+    /// `S_3` or `S_4` it stands for, for `n' ∈ {4, 7, 9, 13}` at two
+    /// summands and `n' ∈ {4, 7, 9}` at three, with `b = 1` and with a
+    /// random `b`, over the standard basis and over random words.  The
+    /// reference is the word formula, which
+    /// `the_word_formulas_are_the_repository_formulas` ties to the
+    /// repository's own `S_3` and `S_4`.  The lift must invert the
+    /// encoding on the same points.
+    #[test]
+    fn the_descent_evaluates_correctly_at_more_dimensions_and_b_one() {
+        let mut rng = StdRng::seed_from_u64(0xd1);
+        for &(n, seed) in &[(17u32, 9u64), (23, 4)] {
+            let inst = random_binary_instance(n, seed, 1 << 20).expect("a curve");
+            let gf = &inst.gf;
+            for &b in &[1u64, inst.b] {
+                for &(summands, n_prime) in &[
+                    (2u32, 4u32),
+                    (2, 7),
+                    (2, 9),
+                    (2, 13),
+                    (3, 4),
+                    (3, 7),
+                    (3, 9),
+                ] {
+                    let standard = standard_basis(n_prime);
+                    let random: Vec<u64> =
+                        (0..n_prime).map(|_| rng.gen::<u64>() & gf.mask).collect();
+                    for (kind, words) in [("standard", &standard), ("random", &random)] {
+                        let x_r = rng.gen::<u64>() & gf.mask;
+                        let sys = descend(gf, b, x_r, words, summands).unwrap();
+                        let n_vars = (summands * n_prime) as usize;
+                        assert_eq!(sys.n_vars, n_vars);
+                        assert_eq!(sys.equations.len(), n as usize);
+                        let points = if summands == 2 { 400 } else { 150 };
+                        for _ in 0..points {
+                            let v = rng.gen::<u64>() & ((1u64 << n_vars) - 1);
+                            let xs = sys.lift(v);
+                            assert_eq!(xs.len(), summands as usize);
+                            for (i, &x) in xs.iter().enumerate() {
+                                let expect = (0..n_prime as usize)
+                                    .filter(|&k| (v >> (i * n_prime as usize + k)) & 1 == 1)
+                                    .fold(0u64, |acc, k| acc ^ words[k]);
+                                assert_eq!(x, expect, "lift of {v:#x}, summand {i}");
+                            }
+                            let direct = if summands == 2 {
+                                semaev_s3_word(gf, b, xs[0], xs[1], x_r)
+                            } else {
+                                semaev_s4_word(gf, b, xs[0], xs[1], xs[2], x_r)
+                            };
+                            for (j, eq) in sys.equations.iter().enumerate() {
+                                assert_eq!(
+                                    eq.eval(v) as u64,
+                                    (direct >> j) & 1,
+                                    "S{} equation {j}, b = {b}, n = {n}, n' = {n_prime}, \
+                                     {kind} basis, at {v:#x}",
+                                    summands + 1
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
