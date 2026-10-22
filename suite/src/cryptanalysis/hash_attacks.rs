@@ -238,23 +238,31 @@ impl MerkleDamgardHash for Sha256 {
     }
 }
 
-/// SHA-3-256 is a sponge: it supports generic measurements here, not
-/// Merkle-Damgård length extension.
-pub struct Sha3_256;
-impl HashFunction for Sha3_256 {
-    fn name(&self) -> &'static str {
-        "SHA-3-256"
-    }
-    fn output_bytes(&self) -> usize {
-        32
-    }
-    fn block_bytes(&self) -> usize {
-        136
-    }
-    fn hash(&self, message: &[u8]) -> Vec<u8> {
-        crate::hash::sha3_256(message).to_vec()
-    }
+/// SHA-3 sponges support generic measurements here, with no
+/// Merkle-Damgård length-extension step.
+macro_rules! sha3_adapter {
+    ($name:ident, $label:literal, $output:expr, $rate:expr, $hash:path) => {
+        pub struct $name;
+        impl HashFunction for $name {
+            fn name(&self) -> &'static str {
+                $label
+            }
+            fn output_bytes(&self) -> usize {
+                $output
+            }
+            fn block_bytes(&self) -> usize {
+                $rate
+            }
+            fn hash(&self, message: &[u8]) -> Vec<u8> {
+                $hash(message).to_vec()
+            }
+        }
+    };
 }
+sha3_adapter!(Sha3_224, "SHA-3-224", 28, 144, crate::hash::sha3_224);
+sha3_adapter!(Sha3_256, "SHA-3-256", 32, 136, crate::hash::sha3_256);
+sha3_adapter!(Sha3_384, "SHA-3-384", 48, 104, crate::hash::sha3_384);
+sha3_adapter!(Sha3_512, "SHA-3-512", 64, 72, crate::hash::sha3_512);
 
 // ── Attack 1: length extension ───────────────────────────────────────
 
@@ -497,14 +505,29 @@ pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
             md.push_str(&run_birthday(&Sha256, 32, 200_000));
             md.push_str(&run_differential(&Sha256));
         }
-        "sha3" | "sha3-256" => {
+        "sha3-224" | "sha-3-224" => {
+            md.push_str("## Length extension\n\nSHA-3-224 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
+            md.push_str(&run_birthday(&Sha3_224, 32, 200_000));
+            md.push_str(&run_differential(&Sha3_224));
+        }
+        "sha3" | "sha-3" | "sha3-256" | "sha-3-256" => {
             md.push_str("## Length extension\n\nSHA-3-256 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
             md.push_str(&run_birthday(&Sha3_256, 32, 200_000));
             md.push_str(&run_differential(&Sha3_256));
         }
+        "sha3-384" | "sha-3-384" => {
+            md.push_str("## Length extension\n\nSHA-3-384 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
+            md.push_str(&run_birthday(&Sha3_384, 32, 200_000));
+            md.push_str(&run_differential(&Sha3_384));
+        }
+        "sha3-512" | "sha-3-512" => {
+            md.push_str("## Length extension\n\nSHA-3-512 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
+            md.push_str(&run_birthday(&Sha3_512, 32, 200_000));
+            md.push_str(&run_differential(&Sha3_512));
+        }
         _ => {
             return Err(format!(
-                "unknown hash '{}'; try one of: md4, md5, sha1, sha256, sha3-256",
+                "unknown hash '{}'; try one of: md4, md5, sha1, sha256, sha3-224, sha3-256, sha3-384, sha3-512",
                 hash_name
             ));
         }
@@ -669,10 +692,20 @@ mod tests {
 
     #[test]
     fn sha3_generic_adapter_matches_known_digest() {
+        assert_eq!(Sha3_224.block_bytes(), 144);
+        assert_eq!(Sha3_256.block_bytes(), 136);
+        assert_eq!(Sha3_384.block_bytes(), 104);
+        assert_eq!(Sha3_512.block_bytes(), 72);
+        assert_eq!(
+            hex(&Sha3_224.hash(b"abc")),
+            "e642824c3f8cf24ad09234ee7d3c766fc9a3a5168d0c94ad73b46fdf"
+        );
         assert_eq!(
             hex(&Sha3_256.hash(b"abc")),
             "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
         );
+        assert_eq!(hex(&Sha3_384.hash(b"abc")), "ec01498288516fc926459f58e2c6ad8df9b473cb0fc08c2596da7cf0e49be4b298d88cea927ac7f539f1edf228376d25");
+        assert_eq!(hex(&Sha3_512.hash(b"abc")), "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0");
     }
 
     /// Birthday-attack on 24-bit-truncated MD5 finds a collision in
