@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-kangaroo, BSGS, and grumpy; other `solve` algorithms reject them.
+kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -88,6 +88,63 @@ points or the giant start point when loading a checkpoint. Grumpy reports
 `grumpy.ckpt`. Each checkpoint has a checksum and binds the group, target,
 interval, and resolved algorithm settings. Both commands write a matching
 `*.progress.json`, `manifest.json`, and `result.json` in their state directory.
+
+## Reusable precomputation table
+
+`solve --alg precomp` reports the build and online phases separately. It saves
+completed chain endpoints during a long build, then saves the finished table as
+a reusable artifact. The online walk has its own checkpoint.
+
+```sh
+cryptanalysis solve --alg precomp --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --seed 1984 --table 100 --dp-bits 3 \
+  --verbose --progress-every 5 --state-dir ./runs/precomp-001 \
+  --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/precomp-001 --sync-every 60
+```
+
+Repeat the same group, base, target, seed, and build settings with `--resume`.
+`precomp.table.ckpt` contains a versioned, checksummed endpoint corpus and
+Bloom filter during the build. Once complete it contains the sorted table.
+The resumed build starts fresh walk lanes while retaining those endpoints and
+cumulative counters. `precomp.online.ckpt` stores the RNG and current walk
+position, and a completed answer is checked against the target on restore.
+Both checkpoints bind the group and run settings; a changed run manifest or a
+damaged checkpoint is rejected. Their `*.progress.json` files provide phase and
+counter updates. `result.json` records the final status. `--verbose` can also
+be used without a state directory.
+
+The S3 copy and restore rules described above apply to both precomp artifacts.
+Keep a separate run directory and prefix for each target. The table checkpoint
+can be retained as an artifact, but this command's run manifest binds it to the
+target. A later target needs a fresh run directory; a table import command is
+not yet exposed by this CLI.
+
+## Pohlig–Hellman discrete log
+
+`solve --alg dlog` factors the base's order and solves each prime factor digit
+with the selected solver. `--solver auto` chooses the same prime-order solver
+as the ordinary command. The durable mode records completed digits in
+`dlog.ckpt` and gives each active digit its own checkpoint, such as
+`dlog.factor2.digit0.ckpt`. Resuming skips finished digits and continues the
+current digit's BSGS, rho, kangaroo, or grumpy state. Small brute-force digits
+complete directly. Progress shows the factor, digit, selected solver, and
+operation counters.
+
+```sh
+cryptanalysis solve --alg dlog --group zp --p 1000003 --order 1000002 \
+  --g 389787 --h 883354 --seed 7 --solver auto \
+  --verbose --progress-every 5 --state-dir ./runs/dlog-001 \
+  --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/dlog-001 --sync-every 60
+```
+
+Repeat the group, base, target, solver selection, and solver settings with
+`--resume`. `--max-ops` may be raised to continue a capped digit. The parent
+checkpoint is versioned and checksummed and binds the group, target, and
+selection settings. Each digit checkpoint validates its own solver state.
+`dlog.ckpt.progress.json` and `result.json` provide readable status. The
+local lock and S3 sync and restore rules described above apply.
 
 ## Index calculus
 
