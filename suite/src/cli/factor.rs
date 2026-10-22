@@ -386,9 +386,11 @@ impl NfsArgs {
     }
 }
 
-struct NfsRun {
+struct FactoringRun {
     dir: Option<PathBuf>,
     s3_uri: Option<String>,
+    checkpoint_name: &'static str,
+    method: &'static str,
     _lock: Option<File>,
     verbose: bool,
     resume: bool,
@@ -398,13 +400,39 @@ struct NfsRun {
     local_error: RefCell<Option<String>>,
 }
 
-struct NfsHeartbeat {
+struct RunOptions {
+    state_dir: Option<PathBuf>,
+    resume: bool,
+    s3_uri: Option<String>,
+    sync_every: Option<u64>,
+    checkpoint_every: Option<u64>,
+    verbose: bool,
+    progress_every: Option<u64>,
+    checkpoint_name: &'static str,
+}
+
+impl From<&NfsArgs> for RunOptions {
+    fn from(args: &NfsArgs) -> Self {
+        Self {
+            state_dir: args.state_dir.clone(),
+            resume: args.resume,
+            s3_uri: args.s3_uri.clone(),
+            sync_every: args.sync_every,
+            checkpoint_every: args.checkpoint_every,
+            verbose: args.verbose,
+            progress_every: args.progress_every,
+            checkpoint_name: "nfs.ckpt",
+        }
+    }
+}
+
+struct StageHeartbeat {
     stage: Arc<Mutex<(&'static str, u64, u64)>>,
     stop: mpsc::Sender<()>,
     worker: Option<JoinHandle<()>>,
 }
 
-impl NfsHeartbeat {
+impl StageHeartbeat {
     fn start(method: &'static str, every_seconds: u64) -> Self {
         let stage = Arc::new(Mutex::new(("polyselect", 0, 0)));
         let shared = Arc::clone(&stage);
@@ -415,7 +443,7 @@ impl NfsHeartbeat {
                 .recv_timeout(Duration::from_secs(every_seconds))
                 .is_err_and(|e| e == mpsc::RecvTimeoutError::Timeout)
             {
-                let (name, done, target) = *shared.lock().expect("NFS heartbeat lock");
+                let (name, done, target) = *shared.lock().expect("stage heartbeat lock");
                 if target == 0 {
                     eprintln!(
                         "[{method}] {:.1}s {name} work={done}",
@@ -437,11 +465,11 @@ impl NfsHeartbeat {
     }
 
     fn update(&self, p: &Progress) {
-        *self.stage.lock().expect("NFS heartbeat lock") = (p.stage, p.done, p.target);
+        *self.stage.lock().expect("stage heartbeat lock") = (p.stage, p.done, p.target);
     }
 }
 
-impl Drop for NfsHeartbeat {
+impl Drop for StageHeartbeat {
     fn drop(&mut self) {
         let _ = self.stop.send(());
         if let Some(worker) = self.worker.take() {
@@ -517,18 +545,35 @@ fn s3_has_objects(uri: &str) -> Result<bool, String> {
     Ok(document["KeyCount"].as_u64().unwrap_or(0) > 0)
 }
 
-impl NfsRun {
-    fn prepare(
+impl FactoringRun {
+    fn prepare_nfs(
         args: &NfsArgs,
-        method: &str,
+        method: &'static str,
         n: &BigUint,
         method_params: serde_json::Value,
     ) -> Result<Self, String> {
-        if args.state_dir.is_none() {
-            if args.resume
-                || args.checkpoint_every.is_some()
-                || args.s3_uri.is_some()
-                || args.sync_every.is_some()
+        let manifest = serde_json::json!({
+            "schema_version": 1,
+            "method": method,
+            "n": n.to_string(),
+            "method_params": method_params,
+            "rational_bound": args.rational_bound,
+            "algebraic_bound": args.algebraic_bound,
+            "sieve_half_width": args.sieve_half_width,
+        });
+        Self::prepare(&RunOptions::from(args), method, manifest)
+    }
+
+    fn prepare(
+        options: &RunOptions,
+        method: &'static str,
+        manifest: serde_json::Value,
+    ) -> Result<Self, String> {
+        if options.state_dir.is_none() {
+            if options.resume
+                || options.checkpoint_every.is_some()
+                || options.s3_uri.is_some()
+                || options.sync_every.is_some()
             {
                 return Err(
                     "--resume, --checkpoint-every, --s3-uri and --sync-every require --state-dir"
@@ -536,10 +581,10 @@ impl NfsRun {
                 );
             }
         }
-        if args.sync_every.is_some() && args.s3_uri.is_none() {
+        if options.sync_every.is_some() && options.s3_uri.is_none() {
             return Err("--sync-every requires --s3-uri".into());
         }
-        if let Some(uri) = &args.s3_uri {
+        if let Some(uri) = &options.s3_uri {
             let Some((bucket, prefix)) = uri.strip_prefix("s3://").and_then(|s| s.split_once('/'))
             else {
                 return Err("--s3-uri must be s3://BUCKET/PREFIX".into());
@@ -552,13 +597,15 @@ impl NfsRun {
             }
         }
         let mut run = Self {
-            dir: args.state_dir.clone(),
-            s3_uri: args.s3_uri.clone(),
+            dir: options.state_dir.clone(),
+            s3_uri: options.s3_uri.clone(),
+            checkpoint_name: options.checkpoint_name,
+            method,
             _lock: None,
-            verbose: args.verbose || args.progress_every.is_some(),
-            resume: args.resume,
+            verbose: options.verbose || options.progress_every.is_some(),
+            resume: options.resume,
             did_progress: Cell::new(false),
-            sync_every: args.sync_every.unwrap_or(60),
+            sync_every: options.sync_every.unwrap_or(60),
             last_sync: Cell::new(Instant::now()),
             local_error: RefCell::new(None),
         };
@@ -571,34 +618,29 @@ impl NfsRun {
             .read(true)
             .write(true)
             .open(dir.join(".lock"))
-            .map_err(|e| format!("opening NFS state lock: {e}"))?;
+            .map_err(|e| format!("opening {method} state lock: {e}"))?;
         #[cfg(unix)]
         if unsafe { libc::flock(lock.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } != 0 {
             return Err(format!("{} is already in use", dir.display()));
         }
         #[cfg(not(unix))]
-        return Err("NFS state directory locking is unavailable on this platform".into());
+        return Err(format!(
+            "{method} state directory locking is unavailable on this platform"
+        ));
         run._lock = Some(lock);
 
-        let manifest = serde_json::json!({
-            "schema_version": 1,
-            "method": method,
-            "n": n.to_string(),
-            "method_params": method_params,
-            "rational_bound": args.rational_bound,
-            "algebraic_bound": args.algebraic_bound,
-            "sieve_half_width": args.sieve_half_width,
-        });
         let manifest_path = dir.join("manifest.json");
-        if args.resume {
+        if options.resume {
             if !manifest_path.exists() {
                 if state_dir_has_payload(dir)? {
-                    return Err("NFS state directory has no manifest but is not empty".into());
+                    return Err(format!(
+                        "{method} state directory has no manifest but is not empty"
+                    ));
                 }
                 let uri = run
                     .s3_uri
                     .as_ref()
-                    .ok_or("no local NFS manifest to resume")?;
+                    .ok_or_else(|| format!("no local {method} manifest to resume"))?;
                 if run.verbose {
                     eprintln!("[{method}] restoring S3 state");
                 }
@@ -618,27 +660,33 @@ impl NfsRun {
                     let remote_manifest = format!("{uri}/manifest.json");
                     let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
                     let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
-                        .map_err(|e| format!("invalid S3 NFS manifest: {e}"))?;
+                        .map_err(|e| format!("invalid S3 {method} manifest: {e}"))?;
                     if found != manifest {
-                        return Err("S3 NFS manifest differs from the local run".into());
+                        return Err(format!("S3 {method} manifest differs from the local run"));
                     }
                 }
             }
             let found: serde_json::Value = serde_json::from_slice(
-                &fs::read(&manifest_path).map_err(|e| format!("reading NFS manifest: {e}"))?,
+                &fs::read(&manifest_path).map_err(|e| format!("reading {method} manifest: {e}"))?,
             )
-            .map_err(|e| format!("invalid NFS manifest: {e}"))?;
+            .map_err(|e| format!("invalid {method} manifest: {e}"))?;
             if found != manifest {
-                return Err("NFS manifest differs from the requested run".into());
+                return Err(format!("{method} manifest differs from the requested run"));
             }
-            if !dir.join("nfs.ckpt").is_file() {
-                let completed: serde_json::Value = serde_json::from_slice(
-                    &fs::read(dir.join("result.json"))
-                        .map_err(|_| "NFS resume needs nfs.ckpt or a verified result")?,
-                )
-                .map_err(|e| format!("invalid NFS result: {e}"))?;
+            if !dir.join(options.checkpoint_name).is_file() {
+                let completed: serde_json::Value =
+                    serde_json::from_slice(&fs::read(dir.join("result.json")).map_err(|_| {
+                        format!(
+                            "{method} resume needs {} or a verified result",
+                            options.checkpoint_name
+                        )
+                    })?)
+                    .map_err(|e| format!("invalid NFS result: {e}"))?;
                 if completed["verified"] != true {
-                    return Err("NFS resume needs nfs.ckpt or a verified result".into());
+                    return Err(format!(
+                        "{method} resume needs {} or a verified result",
+                        options.checkpoint_name
+                    ));
                 }
             }
         } else {
@@ -660,7 +708,7 @@ impl NfsRun {
             return Ok(());
         };
         if self.verbose {
-            eprintln!("[nfs] {label} S3 sync started");
+            eprintln!("[{}] {label} S3 sync started", self.method);
         }
         let started = Instant::now();
         // Force each object upload: `aws s3 sync` may skip a rewritten
@@ -674,7 +722,7 @@ impl NfsRun {
             }
             Ok(())
         };
-        for name in ["manifest.json", "nfs.ckpt", "progress.json"] {
+        for name in ["manifest.json", self.checkpoint_name, "progress.json"] {
             push(name)?;
         }
         if label == "final" {
@@ -683,7 +731,8 @@ impl NfsRun {
         self.last_sync.set(Instant::now());
         if self.verbose {
             eprintln!(
-                "[nfs] {label} S3 sync complete in {:.1}s",
+                "[{}] {label} S3 sync complete in {:.1}s",
+                self.method,
                 started.elapsed().as_secs_f64()
             );
         }
@@ -704,25 +753,25 @@ impl NfsRun {
         }
         if self.s3_uri.is_some() && self.last_sync.get().elapsed().as_secs() >= self.sync_every {
             if let Err(error) = self.sync("periodic") {
-                eprintln!("[nfs] {error}");
+                eprintln!("[{}] {error}", self.method);
             }
             self.last_sync.set(Instant::now());
         }
     }
 
-    fn finish(&self, report: &NfsReport) -> Result<(), String> {
+    fn finish(&self, report: &impl Serialize, verified: bool) -> Result<(), String> {
         // A failed checkpoint validation emits no progress. Keep the previous
         // local and remote result intact so an operator can repair the state.
-        if self.resume && !self.did_progress.get() && !report.verified {
+        if self.resume && !self.did_progress.get() && !verified {
             return Ok(());
+        }
+        if let Some(error) = self.local_error.borrow_mut().take() {
+            return Err(error);
         }
         if let Some(dir) = &self.dir {
             write_json_atomic(&dir.join("result.json"), report)?;
         }
         self.sync("final")?;
-        if let Some(error) = self.local_error.borrow_mut().take() {
-            return Err(error);
-        }
         Ok(())
     }
 }
@@ -781,7 +830,8 @@ pub struct GnfsArgs {
 pub fn run_gnfs(out: Out, a: &GnfsArgs) -> CmdResult {
     let n = parse_expr(&a.n)?;
     size_guard(&n, "gnfs", 65, a.nfs.force)?;
-    let state = NfsRun::prepare(&a.nfs, "gnfs", &n, serde_json::json!({"degree": a.degree}))?;
+    let state =
+        FactoringRun::prepare_nfs(&a.nfs, "gnfs", &n, serde_json::json!({"degree": a.degree}))?;
     let params = GnfsParams {
         degree: a.degree,
         nfs: a.nfs.params(),
@@ -794,7 +844,7 @@ pub fn run_gnfs(out: Out, a: &GnfsArgs) -> CmdResult {
     }
     let r = {
         let heartbeat =
-            verbose.then(|| NfsHeartbeat::start("gnfs", a.nfs.progress_every.unwrap_or(5)));
+            verbose.then(|| StageHeartbeat::start("gnfs", a.nfs.progress_every.unwrap_or(5)));
         let progress = |p: &Progress| {
             if let Some(print) = &pr {
                 print(p);
@@ -807,7 +857,7 @@ pub fn run_gnfs(out: Out, a: &GnfsArgs) -> CmdResult {
         let callback = (verbose || state.dir.is_some()).then_some(&progress as &dyn Fn(&Progress));
         factoring::gnfs(&n, &params, callback)
     };
-    state.finish(&r)?;
+    state.finish(&r, r.verified)?;
     out.emit(&r, || nfs_text(&r))?;
     verdict(r.verified, r.factor.is_some(), "gnfs")
 }
@@ -854,7 +904,7 @@ pub fn run_snfs(out: Out, a: &SnfsArgs) -> CmdResult {
     };
     size_guard(&n, "snfs", 90, a.nfs.force)?;
     let method_params = serde_json::json!({"degree":a.degree,"input":input});
-    let state = NfsRun::prepare(&a.nfs, "snfs", &n, method_params)?;
+    let state = FactoringRun::prepare_nfs(&a.nfs, "snfs", &n, method_params)?;
     let params = SnfsParams {
         degree: a.degree,
         nfs: a.nfs.params(),
@@ -866,7 +916,7 @@ pub fn run_snfs(out: Out, a: &SnfsArgs) -> CmdResult {
     }
     let r = {
         let heartbeat =
-            verbose.then(|| NfsHeartbeat::start("snfs", a.nfs.progress_every.unwrap_or(5)));
+            verbose.then(|| StageHeartbeat::start("snfs", a.nfs.progress_every.unwrap_or(5)));
         let progress = |p: &Progress| {
             if let Some(print) = &pr {
                 print(p);
@@ -879,7 +929,7 @@ pub fn run_snfs(out: Out, a: &SnfsArgs) -> CmdResult {
         let callback = (verbose || state.dir.is_some()).then_some(&progress as &dyn Fn(&Progress));
         factoring::snfs(&n, &input, &params, callback)
     };
-    state.finish(&r)?;
+    state.finish(&r, r.verified)?;
     out.emit(&r, || nfs_text(&r))?;
     verdict(r.verified, r.factor.is_some(), "snfs")
 }
@@ -896,6 +946,9 @@ pub struct QsArgs {
     /// Knuth-Schroeppel multiplier (default: chosen automatically).
     #[arg(long)]
     pub multiplier: Option<u64>,
+    /// Sieve interval half-width.
+    #[arg(long)]
+    pub sieve_half_width: Option<u32>,
     #[arg(long, default_value_t = 1)]
     pub threads: usize,
     #[arg(long, default_value_t = 1)]
@@ -903,9 +956,45 @@ pub struct QsArgs {
     /// Stage progress on stderr.
     #[arg(long)]
     pub verbose: bool,
+    /// Seconds between heartbeats during a stage with no new work reports.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Stop after this many polynomial a-values; raise on resume to continue.
+    #[arg(long)]
+    pub max_a_values: Option<u64>,
+    /// Dedicated directory for SIQS relation checkpoints and reports.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Continue from the checkpoint in --state-dir (or restore from S3).
+    #[arg(long)]
+    pub resume: bool,
+    /// Seconds between local checkpoint writes (0 saves every batch).
+    #[arg(long)]
+    pub checkpoint_every: Option<u64>,
+    /// Mirror the run directory to this S3 prefix with the AWS CLI.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 uploads; the final upload is always attempted.
+    #[arg(long)]
+    pub sync_every: Option<u64>,
     /// Run even above the size this implementation is practical for.
     #[arg(long)]
     pub force: bool,
+}
+
+impl From<&QsArgs> for RunOptions {
+    fn from(args: &QsArgs) -> Self {
+        Self {
+            state_dir: args.state_dir.clone(),
+            resume: args.resume,
+            s3_uri: args.s3_uri.clone(),
+            sync_every: args.sync_every,
+            checkpoint_every: args.checkpoint_every,
+            verbose: args.verbose,
+            progress_every: args.progress_every,
+            checkpoint_name: "qs.ckpt",
+        }
+    }
 }
 
 fn qs_text(r: &QsReport) -> String {
@@ -938,15 +1027,51 @@ fn qs_text(r: &QsReport) -> String {
 pub fn run_qs(out: Out, a: &QsArgs) -> CmdResult {
     let n = parse_expr(&a.n)?;
     size_guard(&n, "qs", 75, a.force)?;
+    let manifest = serde_json::json!({
+        "schema_version": 1,
+        "method": "qs",
+        "n": n.to_string(),
+        "factor_base_size": a.factor_base_size,
+        "multiplier": a.multiplier,
+        "sieve_half_width": a.sieve_half_width,
+        "seed": a.seed,
+    });
+    let state = FactoringRun::prepare(&RunOptions::from(a), "qs", manifest)?;
     let params = QsParams {
         factor_base_size: a.factor_base_size,
         multiplier: a.multiplier,
+        sieve_half_width: a.sieve_half_width,
         threads: a.threads.max(1),
         seed: a.seed,
+        max_a_values: a.max_a_values.unwrap_or(0),
+        checkpoint_path: a.state_dir.as_ref().map(|dir| dir.join("qs.ckpt")),
+        resume: a.resume,
+        checkpoint_every_secs: a
+            .checkpoint_every
+            .unwrap_or(60)
+            .min(a.sync_every.unwrap_or(u64::MAX)),
         ..QsParams::default()
     };
-    let pr = progress_printer(a.verbose);
-    let r = factoring::qs(&n, &params, pr.as_ref().map(|f| f as &dyn Fn(&Progress)));
+    let verbose = a.verbose || a.progress_every.is_some();
+    let pr = progress_printer(verbose);
+    if verbose {
+        eprintln!("[qs] factor-base setup started");
+    }
+    let r = {
+        let heartbeat = verbose.then(|| StageHeartbeat::start("qs", a.progress_every.unwrap_or(5)));
+        let progress = |p: &Progress| {
+            if let Some(print) = &pr {
+                print(p);
+            }
+            if let Some(heartbeat) = &heartbeat {
+                heartbeat.update(p);
+            }
+            state.progress("qs", p);
+        };
+        let callback = (verbose || state.dir.is_some()).then_some(&progress as &dyn Fn(&Progress));
+        factoring::qs(&n, &params, callback)
+    };
+    state.finish(&r, r.verified)?;
     out.emit(&r, || qs_text(&r))?;
     verdict(r.verified, r.factor.is_some(), "qs")
 }
@@ -1373,9 +1498,17 @@ mod tests {
                 n: "1000000000000037*100000000000031".into(),
                 factor_base_size: None,
                 multiplier: None,
+                sieve_half_width: None,
                 threads: 1,
                 seed: 1,
                 verbose: false,
+                progress_every: None,
+                max_a_values: None,
+                state_dir: None,
+                resume: false,
+                checkpoint_every: None,
+                s3_uri: None,
+                sync_every: None,
                 force: false,
             },
         )

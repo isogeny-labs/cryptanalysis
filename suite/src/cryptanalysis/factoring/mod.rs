@@ -103,10 +103,15 @@ pub mod serde_big {
     /// `BigInt` as a decimal string.
     pub mod bigint {
         use num_bigint::BigInt;
-        use serde::Serializer;
+        use serde::{de::Error, Deserialize, Deserializer, Serializer};
         /// Serialise.
         pub fn serialize<S: Serializer>(x: &BigInt, s: S) -> Result<S::Ok, S::Error> {
             s.serialize_str(&x.to_str_radix(10))
+        }
+        /// Deserialize a decimal integer.
+        pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<BigInt, D::Error> {
+            let value = String::deserialize(d)?;
+            value.parse().map_err(D::Error::custom)
         }
     }
     /// `Vec<BigInt>` as a list of decimal strings.

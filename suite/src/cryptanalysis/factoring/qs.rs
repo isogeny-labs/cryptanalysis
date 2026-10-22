@@ -50,9 +50,12 @@ use num_integer::Integer;
 use num_traits::{One, Signed, ToPrimitive, Zero};
 use rand::{rngs::SmallRng, Rng, SeedableRng};
 use rayon::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
 use std::time::Instant;
+
+mod checkpoint;
 
 use super::arith::{
     big_mod_u64, bigint_mod, bigint_mod_u64, inv_mod, is_probable_prime, isqrt_exact, legendre,
@@ -85,6 +88,12 @@ pub struct QsParams {
     pub threads: usize,
     /// Seed for the choice of `a` values.
     pub seed: u64,
+    /// File for completed polynomial batches and their relations.
+    pub checkpoint_path: Option<PathBuf>,
+    /// Continue from `checkpoint_path`.
+    pub resume: bool,
+    /// Seconds between checkpoint writes; zero writes each batch.
+    pub checkpoint_every_secs: u64,
 }
 
 impl Default for QsParams {
@@ -100,6 +109,9 @@ impl Default for QsParams {
             max_a_values: 0,
             threads: 1,
             seed: 1,
+            checkpoint_path: None,
+            resume: false,
+            checkpoint_every_secs: 60,
         }
     }
 }
@@ -159,8 +171,9 @@ pub struct QsReport {
 }
 
 /// One QS relation: `y² ≡ sign · ∏ primes (mod n)`.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 struct Relation {
+    #[serde(with = "serde_big::bigint")]
     y: BigInt,
     negative: bool,
     /// Factor-base indices (with multiplicity).
@@ -745,10 +758,87 @@ pub fn qs(n: &BigUint, params: &QsParams, progress: ProgressFn) -> QsReport {
     let batch = params.threads.max(1) * 4;
     let mut next_check = fb.primes.len();
     let mut failures = 0u32;
+    let identity = serde_json::json!({
+        "schema": 1,
+        "n": n.to_string(),
+        "factor_base_size": fb.primes.len(),
+        "sieve_half_width": m,
+        "multiplier": k,
+        "large_prime_bound": lp_bound,
+        "threshold": threshold,
+        "surplus": params.surplus,
+        "max_dependencies": params.max_dependencies,
+        "seed": params.seed,
+    });
+    // Thread count, a-value cap, and checkpoint cadence may change on resume.
+    let fingerprint = blake3::hash(&serde_json::to_vec(&identity).expect("SIQS identity is JSON"))
+        .to_hex()
+        .to_string();
+    let mut sieve_complete = false;
+    if params.resume {
+        let Some(path) = params.checkpoint_path.as_ref() else {
+            report.failure = Some("SIQS resume needs a checkpoint path".into());
+            return report;
+        };
+        let loaded = match checkpoint::load(path, &fingerprint) {
+            Ok(state) => state,
+            Err(error) => {
+                report.failure = Some(error);
+                return report;
+            }
+        };
+        if loaded.next_check == 0
+            || !loaded.sieve_seconds.is_finite()
+            || loaded
+                .relations
+                .iter()
+                .any(|r| r.fb.iter().any(|&i| i as usize >= fb.primes.len()))
+        {
+            report.failure = Some("invalid SIQS checkpoint state".into());
+            return report;
+        }
+        // Replaying accepted a values restores SmallRng and the dedup set
+        // exactly at a completed batch boundary. No serialized RNG layout is
+        // tied to a particular rand version.
+        while used_a.len() < loaded.a_values as usize {
+            let Some(ap) = choose_a(&fb, &target_a, &mut rng, s) else {
+                report.failure = Some("could not replay SIQS polynomial choices".into());
+                return report;
+            };
+            used_a.insert(ap.a);
+        }
+        report.a_values = loaded.a_values;
+        report.polynomials = loaded.polynomials;
+        report.candidates = loaded.candidates;
+        report.sieve_seconds = loaded.sieve_seconds;
+        next_check = loaded.next_check;
+        rels = loaded.relations;
+        for r in &rels {
+            seen_y.insert(r.y.abs());
+        }
+        sieve_complete = loaded.sieve_complete;
+        report.full_relations = rels.iter().filter(|r| r.large == 1).count();
+        report.partial_relations = rels.len() - report.full_relations;
+    }
+    let prior_sieve_seconds = report.sieve_seconds;
+    let sieve_started = Instant::now();
+    let mut last_checkpoint = Instant::now();
     loop {
+        if sieve_complete {
+            break;
+        }
+        if params.max_a_values > 0 && report.a_values >= params.max_a_values {
+            report.failure = Some("a-value budget exhausted before enough relations".into());
+            break;
+        }
         // Draw a batch of fresh a values.
-        let mut aps = Vec::with_capacity(batch);
-        while aps.len() < batch {
+        let remaining = if params.max_a_values > 0 {
+            (params.max_a_values - report.a_values).min(batch as u64) as usize
+        } else {
+            batch
+        };
+        let mut aps = Vec::with_capacity(remaining);
+        while aps.len() < remaining {
             match choose_a(&fb, &target_a, &mut rng, s) {
                 Some(ap) if used_a.insert(ap.a.clone()) => {
                     failures = 0;
@@ -781,6 +871,40 @@ pub fn qs(n: &BigUint, params: &QsParams, progress: ProgressFn) -> QsReport {
         }
         report.full_relations = rels.iter().filter(|r| r.large == 1).count();
         report.partial_relations = rels.len() - report.full_relations;
+        if rels.len() >= next_check {
+            let rows = relation_rows(&rels, fb.primes.len());
+            let (r, c) = filtered_excess(&rows);
+            if r >= c + params.surplus {
+                sieve_complete = true;
+            } else {
+                next_check = rels.len() + (fb.primes.len() / 20).max(20);
+            }
+        }
+        report.sieve_seconds = prior_sieve_seconds + secs(sieve_started);
+        let budget_exhausted = params.max_a_values > 0 && report.a_values >= params.max_a_values;
+        if let Some(path) = params.checkpoint_path.as_deref() {
+            if sieve_complete
+                || budget_exhausted
+                || params.checkpoint_every_secs == 0
+                || last_checkpoint.elapsed().as_secs() >= params.checkpoint_every_secs
+            {
+                let snapshot = checkpoint::Snapshot {
+                    fingerprint: &fingerprint,
+                    a_values: report.a_values,
+                    polynomials: report.polynomials,
+                    candidates: report.candidates,
+                    sieve_seconds: report.sieve_seconds,
+                    next_check,
+                    sieve_complete,
+                    relations: &rels,
+                };
+                if let Err(error) = checkpoint::save(path, &snapshot) {
+                    report.failure = Some(error);
+                    break;
+                }
+                last_checkpoint = Instant::now();
+            }
+        }
         if let Some(cb) = progress {
             cb(&Progress {
                 stage: "sieve",
@@ -789,20 +913,15 @@ pub fn qs(n: &BigUint, params: &QsParams, progress: ProgressFn) -> QsReport {
                 seconds: secs(t0),
             });
         }
-        if rels.len() >= next_check {
-            let rows = relation_rows(&rels, fb.primes.len());
-            let (r, c) = filtered_excess(&rows);
-            if r >= c + params.surplus {
-                break;
-            }
-            next_check = rels.len() + (fb.primes.len() / 20).max(20);
+        if sieve_complete {
+            break;
         }
-        if params.max_a_values > 0 && report.a_values >= params.max_a_values {
+        if budget_exhausted {
             report.failure = Some("a-value budget exhausted before enough relations".into());
             break;
         }
     }
-    report.sieve_seconds = secs(t0);
+    report.sieve_seconds = prior_sieve_seconds + secs(sieve_started);
     if report.failure.is_some() {
         report.total_seconds = secs(t0);
         return report;

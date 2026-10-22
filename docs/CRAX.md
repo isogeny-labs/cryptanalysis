@@ -68,11 +68,11 @@ command runs and remain in the final `diagnostics_text` field. The native
 
 `crax icx run ... --verbose --json` prints stage progress to stderr and one
 final JSON document to stdout. `crax gnfs`, `snfs`, and `qs` also support
-`--verbose` stage reports. GNFS and SNFS save relation-sieve checkpoints with
-`--state-dir`, continue with `--resume`, and mirror the run directory with
-`--s3-uri`. SIQS and the other Rust attack engines do not yet share that
-checkpoint contract. The underlying sibling commands retain their own
-artifact and recovery options.
+`--verbose` stage reports. GNFS, SNFS, and SIQS save relation-sieve checkpoints
+with `--state-dir`, continue with `--resume`, and mirror the run directory with
+`--s3-uri`. The other Rust attack engines do not yet share that checkpoint
+contract. The underlying sibling commands retain their own artifact and
+recovery options.
 
 For example, a capped GNFS run can be continued from local or S3 state:
 
@@ -101,6 +101,21 @@ each run; the local directory is locked against another writer. With
 default; `--progress-every` changes that interval. S3 syncs use completed
 checkpoints and publish `result.json` last. A successful managed command
 requires the final S3 upload to succeed.
+
+SIQS uses the same state and S3 flags with `crax qs`. Its cap is
+`--max-a-values`; raise that cap on resume. `--threads` and checkpoint cadence
+may also change, while the input, seed, factor-base and sieve parameters must
+match. The `qs.ckpt` file holds completed polynomial batches and deduplicated
+relations. On resume, the accepted polynomial choices are replayed to restore
+the seeded generator. An interrupted batch is repeated; matrix and square-root
+work is recomputed after interruption. For example:
+
+```sh
+crax qs 100000000003900003000000000117 --max-a-values 4 \
+  --state-dir ./runs/qs-001 --checkpoint-every 0 --verbose
+crax qs 100000000003900003000000000117 --max-a-values 40 \
+  --state-dir ./runs/qs-001 --resume --threads 2 --verbose
+```
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:

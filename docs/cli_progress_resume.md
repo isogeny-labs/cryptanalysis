@@ -11,9 +11,9 @@ The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
 Rust executables. Their checkpoint formats and flags are independent of the
 native command described here. In particular, `crax` forwards child
 diagnostics live even with `--json`, and `crax icx run --verbose --json`
-prints stage progress on stderr. `crax gnfs` and `snfs` also persist completed
-sieve batches locally and to S3; `crax qs` currently has verbose stages but no
-computation checkpoint. See [the `crax` command guide](CRAX.md) for details.
+prints stage progress on stderr. `crax gnfs`, `snfs`, and `qs` persist completed
+sieve batches locally and to S3. See [the `crax` command guide](CRAX.md) for
+details.
 
 ## Command coverage
 
@@ -23,8 +23,7 @@ is a separate implementation with these observed interfaces:
 | Command family | Live progress | Local computation resume | S3 computation resume |
 | --- | --- | --- | --- |
 | Native `factor`, `ec-order`, `gen`, `solve` variants, `ic`, ECC2K walks, and `work` | `--verbose` | `--state-dir --resume` | `--s3-uri` with the state directory |
-| `crax gnfs`, `snfs` | `--verbose` stages | `--state-dir --resume` for completed sieve batches | `--s3-uri` with the state directory |
-| `crax qs` | `--verbose` stages | Not implemented | Not implemented |
+| `crax gnfs`, `snfs`, `qs` | `--verbose` stages and heartbeat | `--state-dir --resume` for completed sieve batches | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
 | Other `crax` attacks, including generic discrete logs, ECM, and the full factor ladder | Command-specific output | No shared resume contract | No shared resume contract |
