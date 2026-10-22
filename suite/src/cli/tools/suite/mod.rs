@@ -96,9 +96,9 @@ enum Cmd {
     Bench,
     /// Auto-run every applicable hash-function attack (length
     /// extension where applicable, truncated birthday collision, and
-    /// differential bias) against the named hash. Targets include SHA-256 and SHA3-256.
+    /// differential bias) against the named hash. Targets include SHA-256 and SHA-3 variants.
     HashAuto {
-        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha3-256`.
+        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha3-{224,256,384,512}`.
         #[arg(long)]
         hash: String,
     },

@@ -15,6 +15,7 @@
 //! `ca-curves`) remain as compatible entry points to the same code.
 
 pub mod aes_attack;
+pub mod aes_sbox_table;
 pub mod challenge;
 pub mod curve;
 pub mod digest;
@@ -41,7 +42,7 @@ Attacks by family:
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
   sibling crypto tools      icx solve-prime|solve-cubic, isogeny-walk, store, crypto
-  symmetric & hash          aes-attack, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
+  symmetric & hash          aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
@@ -73,6 +74,8 @@ pub struct Cli {
 pub enum Command {
     /// Recover key material on bounded AES-128 differential, linear, or integral instances.
     AesAttack(aes_attack::AesAttackArgs),
+    /// Export exact AES S-box DDT or LAT rows or complete tables.
+    AesSboxTable(aes_sbox_table::AesSboxTableArgs),
     /// Compute MD, SHA-1/2/3, or SHAKE digests from text, hex bytes, or a file.
     Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
@@ -325,6 +328,7 @@ pub fn run(out: Out, cmd: Command) -> CmdResult {
     use dlog::IntervalSolver;
     match cmd {
         Command::AesAttack(a) => aes_attack::run(out, &a),
+        Command::AesSboxTable(a) => aes_sbox_table::run(out, &a),
         Command::Hash(a) => digest::run(out, &a),
         Command::Bsgs(a) => dlog::run_interval(out, IntervalSolver::Bsgs, &a),
         Command::Rho(a) => dlog::run_rho(out, &a),
