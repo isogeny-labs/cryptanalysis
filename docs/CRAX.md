@@ -78,6 +78,12 @@ with `--state-dir`, continue with `--resume`, and mirror the run directory with
 checkpoint boundary and the remaining gaps. The sibling commands retain their
 own artifact and recovery options.
 
+`crax ic workflow` uses `--dir` for its stage and work-unit artifacts. Add
+`--verbose --progress-every SECONDS` for live stderr, and
+`--s3-uri s3://BUCKET/PREFIX --sync-every SECONDS` to commit checksummed
+artifacts to S3. A fresh `--dir` plus `--resume` restores the last complete
+S3 generation. Use a separate prefix for each worker or run.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh

@@ -42,6 +42,8 @@
 //! The public form never constructs an expected scalar; successful IC
 //! and rho results are certified only by `[d]G = Q`.
 
+mod s3;
+
 use super::experiment::{
     self, log_table_from_doc, log_table_to_doc, FactorBaseDocument, LinearAlgebraMode,
     LogTableDocument, Solver,
@@ -68,8 +70,26 @@ use std::{
     fs::{self, File},
     io::{Read, Write},
     path::{Path, PathBuf},
-    time::Instant,
+    sync::{Arc, Mutex},
+    time::{Duration, Instant},
 };
+
+type Mirror = Option<Arc<Mutex<s3::Store>>>;
+
+fn maybe_sync(mirror: &Mirror, force: bool) -> Result<(), String> {
+    if let Some(store) = mirror {
+        store
+            .lock()
+            .map_err(|_| "workflow S3 mirror lock was poisoned")?
+            .sync(force)?;
+    }
+    Ok(())
+}
+
+fn write_state<T: Serialize>(path: &Path, value: &T, mirror: &Mirror) -> Result<(), String> {
+    write_atomic(path, value)?;
+    maybe_sync(mirror, false)
+}
 
 // ── Parameter file ─────────────────────────────────────────────────
 
@@ -688,6 +708,21 @@ pub struct WorkflowArgs {
     /// `0-3`, `0-3,7`), write their relation files, and stop.
     #[arg(long, value_parser = parse_units)]
     pub collect_units: Option<UnitList>,
+    /// Print live stage and work-unit messages to stderr, including with --json.
+    #[arg(long)]
+    pub verbose: bool,
+    /// Seconds between live workflow heartbeats (implies --verbose).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Continue a run from local state or restore a missing local run from S3.
+    #[arg(long)]
+    pub resume: bool,
+    /// Mirror committed workflow artifacts to this S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Minimum seconds between S3 uploads at work-unit or stage boundaries.
+    #[arg(long, requires = "s3_uri")]
+    pub sync_every: Option<u64>,
 }
 
 fn known_scalar(c: &KoblitzCurve, t: &TargetSpec) -> Result<BigUint, String> {
@@ -1027,6 +1062,72 @@ pub enum PairTableTier {
 }
 
 pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
+    let report_path = args.dir.join("result.json");
+    let mirror = if let Some(uri) = &args.s3_uri {
+        let digest = params_digest(&load_params(&args.params)?);
+        Some(Arc::new(Mutex::new(s3::Store::prepare(
+            &args.dir,
+            uri,
+            &digest,
+            args.resume,
+            args.sync_every.unwrap_or(60),
+            args.verbose || args.progress_every.is_some(),
+        )?)))
+    } else {
+        None
+    };
+    let heartbeat = if args.verbose || args.progress_every.is_some() {
+        let dir = args.dir.clone();
+        let every = args.progress_every.unwrap_or(5);
+        let (stop, received) = std::sync::mpsc::channel::<()>();
+        let worker = std::thread::spawn(move || {
+            let start = Instant::now();
+            while received.recv_timeout(Duration::from_secs(every)).is_err() {
+                let state: Option<Value> = fs::read(dir.join(STATE_FILE))
+                    .ok()
+                    .and_then(|bytes| serde_json::from_slice(&bytes).ok());
+                eprintln!(
+                    "[ic workflow] {:.0}s units={} relations={} targets={}/{}",
+                    start.elapsed().as_secs_f64(),
+                    state
+                        .as_ref()
+                        .and_then(|s| s["units_collected"].as_u64())
+                        .unwrap_or(0),
+                    state
+                        .as_ref()
+                        .and_then(|s| s["relations_collected"].as_u64())
+                        .unwrap_or(0),
+                    state
+                        .as_ref()
+                        .and_then(|s| s["solved_targets"].as_u64())
+                        .unwrap_or(0),
+                    state
+                        .as_ref()
+                        .and_then(|s| s["total_targets"].as_u64())
+                        .unwrap_or(0)
+                );
+            }
+        });
+        Some((stop, worker))
+    } else {
+        None
+    };
+    let result = run_inner(args, quiet, &mirror).and_then(|mut report| {
+        report["software"] = json!({"version":env!("CARGO_PKG_VERSION"),
+            "os":std::env::consts::OS,"arch":std::env::consts::ARCH,
+            "binary_blake3":super::binary_hash(),"git_commit":super::git_commit()});
+        write_atomic(&report_path, &report)?;
+        maybe_sync(&mirror, true)?;
+        Ok(report)
+    });
+    if let Some((stop, worker)) = heartbeat {
+        let _ = stop.send(());
+        let _ = worker.join();
+    }
+    result
+}
+
+fn run_inner(args: WorkflowArgs, quiet: bool, mirror: &Mirror) -> Result<Value, String> {
     let begin = Instant::now();
     let p = load_params(&args.params)?;
     let digest = params_digest(&p);
@@ -1070,7 +1171,9 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
     state.total_targets = p.targets.len();
     let resumed = state.runs > 1;
     let say = |msg: &str| {
-        if !quiet {
+        if args.verbose || args.progress_every.is_some() {
+            eprintln!("{msg}");
+        } else if !quiet {
             println!("{msg}");
             let _ = std::io::stdout().flush();
         }
@@ -1159,7 +1262,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
             elapsed_seconds: t0.elapsed().as_secs_f64(),
             reason: None,
         };
-        write_atomic(&state_path, &state)?;
+        write_state(&state_path, &state, mirror)?;
         if let Some(sr) = search_report {
             stage_reports
                 .push(json!({"stage":"select","status":"complete","ran":true,"search":sr}));
@@ -1200,7 +1303,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
     // build from the amortized cost. Fresh runs charge it to selection.
     if select_ran {
         state.select.elapsed_seconds = t0.elapsed().as_secs_f64();
-        write_atomic(&state_path, &state)?;
+        write_state(&state_path, &state, mirror)?;
     }
     if args.stop_after == Some(Stage::Select) {
         return Ok(finish(
@@ -1335,7 +1438,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
             units.insert(u, doc);
             state.units_collected = units.len();
             state.relations_collected = units.values().map(|d| d.relations.len()).sum();
-            write_atomic(&state_path, &state)?;
+            write_state(&state_path, &state, mirror)?;
         }
     }
     state.units_collected = units.len();
@@ -1351,7 +1454,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
         elapsed_seconds: state.collect.elapsed_seconds + t1.elapsed().as_secs_f64(),
         reason: None,
     };
-    write_atomic(&state_path, &state)?;
+    write_state(&state_path, &state, mirror)?;
     let trials_total: u64 = units.values().map(|d| d.count).sum();
     let summands_scanned_total: u64 = units.values().map(|d| d.summands_scanned).sum();
     stage_reports.push(json!({"stage":"collect",
@@ -1513,7 +1616,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
                 extended += 1;
                 state.units_collected = units.len();
                 state.relations_collected = units.values().map(|d| d.relations.len()).sum();
-                write_atomic(&state_path, &state)?;
+                write_state(&state_path, &state, mirror)?;
                 outcome = solver.try_solve();
             }
         }
@@ -1538,7 +1641,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
                     elapsed_seconds: t2.elapsed().as_secs_f64(),
                     reason: None,
                 };
-                write_atomic(&state_path, &state)?;
+                write_state(&state_path, &state, mirror)?;
                 stage_reports.push(json!({"stage":"logs","status":"complete","ran":true,
                     "columns":report.columns,"trials":trials_total,"relations":report.relations,
                     "relations_loaded":merged,"rejected":report.rejected_relations,
@@ -1567,7 +1670,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
                     elapsed_seconds: t2.elapsed().as_secs_f64(),
                     reason: Some(reason.clone()),
                 };
-                write_atomic(&state_path, &state)?;
+                write_state(&state_path, &state, mirror)?;
                 stage_reports.push(json!({"stage":"logs","status":"failed","ran":true,"reason":reason,
                     "relations_loaded":merged,"rejected":report.rejected_relations,
                     "duplicates":report.duplicate_relations,"units_used":units.len(),"units_extended":extended,
@@ -1585,7 +1688,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
                     elapsed_seconds: t2.elapsed().as_secs_f64(),
                     reason: Some(reason.clone()),
                 };
-                write_atomic(&state_path, &state)?;
+                write_state(&state_path, &state, mirror)?;
                 stage_reports
                     .push(json!({"stage":"logs","status":"failed","ran":true,"reason":reason}));
                 overall_failed = Some(reason);
@@ -1734,7 +1837,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
                 if let Err(e) = write_atomic(&sol_path, &**solutions) {
                     return Some(e);
                 }
-                if let Err(e) = write_atomic(&state_path, &**state) {
+                if let Err(e) = write_state(&state_path, &**state, mirror) {
                     return Some(e);
                 }
                 say(&format!(
@@ -1767,7 +1870,7 @@ pub fn run(args: WorkflowArgs, quiet: bool) -> Result<Value, String> {
             )
         }),
     };
-    write_atomic(&state_path, &state)?;
+    write_state(&state_path, &state, mirror)?;
     stage_reports.push(json!({"stage":"solve","status":if all_verified{"complete"}else{"failed"},"ran":true,
         "targets":p.targets.len(),"already_solved":already.len(),"solved_now":solved_now,"failed_now":failed_now,
         "pair_table_seconds":pair_table_seconds,

@@ -33,7 +33,8 @@ is a separate implementation with these observed interfaces:
 | `crax pm1` (`--pp1`) | `--verbose` prime-batch counts and heartbeat | `--state-dir --resume` for completed p−1 or p+1 prime batches | `--s3-uri` with the state directory |
 | `crax bsgs`, `rho`, `kangaroo`, `grumpy`, `precomp`, `glv`, `pohlig-hellman`, `cheon`, `gpu-rho` | `--verbose` through the native solver | `--state-dir --resume` for the native solver checkpoint | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json`; sibling `icx` adds heartbeat with `--progress-every` | `--state-dir --resume` selects the sibling `icx` completed-repeat checkpoint | `--s3-uri` with the sibling state directory |
-| `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
+| `crax ic workflow` | `--verbose --progress-every` stage messages and heartbeat | Existing `--dir` state, factor base, relation units, logs, and solutions | `--s3-uri --sync-every` commits checksummed artifacts after work-unit and stage boundaries |
+| `crax ic fixed` | Command-specific stage messages | Its own `--dir` workflow state | Not implemented by `crax` |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -57,6 +58,27 @@ crax --json icx run secp256k1 --bits 10 --rho-runs 0 --repeats 3 \
 crax --json icx run secp256k1 --bits 10 --rho-runs 0 --repeats 3 \
   --verbose --state-dir ./runs/icx-001 --resume \
   --s3-uri s3://my-bucket/crax/icx-001
+```
+
+`crax ic workflow` already resumes completed local work units and solved
+targets from `--dir`. With `--s3-uri`, it now uploads changed artifacts before
+publishing a checksummed S3 head; the final `result.json` is kept in the run
+directory and mirrored too. `--sync-every` is the minimum interval between
+uploads at committed work-unit or stage boundaries (default 60 seconds); the
+last successful command result forces a final upload. `--verbose` and
+`--progress-every` print stage lines and a heartbeat to stderr, including with
+`--json`. Resume with the same parameter file and `--resume`; an empty local
+directory restores the last committed S3 generation and verifies every file.
+Use one writer per prefix. An interrupted local directory that differs from
+its last S3 commit is refused for mirrored resume; restore into a fresh
+directory to use the last complete S3 generation.
+
+```sh
+crax --json ic workflow --params ./workflow.json --dir ./runs/ic-001 \
+  --verbose --progress-every 5 --s3-uri s3://my-bucket/crax/ic-001 \
+  --sync-every 30
+crax --json ic workflow --params ./workflow.json --dir ./runs/ic-restore \
+  --resume --verbose --s3-uri s3://my-bucket/crax/ic-001
 ```
 
 ### `crax` generic discrete logs
