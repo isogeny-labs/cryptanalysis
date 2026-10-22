@@ -29,6 +29,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Test admission and result gates
         run: python3 -m unittest discover -s tests -p test_isolated_bench.py -v
+      - name: Test progress exporter validity gate
+        run: python3 -m unittest discover -s tests -p test_progress_metrics.py -v
 
   # ------------------------------------------------------------- build ----
   build:
