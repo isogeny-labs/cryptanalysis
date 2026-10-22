@@ -773,3 +773,16 @@ For new curve comparisons and UI exports, follow [docs/curve-identities.md](docs
 and `tools/curve_identity.py`. Reuse EC1 aliases and full curve UIDs across IC and
 Pollard rho; keep factor-base/isogeny candidate identities separate. Preserve
 immutable historical names and never infer exact identity from field degree alone.
+
+## Progress metrics (daily lab report)
+
+`tools/progress_metrics.py` exports this repo's progress KPIs as JSONL for the lab-wide daily
+report (`/Volumes/SSD990-2/progress-metrics`). It reads committed state at `origin/<default>` and
+prints one sample per line (`metric, value, date, problem, unit, better, kind, label, source`).
+
+- When a PR adds or changes a benchmark, leaderboard, result file or ledger source that carries a
+  number worth tracking day over day, extend the exporter in the same PR. Keep metric ids stable;
+  a renamed id is a new series.
+- Never emit estimates. If a source is missing, emit nothing for it.
+- `python3 tools/progress_metrics.py --since 2026-10-01` must run in under a minute, stdlib only,
+  no builds, and never read the working tree.
