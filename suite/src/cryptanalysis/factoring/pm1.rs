@@ -34,7 +34,7 @@
 use num_bigint::BigUint;
 use num_integer::Integer;
 use num_traits::{One, Zero};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
 use super::arith::{primes_up_to, Mont128};
@@ -374,6 +374,286 @@ fn lucas_v(v: &BigUint, k: u64, n: &BigUint) -> BigUint {
     x
 }
 
+/// Boundary at which the managed CLI may commit completed p-1 or p+1 work.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Pm1Phase {
+    Stage1,
+    Stage2,
+    Pp1,
+    Done,
+}
+
+/// Arithmetic cursor for the managed CLI path. Every step finishes a whole
+/// prime batch or block before its caller commits the cursor.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Pm1Cursor {
+    pub phase: Pm1Phase,
+    pub stage1_next: usize,
+    pub stage2_next: usize,
+    pub seed_next: usize,
+    #[serde(with = "serde_big::biguint")]
+    pub a: BigUint,
+    #[serde(with = "serde_big::biguint")]
+    pub x: BigUint,
+    #[serde(with = "serde_big::biguint")]
+    pub acc: BigUint,
+    #[serde(with = "serde_big::biguint")]
+    pub last_ok: BigUint,
+    pub last_ok_idx: usize,
+    #[serde(with = "serde_big::opt_biguint")]
+    pub factor: Option<BigUint>,
+    pub factor_stage: u8,
+    pub stage1_primes: usize,
+    pub stage2_primes: usize,
+    pub compute_seconds: f64,
+}
+
+impl Pm1Cursor {
+    pub fn new(n: &BigUint, pp1: bool, base: u64) -> Self {
+        Self {
+            phase: if n <= &BigUint::from(3u32) || (pp1 && n.is_even()) {
+                Pm1Phase::Done
+            } else if pp1 {
+                Pm1Phase::Pp1
+            } else {
+                Pm1Phase::Stage1
+            },
+            stage1_next: 0,
+            stage2_next: 0,
+            seed_next: 0,
+            a: if n.is_zero() {
+                BigUint::zero()
+            } else {
+                BigUint::from(base) % n
+            },
+            x: BigUint::zero(),
+            acc: if n.is_zero() {
+                BigUint::zero()
+            } else {
+                BigUint::one() % n
+            },
+            last_ok: BigUint::zero(),
+            last_ok_idx: 0,
+            factor: None,
+            factor_stage: 0,
+            stage1_primes: 0,
+            stage2_primes: 0,
+            compute_seconds: 0.0,
+        }
+    }
+
+    pub fn done(&self) -> bool {
+        self.phase == Pm1Phase::Done
+    }
+
+    pub fn work_done(&self) -> usize {
+        self.stage1_primes.saturating_add(self.stage2_primes)
+    }
+
+    fn accept(&mut self, n: &BigUint, factor: BigUint, stage: u8) -> bool {
+        if factor.is_zero() || factor.is_one() || &factor == n || n % &factor != BigUint::zero() {
+            return false;
+        }
+        self.factor = Some(factor);
+        self.factor_stage = stage;
+        self.phase = Pm1Phase::Done;
+        true
+    }
+
+    fn pp1_seeds(n: &BigUint) -> Vec<BigUint> {
+        let inv = |x: u64| crate::utils::mod_inverse(&BigUint::from(x), n);
+        let mut seeds = Vec::new();
+        if let Some(i7) = inv(7) {
+            seeds.push(BigUint::from(2u32) * i7 % n);
+        }
+        if let Some(i5) = inv(5) {
+            seeds.push(BigUint::from(6u32) * i5 % n);
+        }
+        for k in 3u32..20 {
+            seeds.push(BigUint::from(k) % n);
+        }
+        seeds
+    }
+
+    /// Complete one p-1 stage-1 batch, p-1 stage-2 block, or p+1 batch.
+    /// `primes` is the ordered sieve through B2 (through B1 for p+1).
+    pub fn step(&mut self, n: &BigUint, pm1: &Pm1Params, pp1: &Pp1Params, primes: &[u64]) {
+        let started = Instant::now();
+        match self.phase {
+            Pm1Phase::Stage1 => {
+                let stage1_len = primes.partition_point(|&p| p <= pm1.b1);
+                let end = self.stage1_next.saturating_add(64).min(stage1_len);
+                let saved = self.a.clone();
+                for &p in &primes[self.stage1_next..end] {
+                    self.a = self
+                        .a
+                        .modpow(&BigUint::from(prime_power_below(p, pm1.b1)), n);
+                }
+                self.stage1_primes += end - self.stage1_next;
+                if end > self.stage1_next {
+                    let g = sub1(&self.a, n).gcd(n);
+                    if g == *n {
+                        let mut b = saved;
+                        for &p in &primes[self.stage1_next..end] {
+                            let pk = prime_power_below(p, pm1.b1);
+                            for _ in 0..pk.ilog(p) {
+                                b = b.modpow(&BigUint::from(p), n);
+                                let candidate = sub1(&b, n).gcd(n);
+                                if self.accept(n, candidate.clone(), 1) {
+                                    break;
+                                }
+                                if candidate == *n {
+                                    break;
+                                }
+                            }
+                            if self.done() {
+                                break;
+                            }
+                        }
+                        self.phase = Pm1Phase::Done;
+                    } else if !g.is_one() {
+                        self.accept(n, g, 1);
+                    }
+                }
+                self.stage1_next = end;
+                if !self.done() && end == stage1_len {
+                    if pm1.b2 <= pm1.b1 || end == primes.len() {
+                        self.phase = Pm1Phase::Done;
+                    } else {
+                        self.phase = Pm1Phase::Stage2;
+                        self.x = self.a.modpow(&BigUint::from(primes[end]), n);
+                        self.last_ok = self.x.clone();
+                    }
+                }
+            }
+            Pm1Phase::Stage2 => {
+                let s2 = &primes[self.stage1_next..];
+                let end = self.stage2_next.saturating_add(256).min(s2.len());
+                let max_gap = s2.windows(2).map(|w| w[1] - w[0]).max().unwrap_or(2);
+                let a2 = &self.a * &self.a % n;
+                let mut table = vec![BigUint::one(); (max_gap / 2 + 1) as usize];
+                for i in 1..table.len() {
+                    table[i] = &table[i - 1] * &a2 % n;
+                }
+                for i in self.stage2_next..end {
+                    self.acc = &self.acc * sub1(&self.x, n) % n;
+                    self.stage2_primes += 1;
+                    if i + 1 < s2.len() {
+                        self.x = &self.x * &table[((s2[i + 1] - s2[i]) / 2) as usize] % n;
+                    }
+                }
+                let g = self.acc.gcd(n);
+                if g.is_one() {
+                    self.last_ok = self.x.clone();
+                    self.last_ok_idx = end;
+                    if end == s2.len() {
+                        self.phase = Pm1Phase::Done;
+                    }
+                } else if g == *n {
+                    let mut y = self.last_ok.clone();
+                    for j in self.last_ok_idx..end {
+                        if self.accept(n, sub1(&y, n).gcd(n), 2) {
+                            break;
+                        }
+                        if j + 1 < s2.len() {
+                            y = &y * &table[((s2[j + 1] - s2[j]) / 2) as usize] % n;
+                        }
+                    }
+                    self.phase = Pm1Phase::Done;
+                } else {
+                    self.accept(n, g, 2);
+                }
+                self.stage2_next = end;
+            }
+            Pm1Phase::Pp1 => {
+                let seeds = Self::pp1_seeds(n);
+                let limit = (pp1.seeds as usize).min(seeds.len());
+                if self.seed_next >= limit || primes.is_empty() {
+                    self.phase = Pm1Phase::Done;
+                } else {
+                    if self.stage1_next == 0 {
+                        self.a = seeds[self.seed_next].clone();
+                    }
+                    let end = self.stage1_next.saturating_add(128).min(primes.len());
+                    for &p in &primes[self.stage1_next..end] {
+                        self.a = lucas_v(&self.a, prime_power_below(p, pp1.b1), n);
+                    }
+                    self.stage1_primes += end - self.stage1_next;
+                    self.stage1_next = end;
+                    let two = BigUint::from(2u32);
+                    let g = ((&self.a + n - &two) % n).gcd(n);
+                    let full_gcd = g == *n;
+                    if !full_gcd && self.accept(n, g, 1) {
+                    } else if full_gcd || end == primes.len() {
+                        self.seed_next += 1;
+                        self.stage1_next = 0;
+                        if self.seed_next >= limit {
+                            self.phase = Pm1Phase::Done;
+                        }
+                    }
+                }
+            }
+            Pm1Phase::Done => {}
+        }
+        self.compute_seconds += started.elapsed().as_secs_f64();
+    }
+
+    pub fn validate(
+        &self,
+        n: &BigUint,
+        pm1: &Pm1Params,
+        pp1: &Pp1Params,
+        primes: &[u64],
+        is_pp1: bool,
+    ) -> Result<(), String> {
+        let stage1_len = primes.partition_point(|&p| p <= pm1.b1);
+        if !self.compute_seconds.is_finite()
+            || self.compute_seconds < 0.0
+            || self.a >= *n && !n.is_zero()
+            || self.x >= *n && !n.is_zero()
+            || self.acc >= *n && !n.is_zero()
+            || self.last_ok >= *n && !n.is_zero()
+            || self.stage1_next > stage1_len
+            || self.stage2_next > primes.len() - stage1_len
+            || (self.phase == Pm1Phase::Stage2 && self.stage1_next != stage1_len)
+            || self.last_ok_idx > self.stage2_next
+            || self.stage1_primes
+                > stage1_len.saturating_mul(if is_pp1 { pp1.seeds as usize } else { 1 })
+            || self.stage2_primes != self.stage2_next
+            || (is_pp1 && (self.phase == Pm1Phase::Stage1 || self.phase == Pm1Phase::Stage2))
+            || (is_pp1 && (self.stage2_next != 0 || self.factor_stage == 2))
+            || (!is_pp1
+                && (self.phase == Pm1Phase::Pp1
+                    || self.seed_next != 0
+                    || self.stage1_primes != self.stage1_next))
+            || self.seed_next > pp1.seeds as usize
+            || self.factor.is_some() != (self.factor_stage != 0)
+            || (self.factor.is_some() && self.phase != Pm1Phase::Done)
+            || self.factor_stage > 2
+        {
+            return Err("p-1/p+1 checkpoint has invalid arithmetic state".into());
+        }
+        if let Some(factor) = &self.factor {
+            if factor.is_zero() || factor.is_one() || factor == n || n % factor != BigUint::zero() {
+                return Err("p-1/p+1 checkpoint contains an invalid factor".into());
+            }
+        }
+        Ok(())
+    }
+
+    pub fn result(&self, n: &BigUint, pp1: bool) -> Pm1Result {
+        let mut result = Pm1Result::new(n, if pp1 { "p+1" } else { "p-1" });
+        result.stage1_primes = self.stage1_primes;
+        result.stage2_primes = self.stage2_primes;
+        result.seconds = self.compute_seconds;
+        if let Some(factor) = &self.factor {
+            result.accept(factor.clone(), self.factor_stage);
+        }
+        result
+    }
+}
+
 /// Williams p + 1, stage 1, with seeds `A = 2/7, 6/5, 3, 4, …` (mod `n`).
 pub fn pp1(n: &BigUint, params: &Pp1Params) -> Pm1Result {
     let t0 = Instant::now();
@@ -418,6 +698,42 @@ pub fn pp1(n: &BigUint, params: &Pp1Params) -> Pm1Result {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn managed_batches_match_direct_p_minus_and_plus_one() {
+        let q = BigUint::from(1_000_000_000_000_000_003u64);
+        let cases = [
+            (BigUint::from(2_156_564_411u64) * &q, 100, 100, false, 3),
+            (
+                BigUint::from(4u64 * 3 * 5 * 7 * 104_729 + 1) * &q,
+                1000,
+                200_000,
+                false,
+                3,
+            ),
+            (BigUint::from(29_099_069u64) * &q, 100, 100, true, 6),
+            (BigUint::from(101u32), 20, 40, false, 3),
+        ];
+        for (n, b1, b2, plus, seeds) in cases {
+            let pm = Pm1Params { b1, b2, base: 3 };
+            let pp = Pp1Params { b1, seeds };
+            let primes = primes_up_to(if plus { b1 } else { b1.max(b2) });
+            let mut cursor = Pm1Cursor::new(&n, plus, pm.base);
+            while !cursor.done() {
+                cursor.step(&n, &pm, &pp, &primes);
+                cursor = serde_json::from_slice(&serde_json::to_vec(&cursor).unwrap()).unwrap();
+                cursor.validate(&n, &pm, &pp, &primes, plus).unwrap();
+            }
+            let actual = cursor.result(&n, plus);
+            let direct = if plus { pp1(&n, &pp) } else { pm1(&n, &pm) };
+            assert_eq!(actual.factor, direct.factor, "n={n}, plus={plus}");
+            assert_eq!(actual.cofactor, direct.cofactor);
+            assert_eq!(actual.verified, direct.verified);
+            assert_eq!(actual.stage, direct.stage);
+            assert_eq!(actual.stage1_primes, direct.stage1_primes);
+            assert_eq!(actual.stage2_primes, direct.stage2_primes);
+        }
+    }
 
     /// The Montgomery path returns the big-integer path's factor, stage and
     /// prime counts: semiprimes built to be caught in stage 1, in stage 2,

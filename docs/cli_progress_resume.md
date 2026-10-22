@@ -11,8 +11,8 @@ The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
 Rust executables. Their checkpoint formats and flags are independent of the
 native command described here. In particular, `crax` forwards child
 diagnostics live even with `--json`, and `crax icx run --verbose --json`
-prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, `ecm`, and
-`rho-factor` persist
+prints stage progress on stderr. `crax factor`, `gnfs`, `snfs`, `qs`, `ecm`,
+`rho-factor`, and `pm1` persist
 completed work units locally and to S3. See [the `crax` command guide](CRAX.md) for
 details.
 
@@ -28,6 +28,7 @@ is a separate implementation with these observed interfaces:
 | `crax gnfs`, `snfs`, `qs` | `--verbose` stages and heartbeat | `--state-dir --resume` for completed sieve batches | `--s3-uri` with the state directory |
 | `crax ecm` | `--verbose` curve count and heartbeat | `--state-dir --resume` for completed curves | `--s3-uri` with the state directory |
 | `crax rho-factor` | `--verbose` attempt count and heartbeat | `--state-dir --resume` for completed Brent constants | `--s3-uri` with the state directory |
+| `crax pm1` (`--pp1`) | `--verbose` prime-batch counts and heartbeat | `--state-dir --resume` for completed p−1 or p+1 prime batches | `--s3-uri` with the state directory |
 | `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
 | Other `crax` attacks, including generic discrete logs | Command-specific output | No shared resume contract | No shared resume contract |
@@ -91,6 +92,30 @@ crax rho-factor '1000003*1000033' --iterations 100000 --attempts 16 \
   --state-dir ./runs/rho-001 --s3-uri s3://my-bucket/crax/rho-001 \
   --resume --verbose
 ```
+
+`crax pm1` saves a checksummed `pm1.ckpt` after each complete 64-prime
+p−1 stage-1 batch, 256-prime stage-2 block, or 128-prime p+1 seed batch.
+It saves the exponentiation or Lucas value and stage-2 accumulator, so a
+restart skips committed arithmetic. A stopped batch repeats. The manifest
+binds the input, bounds, method, base, and p+1 seed budget. `progress.json`
+records the active stage; `result.json` records the outcome. S3 gets an
+initial checkpoint, periodic copies, and the final result. Restore into a
+fresh directory when S3 is ahead of local state. The managed path uses
+big-integer arithmetic at every size, while the ordinary p−1 call retains
+its fixed-width Montgomery path for eligible integers. Its reported seconds
+sum arithmetic batches and exclude prime-sieve setup, restarts, and storage.
+
+```sh
+crax pm1 '2156564411*1000000000000000003' --b1 100 --b2 100 \
+  --state-dir ./runs/pm1-001 --s3-uri s3://my-bucket/crax/pm1-001 \
+  --verbose --progress-every 5
+crax pm1 '2156564411*1000000000000000003' --b1 100 --b2 100 \
+  --state-dir ./runs/pm1-001 --s3-uri s3://my-bucket/crax/pm1-001 \
+  --resume --verbose
+```
+
+Add `--pp1 --seeds N` for Williams p+1; use a separate state directory and
+S3 prefix for that method.
 
 ## Integer factorization
 

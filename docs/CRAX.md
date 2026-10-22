@@ -352,6 +352,8 @@ to continue. `--checkpoint-every` controls inner sieve batch writes and
 `--sync-every` controls S3 uploads. `crax rho-factor` also accepts
 `--verbose --progress-every`, `--state-dir --resume`, and `--s3-uri` to retain
 each completed Brent attempt; `--attempts` may increase on resume. The
+`crax pm1` command supports the same progress, local resume, and S3 options;
+`--pp1 --seeds N` selects the p+1 seed budget. The
 [restart guide](cli_progress_resume.md)
 describes the exact boundaries and artifacts.
 

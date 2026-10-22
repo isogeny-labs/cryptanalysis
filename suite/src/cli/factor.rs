@@ -699,6 +699,8 @@ impl StageHeartbeat {
             "curve"
         } else if method == "rho-factor" {
             "attempt"
+        } else if method == "pm1" {
+            "prime setup"
         } else if method == "factor" {
             "startup"
         } else {
@@ -1648,35 +1650,263 @@ pub struct Pm1Args {
     /// Williams p+1 instead of Pollard p-1 (finds p when p+1 is smooth).
     #[arg(long)]
     pub pp1: bool,
+    /// Williams p+1 seeds to try.
+    #[arg(long, default_value_t = 3, value_parser = clap::value_parser!(u32).range(1..))]
+    pub seeds: u32,
+    /// Print completed prime batches and periodic heartbeats on stderr.
+    #[arg(long)]
+    pub verbose: bool,
+    /// Seconds between heartbeat lines (implies --verbose).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Dedicated directory for completed prime-batch checkpoints.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Continue the saved arithmetic cursor locally or restore it from S3.
+    #[arg(long)]
+    pub resume: bool,
+    /// Mirror checkpoints and reports to this S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 copies; the final copy is always required.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub sync_every: Option<u64>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct Pm1Checkpoint {
+    schema_version: u32,
+    fingerprint: String,
+    cursor: factoring::pm1::Pm1Cursor,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Pm1CheckpointFile {
+    checksum: String,
+    payload: String,
+}
+
+fn save_pm1_checkpoint(path: &Path, checkpoint: &Pm1Checkpoint) -> Result<(), String> {
+    let payload = serde_json::to_string(checkpoint)
+        .map_err(|e| format!("serializing p-1/p+1 checkpoint: {e}"))?;
+    write_json_atomic(
+        path,
+        &Pm1CheckpointFile {
+            checksum: blake3::hash(payload.as_bytes()).to_hex().to_string(),
+            payload,
+        },
+    )
+}
+
+fn decode_pm1_checkpoint(
+    bytes: &[u8],
+    fingerprint: &str,
+    n: &BigUint,
+    pm: &Pm1Params,
+    pp: &Pp1Params,
+    primes: &[u64],
+    plus: bool,
+) -> Result<Pm1Checkpoint, String> {
+    let file: Pm1CheckpointFile =
+        serde_json::from_slice(bytes).map_err(|e| format!("invalid p-1/p+1 checkpoint: {e}"))?;
+    if file.checksum != blake3::hash(file.payload.as_bytes()).to_hex().as_str() {
+        return Err("p-1/p+1 checkpoint checksum mismatch".into());
+    }
+    let checkpoint: Pm1Checkpoint = serde_json::from_str(&file.payload)
+        .map_err(|e| format!("invalid p-1/p+1 checkpoint payload: {e}"))?;
+    if checkpoint.schema_version != 1 || checkpoint.fingerprint != fingerprint {
+        return Err("p-1/p+1 checkpoint parameters differ".into());
+    }
+    checkpoint.cursor.validate(n, pm, pp, primes, plus)?;
+    Ok(checkpoint)
 }
 
 pub fn run_pm1(out: Out, a: &Pm1Args) -> CmdResult {
     let n = parse_expr(&a.n)?;
-    let r = if a.pp1 {
-        factoring::pp1(
-            &n,
-            &Pp1Params {
-                b1: a.b1,
-                ..Pp1Params::default()
-            },
-        )
-    } else {
-        factoring::pm1(
-            &n,
-            &Pm1Params {
-                b1: a.b1,
-                b2: a.b2,
-                ..Pm1Params::default()
-            },
-        )
+    let pm = Pm1Params {
+        b1: a.b1,
+        b2: a.b2,
+        ..Pm1Params::default()
     };
+    let pp = Pp1Params {
+        b1: a.b1,
+        seeds: a.seeds,
+    };
+    let managed = a.verbose
+        || a.progress_every.is_some()
+        || a.state_dir.is_some()
+        || a.resume
+        || a.s3_uri.is_some()
+        || a.sync_every.is_some();
+    if !managed {
+        let r = if a.pp1 {
+            factoring::pp1(&n, &pp)
+        } else {
+            factoring::pm1(&n, &pm)
+        };
+        let s = split(
+            r.method,
+            &n,
+            r.factor.clone(),
+            r.seconds,
+            format!("B1 = {}, B2 = {}, found in stage {}", a.b1, a.b2, r.stage),
+        );
+        out.emit(&r, || s.text())?;
+        return verdict(r.verified, r.factor.is_some(), r.method);
+    }
+    let manifest = serde_json::json!({
+        "schema_version": 1, "method": "pm1", "n": n.to_string(),
+        "b1": a.b1, "b2": a.b2, "pp1": a.pp1, "seeds": a.seeds,
+        "base": pm.base,
+    });
+    let fingerprint = blake3::hash(&serde_json::to_vec(&manifest).map_err(|e| e.to_string())?)
+        .to_hex()
+        .to_string();
+    let state = FactoringRun::prepare(
+        &RunOptions {
+            state_dir: a.state_dir.clone(),
+            resume: a.resume,
+            s3_uri: a.s3_uri.clone(),
+            sync_every: a.sync_every,
+            checkpoint_every: None,
+            verbose: a.verbose,
+            progress_every: a.progress_every,
+            checkpoint_name: "pm1.ckpt",
+        },
+        "pm1",
+        manifest,
+    )?;
+    let verbose = a.verbose || a.progress_every.is_some();
+    let heartbeat = verbose.then(|| StageHeartbeat::start("pm1", a.progress_every.unwrap_or(5)));
+    if verbose {
+        eprintln!(
+            "[pm1] preparing primes through {}",
+            if a.pp1 { a.b1 } else { a.b1.max(a.b2) }
+        );
+    }
+    let primes = crate::cryptanalysis::ecm::primes_up_to(if a.pp1 { a.b1 } else { a.b1.max(a.b2) });
+    if verbose {
+        eprintln!("[pm1] {} primes ready", primes.len());
+    }
+    let stage1_len = primes.partition_point(|&prime| prime <= a.b1);
+    let path = state.dir.as_ref().map(|dir| dir.join("pm1.ckpt"));
+    let mut checkpoint = if a.resume {
+        let path = path
+            .as_deref()
+            .ok_or("p-1/p+1 resume requires --state-dir")?;
+        decode_pm1_checkpoint(
+            &fs::read(path).map_err(|e| format!("reading p-1/p+1 checkpoint: {e}"))?,
+            &fingerprint,
+            &n,
+            &pm,
+            &pp,
+            &primes,
+            a.pp1,
+        )?
+    } else {
+        Pm1Checkpoint {
+            schema_version: 1,
+            fingerprint: fingerprint.clone(),
+            cursor: factoring::pm1::Pm1Cursor::new(&n, a.pp1, pm.base),
+        }
+    };
+    if let (Some(uri), Some(local_path)) = (&state.s3_uri, &path) {
+        if a.resume && s3_has_object(uri, "pm1.ckpt")? {
+            let remote_bytes = aws(&[
+                "s3",
+                "cp",
+                &format!("{uri}/pm1.ckpt"),
+                "-",
+                "--only-show-errors",
+            ])?
+            .stdout;
+            let remote =
+                decode_pm1_checkpoint(&remote_bytes, &fingerprint, &n, &pm, &pp, &primes, a.pp1)?;
+            if remote.cursor.work_done() > checkpoint.cursor.work_done() {
+                return Err(
+                    "S3 p-1/p+1 checkpoint is ahead of local state; restore into a fresh directory"
+                        .into(),
+                );
+            }
+            if remote.cursor.work_done() == checkpoint.cursor.work_done()
+                && remote_bytes
+                    != fs::read(local_path)
+                        .map_err(|e| format!("reading local p-1/p+1 checkpoint: {e}"))?
+            {
+                return Err("S3 and local p-1/p+1 checkpoints diverge at the same batch".into());
+            }
+        }
+    }
+    if !a.resume {
+        if let Some(path) = &path {
+            save_pm1_checkpoint(path, &checkpoint)?;
+            state.sync("initial")?;
+        }
+    }
+    let printer = progress_printer(verbose);
+    let progress = |cursor: &factoring::pm1::Pm1Cursor, prior_stage: factoring::pm1::Pm1Phase| {
+        use factoring::pm1::Pm1Phase;
+        let stage = if cursor.phase == Pm1Phase::Done {
+            prior_stage
+        } else {
+            cursor.phase
+        };
+        let update = match stage {
+            Pm1Phase::Stage1 => Progress {
+                stage: "p-1 stage1",
+                done: cursor.stage1_primes as u64,
+                target: stage1_len as u64,
+                seconds: cursor.compute_seconds,
+            },
+            Pm1Phase::Stage2 => Progress {
+                stage: "p-1 stage2",
+                done: cursor.stage2_primes as u64,
+                target: (primes.len() - stage1_len) as u64,
+                seconds: cursor.compute_seconds,
+            },
+            Pm1Phase::Pp1 => Progress {
+                stage: "p+1 seeds",
+                done: cursor.stage1_primes as u64,
+                target: stage1_len.saturating_mul(a.seeds as usize) as u64,
+                seconds: cursor.compute_seconds,
+            },
+            Pm1Phase::Done => Progress {
+                stage: "complete",
+                done: 0,
+                target: 0,
+                seconds: cursor.compute_seconds,
+            },
+        };
+        if let Some(print) = &printer {
+            print(&update);
+        }
+        if let Some(heartbeat) = &heartbeat {
+            heartbeat.update(&update);
+        }
+        state.progress("pm1", &update);
+    };
+    progress(&checkpoint.cursor, checkpoint.cursor.phase);
+    while !checkpoint.cursor.done() {
+        let previous = checkpoint.cursor.phase;
+        checkpoint.cursor.step(&n, &pm, &pp, &primes);
+        if let Some(path) = &path {
+            save_pm1_checkpoint(path, &checkpoint)?;
+        }
+        progress(&checkpoint.cursor, previous);
+    }
+    drop(heartbeat);
+    let r = checkpoint.cursor.result(&n, a.pp1);
     let s = split(
         r.method,
         &n,
         r.factor.clone(),
         r.seconds,
-        format!("B1 = {}, B2 = {}, found in stage {}", a.b1, a.b2, r.stage),
+        format!(
+            "B1 = {}, B2 = {}, found in stage {}; seconds count arithmetic batches only",
+            a.b1, a.b2, r.stage
+        ),
     );
+    state.finish(&r, r.verified)?;
     out.emit(&r, || s.text())?;
     verdict(r.verified, r.factor.is_some(), r.method)
 }
@@ -2130,6 +2360,72 @@ fn message_attack(out: Out, r: &rsa_attacks::MessageAttackResult) -> CmdResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn pm1_checkpoint_rejects_tampering_and_invalid_factors() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path =
+            std::env::temp_dir().join(format!("crax-pm1-{}-{unique}.ckpt", std::process::id()));
+        let n = BigUint::from(101u32);
+        let pm = Pm1Params {
+            b1: 20,
+            b2: 40,
+            base: 3,
+        };
+        let pp = Pp1Params { b1: 20, seeds: 3 };
+        let primes = crate::cryptanalysis::ecm::primes_up_to(40);
+        let mut checkpoint = Pm1Checkpoint {
+            schema_version: 1,
+            fingerprint: "fingerprint".into(),
+            cursor: factoring::pm1::Pm1Cursor::new(&n, false, pm.base),
+        };
+        checkpoint.cursor.step(&n, &pm, &pp, &primes);
+        save_pm1_checkpoint(&path, &checkpoint).unwrap();
+        decode_pm1_checkpoint(
+            &fs::read(&path).unwrap(),
+            "fingerprint",
+            &n,
+            &pm,
+            &pp,
+            &primes,
+            false,
+        )
+        .unwrap();
+        let mut file: Pm1CheckpointFile =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        file.payload.push(' ');
+        fs::write(&path, serde_json::to_vec(&file).unwrap()).unwrap();
+        assert!(decode_pm1_checkpoint(
+            &fs::read(&path).unwrap(),
+            "fingerprint",
+            &n,
+            &pm,
+            &pp,
+            &primes,
+            false
+        )
+        .unwrap_err()
+        .contains("checksum mismatch"));
+        checkpoint.cursor.factor = Some(BigUint::from(2u32));
+        checkpoint.cursor.factor_stage = 1;
+        checkpoint.cursor.phase = factoring::pm1::Pm1Phase::Done;
+        save_pm1_checkpoint(&path, &checkpoint).unwrap();
+        assert!(decode_pm1_checkpoint(
+            &fs::read(&path).unwrap(),
+            "fingerprint",
+            &n,
+            &pm,
+            &pp,
+            &primes,
+            false
+        )
+        .unwrap_err()
+        .contains("invalid factor"));
+        fs::remove_file(path).unwrap();
+    }
 
     #[test]
     fn factor_checkpoint_rejects_tampered_and_missing_pieces() {
