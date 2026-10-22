@@ -1,0 +1,93 @@
+[
+  {
+    "path": "experiments/prime-j0-axis286-20261012/check.py",
+    "exit": 0,
+    "seconds": 115.2,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-axis416-20261012/check.py",
+    "exit": 0,
+    "seconds": 88.1,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-hex-orbit-materialized-20261013/check.py",
+    "exit": 1,
+    "seconds": 0.0,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-orbit-materialized-20261013/check.py\", line 14, in <module>\n    from dag_depth import Node, join, tree, load_module, plan_index  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'dag_depth'\n"
+  },
+  {
+    "path": "experiments/prime-j0-hex-terminal-20261012/check.py",
+    "exit": 1,
+    "seconds": 0.0,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-terminal-20261012/check.py\", line 117, in <module>\n    main()\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-terminal-20261012/check.py\", line 105, in main\n    actual = build_receipt()\n             ^^^^^^^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-terminal-20261012/check.py\", line 63, in build_receipt\n    native_sha = check_native_reciprocals()\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-terminal-20261012/check.py\", line 34, in check_native_reciprocals\n    native = NATIVE_SOURCE.read_text()\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1027, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-secp256k1-native/src/bin/eisenstein_fixed.rs'\n"
+  },
+  {
+    "path": "experiments/prime-j0-power2-direct-terminal-20261012/check.py",
+    "exit": 0,
+    "seconds": 69.3,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix569-topball-20261012/check.py",
+    "exit": 0,
+    "seconds": 114.3,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix919-terminal-unit-20261012/check.py",
+    "exit": 0,
+    "seconds": 35.0,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix929-topball-20261012/check.py",
+    "exit": 0,
+    "seconds": 61.1,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix943-corner-certificate-20261012/check.py",
+    "exit": 1,
+    "seconds": 0.1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-corner-certificate-20261012/check.py\", line 98, in <module>\n    main()\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-corner-certificate-20261012/check.py\", line 86, in main\n    actual = receipt()\n             ^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-corner-certificate-20261012/check.py\", line 52, in receipt\n    records.append(f\"sha256 {source}: {hashlib.sha256((ROOT / source).read_bytes()).hexdigest()}\")\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-secp256k1-native/src/bin/eisenstein_fixed.rs'\n"
+  },
+  {
+    "path": "experiments/prime-j0-radix943-digit-cover-20261012/check.py",
+    "exit": 1,
+    "seconds": 0.1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-digit-cover-20261012/check.py\", line 208, in <module>\n    main()\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-digit-cover-20261012/check.py\", line 198, in main\n    raw = (json.dumps(receipt(), indent=2, sort_keys=True) + \"\\n\").encode()\n                      ^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-digit-cover-20261012/check.py\", line 190, in receipt\n    \"sha256\": {path: digest(path) for path in FILES},\n                     ^^^^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-digit-cover-20261012/check.py\", line 51, in digest\n    return sha256((ROOT / path).read_bytes()).hexdigest()\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-secp256k1-native/radix943_screen.py'\n"
+  },
+  {
+    "path": "experiments/prime-j0-radix943-orbit-refinement-20261012/check.py",
+    "exit": 0,
+    "seconds": 41.9,
+    "stdout": "orbit-atlas Lean build and axiom receipt verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix943-termination-20261012/check.py",
+    "exit": 1,
+    "seconds": 0.0,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-termination-20261012/check.py\", line 75, in <module>\n    main()\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-termination-20261012/check.py\", line 65, in main\n    raw = (json.dumps(receipt(), indent=2, sort_keys=True) + \"\\n\").encode()\n                      ^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-termination-20261012/check.py\", line 57, in receipt\n    \"sha256\": {name: digest(name) for name in FILES},\n                     ^^^^^^^^^^^^\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-radix943-termination-20261012/check.py\", line 29, in digest\n    return sha256((ROOT / path).read_bytes()).hexdigest()\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/autoresearcher-python-20261021/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-secp256k1-native/radix943_screen.py'\n"
+  },
+  {
+    "path": "experiments/prime-j0-split-top-20261012/check.py",
+    "exit": 0,
+    "seconds": 36.7,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  }
+]
