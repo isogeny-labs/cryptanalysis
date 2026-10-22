@@ -18,9 +18,12 @@ theorem or experiment across the three requested repositories. No new
 scientific trial or performance measurement was run.
 
 \textbf{Delivery.} Git smart HTTP returned HTTP 403 (``Your repository is
-disabled'') when pushing this branch. The local commit and evidence remain
-intact, but this change has no PR or remote CI result yet. The access problem
-record names the unblock condition.
+disabled'') on October 21. On October 22, read-only Git access succeeded and
+the audit branch was pushed. Current main was integrated in merge commit
+\mono{94a38d8b}; it changed none of the 93 Lean sources or dedicated receipts.
+The merged-tree metadata audit still reports 93 files, zero unpinned, 13/13
+matching receipt hashes and zero forbidden tokens. Hosted CI and review are
+separate from this local evidence.
 
 \section*{Inventory and correction}
 There are 93 tracked Lean files. Before this change, 33 inherited no

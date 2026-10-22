@@ -9,10 +9,15 @@ No new scientific trial or performance measurement was run.
 [The diagram](diagram.svg) separates these validation layers.
 
 **Delivery:** Git smart HTTP returned HTTP 403 (“Your repository is disabled”)
-when pushing this branch. The local commit remains intact; the
-[access problem record](../../problems/cryptanalysis-git-remote-rejects-push.md)
-contains the exact unblock condition. No PR or remote CI result exists for
-this change yet.
+on October 21. On October 22, `git ls-remote` succeeded at current main
+`7bcc0bf05f51132e74637657275420f1e71f72ff`, and the audit branch was
+pushed successfully. The [access problem record](../../problems/cryptanalysis-git-remote-rejects-push.md)
+preserves the failed and successful observations. The branch integrated that
+main in merge commit `94a38d8b26931e4f9cbcd223ef6a6a2fba864bb9`; none
+of its 93 Lean source files or dedicated receipts changed across the merge.
+The [merged-tree metadata audit](evidence/corpus/merged-main-audit-20261022.json)
+still reports 93 files, zero unpinned, 13/13 matching receipt hashes, and zero
+forbidden tokens. Hosted CI and review are separate from this local evidence.
 
 ## Observed inventory and correction
 

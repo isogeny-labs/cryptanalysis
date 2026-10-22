@@ -17,7 +17,7 @@ explain the gap and what would let the work move past it.
 | [ECC2K-130 public gateway activation and device validation](ecc2k130-public-gateway-activation.md) | Open | Global contributor endpoint and live CUDA/RDS path after image publication | Approved cloud resources and a pinned end-to-end device receipt |
 | [KernelAgent bridge to the ECC2K-130 CUDA walk](ecc2k130-kernelagent-cuda-bridge.md) | Investigating | Direct KernelAgent optimization of the production compatible CUDA walk | Verified same-workload input, provider, and accessible GPU profiling |
 | [ECC2K-130 Frobenius GPU critical path](ecc2k130-frobenius-gpu-critical-path.md) | Investigating | A confirmed production-compatible useful-update speedup after source-correlated profiling and additional bounded screens | Proved and checked grouped-inverse synchronization change, then matched correctness and timing confirmation |
-| [Cryptanalysis Git remote rejects PR branch push](cryptanalysis-git-remote-rejects-push.md) | open | publishing and reviewing the committed Lean evidence audit | Git smart HTTP access restored, then exact branch push and ready PR |
+| [Cryptanalysis Git remote rejects PR branch push](cryptanalysis-git-remote-rejects-push.md) | resolved for transport | publishing and reviewing the committed Lean evidence audit | Git read/write restored and branch pushed; hosted PR gate remains separate |
 
 ## Add or update a problem
 
