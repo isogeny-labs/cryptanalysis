@@ -45,6 +45,9 @@ pub struct Cli {
     /// Emit a machine-readable JSON report.
     #[arg(long, global = true)]
     json: bool,
+    /// Emit live stage progress on stderr, including with --json.
+    #[arg(long, global = true)]
+    verbose: bool,
 }
 
 #[derive(Subcommand)]
@@ -436,7 +439,7 @@ fn display(report: &Value) {
     }
 }
 
-fn run_cmd(args: &RunArgs, json: bool) -> Result<Value, String> {
+fn run_cmd(args: &RunArgs, json: bool, verbose: bool) -> Result<Value, String> {
     use crate::cryptanalysis::ic_progress::ProgressReporter;
     use crate::cryptanalysis::ic_run::{run_curve, RunConfig};
 
@@ -456,12 +459,11 @@ fn run_cmd(args: &RunArgs, json: bool) -> Result<Value, String> {
         envelope_bits: args.envelope,
         solver_budget_seconds: args.solver_budget_seconds,
     };
-    // In JSON mode the progress log would interleave with the document, so
-    // silence it; in human mode it streams the CADO-style stage lines to stderr.
-    let mut progress = ProgressReporter::new(false, json);
+    // The reporter writes to stderr, leaving the final JSON on stdout.
+    let mut progress = ProgressReporter::new(false, json && !verbose);
     let result = run_curve(&curve, &cfg, &mut progress)?;
     let verified_any = result.reports.iter().any(|r| r.verified);
-    if !json {
+    if !json || verbose {
         progress.summary(&format!(
             "{} — {} of {} configuration(s) verified",
             result.curve,
@@ -519,7 +521,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::List(a)) => list(a),
         Some(Action::Inspect(a)) => inspect(&a.curve),
         Some(Action::Estimate(a)) => estimate(a),
-        Some(Action::Run(a)) => run_cmd(a, cli.json),
+        Some(Action::Run(a)) => run_cmd(a, cli.json, cli.verbose),
         Some(Action::Fes(a)) => fes_cmd(a),
         None => {
             let name = cli

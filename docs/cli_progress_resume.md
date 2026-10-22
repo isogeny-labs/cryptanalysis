@@ -7,6 +7,35 @@ S3 prefix with the AWS CLI installed and configured on the host.
 Verbose runs announce the start, outcome, and elapsed time of periodic and
 final S3 syncs so a slow transfer is visible while the command is running.
 
+The `crypto`, `crax`, `icx`, and `isogeny-walk` commands dispatch to separate
+Rust executables. Their checkpoint formats and flags are independent of the
+native command described here. In particular, `crax` forwards child
+diagnostics live even with `--json`, and `crax icx run --verbose --json`
+prints stage progress on stderr. The Rust factoring commands `crax gnfs`,
+`snfs`, and `qs` provide `--verbose` stages but do not currently implement
+`--state-dir`, `--resume`, or `--s3-uri`; an interrupted sieve restarts its
+work. See [the `crax` command guide](CRAX.md) for its command surface.
+
+## Command coverage
+
+The options in this guide belong to the native C CLI. The Rust command tree
+is a separate implementation with these observed interfaces:
+
+| Command family | Live progress | Local computation resume | S3 computation resume |
+| --- | --- | --- | --- |
+| Native `factor`, `ec-order`, `gen`, `solve` variants, `ic`, ECC2K walks, and `work` | `--verbose` | `--state-dir --resume` | `--s3-uri` with the state directory |
+| `crax gnfs`, `snfs`, `qs` | `--verbose` stages | Not implemented | Not implemented |
+| `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
+| `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
+| Other `crax` attacks, including generic discrete logs, ECM, and the full factor ladder | Command-specific output | No shared resume contract | No shared resume contract |
+| Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
+
+Inspection and arithmetic commands such as `prime`, `num`, `group`, and
+`curve` finish as single operations and have no intermediate state to resume.
+The rows marked without a resume contract are open coverage gaps; retaining
+their final output or publishing artifacts does not restore interrupted
+computation.
+
 ## Integer factorization
 
 `factor N` accepts a positive 64-bit integer. Durable mode reports the active

@@ -62,7 +62,16 @@ The sibling crypto commands above execute the corresponding installed
 `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN` to an explicit path when those
 executables are not on `PATH`. `crax` forwards arguments directly, preserves
 the child exit status, and wraps its JSON or text report when `--json` is
-requested. The native `crax icx` catalog and run commands remain in the suite.
+requested. In JSON mode, child diagnostics also stream to stderr while the
+command runs and remain in the final `diagnostics_text` field. The native
+`crax icx` catalog and run commands remain in the suite.
+
+`crax icx run ... --verbose --json` prints stage progress to stderr and one
+final JSON document to stdout. `crax gnfs`, `snfs`, and `qs` also support
+`--verbose` stage reports. These Rust commands do not yet share the native C
+CLI's `--state-dir`, `--resume`, and `--s3-uri` checkpoint contract; passing
+their output through `crax` does not create a computation checkpoint. The
+underlying sibling commands retain their own artifact and recovery options.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:

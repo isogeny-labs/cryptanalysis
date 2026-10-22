@@ -27,7 +27,9 @@ pub mod output;
 pub mod tools;
 
 use std::ffi::OsString;
+use std::io::{self, Read, Write};
 use std::process::ExitCode;
+use std::process::{Command as ProcessCommand, Output, Stdio};
 
 use clap::{CommandFactory, FromArgMatches, Parser, Subcommand};
 
@@ -166,6 +168,32 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// Capture a child's stdout for the final JSON envelope while forwarding its
+/// stderr as it arrives.  Keeping the stderr reader concurrent with stdout
+/// also prevents a chatty child from filling either pipe and stalling.
+fn output_with_live_stderr(command: &mut ProcessCommand) -> io::Result<(Output, Vec<u8>)> {
+    let mut child = command
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()?;
+    let mut stderr = child.stderr.take().expect("stderr pipe was requested");
+    let stderr_reader = std::thread::spawn(move || {
+        let mut diagnostics = Vec::new();
+        let mut chunk = [0u8; 8192];
+        while let Ok(n) = stderr.read(&mut chunk) {
+            if n == 0 {
+                break;
+            }
+            diagnostics.extend_from_slice(&chunk[..n]);
+            let _ = io::stderr().write_all(&chunk[..n]);
+        }
+        diagnostics
+    });
+    let output = child.wait_with_output()?;
+    let diagnostics = stderr_reader.join().unwrap_or_default();
+    Ok((output, diagnostics))
+}
+
 /// Bridge the sibling crypto executables without a shell. This keeps the
 /// public-target EC IC, isogeny-walk, and artifact-store surfaces reachable
 /// from `crax` while preserving the producing executable's exit status.
@@ -186,11 +214,11 @@ fn run_external(
     if json_requested && pass_json {
         native_args.push("--json".into());
     }
-    let mut command = std::process::Command::new(&binary);
+    let mut command = ProcessCommand::new(&binary);
     command.args(&native_args);
     if json_requested {
-        match command.output() {
-            Ok(output) => {
+        match output_with_live_stderr(&mut command) {
+            Ok((output, diagnostics)) => {
                 let ok = output.status.success();
                 let report: serde_json::Value = serde_json::from_slice(&output.stdout)
                     .unwrap_or_else(|_| serde_json::Value::Null);
@@ -205,7 +233,7 @@ fn run_external(
                         "exit_code": output.status.code(),
                         "report": report,
                         "report_text": report_text,
-                        "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                        "diagnostics_text": String::from_utf8_lossy(&diagnostics),
                     })
                 );
                 ExitCode::from(output.status.code().unwrap_or(1) as u8)
@@ -243,9 +271,9 @@ fn run_suite_json(sub: &str, args: &[OsString]) -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let output = std::process::Command::new(exe).arg(sub).args(args).output();
+    let output = output_with_live_stderr(ProcessCommand::new(exe).arg(sub).args(args));
     match output {
-        Ok(output) => {
+        Ok((output, diagnostics)) => {
             let ok = output.status.success();
             println!(
                 "{}",
@@ -254,7 +282,7 @@ fn run_suite_json(sub: &str, args: &[OsString]) -> ExitCode {
                     "command": sub,
                     "exit_code": output.status.code(),
                     "report_text": String::from_utf8_lossy(&output.stdout),
-                    "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                    "diagnostics_text": String::from_utf8_lossy(&diagnostics),
                 })
             );
             ExitCode::from(output.status.code().unwrap_or(1) as u8)
@@ -517,5 +545,18 @@ mod tests {
         for s in suite_commands() {
             assert!(!own.contains(&s), "{s} is both a crax and a suite command");
         }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn json_child_keeps_stdout_separate_from_live_diagnostics() {
+        let mut command = ProcessCommand::new("sh");
+        command
+            .arg("-c")
+            .arg("printf 'stage one\\n' >&2; printf 'result\\n'; printf 'stage two\\n' >&2");
+        let (output, diagnostics) = output_with_live_stderr(&mut command).unwrap();
+        assert!(output.status.success());
+        assert_eq!(output.stdout, b"result\n");
+        assert_eq!(diagnostics, b"stage one\nstage two\n");
     }
 }
