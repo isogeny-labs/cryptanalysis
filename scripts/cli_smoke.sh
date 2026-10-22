@@ -181,6 +181,108 @@ want '"x":123456' bsgs "${ZP[@]}" --g 858101 \
 want '"x":123456' rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
+rho_tmp=$(mktemp -d)
+RHO=(rho --group zp --p 1019 --order 509 --g 4 --h 818 --seed 1984 \
+  --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${RHO[@]}" --max-ops 20
+want '"x":177' "${RHO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
+   [ ! -s "$rho_tmp/rho.dp.progress.json" ] || [ ! -s "$rho_tmp/result.json" ]; then
+  printf 'FAIL: rho checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
+want_bad 'live progress and resumable state require --alg rho, kangaroo, bsgs or grumpy' \
+  solve --alg dlog --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+rm -rf "$rho_tmp"
+bsgs_tmp=$(mktemp -d)
+BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$bsgs_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${BSGS[@]}" --max-ops 100
+want '"x":123456' "${BSGS[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$bsgs_tmp/manifest.json" ] || [ ! -s "$bsgs_tmp/bsgs.ckpt" ] || \
+   [ ! -s "$bsgs_tmp/bsgs.ckpt.progress.json" ] || [ ! -s "$bsgs_tmp/result.json" ]; then
+  printf 'FAIL: bsgs checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' bsgs "${ZP[@]}" --g 858101 --h 218146 \
+  --lo 0 --hi 1000001 --table 17 --state-dir "$bsgs_tmp" --resume
+rm -rf "$bsgs_tmp"
+grumpy_tmp=$(mktemp -d)
+GRUMPY=(grumpy --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --state-dir "$grumpy_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GRUMPY[@]}" --max-ops 20
+want '"x":177' "${GRUMPY[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$grumpy_tmp/manifest.json" ] || [ ! -s "$grumpy_tmp/grumpy.ckpt" ] || \
+   [ ! -s "$grumpy_tmp/grumpy.ckpt.progress.json" ] || [ ! -s "$grumpy_tmp/result.json" ]; then
+  printf 'FAIL: grumpy checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' grumpy --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --state-dir "$grumpy_tmp" --resume
+rm -rf "$grumpy_tmp"
+kangaroo_tmp=$(mktemp -d)
+KANGAROO=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${KANGAROO[@]}" --max-ops 40
+want '"x":177' "${KANGAROO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_tmp/manifest.json" ] || [ ! -s "$kangaroo_tmp/kangaroo.ckpt" ] || \
+   [ ! -s "$kangaroo_tmp/kangaroo.ckpt.progress.json" ] || \
+   [ ! -s "$kangaroo_tmp/result.json" ]; then
+  printf 'FAIL: kangaroo checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' kangaroo --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --resume
+rm -rf "$kangaroo_tmp"
+kangaroo_s3_test=$(mktemp -d)
+mkdir "$kangaroo_s3_test/bin" "$kangaroo_s3_test/remote"
+cat > "$kangaroo_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$kangaroo_s3_test/bin/aws"
+KANGAROO_S3=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_s3_test/local" --s3-uri s3://test/kangaroo --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${KANGAROO_S3[@]}" --max-ops 40
+rm -rf "$kangaroo_s3_test/local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":177' "${KANGAROO_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/kangaroo.ckpt" ] || \
+   ! grep -q '"x":177' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: kangaroo S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+BSGS_S3=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$kangaroo_s3_test/bsgs-local" --s3-uri s3://test/bsgs --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${BSGS_S3[@]}" --max-ops 100
+rm -rf "$kangaroo_s3_test/bsgs-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":123456' "${BSGS_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
+   ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test"
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
@@ -217,6 +319,62 @@ want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --s
 # ── index calculus ──────────────────────────────────────────────────────────
 want '"status":"ok"' ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 want '"x":69,"check":3' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1
+ic_tmp=$(mktemp -d)
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1 --resume
+checks=$((checks + 1))
+if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" ] || \
+   [ ! -s "$ic_tmp/progress.json" ]; then
+  printf 'FAIL: ic checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+# A remote copy must never replace a local run's mismatched identity.
+ic_s3_test=$(mktemp -d)
+mkdir "$ic_s3_test/bin" "$ic_s3_test/local"
+cat > "$ic_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$CA_TEST_S3_CALLED"
+if [[ $3 == s3://* ]]; then
+  cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+fi
+AWS
+chmod +x "$ic_s3_test/bin/aws"
+printf 'another run\n' > "$ic_s3_test/local/manifest.json"
+cp "$ic_s3_test/local/manifest.json" "$ic_s3_test/original-manifest"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'run manifest does not match these arguments' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/original-manifest" "$ic_s3_test/local/manifest.json"; then
+  printf 'FAIL: mismatched local manifest was exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/manifest.json"
+printf 'preserve\n' > "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'nonempty directory without a run manifest' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || [ -e "$ic_s3_test/local/manifest.json" ]; then
+  printf 'FAIL: unidentified local files were exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+rm -rf "$ic_tmp" "$ic_s3_test"
+want_bad 'durable --state-dir currently requires --method lsieve' \
+  ic --p 101 --g 2 --h 3 --method rexp --state-dir /tmp/unused-ca-ic-state
 want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
 want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
 want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
