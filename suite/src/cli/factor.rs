@@ -12,7 +12,7 @@ use clap::{Args, Subcommand};
 use num_bigint::{BigInt, BigUint};
 use num_integer::Integer;
 use num_traits::{One, Zero};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::cell::{Cell, RefCell};
 use std::fs::{self, File, OpenOptions};
 use std::io::Write;
@@ -434,7 +434,12 @@ struct StageHeartbeat {
 
 impl StageHeartbeat {
     fn start(method: &'static str, every_seconds: u64) -> Self {
-        let stage = Arc::new(Mutex::new(("polyselect", 0, 0)));
+        let initial = if method == "ecm" {
+            "curve"
+        } else {
+            "polyselect"
+        };
+        let stage = Arc::new(Mutex::new((initial, 0, 0)));
         let shared = Arc::clone(&stage);
         let (stop, receiver) = mpsc::channel();
         let worker = std::thread::spawn(move || {
@@ -1089,6 +1094,82 @@ pub struct EcmArgs {
     pub curves: u64,
     #[arg(long, default_value_t = 1)]
     pub seed: u64,
+    /// Print each completed curve and a heartbeat while one curve runs.
+    #[arg(long)]
+    pub verbose: bool,
+    /// Seconds between heartbeats (implies --verbose).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub progress_every: Option<u64>,
+    /// Dedicated directory for completed-curve checkpoints and reports.
+    #[arg(long)]
+    pub state_dir: Option<PathBuf>,
+    /// Continue completed curves locally or restore their state from S3.
+    #[arg(long)]
+    pub resume: bool,
+    /// Mirror checkpoints and final artifacts to this S3 prefix.
+    #[arg(long)]
+    pub s3_uri: Option<String>,
+    /// Seconds between S3 copies; the final copy is always attempted.
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+    pub sync_every: Option<u64>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct EcmCheckpoint {
+    schema_version: u32,
+    fingerprint: String,
+    next_curve: u64,
+    factor: Option<String>,
+    compute_seconds: f64,
+}
+
+#[derive(Serialize, Deserialize)]
+struct EcmCheckpointFile {
+    checksum: String,
+    payload: String,
+}
+
+fn save_ecm_checkpoint(path: &Path, state: &EcmCheckpoint) -> Result<(), String> {
+    let payload =
+        serde_json::to_string(state).map_err(|e| format!("serializing ECM state: {e}"))?;
+    write_json_atomic(
+        path,
+        &EcmCheckpointFile {
+            checksum: blake3::hash(payload.as_bytes()).to_hex().to_string(),
+            payload,
+        },
+    )
+}
+
+fn load_ecm_checkpoint(
+    path: &Path,
+    fingerprint: &str,
+    n: &BigUint,
+) -> Result<EcmCheckpoint, String> {
+    let saved: EcmCheckpointFile = serde_json::from_slice(
+        &fs::read(path).map_err(|e| format!("reading ECM checkpoint: {e}"))?,
+    )
+    .map_err(|e| format!("invalid ECM checkpoint: {e}"))?;
+    if saved.checksum != blake3::hash(saved.payload.as_bytes()).to_hex().as_str() {
+        return Err("ECM checkpoint checksum mismatch".into());
+    }
+    let state: EcmCheckpoint = serde_json::from_str(&saved.payload)
+        .map_err(|e| format!("invalid ECM checkpoint payload: {e}"))?;
+    if state.schema_version != 1 || state.fingerprint != fingerprint {
+        return Err("ECM checkpoint parameters or version differ".into());
+    }
+    if !state.compute_seconds.is_finite() || state.compute_seconds < 0.0 {
+        return Err("invalid ECM checkpoint compute time".into());
+    }
+    if let Some(factor) = &state.factor {
+        let f = factor
+            .parse::<BigUint>()
+            .map_err(|e| format!("invalid ECM factor: {e}"))?;
+        if f.is_one() || &f == n || (n % &f) != BigUint::zero() {
+            return Err("ECM checkpoint factor does not divide n".into());
+        }
+    }
+    Ok(state)
 }
 
 #[derive(Serialize)]
@@ -1141,15 +1222,109 @@ fn split(
 
 pub fn run_ecm(out: Out, a: &EcmArgs) -> CmdResult {
     let n = parse_expr(&a.n)?;
-    let t0 = std::time::Instant::now();
-    let f = crate::cryptanalysis::ecm::ecm_factor(&n, a.b1, a.curves, a.seed);
+    if n < BigUint::from(2u32) || a.curves == 0 {
+        return Err("ECM requires n >= 2 and at least one curve".into());
+    }
+    let manifest = serde_json::json!({
+        "schema_version": 1, "method": "ecm", "n": n.to_string(),
+        "b1": a.b1, "seed": a.seed,
+    });
+    let fingerprint = blake3::hash(&serde_json::to_vec(&manifest).map_err(|e| e.to_string())?)
+        .to_hex()
+        .to_string();
+    let options = RunOptions {
+        state_dir: a.state_dir.clone(),
+        resume: a.resume,
+        s3_uri: a.s3_uri.clone(),
+        sync_every: a.sync_every,
+        checkpoint_every: None,
+        verbose: a.verbose,
+        progress_every: a.progress_every,
+        checkpoint_name: "ecm.ckpt",
+    };
+    let state = FactoringRun::prepare(&options, "ecm", manifest)?;
+    let checkpoint_path = a.state_dir.as_ref().map(|dir| dir.join("ecm.ckpt"));
+    let mut checkpoint = if a.resume {
+        load_ecm_checkpoint(
+            checkpoint_path
+                .as_deref()
+                .ok_or("ECM resume needs --state-dir")?,
+            &fingerprint,
+            &n,
+        )?
+    } else {
+        EcmCheckpoint {
+            schema_version: 1,
+            fingerprint,
+            next_curve: 0,
+            factor: None,
+            compute_seconds: 0.0,
+        }
+    };
+    if checkpoint.next_curve > a.curves {
+        return Err("ECM checkpoint contains more curves than the requested budget".into());
+    }
+    if !a.resume {
+        if let Some(path) = &checkpoint_path {
+            save_ecm_checkpoint(path, &checkpoint)?;
+            state.sync("initial")?;
+        }
+    }
+    let verbose = a.verbose || a.progress_every.is_some();
+    let printer = progress_printer(verbose);
+    let heartbeat = verbose.then(|| StageHeartbeat::start("ecm", a.progress_every.unwrap_or(5)));
+    let progress = |done: u64, seconds: f64| {
+        let update = Progress {
+            stage: "curve",
+            done,
+            target: a.curves,
+            seconds,
+        };
+        if let Some(print) = &printer {
+            print(&update);
+        }
+        if let Some(heartbeat) = &heartbeat {
+            heartbeat.update(&update);
+        }
+        state.progress("ecm", &update);
+    };
+    progress(checkpoint.next_curve, checkpoint.compute_seconds);
+    while checkpoint.next_curve < a.curves && checkpoint.factor.is_none() {
+        let curve = checkpoint.next_curve;
+        let started = Instant::now();
+        let outcome =
+            crate::cryptanalysis::ecm::ecm_one_curve(&n, a.b1, a.seed.wrapping_add(curve));
+        checkpoint.compute_seconds += started.elapsed().as_secs_f64();
+        checkpoint.next_curve += 1;
+        if let crate::cryptanalysis::ecm::EcmResult::Found(factor) = outcome {
+            if factor.is_one() || factor == n || (&n % &factor) != BigUint::zero() {
+                return Err("ECM engine returned an invalid factor".into());
+            }
+            checkpoint.factor = Some(factor.to_string());
+        }
+        if let Some(path) = &checkpoint_path {
+            save_ecm_checkpoint(path, &checkpoint)?;
+        }
+        progress(checkpoint.next_curve, checkpoint.compute_seconds);
+    }
+    drop(heartbeat);
+    let f = checkpoint
+        .factor
+        .as_deref()
+        .map(str::parse::<BigUint>)
+        .transpose()
+        .map_err(|e| format!("invalid saved ECM factor: {e}"))?;
     let r = split(
         "ecm",
         &n,
         f,
-        t0.elapsed().as_secs_f64(),
-        format!("B1 = {}, up to {} curves", a.b1, a.curves),
+        checkpoint.compute_seconds,
+        format!(
+            "B1 = {}, completed {} of {} curves; seconds count curve work only",
+            a.b1, checkpoint.next_curve, a.curves
+        ),
     );
+    state.finish(&r, r.verified)?;
     out.emit(&r, || r.text())?;
     verdict(r.verified, r.factor.is_some(), "ecm")
 }
@@ -1431,6 +1606,58 @@ fn message_attack(out: Out, r: &rsa_attacks::MessageAttackResult) -> CmdResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ecm_resumes_only_unfinished_curves_and_rejects_corruption() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!("crax-ecm-{}-{unique}", std::process::id()));
+        let args = EcmArgs {
+            n: "101".into(),
+            b1: 20,
+            curves: 2,
+            seed: 7,
+            verbose: false,
+            progress_every: None,
+            state_dir: Some(dir.clone()),
+            resume: false,
+            s3_uri: None,
+            sync_every: None,
+        };
+        assert!(run_ecm(Out { json: true }, &args).is_err());
+        let path = dir.join("ecm.ckpt");
+        let manifest = serde_json::json!({
+            "schema_version": 1, "method": "ecm", "n": "101", "b1": 20, "seed": 7,
+        });
+        let fingerprint = blake3::hash(&serde_json::to_vec(&manifest).unwrap())
+            .to_hex()
+            .to_string();
+        let first = load_ecm_checkpoint(&path, &fingerprint, &BigUint::from(101u32)).unwrap();
+        assert_eq!(first.next_curve, 2);
+        let continued = EcmArgs {
+            curves: 4,
+            resume: true,
+            ..args
+        };
+        assert!(run_ecm(Out { json: true }, &continued).is_err());
+        let second = load_ecm_checkpoint(&path, &fingerprint, &BigUint::from(101u32)).unwrap();
+        assert_eq!(second.next_curve, 4);
+        assert!(second.compute_seconds >= first.compute_seconds);
+        let mut altered: EcmCheckpointFile =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        let mut payload: serde_json::Value = serde_json::from_str(&altered.payload).unwrap();
+        payload["next_curve"] = serde_json::json!(3);
+        altered.payload = payload.to_string();
+        fs::write(&path, serde_json::to_vec(&altered).unwrap()).unwrap();
+        assert!(
+            load_ecm_checkpoint(&path, &fingerprint, &BigUint::from(101u32))
+                .unwrap_err()
+                .contains("checksum mismatch")
+        );
+        fs::remove_dir_all(dir).unwrap();
+    }
 
     #[test]
     fn expressions_and_forms() {
