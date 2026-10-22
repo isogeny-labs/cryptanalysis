@@ -67,12 +67,16 @@ command runs and remain in the final `diagnostics_text` field. The native
 `crax icx` catalog and run commands remain in the suite.
 
 `crax icx run ... --verbose --json` prints stage progress to stderr and one
-final JSON document to stdout. `crax gnfs`, `snfs`, and `qs` also support
+final JSON document to stdout. Add `--state-dir DIR` to select the sibling
+`icx` binary's completed-repeat checkpoint; `--resume` continues local state
+or restores it from `--s3-uri s3://BUCKET/PREFIX`. The sibling executable
+must be on `PATH` or selected with `CRAX_ICX_BIN`. In this mode, `crax --json`
+nests the sibling report under `report`. `crax gnfs`, `snfs`, and `qs` also support
 `--verbose` stage reports. GNFS, SNFS, and SIQS save relation-sieve checkpoints
 with `--state-dir`, continue with `--resume`, and mirror the run directory with
-`--s3-uri`. The other Rust attack engines do not yet share that checkpoint
-contract. The underlying sibling commands retain their own artifact and
-recovery options.
+`--s3-uri`. The [restart guide](cli_progress_resume.md) lists each command's
+checkpoint boundary and the remaining gaps. The sibling commands retain their
+own artifact and recovery options.
 
 For example, a capped GNFS run can be continued from local or S3 state:
 

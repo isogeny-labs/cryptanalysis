@@ -168,6 +168,35 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// The sibling `icx` binary owns completed-repeat checkpointing for `run`.
+/// Keep ordinary `crax icx run` on the in-process implementation; state flags
+/// explicitly select the sibling's durable implementation.
+fn icx_run_needs_external_state(args: &[OsString]) -> bool {
+    let Some(run_at) = args.iter().position(|arg| arg == "run") else {
+        return false;
+    };
+    let mut i = 1;
+    while i < run_at {
+        let Some(arg) = args[i].to_str() else {
+            return false;
+        };
+        i += match arg {
+            "--json" | "--verbose" => 1,
+            "--progress-every" if i + 1 < run_at => 2,
+            arg if arg.starts_with("--progress-every=") => 1,
+            _ => return false,
+        };
+    }
+    i == run_at
+        && args.iter().skip(1).any(|arg| {
+            arg.to_str().is_some_and(|arg| {
+                ["--resume", "--state-dir", "--s3-uri", "--progress-every"]
+                    .iter()
+                    .any(|flag| arg == *flag || arg.starts_with(&format!("{flag}=")))
+            })
+        })
+}
+
 /// Capture a child's stdout for the final JSON envelope while forwarding its
 /// stderr as it arrives.  Keeping the stderr reader concurrent with stdout
 /// also prevents a chatty child from filling either pipe and stalling.
@@ -436,7 +465,7 @@ where
             if matches!(
                 rest.get(1).and_then(|a| a.to_str()),
                 Some("solve-prime" | "solve-cubic")
-            ) =>
+            ) || icx_run_needs_external_state(&rest) =>
         {
             return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
         }
@@ -545,6 +574,40 @@ mod tests {
         for s in suite_commands() {
             assert!(!own.contains(&s), "{s} is both a crax and a suite command");
         }
+    }
+
+    #[test]
+    fn icx_run_uses_sibling_only_for_durable_flags() {
+        let args = |values: &[&str]| values.iter().map(OsString::from).collect::<Vec<_>>();
+        assert!(!icx_run_needs_external_state(&args(&[
+            "icx",
+            "run",
+            "secp256k1",
+            "--verbose"
+        ])));
+        assert!(icx_run_needs_external_state(&args(&[
+            "icx",
+            "run",
+            "secp256k1",
+            "--state-dir=run1"
+        ])));
+        assert!(icx_run_needs_external_state(&args(&[
+            "icx",
+            "--json",
+            "run",
+            "secp256k1",
+            "--resume"
+        ])));
+        assert!(icx_run_needs_external_state(&args(&[
+            "icx",
+            "--progress-every",
+            "1",
+            "run",
+            "secp256k1"
+        ])));
+        assert!(!icx_run_needs_external_state(&args(&[
+            "icx", "inspect", "run", "--resume"
+        ])));
     }
 
     #[cfg(unix)]

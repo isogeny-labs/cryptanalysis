@@ -32,7 +32,7 @@ is a separate implementation with these observed interfaces:
 | `crax rho-factor` | `--verbose` attempt count and heartbeat | `--state-dir --resume` for completed Brent constants | `--s3-uri` with the state directory |
 | `crax pm1` (`--pp1`) | `--verbose` prime-batch counts and heartbeat | `--state-dir --resume` for completed p−1 or p+1 prime batches | `--s3-uri` with the state directory |
 | `crax bsgs`, `rho`, `kangaroo`, `grumpy`, `precomp`, `glv`, `pohlig-hellman`, `cheon`, `gpu-rho` | `--verbose` through the native solver | `--state-dir --resume` for the native solver checkpoint | `--s3-uri` with the state directory |
-| `crax icx run` | `--verbose`, also with `--json` | Not implemented | Not implemented |
+| `crax icx run` | `--verbose`, also with `--json`; sibling `icx` adds heartbeat with `--progress-every` | `--state-dir --resume` selects the sibling `icx` completed-repeat checkpoint | `--s3-uri` with the sibling state directory |
 | `crax ic workflow` and `ic fixed` | Command-specific stage messages | Their own `--dir` workflow state | Not implemented by `crax` |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
@@ -42,6 +42,22 @@ Inspection and arithmetic commands such as `prime`, `num`, `group`, and
 The rows marked without a resume contract are open coverage gaps; retaining
 their final output or publishing artifacts does not restore interrupted
 computation.
+
+`crax icx run` uses its in-process pipeline when run without state flags.
+`--state-dir`, `--resume`, `--s3-uri`, or `--progress-every` selects the sibling
+`icx` executable, whose completed-repeat checkpoint, checksum, run manifest,
+and S3 restore rules apply. Set `CRAX_ICX_BIN` if that executable is not on
+`PATH`. A repeat interrupted before its checkpoint restarts that repeat.
+The sibling's final report is nested under `report` in `crax --json` output.
+
+```sh
+crax --json icx run secp256k1 --bits 10 --rho-runs 0 --repeats 3 \
+  --verbose --state-dir ./runs/icx-001 \
+  --s3-uri s3://my-bucket/crax/icx-001
+crax --json icx run secp256k1 --bits 10 --rho-runs 0 --repeats 3 \
+  --verbose --state-dir ./runs/icx-001 --resume \
+  --s3-uri s3://my-bucket/crax/icx-001
+```
 
 ### `crax` generic discrete logs
 
