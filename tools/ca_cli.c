@@ -180,6 +180,10 @@ static _Noreturn void usage(void)
         "  rho   --group zp|ec --p P --order N --g G --h H [--threads T]\n"
         "        [--verbose] [--progress-every SEC] [--state-dir DIR] [--resume]\n"
         "        [--checkpoint-every SEC] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
+        "  solve --alg glv --group ec --p P --a A --b B --order N --g G --h H\n"
+        "        [--seed S] [--max-ops K] [--verbose] [--progress-every SEC]\n"
+        "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  grumpy --group zp|ec --p P --order N --g G --h H --lo L --hi U\n"
         "        [--m M] [--alpha A] [--verbose] [--state-dir DIR] [--resume] [--s3-uri URI]\n"
         "        [--progress-every SEC] [--checkpoint-every SEC] [--sync-every SEC]\n"
@@ -346,7 +350,7 @@ static int cmd_gen(void)
 }
 
 static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                           const ca_rho_params *params);
+                           const ca_rho_params *params, int glv);
 static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                 uint64_t lo, uint64_t hi, const ca_kangaroo_params *params);
 static int cmd_interval_durable(const char *alg, const ca_group *g,
@@ -368,10 +372,10 @@ static int cmd_solve(const char *selected_alg)
     int durable = flag("--verbose") || flag("-v") || opt("--progress-every") ||
                   opt("--checkpoint-every") || opt("--state-dir") || flag("--resume") ||
                   opt("--s3-uri") || opt("--sync-every");
-    if (durable && strcmp(alg, "rho") && strcmp(alg, "kangaroo") &&
+    if (durable && strcmp(alg, "rho") && strcmp(alg, "glv") && strcmp(alg, "kangaroo") &&
         strcmp(alg, "bsgs") && strcmp(alg, "grumpy") &&
         strcmp(alg, "precomp") && strcmp(alg, "dlog"))
-        die("live progress and resumable state require --alg rho, kangaroo, bsgs, grumpy, precomp or dlog");
+        die("live progress and resumable state require --alg rho, glv, kangaroo, bsgs, grumpy, precomp or dlog");
     ca_elem base, target;
     parse_elem(&g, opt("--g"), &base);
     parse_elem(&g, opt("--h"), &target);
@@ -411,7 +415,7 @@ static int cmd_solve(const char *selected_alg)
     ca_stats st = {0};
     ca_status rc;
     if (durable && !strcmp(alg, "rho"))
-        return cmd_rho_durable(&g, &base, &target, &dp.rho);
+        return cmd_rho_durable(&g, &base, &target, &dp.rho, 0);
     if (durable && !strcmp(alg, "kangaroo"))
         return cmd_kangaroo_durable(&g, &base, &target, lo, hi, &dp.kangaroo);
     if (durable && (!strcmp(alg, "bsgs") || !strcmp(alg, "grumpy")))
@@ -463,6 +467,8 @@ static int cmd_solve(const char *selected_alg)
         rc = ca_curve_group(&cg, g.p, g.a, g.b, g.order, &info);
         if (rc != CA_OK) die_status(rc);
         /* base/target are valid in cg: identical curve and Montgomery domain. */
+        if (durable || opt("--max-ops"))
+            return cmd_rho_durable(&cg, &base, &target, &dp.rho, 1);
         rc = ca_curve_solve(&cg, &base, &target, opt_u64("--seed", 0), &x, &info, &st);
         const char *ek = info.endo == CA_CURVE_ENDO_J0      ? "j0"
                          : info.endo == CA_CURVE_ENDO_J1728 ? "j1728"
@@ -756,8 +762,9 @@ static void *ic_sync_worker(void *arg)
 }
 
 static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                           const ca_rho_params *params)
+                           const ca_rho_params *params, int glv)
 {
+    const char *alg = glv ? "glv" : "rho";
     int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
     const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
     int resume = flag("--resume");
@@ -780,13 +787,13 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     ca_group_decode(g, hw, target);
     char manifest[2048];
     int ml = snprintf(manifest, sizeof(manifest),
-        "{\"schema\":1,\"command\":\"rho\",\"kind\":%u,\"p\":%" PRIu64
+        "{\"schema\":1,\"command\":\"%s\",\"kind\":%u,\"p\":%" PRIu64
         ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 ",\"order\":%" PRIu64
         ",\"cofactor\":%" PRIu64 ",\"g\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
         "],\"h\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
         "],\"threads\":%u,\"r\":%u,\"dp_bits\":%d,\"walks\":%u,"
         "\"negation\":%d,\"seed\":%" PRIu64 "}\n",
-        (unsigned)g->kind, g->p, g->a, g->b, g->order, g->cofactor,
+        alg, (unsigned)g->kind, g->p, g->a, g->b, g->order, g->cofactor,
         gw[0], gw[1], gw[2], gw[3], hw[0], hw[1], hw[2], hw[3],
         params->threads, params->r, params->dp_bits, params->walks_per_thread,
         params->negation_map, params->seed);
@@ -803,7 +810,7 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
         free(lock_path);
         if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
             die("state directory is already in use");
-        checkpoint = ic_path(state_dir, "rho.dp");
+        checkpoint = ic_path(state_dir, glv ? "glv.ckpt" : "rho.dp");
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
@@ -825,18 +832,18 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
                 !ca_group_is_identity(g, target))
-                die("no rho checkpoint found for --resume");
+                die("no walk checkpoint found for --resume");
         }
         if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist run status");
-        if (verbose) fprintf(stderr, "[rho] state directory: %s%s\n", state_dir,
+        if (verbose) fprintf(stderr, "[%s] state directory: %s%s\n", alg, state_dir,
                              resume ? " (resume)" : "");
     }
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
     if (s3_uri) {
-        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "rho";
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = alg;
         sync.interval = sync_interval; sync.verbose = verbose;
         atomic_init(&sync.stop, 0);
         if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
@@ -845,23 +852,42 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     }
     uint64_t x = 0;
     ca_stats st = {0};
-    ca_status rc = ca_rho_solve_checkpointed(g, base, target, params, checkpoint,
-                                               progress_interval, checkpoint_interval,
-                                               verbose, &x, &st);
+    ca_curve_info info = {0};
+    ca_status rc = glv
+        ? ca_curve_solve_checkpointed(g, base, target, params->seed, checkpoint,
+                                      progress_interval, checkpoint_interval, verbose,
+                                      params->max_ops, &x, &info, &st)
+        : ca_rho_solve_checkpointed(g, base, target, params, checkpoint,
+                                    progress_interval, checkpoint_interval,
+                                    verbose, &x, &st);
     if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
     char result[1024];
-    int nr = snprintf(result, sizeof(result),
-        "{\"status\":\"%s\",\"alg\":\"rho\",\"x\":%" PRIu64
-        ",\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
-        ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
-        ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
-        ca_status_string(rc), rc == CA_OK ? x : 0, st.group_ops, st.iterations,
-        st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
+    const char *ek = info.endo == CA_CURVE_ENDO_J0 ? "j0"
+                     : info.endo == CA_CURVE_ENDO_J1728 ? "j1728" : "none";
+    int nr;
+    if (glv)
+        nr = snprintf(result, sizeof(result),
+            "{\"status\":\"%s\",\"alg\":\"glv\",\"x\":%" PRIu64
+            ",\"endomorphism\":\"%s\",\"aut_order\":%u,\"lambda\":%" PRIu64
+            ",\"rho_speedup\":%.4f,\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
+            ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
+            ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
+            ca_status_string(rc), rc == CA_OK ? x : 0, ek, info.aut_order,
+            info.lambda, info.rho_speedup, st.group_ops, st.iterations,
+            st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
+    else
+        nr = snprintf(result, sizeof(result),
+            "{\"status\":\"%s\",\"alg\":\"rho\",\"x\":%" PRIu64
+            ",\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
+            ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
+            ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
+            ca_status_string(rc), rc == CA_OK ? x : 0, st.group_ops, st.iterations,
+            st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
     if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
-        die("cannot persist rho result");
+        die("cannot persist walk result");
     int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[rho] final S3 sync %s\n",
+    if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
                                    uploaded ? "complete" : "failed");
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",

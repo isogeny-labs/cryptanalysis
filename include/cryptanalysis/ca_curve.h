@@ -71,6 +71,19 @@ CA_API ca_status ca_curve_group(ca_group *g, uint64_t p, uint64_t a, uint64_t b,
 CA_API ca_status ca_curve_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                 uint64_t seed, uint64_t *x, ca_curve_info *info, ca_stats *st);
 
+/* Live GLV progress and exact walk/table snapshots. NULL checkpoint_path
+ * enables verbose progress without persistence. A generic curve uses the
+ * checkpointed negation-map rho solver instead. max_ops is cumulative across
+ * resumes; zero keeps the solver's built-in runaway guard. */
+CA_API ca_status ca_curve_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                              const ca_elem *target, uint64_t seed,
+                                              const char *checkpoint_path,
+                                              uint32_t progress_interval,
+                                              uint32_t checkpoint_interval,
+                                              int verbose, uint64_t max_ops,
+                                              uint64_t *x, ca_curve_info *info,
+                                              ca_stats *st);
+
 /* Explicit research startup backend for one-target GLV rho. The default API
  * above retains generic multiplier construction. In paired2 mode,
  * ca_stats.group_ops remains the exact generic-reference budget count used

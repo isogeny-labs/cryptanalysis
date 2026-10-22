@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
+GLV, kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -46,6 +46,27 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+
+## Curve-aware GLV rho
+
+`solve --alg glv` accepts the same progress, state-directory, resume, and S3
+options. On a curve with a supported endomorphism, `glv.ckpt` saves the exact
+walk lanes, random state, distinguished-point table, cumulative operations,
+and effective seed. The versioned checksum and run identity reject damaged or
+mismatched checkpoints. `glv.ckpt.progress.json` reports live operations,
+steps, and table entries. A generic curve uses the checkpointed negation-map
+rho solver, with the same `glv.ckpt` path.
+
+```sh
+cryptanalysis solve --alg glv --group ec --p 67108933 --a 0 --b 7 \
+  --order 16773703 --g 45431017,59233864 --h 44778635,28265170 \
+  --seed 13 --verbose --state-dir ./runs/glv-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/glv-001 --sync-every 60
+```
+
+Resume with the same curve, points, seed, and state location. `--max-ops`
+can stop a run with a checkpoint; raise it on resume to continue. The local
+lock, final sync, and S3 restore rules above apply.
 
 ## Pollard kangaroo
 
