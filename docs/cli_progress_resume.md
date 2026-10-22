@@ -24,8 +24,8 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 ```
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
-state directory. The durable flags are currently available for native rho and
-kangaroo; other `solve` algorithms reject them.
+state directory. The durable flags are currently available for native rho,
+kangaroo, BSGS, and grumpy; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -66,6 +66,28 @@ herds. `kangaroo.ckpt.progress.json` and `result.json` provide readable
 status. Tiny intervals handled by a direct scan have only the manifest and
 result; resume recomputes them. The local/S3 sync and locking rules above
 apply to kangaroo as well.
+
+## BSGS and grumpy interval searches
+
+`bsgs`, `grumpy`, `solve --alg bsgs`, and `solve --alg grumpy` accept the same
+progress, state-directory, resume, and S3 options. Include the original
+interval and algorithm settings on resume; `--max-ops` may be raised.
+
+```sh
+cryptanalysis bsgs --group zp --p 1000003 --order 1000002 \
+  --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --verbose --progress-every 5 --state-dir ./runs/bsgs-001 \
+  --checkpoint-every 60 --s3-uri s3://my-bucket/cryptanalysis/bsgs-001
+```
+
+BSGS reports `baby` while building its lookup table and `giant` while
+searching. `bsgs.ckpt` saves partial baby tables as well as the giant-step
+position, so both phases can resume. It regenerates a small batch of baby
+points or the giant start point when loading a checkpoint. Grumpy reports
+`walk` and stores its three current positions and collision table in
+`grumpy.ckpt`. Each checkpoint has a checksum and binds the group, target,
+interval, and resolved algorithm settings. Both commands write a matching
+`*.progress.json`, `manifest.json`, and `result.json` in their state directory.
 
 ## Index calculus
 

@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run_matrix(const ca_group *g, const ca_elem *gen, const char *name)
 {
@@ -41,8 +42,70 @@ int main(void)
     ca_group g;
     ca_elem gen;
     fx_zp_safe(&g, &gen, 2000000579ULL); /* 2q+1 with q = 1000000289 */
+    {
+        char dir[] = "/tmp/ca-bsgs-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/table.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 424242, &target);
+        ca_bsgs_params cp;
+        ca_bsgs_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        ca_stats baby = {0}, giant = {0}, finished = {0};
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &baby) == CA_ERR_LIMIT);
+        CHECK(baby.table_entries > 0 && baby.iterations == 0);
+        CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+        cp.table_size = 17;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        cp.table_size = 0;
+        cp.max_ops = 2400;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &giant) == CA_ERR_LIMIT);
+        CHECK(giant.iterations > 0);
+        cp.max_ops = 100000;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &finished) == CA_OK);
+        CHECK_EQ_U64(answer, 424242);
+        CHECK(finished.group_ops > giant.group_ops);
+        FILE *f = fopen(path, "rb+");
+        CHECK(f != NULL);
+        CHECK(fseek(f, -1, SEEK_END) == 0);
+        int last = fgetc(f);
+        CHECK(last != EOF);
+        CHECK(fseek(f, -1, SEEK_END) == 0);
+        CHECK(fputc(last ^ 1, f) != EOF);
+        CHECK(fclose(f) == 0);
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run_matrix(&g, &gen, "zp");
     fx_ec(&g, &gen, 1000003, 1, 7);
+    {
+        char dir[] = "/tmp/ca-bsgs-ec-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/table.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 12345, &target);
+        ca_bsgs_params cp;
+        ca_bsgs_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 50000,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_LIMIT);
+        cp.max_ops = 100000;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 50000,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 12345);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run_matrix(&g, &gen, "ec");
     /* amortised table reuse */
     ca_bsgs_table *t;
