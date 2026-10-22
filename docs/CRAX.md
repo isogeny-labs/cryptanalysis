@@ -90,6 +90,8 @@ crax --json hash-auto --hash sha3-256
 crax --json hash-auto --hash sha-3-512
 crax --json aes-sbox-table --kind ddt --row 1
 crax --json aes-sbox-table --kind lat > aes-lat.json
+crax --json aes-sbox-table --kind bct --row 1
+crax --json aes-sbox-table --kind dlct > aes-dlct.json
 ```
 
 `hash` accepts a single `--text`, `--hex`, or `--file` input and supports
@@ -97,10 +99,13 @@ SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are acce
 SHAKE and bounded to 1 MiB. `hash-auto` runs a length-extension demonstration
 against SHA-256; SHA-3 uses a sponge, so that particular attack is not
 applicable. Its truncated birthday and differential-bias measurements remain
-available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box difference and signed linear-bias tables, or one input row. `aes-attack` runs verified key recovery on the implemented
+available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
 AES-128 reduced-round differential (2), linear (1), or integral (4) models.
 These commands do not imply key recovery against full-round AES-128 or a
 collision against full-output SHA-2 or SHA-3.
+The [AES S-box cross-check](CRAX_AES_SBOX_CROSSCHECK_20261022.json) compares
+all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
+`crypto` release CLI and checks selected one-row exports against full tables.
 
 ## Coverage of the cross-repository CLI path
 
@@ -108,10 +113,10 @@ collision against full-output SHA-2 or SHA-3.
 | --- | --- | --- |
 | SHA-256, SHA-3, and related digests | `crax hash` | Native byte, text, and file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 length extension, 32-bit truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512 have the generic measurements but no Merkle-Damgård length-extension step. |
-| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT and LAT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
-| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic Gaudry factor base requires a counted full prime-order curve. `crax ic zp` remains multiplicative-group index calculus. |
-| Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime IC command checks point transport along a selected route. Cubic-field route transport is not implemented. |
-| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Small public-artifact round trips passed on `setec-astronomy-artifacts`; live multipart recovery is unverified. |
+| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
+| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
+| Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
+| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
 
 The native cryptanalysis commands and the sibling bridges have separate build
 dependencies. Install the sibling `crypto`, `ic`, and `isogeny_walk` binaries

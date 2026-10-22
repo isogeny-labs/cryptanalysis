@@ -1,0 +1,69 @@
+{
+  "binaries": {
+    "crax": {
+      "sha256": "fb8abd7d8876a60e6532f5512b9f1ece9decafcc68a3ad9a107eee7d80cbc656"
+    },
+    "crypto": {
+      "sha256": "ac24c232e5b2f315f252cd7e003fa7dcdcd873eba51d652e745b5e66fb67e1bd"
+    }
+  },
+  "date_utc": "2026-10-22T09:15:23.630617+00:00",
+  "reference": "sibling crypto release CLI; exact binary digests recorded below",
+  "schema": "crax-aes-sbox-crosscheck/v1",
+  "source_parent_commit": "e64e3434368c28d27d82651e8fc3dd320986835a",
+  "tables": {
+    "bct": {
+      "corner_00": 256,
+      "corner_11": 2,
+      "full_entries": 65536,
+      "matches_sibling": true,
+      "sample_rows_match_full": [
+        0,
+        1,
+        127,
+        255
+      ]
+    },
+    "ddt": {
+      "corner_00": 256,
+      "corner_11": 2,
+      "full_entries": 65536,
+      "matches_sibling": true,
+      "sample_rows_match_full": [
+        0,
+        1,
+        127,
+        255
+      ]
+    },
+    "dlct": {
+      "corner_00": 128,
+      "corner_11": -4,
+      "full_entries": 65536,
+      "matches_sibling": true,
+      "sample_rows_match_full": [
+        0,
+        1,
+        127,
+        255
+      ]
+    },
+    "lat": {
+      "corner_00": 128,
+      "corner_11": 12,
+      "full_entries": 65536,
+      "matches_sibling": true,
+      "sample_rows_match_full": [
+        0,
+        1,
+        127,
+        255
+      ]
+    }
+  },
+  "validation": {
+    "cli_table_crosscheck": "all 65536 entries for DDT, LAT, BCT, and DLCT match sibling crypto release binary",
+    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads",
+    "targeted_unit": "2 passed; 0 failed"
+  }
+}
