@@ -1,16 +1,17 @@
 {
   "binaries": {
     "crax": {
-      "sha256": "fb8abd7d8876a60e6532f5512b9f1ece9decafcc68a3ad9a107eee7d80cbc656"
+      "sha256": "207357cb6fe7966eeef87d1435a9704e42b757e2ad71e7cbff584b9256388d5e"
     },
     "crypto": {
-      "sha256": "ac24c232e5b2f315f252cd7e003fa7dcdcd873eba51d652e745b5e66fb67e1bd"
+      "sha256": "2c723399f06d96bc1942c65a678b9419a7383d2beef6ef1761774980262934d4"
     }
   },
-  "date_utc": "2026-10-22T09:15:23.630617+00:00",
+  "date_utc": "2026-10-23T00:41:17.008235+00:00",
   "reference": "sibling crypto release CLI; exact binary digests recorded below",
   "schema": "crax-aes-sbox-crosscheck/v1",
-  "source_parent_commit": "e64e3434368c28d27d82651e8fc3dd320986835a",
+  "source_commit": "25cbe71e3b67df5ffd972b2eb9bf972894639a27",
+  "source_parent_commit": "988d0fe1fb516d72800346eb855e3f57825f4e32",
   "tables": {
     "bct": {
       "corner_00": 256,
@@ -62,8 +63,9 @@
     }
   },
   "validation": {
-    "cli_table_crosscheck": "all 65536 entries for DDT, LAT, BCT, and DLCT match sibling crypto release binary",
-    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads",
+    "cli_table_crosscheck": "all 65536 entries for each DDT, LAT, BCT, and DLCT match the sibling crypto release binary",
+    "release_crax_binary": "compiled and binary test target passed",
+    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads on current main base",
     "targeted_unit": "2 passed; 0 failed"
   }
 }
