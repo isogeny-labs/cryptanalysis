@@ -162,6 +162,12 @@ command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
 fetched and digest-checked before `crax` hashes it. Set the sibling store's
 remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
 receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
+For `--file`, SHA-224/256, SHA-3-224/256/384/512, SHAKE128/256, and BLAKE3
+use incremental processing with a 64 KiB read buffer. Text and hex inputs,
+and the remaining hash algorithms, retain the existing in-memory path.
+The [streaming hash acceptance receipt](CRAX_STREAM_HASH_ACCEPTANCE_20261023.json)
+records 207 boundary comparisons, nine large-file digests, and a fresh-cache
+Setec S3 read through both name and digest references, followed by cleanup.
 
 `hash` accepts a single `--text`, `--hex`, or `--file` input and supports
 SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for

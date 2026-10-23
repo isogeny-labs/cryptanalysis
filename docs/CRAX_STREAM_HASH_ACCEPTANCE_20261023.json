@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "kind": "crax-stream-hash-acceptance",
+  "checked_at_utc": "2026-10-23T17:30:38.495245+00:00",
+  "cryptanalysis_parent_commit": "422d86a9e",
+  "crypto_sibling_commit": "25d703e714e5f1a917266d1b89ed0bb7c9e863bf",
+  "binary_sha256": {
+    "crax_release": "17626bf6f9509dc0a34c1ce4c6badfdc49eb4a0d544ee21801a80b1e3a5c5980",
+    "crypto_debug": "427fe8748681d76c6179a1186b11c2740806d99e687aa5dc60cf0d6c87587e04"
+  },
+  "boundary_validation": {
+    "algorithms": [
+      "sha224",
+      "sha256",
+      "sha3-224",
+      "sha3-256",
+      "sha3-384",
+      "sha3-512",
+      "shake128",
+      "shake256",
+      "blake3"
+    ],
+    "sizes": [
+      0,
+      1,
+      55,
+      56,
+      63,
+      64,
+      65,
+      71,
+      72,
+      73,
+      103,
+      104,
+      105,
+      135,
+      136,
+      137,
+      143,
+      144,
+      145,
+      167,
+      168,
+      169,
+      4097
+    ],
+    "comparisons": 207,
+    "independent_references": "Python hashlib for SHA-2, SHA-3, SHAKE; sibling crypto CLI for BLAKE3",
+    "all_equal": true
+  },
+  "large_file": {
+    "bytes": 8388745,
+    "sha256": "7c3e9604b4a43573cce51a1c1b80f5699a67c42c7b103b2bcade0f3c32ecf3bf",
+    "comparisons": [
+      {
+        "algorithm": "sha224",
+        "digest_hex": "c2963f68f6a0ad9a01a3ad214c67a2d3f35c2fc7c6074042a416d718"
+      },
+      {
+        "algorithm": "sha256",
+        "digest_hex": "7c3e9604b4a43573cce51a1c1b80f5699a67c42c7b103b2bcade0f3c32ecf3bf"
+      },
+      {
+        "algorithm": "sha3-224",
+        "digest_hex": "ed5aa13b6c290bbbe4b0f678042a55beab75cc60507afc2f30d675a5"
+      },
+      {
+        "algorithm": "sha3-256",
+        "digest_hex": "30f351dae5a18bda78c2689dcbc8c6daef2e443851efe154bae2ee4f09f69ed1"
+      },
+      {
+        "algorithm": "sha3-384",
+        "digest_hex": "06d17132248fa7c7e348afd51e6ac89c6c038b140c5f087bb7c4ba7decd2fdfbf970637f42cb2f511e89f55870c3eb6e"
+      },
+      {
+        "algorithm": "sha3-512",
+        "digest_hex": "3229f7235c4ff40ee83147d91e6db8f8465e14087aaf9c9b775f4224d3517d42155ba1c88273f816f5e91e778db5e5ceabeab41e46a3d37e4d3ddde8bc88ed67"
+      },
+      {
+        "algorithm": "shake128",
+        "digest_hex": "16f61272e8e79326cd262a1d11d115b438188dd2617c301fe212b83ad87473511b6019a3071636cc7a644320c92090036d2eed516e9410c18f5e9a731b8bca9b9a2185535b0200c2a53ad255a712a3c9fd64897858d857a945aaece1c6dfb713ce58e9b09d86cc622491dd57493f9f3da9c3771aaff7ef7677a24e1a294b11ed1319ab856e1e548c113fd3d8b72eff5e4b262410abf22168defafcf0959be12192c40ebf21b385d61d9349f73c2dc8b28aaa8fdbe1f4b18586a5513498760507a2bdc49515dca835"
+      },
+      {
+        "algorithm": "shake256",
+        "digest_hex": "0430edf18b9e85200134de9d5c034e004bdcf40fe37305dd490645ef9887b6d66fca6a29d68cd0b6507e9aa0095aef1d9821b668c9c600949e5d3ff4940c6395944483557d8e4891250c469e97a12af10dae68574f06d4eebee2c5e8774fa784ce77c0ca7ac055117494e5d77b52af578f4aa4b4510aa46bb1d1316b31986cb4e00223b53390e193a2f83297ad1957cd2df08b19717096d28b540bebed3e62c5e884119a4143e9446ce6440b0e3f12bd4fb43f2e131d00b4e21bd71d8ab676e830bbbfff854f6100"
+      },
+      {
+        "algorithm": "blake3",
+        "digest_hex": "4e80a79096c9d6e3db84cab60b616477b27c66d62b49c68c79ea6ce9b36c606c"
+      }
+    ],
+    "all_equal": true
+  },
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-stream-hash-20261023T173030Z-a98a2eac",
+  "object_key": "ic/v1/acceptance/crax-stream-hash-20261023T173030Z-a98a2eac/sha256/04/042a02b55ba342cdd30322331816b6e4bca073f33bdb80149dc74a6f949802f4",
+  "store_name": "evidence/crax-stream-hash/20261023T173030Z-a98a2eac/input.bin",
+  "s3": {
+    "head_size_matches": true,
+    "downloaded_bytes_match": true,
+    "fresh_name_sha256": {
+      "status": "ok",
+      "algorithm": "sha256",
+      "input_bytes": 4097,
+      "output_bytes": 32,
+      "digest_hex": "042a02b55ba342cdd30322331816b6e4bca073f33bdb80149dc74a6f949802f4"
+    },
+    "fresh_digest_sha3_256": {
+      "status": "ok",
+      "algorithm": "sha3-256",
+      "input_bytes": 4097,
+      "output_bytes": 32,
+      "digest_hex": "347b151024f605b1a94643cc61f86bad7909c6ef958ed26a6a4a0110f47d440a"
+    }
+  },
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "validation": {
+    "sha256_library_tests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "sha3_library_tests": {
+      "passed": 9,
+      "failed": 0
+    },
+    "dev_crax_build": "pass",
+    "release_crax_build": "pass",
+    "rustfmt_check": "pass",
+    "json_parse": "pass",
+    "diff_whitespace": "pass"
+  }
+}

@@ -3,6 +3,7 @@
 use clap::Args;
 use serde::Serialize;
 use std::{
+    io::Read,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -35,20 +36,12 @@ pub struct DigestArgs {
 struct DigestReport {
     status: &'static str,
     algorithm: String,
-    input_bytes: usize,
+    input_bytes: u64,
     output_bytes: usize,
     digest_hex: String,
 }
 
 pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
-    let message = match (&args.text, &args.hex, &args.file) {
-        (Some(text), None, None) => text.as_bytes().to_vec(),
-        (None, Some(hex), None) => {
-            hex::decode(hex).map_err(|e| format!("invalid --hex input: {e}"))?
-        }
-        (None, None, Some(path)) => read_file_input(path)?,
-        _ => return Err("provide exactly one of --text, --hex, or --file".into()),
-    };
     let algorithm = args.algorithm.to_ascii_lowercase().replace('_', "-");
     let xof = matches!(
         algorithm.as_str(),
@@ -60,6 +53,26 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
     if !xof && args.output_bytes.is_some() {
         return Err("--output-bytes applies only to SHAKE128 and SHAKE256".into());
     }
+    if let Some(path) = &args.file {
+        if let Some((input_bytes, digest)) = stream_file(path, &algorithm, args.output_bytes)? {
+            let report = DigestReport {
+                status: "ok",
+                algorithm,
+                input_bytes,
+                output_bytes: digest.len(),
+                digest_hex: hex::encode(digest),
+            };
+            return out.emit(&report, || report.digest_hex.clone());
+        }
+    }
+    let message = match (&args.text, &args.hex, &args.file) {
+        (Some(text), None, None) => text.as_bytes().to_vec(),
+        (None, Some(hex), None) => {
+            hex::decode(hex).map_err(|e| format!("invalid --hex input: {e}"))?
+        }
+        (None, None, Some(path)) => read_file_input(path)?,
+        _ => return Err("provide exactly one of --text, --hex, or --file".into()),
+    };
     let digest: Vec<u8> = match algorithm.as_str() {
         "md4" => hash::md4(&message).to_vec(),
         "md5" => hash::md5(&message).to_vec(),
@@ -82,11 +95,79 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
     let report = DigestReport {
         status: "ok",
         algorithm,
-        input_bytes: message.len(),
+        input_bytes: message.len() as u64,
         output_bytes: digest.len(),
         digest_hex: hex::encode(digest),
     };
     out.emit(&report, || report.digest_hex.clone())
+}
+
+enum StreamingHash {
+    Sha2(hash::sha256::Sha256State),
+    Keccak(hash::sha3::KeccakSponge, usize),
+    Blake3(blake3::Hasher),
+}
+
+fn stream_file(
+    path: &Path,
+    algorithm: &str,
+    output_bytes: Option<usize>,
+) -> Result<Option<(u64, Vec<u8>)>, String> {
+    let mut engine = match algorithm {
+        "sha224" | "sha-224" => StreamingHash::Sha2(hash::sha256::Sha256State::sha224()),
+        "sha256" | "sha-256" => StreamingHash::Sha2(hash::sha256::Sha256State::sha256()),
+        "sha3-224" | "sha-3-224" => {
+            StreamingHash::Keccak(hash::sha3::KeccakSponge::new(144, 0x06), 28)
+        }
+        "sha3-256" | "sha-3-256" | "sha3" | "sha-3" => {
+            StreamingHash::Keccak(hash::sha3::KeccakSponge::new(136, 0x06), 32)
+        }
+        "sha3-384" | "sha-3-384" => {
+            StreamingHash::Keccak(hash::sha3::KeccakSponge::new(104, 0x06), 48)
+        }
+        "sha3-512" | "sha-3-512" => {
+            StreamingHash::Keccak(hash::sha3::KeccakSponge::new(72, 0x06), 64)
+        }
+        "shake128" | "shake-128" => StreamingHash::Keccak(
+            hash::sha3::KeccakSponge::new(168, 0x1f),
+            output_bytes.ok_or("SHAKE output length is absent")?,
+        ),
+        "shake256" | "shake-256" => StreamingHash::Keccak(
+            hash::sha3::KeccakSponge::new(136, 0x1f),
+            output_bytes.ok_or("SHAKE output length is absent")?,
+        ),
+        "blake3" => StreamingHash::Blake3(blake3::Hasher::new()),
+        _ => return Ok(None),
+    };
+    let resolved = resolve_checked_path(path)?;
+    let mut file =
+        std::fs::File::open(&resolved).map_err(|e| format!("reading {}: {e}", path.display()))?;
+    let mut buffer = [0u8; 64 * 1024];
+    let mut total = 0u64;
+    loop {
+        let count = file
+            .read(&mut buffer)
+            .map_err(|e| format!("reading {}: {e}", path.display()))?;
+        if count == 0 {
+            break;
+        }
+        total = total
+            .checked_add(count as u64)
+            .ok_or("file byte count exceeds u64")?;
+        match &mut engine {
+            StreamingHash::Sha2(state) => state.update(&buffer[..count])?,
+            StreamingHash::Keccak(state, _) => state.update(&buffer[..count]),
+            StreamingHash::Blake3(state) => {
+                state.update(&buffer[..count]);
+            }
+        }
+    }
+    let digest = match engine {
+        StreamingHash::Sha2(state) => state.finalize(),
+        StreamingHash::Keccak(state, output_len) => state.finalize(output_len),
+        StreamingHash::Blake3(state) => state.finalize().as_bytes().to_vec(),
+    };
+    Ok(Some((total, digest)))
 }
 
 fn read_file_input(path: &Path) -> Result<Vec<u8>, String> {

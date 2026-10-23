@@ -125,6 +125,87 @@ pub(crate) fn compress(state: &mut [u32; 8], block: &[u8]) {
     state[7] = state[7].wrapping_add(h);
 }
 
+/// Incremental SHA-224 or SHA-256 state. The pending buffer is one 64-byte
+/// block, regardless of the total input size.
+pub struct Sha256State {
+    state: [u32; 8],
+    pending: [u8; 64],
+    pending_len: usize,
+    total_bytes: u64,
+    output_len: usize,
+}
+
+impl Sha256State {
+    pub fn sha256() -> Self {
+        Self {
+            state: H0,
+            pending: [0; 64],
+            pending_len: 0,
+            total_bytes: 0,
+            output_len: 32,
+        }
+    }
+
+    pub fn sha224() -> Self {
+        Self {
+            state: [
+                0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511, 0x64f98fa7,
+                0xbefa4fa4,
+            ],
+            pending: [0; 64],
+            pending_len: 0,
+            total_bytes: 0,
+            output_len: 28,
+        }
+    }
+
+    pub fn update(&mut self, mut data: &[u8]) -> Result<(), &'static str> {
+        let length = u64::try_from(data.len()).map_err(|_| "SHA-2 input length exceeds u64")?;
+        self.total_bytes = self
+            .total_bytes
+            .checked_add(length)
+            .filter(|&n| n <= u64::MAX / 8)
+            .ok_or("SHA-2 input exceeds the 64-bit bit-length field")?;
+        if self.pending_len != 0 {
+            let take = (64 - self.pending_len).min(data.len());
+            self.pending[self.pending_len..self.pending_len + take].copy_from_slice(&data[..take]);
+            self.pending_len += take;
+            data = &data[take..];
+            if self.pending_len < 64 {
+                return Ok(());
+            }
+            compress(&mut self.state, &self.pending);
+            self.pending_len = 0;
+        }
+        let mut blocks = data.chunks_exact(64);
+        for block in &mut blocks {
+            compress(&mut self.state, block);
+        }
+        let remainder = blocks.remainder();
+        self.pending[..remainder.len()].copy_from_slice(remainder);
+        self.pending_len = remainder.len();
+        Ok(())
+    }
+
+    pub fn finalize(mut self) -> Vec<u8> {
+        let mut last = [0u8; 64];
+        last[..self.pending_len].copy_from_slice(&self.pending[..self.pending_len]);
+        last[self.pending_len] = 0x80;
+        if self.pending_len >= 56 {
+            compress(&mut self.state, &last);
+            last = [0u8; 64];
+        }
+        last[56..].copy_from_slice(&(self.total_bytes * 8).to_be_bytes());
+        compress(&mut self.state, &last);
+        let mut output = Vec::with_capacity(self.output_len);
+        for word in self.state {
+            output.extend_from_slice(&word.to_be_bytes());
+        }
+        output.truncate(self.output_len);
+        output
+    }
+}
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /// Compute SHA-256 of `data`, returning a 32-byte digest.
@@ -167,6 +248,23 @@ mod tests {
 
     fn h(hex_str: &str) -> Vec<u8> {
         hex::decode(hex_str).unwrap()
+    }
+
+    #[test]
+    fn incremental_sha2_matches_one_shot_at_padding_boundaries() {
+        for length in [0, 1, 55, 56, 63, 64, 65, 127, 128, 129, 8193] {
+            let data: Vec<u8> = (0..length).map(|i| (i * 37) as u8).collect();
+            for chunk in [1, 7, 64, 257] {
+                let mut sha256_state = Sha256State::sha256();
+                let mut sha224_state = Sha256State::sha224();
+                for part in data.chunks(chunk) {
+                    sha256_state.update(part).unwrap();
+                    sha224_state.update(part).unwrap();
+                }
+                assert_eq!(sha256_state.finalize(), sha256(&data));
+                assert_eq!(sha224_state.finalize(), sha224(&data));
+            }
+        }
     }
 
     // ── SHA-256 known-answer tests (FIPS 180-4 + RFC 6234) ────────────────────
