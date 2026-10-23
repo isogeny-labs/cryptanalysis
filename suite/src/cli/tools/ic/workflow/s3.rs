@@ -52,6 +52,13 @@ fn aws(args: &[&str]) -> Result<Vec<u8>, String> {
 fn head_uri(uri: &str) -> String {
     format!("{uri}/_workflow_head.json")
 }
+fn artifact_uri(uri: &str, head: &Head, name: &str) -> String {
+    if head.schema == 1 {
+        format!("{uri}/{name}")
+    } else {
+        format!("{uri}/generations/{}/{name}", head.generation)
+    }
+}
 fn local_head(dir: &Path) -> PathBuf {
     dir.join(".workflow-s3-head.json")
 }
@@ -59,7 +66,7 @@ fn local_head(dir: &Path) -> PathBuf {
 fn read_head(bytes: &[u8], digest: &str) -> Result<Head, String> {
     let head: Head =
         serde_json::from_slice(bytes).map_err(|e| format!("invalid workflow S3 head: {e}"))?;
-    if head.schema != 1 || head.params_digest != digest {
+    if !matches!(head.schema, 1 | 2) || head.params_digest != digest {
         return Err("workflow S3 head does not match these parameters".into());
     }
     Ok(head)
@@ -127,7 +134,15 @@ fn write_local_head(dir: &Path, head: &Head) -> Result<(), String> {
 }
 
 fn remote_head(uri: &str, digest: &str) -> Result<Head, String> {
-    let bytes = aws(&["s3", "cp", &head_uri(uri), "-", "--only-show-errors"])?;
+    remote_head_with(uri, digest, &mut aws)
+}
+
+fn remote_head_with(
+    uri: &str,
+    digest: &str,
+    run: &mut impl FnMut(&[&str]) -> Result<Vec<u8>, String>,
+) -> Result<Head, String> {
+    let bytes = run(&["s3", "cp", &head_uri(uri), "-", "--only-show-errors"])?;
     read_head(&bytes, digest)
 }
 
@@ -198,7 +213,7 @@ impl Store {
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
                     }
-                    let remote = format!("{uri}/{name}");
+                    let remote = artifact_uri(uri, &head, name);
                     let local = path
                         .to_str()
                         .ok_or("workflow path must be UTF-8 for AWS CLI")?;
@@ -238,7 +253,7 @@ impl Store {
                 return Err("S3 workflow prefix is not empty; use a new prefix".into());
             }
             let head = Head {
-                schema: 1,
+                schema: 2,
                 params_digest: params_digest.into(),
                 generation: 0,
                 files: BTreeMap::new(),
@@ -269,10 +284,18 @@ impl Store {
     }
 
     pub(super) fn sync(&mut self, force: bool) -> Result<(), String> {
+        self.sync_with(force, &mut aws)
+    }
+
+    fn sync_with(
+        &mut self,
+        force: bool,
+        run: &mut impl FnMut(&[&str]) -> Result<Vec<u8>, String>,
+    ) -> Result<(), String> {
         if !force && self.last_sync.elapsed() < self.sync_every {
             return Ok(());
         }
-        if remote_head(&self.uri, &self.head.params_digest)? != self.head {
+        if remote_head_with(&self.uri, &self.head.params_digest, run)? != self.head {
             return Err(
                 "S3 workflow state changed since the last upload; refusing to overwrite it".into(),
             );
@@ -288,30 +311,33 @@ impl Store {
                 files.len()
             );
         }
-        for (name, entry) in &files {
-            if self.head.files.get(name) == Some(entry) {
-                continue;
-            }
+        let next = Head {
+            schema: 2,
+            params_digest: self.head.params_digest.clone(),
+            generation: self
+                .head
+                .generation
+                .checked_add(1)
+                .ok_or("workflow S3 generation overflow")?,
+            files,
+        };
+        // Every generation is self-contained. Never overwrite objects named
+        // by the published head, including when upgrading a legacy head.
+        for (name, entry) in &next.files {
             let path = self.dir.join(name);
             let local = path
                 .to_str()
                 .ok_or("workflow path must be UTF-8 for AWS CLI")?;
-            let remote = format!("{}/{name}", self.uri);
-            aws(&["s3", "cp", local, &remote, "--only-show-errors"])?;
+            let remote = artifact_uri(&self.uri, &next, name);
+            run(&["s3", "cp", local, &remote, "--only-show-errors"])?;
             if &digest(&path)? != entry {
                 return Err(format!("workflow artifact {name} changed during S3 upload"));
             }
         }
-        let next = Head {
-            schema: 1,
-            params_digest: self.head.params_digest.clone(),
-            generation: self.head.generation + 1,
-            files,
-        };
         let temp = self.dir.join(".workflow-s3-head.upload");
         fs::write(&temp, serde_json::to_vec(&next).map_err(|e| e.to_string())?)
             .map_err(|e| e.to_string())?;
-        aws(&[
+        run(&[
             "s3",
             "cp",
             temp.to_str().ok_or("workflow path must be UTF-8")?,
@@ -381,5 +407,101 @@ mod tests {
         fs::write(&file, b"two").unwrap();
         assert_ne!(first, paths(&root).unwrap());
         fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn interrupted_upload_preserves_committed_generation_and_retries() {
+        for schema in [1, 2] {
+            let nonce = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos();
+            let dir = std::env::temp_dir().join(format!(
+                "workflow-interrupt-{}-{nonce}-{schema}",
+                std::process::id()
+            ));
+            fs::create_dir(&dir).unwrap();
+            fs::write(dir.join("state.json"), b"old-state").unwrap();
+            fs::write(dir.join("factor_base.json"), b"unchanged-factor-base").unwrap();
+            let old = Head {
+                schema,
+                params_digest: "parameters".into(),
+                generation: 1,
+                files: paths(&dir).unwrap(),
+            };
+            let uri = "s3://bucket/workflow";
+            let mut remote = BTreeMap::<String, Vec<u8>>::new();
+            remote.insert(head_uri(uri), serde_json::to_vec(&old).unwrap());
+            for name in old.files.keys() {
+                remote.insert(
+                    artifact_uri(uri, &old, name),
+                    fs::read(dir.join(name)).unwrap(),
+                );
+            }
+            write_local_head(&dir, &old).unwrap();
+            fs::write(dir.join("state.json"), b"new-state").unwrap();
+            let lock = File::create(dir.join(".workflow-s3.lock")).unwrap();
+            let mut store = Store {
+                dir: dir.clone(),
+                uri: uri.into(),
+                head: old.clone(),
+                sync_every: Duration::from_secs(1),
+                last_sync: Instant::now(),
+                verbose: false,
+                _lock: lock,
+            };
+            let mut fail_head = true;
+            let mut run = |args: &[&str]| -> Result<Vec<u8>, String> {
+                assert_eq!(&args[..2], &["s3", "cp"]);
+                if args[3] == "-" {
+                    return remote.get(args[2]).cloned().ok_or("missing object".into());
+                }
+                if args[3] == head_uri(uri) && fail_head {
+                    fail_head = false;
+                    return Err("interrupted before publishing head".into());
+                }
+                remote.insert(
+                    args[3].into(),
+                    fs::read(args[2]).map_err(|e| e.to_string())?,
+                );
+                Ok(Vec::new())
+            };
+            assert!(store
+                .sync_with(true, &mut run)
+                .unwrap_err()
+                .contains("interrupted"));
+            drop(run);
+            let published = read_head(&remote[&head_uri(uri)], "parameters").unwrap();
+            assert_eq!(published, old);
+            for (name, entry) in &published.files {
+                let bytes = &remote[&artifact_uri(uri, &published, name)];
+                assert_eq!(bytes.len() as u64, entry.bytes);
+                assert_eq!(blake3::hash(bytes).to_hex().as_str(), entry.blake3);
+            }
+            assert_eq!(store.head, old);
+            let mut retry = |args: &[&str]| -> Result<Vec<u8>, String> {
+                if args[3] == "-" {
+                    return remote.get(args[2]).cloned().ok_or("missing object".into());
+                }
+                remote.insert(
+                    args[3].into(),
+                    fs::read(args[2]).map_err(|e| e.to_string())?,
+                );
+                Ok(Vec::new())
+            };
+            store.sync_with(true, &mut retry).unwrap();
+            drop(retry);
+            let published = read_head(&remote[&head_uri(uri)], "parameters").unwrap();
+            assert_eq!(published.schema, 2);
+            assert_eq!(published.generation, 2);
+            assert_eq!(published, store.head);
+            for (name, entry) in &published.files {
+                let bytes = &remote[&artifact_uri(uri, &published, name)];
+                assert_eq!(bytes, &fs::read(dir.join(name)).unwrap());
+                assert_eq!(blake3::hash(bytes).to_hex().as_str(), entry.blake3);
+            }
+            assert_eq!(remote[&artifact_uri(uri, &old, "state.json")], b"old-state");
+            drop(store);
+            fs::remove_dir_all(dir).unwrap();
+        }
     }
 }

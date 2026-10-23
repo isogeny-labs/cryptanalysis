@@ -128,9 +128,11 @@ crax --json icx run secp256k1 --bits 10 --rho-runs 0 --repeats 3 \
 ```
 
 `crax ic workflow` already resumes completed local work units and solved
-targets from `--dir`. With `--s3-uri`, it now uploads changed artifacts before
-publishing a checksummed S3 head; the final `result.json` is kept in the run
-directory and mirrored too. `--sync-every` is the minimum interval between
+targets from `--dir`. With `--s3-uri`, it uploads a complete artifact snapshot
+under `generations/<N>/` before publishing a checksummed S3 head. An interrupted
+upload leaves the previous committed generation intact. Existing schema-1 heads
+can be restored and migrate to generation paths on their next commit. The final
+`result.json` is kept in the run directory and mirrored too. `--sync-every` is the minimum interval between
 uploads at committed work-unit or stage boundaries (default 60 seconds); the
 last successful command result forces a final upload. `--verbose` and
 `--progress-every` print stage lines and a heartbeat to stderr, including with
