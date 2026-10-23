@@ -41,7 +41,7 @@ Attacks by family:
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
-  sibling crypto tools      icx solve-prime|solve-cubic, isogeny-walk, store, crypto
+  sibling crypto tools      icx solve-prime|solve-prime-file|solve-cubic, isogeny-walk, store, crypto
   symmetric & hash          aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
@@ -74,9 +74,9 @@ pub struct Cli {
 pub enum Command {
     /// Recover key material on bounded AES-128 differential, linear, or integral instances.
     AesAttack(aes_attack::AesAttackArgs),
-    /// Export exact AES S-box DDT or LAT rows or complete tables.
+    /// Export exact AES S-box DDT, LAT, BCT, or DLCT rows or complete tables.
     AesSboxTable(aes_sbox_table::AesSboxTableArgs),
-    /// Compute MD, SHA-1/2/3, or SHAKE digests from text, hex bytes, or a file.
+    /// Compute MD, SHA-1/2/3, SHAKE, or BLAKE3 digests from text, hex bytes, or a file.
     Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
     Bsgs(dlog::IntervalArgs),
@@ -169,6 +169,23 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// Resolve an optional sibling executable in a release bundle. An explicit
+/// override wins; otherwise a binary beside `crax` wins over `PATH`.
+pub(crate) fn sibling_binary(env_name: &str, default_binary: &str) -> OsString {
+    if let Some(binary) = std::env::var_os(env_name) {
+        return binary;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            let adjacent = dir.join(default_binary);
+            if adjacent.is_file() {
+                return adjacent.into_os_string();
+            }
+        }
+    }
+    default_binary.into()
+}
+
 /// Bridge the sibling crypto executables without a shell. This keeps the
 /// public-target EC IC, isogeny-walk, and artifact-store surfaces reachable
 /// from `crax` while preserving the producing executable's exit status.
@@ -180,7 +197,7 @@ fn run_external(
     json_requested: bool,
     pass_json: bool,
 ) -> ExitCode {
-    let binary = std::env::var_os(env_name).unwrap_or_else(|| default_binary.into());
+    let binary = sibling_binary(env_name, default_binary);
     let mut native_args: Vec<OsString> = args
         .iter()
         .filter(|arg| arg.as_os_str() != std::ffi::OsStr::new("--json"))
@@ -411,14 +428,14 @@ where
         "icx"
             if matches!(
                 rest.get(1).and_then(|a| a.to_str()),
-                Some("solve-prime" | "solve-cubic")
+                Some("solve-prime" | "solve-prime-file" | "solve-cubic")
             ) =>
         {
             return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
         }
         "ic" if matches!(
             rest.get(1).and_then(|a| a.to_str()),
-            Some("solve-prime" | "solve-cubic")
+            Some("solve-prime" | "solve-prime-file" | "solve-cubic")
         ) =>
         {
             return run_external("CRAX_IC_BIN", "ic", sub, &rest[1..], requested_json, true);

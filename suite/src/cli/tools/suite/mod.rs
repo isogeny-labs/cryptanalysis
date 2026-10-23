@@ -96,15 +96,19 @@ enum Cmd {
     Bench,
     /// Auto-run every applicable hash-function attack (length
     /// extension where applicable, truncated birthday collision, and
-    /// differential bias) against the named hash. Targets include SHA-256 and SHA-3 variants.
+    /// differential bias) against the named hash. Targets include SHA-2/3,
+    /// SHAKE128/256, and BLAKE3.
     HashAuto {
-        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha3-{224,256,384,512}`.
+        /// Hash identifier: MD4/5, SHA-1/2/3, SHAKE128/256, or BLAKE3.
         #[arg(long)]
         hash: String,
+        /// Required SHAKE output length in bytes (1..=64 for bounded analysis).
+        #[arg(long)]
+        output_bytes: Option<usize>,
     },
     /// Length-extension attack demo against a Merkle-Damgård hash.
     LengthExtension {
-        /// Hash identifier: `md4`, `md5`, `sha1`, or `sha256`.
+        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha512`.
         #[arg(long)]
         hash: String,
         /// Length (in bytes) of the unknown secret prefix.
@@ -233,6 +237,18 @@ enum IsogenyOp {
         /// so reproducing them needs this.
         #[arg(long)]
         rho_cap: Option<u64>,
+        /// Local directory for atomic per-curve checkpoints.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue from a matching checkpoint in --state-dir.
+        #[arg(long, requires = "state_dir")]
+        resume: bool,
+        /// Stop after this many new curves and emit an explicit partial status.
+        #[arg(long, requires = "state_dir")]
+        max_new_curves: Option<usize>,
+        /// S3 prefix for immutable checkpoint generations and a conditional head.
+        #[arg(long, requires = "state_dir")]
+        s3_uri: Option<String>,
     },
     /// secp256k1 case study: GLV constants, twist analysis, MOV
     /// embedding-degree certificate, small-degree-isogeny survey.
@@ -617,9 +633,9 @@ fn run(op: Cmd) {
         Cmd::Mlwe { op } => cli_mlwe::run(op),
         Cmd::EcChallenges { op } => cmd_ec_challenges(op),
         Cmd::Isogeny { op } => cmd_isogeny(op),
-        Cmd::HashAuto { hash } => {
-            use crate::cryptanalysis::hash_attacks::auto_hash_attack;
-            match auto_hash_attack(&hash) {
+        Cmd::HashAuto { hash, output_bytes } => {
+            use crate::cryptanalysis::hash_attacks::auto_hash_attack_with_output_bytes;
+            match auto_hash_attack_with_output_bytes(&hash, output_bytes) {
                 Ok(md) => println!("{}", md),
                 Err(e) => {
                     eprintln!("error: {}", e);
@@ -635,7 +651,7 @@ fn run(op: Cmd) {
             digest_hex,
         } => {
             use crate::cryptanalysis::hash_attacks::{
-                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1, Sha256,
+                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1, Sha256, Sha512,
             };
             let parse_hex = |value: &str, flag: &str| {
                 from_hex(value).unwrap_or_else(|e| {
@@ -650,9 +666,10 @@ fn run(op: Cmd) {
                 "md4" | "md5" => 16,
                 "sha1" => 20,
                 "sha256" | "sha-256" => 32,
+                "sha512" | "sha-512" => 64,
                 other => {
                     eprintln!(
-                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256, sha512)",
                         other
                     );
                     std::process::exit(2);
@@ -696,9 +713,10 @@ fn run(op: Cmd) {
                 "md5" => report_lex(&Md5, &digest, prefix_len, &message, &suffix),
                 "sha1" => report_lex(&Sha1, &digest, prefix_len, &message, &suffix),
                 "sha256" | "sha-256" => report_lex(&Sha256, &digest, prefix_len, &message, &suffix),
+                "sha512" | "sha-512" => report_lex(&Sha512, &digest, prefix_len, &message, &suffix),
                 other => {
                     eprintln!(
-                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256, sha512)",
                         other
                     );
                     std::process::exit(1);
@@ -908,8 +926,19 @@ fn cmd_rho_collab(op: RhoCollabOp) {
     ) -> JobSpec {
         match (job, mailbox) {
             (Some(p), _) => {
-                let s = std::fs::read_to_string(p)
+                let resolved =
+                    crate::cli::digest::resolve_checked_path(p).unwrap_or_else(|e| die(e));
+                let size = std::fs::metadata(&resolved)
+                    .unwrap_or_else(|e| die(format!("{}: {e}", p.display())))
+                    .len();
+                if size > 64 * 1024 {
+                    die("rho job input exceeds 64 KiB");
+                }
+                let s = std::fs::read_to_string(&resolved)
                     .unwrap_or_else(|e| die(format!("{}: {e}", p.display())));
+                if s.len() > 64 * 1024 {
+                    die("rho job input exceeds 64 KiB");
+                }
                 JobSpec::from_json(&s).unwrap_or_else(|e| die(e))
             }
             (None, Some(d)) => Mailbox::read_job(d).unwrap_or_else(|e| die(e)),
@@ -1068,6 +1097,7 @@ fn cmd_rho_collab(op: RhoCollabOp) {
                 cairn.as_ref().map(|_| {
                     let dir = job
                         .as_ref()
+                        .filter(|p| !crate::cli::digest::is_store_ref(p))
                         .and_then(|p| p.parent().map(|d| d.to_path_buf()))
                         .or_else(|| mailbox.clone())
                         .unwrap_or_else(|| std::path::PathBuf::from("."));
@@ -1423,7 +1453,9 @@ fn cmd_isogeny(op: IsogenyOp) {
     use crate::isogeny::{
         class_group::{class_above_prime, class_number, enumerate_reduced_forms, ClassGroup},
         cm::{cm_discriminant, fundamental_discriminant_and_conductor},
-        experiment::{run_experiment, to_json, ExperimentConfig},
+        experiment::{
+            run_experiment, run_experiment_checkpointed_remote, to_json, ExperimentConfig,
+        },
         graph::build_graph,
         secp256k1_analysis::{
             beta, embedding_degree_secp256k1, lambda, run_secp256k1_suite,
@@ -1555,6 +1587,10 @@ fn cmd_isogeny(op: IsogenyOp) {
             trials,
             ell_list,
             rho_cap,
+            state_dir,
+            resume,
+            max_new_curves,
+            s3_uri,
         } => {
             let mut cfg = ExperimentConfig::default_for_bits(bits);
             cfg.num_curves = trials.max(1);
@@ -1570,14 +1606,45 @@ fn cmd_isogeny(op: IsogenyOp) {
                 "# Running isogeny experiment: bits={}, trials={}, ell={:?}",
                 cfg.bits, cfg.num_curves, cfg.primes,
             );
-            let report = run_experiment(&cfg);
-            println!("{}", to_json(&report));
-            eprintln!(
-                "[summary] {} starting curves, {} isogenous vertices, mean rho iters = {:.1}",
-                report.aggregate.total_curves,
-                report.aggregate.total_isogenous_vertices,
-                report.aggregate.overall_mean_rho_iters,
-            );
+            if let Some(state_dir) = state_dir {
+                if s3_uri
+                    .as_deref()
+                    .is_some_and(|uri| !uri.starts_with("s3://"))
+                {
+                    eprintln!("error: --s3-uri must start with s3://");
+                    std::process::exit(1);
+                }
+                let binary_hash = super::ic::binary_hash().unwrap_or_else(|| {
+                    eprintln!("error: cannot hash the running executable for checkpoint identity");
+                    std::process::exit(1);
+                });
+                let progress = run_experiment_checkpointed_remote(
+                    &cfg,
+                    &state_dir,
+                    resume,
+                    max_new_curves,
+                    &binary_hash,
+                    s3_uri.as_deref(),
+                )
+                .unwrap_or_else(|error| {
+                    eprintln!("error: {error}");
+                    std::process::exit(1);
+                });
+                println!("{}", serde_json::to_string_pretty(&progress).unwrap());
+                eprintln!(
+                    "[summary] {} of {} starting curves checkpointed; status={}",
+                    progress.completed_curves, progress.planned_curves, progress.status,
+                );
+            } else {
+                let report = run_experiment(&cfg);
+                println!("{}", to_json(&report));
+                eprintln!(
+                    "[summary] {} starting curves, {} isogenous vertices, mean rho iters = {:.1}",
+                    report.aggregate.total_curves,
+                    report.aggregate.total_isogenous_vertices,
+                    report.aggregate.overall_mean_rho_iters,
+                );
+            }
         }
         IsogenyOp::Secp256k1 => {
             let _ = cm_discriminant;

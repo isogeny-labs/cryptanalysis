@@ -142,7 +142,7 @@ const IV_384: [u64; 8] = [
     0x47b5481dbefa4fa4,
 ];
 
-fn compress(state: &mut [u64; 8], block: &[u8; 128]) {
+pub(crate) fn compress(state: &mut [u64; 8], block: &[u8; 128]) {
     let mut w = [0u64; 80];
     for i in 0..16 {
         w[i] = u64::from_be_bytes(block[8 * i..8 * i + 8].try_into().unwrap());

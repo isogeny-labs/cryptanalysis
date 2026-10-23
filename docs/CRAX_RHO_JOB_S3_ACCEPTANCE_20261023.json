@@ -1,0 +1,50 @@
+{
+  "binary_sha256": {
+    "crax": "6dd651f0a60d08a74823f61bc8a7482e5e7f54135a1ced729c0aa072a0446dcc",
+    "crypto": "0c1d2a5b5f4339a4261e461b5bd263bc7fb19f8d4da492bb3304f5e9caab889a"
+  },
+  "bounded_work_exit": 2,
+  "bytes": 335,
+  "checks": {
+    "digest_reference_status": true,
+    "fresh_cache_status_matches_local": true,
+    "hash_store_regression": true,
+    "head_digest_and_length": true,
+    "missing_name_rejected": true,
+    "oversized_job_rejected": true,
+    "pull_byte_equality": true,
+    "remote_download_verify": true,
+    "work_accepts_checked_job": true
+  },
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "date_utc": "2026-10-23T01:50:25.244009+00:00",
+  "job_id": "09630d4b5d687bfa57cac41deeed2eba9afc63f87e8633578d3bdc7198004d62",
+  "name": "rho/jobs/demo-small/crax-rho-job-20261023T015025Z-dceb1bea/job.json",
+  "object_key": "ic/v1/acceptance/crax-rho-job-20261023T015025Z-dceb1bea/sha256/d9/d94f9aab72b15b642d77a0070723fbf892b1a724c5b11b17661ddb479a637d72",
+  "push": {
+    "bytes": 335,
+    "cached": true,
+    "name": "rho/jobs/demo-small/crax-rho-job-20261023T015025Z-dceb1bea/job.json",
+    "replaced": false,
+    "sha256": "d94f9aab72b15b642d77a0070723fbf892b1a724c5b11b17661ddb479a637d72",
+    "uploaded": true
+  },
+  "region": "us-east-2",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-rho-job-20261023T015025Z-dceb1bea",
+  "schema": "crax.rho-job-s3-acceptance/v1",
+  "sha256": "d94f9aab72b15b642d77a0070723fbf892b1a724c5b11b17661ddb479a637d72",
+  "source_parent_commit": "096c7581cb2b41e009ba4da58350c9dc527afdb3",
+  "validation": {
+    "git_diff_check": true,
+    "json_parse_check": true,
+    "release_crax_binary_build": true,
+    "rustfmt_check": true,
+    "targeted_release_lib_test": {
+      "failed": 0,
+      "passed": 1
+    }
+  }
+}

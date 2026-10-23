@@ -421,7 +421,7 @@ pub fn legendre_u64(a: u64, p: u64) -> i32 {
 // ── Discriminant / conductor decomposition ───────────────────────────────────
 
 /// CM data attached to a curve `E/F_p`.
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct CmData {
     /// Field prime.
     pub p: u64,
