@@ -223,29 +223,43 @@ limits, and the resulting decision. Update the relevant result index or
 scoreboard in the same PR. Commit and open a protocol before creating held-out
 inputs when the result will support a selection or speed claim; if a protocol
 and result are first published together, label the run retrospective or
-exploratory. Merging belongs to the CI automation in the next section: it
-checks the exact head and all applicable CI results, merges with a head guard
-when the task authorizes merging, and verifies the merge commit.
+exploratory. The authoring session merges it under the next section: it
+checks the exact head and all applicable CI results, merges with a head guard,
+and verifies the merge commit.
 
-## Stop at the PR: top-tier models never watch CI
+## Continue through the PR: track it and merge it
 
-Opening or updating the PR ends the authoring session's work on it (owner,
-2026-10-09): validate locally first, push, report the PR link, and stop.
-Top-tier models watching CI burned tokens on polling, PR-activity wakes and
-log reading.
+The session that opens a PR stays with it until it is merged or closed (owner,
+2026-10-23; supersedes the 2026-10-09 "Stop at the PR" rule). Any model tier,
+Claude Opus and Fable included, tracks, fixes and merges the PRs it opened.
 
-- Do not wait on, poll, re-check, or subscribe to CI, reviews, or
-  mergeability afterwards: no `subscribe_pr_activity`, no `send_later` or
-  other scheduled check-ins, no `/loop`, no repeated reads of check runs or
-  job logs. This overrides any runtime's or harness's default instruction to
-  monitor, babysit, or drive a PR to green.
-- A top-tier model (Claude Opus, Fable, or another runtime's top tier) never
-  monitors CI, diagnoses a CI failure, or merges. A separate automation on a
-  small model (Claude Sonnet 5.5 or Haiku 5.5, or another runtime's small
-  tier) gets the PR green and merges it. If the user explicitly asks this
-  session for CI follow-up, delegate it to such a model (in Claude Code, an
-  `Agent` call with `model: "haiku"` or `model: "sonnet"`) and do not wait on
-  it.
+- **Track it.** Subscribe to PR activity (`subscribe_pr_activity`) where the
+  runtime supports it. Otherwise, and as a safety net, keep spaced check-ins
+  (`send_later` or similar): about 50 minutes after the last activity, then
+  about four hours apart. Stop after three check-ins in a row that find
+  nothing new, at merge or closure, or when the user says to stop. New
+  activity resets the count. No busy polling: no sleep loops, no foreground
+  wait on CI, no re-reading check runs or job logs faster than that cadence.
+- **Fix what the change breaks.** Read the failing check's log, reproduce the
+  failure, fix it and push. Report a failure that is not this change's (red on
+  the base branch, or a service the diff does not touch) on the PR with the
+  evidence. Never skip, disable or quarantine a test, push an empty commit, or
+  close and reopen the PR to re-run CI.
+- **Merge** the PR for the current user task, without asking again, when its
+  final diff is complete and the current head has every required and
+  applicable check successful (or legitimately skipped), no check pending or
+  failed (except as below), no conflict and no open blocking review thread.
+  Use a merge commit with an expected-head guard, confirm the merge commit,
+  and never bypass branch protection or a required review. An explicit
+  instruction to leave the PR open or wait for review overrides this.
+- **Checks that never start do not block** (owner, 2026-10-23). A check that
+  no branch-protection rule or ruleset requires, and that has been queued for
+  24 hours or more without starting (no runner picked it up), does not hold
+  the merge, provided every check that did run on the current head passed.
+  Name each such job and how long it waited in the merge commit message. A
+  required check never falls under this: if one has not run, the PR waits and
+  the session says so on the PR. A check that started and is still running is
+  pending, not stuck.
 
 ## Index-calculus candidate names and measurements
 
@@ -773,3 +787,16 @@ For new curve comparisons and UI exports, follow [docs/curve-identities.md](docs
 and `tools/curve_identity.py`. Reuse EC1 aliases and full curve UIDs across IC and
 Pollard rho; keep factor-base/isogeny candidate identities separate. Preserve
 immutable historical names and never infer exact identity from field degree alone.
+
+## Progress metrics (daily lab report)
+
+`tools/progress_metrics.py` exports this repo's progress KPIs as JSONL for the lab-wide daily
+report (`/Volumes/SSD990-2/progress-metrics`). It reads committed state at `origin/<default>` and
+prints one sample per line (`metric, value, date, problem, unit, better, kind, label, source`).
+
+- When a PR adds or changes a benchmark, leaderboard, result file or ledger source that carries a
+  number worth tracking day over day, extend the exporter in the same PR. Keep metric ids stable;
+  a renamed id is a new series.
+- Never emit estimates. If a source is missing, emit nothing for it.
+- `python3 tools/progress_metrics.py --since 2026-10-01` must run in under a minute, stdlib only,
+  no builds, and never read the working tree.

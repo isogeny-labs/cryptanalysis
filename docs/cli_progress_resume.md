@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, and dlog.
+GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),

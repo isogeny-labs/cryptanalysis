@@ -1,0 +1,51 @@
+[
+  {
+    "path": "experiments/prime-j0-hex-orbit-materialized-20261013/check.py",
+    "exit": 1,
+    "seconds": 0.1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-orbit-materialized-20261013/check.py\", line 86, in <module>\n    fixture_path, rows_path = (Path(p) for p in sys.argv[1:3])\n    ^^^^^^^^^^^^^^^^^^^^^^^\nValueError: not enough values to unpack (expected 2, got 1)\n"
+  },
+  {
+    "path": "experiments/prime-j0-hex-terminal-20261012/check.py",
+    "exit": 0,
+    "seconds": 51.7,
+    "stdout": "Lean build and axiom audit verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix943-corner-certificate-20261012/check.py",
+    "exit": 0,
+    "seconds": 55.6,
+    "stdout": "reciprocal-corner Lean build and axiom receipt verified\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix943-digit-cover-20261012/check.py",
+    "exit": 0,
+    "seconds": 0.1,
+    "stdout": "receipt_sha256=1b134100b6489ebe527892d77fc8c26601b1f6d9fba0bd778a9383fabebd0e7f\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-radix943-termination-20261012/check.py",
+    "exit": 0,
+    "seconds": 0.0,
+    "stdout": "receipt_sha256=b708c88d6a48eab5c5505e84a0996a311af1b035bced61b096e2ccb48c98f076\n",
+    "stderr": ""
+  },
+  {
+    "path": "experiments/prime-j0-hex-dag-pareto-20261013/check.py",
+    "exit": 1,
+    "seconds": 0.0,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-dag-pareto-20261013/check.py\", line 15, in <module>\n    import replay  # noqa: E402\n    ^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'replay'\n"
+  },
+  {
+    "path": "experiments/prime-j0-hex-workdepth-20261013/check.py",
+    "exit": 1,
+    "seconds": 0.0,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/ec2-user/cryptanalysis-proof-audit-20261021/experiments/prime-j0-hex-workdepth-20261013/check.py\", line 15, in <module>\n    import replay  # noqa: E402\n    ^^^^^^^^^^^^^\nModuleNotFoundError: No module named 'replay'\n"
+  }
+]

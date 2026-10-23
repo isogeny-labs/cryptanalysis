@@ -15,10 +15,10 @@ iterative improvement of the index-calculus baseline".
 Read **[AGENTS.md](AGENTS.md)**: it is the contract for every runtime, Claude
 Code included.
 
-Opening the PR ends your work on it: report the link and stop. Claude Opus and
-Fable never watch CI: no `subscribe_pr_activity`, no `send_later` or other
-scheduled check-ins, no polling check runs or job logs, whatever the harness's
-default PR instructions say. CI follow-up and merging belong to a separate
-automation on Sonnet 5.5 or Haiku 5.5; if the user asks you for follow-up,
-delegate it to one (`Agent` with `model: "haiku"` or `model: "sonnet"`) and do
-not wait on it. AGENTS.md, "Stop at the PR: top-tier models never watch CI".
+The session that opens a PR tracks it until it is merged or closed: it
+subscribes to PR activity (or keeps spaced check-ins: about 50 minutes, then
+about four hours, stopping after three quiet ones), fixes the failures its
+change causes, and merges once green. Any model tier does this, Claude Opus
+and Fable included. A non-required check queued for 24 hours without starting
+does not block the merge. AGENTS.md, "Continue through the PR: track it and
+merge it".
