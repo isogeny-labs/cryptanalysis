@@ -1,7 +1,8 @@
 import unittest
 from itertools import product
+import statistics
 
-from orbit_core import m3_truths, mobius_anf, model, planted_targets, quotient_basis, slot_sets
+from orbit_core import m3_truths, m4_stats, mobius_anf, model, planted_targets, quotient_basis, slot_sets
 
 
 class OrbitQuotientTests(unittest.TestCase):
@@ -20,6 +21,30 @@ class OrbitQuotientTests(unittest.TestCase):
                         product(slots[0][a], slots[1][b], slots[2][c])}
                 for target, truth in zip(targets, truths):
                     self.assertEqual(bool(truth[mask]), target in sums)
+
+    def test_two_pair_index_matches_direct_four_tuple_counts(self):
+        # Enumerate representatives without pair_index or m4_stats's buckets.
+        M = {"r": 11, "s": 2, "keys": [1, 2], "scalars": {1: 1, 2: 3},
+             "lam": 2, "H": [1, 10]}
+        targets = list(range(M["r"]))
+        for mode in ("fixed", "orbit"):
+            observed = m4_stats(M, targets, mode)
+            slots = slot_sets(M, 4, mode, (0, 1, 2, 3))
+            for target, summary in zip(targets, observed):
+                counts = []
+                for keys in product(M["keys"], repeat=4):
+                    representatives = [slots[i][key] for i, key in enumerate(keys)]
+                    counts.append(sum((x + y + z + v) % M["r"] == target
+                                      for x, y, z, v in product(*representatives)))
+                positive = [count for count in counts if count]
+                self.assertEqual(summary["domain_key_tuples"], len(counts))
+                self.assertEqual(summary["positive_key_tuples"], len(positive))
+                self.assertEqual(summary["density"], len(positive) / len(counts))
+                self.assertEqual(summary["witness_min"], min(positive, default=0))
+                self.assertEqual(summary["witness_max"], max(positive, default=0))
+                self.assertEqual(summary["witness_mean"], statistics.mean(positive) if positive else 0)
+                self.assertEqual(summary["witness_median"], statistics.median(positive) if positive else 0)
+                self.assertEqual(summary["single_witness_tuples"], sum(count == 1 for count in positive))
 
     def test_payload_basis_shape(self):
         self.assertEqual(len(quotient_basis(13, 4)), 4)

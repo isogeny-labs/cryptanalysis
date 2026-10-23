@@ -179,7 +179,7 @@ degree-131 relation was found, no DLP was solved, no attack exponent is
 claimed, and the interpolation result is not a lower bound on other algebraic
 representations.
 
-## Lean proof map (2026-10-20)
+## Lean proof map (updated 2026-10-23)
 
 [`lean/OrbitPairIndex.lean`](lean/OrbitPairIndex.lean) pins Lean 4.34.1 and
 proves `OrbitQuotient.triple_matches_iff_pair_lookup`: for any modulus `r`,
@@ -193,10 +193,19 @@ it introduces no custom axioms or native evaluation. Check it with
 Lake project and audits both declarations against the exact allowed axiom
 set (`propext`, `Quot.sound`). The focused PR workflow repeats that check.
 
-This is the algebraic correctness obligation behind `pair_index` and
-`m3_truths`, whose small-modulus implementation bridge is checked by
-`test_pair_index_matches_direct_triple_enumeration`. It does not certify the
-curve arithmetic, construction of the representative lists, four-summand
-counts, Boolean interpolation, the sample-based degree-131 projection, or a
-cryptanalytic performance claim. Those retain the empirical and projected
-labels above.
+The same module now proves
+`OrbitQuotient.quadruple_matches_iff_two_pair_lookup`: a four-summand match
+exists exactly when two pair residues sum to the target. The proof is for
+arbitrary finite lists and modulus; it covers the support logic of `m4_stats`.
+The focused test enumerates every four-representative tuple for 11 targets,
+both fixed and orbit representative policies, and compares all summary fields
+against `m4_stats`. See the [dated proof and validation report](FOUR_PAIR_LEAN.md),
+[diagram](four-pair-proof.svg), and [PDF](four-pair-proof.pdf).
+The same report retains a full n=13/n=19 same-code replay whose compact
+summary matches the frozen reference; this is a reproducibility check, not
+an independent curve-arithmetic certification.
+
+These checks do not certify curve arithmetic, representative construction,
+generic bucket multiplicities, Boolean interpolation, the sample-based
+degree-131 projection, or a cryptanalytic performance claim. The frozen
+experimental numbers above remain empirical and projected as labeled.
