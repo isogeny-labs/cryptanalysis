@@ -1,6 +1,7 @@
 name: Complete GPU query experiment
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round10/**'
       - 'experiments/groebner-perf-20260924/round4/**'
@@ -22,6 +23,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   query:
+    if: ${{ !github.event.pull_request.draft }}
     name: Query checks (${{ matrix.os }})
     strategy:
       fail-fast: false

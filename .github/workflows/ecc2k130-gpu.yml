@@ -19,6 +19,7 @@ on:
       - "fpga/model/**"
       - ".github/workflows/ecc2k130-gpu.yml"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "ecc2k130/**"
       - "fpga/model/**"
@@ -39,6 +40,7 @@ defaults:
 
 jobs:
   host:
+    if: ${{ !github.event.pull_request.draft }}
     name: host test (${{ matrix.cxx }}, WALK=${{ matrix.walk }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -53,6 +55,7 @@ jobs:
         run: make test WALK=${{ matrix.walk }} CXX=${{ matrix.cxx }} CC=${{ matrix.cxx == 'g++' && 'gcc' || 'clang' }}
 
   cuda:
+    if: ${{ !github.event.pull_request.draft }}
     name: kernel compile (WALK=${{ matrix.walk }})
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}
@@ -77,6 +80,7 @@ jobs:
         run: make gpu WALK=${{ matrix.walk }} NVCC="$NVCC"
 
   metal:
+    if: ${{ !github.event.pull_request.draft }}
     name: Metal compile and reference tests
     runs-on: macos-15
     timeout-minutes: 20

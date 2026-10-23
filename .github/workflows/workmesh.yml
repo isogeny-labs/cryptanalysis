@@ -2,6 +2,7 @@ name: workmesh
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "cloud/workmesh/**"
       - ".github/workflows/workmesh.yml"
@@ -26,6 +27,7 @@ defaults:
 
 jobs:
   bootstrap:
+    if: ${{ !github.event.pull_request.draft }}
     name: Syntax, shell lint and local behavior
     runs-on: ubuntu-24.04
     timeout-minutes: 10

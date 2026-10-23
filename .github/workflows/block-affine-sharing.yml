@@ -2,6 +2,7 @@ name: Packed affine sharing cost screen
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round39/**'
       - '.github/workflows/block-affine-sharing.yml'
@@ -20,6 +21,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Packed affine sharing (${{ matrix.os }})
     strategy:
       fail-fast: false

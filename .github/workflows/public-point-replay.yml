@@ -1,6 +1,7 @@
 name: Independent public-point replay
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round17/**'
       - 'experiments/groebner-perf-20260924/round15/**'
@@ -26,6 +27,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Public-point replay (${{ matrix.os }})
     strategy:
       fail-fast: false

@@ -7,6 +7,7 @@ name: ic-bench
 # intentional.
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "experiments/ic-bench/**"
       - "experiments/fb-archive/**"
@@ -68,6 +69,7 @@ defaults:
 
 jobs:
   bench:
+    if: ${{ !github.event.pull_request.draft }}
     name: tests and CI benchmark
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -137,7 +139,9 @@ jobs:
     name: upload factor-base archive to S3
     # Only pushes to the default branch, and only when the bucket and credentials
     # are configured as repository secrets; otherwise the step is skipped.
-    if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+    if: >-
+      !github.event.pull_request.draft &&
+      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
     needs: bench
     runs-on: ubuntu-latest
     timeout-minutes: 10

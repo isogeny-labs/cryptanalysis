@@ -1,6 +1,7 @@
 name: Independent GPU certificate experiment
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round16/**'
       - 'experiments/groebner-perf-20260924/round15/**'
@@ -24,6 +25,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   evidence:
+    if: ${{ !github.event.pull_request.draft }}
     name: GPU certificate evidence (${{ matrix.os }})
     strategy:
       fail-fast: false

@@ -2,6 +2,7 @@ name: Sage binary batch evidence
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/sage-binary-batch/**'
       - 'experiments/sage-binary-native-addition/**'
@@ -29,6 +30,7 @@ concurrency:
 
 jobs:
   recorded-evidence:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

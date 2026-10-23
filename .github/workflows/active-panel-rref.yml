@@ -8,6 +8,7 @@ on:
       - 'experiments/groebner-perf-20260924/round7/local*'
       - '.github/workflows/active-panel-rref.yml'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round29/**'
       - 'experiments/groebner-perf-20260924/round7/local*'
@@ -22,6 +23,7 @@ concurrency:
 
 jobs:
   evidence:
+    if: ${{ !github.event.pull_request.draft }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +37,7 @@ jobs:
         run: python experiments/groebner-perf-20260924/round29/test_audit.py
 
   metal:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: macos-latest
     timeout-minutes: 15
     strategy:

@@ -8,6 +8,7 @@ on:
       - 'experiments/groebner-perf-20260924/round7/**'
       - '.github/workflows/gpu-rref-evidence.yml'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round6/**'
       - 'experiments/groebner-perf-20260924/round7/**'
@@ -22,6 +23,7 @@ concurrency:
 
 jobs:
   evidence:
+    if: ${{ !github.event.pull_request.draft }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +39,7 @@ jobs:
           python experiments/groebner-perf-20260924/round7/audit.py > /dev/null
 
   host-build:
+    if: ${{ !github.event.pull_request.draft }}
     timeout-minutes: 20
     runs-on: macos-latest
     steps:

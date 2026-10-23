@@ -9,6 +9,7 @@ on:
   push:
     branches: ["claude/cryptanalysis-repo-setup-p59kek"]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
 
 permissions:
@@ -29,6 +30,7 @@ env:
 
 jobs:
   changes:
+    if: ${{ !github.event.pull_request.draft }}
     name: Select affected jobs
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -50,7 +52,9 @@ jobs:
 
   rust:
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust) != 'false')) }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust) != 'false')))
     name: Rust (stable)
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 45 }}
@@ -142,7 +146,9 @@ jobs:
 
   f4-kernel:
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').f4-kernel) != 'false')) }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').f4-kernel) != 'false')))
     # The batched F4 kernel compiled for sm_75 through sm_120 with the pinned
     # CUDA 13.3 nvcc from NVIDIA's pip wheels, failing on spills, and the
     # same source through NVRTC, which is what the CUDA backend runs.  No
@@ -180,7 +186,9 @@ jobs:
 
   rust-msrv:
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust-msrv) != 'false')) }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust-msrv) != 'false')))
     # The floor declared in suite/Cargo.toml, re-checked here so that it
     # cannot drift from what actually compiles.
     name: Rust MSRV 1.87
@@ -215,7 +223,9 @@ jobs:
 
   rust-supply-chain:
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust-supply-chain) != 'false')) }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled() && (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').rust-supply-chain) != 'false')))
     name: Rust supply chain (cargo-deny)
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -234,7 +244,9 @@ jobs:
 
   python-engine:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled())
     # The stdlib-only engine `ca-ic fixed` drives, with the optional SAT back
     # ends installed so that the tests covering that path run too.
     name: Python engine ${{ matrix.python }}

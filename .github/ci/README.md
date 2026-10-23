@@ -88,3 +88,30 @@ Validate changes with:
 python3 -m unittest discover -s tests -p test_ci_scope.py -v
 actionlint -shellcheck= -pyflakes= .github/workflows/*.yml
 ```
+
+## CI tiers (2026-10-23)
+
+| PR state | What runs on each push |
+| --- | --- |
+| Draft | Fast tier only: `ci-tier.yml` (`tier-gate`; its `full-tier` job skips) |
+| Ready for review | Full tier: every applicable workflow, as before |
+
+- Every other workflow with a `pull_request` trigger gates each job on
+  `!github.event.pull_request.draft` and lists `ready_for_review` in its PR
+  types (label-only triggers are left alone). `.github/scripts/draft_tier_gate.py`
+  checks this in `tier-gate`; `--apply` adds it to a new workflow. Push,
+  schedule and dispatch events carry no PR payload and are unaffected.
+- A gated job on a draft reports `skipped`, so the merge sweeper also requires
+  a successful `full-tier` check on the head. Heads whose checks all started
+  before `ci-tier.yml` reached the default branch predate the tiers.
+- `merge-sweeper.yml` (every 30 minutes; report-only until
+  `MERGE_SWEEPER_APPLY=true`) merges green, clean, unblocked PRs with a merge
+  commit pinned to the checked head, holds heads that ran more than 30 checks
+  (`ci:over-budget`), and with apply moves red, conflicted and `needs-human`
+  PRs back to draft (`ci:parked`) and caps ready PRs at 40 (`ci:waiting`).
+  Given `MERGE_SWEEPER_TOKEN` it promotes waiting drafts and `lane/*` drafts
+  idle for six hours.
+- `scripts/lane-push.sh <lane>` pushes a session's branch into `lane/<lane>`.
+
+The same mechanism is in aburan28/crypto (`.github/CI.md`, "CI tiers") and
+aburan28/crypto-autoresearcher (`docs/ci-tiers.md`).

@@ -1,6 +1,7 @@
 name: curve-identities
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'tools/curve_identity.py'
       - 'tools/export_benchmark_snapshot.py'
@@ -23,6 +24,7 @@ concurrency:
 
 jobs:
   metadata:
+    if: ${{ !github.event.pull_request.draft }}
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:

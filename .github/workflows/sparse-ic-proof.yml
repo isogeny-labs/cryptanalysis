@@ -1,6 +1,7 @@
 name: Sparse verifier in one-target IC
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round25/**'
       - 'experiments/groebner-perf-20260924/round23/**'
@@ -31,6 +32,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Sparse one-target IC (${{ matrix.os }})
     strategy:
       fail-fast: false

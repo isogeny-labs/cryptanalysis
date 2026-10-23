@@ -26,6 +26,7 @@ on:
       - "include/cryptanalysis/ca_coord.h"
       - ".github/workflows/deploy.yml"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "deploy/**"
       - "bindings/go/cmd/ca-coordinator/**"
@@ -48,6 +49,7 @@ defaults:
 
 jobs:
   chart:
+    if: ${{ !github.event.pull_request.draft }}
     name: Helm chart (lint, render, guard rails)
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -182,6 +184,7 @@ jobs:
           PY
 
   images:
+    if: ${{ !github.event.pull_request.draft }}
     name: images (coordinator, agent)
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}

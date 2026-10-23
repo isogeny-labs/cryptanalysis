@@ -2,6 +2,7 @@ name: Partial affine residual certificates
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round43/**'
       - 'experiments/groebner-perf-20260924/round40/fixtures/**'
@@ -22,6 +23,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Partial affine (${{ matrix.os }})
     strategy:
       fail-fast: false

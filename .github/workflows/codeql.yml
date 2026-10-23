@@ -4,6 +4,7 @@ on:
   push:
     branches: ["claude/cryptanalysis-repo-setup-p59kek"]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
   schedule:
     # 04:41 UTC on Mondays, so a new query pack is seen even on a quiet week.
@@ -19,6 +20,7 @@ concurrency:
 
 jobs:
   changes:
+    if: ${{ !github.event.pull_request.draft }}
     name: Select affected jobs
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -40,7 +42,9 @@ jobs:
 
   analyze:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled())
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 40 }}

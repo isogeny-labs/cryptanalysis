@@ -7,6 +7,7 @@ on:
     paths: ['gpueff/**', 'ecc2k130/runner/aws/worker.py',
             'ecc2k130/runner/benchmarks/hardware-limits/result.json', '.github/workflows/gpueff.yml']
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: ['gpueff/**', 'ecc2k130/runner/aws/worker.py',
             'ecc2k130/runner/benchmarks/hardware-limits/result.json', '.github/workflows/gpueff.yml']
 permissions:
@@ -20,6 +21,7 @@ concurrency:
 
 jobs:
   test:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:

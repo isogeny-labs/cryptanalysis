@@ -4,6 +4,7 @@ on:
     branches: ["claude/cryptanalysis-repo-setup-p59kek"]
     paths: ['ecc2k130/runner/**', '.github/workflows/ecc2k130-runner.yml']
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: ['ecc2k130/runner/**', '.github/workflows/ecc2k130-runner.yml']
 permissions:
   contents: read
@@ -13,6 +14,7 @@ concurrency:
 
 jobs:
   local-worker:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

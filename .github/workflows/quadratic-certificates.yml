@@ -2,6 +2,7 @@ name: Independent quadratic branch certificates
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round32/**'
       - 'experiments/groebner-perf-20260924/round31/**'
@@ -33,6 +34,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Branch certificates (${{ matrix.os }})
     strategy:
       fail-fast: false

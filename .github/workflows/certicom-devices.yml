@@ -1,6 +1,7 @@
 name: Certicom CPU and GPU correctness
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'gpu/certicom/**'
       - 'src/cryptanalysis/certicom_dlp/**'
@@ -29,6 +30,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   cpu-cross-check:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -52,6 +54,7 @@ jobs:
           CARGO_BUILD_JOBS: '2'
         run: cargo test --manifest-path '${{ steps.crate.outputs.manifest }}' --release --lib certicom_dlp -- --test-threads=2
   cuda-build:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     container: nvidia/cuda:12.9.1-devel-ubuntu24.04
     timeout-minutes: 15
@@ -64,6 +67,7 @@ jobs:
             nvcc -O2 -std=c++17 -arch="$arch" gpu/certicom/cuda.cu -o "/tmp/certicom_cuda_$arch"
           done
   metal-build:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: macos-14
     timeout-minutes: 45
     steps:
@@ -102,7 +106,9 @@ jobs:
           path: certicom-device-*.log
           if-no-files-found: error
   hardware:
-    if: github.event_name == 'workflow_dispatch' && inputs.hardware_runner != ''
+    if: >-
+      !github.event.pull_request.draft &&
+      (github.event_name == 'workflow_dispatch' && inputs.hardware_runner != '')
     runs-on: ${{ inputs.hardware_runner || 'ubuntu-24.04' }}
     timeout-minutes: 45
     env:

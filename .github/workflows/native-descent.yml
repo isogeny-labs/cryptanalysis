@@ -1,6 +1,7 @@
 name: Native fixed-layout descent
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round14/**'
       - 'experiments/groebner-perf-20260924/round4/**'
@@ -20,6 +21,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   contraction:
+    if: ${{ !github.event.pull_request.draft }}
     name: Native contraction (${{ matrix.os }})
     strategy:
       fail-fast: false

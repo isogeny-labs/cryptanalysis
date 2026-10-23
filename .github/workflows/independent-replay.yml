@@ -1,6 +1,7 @@
 name: Independent scalar replay
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round26/**'
       - 'experiments/groebner-perf-20260924/round25/**'
@@ -33,6 +34,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Independent scalar replay (${{ matrix.os }})
     strategy:
       fail-fast: false

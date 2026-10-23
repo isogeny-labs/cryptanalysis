@@ -9,6 +9,7 @@ name: fb-refs
 # experiments/fb-archive/README.md ("Citation guard").
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "experiments/**"
       - "ecc2k130/research/**"
@@ -30,6 +31,7 @@ concurrency:
 
 jobs:
   refs:
+    if: ${{ !github.event.pull_request.draft }}
     name: cited factor bases are archived
     runs-on: ubuntu-latest
     timeout-minutes: 10

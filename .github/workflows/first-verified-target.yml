@@ -1,6 +1,7 @@
 name: First verified target relation
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round21/**'
       - 'experiments/groebner-perf-20260924/round20/**'
@@ -27,6 +28,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: First verified relation (${{ matrix.os }})
     strategy:
       fail-fast: false

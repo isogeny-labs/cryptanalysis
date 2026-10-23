@@ -2,6 +2,7 @@ name: Sage binary hardware archive
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/sage-binary-hardware/**'
       - 'experiments/sage-ic-campaign/**'
@@ -35,6 +36,7 @@ concurrency:
 
 jobs:
   patch-and-receipts:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

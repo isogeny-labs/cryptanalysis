@@ -4,6 +4,7 @@ on:
   merge_group:
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - ".github/ci/**"
       - ".github/actions/ci-scope/**"
@@ -28,6 +29,7 @@ concurrency:
 
 jobs:
   changes:
+    if: ${{ !github.event.pull_request.draft }}
     name: Select affected jobs
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -49,7 +51,9 @@ jobs:
 
   correctness:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: >-
+      !github.event.pull_request.draft &&
+      (!cancelled())
     name: Independent multiplier identities (${{ matrix.os }})
     strategy:
       fail-fast: false

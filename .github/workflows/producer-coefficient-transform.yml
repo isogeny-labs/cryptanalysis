@@ -2,6 +2,7 @@ name: Producer coefficient transform
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round67/**'
       - 'experiments/groebner-perf-20260924/round40/fixtures/**'
@@ -24,6 +25,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Producer coefficient transform (${{ matrix.os }})
     strategy:
       fail-fast: false

@@ -2,6 +2,7 @@ name: Symmetric Boolean transform kernels
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round46/**'
       - '.github/workflows/symmetric-transform-kernels.yml'
@@ -20,6 +21,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Symmetric transform kernels (${{ matrix.os }})
     strategy:
       fail-fast: false

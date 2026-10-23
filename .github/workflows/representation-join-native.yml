@@ -1,6 +1,7 @@
 name: representation-join-native
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'research/representation_join_20261021/**'
       - '.github/workflows/representation-join-native.yml'
@@ -9,6 +10,7 @@ permissions:
   contents: read
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:

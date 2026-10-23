@@ -1,6 +1,7 @@
 name: Conditional single-target IC
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round28/**'
       - 'experiments/groebner-perf-20260924/round27/**'
@@ -37,6 +38,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Conditional single-target IC (${{ matrix.os }})
     strategy:
       fail-fast: false

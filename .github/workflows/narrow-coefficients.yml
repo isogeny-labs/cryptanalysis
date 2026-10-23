@@ -2,6 +2,7 @@ name: Narrow quadratic coefficients
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round33/**'
       - 'experiments/groebner-perf-20260924/round32/**'
@@ -35,6 +36,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Narrow coefficients (${{ matrix.os }})
     strategy:
       fail-fast: false

@@ -1,6 +1,7 @@
 name: ECC2K-130 root policy
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'ecc2k130/runner/include/collective_inverse.cuh'
       - 'ecc2k130/runner/include/collective_root_policy.h'
@@ -21,6 +22,7 @@ concurrency:
 
 jobs:
   portable-root-policy:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

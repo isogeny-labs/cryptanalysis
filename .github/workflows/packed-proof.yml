@@ -1,6 +1,7 @@
 name: Packed algebraic proofs
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round11/**'
       - 'experiments/groebner-perf-20260924/round5/**'
@@ -18,6 +19,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   proof:
+    if: ${{ !github.event.pull_request.draft }}
     name: Packed proofs (${{ matrix.os }})
     strategy:
       fail-fast: false

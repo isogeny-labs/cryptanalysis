@@ -17,6 +17,7 @@ on:
       - "challenges/ecc/**"
       - ".github/workflows/ecc-corpus.yml"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "challenges/ecc/**"
       - ".github/workflows/ecc-corpus.yml"
@@ -35,6 +36,7 @@ defaults:
 
 jobs:
   corpus:
+    if: ${{ !github.event.pull_request.draft }}
     name: regenerate and validate
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 45 }}

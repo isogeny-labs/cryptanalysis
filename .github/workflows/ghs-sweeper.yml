@@ -2,6 +2,7 @@ name: Rust GHS sweeper
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/ghs-sweeper/**'
       - '.github/workflows/ghs-sweeper.yml'
@@ -16,6 +17,7 @@ permissions:
 
 jobs:
   check:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

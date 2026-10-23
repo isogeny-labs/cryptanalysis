@@ -16,6 +16,7 @@ on:
       - "fpga/**"
       - ".github/workflows/fpga.yml"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "fpga/**"
       - ".github/workflows/fpga.yml"
@@ -35,6 +36,7 @@ defaults:
 
 jobs:
   simulate:
+    if: ${{ !github.event.pull_request.draft }}
     name: model and testbenches (DIGIT=${{ matrix.digit }})
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 40 }}
@@ -61,6 +63,7 @@ jobs:
         run: scripts/run_sim.sh ${{ matrix.digit }} 60 48
 
   lint:
+    if: ${{ !github.event.pull_request.draft }}
     name: verilator
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -76,6 +79,7 @@ jobs:
         run: verilator --lint-only -Wall -Irtl --top-module ecc2k130_top rtl/*.v
 
   synthesise:
+    if: ${{ !github.event.pull_request.draft }}
     name: yosys area report
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}

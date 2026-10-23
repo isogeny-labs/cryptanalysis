@@ -1,6 +1,7 @@
 name: Ordered independent certificate
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round15/**'
       - 'experiments/groebner-perf-20260924/round14/**'
@@ -22,6 +23,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   certificate:
+    if: ${{ !github.event.pull_request.draft }}
     name: Ordered certificate (${{ matrix.os }})
     strategy:
       fail-fast: false

@@ -1,6 +1,7 @@
 name: Tiled packed Metal verification
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round19/**'
       - 'experiments/groebner-perf-20260924/round18/**'
@@ -24,6 +25,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Tiled Metal verifier (${{ matrix.os }})
     strategy:
       fail-fast: false

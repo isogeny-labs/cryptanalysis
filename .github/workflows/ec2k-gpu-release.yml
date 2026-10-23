@@ -23,6 +23,7 @@ on:
   # A pull request that touches the client builds and self-checks both
   # tarballs, so a tag never runs a packaging path for the first time.
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "ecc2k130/**"
       - "fpga/model/**"
@@ -52,6 +53,7 @@ defaults:
 
 jobs:
   build:
+    if: ${{ !github.event.pull_request.draft }}
     name: build (linux-${{ matrix.machine }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 90 }}
@@ -91,6 +93,7 @@ jobs:
           if-no-files-found: error
 
   metal-build:
+    if: ${{ !github.event.pull_request.draft }}
     name: build (macos-arm64 Metal)
     runs-on: macos-15
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 45 }}
@@ -117,6 +120,7 @@ jobs:
           if-no-files-found: error
 
   sage-source:
+    if: ${{ !github.event.pull_request.draft }}
     name: verify and package Sage source stack
     runs-on: ubuntu-22.04
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}
@@ -154,7 +158,9 @@ jobs:
 
   sage-compiled:
     name: build and package Sage accelerator (macos-arm64)
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    if: >-
+      !github.event.pull_request.draft &&
+      (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/'))
     runs-on: macos-15
     timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 240 }}
     defaults:
@@ -218,7 +224,9 @@ jobs:
     timeout-minutes: 20
     name: publish
     needs: [build, metal-build, sage-source, sage-compiled]
-    if: startsWith(github.ref, 'refs/tags/cryptanalysis-v') || startsWith(github.ref, 'refs/tags/ec2k-gpu-v')
+    if: >-
+      !github.event.pull_request.draft &&
+      (startsWith(github.ref, 'refs/tags/cryptanalysis-v') || startsWith(github.ref, 'refs/tags/ec2k-gpu-v'))
     runs-on: ubuntu-latest
     permissions:
       contents: write

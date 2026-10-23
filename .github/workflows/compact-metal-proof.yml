@@ -2,6 +2,7 @@ name: Compact Metal symmetry dispatch
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round38/**'
       - 'experiments/groebner-perf-20260924/round37/**'
@@ -45,6 +46,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Compact Metal proof (${{ matrix.os }})
     strategy:
       fail-fast: false

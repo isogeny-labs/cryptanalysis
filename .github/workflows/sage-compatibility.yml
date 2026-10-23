@@ -2,6 +2,7 @@ name: Sage arithmetic compatibility
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/sage-binary-hardware/**'
       - 'experiments/sage-ic-campaign/five-opportunities-20260925/**'
@@ -16,6 +17,7 @@ permissions:
 
 jobs:
   archive-and-source:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -32,6 +34,7 @@ jobs:
       - run: python3 scripts/sage_release.py verify-stack --sage build/sage-source
 
   native-cpu:
+    if: ${{ !github.event.pull_request.draft }}
     strategy:
       fail-fast: false
       matrix:

@@ -2,6 +2,7 @@ name: Fixed-width affine-proof elimination
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'experiments/groebner-perf-20260924/round37/**'
       - 'experiments/groebner-perf-20260924/round36/**'
@@ -43,6 +44,7 @@ concurrency:
 
 jobs:
   correctness:
+    if: ${{ !github.event.pull_request.draft }}
     name: Fixed-width affine proof (${{ matrix.os }})
     strategy:
       fail-fast: false

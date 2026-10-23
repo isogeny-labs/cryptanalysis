@@ -18,6 +18,26 @@ implementing, running experiments, or making recommendations.
   search scope and evidence gaps before proceeding. Never invent citations or
   treat an unsuccessful search as proof that no prior work exists.
 
+## Pull requests: draft until done, one per lane, 30 checks
+
+Owner, 2026-10-23. The three repositories opened up to about 240 PRs a day
+and their CI could not keep up, so:
+
+- **Open every PR as a draft; mark it ready when the work is done.** Drafts
+  run only the fast CI tier (`ci-tier.yml`); marking a PR ready runs the full
+  tier once on its head, and a later push to a ready PR runs it again. Mark it
+  ready after the final local validation, not to see what CI says.
+- **One PR per research lane.** Work for a study that already has an open
+  `lane/<lane>` PR is pushed there with `scripts/lane-push.sh <lane>` (merge
+  commits only, retried, never a force-push); open a new PR only for work no
+  lane covers.
+- **At most 30 CI checks per PR head.** The merge sweeper holds a PR whose
+  head ran more (`ci:over-budget`); split it by touched area.
+- `merge-sweeper.yml` merges green, clean, unblocked ready PRs and, once
+  `MERGE_SWEEPER_APPLY` is `true`, moves red PRs back to draft (`ci:parked`)
+  and keeps at most 40 PRs ready (`ci:waiting`). Details:
+  [`.github/ci/README.md`](.github/ci/README.md), "CI tiers".
+
 ## Research searches must leave visual reports
 
 For every substantive search for new isogenies, curves, scalar rules,
