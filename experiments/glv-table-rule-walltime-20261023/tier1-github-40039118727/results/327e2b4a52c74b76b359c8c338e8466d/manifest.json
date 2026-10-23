@@ -1,0 +1,53 @@
+{
+  "artifacts": [
+    "/home/runner/work/_temp/glv-walltime/allocation.json",
+    "/home/runner/work/cryptanalysis/cryptanalysis/experiments/glv-table-rule-walltime-20261023/bench_glv_panel.c",
+    "/home/runner/work/cryptanalysis/cryptanalysis/experiments/glv-table-rule-walltime-20261023/panel_j1728.txt"
+  ],
+  "cases": [
+    {
+      "candidate": [
+        "/home/runner/work/_temp/glv-walltime/bin/glv-panel-c12",
+        "/home/runner/work/cryptanalysis/cryptanalysis/experiments/glv-table-rule-walltime-20261023/panel_j1728.txt",
+        "7"
+      ],
+      "expected_fields": {
+        "first_x": "984246554",
+        "first_y": "87062597",
+        "seed": "7",
+        "targets": "400"
+      },
+      "expected_result": "1b2f48914f323ea1",
+      "id": "glv-table-j1728-28-34",
+      "reference": [
+        "/home/runner/work/_temp/glv-walltime/bin/glv-panel-main",
+        "/home/runner/work/cryptanalysis/cryptanalysis/experiments/glv-table-rule-walltime-20261023/panel_j1728.txt",
+        "7"
+      ]
+    }
+  ],
+  "isolation": {
+    "allocation": {
+      "instance_id": "gh-40039118727-1-paired-walltime",
+      "provider": "github_actions",
+      "receipt": "/home/runner/work/_temp/glv-walltime/allocation.json"
+    },
+    "cgroup": "/sys/fs/cgroup/system.slice/hosted-compute-agent.service",
+    "cpus": "0",
+    "execution_cpu": 0,
+    "mem_nodes": "0",
+    "tier": "tier1"
+  },
+  "measurement_boundary": "after every group and target is set up: ca_curve_solve on each panel target plus its replay check, summed",
+  "pair_fields": [
+    "targets",
+    "first_x",
+    "first_y",
+    "seed"
+  ],
+  "repetitions": 15,
+  "result_field": "result",
+  "schema": 1,
+  "timeout_s": 600,
+  "workdir": "/home/runner/work/cryptanalysis/cryptanalysis"
+}
