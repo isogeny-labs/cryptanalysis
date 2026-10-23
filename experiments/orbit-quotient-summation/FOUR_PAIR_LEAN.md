@@ -43,7 +43,10 @@ the original four-summand residue. The reverse direction expands each pair
 membership into witnesses and applies the same modular identity backward.
 Lean's quantifiers range over all finite natural-number lists, including
 duplicates and empty lists. They do not encode elliptic-curve points or
-certify that `slot_sets` produced the intended representatives.
+certify that `slot_sets` produced the intended representatives. Lean's
+natural-number modulus also includes zero, where its `%` operator is defined;
+the Python implementation requires a positive subgroup order because Python
+raises on `% 0`. All experiment instances and the direct test have `r > 0`.
 
 The existing `mem_pairTotals_iff` and `triple_matches_iff_pair_lookup` remain
 the dependencies and three-summand proof. The pinned toolchain is Lean
