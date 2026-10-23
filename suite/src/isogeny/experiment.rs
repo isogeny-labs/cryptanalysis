@@ -14,6 +14,7 @@
 
 use super::attack::{run_attack_suite, AttackReport};
 use super::cm::cm_discriminant;
+use super::experiment_store::{ObservedHead, RemoteStore};
 use super::graph::build_graph;
 use super::SmallCurve;
 use rayon::prelude::*;
@@ -59,7 +60,7 @@ pub struct ExperimentReport {
     pub aggregate: AggregateStats,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PerCurveResult {
     pub start: (u64, u64, u64),
     pub class_size: usize,
@@ -86,6 +87,10 @@ pub struct CheckpointProgress {
     pub completed_curves: usize,
     pub planned_curves: usize,
     pub identity_blake3: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remote_generation: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remote_complete: Option<bool>,
     pub report: Option<ExperimentReport>,
 }
 
@@ -94,6 +99,8 @@ struct CheckpointIdentity {
     config: ExperimentConfig,
     binary_blake3: String,
     curves: Vec<(u64, u64, u64)>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    remote_uri: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -120,6 +127,10 @@ fn save_checkpoint(path: &Path, payload: &CheckpointPayload) -> Result<(), Strin
         payload: payload.clone(),
     };
     let bytes = serde_json::to_vec_pretty(&envelope).map_err(|e| e.to_string())?;
+    write_atomic_bytes(path, &bytes)
+}
+
+pub(super) fn write_atomic_bytes(path: &Path, bytes: &[u8]) -> Result<(), String> {
     let nonce = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|e| e.to_string())?
@@ -143,6 +154,37 @@ fn save_checkpoint(path: &Path, payload: &CheckpointPayload) -> Result<(), Strin
     Ok(())
 }
 
+fn parse_checkpoint(
+    bytes: &[u8],
+    identity: &CheckpointIdentity,
+) -> Result<CheckpointPayload, String> {
+    if bytes.len() > 32 * 1024 * 1024 {
+        return Err("isogeny experiment checkpoint exceeds 32 MiB".into());
+    }
+    let envelope: CheckpointEnvelope =
+        serde_json::from_slice(bytes).map_err(|e| format!("invalid checkpoint: {e}"))?;
+    if payload_hash(&envelope.payload)? != envelope.blake3 {
+        return Err("isogeny experiment checkpoint checksum differs".into());
+    }
+    if envelope.payload.schema_version != 1
+        || serde_json::to_vec(&envelope.payload.identity).map_err(|e| e.to_string())?
+            != serde_json::to_vec(identity).map_err(|e| e.to_string())?
+    {
+        return Err("isogeny experiment checkpoint identity differs".into());
+    }
+    if envelope.payload.completed.len() > identity.curves.len()
+        || envelope
+            .payload
+            .completed
+            .iter()
+            .enumerate()
+            .any(|(i, result)| result.start != identity.curves[i])
+    {
+        return Err("isogeny experiment checkpoint curve sequence differs".into());
+    }
+    Ok(envelope.payload)
+}
+
 /// Resume a deterministic sweep at the next unfinished starting curve. A
 /// completed unit is published by atomic checkpoint replacement before the
 /// next unit starts. The lock keeps one local writer per state directory.
@@ -152,6 +194,17 @@ pub fn run_experiment_checkpointed(
     resume: bool,
     max_new_curves: Option<usize>,
     binary_blake3: &str,
+) -> Result<CheckpointProgress, String> {
+    run_experiment_checkpointed_remote(cfg, state_dir, resume, max_new_curves, binary_blake3, None)
+}
+
+pub fn run_experiment_checkpointed_remote(
+    cfg: &ExperimentConfig,
+    state_dir: &Path,
+    resume: bool,
+    max_new_curves: Option<usize>,
+    binary_blake3: &str,
+    remote_uri: Option<&str>,
 ) -> Result<CheckpointProgress, String> {
     if cfg.num_curves == 0 || cfg.num_curves > 1_000 {
         return Err("checkpointed experiment requires 1..=1000 starting curves".into());
@@ -178,42 +231,98 @@ pub fn run_experiment_checkpointed(
         config: cfg.clone(),
         binary_blake3: binary_blake3.to_string(),
         curves: curves.iter().map(|c| (c.p, c.a, c.b)).collect(),
+        remote_uri: remote_uri.map(str::to_string),
     };
     let identity_blake3 = blake3::hash(&serde_json::to_vec(&identity).map_err(|e| e.to_string())?)
         .to_hex()
         .to_string();
     let checkpoint_path = state_dir.join("checkpoint.json");
+    let remote = remote_uri.map(RemoteStore::parse).transpose()?;
+    let mut observed_head: Option<ObservedHead> = match &remote {
+        Some(store) => store.read_head()?,
+        None => None,
+    };
     let mut payload = if resume {
-        let bytes = fs::read(&checkpoint_path)
-            .map_err(|e| format!("cannot resume {}: {e}", checkpoint_path.display()))?;
-        if bytes.len() > 32 * 1024 * 1024 {
-            return Err("isogeny experiment checkpoint exceeds 32 MiB".into());
+        let local_bytes = match fs::read(&checkpoint_path) {
+            Ok(bytes) => Some(bytes),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+            Err(error) => return Err(format!("{}: {error}", checkpoint_path.display())),
+        };
+        let local = local_bytes
+            .as_deref()
+            .map(|bytes| parse_checkpoint(bytes, &identity))
+            .transpose()?;
+        if let (Some(store), Some(head)) = (&remote, &observed_head) {
+            if head.document.identity_blake3 != identity_blake3 {
+                return Err("remote isogeny head identity differs".into());
+            }
+            let remote_bytes = store.read_checkpoint(&head.document)?;
+            let remote_payload = parse_checkpoint(&remote_bytes, &identity)?;
+            if remote_payload.completed.len() != head.document.generation {
+                return Err("remote isogeny head generation differs from checkpoint".into());
+            }
+            match (local, local_bytes) {
+                (None, _) => {
+                    write_atomic_bytes(&checkpoint_path, &remote_bytes)?;
+                    remote_payload
+                }
+                (Some(local), Some(local_bytes)) => {
+                    let local_count = local.completed.len();
+                    let remote_count = remote_payload.completed.len();
+                    let common = local_count.min(remote_count);
+                    if local.completed[..common] != remote_payload.completed[..common] {
+                        return Err("local and remote isogeny checkpoint results conflict".into());
+                    }
+                    if local_count < remote_count {
+                        write_atomic_bytes(&checkpoint_path, &remote_bytes)?;
+                        remote_payload
+                    } else if local_count == remote_count {
+                        local
+                    } else if local_count == remote_count + 1 {
+                        observed_head = Some(store.publish(
+                            &local_bytes,
+                            local_count,
+                            curves.len(),
+                            &identity_blake3,
+                            observed_head.as_ref(),
+                        )?);
+                        local
+                    } else {
+                        return Err(
+                            "local isogeny checkpoint is more than one generation ahead".into()
+                        );
+                    }
+                }
+                _ => unreachable!(),
+            }
+        } else if let Some(store) = &remote {
+            match (local, local_bytes) {
+                (Some(local), Some(local_bytes)) => {
+                    observed_head = Some(store.publish(
+                        &local_bytes,
+                        local.completed.len(),
+                        curves.len(),
+                        &identity_blake3,
+                        None,
+                    )?);
+                    local
+                }
+                _ => return Err("remote isogeny head and local checkpoint are both absent".into()),
+            }
+        } else {
+            local.ok_or_else(|| {
+                format!(
+                    "cannot resume {}: file is absent",
+                    checkpoint_path.display()
+                )
+            })?
         }
-        let envelope: CheckpointEnvelope =
-            serde_json::from_slice(&bytes).map_err(|e| format!("invalid checkpoint: {e}"))?;
-        if payload_hash(&envelope.payload)? != envelope.blake3 {
-            return Err("isogeny experiment checkpoint checksum differs".into());
-        }
-        if envelope.payload.schema_version != 1
-            || serde_json::to_vec(&envelope.payload.identity).map_err(|e| e.to_string())?
-                != serde_json::to_vec(&identity).map_err(|e| e.to_string())?
-        {
-            return Err("isogeny experiment checkpoint identity differs".into());
-        }
-        if envelope.payload.completed.len() > curves.len()
-            || envelope
-                .payload
-                .completed
-                .iter()
-                .enumerate()
-                .any(|(i, result)| result.start != identity.curves[i])
-        {
-            return Err("isogeny experiment checkpoint curve sequence differs".into());
-        }
-        envelope.payload
     } else {
         if checkpoint_path.exists() {
             return Err("isogeny experiment checkpoint exists; pass --resume".into());
+        }
+        if observed_head.is_some() {
+            return Err("remote isogeny head exists; pass --resume".into());
         }
         let payload = CheckpointPayload {
             schema_version: 1,
@@ -221,6 +330,15 @@ pub fn run_experiment_checkpointed(
             completed: Vec::new(),
         };
         save_checkpoint(&checkpoint_path, &payload)?;
+        if let Some(store) = &remote {
+            observed_head = Some(store.publish(
+                &fs::read(&checkpoint_path).map_err(|e| e.to_string())?,
+                0,
+                curves.len(),
+                &identity_blake3,
+                None,
+            )?);
+        }
         payload
     };
 
@@ -230,6 +348,15 @@ pub fn run_experiment_checkpointed(
         let result = run_one_curve(cfg, &curves[index], index);
         payload.completed.push(result);
         save_checkpoint(&checkpoint_path, &payload)?;
+        if let Some(store) = &remote {
+            observed_head = Some(store.publish(
+                &fs::read(&checkpoint_path).map_err(|e| e.to_string())?,
+                payload.completed.len(),
+                curves.len(),
+                &identity_blake3,
+                observed_head.as_ref(),
+            )?);
+        }
         eprintln!(
             "[isogeny experiment] checkpointed curve {}/{}",
             payload.completed.len(),
@@ -242,6 +369,8 @@ pub fn run_experiment_checkpointed(
         completed_curves: payload.completed.len(),
         planned_curves: curves.len(),
         identity_blake3,
+        remote_generation: observed_head.as_ref().map(|head| head.document.generation),
+        remote_complete: observed_head.as_ref().map(|head| head.document.complete),
         report: done.then(|| report_from_results(cfg, payload.completed)),
     })
 }
@@ -537,5 +666,108 @@ mod tests {
                 .contains("checksum differs")
         );
         fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn remote_head_restores_and_reconciles_one_local_generation() {
+        let mut cfg = ExperimentConfig::default_for_bits(8);
+        cfg.num_curves = 2;
+        cfg.primes = vec![2];
+        cfg.max_graph_nodes = 4;
+        cfg.rho_max_iters = 128;
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "crax-isogeny-remote-test-{}-{nonce}",
+            std::process::id()
+        ));
+        let uri = format!("file://{}", root.join("remote").display());
+        let first = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-a"),
+            false,
+            Some(1),
+            "binary-a",
+            Some(&uri),
+        )
+        .unwrap();
+        assert_eq!(first.status, "partial");
+        let store = RemoteStore::parse(&uri).unwrap();
+        assert_eq!(store.read_head().unwrap().unwrap().document.generation, 1);
+
+        let generation_two = root.join("remote/generations/000002/checkpoint.json");
+        fs::create_dir_all(generation_two.parent().unwrap()).unwrap();
+        fs::write(&generation_two, b"conflicting immutable object").unwrap();
+        let error = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-a"),
+            true,
+            None,
+            "binary-a",
+            Some(&uri),
+        )
+        .unwrap_err();
+        assert!(error.contains("immutable checkpoint generation differs"));
+        assert_eq!(store.read_head().unwrap().unwrap().document.generation, 1);
+        fs::remove_file(&generation_two).unwrap();
+        let complete = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-a"),
+            true,
+            None,
+            "binary-a",
+            Some(&uri),
+        )
+        .unwrap();
+        assert_eq!(complete.status, "complete");
+        assert_eq!(store.read_head().unwrap().unwrap().document.generation, 2);
+        let expected = serde_json::to_value(run_experiment(&cfg)).unwrap();
+        assert_eq!(
+            serde_json::to_value(complete.report.unwrap()).unwrap(),
+            expected
+        );
+
+        let stray = root.join("remote/generations/000003/checkpoint.json");
+        fs::create_dir_all(stray.parent().unwrap()).unwrap();
+        fs::write(stray, b"unpublished generation").unwrap();
+        let restored = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-b"),
+            true,
+            None,
+            "binary-a",
+            Some(&uri),
+        )
+        .unwrap();
+        assert_eq!(
+            serde_json::to_value(restored.report.unwrap()).unwrap(),
+            expected
+        );
+        let error = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-c"),
+            true,
+            None,
+            "binary-b",
+            Some(&uri),
+        )
+        .unwrap_err();
+        assert!(error.contains("identity differs"));
+        let mut checkpoint = fs::read(&generation_two).unwrap();
+        checkpoint.push(b'!');
+        fs::write(&generation_two, checkpoint).unwrap();
+        let error = run_experiment_checkpointed_remote(
+            &cfg,
+            &root.join("local-d"),
+            true,
+            None,
+            "binary-a",
+            Some(&uri),
+        )
+        .unwrap_err();
+        assert!(error.contains("size or digest differs"));
+        fs::remove_dir_all(root).unwrap();
     }
 }

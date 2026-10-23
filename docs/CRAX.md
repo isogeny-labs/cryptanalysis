@@ -85,29 +85,42 @@ all three commands too. Use
 
 ### Resumable isogeny experiment sweeps
 
-`crax isogeny experiment` accepts `--state-dir` for a local checkpoint after
-each completed starting curve. Use `--max-new-curves` to run a bounded number
-of new units, then `--resume` with the same options to continue:
+`crax isogeny experiment` accepts `--state-dir` for a checkpoint after each
+completed starting curve. Add `--s3-uri` to publish and resume that state in
+S3. Use a unique run ID under the Setec production schema
+`s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/<run-id>`. For a
+bounded first run and restore into an empty local directory:
 
 ```sh
 crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
-  --state-dir /tmp/crax-isogeny-run --max-new-curves 1
+  --state-dir /tmp/crax-isogeny-run --max-new-curves 1 \
+  --s3-uri s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/YOUR_RUN_ID
 crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
-  --state-dir /tmp/crax-isogeny-run --resume
+  --state-dir /tmp/crax-isogeny-restored --resume \
+  --s3-uri s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/YOUR_RUN_ID
 ```
 
 The first command reports `status: partial`; the second reports
 `status: complete` and includes the full experiment report. Progress goes to
 stderr. The checkpoint is atomically replaced under a local writer lock and
 binds the complete configuration, generated curve sequence, and running
-executable's BLAKE3 digest. Resume rejects changed inputs, binaries and
-corrupt state. This command's checkpoint is local; the sibling `store`
-command can publish completed artifacts, while live S3 resume is currently
-implemented for the separate fixed-IC command family.
+executable's BLAKE3 digest. S3 uploads immutable
+`generations/<N>/checkpoint.json` objects, then conditionally publishes
+`_isogeny_head.json` last. The head names the generation, size, BLAKE3 digest,
+and an explicit `complete` marker. Resume checks the head and downloaded bytes
+before accepting remote state, ignores unpublished generations, and rejects
+changed inputs, binaries, corrupt state, or concurrent head changes. A local
+checkpoint one generation ahead of the remote head can be published on resume
+after matching the remote prefix. Set `AWS_PROFILE` and `AWS_REGION` for the
+bucket (`us-east-2` for Setec). `--s3-uri` requires `--state-dir`; omitting it
+keeps checkpoints local.
 The [release CLI acceptance receipt](CRAX_ISOGENY_RESUME_ACCEPTANCE_20261023.json)
 records a partial run, an exact-match resume versus a fresh sweep, the
 `crax --json` envelope, and rejection of changed configuration, changed
 executable, and damaged checkpoint bytes.
+The [live Setec S3 receipt](CRAX_ISOGENY_S3_RESUME_ACCEPTANCE_20261023.json)
+records the isolated prefix, partial and complete heads, fresh-local restores,
+stray-generation rejection, exact report replay, and object cleanup.
 
 Native `crax rho-collab work/status --job` accepts a local public job document
 or a checked `store:NAME` or `sha256:DIGEST` reference. Store references are

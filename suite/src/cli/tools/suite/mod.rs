@@ -246,6 +246,9 @@ enum IsogenyOp {
         /// Stop after this many new curves and emit an explicit partial status.
         #[arg(long, requires = "state_dir")]
         max_new_curves: Option<usize>,
+        /// S3 prefix for immutable checkpoint generations and a conditional head.
+        #[arg(long, requires = "state_dir")]
+        s3_uri: Option<String>,
     },
     /// secp256k1 case study: GLV constants, twist analysis, MOV
     /// embedding-degree certificate, small-degree-isogeny survey.
@@ -1450,7 +1453,9 @@ fn cmd_isogeny(op: IsogenyOp) {
     use crate::isogeny::{
         class_group::{class_above_prime, class_number, enumerate_reduced_forms, ClassGroup},
         cm::{cm_discriminant, fundamental_discriminant_and_conductor},
-        experiment::{run_experiment, run_experiment_checkpointed, to_json, ExperimentConfig},
+        experiment::{
+            run_experiment, run_experiment_checkpointed_remote, to_json, ExperimentConfig,
+        },
         graph::build_graph,
         secp256k1_analysis::{
             beta, embedding_degree_secp256k1, lambda, run_secp256k1_suite,
@@ -1585,6 +1590,7 @@ fn cmd_isogeny(op: IsogenyOp) {
             state_dir,
             resume,
             max_new_curves,
+            s3_uri,
         } => {
             let mut cfg = ExperimentConfig::default_for_bits(bits);
             cfg.num_curves = trials.max(1);
@@ -1601,16 +1607,24 @@ fn cmd_isogeny(op: IsogenyOp) {
                 cfg.bits, cfg.num_curves, cfg.primes,
             );
             if let Some(state_dir) = state_dir {
+                if s3_uri
+                    .as_deref()
+                    .is_some_and(|uri| !uri.starts_with("s3://"))
+                {
+                    eprintln!("error: --s3-uri must start with s3://");
+                    std::process::exit(1);
+                }
                 let binary_hash = super::ic::binary_hash().unwrap_or_else(|| {
                     eprintln!("error: cannot hash the running executable for checkpoint identity");
                     std::process::exit(1);
                 });
-                let progress = run_experiment_checkpointed(
+                let progress = run_experiment_checkpointed_remote(
                     &cfg,
                     &state_dir,
                     resume,
                     max_new_curves,
                     &binary_hash,
+                    s3_uri.as_deref(),
                 )
                 .unwrap_or_else(|error| {
                     eprintln!("error: {error}");
