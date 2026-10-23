@@ -168,6 +168,7 @@ int main(void)
         snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
         rmdir(dir);
     }
+    /* Repeated capped resumes must retain the persisted parent elapsed time. */
     {
         ca_group dg;
         ca_elem db, dh;
