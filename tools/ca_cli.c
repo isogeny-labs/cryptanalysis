@@ -3759,7 +3759,8 @@ static int cmd_work(void)
                 die("work manifest does not match this job");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore work state into a nonempty directory");
-            if (!have_local && s3_uri && !ic_s3_sync(s3_uri, state_dir, manifest))
+            if ((!have_local || access(journal_path, F_OK) != 0) && s3_uri &&
+                !ic_s3_sync(s3_uri, state_dir, manifest))
                 die("cannot restore work state from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("work manifest does not match this job");

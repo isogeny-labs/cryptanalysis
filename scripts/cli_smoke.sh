@@ -715,6 +715,10 @@ cat >"$ecc_tmp/awsbin/aws" <<'SH'
 set -eu
 [ "$1" = s3 ] || exit 2
 verb=$2; from=$3; to=$4
+if [ "$verb" = sync ] && [ "${from#s3://}" != "$from" ] && \
+   [ -n "${CA_TEST_S3_FAIL_RESTORE:-}" ]; then
+  exit 1
+fi
 case "$from" in
   s3://test/ecc2k) from=$CA_TEST_S3_REMOTE ;;
   s3://test/ecc2k/*) from="$CA_TEST_S3_REMOTE/${from#s3://test/ecc2k/}" ;;
@@ -869,6 +873,17 @@ fi
 first_lines=$(wc -l <"$work_state/checkins.log")
 printf x >>"$ecc_tmp/remote/work/checkins.log"
 rm -rf "$work_state"
+# The manifest is installed before the bulk restore. A retry must still
+# fetch the journal when the first bulk download was interrupted.
+PATH="$ecc_tmp/awsbin:$PATH" CA="$ecc_ca" CA_TEST_S3_FAIL_RESTORE=1 \
+  want_bad 'cannot restore work state from S3' work --job "$ecc_tmp/work-job.txt" \
+  --state-dir "$work_state" --resume --s3-uri s3://test/ecc2k/work
+checks=$((checks + 1))
+if ! cmp -s "$work_state/manifest.json" "$ecc_tmp/remote/work/manifest.json" || \
+   [ -e "$work_state/checkins.log" ]; then
+  printf 'FAIL: interrupted work restore did not preserve only the manifest\n' >&2
+  fail=$((fail + 1))
+fi
 checks=$((checks + 1))
 work_rc=0
 work_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" work --job "$ecc_tmp/work-job.txt" \
