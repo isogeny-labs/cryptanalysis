@@ -1,6 +1,28 @@
 #include "test_fixtures.h"
 #include <unistd.h>
 
+/* Read the persisted aggregate from the private Pohlig checkpoint so the
+ * elapsed-time regression can verify the exact returned boundary is durable. */
+typedef struct test_ph_checkpoint {
+    char magic[8];
+    uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
+    ca_stats stats;
+    uint64_t checksum;
+} test_ph_checkpoint;
+
+static int read_ph_checkpoint_stats(const char *path, ca_stats *stats)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) return 0;
+    test_ph_checkpoint c;
+    int read_ok = fread(&c, sizeof(c), 1, f) == 1;
+    int close_ok = fclose(f) == 0;
+    if (!read_ok || !close_ok) return 0;
+    if (memcmp(c.magic, "CADLOGC1", 8) != 0 || c.version != 1) return 0;
+    *stats = c.stats;
+    return 1;
+}
+
 int main(void)
 {
     ca_group g;
@@ -144,6 +166,45 @@ int main(void)
         CHECK_EQ_U64(got, 777);
         snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
         snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
+        rmdir(dir);
+    }
+    {
+        ca_group dg;
+        ca_elem db, dh;
+        fx_zp_safe(&dg, &db, 2000000579ULL);
+        fx_instance(&dg, &db, 424242, &dh);
+        ca_dlog_params dp;
+        ca_dlog_params_default(&dp);
+        dp.solver = CA_SOLVER_RHO;
+        dp.rho.seed = 1984;
+        dp.rho.walks_per_thread = 4;
+        dp.rho.dp_bits = 0;
+        char dir[] = "/tmp/ca-dlog-elapsed-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char prefix[256], file[320];
+        snprintf(prefix, sizeof(prefix), "%s/dlog", dir);
+        dp.rho.max_ops = 5000;
+        ca_stats first = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                    1, 1, 0, &got, &first) == CA_ERR_LIMIT);
+        CHECK(first.seconds > 0.0);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix);
+        ca_stats persisted = {0};
+        CHECK(read_ph_checkpoint_stats(file, &persisted));
+        CHECK(persisted.seconds == first.seconds);
+
+        /* The next call is another real capped resume, but deliberately much
+         * shorter. The returned first-call boundary was persisted in the
+         * parent checkpoint; it must not be lost when the child stops again. */
+        dp.rho.max_ops = 1;
+        ca_stats resumed = {0};
+        CHECK(ca_pohlig_hellman_checkpointed(&dg, &db, &dh, &dp, prefix,
+                    1, 1, 0, &got, &resumed) == CA_ERR_LIMIT);
+        CHECK(resumed.seconds >= first.seconds);
+        snprintf(file, sizeof(file), "%s.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.ckpt.progress.json", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor0.digit0.ckpt", prefix); unlink(file);
+        snprintf(file, sizeof(file), "%s.factor0.digit0.ckpt.progress.json", prefix); unlink(file);
         rmdir(dir);
     }
     /* EC group with cofactor: dlog in full group order */
