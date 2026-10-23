@@ -644,6 +644,17 @@ impl FactoringRun {
                 if run.verbose {
                     eprintln!("[{method}] restoring S3 state");
                 }
+                // Validate the remote run identity before downloading any
+                // checkpoint or result payload into the fresh directory.
+                let remote_manifest = format!("{uri}/manifest.json");
+                let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
+                let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
+                    .map_err(|e| format!("invalid S3 {method} manifest: {e}"))?;
+                if found != manifest {
+                    return Err(format!(
+                        "S3 {method} manifest differs from the requested run"
+                    ));
+                }
                 let remote = format!("{uri}/");
                 let local = dir.to_string_lossy();
                 aws(&[

@@ -31,6 +31,64 @@ fn run(args: &[&str]) -> Output {
 }
 
 #[test]
+fn fresh_s3_restore_checks_manifest_before_syncing_payloads() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let run_dir = RunDir::new();
+    let bin = run_dir.0.join("bin");
+    fs::create_dir(&bin).unwrap();
+    let aws = bin.join("aws");
+    fs::write(
+        &aws,
+        "#!/bin/sh\n\
+         printf '%s\\n' \"$*\" >> \"$AWS_LOG\"\n\
+         if [ \"$1\" = s3 ] && [ \"$2\" = cp ] && [ \"$4\" = - ]; then\n\
+           printf '%s\\n' '{\"schema_version\":1,\"method\":\"other\"}'\n\
+           exit 0\n\
+         fi\n\
+         echo 'unexpected AWS operation' >&2\n\
+         exit 98\n",
+    )
+    .unwrap();
+    let mut permissions = fs::metadata(&aws).unwrap().permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&aws, permissions).unwrap();
+
+    let state = run_dir.0.join("fresh-state");
+    let log = run_dir.0.join("aws.log");
+    let path = format!(
+        "{}:{}",
+        bin.display(),
+        std::env::var("PATH").unwrap_or_default()
+    );
+    let output = Command::new(env!("CARGO_BIN_EXE_crax"))
+        .args(["qs", "100000000003900003000000000117", "--state-dir"])
+        .arg(&state)
+        .args(["--resume", "--s3-uri", "s3://bucket/qs-run", "--json"])
+        .env("PATH", path)
+        .env("AWS_LOG", &log)
+        .output()
+        .unwrap();
+
+    assert!(!output.status.success());
+    let report = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        report.contains("S3 qs manifest differs from the requested run"),
+        "{report}"
+    );
+    let calls = fs::read_to_string(log).unwrap();
+    assert!(calls.contains("s3 cp s3://bucket/qs-run/manifest.json - --only-show-errors"));
+    assert!(
+        !calls.contains("s3 sync"),
+        "unexpected payload restore: {calls}"
+    );
+}
+
+#[test]
 fn qs_resumes_polynomial_batches_and_preserves_result_on_bad_checkpoint() {
     let run_dir = RunDir::new();
     let state = run_dir.0.join("state");
