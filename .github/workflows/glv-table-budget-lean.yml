@@ -1,0 +1,75 @@
+name: GLV table budget Lean proof
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/glv-table-budget-lean.yml'
+      - 'lean-toolchain'
+      - 'src/curve.c'
+      - 'experiments/glv-table-rule-confirm-20261022/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/glv-table-budget-lean.yml'
+      - 'lean-toolchain'
+      - 'src/curve.c'
+      - 'experiments/glv-table-rule-confirm-20261022/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /lean-toolchain
+            /src/curve.c
+            /experiments/glv-table-rule-confirm-20261022/**
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install elan for pinned Lean
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check pinned C selector and changed-selector controls
+        run: |
+          set -euo pipefail
+          python3 experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py \
+            > "$RUNNER_TEMP/glv-source-binding.json"
+          cmp "$RUNNER_TEMP/glv-source-binding.json" \
+            experiments/glv-table-rule-confirm-20261022/lean-source-binding.json
+      - name: Build theorem and compare exact axiom receipt
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          directory = Path('experiments/glv-table-rule-confirm-20261022')
+          receipt = json.loads((directory / 'lean-receipt.json').read_text())
+          assert (Path('lean-toolchain').read_text().strip()
+                  == receipt['lean_toolchain'] == os.environ['ELAN_TOOLCHAIN'])
+          assert hashlib.sha256((directory / 'TableBudget.lean').read_bytes()).hexdigest() == receipt['source_sha256']
+          assert hashlib.sha256((directory / 'lean-source-binding.json').read_bytes()).hexdigest() == receipt['source_binding_sha256']
+          run = subprocess.run(['lean', 'TableBudget.lean'], cwd=directory,
+                               capture_output=True, text=True, check=False)
+          assert run.returncode == receipt['exit_code'] == 0
+          assert run.stdout == receipt['stdout'] and run.stderr == receipt['stderr']
+          print(run.stdout, end='')
+          PY
