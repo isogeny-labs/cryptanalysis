@@ -49,7 +49,7 @@ jobs:
             > "$RUNNER_TEMP/glv-source-binding.json"
           cmp "$RUNNER_TEMP/glv-source-binding.json" \
             experiments/glv-table-rule-confirm-20261022/lean-source-binding.json
-      - name: Build theorem and compare exact axiom receipt
+      - name: Build theorem and compare axiom sets with receipt
         env:
           ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
         run: |
@@ -59,7 +59,23 @@ jobs:
           import json
           import os
           from pathlib import Path
+          import re
           import subprocess
+
+          def printed_axioms(output):
+              # Lean may wrap the printed list at a different terminal width.
+              pattern = re.compile(r"'([^']+)' depends on axioms:\s*\[([^]]*)\]")
+              matches = list(pattern.finditer(output))
+              remainder = pattern.sub('', output)
+              assert not remainder.strip(), f'unexpected Lean output: {remainder!r}'
+              result = {}
+              for match in matches:
+                  name = match.group(1)
+                  assert name not in result, f'duplicate axiom output for {name}'
+                  result[name] = frozenset(
+                      axiom.strip() for axiom in match.group(2).split(',')
+                      if axiom.strip())
+              return result
 
           directory = Path('experiments/glv-table-rule-confirm-20261022')
           receipt = json.loads((directory / 'lean-receipt.json').read_text())
@@ -69,7 +85,11 @@ jobs:
           assert hashlib.sha256((directory / 'lean-source-binding.json').read_bytes()).hexdigest() == receipt['source_binding_sha256']
           run = subprocess.run(['lean', 'TableBudget.lean'], cwd=directory,
                                capture_output=True, text=True, check=False)
-          assert run.returncode == receipt['exit_code'] == 0
-          assert run.stdout == receipt['stdout'] and run.stderr == receipt['stderr']
+          assert run.returncode == receipt['exit_code'] == 0, (run.returncode, run.stderr)
+          assert run.stderr == receipt['stderr'] == '', repr(run.stderr)
+          expected = printed_axioms(receipt['stdout'])
+          actual = printed_axioms(run.stdout)
+          assert len(expected) == 6 and actual == expected, (actual, expected)
+          assert all(axioms <= {'propext', 'Quot.sound'} for axioms in actual.values())
           print(run.stdout, end='')
           PY
