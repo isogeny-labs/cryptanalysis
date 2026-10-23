@@ -313,6 +313,17 @@ PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
   want '"factors":[[1000003,1],[1000033,1]]' "${FACTOR_S3[@]}" \
   --max-steps 1000000 --resume
 checks=$((checks + 1))
+factor_verbose=$(PATH="$factor_tmp/bin:$PATH" CA_TEST_S3_ROOT="$factor_tmp/remote" \
+  "$CA" "${FACTOR_S3[@]}" --max-steps 1000000 --resume --verbose 2>&1) || {
+  printf 'FAIL: factor verbose final S3 sync: %s\n' "$factor_verbose" >&2
+  fail=$((fail + 1))
+}
+if [[ "$factor_verbose" != *'[factor] final S3 sync started'* ]] || \
+   [[ "$factor_verbose" != *'[factor] final S3 sync complete in '* ]]; then
+  printf 'FAIL: factor final S3 sync progress missing: %s\n' "$factor_verbose" >&2
+  fail=$((fail + 1))
+fi
+checks=$((checks + 1))
 if [ ! -s "$factor_tmp/remote/factor.ckpt" ] || \
    ! grep -q '"phase":"complete"' "$factor_tmp/remote/factor.ckpt.progress.json"; then
   printf 'FAIL: factor S3 mirror or restore artifacts missing\n' >&2
@@ -774,7 +785,10 @@ ecc_out=$(PATH="$ecc_tmp/awsbin:$PATH" "$ecc_ca" rho --curve ecc2k130 --backend 
   --s3-uri s3://test/ecc2k --sync-every 1 2>&1) || {
   printf 'FAIL: ECC2K managed first run: %s\n' "$ecc_out" >&2; fail=$((fail + 1));
 }
-if [[ "$ecc_out" != *'dp_bytes='* ]] || [ ! -f "$ecc_state/state.ck" ] || \
+if [[ "$ecc_out" != *'dp_bytes='* ]] || \
+   [[ "$ecc_out" != *'final S3 sync started'* ]] || \
+   [[ "$ecc_out" != *'final S3 sync complete in '* ]] || \
+   [ ! -f "$ecc_state/state.ck" ] || \
    [ ! -f "$ecc_tmp/remote/state.ck" ] || [ "$(wc -c <"$ecc_state/dps.bin")" -ne 32 ]; then
   printf 'FAIL: ECC2K managed progress or artifacts missing\n' >&2; fail=$((fail + 1))
 fi

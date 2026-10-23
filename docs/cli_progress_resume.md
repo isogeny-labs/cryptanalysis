@@ -4,8 +4,8 @@ The native `cryptanalysis` (also installed as `ca`) command prints its final
 JSON result on stdout. With `--verbose`, it also prints periodic progress to
 stderr. Run state is kept in a dedicated directory and can be mirrored to an
 S3 prefix with the AWS CLI installed and configured on the host.
-Verbose runs announce the start, outcome, and elapsed time of periodic S3
-syncs so a slow transfer is visible while the command is running.
+Verbose runs announce the start, outcome, and elapsed time of periodic and
+final S3 syncs so a slow transfer is visible while the command is running.
 
 ## Integer factorization
 
