@@ -54,6 +54,19 @@ CA_API void ca_gpu_rho_params_default(ca_gpu_rho_params *p);
 CA_API ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                   const ca_gpu_rho_params *params, uint64_t *x, ca_stats *st);
 
+/* Preserve the host distinguished-point corpus across invocations. A resumed
+ * run rebuilds the same multiplier table and starts fresh device walk streams
+ * against those points. NULL checkpoint_path enables progress without disk
+ * state; zero intervals select 5-second progress and 60-second checkpoints. */
+CA_API ca_status ca_gpu_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                                const ca_elem *target,
+                                                const ca_gpu_rho_params *params,
+                                                const char *checkpoint_path,
+                                                uint32_t progress_interval,
+                                                uint32_t checkpoint_interval,
+                                                int verbose, uint64_t *x,
+                                                ca_stats *st);
+
 /* 1 if the library was built with the CUDA backend (CA_CUDA=ON). */
 CA_API int ca_gpu_cuda_compiled(void);
 /* Number of usable CUDA devices (0 when not compiled in or no driver). */

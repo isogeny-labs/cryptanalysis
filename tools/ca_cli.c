@@ -180,6 +180,15 @@ static _Noreturn void usage(void)
         "  rho   --group zp|ec --p P --order N --g G --h H [--threads T]\n"
         "        [--verbose] [--progress-every SEC] [--state-dir DIR] [--resume]\n"
         "        [--checkpoint-every SEC] [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
+        "  solve --alg glv --group ec --p P --a A --b B --order N --g G --h H\n"
+        "        [--seed S] [--max-ops K] [--verbose] [--progress-every SEC]\n"
+        "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
+        "  solve --alg gpu-rho --group zp|ec --p P --order N --g G --h H\n"
+        "        [--backend auto|cuda|emulate] [--device D] [--tpb T] [--blocks B]\n"
+        "        [--steps S] [--max-ops K] [--verbose] [--progress-every SEC]\n"
+        "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  grumpy --group zp|ec --p P --order N --g G --h H --lo L --hi U\n"
         "        [--m M] [--alpha A] [--verbose] [--state-dir DIR] [--resume] [--s3-uri URI]\n"
         "        [--progress-every SEC] [--checkpoint-every SEC] [--sync-every SEC]\n"
@@ -210,7 +219,8 @@ static _Noreturn void usage(void)
         "  ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C] [--threads T] "
         "[--verbose]\n"
         "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
-        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve state)\n"
+        "        [--max-relation-tries K]  (rexp only)\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve or rexp state)\n"
         "        index calculus in the multiplicative group of a prime field\n"
         "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
         "        delegate to the corresponding Rust CLI (binary override: CA_CRYPTO_BIN,\n"
@@ -356,7 +366,9 @@ static int cmd_gen(void)
 }
 
 static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                           const ca_rho_params *params);
+                           const ca_rho_params *params, int glv);
+static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
+                               const ca_elem *target, const ca_gpu_rho_params *params);
 static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                 uint64_t lo, uint64_t hi, const ca_kangaroo_params *params);
 static int cmd_interval_durable(const char *alg, const ca_group *g,
@@ -378,10 +390,11 @@ static int cmd_solve(const char *selected_alg)
     int durable = flag("--verbose") || flag("-v") || opt("--progress-every") ||
                   opt("--checkpoint-every") || opt("--state-dir") || flag("--resume") ||
                   opt("--s3-uri") || opt("--sync-every");
-    if (durable && strcmp(alg, "rho") && strcmp(alg, "kangaroo") &&
+    if (durable && strcmp(alg, "rho") && strcmp(alg, "glv") &&
+        strcmp(alg, "gpu-rho") && strcmp(alg, "kangaroo") &&
         strcmp(alg, "bsgs") && strcmp(alg, "grumpy") &&
         strcmp(alg, "precomp") && strcmp(alg, "dlog"))
-        die("live progress and resumable state require --alg rho, kangaroo, bsgs, grumpy, precomp or dlog");
+        die("live progress and resumable state require --alg rho, glv, gpu-rho, kangaroo, bsgs, grumpy, precomp or dlog");
     ca_elem base, target;
     parse_elem(&g, opt("--g"), &base);
     parse_elem(&g, opt("--h"), &target);
@@ -421,7 +434,7 @@ static int cmd_solve(const char *selected_alg)
     ca_stats st = {0};
     ca_status rc;
     if (durable && !strcmp(alg, "rho"))
-        return cmd_rho_durable(&g, &base, &target, &dp.rho);
+        return cmd_rho_durable(&g, &base, &target, &dp.rho, 0);
     if (durable && !strcmp(alg, "kangaroo"))
         return cmd_kangaroo_durable(&g, &base, &target, lo, hi, &dp.kangaroo);
     if (durable && (!strcmp(alg, "bsgs") || !strcmp(alg, "grumpy")))
@@ -452,6 +465,7 @@ static int cmd_solve(const char *selected_alg)
         gp.negation_map = !flag("--no-negation");
         gp.seed = opt_u64("--seed", 0);
         gp.max_ops = opt_u64("--max-ops", 0);
+        if (durable) return cmd_gpu_rho_durable(&g, &base, &target, &gp);
         rc = ca_gpu_rho_solve(&g, &base, &target, &gp, &x, &st);
         if (rc == CA_OK) {
             printf("{\"status\":\"ok\",\"alg\":\"gpu-rho\",\"x\":%" PRIu64 ",\"launches\":%u,", x,
@@ -473,6 +487,8 @@ static int cmd_solve(const char *selected_alg)
         rc = ca_curve_group(&cg, g.p, g.a, g.b, g.order, &info);
         if (rc != CA_OK) die_status(rc);
         /* base/target are valid in cg: identical curve and Montgomery domain. */
+        if (durable || opt("--max-ops"))
+            return cmd_rho_durable(&cg, &base, &target, &dp.rho, 1);
         rc = ca_curve_solve(&cg, &base, &target, opt_u64("--seed", 0), &x, &info, &st);
         const char *ek = info.endo == CA_CURVE_ENDO_J0      ? "j0"
                          : info.endo == CA_CURVE_ENDO_J1728 ? "j1728"
@@ -766,7 +782,145 @@ static void *ic_sync_worker(void *arg)
 }
 
 static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                           const ca_rho_params *params)
+                           const ca_rho_params *params, int glv)
+{
+    const char *alg = glv ? "glv" : "rho";
+    int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume");
+    uint32_t progress_interval = opt_u32("--progress-every", 5);
+    uint32_t checkpoint_interval = opt_u32("--checkpoint-every", 60);
+    uint32_t sync_interval = opt_u32("--sync-every", 60);
+    if (!progress_interval || !checkpoint_interval || !sync_interval)
+        die("progress, checkpoint and sync intervals must be positive");
+    if ((resume || s3_uri || opt("--checkpoint-every") || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri, --checkpoint-every and --sync-every require --state-dir");
+    if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
+    if (s3_uri) {
+        if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
+        const char *sep = strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    uint64_t gw[4], hw[4];
+    ca_group_decode(g, gw, base);
+    ca_group_decode(g, hw, target);
+    char manifest[2048];
+    int ml = snprintf(manifest, sizeof(manifest),
+        "{\"schema\":1,\"command\":\"%s\",\"kind\":%u,\"p\":%" PRIu64
+        ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 ",\"order\":%" PRIu64
+        ",\"cofactor\":%" PRIu64 ",\"g\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+        "],\"h\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+        "],\"threads\":%u,\"r\":%u,\"dp_bits\":%d,\"walks\":%u,"
+        "\"negation\":%d,\"seed\":%" PRIu64 "}\n",
+        alg, (unsigned)g->kind, g->p, g->a, g->b, g->order, g->cofactor,
+        gw[0], gw[1], gw[2], gw[3], hw[0], hw[1], hw[2], hw[3],
+        params->threads, params->r, params->dp_bits, params->walks_per_thread,
+        params->negation_map, params->seed);
+    if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
+    int lock_fd = -1;
+    char *checkpoint = NULL;
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+        checkpoint = ic_path(state_dir, glv ? "glv.ckpt" : "rho.dp");
+        if (!checkpoint) die("out of memory");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            if (!manifest_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            free(manifest_path);
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore into a nonempty directory without a run manifest");
+            if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
+                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
+                !ca_group_is_identity(g, target))
+                die("no walk checkpoint found for --resume");
+        }
+        if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
+            die("cannot persist run status");
+        if (verbose) fprintf(stderr, "[%s] state directory: %s%s\n", alg, state_dir,
+                             resume ? " (resume)" : "");
+    }
+    ic_sync_state sync = {0};
+    pthread_t sync_thread;
+    int syncing = 0;
+    if (s3_uri) {
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = alg;
+        sync.interval = sync_interval; sync.verbose = verbose;
+        atomic_init(&sync.stop, 0);
+        if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
+            die("cannot start S3 sync worker");
+        syncing = 1;
+    }
+    uint64_t x = 0;
+    ca_stats st = {0};
+    ca_curve_info info = {0};
+    ca_status rc = glv
+        ? ca_curve_solve_checkpointed(g, base, target, params->seed, checkpoint,
+                                      progress_interval, checkpoint_interval, verbose,
+                                      params->max_ops, &x, &info, &st)
+        : ca_rho_solve_checkpointed(g, base, target, params, checkpoint,
+                                    progress_interval, checkpoint_interval,
+                                    verbose, &x, &st);
+    if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
+    char result[1024];
+    const char *ek = info.endo == CA_CURVE_ENDO_J0 ? "j0"
+                     : info.endo == CA_CURVE_ENDO_J1728 ? "j1728" : "none";
+    int nr;
+    if (glv)
+        nr = snprintf(result, sizeof(result),
+            "{\"status\":\"%s\",\"alg\":\"glv\",\"x\":%" PRIu64
+            ",\"endomorphism\":\"%s\",\"aut_order\":%u,\"lambda\":%" PRIu64
+            ",\"rho_speedup\":%.4f,\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
+            ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
+            ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
+            ca_status_string(rc), rc == CA_OK ? x : 0, ek, info.aut_order,
+            info.lambda, info.rho_speedup, st.group_ops, st.iterations,
+            st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
+    else
+        nr = snprintf(result, sizeof(result),
+            "{\"status\":\"%s\",\"alg\":\"rho\",\"x\":%" PRIu64
+            ",\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
+            ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
+            ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
+            ca_status_string(rc), rc == CA_OK ? x : 0, st.group_ops, st.iterations,
+            st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
+    if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
+    if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
+        die("cannot persist walk result");
+    int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
+    if (verbose && s3_uri) fprintf(stderr, "[%s] final S3 sync %s\n", alg,
+                                   uploaded ? "complete" : "failed");
+    if (uploaded) fputs(result, stdout);
+    else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
+                ca_status_string(rc));
+    if (rc != CA_OK) fprintf(stderr, "error: %s %s\n", ca_status_string(rc), ca_last_error());
+    if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
+    if (lock_fd >= 0) close(lock_fd);
+    free(checkpoint);
+    return rc == CA_OK && uploaded ? 0 : 1;
+}
+
+static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
+                               const ca_elem *target, const ca_gpu_rho_params *params)
 {
     int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
     const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
@@ -790,15 +944,16 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     ca_group_decode(g, hw, target);
     char manifest[2048];
     int ml = snprintf(manifest, sizeof(manifest),
-        "{\"schema\":1,\"command\":\"rho\",\"kind\":%u,\"p\":%" PRIu64
+        "{\"schema\":1,\"command\":\"gpu-rho\",\"kind\":%u,\"p\":%" PRIu64
         ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 ",\"order\":%" PRIu64
         ",\"cofactor\":%" PRIu64 ",\"g\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
         "],\"h\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
-        "],\"threads\":%u,\"r\":%u,\"dp_bits\":%d,\"walks\":%u,"
-        "\"negation\":%d,\"seed\":%" PRIu64 "}\n",
+        "],\"backend\":%u,\"device\":%d,\"tpb\":%u,\"blocks\":%u,"
+        "\"steps\":%u,\"r\":%u,\"dp_bits\":%d,\"negation\":%d,\"seed\":%" PRIu64 "}\n",
         (unsigned)g->kind, g->p, g->a, g->b, g->order, g->cofactor,
         gw[0], gw[1], gw[2], gw[3], hw[0], hw[1], hw[2], hw[3],
-        params->threads, params->r, params->dp_bits, params->walks_per_thread,
+        (unsigned)params->backend, params->device, params->threads_per_block,
+        params->blocks, params->steps_per_launch, params->r, params->dp_bits,
         params->negation_map, params->seed);
     if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
     int lock_fd = -1;
@@ -806,20 +961,22 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     if (state_dir) {
         if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
         struct stat ds;
-        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode))
+            die("--state-dir is not a directory");
         char *lock_path = ic_path(state_dir, ".run.lock");
         if (!lock_path) die("out of memory");
         lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
         free(lock_path);
         if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
             die("state directory is already in use");
-        checkpoint = ic_path(state_dir, "rho.dp");
+        checkpoint = ic_path(state_dir, "gpu-rho.dp");
         if (!checkpoint) die("out of memory");
         if (!resume) {
             if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
             if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
             if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
-            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest))
+                die("cannot persist run manifest");
         } else {
             char *manifest_path = ic_path(state_dir, "manifest.json");
             if (!manifest_path) die("out of memory");
@@ -833,20 +990,20 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
             if (!ic_manifest_matches(state_dir, manifest))
                 die("run manifest does not match these arguments");
-            if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
+            if (access(checkpoint, F_OK) != 0 && g->order >= 4096 &&
                 !ca_group_is_identity(g, target))
-                die("no rho checkpoint found for --resume");
+                die("no GPU rho checkpoint found for --resume");
         }
         if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist run status");
-        if (verbose) fprintf(stderr, "[rho] state directory: %s%s\n", state_dir,
+        if (verbose) fprintf(stderr, "[gpu-rho] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
     if (s3_uri) {
-        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "rho";
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "gpu-rho";
         sync.interval = sync_interval; sync.verbose = verbose;
         atomic_init(&sync.stop, 0);
         if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
@@ -855,23 +1012,29 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
     }
     uint64_t x = 0;
     ca_stats st = {0};
-    ca_status rc = ca_rho_solve_checkpointed(g, base, target, params, checkpoint,
-                                               progress_interval, checkpoint_interval,
-                                               verbose, &x, &st);
+    ca_gpu_backend selected_backend = params->backend;
+    if (selected_backend == CA_GPU_BACKEND_AUTO)
+        selected_backend = ca_gpu_cuda_compiled() && ca_gpu_device_count() > params->device
+                               ? CA_GPU_BACKEND_CUDA : CA_GPU_BACKEND_EMULATE;
+    ca_status rc = ca_gpu_rho_solve_checkpointed(g, base, target, params, checkpoint,
+                                                  progress_interval, checkpoint_interval,
+                                                  verbose, &x, &st);
     if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
     char result[1024];
     int nr = snprintf(result, sizeof(result),
-        "{\"status\":\"%s\",\"alg\":\"rho\",\"x\":%" PRIu64
-        ",\"ops\":%" PRIu64 ",\"iterations\":%" PRIu64
-        ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
-        ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
-        ca_status_string(rc), rc == CA_OK ? x : 0, st.group_ops, st.iterations,
-        st.table_entries, st.collisions, st.bytes_peak, st.seconds, st.threads);
+        "{\"status\":\"%s\",\"alg\":\"gpu-rho\",\"x\":%" PRIu64
+        ",\"backend\":\"%s\",\"launches\":%u,\"ops\":%" PRIu64
+        ",\"distinguished_points\":%" PRIu64 ",\"restarts\":%" PRIu64
+        ",\"table_entries\":%" PRIu64 ",\"bytes_peak\":%" PRIu64
+        ",\"seconds\":%.6f,\"threads\":%u}\n",
+        ca_status_string(rc), rc == CA_OK ? x : 0, ca_gpu_backend_name(selected_backend),
+        st.reserved, st.group_ops, st.iterations, st.collisions, st.table_entries,
+        st.bytes_peak, st.seconds, st.threads);
     if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
     if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
-        die("cannot persist rho result");
+        die("cannot persist GPU rho result");
     int uploaded = !s3_uri || ic_s3_sync(state_dir, s3_uri);
-    if (verbose && s3_uri) fprintf(stderr, "[rho] final S3 sync %s\n",
+    if (verbose && s3_uri) fprintf(stderr, "[gpu-rho] final S3 sync %s\n",
                                    uploaded ? "complete" : "failed");
     if (uploaded) fputs(result, stdout);
     else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
@@ -1401,6 +1564,9 @@ static int cmd_ic(void)
     pr.sieve_radius = opt_u32("--C", 0);
     pr.threads = opt_u32("--threads", 1);
     pr.seed = opt_u64("--seed", 0);
+    pr.max_relation_tries = opt_u64("--max-relation-tries", 0);
+    if (opt("--max-relation-tries") && pr.method != CA_IC_RANDOM_EXPONENT)
+        die("--max-relation-tries requires --method rexp");
     pr.verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
     uint32_t progress_interval = opt_u32("--progress-every", 5);
     if (progress_interval == 0) die("--progress-every must be positive");
@@ -1408,8 +1574,6 @@ static int cmd_ic(void)
     int resume = flag("--resume");
     if ((resume || s3_uri || opt("--sync-every")) && !state_dir)
         die("--resume, --s3-uri and --sync-every require --state-dir");
-    if (state_dir && pr.method != CA_IC_LINEAR_SIEVE)
-        die("durable --state-dir currently requires --method lsieve");
     if (s3_uri) {
         if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
         const char *sep = strchr(s3_uri + 5, '/');

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "date_utc": "2026-10-23",
+  "classification": "same-source retrospective replay, not an independent scientific replication",
+  "base_commit": "42761f85b06242cb54f2a5fa405c723451897503",
+  "python": "3.11.17",
+  "command": "python run.py --out validation/replay-20261023.json",
+  "exit_code": 0,
+  "run_py_sha256": "a65cd729bbddacbbf7522cf05256b2b5c90b56efa3e55446352dfc9114519e12",
+  "orbit_core_py_sha256": "ae38c564eb495b87e2293f8e3cc822278082ec79670ef0b87738ddb706af3dd8",
+  "reference_sha256": "2be2d0a18eaadd4d7babe588866b25a8a13bea0021ee630182dcc07d3d925be5",
+  "replay_sha256": "d5355ce904640e77fbc61863a026d53f949321a2ae65808a9e69915234f88295",
+  "comparison_command": "python validation/check_reference_replay.py validation/replay-20261023.json",
+  "comparison_exit_code": 0,
+  "comparison_result": "22 named case fields, seed, schema, and every degree-131 projection field match",
+  "negative_control": "increase first n=19 phase-free m4 positive count from 279208 to 279209",
+  "negative_control_exit_code": 1,
+  "negative_control_result": "reference.n19_s6_beta112679.m4_orbit_positive[0]: expected 279208, got 279209"
+}

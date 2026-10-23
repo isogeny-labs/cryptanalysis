@@ -43,7 +43,7 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
-| sibling crypto integration | `ic solve-prime \| solve-cubic`, `icx solve-prime \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
+| sibling crypto integration | `ic solve-prime \| solve-prime-file \| solve-cubic`, `icx solve-prime \| solve-prime-file \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
 | symmetric and hash | `aes-attack`, `aes-sbox-table`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
@@ -57,12 +57,17 @@ The symmetric, lattice, isogeny, distributed rho, and demo rows, plus native
 them unchanged, and their `--help`, flags and report formats are their own.
 The old binary names still work.
 
-The sibling crypto commands above execute the corresponding installed
-`ic`, `icx`, `isogeny_walk`, or `crypto` binary. Set `CRAX_IC_BIN`, `CRAX_ICX_BIN`,
-`CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN` to an explicit path when those
-executables are not on `PATH`. `crax` forwards arguments directly, preserves
+The sibling crypto commands above execute the corresponding
+`ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
+`CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
+path, then a binary beside its own executable, then `PATH`. A release bundle
+can therefore put all five binaries in one directory without extra setup.
+`crax` forwards arguments directly, preserves
 the child exit status, and wraps its JSON or text report when `--json` is
 requested. The native `crax icx` catalog and run commands remain in the suite.
+The [co-located release-bundle acceptance](CRAX_SIBLING_BRIDGE_ACCEPTANCE_20261023.json)
+checks all four sibling executables, public prime and cubic EC solves, an S3
+completion-marker lookup, and a fresh-cache S3 artifact read through `crax hash`.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:
@@ -72,9 +77,58 @@ crax --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
   --gx 3 --gy 7 --qx 231 --qy 54
 ```
 
-The bridge also accepts `solve-cubic`; `crax icx` accepts both commands too. Use
+The bridge also accepts `solve-prime-file --input FILE`, including checked
+`store:NAME` and `sha256:DIGEST` inputs, and `solve-cubic`; `crax icx` accepts
+all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
+
+### Resumable isogeny experiment sweeps
+
+`crax isogeny experiment` accepts `--state-dir` for a checkpoint after each
+completed starting curve. Add `--s3-uri` to publish and resume that state in
+S3. Use a unique run ID under the Setec production schema
+`s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/<run-id>`. For a
+bounded first run and restore into an empty local directory:
+
+```sh
+crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
+  --state-dir /tmp/crax-isogeny-run --max-new-curves 1 \
+  --s3-uri s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/YOUR_RUN_ID
+crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
+  --state-dir /tmp/crax-isogeny-restored --resume \
+  --s3-uri s3://setec-astronomy-artifacts/ic/v1/isogeny-experiments/YOUR_RUN_ID
+```
+
+The first command reports `status: partial`; the second reports
+`status: complete` and includes the full experiment report. Progress goes to
+stderr. The checkpoint is atomically replaced under a local writer lock and
+binds the complete configuration, generated curve sequence, and running
+executable's BLAKE3 digest. S3 uploads immutable
+`generations/<N>/checkpoint.json` objects, then conditionally publishes
+`_isogeny_head.json` last. The head names the generation, size, BLAKE3 digest,
+and an explicit `complete` marker. Resume checks the head and downloaded bytes
+before accepting remote state, ignores unpublished generations, and rejects
+changed inputs, binaries, corrupt state, or concurrent head changes. A local
+checkpoint one generation ahead of the remote head can be published on resume
+after matching the remote prefix. Set `AWS_PROFILE` and `AWS_REGION` for the
+bucket (`us-east-2` for Setec). `--s3-uri` requires `--state-dir`; omitting it
+keeps checkpoints local.
+The [release CLI acceptance receipt](CRAX_ISOGENY_RESUME_ACCEPTANCE_20261023.json)
+records a partial run, an exact-match resume versus a fresh sweep, the
+`crax --json` envelope, and rejection of changed configuration, changed
+executable, and damaged checkpoint bytes.
+The [live Setec S3 receipt](CRAX_ISOGENY_S3_RESUME_ACCEPTANCE_20261023.json)
+records the isolated prefix, partial and complete heads, fresh-local restores,
+stray-generation rejection, exact report replay, and object cleanup.
+
+Native `crax rho-collab work/status --job` accepts a local public job document
+or a checked `store:NAME` or `sha256:DIGEST` reference. Store references are
+resolved through `CRAX_CRYPTO_BIN` and limited to 64 KiB of JSON. Mutable
+mailbox and Cairn state stay in local paths; with a store job, the default
+Cairn state directory is `--mailbox` if set, otherwise the current directory.
+The live round trip is recorded in
+[`CRAX_RHO_JOB_S3_ACCEPTANCE_20261023.json`](CRAX_RHO_JOB_S3_ACCEPTANCE_20261023.json).
 
 ## SHA and AES commands
 
@@ -82,6 +136,7 @@ The bridge also accepts `solve-cubic`; `crax icx` accepts both commands too. Use
 crax --json hash --algorithm sha256 --text abc
 crax --json hash --algorithm sha3-384 --hex 616263
 crax hash --algorithm shake256 --text abc --output-bytes 32
+crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
 crax --json aes-attack --technique square
@@ -90,32 +145,51 @@ crax --json hash-auto --hash sha3-256
 crax --json hash-auto --hash sha-3-512
 crax --json aes-sbox-table --kind ddt --row 1
 crax --json aes-sbox-table --kind lat > aes-lat.json
+crax --json aes-sbox-table --kind bct --row 1
+crax --json aes-sbox-table --kind dlct > aes-dlct.json
 ```
+
+For `hash --file`, a local path or indexed `store:NAME` and `sha256:DIGEST`
+reference is accepted. The latter uses the sibling `crypto store pull`
+command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
+fetched and digest-checked before `crax` hashes it. Set the sibling store's
+remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
+receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
 
 `hash` accepts a single `--text`, `--hex`, or `--file` input and supports
 SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for
 SHAKE and bounded to 1 MiB. `hash-auto` runs a length-extension demonstration
 against SHA-256; SHA-3 uses a sponge, so that particular attack is not
 applicable. Its truncated birthday and differential-bias measurements remain
-available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box difference and signed linear-bias tables, or one input row. `aes-attack` runs verified key recovery on the implemented
+available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
 AES-128 reduced-round differential (2), linear (1), or integral (4) models.
 These commands do not imply key recovery against full-round AES-128 or a
 collision against full-output SHA-2 or SHA-3.
+The [AES S-box cross-check](CRAX_AES_SBOX_CROSSCHECK_20261022.json) compares
+all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
+`crypto` release CLI and checks selected one-row exports against full tables.
 
 ## Coverage of the cross-repository CLI path
 
 | Requested surface | Available command | Current boundary |
 | --- | --- | --- |
-| SHA-256, SHA-3, and related digests | `crax hash` | Native byte, text, and file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
-| Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 length extension, 32-bit truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512 have the generic measurements but no Merkle-Damgård length-extension step. |
-| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT and LAT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
-| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic Gaudry factor base requires a counted full prime-order curve. `crax ic zp` remains multiplicative-group index calculus. |
-| Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime IC command checks point transport along a selected route. Cubic-field route transport is not implemented. |
-| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Small public-artifact round trips passed on `setec-astronomy-artifacts`; live multipart recovery is unverified. |
+| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
+| Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 and SHA-512 length extension, bounded truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512, SHAKE128/256, BLAKE3, and the truncated SHA-2 digest variants have generic measurements; SHAKE requires `--output-bytes` in 1..=64. A missing length-extension adapter is reported explicitly. |
+| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
+| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
+| Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
+| Collaborative rho job artifacts | `crax rho-collab work/status --job store:NAME` | Native job loading uses the sibling `crypto store pull` to check the indexed digest before parsing; job JSON is limited to 64 KiB. Mutable worker state is local. |
+| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/exists/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
+
+The release CLI matrix for SHA-256, SHA-3, SHAKE, BLAKE3, bounded hash
+analysis, AES recovery modes, distinguishers, and DDT/LAT/BCT/DLCT row
+agreement is recorded in
+[`CRAX_HASH_AES_ACCEPTANCE_20261023.json`](CRAX_HASH_AES_ACCEPTANCE_20261023.json).
 
 The native cryptanalysis commands and the sibling bridges have separate build
-dependencies. Install the sibling `crypto`, `ic`, and `isogeny_walk` binaries
-or set their `CRAX_*_BIN` paths before using the corresponding rows. The
+dependencies. Put the sibling `crypto`, `ic`, `icx`, and `isogeny_walk` binaries
+beside `crax`, install them on `PATH`, or set their `CRAX_*_BIN` paths before
+using the corresponding rows. The
 explicit field ranges and reproducible public inputs are documented in the
 sibling `crypto:docs/ic/EXTERNAL_TARGET_CLI.md`; its
 `crypto:docs/store/README.md` defines the Setec S3 prefix and receipts.

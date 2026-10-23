@@ -25,7 +25,7 @@ cryptanalysis rho --group zp --p 1019 --order 509 --g 4 --h 818 \
 
 `solve --alg rho` accepts the same options. `--verbose` also works without a
 state directory. The durable flags are currently available for native rho,
-kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
+GLV, GPU rho, kangaroo, BSGS, grumpy, precomp, and dlog; other `solve` algorithms reject them.
 
 For a walking run, the directory contains `manifest.json`, `rho.dp` (a
 versioned, checksummed distinguished-point table),
@@ -46,6 +46,53 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+
+## Curve-aware GLV rho
+
+`solve --alg glv` accepts the same progress, state-directory, resume, and S3
+options. On a curve with a supported endomorphism, `glv.ckpt` saves the exact
+walk lanes, random state, distinguished-point table, cumulative operations,
+and effective seed. The versioned checksum and run identity reject damaged or
+mismatched checkpoints. `glv.ckpt.progress.json` reports live operations,
+steps, and table entries. A generic curve uses the checkpointed negation-map
+rho solver, with the same `glv.ckpt` path.
+
+```sh
+cryptanalysis solve --alg glv --group ec --p 67108933 --a 0 --b 7 \
+  --order 16773703 --g 45431017,59233864 --h 44778635,28265170 \
+  --seed 13 --verbose --state-dir ./runs/glv-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/glv-001 --sync-every 60
+```
+
+Resume with the same curve, points, seed, and state location. `--max-ops`
+can stop a run with a checkpoint; raise it on resume to continue. The local
+lock, final sync, and S3 restore rules above apply.
+
+## GPU rho
+
+`solve --alg gpu-rho` reports launches, group operations, distinguished
+points, retained table entries, and walk restarts. `gpu-rho.dp` holds a
+versioned, checksummed distinguished-point corpus and cumulative counters.
+The snapshot binds the group, base, target, and resolved walk settings. On
+resume the multiplier table is rebuilt from the saved effective seed, then a
+fresh walk stream searches against the retained points. Device lane positions
+are not stored. Automatic `--steps` is fixed to the saved launch size so
+`--max-ops` can be raised without changing the run identity. One launch is
+not interruptible, so a work cap or checkpoint interval can be exceeded by
+the duration and operations of that launch.
+
+```sh
+cryptanalysis solve --alg gpu-rho --group zp --p 1000003 --order 1000002 \
+  --g 858101 --h 218146 --backend emulate --seed 3 \
+  --verbose --state-dir ./runs/gpu-rho-001 --checkpoint-every 60 \
+  --s3-uri s3://my-bucket/cryptanalysis/gpu-rho-001 --sync-every 60
+```
+
+`gpu-rho.dp.progress.json` and `result.json` provide readable status. Repeat
+the same backend request, curve or group, points, and walk settings with
+`--resume`. The local lock and S3 mirror and restore rules above apply. The
+emulator follows the same kernel body as CUDA; a CUDA device is needed to
+validate the device backend itself.
 
 ## Pollard kangaroo
 
@@ -148,7 +195,26 @@ local lock and S3 sync and restore rules described above apply.
 
 ## Index calculus
 
-The linear-sieve `ic` command also accepts `--verbose`, `--progress-every`,
-`--state-dir`, `--resume`, `--s3-uri`, and `--sync-every`. Its run state is a
-relation journal and precomputation artifact. Its random-exponent method does
-not support durable state. See the `ic` section of the CLI help for arguments.
+The `ic` command accepts `--verbose`, `--progress-every`, `--state-dir`,
+`--resume`, `--s3-uri`, and `--sync-every` for both relation collectors. The
+linear sieve saves completed sieve units in a journal. The random-exponent
+method saves committed relations, cumulative smoothness tests, and its
+effective random seed in an atomic snapshot at each `--progress-every`
+interval. A resumed run starts new worker streams against those saved
+relations. Both methods save verified factor-base logarithms in
+`relations.ckpt.precomp` after linear algebra; that artifact lets a later run
+skip relation collection and factor-base work.
+
+```sh
+cryptanalysis ic --p 1000003 --g 2 --h 123456 --method rexp --seed 7 \
+  --threads 2 --verbose --progress-every 5 \
+  --state-dir ./runs/ic-rexp-001 \
+  --s3-uri s3://my-bucket/cryptanalysis/ic-rexp-001 --sync-every 60
+```
+
+Repeat the input and collector settings with `--resume`. For rexp,
+`--max-relation-tries K` can bound a run; raise or omit it on resume to keep
+collecting. `progress.json` reports the phase, relation count, test count, and
+elapsed collection time. A stopped process can lose the work done since the
+last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
+apply. See the `ic` section of the CLI help for the remaining arguments.

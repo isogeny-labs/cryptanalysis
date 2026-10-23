@@ -76,6 +76,30 @@ pub fn aes_sbox_lat() -> Vec<Vec<i32>> {
     lat
 }
 
+/// Differential-linear connectivity table for the AES S-box.
+///
+/// `DLCT[a][b] = (1/2) sum_x (-1)^(b · (S(x) xor S(x xor a)))`.
+/// The half-scale convention gives `DLCT[0][b] = DLCT[a][0] = 128`.
+pub fn aes_sbox_dlct() -> Vec<Vec<i32>> {
+    let mut table = vec![vec![0i32; 256]; 256];
+    for (a, row) in table.iter_mut().enumerate() {
+        for x in 0..256usize {
+            let difference = SBOX[x] ^ SBOX[x ^ a];
+            for (mask, value) in row.iter_mut().enumerate() {
+                *value += if dot(mask as u8, difference) == 0 {
+                    1
+                } else {
+                    -1
+                };
+            }
+        }
+        for value in row {
+            *value /= 2;
+        }
+    }
+    table
+}
+
 /// Returns `(a, b, |bias|)` for the maximum-magnitude entry over
 /// nonzero `(a, b)`. The headline `16` corresponds to bias `16/256 = 1/16`.
 pub fn max_linear_bias(lat: &[Vec<i32>]) -> (u8, u8, u32) {

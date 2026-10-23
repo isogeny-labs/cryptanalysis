@@ -2,7 +2,10 @@
 
 use clap::Args;
 use serde::Serialize;
-use std::path::PathBuf;
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use super::output::{CmdResult, Out};
 use crate::hash;
@@ -11,7 +14,7 @@ use crate::hash;
 pub struct DigestArgs {
     /// Digest name: md4, md5, sha1, sha224, sha256, sha384, sha512,
     /// sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512,
-    /// shake128, or shake256. SHA-3 and SHAKE also accept hyphenated names.
+    /// shake128, shake256, or blake3. SHA-3 and SHAKE also accept hyphenated names.
     #[arg(long)]
     pub algorithm: String,
     /// UTF-8 text to hash.
@@ -20,7 +23,7 @@ pub struct DigestArgs {
     /// Hex-encoded bytes to hash.
     #[arg(long, conflicts_with_all = ["text", "file"])]
     pub hex: Option<String>,
-    /// File whose complete bytes will be hashed.
+    /// File or checked store:NAME/sha256:DIGEST reference to hash.
     #[arg(long, conflicts_with_all = ["text", "hex"])]
     pub file: Option<PathBuf>,
     /// Required output length in bytes for SHAKE128 or SHAKE256.
@@ -43,9 +46,7 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         (None, Some(hex), None) => {
             hex::decode(hex).map_err(|e| format!("invalid --hex input: {e}"))?
         }
-        (None, None, Some(path)) => {
-            std::fs::read(path).map_err(|e| format!("reading {}: {e}", path.display()))?
-        }
+        (None, None, Some(path)) => read_file_input(path)?,
         _ => return Err("provide exactly one of --text, --hex, or --file".into()),
     };
     let algorithm = args.algorithm.to_ascii_lowercase().replace('_', "-");
@@ -75,6 +76,7 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         "sha3-512" | "sha-3-512" => hash::sha3_512(&message).to_vec(),
         "shake128" | "shake-128" => hash::shake128(&message, args.output_bytes.unwrap()),
         "shake256" | "shake-256" => hash::shake256(&message, args.output_bytes.unwrap()),
+        "blake3" => hash::blake3_hash(&message).to_vec(),
         _ => return Err(format!("unsupported hash algorithm: {}", args.algorithm).into()),
     };
     let report = DigestReport {
@@ -85,6 +87,43 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         digest_hex: hex::encode(digest),
     };
     out.emit(&report, || report.digest_hex.clone())
+}
+
+fn read_file_input(path: &Path) -> Result<Vec<u8>, String> {
+    let resolved = resolve_checked_path(path)?;
+    std::fs::read(&resolved).map_err(|e| format!("reading {}: {e}", path.display()))
+}
+
+pub(crate) fn is_store_ref(path: &Path) -> bool {
+    path.to_str()
+        .is_some_and(|s| s.starts_with("store:") || s.starts_with("sha256:"))
+}
+
+pub(crate) fn resolve_checked_path(path: &Path) -> Result<PathBuf, String> {
+    let spec = path.to_str().filter(|_| is_store_ref(path));
+    let resolved = if let Some(spec) = spec {
+        let binary = super::sibling_binary("CRAX_CRYPTO_BIN", "crypto");
+        let output = Command::new(&binary)
+            .args(["store", "pull", spec])
+            .output()
+            .map_err(|e| format!("starting {} for {spec}: {e}", binary.to_string_lossy()))?;
+        if !output.status.success() {
+            return Err(format!(
+                "resolving {spec}: {}",
+                String::from_utf8_lossy(&output.stderr).trim()
+            ));
+        }
+        let stdout = String::from_utf8(output.stdout)
+            .map_err(|e| format!("store pull returned a non-UTF-8 path: {e}"))?;
+        let cached = stdout.trim_end_matches(['\r', '\n']);
+        if cached.is_empty() || cached.contains('\r') || cached.contains('\n') {
+            return Err("store pull returned an invalid cache path".into());
+        }
+        PathBuf::from(cached)
+    } else {
+        path.to_path_buf()
+    };
+    Ok(resolved)
 }
 
 #[cfg(test)]

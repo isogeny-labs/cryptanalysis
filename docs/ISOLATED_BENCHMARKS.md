@@ -175,14 +175,18 @@ host-wide CPU/NUMA isolation.
 
 ## Replaying the j=0 rho comparison
 
-Build the two C variants on the same Linux host, with identical source,
-compiler, flags, and width-2 tau setup, changing only
-`CA_J0_RHO_COVARIANT_WALK`. Link
+Both variants were removed from `main` together with their build options
+(`CA_J0_RHO_COVARIANT_WALK`, `CA_J0_TAU_RHO_WIDTH`). Since #437 neither was
+reached, so building them from a later commit times the same walk twice.
+Replay from commit `f962323`, the last that builds both. Build the two C
+variants on the same Linux host, with identical source, compiler, flags, and
+width-2 tau setup, changing only `CA_J0_RHO_COVARIANT_WALK`. Link
 `experiments/prime-j0-tau-20260930/large-rho-20261002/bench_rho_large.c`
 to each static library:
 
 ```sh
-cd /workspace/cryptanalysis
+git -C /workspace/cryptanalysis worktree add /workspace/cryptanalysis-f962323 f962323
+cd /workspace/cryptanalysis-f962323
 cmake -S . -B /workspace/build/j0-reference -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF -DCA_WERROR=ON -DCA_J0_RHO_COVARIANT_WALK=OFF -DCA_J0_TAU_RHO_WIDTH=2
 cmake -S . -B /workspace/build/j0-oriented -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF -DCA_WERROR=ON -DCA_J0_RHO_COVARIANT_WALK=ON -DCA_J0_TAU_RHO_WIDTH=2
 cmake --build /workspace/build/j0-reference --target cryptanalysis_static

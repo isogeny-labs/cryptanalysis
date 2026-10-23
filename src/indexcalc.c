@@ -16,6 +16,8 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <stddef.h>
+#include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 #define IC_SMALL_Q (1ULL << 24)   /* prime factors of p-1 up to this: Pohlig-Hellman */
@@ -590,6 +592,70 @@ static void *sieve_thread(void *arg)
 
 /* ---- random exponent collector ----------------------------------------- */
 
+typedef struct ic_rexp_header {
+    char magic[8];
+    uint64_t p, g, zeta, seed, tests, generation, fb_hash;
+    double elapsed_seconds;
+    uint32_t B, C, nfb, ncols, target, threads, relation_size, count;
+    uint64_t checksum;
+} ic_rexp_header;
+
+static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
+                              uint64_t requested_seed, rel_list *rels,
+                              uint64_t *seed, uint64_t *tests, uint64_t *generation,
+                              double *elapsed_seconds)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("cannot open random-exponent checkpoint");
+        return -1;
+    }
+    ic_rexp_header h;
+    struct stat sb;
+    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
+             memcmp(h.magic, "CAICRX1", 8) == 0 &&
+             h.p == want->p && h.g == want->g && h.zeta == want->zeta &&
+             h.B == want->B && h.C == want->C && h.nfb == want->nfb &&
+             h.ncols == want->ncols && h.target == want->target &&
+             h.threads == want->threads && h.relation_size == sizeof(relation) &&
+             h.fb_hash == want->fb_hash && (!requested_seed || h.seed == want->seed) &&
+             h.seed != 0 && h.count >= 1 && h.elapsed_seconds >= 0 &&
+             isfinite(h.elapsed_seconds) &&
+             (uint64_t)h.count <= (uint64_t)h.target + 64 * (uint64_t)h.threads + 1 &&
+             fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+             (uint64_t)sb.st_size == sizeof(h) + (uint64_t)h.count * sizeof(relation);
+    if (!ok) {
+        fclose(f);
+        ca_set_error("random-exponent checkpoint identity or header mismatch");
+        return -1;
+    }
+    relation *saved = malloc((size_t)h.count * sizeof(*saved));
+    if (!saved) { fclose(f); return -2; }
+    ok = fread(saved, sizeof(*saved), h.count, f) == h.count && fgetc(f) == EOF;
+    fclose(f);
+    uint64_t hash = ic_hash(&h, offsetof(ic_rexp_header, checksum),
+                            UINT64_C(14695981039346656037));
+    hash = ic_hash(saved, (size_t)h.count * sizeof(*saved), hash);
+    ok = ok && hash == h.checksum;
+    for (uint32_t i = 0; ok && i < h.count; i++) {
+        if (saved[i].n > IC_MAX_REL_COLS || saved[i].rhs >= h.p - 1) { ok = 0; break; }
+        for (uint32_t j = 0; j < saved[i].n; j++) {
+            if (saved[i].col[j] >= h.ncols || saved[i].val[j] < 0) { ok = 0; break; }
+        }
+    }
+    if (!ok) {
+        free(saved);
+        ca_set_error("random-exponent checkpoint checksum or relation mismatch");
+        return -1;
+    }
+    free(rels->r);
+    rels->r = saved; rels->n = h.count; rels->cap = h.count;
+    *seed = h.seed; *tests = h.tests; *generation = h.generation + 1;
+    *elapsed_seconds = h.elapsed_seconds;
+    return 1;
+}
+
 typedef struct rexp_shared {
     uint64_t p, zeta;
     const uint32_t *fb;
@@ -604,16 +670,81 @@ typedef struct rexp_shared {
     atomic_uint_fast64_t tests;
     uint64_t seed;
     atomic_int tid;
+    atomic_int active;
+    ca_status status;
+    const char *checkpoint_path;
+    ic_rexp_header header;
+    uint64_t generation;
+    double elapsed_prior;
     double started, last_report;
     uint32_t progress_interval;
     int verbose;
 } rexp_shared;
 
+static int rexp_snapshot_save(rexp_shared *s)
+{
+    if (!s->checkpoint_path) return 1;
+    char *tmp = ic_precomp_path(s->checkpoint_path, ".tmp.XXXXXX");
+    if (!tmp) return 0;
+    int fd = mkstemp(tmp);
+    FILE *f = fd >= 0 ? fdopen(fd, "wb+") : NULL;
+    if (!f) { if (fd >= 0) close(fd); free(tmp); return 0; }
+    pthread_mutex_lock(&s->lock);
+    ic_rexp_header h = s->header;
+    h.seed = s->seed; h.tests = atomic_load(&s->tests);
+    h.generation = s->generation; h.count = s->rels->n;
+    h.elapsed_seconds = s->elapsed_prior + ca_now() - s->started;
+    h.checksum = 0;
+    uint64_t hash = ic_hash(&h, offsetof(ic_rexp_header, checksum),
+                            UINT64_C(14695981039346656037));
+    hash = ic_hash(s->rels->r, (size_t)h.count * sizeof(relation), hash);
+    h.checksum = hash;
+    int ok = fwrite(&h, sizeof(h), 1, f) == 1 &&
+             fwrite(s->rels->r, sizeof(relation), h.count, f) == h.count;
+    pthread_mutex_unlock(&s->lock);
+    if (ok) ok = ic_sync(f);
+    if (fclose(f) != 0) ok = 0;
+    if (ok && rename(tmp, s->checkpoint_path) != 0) ok = 0;
+    if (ok && !ic_sync_parent(s->checkpoint_path)) ok = 0;
+    if (!ok) unlink(tmp);
+    free(tmp);
+    return ok;
+}
+
+static int rexp_progress_save(rexp_shared *s, const char *phase)
+{
+    if (!s->checkpoint_path) return 1;
+    char *path = ic_sibling_path(s->checkpoint_path, "progress.json");
+    char *tmp = ic_sibling_path(s->checkpoint_path, ".progress.tmp.XXXXXX");
+    if (!path || !tmp) { free(path); free(tmp); return 0; }
+    int fd = mkstemp(tmp);
+    FILE *f = fd >= 0 ? fdopen(fd, "wb") : NULL;
+    if (!f) { if (fd >= 0) close(fd); free(path); free(tmp); return 0; }
+    pthread_mutex_lock(&s->lock);
+    uint32_t count = s->rels->n;
+    pthread_mutex_unlock(&s->lock);
+    int ok = fprintf(f,
+        "{\"schema\":1,\"method\":\"rexp\",\"phase\":\"%s\","
+        "\"relations\":%u,\"target_relations\":%u,\"smooth_tests\":%" PRIu64
+        ",\"elapsed_seconds\":%.3f}\n",
+        phase, count, s->target_rels, atomic_load(&s->tests),
+        s->elapsed_prior + ca_now() - s->started) > 0 &&
+        ic_sync(f);
+    if (fclose(f) != 0) ok = 0;
+    if (ok && rename(tmp, path) != 0) ok = 0;
+    if (ok && !ic_sync_parent(path)) ok = 0;
+    if (!ok) unlink(tmp);
+    free(path); free(tmp);
+    return ok;
+}
+
 static void *rexp_thread(void *arg)
 {
     rexp_shared *s = arg;
     ca_rng rng;
-    ca_rng_seed(&rng, s->seed ^ (0x9E3779B97F4A7C15ULL * (uint64_t)(atomic_fetch_add(&s->tid, 1) + 1)));
+    ca_rng_seed(&rng, s->seed ^ (0x9E3779B97F4A7C15ULL *
+                      (uint64_t)(atomic_fetch_add(&s->tid, 1) + 1)) ^
+                      (s->generation ? ca_mix64(s->generation) : 0));
     ca_mont m;
     ca_mont_init(&m, s->p);
     uint64_t zm = ca_mont_to(&m, s->zeta);
@@ -636,13 +767,26 @@ static void *rexp_thread(void *arg)
         if (trial_factor(v, s->fb, s->fb_div, s->nfb, s->col_prime0, &rel, &cnt)) {
             rel.n = cnt;
             rel.rhs = e; /* sum e_q log q == e */
-            rel_push(&local, &rel);
+            if (rel_push(&local, &rel) < 0) {
+                pthread_mutex_lock(&s->lock);
+                s->status = CA_ERR_NOMEM;
+                atomic_store(&s->done, 1);
+                pthread_mutex_unlock(&s->lock);
+                break;
+            }
             if (local.n >= 64) {
                 pthread_mutex_lock(&s->lock);
-                for (uint32_t i = 0; i < local.n; i++) rel_push(s->rels, &local.r[i]);
+                for (uint32_t i = 0; i < local.n; i++) {
+                    if (rel_push(s->rels, &local.r[i]) < 0) {
+                        s->status = CA_ERR_NOMEM;
+                        atomic_store(&s->done, 1);
+                        break;
+                    }
+                }
                 if (s->rels->n >= s->target_rels) atomic_store(&s->done, 1);
                 pthread_mutex_unlock(&s->lock);
                 local.n = 0;
+                if (atomic_load(&s->done)) break;
             }
         }
         if (pending_tests >= 4096) {
@@ -653,7 +797,8 @@ static void *rexp_thread(void *arg)
                 pthread_mutex_lock(&s->lock);
                 if (now - s->last_report >= s->progress_interval) {
                     fprintf(stderr, "[ic] random exponents: %" PRIu64 " tests, %u/%u relations, %.1fs elapsed\n",
-                            atomic_load(&s->tests), s->rels->n, s->target_rels, now - s->started);
+                            atomic_load(&s->tests), s->rels->n, s->target_rels,
+                            s->elapsed_prior + now - s->started);
                     fflush(stderr);
                     s->last_report = now;
                 }
@@ -663,11 +808,20 @@ static void *rexp_thread(void *arg)
         if (s->max_tries && tests > s->max_tries) break;
     }
     pthread_mutex_lock(&s->lock);
-    for (uint32_t i = 0; i < local.n; i++) rel_push(s->rels, &local.r[i]);
+    if (s->status == CA_OK) {
+        for (uint32_t i = 0; i < local.n; i++) {
+            if (rel_push(s->rels, &local.r[i]) < 0) {
+                s->status = CA_ERR_NOMEM;
+                atomic_store(&s->done, 1);
+                break;
+            }
+        }
+    }
     if (s->rels->n >= s->target_rels) atomic_store(&s->done, 1);
     pthread_mutex_unlock(&s->lock);
     atomic_fetch_add(&s->tests, pending_tests);
     free(local.r);
+    atomic_fetch_sub(&s->active, 1);
     return NULL;
 }
 
@@ -793,10 +947,6 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
 {
     ca_ic_params def;
     if (!params) { ca_ic_params_default(&def); params = &def; }
-    if (checkpoint_path && params->method != CA_IC_LINEAR_SIEVE) {
-        ca_set_error("relation checkpointing requires the linear-sieve method");
-        return CA_ERR_UNSUPPORTED;
-    }
     if (checkpoint_path && !*checkpoint_path) {
         ca_set_error("checkpoint path must not be empty");
         return CA_ERR_INVALID;
@@ -899,6 +1049,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     /* ---- relation collection ---- */
     rel_list rels = {0};
     double t0 = ca_now();
+    double prior_sieve_seconds = 0;
     /* an explicit relation for zeta (usually itself a factor-base prime):
      * sum e_q log q == 1 */
     {
@@ -908,7 +1059,11 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         if (trial_factor(ctx->zeta, ctx->fb, ctx->fb_div, ctx->nfb, col_prime0, &rel, &cnt)) {
             rel.n = cnt;
             rel.rhs = 1;
-            rel_push(&rels, &rel);
+            if (rel_push(&rels, &rel) < 0) {
+                free(fb_log2);
+                ca_ic_free(ctx);
+                return CA_ERR_NOMEM;
+            }
         } else {
             ca_set_error("primitive root %llu is not smooth over the factor base",
                          (unsigned long long)ctx->zeta);
@@ -1019,29 +1174,108 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         s.max_tries = params->max_relation_tries;
         s.rels = &rels;
         s.seed = seed;
-        s.verbose = params->verbose;
+        s.verbose = params->verbose && !checkpoint_path;
+        s.status = CA_OK;
+        s.checkpoint_path = checkpoint_path;
         s.progress_interval = progress_interval ? progress_interval : 5;
         s.started = s.last_report = ca_now();
         atomic_store(&s.done, 0);
         atomic_store(&s.tid, 0);
+        atomic_store(&s.active, 0);
         atomic_store(&s.tests, 0);
         pthread_mutex_init(&s.lock, NULL);
+        if (checkpoint_path) {
+            memcpy(s.header.magic, "CAICRX1", 7);
+            s.header.p = p; s.header.g = g; s.header.zeta = ctx->zeta;
+            s.header.seed = seed;
+            s.header.B = B; s.header.C = C; s.header.nfb = ctx->nfb;
+            s.header.ncols = ncols; s.header.target = target;
+            s.header.threads = threads; s.header.relation_size = sizeof(relation);
+            s.header.fb_hash = ic_hash(ctx->fb, (size_t)ctx->nfb * sizeof(uint32_t),
+                                       UINT64_C(14695981039346656037));
+            uint64_t saved_tests = 0;
+            int loaded = rexp_snapshot_load(checkpoint_path, &s.header, params->seed,
+                                             &rels, &s.seed, &saved_tests,
+                                             &s.generation, &s.elapsed_prior);
+            if (loaded < 0) {
+                pthread_mutex_destroy(&s.lock);
+                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+                return loaded == -2 ? CA_ERR_NOMEM : CA_ERR_INVALID;
+            }
+            atomic_store(&s.tests, saved_tests);
+            seed = s.seed;
+            prior_sieve_seconds = s.elapsed_prior;
+            if (rels.n >= target) atomic_store(&s.done, 1);
+            if (loaded) vlog(params, "[ic] resumed %u relations and %" PRIu64
+                             " smoothness tests\n", rels.n, saved_tests);
+            if (!rexp_snapshot_save(&s) || !rexp_progress_save(&s, "collecting")) {
+                pthread_mutex_destroy(&s.lock);
+                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+                ca_set_error("cannot persist random-exponent checkpoint or progress");
+                return CA_ERR_INTERNAL;
+            }
+        }
         vlog(params, "[ic] p=%llu (%u bits) random exponents B=%u (%u primes) target=%u threads=%u\n",
              (unsigned long long)p, bitlen(p), B, ctx->nfb, target, threads);
         uint32_t started = 0;
-        for (uint32_t t = 0; t < threads; t++) {
-            if (threads == 1) rexp_thread(&s);
+        for (uint32_t t = 0; !atomic_load(&s.done) && t < threads; t++) {
+            atomic_fetch_add(&s.active, 1);
+            if (threads == 1 && !checkpoint_path) rexp_thread(&s);
             else if (pthread_create(&tids[started], NULL, rexp_thread, &s) == 0) started++;
+            else atomic_fetch_sub(&s.active, 1);
         }
-        if (threads > 1 && started == 0) rexp_thread(&s);
+        if (!atomic_load(&s.done) && threads > 1 && started == 0 && !checkpoint_path) {
+            atomic_fetch_add(&s.active, 1);
+            rexp_thread(&s);
+        }
+        if (!atomic_load(&s.done) && checkpoint_path && started == 0) {
+            s.status = CA_ERR_INTERNAL;
+            ca_set_error("cannot start random-exponent checkpoint worker");
+        }
+        if (checkpoint_path && started) {
+            double last_saved = ca_now();
+            while (atomic_load(&s.active) > 0) {
+                double now = ca_now();
+                if (now - last_saved >= s.progress_interval) {
+                    if (!rexp_snapshot_save(&s) || !rexp_progress_save(&s, "collecting")) {
+                        pthread_mutex_lock(&s.lock);
+                        s.status = CA_ERR_INTERNAL;
+                        atomic_store(&s.done, 1);
+                        pthread_mutex_unlock(&s.lock);
+                        ca_set_error("cannot persist random-exponent checkpoint or progress");
+                        break;
+                    }
+                    pthread_mutex_lock(&s.lock);
+                    uint32_t relations_now = rels.n;
+                    pthread_mutex_unlock(&s.lock);
+                    if (params->verbose) fprintf(stderr, "[ic] random exponents: %" PRIu64
+                        " tests, %u/%u relations, %.1fs elapsed\n",
+                        atomic_load(&s.tests), relations_now, target,
+                        s.elapsed_prior + now - s.started);
+                    last_saved = now;
+                }
+                struct timespec wait = {.tv_sec = 0, .tv_nsec = 100000000};
+                nanosleep(&wait, NULL);
+            }
+        }
         for (uint32_t t = 0; t < started; t++) pthread_join(tids[t], NULL);
+        if (s.status == CA_OK && checkpoint_path &&
+            (!rexp_snapshot_save(&s) || !rexp_progress_save(&s,
+                rels.n >= target ? "relations_collected" : "exhausted"))) {
+            s.status = CA_ERR_INTERNAL;
+            ca_set_error("cannot persist final random-exponent checkpoint");
+        }
         pthread_mutex_destroy(&s.lock);
         st->smooth_tests = atomic_load(&s.tests);
+        if (s.status != CA_OK) {
+            free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
+            return s.status;
+        }
     }
     free(tids);
     free(fb_log2);
     st->relations = rels.n;
-    st->sieve_seconds = ca_now() - t0;
+    st->sieve_seconds = prior_sieve_seconds + ca_now() - t0;
     vlog(params, "[ic] %u relations in %.2fs (%llu candidates)\n", rels.n, st->sieve_seconds,
          (unsigned long long)st->sieve_candidates);
     if (rels.n < ncols / 2) {
@@ -1139,7 +1373,7 @@ done:
     /* log of the user's base */
     ctx->ord_g = ca_mult_order(g, p);
     if (g == ctx->zeta) { ctx->log_g = 1; ctx->g_known = 1; }
-    st->total_seconds = ca_now() - t_start;
+    st->total_seconds = prior_sieve_seconds + ca_now() - t_start;
     if (checkpoint_path && !ic_precomp_save(checkpoint_path, ctx, B, C, st)) {
         ca_set_error("cannot persist index-calculus precomputation");
         ca_ic_free(ctx);

@@ -240,7 +240,7 @@ impl MerkleDamgardHash for Sha256 {
 
 /// SHA-3 sponges support generic measurements here, with no
 /// Merkle-Damgård length-extension step.
-macro_rules! sha3_adapter {
+macro_rules! fixed_hash_adapter {
     ($name:ident, $label:literal, $output:expr, $rate:expr, $hash:path) => {
         pub struct $name;
         impl HashFunction for $name {
@@ -259,10 +259,73 @@ macro_rules! sha3_adapter {
         }
     };
 }
-sha3_adapter!(Sha3_224, "SHA-3-224", 28, 144, crate::hash::sha3_224);
-sha3_adapter!(Sha3_256, "SHA-3-256", 32, 136, crate::hash::sha3_256);
-sha3_adapter!(Sha3_384, "SHA-3-384", 48, 104, crate::hash::sha3_384);
-sha3_adapter!(Sha3_512, "SHA-3-512", 64, 72, crate::hash::sha3_512);
+fixed_hash_adapter!(Sha3_224, "SHA-3-224", 28, 144, crate::hash::sha3_224);
+fixed_hash_adapter!(Sha3_256, "SHA-3-256", 32, 136, crate::hash::sha3_256);
+fixed_hash_adapter!(Sha3_384, "SHA-3-384", 48, 104, crate::hash::sha3_384);
+fixed_hash_adapter!(Sha3_512, "SHA-3-512", 64, 72, crate::hash::sha3_512);
+
+fixed_hash_adapter!(Sha224, "SHA-224", 28, 64, crate::hash::sha224);
+fixed_hash_adapter!(Sha384, "SHA-384", 48, 128, crate::hash::sha384);
+fixed_hash_adapter!(Sha512, "SHA-512", 64, 128, crate::hash::sha512);
+fixed_hash_adapter!(Sha512_224, "SHA-512/224", 28, 128, crate::hash::sha512_224);
+fixed_hash_adapter!(Sha512_256, "SHA-512/256", 32, 128, crate::hash::sha512_256);
+fixed_hash_adapter!(Blake3, "BLAKE3", 32, 64, crate::hash::blake3_hash);
+
+impl MerkleDamgardHash for Sha512 {
+    fn compress(&self, state: &mut [u8], block: &[u8]) {
+        let mut words = [0u64; 8];
+        for (i, word) in words.iter_mut().enumerate() {
+            *word = u64::from_be_bytes(state[8 * i..8 * i + 8].try_into().unwrap());
+        }
+        let block: &[u8; 128] = block.try_into().expect("SHA-512 block has 128 bytes");
+        crate::hash::sha512::compress(&mut words, block);
+        for (i, word) in words.iter().enumerate() {
+            state[8 * i..8 * i + 8].copy_from_slice(&word.to_be_bytes());
+        }
+    }
+    fn padding_for_length(&self, message_bytes: usize) -> Vec<u8> {
+        let bit_len = (message_bytes as u128) * 8;
+        let mut padding = vec![0x80];
+        while (message_bytes + padding.len()) % 128 != 112 {
+            padding.push(0);
+        }
+        padding.extend_from_slice(&bit_len.to_be_bytes());
+        padding
+    }
+}
+
+/// A SHAKE XOF fixed at one output length for bounded generic analysis.
+pub struct Shake128(pub usize);
+impl HashFunction for Shake128 {
+    fn name(&self) -> &'static str {
+        "SHAKE128"
+    }
+    fn output_bytes(&self) -> usize {
+        self.0
+    }
+    fn block_bytes(&self) -> usize {
+        168
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::shake128(message, self.0)
+    }
+}
+
+pub struct Shake256(pub usize);
+impl HashFunction for Shake256 {
+    fn name(&self) -> &'static str {
+        "SHAKE256"
+    }
+    fn output_bytes(&self) -> usize {
+        self.0
+    }
+    fn block_bytes(&self) -> usize {
+        136
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::shake256(message, self.0)
+    }
+}
 
 // ── Attack 1: length extension ───────────────────────────────────────
 
@@ -476,8 +539,39 @@ pub fn differential_bias<H: HashFunction>(
 /// `cryptanalysis::auto_attack` for block ciphers.  Returns a Markdown
 /// report.
 pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
+    auto_hash_attack_with_output_bytes(hash_name, None)
+}
+
+/// SHAKE requires an explicit output length so generic measurements stay bounded.
+pub fn auto_hash_attack_with_output_bytes(
+    hash_name: &str,
+    output_bytes: Option<usize>,
+) -> Result<String, String> {
+    let is_xof = matches!(
+        hash_name,
+        "shake128" | "shake-128" | "shake256" | "shake-256"
+    );
+    let xof_len = if is_xof {
+        match output_bytes {
+            Some(length @ 1..=64) => length,
+            _ => return Err("SHAKE hash-auto requires --output-bytes in 1..=64".into()),
+        }
+    } else {
+        if output_bytes.is_some() {
+            return Err("--output-bytes applies only to SHAKE128 and SHAKE256".into());
+        }
+        0
+    };
     let mut md = String::new();
-    md.push_str(&format!("# Auto-hash-cryptanalysis: `{}`\n\n", hash_name));
+    md.push_str(&format!(
+        "# Auto-hash-cryptanalysis: `{}`{}\n\n",
+        hash_name,
+        if is_xof {
+            format!(" ({} output bytes)", xof_len)
+        } else {
+            String::new()
+        }
+    ));
 
     // ── Length-extension (MD-Damgård only) ────────────────────────
     let lex_result: String;
@@ -505,34 +599,54 @@ pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
             md.push_str(&run_birthday(&Sha256, 32, 200_000));
             md.push_str(&run_differential(&Sha256));
         }
-        "sha3-224" | "sha-3-224" => {
-            md.push_str("## Length extension\n\nSHA-3-224 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
-            md.push_str(&run_birthday(&Sha3_224, 32, 200_000));
-            md.push_str(&run_differential(&Sha3_224));
+        "sha224" | "sha-224" => md.push_str(&run_fixed_without_extension(&Sha224)),
+        "sha384" | "sha-384" => md.push_str(&run_fixed_without_extension(&Sha384)),
+        "sha512" | "sha-512" => {
+            md.push_str(&run_length_extension(&Sha512));
+            md.push_str(&run_birthday(&Sha512, 32, 200_000));
+            md.push_str(&run_differential(&Sha512));
         }
-        "sha3" | "sha-3" | "sha3-256" | "sha-3-256" => {
-            md.push_str("## Length extension\n\nSHA-3-256 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
-            md.push_str(&run_birthday(&Sha3_256, 32, 200_000));
-            md.push_str(&run_differential(&Sha3_256));
-        }
-        "sha3-384" | "sha-3-384" => {
-            md.push_str("## Length extension\n\nSHA-3-384 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
-            md.push_str(&run_birthday(&Sha3_384, 32, 200_000));
-            md.push_str(&run_differential(&Sha3_384));
-        }
-        "sha3-512" | "sha-3-512" => {
-            md.push_str("## Length extension\n\nSHA-3-512 uses a sponge construction; this Merkle-Damgård attack does not apply.\n\n");
-            md.push_str(&run_birthday(&Sha3_512, 32, 200_000));
-            md.push_str(&run_differential(&Sha3_512));
-        }
+        "sha512-224" | "sha-512-224" => md.push_str(&run_fixed_without_extension(&Sha512_224)),
+        "sha512-256" | "sha-512-256" => md.push_str(&run_fixed_without_extension(&Sha512_256)),
+        "blake3" => md.push_str(&run_fixed_without_extension(&Blake3)),
+        "sha3-224" | "sha-3-224" => md.push_str(&run_sponge(&Sha3_224)),
+        "sha3" | "sha-3" | "sha3-256" | "sha-3-256" => md.push_str(&run_sponge(&Sha3_256)),
+        "sha3-384" | "sha-3-384" => md.push_str(&run_sponge(&Sha3_384)),
+        "sha3-512" | "sha-3-512" => md.push_str(&run_sponge(&Sha3_512)),
+        "shake128" | "shake-128" => md.push_str(&run_sponge(&Shake128(xof_len))),
+        "shake256" | "shake-256" => md.push_str(&run_sponge(&Shake256(xof_len))),
         _ => {
             return Err(format!(
-                "unknown hash '{}'; try one of: md4, md5, sha1, sha256, sha3-224, sha3-256, sha3-384, sha3-512",
+                "unknown hash '{}'; try one of: md4, md5, sha1, sha224, sha256, sha384, sha512, sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512, shake128, shake256, blake3",
                 hash_name
             ));
         }
     }
     Ok(md)
+}
+
+fn run_fixed_without_extension<H: HashFunction>(hash: &H) -> String {
+    let mut report = format!(
+        "## Length extension\n\n{} has no length-extension adapter in this command. This does not establish resistance to length extension.\n\n",
+        hash.name()
+    );
+    report.push_str(&run_birthday(hash, 32, 200_000));
+    report.push_str(&run_differential(hash));
+    report
+}
+
+fn run_sponge<H: HashFunction>(hash: &H) -> String {
+    let mut report = format!(
+        "## Length extension\n\n{} uses a sponge construction; Merkle-Damgård length extension does not apply.\n\n",
+        hash.name()
+    );
+    report.push_str(&run_birthday(
+        hash,
+        (hash.output_bytes() * 8).min(32) as u32,
+        200_000,
+    ));
+    report.push_str(&run_differential(hash));
+    report
 }
 
 fn run_length_extension<H: MerkleDamgardHash>(hash: &H) -> String {
@@ -761,5 +875,45 @@ mod tests {
     #[test]
     fn auto_hash_attack_rejects_unknown() {
         assert!(auto_hash_attack("not-a-hash").is_err());
+    }
+
+    #[test]
+    fn shake_and_blake3_adapters_match_public_vectors() {
+        assert_eq!(
+            hex(&Shake128(32).hash(b"")),
+            "7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26"
+        );
+        assert_eq!(
+            hex(&Shake256(32).hash(b"abc")),
+            "483366601360a8771c6863080cc4114d8db44530f8f1e1ee4f94ea37e78b5739"
+        );
+        assert_eq!(
+            hex(&Blake3.hash(b"")),
+            "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        );
+    }
+
+    #[test]
+    fn sha512_length_extension_replays_against_hidden_prefix() {
+        let hash = Sha512;
+        let secret = b"hidden-prefix";
+        let message = b"&role=reader";
+        let suffix = b"&role=admin";
+        let original = [&secret[..], &message[..]].concat();
+        let digest = hash.hash(&original);
+        let (forged, glue) = length_extension_attack(&hash, &digest, original.len(), suffix);
+        let actual = [&original[..], &glue[..], &suffix[..]].concat();
+        assert_eq!(hash.hash(&actual), forged);
+    }
+
+    #[test]
+    fn shake_auto_requires_bounded_explicit_output() {
+        assert!(auto_hash_attack("shake128").is_err());
+        assert!(auto_hash_attack_with_output_bytes("shake256", Some(0)).is_err());
+        assert!(auto_hash_attack_with_output_bytes("shake256", Some(65)).is_err());
+        assert!(auto_hash_attack_with_output_bytes("sha3-256", Some(32)).is_err());
+        let report = auto_hash_attack_with_output_bytes("shake-256", Some(1)).unwrap();
+        assert!(report.contains("truncate to 8 bits"));
+        assert!(report.contains("Differential bias"));
     }
 }

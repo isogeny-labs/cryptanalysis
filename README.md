@@ -70,24 +70,18 @@ constants, to serve as the reference implementation that research code is
 compared against, and to give higher-level languages a fast native core;
 it is not an attack tool for cryptographic sizes.
 
-For prime-field `j=0` curves, rho now uses a Jacobian `tau = 1-omega`
-scalar path when building its jump table and restarting walks.  Width 2 is
-the measured default; width 4 with cached base and target tables and
-tripling is selectable using
-`-DCA_J0_TAU_RHO_WIDTH=4`.  The
-[paper integration and paired measurements](experiments/prime-j0-tau-20260930/README.md)
-describe the scope and timing interval.  Configure `-DCA_J0_TAU_RHO=OFF`
-to build the affine setup reference.
-
-The j=0 rho walk now keeps each point in its current sixfold orientation and
-adds a matching precomputed jump.  It checks orbit collisions at distinguished
-points and showed an exploratory gain over the former per-step canonical walk
-on a frozen 36/38/46-bit one-target panel.  That contended-host timing needs
-replay through the [isolated benchmark service](docs/ISOLATED_BENCHMARKS.md).
-The
+On `j=0` curves, `ca_curve_solve` runs the same GLV walk as on `j=1728`
+curves, with generic double-and-add for its jump table and restarts.  Two
+earlier `j=0` variants were removed with their build options: the Jacobian
+`tau = 1-omega` setup (`CA_J0_TAU_RHO`, `CA_J0_TAU_RHO_WIDTH`) and the
+oriented ("covariant") walk (`CA_J0_RHO_COVARIANT_WALK`).  Since #437 the
+solver reached neither, and a paired measurement found the current walk
+cheaper below 36 bits (#1059, #1061).  The tau scalar functions
+(`ca_ec_mul_tau2`, `ca_ec_mul_tau4`, `ca_ec_mul_tau4_tripling`,
+`ca_ec_triple_j0`) remain.  The
+[tau setup measurements](experiments/prime-j0-tau-20260930/README.md) and the
 [oriented-walk experiment](experiments/prime-j0-rho-coordinate-canon-20261002/README.md)
-contains the derivation, raw results, and limits.  Set
-`-DCA_J0_RHO_COVARIANT_WALK=OFF` to build the former walk.
+record the earlier variants; commit `f962323` is the last that builds them.
 
 ## Elliptic-curve surface tools
 
