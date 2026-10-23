@@ -138,6 +138,12 @@ local state may be newer than S3. Resume prefers an existing local checkpoint;
 if it is absent, the command restores from S3 after checking any local run
 manifest. Use one run per directory and S3 prefix. The state directory is
 locked against concurrent local writers.
+Before a local run uploads to S3, the CLI checks that the destination is
+empty or has the same run manifest. A nonempty prefix with a missing or
+different manifest stops the run before its solver starts; periodic and final
+syncs repeat the check before uploading.
+Each upload writes the manifest before syncing checkpoints and results, letting
+the same local run continue after an interrupted first upload.
 On resume, an existing rho checkpoint is checked for group identity, seed,
 file length, checksum, table entry bounds, and any saved answer before S3
 sync can start. A damaged local checkpoint stops the command without

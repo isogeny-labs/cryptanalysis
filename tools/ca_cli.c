@@ -406,6 +406,7 @@ static int ic_atomic_file(const char *dir, const char *name, const char *body);
 static int ic_manifest_matches(const char *dir, const char *expected);
 static int ic_dir_empty(const char *dir);
 static int ic_s3_sync(const char *from, const char *to);
+static int ic_s3_upload_allowed(const char *dir, const char *uri);
 
 static int cmd_solve(const char *selected_alg)
 {
@@ -634,7 +635,8 @@ static char *ecc2k_remote_path(const char *uri, const char *name)
 {
     size_t n = strlen(uri) + strlen(name) + 2;
     char *p = malloc(n);
-    if (p) snprintf(p, n, "%s/%s", uri, name);
+    if (p) snprintf(p, n, "%s%s%s", uri,
+                    uri[0] && uri[strlen(uri) - 1] == '/' ? "" : "/", name);
     return p;
 }
 
@@ -644,6 +646,7 @@ static char *ecc2k_remote_path(const char *uri, const char *name)
  * state newer than the corpus uploaded with it. */
 static int ecc2k_s3_upload(const char *dir, const char *uri)
 {
+    if (!ic_s3_upload_allowed(dir, uri)) return 0;
     char *checkpoint = ic_path(dir, "state.ck");
     char *remote = ecc2k_remote_path(uri, "state.ck");
     char *snapshot = ic_path(dir, ".upload.ckpt.XXXXXX");
@@ -895,6 +898,8 @@ static int ecc2k_managed_run(const char *backend, char **args, int arg_count,
         if (!ecc2k_progress(state_dir, selected_backend, 0, verbose) ||
             !ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
             die("cannot persist ECC2K run status");
+        if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+            die("S3 manifest is unavailable or does not match this run");
 
         /* cadence remains in scope through posix_spawn below */
         extern char **environ;
@@ -1121,6 +1126,16 @@ static int ic_dir_empty(const char *dir)
 
 static int ic_s3_sync(const char *from, const char *to)
 {
+    if (strncmp(to, "s3://", 5) == 0) {
+        if (!ic_s3_upload_allowed(from, to)) return 0;
+        /* An interrupted first sync must leave the run identity available
+         * so this same local run can safely finish uploading on resume. */
+        char *local = ic_path(from, "manifest.json");
+        char *remote = ecc2k_remote_path(to, "manifest.json");
+        int marked = local && remote && ecc2k_aws_cp(local, remote);
+        free(local); free(remote);
+        if (!marked) return 0;
+    }
     /* Sync can run beside allocator-using sieve threads.  Do not allocate
      * in a forked child, where another thread may have held malloc's lock. */
     extern char **environ;
@@ -1433,6 +1448,8 @@ static int cmd_gen_durable(ca_group *g)
     double started = ca_now(), previous_seconds = state.seconds;
     if (!gen_report(state_dir, checkpoint, &state, "running", verbose,
                     previous_seconds, started)) die("cannot persist gen state");
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -1632,6 +1649,8 @@ static int cmd_factor_durable(uint64_t n)
         if (verbose) fprintf(stderr, "[factor] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -1754,6 +1773,8 @@ static int cmd_ec_order_durable(uint64_t p, uint64_t a, uint64_t b)
         if (verbose) fprintf(stderr, "[ec-order] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -1907,6 +1928,8 @@ static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
         if (verbose) fprintf(stderr, "[cheon] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2033,6 +2056,8 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
         if (verbose) fprintf(stderr, "[%s] state directory: %s%s\n", alg, state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2178,6 +2203,8 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
         if (verbose) fprintf(stderr, "[gpu-rho] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2312,6 +2339,8 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
         if (verbose) fprintf(stderr, "[%s] state directory: %s%s\n", alg, state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2443,6 +2472,8 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
         if (verbose) fprintf(stderr, "[precomp] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2585,6 +2616,8 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
         if (verbose) fprintf(stderr, "[dlog] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2710,6 +2743,8 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
         if (verbose) fprintf(stderr, "[kangaroo] state directory: %s%s\n", state_dir,
                              resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -2842,6 +2877,8 @@ static int cmd_ic(void)
             die("cannot persist run status");
         if (pr.verbose) fprintf(stderr, "[ic] state directory: %s%s\n", state_dir, resume ? " (resume)" : "");
     }
+    if (s3_uri && !ic_s3_upload_allowed(state_dir, s3_uri))
+        die("S3 manifest is unavailable or does not match this run");
     ic_sync_state sync = {0};
     pthread_t sync_thread;
     int syncing = 0;
@@ -3474,8 +3511,8 @@ static int work_journal_load(const char *path, ca_coord_state *st,
     return ok;
 }
 
-static int work_remote_manifest_matches(const char *dir, const char *uri,
-                                         const char *expected)
+static int ic_remote_manifest_matches(const char *dir, const char *uri,
+                                      const char *expected)
 {
     char *remote = ecc2k_remote_path(uri, "manifest.json");
     char *tmp = ic_path(dir, ".remote-manifest.tmp.XXXXXX");
@@ -3498,7 +3535,7 @@ static int work_remote_manifest_matches(const char *dir, const char *uri,
     return ok;
 }
 
-static int work_remote_prefix_empty(const char *uri)
+static int ic_remote_prefix_empty(const char *uri)
 {
     char *prefix = ecc2k_remote_path(uri, "");
     if (!prefix) return 0;
@@ -3533,6 +3570,29 @@ static int work_remote_prefix_empty(const char *uri)
     int status = 0;
     while (waitpid(pid, &status, 0) < 0) if (errno != EINTR) return 0;
     return read_ok && !any && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+}
+
+static int ic_s3_upload_allowed(const char *dir, const char *uri)
+{
+    char *path = ic_path(dir, "manifest.json");
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    free(path);
+    if (!f) return 0;
+    int ok = fseek(f, 0, SEEK_END) == 0;
+    long size = ok ? ftell(f) : -1;
+    if (size <= 0 || size > 65536 || fseek(f, 0, SEEK_SET) != 0) ok = 0;
+    char *expected = ok ? malloc((size_t)size + 1) : NULL;
+    if (!expected || fread(expected, 1, (size_t)size, f) != (size_t)size ||
+        fgetc(f) != EOF) ok = 0;
+    if (fclose(f) != 0) ok = 0;
+    if (ok) {
+        expected[size] = '\0';
+        ok = ic_remote_prefix_empty(uri) ||
+             ic_remote_manifest_matches(dir, uri, expected);
+    }
+    free(expected);
+    return ok;
 }
 
 static int work_progress(const char *dir, const ca_coord_ctx *ctx, ca_coord_state *st,
@@ -3635,8 +3695,8 @@ static int cmd_work(void)
             if (!ic_manifest_matches(state_dir, manifest))
                 die("work manifest does not match this job");
             if (have_local && s3_uri &&
-                !work_remote_manifest_matches(state_dir, s3_uri, manifest) &&
-                !work_remote_prefix_empty(s3_uri))
+                !ic_remote_manifest_matches(state_dir, s3_uri, manifest) &&
+                !ic_remote_prefix_empty(s3_uri))
                 die("S3 work manifest is unavailable or does not match this job");
             if (!work_journal_load(journal_path, st, ctx, &journaled))
                 die("work check-in journal is missing or invalid");
