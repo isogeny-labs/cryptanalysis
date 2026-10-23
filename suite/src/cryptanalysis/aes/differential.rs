@@ -307,6 +307,52 @@ pub fn key_recovery_two_round(
     })
 }
 
+/// Check the common first-round S-box difference implied by all four
+/// recovered last-round bytes across the entire supplied pair corpus.
+pub fn validate_two_round_key_bytes(
+    alpha: u8,
+    pairs: &[DiffPair],
+    key_bytes: &[(usize, u8); 4],
+    ddt: &AesDdt,
+) -> bool {
+    let positions = [(0, 2), (13, 1), (10, 1), (7, 3)];
+    if alpha == 0
+        || pairs.is_empty()
+        || key_bytes
+            .iter()
+            .zip(positions.iter())
+            .any(|((actual, _), (expected, _))| actual != expected)
+    {
+        return false;
+    }
+    pairs.iter().all(|pair| {
+        let mut expected_plaintext = pair.p0;
+        expected_plaintext[0] ^= alpha;
+        if expected_plaintext != pair.p1
+            || (0..16).any(|pos| ![0, 7, 10, 13].contains(&pos) && pair.c0[pos] != pair.c1[pos])
+        {
+            return false;
+        }
+        let mut beta = None;
+        for ((pos, coefficient), (_, key)) in positions.iter().zip(key_bytes.iter()) {
+            let v0 = INV_SBOX[(pair.c0[*pos] ^ key) as usize];
+            let v1 = INV_SBOX[(pair.c1[*pos] ^ key) as usize];
+            let candidate = gmul(v0 ^ v1, ginv(*coefficient));
+            if candidate == 0 || ddt[alpha as usize][candidate as usize] == 0 {
+                return false;
+            }
+            if let Some(expected) = beta {
+                if expected != candidate {
+                    return false;
+                }
+            } else {
+                beta = Some(candidate);
+            }
+        }
+        true
+    })
+}
+
 /// Build `n_pairs` chosen-plaintext pairs with input difference
 /// `(alpha, 0, …, 0)`. Uses an LCG so the test is deterministic; for
 /// research use, replace with an OS-backed RNG.
@@ -428,6 +474,20 @@ mod tests {
             let r = pos % 4;
             assert_eq!(k, true_k[c][r], "wrong byte at flat position {pos}");
         }
+        assert!(validate_two_round_key_bytes(
+            alpha,
+            &pairs,
+            &report.key_bytes,
+            &ddt
+        ));
+        let mut corrupt = pairs;
+        corrupt[0].c0[5] ^= 1;
+        assert!(!validate_two_round_key_bytes(
+            alpha,
+            &corrupt,
+            &report.key_bytes,
+            &ddt
+        ));
     }
 
     /// Sanity: the active byte positions predicted by the attack are

@@ -140,6 +140,13 @@ crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
 crax --json aes-attack --technique square
+crax --json aes-attack --technique differential --samples 24 \
+  --export-pairs-file /tmp/aes-differential.json
+crax --json aes-attack --technique differential \
+  --pairs-file /tmp/aes-differential.json
+crax --json aes-attack --technique linear --samples 64 \
+  --export-pairs-file /tmp/aes-linear.json
+crax --json aes-attack --technique linear --pairs-file /tmp/aes-linear.json
 crax --json hash-auto --hash sha256
 crax --json hash-auto --hash sha3-256
 crax --json hash-auto --hash sha-3-512
@@ -163,6 +170,25 @@ against SHA-256; SHA-3 uses a sponge, so that particular attack is not
 applicable. Its truncated birthday and differential-bias measurements remain
 available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
 AES-128 reduced-round differential (2), linear (1), or integral (4) models.
+For captured reduced-round data, `--pairs-file` accepts a JSON object with
+`schema_version: 1`, `cipher_model: "aes128-reduced-final-no-mixcolumns/v1"`,
+`technique: "differential"` and `rounds: 2`, or `technique: "linear"` and
+`rounds: 1`. The differential `pairs` array contains objects with `p0`, `p1`,
+`c0`, and `c1`; linear pairs use `plaintext` and `ciphertext`. Every block is
+exactly 32 hex digits. Differential input pairs must differ by `--alpha` in
+byte 0 only. The file is capped at 64 MiB and one million pairs.
+`--export-pairs-file` writes generated data in the same schema to a new file.
+`--pairs-file` also accepts a checked `store:NAME` or `sha256:DIGEST` reference
+through the sibling `crypto store pull` command; publish an exported file
+with `crypto store push` first. On imported linear data, the recovered master
+key is checked against every supplied ciphertext. Imported differential data
+yields four last-round key bytes with a whole-corpus difference check; it
+does not yield the other 12 key bytes. Supply `--key-hex` only if a reference
+key is available for an additional check. The square command needs an
+encryption oracle and does not accept a static pairs file.
+The [AES corpus acceptance receipt](CRAX_AES_CORPUS_ACCEPTANCE_20261023.json)
+records local differential and linear round trips and a fresh-cache Setec S3
+retrieval through the checked store resolver, followed by exact-object cleanup.
 These commands do not imply key recovery against full-round AES-128 or a
 collision against full-output SHA-2 or SHA-3.
 The [AES S-box cross-check](CRAX_AES_SBOX_CROSSCHECK_20261022.json) compares
