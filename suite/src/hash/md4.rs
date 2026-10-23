@@ -161,6 +161,76 @@ pub fn md4_compress(state: &mut [u32; 4], block: &[u8; 64]) {
     state[3] = state[3].wrapping_add(d);
 }
 
+/// Incremental MD4 with one pending 64-byte block.
+pub struct Md4State {
+    state: [u32; 4],
+    pending: [u8; 64],
+    pending_len: usize,
+    total_bytes: u64,
+}
+
+impl Md4State {
+    pub fn new() -> Self {
+        Self {
+            state: INITIAL_STATE,
+            pending: [0; 64],
+            pending_len: 0,
+            total_bytes: 0,
+        }
+    }
+
+    pub fn update(&mut self, mut data: &[u8]) -> Result<(), &'static str> {
+        let length = u64::try_from(data.len()).map_err(|_| "MD4 input length exceeds u64")?;
+        self.total_bytes = self
+            .total_bytes
+            .checked_add(length)
+            .filter(|&n| n <= u64::MAX / 8)
+            .ok_or("MD4 input exceeds the 64-bit bit-length field")?;
+        if self.pending_len != 0 {
+            let take = (64 - self.pending_len).min(data.len());
+            self.pending[self.pending_len..self.pending_len + take].copy_from_slice(&data[..take]);
+            self.pending_len += take;
+            data = &data[take..];
+            if self.pending_len < 64 {
+                return Ok(());
+            }
+            md4_compress(&mut self.state, &self.pending);
+            self.pending_len = 0;
+        }
+        let mut blocks = data.chunks_exact(64);
+        for block in &mut blocks {
+            md4_compress(&mut self.state, block.try_into().unwrap());
+        }
+        let remainder = blocks.remainder();
+        self.pending[..remainder.len()].copy_from_slice(remainder);
+        self.pending_len = remainder.len();
+        Ok(())
+    }
+
+    pub fn finalize(mut self) -> [u8; 16] {
+        let mut last = [0u8; 64];
+        last[..self.pending_len].copy_from_slice(&self.pending[..self.pending_len]);
+        last[self.pending_len] = 0x80;
+        if self.pending_len >= 56 {
+            md4_compress(&mut self.state, &last);
+            last = [0u8; 64];
+        }
+        last[56..].copy_from_slice(&(self.total_bytes * 8).to_le_bytes());
+        md4_compress(&mut self.state, &last);
+        let mut output = [0u8; 16];
+        for (index, word) in self.state.iter().enumerate() {
+            output[4 * index..4 * index + 4].copy_from_slice(&word.to_le_bytes());
+        }
+        output
+    }
+}
+
+impl Default for Md4State {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Apply MD-Damgård padding (RFC 1320 §3.1).  Append `0x80`, then
 /// zeros, then an 8-byte little-endian message-bit-length, so the
 /// total is a multiple of 64 bytes.
@@ -196,6 +266,20 @@ pub fn md4(message: &[u8]) -> [u8; 16] {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn incremental_md4_matches_one_shot_at_padding_boundaries() {
+        for length in [0, 1, 55, 56, 63, 64, 65, 127, 128, 129, 8193] {
+            let data: Vec<u8> = (0..length).map(|i| (i * 23) as u8).collect();
+            for chunk in [1, 7, 64, 257] {
+                let mut state = Md4State::new();
+                for part in data.chunks(chunk) {
+                    state.update(part).unwrap();
+                }
+                assert_eq!(state.finalize(), md4(&data));
+            }
+        }
+    }
 
     fn hex(bytes: &[u8]) -> String {
         bytes.iter().map(|b| format!("{:02x}", b)).collect()

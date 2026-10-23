@@ -103,6 +103,8 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
 }
 
 enum StreamingHash {
+    Md4(hash::md4::Md4State),
+    Md5(hash::md5::Md5State),
     Sha1(hash::sha1::Sha1State),
     Sha2(hash::sha256::Sha256State),
     Sha512(hash::sha512::Sha512State),
@@ -116,6 +118,8 @@ fn stream_file(
     output_bytes: Option<usize>,
 ) -> Result<Option<(u64, Vec<u8>)>, String> {
     let mut engine = match algorithm {
+        "md4" => StreamingHash::Md4(hash::md4::Md4State::new()),
+        "md5" => StreamingHash::Md5(hash::md5::Md5State::new()),
         "sha1" | "sha-1" => StreamingHash::Sha1(hash::sha1::Sha1State::new()),
         "sha224" | "sha-224" => StreamingHash::Sha2(hash::sha256::Sha256State::sha224()),
         "sha256" | "sha-256" => StreamingHash::Sha2(hash::sha256::Sha256State::sha256()),
@@ -166,6 +170,8 @@ fn stream_file(
             .checked_add(count as u64)
             .ok_or("file byte count exceeds u64")?;
         match &mut engine {
+            StreamingHash::Md4(state) => state.update(&buffer[..count])?,
+            StreamingHash::Md5(state) => state.update(&buffer[..count])?,
             StreamingHash::Sha1(state) => state.update(&buffer[..count])?,
             StreamingHash::Sha2(state) => state.update(&buffer[..count])?,
             StreamingHash::Sha512(state) => state.update(&buffer[..count])?,
@@ -176,6 +182,8 @@ fn stream_file(
         }
     }
     let digest = match engine {
+        StreamingHash::Md4(state) => state.finalize().to_vec(),
+        StreamingHash::Md5(state) => state.finalize().to_vec(),
         StreamingHash::Sha1(state) => state.finalize().to_vec(),
         StreamingHash::Sha2(state) => state.finalize(),
         StreamingHash::Sha512(state) => state.finalize(),

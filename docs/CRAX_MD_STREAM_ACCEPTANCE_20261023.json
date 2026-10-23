@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "crax-md-stream-acceptance",
+  "checked_at_utc": "2026-10-23T17:40:28.503489+00:00",
+  "cryptanalysis_parent_commit": "0aba21b64",
+  "crypto_sibling_commit": "25d703e714e5f1a917266d1b89ed0bb7c9e863bf",
+  "binary_sha256": {
+    "crax_release": "007b714313a559dc36291c099014527eef2c1cddeb25804195789cd3e170185f",
+    "crypto_debug": "427fe8748681d76c6179a1186b11c2740806d99e687aa5dc60cf0d6c87587e04"
+  },
+  "boundary_validation": {
+    "algorithms": [
+      "md4",
+      "md5"
+    ],
+    "sizes": [
+      0,
+      1,
+      55,
+      56,
+      63,
+      64,
+      65,
+      111,
+      112,
+      127,
+      128,
+      129,
+      255,
+      256,
+      257,
+      4097
+    ],
+    "comparisons": 32,
+    "independent_references": {
+      "md4": "OpenSSL 3 legacy provider",
+      "md5": "Python hashlib"
+    },
+    "all_equal": true
+  },
+  "large_file": {
+    "bytes": 8388745,
+    "sha256": "7c3e9604b4a43573cce51a1c1b80f5699a67c42c7b103b2bcade0f3c32ecf3bf",
+    "comparisons": [
+      {
+        "algorithm": "md4",
+        "digest_hex": "8dcfadf94634ee26c026fc40e80865ec"
+      },
+      {
+        "algorithm": "md5",
+        "digest_hex": "33708f4a0d75b38d148e85f317c29706"
+      }
+    ],
+    "all_equal": true
+  },
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-md-stream-20261023T174028Z-dfdffd7d",
+  "store_name": "evidence/crax-md-stream/20261023T174028Z-dfdffd7d/input.bin",
+  "object_key": "ic/v1/acceptance/crax-md-stream-20261023T174028Z-dfdffd7d/sha256/04/042a02b55ba342cdd30322331816b6e4bca073f33bdb80149dc74a6f949802f4",
+  "s3": {
+    "head_size_matches": true,
+    "downloaded_bytes_match": true,
+    "fresh_md4": {
+      "status": "ok",
+      "algorithm": "md4",
+      "input_bytes": 4097,
+      "output_bytes": 16,
+      "digest_hex": "1aa386111ab89ddd9e813e7a1a2f9701"
+    },
+    "fresh_md5": {
+      "status": "ok",
+      "algorithm": "md5",
+      "input_bytes": 4097,
+      "output_bytes": 16,
+      "digest_hex": "82b1834165b5032bacc5f34d594f6a36"
+    }
+  },
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "validation": {
+    "md4_library_tests_passed": 3,
+    "md5_library_tests_passed": 3,
+    "debug_cli_build": "passed",
+    "release_cli_build": "passed",
+    "rustfmt_check": "passed",
+    "git_diff_check": "passed",
+    "json_parse_check": "passed"
+  }
+}

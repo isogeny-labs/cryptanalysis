@@ -162,16 +162,19 @@ command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
 fetched and digest-checked before `crax` hashes it. Set the sibling store's
 remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
 receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
-For `--file`, SHA-1, SHA-224/256/384/512, SHA-512/224 and SHA-512/256,
-SHA-3-224/256/384/512, SHAKE128/256, and BLAKE3 use incremental processing
-with a 64 KiB read buffer. Text and hex inputs, and MD4/MD5 file inputs,
-retain the existing in-memory path.
+For `--file`, MD4/MD5, SHA-1, SHA-224/256/384/512, SHA-512/224 and
+SHA-512/256, SHA-3-224/256/384/512, SHAKE128/256, and BLAKE3 use incremental
+processing with a 64 KiB read buffer. Text and hex inputs retain the
+in-memory path.
 The [streaming hash acceptance receipt](CRAX_STREAM_HASH_ACCEPTANCE_20261023.json)
 records 207 boundary comparisons, nine large-file digests, and a fresh-cache
 Setec S3 read through both name and digest references, followed by cleanup.
 The [SHA-1 and SHA-512 family streaming receipt](CRAX_SHA_REMAINDER_STREAM_ACCEPTANCE_20261023.json)
 records 85 boundary comparisons, five large-file digests, and fresh-cache
 Setec S3 reads through both reference forms, followed by cleanup.
+The [MD4/MD5 streaming receipt](CRAX_MD_STREAM_ACCEPTANCE_20261023.json)
+records 32 comparisons against OpenSSL MD4 and Python MD5, two large-file
+digests, and fresh-cache Setec S3 reads through both reference forms.
 
 `hash` accepts a single `--text`, `--hex`, or `--file` input and supports
 SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for
