@@ -1,0 +1,67 @@
+{
+  "evidence": {
+    "allocation": {
+      "instance_id": "srwxamrnnf2mye",
+      "provider": "runpod",
+      "receipt_sha256": "e1439b9e89313023e865f8da19324c8c9cb4a442312f17aba19eff4469ea6439"
+    },
+    "architecture": "x86_64",
+    "cgroup": "/sys/fs/cgroup/docker/8112ec06d1114c0a4714c26314a00cb598087b30360ca7d16572df2a725e76b9",
+    "cmdline": "BOOT_IMAGE=/vmlinuz-6.8.0-138-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro systemd.unified_cgroup_hierarchy=false",
+    "compiler": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cpu.max": null,
+    "cpu.pressure": null,
+    "cpu.stat": null,
+    "cpu_model": "AMD EPYC 4564P 16-Core Processor",
+    "cpus": [
+      22
+    ],
+    "cpuset.cpus.effective": null,
+    "execution_cpu": 22,
+    "frequency": {
+      "22": {
+        "current_khz": "5489280"
+      }
+    },
+    "host": "8112ec06d111",
+    "host_exclusivity_proved": false,
+    "irq_affinity_overlap": [],
+    "kernel": "6.8.0-138-generic",
+    "mem_nodes": [
+      0
+    ],
+    "memory.current": null,
+    "memory.events": null,
+    "memory.max": null,
+    "os_release": "PRETTY_NAME=\"Ubuntu 24.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.4 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+    "per_cpu_counter_available": true,
+    "runner_affinity": [
+      3,
+      6,
+      19,
+      22
+    ],
+    "self_cgroup": "/sys/fs/cgroup/docker/8112ec06d1114c0a4714c26314a00cb598087b30360ca7d16572df2a725e76b9",
+    "timestamp_ns": 1792789670024608434,
+    "topology": {
+      "22": "6,22"
+    },
+    "virtualization": "docker"
+  },
+  "ok": false,
+  "problems": [
+    "declared cgroup is unavailable beneath cgroup v2",
+    "effective cpuset unavailable",
+    "cpu.stat counters unavailable",
+    "memory.events counters unavailable",
+    "cpu.max unavailable",
+    "memory.max unavailable",
+    "cpu.pressure unavailable",
+    "memory.current unavailable",
+    "cpu.max is malformed",
+    "memory.max is malformed",
+    "memory.current is malformed",
+    "cpu.pressure counters unavailable"
+  ],
+  "tier": "tier1"
+}
