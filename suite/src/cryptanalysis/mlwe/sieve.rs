@@ -581,6 +581,103 @@ pub fn from_bigint_basis(basis: &[Vec<BigInt>]) -> Vec<Vect> {
 /// afterwards, and `log2` of the lattice volume (which must not move).
 pub type BkzStage = (usize, f64, f64);
 
+/// A complete progressive BKZ stage, including the exact integer basis needed
+/// to continue at the next block size.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct BkzCheckpoint {
+    pub stage: BkzStage,
+    pub basis: Vec<Vec<String>>,
+}
+
+impl BkzCheckpoint {
+    fn from_basis(beta: usize, basis: &[Vec<BigInt>]) -> Self {
+        let rounded = from_bigint_basis(basis);
+        Self {
+            stage: (
+                beta,
+                measured_head_log2(&rounded),
+                measured_log2_volume(&rounded),
+            ),
+            basis: basis
+                .iter()
+                .map(|row| row.iter().map(ToString::to_string).collect())
+                .collect(),
+        }
+    }
+
+    fn parsed_basis(&self, dim: usize) -> Result<Vec<Vec<BigInt>>, String> {
+        if self.basis.len() != dim || self.basis.iter().any(|row| row.len() != dim) {
+            return Err("saved BKZ basis dimensions differ from the input".into());
+        }
+        self.basis
+            .iter()
+            .map(|row| {
+                row.iter()
+                    .map(|value| {
+                        BigInt::parse_bytes(value.as_bytes(), 10)
+                            .ok_or_else(|| "invalid saved BKZ basis coefficient".into())
+                    })
+                    .collect()
+            })
+            .collect()
+    }
+}
+
+/// Resume from complete LLL/BKZ stage boundaries and commit each new stage
+/// before beginning the next one.
+pub fn progressive_bkz_resume(
+    basis: &[Vect],
+    beta_max: usize,
+    delta: f64,
+    mut saved: Vec<BkzCheckpoint>,
+    mut committed: impl FnMut(usize, &BkzCheckpoint) -> Result<(), String>,
+) -> Result<(Vec<Vect>, Vec<BkzStage>), String> {
+    use crate::cryptanalysis::lattice::{bkz_reduce, lll_reduce};
+    let dim = basis.len();
+    if dim == 0 || basis.iter().any(|row| row.len() != dim) {
+        return Err("BKZ basis must be nonempty and square".into());
+    }
+    let maximum_stages = 1 + beta_max.saturating_sub(2) / 2;
+    if saved.len() > maximum_stages {
+        return Err("saved BKZ stages exceed the requested block size".into());
+    }
+    for (idx, checkpoint) in saved.iter().enumerate() {
+        let expected_beta = if idx == 0 { 2 } else { 2 * (idx + 1) };
+        if checkpoint.stage.0 != expected_beta {
+            return Err("saved BKZ stages are out of order".into());
+        }
+        let exact = checkpoint.parsed_basis(dim)?;
+        let measured = BkzCheckpoint::from_basis(expected_beta, &exact);
+        if (measured.stage.1 - checkpoint.stage.1).abs() > 1e-9
+            || (measured.stage.2 - checkpoint.stage.2).abs() > 1e-9
+        {
+            return Err("saved BKZ stage profile does not match its basis".into());
+        }
+    }
+    let mut b = if let Some(last) = saved.last() {
+        last.parsed_basis(dim)?
+    } else {
+        let mut b = to_bigint_basis(basis);
+        lll_reduce(&mut b, delta).map_err(str::to_string)?;
+        let checkpoint = BkzCheckpoint::from_basis(2, &b);
+        committed(0, &checkpoint)?;
+        saved.push(checkpoint);
+        b
+    };
+    let mut beta = 2 * (saved.len() + 1);
+    while beta <= beta_max {
+        bkz_reduce(&mut b, beta, delta).map_err(str::to_string)?;
+        let checkpoint = BkzCheckpoint::from_basis(beta, &b);
+        committed(saved.len(), &checkpoint)?;
+        saved.push(checkpoint);
+        beta += 2;
+    }
+    Ok((
+        from_bigint_basis(&b),
+        saved.iter().map(|checkpoint| checkpoint.stage).collect(),
+    ))
+}
+
 pub fn progressive_bkz(
     basis: &[Vect],
     beta_max: usize,
@@ -939,6 +1036,32 @@ mod tests {
         for s in &stages {
             assert!((s.2 - v0).abs() < 0.5, "volume moved: {} vs {v0}", s.2);
         }
+    }
+
+    #[test]
+    fn progressive_bkz_resumes_exact_basis_after_lll() {
+        let basis = random_qary_lattice(8, 257, 5);
+        let expected = progressive_bkz(&basis, 6, 0.99).unwrap();
+        let mut saved = Vec::new();
+        let stopped = progressive_bkz_resume(&basis, 6, 0.99, Vec::new(), |idx, checkpoint| {
+            saved.push(checkpoint.clone());
+            if idx == 0 {
+                Err("stopped after checkpoint".into())
+            } else {
+                Ok(())
+            }
+        });
+        assert!(stopped.is_err());
+        assert_eq!(saved.len(), 1);
+        let mut resumed = Vec::new();
+        let actual = progressive_bkz_resume(&basis, 6, 0.99, saved, |idx, _| {
+            resumed.push(idx);
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(resumed, vec![1, 2]);
+        assert_eq!(actual.0, expected.0);
+        assert_eq!(actual.1, expected.1);
     }
 
     #[test]

@@ -98,6 +98,10 @@ the curve interrupted in progress is run again.
 each completed dimension locally and to S3, and restores checked rows into a
 fresh directory before continuing the remaining dimensions.
 
+`crax mlwe bkz` also accepts progress and state flags, saving the exact
+integer basis after LLL and each complete block-size stage. A fresh S3 restore
+continues at the next stage.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh

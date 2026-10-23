@@ -37,6 +37,7 @@ is a separate implementation with these observed interfaces:
 | `crax ic fixed` | `--verbose --progress-every` stage and SQLite-size heartbeat | Its own transactional `--dir/campaign.sqlite3` | `--s3-uri --resume` commits a consistent SQLite snapshot after each valid invocation |
 | `crax isogeny experiment` | `--verbose --progress-every` heartbeat and completed-curve count | `--state-dir --resume` after each starting curve | `--s3-uri` with the state directory; checked curve artifacts and final report |
 | `crax mlwe scaling` | `--verbose --progress-every` heartbeat and per-dimension results | `--state-dir --resume` after each dimension | `--s3-uri` with the state directory; checked row artifacts and final report |
+| `crax mlwe bkz` | `--verbose --progress-every` heartbeat and completed block sizes | `--state-dir --resume` with the exact reduced basis after each stage | `--s3-uri` with the state directory; checked stage bases and final report |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -77,6 +78,19 @@ crax mlwe scaling --dims 10,12,14,16,18 --verbose --progress-every 5 \
   --state-dir ./runs/mlwe-scaling --s3-uri s3://my-bucket/crax/mlwe-scaling
 crax mlwe scaling --dims 10,12,14,16,18 --resume \
   --state-dir ./runs/mlwe-scaling-restored --s3-uri s3://my-bucket/crax/mlwe-scaling
+```
+
+`crax mlwe bkz` saves the full integer basis after LLL and every completed
+even block size. Resume starts at the next block size, preserving the previous
+reductions. The final report contains the stage profile and reduced basis.
+
+```sh
+crax mlwe bkz --dim 24 --beta 12 --q 4099 --seed 5 \
+  --verbose --progress-every 5 --state-dir ./runs/mlwe-bkz \
+  --s3-uri s3://my-bucket/crax/mlwe-bkz
+crax mlwe bkz --dim 24 --beta 12 --q 4099 --seed 5 \
+  --resume --state-dir ./runs/mlwe-bkz-restored \
+  --s3-uri s3://my-bucket/crax/mlwe-bkz
 ```
 
 `crax icx run` uses its in-process pipeline when run without state flags.

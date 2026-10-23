@@ -20,7 +20,7 @@ use crate::cryptanalysis::mlwe::report::{
 };
 use crate::cryptanalysis::mlwe::sieve::{
     bucketed_sieve, gauss_sieve, measure_gauss_scaling, norm2, nv_sieve, progressive_bkz,
-    random_qary_lattice, SieveConfig,
+    progressive_bkz_resume, random_qary_lattice, BkzCheckpoint, SieveConfig,
 };
 use clap::Subcommand;
 
@@ -107,6 +107,21 @@ pub enum MlweOp {
         q: i64,
         #[arg(long, default_value_t = 5)]
         seed: u64,
+        /// Print completed block sizes and elapsed-work heartbeats.
+        #[arg(long)]
+        verbose: bool,
+        /// Seconds between heartbeats (implies --verbose).
+        #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+        progress_every: Option<u64>,
+        /// Persist the exact integer basis after each complete stage.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue local state or restore S3 state into a fresh directory.
+        #[arg(long)]
+        resume: bool,
+        /// Mirror stage bases and the final report to S3.
+        #[arg(long)]
+        s3_uri: Option<String>,
     },
     /// Chosen-ciphertext key recovery against ML-KEM from decapsulation
     /// leakage.
@@ -548,10 +563,137 @@ pub fn run(op: MlweOp) {
             );
         }
 
-        MlweOp::Bkz { dim, beta, q, seed } => {
+        MlweOp::Bkz {
+            dim,
+            beta,
+            q,
+            seed,
+            verbose,
+            progress_every,
+            state_dir,
+            resume,
+            s3_uri,
+        } => {
+            if (resume || s3_uri.is_some()) && state_dir.is_none() {
+                eprintln!("error: --resume and --s3-uri require --state-dir");
+                std::process::exit(2);
+            }
+            if dim == 0 || q < 2 {
+                eprintln!("error: --dim must be positive and --q must be at least 2");
+                std::process::exit(2);
+            }
             let basis = random_qary_lattice(dim, q, seed);
-            match progressive_bkz(&basis, beta, 0.99) {
-                Ok((_, stages)) => {
+            let live = verbose || progress_every.is_some();
+            let mut identity = blake3::Hasher::new();
+            identity.update(b"crax-mlwe-bkz-v1\0");
+            identity.update(&serde_json::to_vec(&(dim, beta, q, seed, 0.99f64)).unwrap());
+            identity.update(include_str!("../../../cryptanalysis/mlwe/sieve.rs").as_bytes());
+            identity.update(include_str!("../../../cryptanalysis/lattice.rs").as_bytes());
+            identity.update(env!("CARGO_PKG_VERSION").as_bytes());
+            let identity = identity.finalize().to_hex().to_string();
+            let mut state = match state_dir
+                .as_ref()
+                .map(|dir| {
+                    super::unit_state::UnitState::prepare(
+                        dir,
+                        s3_uri.as_deref(),
+                        "mlwe-bkz",
+                        &identity,
+                        resume,
+                    )
+                })
+                .transpose()
+            {
+                Ok(state) => state,
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            let saved: Vec<BkzCheckpoint> = match state.as_ref().map(|s| s.completed()).transpose()
+            {
+                Ok(Some(units)) => units
+                    .into_iter()
+                    .map(|bytes| {
+                        serde_json::from_slice(&bytes)
+                            .map_err(|e| format!("invalid saved BKZ stage: {e}"))
+                    })
+                    .collect::<Result<_, _>>()
+                    .unwrap_or_else(|e| {
+                        eprintln!("error: {e}");
+                        std::process::exit(1);
+                    }),
+                Ok(None) => Vec::new(),
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            let done = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(saved.len()));
+            let total = 1 + beta.saturating_sub(2) / 2;
+            let started = std::time::Instant::now();
+            if live {
+                eprintln!(
+                    "[mlwe bkz] {} of {} stages already complete",
+                    saved.len(),
+                    total
+                );
+            }
+            let heartbeat = if live {
+                let (tx, rx) = std::sync::mpsc::channel::<()>();
+                let done = done.clone();
+                let every = progress_every.unwrap_or(5);
+                let worker = std::thread::spawn(move || {
+                    while rx
+                        .recv_timeout(std::time::Duration::from_secs(every))
+                        .is_err()
+                    {
+                        eprintln!(
+                            "[mlwe bkz] {}/{} stages complete elapsed={}s",
+                            done.load(std::sync::atomic::Ordering::Relaxed),
+                            total,
+                            started.elapsed().as_secs()
+                        );
+                    }
+                });
+                Some((tx, worker))
+            } else {
+                None
+            };
+            let result = if state.is_none() && !live {
+                progressive_bkz(&basis, beta, 0.99).map_err(str::to_string)
+            } else {
+                progressive_bkz_resume(&basis, beta, 0.99, saved, |idx, checkpoint| {
+                    if let Some(state) = &mut state {
+                        state.commit(
+                            idx,
+                            &serde_json::to_vec_pretty(checkpoint).map_err(|e| e.to_string())?,
+                        )?;
+                    }
+                    done.store(idx + 1, std::sync::atomic::Ordering::Relaxed);
+                    if live {
+                        eprintln!(
+                            "[mlwe bkz] beta={} complete: head_log2={:.4} volume_log2={:.4}",
+                            checkpoint.stage.0, checkpoint.stage.1, checkpoint.stage.2
+                        );
+                    }
+                    Ok(())
+                })
+            };
+            if let Some((tx, worker)) = heartbeat {
+                let _ = tx.send(());
+                let _ = worker.join();
+            }
+            match result {
+                Ok((reduced, stages)) => {
+                    if let Some(state) = &mut state {
+                        let report = serde_json::json!({"schema_version":1,"operation":"mlwe-bkz",
+                            "dim":dim,"beta":beta,"q":q,"seed":seed,"stages":stages,"basis":reduced});
+                        if let Err(e) = state.finish(&serde_json::to_vec_pretty(&report).unwrap()) {
+                            eprintln!("error: {e}");
+                            std::process::exit(1);
+                        }
+                    }
                     println!(
                         "{:>6}  {:>16}  {:>16}",
                         "beta", "log2 ||b*_0||", "log2 volume"
