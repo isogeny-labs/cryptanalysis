@@ -61,7 +61,7 @@ fn is_zero(v: &[i64]) -> bool {
 }
 
 /// What a sieve did, as opposed to what it found.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct SieveStats {
     /// Peak number of vectors held.
     pub peak_list: usize,
@@ -246,11 +246,49 @@ impl<'a> LatticeSampler<'a> {
 /// can shorten each other. The shortest list entry at termination is, with the
 /// usual heuristic, the shortest lattice vector.
 pub fn gauss_sieve(basis: &[Vect], cfg: &SieveConfig) -> SieveResult {
-    let mut list: Vec<Vect> = Vec::new();
-    let mut stack: Vec<Vect> = Vec::new();
+    gauss_sieve_resume(basis, cfg, None, u64::MAX, |_| Ok(())).expect("infallible sieve callback")
+}
+
+/// State after a complete Gauss iteration. The sampler is restored by replaying
+/// its deterministic samples; expensive list reductions are never repeated.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct GaussCheckpoint {
+    pub list: Vec<Vect>,
+    pub stack: Vec<Vect>,
+    pub stats: SieveStats,
+}
+
+pub fn gauss_sieve_resume<F>(
+    basis: &[Vect],
+    cfg: &SieveConfig,
+    saved: Option<GaussCheckpoint>,
+    every: u64,
+    mut checkpoint: F,
+) -> Result<SieveResult, String>
+where
+    F: FnMut(&GaussCheckpoint) -> Result<(), String>,
+{
+    let GaussCheckpoint {
+        mut list,
+        mut stack,
+        mut stats,
+    } = saved.unwrap_or(GaussCheckpoint {
+        list: Vec::new(),
+        stack: Vec::new(),
+        stats: SieveStats::default(),
+    });
+    if stats.samples > cfg.max_samples
+        || stats.iterations > cfg.max_iterations
+        || list.len() > cfg.max_list
+        || list.iter().chain(&stack).any(|v| v.len() != basis[0].len())
+    {
+        return Err("saved Gauss sieve state is invalid".into());
+    }
     let mut sampler = LatticeSampler::new(basis, cfg.seed, cfg.sample_range)
         .with_max_retries(cfg.max_sample_retries);
-    let mut stats = SieveStats::default();
+    for _ in 0..stats.samples {
+        sampler.sample();
+    }
 
     while stats.collisions < cfg.max_collisions
         && list.len() < cfg.max_list
@@ -282,6 +320,13 @@ pub fn gauss_sieve(basis: &[Vect], cfg: &SieveConfig) -> SieveResult {
         }
         if is_zero(&v) {
             stats.collisions += 1;
+            if stats.iterations == 1 || stats.iterations % every.max(1) == 0 {
+                checkpoint(&GaussCheckpoint {
+                    list: list.clone(),
+                    stack: stack.clone(),
+                    stats: stats.clone(),
+                })?;
+            }
             continue;
         }
 
@@ -301,9 +346,24 @@ pub fn gauss_sieve(basis: &[Vect], cfg: &SieveConfig) -> SieveResult {
         list = keep;
         list.push(v);
         stats.peak_list = stats.peak_list.max(list.len());
+        if stats.iterations == 1 || stats.iterations % every.max(1) == 0 {
+            checkpoint(&GaussCheckpoint {
+                list: list.clone(),
+                stack: stack.clone(),
+                stats: stats.clone(),
+            })?;
+        }
     }
 
-    finish(list, basis, stats)
+    if stats.iterations > 1 && stats.iterations % every.max(1) != 0 {
+        checkpoint(&GaussCheckpoint {
+            list: list.clone(),
+            stack: stack.clone(),
+            stats: stats.clone(),
+        })?;
+    }
+
+    Ok(finish(list, basis, stats))
 }
 
 /// Assemble a result from a sieve's database.
@@ -339,26 +399,78 @@ fn finish(mut list: Vec<Vect>, basis: &[Vect], stats: SieveStats) -> SieveResult
 /// `gamma` must be in `(0.5, 1)`; 0.95 is the usual choice and what
 /// `Default` uses.
 pub fn nv_sieve(basis: &[Vect], n_start: usize, gamma: f64, cfg: &SieveConfig) -> SieveResult {
+    nv_sieve_resume(basis, n_start, gamma, cfg, None, |_| Ok(()))
+        .expect("infallible sieve callback")
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct NvCheckpoint {
+    pub list: Vec<Vect>,
+    pub best: Option<Vect>,
+    pub radius2: f64,
+    pub stats: SieveStats,
+    pub finished: bool,
+}
+
+pub fn nv_sieve_resume<F>(
+    basis: &[Vect],
+    n_start: usize,
+    gamma: f64,
+    cfg: &SieveConfig,
+    saved: Option<NvCheckpoint>,
+    mut checkpoint: F,
+) -> Result<SieveResult, String>
+where
+    F: FnMut(&NvCheckpoint) -> Result<(), String>,
+{
     assert!(gamma > 0.5 && gamma < 1.0, "gamma must lie in (0.5, 1)");
-    let mut sampler = LatticeSampler::new(basis, cfg.seed, cfg.sample_range)
-        .with_max_retries(cfg.max_sample_retries);
-    let mut stats = SieveStats::default();
-    let mut list: Vec<Vect> = (0..n_start)
-        .map(|_| {
-            stats.samples += 1;
-            sampler.sample()
-        })
-        .collect();
-    stats.peak_list = list.len();
+    let NvCheckpoint {
+        mut list,
+        mut best,
+        mut radius2,
+        mut stats,
+        mut finished,
+    } = if let Some(saved) = saved {
+        if saved.stats.rounds > 64
+            || saved.stats.samples != n_start
+            || saved
+                .list
+                .iter()
+                .chain(saved.best.iter())
+                .any(|v| v.len() != basis[0].len())
+            || !saved.radius2.is_finite()
+            || saved.radius2 < 0.0
+        {
+            return Err("saved NV sieve state is invalid".into());
+        }
+        saved
+    } else {
+        let mut sampler = LatticeSampler::new(basis, cfg.seed, cfg.sample_range)
+            .with_max_retries(cfg.max_sample_retries);
+        let list: Vec<Vect> = (0..n_start).map(|_| sampler.sample()).collect();
+        let best = list
+            .iter()
+            .filter(|v| !is_zero(v))
+            .min_by_key(|v| norm2(v))
+            .cloned();
+        let radius2 = list.iter().map(|v| norm2(v)).max().unwrap_or(0) as f64;
+        let stats = SieveStats {
+            samples: n_start,
+            peak_list: list.len(),
+            ..Default::default()
+        };
+        let initial = NvCheckpoint {
+            list,
+            best,
+            radius2,
+            stats,
+            finished: false,
+        };
+        checkpoint(&initial)?;
+        initial
+    };
 
-    let mut radius2 = list.iter().map(|v| norm2(v)).max().unwrap_or(0) as f64;
-    let mut best: Option<Vect> = list
-        .iter()
-        .filter(|v| !is_zero(v))
-        .min_by_key(|v| norm2(v))
-        .cloned();
-
-    for _ in 0..64 {
+    while stats.rounds < 64 && !finished {
         stats.rounds += 1;
         let target2 = radius2 * gamma * gamma;
         let mut centres: Vec<Vect> = Vec::new();
@@ -407,21 +519,36 @@ pub fn nv_sieve(basis: &[Vect], n_start: usize, gamma: f64, cfg: &SieveConfig) -
             }
         }
         if next.len() < 2 {
+            finished = true;
+            checkpoint(&NvCheckpoint {
+                list: list.clone(),
+                best: best.clone(),
+                radius2,
+                stats: stats.clone(),
+                finished,
+            })?;
             break;
         }
         list = next;
         stats.peak_list = stats.peak_list.max(list.len() + centres.len());
         radius2 = target2;
         if radius2 < 1.0 {
-            break;
+            finished = true;
         }
+        checkpoint(&NvCheckpoint {
+            list: list.clone(),
+            best: best.clone(),
+            radius2,
+            stats: stats.clone(),
+            finished,
+        })?;
     }
 
     let mut db = list;
     if let Some(b) = &best {
         db.push(b.clone());
     }
-    finish(db, basis, stats)
+    Ok(finish(db, basis, stats))
 }
 
 /// Statistics specific to the bucketed sieve, so the saving is quotable.
@@ -468,23 +595,76 @@ pub fn bucketed_sieve(
     rounds: usize,
     cfg: &SieveConfig,
 ) -> BucketedResult {
+    bucketed_sieve_resume(basis, n_start, buckets, rounds, cfg, None, |_| Ok(()))
+        .expect("infallible sieve callback")
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct BucketedCheckpoint {
+    pub list: Vec<Vect>,
+    pub stats: SieveStats,
+    pub bucketed_pairs: u64,
+    pub all_pairs: u64,
+    pub finished: bool,
+}
+
+pub fn bucketed_sieve_resume<F>(
+    basis: &[Vect],
+    n_start: usize,
+    buckets: usize,
+    rounds: usize,
+    cfg: &SieveConfig,
+    saved: Option<BucketedCheckpoint>,
+    mut checkpoint: F,
+) -> Result<BucketedResult, String>
+where
+    F: FnMut(&BucketedCheckpoint) -> Result<(), String>,
+{
     let dim = basis[0].len();
     let mut rng = SmallRng::seed_from_u64(cfg.seed ^ 0xB0CC_E7ED);
-    let mut sampler = LatticeSampler::new(basis, cfg.seed, cfg.sample_range)
-        .with_max_retries(cfg.max_sample_retries);
-    let mut stats = SieveStats::default();
-    let mut list: Vec<Vect> = (0..n_start)
-        .map(|_| {
-            stats.samples += 1;
-            sampler.sample()
-        })
-        .collect();
-    stats.peak_list = list.len();
+    let BucketedCheckpoint {
+        mut list,
+        mut stats,
+        mut bucketed_pairs,
+        mut all_pairs,
+        mut finished,
+    } = if let Some(saved) = saved {
+        if saved.stats.rounds > rounds
+            || saved.stats.samples != n_start
+            || saved.list.iter().any(|v| v.len() != dim)
+        {
+            return Err("saved bucketed sieve state is invalid".into());
+        }
+        saved
+    } else {
+        let mut sampler = LatticeSampler::new(basis, cfg.seed, cfg.sample_range)
+            .with_max_retries(cfg.max_sample_retries);
+        let list: Vec<Vect> = (0..n_start).map(|_| sampler.sample()).collect();
+        let initial = BucketedCheckpoint {
+            stats: SieveStats {
+                samples: n_start,
+                peak_list: list.len(),
+                ..Default::default()
+            },
+            list,
+            bucketed_pairs: 0,
+            all_pairs: 0,
+            finished: false,
+        };
+        checkpoint(&initial)?;
+        initial
+    };
+    // Rebuild only the random direction stream. Previous pair reductions are
+    // retained in the saved list, so restoring avoids their cost.
+    for _ in 0..stats
+        .rounds
+        .saturating_mul(buckets.max(1))
+        .saturating_mul(dim)
+    {
+        let _: bool = rng.gen();
+    }
 
-    let mut bucketed_pairs = 0u64;
-    let mut all_pairs = 0u64;
-
-    for _ in 0..rounds {
+    while stats.rounds < rounds && !finished {
         stats.rounds += 1;
         let n = list.len();
         all_pairs += (n as u64) * (n as u64).saturating_sub(1) / 2;
@@ -535,17 +715,24 @@ pub fn bucketed_sieve(
         list = next;
         list.retain(|v| !is_zero(v));
         if list.len() < 2 {
-            break;
+            finished = true;
         }
         stats.peak_list = stats.peak_list.max(list.len());
+        checkpoint(&BucketedCheckpoint {
+            list: list.clone(),
+            stats: stats.clone(),
+            bucketed_pairs,
+            all_pairs,
+            finished,
+        })?;
     }
 
-    BucketedResult {
+    Ok(BucketedResult {
         result: finish(list, basis, stats),
         bucketed_pairs,
         all_pairs,
         buckets: buckets.max(1),
-    }
+    })
 }
 
 // ── Reduction and profiles ───────────────────────────────────────────────────
@@ -848,6 +1035,51 @@ mod tests {
             seed,
             ..Default::default()
         }
+    }
+
+    #[test]
+    fn all_sieves_resume_from_live_state_with_identical_results() {
+        let basis = random_qary_lattice(8, 127, 19);
+        let cfg = SieveConfig {
+            max_collisions: 12,
+            max_iterations: 300,
+            max_samples: 300,
+            ..small_cfg(19)
+        };
+
+        let mut gauss_saved = None;
+        let baseline = gauss_sieve_resume(&basis, &cfg, None, 1, |stage| {
+            if stage.stats.iterations == 3 {
+                gauss_saved = Some(stage.clone());
+            }
+            Ok(())
+        })
+        .unwrap();
+        let resumed = gauss_sieve_resume(&basis, &cfg, gauss_saved, 1, |_| Ok(())).unwrap();
+        assert_eq!(resumed, baseline);
+
+        let mut nv_saved = None;
+        let baseline = nv_sieve_resume(&basis, 80, 0.95, &cfg, None, |stage| {
+            if stage.stats.rounds == 1 {
+                nv_saved = Some(stage.clone());
+            }
+            Ok(())
+        })
+        .unwrap();
+        let resumed = nv_sieve_resume(&basis, 80, 0.95, &cfg, nv_saved, |_| Ok(())).unwrap();
+        assert_eq!(resumed, baseline);
+
+        let mut bucket_saved = None;
+        let baseline = bucketed_sieve_resume(&basis, 80, 8, 4, &cfg, None, |stage| {
+            if stage.stats.rounds == 1 {
+                bucket_saved = Some(stage.clone());
+            }
+            Ok(())
+        })
+        .unwrap();
+        let resumed =
+            bucketed_sieve_resume(&basis, 80, 8, 4, &cfg, bucket_saved, |_| Ok(())).unwrap();
+        assert_eq!(resumed, baseline);
     }
 
     #[test]
