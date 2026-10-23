@@ -51,6 +51,53 @@ static void checkpoint_roundtrip(void)
     rmdir(dir);
 }
 
+static void rexp_checkpoint_roundtrip(void)
+{
+    char dir[] = "/tmp/ca-ic-rexp-checkpoint-XXXXXX";
+    CHECK(mkdtemp(dir) != NULL);
+    char journal[256], precomp[280], progress[280];
+    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
+    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
+    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
+    ca_ic_params pr;
+    ca_ic_params_default(&pr);
+    pr.method = CA_IC_RANDOM_EXPONENT;
+    pr.seed = 7;
+    pr.threads = 2;
+    pr.max_relation_tries = 1;
+    uint64_t x = 0;
+    ca_ic_stats st;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_NOT_FOUND);
+    uint64_t saved_tests = st.smooth_tests;
+    CHECK(saved_tests > 0);
+    CHECK(access(journal, F_OK) == 0);
+    CHECK(access(progress, F_OK) == 0);
+    pr.max_relation_tries = 0;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
+    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+    CHECK(st.smooth_tests > saved_tests);
+    CHECK(access(precomp, F_OK) == 0);
+    CHECK(unlink(precomp) == 0);
+    pr.seed = 8;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
+    pr.seed = 7;
+    FILE *damage = fopen(journal, "r+b");
+    CHECK(damage != NULL);
+    if (damage) {
+        CHECK(fseek(damage, -1, SEEK_END) == 0);
+        int last = fgetc(damage);
+        CHECK(last != EOF);
+        CHECK(fseek(damage, -1, SEEK_END) == 0);
+        CHECK(fputc(last ^ 0xff, damage) != EOF);
+        CHECK(fclose(damage) == 0);
+    }
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
+    unlink(journal); unlink(progress); rmdir(dir);
+}
+
 static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 {
     ca_ic_params pr;
@@ -100,6 +147,7 @@ static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 int main(void)
 {
     checkpoint_roundtrip();
+    rexp_checkpoint_roundtrip();
     /* small primes with a large prime factor in p-1 (safe primes) and
      * primes with smooth p-1 (Pohlig-Hellman path) */
     run(1000003, CA_IC_LINEAR_SIEVE, 1, 5);           /* 20 bits, p-1 = 2*3*166667 */

@@ -18,9 +18,11 @@
 #include "cryptanalysis/ca_rho.h"
 #include "curve_internal.h"
 #include "dlog_internal.h"
+#include "dlog_checkpoint_internal.h"
 #include "ec_tau_internal.h"
 
 #include <math.h>
+#include <inttypes.h>
 
 #define GLV_MAX_WALKS 4096
 
@@ -388,6 +390,156 @@ typedef struct glv_ctx {
 #endif
 } glv_ctx;
 
+/* A native snapshot includes the exact lane state. The size fields reject
+ * snapshots made with a different diagnostic or cycle-escape build. */
+typedef struct glv_checkpoint_header {
+    char magic[8];
+    uint64_t p, a, b, order, cofactor, endo_lambda, endo_c_mont;
+    uint64_t base[4], target[4];
+    uint32_t kind, endo_kind, aut_order, r, walks, dp_bits;
+    uint32_t walk_size, entry_size, walk_flags;
+    uint64_t seed, rng[4], ops, steps, entries, result;
+    double elapsed_seconds;
+    uint32_t solved;
+    uint64_t checksum;
+} glv_checkpoint_header;
+
+static void glv_checkpoint_identity(glv_checkpoint_header *h, const glv_ctx *c,
+                                    uint32_t walks)
+{
+    const ca_group *g = c->g;
+    memset(h, 0, sizeof(*h));
+    memcpy(h->magic, "CAGLV001", 8);
+    h->p = g->p; h->a = g->a; h->b = g->b; h->order = g->order;
+    h->cofactor = g->cofactor; h->endo_lambda = g->endo_lambda;
+    h->endo_c_mont = g->endo_c_mont;
+    ca_group_decode(g, h->base, &c->base);
+    ca_group_decode(g, h->target, &c->target);
+    h->kind = g->kind; h->endo_kind = g->endo_kind;
+    h->aut_order = g->aut_order; h->r = c->r; h->walks = walks;
+    h->dp_bits = (uint32_t)c->dp_bits;
+    h->walk_size = sizeof(glv_walk); h->entry_size = sizeof(ca_htab_entry);
+#ifdef CA_GLV_LOOKAHEAD_LEGACY
+    h->walk_flags |= 1;
+#endif
+#ifdef CA_GLV_CYCLE_ESCAPE
+    h->walk_flags |= 2;
+#endif
+#ifdef CA_GLV_TRACE
+    h->walk_flags |= 4;
+#endif
+}
+
+static int glv_checkpoint_same_run(const glv_checkpoint_header *a,
+                                    const glv_checkpoint_header *b)
+{
+    return memcmp(a->magic, b->magic, 8) == 0 && a->p == b->p &&
+           a->a == b->a && a->b == b->b && a->order == b->order &&
+           a->cofactor == b->cofactor && a->endo_lambda == b->endo_lambda &&
+           a->endo_c_mont == b->endo_c_mont &&
+           memcmp(a->base, b->base, sizeof(a->base)) == 0 &&
+           memcmp(a->target, b->target, sizeof(a->target)) == 0 &&
+           a->kind == b->kind && a->endo_kind == b->endo_kind &&
+           a->aut_order == b->aut_order && a->r == b->r &&
+           a->walks == b->walks && a->dp_bits == b->dp_bits &&
+           a->walk_size == b->walk_size && a->entry_size == b->entry_size &&
+           a->walk_flags == b->walk_flags;
+}
+
+static int glv_checkpoint_probe(const char *path, const glv_checkpoint_header *identity,
+                                 uint64_t requested_seed, glv_checkpoint_header *saved)
+{
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("glv: cannot open checkpoint");
+        return -1;
+    }
+    int ok = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
+             glv_checkpoint_same_run(saved, identity) && saved->seed &&
+             (!requested_seed || requested_seed == saved->seed) &&
+             saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
+             saved->elapsed_seconds >= 0;
+    fclose(f);
+    if (!ok) ca_set_error("glv: checkpoint identity, format or seed does not match");
+    return ok ? 1 : -1;
+}
+
+static int glv_checkpoint_load(const char *path, const glv_checkpoint_header *expected,
+                                glv_walk *walks, ca_htab *tab, ca_rng *rng,
+                                uint64_t *ops, uint64_t *steps, double *elapsed,
+                                uint64_t *result, int *solved, const glv_ctx *c)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) { ca_set_error("glv: cannot reopen checkpoint"); return 0; }
+    glv_checkpoint_header h = {0};
+    int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             memcmp(&h, expected, sizeof(h)) == 0;
+    uint64_t checksum = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    size_t lanes_bytes = (size_t)h.walks * sizeof(glv_walk);
+    if (ok) ok = fread(walks, 1, lanes_bytes, f) == lanes_bytes;
+    if (ok) hash = dlog_ckpt_hash(walks, lanes_bytes, hash);
+    for (uint64_t i = 0; ok && i < h.entries; i++) {
+        ca_htab_entry e;
+        ok = fread(&e, 1, sizeof(e), f) == sizeof(e);
+        if (ok) {
+            hash = dlog_ckpt_hash(&e, sizeof(e), hash);
+            ok = e.key && e.v0 < c->g->order && e.v1 < c->g->order &&
+                 ca_htab_insert(tab, e.key, e.v0, e.v1, NULL, NULL) == 0;
+        }
+    }
+    if (ok) ok = fgetc(f) == EOF && hash == checksum && tab->count == h.entries;
+    fclose(f);
+    for (uint32_t i = 0; ok && i < h.walks; i++)
+        ok = walks[i].a < c->g->order && walks[i].b < c->g->order &&
+             walks[i].idx < c->r && walks[i].first < c->r &&
+             walks[i].tries < c->r && walks[i].retry <= 1;
+    if (ok && h.solved)
+        ok = ca_verify_log(c->g, &c->base, &c->target, h.result);
+    if (!ok) { ca_set_error("glv: checkpoint is damaged or incompatible"); return 0; }
+    memcpy(rng->s, h.rng, sizeof(h.rng));
+    *ops = h.ops; *steps = h.steps; *elapsed = h.elapsed_seconds;
+    *result = h.result; *solved = h.solved;
+    return 1;
+}
+
+static int glv_checkpoint_save(const char *path, const glv_checkpoint_header *identity,
+                                const glv_walk *walks, const ca_htab *tab,
+                                const ca_rng *rng, uint64_t seed, uint64_t ops,
+                                uint64_t steps, double elapsed, uint64_t result, int solved)
+{
+    if (!path) return 1;
+    dlog_ckpt_file w;
+    if (!dlog_ckpt_begin(&w, path)) {
+        ca_set_error("glv: cannot create checkpoint"); return 0;
+    }
+    glv_checkpoint_header h = *identity;
+    h.seed = seed; memcpy(h.rng, rng->s, sizeof(h.rng));
+    h.ops = ops; h.steps = steps; h.entries = tab->count;
+    h.elapsed_seconds = elapsed; h.result = result; h.solved = solved;
+    size_t lanes_bytes = (size_t)h.walks * sizeof(glv_walk);
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    int ok = fwrite(&h, 1, sizeof(h), w.f) == sizeof(h) &&
+             fwrite(walks, 1, lanes_bytes, w.f) == lanes_bytes;
+    hash = dlog_ckpt_hash(walks, lanes_bytes, hash);
+    for (size_t i = 0; ok && i < tab->cap; i++) {
+        const ca_htab_entry *e = &tab->e[i];
+        if (!e->key) continue;
+        hash = dlog_ckpt_hash(e, sizeof(*e), hash);
+        ok = fwrite(e, 1, sizeof(*e), w.f) == sizeof(*e);
+    }
+    if (ok) {
+        h.checksum = hash;
+        ok = fseek(w.f, 0, SEEK_SET) == 0 && fwrite(&h, 1, sizeof(h), w.f) == sizeof(h);
+    }
+    ok = dlog_ckpt_finish(&w, ok);
+    if (!ok) ca_set_error("glv: cannot persist checkpoint");
+    return ok;
+}
+
 static uint64_t glv_generic_mul_budget(uint64_t scalar)
 {
     uint64_t ops = 0;
@@ -542,7 +694,10 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                                uint64_t seed, uint64_t *x, ca_stats *st,
                                int paired2, int batch_table, int plane_format,
                                int free_gauge, int tau_pair_steered,
-                               ca_curve_startup_stats *startup)
+                               ca_curve_startup_stats *startup,
+                               const char *checkpoint_path, uint32_t progress_interval,
+                               uint32_t checkpoint_interval, int verbose,
+                               uint64_t max_ops)
 {
     double t0 = ca_now();
     uint64_t n = g->order;
@@ -626,13 +781,22 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     c.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     c.abandon = (uint64_t)24 << dp;
 
+    glv_checkpoint_header identity, saved;
+    glv_checkpoint_identity(&identity, &c, W);
+    int existing = glv_checkpoint_probe(checkpoint_path, &identity, seed, &saved);
+    if (existing < 0) return CA_ERR_INTERNAL;
+    uint64_t effective_seed = existing ? saved.seed : ca_seed_or_random(seed);
     ca_rng rng;
-    ca_rng_seed(&rng, ca_seed_or_random(seed));
+    ca_rng_seed(&rng, effective_seed);
     uint64_t ops = 0;
+    uint64_t steps = 0;
+    double elapsed_prior = 0;
+    int checkpoint_ready = 0;
 #ifdef CA_GLV_TRACE
     glv_trace tr;
     memset(&tr, 0, sizeof(tr));
     uint64_t ops_mark = 0;
+    uint64_t trace_prior_ops = 0;
 #endif
     c.M = calloc(c.r, sizeof(ca_elem));
     c.alpha = calloc(c.r, sizeof(uint64_t));
@@ -694,16 +858,43 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     if (ca_htab_init(&tab, (size_t)(exp_dps < 1e8 ? exp_dps : 1e8)) != CA_OK) goto nomem;
     have_tab = 1;
     ca_status rc = CA_ERR_NOT_FOUND;
-    for (uint32_t w = 0; w < W; w++) {
-        if (!glv_restart(&c, &walks[w], &rng, &ops)) {
+    if (existing) {
+        uint64_t prior_ops, result;
+        int solved;
+        if (!glv_checkpoint_load(checkpoint_path, &saved, walks, &tab, &rng,
+                                 &prior_ops, &steps, &elapsed_prior, &result,
+                                 &solved, &c)) {
             rc = CA_ERR_INTERNAL;
             goto done;
         }
+        ops += prior_ops;
+#ifdef CA_GLV_TRACE
+        trace_prior_ops = prior_ops;
+        ops_mark += prior_ops;
+#endif
+        checkpoint_ready = 1;
+        if (solved) { *x = result; rc = CA_OK; goto done; }
+    } else {
+        for (uint32_t w = 0; w < W; w++) {
+            if (!glv_restart(&c, &walks[w], &rng, &ops)) {
+                rc = CA_ERR_INTERNAL;
+                goto done;
+            }
+        }
+        checkpoint_ready = 1;
     }
 #ifdef CA_GLV_TRACE
     tr.start_ops = ops - ops_mark;
 #endif
     uint64_t cap = 64 * sqrt_nm * c.m + (1ULL << 20); /* runaway guard */
+    if (max_ops && max_ops < cap) cap = max_ops;
+    double next_progress = ca_now() + (progress_interval ? progress_interval : 5);
+    double next_checkpoint = ca_now() + (checkpoint_interval ? checkpoint_interval : 60);
+    int monitor = checkpoint_path || verbose;
+    if (monitor && !dlog_ckpt_progress(checkpoint_path, "glv", "walk", "running",
+                           elapsed_prior + ca_now() - t0, ops, steps, tab.count, verbose)) {
+        ca_set_error("glv: cannot persist progress"); rc = CA_ERR_INTERNAL; goto done;
+    }
     while (ops < cap) {
         for (uint32_t w = 0; w < W; w++) {
             glv_walk *wk = &walks[w];
@@ -717,6 +908,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
         }
         ca_group_batch_op(g, Yn, Yn, B, W, scratch);
         ops += W;
+        steps += W;
 #ifdef CA_GLV_TRACE
         tr.step_ops += W;
         tr.iterations++;
@@ -905,12 +1097,43 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #endif
             }
         }
+        double now = monitor ? ca_now() : 0;
+        if (monitor && now >= next_progress) {
+            if (!dlog_ckpt_progress(checkpoint_path, "glv", "walk", "running",
+                                   elapsed_prior + now - t0, ops, steps, tab.count,
+                                   verbose)) {
+                ca_set_error("glv: cannot persist progress");
+                rc = CA_ERR_INTERNAL; goto done;
+            }
+            next_progress = now + (progress_interval ? progress_interval : 5);
+        }
+        if (checkpoint_path && now >= next_checkpoint) {
+            if (!glv_checkpoint_save(checkpoint_path, &identity, walks, &tab, &rng,
+                                     effective_seed, ops, steps,
+                                     elapsed_prior + now - t0, 0, 0)) {
+                rc = CA_ERR_INTERNAL; goto done;
+            }
+            next_checkpoint = now + (checkpoint_interval ? checkpoint_interval : 60);
+        }
     }
+    if (max_ops && ops >= max_ops) rc = CA_ERR_LIMIT;
 done:
+    if (have_tab && checkpoint_ready) {
+        double elapsed = elapsed_prior + ca_now() - t0;
+        if (checkpoint_path && !glv_checkpoint_save(checkpoint_path, &identity,
+                walks, &tab, &rng, effective_seed, ops, steps, elapsed,
+                rc == CA_OK ? *x : 0, rc == CA_OK)) rc = CA_ERR_INTERNAL;
+        if ((checkpoint_path || verbose) && !dlog_ckpt_progress(checkpoint_path, "glv", "walk",
+                                rc == CA_OK ? "ok" : "stopped", elapsed,
+                                ops, steps, tab.count, verbose)) {
+            ca_set_error("glv: cannot persist progress"); rc = CA_ERR_INTERNAL;
+        }
+    }
 #ifdef CA_GLV_TRACE
 {
     assert(tr.abandon_wasted <= tr.useful_steps);
-    assert(ca_glv_trace_ops_total(tr.table_ops, tr.start_ops, tr.restart_ops, tr.step_ops) == ops);
+    assert(ca_glv_trace_ops_total(tr.table_ops, tr.start_ops, tr.restart_ops, tr.step_ops)
+           + trace_prior_ops == ops);
     const char *path = getenv("CA_GLV_TRACE_FILE");
     FILE *fp = path ? fopen(path, "a") : NULL;
     if (fp) {
@@ -950,11 +1173,12 @@ done:
 #endif
     if (st) {
         st->group_ops += ops;
+        st->iterations += steps;
         st->table_entries = ca_max_u64(st->table_entries, tab.count);
         st->bytes_peak = ca_max_u64(st->bytes_peak, ca_htab_bytes(&tab) +
                          (uint64_t)c.r * 32 + (paired2
                          ? (plane_format ? sizeof(plane_pre) : sizeof(plane_pre.base)) : 0));
-        st->seconds += ca_now() - t0;
+        st->seconds += elapsed_prior + ca_now() - t0;
         st->threads = 1;
     }
     ca_htab_free(&tab);
@@ -1030,7 +1254,8 @@ static ca_status glv_covariant_rho_solve(const ca_group *g, const ca_elem *base,
         return CA_OK;
     }
     if (n < 64)
-        return glv_rho_solve(g, base, target, seed, x, st, 0, 0, 0, 0, 0, NULL);
+        return glv_rho_solve(g, base, target, seed, x, st, 0, 0, 0, 0, 0, NULL,
+                             NULL, 0, 0, 0, 0);
     glv_ctx c;
     memset(&c, 0, sizeof(c));
     c.g = g;
@@ -1214,7 +1439,7 @@ static ca_status curve_solve_mode(const ca_group *g, const ca_elem *base,
                              mode == CA_CURVE_STARTUP_TAU_PAIRED2_FREE_GAUGE_BATCH ||
                              mode == CA_CURVE_STARTUP_TAU_PAIRED2_TAUPAIR_STEER_BATCH,
                              mode == CA_CURVE_STARTUP_TAU_PAIRED2_TAUPAIR_STEER_BATCH,
-                             startup);
+                             startup, NULL, 0, 0, 0, 0);
     ca_rho_params rp;
     ca_rho_params_default(&rp);
     rp.seed = seed;
@@ -1226,6 +1451,35 @@ ca_status ca_curve_solve(const ca_group *g, const ca_elem *base, const ca_elem *
 {
     return curve_solve_mode(g, base, target, seed, x, CA_CURVE_STARTUP_GENERIC,
                             NULL, info, st);
+}
+
+ca_status ca_curve_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                      const ca_elem *target, uint64_t seed,
+                                      const char *checkpoint_path, uint32_t progress_interval,
+                                      uint32_t checkpoint_interval, int verbose,
+                                      uint64_t max_ops, uint64_t *x,
+                                      ca_curve_info *info, ca_stats *st)
+{
+    if (info) {
+        memset(info, 0, sizeof(*info));
+        info->endo = (ca_curve_endo)g->endo_kind;
+        info->aut_order = g->endo_kind ? g->aut_order : 2;
+        info->lambda = g->endo_lambda;
+        info->rho_speedup = sqrt((double)info->aut_order);
+    }
+    if (g->order && !ca_check_members(g, base, target, g->order, "glv rho"))
+        return CA_ERR_NOT_FOUND;
+    if (g->kind == CA_GROUP_EC && g->endo_kind)
+        return glv_rho_solve(g, base, target, seed, x, st, 0, 0, 0, 0, 0, NULL,
+                             checkpoint_path, progress_interval, checkpoint_interval,
+                             verbose, max_ops);
+    ca_rho_params rp;
+    ca_rho_params_default(&rp);
+    rp.seed = seed;
+    rp.max_ops = max_ops;
+    return ca_rho_solve_checkpointed(g, base, target, &rp, checkpoint_path,
+                                     progress_interval, checkpoint_interval,
+                                     verbose, x, st);
 }
 
 ca_status ca_curve_solve_startup(const ca_group *g, const ca_elem *base,
