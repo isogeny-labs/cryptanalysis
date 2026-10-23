@@ -296,6 +296,11 @@ Repeat the group, base, target, solver selection, and solver settings with
 `--resume`. `--max-ops` may be raised to continue a capped digit. The parent
 checkpoint is versioned and checksummed and binds the group, target, and
 selection settings. Each digit checkpoint validates its own solver state.
+Before S3 syncing starts on resume, the CLI checks the parent checkpoint's
+factor progress and any current digit checkpoint against the reconstructed
+prime-order problem. A damaged local parent or active digit is left in place
+and cannot replace the remote copy. A missing active digit can restart from
+the last completed digit saved in the parent checkpoint.
 `dlog.ckpt.progress.json` and `result.json` provide readable status. The
 local lock and S3 sync and restore rules described above apply.
 

@@ -247,6 +247,98 @@ static uint64_t ph_completed_digits(const ca_factorization *f, const ph_checkpoi
     return total;
 }
 
+ca_status ca_pohlig_checkpoint_validate(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    const ca_dlog_params *params, const char *checkpoint_prefix)
+{
+    ca_dlog_params def;
+    if (!params) { ca_dlog_params_default(&def); params = &def; }
+    if (!g || !base || !target || !checkpoint_prefix || !*checkpoint_prefix ||
+        !g->order) return CA_ERR_INVALID;
+    uint64_t n = ca_group_elem_order(g, base);
+    if (!n) n = g->order;
+    ca_factorization f;
+    ca_status rc = ca_factorize(n, &f);
+    if (rc != CA_OK) return rc;
+    char *parent = dlog_ckpt_path(checkpoint_prefix, ".ckpt");
+    if (!parent) return CA_ERR_NOMEM;
+    ph_checkpoint c = {0};
+    rc = ph_load(parent, &c, ph_identity(g, base, target, n, params), n, &f);
+    free(parent);
+    if (rc != CA_OK) return rc;
+    if (!c.version) {
+        ca_set_error("dlog parent checkpoint is missing");
+        return CA_ERR_INVALID;
+    }
+    uint64_t completed_modulus = 1;
+    for (uint64_t i = 0; i < c.fi; i++)
+        for (unsigned j = 0; j < f.f[i].e; j++) completed_modulus *= f.f[i].p;
+    if (c.modulus != completed_modulus) goto invalid;
+    ca_elem lhs, factor_base, rhs;
+    ca_group_mul(g, &lhs, target, n / c.modulus, NULL);
+    ca_group_mul(g, &factor_base, base, n / c.modulus, NULL);
+    ca_group_mul(g, &rhs, &factor_base, c.result, NULL);
+    if (!ca_group_equal(g, &lhs, &rhs)) goto invalid;
+    if (c.fi == f.count) {
+        if (c.modulus != n || c.k || c.qk != 1 || c.xk ||
+            !ca_verify_log(g, base, target, c.result)) goto invalid;
+        return CA_OK;
+    }
+    uint64_t q = f.f[c.fi].p, qe = 1, qk = 1;
+    for (unsigned i = 0; i < f.f[c.fi].e; i++) qe *= q;
+    for (uint64_t i = 0; i < c.k; i++) qk *= q;
+    if (c.qk != qk) goto invalid;
+    ca_elem base_e, target_e, gq;
+    ca_group_mul(g, &base_e, base, n / qe, NULL);
+    ca_group_mul(g, &target_e, target, n / qe, NULL);
+    ca_group_mul(g, &lhs, &target_e, qe / qk, NULL);
+    ca_group_mul(g, &factor_base, &base_e, qe / qk, NULL);
+    ca_group_mul(g, &rhs, &factor_base, c.xk, NULL);
+    if (!ca_group_equal(g, &lhs, &rhs)) goto invalid;
+    if (c.k == f.f[c.fi].e) return CA_OK;
+    ca_group_mul(g, &gq, &base_e, qe / q, NULL);
+    ca_elem t, hk;
+    ca_group_mul(g, &t, &base_e, c.xk, NULL);
+    ca_group_inv(g, &t, &t);
+    ca_group_op(g, &hk, &target_e, &t);
+    ca_group_mul(g, &hk, &hk, qe / (qk * q), NULL);
+    size_t len = strlen(checkpoint_prefix) + 80;
+    char *digit_path = malloc(len);
+    if (!digit_path) return CA_ERR_NOMEM;
+    snprintf(digit_path, len, "%s.factor%" PRIu64 ".digit%" PRIu64 ".ckpt",
+             checkpoint_prefix, c.fi, c.k);
+    if (access(digit_path, F_OK) != 0) {
+        free(digit_path);
+        return CA_OK; /* The active digit can restart from the parent state. */
+    }
+    ca_group sub = *g;
+    sub.order = q;
+    switch (resolve_prime_solver(&sub, 0, q - 1, params)) {
+    case CA_SOLVER_BSGS:
+        rc = ca_bsgs_checkpoint_validate(&sub, &gq, &hk, 0, q - 1,
+                                         &params->bsgs, digit_path); break;
+    case CA_SOLVER_RHO:
+        rc = ca_rho_checkpoint_validate(&sub, &gq, &hk, &params->rho, digit_path); break;
+    case CA_SOLVER_KANGAROO:
+        rc = ca_kangaroo_checkpoint_validate(&sub, &gq, &hk, 0, q - 1,
+                                             &params->kangaroo, digit_path); break;
+    case CA_SOLVER_GRUMPY:
+        rc = ca_grumpy_checkpoint_validate(&sub, &gq, &hk, 0, q - 1,
+                                           &params->grumpy, digit_path); break;
+    default:
+        rc = CA_ERR_INVALID; break;
+    }
+    free(digit_path);
+    if (rc != CA_OK) {
+        ca_set_error("dlog active digit checkpoint failed validation");
+        return rc;
+    }
+    return CA_OK;
+invalid:
+    ca_set_error("dlog parent checkpoint failed state validation");
+    return CA_ERR_INVALID;
+}
+
 ca_status ca_pohlig_hellman_checkpointed(const ca_group *g, const ca_elem *base,
                             const ca_elem *target, const ca_dlog_params *params,
                             const char *checkpoint_prefix, uint32_t progress_interval,
