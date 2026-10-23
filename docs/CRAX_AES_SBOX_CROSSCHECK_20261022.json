@@ -1,13 +1,14 @@
 {
   "binaries": {
     "crax": {
-      "sha256": "207357cb6fe7966eeef87d1435a9704e42b757e2ad71e7cbff584b9256388d5e"
+      "sha256": "855b4f178f7756ed18580c88c8905c97f62afead8dc0e6f6a883ccdf7e58e072"
     },
     "crypto": {
       "sha256": "2c723399f06d96bc1942c65a678b9419a7383d2beef6ef1761774980262934d4"
     }
   },
-  "date_utc": "2026-10-23T00:41:17.008235+00:00",
+  "combined_source_parent_commit": "db34271b9c00e9626fc781d18b711ddbdc2b9ad5",
+  "date_utc": "2026-10-23T01:08:13.207594+00:00",
   "reference": "sibling crypto release CLI; exact binary digests recorded below",
   "schema": "crax-aes-sbox-crosscheck/v1",
   "source_commit": "25cbe71e3b67df5ffd972b2eb9bf972894639a27",
@@ -63,9 +64,7 @@
     }
   },
   "validation": {
-    "cli_table_crosscheck": "all 65536 entries for each DDT, LAT, BCT, and DLCT match the sibling crypto release binary",
-    "release_crax_binary": "compiled and binary test target passed",
-    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads on current main base",
-    "targeted_unit": "2 passed; 0 failed"
+    "release_crax_binary": "built from combined branch",
+    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads; combined BCT/DLCT and hash-store branch"
   }
 }
