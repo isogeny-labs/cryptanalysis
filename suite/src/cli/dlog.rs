@@ -642,7 +642,13 @@ pub enum IntervalSolver {
 pub fn run_interval(out: Out, which: IntervalSolver, args: &IntervalArgs) -> CmdResult {
     let pb = args.group.problem()?;
     let iv = args.interval(&pb)?;
-    if args.group.progress.enabled() {
+    // Keep the same bounded walk with and without native delegation. A
+    // target outside the interval cannot meet the tame herd.
+    let mut group = args.group.clone();
+    if matches!(which, IntervalSolver::Kangaroo) && group.max_ops == 0 {
+        group.max_ops = (128.0 * width(&pb, iv).sqrt()).max(1e6) as u64;
+    }
+    if group.progress.enabled() {
         let alg = match which {
             IntervalSolver::Bsgs => "bsgs",
             IntervalSolver::Kangaroo => "kangaroo",
@@ -657,7 +663,7 @@ pub fn run_interval(out: Out, which: IntervalSolver, args: &IntervalArgs) -> Cmd
         return run_native_dlog(
             out,
             &pb,
-            &args.group,
+            &group,
             alg,
             extra,
             width(&pb, iv),
@@ -665,13 +671,7 @@ pub fn run_interval(out: Out, which: IntervalSolver, args: &IntervalArgs) -> Cmd
             Vec::new(),
         );
     }
-    let mut opts = args.group.options();
-    // A kangaroo whose target lies outside the interval never meets the tame
-    // herd; bound the walk at 64 times its expected 2 sqrt(width) unless the
-    // caller chose a budget.
-    if matches!(which, IntervalSolver::Kangaroo) && opts.max_ops == 0 {
-        opts.max_ops = (128.0 * width(&pb, iv).sqrt()).max(1e6) as u64;
-    }
+    let opts = group.options();
     let (name, r) = match which {
         IntervalSolver::Bsgs => ("bsgs", pb.group.bsgs(&pb.g, &pb.h, iv.0, iv.1, &opts)),
         IntervalSolver::Kangaroo => (
