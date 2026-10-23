@@ -688,6 +688,61 @@ want_bad 'option value is not a valid uint64 integer' ic --p 1844674407370955161
 # Then d = 2 divides q - 1 = 166666 = 2 * 83333.
 SUBG=$("$CA" group exp "${ZP[@]}" --elem 858101 --k 6 | sed 's/.*"\([0-9]*\)".*/\1/')
 want '"status":"ok"' cheon --group zp --p 1000003 --order 166667 --g "$SUBG" --d 2 --alpha 4242
+cheon_tmp=$(mktemp -d)
+CHEON=(cheon --group zp --p 1000003 --order 166667 --g "$SUBG" --d 2 --alpha 4242 \
+  --state-dir "$cheon_tmp/local" --checkpoint-every 1 --progress-every 1)
+want_no '"status":"limit reached"' "${CHEON[@]}" --max-exps 3
+checks=$((checks + 1))
+if [ ! -s "$cheon_tmp/local/cheon.ckpt" ] || \
+   ! grep -q '"phase":"first-baby"' "$cheon_tmp/local/cheon.ckpt.progress.json"; then
+  printf 'FAIL: Cheon partial checkpoint or phase progress missing\n' >&2
+  fail=$((fail + 1))
+fi
+want '"alpha":4242' "${CHEON[@]}" --max-exps 1000 --resume
+checks=$((checks + 1))
+if ! grep -q '"phase":"complete"' "$cheon_tmp/local/cheon.ckpt.progress.json" || \
+   ! grep -q '"alpha":4242' "$cheon_tmp/local/result.json" || \
+   ! grep -q '"g_alpha":"' "$cheon_tmp/local/result.json"; then
+  printf 'FAIL: Cheon resume did not finish and persist the result\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' cheon --group zp --p 1000003 --order 166667 \
+  --g "$SUBG" --d 2 --alpha 4243 --state-dir "$cheon_tmp/local" --resume
+mkdir "$cheon_tmp/bin" "$cheon_tmp/remote"
+cat >"$cheon_tmp/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$cheon_tmp/bin/aws"
+CHEON_S3=(cheon --group zp --p 1000003 --order 166667 --g "$SUBG" --d 2 --alpha 4242 \
+  --state-dir "$cheon_tmp/s3-local" --s3-uri s3://test/cheon --sync-every 1)
+PATH="$cheon_tmp/bin:$PATH" CA_TEST_S3_ROOT="$cheon_tmp/remote" \
+  want_no '"status":"limit reached"' "${CHEON_S3[@]}" --max-exps 3
+rm -rf "$cheon_tmp/s3-local"
+PATH="$cheon_tmp/bin:$PATH" CA_TEST_S3_ROOT="$cheon_tmp/remote" \
+  want '"alpha":4242' "${CHEON_S3[@]}" --max-exps 1000 --resume
+checks=$((checks + 1))
+if [ ! -s "$cheon_tmp/remote/cheon.ckpt" ] || \
+   ! grep -q '"alpha":4242' "$cheon_tmp/remote/result.json"; then
+  printf 'FAIL: Cheon S3 mirror or restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$cheon_tmp/remote/cheon.ckpt" "$cheon_tmp/remote-good.ckpt"
+printf X >>"$cheon_tmp/s3-local/cheon.ckpt"
+PATH="$cheon_tmp/bin:$PATH" CA_TEST_S3_ROOT="$cheon_tmp/remote" \
+  want_bad 'Cheon checkpoint failed validation before S3 sync' "${CHEON_S3[@]}" \
+  --max-exps 1000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$cheon_tmp/remote/cheon.ckpt" "$cheon_tmp/remote-good.ckpt"; then
+  printf 'FAIL: invalid local Cheon checkpoint replaced the S3 copy\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$cheon_tmp"
 
 # ── the distributed protocol ────────────────────────────────────────────────
 # The job document is the whole agreement between participants, so the smoke

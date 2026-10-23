@@ -15,8 +15,10 @@
  */
 #include "cryptanalysis/ca_cheon.h"
 #include "dlog_internal.h"
+#include "dlog_checkpoint_internal.h"
 
 #include <math.h>
+#include <stddef.h>
 
 void ca_cheon_params_default(ca_cheon_params *p) { memset(p, 0, sizeof(*p)); }
 
@@ -165,6 +167,361 @@ ca_status ca_cheon_solve(const ca_group *g, const ca_elem *gen, const ca_elem *g
     }
     *alpha = a;
     if (st) st->seconds += ca_now() - t0;
+    return rc;
+}
+
+enum { CHEON_BABY_1 = 0, CHEON_GIANT_1 = 1, CHEON_BABY_2 = 2,
+       CHEON_GIANT_2 = 3, CHEON_SOLVED = 4 };
+
+typedef struct cheon_checkpoint {
+    char magic[8];
+    uint64_t p, a, b, order, cofactor, gen[4], ga[4], gad[4], d;
+    uint32_t kind, endo_kind, aut_order, entry_size;
+    uint64_t endo_lambda, endo_c_mont;
+    uint32_t phase, reserved;
+    uint64_t baby_next, giant_next, k1, phase_exps, total_exps;
+    uint64_t ops, entries, peak_entries, bytes_peak, result;
+    double elapsed_seconds;
+    uint64_t checksum;
+} cheon_checkpoint;
+
+static void cheon_checkpoint_identity(cheon_checkpoint *h, const ca_group *g,
+                                      const ca_elem *gen, const ca_elem *ga,
+                                      const ca_elem *gad, uint64_t d)
+{
+    memset(h, 0, sizeof(*h));
+    memcpy(h->magic, "CACHEON1", 8);
+    h->p = g->p; h->a = g->a; h->b = g->b;
+    h->order = g->order; h->cofactor = g->cofactor;
+    ca_group_decode(g, h->gen, gen);
+    ca_group_decode(g, h->ga, ga);
+    ca_group_decode(g, h->gad, gad);
+    h->d = d; h->kind = g->kind; h->endo_kind = g->endo_kind;
+    h->aut_order = g->aut_order; h->entry_size = sizeof(ca_htab1_entry);
+    h->endo_lambda = g->endo_lambda; h->endo_c_mont = g->endo_c_mont;
+}
+
+static int cheon_checkpoint_save(const char *path, cheon_checkpoint *state,
+                                  const ca_htab1 *tab)
+{
+    if (!path) return 1;
+    cheon_checkpoint h = *state;
+    h.entries = tab->count;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    dlog_ckpt_file w;
+    int ok = dlog_ckpt_begin(&w, path);
+    if (ok) ok = fwrite(&h, 1, sizeof(h), w.f) == sizeof(h);
+    for (size_t i = 0; ok && i < tab->cap; i++) {
+        const ca_htab1_entry *e = &tab->e[i];
+        if (!e->key) continue;
+        hash = dlog_ckpt_hash(e, sizeof(*e), hash);
+        ok = fwrite(e, 1, sizeof(*e), w.f) == sizeof(*e);
+    }
+    if (ok) {
+        h.checksum = hash;
+        ok = fseek(w.f, 0, SEEK_SET) == 0 &&
+             fwrite(&h, 1, sizeof(h), w.f) == sizeof(h);
+    }
+    ok = dlog_ckpt_finish(&w, ok);
+    if (!ok) ca_set_error("cheon: cannot persist checkpoint");
+    return ok;
+}
+
+/* 1 = restored, 0 = fresh, -1 = invalid or unreadable. */
+static int cheon_checkpoint_load(const char *path, const cheon_checkpoint *identity,
+                                  cheon_checkpoint *state, ca_htab1 *tab)
+{
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("cheon: cannot open checkpoint");
+        return -1;
+    }
+    cheon_checkpoint h = {0};
+    int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             memcmp(&h, identity, offsetof(cheon_checkpoint, phase)) == 0 &&
+             h.phase <= CHEON_SOLVED && h.reserved == 0 &&
+             h.phase_exps <= h.total_exps && h.entries <= h.baby_next &&
+             h.peak_entries >= h.entries && h.elapsed_seconds >= 0 &&
+             isfinite(h.elapsed_seconds);
+    uint64_t ord1 = identity->d ? (identity->order - 1) / identity->d : 0;
+    uint64_t ord = h.phase < CHEON_BABY_2 ? ord1 : identity->d;
+    uint64_t m = ord ? ca_isqrt(ord - 1) + 1 : 0;
+    uint64_t steps = m ? (ord - 1) / m + 1 : 0;
+    if (!m || h.baby_next > m || h.giant_next > steps ||
+        (h.phase % 2 == 0 && h.phase != CHEON_SOLVED && h.giant_next != 0) ||
+        (h.phase % 2 == 1 && h.baby_next != m) ||
+        (h.phase >= CHEON_BABY_2 && h.k1 >= ord1) ||
+        (h.phase == CHEON_SOLVED && h.result == 0)) ok = 0;
+    struct stat fs;
+    if (h.entries > (UINT64_MAX - sizeof(h)) / sizeof(ca_htab1_entry)) ok = 0;
+    uint64_t bytes = ok ? sizeof(h) + h.entries * sizeof(ca_htab1_entry) : 0;
+    if (!ok || fstat(fileno(f), &fs) != 0 || fs.st_size < 0 ||
+        bytes != (uint64_t)fs.st_size) ok = 0;
+    uint64_t checksum = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    for (uint64_t i = 0; ok && i < h.entries; i++) {
+        ca_htab1_entry e;
+        if (fread(&e, 1, sizeof(e), f) != sizeof(e) || !e.key ||
+            e.v0 >= h.baby_next) { ok = 0; break; }
+        hash = dlog_ckpt_hash(&e, sizeof(e), hash);
+        if (ca_htab1_insert(tab, e.key, e.v0, NULL) != 0) ok = 0;
+    }
+    if (ok && (hash != checksum || tab->count != h.entries || fgetc(f) != EOF)) ok = 0;
+    if (ferror(f)) ok = 0;
+    fclose(f);
+    if (!ok) {
+        ca_set_error("cheon: checkpoint identity, length or checksum failed");
+        return -1;
+    }
+    h.checksum = checksum;
+    *state = h;
+    return 1;
+}
+
+ca_status ca_cheon_checkpoint_validate(const ca_group *g, const ca_elem *gen,
+                                        const ca_elem *g_alpha, const ca_elem *g_alpha_d,
+                                        uint64_t d, const char *checkpoint_path)
+{
+    if (!checkpoint_path || g->order == 0 || !ca_is_prime(g->order) ||
+        d == 0 || (g->order - 1) % d != 0) {
+        ca_set_error("cheon: checkpoint path, prime order and divisor required");
+        return CA_ERR_INVALID;
+    }
+    cheon_checkpoint identity, state;
+    cheon_checkpoint_identity(&identity, g, gen, g_alpha, g_alpha_d, d);
+    ca_htab1 tab = {0};
+    if (ca_htab1_init(&tab, 16) != CA_OK) return CA_ERR_NOMEM;
+    int loaded = cheon_checkpoint_load(checkpoint_path, &identity, &state, &tab);
+    ca_htab1_free(&tab);
+    if (loaded != 1) {
+        if (loaded == 0) ca_set_error("cheon: checkpoint is missing");
+        return CA_ERR_INVALID;
+    }
+    if (state.phase == CHEON_SOLVED) {
+        ca_elem chk, chk_d;
+        ca_group_mul(g, &chk, gen, state.result, NULL);
+        ca_group_mul(g, &chk_d, gen, ca_powmod(state.result, d, g->order), NULL);
+        if (!ca_group_equal(g, &chk, g_alpha) ||
+            !ca_group_equal(g, &chk_d, g_alpha_d)) {
+            ca_set_error("cheon: saved solution fails verification");
+            return CA_ERR_INVALID;
+        }
+    }
+    return CA_OK;
+}
+
+static const char *cheon_phase_name(uint32_t phase)
+{
+    static const char *names[] = {"first-baby", "first-giant", "second-baby",
+                                  "second-giant", "complete"};
+    return phase <= CHEON_SOLVED ? names[phase] : "invalid";
+}
+
+static int cheon_report(const char *path, cheon_checkpoint *h, const ca_htab1 *tab,
+                        double elapsed, int verbose, const char *status, int save)
+{
+    h->elapsed_seconds = elapsed;
+    if (save && !cheon_checkpoint_save(path, h, tab)) return 0;
+    if (!dlog_ckpt_progress(path, "cheon", cheon_phase_name(h->phase), status,
+                            elapsed, h->ops, h->total_exps, tab->count, verbose)) {
+        ca_set_error("cheon: cannot persist progress");
+        return 0;
+    }
+    return 1;
+}
+
+ca_status ca_cheon_solve_checkpointed(
+    const ca_group *g, const ca_elem *gen, const ca_elem *g_alpha,
+    const ca_elem *g_alpha_d, uint64_t d, const ca_cheon_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *alpha, ca_stats *st)
+{
+    ca_cheon_params def;
+    if (!params) { ca_cheon_params_default(&def); params = &def; }
+    uint64_t p = g->order;
+    if (p == 0 || !ca_is_prime(p) || d == 0 || (p - 1) % d != 0) {
+        ca_set_error("cheon: prime group order and divisor of order-1 required");
+        return CA_ERR_INVALID;
+    }
+    uint64_t zeta = ca_primitive_root(p), ord1 = (p - 1) / d;
+    uint64_t eta1 = ca_powmod(zeta, d, p), eta2 = ca_powmod(zeta, ord1, p);
+    cheon_checkpoint identity, h;
+    cheon_checkpoint_identity(&identity, g, gen, g_alpha, g_alpha_d, d);
+    h = identity;
+    ca_htab1 tab = {0};
+    if (ca_htab1_init(&tab, 16) != CA_OK) return CA_ERR_NOMEM;
+    double t0 = ca_now(), elapsed_prior = 0;
+    int loaded = cheon_checkpoint_load(checkpoint_path, &identity, &h, &tab);
+    ca_status rc = CA_ERR_INTERNAL;
+    if (loaded < 0) { rc = CA_ERR_INVALID; goto done; }
+    elapsed_prior = h.elapsed_seconds;
+    if (h.phase == CHEON_SOLVED) {
+        ca_elem chk, chk_d;
+        ca_group_mul(g, &chk, gen, h.result, NULL);
+        ca_group_mul(g, &chk_d, gen, ca_powmod(h.result, d, p), NULL);
+        if (!ca_group_equal(g, &chk, g_alpha) ||
+            !ca_group_equal(g, &chk_d, g_alpha_d)) {
+            ca_set_error("cheon: saved solution fails verification");
+            rc = CA_ERR_INVALID;
+        } else { *alpha = h.result; rc = CA_OK; }
+        goto done;
+    }
+    if (!progress_interval) progress_interval = 5;
+    if (!checkpoint_interval) checkpoint_interval = 60;
+    double next_progress = t0 + progress_interval;
+    double next_checkpoint = t0 + checkpoint_interval;
+    if ((checkpoint_path || verbose) &&
+        !cheon_report(checkpoint_path, &h, &tab, elapsed_prior, verbose,
+                      "running", !loaded)) { rc = CA_ERR_INTERNAL; goto done; }
+
+    while (h.phase < CHEON_SOLVED) {
+        int second = h.phase >= CHEON_BABY_2;
+        uint64_t ord = second ? d : ord1, eta = second ? eta2 : eta1;
+        uint64_t m = ca_isqrt(ord - 1) + 1;
+        ca_elem base2, base = *gen, target = second ? *g_alpha : *g_alpha_d;
+        if (second) {
+            ca_group_mul(g, &base2, gen, ca_powmod(zeta, h.k1, p), &h.ops);
+            base = base2;
+        }
+        if (h.phase == CHEON_BABY_1 || h.phase == CHEON_BABY_2) {
+            ca_elem cur = base;
+            if (h.baby_next) {
+                ca_group_mul(g, &cur, &base, ca_powmod(eta, h.baby_next, p), &h.ops);
+                h.phase_exps++; h.total_exps++;
+            }
+            while (h.baby_next < m) {
+                if (ca_htab1_insert(&tab, ca_group_hash(g, &cur), h.baby_next, NULL) < 0) {
+                    rc = CA_ERR_NOMEM; goto finish;
+                }
+                h.baby_next++;
+                if (tab.count > h.peak_entries) h.peak_entries = tab.count;
+                h.bytes_peak = ca_max_u64(h.bytes_peak, ca_htab1_bytes(&tab));
+                ca_group_mul(g, &cur, &cur, eta, &h.ops);
+                h.phase_exps++; h.total_exps++;
+                if (params->max_exps && h.phase_exps >= params->max_exps) {
+                    ca_set_error("cheon: exponentiation cap reached; raise --max-exps to resume");
+                    rc = CA_ERR_LIMIT; goto finish;
+                }
+                double now = ca_now();
+                if ((checkpoint_path || verbose) && now >= next_progress) {
+                    if (!cheon_report(checkpoint_path, &h, &tab,
+                                      elapsed_prior + now - t0, verbose, "running", 0)) {
+                        rc = CA_ERR_INTERNAL; goto done;
+                    }
+                    next_progress = now + progress_interval;
+                }
+                if (checkpoint_path && now >= next_checkpoint) {
+                    h.elapsed_seconds = elapsed_prior + now - t0;
+                    if (!cheon_checkpoint_save(checkpoint_path, &h, &tab)) {
+                        rc = CA_ERR_INTERNAL; goto done;
+                    }
+                    next_checkpoint = now + checkpoint_interval;
+                }
+            }
+            h.phase++;
+            h.giant_next = 0;
+            if (!cheon_report(checkpoint_path, &h, &tab,
+                              elapsed_prior + ca_now() - t0, verbose, "running", 1)) {
+                rc = CA_ERR_INTERNAL; goto done;
+            }
+        }
+        if (h.phase == CHEON_GIANT_1 || h.phase == CHEON_GIANT_2) {
+            uint64_t inv_m = ca_powmod(ca_invmod(eta, p), m, p);
+            ca_elem gt = target;
+            if (h.giant_next) {
+                ca_group_mul(g, &gt, &target, ca_powmod(inv_m, h.giant_next, p), &h.ops);
+                h.phase_exps++; h.total_exps++;
+            }
+            uint64_t steps = (ord - 1) / m + 1;
+            int found = 0;
+            while (h.giant_next < steps) {
+                uint64_t j;
+                if (ca_htab1_find(&tab, ca_group_hash(g, &gt), &j)) {
+                    uint64_t c = (uint64_t)(((ca_u128)j + (ca_u128)m * h.giant_next) % ord);
+                    ca_elem chk;
+                    ca_group_mul(g, &chk, &base, ca_powmod(eta, c, p), &h.ops);
+                    h.phase_exps++; h.total_exps++;
+                    if (ca_group_equal(g, &chk, &target)) {
+                        if (second) {
+                            uint64_t k = (uint64_t)(((ca_u128)h.k1 + (ca_u128)ord1 * c) % (p - 1));
+                            uint64_t a = ca_powmod(zeta, k, p);
+                            ca_elem ga_chk, gad_chk;
+                            ca_group_mul(g, &ga_chk, gen, a, &h.ops);
+                            ca_group_mul(g, &gad_chk, gen, ca_powmod(a, d, p), &h.ops);
+                            if (!ca_group_equal(g, &ga_chk, g_alpha) ||
+                                !ca_group_equal(g, &gad_chk, g_alpha_d)) {
+                                ca_set_error("cheon: candidate failed verification");
+                                rc = CA_ERR_INTERNAL; goto finish;
+                            }
+                            *alpha = h.result = a;
+                            h.phase = CHEON_SOLVED;
+                            rc = CA_OK;
+                        } else {
+                            h.k1 = c;
+                            h.phase = CHEON_BABY_2;
+                            h.baby_next = h.giant_next = h.phase_exps = 0;
+                            ca_htab1_free(&tab);
+                            if (ca_htab1_init(&tab, 16) != CA_OK) {
+                                rc = CA_ERR_NOMEM; goto done;
+                            }
+                        }
+                        found = 1;
+                        if (!second &&
+                            !cheon_report(checkpoint_path, &h, &tab,
+                                          elapsed_prior + ca_now() - t0, verbose,
+                                          "running", 1)) {
+                            rc = CA_ERR_INTERNAL; goto done;
+                        }
+                        break;
+                    }
+                }
+                ca_group_mul(g, &gt, &gt, inv_m, &h.ops);
+                h.phase_exps++; h.total_exps++; h.giant_next++;
+                if (params->max_exps && h.phase_exps >= params->max_exps) {
+                    ca_set_error("cheon: exponentiation cap reached; raise --max-exps to resume");
+                    rc = CA_ERR_LIMIT; goto finish;
+                }
+                double now = ca_now();
+                if ((checkpoint_path || verbose) && now >= next_progress) {
+                    if (!cheon_report(checkpoint_path, &h, &tab,
+                                      elapsed_prior + now - t0, verbose, "running", 0)) {
+                        rc = CA_ERR_INTERNAL; goto done;
+                    }
+                    next_progress = now + progress_interval;
+                }
+                if (checkpoint_path && now >= next_checkpoint) {
+                    h.elapsed_seconds = elapsed_prior + now - t0;
+                    if (!cheon_checkpoint_save(checkpoint_path, &h, &tab)) {
+                        rc = CA_ERR_INTERNAL; goto done;
+                    }
+                    next_checkpoint = now + checkpoint_interval;
+                }
+            }
+            if (h.phase == CHEON_SOLVED) goto finish;
+            if (found) continue;
+            rc = CA_ERR_NOT_FOUND;
+            goto finish;
+        }
+    }
+finish:
+    if ((checkpoint_path || verbose) &&
+        !cheon_report(checkpoint_path, &h, &tab, elapsed_prior + ca_now() - t0,
+                      verbose, rc == CA_OK ? "complete" : "stopped", 1))
+        rc = CA_ERR_INTERNAL;
+done:
+    if (st) {
+        st->group_ops += h.ops;
+        st->iterations += h.total_exps;
+        st->table_entries = ca_max_u64(st->table_entries, h.peak_entries);
+        st->bytes_peak = ca_max_u64(st->bytes_peak, h.bytes_peak);
+        st->threads = 1;
+        st->seconds += elapsed_prior + ca_now() - t0;
+    }
+    ca_htab1_free(&tab);
     return rc;
 }
 

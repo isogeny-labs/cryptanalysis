@@ -220,6 +220,9 @@ static _Noreturn void usage(void)
         "  curve --name NAME | (--group ec --p P --a A --b B [--order N]) | --list\n"
         "  cheon --group zp|ec --p P [--a A --b B] --order Q --g G --d D (--ga GA --gad GAD | "
         "--alpha X)\n"
+        "        [--max-exps K] [--verbose] [--progress-every SEC]\n"
+        "        [--state-dir DIR] [--resume] [--checkpoint-every SEC]\n"
+        "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]\n"
         "  ic    --p P --g G --h H [--method lsieve|rexp] [--B B] [--C C] [--threads T] "
         "[--verbose]\n"
         "        [--progress-every SEC] [--state-dir DIR] [--resume]\n"
@@ -375,6 +378,9 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
                                 const ca_elem *target, const ca_precomp_params *params);
 static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
                             const ca_elem *target, const ca_dlog_params *params);
+static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
+                             const ca_elem *ga, const ca_elem *gad, uint64_t d,
+                             const ca_cheon_params *params);
 static char *ic_path(const char *dir, const char *name);
 static int ic_atomic_file(const char *dir, const char *name, const char *body);
 static int ic_manifest_matches(const char *dir, const char *expected);
@@ -1010,6 +1016,10 @@ static int cmd_cheon(void)
     ca_cheon_params cp;
     ca_cheon_params_default(&cp);
     cp.max_exps = opt_u64("--max-exps", 0);
+    if (flag("--verbose") || flag("-v") || opt("--progress-every") ||
+        opt("--checkpoint-every") || opt("--state-dir") || flag("--resume") ||
+        opt("--s3-uri") || opt("--sync-every"))
+        return cmd_cheon_durable(&g, &gen, &ga, &gad, d, &cp);
     ca_status rc = ca_cheon_solve(&g, &gen, &ga, &gad, d, &cp, &alpha, &st);
     if (rc != CA_OK) die_status(rc);
     printf("{\"status\":\"ok\",\"alpha\":%" PRIu64 ",\"d\":%" PRIu64 ",\"exponentiations\":%" PRIu64
@@ -1132,6 +1142,141 @@ static void *ic_sync_worker(void *arg)
                                 ok ? "complete" : "failed; will retry");
     }
     return NULL;
+}
+
+static int cmd_cheon_durable(const ca_group *g, const ca_elem *gen,
+                             const ca_elem *ga, const ca_elem *gad, uint64_t d,
+                             const ca_cheon_params *params)
+{
+    int verbose = flag("--verbose") || flag("-v") || opt("--progress-every");
+    const char *state_dir = opt("--state-dir"), *s3_uri = opt("--s3-uri");
+    int resume = flag("--resume");
+    uint32_t progress_interval = opt_u32("--progress-every", 5);
+    uint32_t checkpoint_interval = opt_u32("--checkpoint-every", 60);
+    uint32_t sync_interval = opt_u32("--sync-every", 60);
+    if (!progress_interval || !checkpoint_interval || !sync_interval)
+        die("progress, checkpoint and sync intervals must be positive");
+    if ((resume || s3_uri || opt("--checkpoint-every") || opt("--sync-every")) && !state_dir)
+        die("--resume, --s3-uri, --checkpoint-every and --sync-every require --state-dir");
+    if (opt("--sync-every") && !s3_uri) die("--sync-every requires --s3-uri");
+    if (s3_uri) {
+        if (strncmp(s3_uri, "s3://", 5)) die("--s3-uri must be s3://BUCKET/PREFIX");
+        const char *sep = strchr(s3_uri + 5, '/');
+        if (!sep || sep == s3_uri + 5 || !sep[1])
+            die("--s3-uri must be s3://BUCKET/PREFIX");
+    }
+    uint64_t gw[4], aw[4], dw[4];
+    ca_group_decode(g, gw, gen);
+    ca_group_decode(g, aw, ga);
+    ca_group_decode(g, dw, gad);
+    char ga_json[128], gad_json[128];
+    if (g->kind == CA_GROUP_ZP) {
+        snprintf(ga_json, sizeof(ga_json), "\"%" PRIu64 "\"", aw[0]);
+        snprintf(gad_json, sizeof(gad_json), "\"%" PRIu64 "\"", dw[0]);
+    } else {
+        if (aw[2]) strcpy(ga_json, "\"inf\"");
+        else snprintf(ga_json, sizeof(ga_json), "\"%" PRIu64 ",%" PRIu64 "\"", aw[0], aw[1]);
+        if (dw[2]) strcpy(gad_json, "\"inf\"");
+        else snprintf(gad_json, sizeof(gad_json), "\"%" PRIu64 ",%" PRIu64 "\"", dw[0], dw[1]);
+    }
+    char manifest[2048];
+    int ml = snprintf(manifest, sizeof(manifest),
+        "{\"schema\":1,\"command\":\"cheon\",\"kind\":%u,\"p\":%" PRIu64
+        ",\"a\":%" PRIu64 ",\"b\":%" PRIu64 ",\"order\":%" PRIu64
+        ",\"cofactor\":%" PRIu64 ",\"d\":%" PRIu64
+        ",\"g\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+        "],\"ga\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+        "],\"gad\":[%" PRIu64 ",%" PRIu64 ",%" PRIu64 ",%" PRIu64
+        "],\"endo_kind\":%u,\"aut_order\":%u,\"endo_lambda\":%" PRIu64
+        ",\"endo_c\":%" PRIu64 "}\n",
+        (unsigned)g->kind, g->p, g->a, g->b, g->order, g->cofactor, d,
+        gw[0], gw[1], gw[2], gw[3], aw[0], aw[1], aw[2], aw[3],
+        dw[0], dw[1], dw[2], dw[3], g->endo_kind, g->aut_order,
+        g->endo_lambda, g->endo_c_mont);
+    if (ml < 0 || (size_t)ml >= sizeof(manifest)) die("manifest is too long");
+    int lock_fd = -1;
+    char *checkpoint = NULL;
+    if (state_dir) {
+        if (mkdir(state_dir, 0700) != 0 && errno != EEXIST) die("cannot create --state-dir");
+        struct stat ds;
+        if (stat(state_dir, &ds) != 0 || !S_ISDIR(ds.st_mode)) die("--state-dir is not a directory");
+        char *lock_path = ic_path(state_dir, ".run.lock");
+        if (!lock_path) die("out of memory");
+        lock_fd = open(lock_path, O_RDWR | O_CREAT, 0600);
+        free(lock_path);
+        if (lock_fd < 0 || flock(lock_fd, LOCK_EX | LOCK_NB) != 0)
+            die("state directory is already in use");
+        checkpoint = ic_path(state_dir, "cheon.ckpt");
+        if (!checkpoint) die("out of memory");
+        if (!resume) {
+            if (!ic_dir_empty(state_dir)) die("--state-dir is not empty; use --resume for this run");
+            if (s3_uri && !ic_s3_sync(s3_uri, state_dir)) die("cannot inspect S3 prefix");
+            if (!ic_dir_empty(state_dir)) die("S3 prefix is not empty; use a new prefix or --resume");
+            if (!ic_atomic_file(state_dir, "manifest.json", manifest)) die("cannot persist run manifest");
+        } else {
+            char *manifest_path = ic_path(state_dir, "manifest.json");
+            if (!manifest_path) die("out of memory");
+            int have_local = access(manifest_path, F_OK) == 0;
+            free(manifest_path);
+            if (have_local && !ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (!have_local && !ic_dir_empty(state_dir))
+                die("cannot restore into a nonempty directory without a run manifest");
+            if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
+                !ic_s3_sync(s3_uri, state_dir)) die("cannot restore Cheon artifacts from S3");
+            if (!ic_manifest_matches(state_dir, manifest))
+                die("run manifest does not match these arguments");
+            if (access(checkpoint, F_OK) != 0) die("no Cheon checkpoint found for --resume");
+            if (s3_uri && ca_cheon_checkpoint_validate(g, gen, ga, gad, d, checkpoint) != CA_OK)
+                die("Cheon checkpoint failed validation before S3 sync");
+        }
+        if (!ic_atomic_file(state_dir, "result.json", "{\"status\":\"running\"}\n"))
+            die("cannot persist run status");
+        if (verbose) fprintf(stderr, "[cheon] state directory: %s%s\n", state_dir,
+                             resume ? " (resume)" : "");
+    }
+    ic_sync_state sync = {0};
+    pthread_t sync_thread;
+    int syncing = 0;
+    if (s3_uri) {
+        sync.dir = state_dir; sync.uri = s3_uri; sync.label = "cheon";
+        sync.interval = sync_interval; sync.verbose = verbose;
+        atomic_init(&sync.stop, 0);
+        if (pthread_create(&sync_thread, NULL, ic_sync_worker, &sync) != 0)
+            die("cannot start S3 sync worker");
+        syncing = 1;
+    }
+    uint64_t alpha = 0;
+    ca_stats st = {0};
+    ca_status rc = ca_cheon_solve_checkpointed(g, gen, ga, gad, d, params,
+        checkpoint, progress_interval, checkpoint_interval, verbose, &alpha, &st);
+    if (syncing) { atomic_store(&sync.stop, 1); pthread_join(sync_thread, NULL); }
+    char result[1024];
+    int nr = snprintf(result, sizeof(result),
+        "{\"status\":\"%s\",\"alg\":\"cheon\",\"alpha\":%" PRIu64
+        ",\"d\":%" PRIu64 ",\"exponentiations\":%" PRIu64
+        ",\"g_alpha\":%s,\"g_alpha_d\":%s,\"ops\":%" PRIu64
+        ",\"table_entries\":%" PRIu64 ",\"collisions\":%" PRIu64
+        ",\"bytes_peak\":%" PRIu64 ",\"seconds\":%.6f,\"threads\":%u}\n",
+        ca_status_string(rc), rc == CA_OK ? alpha : 0, d, st.iterations,
+        ga_json, gad_json, st.group_ops, st.table_entries, st.collisions,
+        st.bytes_peak, st.seconds, st.threads);
+    if (nr < 0 || (size_t)nr >= sizeof(result)) die("result is too long");
+    if (state_dir && !ic_atomic_file(state_dir, "result.json", result))
+        die("cannot persist Cheon result");
+    int safe_to_upload = rc == CA_OK || rc == CA_ERR_LIMIT || rc == CA_ERR_NOT_FOUND;
+    int uploaded = !s3_uri || !safe_to_upload || ic_s3_sync(state_dir, s3_uri);
+    if (verbose && s3_uri) fprintf(stderr, "[cheon] final S3 sync %s\n",
+                                   !safe_to_upload ? "skipped after an invalid run" :
+                                   uploaded ? "complete" : "failed");
+    if (uploaded) fputs(result, stdout);
+    else printf("{\"status\":\"storage error\",\"compute_status\":\"%s\"}\n",
+                ca_status_string(rc));
+    if (rc != CA_OK) fprintf(stderr, "error: %s %s\n", ca_status_string(rc), ca_last_error());
+    if (!uploaded) fprintf(stderr, "error: final S3 sync failed; local state is in %s\n", state_dir);
+    if (lock_fd >= 0) close(lock_fd);
+    free(checkpoint);
+    return rc == CA_OK && uploaded ? 0 : 1;
 }
 
 static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem *target,
