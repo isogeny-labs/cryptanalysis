@@ -3608,7 +3608,8 @@ static int ic_remote_manifest_matches(const char *dir, const char *uri,
 static int ic_remote_prefix_empty(const char *uri)
 {
     /* `aws s3 ls PREFIX --recursive` exits 1 for an empty prefix. Query one
-     * key through s3api instead, where KeyCount is explicitly zero. */
+     * key through s3api instead, where KeyCount is explicitly zero. Disable
+     * CLI pagination: --max-keys only limits each service response. */
     if (strncmp(uri, "s3://", 5) != 0) return 0;
     const char *slash = strchr(uri + 5, '/');
     if (!slash || slash == uri + 5 || !slash[1]) return 0;
@@ -3632,7 +3633,8 @@ static int ic_remote_prefix_empty(const char *uri)
     extern char **environ;
     char *const args[] = {"aws", "s3api", "list-objects-v2",
                           "--bucket", bucket, "--prefix", prefix,
-                          "--max-keys", "1", "--query", "KeyCount",
+                          "--max-keys", "1", "--no-paginate",
+                          "--query", "KeyCount",
                           "--output", "text", NULL};
     pid_t pid = -1;
     int spawned = prepared && posix_spawnp(&pid, "aws", &actions, NULL, args, environ) == 0;

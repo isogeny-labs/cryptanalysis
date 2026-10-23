@@ -94,6 +94,7 @@ make_basic_aws_stub() {
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ $1 == s3api && $2 == list-objects-v2 ]]; then
+  [[ " $* " == *' --no-paginate '* ]] || exit 2
   if [[ -d $CA_TEST_S3_ROOT ]] &&
      [[ -n $(find "$CA_TEST_S3_ROOT" -type f -print -quit) ]]; then
     printf '1\n'
