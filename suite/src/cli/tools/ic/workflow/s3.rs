@@ -22,6 +22,8 @@ struct Head {
     params_digest: String,
     generation: u64,
     files: BTreeMap<String, Entry>,
+    #[serde(default)]
+    objects: BTreeMap<String, String>,
 }
 
 pub(super) struct Store {
@@ -59,10 +61,38 @@ fn local_head(dir: &Path) -> PathBuf {
 fn read_head(bytes: &[u8], digest: &str) -> Result<Head, String> {
     let head: Head =
         serde_json::from_slice(bytes).map_err(|e| format!("invalid workflow S3 head: {e}"))?;
-    if head.schema != 1 || head.params_digest != digest {
+    if !matches!(head.schema, 1 | 2) || head.params_digest != digest {
         return Err("workflow S3 head does not match these parameters".into());
     }
     Ok(head)
+}
+
+fn artifact_uri(uri: &str, head: &Head, name: &str) -> Result<String, String> {
+    let key = if head.schema == 1 {
+        name.to_string()
+    } else {
+        let key = head
+            .objects
+            .get(name)
+            .ok_or_else(|| format!("S3 workflow head has no object for {name}"))?;
+        let Some((generation, object_name)) = key
+            .strip_prefix("_workflow_generations/")
+            .and_then(|tail| tail.split_once('/'))
+        else {
+            return Err("S3 workflow head contains an invalid generation key".into());
+        };
+        if generation
+            .parse::<u64>()
+            .ok()
+            .is_none_or(|generation| generation == 0 || generation > head.generation)
+            || object_name != name
+            || !safe_name(object_name)
+        {
+            return Err("S3 workflow head contains an invalid generation key".into());
+        }
+        key.clone()
+    };
+    Ok(format!("{uri}/{key}"))
 }
 
 fn digest(path: &Path) -> Result<Entry, String> {
@@ -198,7 +228,7 @@ impl Store {
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
                     }
-                    let remote = format!("{uri}/{name}");
+                    let remote = artifact_uri(uri, &head, name)?;
                     let local = path
                         .to_str()
                         .ok_or("workflow path must be UTF-8 for AWS CLI")?;
@@ -238,10 +268,11 @@ impl Store {
                 return Err("S3 workflow prefix is not empty; use a new prefix".into());
             }
             let head = Head {
-                schema: 1,
+                schema: 2,
                 params_digest: params_digest.into(),
                 generation: 0,
                 files: BTreeMap::new(),
+                objects: BTreeMap::new(),
             };
             let bytes = serde_json::to_vec(&head).map_err(|e| e.to_string())?;
             let temp = dir.join(".workflow-s3-head.upload");
@@ -288,26 +319,36 @@ impl Store {
                 files.len()
             );
         }
-        for (name, entry) in &files {
-            if self.head.files.get(name) == Some(entry) {
+        let mut next = Head {
+            schema: 2,
+            params_digest: self.head.params_digest.clone(),
+            generation: self.head.generation + 1,
+            files,
+            objects: BTreeMap::new(),
+        };
+        for (name, entry) in &next.files {
+            if self.head.schema == 2 && self.head.files.get(name) == Some(entry) {
+                let previous = artifact_uri(&self.uri, &self.head, name)?;
+                let key = previous
+                    .strip_prefix(&format!("{}/", self.uri))
+                    .ok_or("invalid workflow artifact URI")?;
+                next.objects.insert(name.clone(), key.to_string());
                 continue;
             }
             let path = self.dir.join(name);
             let local = path
                 .to_str()
                 .ok_or("workflow path must be UTF-8 for AWS CLI")?;
-            let remote = format!("{}/{name}", self.uri);
+            // Failed uploads can leave orphan objects, but cannot invalidate
+            // the complete generation still named by the current head.
+            let key = format!("_workflow_generations/{}/{name}", next.generation);
+            let remote = format!("{}/{key}", self.uri);
             aws(&["s3", "cp", local, &remote, "--only-show-errors"])?;
             if &digest(&path)? != entry {
                 return Err(format!("workflow artifact {name} changed during S3 upload"));
             }
+            next.objects.insert(name.clone(), key);
         }
-        let next = Head {
-            schema: 1,
-            params_digest: self.head.params_digest.clone(),
-            generation: self.head.generation + 1,
-            files,
-        };
         let temp = self.dir.join(".workflow-s3-head.upload");
         fs::write(&temp, serde_json::to_vec(&next).map_err(|e| e.to_string())?)
             .map_err(|e| e.to_string())?;
@@ -350,6 +391,7 @@ fn safe_name(name: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::process::Command;
 
     #[test]
     fn remote_head_can_only_name_workflow_artifacts() {
@@ -381,5 +423,130 @@ mod tests {
         fs::write(&file, b"two").unwrap();
         assert_ne!(first, paths(&root).unwrap());
         fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn interrupted_upload_preserves_previous_committed_generation() {
+        const CHILD: &str = "CA_WORKFLOW_S3_FAILURE_TEST_CHILD";
+        if let Some(root) = std::env::var_os(CHILD) {
+            let root = PathBuf::from(root);
+            let local = root.join("local");
+            let restored = root.join("restored");
+            let bucket = root.join("bucket");
+            let uri = "s3://bucket/run";
+            std::env::set_var("MOCK_S3_ROOT", &bucket);
+            std::env::set_var("MOCK_S3_FAIL_MARKER", root.join("fail-next-upload"));
+
+            let mut store = Store::prepare(&local, uri, "params", false, 1, false).unwrap();
+            fs::write(local.join("state.json"), b"committed generation one").unwrap();
+            fs::write(local.join("result.json"), b"stable report").unwrap();
+            store.sync(true).unwrap();
+            let old_head_bytes = fs::read(bucket.join("run/_workflow_head.json")).unwrap();
+            let old_head: Head = serde_json::from_slice(&old_head_bytes).unwrap();
+            assert_eq!(old_head.schema, 2);
+            assert_eq!(old_head.generation, 1);
+            let key = artifact_uri(uri, &old_head, "state.json")
+                .unwrap()
+                .strip_prefix("s3://bucket/")
+                .unwrap()
+                .to_string();
+            let old_artifact = bucket.join(key);
+            assert_eq!(
+                fs::read(&old_artifact).unwrap(),
+                b"committed generation one"
+            );
+            let old_report_key = old_head.objects.get("result.json").unwrap();
+            assert_eq!(old_report_key, "_workflow_generations/1/result.json");
+
+            fs::write(local.join("state.json"), b"uncommitted generation two").unwrap();
+            fs::write(
+                root.join("fail-next-upload"),
+                b"fail after copying one artifact",
+            )
+            .unwrap();
+            assert!(store.sync(true).is_err());
+
+            assert_eq!(
+                fs::read(bucket.join("run/_workflow_head.json")).unwrap(),
+                old_head_bytes
+            );
+            assert_eq!(
+                fs::read(&old_artifact).unwrap(),
+                b"committed generation one"
+            );
+            assert_eq!(
+                fs::read(bucket.join("run/_workflow_generations/2/state.json")).unwrap(),
+                b"uncommitted generation two"
+            );
+
+            let old_restore = Store::prepare(&restored, uri, "params", true, 1, false).unwrap();
+            assert_eq!(
+                fs::read(restored.join("state.json")).unwrap(),
+                b"committed generation one"
+            );
+            drop(old_restore);
+            fs::remove_dir_all(&restored).unwrap();
+
+            store.sync(true).unwrap();
+            let new_head: Head =
+                serde_json::from_slice(&fs::read(bucket.join("run/_workflow_head.json")).unwrap())
+                    .unwrap();
+            assert_eq!(new_head.generation, 2);
+            assert_eq!(
+                new_head.objects.get("state.json").unwrap(),
+                "_workflow_generations/2/state.json"
+            );
+            assert_eq!(new_head.objects.get("result.json").unwrap(), old_report_key);
+
+            let restored_store = Store::prepare(&restored, uri, "params", true, 1, false).unwrap();
+            assert_eq!(
+                fs::read(restored.join("state.json")).unwrap(),
+                b"uncommitted generation two"
+            );
+            assert_eq!(
+                fs::read(restored.join("result.json")).unwrap(),
+                b"stable report"
+            );
+            assert_eq!(restored_store.head, new_head);
+            return;
+        }
+
+        let root = std::env::temp_dir().join(format!("workflow-s3-failure-{}", std::process::id()));
+        fs::create_dir_all(root.join("bin")).unwrap();
+        let script = root.join("bin/aws");
+        fs::write(&script, r#"#!/bin/sh
+set -eu
+if [ "$1" = s3api ]; then printf '[]'; exit 0; fi
+if [ "$1" != s3 ] || [ "$2" != cp ]; then exit 90; fi
+src=$3
+dst=$4
+if [ "${src#s3://}" != "$src" ]; then
+  key=${src#s3://}; key=${key#*/}
+  if [ "$dst" = - ]; then cat "$MOCK_S3_ROOT/$key"; else mkdir -p "$(dirname "$dst")"; cp "$MOCK_S3_ROOT/$key" "$dst"; fi
+else
+  key=${dst#s3://}; key=${key#*/}
+  mkdir -p "$MOCK_S3_ROOT/$(dirname "$key")"
+  cp "$src" "$MOCK_S3_ROOT/$key"
+  if [ -f "$MOCK_S3_FAIL_MARKER" ] && [ "$key" != "run/_workflow_head.json" ]; then
+    rm -f "$MOCK_S3_FAIL_MARKER"
+    exit 8
+  fi
+fi
+"#).unwrap();
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(&script, fs::Permissions::from_mode(0o755)).unwrap();
+        let path = format!(
+            "{}:{}",
+            root.join("bin").display(),
+            std::env::var("PATH").unwrap_or_default()
+        );
+        let status = Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "cli::tools::ic::workflow::s3::tests::interrupted_upload_preserves_previous_committed_generation", "--nocapture"])
+            .env(CHILD, &root)
+            .env("PATH", path)
+            .status()
+            .unwrap();
+        fs::remove_dir_all(root).unwrap();
+        assert!(status.success());
     }
 }
