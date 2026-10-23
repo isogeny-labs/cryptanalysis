@@ -848,19 +848,22 @@ if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" 
 fi
 # A remote copy must never replace a local run's mismatched identity.
 ic_s3_test=$(mktemp -d)
-mkdir "$ic_s3_test/bin" "$ic_s3_test/local"
+mkdir "$ic_s3_test/bin" "$ic_s3_test/local" "$ic_s3_test/remote"
+cp "$ic_tmp/"* "$ic_s3_test/remote/"
 cat > "$ic_s3_test/bin/aws" <<'AWS'
 #!/usr/bin/env bash
 set -euo pipefail
 touch "$CA_TEST_S3_CALLED"
 if [[ $3 == s3://* ]]; then
   cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+else
+  cp "$3/"* "$CA_TEST_S3_FIXTURE/"
 fi
 AWS
 chmod +x "$ic_s3_test/bin/aws"
 printf 'another run\n' > "$ic_s3_test/local/manifest.json"
 cp "$ic_s3_test/local/manifest.json" "$ic_s3_test/original-manifest"
-PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
   CA_TEST_S3_CALLED="$ic_s3_test/called" \
   want_bad 'run manifest does not match these arguments' \
   ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
@@ -873,7 +876,7 @@ if [ -e "$ic_s3_test/called" ] || \
 fi
 rm "$ic_s3_test/local/manifest.json"
 printf 'preserve\n' > "$ic_s3_test/local/unrelated"
-PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
   CA_TEST_S3_CALLED="$ic_s3_test/called" \
   want_bad 'nonempty directory without a run manifest' \
   ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
@@ -884,12 +887,66 @@ if [ -e "$ic_s3_test/called" ] || [ -e "$ic_s3_test/local/manifest.json" ]; then
   fail=$((fail + 1))
 fi
 rm "$ic_s3_test/local/unrelated"
-PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
   CA_TEST_S3_CALLED="$ic_s3_test/called" \
   want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
   --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+cp "$ic_s3_test/remote/relations.ckpt" "$ic_s3_test/good-journal"
+rm "$ic_s3_test/called"
+printf X > "$ic_s3_test/local/relations.ckpt"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'checkpoint failed validation before S3 sync' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/remote/relations.ckpt" "$ic_s3_test/good-journal"; then
+  printf 'FAIL: corrupt local IC journal reached S3\n' >&2
+  fail=$((fail + 1))
+fi
+cp "$ic_s3_test/good-journal" "$ic_s3_test/local/relations.ckpt"
+cp "$ic_s3_test/remote/relations.ckpt.precomp" "$ic_s3_test/good-precomp"
+printf X >> "$ic_s3_test/local/relations.ckpt.precomp"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_s3_test/remote" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'checkpoint failed validation before S3 sync' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/remote/relations.ckpt.precomp" "$ic_s3_test/good-precomp"; then
+  printf 'FAIL: corrupt local IC precomputation reached S3\n' >&2
+  fail=$((fail + 1))
+fi
 rm -rf "$ic_tmp" "$ic_s3_test"
 rexp_tmp=$(mktemp -d)
+rexp_s3=$(mktemp -d)
+mkdir "$rexp_s3/bin" "$rexp_s3/remote" "$rexp_s3/local"
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_s3/local" --progress-every 1
+want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
+  --state-dir "$rexp_s3/local" --progress-every 1 --resume
+cp "$rexp_s3/local/"* "$rexp_s3/remote/"
+cat > "$rexp_s3/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$CA_TEST_S3_CALLED"
+if [[ $3 == s3://* ]]; then cp "$CA_TEST_S3_ROOT/"* "$4/"; fi
+AWS
+chmod +x "$rexp_s3/bin/aws"
+printf X >> "$rexp_s3/local/relations.ckpt"
+PATH="$rexp_s3/bin:$PATH" CA_TEST_S3_ROOT="$rexp_s3/remote" \
+  CA_TEST_S3_CALLED="$rexp_s3/called" \
+  want_bad 'checkpoint failed validation before S3 sync' \
+  ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --resume \
+  --state-dir "$rexp_s3/local" --s3-uri s3://test/rexp
+checks=$((checks + 1))
+if [ -e "$rexp_s3/called" ]; then
+  printf 'FAIL: corrupt local IC rexp snapshot reached S3\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$rexp_s3"
 REXP=(ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1 \
   --state-dir "$rexp_tmp" --progress-every 1)
 want '"x":69,"check":3' "${REXP[@]}"

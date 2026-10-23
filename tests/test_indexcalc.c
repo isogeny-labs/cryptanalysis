@@ -21,12 +21,26 @@ static void checkpoint_roundtrip(void)
     CHECK(access(journal, F_OK) == 0);
     CHECK(access(precomp, F_OK) == 0);
     CHECK(access(progress, F_OK) == 0);
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_OK);
+    CHECK(ca_ic_checkpoint_validate(1000003, 3, &pr, journal) == CA_ERR_INVALID);
 
     /* The verified precomputation can be loaded without repeating the sieve. */
     x = 0;
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
     CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
     CHECK(st.sieve_seconds == 0);
+
+    FILE *bad_precomp = fopen(precomp, "r+b");
+    CHECK(bad_precomp != NULL);
+    if (bad_precomp) {
+        CHECK(fseek(bad_precomp, -1, SEEK_END) == 0);
+        int last = fgetc(bad_precomp);
+        CHECK(last != EOF);
+        CHECK(fseek(bad_precomp, -1, SEEK_END) == 0);
+        CHECK(fputc(last ^ 0xff, bad_precomp) != EOF);
+        CHECK(fclose(bad_precomp) == 0);
+    }
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_ERR_INVALID);
 
     /* A changed base must never reuse either artifact. */
     CHECK(ca_ic_solve_checkpointed(1000003, 3, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
@@ -42,6 +56,10 @@ static void checkpoint_roundtrip(void)
         CHECK(ftruncate(fd, sb.st_size - 4) == 0);
         close(fd);
     }
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_OK);
+    struct stat unchanged;
+    CHECK(stat(journal, &unchanged) == 0);
+    CHECK(unchanged.st_size == sb.st_size - 4);
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
     CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
     CHECK(unlink(precomp) == 0);
@@ -73,13 +91,16 @@ static void rexp_checkpoint_roundtrip(void)
     CHECK(saved_tests > 0);
     CHECK(access(journal, F_OK) == 0);
     CHECK(access(progress, F_OK) == 0);
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_OK);
     pr.max_relation_tries = 0;
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
     CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
     CHECK(st.smooth_tests > saved_tests);
     CHECK(access(precomp, F_OK) == 0);
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_OK);
     CHECK(unlink(precomp) == 0);
     pr.seed = 8;
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_ERR_INVALID);
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
           CA_ERR_INVALID);
     pr.seed = 7;
@@ -93,6 +114,7 @@ static void rexp_checkpoint_roundtrip(void)
         CHECK(fputc(last ^ 0xff, damage) != EOF);
         CHECK(fclose(damage) == 0);
     }
+    CHECK(ca_ic_checkpoint_validate(1000003, 2, &pr, journal) == CA_ERR_INVALID);
     CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
           CA_ERR_INVALID);
     unlink(journal); unlink(progress); rmdir(dir);

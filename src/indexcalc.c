@@ -79,6 +79,26 @@ void ca_ic_auto_params(unsigned bits, uint32_t *B, uint32_t *C)
 
 static unsigned bitlen(uint64_t v) { unsigned b = 0; while (v) { v >>= 1; b++; } return b; }
 
+static ca_status ic_resolved_params(uint64_t p, const ca_ic_params *params,
+                                    uint32_t *B, uint32_t *C, uint32_t *threads)
+{
+    if (params->method != CA_IC_LINEAR_SIEVE && params->method != CA_IC_RANDOM_EXPONENT)
+        return CA_ERR_INVALID;
+    ca_ic_auto_params(bitlen(p), B, C);
+    if (params->factor_base_bound) *B = params->factor_base_bound;
+    if (params->sieve_radius) *C = params->sieve_radius;
+    if (params->method == CA_IC_RANDOM_EXPONENT && !params->factor_base_bound)
+        *B = *B * 3 / 2;
+    if (*B < 5) *B = 5;
+    if (*C > 1000000) {
+        ca_set_error("index-calculus sieve radius exceeds supported limit");
+        return CA_ERR_INVALID;
+    }
+    if ((uint64_t)*B >= p) *B = (uint32_t)(p - 1);
+    *threads = params->threads ? params->threads : 1;
+    return CA_OK;
+}
+
 /* ---- relation storage --------------------------------------------------- */
 
 typedef struct relation {
@@ -167,10 +187,11 @@ static int ic_sync_parent(const char *path)
 }
 
 static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
-                             rel_list *rels, uint8_t *complete, uint64_t *candidates)
+                             rel_list *rels, uint8_t *complete, uint64_t *candidates,
+                             int readonly)
 {
-    FILE *f = fopen(path, "rb+");
-    if (!f && errno == ENOENT) {
+    FILE *f = fopen(path, readonly ? "rb" : "rb+");
+    if (!f && errno == ENOENT && !readonly) {
         int fd = open(path, O_RDWR | O_CREAT | O_EXCL, 0600);
         if (fd < 0) return NULL;
         f = fdopen(fd, "wb+");
@@ -194,7 +215,7 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
         if (ferror(f)) goto io_error;
         if (nr == 0 && feof(f)) break;
         if (nr != sizeof(r)) {
-            if (ftruncate(fileno(f), start) != 0) goto io_error;
+            if (!readonly && ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
         if (r.marker != UINT32_C(0x43493152) || r.index > 2 * want->C ||
@@ -203,13 +224,22 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
             fclose(f);
             return NULL;
         }
+        off_t batch_start = ftello(f);
+        struct stat file_state;
+        if (batch_start < 0 || fstat(fileno(f), &file_state) != 0 ||
+            file_state.st_size < batch_start) goto io_error;
+        if ((uint64_t)(file_state.st_size - batch_start) <
+            (uint64_t)r.count * sizeof(relation)) {
+            if (!readonly && ftruncate(fileno(f), start) != 0) goto io_error;
+            break;
+        }
         relation *batch = calloc(r.count ? r.count : 1, sizeof(*batch));
         if (!batch) goto io_error;
         nr = fread(batch, sizeof(*batch), r.count, f);
         if (ferror(f)) { free(batch); goto io_error; }
         if (nr != r.count) {
             free(batch);
-            if (ftruncate(fileno(f), start) != 0) goto io_error;
+            if (!readonly && ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
         if (ic_record_hash(&r, batch) != r.checksum) {
@@ -656,6 +686,104 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
     return 1;
 }
 
+ca_status ca_ic_checkpoint_validate(uint64_t p, uint64_t g,
+                                     const ca_ic_params *params,
+                                     const char *checkpoint_path)
+{
+    ca_ic_params def;
+    if (!params) { ca_ic_params_default(&def); params = &def; }
+    if (!checkpoint_path || !*checkpoint_path || p < 7 || !ca_is_prime(p) ||
+        (p >> 63) || g % p == 0) return CA_ERR_INVALID;
+    uint32_t B, C, threads;
+    ca_status rc = ic_resolved_params(p, params, &B, &C, &threads);
+    if (rc != CA_OK) return rc;
+    size_t nfb = ca_sieve_primes(B, NULL, 0);
+    if (!nfb || nfb > UINT32_MAX ||
+        (params->method == CA_IC_LINEAR_SIEVE && (uint64_t)nfb + 2 * (uint64_t)C + 1 > UINT32_MAX))
+        return CA_ERR_INVALID;
+    uint32_t ncols = (uint32_t)nfb +
+        (params->method == CA_IC_LINEAR_SIEVE ? 2 * C + 1 : 0);
+    uint32_t extra = params->extra_relations ? params->extra_relations : 64 + ncols / 20;
+    if (extra > UINT32_MAX - ncols) return CA_ERR_INVALID;
+    uint32_t target = ncols + extra;
+    ca_ic_ctx ctx = {0};
+    ctx.p = p; ctx.g = g % p; ctx.zeta = ca_primitive_root(p);
+    ctx.params = *params; ctx.nfb = (uint32_t)nfb;
+    ctx.fb = malloc(nfb * sizeof(*ctx.fb));
+    ctx.fb_log = calloc(nfb, sizeof(*ctx.fb_log));
+    ctx.fb_known = calloc(nfb, sizeof(*ctx.fb_known));
+    if (!ctx.fb || !ctx.fb_log || !ctx.fb_known) { rc = CA_ERR_NOMEM; goto done; }
+    ca_sieve_primes(B, ctx.fb, nfb);
+    char *precomp_path = ic_precomp_path(checkpoint_path, ".precomp");
+    if (!precomp_path) { rc = CA_ERR_NOMEM; goto done; }
+    struct stat sb;
+    int have_journal = stat(checkpoint_path, &sb) == 0;
+    if ((have_journal && !S_ISREG(sb.st_mode)) || (!have_journal && errno != ENOENT)) {
+        ca_set_error("cannot inspect index-calculus checkpoint");
+        rc = CA_ERR_INVALID;
+    }
+    int have_precomp = stat(precomp_path, &sb) == 0;
+    if ((have_precomp && !S_ISREG(sb.st_mode)) || (!have_precomp && errno != ENOENT)) {
+        ca_set_error("cannot inspect index-calculus precomputation");
+        rc = CA_ERR_INVALID;
+    }
+    free(precomp_path);
+    if (rc != CA_OK) goto done;
+    if (!have_journal && !have_precomp) {
+        ca_set_error("no index-calculus checkpoint artifacts found");
+        rc = CA_ERR_INVALID;
+        goto done;
+    }
+    if (have_precomp) {
+        ca_ic_stats st = {0};
+        if (ic_precomp_load(checkpoint_path, &ctx, B, C, &st) != 1) {
+            rc = CA_ERR_INVALID;
+            goto done;
+        }
+    }
+    if (have_journal && params->method == CA_IC_LINEAR_SIEVE) {
+        ic_journal_header want = {0};
+        memcpy(want.magic, "CAICJ1", 6);
+        want.p = p; want.g = ctx.g; want.zeta = ctx.zeta;
+        want.B = B; want.C = C; want.nfb = ctx.nfb;
+        want.ncols = ncols; want.target = target;
+        want.relation_size = sizeof(relation);
+        uint8_t *complete = calloc((size_t)2 * C + 1, 1);
+        rel_list rels = {0};
+        uint64_t candidates = 0;
+        if (!complete) { rc = CA_ERR_NOMEM; goto done; }
+        FILE *f = ic_journal_open(checkpoint_path, &want, &rels, complete,
+                                  &candidates, 1);
+        if (f) fclose(f);
+        else rc = CA_ERR_INVALID;
+        free(rels.r); free(complete);
+    } else if (have_journal) {
+        ic_rexp_header want = {0};
+        memcpy(want.magic, "CAICRX1", 7);
+        want.p = p; want.g = ctx.g; want.zeta = ctx.zeta;
+        if (params->seed) {
+            ca_rng rng;
+            ca_rng_seed(&rng, params->seed);
+            want.seed = ca_rng_next(&rng);
+        }
+        want.B = B; want.C = C;
+        want.nfb = ctx.nfb; want.ncols = ncols; want.target = target;
+        want.threads = threads; want.relation_size = sizeof(relation);
+        want.fb_hash = ic_hash(ctx.fb, nfb * sizeof(*ctx.fb),
+                               UINT64_C(14695981039346656037));
+        rel_list rels = {0};
+        uint64_t seed = 0, tests = 0, generation = 0;
+        double elapsed = 0;
+        int loaded = rexp_snapshot_load(checkpoint_path, &want, params->seed,
+                                        &rels, &seed, &tests, &generation, &elapsed);
+        if (loaded != 1) rc = loaded == -2 ? CA_ERR_NOMEM : CA_ERR_INVALID;
+        free(rels.r);
+    }
+done:
+    free(ctx.fb); free(ctx.fb_log); free(ctx.fb_known);
+    return rc;
+}
+
 typedef struct rexp_shared {
     uint64_t p, zeta;
     const uint32_t *fb;
@@ -976,22 +1104,9 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
     ca_rng_seed(&ctx->rng, ca_seed_or_random(params->seed));
     pthread_mutex_init(&ctx->rng_lock, NULL);
     uint64_t seed = ca_rng_next(&ctx->rng);
-    uint32_t B, C;
-    ca_ic_auto_params(bitlen(p), &B, &C);
-    if (params->factor_base_bound) B = params->factor_base_bound;
-    if (params->sieve_radius) C = params->sieve_radius;
-    if (params->method == CA_IC_RANDOM_EXPONENT && !params->factor_base_bound) B = B * 3 / 2;
-    if (B < 5) B = 5;
-    if (C > 1000000) {
-        ca_set_error("index-calculus sieve radius exceeds supported limit");
-        ca_ic_free(ctx);
-        return CA_ERR_INVALID;
-    }
-    /* A factor-base prime q >= p reduces to 0 or to a smaller residue mod p,
-     * so its logarithm is undefined or duplicates another's and the solve
-     * fails for a tiny modulus (p < B).  p >= 7 keeps B >= 6 here. */
-    if ((uint64_t)B >= p) B = (uint32_t)(p - 1);
-    uint32_t threads = params->threads ? params->threads : 1;
+    uint32_t B, C, threads;
+    ca_status resolved = ic_resolved_params(p, params, &B, &C, &threads);
+    if (resolved != CA_OK) { ca_ic_free(ctx); return resolved; }
     st->threads = threads;
 
     /* factor base */
@@ -1117,7 +1232,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             header.relation_size = sizeof(relation);
             uint64_t replay_candidates = 0;
             s.journal = ic_journal_open(checkpoint_path, &header, &rels,
-                                        s.complete, &replay_candidates);
+                                        s.complete, &replay_candidates, 0);
             if (!s.journal) {
                 free(s.complete); pthread_mutex_destroy(&s.lock);
                 free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
