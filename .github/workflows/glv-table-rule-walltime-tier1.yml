@@ -28,7 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # the full tree (~58k files) does not fit beside two build trees; only these paths are used
+          sparse-checkout: |
+            scripts
+            experiments/glv-table-rule-walltime-20261023
+            .github
 
       - name: Freeze runner identity
         shell: bash
@@ -63,14 +67,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # f630cc3 (#1065's head before its squash merge) lives on branch glv-table-rule-c12
-          git fetch --no-tags origin glv-table-rule-c12
+          # Fetch the two pinned commits without blobs (f630cc3 is #1065's head before its squash
+          # merge, on branch glv-table-rule-c12) and check out only the directories the build reads.
+          git config remote.origin.promisor true
+          git config remote.origin.partialclonefilter blob:none
+          git fetch --no-tags --depth=1 --filter=blob:none origin \
+            7cb3dce4cac9176d74afb6403048b5fabbaab834 f630cc30baa97eff39b9fa88d57fd273bae7d735
           git cat-file -e 'f630cc30baa97eff39b9fa88d57fd273bae7d735^{commit}'
           git cat-file -e '7cb3dce4cac9176d74afb6403048b5fabbaab834^{commit}'
           for arm in main:7cb3dce4cac9176d74afb6403048b5fabbaab834 c12:f630cc30baa97eff39b9fa88d57fd273bae7d735; do
             name=${arm%%:*}; commit=${arm#*:}
             src="$RUNNER_TEMP/src-$name"
-            git worktree add --detach "$src" "$commit"
+            git worktree add --no-checkout --detach "$src" "$commit"
+            git -C "$src" sparse-checkout set --cone src include cmake bindings cuda tools tests usecases experiments/prime-j0-hot-orbit-table
+            git -C "$src" checkout --detach "$commit"
+            df -h "$RUNNER_TEMP" | tail -1
             cmake -S "$src" -B "$RUNNER_TEMP/build-$name" -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF
             cmake --build "$RUNNER_TEMP/build-$name" --target cryptanalysis_static -j4
             cc -O3 -std=c11 -static -I"$src/include" "$EXP/bench_glv_panel.c" \

@@ -56,3 +56,17 @@ The workflow's first run (Actions run 40030129318) stopped in "Freeze runner
 identity" with `KeyError: 'GLV_DIR'`. A variable written to `$GITHUB_ENV` only
 exists from the next step on. That step now builds the receipt path from
 `RUNNER_TEMP`. Nothing else changes, and no pair ran in the failed attempt.
+
+## Fix 2 (before any timing)
+
+Run 40036000239 built the reference library and then ran out of runner disk
+while checking out the second full worktree (about 58,000 files). No pair ran.
+The workflow now does three things differently:
+
+- **Main checkout:** sparse, limited to `scripts/`, this experiment and `.github/`.
+- **Pinned commits:** fetched blob-less at depth 1.
+- **Arm worktrees:** each sparse-checks out only the directories CMake reads
+  (`src`, `include`, `cmake`, `bindings`, `cuda`, `tools`, `tests`, `usecases`,
+  `experiments/prime-j0-hot-orbit-table`, plus the root `CMakeLists.txt`).
+
+The build commands and sources are unchanged.
