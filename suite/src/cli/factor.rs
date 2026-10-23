@@ -943,6 +943,18 @@ impl FactoringRun {
                 if run.verbose {
                     eprintln!("[{method}] restoring S3 state");
                 }
+                // Establish run identity before downloading any checkpoint
+                // payload. A fresh local directory has no manifest to protect
+                // it from restoring another run's state.
+                let remote_manifest = format!("{uri}/manifest.json");
+                let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
+                let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
+                    .map_err(|e| format!("invalid S3 {method} manifest: {e}"))?;
+                if found != manifest {
+                    return Err(format!(
+                        "S3 {method} manifest differs from the requested run"
+                    ));
+                }
                 let remote = format!("{uri}/");
                 let local = dir.to_string_lossy();
                 aws(&[
@@ -2467,6 +2479,72 @@ mod tests {
             .unwrap_err()
             .contains("multiply"));
         fs::remove_file(path).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn fresh_s3_resume_validates_manifest_before_sync() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("crax-s3-restore-{}-{unique}", std::process::id()));
+        let bin = root.join("bin");
+        let state = root.join("state");
+        fs::create_dir_all(&bin).unwrap();
+        let log = root.join("aws.log");
+        let aws = bin.join("aws");
+        fs::write(
+            &aws,
+            format!(
+                "#!/bin/sh\nprintf '%s\\n' \"$*\" >> '{}'\ncase \"$*\" in *manifest.json*) printf '{{\"method\":\"other\"}}';; esac\n",
+                log.display()
+            ),
+        )
+        .unwrap();
+        fs::set_permissions(&aws, fs::Permissions::from_mode(0o755)).unwrap();
+        let old_path = std::env::var_os("PATH");
+        let path = format!(
+            "{}:{}",
+            bin.display(),
+            old_path.as_deref().unwrap_or_default().to_string_lossy()
+        );
+        std::env::set_var("PATH", path);
+
+        let result = FactoringRun::prepare(
+            &RunOptions {
+                state_dir: Some(state.clone()),
+                resume: true,
+                s3_uri: Some("s3://bucket/run".into()),
+                sync_every: None,
+                checkpoint_every: None,
+                verbose: false,
+                progress_every: None,
+                checkpoint_name: "pm1.ckpt",
+            },
+            "pm1",
+            serde_json::json!({"method":"pm1","n":"101"}),
+        );
+        if let Some(old_path) = old_path {
+            std::env::set_var("PATH", old_path);
+        } else {
+            std::env::remove_var("PATH");
+        }
+        let error = match result {
+            Err(error) => error,
+            Ok(_) => panic!("mismatched remote manifest was accepted"),
+        };
+        assert!(error.contains("manifest differs"));
+        let calls = fs::read_to_string(&log).unwrap();
+        assert!(calls.contains("s3 cp s3://bucket/run/manifest.json -"));
+        assert!(
+            !calls.contains("s3 sync"),
+            "unexpected restore before identity check: {calls}"
+        );
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
