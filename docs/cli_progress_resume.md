@@ -38,6 +38,7 @@ is a separate implementation with these observed interfaces:
 | `crax isogeny experiment` | `--verbose --progress-every` heartbeat and completed-curve count | `--state-dir --resume` after each starting curve | `--s3-uri` with the state directory; checked curve artifacts and final report |
 | `crax mlwe scaling` | `--verbose --progress-every` heartbeat and per-dimension results | `--state-dir --resume` after each dimension | `--s3-uri` with the state directory; checked row artifacts and final report |
 | `crax mlwe bkz` | `--verbose --progress-every` heartbeat and completed block sizes | `--state-dir --resume` with the exact reduced basis after each stage | `--s3-uri` with the state directory; checked stage bases and final report |
+| `crax mlwe sieve` (`gauss`, `nv`, `bucketed`) | `--verbose --progress-every` heartbeat and iteration or round counts | `--state-dir --resume` with the list, counters, and pending work at checkpoint boundaries | `--s3-uri` with the state directory; checked state snapshots and final report |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -91,6 +92,23 @@ crax mlwe bkz --dim 24 --beta 12 --q 4099 --seed 5 \
 crax mlwe bkz --dim 24 --beta 12 --q 4099 --seed 5 \
   --resume --state-dir ./runs/mlwe-bkz-restored \
   --s3-uri s3://my-bucket/crax/mlwe-bkz
+```
+
+`crax mlwe sieve` saves Gauss list and stack state after the first iteration,
+each 1,000 iterations, and the final iteration. Nguyen–Vidick and bucketed
+sieves save the starting list and every completed round. The saved state also
+contains the counters and random stream position needed to continue the same
+seeded run. A fresh directory with `--resume` restores the last committed
+snapshot from S3; any work after that boundary repeats. Keep the algorithm,
+dimension, modulus, seed, list size, and bucket count fixed when resuming.
+
+```sh
+crax mlwe sieve --algo bucketed --dim 20 --list 600 --buckets 32 \
+  --verbose --progress-every 5 --state-dir ./runs/mlwe-sieve \
+  --s3-uri s3://my-bucket/crax/mlwe-sieve
+crax mlwe sieve --algo bucketed --dim 20 --list 600 --buckets 32 \
+  --resume --state-dir ./runs/mlwe-sieve-restored \
+  --s3-uri s3://my-bucket/crax/mlwe-sieve
 ```
 
 `crax icx run` uses its in-process pipeline when run without state flags.

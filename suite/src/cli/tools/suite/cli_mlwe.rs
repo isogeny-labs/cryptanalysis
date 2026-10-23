@@ -19,8 +19,9 @@ use crate::cryptanalysis::mlwe::report::{
     best_believable, full_report, margin_table, render_table, report_search,
 };
 use crate::cryptanalysis::mlwe::sieve::{
-    bucketed_sieve, gauss_sieve, measure_gauss_scaling, norm2, nv_sieve, progressive_bkz,
-    progressive_bkz_resume, random_qary_lattice, BkzCheckpoint, SieveConfig,
+    bucketed_sieve, bucketed_sieve_resume, gauss_sieve, gauss_sieve_resume, measure_gauss_scaling,
+    norm2, nv_sieve, nv_sieve_resume, progressive_bkz, progressive_bkz_resume, random_qary_lattice,
+    BkzCheckpoint, BucketedCheckpoint, GaussCheckpoint, NvCheckpoint, SieveConfig,
 };
 use clap::Subcommand;
 
@@ -73,6 +74,21 @@ pub enum MlweOp {
         /// Bucket count, for `bucketed`.
         #[arg(long, default_value_t = 32)]
         buckets: usize,
+        /// Print completed checkpoints and elapsed-work heartbeats.
+        #[arg(long)]
+        verbose: bool,
+        /// Seconds between heartbeats (implies --verbose).
+        #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+        progress_every: Option<u64>,
+        /// Persist live sieve state and final report here.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue local state or restore S3 state into a fresh directory.
+        #[arg(long)]
+        resume: bool,
+        /// Mirror checkpoints and final report to S3.
+        #[arg(long)]
+        s3_uri: Option<String>,
     },
     /// Measure how the Gauss sieve's list grows with dimension.
     Scaling {
@@ -343,16 +359,152 @@ pub fn run(op: MlweOp) {
             seed,
             list,
             buckets,
+            verbose,
+            progress_every,
+            state_dir,
+            resume,
+            s3_uri,
         } => {
+            if (resume || s3_uri.is_some()) && state_dir.is_none() {
+                eprintln!("error: --resume and --s3-uri require --state-dir");
+                std::process::exit(2);
+            }
+            if dim == 0
+                || q < 2
+                || list == 0
+                || buckets == 0
+                || !matches!(algo.as_str(), "gauss" | "nv" | "bucketed")
+            {
+                eprintln!("error: invalid sieve algorithm or parameters");
+                std::process::exit(2);
+            }
             let basis = random_qary_lattice(dim, q, seed);
             let cfg = SieveConfig {
                 seed,
                 ..Default::default()
             };
             let before = basis.iter().map(|v| norm2(v)).min().unwrap_or(0);
+            let live = verbose || progress_every.is_some();
+            let mut identity = blake3::Hasher::new();
+            identity.update(b"crax-mlwe-sieve-v1\0");
+            identity.update(
+                &serde_json::to_vec(&(
+                    &algo,
+                    dim,
+                    q,
+                    seed,
+                    list,
+                    buckets,
+                    cfg.max_collisions,
+                    cfg.max_list,
+                    cfg.max_samples,
+                    cfg.sample_range,
+                    cfg.max_iterations,
+                    cfg.max_sample_retries,
+                ))
+                .unwrap(),
+            );
+            identity.update(include_str!("../../../cryptanalysis/mlwe/sieve.rs").as_bytes());
+            identity.update(env!("CARGO_PKG_VERSION").as_bytes());
+            let identity = identity.finalize().to_hex().to_string();
+            let mut state = state_dir
+                .as_ref()
+                .map(|dir| {
+                    super::unit_state::UnitState::prepare(
+                        dir,
+                        s3_uri.as_deref(),
+                        "mlwe-sieve",
+                        &identity,
+                        resume,
+                    )
+                })
+                .transpose()
+                .unwrap_or_else(|e| {
+                    eprintln!("error: {e}");
+                    std::process::exit(1)
+                });
+            let units = state
+                .as_ref()
+                .map(|s| s.completed())
+                .transpose()
+                .unwrap_or_else(|e| {
+                    eprintln!("error: {e}");
+                    std::process::exit(1)
+                })
+                .unwrap_or_default();
+            let started = std::time::Instant::now();
+            let work = std::sync::Arc::new(std::sync::atomic::AtomicU64::new(0));
+            let heartbeat = if live {
+                let (tx, rx) = std::sync::mpsc::channel::<()>();
+                let work = work.clone();
+                let every = progress_every.unwrap_or(5);
+                let worker = std::thread::spawn(move || {
+                    while rx
+                        .recv_timeout(std::time::Duration::from_secs(every))
+                        .is_err()
+                    {
+                        eprintln!(
+                            "[mlwe sieve] completed={} elapsed={}s",
+                            work.load(std::sync::atomic::Ordering::Relaxed),
+                            started.elapsed().as_secs()
+                        );
+                    }
+                });
+                Some((tx, worker))
+            } else {
+                None
+            };
+            let mut unit_idx = units.len();
             match algo.as_str() {
                 "gauss" => {
-                    let r = gauss_sieve(&basis, &cfg);
+                    let saved: Option<GaussCheckpoint> = units
+                        .last()
+                        .map(|b| serde_json::from_slice(b))
+                        .transpose()
+                        .unwrap_or_else(|e| {
+                            eprintln!("error: invalid saved sieve state: {e}");
+                            std::process::exit(1)
+                        });
+                    if let Some(saved) = &saved {
+                        work.store(saved.stats.iterations, std::sync::atomic::Ordering::Relaxed);
+                    }
+                    let r = if state.is_none() && !live {
+                        Ok(gauss_sieve(&basis, &cfg))
+                    } else {
+                        gauss_sieve_resume(&basis, &cfg, saved, 1000, |stage| {
+                            if let Some(s) = &mut state {
+                                s.commit(
+                                    unit_idx,
+                                    &serde_json::to_vec(stage).map_err(|e| e.to_string())?,
+                                )?;
+                                unit_idx += 1;
+                            }
+                            work.store(
+                                stage.stats.iterations,
+                                std::sync::atomic::Ordering::Relaxed,
+                            );
+                            if live {
+                                eprintln!(
+                                    "[mlwe sieve] gauss iterations={} samples={} list={} pairs={}",
+                                    stage.stats.iterations,
+                                    stage.stats.samples,
+                                    stage.list.len(),
+                                    stage.stats.pair_ops
+                                );
+                            }
+                            Ok(())
+                        })
+                    }
+                    .unwrap_or_else(|e| {
+                        eprintln!("error: {e}");
+                        std::process::exit(1)
+                    });
+                    if let Some(s) = &mut state {
+                        s.finish(&serde_json::to_vec_pretty(&serde_json::json!({
+                        "schema_version":1,"operation":"mlwe-sieve","algo":"gauss","dim":dim,"q":q,
+                        "seed":seed,"shortest":&r.shortest,"norm2":r.norm2.to_string(),"stats":&r.stats
+                    })).unwrap()).unwrap_or_else(|e| { eprintln!("error: {e}"); std::process::exit(1) });
+                    }
                     report_sieve(
                         "gauss",
                         before,
@@ -363,7 +515,56 @@ pub fn run(op: MlweOp) {
                     );
                 }
                 "nv" => {
-                    let r = nv_sieve(&basis, list, 0.95, &cfg);
+                    let saved: Option<NvCheckpoint> = units
+                        .last()
+                        .map(|b| serde_json::from_slice(b))
+                        .transpose()
+                        .unwrap_or_else(|e| {
+                            eprintln!("error: invalid saved sieve state: {e}");
+                            std::process::exit(1)
+                        });
+                    if let Some(saved) = &saved {
+                        work.store(
+                            saved.stats.rounds as u64,
+                            std::sync::atomic::Ordering::Relaxed,
+                        );
+                    }
+                    let r = if state.is_none() && !live {
+                        Ok(nv_sieve(&basis, list, 0.95, &cfg))
+                    } else {
+                        nv_sieve_resume(&basis, list, 0.95, &cfg, saved, |stage| {
+                            if let Some(s) = &mut state {
+                                s.commit(
+                                    unit_idx,
+                                    &serde_json::to_vec(stage).map_err(|e| e.to_string())?,
+                                )?;
+                                unit_idx += 1;
+                            }
+                            work.store(
+                                stage.stats.rounds as u64,
+                                std::sync::atomic::Ordering::Relaxed,
+                            );
+                            if live {
+                                eprintln!(
+                                    "[mlwe sieve] nv rounds={} list={} pairs={}",
+                                    stage.stats.rounds,
+                                    stage.list.len(),
+                                    stage.stats.pair_ops
+                                );
+                            }
+                            Ok(())
+                        })
+                    }
+                    .unwrap_or_else(|e| {
+                        eprintln!("error: {e}");
+                        std::process::exit(1)
+                    });
+                    if let Some(s) = &mut state {
+                        s.finish(&serde_json::to_vec_pretty(&serde_json::json!({
+                        "schema_version":1,"operation":"mlwe-sieve","algo":"nv","dim":dim,"q":q,
+                        "seed":seed,"shortest":&r.shortest,"norm2":r.norm2.to_string(),"stats":&r.stats
+                    })).unwrap()).unwrap_or_else(|e| { eprintln!("error: {e}"); std::process::exit(1) });
+                    }
                     report_sieve(
                         "nguyen-vidick",
                         before,
@@ -374,7 +575,57 @@ pub fn run(op: MlweOp) {
                     );
                 }
                 "bucketed" => {
-                    let r = bucketed_sieve(&basis, list, buckets, 4, &cfg);
+                    let saved: Option<BucketedCheckpoint> = units
+                        .last()
+                        .map(|b| serde_json::from_slice(b))
+                        .transpose()
+                        .unwrap_or_else(|e| {
+                            eprintln!("error: invalid saved sieve state: {e}");
+                            std::process::exit(1)
+                        });
+                    if let Some(saved) = &saved {
+                        work.store(
+                            saved.stats.rounds as u64,
+                            std::sync::atomic::Ordering::Relaxed,
+                        );
+                    }
+                    let r = if state.is_none() && !live {
+                        Ok(bucketed_sieve(&basis, list, buckets, 4, &cfg))
+                    } else {
+                        bucketed_sieve_resume(&basis, list, buckets, 4, &cfg, saved, |stage| {
+                            if let Some(s) = &mut state {
+                                s.commit(
+                                    unit_idx,
+                                    &serde_json::to_vec(stage).map_err(|e| e.to_string())?,
+                                )?;
+                                unit_idx += 1;
+                            }
+                            work.store(
+                                stage.stats.rounds as u64,
+                                std::sync::atomic::Ordering::Relaxed,
+                            );
+                            if live {
+                                eprintln!(
+                                    "[mlwe sieve] bucketed rounds={} list={} pairs={}",
+                                    stage.stats.rounds,
+                                    stage.list.len(),
+                                    stage.bucketed_pairs
+                                );
+                            }
+                            Ok(())
+                        })
+                    }
+                    .unwrap_or_else(|e| {
+                        eprintln!("error: {e}");
+                        std::process::exit(1)
+                    });
+                    if let Some(s) = &mut state {
+                        s.finish(&serde_json::to_vec_pretty(&serde_json::json!({
+                        "schema_version":1,"operation":"mlwe-sieve","algo":"bucketed","dim":dim,"q":q,
+                        "seed":seed,"shortest":&r.result.shortest,"norm2":r.result.norm2.to_string(),
+                        "stats":&r.result.stats,"bucketed_pairs":r.bucketed_pairs,"all_pairs":r.all_pairs
+                    })).unwrap()).unwrap_or_else(|e| { eprintln!("error: {e}"); std::process::exit(1) });
+                    }
                     report_sieve(
                         "bucketed",
                         before,
@@ -395,6 +646,10 @@ pub fn run(op: MlweOp) {
                     eprintln!("unknown sieve `{other}`; try gauss, nv or bucketed");
                     std::process::exit(2);
                 }
+            }
+            if let Some((tx, worker)) = heartbeat {
+                let _ = tx.send(());
+                let _ = worker.join();
             }
         }
 

@@ -102,6 +102,11 @@ fresh directory before continuing the remaining dimensions.
 integer basis after LLL and each complete block-size stage. A fresh S3 restore
 continues at the next stage.
 
+`crax mlwe sieve` accepts the same flags for all three algorithms. Gauss saves
+its list and pending stack at iteration boundaries; Nguyen–Vidick and bucketed
+sieves save their lists after each round. The final report and every committed
+snapshot can be restored from S3.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh
