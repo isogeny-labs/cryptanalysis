@@ -144,8 +144,14 @@ want '"result":"253109"' num powmod --base 2 --exp 100 --mod 1000003
 want '"result":"2"' group div "${ZP[@]}" --a 6 --b 3
 want '"divides_group_order":true' group order "${ZP[@]}" --elem 2
 want '"exponent"' group random "${ZP[@]}" --seed 7
+want_bad 'Zp element must be an unsigned integer' group exp "${ZP[@]}" --elem 2junk --k 1
+want_bad 'element coordinate is not an unsigned integer' group exp "${ZP[@]}" --elem -2 --k 1
+want_bad 'element coordinate exceeds uint64 range' group exp "${ZP[@]}" --elem 18446744073709551616 --k 1
 
 EC=(--group ec --p 1000003 --a 2 --b 3)
+want_bad 'element coordinate is not an unsigned integer' group exp "${EC[@]}" --elem 1, --k 1
+want_bad 'EC element must be x,y or inf' group exp "${EC[@]}" --elem 1,2junk --k 1
+want_bad 'element coordinate exceeds uint64 range' group exp "${EC[@]}" --elem 1,18446744073709551616 --k 1
 want '"order":999708' ec-order --p 1000003 --a 2 --b 3
 # x = 5 is not the x of a point of this curve; some x is, and the command must
 # distinguish the two cases rather than guessing.

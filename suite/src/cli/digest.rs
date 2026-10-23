@@ -11,7 +11,7 @@ use crate::hash;
 pub struct DigestArgs {
     /// Digest name: md4, md5, sha1, sha224, sha256, sha384, sha512,
     /// sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512,
-    /// shake128, or shake256.
+    /// shake128, or shake256. SHA-3 and SHAKE also accept hyphenated names.
     #[arg(long)]
     pub algorithm: String,
     /// UTF-8 text to hash.
@@ -49,7 +49,10 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         _ => return Err("provide exactly one of --text, --hex, or --file".into()),
     };
     let algorithm = args.algorithm.to_ascii_lowercase().replace('_', "-");
-    let xof = matches!(algorithm.as_str(), "shake128" | "shake256");
+    let xof = matches!(
+        algorithm.as_str(),
+        "shake128" | "shake-128" | "shake256" | "shake-256"
+    );
     if xof && !matches!(args.output_bytes, Some(1..=1_048_576)) {
         return Err("SHAKE requires --output-bytes in 1..=1048576".into());
     }
@@ -66,12 +69,12 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         "sha512" | "sha-512" => hash::sha512(&message).to_vec(),
         "sha512-224" | "sha-512-224" => hash::sha512_224(&message).to_vec(),
         "sha512-256" | "sha-512-256" => hash::sha512_256(&message).to_vec(),
-        "sha3-224" => hash::sha3_224(&message).to_vec(),
-        "sha3-256" | "sha3" => hash::sha3_256(&message).to_vec(),
-        "sha3-384" => hash::sha3_384(&message).to_vec(),
-        "sha3-512" => hash::sha3_512(&message).to_vec(),
-        "shake128" => hash::shake128(&message, args.output_bytes.unwrap()),
-        "shake256" => hash::shake256(&message, args.output_bytes.unwrap()),
+        "sha3-224" | "sha-3-224" => hash::sha3_224(&message).to_vec(),
+        "sha3-256" | "sha-3-256" | "sha3" | "sha-3" => hash::sha3_256(&message).to_vec(),
+        "sha3-384" | "sha-3-384" => hash::sha3_384(&message).to_vec(),
+        "sha3-512" | "sha-3-512" => hash::sha3_512(&message).to_vec(),
+        "shake128" | "shake-128" => hash::shake128(&message, args.output_bytes.unwrap()),
+        "shake256" | "shake-256" => hash::shake256(&message, args.output_bytes.unwrap()),
         _ => return Err(format!("unsupported hash algorithm: {}", args.algorithm).into()),
     };
     let report = DigestReport {
