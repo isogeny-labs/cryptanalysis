@@ -35,6 +35,7 @@ is a separate implementation with these observed interfaces:
 | `crax icx run` | `--verbose`, also with `--json`; sibling `icx` adds heartbeat with `--progress-every` | `--state-dir --resume` selects the sibling `icx` completed-repeat checkpoint | `--s3-uri` with the sibling state directory |
 | `crax ic workflow` | `--verbose --progress-every` stage messages and heartbeat | Existing `--dir` state, factor base, relation units, logs, and solutions | `--s3-uri --sync-every` commits checksummed artifacts after work-unit and stage boundaries |
 | `crax ic fixed` | `--verbose --progress-every` stage and SQLite-size heartbeat | Its own transactional `--dir/campaign.sqlite3` | `--s3-uri --resume` commits a consistent SQLite snapshot after each valid invocation |
+| `crax isogeny experiment` | `--verbose --progress-every` heartbeat and completed-curve count | `--state-dir --resume` after each starting curve | `--s3-uri` with the state directory; checked curve artifacts and final report |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -48,6 +49,22 @@ computation.
 is older). Its S3 database and report keys include the generation number, and
 the head moves only after both artifacts are uploaded. A fresh restore loads
 and verifies the last published generation.
+
+`crax isogeny experiment` saves each finished starting curve under
+`--state-dir/curves/` and writes a final `result.json`. S3 holds checksummed
+curve files and advances its head after each upload; a fresh `--resume`
+directory restores only the committed files. The active curve repeats after
+an interruption. Use one writer per S3 prefix and keep `--bits`, `--trials`,
+`--ell-list`, and `--rho-cap` fixed for a resumed run.
+
+```sh
+crax --json isogeny experiment --bits 16 --trials 20 --rho-cap 16384 \
+  --verbose --progress-every 5 --state-dir ./runs/isogeny-16 \
+  --s3-uri s3://my-bucket/crax/isogeny-16
+crax --json isogeny experiment --bits 16 --trials 20 --rho-cap 16384 \
+  --resume --verbose --state-dir ./runs/isogeny-16-restored \
+  --s3-uri s3://my-bucket/crax/isogeny-16
+```
 
 `crax icx run` uses its in-process pipeline when run without state flags.
 `--state-dir`, `--resume`, `--s3-uri`, or `--progress-every` selects the sibling

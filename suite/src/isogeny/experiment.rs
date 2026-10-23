@@ -17,9 +17,9 @@ use super::cm::cm_discriminant;
 use super::graph::build_graph;
 use super::SmallCurve;
 use rayon::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ExperimentConfig {
     /// Approximate bit-size of `p`.
     pub bits: u32,
@@ -49,14 +49,14 @@ impl ExperimentConfig {
 }
 
 /// Summary of one experimental sweep.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ExperimentReport {
     pub config: ExperimentConfig,
     pub per_curve: Vec<PerCurveResult>,
     pub aggregate: AggregateStats,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PerCurveResult {
     pub start: (u64, u64, u64),
     pub class_size: usize,
@@ -67,7 +67,7 @@ pub struct PerCurveResult {
     pub stddev_rho_iters: f64,
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AggregateStats {
     pub total_curves: usize,
     pub total_isogenous_vertices: usize,
@@ -86,60 +86,83 @@ pub fn run_experiment(cfg: &ExperimentConfig) -> ExperimentReport {
     let per_curve: Vec<PerCurveResult> = starting_curves
         .par_iter()
         .enumerate()
-        .map(|(idx, curve)| {
-            let local_seed = cfg.seed.wrapping_add(idx as u64);
-            // 1. Map the isogeny class via BFS over `S`-isogenies.
-            let g = build_graph(curve, &cfg.primes, cfg.max_graph_nodes);
-            // 2. Run the attack suite on every vertex.
-            let class: Vec<AttackReport> = g
-                .nodes
-                .iter()
-                .map(|n| {
-                    let c = SmallCurve {
-                        name: curve.name,
-                        p: n.curve.0,
-                        a: n.curve.1,
-                        b: n.curve.2,
-                    };
-                    run_attack_suite(&c, cfg.rho_max_iters, local_seed)
-                })
-                .collect();
-
-            // 3. Stats over the class.
-            let iters: Vec<f64> = class
-                .iter()
-                .filter_map(|r| r.rho_iters.map(|v| v as f64))
-                .collect();
-            let mean = if iters.is_empty() {
-                0.0
-            } else {
-                iters.iter().sum::<f64>() / iters.len() as f64
-            };
-            let mut sorted = iters.clone();
-            sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
-            let median = if sorted.is_empty() {
-                0.0
-            } else {
-                sorted[sorted.len() / 2]
-            };
-            let var = if iters.len() < 2 {
-                0.0
-            } else {
-                iters.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / (iters.len() as f64 - 1.0)
-            };
-            let stddev = var.sqrt();
-
-            PerCurveResult {
-                start: (curve.p, curve.a, curve.b),
-                class_size: class.len(),
-                class,
-                mean_rho_iters: mean,
-                median_rho_iters: median,
-                stddev_rho_iters: stddev,
-            }
-        })
+        .map(|(idx, curve)| run_curve(cfg, idx, curve))
         .collect();
 
+    summarize(cfg, per_curve)
+}
+
+/// Resume at a completed starting-curve boundary. The caller persists each
+/// result before this function begins the next curve.
+pub fn run_experiment_incremental(
+    cfg: &ExperimentConfig,
+    mut completed: Vec<PerCurveResult>,
+    mut committed: impl FnMut(usize, &PerCurveResult) -> Result<(), String>,
+) -> Result<ExperimentReport, String> {
+    let starts = generate_random_curves(cfg.bits, cfg.num_curves, cfg.seed);
+    if completed.len() > starts.len()
+        || completed.iter().zip(&starts).any(|(result, curve)| {
+            result.start != (curve.p, curve.a, curve.b) || result.class_size != result.class.len()
+        })
+    {
+        return Err("saved isogeny experiment curves do not match the configuration".into());
+    }
+    for (idx, curve) in starts.iter().enumerate().skip(completed.len()) {
+        let result = run_curve(cfg, idx, curve);
+        committed(idx, &result)?;
+        completed.push(result);
+    }
+    Ok(summarize(cfg, completed))
+}
+
+fn run_curve(cfg: &ExperimentConfig, idx: usize, curve: &SmallCurve) -> PerCurveResult {
+    let local_seed = cfg.seed.wrapping_add(idx as u64);
+    let g = build_graph(curve, &cfg.primes, cfg.max_graph_nodes);
+    let class: Vec<AttackReport> = g
+        .nodes
+        .iter()
+        .map(|n| {
+            let c = SmallCurve {
+                name: curve.name,
+                p: n.curve.0,
+                a: n.curve.1,
+                b: n.curve.2,
+            };
+            run_attack_suite(&c, cfg.rho_max_iters, local_seed)
+        })
+        .collect();
+    let iters: Vec<f64> = class
+        .iter()
+        .filter_map(|r| r.rho_iters.map(|v| v as f64))
+        .collect();
+    let mean = if iters.is_empty() {
+        0.0
+    } else {
+        iters.iter().sum::<f64>() / iters.len() as f64
+    };
+    let mut sorted = iters.clone();
+    sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let median = if sorted.is_empty() {
+        0.0
+    } else {
+        sorted[sorted.len() / 2]
+    };
+    let var = if iters.len() < 2 {
+        0.0
+    } else {
+        iters.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / (iters.len() as f64 - 1.0)
+    };
+    PerCurveResult {
+        start: (curve.p, curve.a, curve.b),
+        class_size: class.len(),
+        class,
+        mean_rho_iters: mean,
+        median_rho_iters: median,
+        stddev_rho_iters: var.sqrt(),
+    }
+}
+
+fn summarize(cfg: &ExperimentConfig, per_curve: Vec<PerCurveResult>) -> ExperimentReport {
     let total_curves = per_curve.len();
     let total_vertices: usize = per_curve.iter().map(|r| r.class_size).sum();
     let smart_count: usize = per_curve
@@ -324,5 +347,35 @@ mod tests {
         cfg.rho_max_iters = 1 << 10;
         let report = run_experiment(&cfg);
         assert!(!report.per_curve.is_empty());
+    }
+
+    #[test]
+    fn incremental_resume_skips_committed_curve() {
+        let mut cfg = ExperimentConfig::default_for_bits(8);
+        cfg.num_curves = 2;
+        cfg.primes = vec![2];
+        cfg.max_graph_nodes = 4;
+        cfg.rho_max_iters = 100;
+        let mut saved = Vec::new();
+        let interrupted = run_experiment_incremental(&cfg, Vec::new(), |idx, curve| {
+            saved.push(curve.clone());
+            if idx == 0 {
+                Err("interrupted after commit".into())
+            } else {
+                Ok(())
+            }
+        });
+        assert!(interrupted.is_err());
+        assert_eq!(saved.len(), 1);
+        let mut resumed_indices = Vec::new();
+        let report = run_experiment_incremental(&cfg, saved.clone(), |idx, _| {
+            resumed_indices.push(idx);
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(resumed_indices, vec![1]);
+        assert_eq!(report.per_curve.len(), 2);
+        assert_eq!(report.per_curve[0].start, saved[0].start);
+        assert_eq!(report.aggregate.total_curves, 2);
     }
 }

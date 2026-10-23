@@ -89,6 +89,11 @@ S3 generation. Use a separate prefix for each worker or run.
 upload a consistent database snapshot and report after each invocation.
 `--resume` in a fresh directory restores the last complete S3 snapshot.
 
+`crax isogeny experiment` accepts `--verbose --progress-every SECONDS` and
+`--state-dir --resume --s3-uri`. It checkpoints each completed starting curve,
+then saves the aggregate report. A fresh directory restores the S3 checkpoint;
+the curve interrupted in progress is run again.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh

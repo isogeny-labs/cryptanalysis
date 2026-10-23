@@ -9,6 +9,7 @@
 //! them; every subcommand has its own `--help`.
 
 mod cli_mlwe;
+mod isogeny_state;
 
 use crate::{
     ecc::point::Point,
@@ -233,6 +234,21 @@ enum IsogenyOp {
         /// so reproducing them needs this.
         #[arg(long)]
         rho_cap: Option<u64>,
+        /// Print a heartbeat and completed-curve progress to stderr.
+        #[arg(long)]
+        verbose: bool,
+        /// Seconds between heartbeats (implies --verbose).
+        #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+        progress_every: Option<u64>,
+        /// Save each completed starting curve and the final report here.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue a local experiment, or restore from S3 into a fresh directory.
+        #[arg(long)]
+        resume: bool,
+        /// Mirror completed curves and the report to an S3 prefix.
+        #[arg(long)]
+        s3_uri: Option<String>,
     },
     /// secp256k1 case study: GLV constants, twist analysis, MOV
     /// embedding-degree certificate, small-degree-isogeny survey.
@@ -1423,7 +1439,7 @@ fn cmd_isogeny(op: IsogenyOp) {
     use crate::isogeny::{
         class_group::{class_above_prime, class_number, enumerate_reduced_forms, ClassGroup},
         cm::{cm_discriminant, fundamental_discriminant_and_conductor},
-        experiment::{run_experiment, to_json, ExperimentConfig},
+        experiment::{run_experiment, run_experiment_incremental, to_json, ExperimentConfig},
         graph::build_graph,
         secp256k1_analysis::{
             beta, embedding_degree_secp256k1, lambda, run_secp256k1_suite,
@@ -1555,7 +1571,16 @@ fn cmd_isogeny(op: IsogenyOp) {
             trials,
             ell_list,
             rho_cap,
+            verbose,
+            progress_every,
+            state_dir,
+            resume,
+            s3_uri,
         } => {
+            if (resume || s3_uri.is_some()) && state_dir.is_none() {
+                eprintln!("error: --resume and --s3-uri require --state-dir");
+                std::process::exit(2);
+            }
             let mut cfg = ExperimentConfig::default_for_bits(bits);
             cfg.num_curves = trials.max(1);
             cfg.primes = parse_ell_list(&ell_list);
@@ -1570,7 +1595,87 @@ fn cmd_isogeny(op: IsogenyOp) {
                 "# Running isogeny experiment: bits={}, trials={}, ell={:?}",
                 cfg.bits, cfg.num_curves, cfg.primes,
             );
-            let report = run_experiment(&cfg);
+            let live = verbose || progress_every.is_some();
+            let mut state = match state_dir
+                .as_ref()
+                .map(|dir| isogeny_state::State::prepare(dir, s3_uri.as_deref(), &cfg, resume))
+                .transpose()
+            {
+                Ok(state) => state,
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            let completed = match state.as_ref().map(|s| s.completed()).transpose() {
+                Ok(value) => value.unwrap_or_default(),
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            if live {
+                eprintln!(
+                    "[isogeny experiment] {} of {} curves already complete",
+                    completed.len(),
+                    cfg.num_curves
+                );
+            }
+            let started = std::time::Instant::now();
+            let heartbeat = if live {
+                let (tx, rx) = std::sync::mpsc::channel::<()>();
+                let every = progress_every.unwrap_or(5);
+                let worker = std::thread::spawn(move || {
+                    while rx
+                        .recv_timeout(std::time::Duration::from_secs(every))
+                        .is_err()
+                    {
+                        eprintln!(
+                            "[isogeny experiment] elapsed={}s",
+                            started.elapsed().as_secs()
+                        );
+                    }
+                });
+                Some((tx, worker))
+            } else {
+                None
+            };
+            let result = if state.is_none() && !live {
+                Ok(run_experiment(&cfg))
+            } else {
+                run_experiment_incremental(&cfg, completed, |idx, curve| {
+                    if let Some(state) = &mut state {
+                        state.commit_curve(idx, curve)?;
+                    }
+                    if live {
+                        eprintln!(
+                            "[isogeny experiment] curve {}/{} complete: vertices={} elapsed={}s",
+                            idx + 1,
+                            cfg.num_curves,
+                            curve.class_size,
+                            started.elapsed().as_secs()
+                        );
+                    }
+                    Ok(())
+                })
+            };
+            if let Some((tx, worker)) = heartbeat {
+                let _ = tx.send(());
+                let _ = worker.join();
+            }
+            let report = match result {
+                Ok(report) => report,
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            if let Some(state) = &mut state {
+                if let Err(e) = state.finish(&report) {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            }
             println!("{}", to_json(&report));
             eprintln!(
                 "[summary] {} starting curves, {} isogenous vertices, mean rho iters = {:.1}",
