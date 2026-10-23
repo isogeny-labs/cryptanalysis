@@ -169,6 +169,23 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// Resolve an optional sibling executable in a release bundle. An explicit
+/// override wins; otherwise a binary beside `crax` wins over `PATH`.
+pub(crate) fn sibling_binary(env_name: &str, default_binary: &str) -> OsString {
+    if let Some(binary) = std::env::var_os(env_name) {
+        return binary;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            let adjacent = dir.join(default_binary);
+            if adjacent.is_file() {
+                return adjacent.into_os_string();
+            }
+        }
+    }
+    default_binary.into()
+}
+
 /// Bridge the sibling crypto executables without a shell. This keeps the
 /// public-target EC IC, isogeny-walk, and artifact-store surfaces reachable
 /// from `crax` while preserving the producing executable's exit status.
@@ -180,7 +197,7 @@ fn run_external(
     json_requested: bool,
     pass_json: bool,
 ) -> ExitCode {
-    let binary = std::env::var_os(env_name).unwrap_or_else(|| default_binary.into());
+    let binary = sibling_binary(env_name, default_binary);
     let mut native_args: Vec<OsString> = args
         .iter()
         .filter(|arg| arg.as_os_str() != std::ffi::OsStr::new("--json"))

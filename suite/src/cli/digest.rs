@@ -102,7 +102,7 @@ pub(crate) fn is_store_ref(path: &Path) -> bool {
 pub(crate) fn resolve_checked_path(path: &Path) -> Result<PathBuf, String> {
     let spec = path.to_str().filter(|_| is_store_ref(path));
     let resolved = if let Some(spec) = spec {
-        let binary = std::env::var_os("CRAX_CRYPTO_BIN").unwrap_or_else(|| "crypto".into());
+        let binary = super::sibling_binary("CRAX_CRYPTO_BIN", "crypto");
         let output = Command::new(&binary)
             .args(["store", "pull", spec])
             .output()

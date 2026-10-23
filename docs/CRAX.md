@@ -57,12 +57,17 @@ The symmetric, lattice, isogeny, distributed rho, and demo rows, plus native
 them unchanged, and their `--help`, flags and report formats are their own.
 The old binary names still work.
 
-The sibling crypto commands above execute the corresponding installed
-`ic`, `icx`, `isogeny_walk`, or `crypto` binary. Set `CRAX_IC_BIN`, `CRAX_ICX_BIN`,
-`CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN` to an explicit path when those
-executables are not on `PATH`. `crax` forwards arguments directly, preserves
+The sibling crypto commands above execute the corresponding
+`ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
+`CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
+path, then a binary beside its own executable, then `PATH`. A release bundle
+can therefore put all five binaries in one directory without extra setup.
+`crax` forwards arguments directly, preserves
 the child exit status, and wraps its JSON or text report when `--json` is
 requested. The native `crax icx` catalog and run commands remain in the suite.
+The [co-located release-bundle acceptance](CRAX_SIBLING_BRIDGE_ACCEPTANCE_20261023.json)
+checks all four sibling executables, public prime and cubic EC solves, an S3
+completion-marker lookup, and a fresh-cache S3 artifact read through `crax hash`.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:
@@ -135,7 +140,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 | Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
 | Collaborative rho job artifacts | `crax rho-collab work/status --job store:NAME` | Native job loading uses the sibling `crypto store pull` to check the indexed digest before parsing; job JSON is limited to 64 KiB. Mutable worker state is local. |
-| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
+| Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/exists/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
 
 The release CLI matrix for SHA-256, SHA-3, SHAKE, BLAKE3, bounded hash
 analysis, AES recovery modes, distinguishers, and DDT/LAT/BCT/DLCT row
@@ -143,8 +148,9 @@ agreement is recorded in
 [`CRAX_HASH_AES_ACCEPTANCE_20261023.json`](CRAX_HASH_AES_ACCEPTANCE_20261023.json).
 
 The native cryptanalysis commands and the sibling bridges have separate build
-dependencies. Install the sibling `crypto`, `ic`, and `isogeny_walk` binaries
-or set their `CRAX_*_BIN` paths before using the corresponding rows. The
+dependencies. Put the sibling `crypto`, `ic`, `icx`, and `isogeny_walk` binaries
+beside `crax`, install them on `PATH`, or set their `CRAX_*_BIN` paths before
+using the corresponding rows. The
 explicit field ranges and reproducible public inputs are documented in the
 sibling `crypto:docs/ic/EXTERNAL_TARGET_CLI.md`; its
 `crypto:docs/store/README.md` defines the Setec S3 prefix and receipts.
