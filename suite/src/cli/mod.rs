@@ -41,7 +41,7 @@ Attacks by family:
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
-  sibling crypto tools      icx solve-prime|solve-cubic, isogeny-walk, store, crypto
+  sibling crypto tools      icx solve-prime|solve-prime-file|solve-cubic, isogeny-walk, store, crypto
   symmetric & hash          aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
@@ -411,14 +411,14 @@ where
         "icx"
             if matches!(
                 rest.get(1).and_then(|a| a.to_str()),
-                Some("solve-prime" | "solve-cubic")
+                Some("solve-prime" | "solve-prime-file" | "solve-cubic")
             ) =>
         {
             return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
         }
         "ic" if matches!(
             rest.get(1).and_then(|a| a.to_str()),
-            Some("solve-prime" | "solve-cubic")
+            Some("solve-prime" | "solve-prime-file" | "solve-cubic")
         ) =>
         {
             return run_external("CRAX_IC_BIN", "ic", sub, &rest[1..], requested_json, true);

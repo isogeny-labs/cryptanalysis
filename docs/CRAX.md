@@ -43,7 +43,7 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
-| sibling crypto integration | `ic solve-prime \| solve-cubic`, `icx solve-prime \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
+| sibling crypto integration | `ic solve-prime \| solve-prime-file \| solve-cubic`, `icx solve-prime \| solve-prime-file \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
 | symmetric and hash | `aes-attack`, `aes-sbox-table`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
@@ -72,7 +72,9 @@ crax --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
   --gx 3 --gy 7 --qx 231 --qy 54
 ```
 
-The bridge also accepts `solve-cubic`; `crax icx` accepts both commands too. Use
+The bridge also accepts `solve-prime-file --input FILE`, including checked
+`store:NAME` and `sha256:DIGEST` inputs, and `solve-cubic`; `crax icx` accepts
+all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
 
@@ -122,7 +124,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 | SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 length extension, 32-bit truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512 have the generic measurements but no Merkle-Damgård length-extension step. |
 | AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
-| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
+| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
 | Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
 
