@@ -133,17 +133,20 @@ def ecc2k130_runs(ref, since):
         day = (d.get("started_at_utc") or d.get("completed_at_utc") or "")[:10]
         if not day or day < since:
             continue
+        # Failed paired runs may contain partial population measurements.
+        valid = d.get("valid") is True
         rates, ratios = [], []
-        for pr in d.get("population_results") or []:
-            r = _f(pr.get("return_rate_billion_per_second"))
-            if r:
-                rates.append(r)
-            m = _f(pr.get("median_ratio"))
-            if m:
-                ratios.append(m)
+        if valid:
+            for pr in d.get("population_results") or []:
+                r = _f(pr.get("return_rate_billion_per_second"))
+                if r:
+                    rates.append(r)
+                m = _f(pr.get("median_ratio"))
+                if m:
+                    ratios.append(m)
         e = by_day.setdefault(day, {"runs": 0, "valid": 0, "rates": [], "ratios": []})
         e["runs"] += 1
-        e["valid"] += 1 if d.get("valid") else 0
+        e["valid"] += valid
         e["rates"] += rates
         e["ratios"] += ratios
     for day, e in by_day.items():
@@ -154,10 +157,10 @@ def ecc2k130_runs(ref, since):
              better="higher", label="ECC2K-130 GPU paired runs marked valid", source=src)
         if e["rates"]:
             emit("ecc2k130.gpu.return_rate_gps_max", max(e["rates"]), date=day, problem=P_RHO, unit="G it/s",
-                 better="higher", label="ECC2K-130 GPU: best candidate walk rate in paired runs", source=src)
+                 better="higher", label="ECC2K-130 GPU: best candidate walk rate in valid paired runs", source=src)
         if e["ratios"]:
             emit("ecc2k130.gpu.paired_median_ratio", statistics.median(e["ratios"]), date=day, problem=P_RHO,
-                 unit="cand/ref", better="higher", label="ECC2K-130 GPU: median candidate/reference ratio", source=src)
+                 unit="cand/ref", better="higher", label="ECC2K-130 GPU: median candidate/reference ratio in valid paired runs", source=src)
 
 
 def readme_headline(ref):
