@@ -704,11 +704,21 @@ only once it moves an end-to-end `S` above.
   one hosted runner and one host class, not replayed on another machine;
   CPU only; the smoke and timed jobs ran on different hosts (EPYC 9V45 and
   9V74); microcode unreadable; the rho is not wall-time tuned.
-- **n=83, §5a band:** the 0 / 0.1 / 1 GAE band for the IC / rho gap is
-  uncomputable on both n=83 rows, because the frozen producer emits no
-  group-operation counts. The K1 replay (archived 2026-10-17) timed
-  factor-base construction but used the same producer, so the band stays
-  open until a producer that emits the counts runs under a new protocol.
+- **n=83, §5a band:** counts emitted from producer
+  `ic_online_stacked_counted_r770`
+  (`experiments/koblitz-n83-opcounts-20261023`: the frozen stacked source
+  `83b58988...` plus counted, exact counter edits, feature `op-counts`; group
+  additions, doublings and scalar multiplications, Frobenius applications,
+  S3 root solves, root-index probes and inserts, canonicalizations, linear
+  algebra and field operations, per phase and per target), and `band.py`
+  computes the 0 / 0.1 / 1 GAE band from them. **Band pending run
+  [39882571652](https://github.com/aburan28/cryptanalysis/actions/runs/39882571652)**
+  (protocol frozen at `765061e1`: the stacked K1 block and 20-point cold
+  panel, gated against run 38862448935); no band is claimed until it is
+  archived. Locally the outputs are bit-identical with counting on and the
+  overhead is within VM noise. That band covers the stacked row; the current
+  rank-finder row needs the counters ported to its derivation and its own
+  run. The K1 replay (archived 2026-10-17) used the uncounted producer.
 - **n=83, construction time X (resolved 2026-10-17):** measured in
   `koblitz-n83-replay-20261017` ([run\ 39007026856](https://github.com/aburan28/cryptanalysis/actions/runs/39007026856)): X = 427.5 ms,
   65.5 ms over the retained-file load. Every-phase stacked R 3.2357 and cold
