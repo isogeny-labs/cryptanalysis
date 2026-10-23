@@ -66,6 +66,25 @@ and `aburan28/ml-cryptanalysis`:
 - `make check` must pass (references and citations resolved, no LaTeX errors,
   no overfull boxes) before a PDF is recommitted.
 
+## Experiment protocol, export and review
+
+Owner request, 2026-10-22. Every experiment, benchmark, sweep or training run
+here is designed from a frozen `experiment.protocol/v1` record before its
+first data point (skill `experiment-protocol`; the `controlled-experiment`
+pointer decides what its controls are), leaves its rows as one
+`experiment.export/v1` beside the raw `.jsonl` (built with `from-rows` from
+the measurement contract's one-object-per-run records), and may be reviewed
+by any other runner through a write-once `experiment.review/v1` record (skill
+`review-run`). The canonical rules, schemas and checker are
+`docs/experiment-protocol.md` and `tools/experiment_protocol.py` in
+aburan28/crypto-autoresearcher; this repository's skills are pointers.
+Remote runs go through `queue-experiment`: a measurement job to a host that
+can earn a Tier 0/1 receipt and is never resumed, a throughput job to spot
+or pod capacity with an application checkpoint, and after a restore counted
+units stay valid and the clock does not. The candidate, workload, one-target
+and tier rules below are unchanged by this; the protocol is where they are
+written down before timing.
+
 ## Index-calculus candidate names and measurements
 
 Use this convention for new elliptic-curve index-calculus (IC) candidate
