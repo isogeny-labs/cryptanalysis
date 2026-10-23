@@ -49,3 +49,10 @@ runner's binaries, and the report says so. The frozen per-panel result hashes
 `gh_manifest.py` rewrites the frozen manifests in the same way as
 `pod_manifest.py`, but for GitHub Actions: paths, the pinned CPU (the lowest
 CPU in the runner's affinity), the v2 cgroup, and the identity fields.
+
+## Fix 1 (before any timing)
+
+The workflow's first run (Actions run 40030129318) stopped in "Freeze runner
+identity" with `KeyError: 'GLV_DIR'`. A variable written to `$GITHUB_ENV` only
+exists from the next step on. That step now builds the receipt path from
+`RUNNER_TEMP`. Nothing else changes, and no pair ran in the failed attempt.

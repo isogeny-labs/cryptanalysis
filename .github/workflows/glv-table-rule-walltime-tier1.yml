@@ -55,7 +55,7 @@ jobs:
               'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'], os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
               'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
           }
-          Path(os.environ['GLV_DIR'], 'allocation.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          Path(os.environ['RUNNER_TEMP'], 'glv-walltime', 'allocation.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
           PY
           (cd "$EXP" && sha256sum -c PROTOCOL.sha256)
 
