@@ -82,6 +82,7 @@ The bridge also accepts `solve-cubic`; `crax icx` accepts both commands too. Use
 crax --json hash --algorithm sha256 --text abc
 crax --json hash --algorithm sha3-384 --hex 616263
 crax hash --algorithm shake256 --text abc --output-bytes 32
+crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
 crax --json aes-attack --technique square
@@ -93,6 +94,13 @@ crax --json aes-sbox-table --kind lat > aes-lat.json
 crax --json aes-sbox-table --kind bct --row 1
 crax --json aes-sbox-table --kind dlct > aes-dlct.json
 ```
+
+For `hash --file`, a local path or indexed `store:NAME` and `sha256:DIGEST`
+reference is accepted. The latter uses the sibling `crypto store pull`
+command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
+fetched and digest-checked before `crax` hashes it. Set the sibling store's
+remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
+receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
 
 `hash` accepts a single `--text`, `--hex`, or `--file` input and supports
 SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for
@@ -111,7 +119,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 
 | Requested surface | Available command | Current boundary |
 | --- | --- | --- |
-| SHA-256, SHA-3, and related digests | `crax hash` | Native byte, text, and file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
+| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 length extension, 32-bit truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512 have the generic measurements but no Merkle-Damgård length-extension step. |
 | AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
 | Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |

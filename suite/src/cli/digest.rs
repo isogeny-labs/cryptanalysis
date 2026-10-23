@@ -2,7 +2,10 @@
 
 use clap::Args;
 use serde::Serialize;
-use std::path::PathBuf;
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use super::output::{CmdResult, Out};
 use crate::hash;
@@ -20,7 +23,7 @@ pub struct DigestArgs {
     /// Hex-encoded bytes to hash.
     #[arg(long, conflicts_with_all = ["text", "file"])]
     pub hex: Option<String>,
-    /// File whose complete bytes will be hashed.
+    /// File or checked store:NAME/sha256:DIGEST reference to hash.
     #[arg(long, conflicts_with_all = ["text", "hex"])]
     pub file: Option<PathBuf>,
     /// Required output length in bytes for SHAKE128 or SHAKE256.
@@ -43,9 +46,7 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         (None, Some(hex), None) => {
             hex::decode(hex).map_err(|e| format!("invalid --hex input: {e}"))?
         }
-        (None, None, Some(path)) => {
-            std::fs::read(path).map_err(|e| format!("reading {}: {e}", path.display()))?
-        }
+        (None, None, Some(path)) => read_file_input(path)?,
         _ => return Err("provide exactly one of --text, --hex, or --file".into()),
     };
     let algorithm = args.algorithm.to_ascii_lowercase().replace('_', "-");
@@ -85,6 +86,35 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         digest_hex: hex::encode(digest),
     };
     out.emit(&report, || report.digest_hex.clone())
+}
+
+fn read_file_input(path: &Path) -> Result<Vec<u8>, String> {
+    let spec = path
+        .to_str()
+        .filter(|s| s.starts_with("store:") || s.starts_with("sha256:"));
+    let resolved = if let Some(spec) = spec {
+        let binary = std::env::var_os("CRAX_CRYPTO_BIN").unwrap_or_else(|| "crypto".into());
+        let output = Command::new(&binary)
+            .args(["store", "pull", spec])
+            .output()
+            .map_err(|e| format!("starting {} for {spec}: {e}", binary.to_string_lossy()))?;
+        if !output.status.success() {
+            return Err(format!(
+                "resolving {spec}: {}",
+                String::from_utf8_lossy(&output.stderr).trim()
+            ));
+        }
+        let stdout = String::from_utf8(output.stdout)
+            .map_err(|e| format!("store pull returned a non-UTF-8 path: {e}"))?;
+        let cached = stdout.trim_end_matches(['\r', '\n']);
+        if cached.is_empty() || cached.contains('\r') || cached.contains('\n') {
+            return Err("store pull returned an invalid cache path".into());
+        }
+        PathBuf::from(cached)
+    } else {
+        path.to_path_buf()
+    };
+    std::fs::read(&resolved).map_err(|e| format!("reading {}: {e}", path.display()))
 }
 
 #[cfg(test)]
