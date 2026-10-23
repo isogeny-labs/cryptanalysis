@@ -5,14 +5,20 @@ date: 2026-10-23
 
 # n = 83 stacked producer with native work counted
 
-**Status (2026-10-23): counted producer built and tested; frozen counting
-run launched, band pending.** The counting run
-([PROTOCOL.md](PROTOCOL.md), GitHub Actions run
-[39882571652](https://github.com/aburan28/cryptanalysis/actions/runs/39882571652)
-on branch `claude/n83-opcounts-run`) was started and not waited on; its
-artifact is not archived here yet and **no n = 83 band is claimed**. The
-numbers below are local diagnostics from the cloud-agent VM (4 vCPU Intel
-Xeon guest, rustc 1.97.0; the runner pins 1.99.0).
+**Status (2026-10-23): counting run archived, v2 analysis
+`counts_identical`, band recorded for the stacked row.** The frozen
+counting run ([PROTOCOL.md](PROTOCOL.md), GitHub Actions run
+[39882571652](https://github.com/aburan28/cryptanalysis/actions/runs/39882571652),
+head `1a6067f6` on `claude/n83-opcounts-run`, AMD EPYC 9V45, rustc 1.99.0)
+is archived in [`run_github_39882571652/`](run_github_39882571652/), and the
+complete-panel analyzer [`analyze_v2.py`](ANALYSIS_V2.md) accepts it: all 62
+rows in frozen order, every run valid, every output identical to the
+archived twin, one scalar per point. The band is in
+[Results](#results-run-39882571652-v2-analysis) below. It is a band for the
+**stacked producer row**, not for the current rank-finder baseline row.
+Sections from "Which producer" to "The band script" describe the producer and
+the local diagnostics from the cloud-agent VM (4 vCPU Intel Xeon guest,
+rustc 1.97.0).
 
 ## Question
 
@@ -129,10 +135,84 @@ doublings. Setup makes 14.94 M root solves and 29.88 M inserts. One online
 target (Q0) makes 994,008 root solves and 1,987,852 probes, and 45 additions
 and 51 doublings.
 
+## Results: run 39882571652, v2 analysis
+
+**Evidence.** [`run_github_39882571652/`](run_github_39882571652/) is the
+workflow artifact `n83-opcounts-39882571652-1` (id 12472682483, 396,291
+bytes, zip sha256 `b1e43f37...3554`, equal to GitHub's digest), unzipped byte
+for byte; [`ARTIFACT.json`](run_github_39882571652/ARTIFACT.json) records its
+provenance and `SHA256SUMS` the digest of every file. In the run, the
+workflow at `1a6067f6` gated with the frozen v1 analyzer (`opcounts.py
+analyze`, [`analyze-stdout.txt`](run_github_39882571652/analyze-stdout.txt)),
+which can accept a truncated panel ([ANALYSIS_V2.md](ANALYSIS_V2.md)). The
+saved receipts were therefore re-analysed after download with
+`analyze_v2.py` (sha256 `42635193...8493`, checked against
+`ANALYSIS_V2.sha256`):
+
+```sh
+python3 experiments/koblitz-n83-opcounts-20261023/analyze_v2.py \
+  --receipt-dir <copy of run_github_39882571652/panel>
+```
+
+Its outputs are in [`run_github_39882571652/analysis_v2/`](run_github_39882571652/analysis_v2/)
+(`band-v2.md`, `counts-v2.json`, `opcounts_result-v2.json`, stdout). A second
+run reproduced every output byte for byte.
+
+**v2 verdict: `counts_identical`** (exit 0, no mismatches):
+
+| check | result |
+| --- | --- |
+| `complete_frozen_panel` (62 rows, frozen serial, arm, point, seed, twin, block) | pass |
+| `all_runs_valid` | pass |
+| `identical_to_archived_run` (run 38862448935) | pass |
+| `one_scalar_per_point` | pass |
+
+v2's band is identical to the v1 `band.md` from the run (and `counts-v2.json`
+to `counts.json`): v1 did not differ on this complete panel.
+
+**Band** (20 points, reference rT; units: GAE per solved target; S = kS + cS,
+P = kP + cP, the stacked end-to-end cold `E2E(k, c)`; gap = cost(arm) /
+cost(rT), paired bootstrap 95% interval, 10,000 draws). Each gap cell is
+given with rho's undecomposed scalar multiplications priced at 0 GAE; at
+104 GAE every cell moves by less than 0.1% (both ends in
+[`band-v2.md`](run_github_39882571652/analysis_v2/band-v2.md)).
+
+| arm | mean group ops | mean unpriced native ops | gap w = 0 | gap w = 0.1 | gap w = 1 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| S | 1.011e5 | 3.093e9 | 0.01138 [0.008767, 0.01552] | 29.00 [22.33, 39.54] | 115.5 [88.94, 157.5] |
+| P | 1.014e5 | 4.688e9 | 0.01141 [0.00879, 0.01556] | 43.93 [33.83, 59.92] | 175.0 [134.8, 238.7] |
+| rT | 8.882e6 | 1.79e7 | 1 | 1 | 1 |
+
+Pair rulings (ranked only where the order holds at every weight and both
+rho bounds):
+
+- S vs P: **S is cheaper than P at every weight** (S / P 0.9973 at w = 0,
+  0.6600 at 0.1, 0.6599 at 1).
+- S vs rT: **unresolved**: S is about 88x cheaper at w = 0 and 29x to 116x
+  dearer at w = 0.1 and 1; the order flips inside the band.
+- P vs rT: **unresolved**, the same flip.
+
+Sensitivity (reported beside the band, never instead of it): with Frobenius
+applications priced at 1 GAE as group operations, rT is cheaper than S and
+than P at every weight (S / rT 56.08 [43.18, 76.48], 70.99, 115.5; P / rT
+84.00 [64.69, 114.6], 106.8, 175.0 at w = 0, 0.1, 1).
+
+The distance remaining to rho for the stacked row is thus a factor of about
+29 at w = 0.1 and 116 at w = 1, carried by the rank stage's ~3.1e9 native
+operations (root solves, canonicalizations, root-index probes and Frobenius
+rotations) against ~1.0e5 group operations. This is accounting of an
+existing producer, not an improvement, and no baseline row changes.
+
+![Gap to matched rho against the GAE weight, run 39882571652, v2 analysis
+(log axis; solid: band, dashed: Frobenius-at-1-GAE sensitivity; bars: 95%
+intervals). Source: [figures/band_gap_39882571652.tex](figures/band_gap_39882571652.tex),
+[SVG](figures/band_gap_39882571652.svg), drawn by `make_gap_figure.py`.](figures/band_gap_39882571652.png)
+
 ## What is left
 
-1. Archive run 39882571652 (or a rerun) into `run_github_<id>/`, and quote
-   its band, for the stacked row only, if its verdict is `counts_identical`.
+1. Done (2026-10-23): run 39882571652 archived in
+   `run_github_39882571652/`, v2 verdict `counts_identical`, band above
+   (stacked row only).
 2. The current n = 83 baseline row is the rank-finder producer
    (`koblitz-n83-rankfinder-20261021`, derived from this source through the
    later index-lift, closure, index-build and rank-finder edits). Its band
@@ -146,5 +226,7 @@ and 51 doublings.
 
 `make_counted_source.py` (derivation), `online/` (crate), `band.py`,
 `opcounts.py` (frozen driver), `check_identity.py`, `make_figure.py`,
-`PROTOCOL.md` and `PINS.sha256` (frozen protocol), `smoke/` (local
-diagnostics), `figures/`.
+`PROTOCOL.md` and `PINS.sha256` (frozen protocol), `analyze_v2.py` and
+`ANALYSIS_V2.md` (complete-panel analysis), `make_gap_figure.py` (gap
+figure), `run_github_39882571652/` (the run and its v2 analysis), `smoke/`
+(local diagnostics), `figures/`.
