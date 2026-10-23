@@ -602,6 +602,48 @@ impl NfsRun {
                 if run.verbose {
                     eprintln!("[{method}] restoring S3 state");
                 }
+                if !s3_has_objects(uri)? {
+                    return Err("S3 NFS prefix is empty".into());
+                }
+                let remote_manifest = format!("{uri}/manifest.json");
+                let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
+                let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
+                    .map_err(|e| format!("invalid S3 NFS manifest: {e}"))?;
+                if found != manifest {
+                    return Err("S3 NFS manifest differs from the requested run".into());
+                }
+                write_json_atomic(&manifest_path, &found)?;
+            } else {
+                let found: serde_json::Value = serde_json::from_slice(
+                    &fs::read(&manifest_path).map_err(|e| format!("reading NFS manifest: {e}"))?,
+                )
+                .map_err(|e| format!("invalid NFS manifest: {e}"))?;
+                if found != manifest {
+                    return Err("NFS manifest differs from the requested run".into());
+                }
+                if let Some(uri) = &run.s3_uri {
+                    if s3_has_objects(uri)? {
+                        let remote_manifest = format!("{uri}/manifest.json");
+                        let remote =
+                            aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
+                        let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
+                            .map_err(|e| format!("invalid S3 NFS manifest: {e}"))?;
+                        if found != manifest {
+                            return Err("S3 NFS manifest differs from the requested run".into());
+                        }
+                    }
+                }
+            }
+            let has_checkpoint = dir.join("nfs.ckpt").is_file();
+            let has_verified_result = fs::read(dir.join("result.json"))
+                .ok()
+                .and_then(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes).ok())
+                .is_some_and(|result| result["verified"] == true);
+            if !has_checkpoint && !has_verified_result {
+                let uri = run
+                    .s3_uri
+                    .as_ref()
+                    .ok_or("NFS resume needs nfs.ckpt or a verified result")?;
                 let remote = format!("{uri}/");
                 let local = dir.to_string_lossy();
                 aws(&[
@@ -611,25 +653,10 @@ impl NfsRun {
                     &local,
                     "--exclude",
                     ".lock",
+                    "--exclude",
+                    "manifest.json",
                     "--only-show-errors",
                 ])?;
-            } else if let Some(uri) = &run.s3_uri {
-                if s3_has_objects(uri)? {
-                    let remote_manifest = format!("{uri}/manifest.json");
-                    let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
-                    let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
-                        .map_err(|e| format!("invalid S3 NFS manifest: {e}"))?;
-                    if found != manifest {
-                        return Err("S3 NFS manifest differs from the local run".into());
-                    }
-                }
-            }
-            let found: serde_json::Value = serde_json::from_slice(
-                &fs::read(&manifest_path).map_err(|e| format!("reading NFS manifest: {e}"))?,
-            )
-            .map_err(|e| format!("invalid NFS manifest: {e}"))?;
-            if found != manifest {
-                return Err("NFS manifest differs from the requested run".into());
             }
             if !dir.join("nfs.ckpt").is_file() {
                 let completed: serde_json::Value = serde_json::from_slice(
