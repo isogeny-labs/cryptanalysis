@@ -19,7 +19,7 @@ was read but not regenerated or changed. Source revision before this addition:
 | Four-summand support equivalence | `quadruple_matches_iff_two_pair_lookup` in [`lean/OrbitPairIndex.lean`](lean/OrbitPairIndex.lean) | Proved for finite natural-number lists and every natural modulus, including zero |
 | Faithful source link | `pair_index` forms `(x+y)%r` buckets; `m4_stats` joins complementary buckets | Source reviewed; formal model starts after representative enumeration |
 | Four-summand count summary | Direct enumeration in [`test_orbit_quotient.py`](test_orbit_quotient.py) | Verified for the pinned small case; no universal multiplicity proof |
-| Frozen n=13/n=19 results and degree-131 projection | Existing result file and original report | Unchanged; this proof does not independently replay those measurements |
+| Frozen n=13/n=19 summary and degree-131 calculation | [Raw full replay](validation/replay-20261023.json) and [source-bound comparator](validation/check_reference_replay.py) | Reproduced under the current source; no independent algorithmic reimplementation or degree-131 measurement |
 
 ## Proof map and readable argument
 
@@ -82,10 +82,40 @@ The raw successful outputs are retained in
 The test checks only this finite case. It does not prove the generic count
 multiplicity of each pair bucket or the correctness of curve arithmetic.
 
+## Full frozen-case replay
+
+The original `run.py` was executed with its unchanged seed 20260926 and both
+frozen cases, `(n,s,beta)=(13,4,5475)` and `(19,6,112679)`, under Python
+3.11.17. Its SHA-256 is
+`a65cd729bbddacbbf7522cf05256b2b5c90b56efa3e55446352dfc9114519e12`.
+The [complete raw JSON](validation/replay-20261023.json) has SHA-256
+`d5355ce904640e77fbc61863a026d53f949321a2ae65808a9e69915234f88295`.
+The [receipt](validation/replay-20261023.receipt.json) records the command,
+source hashes, output, and checker results.
+
+```sh
+python run.py --out validation/replay-20261023.json
+python validation/check_reference_replay.py validation/replay-20261023.json
+```
+
+The comparator maps the full output to the archived compact summary. It
+passed all 22 named n=13/n=19 case fields, the seed, schema, and every
+degree-131 projection field. Integer fields compare exactly; equal integer
+and float encodings such as `16` and `16.0` compare equal; other floats use
+relative and absolute tolerance `1e-13` for cross-runtime comparison. An
+initial strict-type check found only five `16` versus `16.0` encodings; no
+non-equal float value needed the tolerance. The archive used Python 3.13.5,
+while this replay used Python 3.11.17. Changing the first n=19
+phase-free m4 positive count from 279208 to 279209 made the checker exit 1
+and identify that field. This is a same-code reproduction, so it verifies
+determinism and archived summary transcription, not independent correctness
+of the curve implementation or the unobserved degree-131 projection input.
+
 ## Result and visual
 
-The new result is a structural proof of four-summand support and a finite
-implementation cross-check. No measured performance result, relation density,
+The new result is a structural proof of four-summand support, a finite
+implementation cross-check, and a full same-code replay of the archived
+summary. No measured performance result, relation density,
 curve identity, or ECDLP claim changed. The [editable diagram](four-pair-proof.dot)
 and [SVG](four-pair-proof.svg) show the two pair buckets, modular join, and
 direct-enumeration check; the [PDF](four-pair-proof.pdf) contains this summary
@@ -96,6 +126,7 @@ do not represent this result and are unchanged.
 
 Remaining validation work for the original broad experiment: formalize
 representative generation/curve arithmetic and generic bucket
-multiplicities, independently replay the frozen n=13/n=19 result file under
-its original protocol, and review the extrapolation to degree 131. This
-addition does not close those obligations.
+multiplicities; independently reproduce the n=13/n=19 answers with a
+separate implementation or independently checked point arithmetic; and
+trace the 68/256 degree-131 sample to its original source and controls.
+This addition does not close those obligations.

@@ -201,6 +201,9 @@ The focused test enumerates every four-representative tuple for 11 targets,
 both fixed and orbit representative policies, and compares all summary fields
 against `m4_stats`. See the [dated proof and validation report](FOUR_PAIR_LEAN.md),
 [diagram](four-pair-proof.svg), and [PDF](four-pair-proof.pdf).
+The same report retains a full n=13/n=19 same-code replay whose compact
+summary matches the frozen reference; this is a reproducibility check, not
+an independent curve-arithmetic certification.
 
 These checks do not certify curve arithmetic, representative construction,
 generic bucket multiplicities, Boolean interpolation, the sample-based
