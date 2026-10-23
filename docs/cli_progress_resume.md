@@ -371,8 +371,13 @@ cryptanalysis ic --p 1000003 --g 2 --h 123456 --method rexp --seed 7 \
 
 Repeat the input and collector settings with `--resume`. For rexp,
 `--max-relation-tries K` can bound a run; raise or omit it on resume to keep
-collecting. `progress.json` reports the phase, relation count, test count, and
-elapsed collection time. A stopped process can lose the work done since the
+collecting. `progress.json` reports the phase and collector counts. It then
+advances through `linear_algebra`, `factor_base_ready`, `individual_log`, and
+`complete`; linear algebra also emits a timed heartbeat to stderr and refreshes
+the local progress file every `--progress-every` seconds. The later phases
+retain relation and candidate or test counts, and report verified logs,
+individual attempts, and stage elapsed time. A stopped process can lose the
+work done since the
 last snapshot or S3 sync. The manifest, local lock, and S3 restore rules above
 apply. Before starting S3 sync on resume, the command checks every present
 relation journal or snapshot and precomputation cache against the run inputs,

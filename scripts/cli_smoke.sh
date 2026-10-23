@@ -1176,6 +1176,12 @@ if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" 
   printf 'FAIL: ic checkpoint artifacts missing\n' >&2
   fail=$((fail + 1))
 fi
+checks=$((checks + 1))
+if ! grep -q '"phase":"complete"' "$ic_tmp/progress.json" || \
+   ! grep -q '"verified_logs":17' "$ic_tmp/progress.json"; then
+  printf 'FAIL: ic progress did not advance through the solve stages\n' >&2
+  fail=$((fail + 1))
+fi
 # A remote copy must never replace a local run's mismatched identity.
 ic_s3_test=$(mktemp -d)
 mkdir "$ic_s3_test/bin" "$ic_s3_test/local" "$ic_s3_test/remote"
@@ -1277,6 +1283,13 @@ want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
   --state-dir "$rexp_tmp" --progress-every 1
 want '"x":69' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 \
   --state-dir "$rexp_tmp" --progress-every 1 --resume
+checks=$((checks + 1))
+if ! grep -q '"phase":"complete"' "$rexp_tmp/progress.json" || \
+   ! grep -q '"method":"rexp"' "$rexp_tmp/progress.json" || \
+   ! grep -q '"individual_attempts":' "$rexp_tmp/progress.json"; then
+  printf 'FAIL: random-exponent progress did not advance through the solve stages\n' >&2
+  fail=$((fail + 1))
+fi
 rexp_s3=$(mktemp -d)
 mkdir "$rexp_s3/bin" "$rexp_s3/remote"
 cp "$rexp_tmp/"* "$rexp_s3/remote/"
