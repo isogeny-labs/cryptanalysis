@@ -60,7 +60,12 @@ pub fn run(args: FixedArgs) -> Result<Value, String> {
             "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)",
         ])
         .status()
-        .map_err(|e| format!("could not run {}: {e}", args.python.display()))?;
+        .map_err(|e| {
+            format!(
+                "could not run fixed workflow with Python {}: {e}",
+                args.python.display()
+            )
+        })?;
     if !python_version.success() {
         return Err(format!(
             "ic fixed requires Python 3.10 or newer; select it with --python (got {})",
