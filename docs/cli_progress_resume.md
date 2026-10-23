@@ -189,9 +189,12 @@ cryptanalysis solve --alg gpu-rho --group zp --p 1000003 --order 1000002 \
 
 `gpu-rho.dp.progress.json` and `result.json` provide readable status. Repeat
 the same backend request, curve or group, points, and walk settings with
-`--resume`. The local lock and S3 mirror and restore rules above apply. The
-emulator follows the same kernel body as CUDA; a CUDA device is needed to
-validate the device backend itself.
+`--resume`. The resume path validates the local GPU checkpoint's run identity,
+table entries, saved answer, and checksum before S3 syncing starts. A damaged
+checkpoint is left in place for inspection and cannot replace the remote copy.
+The local lock and S3 mirror and restore rules above apply. The emulator follows
+the same kernel body as CUDA; a CUDA device is needed to validate the device
+backend itself.
 
 ## Pollard kangaroo
 
