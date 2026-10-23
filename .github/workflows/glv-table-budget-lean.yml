@@ -42,6 +42,12 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
             | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install pinned Lean toolchain
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          elan toolchain install "$ELAN_TOOLCHAIN"
       - name: Check pinned C selector and changed-selector controls
         run: |
           set -euo pipefail
