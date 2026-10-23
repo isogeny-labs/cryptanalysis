@@ -1,0 +1,14 @@
+{
+  "candidate_id": null,
+  "norm_forms": {
+    "degree2_conductor3": "(2,1,(1+9d)/8)",
+    "degree3_conductor2": "(3,2,(d+1)/3)"
+  },
+  "predicted_degree2_directions": "2*h(-9d)/ord(norm2_f3)",
+  "predicted_degree3_directions": "2*(2*h(-4d)/ord(norm3_f2)) if 3 divides ord(norm3_f2), else 0",
+  "predicted_total": "sum of the two contributions, assuming independent floor spans",
+  "selection": "first squarefree d in [432,1500] with d=23 mod24, h(-4d)=h(-d), h(-9d)=2h(-d), h(-d)<=30, norm3 order in -4d divisible by 3, and revised floor rank between 6 and 20 but unequal to 10; choose first prime p=v^2+9d in [10000,50000] for v>=1",
+  "source_evidence_commit": "97a4b6d324acd048f57f43a4397a2ad085692a5e",
+  "status": "FROZEN_BEFORE_REVISED_CLASS_SELECTION",
+  "timing_claim": null
+}
