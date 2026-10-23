@@ -78,6 +78,14 @@ all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
 
+Native `crax rho-collab work/status --job` accepts a local public job document
+or a checked `store:NAME` or `sha256:DIGEST` reference. Store references are
+resolved through `CRAX_CRYPTO_BIN` and limited to 64 KiB of JSON. Mutable
+mailbox and Cairn state stay in local paths; with a store job, the default
+Cairn state directory is `--mailbox` if set, otherwise the current directory.
+The live round trip is recorded in
+[`CRAX_RHO_JOB_S3_ACCEPTANCE_20261023.json`](CRAX_RHO_JOB_S3_ACCEPTANCE_20261023.json).
+
 ## SHA and AES commands
 
 ```sh
@@ -126,6 +134,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 | AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
 | Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
+| Collaborative rho job artifacts | `crax rho-collab work/status --job store:NAME` | Native job loading uses the sibling `crypto store pull` to check the indexed digest before parsing; job JSON is limited to 64 KiB. Mutable worker state is local. |
 | Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
 
 The native cryptanalysis commands and the sibling bridges have separate build

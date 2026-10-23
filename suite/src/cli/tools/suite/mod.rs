@@ -908,8 +908,19 @@ fn cmd_rho_collab(op: RhoCollabOp) {
     ) -> JobSpec {
         match (job, mailbox) {
             (Some(p), _) => {
-                let s = std::fs::read_to_string(p)
+                let resolved =
+                    crate::cli::digest::resolve_checked_path(p).unwrap_or_else(|e| die(e));
+                let size = std::fs::metadata(&resolved)
+                    .unwrap_or_else(|e| die(format!("{}: {e}", p.display())))
+                    .len();
+                if size > 64 * 1024 {
+                    die("rho job input exceeds 64 KiB");
+                }
+                let s = std::fs::read_to_string(&resolved)
                     .unwrap_or_else(|e| die(format!("{}: {e}", p.display())));
+                if s.len() > 64 * 1024 {
+                    die("rho job input exceeds 64 KiB");
+                }
                 JobSpec::from_json(&s).unwrap_or_else(|e| die(e))
             }
             (None, Some(d)) => Mailbox::read_job(d).unwrap_or_else(|e| die(e)),
@@ -1068,6 +1079,7 @@ fn cmd_rho_collab(op: RhoCollabOp) {
                 cairn.as_ref().map(|_| {
                     let dir = job
                         .as_ref()
+                        .filter(|p| !crate::cli::digest::is_store_ref(p))
                         .and_then(|p| p.parent().map(|d| d.to_path_buf()))
                         .or_else(|| mailbox.clone())
                         .unwrap_or_else(|| std::path::PathBuf::from("."));

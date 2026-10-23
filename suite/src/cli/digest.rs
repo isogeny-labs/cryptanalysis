@@ -89,9 +89,17 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
 }
 
 fn read_file_input(path: &Path) -> Result<Vec<u8>, String> {
-    let spec = path
-        .to_str()
-        .filter(|s| s.starts_with("store:") || s.starts_with("sha256:"));
+    let resolved = resolve_checked_path(path)?;
+    std::fs::read(&resolved).map_err(|e| format!("reading {}: {e}", path.display()))
+}
+
+pub(crate) fn is_store_ref(path: &Path) -> bool {
+    path.to_str()
+        .is_some_and(|s| s.starts_with("store:") || s.starts_with("sha256:"))
+}
+
+pub(crate) fn resolve_checked_path(path: &Path) -> Result<PathBuf, String> {
+    let spec = path.to_str().filter(|_| is_store_ref(path));
     let resolved = if let Some(spec) = spec {
         let binary = std::env::var_os("CRAX_CRYPTO_BIN").unwrap_or_else(|| "crypto".into());
         let output = Command::new(&binary)
@@ -114,7 +122,7 @@ fn read_file_input(path: &Path) -> Result<Vec<u8>, String> {
     } else {
         path.to_path_buf()
     };
-    std::fs::read(&resolved).map_err(|e| format!("reading {}: {e}", path.display()))
+    Ok(resolved)
 }
 
 #[cfg(test)]
