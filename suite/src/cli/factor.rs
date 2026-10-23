@@ -1474,7 +1474,7 @@ fn load_ecm_checkpoint(
         let f = factor
             .parse::<BigUint>()
             .map_err(|e| format!("invalid ECM factor: {e}"))?;
-        if f.is_one() || &f == n || (n % &f) != BigUint::zero() {
+        if f.is_zero() || f.is_one() || &f == n || (n % &f) != BigUint::zero() {
             return Err("ECM checkpoint factor does not divide n".into());
         }
     }
@@ -1516,7 +1516,7 @@ fn split(
     seconds: f64,
     detail: String,
 ) -> SplitReport {
-    let f = f.filter(|f| !f.is_one() && f != n && (n % f).is_zero());
+    let f = f.filter(|f| !f.is_zero() && !f.is_one() && f != n && (n % f).is_zero());
     let c = f.as_ref().map(|f| n / f);
     SplitReport {
         method,
@@ -1606,7 +1606,11 @@ pub fn run_ecm(out: Out, a: &EcmArgs) -> CmdResult {
         checkpoint.compute_seconds += started.elapsed().as_secs_f64();
         checkpoint.next_curve += 1;
         if let crate::cryptanalysis::ecm::EcmResult::Found(factor) = outcome {
-            if factor.is_one() || factor == n || (&n % &factor) != BigUint::zero() {
+            if factor.is_zero()
+                || factor.is_one()
+                || factor == n
+                || (&n % &factor) != BigUint::zero()
+            {
                 return Err("ECM engine returned an invalid factor".into());
             }
             checkpoint.factor = Some(factor.to_string());
@@ -1993,7 +1997,8 @@ fn decode_rho_factor_checkpoint(
         let factor = factor
             .parse::<BigUint>()
             .map_err(|e| format!("invalid rho factor: {e}"))?;
-        if factor.is_one()
+        if factor.is_zero()
+            || factor.is_one()
             || &factor == n
             || (n % &factor) != BigUint::zero()
             || checkpoint
@@ -2360,6 +2365,54 @@ fn message_attack(out: Out, r: &rsa_attacks::MessageAttackResult) -> CmdResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn checkpoint_validators_reject_zero_factors_without_panicking() {
+        let n = BigUint::from(101u32);
+        let fingerprint = "zero-factor-review";
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir =
+            std::env::temp_dir().join(format!("crax-zero-factor-{}-{unique}", std::process::id()));
+        fs::create_dir(&dir).unwrap();
+        let path = dir.join("ecm.ckpt");
+        let ecm = EcmCheckpoint {
+            schema_version: 1,
+            fingerprint: fingerprint.into(),
+            next_curve: 1,
+            factor: Some("0".into()),
+            compute_seconds: 0.0,
+        };
+        save_ecm_checkpoint(&path, &ecm).unwrap();
+        let ecm_error = load_ecm_checkpoint(&path, fingerprint, &n).unwrap_err();
+        fs::remove_dir_all(&dir).unwrap();
+        assert!(ecm_error.contains("factor does not divide n"));
+
+        let rho = RhoFactorCheckpoint {
+            schema_version: 1,
+            fingerprint: fingerprint.into(),
+            next_attempt: 1,
+            factor: Some("0".into()),
+            successful_c: Some(1),
+            iterations: 0,
+            compute_seconds: 0.0,
+        };
+        let payload = serde_json::to_string(&rho).unwrap();
+        let encoded = serde_json::to_vec(&RhoFactorCheckpointFile {
+            checksum: blake3::hash(payload.as_bytes()).to_hex().to_string(),
+            payload,
+        })
+        .unwrap();
+        assert!(decode_rho_factor_checkpoint(&encoded, fingerprint, &n)
+            .unwrap_err()
+            .contains("invalid factor"));
+
+        let report = split("review", &n, Some(BigUint::zero()), 0.0, String::new());
+        assert!(report.factor.is_none());
+        assert!(!report.verified);
+    }
 
     #[test]
     fn pm1_checkpoint_rejects_tampering_and_invalid_factors() {
