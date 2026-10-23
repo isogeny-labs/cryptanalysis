@@ -42,6 +42,7 @@ fn fresh_s3_restore_checks_manifest_before_syncing_payloads() {
         &aws,
         "#!/bin/sh\n\
          printf '%s\\n' \"$*\" >> \"$AWS_LOG\"\n\
+         if [ \"$1\" = s3api ]; then printf '{\"KeyCount\":1}\\n'; exit 0; fi\n\
          if [ \"$1\" = s3 ] && [ \"$2\" = cp ] && [ \"$4\" = - ]; then\n\
            printf '%s\\n' '{\"schema_version\":1,\"method\":\"other\"}'\n\
            exit 0\n\
@@ -141,4 +142,154 @@ fn qs_resumes_polynomial_batches_and_preserves_result_on_bad_checkpoint() {
     assert!(!corrupt.status.success());
     assert!(String::from_utf8_lossy(&corrupt.stdout).contains("checksum mismatch"));
     assert_eq!(fs::read(state.join("result.json")).unwrap(), before);
+}
+
+fn run_with_s3(
+    args: &[&str],
+    bin: &std::path::Path,
+    remote: &std::path::Path,
+    fail_sync: bool,
+) -> Output {
+    let path = format!(
+        "{}:{}",
+        bin.display(),
+        std::env::var("PATH").unwrap_or_default()
+    );
+    Command::new(env!("CARGO_BIN_EXE_crax"))
+        .args(args)
+        .env("PATH", path)
+        .env("CA_TEST_NFS_REMOTE", remote)
+        .env("CA_TEST_NFS_FAIL_SYNC", if fail_sync { "1" } else { "0" })
+        .output()
+        .unwrap()
+}
+
+fn mock_s3(run_dir: &RunDir) -> PathBuf {
+    let bin = run_dir.0.join("aws-bin");
+    fs::create_dir(&bin).unwrap();
+    let script = bin.join("aws");
+    fs::write(
+        &script,
+        r#"#!/bin/sh
+set -eu
+remote=$CA_TEST_NFS_REMOTE
+if [ "$1" = s3api ]; then printf '{"KeyCount":1}\n'; exit 0; fi
+[ "$1" = s3 ] || exit 2
+if [ "$2" = cp ]; then
+  case "$3" in
+    s3://*/manifest.json)
+      if [ "$4" = - ]; then cat "$remote/manifest.json"; else cp "$remote/manifest.json" "$4"; fi ;;
+    s3://*) name=$(basename "$3"); cp "$remote/$name" "$4" ;;
+    *) case "$4" in s3://*) name=$(basename "$4"); cp "$3" "$remote/$name" ;; *) cp "$3" "$4" ;; esac ;;
+  esac
+  exit 0
+fi
+[ "$2" = sync ] || exit 2
+[ "$CA_TEST_NFS_FAIL_SYNC" = 0 ] || exit 1
+dst=$4
+mkdir -p "$dst"
+for file in "$remote"/*; do
+  [ -f "$file" ] || continue
+  [ "$(basename "$file")" = manifest.json ] && continue
+  cp "$file" "$dst/"
+done
+"#,
+    )
+    .unwrap();
+    use std::os::unix::fs::PermissionsExt;
+    fs::set_permissions(&script, fs::Permissions::from_mode(0o755)).unwrap();
+    bin
+}
+
+#[test]
+fn qs_s3_resume_retries_after_interrupted_payload_restore() {
+    let run_dir = RunDir::new();
+    let source = run_dir.0.join("source");
+    let remote = run_dir.0.join("remote");
+    let restored = run_dir.0.join("restored");
+    fs::create_dir(&remote).unwrap();
+    let bin = mock_s3(&run_dir);
+    let dir = source.to_str().unwrap();
+    let incomplete = run(&[
+        "qs",
+        "100000000003900003000000000117",
+        "--state-dir",
+        dir,
+        "--checkpoint-every",
+        "0",
+        "--max-a-values",
+        "4",
+        "--json",
+    ]);
+    assert!(!incomplete.status.success());
+    fs::copy(source.join("manifest.json"), remote.join("manifest.json")).unwrap();
+    fs::copy(source.join("qs.ckpt"), remote.join("qs.ckpt")).unwrap();
+
+    let wrong_state = run_dir.0.join("wrong-state");
+    let wrong = run_with_s3(
+        &[
+            "qs",
+            "100000000003900003000000000119",
+            "--state-dir",
+            wrong_state.to_str().unwrap(),
+            "--resume",
+            "--s3-uri",
+            "s3://bucket/qs",
+            "--json",
+        ],
+        &bin,
+        &remote,
+        false,
+    );
+    assert!(!wrong.status.success());
+    assert!(String::from_utf8_lossy(&wrong.stdout).contains("manifest differs"));
+    assert!(!wrong_state.join("manifest.json").exists());
+    assert!(!wrong_state.join("qs.ckpt").exists());
+
+    let interrupted = run_with_s3(
+        &[
+            "qs",
+            "100000000003900003000000000117",
+            "--state-dir",
+            restored.to_str().unwrap(),
+            "--resume",
+            "--s3-uri",
+            "s3://bucket/qs",
+            "--max-a-values",
+            "40",
+            "--json",
+        ],
+        &bin,
+        &remote,
+        true,
+    );
+    assert!(!interrupted.status.success());
+    assert!(restored.join("manifest.json").is_file());
+    assert!(!restored.join("qs.ckpt").exists());
+
+    let resumed = run_with_s3(
+        &[
+            "qs",
+            "100000000003900003000000000117",
+            "--state-dir",
+            restored.to_str().unwrap(),
+            "--resume",
+            "--s3-uri",
+            "s3://bucket/qs",
+            "--max-a-values",
+            "40",
+            "--json",
+        ],
+        &bin,
+        &remote,
+        false,
+    );
+    assert!(
+        resumed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&resumed.stderr)
+    );
+    let report: serde_json::Value = serde_json::from_slice(&resumed.stdout).unwrap();
+    assert_eq!(report["verified"], true);
+    assert_eq!(report["factor"], "1000000000039");
 }

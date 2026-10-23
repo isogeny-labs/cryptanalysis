@@ -644,8 +644,9 @@ impl FactoringRun {
                 if run.verbose {
                     eprintln!("[{method}] restoring S3 state");
                 }
-                // Validate the remote run identity before downloading any
-                // checkpoint or result payload into the fresh directory.
+                if !s3_has_objects(uri)? {
+                    return Err(format!("S3 {method} prefix is empty"));
+                }
                 let remote_manifest = format!("{uri}/manifest.json");
                 let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
                 let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
@@ -655,6 +656,41 @@ impl FactoringRun {
                         "S3 {method} manifest differs from the requested run"
                     ));
                 }
+                write_json_atomic(&manifest_path, &found)?;
+            } else {
+                let found: serde_json::Value = serde_json::from_slice(
+                    &fs::read(&manifest_path)
+                        .map_err(|e| format!("reading {method} manifest: {e}"))?,
+                )
+                .map_err(|e| format!("invalid {method} manifest: {e}"))?;
+                if found != manifest {
+                    return Err(format!("{method} manifest differs from the requested run"));
+                }
+                if let Some(uri) = &run.s3_uri {
+                    if s3_has_objects(uri)? {
+                        let remote_manifest = format!("{uri}/manifest.json");
+                        let remote =
+                            aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
+                        let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
+                            .map_err(|e| format!("invalid S3 {method} manifest: {e}"))?;
+                        if found != manifest {
+                            return Err(format!(
+                                "S3 {method} manifest differs from the requested run"
+                            ));
+                        }
+                    }
+                }
+            }
+            let has_checkpoint = dir.join(options.checkpoint_name).is_file();
+            let has_verified_result = fs::read(dir.join("result.json"))
+                .ok()
+                .and_then(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes).ok())
+                .is_some_and(|result| result["verified"] == true);
+            if !has_checkpoint && !has_verified_result {
+                let uri = run.s3_uri.as_ref().ok_or(format!(
+                    "{method} resume needs {} or a verified result",
+                    options.checkpoint_name
+                ))?;
                 let remote = format!("{uri}/");
                 let local = dir.to_string_lossy();
                 aws(&[
@@ -664,25 +700,10 @@ impl FactoringRun {
                     &local,
                     "--exclude",
                     ".lock",
+                    "--exclude",
+                    "manifest.json",
                     "--only-show-errors",
                 ])?;
-            } else if let Some(uri) = &run.s3_uri {
-                if s3_has_objects(uri)? {
-                    let remote_manifest = format!("{uri}/manifest.json");
-                    let remote = aws(&["s3", "cp", &remote_manifest, "-", "--only-show-errors"])?;
-                    let found: serde_json::Value = serde_json::from_slice(&remote.stdout)
-                        .map_err(|e| format!("invalid S3 {method} manifest: {e}"))?;
-                    if found != manifest {
-                        return Err(format!("S3 {method} manifest differs from the local run"));
-                    }
-                }
-            }
-            let found: serde_json::Value = serde_json::from_slice(
-                &fs::read(&manifest_path).map_err(|e| format!("reading {method} manifest: {e}"))?,
-            )
-            .map_err(|e| format!("invalid {method} manifest: {e}"))?;
-            if found != manifest {
-                return Err(format!("{method} manifest differs from the requested run"));
             }
             if !dir.join(options.checkpoint_name).is_file() {
                 let completed: serde_json::Value =
@@ -692,7 +713,7 @@ impl FactoringRun {
                             options.checkpoint_name
                         )
                     })?)
-                    .map_err(|e| format!("invalid NFS result: {e}"))?;
+                    .map_err(|e| format!("invalid {method} result: {e}"))?;
                 if completed["verified"] != true {
                     return Err(format!(
                         "{method} resume needs {} or a verified result",
