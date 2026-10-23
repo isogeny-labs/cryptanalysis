@@ -96,15 +96,19 @@ enum Cmd {
     Bench,
     /// Auto-run every applicable hash-function attack (length
     /// extension where applicable, truncated birthday collision, and
-    /// differential bias) against the named hash. Targets include SHA-256 and SHA-3 variants.
+    /// differential bias) against the named hash. Targets include SHA-2/3,
+    /// SHAKE128/256, and BLAKE3.
     HashAuto {
-        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha3-{224,256,384,512}`.
+        /// Hash identifier: MD4/5, SHA-1/2/3, SHAKE128/256, or BLAKE3.
         #[arg(long)]
         hash: String,
+        /// Required SHAKE output length in bytes (1..=64 for bounded analysis).
+        #[arg(long)]
+        output_bytes: Option<usize>,
     },
     /// Length-extension attack demo against a Merkle-Damgård hash.
     LengthExtension {
-        /// Hash identifier: `md4`, `md5`, `sha1`, or `sha256`.
+        /// Hash identifier: `md4`, `md5`, `sha1`, `sha256`, or `sha512`.
         #[arg(long)]
         hash: String,
         /// Length (in bytes) of the unknown secret prefix.
@@ -617,9 +621,9 @@ fn run(op: Cmd) {
         Cmd::Mlwe { op } => cli_mlwe::run(op),
         Cmd::EcChallenges { op } => cmd_ec_challenges(op),
         Cmd::Isogeny { op } => cmd_isogeny(op),
-        Cmd::HashAuto { hash } => {
-            use crate::cryptanalysis::hash_attacks::auto_hash_attack;
-            match auto_hash_attack(&hash) {
+        Cmd::HashAuto { hash, output_bytes } => {
+            use crate::cryptanalysis::hash_attacks::auto_hash_attack_with_output_bytes;
+            match auto_hash_attack_with_output_bytes(&hash, output_bytes) {
                 Ok(md) => println!("{}", md),
                 Err(e) => {
                     eprintln!("error: {}", e);
@@ -635,7 +639,7 @@ fn run(op: Cmd) {
             digest_hex,
         } => {
             use crate::cryptanalysis::hash_attacks::{
-                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1, Sha256,
+                length_extension_attack, Md4, Md5, MerkleDamgardHash, Sha1, Sha256, Sha512,
             };
             let parse_hex = |value: &str, flag: &str| {
                 from_hex(value).unwrap_or_else(|e| {
@@ -650,9 +654,10 @@ fn run(op: Cmd) {
                 "md4" | "md5" => 16,
                 "sha1" => 20,
                 "sha256" | "sha-256" => 32,
+                "sha512" | "sha-512" => 64,
                 other => {
                     eprintln!(
-                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256, sha512)",
                         other
                     );
                     std::process::exit(2);
@@ -696,9 +701,10 @@ fn run(op: Cmd) {
                 "md5" => report_lex(&Md5, &digest, prefix_len, &message, &suffix),
                 "sha1" => report_lex(&Sha1, &digest, prefix_len, &message, &suffix),
                 "sha256" | "sha-256" => report_lex(&Sha256, &digest, prefix_len, &message, &suffix),
+                "sha512" | "sha-512" => report_lex(&Sha512, &digest, prefix_len, &message, &suffix),
                 other => {
                     eprintln!(
-                        "error: unknown hash '{}' (try md4, md5, sha1, sha256)",
+                        "error: unknown hash '{}' (try md4, md5, sha1, sha256, sha512)",
                         other
                     );
                     std::process::exit(1);

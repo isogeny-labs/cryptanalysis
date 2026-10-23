@@ -14,7 +14,7 @@ use crate::hash;
 pub struct DigestArgs {
     /// Digest name: md4, md5, sha1, sha224, sha256, sha384, sha512,
     /// sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512,
-    /// shake128, or shake256. SHA-3 and SHAKE also accept hyphenated names.
+    /// shake128, shake256, or blake3. SHA-3 and SHAKE also accept hyphenated names.
     #[arg(long)]
     pub algorithm: String,
     /// UTF-8 text to hash.
@@ -76,6 +76,7 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         "sha3-512" | "sha-3-512" => hash::sha3_512(&message).to_vec(),
         "shake128" | "shake-128" => hash::shake128(&message, args.output_bytes.unwrap()),
         "shake256" | "shake-256" => hash::shake256(&message, args.output_bytes.unwrap()),
+        "blake3" => hash::blake3_hash(&message).to_vec(),
         _ => return Err(format!("unsupported hash algorithm: {}", args.algorithm).into()),
     };
     let report = DigestReport {
