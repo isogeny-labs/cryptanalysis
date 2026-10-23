@@ -9,6 +9,13 @@ name: N83 K1 block and cold panel with native work counted (section 5a band)
 # driver calls the stacked experiment's run_schedule.one() and arm.py
 # unchanged.
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/n83-opcounts.yml'
+      - 'experiments/koblitz-n83-opcounts-20261023/**'
+      - 'experiments/koblitz-n83-stacked-20261016/*.py'
+      - 'experiments/koblitz-n83-stacked-20261016/*.json'
+      - 'scripts/isolated_bench.py'
   push:
     branches: [claude/n83-opcounts-run, 'claude/n83-opcounts-run-*']
   workflow_dispatch:
@@ -32,7 +39,29 @@ env:
   CARGO_TERM_COLOR: never
 
 jobs:
+  analysis-gate-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/koblitz-n83-opcounts-20261023/
+            /experiments/koblitz-n83-stacked-20261016/*.py
+            /experiments/koblitz-n83-stacked-20261016/*.json
+            /scripts/isolated_bench.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify and test complete-panel analysis gate
+        run: |
+          sha256sum -c "$OPCOUNTS/ANALYSIS_V2.sha256"
+          python3 -m unittest discover -s "$OPCOUNTS" -p test_analyze_v2.py -v
   opcounts:
+    if: github.event_name != 'pull_request'
+    needs: analysis-gate-tests
     runs-on: ${{ inputs.runs_on || 'ubuntu-24.04' }}
     # Build about 15 min (two crates), kS about 5 min, kP about 16 min,
     # 20 x (cS 27 s + cP 51 s + rT 3 s) about 27 min on the stacked runner.
@@ -146,9 +175,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 "$OPCOUNTS/opcounts.py" analyze --receipt-dir "$N83_RECEIPT_DIR/panel" \
+          sha256sum -c "$OPCOUNTS/ANALYSIS_V2.sha256"
+          python3 "$OPCOUNTS/analyze_v2.py" --receipt-dir "$N83_RECEIPT_DIR/panel" \
             | tee "$N83_RECEIPT_DIR/analyze-stdout.txt"
-          if [ -f "$N83_RECEIPT_DIR/panel/band.md" ]; then cat "$N83_RECEIPT_DIR/panel/band.md" >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f "$N83_RECEIPT_DIR/panel/band-v2.md" ]; then cat "$N83_RECEIPT_DIR/panel/band-v2.md" >> "$GITHUB_STEP_SUMMARY"; fi
 
       - name: Preserve host class, builds, raw runs, counts and the band
         if: always()
