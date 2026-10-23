@@ -3,6 +3,7 @@
 use clap::{Args, ValueEnum};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use super::output::{CmdResult, Out};
@@ -32,6 +33,15 @@ pub struct AesAttackArgs {
     /// Write generated pairs as a versioned JSON corpus (file must be new).
     #[arg(long, conflicts_with = "pairs_file")]
     pub export_pairs_file: Option<PathBuf>,
+    /// Separate held-out four-round Square corpus for independent replay.
+    #[arg(long, requires = "pairs_file")]
+    pub verification_file: Option<PathBuf>,
+    /// Export a separate held-out Square lambda set (file must be new).
+    #[arg(long, requires = "export_pairs_file", conflicts_with = "pairs_file")]
+    pub export_verification_file: Option<PathBuf>,
+    /// Complete Square training lambda sets to generate (1..=6).
+    #[arg(long, default_value_t = 3)]
+    pub square_sets: usize,
     /// Reproducible pair generation seed.
     #[arg(long, default_value_t = 0xdead_beef_cafe)]
     pub seed: u64,
@@ -154,15 +164,78 @@ fn write_corpus<T: Serialize>(
     file.sync_all().map_err(|e| e.to_string())
 }
 
+fn square_pairs_from_file(path: &Path) -> Result<Vec<([u8; 16], [u8; 16])>, String> {
+    load_corpus::<LinearPairJson>(path, "square", 4)?
+        .into_iter()
+        .map(|pair| Ok((block(&pair.plaintext)?, block(&pair.ciphertext)?)))
+        .collect()
+}
+
+fn square_generated_pairs(
+    cipher: &ReducedAes128,
+    seed: u64,
+    first_set: usize,
+    count: usize,
+) -> Vec<([u8; 16], [u8; 16])> {
+    (first_set..first_set + count)
+        .flat_map(|index| {
+            let base = [seed.wrapping_add(index as u64) as u8; 16];
+            square::lambda_set(&base, 0)
+                .into_iter()
+                .map(|plaintext| {
+                    let ciphertext = cipher.encrypt(&plaintext);
+                    (plaintext, ciphertext)
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+
+fn square_pair_json(pairs: &[([u8; 16], [u8; 16])]) -> Vec<LinearPairJson> {
+    pairs
+        .iter()
+        .map(|(plaintext, ciphertext)| LinearPairJson {
+            plaintext: hex::encode(plaintext),
+            ciphertext: hex::encode(ciphertext),
+        })
+        .collect()
+}
+
+fn square_ciphertext_sets(pairs: &[([u8; 16], [u8; 16])]) -> Result<Vec<Vec<[u8; 16]>>, String> {
+    if !(256..=1536).contains(&pairs.len()) || pairs.len() % 256 != 0 {
+        return Err("Square recovery needs 1..=6 complete lambda sets".into());
+    }
+    let mut grouped: BTreeMap<[u8; 15], Vec<Option<[u8; 16]>>> = BTreeMap::new();
+    for (plaintext, ciphertext) in pairs {
+        let fixed: [u8; 15] = plaintext[1..].try_into().expect("AES block length");
+        let slots = grouped.entry(fixed).or_insert_with(|| vec![None; 256]);
+        if slots[plaintext[0] as usize].replace(*ciphertext).is_some() {
+            return Err("Square training plaintexts must be distinct".into());
+        }
+    }
+    if grouped.len() != pairs.len() / 256
+        || grouped.values().any(|set| set.iter().any(Option::is_none))
+    {
+        return Err("each Square lambda set must cover all 256 values of plaintext byte 0".into());
+    }
+    Ok(grouped
+        .into_values()
+        .map(|slots| slots.into_iter().map(Option::unwrap).collect())
+        .collect())
+}
+
 pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
     let sample_count = args.samples.unwrap_or(4096);
     if args.pairs_file.is_none() && !(1..=1_000_000).contains(&sample_count) {
         return Err("samples must be in 1..=1000000".into());
     }
-    if (args.pairs_file.is_some() || args.export_pairs_file.is_some())
-        && matches!(args.technique, Technique::Square)
+    if !matches!(args.technique, Technique::Square)
+        && (args.verification_file.is_some() || args.export_verification_file.is_some())
     {
-        return Err("square recovery needs an encryption oracle; pairs files support differential and linear only".into());
+        return Err("separate verification files currently require --technique square".into());
+    }
+    if args.export_pairs_file.is_some() && args.export_pairs_file == args.export_verification_file {
+        return Err("training and verification export paths must differ".into());
     }
     let report = match args.technique {
         Technique::Differential => {
@@ -311,19 +384,82 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
             })
         }
         Technique::Square => {
-            let key = analysis_key(args)?;
-            let cipher = ReducedAes128::new(&key, 4, false);
-            let found = square::key_recovery_four_round(|p| cipher.encrypt(p));
-            let verified = found.master_key == key;
+            if !(1..=6).contains(&args.square_sets) {
+                return Err("square-sets must be in 1..=6".into());
+            }
+            let reference_key = args
+                .key_hex
+                .as_ref()
+                .map(|_| analysis_key(args))
+                .transpose()?;
+            let source_key = if args.pairs_file.is_none() {
+                Some(analysis_key(args)?)
+            } else {
+                None
+            };
+            let pairs = if let Some(path) = &args.pairs_file {
+                square_pairs_from_file(path)?
+            } else {
+                let cipher = ReducedAes128::new(&source_key.expect("generated key"), 4, false);
+                square_generated_pairs(&cipher, args.seed, 0, args.square_sets)
+            };
+            if let Some(path) = &args.export_pairs_file {
+                write_corpus(path, "square", 4, square_pair_json(&pairs))?;
+            }
+            let sets = square_ciphertext_sets(&pairs)?;
+            let found = square::key_recovery_four_round_from_captured(&sets)?;
+            let recovered_cipher = ReducedAes128::new(&found.master_key, 4, false);
+            let training_matches = pairs
+                .iter()
+                .filter(|(p, c)| recovered_cipher.encrypt(p) == *c)
+                .count();
+            let verification_pairs = if let Some(path) = &args.verification_file {
+                square_pairs_from_file(path)?
+            } else if args.export_verification_file.is_some() {
+                let cipher = ReducedAes128::new(&source_key.expect("generated key"), 4, false);
+                square_generated_pairs(&cipher, args.seed, args.square_sets, 1)
+            } else {
+                Vec::new()
+            };
+            if verification_pairs.len() > 100_000 {
+                return Err("Square verification corpus exceeds 100000 pairs".into());
+            }
+            if let Some(path) = &args.export_verification_file {
+                write_corpus(path, "square", 4, square_pair_json(&verification_pairs))?;
+            }
+            let mut seen = HashSet::new();
+            for (p, _) in pairs.iter().chain(&verification_pairs) {
+                if !seen.insert(*p) {
+                    return Err("Square verification plaintexts must be distinct from training and each other".into());
+                }
+            }
+            let verification_matches = verification_pairs
+                .iter()
+                .filter(|(p, c)| recovered_cipher.encrypt(p) == *c)
+                .count();
+            let reference_verified = reference_key
+                .or(source_key)
+                .map(|key| key == found.master_key);
+            let accepted = training_matches == pairs.len()
+                && verification_matches == verification_pairs.len()
+                && reference_verified.unwrap_or(true);
             json!({
-                "status": if verified { "solved" } else { "verification_failed" },
+                "status": if !accepted { "verification_failed" } else if !verification_pairs.is_empty() { "verified" } else if args.pairs_file.is_some() { "candidate" } else { "solved" },
                 "technique": "square",
                 "rounds": 4,
                 "lambda_sets_used": found.lambda_sets_used,
                 "sbox_lookups": found.sbox_lookups,
                 "recovered_master_key_hex": hex::encode(found.master_key),
-                "verified": verified,
-                "accepted": verified,
+                "recovered_last_round_key_hex":hex::encode(found.last_round_key.concat()),
+                "source":if args.pairs_file.is_some() {"external_corpus"} else {"generated"},
+                "training_pairs":pairs.len(),
+                "training_matches":training_matches,
+                "verification_pairs":verification_pairs.len(),
+                "verification_matches":verification_matches,
+                "replay_verified":training_matches == pairs.len(),
+                "reference_verified":reference_verified,
+                "verified":if args.pairs_file.is_some() && verification_pairs.is_empty() && reference_verified.is_none() {None} else {Some(accepted)},
+                "accepted": accepted,
             })
         }
     };
@@ -335,4 +471,37 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
         ));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn captured_square_sets_recover_key_and_reject_incomplete_or_corrupt_sets() {
+        let key = [0x5bu8; 16];
+        let cipher = ReducedAes128::new(&key, 4, false);
+        let mut pairs = square_generated_pairs(&cipher, 0x25, 0, 3);
+        let sets = square_ciphertext_sets(&pairs).unwrap();
+        let found = square::key_recovery_four_round_from_captured(&sets).unwrap();
+        assert_eq!(found.master_key, key);
+        assert_eq!(found.lambda_sets_used, 3);
+        assert!(pairs.iter().all(|(p, c)| cipher.encrypt(p) == *c));
+
+        pairs.pop();
+        assert!(square_ciphertext_sets(&pairs)
+            .unwrap_err()
+            .contains("complete"));
+        pairs = square_generated_pairs(&cipher, 0x25, 0, 3);
+        pairs[1].0 = pairs[0].0;
+        assert!(square_ciphertext_sets(&pairs)
+            .unwrap_err()
+            .contains("distinct"));
+        pairs = square_generated_pairs(&cipher, 0x25, 0, 3);
+        pairs[0].1 = [0u8; 16];
+        assert!(square::key_recovery_four_round_from_captured(
+            &square_ciphertext_sets(&pairs).unwrap()
+        )
+        .is_err());
+    }
 }

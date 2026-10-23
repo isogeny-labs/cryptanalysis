@@ -147,6 +147,12 @@ crax --json aes-attack --technique differential \
 crax --json aes-attack --technique linear --samples 64 \
   --export-pairs-file /tmp/aes-linear.json
 crax --json aes-attack --technique linear --pairs-file /tmp/aes-linear.json
+crax --json aes-attack --technique square --square-sets 3 \
+  --export-pairs-file /tmp/aes-square-training.json \
+  --export-verification-file /tmp/aes-square-heldout.json
+crax --json aes-attack --technique square \
+  --pairs-file /tmp/aes-square-training.json \
+  --verification-file /tmp/aes-square-heldout.json
 crax --json hash-auto --hash sha256
 crax --json hash-auto --hash sha3-256
 crax --json hash-auto --hash sha-3-512
@@ -184,11 +190,20 @@ with `crypto store push` first. On imported linear data, the recovered master
 key is checked against every supplied ciphertext. Imported differential data
 yields four last-round key bytes with a whole-corpus difference check; it
 does not yield the other 12 key bytes. Supply `--key-hex` only if a reference
-key is available for an additional check. The square command needs an
-encryption oracle and does not accept a static pairs file.
+key is available for an additional check. Square accepts the same versioned
+corpus envelope with `technique: square`, `rounds: 4`, and `plaintext` /
+`ciphertext` pairs. It requires 1–6 complete 256-value lambda sets with
+distinct training plaintexts, recovers the four-round key without an oracle,
+and replays the recovered key against every pair. `--verification-file`
+accepts separate held-out pairs and reports `verified` only when all replay
+and the plaintexts are distinct. `--square-sets` controls generated training
+sets; `--export-verification-file` writes one separate held-out set.
 The [AES corpus acceptance receipt](CRAX_AES_CORPUS_ACCEPTANCE_20261023.json)
 records local differential and linear round trips and a fresh-cache Setec S3
 retrieval through the checked store resolver, followed by exact-object cleanup.
+The [Square corpus acceptance receipt](CRAX_AES_SQUARE_CORPUS_ACCEPTANCE_20261023.json)
+records cross-CLI recovery, malformed-corpus controls, and a checked S3
+artifact round trip.
 These commands do not imply key recovery against full-round AES-128 or a
 collision against full-output SHA-2 or SHA-3.
 The [AES S-box cross-check](CRAX_AES_SBOX_CROSSCHECK_20261022.json) compares
