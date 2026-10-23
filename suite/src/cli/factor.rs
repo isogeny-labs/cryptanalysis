@@ -809,6 +809,7 @@ fn s3_has_objects(uri: &str) -> Result<bool, String> {
         &prefix,
         "--max-keys",
         "1",
+        "--no-paginate",
         "--output",
         "json",
     ])?;
@@ -832,6 +833,7 @@ fn s3_has_object(uri: &str, name: &str) -> Result<bool, String> {
         &key,
         "--max-keys",
         "10",
+        "--no-paginate",
         "--output",
         "json",
     ])?;
@@ -2500,7 +2502,7 @@ mod tests {
         fs::write(
             &aws,
             format!(
-                "#!/bin/sh\nprintf '%s\\n' \"$*\" >> '{}'\ncase \"$*\" in *manifest.json*) printf '{{\"method\":\"other\"}}';; esac\n",
+                "#!/bin/sh\nprintf '%s\\n' \"$*\" >> '{}'\ncase \"$*\" in *manifest.json*) printf '{{\"method\":\"other\"}}';; *list-objects-v2*) printf '{{\"KeyCount\":1,\"Contents\":[{{\"Key\":\"run/pm1.ckpt\"}}]}}';; esac\n",
                 log.display()
             ),
         )
@@ -2528,6 +2530,8 @@ mod tests {
             "pm1",
             serde_json::json!({"method":"pm1","n":"101"}),
         );
+        assert!(s3_has_objects("s3://bucket/run").unwrap());
+        assert!(s3_has_object("s3://bucket/run", "pm1.ckpt").unwrap());
         if let Some(old_path) = old_path {
             std::env::set_var("PATH", old_path);
         } else {
@@ -2540,6 +2544,7 @@ mod tests {
         assert!(error.contains("manifest differs"));
         let calls = fs::read_to_string(&log).unwrap();
         assert!(calls.contains("s3 cp s3://bucket/run/manifest.json -"));
+        assert_eq!(calls.matches("--no-paginate").count(), 2);
         assert!(
             !calls.contains("s3 sync"),
             "unexpected restore before identity check: {calls}"
