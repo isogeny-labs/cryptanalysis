@@ -186,6 +186,17 @@ yields four last-round key bytes with a whole-corpus difference check; it
 does not yield the other 12 key bytes. Supply `--key-hex` only if a reference
 key is available for an additional check. The square command needs an
 encryption oracle and does not accept a static pairs file.
+The one-round `linear` report distinguishes its exact S-box consistency
+recovery from a measured LAT approximation. For the strongest nonzero AES
+S-box LAT entry, it reports the input and output masks, theoretical bias,
+observed parity counts, inferred key parity at each of 16 byte positions,
+and agreement with the recovered key. A tie stays unresolved; a finite-sample
+parity estimate can disagree even when the exact key replay succeeds.
+The [linear LAT acceptance receipt](CRAX_AES_LINEAR_LAT_ACCEPTANCE_20261023.json)
+independently recomputes the signed AES LAT entry, every reported sample
+count, and every key parity for 64- and 4096-pair public corpora. It also
+records a release-binary fresh-cache `store:` replay from an isolated Setec
+S3 object and exact-object cleanup.
 The [AES corpus acceptance receipt](CRAX_AES_CORPUS_ACCEPTANCE_20261023.json)
 records local differential and linear round trips and a fresh-cache Setec S3
 retrieval through the checked store resolver, followed by exact-object cleanup.

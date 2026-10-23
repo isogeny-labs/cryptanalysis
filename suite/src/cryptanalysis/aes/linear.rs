@@ -26,18 +26,19 @@
 //!    `C(a, b) = 2 · LAT[a][b] / 256` for masks `(a, b)`.
 //! 3. [`recover_key_bit_one_round`] — Matsui-style attack on 1-round
 //!    AES recovering one bit of `K_R0 ⊕ K_R1_shifted`.
-//! 4. [`recover_key_byte_one_round`] — full byte recovery by combining
-//!    eight linear approximations at the same byte position.
+//! 4. [`measure_key_parity_one_round`] — the empirical LAT parity count,
+//!    including ties where the corpus does not select a parity.
+//! 5. [`recover_key_byte_one_round`] — exact one-round byte consistency;
+//!    this recovery method is separate from the statistical LAT estimate.
 //!
 //! # Why we stop at 1 round in this module
 //!
 //! The wide-trail bound makes a 2-round Matsui-style attack uninteresting
 //! pedagogically: you would need `2³²` known plaintexts and the
 //! cryptanalysis would mostly highlight that the design defeats you.
-//! At 1 round the attack is short enough to step through and verify,
-//! while still being a faithful instance of Matsui's framework: count
-//! samples that satisfy a low-bias linear equation, decide the key
-//! bit by majority vote, verify against the true key.
+//! At 1 round we count samples satisfying an LAT approximation and infer
+//! one key parity by majority vote. Exact one-round key-byte consistency
+//! is available separately and must not be attributed to that vote.
 
 use super::reduced::{ReducedAes128, SBOX};
 
@@ -179,76 +180,82 @@ pub fn recover_key_bit_one_round(
     (bit, margin)
 }
 
-/// Recover the **full byte** of effective key material at position
-/// `(c, r)` — that is, `K_R0[i,r] ⊕ K_R1_shifted[c,r]` — by combining
-/// eight linear approximations, one for each output-bit mask
-/// `b ∈ {1, 2, 4, …, 128}`.
-///
-/// For each output-bit mask, we find the best input mask `a` (largest
-/// `|LAT[a][b]|`), run [`recover_key_bit_one_round`] on it to learn
-/// the bit `a · K_R0[i,r] ⊕ b · K_R1_shifted[c,r]`. Eight such bits
-/// at independent masks span the 8-dimensional space of linear
-/// functionals on the byte, which (with high probability) lets us
-/// solve for the byte itself by Gaussian elimination over GF(2).
-///
-/// Returns `Some(byte)` if the system is solvable, `None` otherwise.
+/// One measured LAT approximation at a selected AES byte position. The
+/// inferred parity is absent on an exact tie; sample noise may still make a
+/// non-tied estimate wrong.
+#[derive(Clone, Debug)]
+pub struct LinearParityMeasurement {
+    pub input_mask: u8,
+    pub output_mask: u8,
+    pub lat_entry: i32,
+    pub pair_count: usize,
+    pub zero_count: usize,
+    pub one_count: usize,
+    pub inferred_key_parity: Option<u8>,
+}
+
+pub fn measure_key_parity_one_round(
+    pairs: &[([u8; 16], [u8; 16])],
+    byte_pos: (usize, usize),
+    input_mask: u8,
+    output_mask: u8,
+    lat: &[Vec<i32>],
+) -> Option<LinearParityMeasurement> {
+    if pairs.is_empty() || input_mask == 0 || output_mask == 0 {
+        return None;
+    }
+    let entry = *lat.get(input_mask as usize)?.get(output_mask as usize)?;
+    if entry == 0 {
+        return None;
+    }
+    let (c, r) = byte_pos;
+    if c >= 4 || r >= 4 {
+        return None;
+    }
+    let plaintext_position = 4 * ((c + r) % 4) + r;
+    let ciphertext_position = 4 * c + r;
+    let zeros = pairs
+        .iter()
+        .filter(|(p, ct)| {
+            dot(input_mask, p[plaintext_position]) ^ dot(output_mask, ct[ciphertext_position]) == 0
+        })
+        .count();
+    let signed_margin = 2 * zeros as i64 - pairs.len() as i64;
+    let inferred_key_parity = if signed_margin == 0 {
+        None
+    } else {
+        Some(if (signed_margin > 0) == (entry > 0) {
+            0
+        } else {
+            1
+        })
+    };
+    Some(LinearParityMeasurement {
+        input_mask,
+        output_mask,
+        lat_entry: entry,
+        pair_count: pairs.len(),
+        zero_count: zeros,
+        one_count: pairs.len() - zeros,
+        inferred_key_parity,
+    })
+}
+
+/// Recover the input whitening key byte at `(c,r)` by testing each of 256
+/// candidates against the exact one-round relation
+/// `C[c,r] = S(P[(c+r) mod 4,r] xor K0) xor K1`. A surviving candidate
+/// must imply the same output whitening byte `K1` for every pair. This is
+/// exact consistency, not statistical linear key recovery. The `lat` argument
+/// is retained for callers of the existing API and is not used here.
 pub fn recover_key_byte_one_round(
     pairs: &[([u8; 16], [u8; 16])],
     byte_pos: (usize, usize),
-    lat: &[Vec<i32>],
+    _lat: &[Vec<i32>],
 ) -> Option<u8> {
-    // We want to recover a single 8-bit secret K = (K_R0 ⊕ K_R1_shift)
-    // such that linear approximations of the S-box give us:
-    //   a · K = a · K_R0_byte                          (input side)
-    //   b · K_R1_shift_byte = ?                        (output side, separate key)
-    //
-    // Strictly speaking, one-round Matsui requires two distinct
-    // 8-bit unknowns (input key, output key). To stay self-contained
-    // we recover each one in turn by fixing the other side's mask
-    // to zero — which makes the approximation degenerate. So instead
-    // we recover the *combined* parity for various `(a, b)` masks and
-    // assemble them.
-    //
-    // Concretely: with 16 distinct mask pairs `(a_j, b_j)` having
-    // independent rows in GF(2), we get 16 linear equations in
-    // 16 unknown key bits (8 from K_R0[i,r], 8 from K_R1_shift[c,r]).
-    // Gauss-eliminate. The "byte" we return is K_R0[i,r] specifically.
-    //
-    // For 8 independent approximations spanning all input-byte masks,
-    // we can sometimes recover only `K_R0 ⊕ K_R1_shift` rather than
-    // each separately. To keep this routine simple and well-tested,
-    // we recover that combined byte.
-    //
-    // Strategy: for each output mask b in {1, 2, 4, ..., 128}, pick the
-    // best input mask a. This gives 8 bits of `a · K_R0 ⊕ b · K_R1_shift`
-    // which is generally NOT enough to determine the 16-bit `(K_R0,K_R1_shift)`,
-    // but if we apply masks `(a, 0)` (zero output mask) we get
-    // approximations of just S-box input → which only hold trivially.
-    //
-    // To keep the test concrete, we recover the combined byte
-    // `K_R0[i,r]` by exhaustively searching 256 candidates: for each
-    // candidate, predict `S(P[i,r] ⊕ candidate)` and compare to
-    // `C[c,r] ⊕ K_R1_shift[c,r]`. But K_R1 is also unknown…
-    //
-    // ---
-    //
-    // Pragmatic version. We just recover the byte `K_eff` such that
-    // `S(P[i,r] ⊕ K_eff)` predicts `C[c,r]` modulo a constant XOR. Use
-    // the LAT-driven majority-vote approach per bit, then verify by
-    // brute force.
-    //
-    // For each candidate K_eff in 0..256:
-    //   define f(P) = S(P[i,r] ⊕ K_eff) ⊕ C[c,r]
-    //   if f is constant across pairs ⇒ K_eff is the input key byte,
-    //   constant is the output-side key byte.
     let (c, r) = byte_pos;
     let i = (c + r) % 4;
     let plaintext_byte_pos = 4 * i + r;
     let ciphertext_byte_pos = 4 * c + r;
-
-    // Suppress unused warning — `lat` is referenced indirectly via the
-    // bit-level routine that callers would invoke if extending this.
-    let _ = lat;
 
     let mut k_eff: Option<u8> = None;
     for k in 0u16..256 {
@@ -336,8 +343,9 @@ mod tests {
     #[test]
     fn aes_max_linear_bias_is_sixteen() {
         let lat = aes_sbox_lat();
-        let (_, _, mag) = max_linear_bias(&lat);
+        let (a, b, mag) = max_linear_bias(&lat);
         assert_eq!(mag, 16, "AES S-box max linear bias should be 16/256 = 1/16");
+        assert_eq!((a, b, lat[a as usize][b as usize]), (1, 72, -16));
     }
 
     /// The correlation of the max bias is ±16/128 = ±1/8.
@@ -395,5 +403,25 @@ mod tests {
         );
         // A bias of 1/16 over 4096 samples gives expected margin ≈ 256.
         assert!(margin.abs() >= 100, "margin too small: {margin}");
+        let measured = measure_key_parity_one_round(&corpus, (0, 0), a, b, &lat).unwrap();
+        assert_eq!(measured.pair_count, corpus.len());
+        assert_eq!(measured.zero_count + measured.one_count, corpus.len());
+        assert_eq!(measured.inferred_key_parity, Some(expected_bit));
+    }
+
+    #[test]
+    fn measured_linear_parity_keeps_a_tie_unresolved() {
+        let lat = aes_sbox_lat();
+        let (a, b, _) = max_linear_bias(&lat);
+        let output_bit = 1u8 << b.trailing_zeros();
+        let zero = ([0u8; 16], [0u8; 16]);
+        let mut one_ciphertext = [0u8; 16];
+        one_ciphertext[0] = output_bit;
+        let tied =
+            measure_key_parity_one_round(&[zero, ([0u8; 16], one_ciphertext)], (0, 0), a, b, &lat)
+                .unwrap();
+        assert_eq!(tied.zero_count, 1);
+        assert_eq!(tied.one_count, 1);
+        assert_eq!(tied.inferred_key_parity, None);
     }
 }

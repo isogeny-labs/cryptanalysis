@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "crax-aes-linear-lat-acceptance",
+  "checked_at_utc": "2026-10-23T17:18:53.373218+00:00",
+  "cryptanalysis_parent_commit": "361ffb9fd",
+  "crypto_sibling_commit": "25d703e714e5f1a917266d1b89ed0bb7c9e863bf",
+  "binary_sha256": {
+    "crax": "18b498d5caa5556cc1a0a7cc69eee8696cf6c38ff1323837909f40c6040dba6d",
+    "crypto": "427fe8748681d76c6179a1186b11c2740806d99e687aa5dc60cf0d6c87587e04"
+  },
+  "cases": [
+    {
+      "pairs": 64,
+      "corpus_sha256": "e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+      "recovered_master_key_hex": "914f6da1c78305bb2957ee104d826cfa",
+      "replay_verified": true,
+      "recovery_method": "exact_one_round_sbox_consistency",
+      "input_mask": 1,
+      "output_mask": 72,
+      "signed_lat_entry": -16,
+      "absolute_lat_entry": 16,
+      "theoretical_absolute_bias": 0.0625,
+      "matched_recovered_key": 16,
+      "ties": 0,
+      "first_position": {
+        "ciphertext_byte_position": 0,
+        "inferred_key_parity": 1,
+        "observed_signed_bias": 0.09375,
+        "one_count": 26,
+        "parity_matches_recovered_key": true,
+        "plaintext_byte_position": 0,
+        "recovered_key_parity": 1,
+        "zero_count": 38
+      },
+      "independent_all_position_counts": true,
+      "independent_round1_key_parities": true
+    },
+    {
+      "pairs": 4096,
+      "corpus_sha256": "e3149c4563b36e60e1d892131723713182528e165458498656512850f92587b0",
+      "recovered_master_key_hex": "914f6da1c78305bb2957ee104d826cfa",
+      "replay_verified": true,
+      "recovery_method": "exact_one_round_sbox_consistency",
+      "input_mask": 1,
+      "output_mask": 72,
+      "signed_lat_entry": -16,
+      "absolute_lat_entry": 16,
+      "theoretical_absolute_bias": 0.0625,
+      "matched_recovered_key": 16,
+      "ties": 0,
+      "first_position": {
+        "ciphertext_byte_position": 0,
+        "inferred_key_parity": 1,
+        "observed_signed_bias": 0.04931640625,
+        "one_count": 1846,
+        "parity_matches_recovered_key": true,
+        "plaintext_byte_position": 0,
+        "recovered_key_parity": 1,
+        "zero_count": 2250
+      },
+      "independent_all_position_counts": true,
+      "independent_round1_key_parities": true
+    }
+  ],
+  "validation": {
+    "targeted_linear_tests": {
+      "passed": 7,
+      "failed": 0
+    },
+    "independent_aes_sbox_lat": true,
+    "sibling_lat_row_agrees": true,
+    "independent_aes_round1_key_schedule": true,
+    "aes_library_tests": {
+      "passed": 118,
+      "failed": 0,
+      "ignored": 7
+    },
+    "dev_crax_build": "pass",
+    "rustfmt_check": "pass",
+    "json_parse": "pass",
+    "diff_whitespace": "pass",
+    "release_crax_build": "pass"
+  },
+  "scope": "One-round reduced AES-128; exact key recovery is reported separately from the measured LAT parity vote.",
+  "release_binary_sha256": "9a67330b70f33bf5babbddfd230affe6331778dfdbb44e2deeb310445e26b6db",
+  "release_s3": {
+    "run_id": "20261023T172252Z-2c62ad0a",
+    "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-aes-lat-20261023T172252Z-2c62ad0a",
+    "object_key": "ic/v1/acceptance/crax-aes-lat-20261023T172252Z-2c62ad0a/sha256/e8/e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+    "corpus_sha256": "e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+    "head_size_matches": true,
+    "remote_bytes_match": true,
+    "fresh_cache_store_report_equals_local": true,
+    "signed_lat_entry": -16,
+    "cleanup": {
+      "delete_exit": 0,
+      "head_after_delete_404": true
+    }
+  }
+}

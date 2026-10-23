@@ -297,12 +297,65 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 .transpose()?
                 .map(|key| recovered == key);
             let verified = replay_verified && reference_verified.unwrap_or(true);
+            let (input_mask, output_mask, max_lat) = linear::max_linear_bias(&lat);
+            let input_key = cipher.round_key(0);
+            let output_key = cipher.round_key(1);
+            let mut approximation_rows = Vec::with_capacity(16);
+            let mut matched = 0usize;
+            let mut ties = 0usize;
+            for c in 0..4 {
+                for r in 0..4 {
+                    let measurement = linear::measure_key_parity_one_round(
+                        &pairs,
+                        (c, r),
+                        input_mask,
+                        output_mask,
+                        &lat,
+                    )
+                    .ok_or("cannot measure nonzero AES linear approximation")?;
+                    let input_col = (c + r) % 4;
+                    let expected_parity = (((input_mask & input_key[input_col][r]).count_ones()
+                        ^ (output_mask & output_key[c][r]).count_ones())
+                        & 1) as u8;
+                    let parity_matches = measurement
+                        .inferred_key_parity
+                        .map(|parity| parity == expected_parity);
+                    if parity_matches == Some(true) {
+                        matched += 1;
+                    }
+                    if parity_matches.is_none() {
+                        ties += 1;
+                    }
+                    approximation_rows.push(json!({
+                        "ciphertext_byte_position": 4 * c + r,
+                        "plaintext_byte_position": 4 * input_col + r,
+                        "zero_count": measurement.zero_count,
+                        "one_count": measurement.one_count,
+                        "observed_signed_bias": measurement.zero_count as f64 / measurement.pair_count as f64 - 0.5,
+                        "inferred_key_parity": measurement.inferred_key_parity,
+                        "recovered_key_parity": expected_parity,
+                        "parity_matches_recovered_key": parity_matches,
+                    }));
+                }
+            }
             json!({
                 "status": if verified { "solved" } else { "verification_failed" },
                 "technique": "linear",
                 "rounds": 1,
                 "pairs_used": pairs.len(),
                 "recovered_master_key_hex": hex::encode(recovered),
+                "recovery_method": "exact_one_round_sbox_consistency",
+                "linear_approximation": {
+                    "method": "lat_parity_majority_vote",
+                    "input_mask": input_mask,
+                    "output_mask": output_mask,
+                    "lat_entry": lat[input_mask as usize][output_mask as usize],
+                    "absolute_lat_entry": max_lat,
+                    "theoretical_absolute_bias": max_lat as f64 / 256.0,
+                    "matched_recovered_key": matched,
+                    "ties": ties,
+                    "positions": approximation_rows,
+                },
                 "source": if args.pairs_file.is_some() { "external_corpus" } else { "generated" },
                 "replay_verified": replay_verified,
                 "reference_verified": reference_verified,
