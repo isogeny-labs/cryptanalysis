@@ -14,13 +14,16 @@ not turn the measured operation-count gain into a theorem.
 | --- | --- |
 | Baseline `src/curve.c` | commit `7cb3dce4cac9176d74afb6403048b5fabbaab834`, SHA-256 `e504bb18f0e80134c9ccf9abc1b7a825097286a759075090d2693ef82b406975` |
 | Current `src/curve.c` | commit `42761f85b06242cb54f2a5fa405c723451897503`, SHA-256 `3f3a100d635d814bdfa0f6624a40b9d77c9c564f65db2bbc568dcd4b55285efe` |
+| Merged source at this PR update | commit `d488af97a0cae6d7e96686da17aeff2f0db5f29f`, SHA-256 `4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20`; [live receipt](live-source-binding.json) |
 | Formal source | [TableBudget.lean](TableBudget.lean), Lean `v4.34.1` from the repository root `lean-toolchain` |
 | Source check | [check_lean_source_binding.py](check_lean_source_binding.py), [receipt](lean-source-binding.json): exact C selector in both pinned sources; two changed-selector controls rejected |
 | Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; six printed theorem axiom sets contain only `propext` and `Quot.sound` |
 | Archived measurement replay | [lean-analysis-replay.json](lean-analysis-replay.json): both 80,000-row arm files, result JSON, result Markdown, and SVG checked |
 
-The committed [source protocol pin](PROTOCOL.sha256) still verifies the current
-C file, protocol, run script, and analysis script. All 13 original entries in
+The committed [source protocol pin](PROTOCOL.sha256) verifies the historical
+`42761f85` C file, protocol, run script, and analysis script at that commit.
+The additional live check pins the merged C file separately and rejects two
+changed-selector controls. All 13 original entries in
 [SHA256SUMS](SHA256SUMS), including the original performance chart and report
 PDF, pass. The new proof files are supplemental and do not modify those frozen
 inputs or outputs.
@@ -43,8 +46,8 @@ the quotient, and a threshold selector cannot decrease as its budget grows.
 
 The C branch returns before this selector when `n < 64`, so `lg =
 glv_ilog2(n)+1` is positive on the path covered by the proof. The full-file
-hash and exact-snippet check bind the C start value, guard, cap, and two
-divisors. The Lean model uses unbounded natural arithmetic; it does not
+hash and exact-snippet checks bind the historical and current C start value,
+guard, cap, and two divisors. The Lean model uses unbounded natural arithmetic; it does not
 formalize the C compiler, group-order validity, division by `c.m`, other
 solver paths, or memory behavior. The C loop itself multiplies only 8 and 16
 by two before the cap stops it.
@@ -73,9 +76,12 @@ From this experiment directory, with the repository's pinned Lean toolchain:
 ```sh
 ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 lean TableBudget.lean
 python3 check_lean_source_binding.py
-sha256sum -c PROTOCOL.sha256
+python3 check_lean_source_binding.py --live
 sha256sum -c SHA256SUMS
 ```
+
+Run `sha256sum -c PROTOCOL.sha256` from the historical `42761f85` checkout;
+its full-file C hash intentionally differs from the later merged source.
 
 To replay the analysis, copy `analyze.py`, `chart.py`, and both `rows_*.jsonl.gz`
 files into a scratch directory, run the two Python scripts there, and compare

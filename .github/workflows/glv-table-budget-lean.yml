@@ -55,6 +55,10 @@ jobs:
             > "$RUNNER_TEMP/glv-source-binding.json"
           cmp "$RUNNER_TEMP/glv-source-binding.json" \
             experiments/glv-table-rule-confirm-20261022/lean-source-binding.json
+          python3 experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py --live \
+            > "$RUNNER_TEMP/glv-live-source-binding.json"
+          cmp "$RUNNER_TEMP/glv-live-source-binding.json" \
+            experiments/glv-table-rule-confirm-20261022/live-source-binding.json
       - name: Build theorem and compare axiom sets with receipt
         env:
           ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
