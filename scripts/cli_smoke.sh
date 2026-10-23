@@ -994,7 +994,7 @@ want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --s
 glv_tmp=$(mktemp -d)
 GLV=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
   --state-dir "$glv_tmp" --verbose --progress-every 1)
-want_no '"status":"limit reached"' "${GLV[@]}" --max-ops 1000
+want_no '"status":"limit reached"' "${GLV[@]}" --max-ops 750
 want '"x":424242' "${GLV[@]}" --max-ops 100000 --resume
 checks=$((checks + 1))
 if [ ! -s "$glv_tmp/glv.ckpt" ] || [ ! -s "$glv_tmp/glv.ckpt.progress.json" ] || \
@@ -1028,7 +1028,7 @@ rm -f "$kangaroo_s3_test/remote/"*
 GLV_S3=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
   --state-dir "$kangaroo_s3_test/glv-local" --s3-uri s3://test/glv --sync-every 1)
 PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
-  want_no '"status":"limit reached"' "${GLV_S3[@]}" --max-ops 1000
+  want_no '"status":"limit reached"' "${GLV_S3[@]}" --max-ops 750
 rm -rf "$kangaroo_s3_test/glv-local"
 PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
   want '"x":424242' "${GLV_S3[@]}" --max-ops 100000 --resume
