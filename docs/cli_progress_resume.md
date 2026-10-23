@@ -36,6 +36,7 @@ is a separate implementation with these observed interfaces:
 | `crax ic workflow` | `--verbose --progress-every` stage messages and heartbeat | Existing `--dir` state, factor base, relation units, logs, and solutions | `--s3-uri --sync-every` commits checksummed artifacts after work-unit and stage boundaries |
 | `crax ic fixed` | `--verbose --progress-every` stage and SQLite-size heartbeat | Its own transactional `--dir/campaign.sqlite3` | `--s3-uri --resume` commits a consistent SQLite snapshot after each valid invocation |
 | `crax isogeny experiment` | `--verbose --progress-every` heartbeat and completed-curve count | `--state-dir --resume` after each starting curve | `--s3-uri` with the state directory; checked curve artifacts and final report |
+| `crax mlwe scaling` | `--verbose --progress-every` heartbeat and per-dimension results | `--state-dir --resume` after each dimension | `--s3-uri` with the state directory; checked row artifacts and final report |
 | Other `crax` attacks | Command-specific output | No shared resume contract | No shared resume contract |
 | Sibling `crypto` and `isogeny-walk` commands | Their own diagnostics stream through `crax`, including with `--json` | Command-specific artifacts | `store` and walker publish/fetch operate on artifacts; no shared computation checkpoint |
 
@@ -64,6 +65,18 @@ crax --json isogeny experiment --bits 16 --trials 20 --rho-cap 16384 \
 crax --json isogeny experiment --bits 16 --trials 20 --rho-cap 16384 \
   --resume --verbose --state-dir ./runs/isogeny-16-restored \
   --s3-uri s3://my-bucket/crax/isogeny-16
+```
+
+`crax mlwe scaling` commits each completed dimension. Resume uses the same
+ordered `--dims` list and modulus; the dimension interrupted in progress runs
+again. The `result.json` report contains every measured row, while stdout
+retains the original table format.
+
+```sh
+crax mlwe scaling --dims 10,12,14,16,18 --verbose --progress-every 5 \
+  --state-dir ./runs/mlwe-scaling --s3-uri s3://my-bucket/crax/mlwe-scaling
+crax mlwe scaling --dims 10,12,14,16,18 --resume \
+  --state-dir ./runs/mlwe-scaling-restored --s3-uri s3://my-bucket/crax/mlwe-scaling
 ```
 
 `crax icx run` uses its in-process pipeline when run without state flags.

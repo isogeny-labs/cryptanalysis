@@ -94,6 +94,10 @@ upload a consistent database snapshot and report after each invocation.
 then saves the aggregate report. A fresh directory restores the S3 checkpoint;
 the curve interrupted in progress is run again.
 
+`crax mlwe scaling` accepts the same progress and state flags. It checkpoints
+each completed dimension locally and to S3, and restores checked rows into a
+fresh directory before continuing the remaining dimensions.
+
 For example, a capped GNFS run can be continued from local or S3 state:
 
 ```sh

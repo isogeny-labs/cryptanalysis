@@ -81,6 +81,21 @@ pub enum MlweOp {
         dims: String,
         #[arg(long, default_value_t = 4099)]
         q: i64,
+        /// Print completed dimensions and elapsed-work heartbeats.
+        #[arg(long)]
+        verbose: bool,
+        /// Seconds between heartbeats (implies --verbose).
+        #[arg(long, value_parser = clap::value_parser!(u64).range(1..))]
+        progress_every: Option<u64>,
+        /// Persist each completed dimension and final report here.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue local state or restore S3 state into a fresh directory.
+        #[arg(long)]
+        resume: bool,
+        /// Mirror dimension results and final report to S3.
+        #[arg(long)]
+        s3_uri: Option<String>,
     },
     /// Run progressive BKZ on a random q-ary lattice and print the profile.
     Bkz {
@@ -368,20 +383,155 @@ pub fn run(op: MlweOp) {
             }
         }
 
-        MlweOp::Scaling { dims, q } => {
-            let dims: Vec<usize> = dims
-                .split(',')
-                .filter_map(|s| s.trim().parse().ok())
-                .collect();
+        MlweOp::Scaling {
+            dims,
+            q,
+            verbose,
+            progress_every,
+            state_dir,
+            resume,
+            s3_uri,
+        } => {
+            if (resume || s3_uri.is_some()) && state_dir.is_none() {
+                eprintln!("error: --resume and --s3-uri require --state-dir");
+                std::process::exit(2);
+            }
+            let dims: Vec<usize> =
+                match dims.split(',').map(|s| s.trim().parse::<usize>()).collect() {
+                    Ok(dims) => dims,
+                    Err(e) => {
+                        eprintln!("error: invalid --dims: {e}");
+                        std::process::exit(2);
+                    }
+                };
+            if dims.is_empty() || dims.iter().any(|&d| d == 0) {
+                eprintln!("error: --dims requires positive comma-separated dimensions");
+                std::process::exit(2);
+            }
             let cfg = SieveConfig {
                 max_collisions: 40,
                 ..Default::default()
             };
+            let live = verbose || progress_every.is_some();
+            let mut identity = blake3::Hasher::new();
+            identity.update(b"crax-mlwe-scaling-v1\0");
+            identity.update(
+                &serde_json::to_vec(&(dims.as_slice(), q, cfg.max_collisions, cfg.seed)).unwrap(),
+            );
+            identity.update(include_str!("../../../cryptanalysis/mlwe/sieve.rs").as_bytes());
+            identity.update(include_str!("../../../cryptanalysis/lattice.rs").as_bytes());
+            identity.update(env!("CARGO_PKG_VERSION").as_bytes());
+            let identity = identity.finalize().to_hex().to_string();
+            let mut state = match state_dir
+                .as_ref()
+                .map(|dir| {
+                    super::unit_state::UnitState::prepare(
+                        dir,
+                        s3_uri.as_deref(),
+                        "mlwe-scaling",
+                        &identity,
+                        resume,
+                    )
+                })
+                .transpose()
+            {
+                Ok(state) => state,
+                Err(e) => {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            };
+            let mut rows: Vec<crate::cryptanalysis::mlwe::sieve::ScalingRow> =
+                match state.as_ref().map(|s| s.completed()).transpose() {
+                    Ok(Some(units)) => units
+                        .into_iter()
+                        .map(|bytes| {
+                            serde_json::from_slice(&bytes)
+                                .map_err(|e| format!("invalid saved scaling row: {e}"))
+                        })
+                        .collect::<Result<_, _>>()
+                        .unwrap_or_else(|e| {
+                            eprintln!("error: {e}");
+                            std::process::exit(1);
+                        }),
+                    Ok(None) => Vec::new(),
+                    Err(e) => {
+                        eprintln!("error: {e}");
+                        std::process::exit(1);
+                    }
+                };
+            if rows.len() > dims.len() || rows.iter().enumerate().any(|(i, row)| row.dim != dims[i])
+            {
+                eprintln!("error: saved scaling dimensions do not match --dims");
+                std::process::exit(1);
+            }
+            let started = std::time::Instant::now();
+            let done = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(rows.len()));
+            if live {
+                eprintln!(
+                    "[mlwe scaling] {} of {} dimensions already complete",
+                    rows.len(),
+                    dims.len()
+                );
+            }
+            let heartbeat = if live {
+                let (tx, rx) = std::sync::mpsc::channel::<()>();
+                let done = done.clone();
+                let total = dims.len();
+                let every = progress_every.unwrap_or(5);
+                let worker = std::thread::spawn(move || {
+                    while rx
+                        .recv_timeout(std::time::Duration::from_secs(every))
+                        .is_err()
+                    {
+                        eprintln!(
+                            "[mlwe scaling] {}/{} dimensions complete elapsed={}s",
+                            done.load(std::sync::atomic::Ordering::Relaxed),
+                            total,
+                            started.elapsed().as_secs()
+                        );
+                    }
+                });
+                Some((tx, worker))
+            } else {
+                None
+            };
+            for (idx, &dim) in dims.iter().enumerate().skip(rows.len()) {
+                if live {
+                    eprintln!("[mlwe scaling] dimension {dim} started");
+                }
+                let row = measure_gauss_scaling(&[dim], q, &cfg).remove(0);
+                if let Some(state) = &mut state {
+                    let bytes = serde_json::to_vec_pretty(&row).unwrap();
+                    if let Err(e) = state.commit(idx, &bytes) {
+                        eprintln!("error: {e}");
+                        std::process::exit(1);
+                    }
+                }
+                rows.push(row);
+                done.store(rows.len(), std::sync::atomic::Ordering::Relaxed);
+                if live {
+                    eprintln!("[mlwe scaling] dimension {dim} complete: peak_list={} pair_ops={} samples={}",
+                    row.peak_list, row.pair_ops, row.samples);
+                }
+            }
+            if let Some((tx, worker)) = heartbeat {
+                let _ = tx.send(());
+                let _ = worker.join();
+            }
+            if let Some(state) = &mut state {
+                let report = serde_json::json!({"schema_version":1,"operation":"mlwe-scaling",
+                    "dims":dims,"q":q,"rows":rows});
+                if let Err(e) = state.finish(&serde_json::to_vec_pretty(&report).unwrap()) {
+                    eprintln!("error: {e}");
+                    std::process::exit(1);
+                }
+            }
             println!(
                 "{:>5}  {:>10}  {:>12}  {:>9}  {:>12}",
                 "dim", "peak list", "pair ops", "samples", "2^0.2075d"
             );
-            for r in measure_gauss_scaling(&dims, q, &cfg) {
+            for r in rows {
                 println!(
                     "{:>5}  {:>10}  {:>12}  {:>9}  {:>12.0}",
                     r.dim,

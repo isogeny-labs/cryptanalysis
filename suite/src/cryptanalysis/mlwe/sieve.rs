@@ -705,7 +705,7 @@ pub fn brute_force_shortest(basis: &[Vect], range: i64) -> Vect {
 }
 
 /// One row of a sieve scaling measurement.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct ScalingRow {
     pub dim: usize,
     pub peak_list: usize,

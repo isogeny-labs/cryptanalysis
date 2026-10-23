@@ -10,6 +10,7 @@
 
 mod cli_mlwe;
 mod isogeny_state;
+mod unit_state;
 
 use crate::{
     ecc::point::Point,
