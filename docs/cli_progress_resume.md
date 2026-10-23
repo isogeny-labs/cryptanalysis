@@ -248,3 +248,37 @@ still prints live backend progress and accepts `--verbose`, but managed
 state directories and S3 resume require a Metal checkpoint implementation.
 The ECC2K-130 command collects walk reports; it does not upload them into
 the live campaign's private ingest service.
+
+## Distributed `work` agent
+
+`work` now reports live steps, distinguished points, completed units,
+check-ins, and the number of check-ins written to disk. Its state directory
+contains `manifest.json`, `checkins.log`, `progress.json`, and `result.json`.
+The journal is the coordinator protocol's verified, replayable CRDT log: it
+preserves distinguished points and reported unit cursors. A resumed process
+gets new peer identities and starts new lanes against that saved state; it
+does not restore an individual lane in the middle of a walk.
+
+```sh
+cryptanalysis work --job ./job.txt --node worker-a --threads 2 \
+  --verbose --progress-every 5 --state-dir ./runs/work-a \
+  --checkpoint-every 60 --s3-uri s3://my-bucket/cryptanalysis/work-a \
+  --sync-every 60
+```
+
+Use the same job with `--resume`. The exact job document is bound in the
+manifest; worker count and time limit may change. The journal is synced to
+local disk at `--checkpoint-every` intervals and on shutdown, so a hard stop
+may repeat work done after the last flush. S3 is a periodic copy and can lag
+local disk by another `--sync-every` interval. If local state is absent,
+`--resume` restores the journal from S3 and verifies every check-in before
+starting workers. A partial final journal line from an interrupted append is
+discarded. When local state exists, resume also checks the remote manifest
+before uploading to that prefix; an empty prefix can be populated from the
+local journal. Use a distinct state directory and S3 prefix for each worker;
+the state directory is locked against a second local writer.
+
+With `--coordinator`, the hub continues to exchange check-ins as before;
+the local journal is an additional recovery copy. The final S3 result is
+published only after the journal upload completes. `--verbose` also works
+without a state directory.
