@@ -1,0 +1,12 @@
+{
+  "candidate_id": null,
+  "hypothesis": "The rational floor vectors from signed norm-2 cycles and period-three norm-3 cycles span independently when both are present; high predicted direction density stresses this assumption.",
+  "eligibility": "Require -36d to be a nonzero square modulo 11 before using rational X0(11) fibers.",
+  "predicted_degree2_directions": "2*h(-9d)/ord(norm2_f3)",
+  "predicted_degree3_directions": "2*(2*h(-4d)/ord(norm3_f2)) when 3 divides ord(norm3_f2)",
+  "predicted_total": "sum of the two contributions, conditional on independent floor spans",
+  "selection": "among squarefree d in [624,3000] with d=23 mod24, h(-4d)=h(-d), h(-9d)=2h(-d), h(-d)<=40, norm3 order divisible by 3, -36d a nonzero quadratic residue mod 11, and both predicted contributions at least 2, choose the class maximizing (predicted total)/(4*h(-d)), tie break by larger predicted total then smaller d; choose the first prime p=v^2+9d in [10000,80000] for v>=1",
+  "source_evidence_commit": "393f7d2be42d4bcf514efc0284e6825e65dbdaba",
+  "status": "FROZEN_BEFORE_HIGH_DENSITY_CLASS_SELECTION",
+  "timing_claim": null
+}
