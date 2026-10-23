@@ -103,7 +103,9 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
 }
 
 enum StreamingHash {
+    Sha1(hash::sha1::Sha1State),
     Sha2(hash::sha256::Sha256State),
+    Sha512(hash::sha512::Sha512State),
     Keccak(hash::sha3::KeccakSponge, usize),
     Blake3(blake3::Hasher),
 }
@@ -114,8 +116,17 @@ fn stream_file(
     output_bytes: Option<usize>,
 ) -> Result<Option<(u64, Vec<u8>)>, String> {
     let mut engine = match algorithm {
+        "sha1" | "sha-1" => StreamingHash::Sha1(hash::sha1::Sha1State::new()),
         "sha224" | "sha-224" => StreamingHash::Sha2(hash::sha256::Sha256State::sha224()),
         "sha256" | "sha-256" => StreamingHash::Sha2(hash::sha256::Sha256State::sha256()),
+        "sha384" | "sha-384" => StreamingHash::Sha512(hash::sha512::Sha512State::sha384()),
+        "sha512" | "sha-512" => StreamingHash::Sha512(hash::sha512::Sha512State::sha512()),
+        "sha512-224" | "sha-512-224" => {
+            StreamingHash::Sha512(hash::sha512::Sha512State::sha512_224())
+        }
+        "sha512-256" | "sha-512-256" => {
+            StreamingHash::Sha512(hash::sha512::Sha512State::sha512_256())
+        }
         "sha3-224" | "sha-3-224" => {
             StreamingHash::Keccak(hash::sha3::KeccakSponge::new(144, 0x06), 28)
         }
@@ -155,7 +166,9 @@ fn stream_file(
             .checked_add(count as u64)
             .ok_or("file byte count exceeds u64")?;
         match &mut engine {
+            StreamingHash::Sha1(state) => state.update(&buffer[..count])?,
             StreamingHash::Sha2(state) => state.update(&buffer[..count])?,
+            StreamingHash::Sha512(state) => state.update(&buffer[..count])?,
             StreamingHash::Keccak(state, _) => state.update(&buffer[..count]),
             StreamingHash::Blake3(state) => {
                 state.update(&buffer[..count]);
@@ -163,7 +176,9 @@ fn stream_file(
         }
     }
     let digest = match engine {
+        StreamingHash::Sha1(state) => state.finalize().to_vec(),
         StreamingHash::Sha2(state) => state.finalize(),
+        StreamingHash::Sha512(state) => state.finalize(),
         StreamingHash::Keccak(state, output_len) => state.finalize(output_len),
         StreamingHash::Blake3(state) => state.finalize().as_bytes().to_vec(),
     };

@@ -96,6 +96,76 @@ fn sha1_compress(state: &mut [u32; 5], block: &[u8]) {
     state[4] = state[4].wrapping_add(e);
 }
 
+/// Incremental SHA-1 with one pending 64-byte block.
+pub struct Sha1State {
+    state: [u32; 5],
+    pending: [u8; 64],
+    pending_len: usize,
+    total_bytes: u64,
+}
+
+impl Sha1State {
+    pub fn new() -> Self {
+        Self {
+            state: H0,
+            pending: [0; 64],
+            pending_len: 0,
+            total_bytes: 0,
+        }
+    }
+
+    pub fn update(&mut self, mut data: &[u8]) -> Result<(), &'static str> {
+        let length = u64::try_from(data.len()).map_err(|_| "SHA-1 input length exceeds u64")?;
+        self.total_bytes = self
+            .total_bytes
+            .checked_add(length)
+            .filter(|&n| n <= u64::MAX / 8)
+            .ok_or("SHA-1 input exceeds the 64-bit bit-length field")?;
+        if self.pending_len != 0 {
+            let take = (64 - self.pending_len).min(data.len());
+            self.pending[self.pending_len..self.pending_len + take].copy_from_slice(&data[..take]);
+            self.pending_len += take;
+            data = &data[take..];
+            if self.pending_len < 64 {
+                return Ok(());
+            }
+            sha1_compress(&mut self.state, &self.pending);
+            self.pending_len = 0;
+        }
+        let mut blocks = data.chunks_exact(64);
+        for block in &mut blocks {
+            sha1_compress(&mut self.state, block);
+        }
+        let remainder = blocks.remainder();
+        self.pending[..remainder.len()].copy_from_slice(remainder);
+        self.pending_len = remainder.len();
+        Ok(())
+    }
+
+    pub fn finalize(mut self) -> [u8; 20] {
+        let mut last = [0u8; 64];
+        last[..self.pending_len].copy_from_slice(&self.pending[..self.pending_len]);
+        last[self.pending_len] = 0x80;
+        if self.pending_len >= 56 {
+            sha1_compress(&mut self.state, &last);
+            last = [0u8; 64];
+        }
+        last[56..].copy_from_slice(&(self.total_bytes * 8).to_be_bytes());
+        sha1_compress(&mut self.state, &last);
+        let mut output = [0u8; 20];
+        for (index, word) in self.state.iter().enumerate() {
+            output[4 * index..4 * index + 4].copy_from_slice(&word.to_be_bytes());
+        }
+        output
+    }
+}
+
+impl Default for Sha1State {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /// Compute SHA-1 of `data`, returning a 20-byte digest.
@@ -118,6 +188,20 @@ mod tests {
 
     fn h(hex_str: &str) -> Vec<u8> {
         hex::decode(hex_str).unwrap()
+    }
+
+    #[test]
+    fn incremental_sha1_matches_one_shot_at_padding_boundaries() {
+        for length in [0, 1, 55, 56, 63, 64, 65, 127, 128, 129, 8193] {
+            let data: Vec<u8> = (0..length).map(|i| (i * 23) as u8).collect();
+            for chunk in [1, 7, 64, 257] {
+                let mut state = Sha1State::new();
+                for part in data.chunks(chunk) {
+                    state.update(part).unwrap();
+                }
+                assert_eq!(state.finalize(), sha1(&data));
+            }
+        }
     }
 
     // ── SHA-1 known-answer tests (FIPS 180-4 / RFC 3174) ─────────────────────

@@ -254,6 +254,90 @@ const IV_512_256: [u64; 8] = [
     0x0eb72ddc81c52ca2,
 ];
 
+/// Incremental SHA-384, SHA-512, SHA-512/224, or SHA-512/256. The pending
+/// buffer is one 128-byte block, independent of input length.
+pub struct Sha512State {
+    state: [u64; 8],
+    pending: [u8; 128],
+    pending_len: usize,
+    total_bytes: u128,
+    output_len: usize,
+}
+
+impl Sha512State {
+    fn new(state: [u64; 8], output_len: usize) -> Self {
+        Self {
+            state,
+            pending: [0; 128],
+            pending_len: 0,
+            total_bytes: 0,
+            output_len,
+        }
+    }
+
+    pub fn sha384() -> Self {
+        Self::new(IV_384, 48)
+    }
+
+    pub fn sha512() -> Self {
+        Self::new(IV_512, 64)
+    }
+
+    pub fn sha512_224() -> Self {
+        Self::new(IV_512_224, 28)
+    }
+
+    pub fn sha512_256() -> Self {
+        Self::new(IV_512_256, 32)
+    }
+
+    pub fn update(&mut self, mut data: &[u8]) -> Result<(), &'static str> {
+        let length = data.len() as u128;
+        self.total_bytes = self
+            .total_bytes
+            .checked_add(length)
+            .filter(|&n| n <= u128::MAX / 8)
+            .ok_or("SHA-512 input exceeds the 128-bit bit-length field")?;
+        if self.pending_len != 0 {
+            let take = (128 - self.pending_len).min(data.len());
+            self.pending[self.pending_len..self.pending_len + take].copy_from_slice(&data[..take]);
+            self.pending_len += take;
+            data = &data[take..];
+            if self.pending_len < 128 {
+                return Ok(());
+            }
+            compress(&mut self.state, &self.pending);
+            self.pending_len = 0;
+        }
+        let mut blocks = data.chunks_exact(128);
+        for block in &mut blocks {
+            compress(&mut self.state, block.try_into().unwrap());
+        }
+        let remainder = blocks.remainder();
+        self.pending[..remainder.len()].copy_from_slice(remainder);
+        self.pending_len = remainder.len();
+        Ok(())
+    }
+
+    pub fn finalize(mut self) -> Vec<u8> {
+        let mut last = [0u8; 128];
+        last[..self.pending_len].copy_from_slice(&self.pending[..self.pending_len]);
+        last[self.pending_len] = 0x80;
+        if self.pending_len >= 112 {
+            compress(&mut self.state, &last);
+            last = [0u8; 128];
+        }
+        last[112..].copy_from_slice(&(self.total_bytes * 8).to_be_bytes());
+        compress(&mut self.state, &last);
+        let mut output = Vec::with_capacity(self.output_len);
+        for word in self.state {
+            output.extend_from_slice(&word.to_be_bytes());
+        }
+        output.truncate(self.output_len);
+        output
+    }
+}
+
 /// SHA-512/224 of `message`.  Returns 28 bytes (truncated SHA-512 with
 /// the §5.3.6.1 IV).
 pub fn sha512_224(message: &[u8]) -> [u8; 28] {
@@ -286,6 +370,26 @@ mod tests {
 
     fn hex(bytes: &[u8]) -> String {
         bytes.iter().map(|b| format!("{:02x}", b)).collect()
+    }
+
+    #[test]
+    fn incremental_sha512_family_matches_one_shot_at_padding_boundaries() {
+        for length in [0, 1, 111, 112, 127, 128, 129, 255, 256, 257, 8193] {
+            let data: Vec<u8> = (0..length).map(|i| (i * 31) as u8).collect();
+            for chunk in [1, 17, 128, 257] {
+                for (mut state, expected) in [
+                    (Sha512State::sha384(), sha384(&data).to_vec()),
+                    (Sha512State::sha512(), sha512(&data).to_vec()),
+                    (Sha512State::sha512_224(), sha512_224(&data).to_vec()),
+                    (Sha512State::sha512_256(), sha512_256(&data).to_vec()),
+                ] {
+                    for part in data.chunks(chunk) {
+                        state.update(part).unwrap();
+                    }
+                    assert_eq!(state.finalize(), expected);
+                }
+            }
+        }
     }
 
     /// FIPS 180-4 KAT for SHA-512("").

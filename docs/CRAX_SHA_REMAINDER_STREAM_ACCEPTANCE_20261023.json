@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "kind": "crax-sha-remainder-stream-acceptance",
+  "checked_at_utc": "2026-10-23T17:35:48.363429+00:00",
+  "cryptanalysis_parent_commit": "5a474f0f6",
+  "crypto_sibling_commit": "25d703e714e5f1a917266d1b89ed0bb7c9e863bf",
+  "binary_sha256": {
+    "crax_release": "50834637b98721629b73a185ce1ed0a6a2e5e7ee36150fdf4fb969366a4754cd",
+    "crypto_debug": "427fe8748681d76c6179a1186b11c2740806d99e687aa5dc60cf0d6c87587e04"
+  },
+  "boundary_validation": {
+    "algorithms": [
+      "sha1",
+      "sha384",
+      "sha512",
+      "sha512-224",
+      "sha512-256"
+    ],
+    "sizes": [
+      0,
+      1,
+      55,
+      56,
+      63,
+      64,
+      65,
+      111,
+      112,
+      127,
+      128,
+      129,
+      255,
+      256,
+      257,
+      4097
+    ],
+    "canonical_and_alias_comparisons": 85,
+    "independent_reference": "Python hashlib",
+    "all_equal": true
+  },
+  "large_file": {
+    "bytes": 8388745,
+    "sha256": "7c3e9604b4a43573cce51a1c1b80f5699a67c42c7b103b2bcade0f3c32ecf3bf",
+    "comparisons": [
+      {
+        "algorithm": "sha1",
+        "digest_hex": "90f14a15c000429e9585e5632dca7efcfde92920"
+      },
+      {
+        "algorithm": "sha384",
+        "digest_hex": "a78fc76fd2e1f42044998df1d6ca309a3fb14b6ed7430d7669d0f99573dff2777da124e3763fc7973abd978433f10943"
+      },
+      {
+        "algorithm": "sha512",
+        "digest_hex": "44c01436815fc8015e4c8dacd47f3276110e96072d6de054e323f593daece5abe4d00377eeed2d3a8286f6ec4b988c6c022f4c74443d9310f8929084d4d23158"
+      },
+      {
+        "algorithm": "sha512-224",
+        "digest_hex": "421c6fb510af8c56a73159e9b520fd968d5b6ba7bbe4d395e9896f41"
+      },
+      {
+        "algorithm": "sha512-256",
+        "digest_hex": "e5d4ce0f9479217c6531f00f94962f2cf8838043ce18556af1d5f173728fe0ad"
+      }
+    ],
+    "all_equal": true
+  },
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-sha-remainder-20261023T173542Z-fdf38fcb",
+  "object_key": "ic/v1/acceptance/crax-sha-remainder-20261023T173542Z-fdf38fcb/sha256/1c/1c33f7415ff963382f8b53da1b7c03352ab29641f939b0e47acdc99c1274e1f3",
+  "store_name": "evidence/crax-sha-remainder/20261023T173542Z-fdf38fcb/input.bin",
+  "s3": {
+    "head_size_matches": true,
+    "downloaded_bytes_match": true,
+    "fresh_name_sha1": {
+      "status": "ok",
+      "algorithm": "sha1",
+      "input_bytes": 4097,
+      "output_bytes": 20,
+      "digest_hex": "52688bec2dfa916ba9d842c8874cdbf393d3dd19"
+    },
+    "fresh_digest_sha512_256": {
+      "status": "ok",
+      "algorithm": "sha512-256",
+      "input_bytes": 4097,
+      "output_bytes": 32,
+      "digest_hex": "72ea403beee6a56601dd83b782ce7c1cc4d92f892973599a0b2fc657d2deffc0"
+    }
+  },
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "validation": {
+    "sha1_library_tests_passed": 5,
+    "sha512_library_tests_passed": 10,
+    "debug_cli_build": "passed",
+    "release_cli_build": "passed",
+    "rustfmt_check": "passed",
+    "git_diff_check": "passed",
+    "json_parse_check": "passed"
+  }
+}
