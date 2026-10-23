@@ -113,6 +113,26 @@ fn read_head(bytes: &[u8], identity: &str) -> Result<Head, String> {
     Ok(head)
 }
 
+fn verify_local_artifacts(dir: &Path, head: &Head) -> Result<(), String> {
+    for (name, expected) in [
+        ("campaign.sqlite3", &head.database_blake3),
+        ("result.json", &head.report_blake3),
+    ] {
+        if let Some(expected) = expected {
+            let path = dir.join(name);
+            if !path.is_file() {
+                return Err(format!("local fixed S3 artifact {name} is missing"));
+            }
+            if &hash(&path)? != expected {
+                return Err(format!(
+                    "local fixed S3 artifact {name} failed checksum validation"
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn remote_head(uri: &str, identity: &str) -> Result<Head, String> {
     read_head(
         &aws(&["s3", "cp", &head_uri(uri), "-", "--only-show-errors"])?,
@@ -171,6 +191,7 @@ impl Store {
                 if remote_head(uri, identity)? != local {
                     return Err("S3 fixed state is ahead of or differs from local state; restore into a fresh directory".into());
                 }
+                verify_local_artifacts(dir, &local)?;
                 local
             } else {
                 if dir.join("campaign.sqlite3").exists() || dir.join("result.json").exists() {
@@ -326,7 +347,11 @@ impl Store {
             "--only-show-errors",
         ])?;
         fs::remove_file(&temp).map_err(|e| e.to_string())?;
-        fs::remove_file(&snapshot).map_err(|e| e.to_string())?;
+        // The committed checksum covers SQLite's consistent backup, which can
+        // differ byte-for-byte from the live database even when logically
+        // equivalent. Install that exact published snapshot locally so a
+        // same-directory resume can verify it against the head.
+        fs::rename(&snapshot, &database).map_err(|e| e.to_string())?;
         write_marker(&self.dir, &next)?;
         self.head = next;
         if self.verbose {
@@ -336,5 +361,42 @@ impl Store {
             );
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn same_directory_resume_checks_committed_local_artifacts() {
+        let dir = std::env::temp_dir().join(format!("fixed-s3-local-check-{}", std::process::id()));
+        fs::create_dir_all(&dir).unwrap();
+        let database = dir.join("campaign.sqlite3");
+        let report = dir.join("result.json");
+        fs::write(&database, b"live sqlite file differs from backup bytes").unwrap();
+        fs::write(&report, b"published report").unwrap();
+        let snapshot = dir.join(".fixed-snapshot.tmp");
+        fs::write(&snapshot, b"published sqlite snapshot").unwrap();
+        let head = Head {
+            schema: 1,
+            input_digest: "input".into(),
+            generation: 1,
+            database_blake3: Some(hash(&snapshot).unwrap()),
+            report_blake3: Some(hash(&report).unwrap()),
+        };
+        fs::rename(&snapshot, &database).unwrap();
+        assert!(verify_local_artifacts(&dir, &head).is_ok());
+
+        fs::write(&database, b"modified local sqlite state").unwrap();
+        assert!(verify_local_artifacts(&dir, &head)
+            .unwrap_err()
+            .contains("campaign.sqlite3 failed checksum validation"));
+        fs::write(&database, b"published sqlite snapshot").unwrap();
+        fs::write(&report, b"modified local result").unwrap();
+        assert!(verify_local_artifacts(&dir, &head)
+            .unwrap_err()
+            .contains("result.json failed checksum validation"));
+        fs::remove_dir_all(dir).unwrap();
     }
 }
