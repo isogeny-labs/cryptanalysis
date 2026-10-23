@@ -237,6 +237,15 @@ enum IsogenyOp {
         /// so reproducing them needs this.
         #[arg(long)]
         rho_cap: Option<u64>,
+        /// Local directory for atomic per-curve checkpoints.
+        #[arg(long)]
+        state_dir: Option<std::path::PathBuf>,
+        /// Continue from a matching checkpoint in --state-dir.
+        #[arg(long, requires = "state_dir")]
+        resume: bool,
+        /// Stop after this many new curves and emit an explicit partial status.
+        #[arg(long, requires = "state_dir")]
+        max_new_curves: Option<usize>,
     },
     /// secp256k1 case study: GLV constants, twist analysis, MOV
     /// embedding-degree certificate, small-degree-isogeny survey.
@@ -1441,7 +1450,7 @@ fn cmd_isogeny(op: IsogenyOp) {
     use crate::isogeny::{
         class_group::{class_above_prime, class_number, enumerate_reduced_forms, ClassGroup},
         cm::{cm_discriminant, fundamental_discriminant_and_conductor},
-        experiment::{run_experiment, to_json, ExperimentConfig},
+        experiment::{run_experiment, run_experiment_checkpointed, to_json, ExperimentConfig},
         graph::build_graph,
         secp256k1_analysis::{
             beta, embedding_degree_secp256k1, lambda, run_secp256k1_suite,
@@ -1573,6 +1582,9 @@ fn cmd_isogeny(op: IsogenyOp) {
             trials,
             ell_list,
             rho_cap,
+            state_dir,
+            resume,
+            max_new_curves,
         } => {
             let mut cfg = ExperimentConfig::default_for_bits(bits);
             cfg.num_curves = trials.max(1);
@@ -1588,14 +1600,37 @@ fn cmd_isogeny(op: IsogenyOp) {
                 "# Running isogeny experiment: bits={}, trials={}, ell={:?}",
                 cfg.bits, cfg.num_curves, cfg.primes,
             );
-            let report = run_experiment(&cfg);
-            println!("{}", to_json(&report));
-            eprintln!(
-                "[summary] {} starting curves, {} isogenous vertices, mean rho iters = {:.1}",
-                report.aggregate.total_curves,
-                report.aggregate.total_isogenous_vertices,
-                report.aggregate.overall_mean_rho_iters,
-            );
+            if let Some(state_dir) = state_dir {
+                let binary_hash = super::ic::binary_hash().unwrap_or_else(|| {
+                    eprintln!("error: cannot hash the running executable for checkpoint identity");
+                    std::process::exit(1);
+                });
+                let progress = run_experiment_checkpointed(
+                    &cfg,
+                    &state_dir,
+                    resume,
+                    max_new_curves,
+                    &binary_hash,
+                )
+                .unwrap_or_else(|error| {
+                    eprintln!("error: {error}");
+                    std::process::exit(1);
+                });
+                println!("{}", serde_json::to_string_pretty(&progress).unwrap());
+                eprintln!(
+                    "[summary] {} of {} starting curves checkpointed; status={}",
+                    progress.completed_curves, progress.planned_curves, progress.status,
+                );
+            } else {
+                let report = run_experiment(&cfg);
+                println!("{}", to_json(&report));
+                eprintln!(
+                    "[summary] {} starting curves, {} isogenous vertices, mean rho iters = {:.1}",
+                    report.aggregate.total_curves,
+                    report.aggregate.total_isogenous_vertices,
+                    report.aggregate.overall_mean_rho_iters,
+                );
+            }
         }
         IsogenyOp::Secp256k1 => {
             let _ = cm_discriminant;

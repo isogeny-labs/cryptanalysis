@@ -83,6 +83,32 @@ all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
 
+### Resumable isogeny experiment sweeps
+
+`crax isogeny experiment` accepts `--state-dir` for a local checkpoint after
+each completed starting curve. Use `--max-new-curves` to run a bounded number
+of new units, then `--resume` with the same options to continue:
+
+```sh
+crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
+  --state-dir /tmp/crax-isogeny-run --max-new-curves 1
+crax isogeny experiment --bits 9 --trials 2 --ell-list 2 --rho-cap 1024 \
+  --state-dir /tmp/crax-isogeny-run --resume
+```
+
+The first command reports `status: partial`; the second reports
+`status: complete` and includes the full experiment report. Progress goes to
+stderr. The checkpoint is atomically replaced under a local writer lock and
+binds the complete configuration, generated curve sequence, and running
+executable's BLAKE3 digest. Resume rejects changed inputs, binaries and
+corrupt state. This command's checkpoint is local; the sibling `store`
+command can publish completed artifacts, while live S3 resume is currently
+implemented for the separate fixed-IC command family.
+The [release CLI acceptance receipt](CRAX_ISOGENY_RESUME_ACCEPTANCE_20261023.json)
+records a partial run, an exact-match resume versus a fresh sweep, the
+`crax --json` envelope, and rejection of changed configuration, changed
+executable, and damaged checkpoint bytes.
+
 Native `crax rho-collab work/status --job` accepts a local public job document
 or a checked `store:NAME` or `sha256:DIGEST` reference. Store references are
 resolved through `CRAX_CRYPTO_BIN` and limited to 64 KiB of JSON. Mutable

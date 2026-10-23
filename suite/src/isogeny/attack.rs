@@ -37,7 +37,7 @@ use num_traits::Zero;
 
 /// Per-curve summary record.  Returned by [`run_attack_suite`] for
 /// every curve in the experimental sweep.
-#[derive(Clone, Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct AttackReport {
     pub curve: (u64, u64, u64),
     pub cm: CmData,
