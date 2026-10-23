@@ -1,0 +1,21 @@
+# The norm-3 action keeps two rational X₀(11) lifts on separate cycles
+
+The prospective `D = −1295`, conductor-6 holdout at `p = 11719` has **four conductor-2 degree-3 cycles of length 18**, matching the frozen separate-lift prediction. The competing sheet-switching pattern was two cycles of length 36. Each observed cycle visits 18 distinct conductor-2 CM `j`-invariants exactly once, and the cycles pair by identical `j`-sets: each base `j`-orbit has two disjoint rational lifts. The 72 conductor-2 points therefore give an eight-dimensional projected degree-3 row kernel, rather than the four-dimensional kernel implied by the competing pattern.
+
+| Quantity | Frozen separate-lift prediction | Frozen sheet-switch prediction | Observed |
+| --- | ---: | ---: | ---: |
+| Conductor-2 class number | 36 | 36 | 36 |
+| Rational conductor-2 lifts | 72 | 72 | 72 |
+| Norm-3 ideal-class order | 18 | 18 | 18 |
+| Degree-3 projected cycles | 4 × 18 | 2 × 36 | **4 × 18** |
+| Projected row-kernel dimension | 8 | 4 | **8** |
+
+`selection_protocol.json` fixed the first-eligible-class rule before class selection. It required 3 to split in the quadratic field, a norm-3 class order strictly below the conductor-2 class number, the previous split-class and nonzero-square-modulo-11 eligibility gates, and a bounded prime search. The first match after eight inspected discriminants was `d = 1295`, with class numbers 36, 36, 72 and 72 at conductors 1, 2, 3 and 6. The first permitted field was `p = 8² + 9·1295 = 11719`, with `u = 16` and `u² − 4p = −1295·6²`. The ordinary CM ideal-class action gives length-18 cycles on the `j`-invariants; the effect of lifting that action to the two rational `X₀(11)` points above each `j` was the experiment's separate question. See [Sutherland, *Isogeny volcanoes*, §§2.8–2.9](https://msp.org/obs/2013/1-1/obs-v1-n1-p25-s.pdf) for the ideal-class action and split-prime cycles.
+
+`producer_protocol.json` froze the two competing patterns, field, class and row counts, and source hashes before the independent fiber gate and producer ran. The gate found two rational `X₀(11)` points over each of the 216 rational CM `j`-invariants. The checked-Sage producer saved 432 class points and 360 verified Hecke rows. `audit.py` reconstructed all points and rows, checked endomorphism conductors, Hecke-root and modular-polynomial root counts, and every elliptic-curve group sum. It found degree-3 ranks 144 full and 136 after nonfloor projection. The union of degrees 2 and 3 has ranks 288 full and 272 after projection.
+
+`validate.py` independently enumerates the four class numbers from reduced forms, verifies the frozen hashes and field arithmetic, rebuilds the degree-3 graph directly from saved row indices, and checks that each of its four connected components has 18 points and modular rank 16. It then compares the `j`-sets: two disjoint pairs of cycles have identical sets of 18 `j`-invariants, with one lift of each `j` on each cycle. The paired cycle indices are `(0,3)` and `(1,2)` in the audit's deterministic order.
+
+For any two-point fiber, a bijective return map after one base orbit is either the identity or the swap. The pinned [Lean module](/Volumes/SSD990/cryptanalysis/experiments/hecke-two-sheet-small-order-20261023/formal/SheetMonodromy.lean) proves this dichotomy and that applying the return map twice is the identity; [build.json](/Volumes/SSD990/cryptanalysis/experiments/hecke-two-sheet-small-order-20261023/formal/build.json) records the checked compilation and standard-foundation axiom audit. The Lean theorem is conditional on an injective return map on a two-point fiber. The identification of the concrete Hecke traversal with that map and the observed identity return after 18 steps are externally replayed from the saved matrix and `j`-values, not a general Lean theorem about modular curves.
+
+This supplies a new prospective lift-compatibility instance in which the norm-3 ideal has proper-subgroup order. It supports the separate-lift cycle count for this exact field and class; the general rational `X₀(11)` sheet action remains to be derived. The run is a relation-stage diagnostic with `candidate_id: null` and `timing_claim: null`. All Sage commands use `/Volumes/SSD990/cryptanalysis/sage`, and `SEAL.json` binds the protocols, runtime receipt, gate, data, audits, proof and report.
