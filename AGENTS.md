@@ -227,6 +227,15 @@ pre-existing user changes out of the branch. For stacked work, target the
 immediate parent branch, name that dependency in the PR, then retarget to
 `main` and rerun checks after the parent merges.
 
+Enable GitHub auto-merge as part of opening or refreshing the PR: `gh pr merge
+<n> --auto --merge`. Auto-merge is the default for every PR in this repository,
+not an optional extra, and the authoring session still tracks the PR under the
+next section. GitHub offers auto-merge only when the base is the repository's
+default branch (`main`); a PR stacked on a feature branch cannot auto-merge, so
+retarget it to `main` once its parent lands and enable auto-merge then, or
+merge the stack bottom-up by hand. Auto-merge waives no gate: required checks,
+review and approvals still decide, and a failing PR is fixed, never merged.
+
 Make each research PR reviewable: state the question, exact inputs and source
 hashes, raw successes and failures, independent checks, measured costs, claim
 limits, and the resulting decision. Update the relevant result index or
@@ -259,9 +268,11 @@ Claude Opus and Fable included, tracks, fixes and merges the PRs it opened.
   final diff is complete and the current head has every required and
   applicable check successful (or legitimately skipped), no check pending or
   failed (except as below), no conflict and no open blocking review thread.
-  Use a merge commit with an expected-head guard, confirm the merge commit,
-  and never bypass branch protection or a required review. An explicit
-  instruction to leave the PR open or wait for review overrides this.
+  Auto-merge is already enabled (see the previous section), so the merge is a
+  merge commit with an expected-head guard; confirm the merge commit, and never
+  bypass branch protection or a required review. An explicit instruction to
+  leave the PR open or wait for review overrides this: disable auto-merge
+  (`gh pr merge <n> --disable-auto`) so the PR stays open.
 - **Checks that never start do not block** (owner, 2026-10-23). A check that
   no branch-protection rule or ruleset requires, and that has been queued for
   24 hours or more without starting (no runner picked it up), does not hold
