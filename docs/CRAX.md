@@ -43,18 +43,26 @@ CRAX="$CRAX_REPO/suite/target/release/crax"
   --hex 00112233445566778899aabbccddeeff
 "$CRAX" --json aes-attack --technique differential --samples 4096
 "$CRAX" --json aes-attack --technique linear --samples 4096
+"$CRAX" --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
 "$CRAX" --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
   --gx 3 --gy 7 --qx 231 --qy 54
 "$CRAX" --json ic solve-cubic \
   --input "$CRYPTO_REPO/docs/ic/fixtures/cubic_f11_public_target.json"
+"$CRAX" --json icx cubic-graph \
+  --input "$CRYPTO_REPO/docs/ic/fixtures/cubic_f11_public_target.json" \
+  --include-degree-two --max-ell 5 --max-nodes 64
 "$CRAX" ic --help
 "$CRAX" icx --help
 "$CRAX" isogeny-walk --help
 ```
 
 The AES block command above returns
-`69c4e0d86a7b0430d8cdb78070b4c55a`. The prime and cubic commands return
-verified scalars 190 and 5 for the supplied public targets. See
+`69c4e0d86a7b0430d8cdb78070b4c55a`. The bounded P-256 interval command
+returns verified scalar 12345; pass `--point X,Y` with a public point and an
+interval to solve an external target. The prime and cubic IC commands return
+verified scalars 190 and 5 for the supplied public targets. The cubic
+graph command enumerates 15 j-nodes without truncation for the fixture;
+its j-neighbours are not by themselves certified point-transport routes. See
 [the explicit-target guide](https://github.com/aburan28/crypto/blob/main/docs/ic/EXTERNAL_TARGET_CLI.md)
 for graph numeration, checked routes, and other input forms. Use
 `"$CRAX" aes <COMMAND> --help` for an individual AES command; all 7 sibling
