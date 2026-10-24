@@ -1,0 +1,26 @@
+{
+  "accepted_row_rule": "All l+1 neighbors rational, unambiguously reconstructed, defined j; verify modular polynomial and group-sum identities.",
+  "candidate_id": null,
+  "competing_prediction": "The second layer adds no induced rank on original orbits after full elimination.",
+  "frontier_rule": "Exactly the 128 new orbit representatives from the first-layer result, ordered by saved column index; process all five torsion translates of each, once each.",
+  "hecke_degrees": [
+    2,
+    3
+  ],
+  "primary_prediction": "At least one second-layer row cancels first-layer frontier columns and increases rank induced on the original 117 orbits after all new columns are eliminated.",
+  "question": "Do Hecke rows from all five representatives of the 128 first-layer new torsion orbits cancel frontier columns and induce new constraints on the original 117 orbits?",
+  "rank_fields": [
+    101,
+    1000000007
+  ],
+  "rank_rule": "For retained old columns A and all other columns B, induced rank equals rank([A B])-rank(B). Repeat with the entire first-layer column set retained.",
+  "source_commit": "eff7b061de6fd8da62af7fecbcbcac28cbdeab3d",
+  "source_sha256": {
+    "first": "0e1cc44778eb241be2736d568bc40b2847ff734244fa8dbd60f23c324a1da794",
+    "hecke11": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+    "matrix": "8ef0c2c318bc28337d3740561646cb005fddf769dd56fe7bb28d7f060fbda6ad",
+    "producer": "95cc35a4085ee5d02b287992df9e1a837c37a13f7abfe66e3de879fbbb876fcf"
+  },
+  "status": "FROZEN_BEFORE_TORSION_LAYER2_PRODUCER",
+  "timing_claim": null
+}

@@ -1,0 +1,27 @@
+{
+  "candidate_id": null,
+  "empirical_result": {
+    "evidence_sha256": {
+      "projection_certificate": "d337ce581fc269b3d3f04437abf780f30560de09ad47873239c561f141d94c70",
+      "rank_validation": "844c031c31d27cf4e3c51b5ac730b3244fb03233f28239428d5078028a11c0b3",
+      "result": "d4cd2b83a1fcd30c7a6297b9d29591083983605aa105b5cb794ec1f84450c6d9",
+      "trace_validation": "be592b8b77cd8960b985a1f47ae2306f0dbfd5175b17bc5692b072084912f68e"
+    },
+    "statement": "For all five torsion representatives of each of 128 first-layer new orbits, 166 eligible second-layer Hecke rows add 166 total rational rank but zero rank induced on the original 117 or first-layer 245 columns after all new columns are eliminated.",
+    "status": "exact_integer_point_replay_and_rational_rank_certified"
+  },
+  "status": "REUSED_CHECKED_LEAN_THEOREM_WITH_EXACT_SECOND_LAYER_PROJECTION_CERTIFICATE",
+  "structural_theorem": {
+    "build_path": "experiments/hecke-torsion-bridge-20261023/formal/build.json",
+    "build_sha256": "892e9e8f72f0e7457034901303936560268b7a0cf1d59992f816280da1f65648",
+    "conclusion": "Old-only components of old plus new rows whose new-column component vanishes equal S.",
+    "hypotheses": "Additive groups O,N,W; old-only set S subset O; additive maps A:W to O and B:W to N; B injective.",
+    "instance_bridge": "The exact selected 166 by 166 new-column submatrix has rank 166 over Q, proving B injective for this finite row family; the matrix-to-Lean construction remains computationally checked.",
+    "lean_declaration": "PrivateNewColumns.oldOnly_eq_original",
+    "prior_commit": "eff7b061de6fd8da62af7fecbcbcac28cbdeab3d",
+    "source_path": "experiments/hecke-torsion-bridge-20261023/formal/PrivateNewColumns.lean",
+    "source_sha256": "7615f399eb058484c9269ce2fd202511db5fca4465db571b3089985976fdb375",
+    "status": "previously_kernel_checked"
+  },
+  "timing_claim": null
+}
