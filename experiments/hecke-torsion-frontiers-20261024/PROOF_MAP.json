@@ -1,0 +1,32 @@
+{
+  "build_receipt": "formal/build.json",
+  "manifest": "formal/lake-manifest.json",
+  "prior_closed_image_theorems": "../hecke-torsion-bridge-layer3-20261023/formal/ClosedBridge.lean",
+  "results": [
+    {
+      "axioms": [
+        "propext"
+      ],
+      "claim": "A verified shifted table hit target + offset*G = knownScalar*G recovers target = (knownScalar-offset)*G in any additive commutative group",
+      "hypotheses": "AddCommGroup A; arbitrary G,target:A; knownScalar,offset:Z; exact hit equality",
+      "lean_declaration": "OffsetRecovery.from_shifted_table_hit",
+      "lean_file": "formal/OffsetRecovery.lean",
+      "status": "kernel_checked"
+    },
+    {
+      "bridge": "p12043.rank.json exact integer and two large-prime checks; p12043.validation.json independent affine-point row replay",
+      "claim": "p=12043 exact rank 2316; full induced ranks 117,245,657,1540 across saved boundaries",
+      "lean_declaration": null,
+      "missing_formalization": "finite-field X0(11) curve, Hecke incidence maps, row matrix and exact rank certificates in Lean",
+      "status": "computational_certificate_replayed_not_formalized_in_lean"
+    },
+    {
+      "bridge": "p20023.seed.result.json, p20023.validation.json, p20023.solved.json",
+      "claim": "p=20023 5565-row exact rank 3943 and induced seed rank 564; anchored GF4021 table covers 3935, offsets 0,1,2 cover 4021",
+      "lean_declaration": "OffsetRecovery.from_shifted_table_hit for the conditional offset implication",
+      "missing_formalization": "kernel-checked finite-matrix and full 4021-point coverage certificate in Lean",
+      "status": "structural_step_checked_finite_certificate_external"
+    }
+  ],
+  "toolchain": "formal/lean-toolchain"
+}
