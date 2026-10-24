@@ -152,6 +152,9 @@ The live round trip is recorded in
 crax --json hash --algorithm sha256 --text abc
 crax --json hash --algorithm sha3-384 --hex 616263
 crax hash --algorithm shake256 --text abc --output-bytes 32
+crax hash --algorithm streebog-256 --text abc
+crax hash --algorithm skein512 --file ./message.bin --output-bytes 64
+crax hash --algorithm cshake256 --text abc --output-bytes 32 --custom-hex 637573746f6d
 crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
@@ -234,7 +237,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 
 | Requested surface | Available command | Current boundary |
 | --- | --- | --- |
-| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
+| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs for SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. BLAKE2b/s, cSHAKE128/256, SM3, RIPEMD-160, Streebog-256/512, Whirlpool, Tiger/Tiger2, and Skein-256/512/1024 use the sibling `crypto` executable through `CRAX_CRYPTO_BIN` or `PATH`. The sibling file path streams input in bounded chunks. SHAKE and cSHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 and SHA-512 length extension, bounded truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512, SHAKE128/256, BLAKE3, and the truncated SHA-2 digest variants have generic measurements; SHAKE requires `--output-bytes` in 1..=64. A missing length-extension adapter is reported explicitly. |
 | AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
 | Standardized-curve ECDLP | `crax ecdlp-nist list/audit/solve/smart/bench` | Delegates to the sibling `ecdlp-nist` executable. External points and checked target artifacts follow its bounded interval and feasibility rules. |
@@ -247,6 +250,14 @@ The release CLI matrix for SHA-256, SHA-3, SHAKE, BLAKE3, bounded hash
 analysis, AES recovery modes, distinguishers, and DDT/LAT/BCT/DLCT row
 agreement is recorded in
 [`CRAX_HASH_AES_ACCEPTANCE_20261023.json`](CRAX_HASH_AES_ACCEPTANCE_20261023.json).
+The [extended hash bridge receipt](CRAX_HASH_BRIDGE_S3_ACCEPTANCE_20261023.json)
+compares all 14 additional digest names with the sibling `crypto` release
+binary on a 1,048,577-byte file. The checked input was fetched through a
+fresh S3-backed cache; upload, remote downloaded-byte verification, exact
+object cleanup, and empty-prefix listing passed. CRAx's native Streebog
+library implementation was corrected and separately passed both RFC 6986 M1
+known-answer tests after converting the RFC's displayed bit-string order to
+the conventional byte-oriented API.
 
 The native cryptanalysis commands and the sibling bridges have separate build
 dependencies. Put the sibling `crypto`, `ic`, `icx`, `isogeny_walk`, and `ecdlp-nist` binaries

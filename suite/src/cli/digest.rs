@@ -16,7 +16,8 @@ use crate::hash;
 pub struct DigestArgs {
     /// Digest name: md4, md5, sha1, sha224, sha256, sha384, sha512,
     /// sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512,
-    /// shake128, shake256, or blake3. SHA-3 and SHAKE also accept hyphenated names.
+    /// shake128, shake256, blake3, blake2b, blake2s, cshake128, cshake256,
+    /// sm3, ripemd160, streebog-256/512, whirlpool, tiger, tiger2, or skein256/512/1024.
     #[arg(long)]
     pub algorithm: String,
     /// UTF-8 text to hash.
@@ -28,9 +29,15 @@ pub struct DigestArgs {
     /// File or checked store:NAME/sha256:DIGEST reference to hash.
     #[arg(long, conflicts_with_all = ["text", "hex"])]
     pub file: Option<PathBuf>,
-    /// Required output length in bytes for SHAKE128 or SHAKE256.
+    /// Required for SHAKE/cSHAKE; optional for BLAKE2 and Skein.
     #[arg(long)]
     pub output_bytes: Option<usize>,
+    /// cSHAKE customization bytes in hexadecimal.
+    #[arg(long)]
+    pub custom_hex: Option<String>,
+    /// cSHAKE function-name bytes in hexadecimal.
+    #[arg(long)]
+    pub function_name_hex: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -46,13 +53,33 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
     let algorithm = args.algorithm.to_ascii_lowercase().replace('_', "-");
     let xof = matches!(
         algorithm.as_str(),
-        "shake128" | "shake-128" | "shake256" | "shake-256"
+        "shake128" | "shake-128" | "shake256" | "shake-256" | "cshake128" | "cshake256"
     );
     if xof && !matches!(args.output_bytes, Some(1..=1_048_576)) {
-        return Err("SHAKE requires --output-bytes in 1..=1048576".into());
+        return Err("SHAKE/cSHAKE requires --output-bytes in 1..=1048576".into());
     }
-    if !xof && args.output_bytes.is_some() {
-        return Err("--output-bytes applies only to SHAKE128 and SHAKE256".into());
+    let variable = xof
+        || matches!(
+            algorithm.as_str(),
+            "blake2b" | "blake2s" | "skein256" | "skein512" | "skein1024"
+        );
+    if !variable && args.output_bytes.is_some() {
+        return Err("--output-bytes applies only to SHAKE, cSHAKE, BLAKE2, and Skein".into());
+    }
+    let cshake = matches!(algorithm.as_str(), "cshake128" | "cshake256");
+    if !cshake && (args.custom_hex.is_some() || args.function_name_hex.is_some()) {
+        return Err("--custom-hex and --function-name-hex apply only to cSHAKE".into());
+    }
+    if is_sibling_hash(&algorithm) {
+        let (digest, input_bytes) = sibling_digest(args, &algorithm)?;
+        let report = DigestReport {
+            status: "ok",
+            algorithm,
+            input_bytes,
+            output_bytes: digest.len(),
+            digest_hex: hex::encode(digest),
+        };
+        return out.emit(&report, || report.digest_hex.clone());
     }
     let (digest, input_bytes) = match (&args.text, &args.hex, &args.file) {
         (Some(text), None, None) => (
@@ -75,6 +102,83 @@ pub fn run(out: Out, args: &DigestArgs) -> CmdResult {
         digest_hex: hex::encode(digest),
     };
     out.emit(&report, || report.digest_hex.clone())
+}
+
+fn is_sibling_hash(algorithm: &str) -> bool {
+    matches!(
+        algorithm,
+        "blake2b"
+            | "blake2s"
+            | "cshake128"
+            | "cshake256"
+            | "sm3"
+            | "ripemd160"
+            | "streebog-256"
+            | "streebog-512"
+            | "whirlpool"
+            | "tiger"
+            | "tiger2"
+            | "skein256"
+            | "skein512"
+            | "skein1024"
+    )
+}
+
+/// The sibling crypto CLI owns these extra hash engines and their bounded
+/// file path. Pass arguments directly, without a shell or whole-file buffer.
+fn sibling_digest(args: &DigestArgs, algorithm: &str) -> Result<(Vec<u8>, u64), String> {
+    let binary = super::sibling_binary("CRAX_CRYPTO_BIN", "crypto");
+    let mut command = Command::new(&binary);
+    command.args(["hash", algorithm, "--color", "never"]);
+    let input_bytes = match (&args.text, &args.hex, &args.file) {
+        (Some(text), None, None) => {
+            command.args(["--hex", &hex::encode(text.as_bytes())]);
+            text.len() as u64
+        }
+        (None, Some(encoded), None) => {
+            let bytes = hex::decode(encoded).map_err(|e| format!("invalid --hex input: {e}"))?;
+            command.args(["--hex", &hex::encode(&bytes)]);
+            bytes.len() as u64
+        }
+        (None, None, Some(path)) => {
+            let resolved = resolve_checked_path(path)?;
+            let count = std::fs::metadata(&resolved)
+                .map_err(|e| format!("reading {}: {e}", path.display()))?
+                .len();
+            command.arg("--file").arg(resolved);
+            count
+        }
+        _ => return Err("provide exactly one of --text, --hex, or --file".into()),
+    };
+    if let Some(length) = args.output_bytes {
+        command.args(["--output-bytes", &length.to_string()]);
+    }
+    if let Some(custom) = &args.custom_hex {
+        hex::decode(custom).map_err(|e| format!("invalid --custom-hex: {e}"))?;
+        command.args(["--custom-hex", custom]);
+    }
+    if let Some(name) = &args.function_name_hex {
+        hex::decode(name).map_err(|e| format!("invalid --function-name-hex: {e}"))?;
+        command.args(["--function-name-hex", name]);
+    }
+    let output = command
+        .output()
+        .map_err(|e| format!("starting {} for {algorithm}: {e}", binary.to_string_lossy()))?;
+    if !output.status.success() {
+        return Err(format!(
+            "{algorithm}: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    let stdout = String::from_utf8(output.stdout)
+        .map_err(|e| format!("{algorithm} returned non-UTF-8 output: {e}"))?;
+    let digest = stdout.trim();
+    if digest.is_empty() || digest.contains(char::is_whitespace) {
+        return Err(format!("{algorithm} returned an invalid digest"));
+    }
+    let bytes = hex::decode(digest)
+        .map_err(|e| format!("{algorithm} returned an invalid hex digest: {e}"))?;
+    Ok((bytes, input_bytes))
 }
 
 fn digest_one_shot(

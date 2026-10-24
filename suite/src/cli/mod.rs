@@ -76,7 +76,7 @@ pub enum Command {
     AesAttack(aes_attack::AesAttackArgs),
     /// Export exact AES S-box DDT, LAT, BCT, or DLCT rows or complete tables.
     AesSboxTable(aes_sbox_table::AesSboxTableArgs),
-    /// Compute MD, SHA-1/2/3, SHAKE, or BLAKE3 digests from text, hex bytes, or a file.
+    /// Compute MD, SHA, BLAKE, Skein, and other unkeyed digests from text, hex, or a file.
     Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
     Bsgs(dlog::IntervalArgs),
