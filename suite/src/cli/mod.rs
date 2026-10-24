@@ -261,6 +261,64 @@ fn aes_bridge_family(command: Option<&str>) -> &'static str {
     }
 }
 
+fn print_aes_bridge_help() {
+    println!("Usage: crax aes <COMMAND> [OPTIONS]");
+    let binary = sibling_binary("CRAX_CRYPTO_BIN", "crypto");
+    for (family, label, fallback) in [
+        (
+            "aes",
+            "AES primitive commands",
+            "block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt",
+        ),
+        (
+            "cryptanalysis",
+            "Sibling cryptanalysis commands",
+            "aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, and other commands",
+        ),
+    ] {
+        let output = std::process::Command::new(&binary)
+            .args([family, "--help"])
+            .output();
+        match output {
+            Ok(output) if output.status.success() => {
+                println!("\n{label} (from {}):", binary.to_string_lossy());
+                print!("{}", String::from_utf8_lossy(&output.stdout));
+            }
+            _ => println!("\n{label}: {fallback}"),
+        }
+    }
+    println!("\nUse `crax aes <COMMAND> --help` for command options.");
+}
+
+fn print_ic_bridge_help(tool: &str) {
+    let (legacy, env_var) = if tool == "ic" {
+        (tools::ic::Cli::command().name("ic"), "CRAX_IC_BIN")
+    } else {
+        (tools::icx::Cli::command().name("icx"), "CRAX_ICX_BIN")
+    };
+    println!(
+        "{}",
+        legacy.bin_name(format!("crax {tool}")).render_long_help()
+    );
+
+    let binary = sibling_binary(env_var, tool);
+    let output = std::process::Command::new(&binary).arg("--help").output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!(
+                "\nAdditional EC index-calculus commands (from {}):",
+                binary.to_string_lossy()
+            );
+            print!("{}", String::from_utf8_lossy(&output.stdout));
+        }
+        _ => println!(
+            "\nAdditional EC index-calculus commands: solve-prime, solve-prime-file, \
+             solve-cubic, prime-route-generate, cubic-graph, cubic-route-generate"
+        ),
+    }
+    println!("\nUse `crax {tool} <COMMAND> --help` for command options.");
+}
+
 fn native_hex_report(
     sub: &str,
     native_args: &[OsString],
@@ -435,6 +493,14 @@ where
     let sub = rest.first().and_then(|a| a.to_str()).unwrap_or("");
     let requested_json = lead_json || rest.iter().skip(1).any(|a| a == "--json");
     match sub {
+        "ic" | "icx"
+            if rest
+                .get(1)
+                .is_some_and(|arg| arg == "--help" || arg == "-h") =>
+        {
+            print_ic_bridge_help(sub);
+            return ExitCode::SUCCESS;
+        }
         "ecdlp-nist" => {
             return run_external(
                 "CRAX_ECDLP_NIST_BIN",
@@ -461,7 +527,7 @@ where
                     .get(1)
                     .is_some_and(|arg| arg == "--help" || arg == "-h")
             {
-                println!("Usage: crax aes <COMMAND> [OPTIONS]\n\nAES primitive commands: block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt\nAES cryptanalysis commands: aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, aes-cpa, aes-dpa, aes-cache-timing, and the other sibling crypto cryptanalysis commands.\n\nUse `crax aes <COMMAND> --help` for command options.");
+                print_aes_bridge_help();
                 return ExitCode::SUCCESS;
             }
             let family = aes_bridge_family(rest.get(1).and_then(|arg| arg.to_str()));

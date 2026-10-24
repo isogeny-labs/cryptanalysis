@@ -13,6 +13,96 @@ cd suite && cargo build --release --bin crax
 
 The same binary is built by `make suite`.
 
+## Build and run with the sibling crypto repository
+
+Use both repository checkouts. The suite carries a pinned, hash-checked copy
+of its small shared analysis dependency, so its build does not fetch the
+private sibling repository. The commands below build the binaries exercised
+by the cross-repository CLI checks:
+
+```sh
+CRYPTO_REPO=/absolute/path/to/crypto
+CRAX_REPO=/absolute/path/to/cryptanalysis
+
+(cd "$CRYPTO_REPO" && cargo build --release --locked \
+  --bin crypto --bin ic --bin icx --bin ecdlp-nist --bin isogeny_walk)
+(cd "$CRAX_REPO" && tools/bootstrap_crypto_analysis_core.sh && \
+  cargo build --release --locked --manifest-path suite/Cargo.toml --bin crax)
+
+export CRAX_CRYPTO_BIN="$CRYPTO_REPO/target/release/crypto"
+export CRAX_IC_BIN="$CRYPTO_REPO/target/release/ic"
+export CRAX_ICX_BIN="$CRYPTO_REPO/target/release/icx"
+export CRAX_ECDLP_NIST_BIN="$CRYPTO_REPO/target/release/ecdlp-nist"
+export CRAX_ISOGENY_WALK_BIN="$CRYPTO_REPO/target/release/isogeny_walk"
+CRAX="$CRAX_REPO/suite/target/release/crax"
+
+"$CRAX" --json hash --algorithm sha256 --text abc
+"$CRAX" --json hash --algorithm sha3-256 --text abc
+"$CRAX" --json aes block-encrypt \
+  --key-hex 000102030405060708090a0b0c0d0e0f \
+  --hex 00112233445566778899aabbccddeeff
+"$CRAX" --json aes-attack --technique differential --samples 4096
+"$CRAX" --json aes-attack --technique linear --samples 4096
+"$CRAX" --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
+"$CRAX" --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
+  --gx 3 --gy 7 --qx 231 --qy 54
+"$CRAX" --json ic solve-cubic \
+  --input "$CRYPTO_REPO/docs/ic/fixtures/cubic_f11_public_target.json"
+"$CRAX" --json icx cubic-graph \
+  --input "$CRYPTO_REPO/docs/ic/fixtures/cubic_f11_public_target.json" \
+  --include-degree-two --max-ell 5 --max-nodes 64
+"$CRAX" ic --help
+"$CRAX" icx --help
+"$CRAX" isogeny-walk --help
+```
+
+The AES block command above returns
+`69c4e0d86a7b0430d8cdb78070b4c55a`. The bounded P-256 interval command
+returns verified scalar 12345; pass `--point X,Y` with a public point and an
+interval to solve an external target. The prime and cubic IC commands return
+verified scalars 190 and 5 for the supplied public targets. The cubic
+graph command enumerates 15 j-nodes without truncation for the fixture;
+its j-neighbours are not by themselves certified point-transport routes. See
+[the explicit-target guide](https://github.com/aburan28/crypto/blob/main/docs/ic/EXTERNAL_TARGET_CLI.md)
+for graph numeration, checked routes, and other input forms. Use
+`"$CRAX" aes <COMMAND> --help` for an individual AES command; all 7 sibling
+AES primitive commands and 32 cryptanalysis commands in the tested sibling
+build are reachable through this bridge.
+
+The explicit prime-field IC commands require a prime field modulus in
+`5..=1,000,000` and a prime subgroup order in `3..=4,000,000`. The explicit
+cubic-field solver requires a prime characteristic in `7..=101` and a prime
+subgroup order in `3..=2,000,000`; it counts the entire curve order before
+running IC. Cubic j-graph numeration supports selected degrees 2, 3, 5, and
+7 with at most 64 distinct j-nodes. The prime and cubic route generators
+accept prime kernel degrees in `2..=31` only when a rational certified route
+can be found within their work budgets. These are operational input limits,
+not estimates of cryptographic-curve solve cost. The attack commands state
+their own sample, round, and output limits in `--help`.
+
+For retained artifacts in the approved Setec bucket, configure an AWS profile
+with access to the bucket and use the versioned runs prefix. `push` updates the
+small local index; commit that index when the logical name should be shared.
+
+```sh
+export AWS_PROFILE=ecc-challenges-new
+export AWS_DEFAULT_REGION=us-east-2
+export CRYPTO_STORE_REMOTE=s3://setec-astronomy-artifacts/ic/v1/runs
+export CRYPTO_STORE_INDEX="$CRYPTO_REPO/store/index.json"
+
+"$CRAX" store --help
+"$CRAX" store push ./artifact.bin --name runs/my-run/artifact.bin
+"$CRAX" store verify runs/my-run/artifact.bin --remote --download --json
+"$CRAX" store pull store:runs/my-run/artifact.bin --out ./retrieved.bin
+```
+
+Use a unique `ic/v1/acceptance/<run-id>` remote prefix for a temporary S3
+check, separate from retained runs. The store writes content-addressed objects
+under that prefix; `store rm` changes only the index, so exact-object cleanup
+uses the bucket owner's S3 tooling. The
+[artifact store guide](https://github.com/aburan28/crypto/blob/main/docs/store/README.md)
+describes the prefix and verification protocol.
+
 **Conventions:**
 
 - Every command accepts `--json`. Native `crax` commands return structured

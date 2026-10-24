@@ -11,6 +11,8 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'suite/Cargo.toml'
+      - 'suite/vendor/crypto-analysis-core/**'
+      - 'tools/bootstrap_crypto_analysis_core.sh'
       - 'suite/Cargo.lock'
       - 'research/binary_genus2_cover_20261014/**'
       - '.github/workflows/binary-genus2-cover.yml'
@@ -37,6 +39,7 @@ jobs:
             /suite/Cargo.lock
             /suite/build.rs
             /suite/src/
+            /suite/vendor/crypto-analysis-core/
             /suite/cuda/
             /suite/docs/ic/calibration.json
             /challenges/elliptic/corpus.json
@@ -55,7 +58,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-      - name: Bootstrap pinned crypto analysis dependency
+      - name: Verify pinned crypto analysis dependency
         run: tools/bootstrap_crypto_analysis_core.sh
       - run: tools/binary-genus2-cover/check.sh
   lean:
