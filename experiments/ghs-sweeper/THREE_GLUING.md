@@ -10,6 +10,14 @@ This is a different search direction from the existing hyperelliptic
 Artin--Schreier sweeper. It does not establish a novel affected family or a
 completed attack. Beating Pollard rho is not an acceptance condition.
 
+| Requested deliverable | Current evidence |
+|:--|:--|
+| A genuinely new affected family or recognition criterion | Candidate criterion derived below; publication novelty remains unresolved. |
+| A short proof | Module proposition, indecomposability lemma and twist-pair corollary below. No formal Lean or independent mathematical review. |
+| Rust in the cryptanalysis repository | Standalone native checker, with independent finite-algebra unit verification. |
+| An explicit subgroup/log transfer | Not implemented for this route; source torsion coordinates, target and twist character remain open. |
+| Continue the earlier search | The 355 pending hyperelliptic jobs remain pending, with their protocol admission unresolved. |
+
 ## Question and literature boundary
 
 Can a small-torsion test identify binary elliptic curves for which a
@@ -111,6 +119,38 @@ Root count is $\deg\gcd(\psi_3,X^{2^{3d}}-X)$, requiring no elliptic
 point-counting census. For odd $d$ one may also use $3\mid\#E(K)$,
 since $q^3+1=0\pmod3$ and $t=0\pmod3$.
 
+### The odd-degree rule reduces to one trace
+
+When $d$ is odd, set $n=3d$ and $c=b^{(2^{n+1}-1)/3}$, the unique cube
+root of $b$ in $K$. The coefficient test is exactly
+
+$$\operatorname{Tr}_{K/\mathbf F_2}(c)=0.$$
+
+Here is a direct algebraic proof. Cube and fourth-power maps are
+permutations of the relevant cyclic/Frobenius orbits for odd $n$. More
+precisely, $u\mapsto u^4+u$ has kernel $\mathbf F_2$ and image the
+absolute-trace-zero hyperplane. The substitutions
+
+$$c=u^4+u=u(u^3+1),\qquad x=u^3+1$$
+
+give $x^4+x^3=c^3=b$. Conversely, from a root $x$ take
+$u=\sqrt[3]{x+1}$ to recover $c=u^4+u$. Thus the quartic has roots if
+and only if $c$ has trace zero, and then has exactly two. An explicit
+solution of $u^4+u=c$ is the Frobenius-four half-trace
+
+$$u=\sum_{i=0}^{(n-1)/2}c^{2^{4i}}.$$
+
+Indeed $u^4+u=c+\operatorname{Tr}(c)$. Its two solutions $u,u+1$
+give the two division roots $u^3+1,(u+1)^3+1$.
+
+**This trace test is not new on its own.** Its connection to rational
+three-torsion and binary Kloosterman sums overlaps established work; see
+[Moisio, Theorem 7.3 and Remark 7.4](https://arxiv.org/abs/0706.2112),
+which cites Charpin--Helleseth--Zinoviev for the odd-degree case. That
+source was checked before adding this simplification. The candidate under
+priority review is its use with the induced-module and indecomposability
+arguments here, not a claim of inventing the trace condition.
+
 ## From the kernel to a genus-three Jacobian
 
 **Lemma (derived).** Suppose no degree-one or degree-two isogeny over
@@ -159,6 +199,13 @@ Twisting the isogeny therefore selects one of the two source twists.
 Its kernel is killed by three, so a prime subgroup of order different
 from three survives. $\square$
 
+In particular, for every odd $d\ge3$ this gives the succinct sufficient
+criterion: full absolute degree of $b$ and $\operatorname{Tr}(\sqrt[3]b)=0$
+imply a genus-three transfer for one source twist. A parametric version is
+$b=(u^4+u)^3$, retaining only nonzero full-degree $b$. This is a derived
+family description; its status as a previously unrecognized affected family
+has not been established.
+
 This proves an existence criterion for a twist pair. It does **not**
 identify the right source twist, instantiate $C$, evaluate the isogeny,
 or prove that the resulting $C$ is non-hyperelliptic. At $d=1$ the
@@ -178,12 +225,33 @@ polynomial-gcd test, checks full absolute degree and preserves all remaining
 twist, target and explicit-map obligations. It does not change the frozen
 sweeper engine or existing journal fingerprints.
 
+```sh
+cargo run --release --locked \
+  --manifest-path experiments/ghs-sweeper/Cargo.toml \
+  --example three_gluing -- curve --base-degree 3 --a 0 --b 24
+cargo run --release --locked \
+  --manifest-path experiments/ghs-sweeper/Cargo.toml \
+  --example three_gluing -- matrix --q-mod-3 2 --entries 1 0 0 2
+```
+
 The independent unit code checks all 48 invertible two-by-two matrices
 against a direct enumeration of the 1120 Lagrangians for each weighted
 form. Fixed coefficient controls compare polynomial-gcd counts with direct
 raw-field evaluation. See [THREE_GLUING_CHECKS.md](THREE_GLUING_CHECKS.md).
 These are software checks of a fixed algebraic statement, not new
 curve-search campaign data or a completed cryptanalytic experiment.
+
+**Fixed software observations:** all 28 release all-target tests pass,
+including the three new tests. The direct subspace check agrees with the
+criterion on all 48 invertible matrices, using 1120 Lagrangians per weighted
+form. Formatting and all-target Clippy with warnings denied pass. At the
+fixed degree-nine coefficient $b=24$ (modulus 515), both supplied constants
+$a=0,1$ give two rational division roots, and $b$ has absolute degree nine.
+This verifies the recognition condition for that twist pair; it does not
+select a twist or instantiate its target. The raw
+[unit log](three-gluing-checks/all-targets-attempt-1.txt) retains the exact
+software result. No curve-population or cost comparison is made, so no
+quantitative curve-yield or performance graph is inferred from these checks.
 
 The next mathematical/computational obligations are: priority review of
 this exact criterion; binary quotient reconstruction; the characteristic-two
@@ -209,6 +277,9 @@ protocol. This does not block the proof and native checker work above.
 - **Read primary:** Lachaud--Ritzenthaler--Zykin, Theorem 1.1.1, gives
   the any-field arithmetic Torelli alternative.
   [arXiv:0802.4017](https://arxiv.org/abs/0802.4017).
+- **Read primary:** Moisio, section 7, Theorem 7.3 and Remark 7.4,
+  documents the older trace-of-cube-root condition in the binary
+  Kloosterman setting. [arXiv:0706.2112](https://arxiv.org/abs/0706.2112).
 - **Prior local work:** Hess baseline [HESS_SCOPE.md](HESS_SCOPE.md),
   old [prior-art comparison](reference/prototype-prior-art.md), and
   Diem--Scholten's 2003 cover-attack report. These do not establish priority

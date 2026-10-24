@@ -49,3 +49,15 @@ failures as well as passing output under three-gluing-checks/. No empirical
 campaign is authorized by this unit-test contract. The existing 355 pending
 jobs and their admission under the canonical experiment-protocol workflow
 are unchanged.
+
+## Addendum: closed trace test, before its assertions
+
+After the initial 28 tests passed, the odd-degree polynomial test was
+reduced symbolically to Tr(cube_root(b))=0. A literature check identifies
+the trace condition as old (Moisio, Theorem 7.3; earlier
+Charpin--Helleseth--Zinoviev). Add a separate algebraic certificate: compute
+the cube root, the Frobenius-four half-trace and its two division roots;
+verify all identities with raw arithmetic. Use only the existing fixed
+odd-degree controls (d,b)=(3,24),(1,2),(3,1). Check acceptance against the
+already checked polynomial-gcd result. This adds no new curve samples or
+priority claim. Commit the addendum and code before running the new test.

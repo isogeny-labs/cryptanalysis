@@ -288,6 +288,45 @@ fn curve(d: u32, a: u32, b: u32) -> Result<Value> {
     ensure!(absolute_degree != 0, "coefficient orbit did not close");
     let q = if d.is_multiple_of(2) { 1 } else { 2 };
     let accepted = roots == if q == 2 { 2 } else { 4 };
+    let trace_certificate = if q == 2 {
+        let c = f.power(b, ((1_u64 << (n + 1)) - 1) / 3);
+        ensure!(raw.mul(raw.mul(c, c), c) == b, "cube-root identity failed");
+        let tr = f.trace[c as usize];
+        ensure!(
+            accepted == (tr == 0),
+            "trace criterion disagrees with division polynomial"
+        );
+        let division_roots = if tr == 0 {
+            let mut u = 0;
+            let mut z = c;
+            for _ in 0..=n / 2 {
+                u ^= z;
+                for _ in 0..4 {
+                    z = raw.mul(z, z);
+                }
+            }
+            ensure!(
+                raw.mul(raw.mul(u, u), raw.mul(u, u)) ^ u == c,
+                "half-trace identity failed"
+            );
+            let values = [u, u ^ 1].map(|v| raw.mul(raw.mul(v, v), v) ^ 1);
+            ensure!(values[0] != values[1], "division roots coincide");
+            ensure!(
+                values
+                    .iter()
+                    .all(|&v| raw.evaluate(&[b, 0, 0, 1, 1], v) == 0),
+                "division-root identity failed"
+            );
+            Some(values)
+        } else {
+            None
+        };
+        Some(json!({"cube_root_b":c,"absolute_trace_cube_root":tr,
+                    "division_roots":division_roots,"raw_identities_checked":true,
+                    "novel_trace_test":false}))
+    } else {
+        None
+    };
     let geometric = accepted && d >= 2 && absolute_degree == n;
     Ok(json!({
         "kind": "binary-cubic-3-gluing-recognition/v1",
@@ -298,6 +337,7 @@ fn curve(d: u32, a: u32, b: u32) -> Result<Value> {
         "absolute_trace_a":f.trace[a as usize],
         "division_polynomial":"X^4+X^3+b",
         "rational_division_roots":roots,
+        "odd_degree_trace_certificate":trace_certificate,
         "raw_arithmetic_root_check":true,
         "coordinate_transverse_rational_3_kernel_exists":accepted,
         "geometric_indecomposability_sufficient_hypotheses":geometric,
@@ -451,6 +491,26 @@ mod tests {
         assert!(curve(1, 0, 0).is_err());
         assert!(curve(1, 8, 2).is_err());
         assert!(curve(1, 0, 8).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn odd_degree_trace_and_half_trace_certificate() -> Result<()> {
+        for (d, b) in [(3, 24), (1, 2), (3, 1)] {
+            let value = curve(d, 0, b)?;
+            let cert = &value["odd_degree_trace_certificate"];
+            assert_eq!(cert["raw_identities_checked"], true);
+            assert_eq!(
+                cert["absolute_trace_cube_root"] == 0,
+                value["coordinate_transverse_rational_3_kernel_exists"]
+            );
+            if cert["absolute_trace_cube_root"] == 0 {
+                assert_eq!(cert["division_roots"].as_array().unwrap().len(), 2);
+            } else {
+                assert!(cert["division_roots"].is_null());
+            }
+        }
+        assert!(curve(2, 0, 2)?["odd_degree_trace_certificate"].is_null());
         Ok(())
     }
 }
