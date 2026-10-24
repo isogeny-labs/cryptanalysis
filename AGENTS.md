@@ -215,6 +215,18 @@ stable artifact locations. Give each rerun a distinct record; never overwrite
 an earlier attempt or substitute a summary for the native capture.
 
 
+### Data files live in the artifact store
+
+Do not `git add` data files (run outputs, relation tables, raw logs, archives).
+A non-code file over 1 MiB, or a data-suffixed file (`.jsonl`, `.gz`, `.npy`,
+`.bin`, `.csv`, `.log`, `.part-NNNN`, ...) over 64 KiB, goes to S3 with
+`python3 tools/artifacts/artifacts.py push <path>`, which writes a per-directory
+`.artifacts.json` manifest to commit instead. Run `artifacts.py pull <path>`
+before reading data under a path, and never delete remote objects. The
+`artifacts` workflow fails a PR that commits such a file (label `large-file-ok`
+overrides). Details: [docs/artifacts.md](docs/artifacts.md).
+
+
 ## Track research work in pull requests
 
 Put every agent-authored code, protocol, frozen input, run receipt, verifier,
