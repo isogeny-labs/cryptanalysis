@@ -159,6 +159,9 @@ crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
 crax --json aes-attack --technique square
+crax aes --help
+crax aes aes-distinguisher --help
+crax aes aes-dfa --help
 crax --json aes-attack --technique differential --samples 24 \
   --export-pairs-file /tmp/aes-differential.json
 crax --json aes-attack --technique differential \
@@ -181,20 +184,29 @@ crax --json aes-sbox-table --kind bct --row 1
 crax --json aes-sbox-table --kind dlct > aes-dlct.json
 ```
 
+`crax aes` forwards the sibling `crypto cryptanalysis` command family. Its
+[bridge acceptance](CRAX_AES_BRIDGE_ACCEPTANCE_20261024.json) checks that the
+help lists the observed differential and linear, DFA, power, cache, trail,
+and distinguisher commands; DDT, LAT, BCT, and DLCT row reports match the
+producer exactly; a zero-correlation command succeeds; and an unknown
+command exits unsuccessfully.
+
 For `hash --file`, a local path or indexed `store:NAME` and `sha256:DIGEST`
 reference is accepted. The latter uses the sibling `crypto store pull`
 command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
 fetched and digest-checked before `crax` hashes it. Set the sibling store's
 remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
 receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
-All 16 supported digest names process file input incrementally in 64 KiB
-chunks. The [streaming hash acceptance receipt](CRAX_HASH_STREAM_S3_ACCEPTANCE_20261023.json)
+The 16 native digest names process file input incrementally in 64 KiB
+chunks. The additional 14 digest names use the sibling `crypto` file reader,
+which also reads in 64 KiB chunks. The [native streaming hash acceptance receipt](CRAX_HASH_STREAM_S3_ACCEPTANCE_20261023.json)
 records 272 local cross-implementation comparisons and a fresh-cache S3
 push, existence check, download, and hash round trip for every digest.
 
-`hash` accepts a single `--text`, `--hex`, or `--file` input and supports
-SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for
-SHAKE and bounded to 1 MiB. `hash-auto` runs a length-extension demonstration
+`hash` accepts a single `--text`, `--hex`, or `--file` input. `sha-3-*` and
+`shake-*` names are accepted. `--output-bytes` is required for SHAKE and
+cSHAKE, and bounded to 1 MiB. It is optional for BLAKE2 and Skein.
+`hash-auto` runs a length-extension demonstration
 against SHA-256; SHA-3 uses a sponge, so that particular attack is not
 applicable. Its truncated birthday and differential-bias measurements remain
 available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
@@ -239,7 +251,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 | --- | --- | --- |
 | SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs for SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. BLAKE2b/s, cSHAKE128/256, SM3, RIPEMD-160, Streebog-256/512, Whirlpool, Tiger/Tiger2, and Skein-256/512/1024 use the sibling `crypto` executable through `CRAX_CRYPTO_BIN` or `PATH`. The sibling file path streams input in bounded chunks. SHAKE and cSHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 and SHA-512 length extension, bounded truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512, SHAKE128/256, BLAKE3, and the truncated SHA-2 digest variants have generic measurements; SHAKE requires `--output-bytes` in 1..=64. A missing length-extension adapter is reported explicitly. |
-| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
+| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto`, `crax aes <command>` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models. `crax aes` exposes the sibling `crypto cryptanalysis` AES command family, including observed differential and linear analysis, distinguishers, power and cache analyses, DFA, trail checks, and related-key experiments, with the producing executable's parameter and evidence limits. |
 | Standardized-curve ECDLP | `crax ecdlp-nist list/audit/solve/smart/bench` | Delegates to the sibling `ecdlp-nist` executable. External points and checked target artifacts follow its bounded interval and feasibility rules. |
 | Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |

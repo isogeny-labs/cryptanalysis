@@ -42,7 +42,7 @@ Attacks by family:
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
   sibling crypto tools      ecdlp-nist, ic/icx solve-prime|solve-prime-file|solve-cubic|prime-route-generate|cubic-graph|cubic-route-generate, isogeny-walk, store, crypto
-  symmetric & hash          aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
+  symmetric & hash          aes (full crypto AES command family), aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
@@ -314,6 +314,7 @@ pub fn command() -> clap::Command {
                 .about("Index calculus across every standardized curve: catalog, estimate, run"),
         )
         .subcommand(clap::Command::new("crypto").about("Bridge to the sibling crypto CLI"))
+        .subcommand(clap::Command::new("aes").about("AES cryptanalysis command family via sibling crypto CLI"))
         .subcommand(clap::Command::new("ecdlp-nist").about("NIST and Certicom ECDLP audit and bounded solve via crypto"))
         .subcommand(clap::Command::new("store").about("Content-addressed artifact store via crypto"))
         .subcommand(clap::Command::new("isogeny-walk").about("Certified isogeny graph CLI"));
@@ -415,6 +416,18 @@ where
                 requested_json,
                 false,
             )
+        }
+        "aes" => {
+            let mut native_args = vec![OsString::from("cryptanalysis")];
+            native_args.extend_from_slice(&rest[1..]);
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &native_args,
+                requested_json,
+                false,
+            );
         }
         "store" => {
             return run_external(
