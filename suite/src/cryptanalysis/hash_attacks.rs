@@ -270,6 +270,100 @@ fixed_hash_adapter!(Sha512, "SHA-512", 64, 128, crate::hash::sha512);
 fixed_hash_adapter!(Sha512_224, "SHA-512/224", 28, 128, crate::hash::sha512_224);
 fixed_hash_adapter!(Sha512_256, "SHA-512/256", 32, 128, crate::hash::sha512_256);
 fixed_hash_adapter!(Blake3, "BLAKE3", 32, 64, crate::hash::blake3_hash);
+fixed_hash_adapter!(Sm3, "SM3", 32, 64, crate::hash::sm3);
+fixed_hash_adapter!(Ripemd160, "RIPEMD-160", 20, 64, crate::hash::ripemd160);
+fixed_hash_adapter!(
+    Streebog256,
+    "Streebog-256",
+    32,
+    64,
+    crate::hash::streebog_256
+);
+fixed_hash_adapter!(
+    Streebog512,
+    "Streebog-512",
+    64,
+    64,
+    crate::hash::streebog_512
+);
+fixed_hash_adapter!(Whirlpool, "Whirlpool", 64, 64, crate::hash::whirlpool);
+fixed_hash_adapter!(Tiger, "Tiger", 24, 64, crate::hash::tiger);
+fixed_hash_adapter!(Tiger2, "Tiger2", 24, 64, crate::hash::tiger2);
+
+macro_rules! variable_hash_adapter {
+    ($name:ident, $label:literal, $block:expr, $hash:path) => {
+        pub struct $name(pub usize);
+        impl HashFunction for $name {
+            fn name(&self) -> &'static str {
+                $label
+            }
+            fn output_bytes(&self) -> usize {
+                self.0
+            }
+            fn block_bytes(&self) -> usize {
+                $block
+            }
+            fn hash(&self, message: &[u8]) -> Vec<u8> {
+                $hash(message, self.0)
+            }
+        }
+    };
+}
+variable_hash_adapter!(Blake2b, "BLAKE2b", 128, crate::hash::blake2b);
+variable_hash_adapter!(Blake2s, "BLAKE2s", 64, crate::hash::blake2s);
+variable_hash_adapter!(Skein256, "Skein-256", 32, crate::hash::skein256);
+variable_hash_adapter!(Skein512, "Skein-512", 64, crate::hash::skein512);
+variable_hash_adapter!(Skein1024, "Skein-1024", 128, crate::hash::skein1024);
+
+pub struct Cshake128 {
+    pub output_bytes: usize,
+    pub function_name: Vec<u8>,
+    pub customization: Vec<u8>,
+}
+impl HashFunction for Cshake128 {
+    fn name(&self) -> &'static str {
+        "cSHAKE128"
+    }
+    fn output_bytes(&self) -> usize {
+        self.output_bytes
+    }
+    fn block_bytes(&self) -> usize {
+        168
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::cshake128(
+            message,
+            &self.function_name,
+            &self.customization,
+            self.output_bytes,
+        )
+    }
+}
+
+pub struct Cshake256 {
+    pub output_bytes: usize,
+    pub function_name: Vec<u8>,
+    pub customization: Vec<u8>,
+}
+impl HashFunction for Cshake256 {
+    fn name(&self) -> &'static str {
+        "cSHAKE256"
+    }
+    fn output_bytes(&self) -> usize {
+        self.output_bytes
+    }
+    fn block_bytes(&self) -> usize {
+        136
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::cshake256(
+            message,
+            &self.function_name,
+            &self.customization,
+            self.output_bytes,
+        )
+    }
+}
 
 impl MerkleDamgardHash for Sha512 {
     fn compress(&self, state: &mut [u8], block: &[u8]) {
@@ -542,36 +636,86 @@ pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
     auto_hash_attack_with_output_bytes(hash_name, None)
 }
 
-/// SHAKE requires an explicit output length so generic measurements stay bounded.
+/// Configurable digests require a bounded output length for generic analysis.
 pub fn auto_hash_attack_with_output_bytes(
     hash_name: &str,
     output_bytes: Option<usize>,
 ) -> Result<String, String> {
-    let is_xof = matches!(
-        hash_name,
-        "shake128" | "shake-128" | "shake256" | "shake-256"
-    );
-    let xof_len = if is_xof {
-        match output_bytes {
+    auto_hash_attack_with_options(hash_name, output_bytes, &[], &[])
+}
+
+pub fn auto_hash_attack_with_options(
+    hash_name: &str,
+    output_bytes: Option<usize>,
+    function_name: &[u8],
+    customization: &[u8],
+) -> Result<String, String> {
+    let normalized = hash_name.to_ascii_lowercase().replace('_', "-");
+    let hash_name = normalized.as_str();
+    let cshake = matches!(hash_name, "cshake128" | "cshake256");
+    if !cshake && (!function_name.is_empty() || !customization.is_empty()) {
+        return Err("function name and customization apply only to cSHAKE".into());
+    }
+    let configured_len = match hash_name {
+        "shake128" | "shake-128" | "shake256" | "shake-256" | "cshake128" | "cshake256"
+        | "skein256" | "skein512" | "skein1024" => match output_bytes {
             Some(length @ 1..=64) => length,
-            _ => return Err("SHAKE hash-auto requires --output-bytes in 1..=64".into()),
+            _ => {
+                return Err(
+                    "SHAKE, cSHAKE, and Skein hash-auto require --output-bytes in 1..=64".into(),
+                )
+            }
+        },
+        "blake2b" => match output_bytes {
+            None => 64,
+            Some(length @ 1..=64) => length,
+            _ => return Err("BLAKE2b hash-auto --output-bytes must be in 1..=64".into()),
+        },
+        "blake2s" => match output_bytes {
+            None => 32,
+            Some(length @ 1..=32) => length,
+            _ => return Err("BLAKE2s hash-auto --output-bytes must be in 1..=32".into()),
+        },
+        _ => {
+            if output_bytes.is_some() {
+                return Err(
+                    "--output-bytes applies only to SHAKE, cSHAKE, BLAKE2, and Skein".into(),
+                );
+            }
+            0
         }
-    } else {
-        if output_bytes.is_some() {
-            return Err("--output-bytes applies only to SHAKE128 and SHAKE256".into());
-        }
-        0
     };
+    let variable = matches!(
+        hash_name,
+        "shake128"
+            | "shake-128"
+            | "shake256"
+            | "shake-256"
+            | "cshake128"
+            | "cshake256"
+            | "blake2b"
+            | "blake2s"
+            | "skein256"
+            | "skein512"
+            | "skein1024"
+    );
     let mut md = String::new();
     md.push_str(&format!(
         "# Auto-hash-cryptanalysis: `{}`{}\n\n",
         hash_name,
-        if is_xof {
-            format!(" ({} output bytes)", xof_len)
+        if variable {
+            format!(" ({} output bytes)", configured_len)
         } else {
             String::new()
         }
     ));
+    if cshake {
+        md.push_str(&format!(
+            "- cSHAKE function name (hex): `{}`\n- customization (hex): `{}`\n\n",
+            hex(function_name),
+            hex(customization)
+        ));
+    }
 
     // ── Length-extension (MD-Damgård only) ────────────────────────
     let lex_result: String;
@@ -613,11 +757,33 @@ pub fn auto_hash_attack_with_output_bytes(
         "sha3" | "sha-3" | "sha3-256" | "sha-3-256" => md.push_str(&run_sponge(&Sha3_256)),
         "sha3-384" | "sha-3-384" => md.push_str(&run_sponge(&Sha3_384)),
         "sha3-512" | "sha-3-512" => md.push_str(&run_sponge(&Sha3_512)),
-        "shake128" | "shake-128" => md.push_str(&run_sponge(&Shake128(xof_len))),
-        "shake256" | "shake-256" => md.push_str(&run_sponge(&Shake256(xof_len))),
+        "shake128" | "shake-128" => md.push_str(&run_sponge(&Shake128(configured_len))),
+        "shake256" | "shake-256" => md.push_str(&run_sponge(&Shake256(configured_len))),
+        "cshake128" => md.push_str(&run_sponge(&Cshake128 {
+            output_bytes: configured_len,
+            function_name: function_name.to_vec(),
+            customization: customization.to_vec(),
+        })),
+        "cshake256" => md.push_str(&run_sponge(&Cshake256 {
+            output_bytes: configured_len,
+            function_name: function_name.to_vec(),
+            customization: customization.to_vec(),
+        })),
+        "blake2b" => md.push_str(&run_fixed_without_extension(&Blake2b(configured_len))),
+        "blake2s" => md.push_str(&run_fixed_without_extension(&Blake2s(configured_len))),
+        "skein256" => md.push_str(&run_fixed_without_extension(&Skein256(configured_len))),
+        "skein512" => md.push_str(&run_fixed_without_extension(&Skein512(configured_len))),
+        "skein1024" => md.push_str(&run_fixed_without_extension(&Skein1024(configured_len))),
+        "sm3" => md.push_str(&run_fixed_without_extension(&Sm3)),
+        "ripemd160" => md.push_str(&run_fixed_without_extension(&Ripemd160)),
+        "streebog-256" => md.push_str(&run_fixed_without_extension(&Streebog256)),
+        "streebog-512" => md.push_str(&run_fixed_without_extension(&Streebog512)),
+        "whirlpool" => md.push_str(&run_fixed_without_extension(&Whirlpool)),
+        "tiger" => md.push_str(&run_fixed_without_extension(&Tiger)),
+        "tiger2" => md.push_str(&run_fixed_without_extension(&Tiger2)),
         _ => {
             return Err(format!(
-                "unknown hash '{}'; try one of: md4, md5, sha1, sha224, sha256, sha384, sha512, sha512-224, sha512-256, sha3-224, sha3-256, sha3-384, sha3-512, shake128, shake256, blake3",
+                "unknown hash '{}'; use a name accepted by crax hash (except keyed modes)",
                 hash_name
             ));
         }
@@ -630,7 +796,11 @@ fn run_fixed_without_extension<H: HashFunction>(hash: &H) -> String {
         "## Length extension\n\n{} has no length-extension adapter in this command. This does not establish resistance to length extension.\n\n",
         hash.name()
     );
-    report.push_str(&run_birthday(hash, 32, 200_000));
+    report.push_str(&run_birthday(
+        hash,
+        (hash.output_bytes() * 8).min(32) as u32,
+        200_000,
+    ));
     report.push_str(&run_differential(hash));
     report
 }
@@ -915,5 +1085,41 @@ mod tests {
         let report = auto_hash_attack_with_output_bytes("shake-256", Some(1)).unwrap();
         assert!(report.contains("truncate to 8 bits"));
         assert!(report.contains("Differential bias"));
+    }
+
+    #[test]
+    fn expanded_adapters_match_hash_implementations() {
+        let message = b"abc";
+        assert_eq!(Sm3.hash(message), crate::hash::sm3(message));
+        assert_eq!(
+            Streebog256.hash(message),
+            crate::hash::streebog_256(message)
+        );
+        assert_eq!(Blake2s(13).hash(message), crate::hash::blake2s(message, 13));
+        assert_eq!(
+            Skein256(13).hash(message),
+            crate::hash::skein256(message, 13)
+        );
+        let cshake = Cshake256 {
+            output_bytes: 13,
+            function_name: b"F".to_vec(),
+            customization: b"C".to_vec(),
+        };
+        assert_eq!(
+            cshake.hash(message),
+            crate::hash::cshake256(message, b"F", b"C", 13)
+        );
+    }
+
+    #[test]
+    fn expanded_auto_enforces_output_and_customization_contract() {
+        assert!(auto_hash_attack_with_options("blake2s", Some(33), &[], &[]).is_err());
+        assert!(auto_hash_attack_with_options("skein256", None, &[], &[]).is_err());
+        assert!(auto_hash_attack_with_options("sha256", None, b"F", &[]).is_err());
+        let blake = auto_hash_attack_with_options("blake2s", Some(1), &[], &[]).unwrap();
+        assert!(blake.contains("truncate to 8 bits"));
+        let cshake = auto_hash_attack_with_options("cshake256", Some(1), b"F", b"C").unwrap();
+        assert!(cshake.contains("function name (hex): `46`"));
+        assert!(cshake.contains("customization (hex): `43`"));
     }
 }
