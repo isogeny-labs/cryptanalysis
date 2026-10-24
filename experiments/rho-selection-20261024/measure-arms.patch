@@ -1,0 +1,218 @@
+--- a/src/rho.c
++++ b/src/rho.c
+@@ -35,6 +35,24 @@
+ #define RHO_WINDOW 64
+ #define RHO_MAX_WALKS 4096
+ 
++#ifdef CA_RHO_MEASURE_ARMS
++/* Measurement-only arms, read from the environment once per solve:
++ *   CA_RHO_TABLE_DIV   divisor of the table-size budget sqrt(n) / (div * lg)   (default 48)
++ *   CA_RHO_R_SQRT      k * 100: table size r = the power of two nearest to
++ *                      k * sqrt(sqrt(n) / lg), within [8, 1024]; 0 keeps the budget rule   (default 0)
++ *   CA_RHO_DP_DIV      DPs per walk targeted by the dp_bits rule               (default 32)
++ *   CA_RHO_FAST_CYCLE  1: escape as soon as a walk repeats a point 2 or 4 steps back
++ *   CA_RHO_FIXED_BASE  1: table, starts and restarts use tables of 2^b * base and 2^b * target
++ * With the defaults the walk and its operation count equal the unflagged build exactly. */
++#    include <math.h>
++#    include <stdlib.h>
++static uint32_t rho_arm_env(const char *name, uint32_t def)
++{
++    const char *v = getenv(name);
++    return v && *v ? (uint32_t)strtoul(v, NULL, 10) : def;
++}
++#endif
++
+ typedef struct rho_shared {
+     const ca_group *g;
+     ca_elem base, target;
+@@ -52,6 +70,11 @@
+     uint64_t max_ops, max_table;
+     uint64_t setup_ops;
+     uint64_t setup_prior;
++#ifdef CA_RHO_MEASURE_ARMS
++    uint32_t arm_tdiv, arm_dpdiv, arm_fast, arm_fb;
++    int fb_bits;
++    ca_elem *fb_base, *fb_target; /* 2^b * base, 2^b * target */
++#endif
+     double elapsed_prior;
+     const char *checkpoint_path;
+ 
+@@ -74,6 +97,11 @@
+     uint64_t since_dp;
+     ca_elem saved;
+     uint32_t win;
++#ifdef CA_RHO_MEASURE_ARMS
++    ca_elem hist[4]; /* last committed points, newest first */
++    uint64_t hh[4];
++    uint32_t hn;
++#endif
+ } rho_walk;
+ 
+ typedef struct rho_thread {
+@@ -336,14 +364,41 @@
+     *a = ca_addmod(*a, d, n);
+ }
+ 
++#ifdef CA_RHO_MEASURE_ARMS
++/* k * base as the sum of the stored 2^b * base over the set bits of k; each
++ * set bit is charged one operation, as ca_group_mul charges it. */
++static void rho_fb_mul(const rho_shared *sh, ca_elem *r, const ca_elem *pow, uint64_t k, uint64_t *ops)
++{
++    ca_elem acc;
++    ca_group_identity(sh->g, &acc);
++    for (int b = 0; k >> b; b++)
++        if ((k >> b) & 1) {
++            ca_group_op(sh->g, &acc, &acc, &pow[b]);
++            (*ops)++;
++        }
++    *r = acc;
++}
++#endif
++
++static void rho_start_mul(const rho_shared *sh, ca_elem *r, int use_target, uint64_t k, uint64_t *ops)
++{
++#ifdef CA_RHO_MEASURE_ARMS
++    if (sh->arm_fb) {
++        rho_fb_mul(sh, r, use_target ? sh->fb_target : sh->fb_base, k, ops);
++        return;
++    }
++#endif
++    ca_group_mul(sh->g, r, use_target ? &sh->target : &sh->base, k, ops);
++}
++
+ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
+ {
+     const ca_group *g = sh->g;
+     w->a = ca_rng_below(rng, sh->n);
+     w->b = ca_rng_below(rng, sh->n);
+     ca_elem t1, t2;
+-    ca_group_mul(g, &t1, &sh->base, w->a, ops);
+-    ca_group_mul(g, &t2, &sh->target, w->b, ops);
++    rho_start_mul(sh, &t1, 0, w->a, ops);
++    rho_start_mul(sh, &t2, 1, w->b, ops);
+     ca_group_op(g, &w->Y, &t1, &t2);
+     (*ops)++;
+     if (sh->negmap && ca_group_canonicalize(g, &w->Y)) {
+@@ -354,6 +409,9 @@
+     w->retry = 0;
+     w->since_dp = 0;
+     w->win = 0;
++#ifdef CA_RHO_MEASURE_ARMS
++    w->hn = 0;
++#endif
+ }
+ 
+ /* Apply the exponent update for a step with multiplier i and sign flag. */
+@@ -425,6 +483,9 @@
+     w->h = ca_group_hash(g, &w->Y);
+     w->retry = 0;
+     w->win = 0;
++#ifdef CA_RHO_MEASURE_ARMS
++    w->hn = 0;
++#endif
+ }
+ 
+ /* Try to solve from a collision between stored (a1,b1) and new (a2,b2) at
+@@ -511,7 +572,25 @@
+             walk_apply(sh, wk, wk->idx, neg);
+             wk->since_dp++;
+ 
++#ifdef CA_RHO_MEASURE_ARMS
++            int fast_escaped = 0;
++            if (sh->negmap && sh->arm_fast) {
++                if ((wk->hn >= 2 && h == wk->hh[1] && ca_group_equal(g, &wk->Y, &wk->hist[1])) ||
++                    (wk->hn >= 4 && h == wk->hh[3] && ca_group_equal(g, &wk->Y, &wk->hist[3]))) {
++                    walk_escape_cycle(sh, wk, &ops);
++                    h = wk->h;
++                    fast_escaped = 1;
++                } else {
++                    for (int k = 3; k > 0; k--) { wk->hist[k] = wk->hist[k - 1]; wk->hh[k] = wk->hh[k - 1]; }
++                    wk->hist[0] = wk->Y;
++                    wk->hh[0] = h;
++                    if (wk->hn < 4) wk->hn++;
++                }
++            }
++            if (sh->negmap && !fast_escaped) {
++#else
+             if (sh->negmap) {
++#endif
+                 if (wk->win == 0) {
+                     wk->saved = wk->Y;
+                     wk->win = RHO_WINDOW;
+@@ -647,9 +726,20 @@
+          * the whole table under sqrt(n)/16 operations so that the setup
+          * never dominates, within [8, 1024] (negation map) or [8, 32]. */
+         int lg = ilog2_u64(n) + 1;
++#ifdef CA_RHO_MEASURE_ARMS
++        uint64_t budget = sqrt_n / ((uint64_t)rho_arm_env("CA_RHO_TABLE_DIV", 48) * (uint64_t)lg);
++#else
+         uint64_t budget = sqrt_n / (48u * (uint64_t)lg);
++#endif
+         uint32_t r = 8;
+         uint32_t cap = sh.negmap ? 1024u : 32u;
++#ifdef CA_RHO_MEASURE_ARMS
++        uint32_t ksqrt = rho_arm_env("CA_RHO_R_SQRT", 0);
++        if (ksqrt) {
++            double rx = ksqrt / 100.0 * sqrt((double)sqrt_n / (double)lg);
++            while ((double)r * 1.41421356 <= rx && r * 2 <= cap) r *= 2;
++        } else
++#endif
+         while ((uint64_t)r * 2 <= budget && r * 2 <= cap) r *= 2;
+         sh.r = r;
+     }
+@@ -680,7 +770,11 @@
+     if (dp < 0) {
+         double expected = 1.25 * (double)sqrt_n / (sh.negmap ? 1.4142 : 1.0);
+         double total_walks = (double)threads * W;
++#ifdef CA_RHO_MEASURE_ARMS
++        double per_walk = expected / ((double)rho_arm_env("CA_RHO_DP_DIV", 32) * total_walks);
++#else
+         double per_walk = expected / (32.0 * total_walks);
++#endif
+         dp = per_walk >= 2.0 ? ilog2_u64((uint64_t)per_walk) : 0;
+         /* keep the DP table under ~2^24 entries */
+         int min_dp = ilog2_u64((uint64_t)expected) - 24;
+@@ -707,12 +801,31 @@
+     ca_rng rng;
+     ca_rng_seed(&rng, sh.seed);
+     uint64_t setup_ops = 0;
++#ifdef CA_RHO_MEASURE_ARMS
++    sh.arm_tdiv = rho_arm_env("CA_RHO_TABLE_DIV", 48);
++    sh.arm_dpdiv = rho_arm_env("CA_RHO_DP_DIV", 32);
++    sh.arm_fast = rho_arm_env("CA_RHO_FAST_CYCLE", 0);
++    sh.arm_fb = rho_arm_env("CA_RHO_FIXED_BASE", 0);
++    if (sh.arm_fb) {
++        sh.fb_bits = ilog2_u64(n) + 1;
++        sh.fb_base = calloc(2 * (size_t)sh.fb_bits, sizeof(ca_elem));
++        if (!sh.fb_base) { free(sh.M); free(sh.alpha); free(sh.beta); return CA_ERR_NOMEM; }
++        sh.fb_target = sh.fb_base + sh.fb_bits;
++        sh.fb_base[0] = *base;
++        sh.fb_target[0] = *target;
++        for (int b = 1; b < sh.fb_bits; b++) { /* the precomputation is charged to setup */
++            ca_group_dbl(g, &sh.fb_base[b], &sh.fb_base[b - 1]);
++            ca_group_dbl(g, &sh.fb_target[b], &sh.fb_target[b - 1]);
++            setup_ops += 2;
++        }
++    }
++#endif
+     for (uint32_t i = 0; i < sh.r; i++) {
+         sh.alpha[i] = ca_rng_below(&rng, n);
+         sh.beta[i] = ca_rng_below(&rng, n);
+         ca_elem t1, t2;
+-        ca_group_mul(g, &t1, base, sh.alpha[i], &setup_ops);
+-        ca_group_mul(g, &t2, target, sh.beta[i], &setup_ops);
++        rho_start_mul(&sh, &t1, 0, sh.alpha[i], &setup_ops);
++        rho_start_mul(&sh, &t2, 1, sh.beta[i], &setup_ops);
+         ca_group_op(g, &sh.M[i], &t1, &t2);
+         setup_ops++;
+     }
+@@ -827,6 +940,9 @@
+     free(created);
+     ca_htab_free(&sh.tab);
+     free(sh.M); free(sh.alpha); free(sh.beta);
++#ifdef CA_RHO_MEASURE_ARMS
++    free(sh.fb_base);
++#endif
+     pthread_mutex_destroy(&sh.lock);
+     return rc;
+ }
