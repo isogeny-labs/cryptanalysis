@@ -1,0 +1,32 @@
+{
+  "abstract_commutator": {
+    "conclusion": "sum_i (T3 q_i + q_i) = sum_j (T2 w_j + 2 w_j) + (T2 x + 2 x) - 2(T3 x + x)",
+    "hypotheses": "AddCommGroup A; additive maps T2,T3 commute on every x; T2 x is exactly the sum of three q_i; T3 x is exactly the sum of four w_i",
+    "lean_declaration": "ThreeDescendants.three_downward_commutator",
+    "missing_bridge": "Lean definitions of the finite-field X0(11) point module, Hecke incidence, and commuting operators for the saved rows",
+    "source_sha256": "0ae54a79494a7952d69f8626ef44dab7892381d02da75f5fe4510d96ddb6699e",
+    "status": "kernel_checked"
+  },
+  "build_sha256": "e1fc7a1bcd958972ddc2e6fc3ee208c1829047ef75c63af91d46cac5cc720477",
+  "candidate_id": null,
+  "cycle_kernel": {
+    "conclusion": "x is identically zero; the projected I+P+P^-1 block on each 5-cycle has trivial kernel",
+    "hypotheses": "rational sequence x with x(i)+x(i+1)+x(i+2)=0, period n, and n mod 3 nonzero; here n=5",
+    "lean_declaration": "GeneralCycleKernel.nonmultiple_trivial",
+    "missing_bridge": "Lean identification of the saved six 5-cycles and projected row block with this recurrence",
+    "source_sha256": "21632bbac143849773575389d68a49a8f60131554d81a1e2a0ccbaf876dc55ee",
+    "status": "kernel_checked"
+  },
+  "empirical_result": {
+    "evidence_sha256": {
+      "certificates": "3de1f4e9debf7b4bf430779337c56c817935c6e44daf0ce787057119def729a8",
+      "full_matrix": "8ef0c2c318bc28337d3740561646cb005fddf769dd56fe7bb28d7f060fbda6ad",
+      "order_audit": "c4dda2fdbb923e05b9008f4014a2e2605600632dd804d4fc68bff4a9c32e1966",
+      "validation": "5830c27cb698f693d3613c0d69f140f754c6a9e91b5eadc198c5425c00ed6658"
+    },
+    "formal_status": "finite-field modular-curve incidence and exact rank are checked computationally, not formalized in Lean",
+    "statement": "For selected D=-227, p=12043, 70 verified X0(11) rows have full and nonfloor rank 60; all 30 conductor-2 rows are independent after nonfloor projection; ten local commutator relations hold."
+  },
+  "status": "PARTIAL_FORMAL_BRIDGE_WITH_CHECKED_ABSTRACT_THEOREMS",
+  "timing_claim": null
+}

@@ -1,0 +1,12 @@
+{
+  "status": "FROZEN_BEFORE_NON3_CYCLE_SELECTION",
+  "question": "Can an inert-2 ring class with split 3 have conductor-2 horizontal cycle order prime to 3, so that the projected conductor-2 three-term block is nonsingular?",
+  "selection": "First squarefree d in [35,10000] with d = 11 mod 24, 4 <= h(-d) <= 20, h(-4d)=3h(-d), h(-9d)=2h(-d), h(-36d)=6h(-d), -36d a nonzero square modulo 11, and order of the reduced binary quadratic form of norm 3 at discriminant -4d not divisible by 3; then choose the least v >= 1 with p=v^2+9d prime in [10000,250000] and p not 2,3,5,11",
+  "order_rule": "Compute the least positive divisor k of h(-4d) for which qfbpow(qfbprimeform(-4d,3),k) equals its identity form",
+  "field_prime_rule": "least v for each d before advancing d",
+  "primary_prediction": "The conductor-2 degree-3 projected block has full row rank because each horizontal cycle length is not divisible by 3",
+  "competing_prediction": "The projected conductor-2 block retains a nonzero three-term cycle kernel",
+  "secondary_prediction": "Three distinct conductor-2 descendants per conductor-1 point still yield exact commutator dependencies in the full relation matrix",
+  "candidate_id": null,
+  "timing_claim": null
+}
