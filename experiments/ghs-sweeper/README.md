@@ -4,6 +4,19 @@ Native Rust CLI and library in `aburan28/cryptanalysis`. This is an engineering
 port of the earlier prototype, with fixed census fixtures and no runtime Python,
 Sage, CUDA or native cryptanalysis-bindings dependency. SQLite is bundled.
 
+The separate [cubic 3-gluing criterion](THREE_GLUING.md)
+([proof PDF](THREE_GLUING.pdf)) explores a route through the Weil restriction's
+three-torsion. Its native Rust `three_gluing` example checks a mod-three
+Frobenius matrix or one binary source coefficient. Under the stated full-degree
+hypotheses, the proof gives genus-three Jacobian existence for one source
+twist. Target reconstruction, twist selection, explicit transfer and publication
+novelty remain open; it creates no weak-curve catalogue entry.
+
+```sh
+cargo run --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml \
+  --example three_gluing -- curve --base-degree 3 --a 0 --b 24
+```
+
 ```sh
 # From the repository root:
 cargo build --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml

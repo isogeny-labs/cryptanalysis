@@ -12,11 +12,11 @@ completed attack. Beating Pollard rho is not an acceptance condition.
 
 | Requested deliverable | Current evidence |
 |:--|:--|
-| A genuinely new affected family or recognition criterion | Candidate criterion derived below; publication novelty remains unresolved. |
-| A short proof | Module proposition, indecomposability lemma and twist-pair corollary below. No formal Lean or independent mathematical review. |
+| A new affected family or recognition criterion | Candidate derived; publication novelty unresolved. |
+| A short proof | Three derived statements below; no Lean or independent mathematical review. |
 | Rust in the cryptanalysis repository | Standalone native checker, with independent finite-algebra unit verification. |
-| An explicit subgroup/log transfer | Not implemented for this route; source torsion coordinates, target and twist character remain open. |
-| Continue the earlier search | The 355 pending hyperelliptic jobs remain pending, with their protocol admission unresolved. |
+| An explicit subgroup/log transfer | Not implemented; target, torsion coordinates and twist character open. |
+| Continue the earlier search | 355 hyperelliptic jobs still pending; protocol admission unresolved. |
 
 ## Question and literature boundary
 
@@ -52,6 +52,8 @@ Thus $F^*\Omega=q\Omega$. Call a three-dimensional subspace $L$
 **coordinate-transverse** if $L\cap V_i=0$ for each $i$. This is the
 necessary coordinate condition in Tian's construction, not by itself a
 general theorem that a quotient is a Jacobian.
+Here a rational subgroup means a subgroup scheme defined over $k$; its
+generators may have coordinates in an extension.
 
 **Proposition (derived).** An $F$-stable, coordinate-transverse Lagrangian
 $L\subset A[3]$ exists if and only if either
@@ -126,9 +128,8 @@ root of $b$ in $K$. The coefficient test is exactly
 
 $$\operatorname{Tr}_{K/\mathbf F_2}(c)=0.$$
 
-Here is a direct algebraic proof. Cube and fourth-power maps are
-permutations of the relevant cyclic/Frobenius orbits for odd $n$. More
-precisely, $u\mapsto u^4+u$ has kernel $\mathbf F_2$ and image the
+Here is a direct algebraic proof. Cubing is bijective for odd $n$.
+The map $u\mapsto u^4+u$ has kernel $\mathbf F_2$ and image the
 absolute-trace-zero hyperplane. The substitutions
 
 $$c=u^4+u=u(u^3+1),\qquad x=u^3+1$$
@@ -241,16 +242,18 @@ raw-field evaluation. See [THREE_GLUING_CHECKS.md](THREE_GLUING_CHECKS.md).
 These are software checks of a fixed algebraic statement, not new
 curve-search campaign data or a completed cryptanalytic experiment.
 
-**Fixed software observations:** all 28 release all-target tests pass,
-including the three new tests. The direct subspace check agrees with the
+**Fixed software observations:** all 29 release all-target tests pass,
+including the four new tests. The direct subspace check agrees with the
 criterion on all 48 invertible matrices, using 1120 Lagrangians per weighted
 form. Formatting and all-target Clippy with warnings denied pass. At the
 fixed degree-nine coefficient $b=24$ (modulus 515), both supplied constants
 $a=0,1$ give two rational division roots, and $b$ has absolute degree nine.
 This verifies the recognition condition for that twist pair; it does not
 select a twist or instantiate its target. The raw
-[unit log](three-gluing-checks/all-targets-attempt-1.txt) retains the exact
-software result. No curve-population or cost comparison is made, so no
+[unit log](three-gluing-checks/all-targets-attempt-2.txt) retains the final
+software result; the earlier 28-test output is retained too. The closed trace
+test and its two explicit division roots agree with the polynomial-gcd
+result on the fixed odd-degree controls. No curve-population or cost comparison is made, so no
 quantitative curve-yield or performance graph is inferred from these checks.
 
 The next mathematical/computational obligations are: priority review of
@@ -260,11 +263,10 @@ isogeny evaluation and planted-log replay. Only then can an exact curve and
 subgroup enter the weak-curve catalogue. No cost comparison is required to
 identify an affected family, but no measured cost is asserted here.
 
-The larger hyperelliptic campaign remains separate. At inspected
-`crypto-autoresearcher origin/main` commit
-`4ea4e6a22ab30e4da6f4b7515e4fe2dfbdfa8a58`, its required canonical
-protocol tool is still absent. No campaign was run under a substitute
-protocol. This does not block the proof and native checker work above.
+The larger campaign's 355 jobs remain pending: the required protocol tool
+is absent from inspected `crypto-autoresearcher origin/main` at
+`4ea4e6a22ab30e4da6f4b7515e4fe2dfbdfa8a58`. No substitute protocol was
+used. This leaves the proof and software work above available.
 
 ## Evidence, source gaps and graph audit
 
@@ -295,9 +297,7 @@ and subgroup IDs, candidate IDs and run IDs for attacks are null: no
 instantiated transfer is supplied. Measured construction, transfer, solve
 and rho costs are null.
 
-Graph sources checked: the hyperelliptic infrastructure source-parity
-table; the GHS audit and branch-orbit/prior-art reports; the canonical
-curve registry and isogeny-route index where available in the repository
-tree. No new instantiated curve or verified edge follows from a symbolic
-twist-pair existence result, so those graphs remain unchanged. The new
-diagram is explicitly a theorem/obligation flow, not an isogeny graph.
+Graph audit: checked the infrastructure source-parity table, GHS and
+branch-orbit reports, curve registry and route index. No concrete curve or
+verified route was added; existing graphs remain current. The new diagram
+records theorem implications and remaining obligations.
