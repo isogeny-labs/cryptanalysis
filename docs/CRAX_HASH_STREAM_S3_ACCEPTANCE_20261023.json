@@ -1,0 +1,90 @@
+{
+  "schema": "cryptanalysis.crax-hash-stream-s3-acceptance/v1",
+  "checked_at_utc": "2026-10-24T04:19:07.136024+00:00",
+  "source_base_commit": "bcd1014c9c26a4aa01dd507681013378f0bf44e0",
+  "source_state": "committed streaming hash implementation",
+  "binary_sha256": {
+    "crax": "98268a16516b3e5a987149dfd951bf7321507b989e4c071a4bf722864f13bae0",
+    "crypto_store_bridge": "b9cc06b8da10d090bea8d93e3b094c56817fb47d4f42a954ff218456561d4114"
+  },
+  "bucket": "setec-astronomy-artifacts",
+  "region": "us-east-2",
+  "aws_profile": "ecc-challenges-new",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/20261024T041859Z-65f50448",
+  "logical_name": "evidence/crax-hash-stream/20261024T041859Z-65f50448/input.bin",
+  "object": {
+    "key": "ic/v1/acceptance/20261024T041859Z-65f50448/sha256/58/588f63505ca941a4325eb1b365238720537c676bad4c8c8223b70dfb58dcb5a9",
+    "sha256": "588f63505ca941a4325eb1b365238720537c676bad4c8c8223b70dfb58dcb5a9",
+    "bytes": 1048577
+  },
+  "checks": {
+    "local_comparisons": 272,
+    "local_algorithms": [
+      "md4",
+      "md5",
+      "sha1",
+      "sha224",
+      "sha256",
+      "sha384",
+      "sha512",
+      "sha512-224",
+      "sha512-256",
+      "sha3-224",
+      "sha3-256",
+      "sha3-384",
+      "sha3-512",
+      "shake128",
+      "shake256",
+      "blake3"
+    ],
+    "local_size_cases": [
+      0,
+      1,
+      55,
+      56,
+      63,
+      64,
+      65,
+      111,
+      112,
+      127,
+      128,
+      129,
+      65535,
+      65536,
+      65537,
+      1048577,
+      8388745
+    ],
+    "remote_download_status": "bytes_ok",
+    "fresh_cache_hash_matches": [
+      "md4",
+      "md5",
+      "sha1",
+      "sha224",
+      "sha256",
+      "sha384",
+      "sha512",
+      "sha512-224",
+      "sha512-256",
+      "sha3-224",
+      "sha3-256",
+      "sha3-384",
+      "sha3-512",
+      "shake128",
+      "shake256",
+      "blake3"
+    ],
+    "digest_reference_sha3_256_match": true,
+    "fresh_cache_pull_sha256_match": true,
+    "exact_objects_deleted": 1,
+    "prefix_empty_after_cleanup": true,
+    "cleanup_errors": []
+  },
+  "limits": {
+    "file_hash_streaming": "all 16 digest names currently accepted by crax hash",
+    "external_reference": "Python hashlib for 14 names; sibling crypto CLI for MD4 and BLAKE3",
+    "store_refs_require_sibling_crypto_binary": true
+  },
+  "source_commit": "98b699fbe"
+}
