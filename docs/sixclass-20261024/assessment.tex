@@ -19,19 +19,32 @@ oriented GLV rho took 0.016382582 s; six-class DP rho took 0.020590401 s,
 1.257 times as long. The candidate visited 46,882 classes, emitted 2,922 DPs,
 and took 196 short-cycle escapes. These are total times, with no uncertainty
 estimate from this single run.
+The figure below shows that original run only.
 \begin{center}\includegraphics[width=.95\linewidth]{timing.pdf}\end{center}
+A second local run retained default/six-class/default times per planted target.
+Across 20 targets, the default arms took 0.012935407 s and 0.012907277 s;
+six-class took 0.023595841 s, 1.826 times the default-arm mean. All answers
+and repeated-baseline group-operation counts matched. Each run lasted only
+milliseconds, so this A/A control is a diagnostic, not a confidence interval
+or production throughput estimate. The raw per-target rows are in
+\texttt{paired-glv-j0-26-aba.json}.
 \section*{Interpretation and limits}
 This is a negative toy-curve result. It is not a secp256k1 cost measurement.
 Commit 1f084c1 changes $\kappa$ from 1.05 to 1.02 and the inversion batch to
 $2^{16}$ while leaving the algorithm unchanged. Its 126.96-bit cost and
 $\geq0.3909$ success remain conditional on the stated H1 mixing and cost model.
-The C solver is opt-in. A Rust BigUint worker, harness launcher and native Cairn
-DP checker provide an end-to-end research path. The C and Rust job derivations
-are different, so their receipts cannot be pooled. DP point equations do not
-prove walker provenance; sampled re-walks are still required.
+The C solver is opt-in. A Rust BigUint worker, isolated native challenge custody,
+a five-clause H1 matrix, a paired native comparison and one frozen follow-up
+protocol now provide a research path. Cairn's native checker accepts public
+secp256k1 distinguished points, but DP point equations do not prove walker
+provenance; sampled re-walks are still required. The C and Rust job derivations
+are different, so their receipts cannot be pooled. The H1 clauses, full-work
+cost and independent follow-up review remain open.
 \section*{Evidence and next checks}
 The source record is \texttt{assessment.md}; raw receipt is
-\texttt{paired-glv-j0-26.json}. Repeat paired A/A and A/B tests over the curve
-ladder, audit sampled trails, then assess a fixed-limb implementation. No
+\texttt{paired-glv-j0-26.json}, with A/B/A rows in
+\texttt{paired-glv-j0-26-aba.json}. Repeat controlled tests over the curve
+ladder, audit sampled trails, and build a field-operation and memory meter
+before assessing a fixed-limb implementation. No
 isogeny-route or volcano graph update follows from this walk.
 \end{document}
