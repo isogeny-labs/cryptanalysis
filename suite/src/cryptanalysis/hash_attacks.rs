@@ -830,8 +830,8 @@ fn run_length_extension<H: MerkleDamgardHash>(hash: &H) -> String {
 
 fn run_birthday<H: HashFunction>(hash: &H, truncate_bits: u32, max_trials: usize) -> String {
     let mut md = format!(
-        "## Birthday-collision search (truncate to {} bits)\n\n",
-        truncate_bits
+        "## Birthday-collision search (truncate to {} bits)\n\n- seed: `0xC0FFEE`; maximum trials: {}\n\n",
+        truncate_bits, max_trials
     );
     let t0 = std::time::Instant::now();
     let result = birthday_collision_search(hash, truncate_bits, max_trials, 0xC0FFEE);
@@ -840,10 +840,15 @@ fn run_birthday<H: HashFunction>(hash: &H, truncate_bits: u32, max_trials: usize
         Some((m1, m2, d)) => {
             md.push_str(&format!(
                 "- found collision in {} ms\n\
-                 - m1 ({} B) ≠ m2 ({} B), both hash to: {}\n\n",
+                 - m1 ({} B) hex: `{}`\n\
+                 - m2 ({} B) hex: `{}`\n\
+                 - shared {}-bit digest prefix: `{}`\n\n",
                 elapsed,
                 m1.len(),
+                hex(&m1),
                 m2.len(),
+                hex(&m2),
+                truncate_bits,
                 hex(&d),
             ));
         }

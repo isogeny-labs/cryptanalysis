@@ -216,7 +216,12 @@ cSHAKE, and bounded to 1 MiB. It is optional for BLAKE2 and Skein.
 adapter (MD4, MD5, SHA-1, SHA-256, SHA-512). It runs bounded truncated birthday
 searches and differential-bias measurements for the supported unkeyed digests.
 These searches concern up to 32 output bits and do not claim a full-output
-collision. SHAKE, cSHAKE, and Skein require `--output-bytes` in 1..=64;
+collision. Each found pair includes both input messages as hex, the shared
+digest prefix, the search seed, and the trial cap so it can be replayed.
+The [CLI replay receipt](CRAX_HASH_AUTO_REPLAY_ACCEPTANCE_20261024.json)
+checks reported pairs for all 30 supported unkeyed names through the
+independent `crax hash` command, including cSHAKE customization.
+SHAKE, cSHAKE, and Skein require `--output-bytes` in 1..=64;
 BLAKE2b and BLAKE2s allow 1..=64 and 1..=32 respectively, defaulting to their
 maximum digest sizes. cSHAKE also accepts `--function-name-hex` and
 `--custom-hex`, and the report records both inputs. SHA-3 uses a sponge, so
