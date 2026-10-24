@@ -91,6 +91,9 @@ actionlint -shellcheck= -pyflakes= .github/workflows/*.yml
 
 ## CI tiers (2026-10-23)
 
+PRs are opened ready for review by default. A draft, opened only when the user
+asks for one, runs the fast tier:
+
 | PR state | What runs on each push |
 | --- | --- |
 | Draft | Fast tier only: `ci-tier.yml` (`tier-gate`; its `full-tier` job skips) |
@@ -107,10 +110,11 @@ actionlint -shellcheck= -pyflakes= .github/workflows/*.yml
 - `merge-sweeper.yml` (every 30 minutes; report-only until
   `MERGE_SWEEPER_APPLY=true`) merges green, clean, unblocked PRs with a merge
   commit pinned to the checked head, holds heads that ran more than 30 checks
-  (`ci:over-budget`), and with apply moves red, conflicted and `needs-human`
-  PRs back to draft (`ci:parked`) and caps ready PRs at 40 (`ci:waiting`).
-  Given `MERGE_SWEEPER_TOKEN` it promotes waiting drafts and `lane/*` drafts
-  idle for six hours.
+  (`ci:over-budget`), and with apply labels red, conflicted and `needs-human`
+  PRs `ci:parked` and PRs beyond a 40-PR prioritization cap `ci:waiting`,
+  clearing the labels when the blocker clears. It never converts a PR to
+  draft or marks one ready: PRs stay open and ready for review (owner,
+  2026-10-24).
 - `scripts/lane-push.sh <lane>` pushes a session's branch into `lane/<lane>`.
 
 The same mechanism is in aburan28/crypto (`.github/CI.md`, "CI tiers") and
