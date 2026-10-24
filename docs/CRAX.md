@@ -139,6 +139,13 @@ CRAX_CRYPTO_BIN=/path/to/crypto crax --json aes block-encrypt \
 For that AES-128 known-answer vector, `report.output_hex` is
 `69c4e0d86a7b0430d8cdb78070b4c55a`.
 
+`crax mac` forwards keyed digest commands to `crypto mac`, including
+HMAC-SHA-256, KMAC128, KMAC256, and their XOF variants. Use `--key-file`
+for a secret key or `--key-hex` for a public test vector. A successful
+`crax --json mac kmac128 ...` result carries `report.algorithm` and
+`report.tag_hex`; tag verification retains the native success or failure
+exit code and its text report.
+
 ### Resumable isogeny experiment sweeps
 
 `crax isogeny experiment` accepts `--state-dir` for a checkpoint after each

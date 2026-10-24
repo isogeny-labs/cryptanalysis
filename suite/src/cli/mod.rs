@@ -42,7 +42,7 @@ Attacks by family:
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
   sibling crypto tools      ecdlp-nist, ic/icx solve-prime|solve-prime-file|solve-cubic|prime-route-generate|cubic-graph|cubic-route-generate, isogeny-walk, store, crypto
-  symmetric & hash          aes (full crypto AES command family), aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
+  symmetric & hash          aes (AES primitives and attacks), mac (HMAC/KMAC), aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
@@ -213,7 +213,7 @@ fn run_external(
             Ok(output) => {
                 let ok = output.status.success();
                 let report: serde_json::Value =
-                    aes_native_hex_report(sub, &native_args, &output.stdout)
+                    native_hex_report(sub, &native_args, &output.stdout)
                         .or_else(|| serde_json::from_slice(&output.stdout).ok())
                         .unwrap_or(serde_json::Value::Null);
                 let report_text = report
@@ -261,17 +261,17 @@ fn aes_bridge_family(command: Option<&str>) -> &'static str {
     }
 }
 
-fn aes_native_hex_report(
+fn native_hex_report(
     sub: &str,
     native_args: &[OsString],
     stdout: &[u8],
 ) -> Option<serde_json::Value> {
-    if sub != "aes" || native_args.first()?.to_str()? != "aes" {
-        return None;
-    }
-    let operation = native_args.get(1)?.to_str()?;
-    if aes_bridge_family(Some(operation)) != "aes" {
-        return None;
+    let family = native_args.first()?.to_str()?;
+    let command = native_args.get(1)?.to_str()?;
+    match (sub, family) {
+        ("aes", "aes") if aes_bridge_family(Some(command)) == "aes" => {}
+        ("mac", "mac") => {}
+        _ => return None,
     }
     let output = std::str::from_utf8(stdout).ok()?.trim();
     if output.is_empty()
@@ -280,7 +280,10 @@ fn aes_native_hex_report(
     {
         return None;
     }
-    Some(serde_json::json!({"operation": operation, "output_hex": output}))
+    Some(match sub {
+        "mac" => serde_json::json!({"algorithm": command, "tag_hex": output}),
+        _ => serde_json::json!({"operation": command, "output_hex": output}),
+    })
 }
 
 /// Run a legacy suite command as a child so its native stdout and diagnostics
@@ -349,6 +352,7 @@ pub fn command() -> clap::Command {
         )
         .subcommand(clap::Command::new("crypto").about("Bridge to the sibling crypto CLI"))
         .subcommand(clap::Command::new("aes").about("AES cryptanalysis command family via sibling crypto CLI"))
+        .subcommand(clap::Command::new("mac").about("HMAC, KMAC, and keyed digests via sibling crypto CLI"))
         .subcommand(clap::Command::new("ecdlp-nist").about("NIST and Certicom ECDLP audit and bounded solve via crypto"))
         .subcommand(clap::Command::new("store").about("Content-addressed artifact store via crypto"))
         .subcommand(clap::Command::new("isogeny-walk").about("Certified isogeny graph CLI"));
@@ -471,6 +475,16 @@ where
                 requested_json,
                 false,
             );
+        }
+        "mac" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest,
+                requested_json,
+                false,
+            )
         }
         "store" => {
             return run_external(
@@ -648,14 +662,19 @@ mod tests {
     fn aes_bridge_structures_native_hex_output() {
         let primitive = vec![OsString::from("aes"), OsString::from("block-encrypt")];
         assert_eq!(
-            aes_native_hex_report("aes", &primitive, b"69c4\n").unwrap(),
+            native_hex_report("aes", &primitive, b"69c4\n").unwrap(),
             serde_json::json!({"operation":"block-encrypt","output_hex":"69c4"})
         );
-        assert!(aes_native_hex_report("aes", &primitive, b"not hex\n").is_none());
+        assert!(native_hex_report("aes", &primitive, b"not hex\n").is_none());
         let attack = vec![
             OsString::from("cryptanalysis"),
             OsString::from("aes-attack"),
         ];
-        assert!(aes_native_hex_report("aes", &attack, b"69c4\n").is_none());
+        assert!(native_hex_report("aes", &attack, b"69c4\n").is_none());
+        let mac = vec![OsString::from("mac"), OsString::from("kmac128")];
+        assert_eq!(
+            native_hex_report("mac", &mac, b"a0b1\n").unwrap(),
+            serde_json::json!({"algorithm":"kmac128","tag_hex":"a0b1"})
+        );
     }
 }
