@@ -82,10 +82,19 @@ int main(int argc, char **argv)
         printf("%s{\"index\":%u,\"seed\":%u,\"default_before_seconds\":%.9f,"
                "\"sixclass_seconds\":%.9f,\"default_after_seconds\":%.9f,"
                "\"default_group_ops\":%" PRIu64 ",\"sixclass_class_visits\":%" PRIu64 ","
-               "\"sixclass_dps\":%" PRIu64 ",\"sixclass_escapes\":%" PRIu64 "}",
+               "\"sixclass_dps\":%" PRIu64 ",\"sixclass_escapes\":%" PRIu64 ","
+               "\"twist_visits\":[",
                i ? "," : "", i, 19 + i, before, middle, after,
                baseline.group_ops, candidate.class_visits,
                candidate.distinguished, candidate.short_cycle_escapes);
+        for (unsigned t = 0; t < 6; t++)
+            printf("%s%" PRIu64, t ? "," : "", candidate.twist_visits[t]);
+        printf("],\"route_parity_by_twist\":[");
+        for (unsigned t = 0; t < 6; t++)
+            printf("%s[%" PRIu64 ",%" PRIu64 "]", t ? "," : "",
+                   candidate.route_parity_by_twist[t][0],
+                   candidate.route_parity_by_twist[t][1]);
+        printf("]}");
     }
     printf("],\"default_before_seconds\":%.9f,\"default_after_seconds\":%.9f,"
            "\"sixclass_seconds\":%.9f,"

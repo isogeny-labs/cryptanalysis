@@ -112,6 +112,8 @@ ca_status ca_sixclass_solve(const ca_group *g, const ca_elem *base,
                 stats->exceptional++; break;
             }
             stats->class_visits++;
+            stats->twist_visits[t]++;
+            stats->route_parity_by_twist[t][key & 1]++;
             if (((key >> branch_bits) & dp_mask) == 0) {
                 stats->distinguished++;
                 uint64_t aa = ca_mulmod(s.a, units[t], n);

@@ -11,6 +11,8 @@ extern "C" {
 typedef struct ca_sixclass_stats {
     uint64_t class_visits, distinguished, short_cycle_escapes;
     uint64_t walkers, exceptional, collisions;
+    /* Every class visit, including a DP, contributes to these H1 counts. */
+    uint64_t twist_visits[6], route_parity_by_twist[6][2];
 } ca_sixclass_stats;
 
 /* r must be a power of two, dp_bits <= 24. Returns CA_OK only after

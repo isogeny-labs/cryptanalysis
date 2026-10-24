@@ -14,6 +14,7 @@ We cannot establish a secp256k1 cost or success improvement from the present six
 
 - **Observed:** The [paired raw receipt](../docs/sixclass-20261024/paired-glv-j0-26.json) covers 20 planted `glv-j0-26` logs: all solved, with the six-class path 1.257 times slower in one local run. The C implementation is opt-in in `src/sixclass.c`.
 - **Observed with drift control:** The [A/B/A raw receipt](../docs/sixclass-20261024/paired-glv-j0-26-aba.json) covers the same 20 planted targets. Both default arms solved every target and had identical group-operation counts; the six-class time was 1.826 times their mean on this local run. These millisecond solves are a diagnostic, not a precision estimate. The Rust harness also retains two p25 A/B/A trials and a fresh full-curve DP, with all unpriced categories explicit.
+- **Routing instrumentation:** The [exploratory two-target telemetry](../docs/sixclass-20261024/routing-telemetry-2trials.md) now records six twist counts and joint twist/route-parity counts for every C class visit. Both row totals reconcile, but walk visits are correlated and this is not an H1 statistical test.
 - **Derived or proved:** The six-class automorphism is valid for the checked curve and toy planted-log tests. No secp256k1 throughput theorem or end-to-end cost measurement is established.
 - **Suspected explanation:** Extra canonicalization, DP management and short-cycle work may outweigh a quotient gain on this curve. A matched operation and wall-time breakdown is needed to distinguish these costs.
 - **Missing capability:** A fixed-limb worker with batch inversion, production branch count, a global field-operation and memory work meter, independent sampled trail replay, and matched secp256k1-scale measurement. Versioned native jobs, a local private-answer challenge, a native DP checker, and toy A/B/A rows now exist. The harness's five-clause H1 matrix leaves every distributional clause open.
@@ -36,4 +37,4 @@ These conditions would establish measured behavior at tested sizes and a defensi
 
 ## Resolution and history
 
-2026-10-24: opened from the toy native implementation and first paired result. Added a local A/B/A receipt, isolated full-curve challenge custody, and a falsifiable H1 matrix. The production throughput and mixing obligations remain open; no production claim is promoted.
+2026-10-24: opened from the toy native implementation and first paired result. Added a local A/B/A receipt, isolated full-curve challenge custody, and a falsifiable H1 matrix. Later added descriptive C routing telemetry. The production throughput and mixing obligations remain open; no production claim is promoted.
