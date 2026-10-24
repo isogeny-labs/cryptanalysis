@@ -126,6 +126,10 @@ def check_delta() -> dict:
     ]
     require(orbit.stdout.splitlines()[-3:] == expected_orbit, "Orbit axiom output changed")
     require(not orbit.stderr.strip(), "Orbit build wrote stderr")
+    # `check.sh` also prints Lake's build progress, which differs between a
+    # cached local build and a fresh CI runner. The three checked axiom lines
+    # are the source-bound proof evidence; bind only those stable lines.
+    orbit_axioms = "\n".join(expected_orbit) + "\n"
     for mode, archived in (([], "lean-source-binding.json"),
                            (["--live"], "live-source-binding.json")):
         check = run(["python3", "check_lean_source_binding.py", *mode], cwd=GLV)
@@ -148,7 +152,7 @@ def check_delta() -> dict:
             all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
                 <= {"propext", "Quot.sound"} for _, names in printed),
             "GLV theorem coverage or axiom set changed")
-    return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit.stdout.encode()).hexdigest(),
+    return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json")}
 
