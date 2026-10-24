@@ -29,6 +29,13 @@ jobs:
             tools/ecdlp-surfaces
             docs/ecdlp-surfaces
             research/ecdlp_surfaces_n83_20261012
+            tools/artifacts
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 docs/ecdlp-surfaces research/ecdlp_surfaces_n83_20261012
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
