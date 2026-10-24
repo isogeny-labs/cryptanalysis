@@ -1,0 +1,11 @@
+digraph SixClass {
+  graph [label="Six-class GLV rho research path (2026-10-24)", labelloc=t, rankdir=TB, fontname="Helvetica", fontsize=18];
+  node [shape=box, style=rounded, fontname="Helvetica", fontsize=16];
+  state [label="P = aG + bQ\ncurve glv-j0-26"];
+  class [label="Class representative\nmin of 3 x rotations, min(y,p-y)"];
+  branch [label="Branch from low class-key bits\nDP from following bits"];
+  jump [label="Twisted jump u(t)^-1 M[h]\nupdate a,b"];
+  receipt [label="Canonical DP record\ncheck aG+bQ and collision"];
+  state -> class -> branch -> jump -> state;
+  branch -> receipt [label="distinguished"];
+}
