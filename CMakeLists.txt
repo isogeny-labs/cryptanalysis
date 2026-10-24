@@ -73,6 +73,7 @@ set(CA_SOURCES
   src/grumpy.c
   src/precomp.c
   src/curve.c
+  src/sixclass.c
   src/pohlig.c
   src/cheon.c
   src/linalg.c
@@ -177,6 +178,10 @@ if(CA_BUILD_TOOLS)
   ca_sanitize(ca)
   add_executable(ca_bench tools/ca_bench.c)
   target_link_libraries(ca_bench PRIVATE ${CA_LINK_TARGET})
+  add_executable(ca_sixclass_bench tools/ca_sixclass_bench.c)
+  target_link_libraries(ca_sixclass_bench PRIVATE ${CA_LINK_TARGET})
+  target_compile_options(ca_sixclass_bench PRIVATE ${CA_WARNINGS})
+  ca_sanitize(ca_sixclass_bench)
   target_include_directories(ca_bench PRIVATE src cuda)
   target_compile_options(ca_bench PRIVATE ${CA_WARNINGS})
   ca_sanitize(ca_bench)
@@ -419,7 +424,7 @@ endif()
 
 if(CA_BUILD_TESTS)
   enable_testing()
-  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve joint_tau pohlig cheon linalg indexcalc ffi gpu coord glv_trace_accounting)
+  set(CA_TESTS modarith group bsgs rho kangaroo grumpy precomp curve sixclass joint_tau pohlig cheon linalg indexcalc ffi gpu coord glv_trace_accounting)
   foreach(t ${CA_TESTS})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_${t}.c)
       add_executable(test_${t} tests/test_${t}.c)
