@@ -74,6 +74,16 @@ does not authorize abandoning requested work, weakening its acceptance criteria,
 or promoting a claim. Completing the template or merging its PR does not solve
 the underlying problem.
 
+## ECDLP lead atlas: check what was already tried
+
+The lead atlas in aburan28/crypto-autoresearcher, `knowledge/leads/ecdlp/`,
+records every ECDLP lead tried in this repository and its siblings, with its
+disposition (the obstruction that closed it, or the next step that decides it)
+and evidence. `python3 tools/lead_atlas.py --brief` there (printed at session
+start by `.claude/hooks/lead-atlas-brief.sh`) says whether anything changed
+since its last review. Run `--match "<idea>"` before proposing an ECDLP
+mechanism, and update the lead a landed result advances.
+
 ## Research searches must leave visual reports
 
 For every substantive search for new isogenies, curves, scalar rules,
