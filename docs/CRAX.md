@@ -47,6 +47,8 @@ CRAX="$CRAX_REPO/suite/target/release/crax"
   --gx 3 --gy 7 --qx 231 --qy 54
 "$CRAX" --json ic solve-cubic \
   --input "$CRYPTO_REPO/docs/ic/fixtures/cubic_f11_public_target.json"
+"$CRAX" ic --help
+"$CRAX" icx --help
 "$CRAX" isogeny-walk --help
 ```
 
