@@ -187,9 +187,9 @@ static int grumpy_checkpoint_load(const char *path, const grumpy_checkpoint_head
     if (!f) { ca_set_error("grumpy: cannot reopen checkpoint"); return 0; }
     grumpy_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
-             memcmp(&h, saved, sizeof(h)) == 0;
+             memcmp(&h, saved, sizeof(h)) == 0; /* NOLINT(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c): both headers are raw fread() bytes of the same file, padding included */
     struct stat fs;
-    uint64_t prefix = sizeof(h) + 3 * 4 * sizeof(uint64_t);
+    uint64_t prefix = sizeof(h) + (size_t)3 * 4 * sizeof(uint64_t);
     if (h.entries > (UINT64_MAX - prefix) / sizeof(ca_htab_entry)) ok = 0;
     uint64_t bytes = ok ? prefix + h.entries * sizeof(ca_htab_entry) : 0;
     if (!ok || fstat(fileno(f), &fs) != 0 || fs.st_size < 0 ||
@@ -307,7 +307,6 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
         goto out;
     }
     if (rc == CA_OK) goto out;
-    rc = CA_ERR_INTERNAL;
     /* Upper bound on iterations: the baby walk alone finds x' in at most
      * width+1 steps (it meets U_0 = H'). */
     uint64_t max_iter = width > UINT64_MAX - 2 ? UINT64_MAX : width + 2;

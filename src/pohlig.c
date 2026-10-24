@@ -154,7 +154,7 @@ static uint64_t ph_identity(const ca_group *g, const ca_elem *base,
                             const ca_elem *target, uint64_t n,
                             const ca_dlog_params *p)
 {
-    uint64_t bw[4], tw[4], alpha_bits;
+    uint64_t bw[4] = {0}, tw[4] = {0}, alpha_bits;
     ca_group_decode(g, bw, base); ca_group_decode(g, tw, target);
     memcpy(&alpha_bits, &p->grumpy.alpha, sizeof(alpha_bits));
     uint64_t v[] = {

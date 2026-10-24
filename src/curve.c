@@ -479,7 +479,7 @@ static int glv_checkpoint_load(const char *path, const glv_checkpoint_header *ex
     if (!f) { ca_set_error("glv: cannot reopen checkpoint"); return 0; }
     glv_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
-             memcmp(&h, expected, sizeof(h)) == 0;
+             memcmp(&h, expected, sizeof(h)) == 0; /* NOLINT(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c): both headers are raw fread() bytes of the same file, padding included */
     uint64_t checksum = h.checksum;
     h.checksum = 0;
     uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
@@ -506,7 +506,7 @@ static int glv_checkpoint_load(const char *path, const glv_checkpoint_header *ex
     if (!ok) { ca_set_error("glv: checkpoint is damaged or incompatible"); return 0; }
     memcpy(rng->s, h.rng, sizeof(h.rng));
     *ops = h.ops; *steps = h.steps; *elapsed = h.elapsed_seconds;
-    *result = h.result; *solved = h.solved;
+    *result = h.result; *solved = h.solved != 0;
     return 1;
 }
 
