@@ -258,6 +258,32 @@ exploratory. The authoring session merges it under the next section: it
 checks the exact head and all applicable CI results, merges with a head guard,
 and verifies the merge commit.
 
+## Reports in S3
+
+Published research reports are mirrored to
+`s3://setec-astronomy-artifacts/reports/cryptanalysis/<path in the
+repository>` (bucket region `us-east-2`), keeping the repository path. That
+bucket also holds the content-addressed artifact store and the other
+repositories' mirrors; only the `reports/cryptanalysis/` prefix belongs to this
+repository.
+
+An agent session is a **reader**: it may list, copy down and presign objects,
+and must not upload, overwrite or delete under the prefix. Uploads are made by
+the owner-run sync, never by a research session; a corrected report is committed
+and opens a PR like any other evidence change.
+
+```sh
+aws s3 ls s3://setec-astronomy-artifacts/reports/cryptanalysis/ --region us-east-2
+aws s3 cp s3://setec-astronomy-artifacts/reports/cryptanalysis/<path> . --region us-east-2
+aws s3 presign s3://setec-astronomy-artifacts/reports/cryptanalysis/<path> --expires-in 604800 --region us-east-2
+```
+
+Reading needs `s3:GetObject` and `s3:ListBucket` on
+`arn:aws:s3:::setec-astronomy-artifacts/reports/cryptanalysis/*` (the
+`ARTIFACTS_AWS_*` credentials have it). Treat a downloaded report as a copy of
+the committed file: verify it against the repository blob or `VALIDATION.json`
+before citing it.
+
 ## Continue through the PR: track it and merge it
 
 The session that opens a PR stays with it until it is merged or closed (owner,
