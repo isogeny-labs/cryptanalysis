@@ -1,0 +1,28 @@
+{
+  "arm": "joint",
+  "arm_index": 2,
+  "command": [
+    "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+    "--threads=1",
+    "--maxconfl=20000",
+    "--maxtime=170",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_joint_right_s3_20261023/formula.xcnf"
+  ],
+  "last_restart_line": "c rst  luby best  vmt    81   20K  137857  122K  241K    3.12    2.38   110   148 14323    14  249.89  249.66",
+  "monitor_error": null,
+  "protocol_sha256": "a11f92a03238cb8d7a4769eedbb7434f571f79997bad68549e26a24f0af87dbc",
+  "reported_conflicts": 20003,
+  "reported_decisions": 34472,
+  "reported_propagations": "77M",
+  "rss_samples": 24,
+  "sampled_peak_combined_rss_bytes": 162004992,
+  "solver_exit_code": 0,
+  "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "solver_stdout_sha256": "ad565956ab7db235c94146e99e75f7a70e4ab4ec478ea831fc8a00ab4839db6e",
+  "status": "INDETERMINATE_CONFLICT_CAP",
+  "stop_reason": null,
+  "wall_seconds": 2.4760453330000005
+}
