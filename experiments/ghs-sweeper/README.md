@@ -130,6 +130,17 @@ committed completed jobs; remaining work can be run in Rust.
 
 ## Evidence and novelty triage
 
+The [Hess scope note](HESS_SCOPE.md) derives a published-construction inclusion
+baseline for full-relative-degree coefficients, with a
+[PDF proof and diagram](HESS_SCOPE.pdf) and a separate Rust witness example.
+It is an existence bound, not a minimum-genus or cost result. It changes no
+search checkpoint, prior snapshot, catalogue, or novelty verdict.
+
+```sh
+cargo test --release --locked \
+  --manifest-path experiments/ghs-sweeper/Cargo.toml --example hess_scope
+```
+
 `spectral_model_id` is a stable hash of the normalized model parameters in the
 declared deterministic binary power-basis convention. Field moduli and base
 embeddings are retained with every result. This is not an EC1 curve identity

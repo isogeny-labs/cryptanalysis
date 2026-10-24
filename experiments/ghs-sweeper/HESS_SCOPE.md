@@ -6,8 +6,8 @@ fontsize: 10pt
 ---
 
 Classification: **derived corollary of published work**, with a Rust parameter
-checker. This is not a new vulnerable family, a publication-novel theorem, a
-complete attack, or a cost obstruction. It explains a baseline that a future
+checker. This does not establish a new vulnerable family, publication novelty,
+a complete attack, or a cost obstruction. It explains a baseline that a future
 novelty claim must distinguish from a useful low-genus or low-cost descent.
 
 ## Request and current evidence
@@ -78,8 +78,8 @@ $$\gamma\beta=s,\qquad
 \operatorname{Tr}_{K/k}(\gamma)=0,\qquad
 \operatorname{Tr}_{K/k}(\beta)\ne0.$$
 
-The standard Artin--Schreier transformation, followed by scaling its rational
-coordinate, identifies the elliptic function field with
+The explicit substitution $X=\beta x$, $Y=\beta xw+s$ identifies the elliptic
+function field with
 
 $$w^2+w=\gamma/x+a+\beta x.$$
 
@@ -169,6 +169,11 @@ of $2^N-2$. The renderer is `render_hess_scope.py`. These are derived arithmetic
 not experimental search rows. The [software-check contract](PROOF_CHECKS.md)
 fixes the unit assertions and the figure inputs before their execution.
 
+The retained [unit output](scope-checks/unit-attempt-1.txt) and
+[source receipt](scope-checks/source-check.json) support these software and
+source-review statements. The corollary is not a machine-checked Lean proof
+and has not received an independent mathematical review in this session.
+
 ## Remaining blockers and graph audit
 
 The 355 pending exploration jobs have not been replaced or discharged by this
@@ -176,9 +181,11 @@ inclusion proof. The updated repository policy requires a frozen
 `experiment.protocol/v1` before new campaign data. Its pointer requires
 `crypto-autoresearcher` on `origin/main`. At inspected commit
 `dcfdd16cdf7783a059ca1e6e4cc5efbf77434b7b`, the canonical checker,
-protocol/export schemas and skill are absent. No substitute schema is invented
-and no new campaign is run under a retroactive protocol. The missing canonical
-location has been requested while this proof and code verification proceed.
+protocol/export schemas and skill are absent. The implementation was located
+in unmerged upstream [PR 2464](https://github.com/aburan28/crypto-autoresearcher/pull/2464),
+at head `e6527aafcafa970cc93dd51b24966162aecd84e0`. It is not on the required
+`origin/main`. No substitute schema is invented and no new campaign is run
+under a retroactive protocol. An admitted canonical location remains needed.
 
 The checked graph sources are the cover infrastructure's source-parity table,
 the previous GHS audit, and the retained branch-orbit/prior-art report. Their

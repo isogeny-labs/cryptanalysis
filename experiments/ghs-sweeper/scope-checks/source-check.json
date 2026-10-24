@@ -1,0 +1,119 @@
+{
+  "classification": "derived published-construction inclusion; software unit verification only",
+  "proof_source_commit": "a8b214b1e3265d0d4a1297dcdaa96b5663da0bdd",
+  "primary_reference": {
+    "title": "Generalising the GHS Attack on the Elliptic Curve Discrete Logarithm Problem",
+    "author": "F. Hess",
+    "year": 2004,
+    "url": "https://doi.org/10.1112/S146115700000108X",
+    "read_sections": [
+      "equation (10)",
+      "Theorems 11, 12 and 14",
+      "Section 6 normalization"
+    ],
+    "printed_pages": [
+      174,
+      175,
+      176,
+      177
+    ],
+    "retained_pdf_sha256": "0f017dd0c0a3d3056044351ec631dea4d75ec1e7a54d5d66bfdbae456624f3e1",
+    "retained_text_sha256": "4cfabf4d64c25f8081c46c821279dce4692128e67139d882497e578b17f6de11"
+  },
+  "derived_claim": {
+    "source": "ordinary binary E/K in the normalized model",
+    "conditions": [
+      "relative extension degree N>=2",
+      "b has full relative degree N over k"
+    ],
+    "existence_genus_upper_bound": "2^N-2",
+    "kernel_annihilator": "2^(m-1)",
+    "odd_prime_subgroup_injectivity": "derived from Hess Theorem 14, not an instantiated transfer"
+  },
+  "validation": {
+    "new_fixed_Rust_unit_tests_passed": 4,
+    "existing_Rust_regression_tests_passed": 21,
+    "failed": 0,
+    "clippy_all_targets_deny_warnings": "passed",
+    "fmt": "passed",
+    "new_experimental_parameter_sweeps": 0,
+    "new_planted_log_checks": 0,
+    "formal_Lean_proof": false,
+    "independent_mathematical_review_this_session": false,
+    "PDF_inspected_pages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "final_PDF_layout": "five pages; all initially inspected; changed final pages 4 and 5 re-inspected after update",
+    "fixed_cubic_native_CLI_replay": "passed: gamma=2, beta=3, m=3, genus=6; parameter certificate only"
+  },
+  "blocker": {
+    "skill": "cryptanalysis:.agents/skills/experiment-protocol/SKILL.md",
+    "rule": "Use a sibling checkout at ../crypto-autoresearcher on origin/main; never copy the tool here.",
+    "canonical_repository": "aburan28/crypto-autoresearcher",
+    "inspected_commit": "dcfdd16cdf7783a059ca1e6e4cc5efbf77434b7b",
+    "required_files": [
+      {
+        "path": ".claude/skills/experiment-protocol/SKILL.md",
+        "present_on_inspected_origin_main": false
+      },
+      {
+        "path": ".agents/skills/experiment-protocol/SKILL.md",
+        "present_on_inspected_origin_main": false
+      },
+      {
+        "path": "tools/experiment_protocol.py",
+        "present_on_inspected_origin_main": false
+      },
+      {
+        "path": "docs/experiment-protocol.md",
+        "present_on_inspected_origin_main": false
+      },
+      {
+        "path": "schemas/experiment-protocol.v1.json",
+        "present_on_inspected_origin_main": false
+      },
+      {
+        "path": "schemas/experiment-export.v1.json",
+        "present_on_inspected_origin_main": false
+      }
+    ],
+    "fresh_campaign_status": "blocked pending canonical location; clarification requested",
+    "located_unmerged_implementation": {
+      "url": "https://github.com/aburan28/crypto-autoresearcher/pull/2464",
+      "head_commit": "e6527aafcafa970cc93dd51b24966162aecd84e0",
+      "state": "open, not merged",
+      "constraint": "the active pointer requires origin/main"
+    }
+  },
+  "request_status": {
+    "novel_affected_source_family": "not established",
+    "lower_total_cost_or_cost_obstruction": "not established",
+    "existing_exploration_jobs_pending": 355,
+    "main_Rust_engine_modified": false,
+    "existing_catalogue_entries_added": 0,
+    "publication_novelty_established": false,
+    "rho_is_acceptance_gate": false
+  },
+  "evidence_sha256": {
+    "HESS_SCOPE.md": "49dd3e646023c95709916ad17ea72125a8d29a005e7257e4bd9beb13da74c3e8",
+    "PROOF_CHECKS.md": "6ace64d4ea9c9060357f0cfb793515afa33563db1f9010398ce243acb7f21808",
+    "examples/hess_scope.rs": "529128c3e388bcfc107013ea991d9c4f7b95187d8cd4c3bfa10f571ef3273fd7",
+    "scope-checks/unit-attempt-1.txt": "a815f5eefcb5cf44ed48eb26018f4cf28beeee5041c263d5c52c350efeeaa64c",
+    "scope-checks/clippy-attempt-1.txt": "108860fa6eb38488e6c47c63406f14ad98ef47d12943061ff9993ef4f2b2a94e",
+    "scope-checks/all-targets-attempt-1.txt": "85ea7af84457f3f4367806166a454d1d89c5e1a8932cf79df2b67199bd2b4cfc",
+    "scope-figures/genus-bound.csv": "49a24d9892b6ecfa61089dda0b75e7125c838761bde126a8d24bd4ebe3083721",
+    "scope-checks/checkpoint-status.json": "90a4566d215cad5d7af998444152b62e2251cb8131be06d411393e2522bc9f48",
+    "scope-checks/cubic-cli-control.json": "3e21eac9c0a03fffb082114525b917fefa248b9bed76bb868d949185c13a99a7"
+  },
+  "attack_phase_costs": {
+    "construction": null,
+    "transfer": null,
+    "solve": null,
+    "rho": null,
+    "scope": "none measured or modelled in this proof/parameter-check change"
+  }
+}
