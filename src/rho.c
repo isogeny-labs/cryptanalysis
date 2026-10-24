@@ -35,6 +35,58 @@
 #define RHO_WINDOW 64
 #define RHO_MAX_WALKS 4096
 
+#ifdef CA_RHO_TRACE
+#    include <stdlib.h>
+#    define RHO_TR_CHECK(c) do { if (!(c)) { fprintf(stderr, "rho trace: %s\n", #c); abort(); } } while (0)
+#    define RHO_RING 192
+#    define RHO_CYC_MAX (4 * RHO_WINDOW)
+/* Where ca_rho_solve's group operations go, written as one JSON line per
+ * solve to $CA_RHO_TRACE_FILE.  Diagnostic builds only (-DCA_RHO_TRACE,
+ * single-threaded solves); the walk itself is unchanged.  Restart reasons:
+ * 0 = merged with its own earlier trail, 1 = useless collision, 2 = abandoned. */
+typedef struct rho_trace {
+    uint64_t table_ops, start_ops, restart_ops[3], restarts[3];
+    uint64_t step_ops, escape_ops;
+    uint64_t committed, retry_slots, unprocessed, dps;
+    uint64_t escapes, escape_cycle_steps, escape_unclosed;
+    uint64_t cycle_len[RHO_CYC_MAX + 1];
+    uint64_t abandons, abandon_wasted, abandon_dup;
+    uint64_t trail_counter;
+    /* exact-collision oracle: every committed point, with the trail that first visited it */
+    uint64_t *set_key;
+    uint32_t *set_trail;
+    uint64_t set_mask, set_count;
+    uint64_t cross_repeats, first_cross_at, dup_steps, solve_at;
+} rho_trace;
+
+static void rho_trace_set_insert(rho_trace *t, uint64_t key, uint32_t trail, int *seen_other)
+{
+    if (key == 0) key = 1;
+    if (t->set_count * 2 >= t->set_mask + 1 || !t->set_key) {
+        uint64_t ncap = t->set_key ? (t->set_mask + 1) * 2 : 1u << 16;
+        uint64_t *nk = calloc(ncap, sizeof(uint64_t));
+        uint32_t *nt = calloc(ncap, sizeof(uint32_t));
+        RHO_TR_CHECK(nk && nt);
+        for (uint64_t i = 0; t->set_key && i <= t->set_mask; i++)
+            if (t->set_key[i]) {
+                uint64_t j = (t->set_key[i] * 0x9E3779B97F4A7C15ULL) >> 20 & (ncap - 1);
+                while (nk[j]) j = (j + 1) & (ncap - 1);
+                nk[j] = t->set_key[i];
+                nt[j] = t->set_trail[i];
+            }
+        free(t->set_key); free(t->set_trail);
+        t->set_key = nk; t->set_trail = nt; t->set_mask = ncap - 1;
+    }
+    uint64_t j = (key * 0x9E3779B97F4A7C15ULL) >> 20 & t->set_mask;
+    while (t->set_key[j]) {
+        if (t->set_key[j] == key) { *seen_other = t->set_trail[j] != trail; return; }
+        j = (j + 1) & t->set_mask;
+    }
+    t->set_key[j] = key; t->set_trail[j] = trail; t->set_count++;
+    *seen_other = 0;
+}
+#endif
+
 typedef struct rho_shared {
     const ca_group *g;
     ca_elem base, target;
@@ -63,6 +115,9 @@ typedef struct rho_shared {
     atomic_uint_fast64_t restarts;
     uint64_t result;
     ca_status status;
+#ifdef CA_RHO_TRACE
+    rho_trace tr;
+#endif
 } rho_shared;
 
 typedef struct rho_walk {
@@ -74,6 +129,13 @@ typedef struct rho_walk {
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
+#ifdef CA_RHO_TRACE
+    uint64_t ring[RHO_RING];
+    uint64_t ring_n;   /* committed points since the walk start or the last escape */
+    uint64_t charged;  /* steps of the current since-DP interval already booked to a cycle */
+    uint32_t trail;
+    uint8_t merged;    /* has met another trail's point */
+#endif
 } rho_walk;
 
 typedef struct rho_thread {
@@ -354,6 +416,12 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
     w->retry = 0;
     w->since_dp = 0;
     w->win = 0;
+#ifdef CA_RHO_TRACE
+    w->ring_n = 0;
+    w->charged = 0;
+    w->merged = 0;
+    w->trail = (uint32_t)++sh->tr.trail_counter;
+#endif
 }
 
 /* Apply the exponent update for a step with multiplier i and sign flag. */
@@ -401,17 +469,18 @@ static void walk_step_single(rho_shared *sh, rho_walk *w, uint64_t *ops)
 
 /* Escape from a fruitless cycle containing w->Y: find the cycle's minimum
  * (by hash), then jump to 2*min. */
-static void walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
+static uint32_t walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     rho_walk cur = *w;
     cur.retry = 0;
     rho_walk best = cur;
     uint64_t best_h = cur.h;
+    uint32_t cycle_len = 0; /* 0: no return within the scan limit */
     for (uint32_t k = 0; k < 4 * RHO_WINDOW; k++) {
         walk_step_single(sh, &cur, ops);
         uint64_t h = cur.h;
-        if (ca_group_equal(g, &cur.Y, &w->Y)) break;
+        if (ca_group_equal(g, &cur.Y, &w->Y)) { cycle_len = k + 1; break; }
         if (h < best_h) { best_h = h; best = cur; }
     }
     ca_group_dbl(g, &w->Y, &best.Y);
@@ -425,6 +494,7 @@ static void walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
     w->h = ca_group_hash(g, &w->Y);
     w->retry = 0;
     w->win = 0;
+    return cycle_len;
 }
 
 /* Try to solve from a collision between stored (a1,b1) and new (a2,b2) at
@@ -485,6 +555,18 @@ static void *rho_thread_main(void *arg)
     ca_rng_seed(&rng, sh->seed ^ (0x9E3779B97F4A7C15ULL * (th->id + 1)));
     uint64_t ops = 0;
     for (uint32_t w = 0; w < W; w++) walk_restart(sh, &walks[w], &rng, &ops);
+#ifdef CA_RHO_TRACE
+    sh->tr.start_ops = ops;
+#    define RHO_RESTART(kind)                                          \
+        do {                                                           \
+            uint64_t o0_ = ops;                                        \
+            walk_restart(sh, wk, &rng, &ops);                          \
+            sh->tr.restart_ops[kind] += ops - o0_;                     \
+            sh->tr.restarts[kind]++;                                   \
+        } while (0)
+#else
+#    define RHO_RESTART(kind) walk_restart(sh, wk, &rng, &ops)
+#endif
     const uint64_t abandon = (uint64_t)24 << sh->dp_bits;
 
     while (!atomic_load_explicit(&sh->done, memory_order_relaxed)) {
@@ -496,13 +578,23 @@ static void *rho_thread_main(void *arg)
         for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
         ca_group_batch_op(g, Yn, Yn, B, W, scratch);
         ops += W;
+#ifdef CA_RHO_TRACE
+        sh->tr.step_ops += W;
+        uint32_t tr_done = 0;
+#endif
         for (uint32_t w = 0; w < W; w++) {
             rho_walk *wk = &walks[w];
+#ifdef CA_RHO_TRACE
+            tr_done = w + 1;
+#endif
             int neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
             uint64_t h = ca_group_hash(g, &Yn[w]);
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
                 wk->idx = (wk->idx + 1) % sh->r;
                 wk->retry++; /* bounded as in walk_step_single */
+#ifdef CA_RHO_TRACE
+                sh->tr.retry_slots++;
+#endif
                 continue;
             }
             wk->retry = 0;
@@ -510,6 +602,21 @@ static void *rho_thread_main(void *arg)
             wk->h = h;
             walk_apply(sh, wk, wk->idx, neg);
             wk->since_dp++;
+#ifdef CA_RHO_TRACE
+            {
+                rho_trace *tr = &sh->tr;
+                tr->committed++;
+                wk->ring[wk->ring_n % RHO_RING] = h;
+                wk->ring_n++;
+                int other = 0;
+                rho_trace_set_insert(tr, h, wk->trail, &other);
+                if (other) {
+                    tr->cross_repeats++;
+                    if (!wk->merged) { wk->merged = 1; if (!tr->first_cross_at) tr->first_cross_at = tr->committed; }
+                }
+                if (wk->merged) tr->dup_steps++;
+            }
+#endif
 
             if (sh->negmap) {
                 if (wk->win == 0) {
@@ -518,8 +625,38 @@ static void *rho_thread_main(void *arg)
                 } else {
                     wk->win--;
                     if (wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved)) {
+#ifdef CA_RHO_TRACE
+                        uint64_t o0_ = ops;
+#endif
+#ifdef CA_RHO_TRACE
+                        uint32_t cl_ =
+#endif
                         walk_escape_cycle(sh, wk, &ops);
                         h = wk->h;
+#ifdef CA_RHO_TRACE
+                        {
+                            rho_trace *tr = &sh->tr;
+                            tr->escape_ops += ops - o0_;
+                            tr->escapes++;
+                            if (cl_ == 0) tr->escape_unclosed++;
+                            else tr->cycle_len[cl_]++;
+                            /* committed points that lie on the cycle: the last c steps repeat the
+                             * point cl_ earlier, plus the first traversal */
+                            uint64_t c = 0, avail = wk->ring_n;
+                            if (cl_) {
+                                while (c + cl_ < RHO_RING && c + cl_ < avail &&
+                                       wk->ring[(wk->ring_n - 1 - c) % RHO_RING] ==
+                                           wk->ring[(wk->ring_n - 1 - c - cl_) % RHO_RING])
+                                    c++;
+                            }
+                            uint64_t cyc = cl_ ? c + cl_ : 0;
+                            if (cyc > avail) cyc = avail;
+                            if (cyc > wk->since_dp - wk->charged) cyc = wk->since_dp - wk->charged;
+                            tr->escape_cycle_steps += cyc;
+                            wk->charged += cyc;
+                            wk->ring_n = 0; /* the jump leaves the cycle */
+                        }
+#endif
                     }
                 }
             }
@@ -543,7 +680,7 @@ static void *rho_thread_main(void *arg)
                     if (oa == wk->a && ob == wk->b) {
                         /* the walk merged with its own earlier trail (or an
                          * identical trail): restart */
-                        walk_restart(sh, wk, &rng, &ops);
+                        RHO_RESTART(0);
                         atomic_fetch_add(&sh->restarts, 1);
                     } else {
                         pthread_mutex_lock(&sh->lock);
@@ -552,13 +689,20 @@ static void *rho_thread_main(void *arg)
                             atomic_store(&sh->done, 1);
                         }
                         pthread_mutex_unlock(&sh->lock);
+#ifdef CA_RHO_TRACE
+                        if (atomic_load(&sh->done)) sh->tr.solve_at = sh->tr.committed;
+#endif
                         if (atomic_load(&sh->done)) break;
                         /* useless collision (e.g. same point, unsolvable congruence): restart */
-                        walk_restart(sh, wk, &rng, &ops);
+                        RHO_RESTART(1);
                         atomic_fetch_add(&sh->restarts, 1);
                     }
                 }
                 wk->since_dp = 0;
+#ifdef CA_RHO_TRACE
+                wk->charged = 0;
+                sh->tr.dps++;
+#endif
                 if (sh->max_table && entries > sh->max_table) {
                     pthread_mutex_lock(&sh->lock);
                     if (!atomic_load(&sh->done)) sh->status = CA_ERR_LIMIT;
@@ -567,10 +711,18 @@ static void *rho_thread_main(void *arg)
                     break;
                 }
             } else if (wk->since_dp > abandon) {
-                walk_restart(sh, wk, &rng, &ops);
+#ifdef CA_RHO_TRACE
+                sh->tr.abandons++;
+                sh->tr.abandon_wasted += wk->since_dp - wk->charged;
+                if (wk->merged) sh->tr.abandon_dup++;
+#endif
+                RHO_RESTART(2);
                 atomic_fetch_add(&sh->restarts, 1);
             }
         }
+#ifdef CA_RHO_TRACE
+        sh->tr.unprocessed += W - tr_done; /* slots left unused when the solve ended mid-round */
+#endif
         if (sh->max_ops) {
             uint64_t tot = atomic_load_explicit(&sh->total_ops, memory_order_relaxed) + ops;
             if (tot > sh->max_ops) {
@@ -717,6 +869,9 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         setup_ops++;
     }
     sh.setup_ops = setup_ops;
+#ifdef CA_RHO_TRACE
+    sh.tr.table_ops = setup_ops;
+#endif
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
         free(sh.M); free(sh.alpha); free(sh.beta);
@@ -813,6 +968,54 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 
     ca_status rc = storage_failed ? CA_ERR_INTERNAL : sh.status;
     if (rc == CA_OK) *x = sh.result;
+#ifdef CA_RHO_TRACE
+    {
+        rho_trace *tr = &sh.tr;
+        uint64_t sum = tr->table_ops + tr->start_ops + tr->restart_ops[0] + tr->restart_ops[1] +
+                       tr->restart_ops[2] + tr->step_ops + tr->escape_ops;
+        RHO_TR_CHECK(sum == atomic_load(&sh.total_ops) + setup_ops);
+        RHO_TR_CHECK(tr->committed + tr->retry_slots + tr->unprocessed == tr->step_ops);
+        const char *path = getenv("CA_RHO_TRACE_FILE");
+        FILE *fp = path ? fopen(path, "a") : NULL;
+        if (fp) {
+            fprintf(fp,
+                    "{\"n\":%llu,\"W\":%u,\"table_r\":%u,\"dp_bits\":%d,\"abandon_after\":%llu,"
+                    "\"solved\":%d,\"total_ops\":%llu,\"table_ops\":%llu,\"start_ops\":%llu,"
+                    "\"restart_ops\":[%llu,%llu,%llu],\"restarts\":[%llu,%llu,%llu],"
+                    "\"step_ops\":%llu,\"escape_ops\":%llu,\"committed\":%llu,"
+                    "\"retry_slots\":%llu,\"unprocessed\":%llu,\"dps\":%llu,\"escapes\":%llu,"
+                    "\"escape_cycle_steps\":%llu,\"escape_unclosed\":%llu,\"abandons\":%llu,"
+                    "\"abandon_wasted\":%llu,\"abandon_dup\":%llu,\"cross_repeats\":%llu,"
+                    "\"first_cross_at\":%llu,\"dup_steps\":%llu,\"solve_at\":%llu,\"cycle_len\":{",
+                    (unsigned long long)n, sh.walks, sh.r, sh.dp_bits,
+                    (unsigned long long)((uint64_t)24 << sh.dp_bits), rc == CA_OK,
+                    (unsigned long long)(atomic_load(&sh.total_ops) + sh.setup_prior + setup_ops),
+                    (unsigned long long)tr->table_ops, (unsigned long long)tr->start_ops,
+                    (unsigned long long)tr->restart_ops[0], (unsigned long long)tr->restart_ops[1],
+                    (unsigned long long)tr->restart_ops[2], (unsigned long long)tr->restarts[0],
+                    (unsigned long long)tr->restarts[1], (unsigned long long)tr->restarts[2],
+                    (unsigned long long)tr->step_ops, (unsigned long long)tr->escape_ops,
+                    (unsigned long long)tr->committed, (unsigned long long)tr->retry_slots, (unsigned long long)tr->unprocessed,
+                    (unsigned long long)tr->dps, (unsigned long long)tr->escapes,
+                    (unsigned long long)tr->escape_cycle_steps,
+                    (unsigned long long)tr->escape_unclosed, (unsigned long long)tr->abandons,
+                    (unsigned long long)tr->abandon_wasted, (unsigned long long)tr->abandon_dup,
+                    (unsigned long long)tr->cross_repeats, (unsigned long long)tr->first_cross_at,
+                    (unsigned long long)tr->dup_steps, (unsigned long long)tr->solve_at);
+            int first = 1;
+            for (int L = 1; L <= RHO_CYC_MAX; L++)
+                if (tr->cycle_len[L]) {
+                    fprintf(fp, "%s\"%d\":%llu", first ? "" : ",", L,
+                            (unsigned long long)tr->cycle_len[L]);
+                    first = 0;
+                }
+            fprintf(fp, "}}\n");
+            fclose(fp);
+        }
+        free(tr->set_key);
+        free(tr->set_trail);
+    }
+#endif
     if (st) {
         st->group_ops += atomic_load(&sh.total_ops) + sh.setup_prior + setup_ops;
         st->iterations += atomic_load(&sh.total_dps);
