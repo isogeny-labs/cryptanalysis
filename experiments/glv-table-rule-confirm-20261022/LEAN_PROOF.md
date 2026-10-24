@@ -17,8 +17,13 @@ not turn the measured operation-count gain into a theorem.
 | Merged source at this PR update | commit `d488af97a0cae6d7e96686da17aeff2f0db5f29f`, SHA-256 `4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20`; [live receipt](live-source-binding.json) |
 | Formal source | [TableBudget.lean](TableBudget.lean), Lean `v4.34.1` from the repository root `lean-toolchain` |
 | Source check | [check_lean_source_binding.py](check_lean_source_binding.py), [receipt](lean-source-binding.json): exact C selector in both pinned sources; two changed-selector controls rejected |
-| Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; six printed theorem axiom sets contain only `propext` and `Quot.sound` |
+| Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; all eight public theorem axiom sets contain only `propext` and `Quot.sound` |
 | Archived measurement replay | [lean-analysis-replay.json](lean-analysis-replay.json): both 80,000-row arm files, result JSON, result Markdown, and SVG checked |
+
+The earlier six-print receipt omitted the axiom sets of `tableSize_cases` and
+`table48_le_table12`. The corrected eight-print receipt and CI declaration
+check cover every public theorem in `TableBudget.lean`; no theorem statement,
+proof body, C selector, or measured row changed.
 
 The committed [source protocol pin](PROTOCOL.sha256) verifies the historical
 `42761f85` C file, protocol, run script, and analysis script at that commit.
@@ -34,9 +39,11 @@ inputs or outputs.
 | --- | --- |
 | `GlvTableBudget.loopResult_eq_tableSize` | Two C-style guard-and-double steps from 8 equal the three threshold cases: budget below 16 gives 8; budget from 16 to 31 gives 16; budget at least 32 gives 32. |
 | `GlvTableBudget.loopResult_fixed` | A third step cannot change the result. Together with the prior theorem, this identifies the full loop result. |
+| `GlvTableBudget.tableSize_cases` | The selected table size is exactly 8, 16, or 32. |
 | `GlvTableBudget.loopResult_bounds` | The result is between 8 and 32; `tableSize_cases` strengthens this to exactly 8, 16, or 32. |
 | `GlvTableBudget.tableSize_mono` | The selector is nondecreasing in its integer budget. |
 | `GlvTableBudget.budget48_le_budget12` | For every natural `s` and positive natural `lg`, `s/(48*lg) ≤ s/(12*lg)`. |
+| `GlvTableBudget.table48_le_table12` | Monotonicity applies to the two divisor budgets before the loop-result bridge. |
 | `GlvTableBudget.loop48_le_loop12` | Combining the two results, the divisor change from 48 to 12 cannot reduce the selected table size for the same `s` and `lg`. |
 
 The readable argument is short: the cap of 32 permits only `8 → 16 → 32`.

@@ -92,9 +92,11 @@ theorem loop48_le_loop12 (s lg : Nat) (hlg : 0 < lg) :
 
 #print axioms loopResult_eq_tableSize
 #print axioms loopResult_fixed
+#print axioms tableSize_cases
 #print axioms loopResult_bounds
 #print axioms tableSize_mono
 #print axioms budget48_le_budget12
+#print axioms table48_le_table12
 #print axioms loop48_le_loop12
 
 end GlvTableBudget
