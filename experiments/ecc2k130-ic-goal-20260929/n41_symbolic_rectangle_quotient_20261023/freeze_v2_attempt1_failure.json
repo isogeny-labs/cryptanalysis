@@ -1,0 +1,8 @@
+{
+  "status": "FREEZE_ASSERTION_FAILED_BEFORE_PROTOCOL_WRITE",
+  "command": "python3 experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/freeze_v2.py",
+  "exit_code": 1,
+  "incorrect_assumption": "All 134 size-four depth-six rectangles are complete 2x2 Cartesian products.",
+  "observed": "132 complete 2x2 rectangles; two other size-four rectangles have more than two source codes on one axis and omit some Cartesian pairs.",
+  "correction": "Freeze the 132 complete 2x2 rectangles and retain the two incomplete rectangles for a later quotient with source-validity constraints."
+}

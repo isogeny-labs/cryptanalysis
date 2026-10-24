@@ -1,0 +1,48 @@
+{
+  "candidate_id": null,
+  "holdout_rectangles": 100,
+  "max_bits": 16,
+  "rss_cap_bytes": 4294967296,
+  "selection_rule": "Greedy cover of full-feature training mismatches, maximizing still-uncovered rectangles with lowest feature index breaking ties. Holdout roots are read only after the order is fixed.",
+  "sources": {
+    "coordinate_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_two_code_affine_span_20261013/cases.jsonl",
+      "sha256": "5865314886c6d777c2827074f3917485d40d76fad7d93cda6aac47b5f97d82d6"
+    },
+    "feature_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_target_conditioned_family_20261015/cubic_screen.py",
+      "sha256": "a13264b88bd9ed7532558c90f9729485bc24fa26686175d488761c1bbd6b2fcd"
+    },
+    "freeze_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/freeze_selection.py",
+      "sha256": "8c3131750912490cd6e12088dd85264a0d88e23aef2dd3d73f15d9f0726fb4db"
+    },
+    "inverse_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_target_conditioned_family_20261015/reciprocal_cubic.py",
+      "sha256": "ca96884a226403cebe2dd2cac896a1160cc14c16dc5bf85b88c9ac6b056146af"
+    },
+    "rectangle_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/audit_result_v2.json",
+      "sha256": "b0ed2e826bc3fda31a18b87ed0d6bf23fc30ec55fac49710e42721fcc93b7089"
+    },
+    "rectangle_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/protocol_v2.json",
+      "sha256": "8e38ac7250436543f8aa1e0cf5cb06816406669825d5c0ed9f1551d0aa06837b"
+    },
+    "rectangle_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/result_v2.json",
+      "sha256": "60754d6aa1316eb96ef78c6c6de2f7cba6fd22bdb3dd8c2f20bf209a56360d1c"
+    },
+    "selection_source": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/select_bits.py",
+      "sha256": "ce611527f7636b3f46777cd106bc0b3afa9505222f5fc193a5532a17155a5080"
+    },
+    "target_residuals": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_two_pair_affine_router_20261014/targets.bin",
+      "sha256": "15c18a052fffa413bd45fa8c6885e0a84c9dd1df9499a9332124f38ad85d642f"
+    }
+  },
+  "status": "FROZEN_N41_CUBIC_BIT_SELECTION",
+  "train_rectangles": 32,
+  "wall_cap_seconds": 120
+}

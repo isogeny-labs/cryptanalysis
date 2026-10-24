@@ -1,0 +1,104 @@
+{
+  "bit_indices": [
+    2,
+    5,
+    8
+  ],
+  "candidate_id": null,
+  "code_prefix_depth": [
+    6,
+    6
+  ],
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "feature_index": 1597,
+  "field_degree": 41,
+  "field_modulus": [
+    41,
+    3,
+    0
+  ],
+  "rectangles": [
+    {
+      "case_indices": [
+        4,
+        5,
+        43,
+        44
+      ],
+      "label": "rejecting",
+      "prefix": [
+        0,
+        4
+      ]
+    },
+    {
+      "case_indices": [
+        965,
+        966,
+        1004,
+        1005
+      ],
+      "label": "witness",
+      "prefix": [
+        38,
+        53
+      ]
+    }
+  ],
+  "rss_cap_bytes": 4294967296,
+  "selection": "Two archived full 2x2 rectangles selected before symbolic execution: one cubic-bit mismatch and the known public witness control.",
+  "sources": {
+    "auditor": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/audit_sage.py",
+      "sha256": "134a4685596c19a05b4caf0785e317d8bd843976c82d047290d4b95a4180494b"
+    },
+    "coordinate_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_two_code_affine_span_20261013/cases.jsonl",
+      "sha256": "5865314886c6d777c2827074f3917485d40d76fad7d93cda6aac47b5f97d82d6"
+    },
+    "field_arithmetic": {
+      "path": "/Volumes/SSD990/crypto/research/sat_factor_base_review_20260908/autolab_orbit_extract_20260924/independent_replay.py",
+      "sha256": "1df6fc9295cf525be198a19842dfdca7391ac985bfa79ffa1acf8e546cc05ce1"
+    },
+    "freeze": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/freeze.py",
+      "sha256": "f74bd9a5242910b7a14a285192c95d8734f348668e641e340e40946dd1471ba9"
+    },
+    "geometry": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_fixed_sum_table_20261009/geometry.json",
+      "sha256": "d100282312b509a4e93dd8896b8d79f7c664537e224e25b607eab28e6c87dcae"
+    },
+    "prior_quotient_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_quotient_trace_cubic_20261023/result.json",
+      "sha256": "2af26b5dca830e179c9d5e8533a558fdb776672cb5fcb97e065545e5455fd525"
+    },
+    "prior_region_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_target_conditioned_family_20261015/reciprocal_result.json",
+      "sha256": "070df2b76cc73d69b0700f501af55f156bc8e1d7eda9b9e6634ae10f0ca972f7"
+    },
+    "producer": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/run.py",
+      "sha256": "621e10cab87f0c2802ed412d17dacf701d2e63754798ab530235879987af621d"
+    },
+    "root_polynomial": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_three_pair_resultant_20261013/result.json",
+      "sha256": "ced50080053f18432cdcab3f89707902116a14b72451a1452e1ffb80c1201cd2"
+    },
+    "sage_curve_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_fixed_sum_table_20261009/audit.py",
+      "sha256": "9a0b4b8c97e0b4d8102d175e511cc19f5b751354c3a7d04540646f6498a60b0e"
+    },
+    "sage_runtime": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_symbolic_rectangle_quotient_20261023/sage_runtime_info.json",
+      "sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01"
+    },
+    "target_residuals": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_two_pair_affine_router_20261014/targets.bin",
+      "sha256": "15c18a052fffa413bd45fa8c6885e0a84c9dd1df9499a9332124f38ad85d642f"
+    }
+  },
+  "status": "FROZEN_N41_TWO_CODE_RECTANGLE_QUOTIENT",
+  "target_residual_index": 0,
+  "wall_cap_seconds": 300,
+  "worker_count": 1
+}
