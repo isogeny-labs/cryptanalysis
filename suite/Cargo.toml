@@ -91,6 +91,9 @@ rayon = "1.10"
 # BLAKE3 is a dependency rather than a reimplementation: its Merkle-tree
 # construction is not what any attack here studies.
 blake3 = "1.5"
+sha1 = "0.10"
+sha2 = "0.10"
+sha3 = "0.10"
 # The C library (64-bit groups, Montgomery arithmetic) behind `crax`'s generic
 # discrete-log solvers, compiled from ../src by its own build script.
 libca = { package = "cryptanalysis", path = "../bindings/rust/cryptanalysis" }
