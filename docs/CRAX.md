@@ -43,7 +43,7 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
-| sibling crypto integration | `ic solve-prime \| solve-prime-file \| solve-cubic`, `icx solve-prime \| solve-prime-file \| solve-cubic`, `isogeny-walk`, `store`, `crypto` |
+| sibling crypto integration | `ic` / `icx` `solve-prime \| solve-prime-file \| solve-cubic \| prime-route-generate \| cubic-graph \| cubic-route-generate`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
 | symmetric and hash | `aes-attack`, `aes-sbox-table`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
@@ -77,7 +77,11 @@ crax --json ic solve-prime --p 271 --a 1 --b 19 --n 281 \
   --gx 3 --gy 7 --qx 231 --qy 54
 ```
 
-The bridge also accepts `solve-prime-file --input FILE`, including checked
+The bridge also accepts `prime-route-generate`, `cubic-graph`, and
+`cubic-route-generate` through either `crax ic` or `crax icx`. Route generation
+returns the native JSON route file inside the `report` field when `crax --json`
+is used; save that field as a JSON file before passing it to `--route-file`.
+It accepts `solve-prime-file --input FILE`, including checked
 `store:NAME` and `sha256:DIGEST` inputs, and `solve-cubic`; `crax icx` accepts
 all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
