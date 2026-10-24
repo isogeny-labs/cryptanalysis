@@ -110,8 +110,15 @@ For `p=11`, `"modulus": [1,0,4]` selects `F_11[t]/(t³+4t²+1)`.
 verified scalar 5 on the sibling `cubic_f11_public_target.json` fixture,
 including fresh-cache `store:` input replay. The [sibling release and S3
 receipt](https://github.com/aburan28/crypto/blob/e34a4a66286/docs/store/CUBIC_GENERAL_MODULUS_S3_ACCEPTANCE_20261024.json)
-records those runs. Cubic isogeny routes still require the `t³-c`
-presentation.
+records those runs. The sibling `ic` and `icx` now also enumerate cubic
+isogeny j-graphs, generate checked degree-2 routes, and solve across those
+routes for an explicit irreducible cubic modulus. The
+[routed F11 S3 receipt](https://github.com/aburan28/crypto/blob/a273e3f558f/docs/store/CUBIC_ROUTED_GENERAL_S3_ACCEPTANCE_20261024.json)
+records target and route upload, byte verification, fresh-cache `store:`
+solves through both binaries, scalar 5 with IC and same-target rho, and
+exact-object cleanup. Use `crax --json ic cubic-graph` and
+`crax --json ic cubic-route-generate` to get the corresponding child reports;
+save each child `report` JSON before using it as a graph or route file.
 
 ### Resumable isogeny experiment sweeps
 
