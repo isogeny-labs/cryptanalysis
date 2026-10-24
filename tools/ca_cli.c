@@ -256,7 +256,7 @@ static int delegate_cli(const char *env_name, const char *default_binary)
         fprintf(stderr, "error: cannot allocate binary name\n");
         return 2;
     }
-    strcpy(child[0], binary);
+    memcpy(child[0], binary, strlen(binary) + 1);
     for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
     child[argc_g - 1] = NULL;
     execvp(binary, child);

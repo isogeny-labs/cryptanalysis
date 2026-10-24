@@ -152,14 +152,15 @@ static int ic_sync_parent(const char *path)
     if (!path || !*path) return 0;
     char *dir = strdup(path);
     if (!dir) return 0;
+    const char *parent = dir;
     char *slash = strrchr(dir, '/');
     if (slash) {
         if (slash == dir) slash[1] = '\0';
         else *slash = '\0';
     } else {
-        strcpy(dir, ".");
+        parent = ".";
     }
-    int fd = open(dir, O_RDONLY);
+    int fd = open(parent, O_RDONLY);
     int ok = fd >= 0 && fsync(fd) == 0;
     if (fd >= 0) close(fd);
     free(dir);
@@ -275,10 +276,11 @@ static char *ic_sibling_path(const char *journal, const char *name)
 {
     const char *slash = strrchr(journal, '/');
     size_t prefix = slash ? (size_t)(slash - journal + 1) : 0;
-    char *path = malloc(prefix + strlen(name) + 1);
+    size_t name_len = strlen(name) + 1;
+    char *path = malloc(prefix + name_len);
     if (!path) return NULL;
     memcpy(path, journal, prefix);
-    strcpy(path + prefix, name);
+    memcpy(path + prefix, name, name_len);
     return path;
 }
 
