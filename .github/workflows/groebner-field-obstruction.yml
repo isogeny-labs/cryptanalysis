@@ -38,6 +38,12 @@ jobs:
       GROEBNER_F4_REFERENCE_ROOT: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round108 experiments/groebner-perf-20260924/round11 experiments/groebner-perf-20260924/round110 experiments/groebner-perf-20260924/round112 experiments/groebner-perf-20260924/round116 experiments/groebner-perf-20260924/round118 experiments/groebner-perf-20260924/round119 experiments/groebner-perf-20260924/round121
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
