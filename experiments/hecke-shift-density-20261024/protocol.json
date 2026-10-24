@@ -1,0 +1,15 @@
+{
+  "status": "FROZEN_BEFORE_DENSITY_SWEEP",
+  "curve": "y^2+y=x^3-x^2-10x-20 over F_20023",
+  "subgroup_order": 4021,
+  "source_table": "hecke-torsion-frontiers-20261024/p20023.result.json original 3949 representatives",
+  "relation_rows": "p20023.seed.result.json accepted_rows plus p20023.result.json rows; retain a row iff every referenced column survives",
+  "subset_law": "keep the anchored generator column; order every other original column by SHA-256 of ASCII 'hecke-shift-density/v1:' plus seed label plus ':' plus decimal original column index; take the first table_size-1",
+  "seeds": ["A", "B"],
+  "table_sizes": [3949, 3900, 3800, 3600, 3200, 2800, 2400],
+  "shift_rule": "for each retained projected point Q, include Q+G when the hit also survives; verify the point identity; contract connected shift components with log offset +1 modulo 4021",
+  "rank_rule": "reduce every retained Hecke row to shift-component variables, append anchored log(G)=1, and compute exact GF(4021) rank; unresolved component dimension equals component count minus rank",
+  "validation": "independently reconstruct all projected edges and retained rows and compare component rank with a separate Sage GF(4021) matrix rank",
+  "candidate_id": null,
+  "timing_claim": null
+}
