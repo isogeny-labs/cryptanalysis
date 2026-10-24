@@ -17,6 +17,14 @@ int main(void)
                             10000, &answer, &stats) == CA_OK);
     CHECK_EQ_U64(answer, 12345);
     CHECK(stats.class_visits > 0 && stats.distinguished > 0);
+    uint64_t accounted = 0;
+    for (unsigned t = 0; t < 6; t++) {
+        CHECK_EQ_U64(stats.twist_visits[t],
+                     stats.route_parity_by_twist[t][0] +
+                     stats.route_parity_by_twist[t][1]);
+        accounted += stats.twist_visits[t];
+    }
+    CHECK_EQ_U64(accounted, stats.class_visits);
     CHECK(ca_sixclass_solve(&g, &base, &target, 19, 3, 4,
                             100, &answer, NULL) == CA_ERR_INVALID);
     return 0;
