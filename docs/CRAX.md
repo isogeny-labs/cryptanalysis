@@ -59,6 +59,17 @@ for graph numeration, checked routes, and other input forms. Use
 AES primitive commands and 32 cryptanalysis commands in the tested sibling
 build are reachable through this bridge.
 
+The explicit prime-field IC commands require a prime field modulus in
+`5..=1,000,000` and a prime subgroup order in `3..=4,000,000`. The explicit
+cubic-field solver requires a prime characteristic in `7..=101` and a prime
+subgroup order in `3..=2,000,000`; it counts the entire curve order before
+running IC. Cubic j-graph numeration supports selected degrees 2, 3, 5, and
+7 with at most 64 distinct j-nodes. The prime and cubic route generators
+accept prime kernel degrees in `2..=31` only when a rational certified route
+can be found within their work budgets. These are operational input limits,
+not estimates of cryptographic-curve solve cost. The attack commands state
+their own sample, round, and output limits in `--help`.
+
 For retained artifacts in the approved Setec bucket, configure an AWS profile
 with access to the bucket and use the versioned runs prefix. `push` updates the
 small local index; commit that index when the logical name should be shared.
