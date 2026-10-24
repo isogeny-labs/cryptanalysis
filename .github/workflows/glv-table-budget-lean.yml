@@ -99,7 +99,10 @@ jobs:
           assert run.stderr == receipt['stderr'] == '', repr(run.stderr)
           expected = printed_axioms(receipt['stdout'])
           actual = printed_axioms(run.stdout)
-          assert len(expected) == 6 and actual == expected, (actual, expected)
+          declared = {'GlvTableBudget.' + name for name in
+                      re.findall(r'^theorem\s+(\w+)',
+                                 (directory / 'TableBudget.lean').read_text(), re.MULTILINE)}
+          assert len(declared) == 8 and set(actual) == declared and actual == expected, (actual, expected, declared)
           assert all(axioms <= {'propext', 'Quot.sound'} for axioms in actual.values())
           print(run.stdout, end='')
           PY

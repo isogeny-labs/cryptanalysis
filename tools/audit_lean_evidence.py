@@ -100,7 +100,10 @@ def receipt_source(path: str, receipt: dict) -> str | None:
 
 def audit() -> dict:
     paths = tracked_paths()
-    lean_files = sorted(p for p in paths if p.endswith(".lean"))
+    # The gate's intentionally failing Lean fixtures are audit instruments,
+    # not research proofs. Their behavior is checked by tools/lean/selftest.
+    lean_files = sorted(p for p in paths if p.endswith(".lean") and
+                        not p.startswith("tools/lean/"))
     receipts = sorted(p for p in paths if p.endswith("lean-receipt.json"))
     missing_pins: list[str] = []
     forbidden: list[str] = []
