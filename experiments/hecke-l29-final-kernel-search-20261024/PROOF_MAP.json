@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "result": "A known table log transports through a checked j-generator shift",
+      "lean_declaration": "ShiftClosure.log_from_generator_shift",
+      "hypotheses": "Additive commutative groups G,H; additive homomorphism log:G→+H; known=unknown+steps•generator for steps:ℕ",
+      "status": "LEAN_CHECKED",
+      "concrete_bridge": "The F_20023 group operation, projection and each saved Q+jG=R point identity are checked by validate_control.py and validate_translation.py, not formalized in Lean"
+    },
+    {
+      "result": "A shift row with nonzero residual coordinate separates a one-dimensional kernel",
+      "lean_declaration": "ShiftClosure.shift_row_separates_residual",
+      "hypotheses": "Field K; unknown≠0; anchor=0; known=0",
+      "status": "LEAN_CHECKED",
+      "concrete_bridge": "The saved GF(4021) kernels, row evaluations, full ranks and scalar replays are checked by validate_ranks.py and the integer validators, not formalized in Lean"
+    }
+  ],
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "axiom_receipt": "formal/lean_check.txt",
+  "lean4checker_fresh": "UNAVAILABLE"
+}

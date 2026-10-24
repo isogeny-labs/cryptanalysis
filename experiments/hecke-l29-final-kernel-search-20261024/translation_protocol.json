@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN_BEFORE_GENERATOR_TRANSLATION_CLOSURE",
+  "p": 20023,
+  "subgroup_order": 4021,
+  "quotient_projection": "multiply curve point by 5 to kill the saved order-five torsion",
+  "generator_point": [1, 8630],
+  "old_ambiguous_orbit_indices": [1391, 1392, 2593, 2594],
+  "selection": "for each ambiguous projected orbit point in ascending old index, find the smallest j in {1,2} such that Q+jG equals a prepared table point at a column with zero residual-kernel coefficient",
+  "row": "log(Q) + j*log(G) - log(Q+jG) = 0 modulo 4021, using the anchored log(G)=1",
+  "acceptance": "independent projected-point identity, full anchored GF(4021) rank on all 3959 columns, scalar replay of every orbit log and every subgroup target",
+  "candidate_id": null,
+  "timing_claim": null
+}
