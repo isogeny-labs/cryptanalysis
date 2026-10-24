@@ -190,6 +190,10 @@ help lists the observed differential and linear, DFA, power, cache, trail,
 and distinguisher commands; DDT, LAT, BCT, and DLCT row reports match the
 producer exactly; a zero-correlation command succeeds; and an unknown
 command exits unsuccessfully.
+The separate [observed AES bridge receipt](CRAX_AES_OBSERVED_BRIDGE_ACCEPTANCE_20261024.json)
+uses the committed differential and linear statistics fixtures. Both measured
+reports match the direct producer command exactly, with input and report
+digests recorded.
 
 For `hash --file`, a local path or indexed `store:NAME` and `sha256:DIGEST`
 reference is accepted. The latter uses the sibling `crypto store pull`
