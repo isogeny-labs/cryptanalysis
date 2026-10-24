@@ -29,7 +29,7 @@ int main(void)
                             100, &answer, NULL) == CA_ERR_INVALID);
     ca_elem identity;
     ca_group_identity(&g, &identity);
-    CHECK(ca_sixclass_solve(&g, &identity, &identity, 19, 32, 4,
-                            1, &answer, NULL) == CA_ERR_INVALID);
+    CHECK(ca_sixclass_solve(&g, &identity, &identity, 19, 32, 4, 1, &answer, NULL) ==
+          CA_ERR_INVALID);
     return 0;
 }

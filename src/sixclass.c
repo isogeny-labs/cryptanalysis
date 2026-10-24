@@ -53,9 +53,8 @@ ca_status ca_sixclass_solve(const ca_group *g, const ca_elem *base,
     ca_sixclass_stats local = {0};
     if (!stats) stats = &local;
     memset(stats, 0, sizeof(*stats));
-    if (!g || !base || !target || !x || g->kind != CA_GROUP_EC ||
-        g->endo_kind != 1 || g->aut_order != 6 || !g->order ||
-        r < 2 || (r & (r - 1)) || r > 2048 || dp_bits > 24 ||
+    if (!g || !base || !target || !x || g->kind != CA_GROUP_EC || g->endo_kind != 1 ||
+        g->aut_order != 6 || !g->order || r < 2 || (r & (r - 1)) || r > 2048 || dp_bits > 24 ||
         !ca_group_is_valid(g, base) || !ca_group_is_valid(g, target) ||
         ca_group_is_identity(g, base))
         return CA_ERR_INVALID;
