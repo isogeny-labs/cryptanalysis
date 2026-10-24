@@ -1,0 +1,54 @@
+{
+  "byte_identical_outputs": [
+    "confirm.svg",
+    "results.json",
+    "results.md"
+  ],
+  "command": "python3 analyze.py && python3 chart.py in an isolated copy of the frozen source and rows",
+  "identity_control": {
+    "differing": 0,
+    "rows_with_equal_table": 45700
+  },
+  "original_sha256": {
+    "analyze.py": "a7603a1bb717d5d4f40e36037df4a912efc5fa408b6149786815a52ef2aa8e3d",
+    "chart.py": "95e26bfd4bb7e53d6e1eebdcfa9119aa424520cffaffa00b74fcb87be666bcc8",
+    "confirm.png": "710f4516098ba53ba1a0ee1b2983f69fabc9e4306a669abb5f4ab9b3c3a92355",
+    "confirm.svg": "7eb54ee2bd801bee14dc508e2558d37a219ec4a268939f1831b595bc0acc4195",
+    "results.json": "faf17488baab63ed000f61bbdb516417c7bb255404d807f83e1f5c4f522ff117",
+    "results.md": "2497217f4066d873086e9609b5ea19b4a909bd0609fedaf0d57aad7bd10da8bb",
+    "rows_c12.jsonl.gz": "4bb57c61f156a3871cd757460cce17223fd91950534f4c41d693f4b50531805a",
+    "rows_main.jsonl.gz": "46237cc3602ff7582aacf43b3fa7c8de3d38e0330ae85c9b97ef985196178b30"
+  },
+  "primary": {
+    "j0": {
+      "ci": [
+        0.9581173295239663,
+        0.9761893211383101
+      ],
+      "geomean_28_34": 0.9670782595099048,
+      "level": 0.975,
+      "verdict": "confirmed: fewer ops than main"
+    },
+    "j1728": {
+      "ci": [
+        0.9480028115397712,
+        0.9648953659197841
+      ],
+      "geomean_28_34": 0.9565397206383895,
+      "level": 0.975,
+      "verdict": "confirmed: fewer ops than main"
+    }
+  },
+  "regenerated_sha256": {
+    "confirm.svg": "7eb54ee2bd801bee14dc508e2558d37a219ec4a268939f1831b595bc0acc4195",
+    "results.json": "faf17488baab63ed000f61bbdb516417c7bb255404d807f83e1f5c4f522ff117",
+    "results.md": "2497217f4066d873086e9609b5ea19b4a909bd0609fedaf0d57aad7bd10da8bb"
+  },
+  "row_counts": {
+    "c12": 80000,
+    "main": 80000
+  },
+  "schema": "glv-table-lean-reanalysis-v1",
+  "scope": "archived row and graph replay; no new solver run or wall-time claim",
+  "source_commit": "42761f85b06242cb54f2a5fa405c723451897503"
+}
