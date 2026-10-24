@@ -1,0 +1,37 @@
+{
+  "candidate_id": null,
+  "results": [
+    {
+      "claim": "distinct abscissas over any field make the power-sum moment matrix invertible and the ordinate coefficient vector unique",
+      "lean_source": "formal/MomentTrace.lean",
+      "lean_declarations": ["MomentTrace.momentMatrix_eq_gram", "MomentTrace.momentMatrix_det_ne_zero", "MomentTrace.momentMatrix_mulVec_injective", "MomentTrace.moment_reconstruction_unique"],
+      "hypotheses": "K is a field, n is a natural number, x : Fin n -> K is injective; uniqueness assumes two coefficient vectors produce the same observed mixed-moment vector",
+      "status": "lean_checked",
+      "axioms": ["propext", "Classical.choice", "Quot.sound"],
+      "check_output": "formal/lean_check.txt"
+    },
+    {
+      "claim": "the sum of a complete cycle under an additive endomorphism is fixed by that endomorphism",
+      "lean_source": "formal/MomentTrace.lean",
+      "lean_declarations": ["MomentTrace.cyclic_trace_fixed"],
+      "hypotheses": "G is an additive commutative group, sigma is an additive endomorphism, f : Nat -> G obeys sigma(f i)=f(i+1) and f(d)=f(0)",
+      "status": "lean_checked",
+      "axioms": ["propext", "Classical.choice", "Quot.sound"],
+      "missing_bridge": "identify fixed points of concrete Frobenius on the elliptic curve over the extension field with rational base-field points"
+    },
+    {
+      "claim": "54 degree-29 squarefree Hecke fibers give verified Frobenius-orbit trace rows; their addition raises induced old-column rank from 3947 to 3948",
+      "finite_evidence": ["squarefree_result.json", "residual_trace_result.json", "all_rank_result.json", "all_validation.json"],
+      "status": "finite_field_and_exact_rank_externally_replayed",
+      "missing_formalization": "kernel encoding of the concrete degree-29 Hecke functions, 54 finite-field factorization and trace certificates, and the 3959-column integer rank certificate"
+    },
+    {
+      "claim": "one generic seed log completes all 3959 reachable orbit logs and covers all 4021 subgroup targets within two generator additions",
+      "finite_evidence": ["all_completion_result.json", "all_completion_validation.json"],
+      "status": "integer_curve_replay_external",
+      "missing_formalization": "instantiate the prior abstract seed-uniqueness result with the concrete rank and point certificates"
+    }
+  ],
+  "lean4checker_fresh": "unavailable_on_host",
+  "timing_claim": null
+}
