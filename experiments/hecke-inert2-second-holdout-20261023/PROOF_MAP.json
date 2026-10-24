@@ -1,0 +1,36 @@
+{
+  "abstract_commutator": {
+    "conclusion": "sum_i (T3 q_i + q_i) = sum_j (T2 w_j + 2 w_j) + (T2 x + 2 x) - 2(T3 x + x)",
+    "hypotheses": "AddCommGroup A; additive maps T2,T3 commute on every x; T2 x is the sum of exactly three q_i; T3 x is the sum of exactly four w_i",
+    "lean_declaration": "ThreeDescendants.three_downward_commutator",
+    "missing_bridge": "Lean definitions of the finite-field X0(11) point module, Hecke incidence, and commuting operators for the saved rows",
+    "source_sha256": "0ae54a79494a7952d69f8626ef44dab7892381d02da75f5fe4510d96ddb6699e",
+    "status": "kernel_checked"
+  },
+  "build_sha256": "73b21b3545cef90fe1c2748bf9fc5ef381a8659c223edd6a2c13b7521791635f",
+  "candidate_id": null,
+  "cycle_kernel": {
+    "conclusion": "solutions have period three and exactly two free rational parameters per 15-cycle",
+    "hypotheses": "rational sequence x with x(i)+x(i+1)+x(i+2)=0 and a specified cycle period; n=15 is divisible by 3",
+    "lean_declarations": [
+      "GeneralCycleKernel.period_three",
+      "GeneralCycleKernel.periodicPair_cycle",
+      "GeneralCycleKernel.recurrence_has_two_parameters",
+      "GeneralCycleKernel.periodic_solution_unique_pair"
+    ],
+    "missing_bridge": "Lean identification of the saved two 15-cycle graph and its projected relation block with the recurrence",
+    "source_sha256": "21632bbac143849773575389d68a49a8f60131554d81a1e2a0ccbaf876dc55ee",
+    "status": "kernel_checked"
+  },
+  "empirical_result": {
+    "evidence_sha256": {
+      "certificates": "b3256a666f7bd6425905297d99a9532e2020edca3519dd981f818aafa4cff629",
+      "full_matrix": "7febac90ddbc8b17280208a7523ac8f122c142b1e1599eb57eb696d9bfcd5329",
+      "validation": "0fd9b9d47f247a3353867eaadea78253bb9b0f692cc67174e5792f1c6a9a15fd"
+    },
+    "formal_status": "finite-field modular-curve incidence and exact rank are checked computationally, not formalized in Lean",
+    "statement": "For the selected D=-131, p=13723 X0(11) class, 70 verified rows have rational rank 60; 30 conductor-2 rows add 20 after the other 40 rows; the nonfloor projection has rank 56."
+  },
+  "status": "PARTIAL_FORMAL_BRIDGE_WITH_CHECKED_ABSTRACT_THEOREMS",
+  "timing_claim": null
+}

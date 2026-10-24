@@ -1,0 +1,34 @@
+{
+  "lean4checker_fresh": "unavailable_on_host",
+  "manifest_sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+  "modules": {
+    "GeneralCycleKernel": {
+      "axiom_audit": [
+        "'GeneralCycleKernel.period_three' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.period_three_mul' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.nonmultiple_trivial' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.periodicPair_recurrence' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.periodicPair_cycle' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.recurrence_has_two_parameters' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.periodicPair_injective' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.multiple_periodic_solution' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'GeneralCycleKernel.periodic_solution_unique_pair' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      ],
+      "command": "lake env lean -o /private/tmp/SecondInertGeneralCycleKernel.olean GeneralCycleKernel.lean",
+      "olean_sha256": "add408d197175512daf77d72f2dea0a861c2b8051e294e1960d0bebf0d561266",
+      "output_sha256": "d1ee694711ff8c762a7749aa07ce2d7daf9760c841c535a2e3cde69901a7df9b",
+      "source_sha256": "21632bbac143849773575389d68a49a8f60131554d81a1e2a0ccbaf876dc55ee"
+    },
+    "ThreeDescendants": {
+      "axiom_audit": [
+        "'ThreeDescendants.three_downward_commutator' depends on axioms: [propext]"
+      ],
+      "command": "lake env lean -o /private/tmp/SecondInertThreeDescendants.olean ThreeDescendants.lean",
+      "olean_sha256": "c2d23093e40cb19283ec15cccf658165588a556e0bb08d3a0451fe4fdb2884f4",
+      "output_sha256": "7d39562d0e4c1803fd2680627164c45bcaf4605e86df2a93477c385504d7ed16",
+      "source_sha256": "0ae54a79494a7952d69f8626ef44dab7892381d02da75f5fe4510d96ddb6699e"
+    }
+  },
+  "status": "LEAN_MODULES_BUILT_AND_AXIOMS_AUDITED",
+  "toolchain_sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7"
+}
