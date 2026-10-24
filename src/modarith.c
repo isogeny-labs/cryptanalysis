@@ -38,6 +38,23 @@ uint64_t ca_gcd(uint64_t a, uint64_t b)
     return a;
 }
 
+#ifdef CA_GLV_FIELD_COUNT
+uint64_t ca_fc_cnt[CA_FC_PHASES][CA_FC_KINDS];
+uint64_t ca_fc_ev[CA_FC_EV_N];
+uint32_t ca_fc_phase;
+void ca_fc_reset(void)
+{
+    memset(ca_fc_cnt, 0, sizeof(ca_fc_cnt));
+    memset(ca_fc_ev, 0, sizeof(ca_fc_ev));
+    ca_fc_phase = CA_FC_OUTSIDE;
+}
+void ca_fc_read(uint64_t *out)
+{
+    memcpy(out, ca_fc_cnt, sizeof(ca_fc_cnt));
+    memcpy(out + CA_FC_PHASES * CA_FC_KINDS, ca_fc_ev, sizeof(ca_fc_ev));
+}
+#endif
+
 uint64_t ca_invmod(uint64_t a, uint64_t m)
 {
     /* Extended Euclid with signed 128-bit coefficients so any 64-bit
@@ -47,7 +64,9 @@ uint64_t ca_invmod(uint64_t a, uint64_t m)
     if (a == 0) return 0;
     ca_i128 t = 0, newt = 1;
     uint64_t r = m, newr = a;
+    CA_FC_ADD(CA_FC_INV, 1);
     while (newr) {
+        CA_FC_ADD(CA_FC_EUCLID, 1);
         uint64_t q = r / newr;
         ca_i128 tmp = t - (ca_i128)q * newt;
         t = newt;

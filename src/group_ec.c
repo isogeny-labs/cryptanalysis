@@ -120,7 +120,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
      * ca_mont_redc, so the same residues. */
     const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
     const uint64_t one = g->mont.r1;
-#define BM(x, y) bmul((x), (y), P, NPI)
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), bmul((x), (y), P, NPI))
 #define BA(x, y) ca_addmod((x), (y), P)
 #define BS(x, y) ca_submod((x), (y), P)
     uint64_t *den = scratch;       /* n denominators */
@@ -148,6 +148,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         uint64_t lam;
         if (ax == FX(B)) {
             if (ay == FY(B) && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
                 uint64_t x2 = bmul(ax, ax, P, NPI);
                 uint64_t num = BA(BA(BA(x2, x2), x2), AM);
                 lam = BM(num, di);
@@ -159,6 +160,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
             lam = BM(BS(FY(B), ay), di);
         }
         const uint64_t bx = FX(B);
+        CA_FC_ADD(CA_FC_SQR, 1);
         uint64_t x3 = BS(BS(bmul(lam, lam, P, NPI), ax), bx);
         uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
         FX(&r[i]) = x3;

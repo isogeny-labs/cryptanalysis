@@ -356,6 +356,11 @@ typedef struct glv_walk {
     ca_elem hY[4];
     uint64_t ha[4], hb[4], hh[4];
     uint32_t hn;
+#    ifdef CA_GLV_BATCH_ESCAPE
+    /* set while the walk's next batched slot doubles Y (a, b already those of
+     * the cycle member Y) instead of adding a multiplier */
+    uint8_t esc;
+#    endif
 #endif
 #ifdef CA_GLV_TRACE
     uint64_t ring[GLV_RING];
@@ -423,6 +428,9 @@ static void glv_checkpoint_identity(glv_checkpoint_header *h, const glv_ctx *c,
 #endif
 #ifdef CA_GLV_TRACE
     h->walk_flags |= 4;
+#endif
+#ifdef CA_GLV_BATCH_ESCAPE
+    h->walk_flags |= 8;
 #endif
 }
 
@@ -625,6 +633,13 @@ static int glv_startup_combination(const glv_ctx *c, ca_elem *out,
 static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = c->g;
+#ifdef CA_GLV_FIELD_COUNT
+    const uint32_t fc_saved_phase = ca_fc_phase;
+    if (fc_saved_phase != CA_FC_SETUP) {
+        ca_fc_phase = CA_FC_RESTART;
+        ca_fc_ev[CA_FC_EV_RESTARTS]++;
+    }
+#endif
     uint64_t n = g->order;
     w->a = ca_rng_below(rng, n);
     w->b = ca_rng_below(rng, n);
@@ -641,6 +656,12 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
     w->retry = 0;
 #ifdef CA_GLV_CYCLE_ESCAPE
     w->hn = 0;
+#    ifdef CA_GLV_BATCH_ESCAPE
+    w->esc = 0;
+#    endif
+#endif
+#ifdef CA_GLV_FIELD_COUNT
+    ca_fc_phase = fc_saved_phase;
 #endif
     return 1;
 }
@@ -676,6 +697,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 
     glv_ctx c;
     memset(&c, 0, sizeof(c));
+#ifdef CA_GLV_FIELD_COUNT
+    ca_fc_phase = CA_FC_SETUP;
+#endif
     c.g = g;
     c.base = *base;
     c.target = *target;
@@ -853,6 +877,13 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     while (ops < cap) {
         for (uint32_t w = 0; w < W; w++) {
             glv_walk *wk = &walks[w];
+#ifdef CA_GLV_BATCH_ESCAPE
+            if (wk->esc) { /* escaping: the batch doubles the cycle member */
+                B[w] = wk->Y;
+                Yn[w] = wk->Y;
+                continue;
+            }
+#endif
             if (!wk->retry) {
                 wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) % c.r);
                 wk->first = wk->idx;
@@ -861,7 +892,15 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             B[w] = c.M[wk->idx];
             Yn[w] = wk->Y;
         }
+#ifdef CA_GLV_FIELD_COUNT
+        ca_fc_phase = CA_FC_BATCH;
+        ca_fc_ev[CA_FC_EV_BATCHES]++;
+        ca_fc_ev[CA_FC_EV_BATCH_WALKS] += W;
+#endif
         ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+#ifdef CA_GLV_FIELD_COUNT
+        ca_fc_phase = CA_FC_POST;
+#endif
         ops += W;
         steps += W;
 #ifdef CA_GLV_TRACE
@@ -870,8 +909,29 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #endif
         for (uint32_t w = 0; w < W; w++) {
             glv_walk *wk = &walks[w];
-            uint32_t k = glv_class_reduce(g, &Yn[w], c.m);
-            uint64_t h = ca_group_hash(g, &Yn[w]);
+            uint32_t k;
+            uint64_t h;
+#ifdef CA_GLV_BATCH_ESCAPE
+            if (wk->esc) {
+                /* Finish the escape the previous iteration decided on: Yn[w]
+                 * is twice the cycle member, in this walk's own batch slot.
+                 * The state from here is exactly what the inline doubling
+                 * left. */
+                wk->esc = 0;
+                wk->Y = Yn[w];
+                wk->a = ca_addmod(wk->a, wk->a, n);
+                wk->b = ca_addmod(wk->b, wk->b, n);
+                uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                if (kk) {
+                    wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
+                    wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                }
+                h = ca_group_hash(g, &wk->Y);
+                goto glv_dp_check;
+            }
+#endif
+            k = glv_class_reduce(g, &Yn[w], c.m);
+            h = ca_group_hash(g, &Yn[w]);
             /* Fruitless-cycle look-ahead: if the reduced point would pick the
              * same multiplier we just used, advance to the next one and redo
              * the step -- a deterministic function of the class, so walks
@@ -896,6 +956,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #endif
                 wk->idx = (wk->idx + 1) % c.r;
                 wk->retry = 1;
+#ifdef CA_GLV_FIELD_COUNT
+                ca_fc_ev[CA_FC_EV_RETRIES]++;
+#endif
 #ifdef CA_GLV_TRACE
                 tr.retry_steps++;
                 wk->retried = 1;
@@ -938,9 +1001,28 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                             best_h = wk->hh[i];
                             best = i;
                         }
+#    ifdef CA_GLV_FIELD_COUNT
+                    ca_fc_ev[L == 2 ? CA_FC_EV_ESC2 : CA_FC_EV_ESC4]++;
+#    endif
                     ca_elem P = best == UINT32_MAX ? wk->Y : wk->hY[best];
                     uint64_t pa = best == UINT32_MAX ? wk->a : wk->ha[best];
                     uint64_t pb = best == UINT32_MAX ? wk->b : wk->hb[best];
+#    ifdef CA_GLV_BATCH_ESCAPE
+                    /* Leave the doubling to this walk's slot in the next
+                     * batch (a == b there is a doubling, sharing the batch's
+                     * one inversion).  The slot is one of the W operations
+                     * the iteration already counts, so the doubling is
+                     * booked as before, one group operation; the walk's
+                     * state after it is finished at the top of the next
+                     * iteration and equals the inline result. */
+                    wk->Y = P;
+                    wk->a = pa;
+                    wk->b = pb;
+                    wk->esc = 1;
+#    else
+#        ifdef CA_GLV_FIELD_COUNT
+                    ca_fc_phase = CA_FC_ESCAPE;
+#        endif
                     ca_group_op(g, &wk->Y, &P, &P);
                     ops++;
                     wk->a = ca_addmod(pa, pa, n);
@@ -951,19 +1033,28 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                         wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
                     }
                     h = ca_group_hash(g, &wk->Y);
+#        ifdef CA_GLV_FIELD_COUNT
+                    ca_fc_phase = CA_FC_POST;
+#        endif
+#    endif
                     wk->hn = 0;
 #    ifdef CA_GLV_TRACE
                     if (L == 2)
                         tr.escape2++;
                     else
                         tr.escape4++;
+#        ifndef CA_GLV_BATCH_ESCAPE
                     tr.restart_ops += 1; /* the doubling is booked with restarts */
+#        endif
                     tr.abandon_wasted +=
                         L; /* the L committed steps around the cycle were not productive */
                     wk->trace_wasted_since_dp +=
                         ca_glv_trace_cycle_steps_since_dp(L, wk->since_dp);
                     assert(wk->trace_wasted_since_dp <= wk->since_dp);
                     wk->ring_pos = 0;
+#    endif
+#    ifdef CA_GLV_BATCH_ESCAPE
+                    continue; /* no data point or abandon test until the doubling is done */
 #    endif
                 } else {
                     for (uint32_t i = 3; i > 0; i--) {
@@ -980,6 +1071,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 }
             }
 #endif
+#ifdef CA_GLV_BATCH_ESCAPE
+        glv_dp_check:
+#endif
             if ((h & c.dp_mask) == 0) {
                 uint64_t oa, ob;
                 int ins = ca_htab_insert(&tab, h, wk->a, wk->b, &oa, &ob);
@@ -990,6 +1084,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 tr.dps++;
 #endif
                 if (ins == 1) {
+#ifdef CA_GLV_FIELD_COUNT
+                    ca_fc_phase = CA_FC_OUTSIDE;
+#endif
 #ifdef CA_GLV_TRACE
                     tr.coll_total++;
                     if (oa == wk->a && ob == wk->b) tr.coll_same_ab++;
@@ -1002,6 +1099,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
 #ifdef CA_GLV_TRACE
                     if (!(oa == wk->a && ob == wk->b)) tr.coll_recover_fail++;
                     uint64_t before = ops;
+#endif
+#ifdef CA_GLV_FIELD_COUNT
+                    ca_fc_phase = CA_FC_POST;
 #endif
                     if (!glv_restart(&c, wk, &rng, &ops)) {
                         rc = CA_ERR_INTERNAL;
@@ -1073,6 +1173,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     }
     if (max_ops && ops >= max_ops) rc = CA_ERR_LIMIT;
 done:
+#ifdef CA_GLV_FIELD_COUNT
+    ca_fc_phase = CA_FC_OUTSIDE;
+#endif
     if (have_tab && checkpoint_ready) {
         double elapsed = elapsed_prior + ca_now() - t0;
         if (checkpoint_path && !glv_checkpoint_save(checkpoint_path, &identity,
