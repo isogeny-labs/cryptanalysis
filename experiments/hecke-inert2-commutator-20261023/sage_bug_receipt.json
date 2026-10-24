@@ -1,0 +1,63 @@
+{
+  "d": 35,
+  "method_source_file": "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/schemes/elliptic_curves/ell_finite_field.py",
+  "method_source_sha256": "57b6045fda2f8361b19a383670cc42c18d53cfbbdf3821445363de074af6e078",
+  "p": 11131,
+  "records": [
+    {
+      "explicit_codomain_j": [
+        1345,
+        1345,
+        5662,
+        11080
+      ],
+      "explicit_isogeny_count": 4,
+      "j": 193,
+      "phi3_roots": [
+        {
+          "j": 11080,
+          "multiplicity": 1
+        },
+        {
+          "j": 5662,
+          "multiplicity": 1
+        },
+        {
+          "j": 1345,
+          "multiplicity": 2
+        }
+      ],
+      "sage_height_above_floor_3": 0,
+      "sage_reported_endomorphism_conductor": 3
+    },
+    {
+      "explicit_codomain_j": [
+        193,
+        193,
+        948,
+        4153
+      ],
+      "explicit_isogeny_count": 4,
+      "j": 1345,
+      "phi3_roots": [
+        {
+          "j": 4153,
+          "multiplicity": 1
+        },
+        {
+          "j": 948,
+          "multiplicity": 1
+        },
+        {
+          "j": 193,
+          "multiplicity": 2
+        }
+      ],
+      "sage_height_above_floor_3": 0,
+      "sage_reported_endomorphism_conductor": 3
+    }
+  ],
+  "script_sha256": "4e7280c468ef647a316bf91bff144365b9165a211d10669daf9851ee45fd851c",
+  "source_condition": "nj1 = len(Phi_ell(j,Y).roots(multiplicities=False)); on_floor = nj1 <= ell for ell != 2",
+  "status": "REPRODUCED_DISTINCT_ROOT_FLOOR_CLASSIFICATION_DISCREPANCY"
+}

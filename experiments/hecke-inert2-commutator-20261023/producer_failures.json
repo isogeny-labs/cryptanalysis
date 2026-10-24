@@ -1,0 +1,19 @@
+{
+  "runs": [
+    {
+      "command": "./sage -python experiments/hecke-inert2-commutator-20261023/produce.py",
+      "exception": "AssertionError at exact endomorphism_order().conductor()==c check for H_-35 root; no matrix output produced",
+      "protocol_sha256": "d6d19ccc2db5afb178daf74dc76f5f7771515f523d900a288e6c1d7afb91bb57",
+      "script_sha256": "e08925c3d90e524025cc6b765695d06396858bdef3afff564b1e7f4d88140d1b",
+      "version": "v1"
+    },
+    {
+      "command": "./sage -python experiments/hecke-inert2-commutator-20261023/produce_v2.py",
+      "exception": "AssertionError at codomains==expected because v2 compared degree-3 isogeny codomains against degree-2 modular-polynomial roots; no matrix output produced",
+      "protocol_sha256": "f6ee76e5a7bcfa5ba0dccc2ec4599a3fc06b5c27fe372467b240b24ed37c03dc",
+      "script_sha256": "b396ee769ba2ea85bc3f774f619ecfeb86e9456080c359dff331bbc2ee11450c",
+      "version": "v2"
+    }
+  ],
+  "status": "PRESERVED_PRE_RANK_PRODUCER_FAILURES"
+}
