@@ -1,0 +1,28 @@
+# Ramified level 11 gives one rational lift and a full-rank 19-cycle block
+
+**Contribution.** The frozen \(D=-1199\), \(p=10891\) conductor-6 experiment finds exactly **one rational \(X_0(11)\) point per CM \(j\)-invariant** in all four conductor strata. In the conductor-2 stratum, the degree-3 horizontal graph has **two cycles of length 19**. Its 38-by-38 projected Hecke matrix has **determinant 9** and rational rank 38. This identifies a concrete one-sheet boundary of the previous split-level theorem and eliminates its two-sheet degree-3 kernel for this exact stratum.
+
+| Quantity | Frozen forecast | Observed |
+| --- | ---: | ---: |
+| Rational level-11 lifts per conductor-2 \(j\) | 1 | 1 for all 38 \(j\)-values |
+| Conductor-2 rational points | 38 | 38 |
+| Conductor-2 degree-3 cycles | \(2\times19\) | \(2\times19\) |
+| Degree-3 projected matrix rank | Not frozen; follows from the observed 19-cycles and \(a_3=-1\) | 38 of 38; determinant 9 |
+
+The selection was fixed in [protocol.json](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/protocol.json) before the fiber gate. The discriminant \(D=-1199\) was the first zero-discriminant-modulo-11 row in the earlier frozen scan. The selected prime of the form \(v^2+9d\) is \(p=10^2+9(1199)=10891\); \(t^2-4p=-1199\cdot6^2\) for \(|t|=20\). Modulo 11, the Frobenius polynomial has a repeated root: 10 for \(t=20\) and 1 for \(t=-20\). A repeated root permits either scalar Frobenius, with twelve invariant projective lines, or a nontrivial Jordan action, with one. The fiber gate distinguishes these cases empirically without inferring one solely from the vanishing discriminant.
+
+The checked repository Sage launcher recorded [runtime information](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/sage_runtime.json) before either job. The inherited [fiber gate](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/fiber_gate_raw.json) enumerated the Hilbert-class-polynomial roots and exact rational \(X_0(11)\) points. Its built-in status is `FAIL_UNIFORM_TWO_SHEET_GATE` because that script tests for two points per \(j\); its counts are 38/38, 38/38, 76/76, and 76/76 points/\(j\)-values for conductors 1, 2, 3, and 6. Every fiber has cardinality one. The source model is \(y^2+y=x^3-x^2-10x-20\), with \(\#X_0(11)(\mathbf F_{10891})=11000\).
+
+[walk.py](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/walk.py) independently constructs all 38 conductor-2 points, checks each underlying curve's endomorphism conductor is exactly 2, and verifies every degree-3 neighbor by the classical modular polynomial, four rational root counts, and the elliptic-curve group-sum identity. It saves all 38 points and 38 undirected horizontal edges in [walk.json](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/walk.json). With \(a_3=-1\), the projected row at each vertex is \(I+P+P^{-1}\) on its cycle. Since \(19\not\equiv0\pmod3\), the previously checked [general cycle theorem](/Volumes/SSD990/cryptanalysis/experiments/hecke-cycle-rank-theorem-20261023/formal/GeneralCycleKernel.lean) gives a zero kernel on each cycle. Direct rational elimination yields rank 38 and determinant 9. [validate.py](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/validate.py) independently rebuilds the cycles, integer matrix, Bareiss determinant, and ranks modulo three primes; its [receipt](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/validation.json) records the input and source digests.
+
+## Proof map
+
+| Mathematical step | Lean declaration | Status |
+| --- | --- | --- |
+| In a nontrivial repeated-root Jordan model over a field, every eigenvector has zero second coordinate, and the horizontal line consists of eigenvectors | `JordanLine.eigenvector_second_coordinate_zero`; `JordanLine.horizontal_line_is_eigenline` | Built with pinned mathlib; `#print axioms` lists only standard Lean foundations |
+| A rational three-term cycle of length not divisible by 3 has zero kernel | `GeneralCycleKernel.nonmultiple_trivial` in the preceding formalization | Previously built; applied here with length 19 |
+| The actual finite-field Frobenius action at each CM curve has Jordan normal form, its unique invariant line equals the saved modular point, and the concrete Hecke code realizes the moduli correspondence | No elliptic-curve/modular-curve Lean declaration | Exact-field Sage and independent graph replay; full formalization remains partial |
+
+The [JordanLine module](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/formal/JordanLine.lean) proves the linear-algebra implication over any field. [build.json](/Volumes/SSD990/cryptanalysis/experiments/hecke-ramified11-fiber-20261023/formal/build.json) records the pinned toolchain, dependency revision, successful build, and axiom audit. The remaining Lean bridge requires a verified model of elliptic-curve 11-torsion, Frobenius, rational cyclic subgroups, and the concrete \(X_0(11)\) map. The relevant Hecke moduli rule and ordinary ideal-class cycle context are described in [Snowden's lecture](https://websites.umich.edu/~asnowden/teaching/2013/679/L16.html) and [Sutherland's isogeny-volcano account](https://msp.org/obs/2013/1-1/obs-v1-n1-p25-s.pdf).
+
+This is a conductor-2 relation-stage result with `candidate_id: null` and `timing_claim: null`. The next stage is to measure the full conductor-1/2/3/6 relation matrix and test whether the full-rank conductor-2 block adds new global rank after the other strata and floor columns are included.
