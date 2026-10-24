@@ -43,7 +43,7 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
-| sibling crypto integration | `ic` / `icx` `solve-prime \| solve-prime-file \| solve-cubic \| prime-route-generate \| cubic-graph \| cubic-route-generate`, `isogeny-walk`, `store`, `crypto` |
+| sibling crypto integration | `ecdlp-nist`, `ic` / `icx` `solve-prime \| solve-prime-file \| solve-cubic \| prime-route-generate \| cubic-graph \| cubic-route-generate`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
 | symmetric and hash | `aes-attack`, `aes-sbox-table`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
@@ -58,16 +58,28 @@ them unchanged, and their `--help`, flags and report formats are their own.
 The old binary names still work.
 
 The sibling crypto commands above execute the corresponding
-`ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
-`CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
+`ecdlp-nist`, `ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
+`CRAX_ECDLP_NIST_BIN`, `CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
 path, then a binary beside its own executable, then `PATH`. A release bundle
-can therefore put all five binaries in one directory without extra setup.
+can therefore put all six binaries in one directory without extra setup.
 `crax` forwards arguments directly, preserves
 the child exit status, and wraps its JSON or text report when `--json` is
 requested. The native `crax icx` catalog and run commands remain in the suite.
 The [co-located release-bundle acceptance](CRAX_SIBLING_BRIDGE_ACCEPTANCE_20261023.json)
 checks all four sibling executables, public prime and cubic EC solves, an S3
 completion-marker lookup, and a fresh-cache S3 artifact read through `crax hash`.
+
+Build `ecdlp-nist` in the sibling crypto checkout with
+`cargo build --release --bin ecdlp-nist`. The bridge forwards `list`, `audit`,
+`solve`, `smart`, and `bench` directly, including checked `--point-file`
+references and the native feasibility bounds. For example:
+
+```sh
+crax --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
+```
+
+With `--json`, the verified solve result is in `report.report`; the outer
+envelope records the child exit code and diagnostics.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:
@@ -221,6 +233,7 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 | SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
 | Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 and SHA-512 length extension, bounded truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512, SHAKE128/256, BLAKE3, and the truncated SHA-2 digest variants have generic measurements; SHAKE requires `--output-bytes` in 1..=64. A missing length-extension adapter is reported explicitly. |
 | AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
+| Standardized-curve ECDLP | `crax ecdlp-nist list/audit/solve/smart/bench` | Delegates to the sibling `ecdlp-nist` executable. External points and checked target artifacts follow its bounded interval and feasibility rules. |
 | Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
 | Collaborative rho job artifacts | `crax rho-collab work/status --job store:NAME` | Native job loading uses the sibling `crypto store pull` to check the indexed digest before parsing; job JSON is limited to 64 KiB. Mutable worker state is local. |
@@ -232,7 +245,7 @@ agreement is recorded in
 [`CRAX_HASH_AES_ACCEPTANCE_20261023.json`](CRAX_HASH_AES_ACCEPTANCE_20261023.json).
 
 The native cryptanalysis commands and the sibling bridges have separate build
-dependencies. Put the sibling `crypto`, `ic`, `icx`, and `isogeny_walk` binaries
+dependencies. Put the sibling `crypto`, `ic`, `icx`, `isogeny_walk`, and `ecdlp-nist` binaries
 beside `crax`, install them on `PATH`, or set their `CRAX_*_BIN` paths before
 using the corresponding rows. The
 explicit field ranges and reproducible public inputs are documented in the
