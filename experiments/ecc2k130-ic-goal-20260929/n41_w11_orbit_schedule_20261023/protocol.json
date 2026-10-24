@@ -1,0 +1,100 @@
+{
+  "candidate_id": null,
+  "circuit_counts": {
+    "and_gates": 13426,
+    "clauses": 40810,
+    "forbidden_code_pairs": 286,
+    "variables": 16224,
+    "xor_rows": 2342
+  },
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "global_wall_cap_seconds": 590,
+  "orientation_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+  ],
+  "public_target": [
+    1936680952394,
+    910597499030
+  ],
+  "rss_cap_bytes": 4294967296,
+  "seconds_per_orientation": 13,
+  "selector_wires": [
+    4886,
+    4887,
+    4888,
+    4889,
+    4890,
+    4891
+  ],
+  "solver_flags": [
+    "--threads=1",
+    "--maxtime=13",
+    "--zero-exit-status",
+    "--verb=0",
+    "--printsol=1"
+  ],
+  "sources": {
+    "circuit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fourpair_orbit_sat_20261019/circuit_orbit.py",
+      "sha256": "736167e078b6709d6d53913e169c015569a06a52347c8b4d96348ab27aaa6834"
+    },
+    "formula": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fourpair_orbit_sat_20261019/orbit41.xcnf",
+      "sha256": "aefe951b7ab4e867a4a752696facdbdf38844436d55314dd1f57c995c99a108c"
+    },
+    "script": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_orbit_schedule_20261023/schedule.py",
+      "sha256": "b6fdf6b1eef699a14b626f6986465e3f24336a99edbe91feb0f728d5f417c258"
+    },
+    "solver": {
+      "path": "/opt/homebrew/bin/cryptominisat5",
+      "sha256": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac"
+    },
+    "source_input": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_fourpair_public_20261019/join4_input.tsv",
+      "sha256": "f5c7c7937fed33bebe83a4b342f5a77065fb90d9c96d1f048bbeb23a8bc1c5dd"
+    }
+  },
+  "status": "FROZEN_BEFORE_N41_W11_ORIENTATION_SCHEDULE",
+  "worker_count": 1
+}
