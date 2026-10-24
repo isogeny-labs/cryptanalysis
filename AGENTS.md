@@ -143,7 +143,9 @@ and `aburan28/ml-cryptanalysis`:
 revised mathematical result, include a faithful Lean 4 theorem and checked
 proof whenever formalization is feasible. Treat the formalization attempt as
 part of the requested work, prioritize the central theorem and its
-dependencies, and keep a readable mathematical proof in the report.
+dependencies, and keep a readable mathematical proof in the report. The shared
+library and gate live in `aburan28/crypto-lean`; pin its revision with the
+toolchain, and treat a gate change as a dependency change.
 
 - Maintain a proof map from each result to its Lean declaration, exact
   hypotheses and verification status. Preserve the statement's quantifiers,
@@ -288,7 +290,12 @@ Reading needs `s3:GetObject` and `s3:ListBucket` on
 `arn:aws:s3:::setec-astronomy-artifacts/reports/cryptanalysis/*` (the
 `ARTIFACTS_AWS_*` credentials have it). Treat a downloaded report as a copy of
 the committed file: verify it against the repository blob or `VALIDATION.json`
-before citing it.
+before citing it. The mirror is write-once: a corrected report is a new object,
+and deleting a report from the repository does not delete its S3 copy.
+
+`s3://setec-astronomy-artifacts` is the only writable bucket. The legacy
+buckets (`s3://crypto-autoresearcher/**`, `ecc2k130-*`,
+`ecc2k130-status-*`, `aburan28-n83-tier1-*`, `cairn-swarm-*`) are read-only.
 
 ## Continue through the PR: track it and merge it
 
