@@ -33,10 +33,10 @@ pub struct AesAttackArgs {
     /// Write generated pairs as a versioned JSON corpus (file must be new).
     #[arg(long, conflicts_with = "pairs_file")]
     pub export_pairs_file: Option<PathBuf>,
-    /// Separate held-out four-round Square corpus for independent replay.
+    /// Separate held-out corpus for independent candidate verification.
     #[arg(long, requires = "pairs_file")]
     pub verification_file: Option<PathBuf>,
-    /// Export a separate held-out Square lambda set (file must be new).
+    /// Export a separate held-out corpus (file must be new).
     #[arg(long, requires = "export_pairs_file", conflicts_with = "pairs_file")]
     pub export_verification_file: Option<PathBuf>,
     /// Complete Square training lambda sets to generate (1..=6).
@@ -201,6 +201,65 @@ fn square_pair_json(pairs: &[([u8; 16], [u8; 16])]) -> Vec<LinearPairJson> {
         .collect()
 }
 
+fn linear_pairs_from_file(
+    path: &Path,
+    technique: &str,
+    rounds: usize,
+) -> Result<Vec<([u8; 16], [u8; 16])>, String> {
+    load_corpus::<LinearPairJson>(path, technique, rounds)?
+        .into_iter()
+        .map(|pair| Ok((block(&pair.plaintext)?, block(&pair.ciphertext)?)))
+        .collect()
+}
+
+fn differential_pairs_from_file(path: &Path) -> Result<Vec<differential::DiffPair>, String> {
+    load_corpus::<DifferentialPairJson>(path, "differential", 2)?
+        .into_iter()
+        .map(|pair| {
+            Ok(differential::DiffPair {
+                p0: block(&pair.p0)?,
+                p1: block(&pair.p1)?,
+                c0: block(&pair.c0)?,
+                c1: block(&pair.c1)?,
+            })
+        })
+        .collect()
+}
+
+fn differential_pair_json(pairs: &[differential::DiffPair]) -> Vec<DifferentialPairJson> {
+    pairs
+        .iter()
+        .map(|pair| DifferentialPairJson {
+            p0: hex::encode(pair.p0),
+            p1: hex::encode(pair.p1),
+            c0: hex::encode(pair.c0),
+            c1: hex::encode(pair.c1),
+        })
+        .collect()
+}
+
+fn distinct_differential_plaintexts(
+    training: &[differential::DiffPair],
+    verification: &[differential::DiffPair],
+) -> bool {
+    let mut seen = HashSet::new();
+    training
+        .iter()
+        .chain(verification)
+        .all(|pair| seen.insert(pair.p0) && seen.insert(pair.p1))
+}
+
+fn distinct_linear_plaintexts(
+    training: &[([u8; 16], [u8; 16])],
+    verification: &[([u8; 16], [u8; 16])],
+) -> bool {
+    let mut seen = HashSet::new();
+    training
+        .iter()
+        .chain(verification)
+        .all(|(p, _)| seen.insert(*p))
+}
+
 fn square_ciphertext_sets(pairs: &[([u8; 16], [u8; 16])]) -> Result<Vec<Vec<[u8; 16]>>, String> {
     if !(256..=1536).contains(&pairs.len()) || pairs.len() % 256 != 0 {
         return Err("Square recovery needs 1..=6 complete lambda sets".into());
@@ -229,11 +288,6 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
     if args.pairs_file.is_none() && !(1..=1_000_000).contains(&sample_count) {
         return Err("samples must be in 1..=1000000".into());
     }
-    if !matches!(args.technique, Technique::Square)
-        && (args.verification_file.is_some() || args.export_verification_file.is_some())
-    {
-        return Err("separate verification files currently require --technique square".into());
-    }
     if args.export_pairs_file.is_some() && args.export_pairs_file == args.export_verification_file {
         return Err("training and verification export paths must differ".into());
     }
@@ -248,17 +302,7 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 .map(|_| analysis_key(args))
                 .transpose()?;
             let pairs = if let Some(path) = &args.pairs_file {
-                load_corpus::<DifferentialPairJson>(path, "differential", 2)?
-                    .into_iter()
-                    .map(|pair| {
-                        Ok(differential::DiffPair {
-                            p0: block(&pair.p0)?,
-                            p1: block(&pair.p1)?,
-                            c0: block(&pair.c0)?,
-                            c1: block(&pair.c1)?,
-                        })
-                    })
-                    .collect::<Result<Vec<_>, String>>()?
+                differential_pairs_from_file(path)?
             } else {
                 let key = analysis_key(args)?;
                 let cipher = ReducedAes128::new(&key, 2, false);
@@ -274,19 +318,32 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 );
             }
             if let Some(path) = &args.export_pairs_file {
+                write_corpus(path, "differential", 2, differential_pair_json(&pairs))?;
+            }
+            let verification_pairs = if let Some(path) = &args.verification_file {
+                differential_pairs_from_file(path)?
+            } else if args.export_verification_file.is_some() {
+                let cipher = ReducedAes128::new(&analysis_key(args)?, 2, false);
+                differential::build_pairs(
+                    &cipher,
+                    args.alpha,
+                    sample_count,
+                    args.seed ^ 0xa5a5_5a5a_9876_1234,
+                )
+            } else {
+                Vec::new()
+            };
+            if !distinct_differential_plaintexts(&pairs, &verification_pairs) {
+                return Err(
+                    "differential training and verification plaintexts must be distinct".into(),
+                );
+            }
+            if let Some(path) = &args.export_verification_file {
                 write_corpus(
                     path,
                     "differential",
                     2,
-                    pairs
-                        .iter()
-                        .map(|pair| DifferentialPairJson {
-                            p0: hex::encode(pair.p0),
-                            p1: hex::encode(pair.p1),
-                            c0: hex::encode(pair.c0),
-                            c1: hex::encode(pair.c1),
-                        })
-                        .collect(),
+                    differential_pair_json(&verification_pairs),
                 )?;
             }
             let ddt = differential::aes_sbox_ddt();
@@ -298,6 +355,16 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 &found.key_bytes,
                 &ddt,
             );
+            let holdout_constraints_verified = if verification_pairs.is_empty() {
+                None
+            } else {
+                Some(differential::validate_two_round_key_bytes(
+                    args.alpha,
+                    &verification_pairs,
+                    &found.key_bytes,
+                    &ddt,
+                ))
+            };
             let reference_verified = if args.pairs_file.is_none() || reference_key.is_some() {
                 let key = reference_key.unwrap_or(analysis_key(args)?);
                 let cipher = ReducedAes128::new(&key, 2, false);
@@ -312,7 +379,9 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
             } else {
                 None
             };
-            let accepted = constraints_verified && reference_verified.unwrap_or(true);
+            let accepted = constraints_verified
+                && holdout_constraints_verified.unwrap_or(true)
+                && reference_verified.unwrap_or(true);
             json!({
                 "status": if !accepted { "verification_failed" } else if reference_verified.is_some() { "solved" } else { "candidate" },
                 "technique": "differential",
@@ -323,34 +392,40 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 "recovery_scope": "four_last_round_bytes",
                 "source": if args.pairs_file.is_some() { "external_corpus" } else { "generated" },
                 "constraints_verified": constraints_verified,
+                "verification_pairs": verification_pairs.len(),
+                "holdout_constraints_verified": holdout_constraints_verified,
                 "verified": reference_verified,
                 "accepted": accepted,
             })
         }
         Technique::Linear => {
             let pairs = if let Some(path) = &args.pairs_file {
-                load_corpus::<LinearPairJson>(path, "linear", 1)?
-                    .into_iter()
-                    .map(|pair| Ok((block(&pair.plaintext)?, block(&pair.ciphertext)?)))
-                    .collect::<Result<Vec<_>, String>>()?
+                linear_pairs_from_file(path, "linear", 1)?
             } else {
                 let key = analysis_key(args)?;
                 let cipher = ReducedAes128::new(&key, 1, false);
                 linear::known_plaintext_corpus(&cipher, sample_count, args.seed)
             };
             if let Some(path) = &args.export_pairs_file {
-                write_corpus(
-                    path,
-                    "linear",
-                    1,
-                    pairs
-                        .iter()
-                        .map(|(p, c)| LinearPairJson {
-                            plaintext: hex::encode(p),
-                            ciphertext: hex::encode(c),
-                        })
-                        .collect(),
-                )?;
+                write_corpus(path, "linear", 1, square_pair_json(&pairs))?;
+            }
+            let verification_pairs = if let Some(path) = &args.verification_file {
+                linear_pairs_from_file(path, "linear", 1)?
+            } else if args.export_verification_file.is_some() {
+                let cipher = ReducedAes128::new(&analysis_key(args)?, 1, false);
+                linear::known_plaintext_corpus(
+                    &cipher,
+                    sample_count,
+                    args.seed ^ 0xa5a5_5a5a_9876_1234,
+                )
+            } else {
+                Vec::new()
+            };
+            if !distinct_linear_plaintexts(&pairs, &verification_pairs) {
+                return Err("linear training and verification plaintexts must be distinct".into());
+            }
+            if let Some(path) = &args.export_verification_file {
+                write_corpus(path, "linear", 1, square_pair_json(&verification_pairs))?;
             }
             let lat = linear::aes_sbox_lat();
             let mut recovered = [0u8; 16];
@@ -363,13 +438,24 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
             }
             let cipher = ReducedAes128::new(&recovered, 1, false);
             let replay_verified = pairs.iter().all(|(p, c)| cipher.encrypt(p) == *c);
+            let verification_matches = verification_pairs
+                .iter()
+                .filter(|(p, c)| cipher.encrypt(p) == *c)
+                .count();
+            let holdout_verified = if verification_pairs.is_empty() {
+                None
+            } else {
+                Some(verification_matches == verification_pairs.len())
+            };
             let reference_verified = args
                 .key_hex
                 .as_ref()
                 .map(|_| analysis_key(args))
                 .transpose()?
                 .map(|key| recovered == key);
-            let verified = replay_verified && reference_verified.unwrap_or(true);
+            let verified = replay_verified
+                && holdout_verified.unwrap_or(true)
+                && reference_verified.unwrap_or(true);
             json!({
                 "status": if verified { "solved" } else { "verification_failed" },
                 "technique": "linear",
@@ -378,6 +464,9 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
                 "recovered_master_key_hex": hex::encode(recovered),
                 "source": if args.pairs_file.is_some() { "external_corpus" } else { "generated" },
                 "replay_verified": replay_verified,
+                "verification_pairs": verification_pairs.len(),
+                "verification_matches": verification_matches,
+                "holdout_verified": holdout_verified,
                 "reference_verified": reference_verified,
                 "verified": verified,
                 "accepted": verified,

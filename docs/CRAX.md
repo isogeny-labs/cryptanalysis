@@ -43,7 +43,7 @@ The same binary is built by `make suite`.
 | factoring | `factor`, `gnfs`, `snfs`, `qs`, `ecm`, `pm1` (`--pp1`), `rho-factor` |
 | RSA | `rsa fermat \| wiener \| from-d \| hastad \| common-modulus \| small-e \| batch-gcd` |
 | index calculus | `ic zp` ((Z/pZ)^*, C library), `ic prime \| run \| compare \| fixed \| workflow \| boundary \| bench \| rho \| descent \| corpus \| budget \| ...`, `icx` |
-| sibling crypto integration | `ic` / `icx` `solve-prime \| solve-prime-file \| solve-cubic \| prime-route-generate \| cubic-graph \| cubic-route-generate`, `isogeny-walk`, `store`, `crypto` |
+| sibling crypto integration | `ecdlp-nist`, `ic` / `icx` `solve-prime \| solve-prime-file \| solve-cubic \| prime-route-generate \| cubic-graph \| cubic-route-generate`, `isogeny-walk`, `store`, `crypto` |
 | curves and challenges | `curve names \| info`, `challenge list \| show \| solve \| rho-job` |
 | symmetric and hash | `aes-attack`, `aes-sbox-table`, `hash`, `list-ciphers`, `auto`, `boomerang`, `rectangle`, `sbox`, `aes-related-key`, `hash-auto`, `length-extension` |
 | lattice and post-quantum | `mlwe` |
@@ -58,16 +58,28 @@ them unchanged, and their `--help`, flags and report formats are their own.
 The old binary names still work.
 
 The sibling crypto commands above execute the corresponding
-`ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
-`CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
+`ecdlp-nist`, `ic`, `icx`, `isogeny_walk`, or `crypto` binary. `crax` first uses an explicit
+`CRAX_ECDLP_NIST_BIN`, `CRAX_IC_BIN`, `CRAX_ICX_BIN`, `CRAX_ISOGENY_WALK_BIN`, or `CRAX_CRYPTO_BIN`
 path, then a binary beside its own executable, then `PATH`. A release bundle
-can therefore put all five binaries in one directory without extra setup.
+can therefore put all six binaries in one directory without extra setup.
 `crax` forwards arguments directly, preserves
 the child exit status, and wraps its JSON or text report when `--json` is
 requested. The native `crax icx` catalog and run commands remain in the suite.
 The [co-located release-bundle acceptance](CRAX_SIBLING_BRIDGE_ACCEPTANCE_20261023.json)
 checks all four sibling executables, public prime and cubic EC solves, an S3
 completion-marker lookup, and a fresh-cache S3 artifact read through `crax hash`.
+
+Build `ecdlp-nist` in the sibling crypto checkout with
+`cargo build --release --bin ecdlp-nist`. The bridge forwards `list`, `audit`,
+`solve`, `smart`, and `bench` directly, including checked `--point-file`
+references and the native feasibility bounds. For example:
+
+```sh
+crax --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
+```
+
+With `--json`, the verified solve result is in `report.report`; the outer
+envelope records the child exit code and diagnostics.
 
 For an explicit public EC target, install the sibling `ic` executable or
 set `CRAX_IC_BIN`, then run:
@@ -86,6 +98,53 @@ It accepts `solve-prime-file --input FILE`, including checked
 all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
+The [current-head S3 bridge receipt](CRAX_PRIME_ROUTE_S3_ACCEPTANCE_20261024.json)
+checks `crax store` upload, remote HEAD and byte verification, and fresh-cache
+pull for both a public prime target and certified route. `crax --json ic
+solve-prime-file` then consumes their `store:` names and returns scalar 190,
+`verified: true`, and two verified route edges in its child report. The
+isolated acceptance prefix was empty after exact-object cleanup.
+The sibling cubic solver also accepts a checked monic irreducible modulus.
+For `p=11`, `"modulus": [1,0,4]` selects `F_11[t]/(t³+4t²+1)`.
+`crax --json ic solve-cubic` and `crax --json icx solve-cubic` both return
+verified scalar 5 on the sibling `cubic_f11_public_target.json` fixture,
+including fresh-cache `store:` input replay. The [sibling release and S3
+receipt](https://github.com/aburan28/crypto/blob/e34a4a66286/docs/store/CUBIC_GENERAL_MODULUS_S3_ACCEPTANCE_20261024.json)
+records those runs. The sibling `ic` and `icx` now also enumerate cubic
+isogeny j-graphs, generate checked degree-2 routes, and solve across those
+routes for an explicit irreducible cubic modulus. The
+[routed F11 S3 receipt](https://github.com/aburan28/crypto/blob/a273e3f558f/docs/store/CUBIC_ROUTED_GENERAL_S3_ACCEPTANCE_20261024.json)
+records target and route upload, byte verification, fresh-cache `store:`
+solves through both binaries, scalar 5 with IC and same-target rho, and
+exact-object cleanup. Use `crax --json ic cubic-graph` and
+`crax --json ic cubic-route-generate` to get the corresponding child reports;
+save each child `report` JSON before using it as a graph or route file.
+
+`crax aes` now exposes both sibling AES families. Block encryption and
+decryption, CTR, CBC, and GCM commands go to `crypto aes`; AES attack and
+analysis commands go to `crypto cryptanalysis`. For example,
+`crax aes block-encrypt --help` and `crax aes aes-attack --help` show the
+respective native options. `crax aes --help` lists both families, and
+`CRAX_CRYPTO_BIN` selects the sibling `crypto` executable if it is not
+adjacent to `crax` or on `PATH`. With `crax --json aes block-encrypt ...`,
+the native hexadecimal result appears as `report.output_hex`, alongside
+`report.operation` and the producer exit status.
+
+```sh
+CRAX_CRYPTO_BIN=/path/to/crypto crax --json aes block-encrypt \
+  --key-hex 000102030405060708090a0b0c0d0e0f \
+  --hex 00112233445566778899aabbccddeeff
+```
+
+For that AES-128 known-answer vector, `report.output_hex` is
+`69c4e0d86a7b0430d8cdb78070b4c55a`.
+
+`crax mac` forwards keyed digest commands to `crypto mac`, including
+HMAC-SHA-256, KMAC128, KMAC256, and their XOF variants. Use `--key-file`
+for a secret key or `--key-hex` for a public test vector. A successful
+`crax --json mac kmac128 ...` result carries `report.algorithm` and
+`report.tag_hex`; tag verification retains the native success or failure
+exit code and its text report.
 
 ### Resumable isogeny experiment sweeps
 
@@ -140,10 +199,16 @@ The live round trip is recorded in
 crax --json hash --algorithm sha256 --text abc
 crax --json hash --algorithm sha3-384 --hex 616263
 crax hash --algorithm shake256 --text abc --output-bytes 32
+crax hash --algorithm streebog-256 --text abc
+crax hash --algorithm skein512 --file ./message.bin --output-bytes 64
+crax hash --algorithm cshake256 --text abc --output-bytes 32 --custom-hex 637573746f6d
 crax --json hash --algorithm sha256 --file store:public/message.bin
 crax --json aes-attack --technique differential --samples 4096
 crax --json aes-attack --technique linear --samples 4096
 crax --json aes-attack --technique square
+crax aes --help
+crax aes aes-distinguisher --help
+crax aes aes-dfa --help
 crax --json aes-attack --technique differential --samples 24 \
   --export-pairs-file /tmp/aes-differential.json
 crax --json aes-attack --technique differential \
@@ -160,11 +225,24 @@ crax --json aes-attack --technique square \
 crax --json hash-auto --hash sha256
 crax --json hash-auto --hash sha3-256
 crax --json hash-auto --hash sha-3-512
+crax --json hash-auto --hash blake2s --output-bytes 1
+crax --json hash-auto --hash cshake256 --output-bytes 1 --custom-hex 74657374
 crax --json aes-sbox-table --kind ddt --row 1
 crax --json aes-sbox-table --kind lat > aes-lat.json
 crax --json aes-sbox-table --kind bct --row 1
 crax --json aes-sbox-table --kind dlct > aes-dlct.json
 ```
+
+`crax aes` forwards the sibling `crypto cryptanalysis` command family. Its
+[bridge acceptance](CRAX_AES_BRIDGE_ACCEPTANCE_20261024.json) checks that the
+help lists the observed differential and linear, DFA, power, cache, trail,
+and distinguisher commands; DDT, LAT, BCT, and DLCT row reports match the
+producer exactly; a zero-correlation command succeeds; and an unknown
+command exits unsuccessfully.
+The separate [observed AES bridge receipt](CRAX_AES_OBSERVED_BRIDGE_ACCEPTANCE_20261024.json)
+uses the committed differential and linear statistics fixtures. Both measured
+reports match the direct producer command exactly, with input and report
+digests recorded.
 
 For `hash --file`, a local path or indexed `store:NAME` and `sha256:DIGEST`
 reference is accepted. The latter uses the sibling `crypto store pull`
@@ -172,13 +250,29 @@ command through `CRAX_CRYPTO_BIN` (or `crypto` on `PATH`), so the artifact is
 fetched and digest-checked before `crax` hashes it. Set the sibling store's
 remote, index, cache, and AWS profile as needed. A public Setec S3 acceptance
 receipt is in [`CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json`](CRAX_HASH_STORE_S3_ACCEPTANCE_20261023.json).
+The 16 native digest names process file input incrementally in 64 KiB
+chunks. The additional 14 digest names use the sibling `crypto` file reader,
+which also reads in 64 KiB chunks. The [native streaming hash acceptance receipt](CRAX_HASH_STREAM_S3_ACCEPTANCE_20261023.json)
+records 272 local cross-implementation comparisons and a fresh-cache S3
+push, existence check, download, and hash round trip for every digest.
 
-`hash` accepts a single `--text`, `--hex`, or `--file` input and supports
-SHA-1, SHA-2, SHA-3, SHAKE, MD4, and MD5. `sha-3-*` and `shake-*` names are accepted. `--output-bytes` is required for
-SHAKE and bounded to 1 MiB. `hash-auto` runs a length-extension demonstration
-against SHA-256; SHA-3 uses a sponge, so that particular attack is not
-applicable. Its truncated birthday and differential-bias measurements remain
-available for all four SHA-3 digest sizes. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
+`hash` accepts a single `--text`, `--hex`, or `--file` input. `sha-3-*` and
+`shake-*` names are accepted. `--output-bytes` is required for SHAKE and
+cSHAKE, and bounded to 1 MiB. It is optional for BLAKE2 and Skein.
+`hash-auto` runs length-extension demonstrations for hashes with an implemented
+adapter (MD4, MD5, SHA-1, SHA-256, SHA-512). It runs bounded truncated birthday
+searches and differential-bias measurements for the supported unkeyed digests.
+These searches concern up to 32 output bits and do not claim a full-output
+collision. Each found pair includes both input messages as hex, the shared
+digest prefix, the search seed, and the trial cap so it can be replayed.
+The [CLI replay receipt](CRAX_HASH_AUTO_REPLAY_ACCEPTANCE_20261024.json)
+checks reported pairs for all 30 supported unkeyed names through the
+independent `crax hash` command, including cSHAKE customization.
+SHAKE, cSHAKE, and Skein require `--output-bytes` in 1..=64;
+BLAKE2b and BLAKE2s allow 1..=64 and 1..=32 respectively, defaulting to their
+maximum digest sizes. cSHAKE also accepts `--function-name-hex` and
+`--custom-hex`, and the report records both inputs. SHA-3 uses a sponge, so
+Merkle-Damgård length extension does not apply. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
 AES-128 reduced-round differential (2), linear (1), or integral (4) models.
 For captured reduced-round data, `--pairs-file` accepts a JSON object with
 `schema_version: 1`, `cipher_model: "aes128-reduced-final-no-mixcolumns/v1"`,
@@ -218,10 +312,12 @@ all 65,536 entries of each DDT, LAT, BCT, and DLCT export with the sibling
 
 | Requested surface | Available command | Current boundary |
 | --- | --- | --- |
-| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs; SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. SHAKE output is limited to 1 MiB per call. |
-| Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | SHA-256 and SHA-512 length extension, bounded truncated birthday search, and differential-bias measurements. SHA-3-224/256/384/512, SHAKE128/256, BLAKE3, and the truncated SHA-2 digest variants have generic measurements; SHAKE requires `--output-bytes` in 1..=64. A missing length-extension adapter is reported explicitly. |
-| AES differential and linear analysis | `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto` | The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models; other AES research commands retain their own flags and reports. |
-| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime target files may be checked store references. The cubic command counts the full curve order and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
+| SHA-256, SHA-3, and related digests | `crax hash` | Native text, hex, local-file, and checked `store:` file inputs for SHA-1, SHA-2, SHA-3, SHAKE, BLAKE3, MD4, and MD5. BLAKE2b/s, cSHAKE128/256, SM3, RIPEMD-160, Streebog-256/512, Whirlpool, Tiger/Tiger2, and Skein-256/512/1024 use the sibling `crypto` executable through `CRAX_CRYPTO_BIN` or `PATH`. The sibling file path streams input in bounded chunks. SHAKE and cSHAKE output is limited to 1 MiB per call. |
+| Hash cryptanalysis | `crax hash-auto`, `crax length-extension` | MD4/5, SHA-1/256/512 length extension where implemented; bounded truncated birthday search and differential-bias measurements for supported unkeyed hashes, including SHA-2/3, SHAKE/cSHAKE, BLAKE2/3, Skein, SM3, RIPEMD-160, Streebog, Whirlpool, and Tiger. A missing length-extension adapter is reported explicitly. |
+| AES primitives, differential and linear analysis | `crax aes block-encrypt/block-decrypt/ctr/cbc-encrypt/cbc-decrypt/gcm-encrypt/gcm-decrypt`, `crax aes-attack`, `crax aes-sbox-table`, `crax sbox`, `crax auto`, `crax aes <attack-command>` | AES block and mode operations use the sibling `crypto aes` implementation; a successful JSON invocation includes `report.output_hex`. The full AES S-box DDT, LAT, BCT, and DLCT or a selected row are exported as JSON. Key-recovery examples use the implemented one-, two-, or four-round AES-128 models. Attack commands include observed differential and linear analysis, distinguishers, power and cache analyses, DFA, trail checks, and related-key experiments, with the producing executable's parameter and evidence limits. |
+| Keyed SHA and authentication codes | `crax mac hmac-sha256`, `crax mac kmac128/kmac256/kmacxof128/kmacxof256`; other `crypto mac` algorithms | Delegates to the sibling implementation. Computed tags appear in `report.tag_hex` with `--json`; constant-time tag verification preserves the native success or failure exit code. Secret keys can be supplied with `--key-file`. |
+| Standardized-curve ECDLP | `crax ecdlp-nist list/audit/solve/smart/bench` | Delegates to the sibling `ecdlp-nist` executable. External points and checked target artifacts follow its bounded interval and feasibility rules. |
+| Explicit EC index calculus | `crax ic solve-prime`, `crax ic solve-prime-file`, `crax ic solve-cubic`; `crax icx` aliases | These delegate to the sibling `ic` or `icx` executable and inherit its checked field-size and work-budget limits. Prime and cubic target files may be checked store references. The cubic command accepts either a noncube binomial or a checked irreducible monic cubic modulus, counts the full curve order, and requires a cofactor invertible modulo the target subgroup order. `crax ic zp` remains multiplicative-group index calculus. |
 | Isogeny graph enumeration and route checks | `crax isogeny-walk`; `crax ic solve-prime --route-file ... --route-id ...`; `crax ic solve-cubic --route-file ... --route-id ...` | The sibling walker enumerates and verifies prime-field routes; the prime and cubic IC commands check point transport along selected certified routes within their documented degree and field bounds. |
 | Collaborative rho job artifacts | `crax rho-collab work/status --job store:NAME` | Native job loading uses the sibling `crypto store pull` to check the indexed digest before parsing; job JSON is limited to 64 KiB. Mutable worker state is local. |
 | Artifact upload, existence verification, and retrieval | `crax store push`, `crax store verify --remote --download`, `crax store pull`; `crax isogeny-walk publish/exists/fetch` | Sibling `crypto` store and walker require configured AWS credentials. Public-artifact round trips and the `crypto` store's live multipart upload, HEAD, downloaded-byte verification, and cleanup have Setec S3 receipts in the sibling repository. |
@@ -230,9 +326,17 @@ The release CLI matrix for SHA-256, SHA-3, SHAKE, BLAKE3, bounded hash
 analysis, AES recovery modes, distinguishers, and DDT/LAT/BCT/DLCT row
 agreement is recorded in
 [`CRAX_HASH_AES_ACCEPTANCE_20261023.json`](CRAX_HASH_AES_ACCEPTANCE_20261023.json).
+The [extended hash bridge receipt](CRAX_HASH_BRIDGE_S3_ACCEPTANCE_20261023.json)
+compares all 14 additional digest names with the sibling `crypto` release
+binary on a 1,048,577-byte file. The checked input was fetched through a
+fresh S3-backed cache; upload, remote downloaded-byte verification, exact
+object cleanup, and empty-prefix listing passed. CRAx's native Streebog
+library implementation was corrected and separately passed both RFC 6986 M1
+known-answer tests after converting the RFC's displayed bit-string order to
+the conventional byte-oriented API.
 
 The native cryptanalysis commands and the sibling bridges have separate build
-dependencies. Put the sibling `crypto`, `ic`, `icx`, and `isogeny_walk` binaries
+dependencies. Put the sibling `crypto`, `ic`, `icx`, `isogeny_walk`, and `ecdlp-nist` binaries
 beside `crax`, install them on `PATH`, or set their `CRAX_*_BIN` paths before
 using the corresponding rows. The
 explicit field ranges and reproducible public inputs are documented in the

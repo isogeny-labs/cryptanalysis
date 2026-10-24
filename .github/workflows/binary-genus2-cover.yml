@@ -45,6 +45,7 @@ jobs:
             /cuda/
             /tools/ecdlp-surfaces/
             /tools/binary-genus2-cover/
+            /tools/bootstrap_crypto_analysis_core.sh
             /docs/ecdlp-surfaces/certificates/
             /docs/curves/registry.json
             /docs/ecbench/schema.sql
@@ -54,6 +55,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - name: Bootstrap pinned crypto analysis dependency
+        run: tools/bootstrap_crypto_analysis_core.sh
       - run: tools/binary-genus2-cover/check.sh
   lean:
     runs-on: ubuntu-latest

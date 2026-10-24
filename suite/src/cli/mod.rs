@@ -41,8 +41,8 @@ Attacks by family:
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
-  sibling crypto tools      ic/icx solve-prime|solve-prime-file|solve-cubic|prime-route-generate|cubic-graph|cubic-route-generate, isogeny-walk, store, crypto
-  symmetric & hash          aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
+  sibling crypto tools      ecdlp-nist, ic/icx solve-prime|solve-prime-file|solve-cubic|prime-route-generate|cubic-graph|cubic-route-generate, isogeny-walk, store, crypto
+  symmetric & hash          aes (AES primitives and attacks), mac (HMAC/KMAC), aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
@@ -76,7 +76,7 @@ pub enum Command {
     AesAttack(aes_attack::AesAttackArgs),
     /// Export exact AES S-box DDT, LAT, BCT, or DLCT rows or complete tables.
     AesSboxTable(aes_sbox_table::AesSboxTableArgs),
-    /// Compute MD, SHA-1/2/3, SHAKE, or BLAKE3 digests from text, hex bytes, or a file.
+    /// Compute MD, SHA, BLAKE, Skein, and other unkeyed digests from text, hex, or a file.
     Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
     Bsgs(dlog::IntervalArgs),
@@ -212,8 +212,10 @@ fn run_external(
         match command.output() {
             Ok(output) => {
                 let ok = output.status.success();
-                let report: serde_json::Value = serde_json::from_slice(&output.stdout)
-                    .unwrap_or_else(|_| serde_json::Value::Null);
+                let report: serde_json::Value =
+                    native_hex_report(sub, &native_args, &output.stdout)
+                        .or_else(|| serde_json::from_slice(&output.stdout).ok())
+                        .unwrap_or(serde_json::Value::Null);
                 let report_text = report
                     .is_null()
                     .then(|| String::from_utf8_lossy(&output.stdout).to_string());
@@ -247,6 +249,41 @@ fn run_external(
             }
         }
     }
+}
+
+fn aes_bridge_family(command: Option<&str>) -> &'static str {
+    match command {
+        Some(
+            "block-encrypt" | "block-decrypt" | "ctr" | "cbc-encrypt" | "cbc-decrypt"
+            | "gcm-encrypt" | "gcm-decrypt",
+        ) => "aes",
+        _ => "cryptanalysis",
+    }
+}
+
+fn native_hex_report(
+    sub: &str,
+    native_args: &[OsString],
+    stdout: &[u8],
+) -> Option<serde_json::Value> {
+    let family = native_args.first()?.to_str()?;
+    let command = native_args.get(1)?.to_str()?;
+    match (sub, family) {
+        ("aes", "aes") if aes_bridge_family(Some(command)) == "aes" => {}
+        ("mac", "mac") => {}
+        _ => return None,
+    }
+    let output = std::str::from_utf8(stdout).ok()?.trim();
+    if output.is_empty()
+        || !output.len().is_multiple_of(2)
+        || !output.bytes().all(|b| b.is_ascii_hexdigit())
+    {
+        return None;
+    }
+    Some(match sub {
+        "mac" => serde_json::json!({"algorithm": command, "tag_hex": output}),
+        _ => serde_json::json!({"operation": command, "output_hex": output}),
+    })
 }
 
 /// Run a legacy suite command as a child so its native stdout and diagnostics
@@ -314,6 +351,9 @@ pub fn command() -> clap::Command {
                 .about("Index calculus across every standardized curve: catalog, estimate, run"),
         )
         .subcommand(clap::Command::new("crypto").about("Bridge to the sibling crypto CLI"))
+        .subcommand(clap::Command::new("aes").about("AES cryptanalysis command family via sibling crypto CLI"))
+        .subcommand(clap::Command::new("mac").about("HMAC, KMAC, and keyed digests via sibling crypto CLI"))
+        .subcommand(clap::Command::new("ecdlp-nist").about("NIST and Certicom ECDLP audit and bounded solve via crypto"))
         .subcommand(clap::Command::new("store").about("Content-addressed artifact store via crypto"))
         .subcommand(clap::Command::new("isogeny-walk").about("Certified isogeny graph CLI"));
     for sub in tools::suite::Cli::command().get_subcommands() {
@@ -395,12 +435,53 @@ where
     let sub = rest.first().and_then(|a| a.to_str()).unwrap_or("");
     let requested_json = lead_json || rest.iter().skip(1).any(|a| a == "--json");
     match sub {
+        "ecdlp-nist" => {
+            return run_external(
+                "CRAX_ECDLP_NIST_BIN",
+                "ecdlp-nist",
+                sub,
+                &rest[1..],
+                requested_json,
+                true,
+            )
+        }
         "crypto" => {
             return run_external(
                 "CRAX_CRYPTO_BIN",
                 "crypto",
                 sub,
                 &rest[1..],
+                requested_json,
+                false,
+            )
+        }
+        "aes" => {
+            if rest.len() == 1
+                || rest
+                    .get(1)
+                    .is_some_and(|arg| arg == "--help" || arg == "-h")
+            {
+                println!("Usage: crax aes <COMMAND> [OPTIONS]\n\nAES primitive commands: block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt\nAES cryptanalysis commands: aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, aes-cpa, aes-dpa, aes-cache-timing, and the other sibling crypto cryptanalysis commands.\n\nUse `crax aes <COMMAND> --help` for command options.");
+                return ExitCode::SUCCESS;
+            }
+            let family = aes_bridge_family(rest.get(1).and_then(|arg| arg.to_str()));
+            let mut native_args = vec![OsString::from(family)];
+            native_args.extend_from_slice(&rest[1..]);
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &native_args,
+                requested_json,
+                false,
+            );
+        }
+        "mac" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest,
                 requested_json,
                 false,
             )
@@ -428,14 +509,28 @@ where
         "icx"
             if matches!(
                 rest.get(1).and_then(|a| a.to_str()),
-                Some("solve-prime" | "solve-prime-file" | "solve-cubic" | "prime-route-generate" | "cubic-graph" | "cubic-route-generate")
+                Some(
+                    "solve-prime"
+                        | "solve-prime-file"
+                        | "solve-cubic"
+                        | "prime-route-generate"
+                        | "cubic-graph"
+                        | "cubic-route-generate"
+                )
             ) =>
         {
             return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
         }
         "ic" if matches!(
             rest.get(1).and_then(|a| a.to_str()),
-            Some("solve-prime" | "solve-prime-file" | "solve-cubic" | "prime-route-generate" | "cubic-graph" | "cubic-route-generate")
+            Some(
+                "solve-prime"
+                    | "solve-prime-file"
+                    | "solve-cubic"
+                    | "prime-route-generate"
+                    | "cubic-graph"
+                    | "cubic-route-generate"
+            )
         ) =>
         {
             return run_external("CRAX_IC_BIN", "ic", sub, &rest[1..], requested_json, true);
@@ -538,5 +633,48 @@ mod tests {
         for s in suite_commands() {
             assert!(!own.contains(&s), "{s} is both a crax and a suite command");
         }
+    }
+
+    #[test]
+    fn aes_bridge_routes_primitive_and_attack_commands() {
+        for command in [
+            "block-encrypt",
+            "block-decrypt",
+            "ctr",
+            "cbc-encrypt",
+            "cbc-decrypt",
+            "gcm-encrypt",
+            "gcm-decrypt",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "aes");
+        }
+        for command in [
+            "aes-attack",
+            "aes-dfa",
+            "aes-sbox-table",
+            "aes-distinguisher",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "cryptanalysis");
+        }
+    }
+
+    #[test]
+    fn aes_bridge_structures_native_hex_output() {
+        let primitive = vec![OsString::from("aes"), OsString::from("block-encrypt")];
+        assert_eq!(
+            native_hex_report("aes", &primitive, b"69c4\n").unwrap(),
+            serde_json::json!({"operation":"block-encrypt","output_hex":"69c4"})
+        );
+        assert!(native_hex_report("aes", &primitive, b"not hex\n").is_none());
+        let attack = vec![
+            OsString::from("cryptanalysis"),
+            OsString::from("aes-attack"),
+        ];
+        assert!(native_hex_report("aes", &attack, b"69c4\n").is_none());
+        let mac = vec![OsString::from("mac"), OsString::from("kmac128")];
+        assert_eq!(
+            native_hex_report("mac", &mac, b"a0b1\n").unwrap(),
+            serde_json::json!({"algorithm":"kmac128","tag_hex":"a0b1"})
+        );
     }
 }

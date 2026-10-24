@@ -96,15 +96,20 @@ enum Cmd {
     Bench,
     /// Auto-run every applicable hash-function attack (length
     /// extension where applicable, truncated birthday collision, and
-    /// differential bias) against the named hash. Targets include SHA-2/3,
-    /// SHAKE128/256, and BLAKE3.
+    /// differential bias) against a supported hash digest.
     HashAuto {
-        /// Hash identifier: MD4/5, SHA-1/2/3, SHAKE128/256, or BLAKE3.
+        /// Hash identifier accepted by `hash` (except keyed modes).
         #[arg(long)]
         hash: String,
-        /// Required SHAKE output length in bytes (1..=64 for bounded analysis).
+        /// Output length in bytes for SHAKE, cSHAKE, Skein; optional for BLAKE2.
         #[arg(long)]
         output_bytes: Option<usize>,
+        /// cSHAKE function name encoded as hex.
+        #[arg(long)]
+        function_name_hex: Option<String>,
+        /// cSHAKE customization string encoded as hex.
+        #[arg(long)]
+        custom_hex: Option<String>,
     },
     /// Length-extension attack demo against a Merkle-Damgård hash.
     LengthExtension {
@@ -633,9 +638,35 @@ fn run(op: Cmd) {
         Cmd::Mlwe { op } => cli_mlwe::run(op),
         Cmd::EcChallenges { op } => cmd_ec_challenges(op),
         Cmd::Isogeny { op } => cmd_isogeny(op),
-        Cmd::HashAuto { hash, output_bytes } => {
-            use crate::cryptanalysis::hash_attacks::auto_hash_attack_with_output_bytes;
-            match auto_hash_attack_with_output_bytes(&hash, output_bytes) {
+        Cmd::HashAuto {
+            hash,
+            output_bytes,
+            function_name_hex,
+            custom_hex,
+        } => {
+            use crate::cryptanalysis::hash_attacks::auto_hash_attack_with_options;
+            let function_name = function_name_hex
+                .as_deref()
+                .map(hex::decode)
+                .transpose()
+                .unwrap_or_else(|e| {
+                    eprintln!("error: invalid function name hex: {e}");
+                    std::process::exit(1)
+                });
+            let customization = custom_hex
+                .as_deref()
+                .map(hex::decode)
+                .transpose()
+                .unwrap_or_else(|e| {
+                    eprintln!("error: invalid customization hex: {e}");
+                    std::process::exit(1)
+                });
+            match auto_hash_attack_with_options(
+                &hash,
+                output_bytes,
+                function_name.as_deref().unwrap_or(&[]),
+                customization.as_deref().unwrap_or(&[]),
+            ) {
                 Ok(md) => println!("{}", md),
                 Err(e) => {
                     eprintln!("error: {}", e);
