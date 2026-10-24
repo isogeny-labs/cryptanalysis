@@ -1,0 +1,15 @@
+# Inversion relations reduce the residual kernel to three generic seed logs
+
+**Contribution.** Adding every distinct inversion identity (L(P)+L(-P)=0) to the p=20023 torsion-orbit Hecke matrix raises its anchored rank from **3,943 to 3,946** over both (\mathbf Q) and GF(4021). The kernel dimension falls from six to **three**. The same 14 orbit columns remain dependent on those three parameters, so the [frozen completion rule](completion_protocol.json) chooses three independent coordinates and obtains their logs by a recorded generic baby-step/giant-step calculation. The augmented 3,949-column matrix then has rank **3,949**, and independent scalar replay verifies every reachable orbit log.
+
+| Boundary | Anchored rank / 3,949 columns | Kernel dimension | Individually determined orbit logs |
+| --- | ---: | ---: | ---: |
+| Saved Hecke rows | 3,943 | 6 | 3,935 |
+| Hecke plus 1,975 inversion rows | 3,946 | 3 | 3,935 |
+| Plus three independent seed-log equations | **3,949** | **0** | **3,949** |
+
+The [sign protocol](protocol.json) froze the complete set of unordered inverse-orbit pairs before production. Its [result](result.json) records every row and independently checks that multiplying both represented points by 5 makes their sum the identity. One row is a self-pair; the other 1,974 pair distinct orbit columns. The three [selected seeds](completion.json) are the first supported coordinates, in ascending column order, whose evaluation vectors increase rank on the residual kernel: indices **1, 487, 1,391**. With (G=5(1,8630)) of order 4,021, the verified scalar values are **3,118, 2,252, 3,006**. One shared baby table has 64 entries; the respective giant-step counts are 48, 35, and 46. These generic computations are target-independent preparation for this completed relation table.
+
+The [integer-curve validator](validation.json) replayed all 1,975 inversion rows, the three seed values, all 3,949 projected logs, the augmented GF(4021) rank, and every one of the 4,021 subgroup target coordinates. The raw reachable table directly contains 3,949 coordinates; 70 more require one generator addition and two require two. The earlier relation solve already recovered arbitrary subgroup targets with at most two additions, so the three seed logs improve the completeness of the orbit-log system rather than establishing a new single-target online result. The [runtime receipt](sage_runtime.json) identifies the checked Sage build.
+
+The [Lean theorem](formal/SeedUniqueness.lean) proves that two solutions with equal relation and seed values coincide when the common relation-and-seed kernel is zero. Its pinned [build receipt](formal/build.json) reports only standard Lean foundations. The [proof map](PROOF_MAP.json) records the external finite-matrix rank and curve replay that instantiate this structural theorem. This remains a relation-stage configuration with `candidate_id: null` and `timing_claim: null`; a complete candidate would need the three generic seed costs, reusable table construction, target-dependent lookup, and a same-point rho clock in the prescribed resource tier.

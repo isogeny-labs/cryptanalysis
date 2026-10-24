@@ -1,0 +1,41 @@
+{
+  "accepted_rule": "all 14 roots rational with multiplicity, unique neighbors, defined j, sum neighbors=4P, and Phi_13(j(P),j(Q))=0",
+  "baseline_ambiguous_indices": [
+    1,
+    2,
+    487,
+    488,
+    1005,
+    1006,
+    1015,
+    1016,
+    1391,
+    1392,
+    1709,
+    1710,
+    2593,
+    2594
+  ],
+  "candidate_id": null,
+  "competing_prediction": "no accepted degree-13 row, or all new information is absorbed by new columns",
+  "curve": "y^2+y=x^3-x^2-10x-20",
+  "degree": 13,
+  "expected_a13": 4,
+  "p": 20023,
+  "primary_prediction": "at least one ambiguous old orbit log becomes determined",
+  "rank_rule": "append accepted rows; anchor orbit of (1,8630) to 1; compare GF4021 kernel support on all old columns while retaining every new column",
+  "sieve_reason": "all 14 rational cyclic-13 neighbor lines imply projective Frobenius scalar; determinant p=3 mod13 has square roots \u00b14, so trace is \u00b18 mod13 up to quadratic twist",
+  "source_commit": "be410965fc573b5f1a8725dce3d756083727d5e4",
+  "source_point_count": 19745,
+  "source_rule": "every five-torsion translate of every one of 3949 reachable orbit representatives",
+  "source_sha256": {
+    "frontier": "edf82463f015d47331da701cd55dfd4be4e92358d5378c4e9e325279ccb1de2f",
+    "hecke11": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+    "modular_hecke": "38f9cd111494f9b755230f6d5a5e0d1ee65381d7abeb9dee3bf75b3963f9391d",
+    "producer": "83c2f3fce1ea5ff87353d0204e77aaebcb4a09ddd24cb311267b3d0cbd00d3bf",
+    "seed": "517fd4fdf5d0684bd72a2dcded924703f6dc903ad44e71b2c074c21fdc47e240"
+  },
+  "status": "FROZEN_BEFORE_L13_PRODUCER",
+  "timing_claim": null,
+  "trace_sieve": "for j outside {0,1728}, abs trace of EllipticCurve_from_j(j) must be 5 or 8 modulo 13; exceptional j are always tested"
+}

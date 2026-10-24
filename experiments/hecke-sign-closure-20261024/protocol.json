@@ -1,0 +1,40 @@
+{
+  "anchor": "orbit of (1,8630) has log 1 modulo 4021",
+  "baseline_ambiguous_indices": [
+    1,
+    2,
+    487,
+    488,
+    1005,
+    1006,
+    1015,
+    1016,
+    1391,
+    1392,
+    1709,
+    1710,
+    2593,
+    2594
+  ],
+  "candidate_id": null,
+  "competing_prediction": "all sign identities already lie in the Hecke row span on the ambiguous component",
+  "curve": "y^2+y=x^3-x^2-10x-20",
+  "p": 20023,
+  "primary_prediction": "sign identities resolve at least one of the 14 ambiguous orbit columns",
+  "rank_rule": "append all sign rows to 5565 Hecke rows and anchor; compute GF4021 kernel support, exact integer rank, and independently replay every determined log",
+  "sign_row_rule": "x_i+x_neg_i=0, or 2*x_i=0 for a self-inverse orbit, checked after projection by 5",
+  "source_commit": "be410965fc573b5f1a8725dce3d756083727d5e4",
+  "source_rule": "each distinct unordered pair of saved torsion-orbit columns under point negation, including self-pairs",
+  "source_sha256": {
+    "frontier": "edf82463f015d47331da701cd55dfd4be4e92358d5378c4e9e325279ccb1de2f",
+    "producer": "9ec341b240f8afa11af0dcd165231df957eb0445ec38ea0f40cf6384ae3d9a12",
+    "seed": "517fd4fdf5d0684bd72a2dcded924703f6dc903ad44e71b2c074c21fdc47e240"
+  },
+  "status": "FROZEN_BEFORE_SIGN_PRODUCER",
+  "subgroup_projection_multiplier": 5,
+  "timing_claim": null,
+  "torsion_point": [
+    5,
+    5
+  ]
+}

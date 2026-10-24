@@ -1,0 +1,24 @@
+{
+  "candidate_id": null,
+  "claims": [
+    {
+      "claim": "if s^2=3 modulo 13, then s is 4 or 9 and 2s is 8 or 5 modulo 13",
+      "hypotheses": "s is a residue modulo 13; scalar Frobenius determinant p=3 modulo 13",
+      "lean_declarations": [
+        "TraceSieve.square_roots_three_mod_thirteen",
+        "TraceSieve.scalar_trace_residue"
+      ],
+      "status": "kernel_checked_without_axioms"
+    },
+    {
+      "bridge": "result.json, validation.json, sieve_audit.json",
+      "claim": "10 verified degree-13 rows add two new columns, with no new induced rank on the old 3949 columns",
+      "lean_declarations": [],
+      "missing_formalization": "X0(11) Hecke-13 functions, finite source enumeration, and exact rank certificate in Lean",
+      "status": "finite_matrix_and_point_replay_external"
+    }
+  ],
+  "formal_build_receipt": "formal/build.json",
+  "formal_source": "formal/TraceSieve.lean",
+  "timing_claim": null
+}

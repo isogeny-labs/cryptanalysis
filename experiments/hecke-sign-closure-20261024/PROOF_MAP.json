@@ -1,0 +1,23 @@
+{
+  "candidate_id": null,
+  "claims": [
+    {
+      "claim": "two relation solutions agreeing on seeds coincide if the relation-and-seed kernel intersection is zero",
+      "hypotheses": "additive groups V,W,S; additive homomorphisms A and seed; common kernel is zero",
+      "lean_declarations": [
+        "SeedUniqueness.unique_of_relation_and_seed_values"
+      ],
+      "status": "kernel_checked_standard_foundations"
+    },
+    {
+      "bridge": "result.json, completion.json, validation.json",
+      "claim": "1975 inversion rows reduce anchored nullity from 6 to 3; three selected generic seed logs give rank 3949 and all reachable orbit logs",
+      "lean_declarations": [],
+      "missing_formalization": "finite elliptic-curve group, orbit quotient, complete row matrix, and rank certificates in Lean",
+      "status": "finite_rank_and_integer_curve_replay_external"
+    }
+  ],
+  "formal_build_receipt": "formal/build.json",
+  "formal_source": "formal/SeedUniqueness.lean",
+  "timing_claim": null
+}
