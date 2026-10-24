@@ -1,0 +1,31 @@
+{
+  "candidate_id": null,
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--maxtime=110",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w8_n131_w29_sixpair_deferred_20261023/n41_public_all_deferred.xcnf"
+  ],
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "last_restart_line": "c rst  geom best  vmt  2493 2427K   19243 18767   33K    4.13    2.76  4175   274   29K    42  261.17  260.84",
+  "monitor_error": null,
+  "protocol_sha256": "9b7566535fbb18bd281642befedfe7a0a5f0e7acb6c0371b0fa954563fa4d367",
+  "public_point": [
+    344545435656,
+    924092594889
+  ],
+  "rss_samples": 1137,
+  "sampled_peak_combined_rss_bytes": 430161920,
+  "solver_exit_code": -15,
+  "solver_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "solver_stdout_sha256": "b9986a9a9d3f3bc5a4009ada7024539d2aca9ad6263e0c70e0638fa4a10c4522",
+  "solver_terminal_indeterminate": false,
+  "solver_terminal_sat": false,
+  "solver_terminal_unsat": false,
+  "status": "BOUNDED_UNKNOWN",
+  "stop_reason": "WALL_CAP",
+  "wall_seconds": 120.01312466699164
+}
