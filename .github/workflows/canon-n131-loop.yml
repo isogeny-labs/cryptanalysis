@@ -38,6 +38,12 @@ jobs:
       OUT: results/ci/run-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130 experiments/canon-n131-20261014 experiments/canon-n131-loop-20261014
       - name: Toolchain (pinned to the local build's rustc)
         run: |
           rustup toolchain install 1.97.0 --profile minimal

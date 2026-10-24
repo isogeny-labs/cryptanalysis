@@ -52,6 +52,13 @@ jobs:
             /experiments/koblitz-n83-stacked-20261016/*.py
             /experiments/koblitz-n83-stacked-20261016/*.json
             /scripts/isolated_bench.py
+            /tools/artifacts/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -68,6 +75,12 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
 
       - name: Check the frozen protocol pins
         shell: bash
