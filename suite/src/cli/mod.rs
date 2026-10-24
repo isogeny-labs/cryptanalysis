@@ -261,6 +261,35 @@ fn aes_bridge_family(command: Option<&str>) -> &'static str {
     }
 }
 
+fn print_aes_bridge_help() {
+    println!("Usage: crax aes <COMMAND> [OPTIONS]");
+    let binary = sibling_binary("CRAX_CRYPTO_BIN", "crypto");
+    for (family, label, fallback) in [
+        (
+            "aes",
+            "AES primitive commands",
+            "block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt",
+        ),
+        (
+            "cryptanalysis",
+            "Sibling cryptanalysis commands",
+            "aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, and other commands",
+        ),
+    ] {
+        let output = std::process::Command::new(&binary)
+            .args([family, "--help"])
+            .output();
+        match output {
+            Ok(output) if output.status.success() => {
+                println!("\n{label} (from {}):", binary.to_string_lossy());
+                print!("{}", String::from_utf8_lossy(&output.stdout));
+            }
+            _ => println!("\n{label}: {fallback}"),
+        }
+    }
+    println!("\nUse `crax aes <COMMAND> --help` for command options.");
+}
+
 fn native_hex_report(
     sub: &str,
     native_args: &[OsString],
@@ -461,7 +490,7 @@ where
                     .get(1)
                     .is_some_and(|arg| arg == "--help" || arg == "-h")
             {
-                println!("Usage: crax aes <COMMAND> [OPTIONS]\n\nAES primitive commands: block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt\nAES cryptanalysis commands: aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, aes-cpa, aes-dpa, aes-cache-timing, and the other sibling crypto cryptanalysis commands.\n\nUse `crax aes <COMMAND> --help` for command options.");
+                print_aes_bridge_help();
                 return ExitCode::SUCCESS;
             }
             let family = aes_bridge_family(rest.get(1).and_then(|arg| arg.to_str()));
