@@ -1,0 +1,52 @@
+{
+  "arm_order": [
+    "old",
+    "new",
+    "new",
+    "old"
+  ],
+  "arms": {
+    "new": {
+      "cases": {
+        "ordinary": "n131_ordinary",
+        "positive": "n131_positive"
+      },
+      "directory": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/nonzero_branch_cubic_20261023",
+      "fixed_bit_policy": "substitute x0=1 before 35-variable ANF construction"
+    },
+    "old": {
+      "cases": {
+        "ordinary": "n131_o_k4",
+        "positive": "n131_p_k4"
+      },
+      "directory": "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_nonzero_branch_20261019",
+      "fixed_bit_policy": "equation x0=1 in 36-variable Boolean ring"
+    }
+  },
+  "candidate_id": null,
+  "curve_id": "EC1N131Ckb1heb5f1998f20b",
+  "ordinary_point": [
+    877610862732227974378969808549299291499,
+    2063336771837286479337213121437715536874
+  ],
+  "positive_codes": [
+    3,
+    16722
+  ],
+  "rss_cap_bytes": 4294967296,
+  "sage_launcher": "/Volumes/SSD990/cryptanalysis/sage",
+  "sources": {
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_freecode_resultant_20261018/coefficients.json": "9109e2222876f4fd8c413f16dd7dac542fd04b7ab70a4784721638301311bb60",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w33_resultant_core_20261018/replay_result.json": "8e023731df98d4279a6e217798ed9167b483ee62620af1743f5cfc5e609413f5",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/nonzero_branch_cubic_20261023/branch_gb.py": "5f8aa77d422d70dfcd28cd3babdef7bab19cfef5dda3f751ee033a25addb83ef",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/nonzero_branch_cubic_20261023/protocol.json": "6f96bb0b627b11fcae23f8edfd1ae80e092268f541d1b805a9660a115c135ae5",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/nonzero_branch_cubic_20261023/verification_result.json": "a2abbfb21a8c97c080323f3eb108082fbea90423c6ab9857079da04c2bba9444",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/nonzero_branch_fixedbit_abba_20261023/run_one.py": "d29f080f67cf6bf6134c0a6a97eee7ceb8680ff8a6e4a9c874ba502712a800cc",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_nonzero_branch_20261019/branch_gb.py": "dfa578bf772aa9695c8685e9ce2a92f2525f4db3a960ebbad98ed463c8f75d39",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_nonzero_branch_20261019/protocol.json": "90684a23787d7a693d6183eea134977a03240c7d14d38b76cf97c4ff0fd0e21f",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/resultant_nonzero_branch_20261019/verification_result.json": "cff695c9776d8f5da0ba96eefd16ec60b4556e1ce63a2e09843926c17eaf9908"
+  },
+  "status": "FROZEN_BEFORE_FIXEDBIT_ABBA_RUNS",
+  "wall_cap_seconds": 600,
+  "worker_count": 1
+}
