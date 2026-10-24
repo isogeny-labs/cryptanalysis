@@ -1,0 +1,42 @@
+{
+  "accepted_row_rule": "All l+1 Hecke neighbors rational and uniquely reconstructed; all j values defined; modular polynomial and group-sum identities checked",
+  "candidate_id": null,
+  "competing_prediction": "Translated rows either fail the rational-neighbor gate or add no induced rank on the original quotient columns",
+  "curve_model": [
+    0,
+    -1,
+    1,
+    -10,
+    -20
+  ],
+  "field_prime": 12043,
+  "hecke_degrees": [
+    2,
+    3
+  ],
+  "induced_rank_rule": "rank([A B])-rank(B), where A has original torsion-orbit columns and B has every new column; subtract baseline old-column row rank",
+  "new_sources": "Unique P+T and P-T points outside the original 120-point set",
+  "old_columns": "Canonical orbits under adding kT, k=0..4, of the 120 frozen D=-227 class points",
+  "primary_prediction": "At least one cross-trace translated source supplies an eligible Hecke row and yields positive induced rank on the original torsion-quotient columns after new columns are eliminated",
+  "question": "Does known 5-torsion translation connect the D=-227 Hecke class to other isogeny classes with rows that constrain the original torsion quotient after every new column is eliminated?",
+  "rank_fields": [
+    101,
+    1000000007
+  ],
+  "source_commit": "06310afcad45a5d1f08c523d8d0d51b7f5d97404",
+  "source_sha256": {
+    "hecke11": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+    "matrix": "8ef0c2c318bc28337d3740561646cb005fddf769dd56fe7bb28d7f060fbda6ad",
+    "producer": "6f3a549ed7c0e6c71a2d1abec1c57195dc036c24120cf764aa38e1cdb0101c01"
+  },
+  "status": "FROZEN_BEFORE_TORSION_BRIDGE_PRODUCER",
+  "timing_claim": null,
+  "torsion_point": [
+    5,
+    5
+  ],
+  "translation_powers": [
+    1,
+    4
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "candidate_id": null,
+  "empirical_result": {
+    "evidence_sha256": {
+      "private_witness": "ca7bdcef6db865d45076a535ecce50c3ca3bed472f52720b6f3688843d5d8d34",
+      "rank_validation": "1f3ca484ef60a535c28e44eb81ba9732d23b815a0adf2bc309546a60d7b2dd84",
+      "result": "0e1cc44778eb241be2736d568bc40b2847ff734244fa8dbd60f23c324a1da794",
+      "trace_validation": "36ca06b26fefcc46e0aa8a563338c99d3f9ff4a055fdc7468912c1db06d07b42"
+    },
+    "statement": "At p=12043, 40 eligible Hecke rows from translated sources with different absolute traces add 40 total rational rank but zero induced rank on the original 117 torsion-orbit columns after 128 new columns are eliminated.",
+    "status": "exact_integer_point_replay_and_rational_rank_certified"
+  },
+  "formal_build_sha256": "892e9e8f72f0e7457034901303936560268b7a0cf1d59992f816280da1f65648",
+  "standard_foundations": [
+    "propext",
+    "Quot.sound"
+  ],
+  "status": "CONDITIONAL_LEAN_STRUCTURE_WITH_EXACT_INSTANCE_CERTIFICATES",
+  "structural_theorem": {
+    "conclusion": "The old components of combinations of old rows and new rows whose new component vanishes equal S exactly.",
+    "hypotheses": "Additive groups O,N,W; old-only set S subset O; additive maps A:W to O and B:W to N; B injective.",
+    "instance_bridge": "The 40 private new columns form an identity 40 by 40 submatrix and independently certify injectivity of the new projection B over Q; Python checks this exact instance, while the matrix-to-Lean construction remains open.",
+    "lean_declaration": "PrivateNewColumns.oldOnly_eq_original",
+    "source_sha256": "7615f399eb058484c9269ce2fd202511db5fca4465db571b3089985976fdb375",
+    "status": "kernel_checked"
+  },
+  "timing_claim": null
+}
