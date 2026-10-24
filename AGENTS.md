@@ -1,5 +1,11 @@
 # Agent rules for cryptanalysis experiments
 
+Shared conventions with `crypto`, `crypto-autoresearcher` and `crypto-lean` —
+object storage, the validation vocabulary, curve identity, the skill surface and
+the shared-code parity list — are stated once in
+`crypto-autoresearcher:docs/lab-contract.md`. That file wins on a shared
+convention; this file wins on anything specific to this repository.
+
 ## Success criterion: iterative improvement of the index-calculus baseline
 
 Owner's rule, 2026-10-15. It replaces any earlier wording that treats only
