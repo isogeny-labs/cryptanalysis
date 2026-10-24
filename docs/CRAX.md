@@ -98,6 +98,12 @@ It accepts `solve-prime-file --input FILE`, including checked
 all three commands too. Use
 `crax store` for the content-addressed S3 push, verify and pull commands, and
 `crax isogeny-walk` for route enumeration and verification.
+The [current-head S3 bridge receipt](CRAX_PRIME_ROUTE_S3_ACCEPTANCE_20261024.json)
+checks `crax store` upload, remote HEAD and byte verification, and fresh-cache
+pull for both a public prime target and certified route. `crax --json ic
+solve-prime-file` then consumes their `store:` names and returns scalar 190,
+`verified: true`, and two verified route edges in its child report. The
+isolated acceptance prefix was empty after exact-object cleanup.
 
 ### Resumable isogeny experiment sweeps
 
