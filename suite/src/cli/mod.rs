@@ -212,8 +212,10 @@ fn run_external(
         match command.output() {
             Ok(output) => {
                 let ok = output.status.success();
-                let report: serde_json::Value = serde_json::from_slice(&output.stdout)
-                    .unwrap_or_else(|_| serde_json::Value::Null);
+                let report: serde_json::Value =
+                    aes_native_hex_report(sub, &native_args, &output.stdout)
+                        .or_else(|| serde_json::from_slice(&output.stdout).ok())
+                        .unwrap_or(serde_json::Value::Null);
                 let report_text = report
                     .is_null()
                     .then(|| String::from_utf8_lossy(&output.stdout).to_string());
@@ -247,6 +249,38 @@ fn run_external(
             }
         }
     }
+}
+
+fn aes_bridge_family(command: Option<&str>) -> &'static str {
+    match command {
+        Some(
+            "block-encrypt" | "block-decrypt" | "ctr" | "cbc-encrypt" | "cbc-decrypt"
+            | "gcm-encrypt" | "gcm-decrypt",
+        ) => "aes",
+        _ => "cryptanalysis",
+    }
+}
+
+fn aes_native_hex_report(
+    sub: &str,
+    native_args: &[OsString],
+    stdout: &[u8],
+) -> Option<serde_json::Value> {
+    if sub != "aes" || native_args.first()?.to_str()? != "aes" {
+        return None;
+    }
+    let operation = native_args.get(1)?.to_str()?;
+    if aes_bridge_family(Some(operation)) != "aes" {
+        return None;
+    }
+    let output = std::str::from_utf8(stdout).ok()?.trim();
+    if output.is_empty()
+        || !output.len().is_multiple_of(2)
+        || !output.bytes().all(|b| b.is_ascii_hexdigit())
+    {
+        return None;
+    }
+    Some(serde_json::json!({"operation": operation, "output_hex": output}))
 }
 
 /// Run a legacy suite command as a child so its native stdout and diagnostics
@@ -418,7 +452,16 @@ where
             )
         }
         "aes" => {
-            let mut native_args = vec![OsString::from("cryptanalysis")];
+            if rest.len() == 1
+                || rest
+                    .get(1)
+                    .is_some_and(|arg| arg == "--help" || arg == "-h")
+            {
+                println!("Usage: crax aes <COMMAND> [OPTIONS]\n\nAES primitive commands: block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt\nAES cryptanalysis commands: aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, aes-cpa, aes-dpa, aes-cache-timing, and the other sibling crypto cryptanalysis commands.\n\nUse `crax aes <COMMAND> --help` for command options.");
+                return ExitCode::SUCCESS;
+            }
+            let family = aes_bridge_family(rest.get(1).and_then(|arg| arg.to_str()));
+            let mut native_args = vec![OsString::from(family)];
             native_args.extend_from_slice(&rest[1..]);
             return run_external(
                 "CRAX_CRYPTO_BIN",
@@ -576,5 +619,43 @@ mod tests {
         for s in suite_commands() {
             assert!(!own.contains(&s), "{s} is both a crax and a suite command");
         }
+    }
+
+    #[test]
+    fn aes_bridge_routes_primitive_and_attack_commands() {
+        for command in [
+            "block-encrypt",
+            "block-decrypt",
+            "ctr",
+            "cbc-encrypt",
+            "cbc-decrypt",
+            "gcm-encrypt",
+            "gcm-decrypt",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "aes");
+        }
+        for command in [
+            "aes-attack",
+            "aes-dfa",
+            "aes-sbox-table",
+            "aes-distinguisher",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "cryptanalysis");
+        }
+    }
+
+    #[test]
+    fn aes_bridge_structures_native_hex_output() {
+        let primitive = vec![OsString::from("aes"), OsString::from("block-encrypt")];
+        assert_eq!(
+            aes_native_hex_report("aes", &primitive, b"69c4\n").unwrap(),
+            serde_json::json!({"operation":"block-encrypt","output_hex":"69c4"})
+        );
+        assert!(aes_native_hex_report("aes", &primitive, b"not hex\n").is_none());
+        let attack = vec![
+            OsString::from("cryptanalysis"),
+            OsString::from("aes-attack"),
+        ];
+        assert!(aes_native_hex_report("aes", &attack, b"69c4\n").is_none());
     }
 }

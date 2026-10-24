@@ -120,6 +120,25 @@ exact-object cleanup. Use `crax --json ic cubic-graph` and
 `crax --json ic cubic-route-generate` to get the corresponding child reports;
 save each child `report` JSON before using it as a graph or route file.
 
+`crax aes` now exposes both sibling AES families. Block encryption and
+decryption, CTR, CBC, and GCM commands go to `crypto aes`; AES attack and
+analysis commands go to `crypto cryptanalysis`. For example,
+`crax aes block-encrypt --help` and `crax aes aes-attack --help` show the
+respective native options. `crax aes --help` lists both families, and
+`CRAX_CRYPTO_BIN` selects the sibling `crypto` executable if it is not
+adjacent to `crax` or on `PATH`. With `crax --json aes block-encrypt ...`,
+the native hexadecimal result appears as `report.output_hex`, alongside
+`report.operation` and the producer exit status.
+
+```sh
+CRAX_CRYPTO_BIN=/path/to/crypto crax --json aes block-encrypt \
+  --key-hex 000102030405060708090a0b0c0d0e0f \
+  --hex 00112233445566778899aabbccddeeff
+```
+
+For that AES-128 known-answer vector, `report.output_hex` is
+`69c4e0d86a7b0430d8cdb78070b4c55a`.
+
 ### Resumable isogeny experiment sweeps
 
 `crax isogeny experiment` accepts `--state-dir` for a checkpoint after each
