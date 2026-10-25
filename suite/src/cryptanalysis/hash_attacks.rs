@@ -555,7 +555,7 @@ pub fn joux_multicollision<H: MerkleDamgardHash>(
 
 fn truncate_compression_state(state: &mut [u8], bits: u32) {
     let bytes = (bits as usize).div_ceil(8);
-    if bytes > 0 && bits % 8 != 0 {
+    if bytes > 0 && !bits.is_multiple_of(8) {
         state[bytes - 1] &= 0xFFu8 >> (8 - bits % 8);
     }
     state[bytes..].fill(0);

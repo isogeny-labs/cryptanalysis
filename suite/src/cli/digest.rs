@@ -187,22 +187,22 @@ fn digest_one_shot(
     output_bytes: Option<usize>,
 ) -> Result<Vec<u8>, String> {
     let digest: Vec<u8> = match algorithm {
-        "md4" => hash::md4(&message).to_vec(),
-        "md5" => hash::md5(&message).to_vec(),
-        "sha1" | "sha-1" => hash::sha1(&message).to_vec(),
-        "sha224" | "sha-224" => hash::sha224(&message).to_vec(),
-        "sha256" | "sha-256" => hash::sha256(&message).to_vec(),
-        "sha384" | "sha-384" => hash::sha384(&message).to_vec(),
-        "sha512" | "sha-512" => hash::sha512(&message).to_vec(),
-        "sha512-224" | "sha-512-224" => hash::sha512_224(&message).to_vec(),
-        "sha512-256" | "sha-512-256" => hash::sha512_256(&message).to_vec(),
-        "sha3-224" | "sha-3-224" => hash::sha3_224(&message).to_vec(),
-        "sha3-256" | "sha-3-256" | "sha3" | "sha-3" => hash::sha3_256(&message).to_vec(),
-        "sha3-384" | "sha-3-384" => hash::sha3_384(&message).to_vec(),
-        "sha3-512" | "sha-3-512" => hash::sha3_512(&message).to_vec(),
-        "shake128" | "shake-128" => hash::shake128(&message, output_bytes.unwrap()),
-        "shake256" | "shake-256" => hash::shake256(&message, output_bytes.unwrap()),
-        "blake3" => hash::blake3_hash(&message).to_vec(),
+        "md4" => hash::md4(message).to_vec(),
+        "md5" => hash::md5(message).to_vec(),
+        "sha1" | "sha-1" => hash::sha1(message).to_vec(),
+        "sha224" | "sha-224" => hash::sha224(message).to_vec(),
+        "sha256" | "sha-256" => hash::sha256(message).to_vec(),
+        "sha384" | "sha-384" => hash::sha384(message).to_vec(),
+        "sha512" | "sha-512" => hash::sha512(message).to_vec(),
+        "sha512-224" | "sha-512-224" => hash::sha512_224(message).to_vec(),
+        "sha512-256" | "sha-512-256" => hash::sha512_256(message).to_vec(),
+        "sha3-224" | "sha-3-224" => hash::sha3_224(message).to_vec(),
+        "sha3-256" | "sha-3-256" | "sha3" | "sha-3" => hash::sha3_256(message).to_vec(),
+        "sha3-384" | "sha-3-384" => hash::sha3_384(message).to_vec(),
+        "sha3-512" | "sha-3-512" => hash::sha3_512(message).to_vec(),
+        "shake128" | "shake-128" => hash::shake128(message, output_bytes.unwrap()),
+        "shake256" | "shake-256" => hash::shake256(message, output_bytes.unwrap()),
+        "blake3" => hash::blake3_hash(message).to_vec(),
         _ => return Err(format!("unsupported hash algorithm: {algorithm}")),
     };
     Ok(digest)
@@ -284,7 +284,7 @@ enum StreamingDigest {
     Fixed(Box<dyn sha1::digest::DynDigest>),
     Shake128(sha3::Shake128, usize),
     Shake256(sha3::Shake256, usize),
-    Blake3(blake3::Hasher),
+    Blake3(Box<blake3::Hasher>),
 }
 
 impl StreamingDigest {
@@ -323,7 +323,7 @@ impl StreamingDigest {
                 sha3::Shake256::default(),
                 output_bytes.unwrap(),
             )),
-            "blake3" => Ok(Self::Blake3(blake3::Hasher::new())),
+            "blake3" => Ok(Self::Blake3(Box::new(blake3::Hasher::new()))),
             _ => Err(format!("unsupported hash algorithm: {algorithm}")),
         }
     }
