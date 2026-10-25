@@ -11,7 +11,6 @@ on:
       - "experiments/ic-bench/**"
       - "experiments/fb-archive/**"
       - "experiments/fb-search/**"
-      - "experiments/orbit-quotient-summation/**"
       - "experiments/pdp-degree-heuristics/**"
       - "experiments/pdp-scaling/sumpoly.py"
       - "experiments/pdp-scaling/gf2n.py"
@@ -23,19 +22,13 @@ on:
       - "ecc2k130/runner/codegen/curves.py"
       - "ecc2k130/runner/codegen/field.py"
       - "ecc2k130/runner/codegen/indexcalc.py"
-      - "tools/bitops.py"
-      - "tools/rho_reference.py"
-      - "docs/units/**"
-      - "tests/test_bitops.py"
-      - "tests/test_rho_reference.py"
       - ".github/workflows/ic-bench.yml"
   push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
+    branches: ["**"]
     paths:
       - "experiments/ic-bench/**"
       - "experiments/fb-archive/**"
       - "experiments/fb-search/**"
-      - "experiments/orbit-quotient-summation/**"
       - "experiments/pdp-degree-heuristics/**"
       - "experiments/pdp-scaling/sumpoly.py"
       - "experiments/pdp-scaling/gf2n.py"
@@ -47,11 +40,6 @@ on:
       - "ecc2k130/runner/codegen/curves.py"
       - "ecc2k130/runner/codegen/field.py"
       - "ecc2k130/runner/codegen/indexcalc.py"
-      - "tools/bitops.py"
-      - "tools/rho_reference.py"
-      - "docs/units/**"
-      - "tests/test_bitops.py"
-      - "tests/test_rho_reference.py"
       - ".github/workflows/ic-bench.yml"
   workflow_dispatch:
 
@@ -59,7 +47,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ic-bench-${{ github.ref }}
   cancel-in-progress: true
 
 defaults:
@@ -72,26 +60,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/runner experiments
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install
-        run: python -m pip install --quiet numpy pytest
+        run: python -m pip install --quiet numpy pytest pyyaml==6.0.2 jsonschema==4.23.0
 
       - name: Unit tests
         run: |
           python -m pytest -q experiments/pdp-degree-heuristics
           python -m pytest -q experiments/ic-bench
-          python -m pytest -q tests/test_bitops.py tests/test_rho_reference.py
           python -m pytest -q experiments/fb-archive
           python -m pytest -q experiments/fb-search
           python -m pytest -q experiments/frobenius-quotient-m4/test_fqm4_factor_bases.py
           python -m pytest -q experiments/linearized-half-decomposition/test_lhd_factor_bases.py
           python -m pytest -q experiments/sage-ic-campaign/pb-bulk-halftrace-20260924/test_pbbulk_factor_bases.py
-          python -m pytest -q experiments/orbit-quotient-summation
 
       - name: Candidate catalog
         working-directory: experiments/ic-candidate-catalog
@@ -147,9 +139,15 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/runner experiments
 
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 

@@ -36,6 +36,15 @@ CA_API ca_status ca_kangaroo_solve(const ca_group *g, const ca_elem *base, const
                                    uint64_t lo, uint64_t hi, const ca_kangaroo_params *params,
                                    uint64_t *x, ca_stats *st);
 
+/* Preserve herd positions, RNG state and distinguished points.  NULL
+ * checkpoint_path enables live progress without persistence.  Intervals are
+ * seconds; zero selects defaults (5 for progress, 60 for checkpoint). */
+CA_API ca_status ca_kangaroo_solve_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_kangaroo_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
+
 #ifdef __cplusplus
 }
 #endif

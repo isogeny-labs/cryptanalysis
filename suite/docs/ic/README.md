@@ -10,6 +10,35 @@ The `prime` command runs the pipeline on prime-field curves by type — generic
 (NIST P-192 … P-521), `j = 0` Koblitz-style (secp256k1) and `j = 1728` — see
 [Prime-field curves](#prime-field-curves-ic-prime).
 
+## Certicom 130-bit challenge workflows
+
+`ECCp-131` is the Certicom prime-field challenge. Its exact field, curve,
+generator, subgroup order, and published target are imported from the
+[Certicom curve list](https://www.certicom.com/en/curves-list). The inspector
+checks both points against the curve equation and subgroup relation:
+
+    ca-ic inspect --curve eccp-131 --json
+    ca-icx inspect eccp-131 --json
+    ca-icx estimate eccp-131 --json
+
+`ca-ic prime --curve eccp-131` reports the exact curve's structure, then runs
+index calculus on a generated smaller curve of the same type. Its result is a
+scaled experiment. A full-parameter ECCp-131 relation and target-descent path
+remains open in the [problem record](https://github.com/aburan28/crypto/blob/main/problems/eccp131-full-parameter-index-calculus.md).
+
+`ECC2K-130` is the separate binary Koblitz challenge. The fixed-parameter
+index-calculus workflow accepts its published point through the pinned
+polynomial-basis file and keeps its intermediate state in the requested run
+directory:
+
+    ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
+      --dir runs/ecc2k130-fixed --stage status --json
+
+The `crypto` repository's `ecdlp-nist` command offers verified interval BSGS
+on both exact curves. Give a justified interval for the published target or
+use a known-answer point. Its in-memory table is capped at 1,048,576 baby
+steps; a whole-subgroup request is refused before allocation.
+
 **Research provenance:** the per-stage scoreboard
 ([`BOUNDARY_TARGETS.md`](https://github.com/aburan28/crypto/blob/main/docs/ic/BOUNDARY_TARGETS.md)),
 the frozen run records and the autolab control plane that produced them stay

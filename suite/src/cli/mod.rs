@@ -3,10 +3,10 @@
 //! One binary, one subcommand per attack. The generic discrete-logarithm
 //! solvers run on the C library in the repository root (64-bit groups,
 //! measured constants); everything else runs on this crate's
-//! arbitrary-precision attacks. Every command takes the global `--json`
-//! flag and then prints exactly one JSON object; every answer a command
-//! reports as solved has been verified independently of the solver that
-//! produced it.
+//! arbitrary-precision attacks. Every command accepts `--json` and emits one
+//! JSON object. Older research commands expose their native report text inside
+//! a JSON envelope. Native solver commands independently verify answers they
+//! mark solved; each research command retains its own evidence contract.
 //!
 //! `crax ic`, `crax icx` and the suite's cipher, hash, lattice, isogeny and
 //! collaborative-rho commands are the research command lines in
@@ -14,8 +14,11 @@
 //! and report formats. The older binaries (`ca-ic`, `ca-icx`, `ca-suite`,
 //! `ca-curves`) remain as compatible entry points to the same code.
 
+pub mod aes_attack;
+pub mod aes_sbox_table;
 pub mod challenge;
 pub mod curve;
+pub mod digest;
 pub mod dlog;
 pub mod ecdlp;
 pub mod ecdsa;
@@ -38,14 +41,16 @@ Attacks by family:
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
-  symmetric & hash          list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash-auto, length-extension
+  sibling crypto tools      ecdlp-nist, ic/icx solve-prime|solve-prime-file|solve-cubic|prime-route-generate|cubic-graph|cubic-route-generate, isogeny-walk, store, crypto
+  symmetric & hash          aes (AES primitives and attacks), mac (HMAC/KMAC), aes-attack, aes-sbox-table, list-ciphers, auto, boomerang, rectangle, sbox, aes-related-key, hash, hash-auto, length-extension
   lattice & post-quantum    mlwe
   isogenies                 isogeny
   distributed rho           rho-collab
   demos & research bench    visual-all, aes-visual-demo, bench, ec-challenges
   curves & challenges       curve names, curve info, challenge list|show|solve|rho-job
 
-Every command accepts --json. `crax <command> --help` shows its options.";
+Every command accepts --json. Native Markdown reports are wrapped as report_text in JSON mode.
+`crax <command> --help` shows its options.";
 
 /// The top-level parser.
 #[derive(Parser, Debug)]
@@ -67,6 +72,12 @@ pub struct Cli {
 /// Every `crax` subcommand.
 #[derive(Subcommand, Debug)]
 pub enum Command {
+    /// Recover key material on bounded AES-128 differential, linear, or integral instances.
+    AesAttack(aes_attack::AesAttackArgs),
+    /// Export exact AES S-box DDT, LAT, BCT, or DLCT rows or complete tables.
+    AesSboxTable(aes_sbox_table::AesSboxTableArgs),
+    /// Compute MD, SHA, BLAKE, Skein, and other unkeyed digests from text, hex, or a file.
+    Hash(digest::DigestArgs),
     /// Baby-step giant-step over an interval or the whole group.
     Bsgs(dlog::IntervalArgs),
     /// Pollard rho: r-adding walk, distinguished points, negation map, threads.
@@ -158,6 +169,221 @@ fn tool_for(sub: &str) -> Option<Tool> {
     }
 }
 
+/// Resolve an optional sibling executable in a release bundle. An explicit
+/// override wins; otherwise a binary beside `crax` wins over `PATH`.
+pub(crate) fn sibling_binary(env_name: &str, default_binary: &str) -> OsString {
+    if let Some(binary) = std::env::var_os(env_name) {
+        return binary;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            let adjacent = dir.join(default_binary);
+            if adjacent.is_file() {
+                return adjacent.into_os_string();
+            }
+        }
+    }
+    default_binary.into()
+}
+
+/// Bridge the sibling crypto executables without a shell. This keeps the
+/// public-target EC IC, isogeny-walk, and artifact-store surfaces reachable
+/// from `crax` while preserving the producing executable's exit status.
+fn run_external(
+    env_name: &str,
+    default_binary: &str,
+    sub: &str,
+    args: &[OsString],
+    json_requested: bool,
+    pass_json: bool,
+) -> ExitCode {
+    let binary = sibling_binary(env_name, default_binary);
+    let mut native_args: Vec<OsString> = args
+        .iter()
+        .filter(|arg| arg.as_os_str() != std::ffi::OsStr::new("--json"))
+        .cloned()
+        .collect();
+    if json_requested && pass_json {
+        native_args.push("--json".into());
+    }
+    let mut command = std::process::Command::new(&binary);
+    command.args(&native_args);
+    if json_requested {
+        match command.output() {
+            Ok(output) => {
+                let ok = output.status.success();
+                let report: serde_json::Value =
+                    native_hex_report(sub, &native_args, &output.stdout)
+                        .or_else(|| serde_json::from_slice(&output.stdout).ok())
+                        .unwrap_or(serde_json::Value::Null);
+                let report_text = report
+                    .is_null()
+                    .then(|| String::from_utf8_lossy(&output.stdout).to_string());
+                println!(
+                    "{}",
+                    serde_json::json!({
+                        "status": if ok { "ok" } else { "error" },
+                        "command": sub,
+                        "exit_code": output.status.code(),
+                        "report": report,
+                        "report_text": report_text,
+                        "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                    })
+                );
+                ExitCode::from(output.status.code().unwrap_or(1) as u8)
+            }
+            Err(e) => {
+                println!(
+                    "{}",
+                    serde_json::json!({"status":"error","command":sub,"error":format!("starting {}: {e}", binary.to_string_lossy())})
+                );
+                ExitCode::FAILURE
+            }
+        }
+    } else {
+        match command.status() {
+            Ok(status) => ExitCode::from(status.code().unwrap_or(1) as u8),
+            Err(e) => {
+                eprintln!("error: starting {}: {e}", binary.to_string_lossy());
+                ExitCode::FAILURE
+            }
+        }
+    }
+}
+
+fn aes_bridge_family(command: Option<&str>) -> &'static str {
+    match command {
+        Some(
+            "block-encrypt" | "block-decrypt" | "ctr" | "cbc-encrypt" | "cbc-decrypt"
+            | "gcm-encrypt" | "gcm-decrypt",
+        ) => "aes",
+        _ => "cryptanalysis",
+    }
+}
+
+fn print_aes_bridge_help() {
+    println!("Usage: crax aes <COMMAND> [OPTIONS]");
+    let binary = sibling_binary("CRAX_CRYPTO_BIN", "crypto");
+    for (family, label, fallback) in [
+        (
+            "aes",
+            "AES primitive commands",
+            "block-encrypt, block-decrypt, ctr, cbc-encrypt, cbc-decrypt, gcm-encrypt, gcm-decrypt",
+        ),
+        (
+            "cryptanalysis",
+            "Sibling cryptanalysis commands",
+            "aes-attack, aes-sbox-table, aes-distinguisher, aes-dfa, and other commands",
+        ),
+    ] {
+        let output = std::process::Command::new(&binary)
+            .args([family, "--help"])
+            .output();
+        match output {
+            Ok(output) if output.status.success() => {
+                println!("\n{label} (from {}):", binary.to_string_lossy());
+                print!("{}", String::from_utf8_lossy(&output.stdout));
+            }
+            _ => println!("\n{label}: {fallback}"),
+        }
+    }
+    println!("\nUse `crax aes <COMMAND> --help` for command options.");
+}
+
+fn print_ic_bridge_help(tool: &str) {
+    let (legacy, env_var) = if tool == "ic" {
+        (tools::ic::Cli::command().name("ic"), "CRAX_IC_BIN")
+    } else {
+        (tools::icx::Cli::command().name("icx"), "CRAX_ICX_BIN")
+    };
+    println!(
+        "{}",
+        legacy.bin_name(format!("crax {tool}")).render_long_help()
+    );
+
+    let binary = sibling_binary(env_var, tool);
+    let output = std::process::Command::new(&binary).arg("--help").output();
+    match output {
+        Ok(output) if output.status.success() => {
+            println!(
+                "\nAdditional EC index-calculus commands (from {}):",
+                binary.to_string_lossy()
+            );
+            print!("{}", String::from_utf8_lossy(&output.stdout));
+        }
+        _ => println!(
+            "\nAdditional EC index-calculus commands: solve-prime, solve-prime-file, \
+             solve-cubic, prime-route-generate, cubic-graph, cubic-route-generate"
+        ),
+    }
+    println!("\nUse `crax {tool} <COMMAND> --help` for command options.");
+}
+
+fn native_hex_report(
+    sub: &str,
+    native_args: &[OsString],
+    stdout: &[u8],
+) -> Option<serde_json::Value> {
+    let family = native_args.first()?.to_str()?;
+    let command = native_args.get(1)?.to_str()?;
+    match (sub, family) {
+        ("aes", "aes") if aes_bridge_family(Some(command)) == "aes" => {}
+        ("mac", "mac") => {}
+        _ => return None,
+    }
+    let output = std::str::from_utf8(stdout).ok()?.trim();
+    if output.is_empty()
+        || !output.len().is_multiple_of(2)
+        || !output.bytes().all(|b| b.is_ascii_hexdigit())
+    {
+        return None;
+    }
+    Some(match sub {
+        "mac" => serde_json::json!({"algorithm": command, "tag_hex": output}),
+        _ => serde_json::json!({"operation": command, "output_hex": output}),
+    })
+}
+
+/// Run a legacy suite command as a child so its native stdout and diagnostics
+/// can be reported as exactly one JSON object without changing its parser or
+/// allowing an inner `process::exit` to terminate the unified dispatcher.
+fn run_suite_json(sub: &str, args: &[OsString]) -> ExitCode {
+    let exe = match std::env::current_exe() {
+        Ok(path) => path,
+        Err(e) => {
+            println!(
+                "{}",
+                serde_json::json!({"status":"error","error":format!("locating crax: {e}")})
+            );
+            return ExitCode::FAILURE;
+        }
+    };
+    let output = std::process::Command::new(exe).arg(sub).args(args).output();
+    match output {
+        Ok(output) => {
+            let ok = output.status.success();
+            println!(
+                "{}",
+                serde_json::json!({
+                    "status": if ok { "ok" } else { "error" },
+                    "command": sub,
+                    "exit_code": output.status.code(),
+                    "report_text": String::from_utf8_lossy(&output.stdout),
+                    "diagnostics_text": String::from_utf8_lossy(&output.stderr),
+                })
+            );
+            ExitCode::from(output.status.code().unwrap_or(1) as u8)
+        }
+        Err(e) => {
+            println!(
+                "{}",
+                serde_json::json!({"status":"error","error":format!("starting crax: {e}")})
+            );
+            ExitCode::FAILURE
+        }
+    }
+}
+
 /// The full command tree, for `--help`: `crax`'s own subcommands plus the
 /// research command lines, grafted in under their `crax` names.
 pub fn command() -> clap::Command {
@@ -181,7 +407,13 @@ pub fn command() -> clap::Command {
             tools::icx::Cli::command()
                 .name("icx")
                 .about("Index calculus across every standardized curve: catalog, estimate, run"),
-        );
+        )
+        .subcommand(clap::Command::new("crypto").about("Bridge to the sibling crypto CLI"))
+        .subcommand(clap::Command::new("aes").about("AES cryptanalysis command family via sibling crypto CLI"))
+        .subcommand(clap::Command::new("mac").about("HMAC, KMAC, and keyed digests via sibling crypto CLI"))
+        .subcommand(clap::Command::new("ecdlp-nist").about("NIST and Certicom ECDLP audit and bounded solve via crypto"))
+        .subcommand(clap::Command::new("store").about("Content-addressed artifact store via crypto"))
+        .subcommand(clap::Command::new("isogeny-walk").about("Certified isogeny graph CLI"));
     for sub in tools::suite::Cli::command().get_subcommands() {
         cmd = cmd.subcommand(sub.clone());
     }
@@ -210,6 +442,9 @@ pub fn default_sigpipe() {
 pub fn run(out: Out, cmd: Command) -> CmdResult {
     use dlog::IntervalSolver;
     match cmd {
+        Command::AesAttack(a) => aes_attack::run(out, &a),
+        Command::AesSboxTable(a) => aes_sbox_table::run(out, &a),
+        Command::Hash(a) => digest::run(out, &a),
         Command::Bsgs(a) => dlog::run_interval(out, IntervalSolver::Bsgs, &a),
         Command::Rho(a) => dlog::run_rho(out, &a),
         Command::Kangaroo(a) => dlog::run_interval(out, IntervalSolver::Kangaroo, &a),
@@ -256,7 +491,129 @@ where
         .cloned()
         .collect();
     let sub = rest.first().and_then(|a| a.to_str()).unwrap_or("");
+    let requested_json = lead_json || rest.iter().skip(1).any(|a| a == "--json");
+    match sub {
+        "ic" | "icx"
+            if rest
+                .get(1)
+                .is_some_and(|arg| arg == "--help" || arg == "-h") =>
+        {
+            print_ic_bridge_help(sub);
+            return ExitCode::SUCCESS;
+        }
+        "ecdlp-nist" => {
+            return run_external(
+                "CRAX_ECDLP_NIST_BIN",
+                "ecdlp-nist",
+                sub,
+                &rest[1..],
+                requested_json,
+                true,
+            )
+        }
+        "crypto" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest[1..],
+                requested_json,
+                false,
+            )
+        }
+        "aes" => {
+            if rest.len() == 1
+                || rest
+                    .get(1)
+                    .is_some_and(|arg| arg == "--help" || arg == "-h")
+            {
+                print_aes_bridge_help();
+                return ExitCode::SUCCESS;
+            }
+            let family = aes_bridge_family(rest.get(1).and_then(|arg| arg.to_str()));
+            let mut native_args = vec![OsString::from(family)];
+            native_args.extend_from_slice(&rest[1..]);
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &native_args,
+                requested_json,
+                false,
+            );
+        }
+        "mac" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest,
+                requested_json,
+                false,
+            )
+        }
+        "store" => {
+            return run_external(
+                "CRAX_CRYPTO_BIN",
+                "crypto",
+                sub,
+                &rest,
+                requested_json,
+                true,
+            )
+        }
+        "isogeny-walk" => {
+            return run_external(
+                "CRAX_ISOGENY_WALK_BIN",
+                "isogeny_walk",
+                sub,
+                &rest[1..],
+                requested_json,
+                false,
+            )
+        }
+        "icx"
+            if matches!(
+                rest.get(1).and_then(|a| a.to_str()),
+                Some(
+                    "solve-prime"
+                        | "solve-prime-file"
+                        | "solve-cubic"
+                        | "prime-route-generate"
+                        | "cubic-graph"
+                        | "cubic-route-generate"
+                )
+            ) =>
+        {
+            return run_external("CRAX_ICX_BIN", "icx", sub, &rest[1..], requested_json, true);
+        }
+        "ic" if matches!(
+            rest.get(1).and_then(|a| a.to_str()),
+            Some(
+                "solve-prime"
+                    | "solve-prime-file"
+                    | "solve-cubic"
+                    | "prime-route-generate"
+                    | "cubic-graph"
+                    | "cubic-route-generate"
+            )
+        ) =>
+        {
+            return run_external("CRAX_IC_BIN", "ic", sub, &rest[1..], requested_json, true);
+        }
+        _ => {}
+    }
     if let Some(tool) = tool_for(sub) {
+        if matches!(tool, Tool::Suite) && (lead_json || rest.iter().skip(1).any(|a| a == "--json"))
+        {
+            let native_args: Vec<OsString> = rest
+                .iter()
+                .skip(1)
+                .filter(|a| *a != "--json")
+                .cloned()
+                .collect();
+            return run_suite_json(sub, &native_args);
+        }
         let is_zp = matches!(tool, Tool::Ic) && rest.get(1).is_some_and(|a| a == "zp");
         if !is_zp {
             let mut argv: Vec<OsString> = vec![format!("crax {sub}").into()];
@@ -342,5 +699,48 @@ mod tests {
         for s in suite_commands() {
             assert!(!own.contains(&s), "{s} is both a crax and a suite command");
         }
+    }
+
+    #[test]
+    fn aes_bridge_routes_primitive_and_attack_commands() {
+        for command in [
+            "block-encrypt",
+            "block-decrypt",
+            "ctr",
+            "cbc-encrypt",
+            "cbc-decrypt",
+            "gcm-encrypt",
+            "gcm-decrypt",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "aes");
+        }
+        for command in [
+            "aes-attack",
+            "aes-dfa",
+            "aes-sbox-table",
+            "aes-distinguisher",
+        ] {
+            assert_eq!(aes_bridge_family(Some(command)), "cryptanalysis");
+        }
+    }
+
+    #[test]
+    fn aes_bridge_structures_native_hex_output() {
+        let primitive = vec![OsString::from("aes"), OsString::from("block-encrypt")];
+        assert_eq!(
+            native_hex_report("aes", &primitive, b"69c4\n").unwrap(),
+            serde_json::json!({"operation":"block-encrypt","output_hex":"69c4"})
+        );
+        assert!(native_hex_report("aes", &primitive, b"not hex\n").is_none());
+        let attack = vec![
+            OsString::from("cryptanalysis"),
+            OsString::from("aes-attack"),
+        ];
+        assert!(native_hex_report("aes", &attack, b"69c4\n").is_none());
+        let mac = vec![OsString::from("mac"), OsString::from("kmac128")];
+        assert_eq!(
+            native_hex_report("mac", &mac, b"a0b1\n").unwrap(),
+            serde_json::json!({"algorithm":"kmac128","tag_hex":"a0b1"})
+        );
     }
 }

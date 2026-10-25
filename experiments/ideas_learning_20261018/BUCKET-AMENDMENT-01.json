@@ -1,7 +1,0 @@
-{
-  "frozen_before_second_bucket_execution": true,
-  "reason":"A linear map on the field may have a non-power-of-two image when restricted to the finite set of subgroup x coordinates. The first implementation incorrectly assumed the restricted image size was a power of two.",
-  "retained_failure":"bucket-attempt-01/bucket.stderr",
-  "change":"Keep the original F2^j label encoding and XOR combiner. Build the matched x-only SHA null by sorting distinct x/identity inputs by SHA256 and assigning the original used labels cyclically. This ensures exactly the same effective image size, while preserving x-only dependence and the ambient XOR alphabet. Report the per-bucket marginals, which need not be balanced on points because x has sign fibres.",
-  "unchanged":"Exact single-bucket maximum, nominal and effective gains, full-group controls, direct-pair checks and rounding gate."
-}

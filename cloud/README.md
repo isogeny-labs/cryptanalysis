@@ -1,7 +1,5 @@
 # Cloud compute for agents
 
-For a shared workspace bootstrap across RunPod, Modal, EC2 and coding-agent environments, see [Workmesh](workmesh/README.md). Its standalone [bootstrap.sh](workmesh/bootstrap.sh) installs the research toolchain and configures Tailscale, Cairn and Conductor; copy [config.example.sh](workmesh/config.example.sh) and supply the existing mesh endpoints and credential references before launch.
-
 A cloud-agent VM has 4 CPUs, 15 GB and no GPU. This directory provides larger
 places to run work:
 
@@ -13,7 +11,6 @@ places to run work:
 | One index-calculus run or benchmark on a GPU of a chosen type | `runpod_pod.py run NAME -- CMD`: a pod rented for the command and deleted after it | the pod's hourly rate while it exists |
 | A queue of GPU jobs, run one at a time on a runner, each to a receipt | **cairn's host agent on a Runpod pod** (`cairn_queue.py`) | the pod's hourly rate; stops itself when idle |
 | Burst or fan-out: 1-100 containers, any core count, any GPU type, then back to zero | **Modal** (`modal_run.py`) | per second of sandbox time (3x the function rate) |
-| One EC2 instance on AWS, ssh from your address only, this checkout synced to it | [`deploy/aws/launch.py`](../deploy/aws/README.md) `launch`, `run NAME -- CMD`, `terminate` | the instance's hourly rate; terminates itself after `--hours` |
 
 Everything here is Python standard library plus the `modal` client, and needs
 no local GPU or Docker.
@@ -352,4 +349,3 @@ GitHub, and check the pod requests `fleet.py`, `runpod_pod.py` and
 `cairn_queue.py` would send. With a cairn binary (`CAIRN_BIN`, or `cairn` on
 `PATH`; CI downloads the release runners use), they also run queued jobs
 through a real cairn agent and node.
-

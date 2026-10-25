@@ -1,1 +1,0 @@
-["timeout", "--signal=TERM", "--kill-after=30", "600", "bash", "-c", "set -e\nexport DEBIAN_FRONTEND=noninteractive\napt-get update -qq\napt-get install -y -qq build-essential python3-pip unzip time jq util-linux ca-certificates\ncommand -v pip >/dev/null || ln -s /usr/bin/pip3 /usr/local/bin/pip\n"]

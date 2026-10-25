@@ -1,65 +1,38 @@
 #!/usr/bin/env bash
-# Repository-wide Lean proof gate (AGENTS.md "Mathematical results should
-# include Lean proofs").
+# Standalone Lean audit fixture gate. The current repository corpus is checked
+# by current-corpus-gate.py, which handles historical source evidence and
+# local import chains. Do not use this script as a corpus verdict: a standalone
+# file may import another local module.
 #
-# For every Lean target in the repository:
+# For each explicit fixture target:
 #   * a Lake project (a directory with lakefile.toml / lakefile.lean): `lake build`,
-#     explicitly build every tracked source owned by it (not only default
-#     targets), then audit every compiled module;
+#     then audit every module the project itself built;
 #   * a standalone .lean file outside any Lake project: compile it with `lean -o`
 #     against the core library, then audit that module.
-# The audit (AuditAxioms.lean, next to this script) fails any theorem whose transitive
+# The audit (tools/lean/AuditAxioms.lean) fails any theorem whose transitive
 # axioms go beyond propext / Classical.choice / Quot.sound: `sorry`,
 # `native_decide` and user axioms all fail. A target with no theorems fails too.
 #
-# Shipped by the CryptoLean package. A consumer runs its pinned copy from its
-# own repository root:  .lake/packages/CryptoLean/tools/proof-gate.sh
-# The repository checked is the one containing the current directory, and its
-# trust manifest is tools/lean/trusted-native.txt there (override with
-# LEAN_GATE_TRUSTED; a missing file means nothing is trusted).
-#
-# Usage: proof-gate.sh [--list] [--out DIR] [TARGET ...]
-#   TARGET is a project directory or standalone file (default: all discovered).
-#   --list prints the discovered targets and exits.
+# Usage: tools/lean/proof-gate.sh [--out DIR] TARGET ...
+#   TARGET is an explicit project directory or standalone file with no missing
+#   local import prerequisite. The self-test uses explicit fixtures only.
 #   --out DIR writes one receipt per target (build log, audit log, status).
 # Exit status: 0 all targets pass; 1 some target failed; 3 infrastructure error.
 set -uo pipefail
 
-here=$(cd "$(dirname "$0")" && pwd)
-root=$(git rev-parse --show-toplevel) || exit 3
-audit="$here/AuditAxioms.lean"
-trusted="${LEAN_GATE_TRUSTED:-$root/tools/lean/trusted-native.txt}"
-trust_args=()
-[ -f "$trusted" ] && trust_args=(--trusted "$trusted")
+root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel) || exit 3
+audit="$root/tools/lean/AuditAxioms.lean"
 out=""
-list=0
 targets=()
 while [ $# -gt 0 ]; do
   case "$1" in
-    --list) list=1 ;;
     --out) out=$2; shift ;;
     *) targets+=("$1") ;;
   esac
   shift
 done
 
-discover() {
-  cd "$root" || exit 3
-  # Lake projects: every lakefile outside build output and vendored packages.
-  git ls-files -- '*lakefile.toml' '*lakefile.lean' | grep -vE '(^|/)tools/(lean/)?selftest/' | xargs -r -n1 dirname | sort -u
-  # Standalone files: tracked .lean files with no lakefile in any parent directory.
-  git ls-files -- '*.lean' | grep -vE '^tools/(lean|selftest)/' | while read -r f; do
-    d=$(dirname "$f")
-    while [ "$d" != "." ] && [ ! -f "$d/lakefile.toml" ] && [ ! -f "$d/lakefile.lean" ]; do
-      d=$(dirname "$d")
-    done
-    [ "$d" = "." ] && [ ! -f lakefile.toml ] && [ ! -f lakefile.lean ] && echo "$f"
-  done
-}
-
-if [ ${#targets[@]} -eq 0 ]; then mapfile -t targets < <(discover); fi
-if [ $list -eq 1 ]; then printf '%s\n' "${targets[@]}"; exit 0; fi
-[ ${#targets[@]} -gt 0 ] || { echo "no Lean targets found" >&2; exit 3; }
+[ ${#targets[@]} -gt 0 ] || { echo "explicit target required; use current-corpus-gate.py for the repository" >&2; exit 3; }
 command -v lake > /dev/null || { echo "lake not on PATH (install elan)" >&2; exit 3; }
 
 scratch=$(mktemp -d)
@@ -83,56 +56,12 @@ run_target() {
     if ! (cd "$root/$t" && lake build) > "$log/build.log" 2>&1; then
       status=FAIL_build
     else
-      # A default target can omit a tracked proof entirely. Force each source
-      # through Lake's source-path target resolver. Unregistered auxiliary
-      # sources compile directly into a private directory and are audited too,
-      # so frozen Lake configurations need no edits. Tools and fixtures are outside
-      # the proof inventory. Nested Lake projects are owned by their own gate.
-      local source rel owner aux auxfile probe
-      aux="$log/aux"
-      mkdir -p "$aux"
-      : > "$log/sources.log"
-      while IFS= read -r -d '' source; do
-        case "$source" in tools/selftest/*|*/tools/selftest/*|tools/lean/*|*/tools/lean/*|tools/AuditAxioms.lean|*/tools/AuditAxioms.lean|*/.lake/*|lakefile.lean|*/lakefile.lean) continue ;; esac
-        owner=$(dirname "$source")
-        while [ "$owner" != . ] && [ ! -f "$root/$owner/lakefile.toml" ] && [ ! -f "$root/$owner/lakefile.lean" ]; do
-          owner=$(dirname "$owner")
-        done
-        [ "$owner" = "$t" ] || { [ "$owner" = . ] && [ "$t" = . ]; } || continue
-        rel=${source#"$t"/}
-        [ "$t" = . ] && rel=$source
-        printf '%s\n' "$rel" >> "$log/sources.log"
-        probe="$log/source-target.log"
-        if ! (cd "$root/$t" && lake build "$rel") > "$probe" 2>&1; then
-          if grep -q 'unknown target' "$probe"; then
-            printf 'direct source compile: %s\n' "$rel" >> "$log/build.log"
-            auxfile="$aux/${rel%.lean}.olean"
-            mkdir -p "$(dirname "$auxfile")"
-            if ! (cd "$root/$t" && LEAN_PATH="$aux:${LEAN_PATH:-}" lake env lean -o "$auxfile" "$rel") >> "$log/build.log" 2>&1; then
-              status=FAIL_build_source
-            fi
-          else
-            cat "$probe" >> "$log/build.log"
-            status=FAIL_build_source
-          fi
-          [ "$status" = PASS ] || break
-        else
-          cat "$probe" >> "$log/build.log"
-        fi
-      done < <(cd "$root" && git ls-files -z -- '*.lean')
-      if [ "$status" = PASS ] && [ ! -s "$log/sources.log" ]; then
-        status=FAIL_no_sources
-        echo 'error: no tracked project proof sources' >> "$log/build.log"
-      fi
       local mods
-      mods=$({ (cd "$root/$t/.lake/build/lib/lean" 2>/dev/null && find . -name '*.olean');
-                (cd "$aux" && find . -name '*.olean'); } \
-        | sed 's|^\./||; s|\.olean$||; s|/|.|g' | sort -u | tr '\n' ' ')
-      if [ "$status" != PASS ]; then
-        : # Do not turn an omitted/unbuildable source into an audit success.
-      elif [ -z "$mods" ]; then
+      mods=$(cd "$root/$t/.lake/build/lib/lean" 2>/dev/null && find . -name '*.olean' \
+        | sed 's|^\./||; s|\.olean$||; s|/|.|g' | sort | tr '\n' ' ')
+      if [ -z "$mods" ]; then
         status=FAIL_no_modules
-      elif ! (cd "$root/$t" && LEAN_PATH="$aux:${LEAN_PATH:-}" lake env lean --run "$audit" "${trust_args[@]}" $mods) > "$log/audit.log" 2>&1; then
+      elif ! (cd "$root/$t" && lake env lean --run "$audit" --trusted "${LEAN_GATE_TRUSTED:-$root/tools/lean/trusted-native.txt}" $mods) > "$log/audit.log" 2>&1; then
         status=FAIL_audit
       fi
     fi
@@ -145,7 +74,7 @@ run_target() {
     toolchain=$(cat "$(dirname "$root/$t")/lean-toolchain" 2>/dev/null || true)
     if ! (cd "$(dirname "$root/$t")" && lean -o "$dir/$mod.olean" "$root/$t") > "$log/build.log" 2>&1; then
       status=FAIL_build
-    elif ! (cd "$(dirname "$root/$t")" && LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" "${trust_args[@]}" "$mod") > "$log/audit.log" 2>&1; then
+    elif ! LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" --trusted "${LEAN_GATE_TRUSTED:-$root/tools/lean/trusted-native.txt}" "$mod" > "$log/audit.log" 2>&1; then
       status=FAIL_audit
     fi
     [ -n "$toolchain" ] && echo "toolchain pin: $toolchain" >> "$log/build.log"
@@ -162,7 +91,7 @@ run_target() {
   tr=$(grep -o '[0-9]* trusted' "$log/audit.log" 2>/dev/null | grep -o '[0-9]*' || echo 0)
   printf '%-22s %4s thm %3s trusted  %s\n' "$status" "${n:-0}" "${tr:-0}" "$t"
   if [ "$status" != PASS ]; then
-    grep -E '^FAIL|error|no theorems' "$log/audit.log" "$log/build.log" 2>/dev/null | head -5 | sed 's/^/    /'
+    grep -E '^FAIL|error' "$log/audit.log" "$log/build.log" 2>/dev/null | head -5 | sed 's/^/    /'
     return 1
   fi
 }

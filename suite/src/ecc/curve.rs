@@ -33,6 +33,22 @@ pub struct CurveParams {
 impl CurveParams {
     // ── Convenience constructors ──────────────────────────────────────────────
 
+    /// Certicom ECCp-131 challenge, including its published base point.
+    /// Parameters: https://www.certicom.com/en/curves-list
+    pub fn eccp131() -> Self {
+        let hex = |value: &[u8]| BigUint::parse_bytes(value, 16).expect("ECCp-131 hex constant");
+        CurveParams {
+            name: "ECCp-131",
+            p: hex(b"048E1D43F293469E33194C43186B3ABC0B"),
+            a: hex(b"041CB121CE2B31F608A76FC8F23D73CB66"),
+            b: hex(b"02F74F717E8DEC90991E5EA9B2FF03DA58"),
+            gx: hex(b"03DF84A96B5688EF574FA91A32E197198A"),
+            gy: hex(b"014721161917A44FB7B4626F36F0942E71"),
+            n: hex(b"048E1D43F293469E317F7ED728F6B8E6F1"),
+            h: 1,
+        }
+    }
+
     /// secp256k1 — the curve used by Bitcoin and Ethereum.
     ///
     /// y² = x³ + 7 (mod p), a=0, b=7.

@@ -1,0 +1,50 @@
+{
+  "binaries": {
+    "crax": {
+      "sha256": "855b4f178f7756ed18580c88c8905c97f62afead8dc0e6f6a883ccdf7e58e072"
+    },
+    "crypto": {
+      "sha256": "2c723399f06d96bc1942c65a678b9419a7383d2beef6ef1761774980262934d4"
+    }
+  },
+  "checks": {
+    "digest_reference": true,
+    "fresh_cache_vectors": true,
+    "head_digest_and_length": true,
+    "local_vectors": true,
+    "missing_name_rejected": true,
+    "pull_byte_equality": true,
+    "remote_download_verify": true
+  },
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "date_utc": "2026-10-23T01:07:50.747162+00:00",
+  "expected": {
+    "sha256": "edc81f7e4ee358fb91e94bd9bd74079c3dcba36f40f2c8a36e7ae0567afecc8f",
+    "sha3-256": "1247afc61f0232f72ead87452d324725e629a2f9924301982526060dd023c097",
+    "shake256": "12ca899e23f1d95be6392ae63905a43d0f06cdae5a1b1a0e7787aee466389e8f"
+  },
+  "name": "evidence/crax-hash/crax-hash-20261023T010750Z-7811ca92/message.bin",
+  "object_key": "ic/v1/acceptance/crax-hash-20261023T010750Z-7811ca92/sha256/ed/edc81f7e4ee358fb91e94bd9bd74079c3dcba36f40f2c8a36e7ae0567afecc8f",
+  "public_message_hex": "00ff0180",
+  "push": {
+    "bytes": 4,
+    "cached": true,
+    "name": "evidence/crax-hash/crax-hash-20261023T010750Z-7811ca92/message.bin",
+    "replaced": false,
+    "sha256": "edc81f7e4ee358fb91e94bd9bd74079c3dcba36f40f2c8a36e7ae0567afecc8f",
+    "uploaded": true
+  },
+  "region": "us-east-2",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-hash-20261023T010750Z-7811ca92",
+  "run_id": "crax-hash-20261023T010750Z-7811ca92",
+  "schema": "crax.hash-store-s3-acceptance/v1",
+  "sha256": "edc81f7e4ee358fb91e94bd9bd74079c3dcba36f40f2c8a36e7ae0567afecc8f",
+  "source_parent_commit": "db34271b9c00e9626fc781d18b711ddbdc2b9ad5",
+  "validation": {
+    "release_crax_binary": "built from combined branch",
+    "release_library": "3016 passed; 0 failed; 90 ignored; four test threads; combined BCT/DLCT and hash-store branch"
+  }
+}

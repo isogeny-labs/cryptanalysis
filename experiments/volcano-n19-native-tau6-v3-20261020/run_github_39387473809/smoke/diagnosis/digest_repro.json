@@ -1,0 +1,136 @@
+{
+ "fix": {
+  "digests_int": {
+   "canonical_sha256": "72d9c7dee42d3c8a1a2678f588a386ea4f23daa8c08bce53bda5fdf084f29123",
+   "count": 3,
+   "ordered_sha256": "fe85060db6eebf79e4bb4e7dce1dbf3ce4e9a8b151fd690050e87e982de5b686",
+   "rows_sha256": "26f65746e06e996e40ee37a6ac9b910750a8ad0cda452a179fa092de1e183516"
+  },
+  "digests_sage_Integer": {
+   "canonical_sha256": "72d9c7dee42d3c8a1a2678f588a386ea4f23daa8c08bce53bda5fdf084f29123",
+   "count": 3,
+   "ordered_sha256": "fe85060db6eebf79e4bb4e7dce1dbf3ce4e9a8b151fd690050e87e982de5b686",
+   "rows_sha256": "26f65746e06e996e40ee37a6ac9b910750a8ad0cda452a179fa092de1e183516"
+  },
+  "equal": true,
+  "plain": {
+   "GF2_19_element": {
+    "rejected": "$.v: object of type FiniteField_ntl_gf2eElement is not a JSON value (convert it explicitly)",
+    "type": "FiniteField_ntl_gf2eElement"
+   },
+   "Integer": {
+    "converted": 7,
+    "type": "Integer"
+   },
+   "Rational": {
+    "rejected": "$.v: object of type Rational has no exact integer value (unable to convert rational 1/2 to an integer)",
+    "type": "Rational"
+   },
+   "RealDoubleElement": {
+    "rejected": "$.v: object of type RealDoubleElement_gsl is not a JSON value (convert it explicitly)",
+    "type": "RealDoubleElement_gsl"
+   },
+   "RealNumber": {
+    "converted": 0.5,
+    "type": "RealLiteral"
+   },
+   "python_bool": {
+    "converted": true,
+    "type": "bool"
+   }
+  }
+ },
+ "fix_ok": true,
+ "kind": "untimed Sage diagnostic (digest crash of v2 run 39376405326)",
+ "mechanism": {
+  "json_dumps_of_it": "TypeError: Object of type Integer is not JSON serializable",
+  "preparsed": "row[col] = (row.get(col, Integer(0)) + sg * pow(int(lam), int(e), int(p))) % int(p)",
+  "type_of_get_default_plus_int_mod_int": "Integer",
+  "type_of_literal_0_in_a_sage_file": "Integer",
+  "v2_line": "row[col] = (row.get(col, 0) + sg * pow(int(lam), int(e), int(p))) % int(p)"
+ },
+ "mechanism_ok": true,
+ "ok": true,
+ "sage_version": "SageMath version 10.10, Release Date: 2026-09-28",
+ "v2_exact_calls": [
+  {
+   "at_rows_digest": true,
+   "command": [
+    "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage",
+    "--arm",
+    "N",
+    "--lib",
+    "/rd/lib/libtau6native.so",
+    "--out",
+    "/rd/diagnosis/v2-p00-N.json",
+    "--point",
+    "p00",
+    "--scalar",
+    "65888",
+    "--rng-seed",
+    "n19-native-tau6-v2:00"
+   ],
+   "exit": 1,
+   "last_line": "TypeError: Object of type Integer is not JSON serializable",
+   "row": "p00-N",
+   "row_file_written": false,
+   "stderr_tail": [
+    "    h = lambda o: hashlib.sha256(json.dumps(o, separators=(',', ':')).encode()).hexdigest()",
+    "                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/__init__.py\", line 238, in dumps",
+    "    **kw).encode(obj)",
+    "          ^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 200, in encode",
+    "    chunks = self.iterencode(o, _one_shot=True)",
+    "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 258, in iterencode",
+    "    return _iterencode(o, 0)",
+    "           ^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 180, in default",
+    "    raise TypeError(f'Object of type {o.__class__.__name__} '",
+    "TypeError: Object of type Integer is not JSON serializable"
+   ],
+   "through_relation_digests": true
+  },
+  {
+   "at_rows_digest": true,
+   "command": [
+    "/w/experiments/volcano-n19-native-tau6-v2-20261019/arm.sage",
+    "--arm",
+    "B",
+    "--lib",
+    "/rd/lib/libtau6native.so",
+    "--out",
+    "/rd/diagnosis/v2-p00-B.json",
+    "--point",
+    "p00",
+    "--scalar",
+    "65888",
+    "--rng-seed",
+    "n19-native-tau6-v2:00"
+   ],
+   "exit": 1,
+   "last_line": "TypeError: Object of type Integer is not JSON serializable",
+   "row": "p00-B",
+   "row_file_written": false,
+   "stderr_tail": [
+    "    h = lambda o: hashlib.sha256(json.dumps(o, separators=(',', ':')).encode()).hexdigest()",
+    "                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/__init__.py\", line 238, in dumps",
+    "    **kw).encode(obj)",
+    "          ^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 200, in encode",
+    "    chunks = self.iterencode(o, _one_shot=True)",
+    "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 258, in iterencode",
+    "    return _iterencode(o, 0)",
+    "           ^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/json/encoder.py\", line 180, in default",
+    "    raise TypeError(f'Object of type {o.__class__.__name__} '",
+    "TypeError: Object of type Integer is not JSON serializable"
+   ],
+   "through_relation_digests": true
+  }
+ ],
+ "v2_reproduced": true
+}

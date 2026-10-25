@@ -1,1 +1,0 @@
-make -C /root/cryptanalysis/experiments/ideas_gpu_20261018/source/tree/ecc2k130 gpu -j4 BUILD=/root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-1/build NVCC=/root/cryptanalysis/experiments/ideas_gpu_20261018/remote/run-1/cuda/bin/nvcc ARCH=-gencode\ arch=compute_120\,code=sm_120 

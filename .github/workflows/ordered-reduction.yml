@@ -1,22 +1,13 @@
 name: Ordered sparse reduction
 on:
-  pull_request:
-    paths:
-      - 'experiments/groebner-perf-20260924/round12/**'
-      - 'experiments/groebner-perf-20260924/round11/**'
-      - 'experiments/groebner-perf-20260924/round5/**'
-      - '.github/workflows/ordered-reduction.yml'
-  push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
-    paths:
-      - 'experiments/groebner-perf-20260924/round12/**'
-      - 'experiments/groebner-perf-20260924/round11/**'
-      - 'experiments/groebner-perf-20260924/round5/**'
-      - '.github/workflows/ordered-reduction.yml'
+  # Retired 2026-10-11: this gate guards a study that has been quiet for 7+ days, and its
+  # push/pull_request triggers were fanning out across the account's shared runners. Run it
+  # on demand, or restore its push/pull_request triggers from git history to bring it back.
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ordered-reduction-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   proof:
@@ -35,6 +26,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round12
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'

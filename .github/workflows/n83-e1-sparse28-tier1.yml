@@ -23,7 +23,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 125
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-index-design-20260929/packed_index_e1_sparse28_capacity_20261011
 
       - name: Freeze runner and source identity
         shell: bash

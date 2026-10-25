@@ -104,10 +104,6 @@
 
 use crate::binary_ecc::{F2mElement, IrreduciblePoly};
 
-// The `m = 4` analogue of `SubspaceOracle`: triples and an octic in the
-// fourth abscissa.
-pub mod linearised_m4;
-
 /// Highest polynomial degree the fixed-size helpers handle.  The
 /// quartic is degree 4 and squaring one of its remainders reaches 6,
 /// which is the most anything here needs.
@@ -1255,10 +1251,6 @@ impl SubspaceOracle {
         (None, pairs)
     }
 }
-
-// The same oracle over a coset `V + c` (affine factor bases).
-mod coset;
-pub use coset::AffineSubspaceOracle;
 
 #[cfg(test)]
 mod tests {

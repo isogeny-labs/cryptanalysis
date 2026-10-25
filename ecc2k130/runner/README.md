@@ -1,5 +1,9 @@
 # ECC2K-130 runner
 
+For invited external GPU contributors, use the
+[public worker image and gateway](public/README.md). The container below is
+for the managed fleet and requires private S3 and RDS access.
+
 The Certicom challenge client and its worker supervisor now live here, independently
 of the `crypto` checkout. Production uses the legacy Frobenius walk at **DP weight
 32**, contributing to the existing **`ecc2k-130`** RDS collision pool. The faster
@@ -408,6 +412,11 @@ Re-run the binary checks with `modal run ecc2k130/runner/deployment_validate.py`
 from the repository root. Inspect live leases, checkpoints and indexed RDS
 sample records with `modal run ecc2k130/runner/verify_production.py` (set
 `ECC_RDS_SECURITY_GROUP` if managed temporary RDS access is needed).
+
+**GPU optimization profile (2026-10-13):** the [Modal profiling and paired-screen
+record](research/kernelagent-20261013/README.md) covers the current compatible
+Frobenius walk, the exact build settings, the frozen DP32 corpus, and the
+candidate decision. The experiments did not change the production preset.
 
 **Table-walk research validation (superseded production profile):** its timing, replay, corpus, and checkpoint
 evidence is in [research/candidates/goal22/](research/candidates/goal22/).

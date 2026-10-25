@@ -206,6 +206,14 @@ same `sqrt(n)`, applied automatically once the curve's j-invariant is
 recognised.  `ca curve --name <name>` reports the structure and the chosen
 solver without running anything.
 
+The later [held-out GLV table-rule experiment](../experiments/glv-table-rule-confirm-20261022/REPORT.md)
+compares divisor 12 with divisor 48 on paired 28–34-bit inputs. Its archived
+group-operation ratios and chart are unchanged. The [Lean addendum](../experiments/glv-table-rule-confirm-20261022/LEAN_PROOF.md)
+proves the source-bound table selector is nondecreasing when the divisor
+changes from 48 to 12, and records a byte-identical replay of the archived
+analysis. That theorem concerns table size; it does not prove the measured
+operation-count ratios or wall-time speedups.
+
 ## Index calculus in `Z_p^*` (`ca_bench ic --threads 4`)
 
 Safe primes `p = 2q + 1`, linear sieve, default `(B, C)`.  "rho ops ref"

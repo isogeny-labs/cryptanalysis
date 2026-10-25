@@ -1,0 +1,449 @@
+{
+ "ci_level": 0.9875,
+ "rho_mismatch": 0,
+ "random_mismatch": 0,
+ "primary": [
+  {
+   "variant": "patched",
+   "family": "j1728",
+   "curves": 120,
+   "ratio": 0.9760102304226764,
+   "ci": [
+    0.9604067522903064,
+    0.9907478905645021
+   ],
+   "verdict": "fewer operations than legacy"
+  },
+  {
+   "variant": "patched",
+   "family": "j0",
+   "curves": 120,
+   "ratio": 0.9778647547760696,
+   "ci": [
+    0.9606366075729514,
+    0.995074087367549
+   ],
+   "verdict": "fewer operations than legacy"
+  },
+  {
+   "variant": "escape",
+   "family": "j1728",
+   "curves": 120,
+   "ratio": 0.6579449053555211,
+   "ci": [
+    0.6296962452539304,
+    0.6879282420405038
+   ],
+   "verdict": "fewer operations than legacy"
+  },
+  {
+   "variant": "escape",
+   "family": "j0",
+   "curves": 120,
+   "ratio": 0.7681210245827502,
+   "ci": [
+    0.7529886470095084,
+    0.784291380745742
+   ],
+   "verdict": "fewer operations than legacy"
+  }
+ ],
+ "vs_rho": [
+  {
+   "variant": "legacy",
+   "family": "j1728",
+   "r_bits": 24,
+   "ratio": 0.9385772507994358,
+   "ci": [
+    0.8834862541273879,
+    1.0074203136715774
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "legacy",
+   "family": "j1728",
+   "r_bits": 28,
+   "ratio": 0.8473758712638244,
+   "ci": [
+    0.8224098490162404,
+    0.8722728119842013
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "legacy",
+   "family": "j1728",
+   "r_bits": 32,
+   "ratio": 0.8987634666828792,
+   "ci": [
+    0.8206650076926587,
+    0.9798880815234402
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "legacy",
+   "family": "j1728",
+   "r_bits": "all",
+   "ratio": 0.8941228132895905,
+   "ci": [
+    0.8593569385084997,
+    0.9287313269933565
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "legacy",
+   "family": "j0",
+   "r_bits": 24,
+   "ratio": 0.6011585231645195,
+   "ci": [
+    0.585876658611924,
+    0.6187189265736792
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "legacy",
+   "family": "j0",
+   "r_bits": 28,
+   "ratio": 0.553735803816583,
+   "ci": [
+    0.5379827925499834,
+    0.5688632372192756
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "legacy",
+   "family": "j0",
+   "r_bits": 32,
+   "ratio": 0.7566219212178062,
+   "ci": [
+    0.7074384282925009,
+    0.7977205993369069
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "legacy",
+   "family": "j0",
+   "r_bits": "all",
+   "ratio": 0.6315244626229621,
+   "ci": [
+    0.6103023338295839,
+    0.6565068398444006
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "legacy",
+   "family": "random",
+   "r_bits": 24,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "legacy",
+   "family": "random",
+   "r_bits": 28,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "legacy",
+   "family": "random",
+   "r_bits": 32,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "legacy",
+   "family": "random",
+   "r_bits": "all",
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "patched",
+   "family": "j1728",
+   "r_bits": 24,
+   "ratio": 0.9308733739151219,
+   "ci": [
+    0.8798864660190411,
+    0.995096499211935
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "patched",
+   "family": "j1728",
+   "r_bits": 28,
+   "ratio": 0.8067861008080076,
+   "ci": [
+    0.7856409571187907,
+    0.8268646205733488
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "patched",
+   "family": "j1728",
+   "r_bits": 32,
+   "ratio": 0.884923282559669,
+   "ci": [
+    0.812792298817525,
+    0.965503692553355
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "patched",
+   "family": "j1728",
+   "r_bits": "all",
+   "ratio": 0.8726730130249449,
+   "ci": [
+    0.8375117032562253,
+    0.9060013234022134
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "patched",
+   "family": "j0",
+   "r_bits": 24,
+   "ratio": 0.5908968164267978,
+   "ci": [
+    0.5757290345973611,
+    0.6067568608583521
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "patched",
+   "family": "j0",
+   "r_bits": 28,
+   "ratio": 0.5361426301389856,
+   "ci": [
+    0.5207696839289813,
+    0.5518383508005851
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "patched",
+   "family": "j0",
+   "r_bits": 32,
+   "ratio": 0.7433869324191119,
+   "ci": [
+    0.6996236220502831,
+    0.7863263193913143
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "patched",
+   "family": "j0",
+   "r_bits": "all",
+   "ratio": 0.617545513777892,
+   "ci": [
+    0.5943284769788227,
+    0.642747014032179
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "patched",
+   "family": "random",
+   "r_bits": 24,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "patched",
+   "family": "random",
+   "r_bits": 28,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "patched",
+   "family": "random",
+   "r_bits": 32,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "patched",
+   "family": "random",
+   "r_bits": "all",
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "escape",
+   "family": "j1728",
+   "r_bits": 24,
+   "ratio": 0.5641964558774746,
+   "ci": [
+    0.5515340113261689,
+    0.5761175463611963
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "escape",
+   "family": "j1728",
+   "r_bits": 28,
+   "ratio": 0.5160424195047809,
+   "ci": [
+    0.5037084849311779,
+    0.5296771745991358
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "escape",
+   "family": "j1728",
+   "r_bits": 32,
+   "ratio": 0.6992691303955346,
+   "ci": [
+    0.6825416750909025,
+    0.7178698900000519
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "escape",
+   "family": "j1728",
+   "r_bits": "all",
+   "ratio": 0.5882835497660319,
+   "ci": [
+    0.5699584859773151,
+    0.607839522869326
+   ],
+   "theory": 0.7071067811865476
+  },
+  {
+   "variant": "escape",
+   "family": "j0",
+   "r_bits": 24,
+   "ratio": 0.46081086840580254,
+   "ci": [
+    0.4493414608158834,
+    0.4717411436281334
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "escape",
+   "family": "j0",
+   "r_bits": 28,
+   "ratio": 0.41545497382848545,
+   "ci": [
+    0.40549664194318036,
+    0.42764549043691985
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "escape",
+   "family": "j0",
+   "r_bits": 32,
+   "ratio": 0.5962286147990152,
+   "ci": [
+    0.5770170128208298,
+    0.615889742181229
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "escape",
+   "family": "j0",
+   "r_bits": "all",
+   "ratio": 0.48508721727902043,
+   "ci": [
+    0.46705086653392636,
+    0.5058429399521893
+   ],
+   "theory": 0.5773502691896257
+  },
+  {
+   "variant": "escape",
+   "family": "random",
+   "r_bits": 24,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "escape",
+   "family": "random",
+   "r_bits": 28,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "escape",
+   "family": "random",
+   "r_bits": 32,
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  },
+  {
+   "variant": "escape",
+   "family": "random",
+   "r_bits": "all",
+   "ratio": 1.0,
+   "ci": [
+    1.0,
+    1.0
+   ],
+   "theory": 1.0
+  }
+ ]
+}

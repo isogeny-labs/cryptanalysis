@@ -1,0 +1,287 @@
+{
+ "crypto_commit": "ecc27ef893c827c90b2b2274501c849b35e6f9d2",
+ "identity_code": "research/ic_candidate_tournament_20260915/identity.py",
+ "row_curve_id_note": "BASELINES.md lists the curve as EC1N19Ckb1h01617b86df6c (fb-archive sweep label E0, b = 1); identity.py derives its own EC1 id from the a2 = 0 model below",
+ "source_sha256": {
+  "tau.sage": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913",
+  "run.sage": "df38bc8c5ca8debca75ba9b8327a20251ccbcc64ad2d58b44c7af041bdf5b3cf",
+  "arm.sage": "7975bfce9af17be95a5659cd6875fdb188d22e75d346280ad79341719c4d6f34",
+  "native/src/lib.rs": "1f6b974a5d2921a52759c3f553c4174d0b24dbe69ac9a55a76caa0880e048432"
+ },
+ "candidates": {
+  "baseline_tau6_sage_groebner": {
+   "candidate_id": "IC1N19Ckb0fb1064PDP2polyboriRCsampleLAkernelTDpdpISO0hb41aed7ef80a",
+   "record_sha256": "b41aed7ef80a17479a53e9684de50c2c447900c45d711536e1a327faaa1bee97",
+   "record": {
+    "schema_version": 1,
+    "field": {
+     "p": 2,
+     "n": 19,
+     "basis": "polynomial",
+     "modulus": 854355,
+     "element_encoding": "unsigned-integer-polynomial-bits"
+    },
+    "curve": {
+     "tag": "kb0",
+     "model": "y^2+x*y=x^3+a2*x^2+a6",
+     "coefficients": {
+      "a1": 1,
+      "a2": 0,
+      "a3": 0,
+      "a4": 0,
+      "a6": 1
+     },
+     "order": 523492,
+     "trace": 797,
+     "r": 130873,
+     "cofactor": 4,
+     "generator": [
+      130965,
+      276777
+     ],
+     "target_group": "prime-order-subgroup-generated-by-G",
+     "curve_id": "EC1N19Ckb0h1544edc87d68"
+    },
+    "isogeny": "none",
+    "endomorphism": {
+     "order_conductor": null,
+     "frobenius_order_conductor": null,
+     "volcano_levels": []
+    },
+    "factor_base": {
+     "construction": {
+      "recipe": "tau-orbit-closure-of-polynomial-subspace",
+      "dimension": 6,
+      "basis_bitmasks": [
+       1,
+       2,
+       4,
+       8,
+       16,
+       32
+      ],
+      "ordering": "TauCurve: V-prime x by integer encoding; orbit representative = smallest encoding; sign and Frobenius power per point",
+      "subgroup_map": "cofactor-multiplication"
+     },
+     "nominal_bound": 6,
+     "inventory": {
+      "geometric_point_count": 1066,
+      "geometric_set_sha256": "100fd49fc9061ade29d9524f74fb9a58dc6ff40d04c34558f43d1d417fa60d71",
+      "geometric_order_sha256": "100fd49fc9061ade29d9524f74fb9a58dc6ff40d04c34558f43d1d417fa60d71",
+      "usable_point_count": 1064,
+      "usable_set_sha256": "ad1ac525914a4730fc062b13c067397a1e65b28790ba374b5fc2ecb95807f492",
+      "subgroup_map": "cofactor-multiplication",
+      "identity_images": 2,
+      "duplicate_nonidentity_images": 0,
+      "quotient": "sign-and-Frobenius",
+      "effective_columns": 28
+     }
+    },
+    "point_decomposition": {
+     "summands": 2,
+     "solver": "polybori",
+     "summation_polynomial": "S3",
+     "encoding": "x1 in V-prime (u), x2 = sigma^j(w), w in V-prime; one system per Frobenius shift j",
+     "equation_order": "GF(2^19) coordinates 0..18 of S3",
+     "monomial_order": "PolyBoRi default (lp)",
+     "internal_matrix_kernel": "PolyBoRi groebner_basis + variety",
+     "limits": {
+      "shifts_per_target": 19
+     },
+     "cache_policy": "none",
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "relation_collection": {
+     "collector": "sample",
+     "query_distribution": "random.Random(seed) a, b uniform in [1, r - 1]",
+     "query_rule": "R = aP + bQ; shifts in random order; first shift with a verified decomposition",
+     "filtering": "x1, x2 in the V-prime base",
+     "verification": "+-P1 +- tau^j P2 == R in Sage",
+     "duplicates": "kept",
+     "dependencies": "kept",
+     "stop_rule": {
+      "relations": "columns + 10"
+     },
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "relation_linear_algebra": {
+     "solver": "kernel",
+     "modulus": 130873,
+     "matrix_construction": "row: column -> sum sign lambda^e; rhs (h a, h b)",
+     "orbit_quotient": "sign-and-Frobenius",
+     "rank_criterion": "left kernel vector with b-part nonzero",
+     "block_parameters": "none",
+     "preconditioner": "none",
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "target_descent": {
+     "method": "pdp",
+     "policy": "relations contain Q (aP + bQ); one-target",
+     "recursive_solvers": "none",
+     "success_rule": "log from the kernel vector; s P == Q",
+     "stop_rule": {
+      "relations": "columns + 10"
+     },
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "implementation": {
+     "source_manifest_sha256": "48b83439e336aaed1f57238a5093eb8ae04b550989628bc316525206447f4f1d",
+     "components": [
+      {
+       "role": "tau.sage",
+       "sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+      },
+      {
+       "role": "run.sage",
+       "sha256": "df38bc8c5ca8debca75ba9b8327a20251ccbcc64ad2d58b44c7af041bdf5b3cf"
+      }
+     ],
+     "flags": {
+      "sage_image": "sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565"
+     }
+    }
+   }
+  },
+  "candidate_tau6_native_solve": {
+   "candidate_id": "IC1N19Ckb0fb1064PDP2nativeenumRCsampleLAkernelTDpdpISO0h6952f30ce00e",
+   "record_sha256": "6952f30ce00eaeea23ef438f0d3b160ff25de09eb29d9d32af1383a89485eae0",
+   "record": {
+    "schema_version": 1,
+    "field": {
+     "p": 2,
+     "n": 19,
+     "basis": "polynomial",
+     "modulus": 854355,
+     "element_encoding": "unsigned-integer-polynomial-bits"
+    },
+    "curve": {
+     "tag": "kb0",
+     "model": "y^2+x*y=x^3+a2*x^2+a6",
+     "coefficients": {
+      "a1": 1,
+      "a2": 0,
+      "a3": 0,
+      "a4": 0,
+      "a6": 1
+     },
+     "order": 523492,
+     "trace": 797,
+     "r": 130873,
+     "cofactor": 4,
+     "generator": [
+      130965,
+      276777
+     ],
+     "target_group": "prime-order-subgroup-generated-by-G",
+     "curve_id": "EC1N19Ckb0h1544edc87d68"
+    },
+    "isogeny": "none",
+    "endomorphism": {
+     "order_conductor": null,
+     "frobenius_order_conductor": null,
+     "volcano_levels": []
+    },
+    "factor_base": {
+     "construction": {
+      "recipe": "tau-orbit-closure-of-polynomial-subspace",
+      "dimension": 6,
+      "basis_bitmasks": [
+       1,
+       2,
+       4,
+       8,
+       16,
+       32
+      ],
+      "ordering": "TauCurve: V-prime x by integer encoding; orbit representative = smallest encoding; sign and Frobenius power per point",
+      "subgroup_map": "cofactor-multiplication"
+     },
+     "nominal_bound": 6,
+     "inventory": {
+      "geometric_point_count": 1066,
+      "geometric_set_sha256": "100fd49fc9061ade29d9524f74fb9a58dc6ff40d04c34558f43d1d417fa60d71",
+      "geometric_order_sha256": "100fd49fc9061ade29d9524f74fb9a58dc6ff40d04c34558f43d1d417fa60d71",
+      "usable_point_count": 1064,
+      "usable_set_sha256": "ad1ac525914a4730fc062b13c067397a1e65b28790ba374b5fc2ecb95807f492",
+      "subgroup_map": "cofactor-multiplication",
+      "identity_images": 2,
+      "duplicate_nonidentity_images": 0,
+      "quotient": "sign-and-Frobenius",
+      "effective_columns": 28
+     }
+    },
+    "point_decomposition": {
+     "summands": 2,
+     "solver": "nativeenum",
+     "summation_polynomial": "S3",
+     "encoding": "x1 in V-prime (u), x2 = sigma^j(w), w in V-prime; one system per Frobenius shift j",
+     "equation_order": "GF(2^19) coordinates 0..18 of S3",
+     "monomial_order": "none",
+     "internal_matrix_kernel": "affine-in-u increments and Gray-code enumeration of all 4096 (u, w)",
+     "limits": {
+      "shifts_per_target": 19
+     },
+     "cache_policy": "none",
+     "source_sha256": "1f6b974a5d2921a52759c3f553c4174d0b24dbe69ac9a55a76caa0880e048432"
+    },
+    "relation_collection": {
+     "collector": "sample",
+     "query_distribution": "random.Random(seed) a, b uniform in [1, r - 1]",
+     "query_rule": "R = aP + bQ; shifts in random order; first shift with a verified decomposition",
+     "filtering": "x1, x2 in the V-prime base",
+     "verification": "+-P1 +- tau^j P2 == R in Sage",
+     "duplicates": "kept",
+     "dependencies": "kept",
+     "stop_rule": {
+      "relations": "columns + 10"
+     },
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "relation_linear_algebra": {
+     "solver": "kernel",
+     "modulus": 130873,
+     "matrix_construction": "row: column -> sum sign lambda^e; rhs (h a, h b)",
+     "orbit_quotient": "sign-and-Frobenius",
+     "rank_criterion": "left kernel vector with b-part nonzero",
+     "block_parameters": "none",
+     "preconditioner": "none",
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "target_descent": {
+     "method": "pdp",
+     "policy": "relations contain Q (aP + bQ); one-target",
+     "recursive_solvers": "none",
+     "success_rule": "log from the kernel vector; s P == Q",
+     "stop_rule": {
+      "relations": "columns + 10"
+     },
+     "source_sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+    },
+    "implementation": {
+     "source_manifest_sha256": "b28edd4865f9784d7fdc08594b62bc03676ff86a075c64a150d1d1b817bcff19",
+     "components": [
+      {
+       "role": "tau.sage",
+       "sha256": "0d09cd416ab6b2f69e6cac84d96e288bd2be699c206f5c73e6b12c182ee0c913"
+      },
+      {
+       "role": "run.sage",
+       "sha256": "df38bc8c5ca8debca75ba9b8327a20251ccbcc64ad2d58b44c7af041bdf5b3cf"
+      },
+      {
+       "role": "arm.sage",
+       "sha256": "7975bfce9af17be95a5659cd6875fdb188d22e75d346280ad79341719c4d6f34"
+      },
+      {
+       "role": "native/src/lib.rs",
+       "sha256": "1f6b974a5d2921a52759c3f553c4174d0b24dbe69ac9a55a76caa0880e048432"
+      }
+     ],
+     "flags": {
+      "sage_image": "sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565"
+     }
+    }
+   }
+  }
+ }
+}

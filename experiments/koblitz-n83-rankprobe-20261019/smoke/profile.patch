@@ -1,0 +1,193 @@
+--- koblitz_orbit_dlp_fast_online_rankprobe.rs
++++ profile.rs
+@@ -4787,6 +4787,190 @@
+                         &PADD_SWAPPED_PAIRS, &PADD_PLANT_CHECKED, &FRAME_BUILDS, &FRAME_PLANT_CHECKED] {
+             counter.store(0, Ordering::Relaxed);
+         }
++        // LOCAL PROFILE ONLY (KIC_PROF3; not part of any frozen producer).
++        if std::env::var("KIC_PROF3").as_deref() == Ok("1") {
++            #[allow(clippy::too_many_arguments)]
++            #[inline(never)]
++            fn keys_level<const L: u8, const FRAME: bool>(
++                gf: &Gf2_128, basis: &NormalBasis128, solver: &S3Solver128, compact: &CompactRootTable128,
++                a: u128, tx: u128, ty: u128, state: &State128, scan: &mut StateScan128,
++            ) -> u128 {
++                let n = gf.n as usize;
++                let mut sink = state.normal_roots[0] ^ state.normal_roots[1];
++                if L == 0 { return sink; }
++                let mut xk = [0u128; 2]; let mut yk = [0u128; 2]; let mut ykn = [0u128; 2];
++                for k in 0..2 {
++                    if FRAME {
++                        let (x, y) = frame_root_xy(gf, basis, solver, a, state.normal_roots[k]).unwrap();
++                        xk[k] = x; yk[k] = y;
++                    } else {
++                        ykn[k] = padd_root_y(gf, basis, solver, a, state.normal_roots[k]).unwrap();
++                    }
++                }
++                sink ^= xk[0] ^ yk[1] ^ ykn[0] ^ ykn[1];
++                if L == 1 { return sink; }
++                if FRAME { frame_build128(&mut scan.frame, basis, a, tx, ty); }
++                let fr = &mut scan.frame;
++                let pad = &mut scan.padd;
++                fr.prefix.clear(); fr.regular.clear(); scan.inputs.clear(); pad.ys.clear();
++                let mut product = 1u128;
++                for shift in 0..n {
++                    for k in 0..2 {
++                        let (xs, d) = if FRAME {
++                            (xk[k], xk[k] ^ fr.x[shift])
++                        } else {
++                            let xs = basis.to_poly.apply(basis.rotate(state.normal_roots[k], shift as u32));
++                            let ys = basis.to_poly.apply(basis.rotate(ykn[k], shift as u32));
++                            pad.ys.push(ys);
++                            scan.inputs.push((xs, tx));
++                            (xs, xs ^ tx)
++                        };
++                        fr.prefix.push(product);
++                        fr.regular.push(true);
++                        if L >= 2 { product = gf.mul(product, d); }
++                        sink ^= xs;
++                    }
++                }
++                sink ^= product;
++                if L == 2 { return sink; }
++                let count = fr.prefix.len();
++                fr.inverse.clear(); fr.inverse.resize(count, 0);
++                let mut inverse = invert128(gf, basis, product);
++                for i in (0..count).rev() {
++                    fr.inverse[i] = gf.mul(inverse, fr.prefix[i]);
++                    let d = if FRAME { xk[i % 2] ^ fr.x[i / 2] } else { scan.inputs[i].0 ^ tx };
++                    inverse = gf.mul(inverse, d);
++                }
++                sink ^= fr.inverse[1];
++                if L == 3 { return sink; }
++                let normal_c = basis.to_normal.apply(tx ^ a);
++                scan.keys.clear();
++                for shift in 0..n {
++                    for k in 0..2 {
++                        let i = shift * 2 + k;
++                        let inv = fr.inverse[i];
++                        let pair = if FRAME {
++                            let lambda = basis.to_normal.apply(gf.mul(fr.y[shift] ^ yk[k], inv));
++                            let lambda2 = lambda ^ basis.to_normal.apply(gf.mul(xk[k], inv));
++                            let c = fr.normal_c[shift] ^ state.normal_roots[k];
++                            [basis.rotate(basis.rotate(lambda2, 1) ^ lambda2 ^ c, shift as u32),
++                             basis.rotate(basis.rotate(lambda, 1) ^ lambda ^ c, shift as u32)]
++                        } else {
++                            let xs = scan.inputs[i].0;
++                            let lambda = basis.to_normal.apply(gf.mul(ty ^ pad.ys[i], inv));
++                            let lambda2 = lambda ^ basis.to_normal.apply(gf.mul(xs, inv));
++                            let c = normal_c ^ basis.rotate(state.normal_roots[k], shift as u32);
++                            [basis.rotate(lambda2, 1) ^ lambda2 ^ c, basis.rotate(lambda, 1) ^ lambda ^ c]
++                        };
++                        for partner in pair {
++                            if L == 4 { sink ^= partner; continue; }
++                            let (canonical, partner_shift) = target_canonical::<CANON_LIFT>(basis, partner);
++                            if L == 5 { sink ^= canonical ^ partner_shift as u128; continue; }
++                            compact.prefetch(canonical);
++                            scan.keys.push(ProbeKey128 { canonical, partner, partner_shift, candidate: i as u32 });
++                        }
++                    }
++                }
++                if L <= 6 { return sink ^ scan.keys.len() as u128; }
++                let mut hits = 0u128;
++                for key in &scan.keys { if compact.get(key.canonical).is_some() { hits += 1; } }
++                sink ^ hits
++            }
++            let fold = index.fold.as_ref().expect("prof needs the fold");
++            let compact = index.compact.as_ref().expect("prof needs compact");
++            let seed = rank_seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
++            let scalar = (seed >> 11) % (r - 1) + 1;
++            let rep: FastPoint128 = representatives[0].map(|[x, y]| (x, y));
++            let point = fast.add(fast.scalar_mul(generator, &BigUint::from(scalar)), FastBinaryCurve128::neg(rep));
++            let (tx, ty) = point.unwrap();
++            let len = index.logical_states;
++            let permutation = ScanPermutation::new(len, seed >> 20);
++            let want: usize = std::env::var("KIC_PROF_STATES").ok().and_then(|v| v.parse().ok()).unwrap_or(20000);
++            let mut list = Vec::with_capacity(want);
++            let mut position = 0u64;
++            while list.len() < want {
++                let logical = permutation.apply(position);
++                if logical < len as u64 {
++                    let logical = logical as usize;
++                    let mate = fold.mate_index(logical);
++                    if !(mate != logical && permutation.invert(mate as u64) < position) { list.push(logical); }
++                }
++                position += 1;
++            }
++            let a = fast.a;
++            let mut scan = StateScan128::new(gf.n);
++            let keys_per_state = 4.0 * gf.n as f64;
++            let total = keys_per_state * list.len() as f64;
++            let rounds: usize = std::env::var("KIC_PROF_ROUNDS").ok().and_then(|v| v.parse().ok()).unwrap_or(3);
++            let mut sink = 0u128;
++            // micro: isolated per-op throughput on independent data
++            let mut data: Vec<u128> = (0..4096u64).map(|i| digest_mix64(i) as u128 | ((digest_mix64(i ^ 77) as u128) << 64)).map(|v| v & basis.mask).collect();
++            for round in 0..rounds {
++                macro_rules! time_level {
++                    ($l:expr, $f:expr) => {{
++                        let t = Instant::now();
++                        for &logical in &list {
++                            let state = fold_state128(&index, fold, &basis, logical);
++                            sink ^= keys_level::<{ $l }, { $f }>(&gf, &basis, &solver, compact, a, tx, ty, &state, &mut scan);
++                        }
++                        t.elapsed().as_nanos() as f64 / total
++                    }};
++                }
++                let s: Vec<f64> = vec![time_level!(0, false), time_level!(1, false), time_level!(2, false), time_level!(3, false),
++                    time_level!(4, false), time_level!(5, false), time_level!(6, false), time_level!(7, false)];
++                let f: Vec<f64> = vec![time_level!(0, true), time_level!(1, true), time_level!(2, true), time_level!(3, true),
++                    time_level!(4, true), time_level!(5, true), time_level!(6, true), time_level!(7, true)];
++                macro_rules! production {
++                    ($p:expr) => {{
++                        let t = Instant::now();
++                        let mut probes = 0u64;
++                        let mut clock = PhaseClock::start();
++                        let mut split = ExtractSplit::default();
++                        let mut found = 0u64;
++                        for &logical in &list {
++                            let state = fold_state128(&index, fold, &basis, logical);
++                            if scan_state128_select::<CANON_LIFT, { $p }>(&gf, &fast, &basis, &solver, &index, &base, point, tx, &state,
++                                &mut scan, &mut probes, &mut clock, &mut split).is_some() { found += 1; }
++                        }
++                        (t.elapsed().as_nanos() as f64 / probes as f64, probes, found)
++                    }};
++                }
++                let pc = production!(PIPE_COMPACT);
++                let pp = production!(PIPE_PADD);
++                let pf = production!(PIPE_FRAME);
++                // micro ops (ns per op, independent operations)
++                macro_rules! micro {
++                    ($body:expr) => {{
++                        let t = Instant::now();
++                        let mut acc = 0u128;
++                        for _ in 0..64 { for v in data.iter() { acc ^= $body(*v); } }
++                        sink ^= acc;
++                        t.elapsed().as_nanos() as f64 / (64.0 * data.len() as f64)
++                    }};
++                }
++                let m_to_normal = micro!(|v| basis.to_normal.apply(v));
++                let m_to_poly = micro!(|v| basis.to_poly.apply(v));
++                let m_mul = micro!(|v: u128| gf.mul(v, v ^ 0x1234_5678_9abc_def0));
++                let m_sqr = micro!(|v: u128| gf.sqr(v));
++                let m_lift = micro!(|v| target_canonical::<CANON_LIFT>(&basis, v).0);
++                let m_rot = micro!(|v| basis.rotate(v, 37));
++                let m_inv = micro!(|v: u128| if v == 0 { 0 } else { invert128(&gf, &basis, v) }) ;
++                data.rotate_left(1);
++                eprintln!("{}", json!({"prof3_round": round, "states": list.len(), "keys": total,
++                    "cumulative_ns_per_probe_rankcut": {"fold_rebuild": s[0], "plus_root_y": s[1], "plus_inputs_maps_and_prefix_products": s[2],
++                        "plus_batched_inversion": s[3], "plus_lambda_maps_and_partners": s[4], "plus_lift_scan_keys": s[5],
++                        "plus_prefetch_and_key_store": s[6], "plus_lookups": s[7]},
++                    "cumulative_ns_per_probe_frame": {"fold_rebuild": f[0], "plus_root_xy": f[1], "plus_prefix_products": f[2],
++                        "plus_batched_inversion": f[3], "plus_lambda_maps_and_partners": f[4], "plus_lift_scan_keys": f[5],
++                        "plus_prefetch_and_key_store": f[6], "plus_lookups": f[7]},
++                    "production_ns_per_probe": {"compact_s3": pc.0, "padd": pp.0, "frame": pf.0},
++                    "production_probes": [pc.1, pp.1, pf.1], "production_found": [pc.2, pp.2, pf.2],
++                    "micro_ns_per_op": {"to_normal_map": m_to_normal, "to_poly_map": m_to_poly, "mul": m_mul, "sqr": m_sqr,
++                        "lift_scan": m_lift, "rotate": m_rot, "invert128": m_inv}}));
++            }
++            eprintln!("prof3 sink {}", sink & 1);
++            std::process::exit(0);
++        }
+         let rank_started = Instant::now();
+         let mut echelon = Echelon {
+             r,

@@ -56,6 +56,7 @@ pub mod attack;
 pub mod class_group;
 pub mod cm;
 pub mod experiment;
+mod experiment_store;
 pub mod graph;
 pub mod secp256k1_analysis;
 pub mod velu;

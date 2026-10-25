@@ -133,6 +133,15 @@ void ca_htab1_free(ca_htab1 *t);
 int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
 int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
 size_t ca_htab1_bytes(const ca_htab1 *t);
+/* Start loading the slot a key probes first.  A hint only: the table may
+ * be resized or modified before the access that follows, and nothing about
+ * the table's contents or the order of operations changes.  Lets a block of
+ * independent lookups overlap their cache misses. */
+static inline void ca_htab1_prefetch(const ca_htab1 *t, uint64_t key)
+{
+    if (key == 0) key = 1;
+    if (t->cap) __builtin_prefetch(&t->e[(size_t)key & (t->cap - 1)], 0, 1);
+}
 
 /* ---- misc -------------------------------------------------------------- */
 static inline uint64_t ca_max_u64(uint64_t a, uint64_t b) { return a > b ? a : b; }
@@ -151,43 +160,6 @@ struct ca_group;
  * (and does nothing) for any other vtable. */
 int ca_zp_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
 int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
-
-/* Fixed-base multiples for curves made by ca_group_ec_init (Montgomery
- * affine coordinates of 2^j P; bit j of inf_mask marks 2^j P = O).
- * ca_ec_pow2_init returns 0, leaving the table unset, for any other vtable.
- * ca_ec_pow2_mul2 sets r = k1 P1 + k2 P2 (t2 may be NULL), the same point
- * ca_group_mul and ca_group_op would give, with one field inversion. */
-typedef struct ca_ec_pow2 {
-    uint64_t x[64], y[64];
-    uint64_t inf_mask;
-} ca_ec_pow2;
-int ca_ec_pow2_init(const struct ca_group *g, ca_ec_pow2 *t, const ca_elem *P);
-void ca_ec_pow2_mul2(const struct ca_group *g, ca_elem *r, const ca_ec_pow2 *t1, uint64_t k1,
-                     const ca_ec_pow2 *t2, uint64_t k2);
-
-/* The bodies of the curve vtable's hash and canonicalize (group_ec.c calls
- * these), so a solver that knows it holds a plain curve can inline them in
- * its step loop instead of calling through the vtable.  Layout: w[0] = x,
- * w[1] = y (Montgomery form), w[2] != 0 for the point at infinity. */
-static inline uint64_t ca_ec_hash_inline(const ca_elem *a)
-{
-    if (a->w[2]) return 0x9e3779b97f4a7c15ULL;
-    return ca_mix64(a->w[0] * 0x9E3779B97F4A7C15ULL ^ ca_mix64(a->w[1]));
-}
-
-static inline int ca_ec_canonicalize_inline(uint64_t p, ca_elem *a)
-{
-    if (a->w[2] || a->w[1] == 0) return 0;
-    uint64_t ny = p - a->w[1];
-    if (ny < a->w[1]) { a->w[1] = ny; return 1; }
-    return 0;
-}
-
-/* What ca_group_mul adds to its ops counter for scalar k. */
-static inline uint64_t ca_mul_ops(uint64_t k)
-{
-    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
-}
 
 int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
                      uint64_t n, const char *solver);

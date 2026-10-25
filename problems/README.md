@@ -9,15 +9,16 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
-| [Native CPU performance replay lacks a qualified Tier 0 host](cpu-performance-tier0-host-qualification.md) | open | qualified C library/ECC2K CPU comparison and the missing original #880 timing records | assigned Tier 0 physical host, tested multi-CPU worker-affinity service, and complete frozen v1 panel; original provenance remains unresolved |
 | [a=0 native genus-two full-solve compute](binary-genus2-a0-full-solve-compute.md) | investigating | completed full-order native-Jacobian timings at r=2417851639230796216685689; a=1 native panel 8/8 verified, a=0 still censored | retained checkpoints, durable compute or a verified new method, and actual full-target recoveries |
 | [ecbench binary genus-two full-subgroup adapter](ecbench-binary-genus2-full-subgroup-adapter.md) | open | sealed cross-representation n=83 comparison and qualified speed ratio; 24 external resumable completions do not satisfy it | explicit wide subgroup selection, registered Mumford-image adapter, common costs and independent replay |
 | [Binary genus-two geometric formalization](https://github.com/aburan28/crypto/blob/ad73d4bea330eddc4e7db0c660aa91a0255ff3a1/problems/binary-genus2-cover-geometric-formalization.md) | Open | full Lean theorem for the paired native cover construction | geometric and Picard bridge proofs; canonical record is in crypto |
 | [Fixed-width chooser and terminal census formal coverage](prime-j0-hex-terminal-formal-coverage.md) | Investigating | Full Lean coverage of the secp256k1 Voronoi terminal table | All-scalar chooser theorem and checked finite census |
+| [Six-class GLV rho secp256k1 throughput unmeasured](sixclass-secp-throughput-unmeasured.md) | Open | A measured secp256k1 cost or success improvement from the six-class approach | Fixed-limb worker, independent trail replay and matched ladder |
 | [Large-field curve-audit certificates and extension transfer](curve-audit-large-field-certificates-and-extension-transfer.md) | Open | Independent 192–252-bit orders and extension-field cover/isogeny assessment | Replayable order certificates, field arithmetic, exact maps and subgroup checks |
 | [ECC2K-130 public gateway activation and device validation](ecc2k130-public-gateway-activation.md) | Open | Global contributor endpoint and live CUDA/RDS path after image publication | Approved cloud resources and a pinned end-to-end device receipt |
 | [KernelAgent bridge to the ECC2K-130 CUDA walk](ecc2k130-kernelagent-cuda-bridge.md) | Investigating | Direct KernelAgent optimization of the production compatible CUDA walk | Verified same-workload input, provider, and accessible GPU profiling |
 | [ECC2K-130 Frobenius GPU critical path](ecc2k130-frobenius-gpu-critical-path.md) | Investigating | A confirmed production-compatible useful-update speedup after source-correlated profiling and additional bounded screens | Proved and checked grouped-inverse synchronization change, then matched correctness and timing confirmation |
+| [Cryptanalysis Git remote rejects PR branch push](cryptanalysis-git-remote-rejects-push.md) | resolved for transport | publishing and reviewing the committed Lean evidence audit | Git read/write restored and branch pushed; hosted PR gate remains separate |
 
 ## Add or update a problem
 

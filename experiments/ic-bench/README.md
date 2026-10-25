@@ -104,52 +104,6 @@ so the folded batch-rho number is generous to rho. Multi-target claims should
 use `ratio_to_batch_floor`; the older `ratio_to_rho` remains a cold whole-run /
 one-target diagnostic and is not a batch crossover metric.
 
-### One rho reference, two named variants
-
-Every rho figure here comes from [`tools/rho_reference.py`](../../tools/rho_reference.py):
-the floor `sqrt(pi r / (2A))` (`A` automorphisms; `A = 2n` on these Koblitz
-curves), the one-target expectation `sqrt(pi r / 2)`, and the Kuhn-Struik batch
-series in two explicitly named variants:
-
-| variant | batch rho, group operations | used by |
-|---|---|---|
-| `generous` | `sqrt(pi (r/A)/2) * sum_{k<T} C(2k,k)/4^k` (no seeding, jump table or detection lag) | `bench.py` columns (`rho_batch.variant`, `warm.batch_rho_variant`) |
-| `with_setup` | the same + `T (2 smul + 1) + 32 smul`, `smul = ceil(3 bits(r)/2)` | `prime_bridge.py` columns, and `ca-ic`'s `batch_rho_expected_ops` |
-
-Every receipt also carries a `rho_reference` block with both variants in its own
-unit. `cross_report.py --variant generous|with_setup` recomputes every ratio
-column of both regimes under the one variant it names (default `generous`), so a
-binary and a prime ratio are never set side by side under different conventions.
-`smul`: Rust's `(3 * bits).div_ceil(2)` and Python's `(3 * bits + 1) // 2` are the
-same integer for every `bits`, so the two implementations already agree.
-
-### Work in bitop/v1
-
-Beside the rps figures (unchanged), every receipt has a `work` block in the
-cross-repository unit [`bitop/v1`](../../docs/units/README.md): two-input
-Boolean gates, frozen per primitive (`tools/bitops.py`). Each opcount class is
-mapped by [`bitop_work.py`](bitop_work.py) to the primitives over `F_{2^n}` one
-increment performs; where an increment can be either of two operations the
-dearer is charged, so the total is an upper bound on the counted work. Python
-bookkeeping and the `instrument` phase are not counted, as in rps.
-
-| class | one increment | bitop/v1 primitives |
-|---|---|---|
-| `gf_mul` | an `F_2^n` product or squaring | `field_mul` |
-| `gf_inv` | an `F_2^n` inversion | `field_inv` |
-| `gf_lin` | a trace, half-trace or square root (`lin_apply`) | `as_solve` (`n^2` AND + `n(n-1)` XOR) |
-| `ec_add` | an affine addition or doubling | `group_add` (binary affine `I + 2M + S + 9A`) |
-| `ec_lift` | `rhs = x + a2 + b/x^2`, `Tr(rhs)`, `y = x * HT(rhs)` | `field_sqr + field_inv + 2 field_mul + 2 field_add + 2 as_solve` |
-| `modr_mul` | a multiply-subtract mod `r` | `modr_mul + modr_add` (BITOPS' `row_op`) |
-| `modr_inv` | an inversion mod `r` | `modr_inv` (bitop/v1: binary extended Euclid at `w = bits(r)`) |
-| `mac_op`, `anf_op`, `sys_word` | one 64-bit word XOR/test, monomial insertion, or coefficient-word slice | `word_op` (64) |
-
-The block reports `primitives`, `phase_bitops`, `per_target_bitops`, `bitops`,
-`log2_bitops` (both null unless the DLP is complete and verified, like
-`total_operations`) and `ratio_to_floor = bitops / (sqrt(pi r / (2A)) *
-gates(group_add))`. The CSV gains `bitops`, `log2_bitops` and
-`bitops_ratio_to_floor` at the end of its columns.
-
 **Instrument** work is recorded but not charged to supplementary cold operations.
 It covers structure checks, exact-yield enumeration, and predictions. Every
 target PDP enumeration that runs, including those of unsuccessful attempts, is
@@ -318,6 +272,128 @@ artifact. Compare that curve across n before claiming scaling beyond trivial
 setup amortization. The observed-mean break-even in a receipt is only against
 independent per-target rho; the folded batch-rho prefix curve is the fairer many-
 target control.
+## Running a cell under ICMS
+
+The [ICMS measurement standard](https://github.com/aburan28/crypto/blob/main/docs/ic/measurement/README.md)
+in the crypto repository ([crypto#1177](https://github.com/aburan28/crypto/pull/1177))
+can run one cell of this harness as a pinned, recorded measurement. Use it when
+a wall time or a comparison has to hold beside another host or another
+repository. The CI suite above stays the gate for counters.
+
+ICMS adds three things a receipt does not have:
+
+- **Isolation, recorded and graded.** The cell runs alone on a reserved core,
+  with other threads moved off it by crypto's `tools/isolated_bench.py`, in a
+  fresh interpreter with a built environment. Every 50 ms the runner samples
+  the cell's run-queue delay and any foreign runnable task on the reserved
+  core. It also reads hypervisor steal and PSI before and after the run. Each
+  run earns a level from L0 to L3. Wall time is compared only when every run
+  of both arms reached at least the level the spec declares.
+- **The host.** It records the CPU model, microcode and flags, governor and
+  turbo, SMT, the kernel command line, sysctls, virtualization, `cc --version`,
+  numpy and Python. `calibration.json`'s `host` block records `node`,
+  `machine`, `processor` (here `x86_64`, the architecture rather than a CPU
+  model), `python`, `numpy` and `kernel_cflags`, but not the CPU model.
+- **A spec and a comparison.** The cell is written as a YAML spec whose hash
+  is in every record, a session can carry an A/A arm, and a comparison
+  refuses any difference it was not told to expect.
+
+**How it calls this harness.** crypto's `tools/icms/adapters/cryptanalysis_cell.py`
+imports `bench.py` from a checkout beside crypto (`../cryptanalysis` by
+default) and reads `calibration.json`. It then calls `bench.run_cell(cell,
+calibration)` once in the pinned process. It refuses to run when
+`bench.LIMITS` differs from the solver limits the spec pins. It never passes
+`--record`, so nothing is written to `history.csv`, `results/`, `baseline/`,
+`candidates/` or `workloads/`. Two git-ignored caches are still written on
+first use: the C kernel under `../pdp-degree-heuristics/build/` and the
+summation polynomials in `../pdp-scaling/sumpoly_cache.pkl`.
+[`test_icms_interface.py`](test_icms_interface.py) pins every module name,
+receipt field and counter that runner and its adapter read. Change them in
+both repositories together.
+
+A cell maps onto a spec as follows. crypto's
+`docs/ic/measurement/specs/ca-k0n13-prefix-l3-m3.yaml` is a complete example.
+
+| cell | spec field |
+|---|---|
+| `n` | `instance.curve.degree`, with `regime: koblitz` and `koblitz_a: 0` |
+| `family` | `factor_base.params.basis_law`, with `family: binary_subspace` |
+| `l` | `factor_base.params.dimension` |
+| `seed` | `factor_base.params.basis_seed` |
+| sign/Frobenius quotient rule | `factor_base.quotient`: `[negation]`, or `[negation, frobenius]` for the `invariant` law |
+| `m` | `decomposition.arity`, with `method: algebraic` and `encoding: expanded_semaev` |
+| `mode`, `LIMITS` | `decomposition.solver`: `name: macaulay-xl`, options `mode`, `formulation: direct`, `d_max`, `max_cols`, `max_rows` |
+| `workload_seed`, `targets` | `instance.workload.seeds`, `instance.workload.targets` |
+| `max_attempts` | `relations.max_trials`, with `collector: sample` and `stop: full_rank` |
+
+The ICMS record keeps the receipt's figures under its own names:
+
+- the rps total, as unit `cryptanalysis.rps` with the `calibration_id`;
+- the `ec_add` counter summed over the eleven phases, as `count.group_additions`;
+- `fb_points` as `usable_points` (B), and `geometric_points` as `signed_points`;
+- `effective_columns` as `columns`;
+- `ratio_to_rho` under `rho.plain`, and `ratio_to_floor` under
+  `rho.signed_frobenius`. The spec names the one it compares against.
+
+A receipt has no Boolean-system shape, so those PDP fields are null.
+
+To run two cells as an A/B session with an A/A arm, check crypto out beside
+this repository and install numpy and PyYAML:
+
+```bash
+cd "$(git rev-parse --show-toplevel)/../crypto"   # crypto checked out beside this repository
+python3 tools/icms run docs/ic/measurement/specs/ca-k0n13-prefix-l3-m3.yaml \
+                      docs/ic/measurement/specs/ca-k0n13-geomtrace-l3-m3.yaml \
+                      docs/ic/measurement/specs/ca-k0n13-prefix-l3-m3.yaml \
+                      --cpus auto --out /tmp/ic-bench-session
+python3 tools/icms compare /tmp/ic-bench-session --a 0 --b 1 --declare factor_base.params.basis_law
+python3 tools/icms audit-sessions /tmp/ic-bench-session
+```
+
+- `--cpus auto` reserves the highest-numbered whole core in the session's CPU
+  affinity, never CPU 0's core and never every CPU the session may use.
+- The session refuses to start on a busy machine. `--allow-busy` records the
+  refusal and keeps every run below L2.
+- Run it as root. A session that cannot move other users' threads off the
+  reserved core earns L0. Its operation counts are still exact.
+
+### Comparing these figures with crypto's or crypto-autoresearcher's
+
+ICMS's audit (crypto `docs/ic/measurement/audit.json`) found these
+differences between this harness's figures and those of the other two
+repositories. An independent verifier re-checked each one.
+
+- **Rho reference (X01).** `ratio_to_rho` divides by the analytic plain walk
+  `sqrt(pi r / 2)`. crypto's `s_over_rho` divides by the cheaper of two
+  measured walks on the same subgroup, setup included: signed-Frobenius
+  (`A = 2n`) or negation (`A = 2`). In expectation the plain walk is
+  `sqrt(2n)` more expensive than the `A = 2n` one, 6.78 at `n = 23`. In
+  crypto's frozen `n = 23` and `n = 31` Koblitz runs the negation walk won,
+  and the realized gap was 1.14 to 1.19.
+- **Unit (X05).** `modr_mul` is priced at the speed of a CPython loop: at
+  `n = 19` it costs 47.575 ns against 117.255 ns for `ec_add`, a ratio of
+  0.406. crypto prices a relation-matrix row operation at 0.01135 of an
+  addition at the same size, about 36 times lighter. rps and crypto's GAE are
+  different units, and ICMS never compares them.
+- **Stop event (X09).** A cell collects relations until the rank reaches the
+  achievable rank (`m = 2`) or the effective column count (`m >= 3`), then
+  descends every target. crypto's `ic bench` stops when the target's column
+  is pinned. Relation counts and totals under the two stop rules are not
+  comparable.
+- **Targets (X10).** `ci` cells use `targets = 3`, and `ratio_to_rho` divides
+  that three-target cold total by a one-target rho. The primary comparison in
+  [AGENTS.md](../../AGENTS.md) uses one target. The ICMS specs for this
+  harness use one target, and the adapter attaches no one-target reference
+  ratio to a k-target total.
+- **Uncharged work (X11).** Loading the summation polynomials and the
+  `instrument` diagnostics are not charged. Compare only windows that leave
+  out the same work.
+- **Host and pinning (X16).** The calibration host's CPU model is not
+  recorded, and `bench.py run --jobs` defaults to `os.cpu_count()` unpinned
+  worker processes. Wall times from such runs do not carry across hosts.
+- **Build (X17).** `kernel.py` compiles with `-march=native`, so the kernel
+  that runs depends on the host, while the candidate ID covers only the
+  `CFLAGS` string. ICMS records the compiler and the CPU flags in its capsule.
 
 ## Other receipt writers (audit)
 

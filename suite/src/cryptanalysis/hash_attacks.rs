@@ -15,8 +15,8 @@
 //!
 //! 2. [`length_extension_attack`] — given `H(secret || m)` and `len(secret)`,
 //!    forge `H(secret || m || pad || suffix)` without knowing `secret`.
-//!    Works for **any** MD-Damgård hash without HMAC-style wrapping
-//!    (MD4, MD5, SHA-1, SHA-256, SHA-512, RIPEMD-160, …).
+//!    The current adapters support MD4, MD5, SHA-1, and SHA-256 without
+//!    HMAC-style wrapping. Other Merkle-Damgård hashes need adapters.
 //!
 //! 3. [`birthday_collision_search`] — generic √n collision finder
 //!    over an `n`-bit-truncated hash.  Useful for falsifying claims
@@ -30,10 +30,9 @@
 //!    does **not** provide `2^(n/2)` security against
 //!    multicollisions, only against single collisions.
 //!
-//! 5. [`differential_bias`] — XOR `Δ` into one input bit position,
-//!    measure the empirical bias `|Pr[bit_i(H(x)) = bit_i(H(x⊕Δ))]
-//!    − 1/2|` per output bit.  An ideal hash gives bias ≈ 0; reduced-
-//!    round MD4/MD5/SHA-1 give a clear non-zero signal.
+//! 5. [`differential_bias`] — XOR `Δ` into the input and measure
+//!    `|Pr[byte_i(H(x)) = byte_i(H(x⊕Δ))] − 1/256|` per output byte.
+//!    An ideal hash gives bias near zero at sufficient sample count.
 
 use rand::rngs::StdRng;
 use rand::{Rng, RngCore, SeedableRng};
@@ -200,6 +199,227 @@ impl MerkleDamgardHash for Sha1 {
     }
 }
 
+/// SHA-256 with its full digest exposed as the big-endian chaining state.
+pub struct Sha256;
+impl HashFunction for Sha256 {
+    fn name(&self) -> &'static str {
+        "SHA-256"
+    }
+    fn output_bytes(&self) -> usize {
+        32
+    }
+    fn block_bytes(&self) -> usize {
+        64
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::sha256(message).to_vec()
+    }
+}
+impl MerkleDamgardHash for Sha256 {
+    fn compress(&self, state: &mut [u8], block: &[u8]) {
+        let mut words = [0u32; 8];
+        for (i, word) in words.iter_mut().enumerate() {
+            *word = u32::from_be_bytes(state[4 * i..4 * i + 4].try_into().unwrap());
+        }
+        crate::hash::sha256::compress(&mut words, block);
+        for (i, word) in words.iter().enumerate() {
+            state[4 * i..4 * i + 4].copy_from_slice(&word.to_be_bytes());
+        }
+    }
+    fn padding_for_length(&self, message_bytes: usize) -> Vec<u8> {
+        let bit_len = (message_bytes as u64).wrapping_mul(8);
+        let mut padding = vec![0x80];
+        while (message_bytes + padding.len()) % 64 != 56 {
+            padding.push(0);
+        }
+        padding.extend_from_slice(&bit_len.to_be_bytes());
+        padding
+    }
+}
+
+/// SHA-3 sponges support generic measurements here, with no
+/// Merkle-Damgård length-extension step.
+macro_rules! fixed_hash_adapter {
+    ($name:ident, $label:literal, $output:expr, $rate:expr, $hash:path) => {
+        pub struct $name;
+        impl HashFunction for $name {
+            fn name(&self) -> &'static str {
+                $label
+            }
+            fn output_bytes(&self) -> usize {
+                $output
+            }
+            fn block_bytes(&self) -> usize {
+                $rate
+            }
+            fn hash(&self, message: &[u8]) -> Vec<u8> {
+                $hash(message).to_vec()
+            }
+        }
+    };
+}
+fixed_hash_adapter!(Sha3_224, "SHA-3-224", 28, 144, crate::hash::sha3_224);
+fixed_hash_adapter!(Sha3_256, "SHA-3-256", 32, 136, crate::hash::sha3_256);
+fixed_hash_adapter!(Sha3_384, "SHA-3-384", 48, 104, crate::hash::sha3_384);
+fixed_hash_adapter!(Sha3_512, "SHA-3-512", 64, 72, crate::hash::sha3_512);
+
+fixed_hash_adapter!(Sha224, "SHA-224", 28, 64, crate::hash::sha224);
+fixed_hash_adapter!(Sha384, "SHA-384", 48, 128, crate::hash::sha384);
+fixed_hash_adapter!(Sha512, "SHA-512", 64, 128, crate::hash::sha512);
+fixed_hash_adapter!(Sha512_224, "SHA-512/224", 28, 128, crate::hash::sha512_224);
+fixed_hash_adapter!(Sha512_256, "SHA-512/256", 32, 128, crate::hash::sha512_256);
+fixed_hash_adapter!(Blake3, "BLAKE3", 32, 64, crate::hash::blake3_hash);
+fixed_hash_adapter!(Sm3, "SM3", 32, 64, crate::hash::sm3);
+fixed_hash_adapter!(Ripemd160, "RIPEMD-160", 20, 64, crate::hash::ripemd160);
+fixed_hash_adapter!(
+    Streebog256,
+    "Streebog-256",
+    32,
+    64,
+    crate::hash::streebog_256
+);
+fixed_hash_adapter!(
+    Streebog512,
+    "Streebog-512",
+    64,
+    64,
+    crate::hash::streebog_512
+);
+fixed_hash_adapter!(Whirlpool, "Whirlpool", 64, 64, crate::hash::whirlpool);
+fixed_hash_adapter!(Tiger, "Tiger", 24, 64, crate::hash::tiger);
+fixed_hash_adapter!(Tiger2, "Tiger2", 24, 64, crate::hash::tiger2);
+
+macro_rules! variable_hash_adapter {
+    ($name:ident, $label:literal, $block:expr, $hash:path) => {
+        pub struct $name(pub usize);
+        impl HashFunction for $name {
+            fn name(&self) -> &'static str {
+                $label
+            }
+            fn output_bytes(&self) -> usize {
+                self.0
+            }
+            fn block_bytes(&self) -> usize {
+                $block
+            }
+            fn hash(&self, message: &[u8]) -> Vec<u8> {
+                $hash(message, self.0)
+            }
+        }
+    };
+}
+variable_hash_adapter!(Blake2b, "BLAKE2b", 128, crate::hash::blake2b);
+variable_hash_adapter!(Blake2s, "BLAKE2s", 64, crate::hash::blake2s);
+variable_hash_adapter!(Skein256, "Skein-256", 32, crate::hash::skein256);
+variable_hash_adapter!(Skein512, "Skein-512", 64, crate::hash::skein512);
+variable_hash_adapter!(Skein1024, "Skein-1024", 128, crate::hash::skein1024);
+
+pub struct Cshake128 {
+    pub output_bytes: usize,
+    pub function_name: Vec<u8>,
+    pub customization: Vec<u8>,
+}
+impl HashFunction for Cshake128 {
+    fn name(&self) -> &'static str {
+        "cSHAKE128"
+    }
+    fn output_bytes(&self) -> usize {
+        self.output_bytes
+    }
+    fn block_bytes(&self) -> usize {
+        168
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::cshake128(
+            message,
+            &self.function_name,
+            &self.customization,
+            self.output_bytes,
+        )
+    }
+}
+
+pub struct Cshake256 {
+    pub output_bytes: usize,
+    pub function_name: Vec<u8>,
+    pub customization: Vec<u8>,
+}
+impl HashFunction for Cshake256 {
+    fn name(&self) -> &'static str {
+        "cSHAKE256"
+    }
+    fn output_bytes(&self) -> usize {
+        self.output_bytes
+    }
+    fn block_bytes(&self) -> usize {
+        136
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::cshake256(
+            message,
+            &self.function_name,
+            &self.customization,
+            self.output_bytes,
+        )
+    }
+}
+
+impl MerkleDamgardHash for Sha512 {
+    fn compress(&self, state: &mut [u8], block: &[u8]) {
+        let mut words = [0u64; 8];
+        for (i, word) in words.iter_mut().enumerate() {
+            *word = u64::from_be_bytes(state[8 * i..8 * i + 8].try_into().unwrap());
+        }
+        let block: &[u8; 128] = block.try_into().expect("SHA-512 block has 128 bytes");
+        crate::hash::sha512::compress(&mut words, block);
+        for (i, word) in words.iter().enumerate() {
+            state[8 * i..8 * i + 8].copy_from_slice(&word.to_be_bytes());
+        }
+    }
+    fn padding_for_length(&self, message_bytes: usize) -> Vec<u8> {
+        let bit_len = (message_bytes as u128) * 8;
+        let mut padding = vec![0x80];
+        while (message_bytes + padding.len()) % 128 != 112 {
+            padding.push(0);
+        }
+        padding.extend_from_slice(&bit_len.to_be_bytes());
+        padding
+    }
+}
+
+/// A SHAKE XOF fixed at one output length for bounded generic analysis.
+pub struct Shake128(pub usize);
+impl HashFunction for Shake128 {
+    fn name(&self) -> &'static str {
+        "SHAKE128"
+    }
+    fn output_bytes(&self) -> usize {
+        self.0
+    }
+    fn block_bytes(&self) -> usize {
+        168
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::shake128(message, self.0)
+    }
+}
+
+pub struct Shake256(pub usize);
+impl HashFunction for Shake256 {
+    fn name(&self) -> &'static str {
+        "SHAKE256"
+    }
+    fn output_bytes(&self) -> usize {
+        self.0
+    }
+    fn block_bytes(&self) -> usize {
+        136
+    }
+    fn hash(&self, message: &[u8]) -> Vec<u8> {
+        crate::hash::shake256(message, self.0)
+    }
+}
+
 // ── Attack 1: length extension ───────────────────────────────────────
 
 /// **Length-extension attack** on an MD-Damgård hash.  Given
@@ -281,20 +501,18 @@ pub fn birthday_collision_search<H: HashFunction>(
 
 // ── Attack 3: Joux multicollision (CRYPTO 2004) ──────────────────────
 
-/// **Joux multicollision** on an MD-Damgård hash truncated to
-/// `truncate_bits`.  Chains `t` independent block-level collisions to
-/// produce `2^t` messages with the same digest.  Cost: `t · 2^(b/2)`
-/// (vs the naive expectation that `2^t`-fold collision should cost
-/// `t · 2^(b · (2^t − 1) / 2^t)` for an ideal hash).
+/// **Joux multicollision in a reduced-state MD construction**. The
+/// compression output is truncated to `truncate_bits` after *every* block,
+/// with the remaining state bits cleared before the next compression.
+/// Chains `t` block-level collisions to produce `2^t` paths with the same
+/// reduced state at every merge. This does not produce a multicollision for
+/// the full-width hash or for a hash truncated only after finalization.
 ///
 /// Returns the chain of `t` `(block_a, block_b)` colliding pairs.
-/// Any combination of choosing one from each pair yields a message
-/// hashing to the same value.
+/// Any combination of choosing one from each pair reaches the same final
+/// reduced state when replayed from the reduced `H(empty)` starting state.
 ///
-/// The truncation parameter exists so toy demos run in seconds:
-/// finding a single 32-bit collision in MD5 takes ~65 k trials; eight
-/// chained collisions take ~520 k trials and demonstrate `2^8 = 256`
-/// equivalent messages.
+/// A 16-bit state makes a short chain practical in a bounded demonstration.
 pub fn joux_multicollision<H: MerkleDamgardHash>(
     hash: &H,
     truncate_bits: u32,
@@ -303,28 +521,9 @@ pub fn joux_multicollision<H: MerkleDamgardHash>(
     seed: u64,
 ) -> Option<Vec<(Vec<u8>, Vec<u8>)>> {
     assert!(truncate_bits as usize <= hash.state_bytes() * 8);
-    let truncate_bytes = (truncate_bits as usize).div_ceil(8);
-    let leftover = (truncate_bytes * 8) as u32 - truncate_bits;
     let bb = hash.block_bytes();
-
-    // Start from a fixed initial state — for MD5/MD4 that's MD-IV.
-    // We get the IV by hashing the empty message and inverting the
-    // final compression: easier to just snapshot after compressing
-    // a known block.  Cleanest is to take the IV implicitly by
-    // calling `hash.compress` on a fresh state-bytes buffer that we
-    // initialise from `H(empty)`'s pre-padding state... but we don't
-    // expose that.  Workaround: just iterate from the digest of the
-    // empty-string padding block.
-    let pad_block = hash.padding_for_length(0);
-    let mut state = vec![0u8; hash.state_bytes()];
-    // Initialise to the IV by un-doing the final padding compression.
-    // Simpler: hash the empty message and adopt its digest as the
-    // "starting state" — this means our multicollision is on
-    // messages of the form (empty-pad-block || colliding_chain),
-    // which still demonstrates the property.
-    let initial_digest = hash.hash(&[]);
-    state.copy_from_slice(&initial_digest[..hash.state_bytes().min(initial_digest.len())]);
-    let _ = pad_block;
+    let mut state = hash.hash(&[])[..hash.state_bytes()].to_vec();
+    truncate_compression_state(&mut state, truncate_bits);
 
     let mut rng = StdRng::seed_from_u64(seed);
     let mut chain = Vec::with_capacity(chain_length);
@@ -334,15 +533,9 @@ pub fn joux_multicollision<H: MerkleDamgardHash>(
         for _ in 0..max_trials_per_block {
             let mut b = vec![0u8; bb];
             rng.fill_bytes(&mut b);
-            let mut s = state.clone();
-            hash.compress(&mut s, &b);
-            let mut key = s.clone();
-            key.truncate(truncate_bytes);
-            if leftover > 0 {
-                if let Some(last) = key.last_mut() {
-                    *last &= 0xFFu8 >> leftover;
-                }
-            }
+            let mut key = state.clone();
+            hash.compress(&mut key, &b);
+            truncate_compression_state(&mut key, truncate_bits);
             if let Some(prev) = seen.get(&key) {
                 if prev != &b {
                     found = Some((prev.clone(), b));
@@ -352,15 +545,20 @@ pub fn joux_multicollision<H: MerkleDamgardHash>(
             seen.insert(key, b);
         }
         let (a, b) = found?;
-        // Advance the chain state via `a` (any of the two would do —
-        // they produce the same truncated state).
-        let mut s = state.clone();
-        hash.compress(&mut s, &a);
-        state = s.clone();
-        // Also keep `s` truncated identically for the next iteration.
+        // Both branches now produce precisely the same reduced state.
+        hash.compress(&mut state, &a);
+        truncate_compression_state(&mut state, truncate_bits);
         chain.push((a, b));
     }
     Some(chain)
+}
+
+fn truncate_compression_state(state: &mut [u8], bits: u32) {
+    let bytes = (bits as usize).div_ceil(8);
+    if bytes > 0 && bits % 8 != 0 {
+        state[bytes - 1] &= 0xFFu8 >> (8 - bits % 8);
+    }
+    state[bytes..].fill(0);
 }
 
 // ── Attack 4: differential bias ──────────────────────────────────────
@@ -412,8 +610,89 @@ pub fn differential_bias<H: HashFunction>(
 /// `cryptanalysis::auto_attack` for block ciphers.  Returns a Markdown
 /// report.
 pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
+    auto_hash_attack_with_output_bytes(hash_name, None)
+}
+
+/// Configurable digests require a bounded output length for generic analysis.
+pub fn auto_hash_attack_with_output_bytes(
+    hash_name: &str,
+    output_bytes: Option<usize>,
+) -> Result<String, String> {
+    auto_hash_attack_with_options(hash_name, output_bytes, &[], &[])
+}
+
+pub fn auto_hash_attack_with_options(
+    hash_name: &str,
+    output_bytes: Option<usize>,
+    function_name: &[u8],
+    customization: &[u8],
+) -> Result<String, String> {
+    let normalized = hash_name.to_ascii_lowercase().replace('_', "-");
+    let hash_name = normalized.as_str();
+    let cshake = matches!(hash_name, "cshake128" | "cshake256");
+    if !cshake && (!function_name.is_empty() || !customization.is_empty()) {
+        return Err("function name and customization apply only to cSHAKE".into());
+    }
+    let configured_len = match hash_name {
+        "shake128" | "shake-128" | "shake256" | "shake-256" | "cshake128" | "cshake256"
+        | "skein256" | "skein512" | "skein1024" => match output_bytes {
+            Some(length @ 1..=64) => length,
+            _ => {
+                return Err(
+                    "SHAKE, cSHAKE, and Skein hash-auto require --output-bytes in 1..=64".into(),
+                )
+            }
+        },
+        "blake2b" => match output_bytes {
+            None => 64,
+            Some(length @ 1..=64) => length,
+            _ => return Err("BLAKE2b hash-auto --output-bytes must be in 1..=64".into()),
+        },
+        "blake2s" => match output_bytes {
+            None => 32,
+            Some(length @ 1..=32) => length,
+            _ => return Err("BLAKE2s hash-auto --output-bytes must be in 1..=32".into()),
+        },
+        _ => {
+            if output_bytes.is_some() {
+                return Err(
+                    "--output-bytes applies only to SHAKE, cSHAKE, BLAKE2, and Skein".into(),
+                );
+            }
+            0
+        }
+    };
+    let variable = matches!(
+        hash_name,
+        "shake128"
+            | "shake-128"
+            | "shake256"
+            | "shake-256"
+            | "cshake128"
+            | "cshake256"
+            | "blake2b"
+            | "blake2s"
+            | "skein256"
+            | "skein512"
+            | "skein1024"
+    );
     let mut md = String::new();
-    md.push_str(&format!("# Auto-hash-cryptanalysis: `{}`\n\n", hash_name));
+    md.push_str(&format!(
+        "# Auto-hash-cryptanalysis: `{}`{}\n\n",
+        hash_name,
+        if variable {
+            format!(" ({} output bytes)", configured_len)
+        } else {
+            String::new()
+        }
+    ));
+    if cshake {
+        md.push_str(&format!(
+            "- cSHAKE function name (hex): `{}`\n- customization (hex): `{}`\n\n",
+            hex(function_name),
+            hex(customization)
+        ));
+    }
 
     // ── Length-extension (MD-Damgård only) ────────────────────────
     let lex_result: String;
@@ -436,14 +715,85 @@ pub fn auto_hash_attack(hash_name: &str) -> Result<String, String> {
             md.push_str(&run_birthday(&Sha1, 32, 200_000));
             md.push_str(&run_differential(&Sha1));
         }
+        "sha256" | "sha-256" => {
+            md.push_str(&run_length_extension(&Sha256));
+            md.push_str(&run_birthday(&Sha256, 32, 200_000));
+            md.push_str(&run_differential(&Sha256));
+        }
+        "sha224" | "sha-224" => md.push_str(&run_fixed_without_extension(&Sha224)),
+        "sha384" | "sha-384" => md.push_str(&run_fixed_without_extension(&Sha384)),
+        "sha512" | "sha-512" => {
+            md.push_str(&run_length_extension(&Sha512));
+            md.push_str(&run_birthday(&Sha512, 32, 200_000));
+            md.push_str(&run_differential(&Sha512));
+        }
+        "sha512-224" | "sha-512-224" => md.push_str(&run_fixed_without_extension(&Sha512_224)),
+        "sha512-256" | "sha-512-256" => md.push_str(&run_fixed_without_extension(&Sha512_256)),
+        "blake3" => md.push_str(&run_fixed_without_extension(&Blake3)),
+        "sha3-224" | "sha-3-224" => md.push_str(&run_sponge(&Sha3_224)),
+        "sha3" | "sha-3" | "sha3-256" | "sha-3-256" => md.push_str(&run_sponge(&Sha3_256)),
+        "sha3-384" | "sha-3-384" => md.push_str(&run_sponge(&Sha3_384)),
+        "sha3-512" | "sha-3-512" => md.push_str(&run_sponge(&Sha3_512)),
+        "shake128" | "shake-128" => md.push_str(&run_sponge(&Shake128(configured_len))),
+        "shake256" | "shake-256" => md.push_str(&run_sponge(&Shake256(configured_len))),
+        "cshake128" => md.push_str(&run_sponge(&Cshake128 {
+            output_bytes: configured_len,
+            function_name: function_name.to_vec(),
+            customization: customization.to_vec(),
+        })),
+        "cshake256" => md.push_str(&run_sponge(&Cshake256 {
+            output_bytes: configured_len,
+            function_name: function_name.to_vec(),
+            customization: customization.to_vec(),
+        })),
+        "blake2b" => md.push_str(&run_fixed_without_extension(&Blake2b(configured_len))),
+        "blake2s" => md.push_str(&run_fixed_without_extension(&Blake2s(configured_len))),
+        "skein256" => md.push_str(&run_fixed_without_extension(&Skein256(configured_len))),
+        "skein512" => md.push_str(&run_fixed_without_extension(&Skein512(configured_len))),
+        "skein1024" => md.push_str(&run_fixed_without_extension(&Skein1024(configured_len))),
+        "sm3" => md.push_str(&run_fixed_without_extension(&Sm3)),
+        "ripemd160" => md.push_str(&run_fixed_without_extension(&Ripemd160)),
+        "streebog-256" => md.push_str(&run_fixed_without_extension(&Streebog256)),
+        "streebog-512" => md.push_str(&run_fixed_without_extension(&Streebog512)),
+        "whirlpool" => md.push_str(&run_fixed_without_extension(&Whirlpool)),
+        "tiger" => md.push_str(&run_fixed_without_extension(&Tiger)),
+        "tiger2" => md.push_str(&run_fixed_without_extension(&Tiger2)),
         _ => {
             return Err(format!(
-                "unknown hash '{}'; try one of: md4, md5, sha1",
+                "unknown hash '{}'; use a name accepted by crax hash (except keyed modes)",
                 hash_name
             ));
         }
     }
     Ok(md)
+}
+
+fn run_fixed_without_extension<H: HashFunction>(hash: &H) -> String {
+    let mut report = format!(
+        "## Length extension\n\n{} has no length-extension adapter in this command. This does not establish resistance to length extension.\n\n",
+        hash.name()
+    );
+    report.push_str(&run_birthday(
+        hash,
+        (hash.output_bytes() * 8).min(32) as u32,
+        200_000,
+    ));
+    report.push_str(&run_differential(hash));
+    report
+}
+
+fn run_sponge<H: HashFunction>(hash: &H) -> String {
+    let mut report = format!(
+        "## Length extension\n\n{} uses a sponge construction; Merkle-Damgård length extension does not apply.\n\n",
+        hash.name()
+    );
+    report.push_str(&run_birthday(
+        hash,
+        (hash.output_bytes() * 8).min(32) as u32,
+        200_000,
+    ));
+    report.push_str(&run_differential(hash));
+    report
 }
 
 fn run_length_extension<H: MerkleDamgardHash>(hash: &H) -> String {
@@ -480,8 +830,8 @@ fn run_length_extension<H: MerkleDamgardHash>(hash: &H) -> String {
 
 fn run_birthday<H: HashFunction>(hash: &H, truncate_bits: u32, max_trials: usize) -> String {
     let mut md = format!(
-        "## Birthday-collision search (truncate to {} bits)\n\n",
-        truncate_bits
+        "## Birthday-collision search (truncate to {} bits)\n\n- seed: `0xC0FFEE`; maximum trials: {}\n\n",
+        truncate_bits, max_trials
     );
     let t0 = std::time::Instant::now();
     let result = birthday_collision_search(hash, truncate_bits, max_trials, 0xC0FFEE);
@@ -490,10 +840,15 @@ fn run_birthday<H: HashFunction>(hash: &H, truncate_bits: u32, max_trials: usize
         Some((m1, m2, d)) => {
             md.push_str(&format!(
                 "- found collision in {} ms\n\
-                 - m1 ({} B) ≠ m2 ({} B), both hash to: {}\n\n",
+                 - m1 ({} B) hex: `{}`\n\
+                 - m2 ({} B) hex: `{}`\n\
+                 - shared {}-bit digest prefix: `{}`\n\n",
                 elapsed,
                 m1.len(),
+                hex(&m1),
                 m2.len(),
+                hex(&m2),
+                truncate_bits,
                 hex(&d),
             ));
         }
@@ -588,6 +943,37 @@ mod tests {
         assert_eq!(h.hash(&actual_input), forged);
     }
 
+    #[test]
+    fn length_extension_sha256() {
+        let h = Sha256;
+        let secret = b"sha256-secret";
+        let msg = b"data";
+        let suffix = b"&admin=1";
+        let combined = [&secret[..], &msg[..]].concat();
+        let target = h.hash(&combined);
+        let (forged, glue) = length_extension_attack(&h, &target, combined.len(), suffix);
+        let actual_input = [&combined[..], &glue[..], &suffix[..]].concat();
+        assert_eq!(h.hash(&actual_input), forged);
+    }
+
+    #[test]
+    fn sha3_generic_adapter_matches_known_digest() {
+        assert_eq!(Sha3_224.block_bytes(), 144);
+        assert_eq!(Sha3_256.block_bytes(), 136);
+        assert_eq!(Sha3_384.block_bytes(), 104);
+        assert_eq!(Sha3_512.block_bytes(), 72);
+        assert_eq!(
+            hex(&Sha3_224.hash(b"abc")),
+            "e642824c3f8cf24ad09234ee7d3c766fc9a3a5168d0c94ad73b46fdf"
+        );
+        assert_eq!(
+            hex(&Sha3_256.hash(b"abc")),
+            "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"
+        );
+        assert_eq!(hex(&Sha3_384.hash(b"abc")), "ec01498288516fc926459f58e2c6ad8df9b473cb0fc08c2596da7cf0e49be4b298d88cea927ac7f539f1edf228376d25");
+        assert_eq!(hex(&Sha3_512.hash(b"abc")), "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0");
+    }
+
     /// Birthday-attack on 24-bit-truncated MD5 finds a collision in
     /// well under 200k trials (expected ~4k).
     #[test]
@@ -600,8 +986,7 @@ mod tests {
         assert_eq!(h.hash(&m2)[..3], d[..3]);
     }
 
-    /// Joux multicollision: chain 3 collisions on 16-bit-truncated
-    /// MD5 → demonstrates `2^3 = 8` equivalent message paths exist.
+    /// Every branch must merge after each reduced-state compression.
     #[test]
     fn joux_multicollision_md5_chain_of_3() {
         let h = Md5;
@@ -613,6 +998,17 @@ mod tests {
             assert_eq!(b.len(), 64);
             assert_ne!(a, b);
         }
+        let mut final_states = Vec::new();
+        for choices in 0..(1 << chain.len()) {
+            let mut state = h.hash(&[])[..h.state_bytes()].to_vec();
+            truncate_compression_state(&mut state, 16);
+            for (index, (a, b)) in chain.iter().enumerate() {
+                h.compress(&mut state, if choices & (1 << index) == 0 { a } else { b });
+                truncate_compression_state(&mut state, 16);
+            }
+            final_states.push(state);
+        }
+        assert!(final_states.iter().all(|state| state == &final_states[0]));
     }
 
     /// Differential-bias measurement runs end-to-end and returns the
@@ -641,5 +1037,81 @@ mod tests {
     #[test]
     fn auto_hash_attack_rejects_unknown() {
         assert!(auto_hash_attack("not-a-hash").is_err());
+    }
+
+    #[test]
+    fn shake_and_blake3_adapters_match_public_vectors() {
+        assert_eq!(
+            hex(&Shake128(32).hash(b"")),
+            "7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26"
+        );
+        assert_eq!(
+            hex(&Shake256(32).hash(b"abc")),
+            "483366601360a8771c6863080cc4114d8db44530f8f1e1ee4f94ea37e78b5739"
+        );
+        assert_eq!(
+            hex(&Blake3.hash(b"")),
+            "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        );
+    }
+
+    #[test]
+    fn sha512_length_extension_replays_against_hidden_prefix() {
+        let hash = Sha512;
+        let secret = b"hidden-prefix";
+        let message = b"&role=reader";
+        let suffix = b"&role=admin";
+        let original = [&secret[..], &message[..]].concat();
+        let digest = hash.hash(&original);
+        let (forged, glue) = length_extension_attack(&hash, &digest, original.len(), suffix);
+        let actual = [&original[..], &glue[..], &suffix[..]].concat();
+        assert_eq!(hash.hash(&actual), forged);
+    }
+
+    #[test]
+    fn shake_auto_requires_bounded_explicit_output() {
+        assert!(auto_hash_attack("shake128").is_err());
+        assert!(auto_hash_attack_with_output_bytes("shake256", Some(0)).is_err());
+        assert!(auto_hash_attack_with_output_bytes("shake256", Some(65)).is_err());
+        assert!(auto_hash_attack_with_output_bytes("sha3-256", Some(32)).is_err());
+        let report = auto_hash_attack_with_output_bytes("shake-256", Some(1)).unwrap();
+        assert!(report.contains("truncate to 8 bits"));
+        assert!(report.contains("Differential bias"));
+    }
+
+    #[test]
+    fn expanded_adapters_match_hash_implementations() {
+        let message = b"abc";
+        assert_eq!(Sm3.hash(message), crate::hash::sm3(message));
+        assert_eq!(
+            Streebog256.hash(message),
+            crate::hash::streebog_256(message)
+        );
+        assert_eq!(Blake2s(13).hash(message), crate::hash::blake2s(message, 13));
+        assert_eq!(
+            Skein256(13).hash(message),
+            crate::hash::skein256(message, 13)
+        );
+        let cshake = Cshake256 {
+            output_bytes: 13,
+            function_name: b"F".to_vec(),
+            customization: b"C".to_vec(),
+        };
+        assert_eq!(
+            cshake.hash(message),
+            crate::hash::cshake256(message, b"F", b"C", 13)
+        );
+    }
+
+    #[test]
+    fn expanded_auto_enforces_output_and_customization_contract() {
+        assert!(auto_hash_attack_with_options("blake2s", Some(33), &[], &[]).is_err());
+        assert!(auto_hash_attack_with_options("skein256", None, &[], &[]).is_err());
+        assert!(auto_hash_attack_with_options("sha256", None, b"F", &[]).is_err());
+        let blake = auto_hash_attack_with_options("blake2s", Some(1), &[], &[]).unwrap();
+        assert!(blake.contains("truncate to 8 bits"));
+        let cshake = auto_hash_attack_with_options("cshake256", Some(1), b"F", b"C").unwrap();
+        assert!(cshake.contains("function name (hex): `46`"));
+        assert!(cshake.contains("customization (hex): `43`"));
     }
 }

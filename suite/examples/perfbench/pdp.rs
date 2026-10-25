@@ -333,67 +333,6 @@ fn mitm_m4_n31() -> Box<dyn Workload> {
     mitm_on(31, 6, 4, 64, 64)
 }
 
-/// The specialised `m = 5` meet in the middle (`mitm_m5`: pair table ×
-/// enumerated triple in nested batched rows) on the tier `tier` names,
-/// against the same targets [`spec_enum_m5_on`] hands the generic oracle.
-/// The fingerprint is the tier, the stored-pair count, how many targets
-/// decomposed, and every returned decomposition.
-fn spec_mitm_m5_on(
-    n: u32,
-    ell: u32,
-    planted: usize,
-    random: usize,
-    tier: &'static str,
-) -> Box<dyn Workload> {
-    let c = cell(n, ell, 5, planted, random, 0x4d35_5350);
-    let table = match tier {
-        "folded" => {
-            PairSumTable::build_folded_within(&c.kc, &c.fb, PairSumTable::DEFAULT_BYTE_BUDGET)
-        }
-        _ => PairSumTable::build_full(&c.kc, &c.fb),
-    }
-    .expect("table fits");
-    assert_eq!(table.tier(), tier);
-    Box::new(Closure(move || {
-        let mut fp = Fp::new().str(table.tier()).usize(table.len());
-        let mut hits = 0usize;
-        for (_, t) in &c.targets {
-            let d = table.decompose(&c.kc, &c.fb, t, 5);
-            hits += usize::from(d.is_some());
-            fp = fp_decomp(fp, &d);
-        }
-        fp.usize(hits).finish()
-    }))
-}
-
-/// The generic `m = 5` oracle on [`spec_mitm_m5_on`]'s cell and targets:
-/// `enumerate_decompose`, `|F|⁴/24` group operations a refuted target.
-fn spec_enum_m5_on(n: u32, ell: u32, planted: usize, random: usize) -> Box<dyn Workload> {
-    let c = cell(n, ell, 5, planted, random, 0x4d35_5350);
-    Box::new(Closure(move || {
-        let mut fp = Fp::new();
-        let mut hits = 0usize;
-        for (_, t) in &c.targets {
-            let d = enumerate_decompose(&c.kc, &c.fb, &c.index_of, t, 5);
-            hits += usize::from(d.is_some());
-            fp = fp_decomp(fp, &d);
-        }
-        fp.usize(hits).finish()
-    }))
-}
-
-fn spec_mitm_m5_n31() -> Box<dyn Workload> {
-    spec_mitm_m5_on(31, 6, 8, 8, "full")
-}
-
-fn spec_mitm_m5_folded_n31() -> Box<dyn Workload> {
-    spec_mitm_m5_on(31, 6, 8, 8, "folded")
-}
-
-fn spec_enum_m5_n31() -> Box<dyn Workload> {
-    spec_enum_m5_on(31, 6, 8, 8)
-}
-
 /// `SubspaceOracle::decompose`, the pairs-and-solve `S₄` oracle
 /// (`semaev_decomp`): for each pair of subspace abscissae, the quartic
 /// in the third and its roots in the subspace by `gcd(q, L_V mod q)`.
@@ -726,24 +665,6 @@ pub fn register(kernels: &mut Vec<Kernel>) {
         "PairSumTable::decompose, cell n=31 l=6 m=4, 64 planted + 64 random targets",
         Tier::Quick,
         mitm_m4_n31,
-    );
-    add(
-        "pdp/spec_mitm_m5_n31",
-        "PairSumTable::decompose m=5 (pair table x triple, batched rows), full tier, cell n=31 l=6, 8 planted + 8 random",
-        Tier::Quick,
-        spec_mitm_m5_n31,
-    );
-    add(
-        "pdp/spec_mitm_m5_folded_n31",
-        "PairSumTable::decompose m=5 (pair table x triple, lazy rows), folded tier, cell n=31 l=6, 8 planted + 8 random",
-        Tier::Quick,
-        spec_mitm_m5_folded_n31,
-    );
-    add(
-        "pdp/spec_enum_m5_n31",
-        "enumerate_decompose m=5 (generic reference for spec_mitm_m5; about 3 s, so Full tier), cell n=31 l=6, 8 planted + 8 random",
-        Tier::Full,
-        spec_enum_m5_n31,
     );
     add(
         "pdp/subspace_oracle_n20_l7",

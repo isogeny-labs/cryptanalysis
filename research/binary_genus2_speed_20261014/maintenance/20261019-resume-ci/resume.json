@@ -1,0 +1,477 @@
+{
+  "schema": "binary-genus2.continuation/v1",
+  "scope": "Infrastructure recovery and CI maintenance; no new full-subgroup solve or performance execution.",
+  "source_crypto_commit": "dbd33f00da0a0ac35f285603ec168ad9d91a1d79",
+  "immutable_binary_sha256": "e02c63d3fc033ce6ccc007aca13cd74aa0c342572744bce7869e984585525231",
+  "environment_id": "ccarenv_b64_Y2NhcmVudl9lMTJlODUxYTk0OTA4MTkxYTFiNjI0YWY3ZWJkZTE2ZQ",
+  "original_process": {
+    "pid": 21441,
+    "start_tick": 1667143,
+    "absent_observed_utc": "2026-10-19T03:42:05.768462+00:00",
+    "last_retained_progress": [
+      {
+        "timestamp_unix": 1792200024,
+        "a": 0,
+        "index": 0,
+        "arm": "image_inverse",
+        "steps": 46513039949,
+        "candidate": null
+      },
+      {
+        "timestamp_unix": 1792200026,
+        "a": 0,
+        "index": 0,
+        "arm": "jacobian",
+        "steps": 473230286,
+        "candidate": null
+      },
+      {
+        "timestamp_unix": 1792200027,
+        "a": 0,
+        "index": 0,
+        "arm": "elliptic",
+        "steps": 46222661859,
+        "candidate": null
+      }
+    ],
+    "exact_disappearance_time": "unknown"
+  },
+  "resumed_process": {
+    "pid": 641,
+    "start_tick": 23288,
+    "comm": "cover_rho-campa",
+    "kernel_boot_id": "6e4a7e6b-676a-4e18-bfb3-a8e2f2beb4c9",
+    "cpu_affinity": [
+      4
+    ],
+    "command": [
+      "/workspace/measurements/binary-genus2-speed-20261014/bin/cover_rho-campaign",
+      "run",
+      "--public",
+      "/workspace/measurements/binary-genus2-speed-20261014/public",
+      "--out",
+      "/workspace/measurements/binary-genus2-speed-20261014/campaign",
+      "--cpu",
+      "4"
+    ],
+    "bootstrap_pause": {
+      "pid": 641,
+      "status": "paused_with_checkpoints",
+      "timestamp_unix": 1792381583
+    }
+  },
+  "original_public_jobs_byte_equal_to_run_20261014T2250Z": 16,
+  "saved_checkpoint_backup": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints",
+  "checkpoint_storage_limit": "Latest full checkpoints and their backup remain workspace-local, with no guaranteed durable retention. This receipt is not a new scientific checkpoint archive.",
+  "health_observations": [
+    {
+      "utc": "2026-10-19T03:47:38.829642+00:00",
+      "pid": 641,
+      "comm": "cover_rho-campa",
+      "command": "/workspace/measurements/binary-genus2-speed-20261014/bin/cover_rho-campaign run --public /workspace/measurements/binary-genus2-speed-20261014/public --out /workspace/measurements/binary-genus2-speed-20261014/campaign --cpu 4",
+      "state": "R",
+      "start_tick": "23288",
+      "cpu_ticks": 9193,
+      "affinity": [
+        4
+      ],
+      "markers": {
+        "PAUSE": false,
+        "paused.json": false,
+        "STOP": false
+      },
+      "progress": [
+        {
+          "timestamp_unix": 1792381653,
+          "a": 0,
+          "index": 0,
+          "arm": "jacobian",
+          "steps": 473230286,
+          "candidate": null
+        },
+        {
+          "timestamp_unix": 1792381655,
+          "a": 0,
+          "index": 0,
+          "arm": "elliptic",
+          "steps": 46222661923,
+          "candidate": null
+        },
+        {
+          "timestamp_unix": 1792381657,
+          "a": 0,
+          "index": 0,
+          "arm": "image_inverse",
+          "steps": 46513040045,
+          "candidate": null
+        }
+      ],
+      "completed_lines": 27,
+      "unique_completions": 24,
+      "a0_unique_completions": 0,
+      "duplicate_rows": 3
+    },
+    {
+      "utc": "2026-10-19T03:49:02.898145+00:00",
+      "pid": 641,
+      "comm": "cover_rho-campa",
+      "state": "R",
+      "start_tick": "23288",
+      "cpu_ticks": 17583,
+      "affinity": [
+        4
+      ],
+      "markers": {
+        "PAUSE": false,
+        "paused.json": false,
+        "STOP": false
+      },
+      "progress": [
+        {
+          "timestamp_unix": 1792381738,
+          "a": 0,
+          "index": 0,
+          "arm": "image_inverse",
+          "steps": 46531322335,
+          "candidate": null
+        },
+        {
+          "timestamp_unix": 1792381740,
+          "a": 0,
+          "index": 0,
+          "arm": "jacobian",
+          "steps": 473435149,
+          "candidate": null
+        },
+        {
+          "timestamp_unix": 1792381742,
+          "a": 0,
+          "index": 0,
+          "arm": "elliptic",
+          "steps": 46242637624,
+          "candidate": null
+        }
+      ],
+      "completed_lines": 27,
+      "unique_completions": 24,
+      "a0_unique_completions": 0
+    },
+    {
+      "utc": "2026-10-19T04:17:17.623397+00:00",
+      "pid": 641,
+      "comm": "cover_rho-campa",
+      "command": "/workspace/measurements/binary-genus2-speed-20261014/bin/cover_rho-campaign run --public /workspace/measurements/binary-genus2-speed-20261014/public --out /workspace/measurements/binary-genus2-speed-20261014/campaign --cpu 4",
+      "state": "R",
+      "start_tick": "23288",
+      "cpu_ticks": 33376,
+      "affinity": [
+        4
+      ],
+      "markers": {
+        "PAUSE": false,
+        "paused.json": false,
+        "STOP": false
+      },
+      "progress": [
+        {
+          "timestamp_unix": 1792383432,
+          "a": 0,
+          "index": 0,
+          "arm": "image_inverse",
+          "steps": 46558745318,
+          "candidate": null,
+          "table_entries": 709978
+        },
+        {
+          "timestamp_unix": 1792383434,
+          "a": 0,
+          "index": 0,
+          "arm": "jacobian",
+          "steps": 473695883,
+          "candidate": null,
+          "table_entries": 7317
+        },
+        {
+          "timestamp_unix": 1792383435,
+          "a": 0,
+          "index": 0,
+          "arm": "elliptic",
+          "steps": 46269877178,
+          "candidate": null,
+          "table_entries": 705670
+        }
+      ],
+      "completed_lines": 27,
+      "unique_completions": 24,
+      "a0_unique_completions": 0
+    }
+  ],
+  "completion_accounting": {
+    "raw_rows": 27,
+    "unique_a_index_arm": 24,
+    "a0_unique": 0,
+    "replayed_rows": [
+      {
+        "a": 1,
+        "index": 7,
+        "arm": "elliptic"
+      },
+      {
+        "a": 1,
+        "index": 7,
+        "arm": "image_inverse"
+      },
+      {
+        "a": 1,
+        "index": 7,
+        "arm": "jacobian"
+      }
+    ],
+    "old_24_rows_retained_as_prefix": true,
+    "replayed_candidate_bytes_match_old_candidates": true
+  },
+  "replayed_q7_verification_receipts": {
+    "elliptic": {
+      "elliptic_verified": true,
+      "jacobian_verified": true,
+      "job_sha256": "37aeacaa5da49153a2f747a492aff2699afadcc170275886a7008a9d0adb33fa",
+      "native_work": {
+        "elliptic_scalar_multiplications": 1,
+        "jacobian_scalar_multiplications": 1,
+        "pullbacks": 2
+      },
+      "schema": "cover-rho.verification/v1",
+      "wall_seconds": 0.003560694
+    },
+    "image_inverse": {
+      "elliptic_verified": true,
+      "jacobian_verified": true,
+      "job_sha256": "37aeacaa5da49153a2f747a492aff2699afadcc170275886a7008a9d0adb33fa",
+      "native_work": {
+        "elliptic_scalar_multiplications": 1,
+        "jacobian_scalar_multiplications": 1,
+        "pullbacks": 2
+      },
+      "schema": "cover-rho.verification/v1",
+      "wall_seconds": 0.003598586
+    },
+    "jacobian": {
+      "elliptic_verified": true,
+      "jacobian_verified": true,
+      "job_sha256": "37aeacaa5da49153a2f747a492aff2699afadcc170275886a7008a9d0adb33fa",
+      "native_work": {
+        "elliptic_scalar_multiplications": 1,
+        "jacobian_scalar_multiplications": 1,
+        "pullbacks": 2
+      },
+      "schema": "cover-rho.verification/v1",
+      "wall_seconds": 0.003282189
+    }
+  },
+  "pre_resume_hashes": [
+    {
+      "sha256": "e02c63d3fc033ce6ccc007aca13cd74aa0c342572744bce7869e984585525231",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/bin/cover_rho-campaign"
+    },
+    {
+      "sha256": "9d0970ce3880750be1101533d567073bad4a9ab90d5526b98318aa8aa804b884",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a0-0-elliptic.checkpoint.json"
+    },
+    {
+      "sha256": "67e828450e20c8edcaa757eaea68b10bcff24ed12aeb72e1bc3d43d2c0e7a7ac",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a0-0-image_inverse.checkpoint.json"
+    },
+    {
+      "sha256": "24f79f0486e897f401ddb6feb39b901c0326b9511c8b86729f1368bd317f56e6",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a0-0-jacobian.checkpoint.json"
+    },
+    {
+      "sha256": "b1f0e5f019a09a730925204785c284ecbf9c4d8e1dc10d759e7610e659220397",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-elliptic.candidate.json"
+    },
+    {
+      "sha256": "b6cd4880e196f420f6d258fc426b4f4785aa0de0fb7c9e0cbbf4bbe92860f51e",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-elliptic.checkpoint.json"
+    },
+    {
+      "sha256": "b605d44c6aaa71a2d8a7c1ac406ebc9a5803037e3e3074c2cccf102aef293b2a",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-elliptic.verification.json"
+    },
+    {
+      "sha256": "b1f0e5f019a09a730925204785c284ecbf9c4d8e1dc10d759e7610e659220397",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-image_inverse.candidate.json"
+    },
+    {
+      "sha256": "606b0cb365b42e537bb3966e9fcf5c7ef95e2122fac30d33171b78891a409ecf",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-image_inverse.checkpoint.json"
+    },
+    {
+      "sha256": "aa69c2fb52ec2df5941a072f765fb477041d44d496b953c9499330e35481ee26",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-image_inverse.verification.json"
+    },
+    {
+      "sha256": "b1f0e5f019a09a730925204785c284ecbf9c4d8e1dc10d759e7610e659220397",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-jacobian.candidate.json"
+    },
+    {
+      "sha256": "ecdd8506e00fef848f6fbfb40cd4af955b5195b3676392b2adaea0738c70318d",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-jacobian.checkpoint.json"
+    },
+    {
+      "sha256": "dcb05172b62f54aa3dd172292e1bb3197c21c229427f00b1da7e9654eff95c9f",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/pre-resume-checkpoints/a1-7-jacobian.verification.json"
+    },
+    {
+      "sha256": "969e2cfd79b0434d07fd1ace6b299dee645a724b5151c677201cba5e6ab94374",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-0.json"
+    },
+    {
+      "sha256": "e1e20b26ff93271e69edbffb5e3ed917bd5db2309b2e453ce5de91669cc68925",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-1.json"
+    },
+    {
+      "sha256": "0b5088f2bd982b63d57c98975bf086c3beeaa0d03a1ec85ebbe719882ee77dab",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-2.json"
+    },
+    {
+      "sha256": "e21047a0713015c26360c5e0b17237f5ce8693d56d70dc41b434c193e47b2985",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-3.json"
+    },
+    {
+      "sha256": "3cf1b28af7388386bc2d8a9823ff4eb8150bbe8036d9d3fd80e0ca6918a071d4",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-4.json"
+    },
+    {
+      "sha256": "f546b5fe7e640307397d39c091d03e7a44280cc5f552802a8b85f256726625d6",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-5.json"
+    },
+    {
+      "sha256": "e998af70893e281a4680bb0b25b9e9809ae4e9d3d6cb66754865c20fd89019fe",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-6.json"
+    },
+    {
+      "sha256": "54b6a1dab94bec7626086625bde7ac7e3a80d675699929576b128e3254e3f057",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a0-7.json"
+    },
+    {
+      "sha256": "ba28bb397293ba013df08f099ba1fc5bdb483e1b55005d9efc7fb897a9a180ce",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-0.json"
+    },
+    {
+      "sha256": "1a6f987292f1d4fc05e3d260d4c25d7f813a3eaf1dd9f4069660bd31efcd6c98",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-1.json"
+    },
+    {
+      "sha256": "9823283788611731228735679a326ecc965ee888b575d7eb5a2a5ca1e0180d09",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-2.json"
+    },
+    {
+      "sha256": "a9320e655abab33eac2cdb9a95c6bee55ea09fa4b4d5749b32cc8c190317ccb2",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-3.json"
+    },
+    {
+      "sha256": "6e9685a30819c9c372ba3a5194bd67faa8a1026085d19b262f35b251d38ecca2",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-4.json"
+    },
+    {
+      "sha256": "e1cc25cd2b352047cea67c348c9edd0353773ab39bf43edd1a1a3a2e16927613",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-5.json"
+    },
+    {
+      "sha256": "6380a1ce4985c158fd3b8782e7563f80748e517b7cca00db458080059d8ec216",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-6.json"
+    },
+    {
+      "sha256": "ad6ceadf4e4c9a8b847c36fcf755ae18daf56fd54cbc0fc38edf1ef15006e1b4",
+      "workspace_path": "/workspace/measurements/binary-genus2-speed-20261014/maintenance/resume-20261019T034528Z/public/a1-7.json"
+    }
+  ],
+  "ci_maintenance_pause": {
+    "pid": 641,
+    "status": "paused_with_checkpoints",
+    "timestamp_unix": 1792381831
+  },
+  "timing_limit": "Later search counters accumulate across interrupted execution sessions. They remain censored and do not extend the original session's continuous-host performance claim. All frozen run/report/benchmark evidence remains unchanged.",
+  "no_original_target_regeneration": true,
+  "no_heldout_witness_access": true,
+  "no_interval_or_prefix_substitution": true,
+  "no_new_paid_resources": true,
+  "scientific_status": {
+    "a1_targets_per_arm": 8,
+    "a1_unique_completions": 24,
+    "a0_completed_targets_per_arm": 0,
+    "isolation_level": "L0",
+    "common_priced_cost": null,
+    "admitted_speedup": null,
+    "independent_host_performance_replay": false,
+    "ecbench_audit": null
+  },
+  "checkpoint_metadata": [
+    {
+      "arm": "elliptic",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 46217213967,
+      "rounds": 1444309965,
+      "resumes": 0,
+      "table_entries": 704913,
+      "lane_count": 32
+    },
+    {
+      "arm": "elliptic",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 46255349437,
+      "rounds": 1445501716,
+      "resumes": 1,
+      "table_entries": 705475,
+      "lane_count": 32
+    },
+    {
+      "arm": "image_inverse",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 46507555383,
+      "rounds": 1453383269,
+      "resumes": 0,
+      "table_entries": 709225,
+      "lane_count": 32
+    },
+    {
+      "arm": "image_inverse",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 46545947941,
+      "rounds": 1454583054,
+      "resumes": 1,
+      "table_entries": 709787,
+      "lane_count": 32
+    },
+    {
+      "arm": "jacobian",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 473193038,
+      "rounds": 14787511,
+      "resumes": 0,
+      "table_entries": 7314,
+      "lane_count": 32
+    },
+    {
+      "arm": "jacobian",
+      "job_sha256": "db406108cbac9b0013b5081754fe73f433e13b394bb9456cf3271bcc8101453b",
+      "method": "rho.cover_image_checkpoint/v1",
+      "steps": 473565517,
+      "rounds": 14799151,
+      "resumes": 1,
+      "table_entries": 7315,
+      "lane_count": 32
+    }
+  ],
+  "replayed_q7_receipt_projection": {
+    "omitted_fields": [
+      "scalar"
+    ],
+    "reason": "The operational publication excludes recovered scalar values. Full verification receipts remain retained in the local campaign and the immutable published scientific archives; those files are unchanged. These replay summaries are not new full solves or independent targets."
+  }
+}

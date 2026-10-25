@@ -1,9 +1,0 @@
-{
-  "schema": "ideas-gpu-resource-amendment/v1",
-  "base": "RESOURCE-AMENDMENT-04.json",
-  "observed_failure": "Community v5 request also refused no instances currently available; no third pod allocated.",
-  "change": "Permit alternative supported physical GPU architectures and broader provider CUDA labels. Actual pinned CUDA13.3.73 build/device/KAT gates remain mandatory; a provider label does not certify runtime compatibility.",
-  "controller": "controller_v6.py",
-  "gpu_types": ["RTX PRO 6000 Blackwell Server", "RTX PRO 6000 Blackwell Workstation", "RTX5090", "A100SXM80", "A100PCIe80", "H100PCIe"],
-  "unchanged": "Maximum three actual new pods, one simultaneous; minimum96GiB host RAM/16vCPU, $3/hour guard,6000s lifetime, same frozen scientific launcher and exact-device compilation. CPU frontier evidence remains separate from GPU arithmetic."
-}

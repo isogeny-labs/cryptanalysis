@@ -41,7 +41,13 @@ jobs:
     # archives over 1 MiB are not in git; --rebuild-missing regenerates them (largest: n = 47, 8.4M points)
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/fb-archive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -67,7 +73,13 @@ jobs:
       matrix:
         sweep: [volcano-ic, volcano-m83, ecc2k130-isogeny-class]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/fb-archive
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

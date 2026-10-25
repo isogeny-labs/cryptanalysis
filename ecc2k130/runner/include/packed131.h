@@ -43,6 +43,12 @@
 #else
 #define ECC_USE_CLMAD_INSN 0
 #endif
+#ifndef ECC_PACKED_CLMAD_HI_FIRST
+#define ECC_PACKED_CLMAD_HI_FIRST 0
+#endif
+#if ECC_PACKED_CLMAD_HI_FIRST != 0 && ECC_PACKED_CLMAD_HI_FIRST != 1
+#error "ECC_PACKED_CLMAD_HI_FIRST must be 0 or 1"
+#endif
 #ifndef ECC_PACKED_TOP_CLMAD
 #define ECC_PACKED_TOP_CLMAD 0
 #endif
@@ -52,14 +58,26 @@
 #if ECC_PACKED_TOP_CLMAD && !ECC_PACKED_CLMAD
 #error "ECC_PACKED_TOP_CLMAD requires ECC_PACKED_CLMAD"
 #endif
+#ifndef ECC_PACKED_TOP_HALF_CLMAD
+#define ECC_PACKED_TOP_HALF_CLMAD 0
+#endif
+#if ECC_PACKED_TOP_HALF_CLMAD != 0 && ECC_PACKED_TOP_HALF_CLMAD != 1
+#error "ECC_PACKED_TOP_HALF_CLMAD must be 0 or 1"
+#endif
+#if ECC_PACKED_TOP_HALF_CLMAD && !ECC_PACKED_CLMAD
+#error "ECC_PACKED_TOP_HALF_CLMAD requires ECC_PACKED_CLMAD"
+#endif
+#if ECC_PACKED_TOP_HALF_CLMAD && ECC_PACKED_TOP_CLMAD
+#error "Choose one top correction variant"
+#endif
 #ifndef ECC_PACKED_TOP_HOIST
 #define ECC_PACKED_TOP_HOIST 0
 #endif
 #if ECC_PACKED_TOP_HOIST != 0 && ECC_PACKED_TOP_HOIST != 1
 #error "ECC_PACKED_TOP_HOIST must be 0 or 1"
 #endif
-#if ECC_PACKED_TOP_HOIST && ECC_PACKED_TOP_CLMAD
-#error "ECC_PACKED_TOP_HOIST is the ALU form of the 3-bit correction; do not combine with ECC_PACKED_TOP_CLMAD"
+#if ECC_PACKED_TOP_HOIST && (ECC_PACKED_TOP_CLMAD || ECC_PACKED_TOP_HALF_CLMAD)
+#error "ECC_PACKED_TOP_HOIST is the ALU form of the 3-bit correction; choose one top correction variant"
 #endif
 #ifndef ECC_PACKED_ONB_INV
 #define ECC_PACKED_ONB_INV 0
@@ -81,6 +99,15 @@
 #endif
 #if ECC_PACKED_CLMUL_FLAT && !ECC_PACKED_CLMAD
 #error "ECC_PACKED_CLMUL_FLAT requires ECC_PACKED_CLMAD"
+#endif
+#ifndef ECC_PACKED_CLMUL_HI_BATCH
+#define ECC_PACKED_CLMUL_HI_BATCH 0
+#endif
+#if ECC_PACKED_CLMUL_HI_BATCH != 0 && ECC_PACKED_CLMUL_HI_BATCH != 1
+#error "ECC_PACKED_CLMUL_HI_BATCH must be 0 or 1"
+#endif
+#if ECC_PACKED_CLMUL_HI_BATCH && (!ECC_PACKED_CLMAD || ECC_PACKED_CLMUL_FLAT)
+#error "ECC_PACKED_CLMUL_HI_BATCH requires CLMAD and excludes CLMUL_FLAT"
 #endif
 #ifndef ECC_PACKED_PAIR_CLMUL
 #define ECC_PACKED_PAIR_CLMUL 0
@@ -181,8 +208,15 @@ ECC_HD void clmul64(uint32_t r[4], const uint32_t a[2], const uint32_t b[2]) {
     const uint64_t aa = uint64_t(a[0]) | (uint64_t(a[1]) << 32);
     const uint64_t bb = uint64_t(b[0]) | (uint64_t(b[1]) << 32);
     uint64_t lo, hi;
+#if ECC_PACKED_CLMAD_HI_FIRST
+    // The high half feeds the Karatsuba fold.  Try issuing it first so its
+    // consumers have more distance from the carryless operation.
+    asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(hi) : "l"(aa), "l"(bb));
+    asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(lo) : "l"(aa), "l"(bb));
+#else
     asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(lo) : "l"(aa), "l"(bb));
     asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(hi) : "l"(aa), "l"(bb));
+#endif
     r[0] = uint32_t(lo); r[1] = uint32_t(lo >> 32);
     r[2] = uint32_t(hi); r[3] = uint32_t(hi >> 32);
 #else
@@ -202,7 +236,7 @@ ECC_HD void clmul64(uint32_t r[4], const uint32_t a[2], const uint32_t b[2]) {
 
 /* Fold three 128-bit Karatsuba leaves into one 256-bit product. l0/l1 are
    the low 64x64, h0/h1 the high, m0/m1 the middle; each pair is lo then hi. */
-#if ECC_PACKED_CLMUL_FLAT || ECC_PACKED_PAIR_CLMUL
+#if ECC_PACKED_CLMUL_FLAT || ECC_PACKED_CLMUL_HI_BATCH || ECC_PACKED_PAIR_CLMUL
 ECC_HD void foldKarat128(uint32_t r[8], uint64_t l0, uint64_t l1, uint64_t h0, uint64_t h1,
                          uint64_t m0, uint64_t m1) {
     m0 ^= l0 ^ h0;
@@ -218,21 +252,30 @@ ECC_HD void foldKarat128(uint32_t r[8], uint64_t l0, uint64_t l1, uint64_t h0, u
 
 /* 4 x 4 words -> 8 words, Karatsuba again: 3 clmul64 = 9 clmul32. */
 ECC_HD void clmul128(uint32_t r[8], const uint32_t a[4], const uint32_t b[4]) {
-#if ECC_PACKED_CLMUL_FLAT && ECC_PACKED_CLMAD && defined(__CUDA_ARCH__)
-    /* Issue the three .lo halves, then the three .hi, so the carry-less unit
-       sees six independent multiplies instead of three lo/hi pairs. */
+#if (ECC_PACKED_CLMUL_FLAT || ECC_PACKED_CLMUL_HI_BATCH) && ECC_PACKED_CLMAD && defined(__CUDA_ARCH__)
+    /* Six independent carryless halves. The high-first candidate gives the
+       high-half Karatsuba consumers more distance from their producers. */
     const uint64_t a0 = uint64_t(a[0]) | (uint64_t(a[1]) << 32);
     const uint64_t a1 = uint64_t(a[2]) | (uint64_t(a[3]) << 32);
     const uint64_t b0 = uint64_t(b[0]) | (uint64_t(b[1]) << 32);
     const uint64_t b1 = uint64_t(b[2]) | (uint64_t(b[3]) << 32);
     const uint64_t as = a0 ^ a1, bs = b0 ^ b1;
     uint64_t l0, h0, m0, l1, h1, m1;
+#if ECC_PACKED_CLMUL_HI_BATCH
+    asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(l1) : "l"(a0), "l"(b0));
+    asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(h1) : "l"(a1), "l"(b1));
+    asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(m1) : "l"(as), "l"(bs));
+    asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(l0) : "l"(a0), "l"(b0));
+    asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(h0) : "l"(a1), "l"(b1));
+    asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(m0) : "l"(as), "l"(bs));
+#else
     asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(l0) : "l"(a0), "l"(b0));
     asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(h0) : "l"(a1), "l"(b1));
     asm("clmad.lo.u64 %0, %1, %2, 0;" : "=l"(m0) : "l"(as), "l"(bs));
     asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(l1) : "l"(a0), "l"(b0));
     asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(h1) : "l"(a1), "l"(b1));
     asm("clmad.hi.u64 %0, %1, %2, 0;" : "=l"(m1) : "l"(as), "l"(bs));
+#endif
     foldKarat128(r, l0, l1, h0, h1, m0, m1);
 #else
     uint32_t lo[4], hi[4], mid[4], as[2], bs[2];
@@ -255,7 +298,7 @@ ECC_HD void clmul128(uint32_t r[8], const uint32_t a[4], const uint32_t b[4]) {
 
 struct P131 { uint32_t v[5]; };
 
-#if ECC_PACKED_TOP_CLMAD
+#if ECC_PACKED_TOP_CLMAD || ECC_PACKED_TOP_HALF_CLMAD
 /* The low 64 bits of x*y, plus an addend.  On the device this is one clmad
    whose third operand is free; the host emulates it through the software
    clmul64 so that testpacked.cpp checks the device formulation bit for bit. */
@@ -301,6 +344,7 @@ ECC_HD uint32_t clmulTiny(uint32_t x, uint32_t y) {
    whole saving, about +4%.  What it cannot see is a product issuing its ten
    clmads back to back into a unit at 76% average.  A knob until a card
    decides, off by default; TOP-CLMAD.md has the tables. */
+#if ECC_PACKED_TOP_CLMAD
 ECC_HD void topCrossClmad131(const P131 &a, const P131 &b, uint32_t *c) {
     const uint64_t A0 = a.v[0] | (uint64_t(a.v[1]) << 32), A1 = a.v[2] | (uint64_t(a.v[3]) << 32);
     const uint64_t B0 = b.v[0] | (uint64_t(b.v[1]) << 32), B1 = b.v[2] | (uint64_t(b.v[3]) << 32);
@@ -315,6 +359,37 @@ ECC_HD void topCrossClmad131(const P131 &a, const P131 &b, uint32_t *c) {
     c[6] = uint32_t(C3); c[7] = uint32_t(C3 >> 32);
     c[8] ^= h1 ^ clmulTiny(a4, b4);
 }
+#endif
+#if ECC_PACKED_TOP_HALF_CLMAD
+/* Keep b4*A_lo on the ALU and place only a4*B_lo on the carryless unit.
+   This adds two clmad.lo instructions to product131, versus four for the
+   full top-CLMAD variant.  The two overflow bits of each 3x64 product are
+   accumulated into the next limb explicitly. */
+ECC_HD void topCrossHalfClmad131(const P131 &a, const P131 &b, uint32_t *c) {
+    const uint32_t a4 = a.v[4] & 7u, b4 = b.v[4] & 7u;
+#pragma unroll
+    for (int k = 0; k < 3; ++k) {
+        const uint32_t mb = 0u - ((b4 >> k) & 1u);
+#pragma unroll
+        for (int i = 0; i < 4; ++i) {
+            const uint32_t t = a.v[i] & mb;
+            c[4 + i] ^= t << k;
+            if (k) c[5 + i] ^= t >> (32 - k);
+        }
+    }
+    const uint64_t B0 = b.v[0] | (uint64_t(b.v[1]) << 32);
+    const uint64_t B1 = b.v[2] | (uint64_t(b.v[3]) << 32);
+    const uint32_t h0 = clmulTiny(a4, uint32_t(B0 >> 62)) >> 2;
+    const uint32_t h1 = clmulTiny(a4, uint32_t(B1 >> 62)) >> 2;
+    uint64_t C2 = c[4] | (uint64_t(c[5]) << 32);
+    uint64_t C3 = c[6] | (uint64_t(c[7]) << 32);
+    C2 = clmadLo64(a4, B0, C2);
+    C3 = clmadLo64(a4, B1, C3 ^ h0);
+    c[4] = uint32_t(C2); c[5] = uint32_t(C2 >> 32);
+    c[6] = uint32_t(C3); c[7] = uint32_t(C3 >> 32);
+    c[8] ^= h1 ^ clmulTiny(a4, b4);
+}
+#endif
 #endif
 ECC_HD uint32_t reverse32(uint32_t x) {
 #ifdef __CUDA_ARCH__
@@ -410,6 +485,9 @@ ECC_HD void product131(const P131 &a,const P131 &b,uint32_t *c) {
 #elif ECC_PACKED_TOP_CLMAD
     clmul128(c,a.v,b.v); c[8]=0;
     topCrossClmad131(a,b,c);
+#elif ECC_PACKED_TOP_HALF_CLMAD
+    clmul128(c,a.v,b.v); c[8]=0;
+    topCrossHalfClmad131(a,b,c);
 #else
     clmul128(c,a.v,b.v); c[8]=0;
 #pragma unroll
@@ -699,6 +777,15 @@ static ECC_BIG P131 mul131(MulArg a, MulArg b) {
 #if ECC_PACKED_ALU_SQR != 0 && ECC_PACKED_ALU_SQR != 1
 #error "ECC_PACKED_ALU_SQR must be 0 or 1"
 #endif
+#ifndef ECC_PACKED_ZIP_SQR
+#define ECC_PACKED_ZIP_SQR 0
+#endif
+#if ECC_PACKED_ZIP_SQR != 0 && ECC_PACKED_ZIP_SQR != 1
+#error "ECC_PACKED_ZIP_SQR must be 0 or 1"
+#endif
+#if ECC_PACKED_ZIP_SQR && ECC_PACKED_ALU_SQR
+#error "Choose one normal-basis square implementation"
+#endif
 // The logic-op spread, kept callable beside the clmad one: with the table walk
 // the ALU pipe is no longer the only saturated one (ITERATION-FUNCTION.md
 // section 6), so the per-update polynomial squaring can be moved back here
@@ -744,6 +831,9 @@ ECC_HD uint64_t spread32p(uint32_t x){
 #include "square_reduce.h"
 ECC_HD P131 squarePolynomial131(P131 a) { return goal22SquareReduced(a); }
 ECC_HD P131 sqr131(const P131 &a){
+#if ECC_PACKED_ZIP_SQR
+ return goal22SquareNormal(a);
+#else
  P131 rev=reverse131(a),r;
 #if ECC_PACKED_ALU_SQR
  uint64_t lo=(spread32alu(a.v[0])<<1)^spread32alu(rev.v[0]);
@@ -756,6 +846,7 @@ ECC_HD P131 sqr131(const P131 &a){
  r.v[2]=uint32_t(hi);r.v[3]=uint32_t(hi>>32);
  r.v[4]=(rev.v[2]&1u)|((a.v[2]&1u)<<1)|((rev.v[2]&2u)<<1);
  return r;
+#endif
 }
 #ifndef ECC_PACKED_PERM_SIGMA
 #define ECC_PACKED_PERM_SIGMA 0

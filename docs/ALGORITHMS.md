@@ -286,36 +286,25 @@ the same idea over an extension field, out of scope for this `F_p` core.
 
 **The walk.**  The reference `glv_rho_solve` walks canonical representatives
 of `{Y, psi(Y), ..., psi^{m-1}(Y)}`: it selects the minimum-hash member and
-multiplies `(a, b)` by `lambda^k` after applying `psi^k`.  For j=0 the
-default `glv_covariant_rho_solve` instead leaves the walking point in its
-current orientation.  The minimum of `y` and `-y` is invariant under all six
-automorphisms and supplies its partition and distinguished-point hash.  If
-`Y = psi^e(C)` for the coordinate-canonical member `C`, it adds the
-precomputed `psi^e(M_i)` and adds `lambda^e(alpha_i, beta_i)` to the tracked
-coefficients.  Thus applying `psi` to the input applies `psi` to the output;
-two walks that meet in a class remain in that class.  At a distinguished
-point, the solver transports its coefficients to the canonical member and
-checks the collision.  The 2-cycle look-ahead remains defined on the class.
-`CA_J0_RHO_COVARIANT_WALK=OFF` selects the former minimum-hash walk.
-`CA_J0_RHO_COORD_CANON=ON` with the covariant flag off is a coordinate-only
-ablation that canonicalizes every step.
+multiplies `(a, b)` by `lambda^k` after applying `psi^k`.  Both families use
+it.  `CA_J0_RHO_COORD_CANON=ON` is a coordinate-only ablation that
+canonicalizes every j=0 step.  An oriented ("covariant") j=0 walk, which kept
+each point in its current orientation and checked orbit collisions only at
+distinguished points, was removed with `CA_J0_RHO_COVARIANT_WALK`.  The
+solver had not reached it since #437, and the current walk measured cheaper
+below 36 bits (#1059, #1061).  Commit `f962323` is the last that builds it.
 
-**Prime-field j0 setup.**  For `p = 1 mod 3`, the rho jump table and walk
-restarts use `ca_ec_mul_tau2` by default when the configured subgroup admits
-the endomorphism.  It represents a scalar as a short element of `Z[omega]`,
-expands it with width-2 digits from the six units, and evaluates the paper's
-Jacobian `tau = 1 - omega` formula.  The width-4 table from the paper is
-available in `ca_ec_mul_tau4`; `ca_ec_mul_tau4_tripling` rewrites pairs of
-tau powers as powers of 3.  Set `CA_J0_TAU_RHO_WIDTH=4` to prepare reusable
-width-4 tables for the base and target, then use the tripling path for jump
-and restart scalars.  This preparation is inside the timed rho solve.  The
-width setting does not change the selected rho walk.  `ca_ec_triple_j0`
-exposes the Jacobian tripling formula for curve
-arithmetic.  `CA_J0_TAU_RHO=OFF` reproduces the old setup.  The measured
-default remains width 2 on the registered 64-bit prime-field groups.  The
-one-shot width-4 tripling implementation uses general projective addition
-for odd digits; the prepared path caches their affine tau images and uses
-mixed addition.  These field-operation costs differ from the paper's
+**Prime-field j0 tau arithmetic.**  `ca_ec_mul_tau2` represents a scalar as
+a short element of `Z[omega]`, expands it with width-2 digits from the six
+units, and evaluates the paper's Jacobian `tau = 1 - omega` formula.  The
+width-4 table from the paper is available in `ca_ec_mul_tau4`;
+`ca_ec_mul_tau4_tripling` rewrites pairs of tau powers as powers of 3, and
+`ca_ec_triple_j0` exposes the Jacobian tripling formula.  The one-shot
+width-4 tripling implementation uses general projective addition for odd
+digits.  The rho jump table and restarts no longer use these functions: their
+build options (`CA_J0_TAU_RHO`, `CA_J0_TAU_RHO_WIDTH`) were removed after the
+setup path stopped reaching them in #437.  The explicit paired startup modes
+of `ca_curve_solve_startup` keep their own tau evaluation.  These field-operation costs differ from the paper's
 augmented-tau variant.  Counts from different scalar backends use different
 primitive operations, so compare their paired online wall times;
 see [the recorded exploratory measurements](../experiments/prime-j0-tau-20260930/README.md).

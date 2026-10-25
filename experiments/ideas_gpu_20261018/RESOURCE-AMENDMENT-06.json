@@ -1,8 +1,0 @@
-{
-  "schema": "ideas-gpu-resource-amendment/v1",
-  "base": "RESOURCE-AMENDMENT-05.json",
-  "observed_failure": "v6 no-capacity refusal allocated no pod. Review found older nested API adapter still narrowed CUDA labels.",
-  "change": "Use original API once at final request, with explicit equivalent GPU list/broader CUDA labels and PAM-enabled key-only sshd. Existing userkey credential never enters pod environment.",
-  "controller": "controller_v7.py",
-  "unchanged": "Maximum three actual pods, one simultaneous,96GiBhostRAM/16vCPU,$3hourguard,6000sworkloadcap, explicit DELETE and provider absence verification, all scientific gates."
-}

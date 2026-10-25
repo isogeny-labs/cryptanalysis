@@ -1,4 +1,102 @@
 #include "test_fixtures.h"
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+static void checkpoint_roundtrip(void)
+{
+    char dir[] = "/tmp/ca-ic-checkpoint-XXXXXX";
+    CHECK(mkdtemp(dir) != NULL);
+    char journal[256], precomp[280], progress[280];
+    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
+    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
+    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
+    ca_ic_params pr;
+    ca_ic_params_default(&pr);
+    pr.seed = 7;
+    uint64_t x = 0;
+    ca_ic_stats st;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
+    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+    CHECK(access(journal, F_OK) == 0);
+    CHECK(access(precomp, F_OK) == 0);
+    CHECK(access(progress, F_OK) == 0);
+
+    /* The verified precomputation can be loaded without repeating the sieve. */
+    x = 0;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
+    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+    CHECK(st.sieve_seconds == 0);
+
+    /* A changed base must never reuse either artifact. */
+    CHECK(ca_ic_solve_checkpointed(1000003, 3, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
+
+    /* Simulate interruption during the last relation record.  The completed
+     * prefix is replayed and the missing sieve unit is recomputed. */
+    CHECK(unlink(precomp) == 0);
+    struct stat sb;
+    CHECK(stat(journal, &sb) == 0);
+    int fd = open(journal, O_WRONLY);
+    CHECK(fd >= 0);
+    if (fd >= 0) {
+        CHECK(ftruncate(fd, sb.st_size - 4) == 0);
+        close(fd);
+    }
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
+    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+    CHECK(unlink(precomp) == 0);
+    CHECK(ca_ic_solve_checkpointed(1000003, 3, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
+    unlink(journal);
+    unlink(progress);
+    rmdir(dir);
+}
+
+static void rexp_checkpoint_roundtrip(void)
+{
+    char dir[] = "/tmp/ca-ic-rexp-checkpoint-XXXXXX";
+    CHECK(mkdtemp(dir) != NULL);
+    char journal[256], precomp[280], progress[280];
+    snprintf(journal, sizeof(journal), "%s/relations.ckpt", dir);
+    snprintf(precomp, sizeof(precomp), "%s.precomp", journal);
+    snprintf(progress, sizeof(progress), "%s/progress.json", dir);
+    ca_ic_params pr;
+    ca_ic_params_default(&pr);
+    pr.method = CA_IC_RANDOM_EXPONENT;
+    pr.seed = 7;
+    pr.threads = 2;
+    pr.max_relation_tries = 1;
+    uint64_t x = 0;
+    ca_ic_stats st;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_NOT_FOUND);
+    uint64_t saved_tests = st.smooth_tests;
+    CHECK(saved_tests > 0);
+    CHECK(access(journal, F_OK) == 0);
+    CHECK(access(progress, F_OK) == 0);
+    pr.max_relation_tries = 0;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_OK);
+    CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+    CHECK(st.smooth_tests > saved_tests);
+    CHECK(access(precomp, F_OK) == 0);
+    CHECK(unlink(precomp) == 0);
+    pr.seed = 8;
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
+    pr.seed = 7;
+    FILE *damage = fopen(journal, "r+b");
+    CHECK(damage != NULL);
+    if (damage) {
+        CHECK(fseek(damage, -1, SEEK_END) == 0);
+        int last = fgetc(damage);
+        CHECK(last != EOF);
+        CHECK(fseek(damage, -1, SEEK_END) == 0);
+        CHECK(fputc(last ^ 0xff, damage) != EOF);
+        CHECK(fclose(damage) == 0);
+    }
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
+    unlink(journal); unlink(progress); rmdir(dir);
+}
 
 static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 {
@@ -48,6 +146,8 @@ static void run(uint64_t p, ca_ic_method method, uint32_t threads, int nlogs)
 
 int main(void)
 {
+    checkpoint_roundtrip();
+    rexp_checkpoint_roundtrip();
     /* small primes with a large prime factor in p-1 (safe primes) and
      * primes with smooth p-1 (Pohlig-Hellman path) */
     run(1000003, CA_IC_LINEAR_SIEVE, 1, 5);           /* 20 bits, p-1 = 2*3*166667 */
@@ -70,5 +170,23 @@ int main(void)
     ca_ic_stats st;
     CHECK(ca_ic_solve(1000003, 2, 123456, NULL, &x, &st) == CA_OK);
     CHECK_EQ_U64(ca_powmod(2, x, 1000003), 123456);
+
+    /* Regression: the automatic factor-base bound (60 and up) exceeded a tiny
+     * modulus, so a prime q >= p was in the base, reduced to 0 or to another
+     * prime's residue, and the logarithms could not be solved. */
+    static const uint64_t tiny[] = {7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 53, 59, 61};
+    for (size_t i = 0; i < sizeof(tiny) / sizeof(tiny[0]); i++) {
+        for (int m = 0; m < 2; m++) {
+            uint64_t tp = tiny[i], tg = ca_primitive_root(tp), th = 2 + (i % (tp - 3));
+            ca_ic_params tpar;
+            ca_ic_params_default(&tpar);
+            tpar.seed = 5 + i;
+            tpar.method = m ? CA_IC_RANDOM_EXPONENT : CA_IC_LINEAR_SIEVE;
+            uint64_t tx = 0;
+            ca_status trc = ca_ic_solve(tp, tg, th, &tpar, &tx, NULL);
+            CHECK(trc == CA_OK);
+            if (trc == CA_OK) CHECK_EQ_U64(ca_powmod(tg, tx, tp), th);
+        }
+    }
     TEST_MAIN_END();
 }

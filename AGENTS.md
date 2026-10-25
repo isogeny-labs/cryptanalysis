@@ -1,22 +1,94 @@
 # Agent rules for cryptanalysis experiments
 
-## Literature first
+Shared conventions with `crypto`, `crypto-autoresearcher` and `crypto-lean` —
+object storage, the validation vocabulary, curve identity, the skill surface and
+the shared-code parity list — are stated once in
+`crypto-autoresearcher:docs/lab-contract.md`. That file wins on a shared
+convention; this file wins on anything specific to this repository.
 
-Owner instruction (2026-10-19): check relevant literature before doing any work.
-For every task, complete this review before choosing an approach, editing files,
-implementing, running experiments, or making recommendations.
+## Success criterion: iterative improvement of the index-calculus baseline
 
-- Start with this repository's references, research notes and prior results, then
-  check relevant papers, standards and official documentation for current methods,
-  limitations and known negative results.
-- Read the primary sources that matter. Verify their assumptions, parameters and
-  conclusions rather than relying on memory, abstracts or search snippets.
-- Briefly record the sources checked, with links or repository paths, and explain
-  how they inform the work in the task notes, report or PR. Check novelty claims
-  against that prior work and reuse established methods where appropriate.
-- If relevant sources are inaccessible or no relevant work is found, state the
-  search scope and evidence gaps before proceeding. Never invent citations or
-  treat an unsuccessful search as proof that no prior work exists.
+Owner's rule, 2026-10-15. It replaces any earlier wording that treats only
+beating rho, or only an "advance", as success.
+
+The long-term goal is an index calculus that beats Pollard rho. That will
+not come from one breakthrough. It comes from many measured improvements,
+each building on the last, until the gap closes. So **the success criterion
+is a verified, measured improvement over the current index-calculus
+baseline. Every such improvement is a success and is reported as one.**
+
+- **Baseline.** For each curve and size, the baseline is the best current
+  verified index-calculus pipeline, frozen with its protocol, receipts and
+  end-to-end `S` (every phase, cold). Name it before you optimise.
+- **Improvement.** The improvement must lower cost against that baseline on
+  the same instances, with every answer verified, under a protocol frozen
+  before timing. A stage-level win is reported as a stage improvement and
+  becomes a pipeline improvement once it moves end-to-end `S`. The
+  measurement rules still apply in full: isolation tiers, A/A and positive
+  controls, matched references, and no combining results from different
+  experiments.
+- **What counts.** Advance and engineering are both successes. Relabelling
+  (the headline count fell while total cost rose) and accounting (the
+  numbers changed but the algorithm did not) are recorded honestly and are
+  not improvements. A negative or null result is a valid outcome to record,
+  but it is not an improvement.
+- **Ratchet.** Each landed improvement becomes the new baseline. Record it
+  with its delta, so progress is cumulative and visible across the
+  sequence.
+- **Distance to rho.** Report the gap to the matched rho on every row,
+  and to precomputation rho (Bernstein–Lange) where setup is excluded. The
+  gap is the distance remaining, not a pass/fail gate. Not beating rho
+  never makes an improvement a failure. A claim to *beat* rho still needs
+  every reference rule: an end-to-end cold `S` below the matched rho's,
+  robust at growing `n`, independently replayed.
+- **Keep going.** After each result, name the next improvement to try, and
+  move on to it.
+
+## Name the obstruction
+
+When substantial research, cryptanalysis, or audit work cannot meet a proof,
+implementation, experiment, or validation requirement, **name the specific
+problem**. Before repeating the same blocked approach or handing it off, create
+or update `problems/<descriptive-slug>.md` using
+[the problem template](problems/TEMPLATE.md), add it to
+[the problem index](problems/README.md), and link it from the affected work.
+
+- State exactly what is blocked, under which parameters and assumptions, and
+  why that gap prevents the requested conclusion. Track major or recurring
+  blockers, not every routine TODO.
+- Separate observed evidence, suspected explanations, missing implementations,
+  access/tool or assistance limits, resource limits, and proved mathematical
+  obstructions. Cite artifacts or proofs with their exact scope; mark unknowns
+  explicitly. A timeout or bounded failed search does not prove impossibility;
+  failure to find an attack does not establish security.
+- Say **what would unblock it**: the missing lemma, construction, verified map,
+  measurement, implementation, access, or resource, with checkable acceptance
+  criteria. Explain what satisfying those criteria would establish and what
+  would remain unresolved. "More research" is not an exit condition.
+- Give the next discriminating experiment or proof obligation, its controls
+  and execution limits where relevant, and how each possible outcome changes
+  the next action. Apply the existing experiment and budget rules.
+- Reuse an existing problem record for the same obstruction, including a
+  cross-repository link when appropriate. Update its evidence, next action,
+  and index row in the PR that changes the situation; preserve frozen evidence.
+  Resolve it only with linked evidence meeting its exit criteria. If another
+  record replaces it, mark it superseded and link the successor.
+
+Recording a problem keeps the original requirement visible; recording it alone
+does not resolve that requirement. It
+does not authorize abandoning requested work, weakening its acceptance criteria,
+or promoting a claim. Completing the template or merging its PR does not solve
+the underlying problem.
+
+## ECDLP lead atlas: check what was already tried
+
+The lead atlas in aburan28/crypto-autoresearcher, `knowledge/leads/ecdlp/`,
+records every ECDLP lead tried in this repository and its siblings, with its
+disposition (the obstruction that closed it, or the next step that decides it)
+and evidence. `python3 tools/lead_atlas.py --brief` there (printed at session
+start by `.claude/hooks/lead-atlas-brief.sh`) says whether anything changed
+since its last review. Run `--match "<idea>"` before proposing an ECDLP
+mechanism, and update the lead a landed result advances.
 
 ## Research searches must leave visual reports
 
@@ -41,8 +113,7 @@ and `aburan28/ml-cryptanalysis`:
 - `papers/README.md` is the index: one row per paper (directory, title,
   status). Add a row when adding a paper; never add a paper outside `papers/`.
 - `papers/paper.mk` is the shared build. A paper's `Makefile` sets `TEX`,
-  `SECTIONS`, `BIB` and, for figures or other files the build reads,
-  `ASSETS`, and includes it; the targets are `make`, `make check`,
+  `SECTIONS` and `BIB` and includes it; the targets are `make`, `make check`,
   `make arxiv`, `make eprint`, `make deanonymize` and `make clean`.
 - `papers/.gitignore` ignores LaTeX auxiliaries and submission bundles. The
   built PDF is committed next to its sources and rebuilt whenever a cited
@@ -66,24 +137,194 @@ and `aburan28/ml-cryptanalysis`:
 - `make check` must pass (references and citations resolved, no LaTeX errors,
   no overfull boxes) before a PDF is recommitted.
 
-## Experiment protocol, export and review
+## Mathematical results should include Lean proofs
 
-Owner request, 2026-10-22. Every experiment, benchmark, sweep or training run
-here is designed from a frozen `experiment.protocol/v1` record before its
-first data point (skill `experiment-protocol`; the `controlled-experiment`
-pointer decides what its controls are), leaves its rows as one
-`experiment.export/v1` beside the raw `.jsonl` (built with `from-rows` from
-the measurement contract's one-object-per-run records), and may be reviewed
-by any other runner through a write-once `experiment.review/v1` record (skill
-`review-run`). The canonical rules, schemas and checker are
-`docs/experiment-protocol.md` and `tools/experiment_protocol.py` in
-aburan28/crypto-autoresearcher; this repository's skills are pointers.
-Remote runs go through `queue-experiment`: a measurement job to a host that
-can earn a Tier 0/1 receipt and is never resumed, a throughput job to spot
-or pod capacity with an application checkpoint, and after a restore counted
-units stay valid and the clock does not. The candidate, workload, one-target
-and tier rules below are unchanged by this; the protocol is where they are
-written down before timing.
+**Standing owner instruction, 2026-10-11:** For every new or substantially
+revised mathematical result, include a faithful Lean 4 theorem and checked
+proof whenever formalization is feasible. Treat the formalization attempt as
+part of the requested work, prioritize the central theorem and its
+dependencies, and keep a readable mathematical proof in the report.
+
+- Maintain a proof map from each result to its Lean declaration, exact
+  hypotheses and verification status. Preserve the statement's quantifiers,
+  exceptional cases, field, curve, subgroup and endomorphism-order assumptions.
+- Pin the Lean toolchain and dependency revisions. Build the actual theorem
+  modules, retain the command and output, and audit every reported theorem
+  with `#print axioms`. Use `lean4checker --fresh` when available.
+- A reported Lean proof must contain no `sorry`, `admit`, `sorryAx`, custom
+  axioms encoding the research claim, kernel-check bypasses or unverified
+  native evaluation. Record the standard Lean foundations used.
+- Prove structural implications as well as polynomial identities. Expose
+  conditional assumptions and any missing bridge to the actual mathematical
+  objects. Do not substitute a weaker statement, assumed conclusion, circular
+  hypothesis or arithmetic certificate for the full theorem.
+- When full formalization remains unfinished, preserve the original result
+  and written proof, complete the feasible Lean lemmas, and record the exact
+  missing definition, dependency, proof obligation or failed build. Label the
+  formalization partial and keep the full theorem open.
+- Add reproducible proof checks to CI where practical, and preserve frozen
+  evidence through versioned formalization additions.
+
+For small-prime or pinned GF(2^83) elliptic-curve surface searches, quartic
+subgroup transfers, genus-2+ Jacobian transfers, hyperelliptic covers, Mumford
+arithmetic, gluing or polarization candidates, or Frobenius compatibility
+checks, use [ecdlp-surfaces](.agents/skills/ecdlp-surfaces/SKILL.md) for tool
+selection, commands, and interpretation limits.
+
+## Preserve scope and report evidence
+
+Use [report-evidence](.agents/skills/report-evidence/SKILL.md) for implementation,
+experiments, benchmarks, completion reports, and research handoffs.
+
+- Preserve the user's requested deliverables, parameters, workloads, and acceptance
+  criteria. Do not silently substitute a smaller experiment, weaken an argument
+  or validation gate, or omit a requested run because you expect it to fail.
+- Execute authorized, feasible experiments as requested. The user decides research
+  significance and priorities. Report measured values and exact ratios; do not
+  independently market results as "massive", "breakthrough", or dismiss them as
+  "not worth running". Give interpretation when requested and label it separately.
+- Continue to check correctness and flag invalid results, factual errors, and
+  uncertainty. Preserve failed runs, timeouts, regressions, raw evidence, exact
+  commands, inputs, revisions, environment, and accounting intervals.
+- Distinguish assistance restrictions, access/tool limits, resource limits,
+  implementation gaps, untested hypotheses, and proved mathematical obstructions.
+  Never disguise an assistance limit as mathematical impossibility. State the
+  actual blocker explicitly; retain the original requirement as unresolved.
+  Higher-priority restrictions and authorization boundaries still apply.
+- Keep observations, calculations, hypotheses, extrapolations, and interpretations
+  distinct. A stage ratio does not establish an end-to-end gain; a bounded search
+  failure does not prove nonexistence; a toy implementation is not general support.
+- Track each requested requirement as verified complete, implemented but unverified,
+  partial, blocked, or not attempted, with evidence or the exact remaining gap.
+  Passing tests or merging a PR does not make the original task complete.
+- Correct misleading prior claims explicitly. Do not rewrite frozen evidence or
+  quietly redefine completion. Report actual execution status, never planned runs
+  as completed or unscheduled work as continuing in the background.
+
+These rules govern scope and reporting throughout this file. Existing measurement
+and correctness gates remain in force; they do not authorize an agent to cancel a
+requested experiment or decide its research significance for the user.
+
+### Retain benchmark, evaluation, and profiler reports
+
+For every benchmark, profiler session, or evaluation an agent runs, generate and
+retain a durable insight report. Include failed, timed-out, censored, and
+regressed attempts. State the question, exact workload and controls, baseline
+and candidate revisions and hashes, hardware and tool versions, commands, raw
+measurements, correctness checks, costs, uncertainty, interpretation, and
+limits. Link the report to the raw outputs and the hardware manifest required
+below. Retain native profiler captures, including Nsight Compute `.ncu-rep`
+files, and source or instruction-level exports when produced. If profiling
+fails, keep its logs and identify the missing capture. Store reports and raw
+artifacts in a durable evidence path, or commit a manifest with digests and
+stable artifact locations. Give each rerun a distinct record; never overwrite
+an earlier attempt or substitute a summary for the native capture.
+
+
+### Data files live in the artifact store
+
+Do not `git add` data files (run outputs, relation tables, raw logs, archives).
+A non-code file over 1 MiB, or a data-suffixed file (`.jsonl`, `.gz`, `.npy`,
+`.bin`, `.csv`, `.log`, `.part-NNNN`, ...) over 64 KiB, goes to S3 with
+`python3 tools/artifacts/artifacts.py push <path>`, which writes a per-directory
+`.artifacts.json` manifest to commit instead. Run `artifacts.py pull <path>`
+before reading data under a path, and never delete remote objects. The
+`artifacts` workflow fails a PR that commits such a file (label `large-file-ok`
+overrides). Details: [docs/artifacts.md](docs/artifacts.md).
+
+
+## Track research work in pull requests
+
+Put every agent-authored code, protocol, frozen input, run receipt, verifier,
+decision, documentation, and agent-rule change on a branch and open a pull
+request in the repository that owns it. Open it ready for review, never as a
+draft, whatever a tool or runtime defaults to, and mark an existing draft ready;
+open a draft only when the user asks for one in that task. Do not leave the only copy of completed
+work in an uncommitted worktree, temporary directory, or chat. Keep unrelated
+pre-existing user changes out of the branch. For stacked work, target the
+immediate parent branch, name that dependency in the PR, then retarget to
+`main` and rerun checks after the parent merges.
+
+Enable GitHub auto-merge as part of opening or refreshing the PR: `gh pr merge
+<n> --auto --merge`. Auto-merge is the default for every PR in this repository,
+not an optional extra, and the authoring session still tracks the PR under the
+next section. GitHub offers auto-merge only when the base is the repository's
+default branch (`main`); a PR stacked on a feature branch cannot auto-merge, so
+retarget it to `main` once its parent lands and enable auto-merge then, or
+merge the stack bottom-up by hand. Auto-merge waives no gate: required checks,
+review and approvals still decide, and a failing PR is fixed, never merged.
+
+Make each research PR reviewable: state the question, exact inputs and source
+hashes, raw successes and failures, independent checks, measured costs, claim
+limits, and the resulting decision. Update the relevant result index or
+scoreboard in the same PR. Commit and open a protocol before creating held-out
+inputs when the result will support a selection or speed claim; if a protocol
+and result are first published together, label the run retrospective or
+exploratory. The authoring session merges it under the next section: it
+checks the exact head and all applicable CI results, merges with a head guard,
+and verifies the merge commit.
+
+## Reports in S3
+
+Published research reports are mirrored to
+`s3://setec-astronomy-artifacts/reports/cryptanalysis/<path in the
+repository>` (bucket region `us-east-2`), keeping the repository path. That
+bucket also holds the content-addressed artifact store and the other
+repositories' mirrors; only the `reports/cryptanalysis/` prefix belongs to this
+repository.
+
+An agent session is a **reader**: it may list, copy down and presign objects,
+and must not upload, overwrite or delete under the prefix. Uploads are made by
+the owner-run sync, never by a research session; a corrected report is committed
+and opens a PR like any other evidence change.
+
+```sh
+aws s3 ls s3://setec-astronomy-artifacts/reports/cryptanalysis/ --region us-east-2
+aws s3 cp s3://setec-astronomy-artifacts/reports/cryptanalysis/<path> . --region us-east-2
+aws s3 presign s3://setec-astronomy-artifacts/reports/cryptanalysis/<path> --expires-in 604800 --region us-east-2
+```
+
+Reading needs `s3:GetObject` and `s3:ListBucket` on
+`arn:aws:s3:::setec-astronomy-artifacts/reports/cryptanalysis/*` (the
+`ARTIFACTS_AWS_*` credentials have it). Treat a downloaded report as a copy of
+the committed file: verify it against the repository blob or `VALIDATION.json`
+before citing it.
+
+## Continue through the PR: track it and merge it
+
+The session that opens a PR stays with it until it is merged or closed (owner,
+2026-10-23; supersedes the 2026-10-09 "Stop at the PR" rule). Any model tier,
+Claude Opus and Fable included, tracks, fixes and merges the PRs it opened.
+
+- **Track it.** Subscribe to PR activity (`subscribe_pr_activity`) where the
+  runtime supports it. Otherwise, and as a safety net, keep spaced check-ins
+  (`send_later` or similar): about 50 minutes after the last activity, then
+  about four hours apart. Stop after three check-ins in a row that find
+  nothing new, at merge or closure, or when the user says to stop. New
+  activity resets the count. No busy polling: no sleep loops, no foreground
+  wait on CI, no re-reading check runs or job logs faster than that cadence.
+- **Fix what the change breaks.** Read the failing check's log, reproduce the
+  failure, fix it and push. Report a failure that is not this change's (red on
+  the base branch, or a service the diff does not touch) on the PR with the
+  evidence. Never skip, disable or quarantine a test, push an empty commit, or
+  close and reopen the PR to re-run CI.
+- **Merge** the PR for the current user task, without asking again, when its
+  final diff is complete and the current head has every required and
+  applicable check successful (or legitimately skipped), no check pending or
+  failed (except as below), no conflict and no open blocking review thread.
+  Auto-merge is already enabled (see the previous section), so the merge is a
+  merge commit with an expected-head guard; confirm the merge commit, and never
+  bypass branch protection or a required review. An explicit instruction to
+  leave the PR open or wait for review overrides this: disable auto-merge
+  (`gh pr merge <n> --disable-auto`) so the PR stays open.
+- **Checks that never start do not block** (owner, 2026-10-23). A check that
+  no branch-protection rule or ruleset requires, and that has been queued for
+  24 hours or more without starting (no runner picked it up), does not hold
+  the merge, provided every check that did run on the current head passed.
+  Name each such job and how long it waited in the merge commit message. A
+  required check never falls under this: if one has not run, the PR waits and
+  the session says so on the PR. A check that started and is still running is
+  pending, not stuck.
 
 ## Index-calculus candidate names and measurements
 
@@ -95,7 +336,15 @@ they enter a new comparison. **Always** use the candidate and measurement
 rules below when comparing IC variants. A campaign may impose stricter claim
 rules. The [candidate catalog](experiments/ic-candidate-catalog/README.md)
 contains design proposals; its [measurement contract](experiments/ic-candidate-catalog/MEASUREMENT.md)
-specifies the empirical stage record and promotion gates. The
+specifies the empirical stage record and promotion gates.
+The [curve and artifact storage contract](experiments/ic-candidate-catalog/CURVE_STORAGE.md)
+links exact EC1/UID records to crypto's ICV1 registry, bulk factor-base
+archives, and verified isogeny walks.
+The [typed curve-link rules](experiments/ic-candidate-catalog/curve-links/README.md)
+keep twists, same-field isomorphisms, base changes, and isogenies distinct;
+only verified maps with subgroup/log transport may enter an IC route. Keep unresolved links and traits as
+explicit `null` plus status; never infer a factor-base or curve equivalence
+from matching field degree or ICV1 model name. The
 [IC benchmark](experiments/ic-bench/README.md) is the reference harness for
 named, fully charged, verified toy-curve runs. It holds the calibrated `rps` unit,
 candidate/workload manifests, `history.csv`, and the CI baseline gate. Record a new
@@ -109,6 +358,12 @@ remove or rewrite an archived row or file; a correction is a new entry. Archive 
 `experiments/fb-archive/aliases.csv`) nor listed in
 `experiments/fb-archive/unarchived.csv`; record bases under that key and archive
 them in the same change.
+archive keeps `B` null.
+Run `python3 experiments/ic-candidate-catalog/validate_semantics.py` after
+changing curve records, typed links, isogeny routes, factor-base references,
+or IC1 candidate/workload manifests. CI runs the same metadata gate. Update
+`mirror-lock.json` only when the mirrored source files deliberately change,
+and update crypto's mirror in a paired PR.
 
 ### Three distinct identifiers
 
@@ -218,6 +473,26 @@ verified differences to a shared logarithm database, for target handling
 (`TDpdp` records its rerandomization in the manifest: uniform `Q + [a]G`, or
 the additive walk `Q + i[a0]G`);
 `ISO0` for no isogeny
+Suggested codes: `PDP5f4`, `PDP5f5`, `PDP5sat`, `PDP5hybrid`; `PDP4sat`
+for a compact four-summand S3 SAT chain, `PDP4root` for the compact
+four-summand S3 root index, `PDP4theory` for a four-summand SAT search with
+external exact S3 field-root propagation, `PDP4phi5` for a compact
+four-summand torsion-symmetrized five-input polynomial SAT stage, and
+`PDP4qpair` for a complete
+four-summand signed-Frobenius quotient pair-sum index; `PDP4claw` for a
+two-color four-summand pair-sum distinguished-point claw; `PDP4qclaw` for its
+signed-Frobenius quotient walk; `PDP4qtable` for a signed-Frobenius quotient
+pair table matched against target-complement pairs; `PDP5q23` for a
+five-summand two-G pair quotient index queried by three target-seed points;
+`PDP3qpair` for a three-summand two-G quotient lookup with one target point;
+`PDP2xl` for a dense Macaulay/XL
+degree scan and `PDP2xlsym` for the same scan over the symmetric-function
+(`e_k` in `V^(k)`) formulation, with the XL or closure mode in the manifest;
+`RCwalk`, `RCsample`, `RCdirect`; `RCguided` for pivot-guided relation
+collection; `RCaffine` for random-start nonzero-stride known-log query blocks;
+`LAbw`, `LAwied`, `LAgauss` for **final sparse relation-matrix** solving;
+`LAnone` when all factor-base logs are known and there is no final matrix;
+`TDdirect`, `TDpdp`, `TDdescent` for target handling; `ISO0` for no isogeny
 transport and `ISO1` for a specified route. A solver's internal Macaulay
 matrix reduction belongs under `PDP`, including its RREF/M4RI/GPU kernel. It
 is not the `LA` stage. Extend the vocabulary in this file when a genuinely
@@ -336,6 +611,16 @@ F4/F5/SAT solve time, coverage, or cost per useful row are stage diagnostics.
 Label predictions and extrapolations separately from measurements. A row with
 an unverified answer is not a verified single-target result.
 
+When a wall time or a comparison has to hold across hosts or repositories,
+measure it through crypto's [ICMS](https://github.com/aburan28/crypto/blob/main/docs/ic/measurement/README.md)
+([crypto#1177](https://github.com/aburan28/crypto/pull/1177)).
+It runs one ic-bench cell per run, pinned to a reserved core with the frozen
+calibration, and records the host and the isolation level the run earned. It
+refuses a comparison whose unit, window, reference, stop rule or workload
+differ. See [Running a cell under ICMS](experiments/ic-bench/README.md#running-a-cell-under-icms),
+which also lists how this harness's figures differ from crypto's and
+crypto-autoresearcher's.
+
 Every empirical comparison must also retain stage measurements: actual base
 size and folded columns, base construction and memory, ordinary-query PDP
 status mix and cost (including failed attempts), verified relation yield,
@@ -347,44 +632,53 @@ not estimates of natural relation yield. An unverified isogeny neighbor or
 conductor guess is a proposal only: `ISO1` requires an explicit verified map,
 ordered edge links, subgroup/log transport, and charged route costs.
 
-## Model tiers
+## Hardware and placement for empirical benchmarks
 
-The owner's model-tier topology is the same in every repository; the
-reference is
-[`docs/model-tiers.md` in aburan28/crypto-autoresearcher](https://github.com/aburan28/crypto-autoresearcher/blob/main/docs/model-tiers.md).
-Here:
+For every performance or memory comparison, save a machine-readable hardware
+and execution manifest with the run receipt. Record the CPU vendor, exact
+reported model and generation or microarchitecture when independently known,
+architecture, exposed cores/threads/sockets, cache topology, kernel and OS,
+virtualization/container status, and CPU and memory cgroup limits. Record the
+physical memory technology (for example DDR4 or DDR5), speed, and channel
+configuration only when the host exposes verifiable evidence; otherwise write
+`unknown`, especially in a VM. Do not infer DIMM type from a CPU model.
 
-- **Frontier** (Claude Mythos `claude-mythos-5`, Fable 5.1 `claude-fable-5-1`)
-  and **core** (Opus 5.5 `claude-opus-5-5`, or the OpenAI, GLM and Qwen
-  equivalents) keep the reasoning: experiment design, curve and arm choice,
-  controls, analysis and interpretation, every claim, speedup and evidence
-  tier, papers, and every PR decision.
-- **Director** (Sonnet 5.5, [`experiment-director`](.claude/agents/experiment-director.md))
-  compiles a decided experiment into a frozen command card: exact argv for
-  the build (`cmake`, `cargo`) and the run (`./build/ca`, `ca_bench`,
-  `crax`, `./sage`, `cloud/` launchers), seeds, input paths with sha256,
-  output directories, timeouts, success exit codes and observable stop
-  conditions. A value the design does not give is a specification error,
-  never a default. The card format and `tools/task_card.py` (lint, prompt,
-  run, check-relay) are the same in every repository of the owner; the tool
-  is canonical in crypto-autoresearcher and copied here byte-identical, so
-  never edit the copy. In a fresh dispatch it assesses the executor's returned
-  text against the outputs on disk (`executed_as_specified`, `stopped`,
-  `impeded` or `executor_deviated`) and recommends `proceed_to_analysis`,
-  `rerun_after_infrastructure_fix`, `respecify` or `escalate`; it never
-  interprets.
-- **Mechanical** (Haiku 5.5 at effort low,
-  [`executor-mechanical`](.claude/agents/executor-mechanical.md)) runs one
-  command, `python3 tools/task_card.py run <card>`, which executes the card
-  and writes its receipt; it returns that output verbatim, computes nothing, edits no code, inputs or results, and
-  refuses any card that leaves a choice.
+Record allowed CPUs and NUMA memory nodes, the selected CPU affinity and
+memory policy, and observed page placement for the measured process. On a
+multi-node host, choose a CPU and its local memory node together, first-touch
+the working set under that policy, and verify the placement. If only one node
+is exposed, say so and do not claim a NUMA locality comparison or host-level
+isolation. CPU affinity restricts the benchmark process's placement; it does
+not reserve a core from other processes. Record any CPU throttling and relevant
+co-runners where observable.
 
-Subagents never nest in Claude Code: the main session does every dispatch,
-relays the director's card to the executor verbatim and adds nothing, then
-dispatches the director again to assess. Mechanical output is an
-observation, never a claim: every rule in this file about measurement rows,
-evidence tiers, matched rho and verification still applies before anything it
-returned is reported as a result.
+Pair variants on the same host, core/node policy, inputs, limits and warmup
+policy. Report process CPU time and wall time separately, along with peak RSS,
+operation counts, rank progress, and algorithm-specific work such as row
+fill-in. Include repeated paired runs and variability for timing claims;
+never treat one elapsed-time result alone as evidence of a solver speedup.
+Keep source and input hashes and record censored, timed-out, or memory-limited
+runs as such.
+
+## CPU performance isolation gate
+
+Treat CPU timing ratios from a contended or unverified host as exploratory.
+The [tiered benchmark service](docs/ISOLATED_BENCHMARKS.md) admits Tier 0
+host-isolated and Tier 1 instance-scoped paired comparisons under their
+separate preflight and noise gates below. A container's visible affinity mask
+establishes placement only. If the selected tier's gate fails, preserve the
+row and keep its qualified speedup unknown. Re-evaluate earlier measurements
+before assigning a tier. Correctness runs and algorithmic diagnostics may
+still run on ordinary hosts when labeled accordingly.
+
+For an IC single-target speedup on a cloud VM or Pod, use the
+[IC benchmark tier contract](docs/IC_BENCHMARK_TIERS.md). Its Tier 1 panel
+freezes at least five fresh public points after candidate selection, measures
+IC and strong rho on each same point in alternating order on one allocation,
+and records a pinned exposed CPU set and worker counts for both arms. This
+IC-specific multiworker protocol does not require physical-host isolation.
+The general benchmark service's one-CPU Tier 1 mode remains available for
+single-workload comparisons; it is not the only Tier 1 measurement path.
 
 ## Remote compute
 
@@ -401,16 +695,6 @@ working tree and copy the results back into the checkout:
   start them.
 - For whole agents on bigger machines, `cloud/modal_worker.py up NAME [--gpu
   TYPE]` starts a Cursor worker on Modal, and `status` shows it.
-- **On AWS (the default when the owner asks to run experiments remotely
-  rather than locally):** `pip install boto3`, then
-  `python3 deploy/aws/launch.py launch --region us-east-1 --allow-cidr
-  OWNER.IP/32`, then `deploy/aws/launch.py run exp [--out PATH] -- CMD`, and
-  `deploy/aws/launch.py terminate exp` when the experiment is done
-  ([`deploy/aws/README.md`](deploy/aws/README.md)). `OWNER.IP` is the
-  public address the owner connects from, never the agent VM's; ask for it
-  when it is not known. Confirm the instance type and hours with the owner
-  before `launch`, because it bills by the hour. The instance terminates
-  itself after `--hours` (default 6) in any case.
 
 If `FLEET_WORKER_NAME` is set, you are already on a fleet machine (a Runpod
 pod or a Modal worker): run locally, up to `$FLEET_CPUS` wide. Stop or kill whatever you start, never write
@@ -569,14 +853,15 @@ and `tools/curve_identity.py`. Reuse EC1 aliases and full curve UIDs across IC a
 Pollard rho; keep factor-base/isogeny candidate identities separate. Preserve
 immutable historical names and never infer exact identity from field degree alone.
 
-## Lean proofs
+## Progress metrics (daily lab report)
 
-Lean is optional here, but every Lean target that lands (a Lake project or a
-standalone `.lean` file) is checked by the repository-wide proof gate:
-`tools/lean/proof-gate.sh`, workflow `lean-proof-gate.yml`. It builds each
-target and fails any theorem whose transitive axioms include `sorryAx`, an
-unlisted `native_decide` or a user axiom. A `native_decide` a study
-deliberately trusts goes in `tools/lean/trusted-native.txt` with its reason. A
-passing gate does not show that the Lean statement is the claimed theorem.
-State that correspondence in the report. See `tools/lean/README.md`.
+`tools/progress_metrics.py` exports this repo's progress KPIs as JSONL for the lab-wide daily
+report (`/Volumes/SSD990-2/progress-metrics`). It reads committed state at `origin/<default>` and
+prints one sample per line (`metric, value, date, problem, unit, better, kind, label, source`).
 
+- When a PR adds or changes a benchmark, leaderboard, result file or ledger source that carries a
+  number worth tracking day over day, extend the exporter in the same PR. Keep metric ids stable;
+  a renamed id is a new series.
+- Never emit estimates. If a source is missing, emit nothing for it.
+- `python3 tools/progress_metrics.py --since 2026-10-01` must run in under a minute, stdlib only,
+  no builds, and never read the working tree.

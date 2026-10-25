@@ -49,8 +49,6 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 enum Action {
-    /// Solve on an exact Certicom curve with rho, BSGS, or index calculus.
-    Solve(crate::cryptanalysis::certicom_dlp_cli::SolveArgs),
     /// List catalog curves, optionally filtered by field family.
     List(ListArgs),
     /// Verify a curve's parameters (generator on curve, n·G = O, Hasse).
@@ -290,7 +288,6 @@ fn round2(x: f64) -> f64 {
 
 fn display(report: &Value) {
     match report["operation"].as_str() {
-        Some("solve") => crate::cryptanalysis::certicom_dlp_cli::display(report),
         Some("list") => {
             println!(
                 "{:<22} {:<10} {:<9} {:>10} {:>9}  regime",
@@ -519,7 +516,6 @@ fn fes_cmd(args: &FesArgs) -> Result<Value, String> {
 
 fn execute(cli: &Cli) -> Result<Value, String> {
     match &cli.command {
-        Some(Action::Solve(a)) => crate::cryptanalysis::certicom_dlp_cli::run(a),
         Some(Action::List(a)) => list(a),
         Some(Action::Inspect(a)) => inspect(&a.curve),
         Some(Action::Estimate(a)) => estimate(a),

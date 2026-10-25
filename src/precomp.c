@@ -31,10 +31,12 @@
  */
 #include "cryptanalysis/ca_precomp.h"
 #include "dlog_internal.h"
+#include "dlog_checkpoint_internal.h"
 
 #include <math.h>
 #include <pthread.h>
 #include <stdatomic.h>
+#include <time.h>
 
 #define PRECOMP_DEFAULT_R      20
 #define PRECOMP_MAX_WALKS      1024
@@ -196,6 +198,8 @@ typedef struct pc_build {
     atomic_uint_fast64_t starts;
     atomic_uint_fast64_t total_ops;
     atomic_int done;
+    pthread_mutex_t *snapshot_lock; /* protects endpoint buffers and stored count */
+    uint64_t generation;            /* changes walk streams after a restored snapshot */
 } pc_build;
 
 typedef struct pc_worker {
@@ -203,8 +207,9 @@ typedef struct pc_worker {
     uint32_t id;
     pc_entry *buf;
     size_t n, cap;
-    uint64_t merges;
+    atomic_uint_fast64_t merges;
     int err;
+    atomic_int running;
 } pc_worker;
 
 static int pc_worker_push(pc_worker *wk, uint64_t fp, uint64_t exp)
@@ -279,7 +284,8 @@ static void *pc_build_worker(void *arg)
     ca_elem idelem;
     ca_group_identity(g, &idelem);
     ca_rng rng;
-    ca_rng_seed(&rng, t->seed ^ (0x9E3779B97F4A7C15ULL * (wk->id + 1)));
+    ca_rng_seed(&rng, t->seed ^ (0x9E3779B97F4A7C15ULL * (wk->id + 1)) ^
+                      (bd->generation ? ca_mix64(bd->generation) : 0));
     for (uint32_t i = 0; i < W; i++) {
         a[i] = ca_rng_below(&rng, t->n);
         uint64_t nops = 0;
@@ -298,17 +304,21 @@ static void *pc_build_worker(void *arg)
             uint64_t h = ca_group_hash(g, &Y[i]);
             int terminal = ((h & t->dp_mask) == 0);
             if (!terminal && bd->bloom && pc_bloom_test_and_add(bd->bloom, h, 0)) {
-                wk->merges++;
+                atomic_fetch_add(&wk->merges, 1);
                 if (!pc_lane_restart(t, &rng, &Y[i], &a[i], &stepc[i], &stall[i], bd)) break;
                 continue;
             }
             if (terminal) {
-                if (pc_worker_push(wk, h, a[i]) != 0) {
+                if (bd->snapshot_lock) pthread_mutex_lock(bd->snapshot_lock);
+                int pushed = pc_worker_push(wk, h, a[i]);
+                if (pushed != 0) {
                     wk->err = 1;
                     atomic_store(&bd->done, 1);
+                    if (bd->snapshot_lock) pthread_mutex_unlock(bd->snapshot_lock);
                     break;
                 }
                 atomic_fetch_add_explicit(&bd->stored, 1, memory_order_relaxed);
+                if (bd->snapshot_lock) pthread_mutex_unlock(bd->snapshot_lock);
                 if (bd->bloom) pc_bloom_test_and_add(bd->bloom, h, 1);
                 if (!pc_lane_restart(t, &rng, &Y[i], &a[i], &stepc[i], &stall[i], bd)) break;
                 continue;
@@ -354,6 +364,7 @@ cleanup:
     free(stepc);
     free(stall);
     free(scratch);
+    atomic_store(&wk->running, 0);
     return NULL;
 }
 
@@ -379,7 +390,10 @@ static int64_t pc_build_tables(ca_precomp_table *t, const ca_elem *base, ca_rng 
 static ca_status pc_collect(ca_precomp_table *t, pc_worker *wks, uint32_t nthreads)
 {
     size_t total = 0;
-    for (uint32_t w = 0; w < nthreads; w++) total += wks[w].n;
+    for (uint32_t w = 0; w < nthreads; w++) {
+        total += wks[w].n;
+        t->merges += atomic_load(&wks[w].merges);
+    }
     if (total == 0) {
         t->ent = NULL;
         t->nent = 0;
@@ -392,7 +406,6 @@ static ca_status pc_collect(ca_precomp_table *t, pc_worker *wks, uint32_t nthrea
     for (uint32_t w = 0; w < nthreads; w++) {
         if (wks[w].n) memcpy(all + off, wks[w].buf, wks[w].n * sizeof(pc_entry));
         off += wks[w].n;
-        t->merges += wks[w].merges;
     }
     qsort(all, total, sizeof(pc_entry), pc_entry_cmp);
     size_t u = 0;
@@ -408,9 +421,141 @@ static ca_status pc_collect(ca_precomp_table *t, pc_worker *wks, uint32_t nthrea
     return CA_OK;
 }
 
-ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
-                               const ca_precomp_params *params, ca_precomp_table **out,
-                               ca_stats *st)
+/* Versioned, atomic snapshot.  The fingerprint binds the group, base and
+ * effective build settings.  A checksum catches torn or damaged artifacts. */
+typedef struct pc_ckpt_header {
+    char magic[8];
+    uint64_t version, ready, identity, seed, generation;
+    uint64_t stored, starts, ops, merges, count, bloom_words, checksum;
+} pc_ckpt_header;
+
+static uint64_t pc_checkpoint_identity(const ca_precomp_table *t, uint64_t target,
+                                       uint32_t threads, uint64_t max_ops,
+                                       size_t bloom_words)
+{
+    uint64_t base[4], v[22] = {0};
+    ca_group_decode(t->g, base, &t->base);
+    v[0] = t->g->kind; v[1] = t->g->p; v[2] = t->g->a; v[3] = t->g->b;
+    v[4] = t->g->order; v[5] = t->g->cofactor;
+    memcpy(v + 6, base, sizeof(base));
+    v[10] = t->r; v[11] = (uint64_t)t->dp_bits; v[12] = t->chain_limit;
+    v[13] = t->walks; v[14] = target; v[15] = threads; v[16] = max_ops;
+    v[17] = t->max_online_ops; v[18] = bloom_words;
+    v[19] = t->g->endo_kind; v[20] = t->g->endo_lambda;
+    v[21] = t->g->endo_c_mont;
+    return dlog_ckpt_hash(v, sizeof(v), UINT64_C(14695981039346656037));
+}
+
+static int pc_checkpoint_write(const char *path, const pc_build *bd, pc_worker *wks,
+                                uint32_t threads, uint64_t identity, int ready)
+{
+    if (!path) return 1;
+    dlog_ckpt_file f;
+    int ok = dlog_ckpt_begin(&f, path);
+    if (!ok) return dlog_ckpt_finish(&f, 0);
+    if (!ready && bd->snapshot_lock) pthread_mutex_lock(bd->snapshot_lock);
+    pc_ckpt_header h = {0};
+    memcpy(h.magic, "CAPREPC1", 8);
+    h.version = 1; h.ready = ready; h.identity = identity; h.seed = bd->t->seed;
+    h.generation = bd->generation;
+    h.count = ready ? bd->t->nent : 0;
+    h.merges = ready ? bd->t->merges : 0;
+    if (!ready) {
+        for (uint32_t i = 0; i < threads; i++) {
+            h.count += wks[i].n;
+            h.merges += atomic_load(&wks[i].merges);
+        }
+    }
+    /* Hold the endpoint lock through the stream write: this bounds memory
+     * overhead even when a table is much larger than available spare RAM. */
+    h.stored = ready ? atomic_load(&bd->stored) : h.count;
+    h.starts = atomic_load(&bd->starts); h.ops = atomic_load(&bd->total_ops);
+    h.bloom_words = bd->bloom ? bd->bloom->nwords : 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    ok = fwrite(&h, sizeof(h), 1, f.f) == 1;
+    if (ready) {
+        if (h.count) {
+            if (ok) ok = fwrite(bd->t->ent, sizeof(pc_entry), h.count, f.f) == h.count;
+            hash = dlog_ckpt_hash(bd->t->ent, h.count * sizeof(pc_entry), hash);
+        }
+    } else {
+        for (uint32_t i = 0; i < threads; i++) {
+            if (wks[i].n) {
+                if (ok) ok = fwrite(wks[i].buf, sizeof(pc_entry), wks[i].n, f.f) == wks[i].n;
+                hash = dlog_ckpt_hash(wks[i].buf, wks[i].n * sizeof(pc_entry), hash);
+            }
+        }
+    }
+    if (!ready && bd->snapshot_lock) pthread_mutex_unlock(bd->snapshot_lock);
+    for (size_t i = 0; ok && i < h.bloom_words; i++) {
+        uint64_t word = atomic_load(&bd->bloom->w[i]);
+        ok = fwrite(&word, sizeof(word), 1, f.f) == 1;
+        hash = dlog_ckpt_hash(&word, sizeof(word), hash);
+    }
+    h.checksum = hash;
+    if (ok) ok = fseek(f.f, 0, SEEK_SET) == 0 && fwrite(&h, sizeof(h), 1, f.f) == 1;
+    return dlog_ckpt_finish(&f, ok);
+}
+
+static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *wks,
+                                     uint64_t identity, uint64_t requested_seed,
+                                     int *ready)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return CA_OK;
+        ca_set_error("cannot open precomp checkpoint");
+        return CA_ERR_INTERNAL;
+    }
+    pc_ckpt_header h;
+    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
+        memcmp(h.magic, "CAPREPC1", 8) == 0 && h.version == 1 &&
+        h.ready <= 1 && h.identity == identity &&
+        (!requested_seed || h.seed == requested_seed) && h.seed != 0 &&
+        h.bloom_words == (bd->bloom ? bd->bloom->nwords : 0) &&
+        h.count <= SIZE_MAX / sizeof(pc_entry) &&
+        h.stored >= h.count && h.starts >= h.stored;
+    struct stat file_info;
+    if (ok) {
+        ok = fstat(fileno(f), &file_info) == 0 && file_info.st_size >= 0 &&
+             (uint64_t)file_info.st_size >= sizeof(h) + h.bloom_words * sizeof(uint64_t) &&
+             h.count == ((uint64_t)file_info.st_size - sizeof(h) -
+                         h.bloom_words * sizeof(uint64_t)) / sizeof(pc_entry) &&
+             ((uint64_t)file_info.st_size - sizeof(h) -
+              h.bloom_words * sizeof(uint64_t)) % sizeof(pc_entry) == 0;
+    }
+    if (!ok) { fclose(f); ca_set_error("precomp checkpoint identity or header mismatch"); return CA_ERR_INVALID; }
+    pc_entry *entries = malloc((h.count ? h.count : 1) * sizeof(*entries));
+    if (!entries) { fclose(f); return CA_ERR_NOMEM; }
+    ok = fread(entries, sizeof(*entries), h.count, f) == h.count;
+    uint64_t expected = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    hash = dlog_ckpt_hash(entries, h.count * sizeof(*entries), hash);
+    for (size_t i = 0; ok && i < h.bloom_words; i++) {
+        uint64_t word;
+        ok = fread(&word, sizeof(word), 1, f) == 1;
+        if (ok) {
+            atomic_store(&bd->bloom->w[i], word);
+            hash = dlog_ckpt_hash(&word, sizeof(word), hash);
+        }
+    }
+    ok = ok && fgetc(f) == EOF && hash == expected;
+    fclose(f);
+    if (!ok) { free(entries); ca_set_error("precomp checkpoint checksum or length mismatch"); return CA_ERR_INVALID; }
+    wks[0].buf = entries; wks[0].n = h.count; wks[0].cap = h.count;
+    atomic_store(&wks[0].merges, h.merges);
+    bd->t->seed = h.seed; bd->generation = h.generation + !h.ready;
+    atomic_store(&bd->stored, h.stored); atomic_store(&bd->starts, h.starts);
+    atomic_store(&bd->total_ops, h.ops);
+    *ready = (int)h.ready;
+    return CA_OK;
+}
+
+static ca_status pc_table_new(const ca_group *g, const ca_elem *base,
+                              const ca_precomp_params *params, const char *checkpoint,
+                              uint32_t progress_every, uint32_t checkpoint_every,
+                              int verbose, ca_precomp_table **out, ca_stats *st)
 {
     ca_precomp_params def;
     if (!params) {
@@ -463,14 +608,6 @@ ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
     if (W > PRECOMP_MAX_WALKS) W = PRECOMP_MAX_WALKS;
     t->walks = W;
 
-    ca_rng rng;
-    ca_rng_seed(&rng, t->seed);
-    int64_t setup = pc_build_tables(t, base, &rng);
-    if (setup < 0) {
-        ca_precomp_table_free(t);
-        return CA_ERR_NOMEM;
-    }
-
     /* Optional early-abort filter.  Auto-enable only when the table is built
      * to cover a non-trivial fraction of the group (large coverage factor),
      * where chains actually merge; otherwise merges are negligible and the
@@ -514,31 +651,111 @@ ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
         wks[i].bd = &bd;
         wks[i].id = i;
     }
+    pthread_mutex_t snapshot_lock;
+    int lock_initialized = 0;
+    if (checkpoint) {
+        if (pthread_mutex_init(&snapshot_lock, NULL) != 0) {
+            free(tids); free(wks); free(created);
+            if (use_bloom) pc_bloom_free(&bloom);
+            ca_precomp_table_free(t);
+            ca_set_error("cannot initialize precomp snapshot lock");
+            return CA_ERR_INTERNAL;
+        }
+        lock_initialized = 1;
+        bd.snapshot_lock = &snapshot_lock;
+    }
+    uint64_t identity = pc_checkpoint_identity(t, chains, threads, bd.max_ops,
+                                                use_bloom ? bloom.nwords : 0);
+    int ready = 0;
+    ca_status rc = checkpoint ? pc_checkpoint_load(checkpoint, &bd, wks, identity,
+                                                     params->seed, &ready) : CA_OK;
+    if (rc != CA_OK) goto finish;
+    ca_rng rng;
+    ca_rng_seed(&rng, t->seed);
+    int64_t setup = pc_build_tables(t, base, &rng);
+    if (setup < 0) { rc = CA_ERR_NOMEM; goto finish; }
+    if ((checkpoint || verbose) && !dlog_ckpt_progress(checkpoint, "precomp", ready ? "table-ready" :
+                            "build", "running", ca_now() - t0,
+                            (uint64_t)setup + atomic_load(&bd.total_ops),
+                            atomic_load(&bd.starts), ready ? wks[0].n :
+                            (size_t)atomic_load(&bd.stored), verbose)) {
+        rc = CA_ERR_INTERNAL;
+        ca_set_error("cannot persist precomp progress");
+        goto finish;
+    }
     uint32_t started = 0;
-    for (uint32_t i = 0; i < threads; i++) {
-        if (threads == 1) {
+    for (uint32_t i = 0; !ready && i < threads; i++) {
+        if (atomic_load(&bd.stored) >= chains || atomic_load(&bd.starts) >= bd.max_starts ||
+            (bd.max_ops && atomic_load(&bd.total_ops) >= bd.max_ops)) break;
+        atomic_store(&wks[i].running, 1);
+        if (threads == 1 && !checkpoint && !verbose) {
             pc_build_worker(&wks[i]);
         } else if (pthread_create(&tids[i], NULL, pc_build_worker, &wks[i]) == 0) {
             created[i] = 1;
             started++;
+        } else atomic_store(&wks[i].running, 0);
+    }
+    if (!ready && started == 0 && (threads > 1 || checkpoint || verbose) &&
+        atomic_load(&bd.stored) < chains && atomic_load(&bd.starts) < bd.max_starts &&
+        (!bd.max_ops || atomic_load(&bd.total_ops) < bd.max_ops)) {
+        atomic_store(&wks[0].running, 1);
+        pc_build_worker(&wks[0]);
+    }
+    if ((checkpoint || verbose) && started) {
+        double last_progress = t0, last_checkpoint = t0;
+        for (;;) {
+            int active = 0;
+            for (uint32_t i = 0; i < threads; i++) active |= atomic_load(&wks[i].running);
+            if (!active) break;
+            double now = ca_now();
+            if (now - last_progress >= progress_every) {
+                if (!dlog_ckpt_progress(checkpoint, "precomp", "build", "running",
+                        now - t0, (uint64_t)setup + atomic_load(&bd.total_ops),
+                        atomic_load(&bd.starts), (size_t)atomic_load(&bd.stored), verbose)) {
+                    rc = CA_ERR_INTERNAL; ca_set_error("cannot persist precomp progress");
+                    atomic_store(&bd.done, 1); break;
+                }
+                last_progress = now;
+            }
+            if (checkpoint && now - last_checkpoint >= checkpoint_every) {
+                if (!pc_checkpoint_write(checkpoint, &bd, wks, threads, identity, 0)) {
+                    rc = CA_ERR_INTERNAL; ca_set_error("cannot persist precomp checkpoint");
+                    atomic_store(&bd.done, 1); break;
+                }
+                last_checkpoint = now;
+            }
+            struct timespec wait = {.tv_sec = 0, .tv_nsec = 100000000};
+            nanosleep(&wait, NULL);
         }
     }
-    if (threads > 1 && started == 0) pc_build_worker(&wks[0]);
     for (uint32_t i = 0; i < threads; i++)
         if (created[i]) pthread_join(tids[i], NULL);
 
-    ca_status rc = CA_OK;
+    if (rc != CA_OK) goto finish;
     for (uint32_t i = 0; i < threads; i++)
         if (wks[i].err) rc = CA_ERR_NOMEM;
     if (rc == CA_OK) rc = pc_collect(t, wks, threads);
 
     t->precomp_ops = (uint64_t)setup + atomic_load(&bd.total_ops);
+    if (rc == CA_OK && checkpoint && !pc_checkpoint_write(checkpoint, &bd, wks,
+                                                            threads, identity, 1)) {
+        rc = CA_ERR_INTERNAL;
+        ca_set_error("cannot persist precomp table");
+    }
+    if (rc == CA_OK && (checkpoint || verbose) && !dlog_ckpt_progress(checkpoint, "precomp",
+                            "table-ready", "running", ca_now() - t0, t->precomp_ops,
+                            atomic_load(&bd.starts), t->nent, verbose)) {
+        rc = CA_ERR_INTERNAL;
+        ca_set_error("cannot persist precomp progress");
+    }
 
+finish:
     for (uint32_t i = 0; i < threads; i++) free(wks[i].buf);
     free(tids);
     free(wks);
     free(created);
     if (use_bloom) pc_bloom_free(&bloom);
+    if (lock_initialized) pthread_mutex_destroy(&snapshot_lock);
 
     if (rc != CA_OK) {
         ca_precomp_table_free(t);
@@ -560,6 +777,26 @@ ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
     return CA_OK;
 }
 
+ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
+                               const ca_precomp_params *params, ca_precomp_table **out,
+                               ca_stats *st)
+{
+    return pc_table_new(g, base, params, NULL, 0, 0, 0, out, st);
+}
+
+ca_status ca_precomp_table_new_checkpointed(const ca_group *g, const ca_elem *base,
+                               const ca_precomp_params *params, const char *checkpoint_path,
+                               uint32_t progress_every, uint32_t checkpoint_every,
+                               int verbose, ca_precomp_table **out, ca_stats *st)
+{
+    if (!progress_every || !checkpoint_every) {
+        ca_set_error("precomp progress and checkpoint intervals must be positive");
+        return CA_ERR_INVALID;
+    }
+    return pc_table_new(g, base, params, checkpoint_path,
+                        progress_every, checkpoint_every, verbose, out, st);
+}
+
 void ca_precomp_table_free(ca_precomp_table *t)
 {
     if (!t) return;
@@ -570,8 +807,62 @@ void ca_precomp_table_free(ca_precomp_table *t)
     free(t);
 }
 
-ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *target, uint64_t *x,
-                                 ca_stats *st)
+typedef struct pc_online_checkpoint {
+    char magic[8];
+    uint64_t version, identity, rng[4], ops, attempts, active, a, y[4], steps;
+    uint64_t done, answer, checksum;
+} pc_online_checkpoint;
+
+static uint64_t pc_online_identity(const ca_precomp_table *t, const ca_elem *target)
+{
+    uint64_t words[4], v[8] = {t->seed, t->n, t->r, (uint64_t)t->dp_bits,
+                                  t->chain_limit, t->nent, t->max_online_ops, 0};
+    ca_group_decode(t->g, words, target);
+    uint64_t h = pc_checkpoint_identity(t, t->chains, 0, 0, 0);
+    h = dlog_ckpt_hash(v, sizeof(v), h);
+    h = dlog_ckpt_hash(words, sizeof(words), h);
+    return dlog_ckpt_hash(t->ent, t->nent * sizeof(*t->ent), h);
+}
+
+static int pc_online_save(const char *path, pc_online_checkpoint *c)
+{
+    if (!path) return 1;
+    c->checksum = 0;
+    c->checksum = dlog_ckpt_hash(c, sizeof(*c), UINT64_C(14695981039346656037));
+    dlog_ckpt_file f;
+    int ok = dlog_ckpt_begin(&f, path);
+    if (ok) ok = fwrite(c, sizeof(*c), 1, f.f) == 1;
+    return dlog_ckpt_finish(&f, ok);
+}
+
+static ca_status pc_online_load(const char *path, pc_online_checkpoint *c,
+                                 uint64_t identity, const ca_precomp_table *t)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return CA_OK;
+        ca_set_error("cannot open precomp online checkpoint");
+        return CA_ERR_INTERNAL;
+    }
+    int ok = fread(c, sizeof(*c), 1, f) == 1 && fgetc(f) == EOF;
+    fclose(f);
+    uint64_t sum = c->checksum;
+    c->checksum = 0;
+    ok = ok && memcmp(c->magic, "CAONLPC1", 8) == 0 && c->version == 1 &&
+         c->identity == identity && c->attempts <= 512 && c->active <= 1 &&
+         c->done <= 1 && c->a < t->n && c->steps <= t->chain_limit &&
+         sum == dlog_ckpt_hash(c, sizeof(*c), UINT64_C(14695981039346656037));
+    if (!ok) {
+        ca_set_error("precomp online checkpoint is damaged or belongs to another run");
+        return CA_ERR_INVALID;
+    }
+    return CA_OK;
+}
+
+static ca_status pc_table_solve(const ca_precomp_table *t, const ca_elem *target,
+                                const char *checkpoint, uint32_t progress_every,
+                                uint32_t checkpoint_every, int verbose, uint64_t *x,
+                                ca_stats *st)
 {
     const ca_group *g = t->g;
     double t0 = ca_now();
@@ -595,19 +886,62 @@ ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *targe
     const uint64_t max_attempts = 512;
     uint64_t ops = 0, attempts = 0;
     ca_status rc = CA_ERR_NOT_FOUND;
+    ca_elem Y = {0};
+    uint64_t a = 0, steps = 0;
+    int active = 0;
+    pc_online_checkpoint c = {0};
+    uint64_t identity = checkpoint ? pc_online_identity(t, target) : 0;
+    if (checkpoint) {
+        ca_status load = pc_online_load(checkpoint, &c, identity, t);
+        if (load != CA_OK) return load;
+        if (c.version) {
+            memcpy(rng.s, c.rng, sizeof(rng.s));
+            ops = c.ops; attempts = c.attempts; active = (int)c.active;
+            a = c.a; steps = c.steps;
+            if (active && !ca_group_encode(g, &Y, c.y)) {
+                ca_set_error("precomp online checkpoint has an invalid walk point");
+                return CA_ERR_INVALID;
+            }
+            if (c.done) {
+                if (!ca_verify_log(g, &t->base, target, c.answer)) {
+                    ca_set_error("precomp online checkpoint answer does not verify");
+                    return CA_ERR_INVALID;
+                }
+                *x = c.answer;
+                if (!dlog_ckpt_progress(checkpoint, "precomp", "online", "complete",
+                                        ca_now() - t0, ops, attempts, t->nent, verbose)) {
+                    ca_set_error("cannot persist precomp online progress");
+                    return CA_ERR_INTERNAL;
+                }
+                if (st) { st->group_ops += ops; st->iterations += attempts;
+                          st->table_entries = ca_max_u64(st->table_entries, t->nent); }
+                return CA_OK;
+            }
+        }
+    }
+    if (checkpoint || verbose) {
+        if (!dlog_ckpt_progress(checkpoint, "precomp", "online", "running",
+                                ca_now() - t0, ops, attempts, t->nent, verbose)) {
+            ca_set_error("cannot persist precomp online progress");
+            return CA_ERR_INTERNAL;
+        }
+    }
+    double last_progress = t0, last_checkpoint = t0;
 
-    while (attempts < max_attempts) {
+    while (attempts < max_attempts || active) {
         if (t->max_online_ops && ops > t->max_online_ops) {
             rc = CA_ERR_LIMIT;
             break;
         }
-        attempts++;
-        uint64_t a = ca_rng_below(&rng, n);
-        ca_elem Y;
-        pc_base_mul(t, &Y, a, &ops);
-        ca_group_op(g, &Y, &Y, target);
-        ops++;
-        uint64_t steps = 0;
+        if (!active) {
+            attempts++;
+            a = ca_rng_below(&rng, n);
+            pc_base_mul(t, &Y, a, &ops);
+            ca_group_op(g, &Y, &Y, target);
+            ops++;
+            steps = 0;
+            active = 1;
+        }
         for (;;) {
             uint64_t h = ca_group_hash(g, &Y);
             if ((h & t->dp_mask) == 0) {
@@ -619,18 +953,65 @@ ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *targe
                         rc = CA_OK;
                     }
                 }
+                active = 0;
                 break;
             }
-            if (steps >= t->chain_limit) break;
+            if (steps >= t->chain_limit) { active = 0; break; }
             uint32_t idx = (uint32_t)(ca_mix64(h) % t->r);
             ca_group_op(g, &Y, &Y, &t->S[idx]);
             a = ca_addmod(a, t->s[idx], n);
             ops++;
             steps++;
+            if ((checkpoint || verbose) && (ops & 1023) == 0) {
+                double now = ca_now();
+                if (now - last_progress >= progress_every) {
+                    if (!dlog_ckpt_progress(checkpoint, "precomp", "online", "running",
+                                            now - t0, ops, attempts, t->nent, verbose)) {
+                        ca_set_error("cannot persist precomp online progress");
+                        rc = CA_ERR_INTERNAL; goto online_done;
+                    }
+                    last_progress = now;
+                }
+                if (checkpoint && now - last_checkpoint >= checkpoint_every) {
+                    goto save_online;
+                }
+            }
         }
         if (rc == CA_OK) break;
+        if (checkpoint && ca_now() - last_checkpoint >= checkpoint_every) {
+save_online:
+            memset(&c, 0, sizeof(c));
+            memcpy(c.magic, "CAONLPC1", 8); c.version = 1; c.identity = identity;
+            memcpy(c.rng, rng.s, sizeof(c.rng));
+            c.ops = ops; c.attempts = attempts; c.active = active;
+            c.a = a; c.steps = steps;
+            if (active) ca_group_decode(g, c.y, &Y);
+            if (!pc_online_save(checkpoint, &c)) {
+                ca_set_error("cannot persist precomp online checkpoint");
+                rc = CA_ERR_INTERNAL; goto online_done;
+            }
+            last_checkpoint = ca_now();
+            if (active) continue;
+        }
     }
 
+    if (checkpoint || verbose) {
+        memset(&c, 0, sizeof(c));
+        memcpy(c.magic, "CAONLPC1", 8); c.version = 1; c.identity = identity;
+        memcpy(c.rng, rng.s, sizeof(c.rng)); c.ops = ops; c.attempts = attempts;
+        c.active = active; c.a = a; c.steps = steps;
+        c.done = rc == CA_OK; c.answer = rc == CA_OK ? *x : 0;
+        if (active) ca_group_decode(g, c.y, &Y);
+        if (!pc_online_save(checkpoint, &c) ||
+            !dlog_ckpt_progress(checkpoint, "precomp", "online",
+                                  rc == CA_OK ? "complete" : "stopped",
+                                  ca_now() - t0, ops, attempts, t->nent, verbose)) {
+            ca_set_error("cannot persist precomp online result");
+            rc = CA_ERR_INTERNAL;
+        }
+    }
+
+online_done:
     if (st) {
         st->group_ops += ops;
         st->iterations += attempts;
@@ -641,6 +1022,25 @@ ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *targe
     if (rc == CA_ERR_NOT_FOUND)
         ca_set_error("precomputation solve: no stored distinguished point matched");
     return rc;
+}
+
+ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *target,
+                                 uint64_t *x, ca_stats *st)
+{
+    return pc_table_solve(t, target, NULL, 0, 0, 0, x, st);
+}
+
+ca_status ca_precomp_table_solve_checkpointed(const ca_precomp_table *t,
+                                 const ca_elem *target, const char *checkpoint_path,
+                                 uint32_t progress_every, uint32_t checkpoint_every,
+                                 int verbose, uint64_t *x, ca_stats *st)
+{
+    if (!progress_every || !checkpoint_every) {
+        ca_set_error("precomp online progress and checkpoint intervals must be positive");
+        return CA_ERR_INVALID;
+    }
+    return pc_table_solve(t, target, checkpoint_path, progress_every,
+                          checkpoint_every, verbose, x, st);
 }
 
 void ca_precomp_table_info(const ca_precomp_table *t, int32_t *dp_bits, uint64_t *chains,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # device_check.sh - what the host test cannot check: the campaign build on a
-# real card.  Run from ecc2k130/ on a machine with an NVIDIA GPU (sm_80+,
+# real card.  Run from ecc2k130/ on a machine with an NVIDIA GPU (sm_75+,
 # driver for CUDA 13.3).  Prints one JSON line per stage and exits non-zero on
 # the first failure.
 #

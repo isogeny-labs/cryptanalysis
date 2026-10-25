@@ -1,0 +1,161 @@
+"""Write protocol.json (run once, at freezing; the frozen file is the record).
+
+    python3 make_protocol.py --frozen-at 2026-10-19T..Z
+"""
+import json
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def main():
+    at = sys.argv[sys.argv.index('--frozen-at') + 1]
+    power = json.load(open(os.path.join(HERE, 'analysis', 'power.json')))
+    p = {
+        'id': 'volcano-n19-native-tau6-20261019',
+        'kind': 'n19-tau6-native-solve-e2e-cold-tier1',
+        'status': 'frozen',
+        'frozen_at_utc': at,
+        'frozen_before_any_timing': True,
+        'success_criterion': "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'",
+        'question': ('On E0/F_2^19 (EC1N19Ckb1h01617b86df6c, r = 130873), does replacing the tau6 arm\'s per-shift '
+                     'PolyBoRi solve (TauField.system + ideal + groebner_basis + variety) by a native enumeration of '
+                     'the same variety lower the end-to-end cold CPU cost of one complete, verified ECDLP, with every '
+                     'target, every shift system, every relation and every log unchanged?'),
+        'current_baseline': {
+            'row': 'docs/ic/BASELINES.md n=19 (volcano-ic tau-orbit dim-6 base, Sage Groebner, arm tau6)',
+            'experiment': 'experiments/volcano-ic/rho-arm-20261014 (protocol volcano-ic-n19-rho-arm-20261014)',
+            'run': 'https://github.com/aburan28/cryptanalysis/actions/runs/38520305068',
+            'commit': '3f722e2e4897d956438c6bdf2becaf62dbde2f9e',
+            'code': '../volcano-ic/tau.sage TauField(19, MODULUS, 6), TauCurve, tauDlp, tauRelation',
+            'S_cold': 5154, 'S_online': 'not separable (row)', 'cold_gap_vs_rho': '1.94e4 [1.69e4, 2.23e4]'},
+        'cost_structure_of_the_baseline': {
+            'source': '../volcano-ic/rho-arm-20261014/results/arms.jsonl (10 tau6 rows) and results/runtime-info.json',
+            'tau6_total_cpu_s_sum': 404.593, 'gb_cpu_s_sum': 402.147, 'gb_share': 0.99395,
+            'relation_search_outside_gb_cpu_s_sum': 2.421, 'linalg_cpu_s_sum': 0.0249,
+            'gb_calls_sum': 54336, 'ms_per_gb_call': 7.401, 'targets_sum': 3057, 'relations_per_ecdlp': 39,
+            'setup_cpu_s_all_arms': 0.372, 'setup_note': 'built once, outside every timed interval of that run',
+            'rank_stage': 'none: relations are collected for one target (R = aP + bQ), there is no reusable table',
+            'reading': ('the per-shift Groebner solve (system construction + PolyBoRi GB + variety, the interval '
+                        'gb_cpu_s) is 99.4% of the tau6 arm\'s CPU; it is the lever')},
+        'curve': {'id': 'EC1N19Ckb1h01617b86df6c', 'model': 'y^2 + x*y = x^3 + 1',
+                  'field': 'F_2[z]/(z^19 + z^18 + z^16 + z^11 + z^8 + z^6 + z^4 + z + 1)',
+                  'order': 523492, 'cofactor': 4, 'r': 130873, 'lambda': 41811,
+                  'generator': 'run.sage generator(cur, "E0"); must equal the archived P of runtime-info.json'},
+        'change': {
+            'summary': ('tauRelation\'s variety per shift j comes from native/src/lib.rs (Rust cdylib, ctypes) '
+                        'instead of Sage. Everything else is tau.sage\'s code: tauDlp (rng, targets, shift order, '
+                        'matrix, left kernel, verification) is called unchanged with the global tauRelation '
+                        'rebound to tauRelationNative, whose loop is tauRelation\'s line for line after the '
+                        'variety. Setup builds NativeTauField (no Boolean ring or shift systems) for TauCurve.'),
+            'exactness_argument': ('TauField.system(j, xR, b) is, coordinate by coordinate over GF(2^19), '
+                                   'S3(x1, x2, xR) = (x1 x2)^2 + xR^2 (x1^2 + x2^2) + xR x1 x2 + b with '
+                                   'x1 = sum u_i z^i and x2 = sigma^j(sum w_l z^l); its variety over F_2 is the set '
+                                   'of (u, w) in F_2^6 x F_2^6 with S3 = 0. The native code decides all 4,096 pairs '
+                                   '(S3 is affine-linear in w for fixed u, and its coefficients are affine in u), '
+                                   'so it returns the whole variety, as a set (ascending (u, w)). The order of a '
+                                   'multi-solution variety is the only freedom: an exhaustive local survey of all '
+                                   '(xR, j) finds 2,375 such systems (2,001 shift-0 swaps (a, b), (b, a)); on this '
+                                   'panel and the archived scalars the candidate meets 26, all shift-0 swaps, '
+                                   'whose order changes no count, relation or matrix row (only the order of the '
+                                   'two terms), so the gates compare rows and multiset decompositions across B '
+                                   'and N (smoke/multi_survey.json, smoke/multi_calls.json).'),
+            'native_source': 'native/src/lib.rs', 'native_tests': 'cargo test (solve == direct form == brute force S3)'},
+        'arms': {
+            'B': 'baseline: unmodified tau.sage (Sage Groebner per shift); its own process per point',
+            'N': 'candidate: tau.sage tauDlp with tauRelationNative; its own process per point',
+            'Naa': 'A/A control: a second process of N per point',
+            'NX': ('planted positive control: N plus the work it removes, redone: every shift system is also built '
+                   'and solved by Sage (TauField.system, groebner_basis, variety) and compared with the native '
+                   'variety as a set (abort on any difference), then discarded'),
+            'rho': ('matched signed-Frobenius rho of rho-arm-20261014 (rho_frob.py SageBackend, R = 16, 64 reps per '
+                    'point, walk seeds rho-arm-20261014:walk:k); S unit and gap only, never decides')},
+        'design': {
+            'panel': 'inputs/panel.json (role n19-native-heldout-v1, make_panel.py): 16 new scalars, none equal to, '
+                     'the negative of or a Frobenius image of an archived scalar or of each other',
+            'rng': 'tauDlp rng = random.Random(panel rng_seed) in every IC arm of a point, so B, N, Naa and NX draw '
+                   'the same targets and shift orders',
+            'schedule': 'schedule.json (make_schedule.py): S0 selftest, O1 archived exactness, then P00..P15, one '
+                        'segment per point with B, N, Naa, NX, rho in random.Random(2026101919 + i) order',
+            'process_model': 'one fresh Sage process per row, CPU affinity one CPU (the lowest allowed), one runner',
+            'environment': 'GitHub ubuntu-24.04 runner; sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565 '
+                           '(the baseline run\'s image); native library built on the runner by the pinned Rust '
+                           'toolchain before the schedule',
+            'time_guard': 'skip a segment (rows skipped_time_guard, verdict invalid) if elapsed + its upper estimate '
+                          'exceeds 300 min; a failed S0 or O1 stops the schedule before any timed segment',
+            'runtime_estimate': 'about 45 min: B about 40-55 s and NX about the same per point, N and Naa about 1 s, '
+                                'rho about 1 s, Sage start-up a few s per process'},
+        'intervals': {
+            'clock': 'time.process_time() (CPU, the baseline row\'s measure); perf_counter wall co-reported; '
+                     'each row records time.get_clock_info("process_time").resolution',
+            'setup': 'target-independent construction: field (TauField for B and NX, NativeTauField for N/Naa), '
+                     'TauCurve (V\' base and orbit representatives), the native context for N/Naa/NX (dlopen + '
+                     'tau6_new) and the generator',
+            'online': 'tauDlp: first target-dependent operation (tauEigen, R = aP + bQ) .. verified log '
+                      '(s * P == Q); relation search, matrix, left kernel and verification',
+            'cold': 'setup + online, one process, one point; Sage import and source loading precede it and are '
+                    'recorded by the launcher (launcher_wall_s), not charged to either arm',
+            'fixture': 'Q = s * P is built between setup and online, outside both (as in rho-arm-20261014)',
+            'online_separability': ('n = 19 has no reusable factor-log table: every relation contains Q, so the '
+                                    'one-target pipeline is setup (target independent) + online (everything else). '
+                                    'Both are timed separately in every process; online is the per-target cost '
+                                    'and S_online is reported per arm. The repeated-batch measurement below '
+                                    'covers the case where a per-process interval is too short to read'),
+            'repeated_batch': ('pre-registered secondary, labelled "repeated-batch, warm": every N and Naa process, '
+                               'after its cold interval is recorded, rebuilds setup 20 times and reruns the same '
+                               'point\'s tauDlp 3 times (same rng seed; the relations must repeat) and reports the '
+                               'mean per repetition. It never decides and never replaces a cold number')},
+        'statistics': {
+            'primary': 'R = mean over points of cold_cpu_s(B) / mean over points of cold_cpu_s(N)',
+            'interval': 'paired bootstrap over the 16 points (B and N of a point drawn together), 10,000 draws, '
+                        'numpy default_rng(20261019), 2.5/97.5 percentiles (stats.py)',
+            'primary_is': 'the END-TO-END cold ratio (setup + online); online, setup, wall, launcher wall and the '
+                          'per-call solve ratio are co-reported and never decide',
+            'secondary': ['online and setup ratios B/N, cold wall ratio, launcher wall ratio (Sage start-up included)',
+                          'solve ms per shift system per arm (gb_cpu_s / gb_calls)',
+                          'phase shares of N: native solve, rest of the relation search, linear algebra, setup',
+                          'S = cpu / (u * sqrt(r)) with u = rho CPU per group operation of this run (the row\'s unit): '
+                          'S cold, S online, S setup per arm, rho S cold',
+                          'cold gap to the matched rho: geometric mean over points of cold_cpu_s / rho cpu per solve, '
+                          'bootstrap interval',
+                          'the repeated-batch warm setup and online means of N and Naa']},
+        'decision_rule': {
+            'improvement': 'R 95% lower bound > 1 (the native tau6 solve becomes the n=19 end-to-end cold baseline)',
+            'regression': 'R 95% upper bound < 1',
+            'not_separated': 'otherwise',
+            'invalid': 'any gate or control fails, or any scheduled row is missing (time-guard skips included)'},
+        'controls': {
+            'aa': 'mean cold_cpu_s(N) / mean cold_cpu_s(Naa) inside aa_window',
+            'aa_window': [0.95, 1.05],
+            'planted': 'R_plant = mean cold(NX) / mean cold(N), paired bootstrap as the primary: 95% lower bound > 1'},
+        'gates': [
+            'every scheduled row ran, exit 0, verified (log == scalar mod r and s * P == Q)',
+            'S0: on 300 random (xR, j) systems (j = t mod 19), the Sage variety of TauField.system equals the native '
+            'variety as a set and the native brute-force S3 enumeration equals the native output',
+            'O1: the candidate on the ten archived scalars with the archived rng seeds reproduces run 38520305068\'s '
+            'tau6 targets, gb_calls, spurious, relations and log, and the archived generator P',
+            'per point: targets, gb_calls, spurious, relations and log identical across B, N, Naa and NX',
+            'per point: the relation rows (column -> sum sign lambda^e mod r, i.e. the matrix tauDlp builds) and the '
+            'decompositions as multisets of (column, sign, Frobenius power) identical across B, N, Naa and NX '
+            '(sha256); the ordered lists are recorded for all and must be identical across N, Naa, NX',
+            'per point: NX compared every shift system with Sage (checked_calls == gb_calls), no mismatch',
+            'per point: the generator equals the archived P; rho 64/64 verified; the warm batch repeats the relations',
+            'one pinned CPU for every process; one native library digest across every native process'],
+        'multiplicity': 'one primary statistic; every secondary is descriptive and never changes the verdict',
+        'power': {'file': 'analysis/power.json', 'points': power['chosen_points'], 'min_delta': power['min_delta'],
+                  'power_at_min_delta': power['power_at_min_delta'],
+                  'rejection_rate_at_no_effect': power['rejection_rate_at_no_effect'],
+                  'model': power['model'], 'note': power['note']},
+        'tier': ('Tier 1 in the n = 83 sense: one fresh GitHub-hosted runner, one pinned CPU, one fresh process per '
+                 'row, CPU-only. Not isolab; one host class; not replayed'),
+        'what_is_not_claimed': ['nothing about rho: the matched rho is the same Python/Sage walk as the baseline row '
+                                'and is not tuned for wall time',
+                                'no advance in the exponent: the change is engineering (the same algorithm, the same '
+                                'relations); the counts of the IC are unchanged by construction']}
+    json.dump(p, open(os.path.join(HERE, 'protocol.json'), 'w'), indent=1)
+    open(os.path.join(HERE, 'protocol.json'), 'a').write('\n')
+
+
+if __name__ == '__main__':
+    main()

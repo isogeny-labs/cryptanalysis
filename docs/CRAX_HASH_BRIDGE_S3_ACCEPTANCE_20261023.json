@@ -1,0 +1,83 @@
+{
+  "schema": "crax.hash-bridge-s3-acceptance/v1",
+  "checked_at_utc": "2026-10-24T05:07:29.235309+00:00",
+  "source_state": "working tree CRAx hash bridge and Streebog correction",
+  "crypto_binary_sha256": "8cfb04fa2aa4c1ff8b56fe40fb46e3631e2af285328c61f20d240be8c858f8e4",
+  "crax_binary_sha256": "027b4fdaa0269915fb81f1d4d33fb369716ca1073fda1cbf08859987b1863a94",
+  "bucket": "setec-astronomy-artifacts",
+  "region": "us-east-2",
+  "aws_profile": "ecc-challenges-new",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/20261024T050722Z-cca16974",
+  "logical_name": "evidence/crax-hash-bridge/20261024T050722Z-cca16974/input.bin",
+  "object": {
+    "key": "ic/v1/acceptance/20261024T050722Z-cca16974/sha256/aa/aa92189ea96a5dcdf2b666627f985a689e6bb3e50546f8bc0fdb4ec5de34c5e9",
+    "sha256": "aa92189ea96a5dcdf2b666627f985a689e6bb3e50546f8bc0fdb4ec5de34c5e9",
+    "bytes": 1048577
+  },
+  "checks": {
+    "remote_download_status": "bytes_ok",
+    "fresh_cache_crax_matches_crypto_local_file": {
+      "blake2b": {
+        "output_bytes": 16,
+        "digest_hex": "da0da8add81f2beab60c6c56be175175"
+      },
+      "blake2s": {
+        "output_bytes": 32,
+        "digest_hex": "a1401c33542a632c012ae99518568f9e6abf87f64f6e1ad8a2a0a8be2e680351"
+      },
+      "cshake128": {
+        "output_bytes": 32,
+        "digest_hex": "3593be7b6a49b9dd98bf1ef930ed9daa9bbb62b53d970752ed591d27fd69d400"
+      },
+      "cshake256": {
+        "output_bytes": 32,
+        "digest_hex": "0cf29ce127c801308140b0b34baf1ce3c5eb922b69eb8b7600b04ba02ec17698"
+      },
+      "sm3": {
+        "output_bytes": 32,
+        "digest_hex": "6e82d07a2597ddce647c448d74aed7070ea4af1ba8d61b72601126c9f03c3ecd"
+      },
+      "ripemd160": {
+        "output_bytes": 20,
+        "digest_hex": "db813b42fb6ba49ebd49566f2821aeecd34f59f8"
+      },
+      "streebog-256": {
+        "output_bytes": 32,
+        "digest_hex": "295ae00f7ad8059dc58b3303cef33031362cc69b32a73d663a5da833fb3ddda2"
+      },
+      "streebog-512": {
+        "output_bytes": 64,
+        "digest_hex": "b9146aa6cd54fd1863cdd111f43485210c32314964c7539c5e053435b9ec352e0f0b7c2d8ca1c57600d57ac9ca779fdca8aecfff9fc79517eb380683bf545e3b"
+      },
+      "whirlpool": {
+        "output_bytes": 64,
+        "digest_hex": "5143e05b3d5146caf2045d3e9545ff4131e481738604e839887e50228b61c44e9c9ed111adac022a1986d8152feb00c07348548561efd577edad4d3687d14501"
+      },
+      "tiger": {
+        "output_bytes": 24,
+        "digest_hex": "baae345c57fe4fda2cc33b3595b631ae9ebfcff7d0b3cd22"
+      },
+      "tiger2": {
+        "output_bytes": 24,
+        "digest_hex": "6cebb68e38f2d3610d9d46eebbc2fc96d0e494799e3f6369"
+      },
+      "skein256": {
+        "output_bytes": 32,
+        "digest_hex": "3c09daadfc0e770262f48ec1bdd29455bdf8c33f7af0850ec4fe88d355e3cee1"
+      },
+      "skein512": {
+        "output_bytes": 40,
+        "digest_hex": "27ce7eaa47cf3d7c8ef23d803c1bc8ba2628cb9c0eabff24313da81eef21f39391685269d433a422"
+      },
+      "skein1024": {
+        "output_bytes": 128,
+        "digest_hex": "308def22211f02beae05188919cff38a4a5c295689bf7464667d0339aa5b3807b765fd6fa642852977594da544b0bba2c4b650702ebcab5ea7c5b688dbd117171211c7e32be86fcaf3577bb6f65b4642b83a8bc097e016519b172b45f697cc3ec23099b9f7743dae9b8e505017e57d838b2382a48b3b125d1ed572495f6ff3e2"
+      }
+    }
+  },
+  "cleanup": {
+    "objects_deleted": 1,
+    "prefix_empty": true,
+    "errors": []
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "crax.aes-observed-bridge-acceptance/v1",
+  "checked_at_utc": "2026-10-24T05:16:49.216302+00:00",
+  "crypto_binary_sha256": "8cfb04fa2aa4c1ff8b56fe40fb46e3631e2af285328c61f20d240be8c858f8e4",
+  "crax_binary_sha256": "dec0d583a6842114cebb0970593c26fde52826fc5d3bc57a4ce2814229b52cbb",
+  "checks": {
+    "differential": {
+      "input": "docs/ic/fixtures/aes_differential_statistics_public.json",
+      "input_sha256": "e6305f6c8d43b86dfdaab178c5eefb45cd3b756ede4a6ef3c54afea67b4d6ac2",
+      "pairs_used": 2,
+      "status": "measured",
+      "report_sha256": "4469f412e061ed52369682dd8a4a7b2b2836dc8fa29c0c6aba837ef6bd043ce4",
+      "direct_equals_crax": true
+    },
+    "linear": {
+      "input": "docs/ic/fixtures/aes_linear_statistics_public.json",
+      "input_sha256": "968ebd7ff8551032acfac7536011c3ff4369e1821179b8bb2977ec780c5d2329",
+      "pairs_used": 4,
+      "status": "measured",
+      "report_sha256": "f0272387962ed802077029a9445e5177fe8259f05c632be65a479b2d5ab60b6b",
+      "direct_equals_crax": true
+    }
+  }
+}

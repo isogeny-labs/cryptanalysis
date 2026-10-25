@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run_rho(const ca_group *g, const ca_elem *gen, const ca_rho_params *p, int reps,
                     double *ratio_out)
@@ -63,6 +64,9 @@ int main(void)
     p.walks_per_thread = 3;
     p.r = 16;
     run_rho(&g, &gen, &p, 3, NULL);
+    /* User-supplied table sizes also exercise the general index path. */
+    p.r = 15;
+    run_rho(&g, &gen, &p, 3, NULL);
 
     /* tiny groups must still work (brute force path and dp_bits = 0) */
     fx_zp_safe(&g, &gen, 23);
@@ -86,6 +90,46 @@ int main(void)
     uint64_t got;
     fx_instance(&g, &gen, 424242, &h);
     CHECK(ca_rho_solve(&g, &gen, &h, &p, &got, NULL) == CA_ERR_LIMIT);
+
+    /* A capped run saves its DP corpus; a later process can raise the
+     * cumulative operation budget and continue against that corpus. */
+    {
+        char dir[] = "/tmp/ca-rho-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/rho.dp", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_rho_params rp;
+        ca_rho_params_default(&rp);
+        rp.seed = 1984;
+        rp.dp_bits = 0;
+        rp.walks_per_thread = 4;
+        rp.max_ops = 500;
+        ca_stats first = {0}, second = {0};
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, &first) == CA_ERR_LIMIT);
+        CHECK(first.table_entries > 0);
+        CHECK(access(path, F_OK) == 0);
+        CHECK(access(progress, F_OK) == 0);
+        rp.seed = 1985;
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, NULL) == CA_ERR_INVALID);
+        rp.seed = 1984;
+        rp.max_ops = 1000000;
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, &second) == CA_OK);
+        CHECK_EQ_U64(got, 424242);
+        CHECK(second.group_ops > first.group_ops);
+        FILE *f = fopen(path, "ab");
+        CHECK(f != NULL);
+        CHECK(fputc(0, f) != EOF);
+        CHECK(fclose(f) == 0);
+        CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+                                        &got, NULL) == CA_ERR_INVALID);
+        unlink(progress);
+        unlink(path);
+        rmdir(dir);
+    }
     /* Regression, fuzz/crashes/rho_kangaroo_dp_bits_shift: dp_bits at or above
      * the width of the mask used to shift a 64-bit value by >= 64. */
     for (int32_t dpb = 58; dpb <= 200; dpb += 27) {
@@ -102,6 +146,53 @@ int main(void)
             ca_elem chk;
             ca_group_mul(&g, &chk, &gen, any, NULL);
             CHECK(ca_group_equal(&g, &chk, &h));
+        }
+    }
+
+    /* Regression: the base is the identity and the target is not.  No power
+     * of the identity equals the target, and the walk never produced a
+     * collision that verifies, so it ran until max_ops (forever without
+     * one).  It must report NOT_FOUND at once. */
+    {
+        ca_elem idb, tgt;
+        ca_group_identity(&g, &idb);
+        fx_instance(&g, &gen, 12345, &tgt);
+        ca_rho_params ip;
+        ca_rho_params_default(&ip);
+        ip.seed = 3;
+        ip.max_ops = 2000000;
+        ca_stats ist = {0};
+        uint64_t ix = 0;
+        CHECK(ca_rho_solve(&g, &idb, &tgt, &ip, &ix, &ist) == CA_ERR_NOT_FOUND);
+        CHECK_EQ_U64(ist.group_ops, 0);
+        CHECK(ca_rho_solve(&g, &idb, &idb, &ip, &ix, NULL) == CA_OK);
+        CHECK_EQ_U64(ix, 0);
+    }
+
+    /* Regression: with the negation map the look-ahead rule rejects a
+     * multiplier that returns to the previous point.  When all r multipliers
+     * are rejected the scan wrapped around and repeated forever; a small
+     * user-chosen r reaches that point with probability r^-r per step (about
+     * 1/256 per point at r = 4), so most runs at r = 4 stalled until max_ops.
+     * Every run must now finish, long before 400000 ops on a group of 65k. */
+    fx_ec(&g, &gen, 65537, 1, 1);
+    for (uint32_t r = 4; r <= 5; r++) {
+        for (uint64_t seed = 1; seed <= 30; seed++) {
+            ca_rho_params sp;
+            ca_rho_params_default(&sp);
+            sp.seed = seed;
+            sp.r = r;
+            sp.dp_bits = 0;
+            sp.max_ops = 400000;
+            uint64_t sx = 0;
+            fx_instance(&g, &gen, (seed * 7919) % g.order, &h);
+            ca_status sr = ca_rho_solve(&g, &gen, &h, &sp, &sx, NULL);
+            CHECK(sr == CA_OK);
+            if (sr == CA_OK) {
+                ca_elem chk;
+                ca_group_mul(&g, &chk, &gen, sx, NULL);
+                CHECK(ca_group_equal(&g, &chk, &h));
+            }
         }
     }
     TEST_MAIN_END();
