@@ -67,3 +67,16 @@ the retained unit output. Compare only those exact traces against the
 existing read-only journal; a historical trace match is local overlap,
 not an explicit map or a publication-priority conclusion. Commit this
 addendum and the assertion before its first execution.
+
+## Addendum: transport the same kernel across the quadratic twist
+
+The separately generated kernels for a=0 and a=1 need not define twists
+of the same quotient. Preserve both existing certificates. Add a distinct
+`twist` command: over L, the isomorphism (x,y)->(x,y+u*x) sends a to a+1.
+Map every kernel point and generator; swap the two source Frobenius lines.
+On the fixed a=0,b=24 certificate verify all 27 transported points, the
+group-law identity on all 729 pairs, and F*phi=-phi*F on the kernel.
+Verify the new a=1 certificate using both arithmetic paths, then transport
+it back: phi composed with itself is the identity in characteristic two.
+This binds the kernel of a quotient and its quadratic twist, but does not
+determine which quotient is a Jacobian. Commit before the new assertions.

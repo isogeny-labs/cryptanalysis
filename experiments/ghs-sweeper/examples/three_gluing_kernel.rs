@@ -34,6 +34,11 @@ enum Command {
         #[arg(long)]
         certificate: PathBuf,
     },
+    /// Transport the same kernel across y -> y+u*x, over the quadratic field.
+    Twist {
+        #[arg(long)]
+        certificate: PathBuf,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -508,13 +513,46 @@ fn verify(cert: &Certificate) -> Result<Checks> {
     Ok(fast)
 }
 
+fn read_certificate(path: PathBuf) -> Result<Certificate> {
+    let value: serde_json::Value = serde_json::from_slice(&fs::read(path)?)?;
+    Ok(serde_json::from_value(
+        value.get("certificate").unwrap_or(&value).clone(),
+    )?)
+}
+
+fn twist_point(p: Point, f: Arithmetic<'_>) -> Point {
+    p.map(|[x, y]| [x, f.add(y, f.mul(Z(0, 1), x))])
+}
+
+fn twist_kernel(cert: &Certificate) -> Result<Certificate> {
+    verify(cert)?;
+    let f = field(cert.base_degree, cert.a, cert.b)?;
+    let ar = Arithmetic {
+        field: &f,
+        raw: None,
+    };
+    let mut target = cert.clone();
+    target.a ^= 1;
+    target.source_basis = [
+        twist_point(cert.source_basis[1], ar),
+        twist_point(cert.source_basis[0], ar),
+    ];
+    target.generators = cert.generators.map(|g| g.map(|p| twist_point(p, ar)));
+    target.kernel_points = cert
+        .kernel_points
+        .iter()
+        .map(|g| g.map(|p| twist_point(p, ar)))
+        .collect();
+    target.kernel_points.sort();
+    verify(&target)?;
+    Ok(target)
+}
+
 fn main() -> Result<()> {
     let cert = match Args::parse().command {
         Command::Generate { base_degree, a, b } => generate(base_degree, a, b)?,
-        Command::Verify { certificate } => {
-            let value: serde_json::Value = serde_json::from_slice(&fs::read(certificate)?)?;
-            serde_json::from_value(value.get("certificate").unwrap_or(&value).clone())?
-        }
+        Command::Verify { certificate } => read_certificate(certificate)?,
+        Command::Twist { certificate } => twist_kernel(&read_certificate(certificate)?)?,
     };
     let checks = verify(&cert)?;
     println!(
@@ -534,6 +572,57 @@ fn main() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn quadratic_twist_transports_the_same_kernel() -> Result<()> {
+        let cert = generate(3, 0, 24)?;
+        let target = twist_kernel(&cert)?;
+        assert_eq!(target.a, 1);
+        let f = field(3, 0, 24)?;
+        let raw = RawField {
+            degree: f.degree,
+            size: f.size,
+            modulus: f.modulus,
+            traces: Vec::new(),
+            inverses: Vec::new(),
+        };
+        for ar in [
+            Arithmetic {
+                field: &f,
+                raw: None,
+            },
+            Arithmetic {
+                field: &f,
+                raw: Some(&raw),
+            },
+        ] {
+            let source_curves = curves(&cert, ar);
+            let target_curves = curves(&target, ar);
+            for &g in &cert.kernel_points {
+                let image = g.map(|p| twist_point(p, ar));
+                let left = tuple_frobenius(image, 3, ar);
+                let right = tuple_frobenius(g, 3, ar).map(|p| twist_point(p, ar));
+                assert_eq!(
+                    left,
+                    std::array::from_fn(|i| target_curves[i].neg(right[i], ar))
+                );
+                for &h in &cert.kernel_points {
+                    let mapped_sum =
+                        tuple_plus(g, h, &source_curves, ar)?.map(|p| twist_point(p, ar));
+                    assert_eq!(
+                        mapped_sum,
+                        tuple_plus(image, h.map(|p| twist_point(p, ar)), &target_curves, ar)?
+                    );
+                }
+            }
+        }
+        let restored = twist_kernel(&target)?;
+        assert_eq!(restored.a, cert.a);
+        assert_eq!(restored.source_basis, cert.source_basis);
+        assert_eq!(restored.generators, cert.generators);
+        assert_eq!(restored.kernel_points, cert.kernel_points);
+        Ok(())
+    }
 
     fn exact_control_order(f: Arithmetic<'_>, a: u32, b: u32) -> u64 {
         let mut count = 2;
