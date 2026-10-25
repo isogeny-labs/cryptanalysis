@@ -151,7 +151,13 @@ typedef struct rho_checkpoint_header {
     uint64_t p, a, b, order, cofactor;
     uint64_t base[4], target[4];
     uint32_t kind, endo_kind, aut_order, r, dp_bits, negmap;
-    uint32_t entry_size, threads, walks;
+    uint32_t entry_size;
+    /* Reserved in the native CARHODP2 layout.  Keep both words so old
+     * checkpoints retain their exact header size and checksum offsets. */
+    // cppcheck-suppress unusedStructMember
+    uint32_t threads;
+    // cppcheck-suppress unusedStructMember
+    uint32_t walks;
     uint64_t endo_lambda, endo_c_mont;
     uint64_t seed, walk_ops, setup_ops, dps, restarts, entries, result;
     double elapsed_seconds;

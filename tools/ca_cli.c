@@ -731,7 +731,7 @@ static int ic_dir_empty(const char *dir)
 {
     DIR *d = opendir(dir);
     if (!d) return 0;
-    struct dirent *e;
+    const struct dirent *e;
     int empty = 1;
     while ((e = readdir(d))) {
         if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..") &&
