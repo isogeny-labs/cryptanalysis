@@ -16,6 +16,7 @@ from pathlib import Path
 TOOL = Path(__file__).resolve().parent / "artifacts.py"
 sys.path.insert(0, str(TOOL.parent))
 import artifacts  # noqa: E402
+import wire_workflows  # noqa: E402
 
 
 def sh(cwd, *argv, check=True, env=None):
@@ -216,6 +217,22 @@ class S3Argv(unittest.TestCase):
     def test_rejects_non_digest(self):
         with self.assertRaises(SystemExit):
             artifacts.object_key("../../etc/passwd")
+
+
+class WorkflowPaths(unittest.TestCase):
+    def test_unrelated_sibling_does_not_pull_whole_archive(self):
+        moved = {"ecc2k130/research/runs/result.jsonl"}
+        dirs = {"ecc2k130", "ecc2k130/research", "ecc2k130/research/runs"}
+        text = "path: ecc2k130/build/cuda\nrun: ecc2k130/scripts/fetch_cuda.sh"
+        self.assertEqual(wire_workflows.needed(text, moved, dirs), [])
+
+    def test_named_file_and_directory_are_pulled(self):
+        moved = {"research/runs/result.jsonl"}
+        dirs = {"research", "research/runs"}
+        self.assertEqual(wire_workflows.needed("run: cat research/runs/result.jsonl", moved, dirs),
+                         ["research/runs/result.jsonl"])
+        self.assertEqual(wire_workflows.needed("run: cat research/runs/*", moved, dirs),
+                         ["research/runs"])
 
 
 if __name__ == "__main__":

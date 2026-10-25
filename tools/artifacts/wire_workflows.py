@@ -47,9 +47,9 @@ def needed(text: str, moved: set[str], dirs: set[str]) -> list[str]:
     found = set()
     for m in PATH_RE.finditer(text):
         p = m.group(1).split("*", 1)[0].rstrip("/.")
-        while p and p not in moved and p not in dirs:
-            p = p.rsplit("/", 1)[0] if "/" in p else ""
-        if p:
+        # A path beside stored data does not need its parent's entire archive.
+        # Only pull when the workflow names a stored object or its directory.
+        if p in moved or p in dirs:
             found.add(p)
     return sorted(p for p in found if not any(p.startswith(q + "/") for q in found))
 
