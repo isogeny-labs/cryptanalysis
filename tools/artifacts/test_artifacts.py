@@ -148,6 +148,21 @@ class RoundTrip(unittest.TestCase):
         self.git("commit", "-qm", "move it")
         self.assertEqual(self.art("check", base).returncode, 0)
 
+    def test_pull_creates_missing_parent_in_blobless_sparse_clone(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        self.git("commit", "-qm", "move data into store")
+        self.git("config", "uploadpack.allowFilter", "true")
+
+        clone = Path(self.tmp.name) / "pull-blobless"
+        sh(self.tmp.name, "git", "clone", "-q", "--filter=blob:none", "--sparse",
+           self.repo.as_uri(), str(clone), env=self.env)
+        dest = clone / "research/r1/runs/a.jsonl"
+        self.assertFalse(dest.parent.exists())
+
+        self.art("pull", "research/r1/runs/a.jsonl", cwd=clone)
+        self.assertEqual(dest.read_bytes(), self.big)
+        self.assertEqual(sh(clone, "git", "status", "--porcelain").stdout, "")
+
     def test_check_gate_in_blobless_sparse_clone(self):
         runs = self.repo / "research" / "r1" / "runs"
         (runs / "new.jsonl").write_bytes(os.urandom(100_000))
