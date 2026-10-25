@@ -90,6 +90,28 @@ start by `.claude/hooks/lead-atlas-brief.sh`) says whether anything changed
 since its last review. Run `--match "<idea>"` before proposing an ECDLP
 mechanism, and update the lead a landed result advances.
 
+## Local LMFDB curve catalog
+
+When LMFDB catalog data could answer a curve, isogeny, genus 2, or finite-field
+abelian-variety question, use the local indexes described by
+[the LMFDB query skill](.agents/skills/lmfdb-local-query/SKILL.md) before
+fetching the same data remotely. On the Mac with the NAS mounted, start with:
+
+```sh
+/Users/adamburan/.pyenv/versions/3.9.10/bin/python3 tools/lmfdb/query.py \
+  --dataset-dir /Volumes/SSD990/llm/tmp/lmfdb-query-cache-20261025 --list
+```
+
+The NAS source is `/Volumes/data/workspaces/lmfdb-agent-query-20261019/data/`.
+Check its mount and complete manifests if the SSD cache is unavailable. Cite
+the source, extraction time, and exact label in research artifacts. The
+`av_fq` index contains isogeny classes rather than individual curves. An
+LMFDB label alone does not identify a cryptographic challenge: verify the
+field, equation, subgroup order, cofactor, generator, and target metadata.
+The archive and read-only LAN service are documented in
+`/Volumes/data/workspaces/lmfdb-network-20261025/README.md`; the service
+waits for a valid archive `COMPLETE.json` before opening its endpoint.
+
 ## Research searches must leave visual reports
 
 For every substantive search for new isogenies, curves, scalar rules,
