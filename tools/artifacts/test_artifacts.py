@@ -148,6 +148,24 @@ class RoundTrip(unittest.TestCase):
         self.git("commit", "-qm", "move it")
         self.assertEqual(self.art("check", base).returncode, 0)
 
+    def test_check_gate_in_blobless_sparse_clone(self):
+        runs = self.repo / "research" / "r1" / "runs"
+        (runs / "new.jsonl").write_bytes(os.urandom(100_000))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "add data in an omitted directory")
+        self.git("config", "uploadpack.allowFilter", "true")
+
+        clone = Path(self.tmp.name) / "blobless"
+        sh(self.tmp.name, "git", "clone", "-q", "--filter=blob:none", "--sparse",
+           self.repo.as_uri(), str(clone), env=self.env)
+        sh(clone, "git", "config", "core.abbrev", "7")
+        self.assertFalse((clone / "research").exists())
+
+        result = self.art("check", "HEAD^", "HEAD", check=False, cwd=clone)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("research/r1/runs/new.jsonl", result.stdout)
+        self.assertNotIn("not a valid object name", result.stderr)
+
 
 class Policy(unittest.TestCase):
     P = artifacts.DEFAULT_POLICY
