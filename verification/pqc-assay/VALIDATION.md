@@ -12,6 +12,7 @@ This is correctness validation. No performance measurement or comparison was mad
 | Wrong specifications are rejected for the intended reason | Verified | two LLVM counterexamples and two mathematical `Invalid` models |
 | Wrong production functions are rejected | Verified | add and subtract source mutants both rejected with solver counterexamples |
 | Existing arithmetic tests | Verified | existing `test_modarith.c`: `ok: 404488 checks` |
+| Lean reduced-input arithmetic transcription | Verified locally | `lean/Modarith.lean`, Lean 4.34.1; 2 theorems, 0 failing, 0 trusted, transitive axioms `propext` and `Quot.sound` |
 | Shell and workflow syntax | Verified | ShellCheck 0.10.0 and actionlint 1.7.12 exited 0 |
 | Other functions, Isabelle proofs and side channels | Not attempted | outside this port's two-function scope |
 
@@ -70,3 +71,32 @@ Other initial-head failures do not inspect changed production code:
 Those checks remain merge gates. The port does not suppress their findings
 or change their policies. Merge is authorized, but remains pending successful
 applicable checks.
+
+## Lean arithmetic follow-up, 2026-10-25
+
+The standalone [`lean/Modarith.lean`](lean/Modarith.lean) adds two reduced-input
+theorems without changing the pinned production C or Cryptol source. The Nat
+models represent unsigned 64-bit wrap at each C operation that can wrap.
+`PqcAssay.cAdd64_correct` states addition equals `(a+b)%m`;
+`PqcAssay.cSub64_correct` states subtraction equals `(a+m-b)%m`. Both assume
+`0<m<2^64`, `a<m`, and `b<m`. The model-to-header correspondence was checked
+by reading the C branch expressions; the Lean proof alone does not certify
+that correspondence. SAW remains the machine check of compiled C against the
+independent widened Cryptol models.
+
+For addition, `a+b<2m`, so at most one subtraction of `m` is needed. If the
+64-bit sum does not wrap, the comparison with `m` performs exactly that
+subtraction when needed. If it wraps, the wrapped sum is less than `a` because
+`b<2^64`; the carry branch adds back `2^64` before subtracting `m`, yielding
+`a+b-m` in `[0,m)`. For subtraction, `a>=b` returns `a-b`; otherwise
+`a+(m-b)=a+m-b` lies in `[0,m)`, so the unsigned addition cannot wrap.
+
+Local `TMPDIR=/var/tmp tools/lean/proof-gate.sh --out ...
+verification/pqc-assay/lean/Modarith.lean` exited 0. The audit reported
+`PASS`, two theorems, zero failing and zero trusted. Each theorem has exactly
+the reported transitive axioms `propext` and `Quot.sound`; there is no
+`sorry`, user axiom or `native_decide`. The Lean source SHA-256 is
+`83c8a9ec8cd48f0c49d686ad551977d170130b06b726cf0bd002227a89036170`;
+the pinned toolchain file SHA-256 is
+`d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b`.
+The hosted proof gate on this new PR head is still required before merge.

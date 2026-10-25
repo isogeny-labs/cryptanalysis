@@ -18,7 +18,10 @@ For all 64-bit unsigned a, b, m with `m != 0`, `a < m`, and `b < m`:
 The widened additions cannot overflow: each operand is at most 64 bits.
 The subtraction expression is nonnegative because b < m. The models are
 written independently using widened arithmetic. Both mathematical properties
-are SAW/z3 proofs, not Isabelle theorems. Every implementation obligation and
+are SAW/z3 proofs. A separate Lean 4 arithmetic layer checks the same modular
+results for explicit unsigned-wrap transcriptions of the C branches; it does
+not replace the SAW implementation proof or establish a C-to-Lean refinement.
+Every implementation obligation and
 mathematical property has a wrong-output control that must produce a solver
 counterexample. `mutations.sh` also compiles copies of the actual header with
 wrong add and subtract expressions; the unchanged proofs must reject both.
@@ -28,6 +31,24 @@ The nonempty domain includes m = 1, zero operands, unequal operands and
 The proof says nothing about unreduced operands, modulus zero, multiplication,
 Montgomery reduction, group operations, solvers, timing or side channels.
 
+### Lean proof map
+
+[`lean/Modarith.lean`](lean/Modarith.lean) uses Lean 4.34.1 with only `Init`.
+`U = 2^64`, and every theorem assumes `0 < m < U`, `a < m`, and `b < m`.
+The corresponding SAW domain is `m != 0`, `a < m`, `b < m` for 64-bit words.
+
+| C operation | Lean model and theorem | Exact statement |
+| --- | --- | --- |
+| `ca_addmod` | `PqcAssay.cAdd64`, `PqcAssay.cAdd64_correct` | `(a+b) % m` after 64-bit input and conditional-result wrapping |
+| `ca_submod` | `PqcAssay.cSub64`, `PqcAssay.cSub64_correct` | `(a+m-b) % m` after 64-bit else-branch wrapping |
+
+The Lean definitions transcribe the header's unsigned addition, comparison,
+subtraction and wrap points. A human review still connects those definitions
+to C; SAW independently checks the compiled header against the widened
+Cryptol models. The repository Lean gate compiles both theorems and rejects
+transitive axioms beyond Lean's standard foundations. No `sorry`, custom
+axiom or `native_decide` is used.
+
 ## Reproduce
 
 Linux x86_64, clang 19.1.7, git, curl, tar and sha256sum:
@@ -36,6 +57,7 @@ Linux x86_64, clang 19.1.7, git, curl, tar and sha256sum:
 verification/pqc-assay/setup.sh
 verification/pqc-assay/verify.sh
 verification/pqc-assay/mutations.sh
+tools/lean/proof-gate.sh verification/pqc-assay/lean/Modarith.lean
 ```
 
 CI uses Debian 13's `clang-19=1:19.1.7-3+b1`. `CLANG` can select that
