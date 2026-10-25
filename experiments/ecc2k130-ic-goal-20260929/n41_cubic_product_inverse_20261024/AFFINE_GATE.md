@@ -4,7 +4,7 @@ The affine gate rejects **248,145 of 248,640** frozen first-two-code families be
 
 ## Exact workload and method
 
-The field is `GF(2^41)` with modulus `t^41+t^3+1`; the curve is `y^2+xy=x^3+x^2+1`, curve ID `EC1N41Ckb1h7d5e80d3c4d0`, and the DLP subgroup order is `549756390943`. The frozen raw target is `(1970584690684,115750356512)`. The last three pair states are fixed at IDs `(14,109,51)`, and the fourth pair ranges over all 160 states in [target_table.json](../n41_four_code_suffix_quotient_20261024/target_table.json). Every chart is paired with the 1,554 admissible first-two code families in `cases.jsonl`, yielding 248,640 families. The third pair has 40 admissible source products in a seven-dimensional binary span.
+The field is `GF(2^41)` with modulus `t^41+t^3+1`; the curve is `y^2+xy=x^3+1`, curve ID `EC1N41Ckb1h7d5e80d3c4d0`, and the DLP subgroup order is `549756390943`. The frozen raw target is `(1970584690684,115750356512)`. The last three pair states are fixed at IDs `(14,109,51)`, and the fourth pair ranges over all 160 states in [target_table.json](../n41_four_code_suffix_quotient_20261024/target_table.json). Every chart is paired with the 1,554 admissible first-two code families in `cases.jsonl`, yielding 248,640 families. The third pair has 40 admissible source products in a seven-dimensional binary span.
 
 For each first-two sum root and residual target chart, the exact third-product inverse is
 
