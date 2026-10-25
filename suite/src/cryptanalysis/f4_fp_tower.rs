@@ -2058,7 +2058,10 @@ mod tests {
     fn the_kernels_agree_with_exact_arithmetic() {
         use rand::{Rng, SeedableRng};
         let mut rng = rand::rngs::StdRng::seed_from_u64(5);
+        #[cfg(target_arch = "x86_64")]
         let mut lanes = vec![Lanes::Scalar];
+        #[cfg(not(target_arch = "x86_64"))]
+        let lanes = vec![Lanes::Scalar];
         #[cfg(target_arch = "x86_64")]
         {
             if std::is_x86_feature_detected!("avx2") {

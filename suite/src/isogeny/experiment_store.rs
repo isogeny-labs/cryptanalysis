@@ -246,9 +246,10 @@ impl RemoteStore {
                 let lock = OpenOptions::new()
                     .write(true)
                     .create(true)
+                    .truncate(false)
                     .open(root.join(".remote.lock"))
                     .map_err(|e| e.to_string())?;
-                lock.try_lock()
+                fs2::FileExt::try_lock_exclusive(&lock)
                     .map_err(|e| format!("remote isogeny head is being written: {e}"))?;
                 let current = self.read_head()?;
                 if current.as_ref().map(|h| h.etag.as_str()) != prior.map(|h| h.etag.as_str()) {

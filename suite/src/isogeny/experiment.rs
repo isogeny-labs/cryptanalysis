@@ -141,7 +141,7 @@ pub(super) fn write_atomic_bytes(path: &Path, bytes: &[u8]) -> Result<(), String
         .create_new(true)
         .open(&temp)
         .map_err(|e| format!("{}: {e}", temp.display()))?;
-    file.write_all(&bytes).map_err(|e| e.to_string())?;
+    file.write_all(bytes).map_err(|e| e.to_string())?;
     file.sync_all().map_err(|e| e.to_string())?;
     fs::rename(&temp, path).map_err(|e| format!("{}: {e}", path.display()))?;
     #[cfg(unix)]
@@ -218,9 +218,10 @@ pub fn run_experiment_checkpointed_remote(
         .read(true)
         .write(true)
         .create(true)
+        .truncate(false)
         .open(&lock_path)
         .map_err(|e| format!("{}: {e}", lock_path.display()))?;
-    lock.try_lock()
+    fs2::FileExt::try_lock_exclusive(&lock)
         .map_err(|e| format!("experiment state directory is already in use: {e}"))?;
 
     let curves = generate_random_curves(cfg.bits, cfg.num_curves, cfg.seed);
