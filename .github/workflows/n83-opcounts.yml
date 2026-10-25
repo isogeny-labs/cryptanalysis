@@ -86,7 +86,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          want="$(grep -o 'PINS.sha256` (this commit) | `[0-9a-f]\{64\}' "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
+          want="$(grep -o "PINS.sha256\` (this commit) | \`[0-9a-f]\\{64\\}" "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
           echo "$want  $OPCOUNTS/PINS.sha256" | sha256sum -c -
           grep -v 'derived/' "$OPCOUNTS/PINS.sha256" | sha256sum -c -
 

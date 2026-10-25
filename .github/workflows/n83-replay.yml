@@ -49,7 +49,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          want="$(grep -o 'replay.py` (driver and analysis, this commit) | `[0-9a-f]\{64\}' "$REPLAY/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
+          want="$(grep -o "replay.py\` (driver and analysis, this commit) | \`[0-9a-f]\\{64\\}" "$REPLAY/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
           echo "$want  $REPLAY/replay.py" | sha256sum -c -
 
       - name: Record the host class
