@@ -1,0 +1,149 @@
+{
+  "import": {
+    "historical_source_hashes": {
+      "__init__.py": "a4c4c4772d48704d0aa3730307134dca24d6dbd57bf00095726e92ca18342bab",
+      "__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+      "cli.py": "fb2e859e4941ad1d107428818cabe28ef32bb7b22ad21b53f0a83829f8e0730f",
+      "fields.py": "e4411da8747d67f945dd90d69f4ebc75b737aea90401c684e65f09be16400536",
+      "journal.py": "79ba59ace72458f45fae45a97b1fc9683aa7f973e938954c697c24020c8093d5",
+      "prior.py": "293f4d997a83d2543f569c15ae5cbc58b503a529eb922f77aab9dea97f71e9e6",
+      "search.py": "88b7ac90fdcc50c962d8a17d542d380389fb50b5d2553a7f22e7035f58509ca6",
+      "sources.py": "7ec30cb49fb25674596491a7c5a2f6cc70f4ffae4221273ac5879370f614d7e6",
+      "verify.py": "4cd2010098973257dba4526333afb771e02319634f6ba825b3b1629e1d7dd461"
+    },
+    "imported_complete_jobs": 9,
+    "input_sha256": "a36045c6b22b601f70e192b44c1c72e2fd820a9a7d93db6dee5b7a79e455bc67",
+    "origin": "python-prototype",
+    "policy": "Historical coverage preserved and timed separately; raw checks, source matches and reviews must be redone in Rust. Pending/running/failed historical work becomes pending."
+  },
+  "status": {
+    "candidates_with_reviews": 0,
+    "candidates_with_source_models": 0,
+    "complete": true,
+    "engine": "binary-ordinary-1-plus-N-rust-v1",
+    "engine_matches_journal": true,
+    "failures": [],
+    "historical_import": {
+      "historical_source_hashes": {
+        "__init__.py": "a4c4c4772d48704d0aa3730307134dca24d6dbd57bf00095726e92ca18342bab",
+        "__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+        "cli.py": "fb2e859e4941ad1d107428818cabe28ef32bb7b22ad21b53f0a83829f8e0730f",
+        "fields.py": "e4411da8747d67f945dd90d69f4ebc75b737aea90401c684e65f09be16400536",
+        "journal.py": "79ba59ace72458f45fae45a97b1fc9683aa7f973e938954c697c24020c8093d5",
+        "prior.py": "293f4d997a83d2543f569c15ae5cbc58b503a529eb922f77aab9dea97f71e9e6",
+        "search.py": "88b7ac90fdcc50c962d8a17d542d380389fb50b5d2553a7f22e7035f58509ca6",
+        "sources.py": "7ec30cb49fb25674596491a7c5a2f6cc70f4ffae4221273ac5879370f614d7e6",
+        "verify.py": "4cd2010098973257dba4526333afb771e02319634f6ba825b3b1629e1d7dd461"
+      },
+      "imported_complete_jobs": 9,
+      "input_sha256": "a36045c6b22b601f70e192b44c1c72e2fd820a9a7d93db6dee5b7a79e455bc67",
+      "origin": "python-prototype",
+      "policy": "Historical coverage preserved and timed separately; raw checks, source matches and reviews must be redone in Rust. Pending/running/failed historical work becomes pending."
+    },
+    "independently_checked_candidates": 0,
+    "local_source_isogeny_or_twist_class_overlaps": 174,
+    "new_catalogue_entries": 0,
+    "plan_hash": "08d70d153fed2f0d4ec6e69d8fd5ecd71b75f2e55739bc514af4fbf732fde873",
+    "previously_recorded_local_spectral_candidates": 6,
+    "publication_novelty_established": false,
+    "rho_is_acceptance_gate": false,
+    "schema_version": 1,
+    "scope": "Ordinary binary hyperelliptic w^2+w=A*x+c+R/H with pole pattern 1+N. Exhaustive only within this model family modulo affine x changes. Necessity for genus-N covers assumes ordinary E and simple Res(E); simplicity, explicit maps and subgroup transfer are not checked.",
+    "searches": [
+      {
+        "base_degree": 1,
+        "candidates": 6,
+        "complete": true,
+        "denominator_representatives": 3,
+        "genus": 5,
+        "historical_worker_wall_seconds": 0.0019418430092628114,
+        "irreducible_denominators": 6,
+        "jobs": {
+          "complete": 3,
+          "failed": 0,
+          "pending": 0,
+          "running": 0
+        },
+        "models_examined": 186,
+        "normalized_models": 186,
+        "orbit_sizes": [
+          2
+        ],
+        "q": 2,
+        "relative_degree": 5,
+        "source_field_size": 32,
+        "survivors_by_extension_degree": [
+          90,
+          42,
+          18,
+          6,
+          6
+        ],
+        "walsh_entries": 32,
+        "worker_wall_seconds": 0.0
+      },
+      {
+        "base_degree": 2,
+        "candidates": 108,
+        "complete": true,
+        "denominator_representatives": 3,
+        "genus": 3,
+        "historical_worker_wall_seconds": 0.014108231996942777,
+        "irreducible_denominators": 20,
+        "jobs": {
+          "complete": 3,
+          "failed": 0,
+          "pending": 0,
+          "running": 0
+        },
+        "models_examined": 1134,
+        "normalized_models": 1134,
+        "orbit_sizes": [
+          4,
+          12
+        ],
+        "q": 4,
+        "relative_degree": 3,
+        "source_field_size": 64,
+        "survivors_by_extension_degree": [
+          414,
+          108,
+          108
+        ],
+        "walsh_entries": 256,
+        "worker_wall_seconds": 0.0
+      },
+      {
+        "base_degree": 3,
+        "candidates": 918,
+        "complete": true,
+        "denominator_representatives": 3,
+        "genus": 3,
+        "historical_worker_wall_seconds": 0.9835225039932993,
+        "irreducible_denominators": 168,
+        "jobs": {
+          "complete": 3,
+          "failed": 0,
+          "pending": 0,
+          "running": 0
+        },
+        "models_examined": 21462,
+        "normalized_models": 21462,
+        "orbit_sizes": [
+          56
+        ],
+        "q": 8,
+        "relative_degree": 3,
+        "source_field_size": 512,
+        "survivors_by_extension_degree": [
+          5838,
+          918,
+          918
+        ],
+        "walsh_entries": 4096,
+        "worker_wall_seconds": 0.0
+      }
+    ],
+    "total_candidates": 1032
+  }
+}

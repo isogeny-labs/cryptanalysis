@@ -1,0 +1,421 @@
+{
+  "schema": "cryptanalysis.ghs_quartic_cm_artifacts/v1",
+  "path_root": "repository",
+  "scientific_source_commits": {
+    "published_O3_census": "15e0c097d08216a3bfb3972f6264c1f163cd53f6",
+    "CM_v1": "214ebc91c7a77154be87c3c8cfd0e3e902af0ca0",
+    "automorphisms": "43f833b0b30062697bfc9760bf83f0ade755059c",
+    "CM_discriminant_and_Lean": "4d9121c8c5edba6274c106e7b023b14304ad0486"
+  },
+  "report_and_validated_lint_revision": "f3744f350e7a7acdeb65efcb87bc1b2295e05cee",
+  "source_version_note": "Frozen scientific receipts bind their original sources. Current cubic_cm.rs and quartic_cubic.rs include lint-only changes recorded in README.md.",
+  "new_local_source_trace_classes": [
+    -35,
+    35
+  ],
+  "novel_affected_family_established": false,
+  "evaluated_map_or_log_transfer": false,
+  "partial_Lean_formalization": true,
+  "historical_manifests_and_version_transitions": {
+    "manifests": [
+      {
+        "manifest": "experiments/ghs-sweeper/scope-checks/artifact-manifest.json",
+        "sha256": "e33991acd83108abd2a857e3e577dd44ad22b5d2ba34256374d000497d21830a",
+        "entries": 32,
+        "live_byte_identical": 32
+      },
+      {
+        "manifest": "experiments/ghs-sweeper/three-gluing-checks/artifact-manifest.json",
+        "sha256": "2e51ce96d1b31346c5818056fec0f50ea136b12ab198f7fb90713f0430a0c6ad",
+        "entries": 30,
+        "live_byte_identical": 30
+      },
+      {
+        "manifest": "experiments/ghs-sweeper/kernel-checks/artifact-manifest.json",
+        "sha256": "a526633579a9a6de530a3165fdaa068b564f17649843428fe9f26f5d620adb1e",
+        "entries": 63,
+        "live_byte_identical": 63
+      },
+      {
+        "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+        "sha256": "f83024343ffaf6f574f25016a6117045624c43f16613f8308d6faf4de62a1d91",
+        "entries": 89,
+        "live_byte_identical": 85
+      },
+      {
+        "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/additional-artifact-manifest.json",
+        "sha256": "77d4e8c8d03622b4fc9aae0bead9330417a0a57196f542e5ae425e7091e73209",
+        "entries": 15,
+        "live_byte_identical": 15
+      }
+    ],
+    "explicit_version_transitions": [
+      {
+        "path": ".github/workflows/lean-proof-gate.yml",
+        "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+        "original_commit": "9ddbe2c6",
+        "original_sha256": "33f54aca34e310dad1f9cbd416523ca73567aff70a8732957b0eea13f59e736c",
+        "new_sha256": "e5d268d8420daeb53bc50f195a2a36847f9bc2ea44ac52829b6b517568ef34b8"
+      },
+      {
+        "path": "problems/binary-cubic-gluing-target-and-novelty.md",
+        "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+        "original_commit": "9ddbe2c6",
+        "original_sha256": "1f9bae537d419dca424fe229798f6cc6590ff82e671ea33c63d7188b507bbe35",
+        "new_sha256": "fcc05bff9a8db8b123097dc67ed899e5c36971690b6d94d58f609fb53f909182"
+      },
+      {
+        "path": "tools/lean/README.md",
+        "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+        "original_commit": "9ddbe2c6",
+        "original_sha256": "5fe202341a8b963422b955154654839f2f4c7a435c2bc76f018fc915b53edbe0",
+        "new_sha256": "48b73369b713aa34d12bc25dc1485c64ca8cd4fbf27209528c00b82a513c92be"
+      },
+      {
+        "path": "tools/lean/current-corpus-gate.py",
+        "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+        "original_commit": "9ddbe2c6",
+        "original_sha256": "0b1ab1e2acfde0a13dd528ffba7f3173288457336a62d3fb676f4776ce6bdc2b",
+        "new_sha256": "9615d45b805bd9442f59e88d1a20f6b9a3519439d1993be80ae379898030efb9"
+      }
+    ]
+  },
+  "files": {
+    ".github/workflows/lean-proof-gate.yml": {
+      "bytes": 1767,
+      "sha256": "e5d268d8420daeb53bc50f195a2a36847f9bc2ea44ac52829b6b517568ef34b8"
+    },
+    "experiments/ghs-sweeper/.gitattributes": {
+      "bytes": 757,
+      "sha256": "0fbfa352698181caf44713c3dd99cb3de1c78454f3c5bd829cbdf093cd3b7864"
+    },
+    "experiments/ghs-sweeper/CUBIC_CM_CHECKS.md": {
+      "bytes": 2389,
+      "sha256": "485ee6a15918c9710547789238e21370be5130b71c4836c094b0101ee60d6f0d"
+    },
+    "experiments/ghs-sweeper/CUBIC_CM_DISCRIMINANT.md": {
+      "bytes": 6557,
+      "sha256": "74613421583a0e4adb495f54f02ebfd0f229f7ac8039d6e66b7124554879cbab"
+    },
+    "experiments/ghs-sweeper/CUBIC_CM_DISCRIMINANT.pdf": {
+      "bytes": 38559,
+      "sha256": "80202463199cce57e8b2e7304008b76eb4cfc8cd9f318eb10d412994d4c3502a"
+    },
+    "experiments/ghs-sweeper/CUBIC_CM_DISCRIMINANT_CHECKS.md": {
+      "bytes": 1859,
+      "sha256": "932b353e377e072c27862d89f1e764ad64c731537002148089c3090f3f7673b9"
+    },
+    "experiments/ghs-sweeper/QUARTIC_AUTOMORPHISM_CHECKS.md": {
+      "bytes": 1406,
+      "sha256": "f3a00cdd53289479a07f50187a0e0597d84671358acc86e70bc3a1ce9d9e1ef0"
+    },
+    "experiments/ghs-sweeper/QUARTIC_CUBIC_CHECKS.md": {
+      "bytes": 3134,
+      "sha256": "3f0bf229675c43612cf9543c6b16170ac4409ca3f9bbb9a36a31f591008a52d6"
+    },
+    "experiments/ghs-sweeper/QUARTIC_CUBIC_RESULTS.md": {
+      "bytes": 8871,
+      "sha256": "d4150c150e051a92af9dc60b83bb1329ad35bd251d2c9f2f92c8009a6e6a2888"
+    },
+    "experiments/ghs-sweeper/QUARTIC_CUBIC_RESULTS.pdf": {
+      "bytes": 61618,
+      "sha256": "6f19d00690a2ef52b003303f6bcda590d28c7e47514d3375b88f71d501bf1814"
+    },
+    "experiments/ghs-sweeper/cm-formal/.gitignore": {
+      "bytes": 8,
+      "sha256": "5375c2c5e323f40c0031aa8c82f66bb9197214001039e6a8c9ff2a5eb3aa24a9"
+    },
+    "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": {
+      "bytes": 1799,
+      "sha256": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f"
+    },
+    "experiments/ghs-sweeper/cm-formal/README.md": {
+      "bytes": 1630,
+      "sha256": "d90ec6585a35ac5e34424601f632c53a290ba3e7a31cb2d6b174d483ef6e3dc9"
+    },
+    "experiments/ghs-sweeper/cm-formal/lake-manifest.json": {
+      "bytes": 151,
+      "sha256": "9cf74655f0099f0cb50ea532310fc47f740b89a796c4ab586789dfb178886f85"
+    },
+    "experiments/ghs-sweeper/cm-formal/lakefile.toml": {
+      "bytes": 111,
+      "sha256": "0b64d9bbf92192f8c0d4c90b9e1aec0dd59fe43fc02d156b4a3cd90facce129b"
+    },
+    "experiments/ghs-sweeper/cm-formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "experiments/ghs-sweeper/examples/cubic_cm.rs": {
+      "bytes": 7386,
+      "sha256": "cb745c5f4bba714ab418f04607ea157920e78a2bfc6c4b1191259e3a33a5a04b"
+    },
+    "experiments/ghs-sweeper/examples/quartic_automorphisms.rs": {
+      "bytes": 9494,
+      "sha256": "d82720db1c5855c19f96e5e8cc85cb7ea836600af8b766105d3a6858d00eaf9b"
+    },
+    "experiments/ghs-sweeper/examples/quartic_cubic.rs": {
+      "bytes": 16776,
+      "sha256": "bc9598339b7dc6eea7b86ac7afb7314062d5bb9ad4f7dada3fd9fcf8955ed59d"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/README.md": {
+      "bytes": 2245,
+      "sha256": "b26f4ad6004e6bcefcd47b22d12323c8b073ec1c82dea9674434b7b5e07fabce"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/all-targets-attempt-1.txt": {
+      "bytes": 5724,
+      "sha256": "bea87ccd680cab10d59e56f0c73bfd301c43e77d29ee2898de785add1702800a"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/all-targets-attempt-2.txt": {
+      "bytes": 5724,
+      "sha256": "8fac273e4eea23a58c33713584da50af3f15851fe1eba3ca817c15df3c52f251"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/automorphism-command-attempt-1.json": {
+      "bytes": 715,
+      "sha256": "d5675ecc93ebffdd82e7e0022d283c045db1d3772f179fa1de695675ebb39b91"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/automorphisms-attempt-1.json": {
+      "bytes": 35295,
+      "sha256": "d500deaf0874caccd1f9063819be2259b272a5f5edbbf733a303e2b8ce4cd2a3"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/automorphisms-attempt-1.stderr.txt": {
+      "bytes": 306,
+      "sha256": "5fb7df321107035eaada0f026284de713e06ac64819c8f97d92a542cd3e783f1"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/canonical-graph-review.json": {
+      "bytes": 1083,
+      "sha256": "f8cdd5607679d0d992eae04a7159fc09646a911a37ed8bb83bb62dfaa80a011c"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/census-attempt-1.json": {
+      "bytes": 28078,
+      "sha256": "7325f3ea08dae2f39ce96acbb2f1c9138adc6906466c7ec1c60a9bab645c25b8"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/census-attempt-1.stderr.txt": {
+      "bytes": 355,
+      "sha256": "92e85d600ede3cd221790a9d0872c59266508bb9b633f04c084575fbce6d67cd"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/census-command-attempt-1.json": {
+      "bytes": 724,
+      "sha256": "4ac39f299a2768b0af92485d322884adea477e77d7bb7f9978743fe50e388318"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/clippy-attempt-1.txt": {
+      "bytes": 1905,
+      "sha256": "9f9c3e8791504adf5bd45c12b44dc828289afaa582024f52ee96296c6c6da353"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/clippy-attempt-2.txt": {
+      "bytes": 155,
+      "sha256": "995726d79ca430275712cd01d2a481ceed14b0491211a45c5354a9cb45b200f6"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-certificate-v2.json": {
+      "bytes": 8288,
+      "sha256": "ebf763007925e731b79d0bd48c9596c30ce8f90bebac756821f1ce6360350a4d"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-certificate-v2.stderr.txt": {
+      "bytes": 217,
+      "sha256": "8c7749f0f0f48af87e6c76ea618ff46b025e094ff48b84c7242809050330228c"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-certificate.stderr.txt": {
+      "bytes": 217,
+      "sha256": "2b284cb9639943e6555dcb92b1d805ed45614db2b9d2380ede4e41633bc78b0a"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-certificate.stdout.txt": {
+      "bytes": 7800,
+      "sha256": "989c35c7139d8339b964e2b42f80d1c79427f63c3a05595b9a25a051b92a0f79"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-command-v2.json": {
+      "bytes": 457,
+      "sha256": "f6285272e5502aa9428ef0b9b5f0d925bde1006b08cf554ca150364bb24293f4"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-commands.json": {
+      "bytes": 1282,
+      "sha256": "65b0b08f83728e18eea0628d6ee60098ab61f6fd4b2a10724621b11fd27cdf15"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-lean-attempt-1.json": {
+      "bytes": 341,
+      "sha256": "bbf1ecd80abd69bbfb50ec9e7685ffefa74a1859257e3c6ef835520067f98df8"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-lean-attempt-1.txt": {
+      "bytes": 598,
+      "sha256": "ee16b43fb3310962591681fd3cb28a0ded74654fdcf4cdb6c8396439463797d2"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-units.stderr.txt": {
+      "bytes": 265,
+      "sha256": "18d917c5fb51e737d9934d7fad9e847788275b4a773258fa13e7edb45eddbaaf"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/cm-units.stdout.txt": {
+      "bytes": 209,
+      "sha256": "9f12c3894a5bb90830809a1ba2264d7c7cf2a51b3b5618838b265544e7b24c9f"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-attempt-1.stderr.txt": {
+      "bytes": 577,
+      "sha256": "ffe694a6e34046ba58b54168f803db2ba221484a886a32a90a25c804b9242c38"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-attempt-1.stdout.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-attempt-2.stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-attempt-2.stdout.txt": {
+      "bytes": 3072,
+      "sha256": "dde61e2dceeeb0abff51531351c2179aa0c203cfbc6e7d8f173951fff303cd48"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-command-attempt-1.json": {
+      "bytes": 248,
+      "sha256": "26a3c1578958d586e2df016039ba4c2c58498a864df4dd857c9b538219093910"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/corpus-command-attempt-2.json": {
+      "bytes": 248,
+      "sha256": "012b3c81aacbfb0f63f42fd3606f72427497bd250e67990f5331321233ab4264"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/environment.json": {
+      "bytes": 3772,
+      "sha256": "2d43d1cd03cd12c22d1f0a845ff6af767d74777efbfac7c0e7cf011e83c07eef"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/final-artifact-policy.txt": {
+      "bytes": 41,
+      "sha256": "30a8346d1f9f41872ce54a60a20c0c053f57632ebd6e32f1e9be5529224fa934"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/final-check-commands.json": {
+      "bytes": 1299,
+      "sha256": "3c76da7d84ad94deccb1fd04f1800c8850b0ae7a297f28dac8e4ce4f267a3155"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/final-corpus-receipt.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/final-whitespace.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/format-attempt-1.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/historical-evidence-replay.json": {
+      "bytes": 2772,
+      "sha256": "2a8c6e4bdec9e3092d0e6f1e87e73c568c564cc488503dcba6626125ab12c0d1"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/local-missing-trace-audit.json": {
+      "bytes": 1304,
+      "sha256": "771a2f1ff60a9a8f5f7ae625cf36d080c2f8302cd754e88866c79ea5bbbf1528"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/quality-commands-attempt-2.json": {
+      "bytes": 871,
+      "sha256": "4f1c3e8fe68792f8ca3b67a3a577a6e1ee5b729ca874fa3e56c9c1037fde00dd"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/quality-commands.json": {
+      "bytes": 1261,
+      "sha256": "f6a7f7213cd07f232716b9dc31e435a5737de380373802ad3e14f39ac1b37d69"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/render-attempt-1.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/render-attempt-2.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/render-attempt-3.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/tian-journal-access.json": {
+      "bytes": 470,
+      "sha256": "7f20f626f71d76c2cf9fba52c0e6ec5e023e9b6fe0871bb1a9430cc1467285be"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/unit-attempt-1.json": {
+      "bytes": 588,
+      "sha256": "c8dd7a6805330d1e18040a7714da3a375eb2d6bc470ea73d79e8dd9fbb2fe99d"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/unit-attempt-1.txt": {
+      "bytes": 646,
+      "sha256": "3ec13aae400fdf990a53f0c5ddf199e540a0b4df38268a0f1607f9dedb9466be"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/verify-commands.json": {
+      "bytes": 1055,
+      "sha256": "579c04fa4919a55f3521ba853f69289fea89b9668a17736f08e3e3137b6e4cd0"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/verify-trace-minus35.json": {
+      "bytes": 2047,
+      "sha256": "c63d1d38a1381f778461f263bebaf0182866eae8bf13db7dec8612346a974321"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/verify-trace-minus35.stderr.txt": {
+      "bytes": 173,
+      "sha256": "b851c7fcd664bc8f9d3f73026225691b8bba8bc315210581a1c2e9428e771e9b"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/verify-trace-plus35.json": {
+      "bytes": 2144,
+      "sha256": "04487608a5a463d2ef27ffd8abbea7adaec868af6a317d9e45dc38c52203fe83"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/verify-trace-plus35.stderr.txt": {
+      "bytes": 256,
+      "sha256": "a79217a9a4be3ec90c0cd22eb1b09d05a10accf965e45ef929e30dd1e8ac7650"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-checks/visual-inspection.json": {
+      "bytes": 699,
+      "sha256": "fc66bfb1b269f26dea52f7ca92e1c85f6f3a61e36aa12289c3c5ca8f72d86e0b"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/census.csv": {
+      "bytes": 109,
+      "sha256": "6359c9867780b5909fffeee92764465045f601f1b29028a229bc8c519b5c2bb9"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/census.pdf": {
+      "bytes": 7070,
+      "sha256": "859062afc9ea116387765a0c332d6c76169be9052c8c4877248423d0b052c134"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/census.svg": {
+      "bytes": 25152,
+      "sha256": "d1cf5763cf1a28c484d6fce336ae06076b273d3ab40796a81f3175df08284c38"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/transfer-scope.dot": {
+      "bytes": 1075,
+      "sha256": "896dcdb5b4809071bc07d116535b7a810b07f73b1e50c8b12ee71016cc08e7e2"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/transfer-scope.pdf": {
+      "bytes": 16473,
+      "sha256": "48b8b336adc4a35c87dda8cf2aba8c1c7ccb18bf8e253cfa2fe1d04d5daed358"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-figures/transfer-scope.svg": {
+      "bytes": 5650,
+      "sha256": "a3217a468677c91fb1cb2c684e706bfa4877feb6d265f1ac93d0beae8f6bf3eb"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-reference/PROVENANCE.json": {
+      "bytes": 759,
+      "sha256": "16cdbbb4ea00c248622c1e09e49ddc3e028bd723a5a70368c73e426ceda7558f"
+    },
+    "experiments/ghs-sweeper/quartic-cubic-reference/PROVENANCE_ADDITIONS.json": {
+      "bytes": 937,
+      "sha256": "dc7256eead606a6593f8d045e36f0a94ed481770157c89965560336481af3037"
+    },
+    "experiments/ghs-sweeper/render_quartic_cubic.py": {
+      "bytes": 2160,
+      "sha256": "d4020f3f471d56994d1d629f170997979ef14b105331286b01d683a92232b9b9"
+    },
+    "problems/README.md": {
+      "bytes": 6217,
+      "sha256": "276d94efea703aa8c79b5c01db3461eb1b39d0b23762569898524cee2bd6158d"
+    },
+    "problems/binary-cubic-gluing-target-and-novelty.md": {
+      "bytes": 6490,
+      "sha256": "fcc05bff9a8db8b123097dc67ed899e5c36971690b6d94d58f609fb53f909182"
+    },
+    "reports/lean-current-corpus-20261025-cm/README.md": {
+      "bytes": 940,
+      "sha256": "f03d7296c89a2e2c9edb95d1f105dde08f3e486f29808d5b7cd4218212c96d38"
+    },
+    "reports/lean-current-corpus-20261025-cm/receipt.json": {
+      "bytes": 3072,
+      "sha256": "dde61e2dceeeb0abff51531351c2179aa0c203cfbc6e7d8f173951fff303cd48"
+    },
+    "tools/lean/README.md": {
+      "bytes": 1928,
+      "sha256": "48b73369b713aa34d12bc25dc1485c64ca8cd4fbf27209528c00b82a513c92be"
+    },
+    "tools/lean/current-corpus-gate.py": {
+      "bytes": 16060,
+      "sha256": "9615d45b805bd9442f59e88d1a20f6b9a3519439d1993be80ae379898030efb9"
+    }
+  }
+}

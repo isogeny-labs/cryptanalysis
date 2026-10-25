@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 282, in <module>
+    main()
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 266, in main
+    delta = check_delta()
+            ^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 241, in check_delta
+    require(len(cm_audited) == 5 and
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 48, in require
+    raise ValueError(message)
+ValueError: CM arithmetic transitive audit changed

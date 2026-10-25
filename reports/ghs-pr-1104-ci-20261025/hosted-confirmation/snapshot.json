@@ -1,0 +1,477 @@
+{
+  "observed_utc": "2026-10-25 08:14:11 UTC",
+  "pull_request": {
+    "url": "https://github.com/aburan28/cryptanalysis/pull/1104",
+    "state": "open",
+    "merged": false,
+    "draft": false,
+    "mergeable": true,
+    "head_sha": "8ffc01a1ca3419da97c6142caa70c153d6cdada6",
+    "base_sha": "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503",
+    "merged_at": null,
+    "merge_commit_sha": "a3000e9f9b0234b0b46bb0122a86240aab3b05f9",
+    "updated_at": "2026-10-25T07:17:48Z"
+  },
+  "workflow_runs": [
+    {
+      "id": 40172185776,
+      "name": "analysis",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_number": 4855,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185776/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185776/logs",
+      "workflow_id": 362093647
+    },
+    {
+      "id": 40172185671,
+      "name": "Lean source evidence audit",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 20,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185671/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185671/logs",
+      "workflow_id": 392520392
+    },
+    {
+      "id": 40172185628,
+      "name": "Lean corpus evidence bridge",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 21,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185628/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185628/logs",
+      "workflow_id": 386133664
+    },
+    {
+      "id": 40172185694,
+      "name": "Rust GHS sweeper",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 22,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185694/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185694/logs",
+      "workflow_id": 391842033
+    },
+    {
+      "id": 40172185621,
+      "name": "ci",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 6141,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185621/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185621/logs",
+      "workflow_id": 362015679
+    },
+    {
+      "id": 40172185678,
+      "name": "artifacts",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_number": 47,
+      "jobs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185678/jobs",
+      "logs_url": "https://api.github.com/repos/aburan28/cryptanalysis/actions/runs/40172185678/logs",
+      "workflow_id": 395300251
+    }
+  ],
+  "artifact_jobs": [
+    {
+      "id": 121105184822,
+      "name": "store",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 40172185678,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "No added or modified file that belongs in the store",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Workflows that name moved data pull it",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    }
+  ],
+  "analysis_jobs": [
+    {
+      "id": 121105252765,
+      "name": "coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install gcovr",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Build instrumented and run the suite",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Report",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Publish the summary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Upload the HTML report",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 121105252860,
+      "name": "cppcheck",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install cppcheck",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run cppcheck",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 121105252883,
+      "name": "clang-tidy",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install clang-tidy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Generate the compilation database",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run clang-tidy",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 121105252892,
+      "name": "clang-format (changed lines)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install clang-format",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Check the lines this change touches",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 121105253002,
+      "name": "shellcheck + actionlint",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "shellcheck",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        },
+        {
+          "name": "Run actions/setup-go@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "actionlint",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 121105253013,
+      "name": "gcc -fanalyzer",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 40172185776,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Pull store data this workflow reads (tools/artifacts)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Build with the analyzer, warnings as errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    }
+  ],
+  "reviews": [],
+  "review_threads": []
+}
