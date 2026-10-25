@@ -624,7 +624,12 @@ def cmd_status(cfg: Config, args) -> int:
 
 def cmd_check(cfg: Config, args) -> int:
     """Fail when BASE..HEAD adds or grows a tracked file the policy assigns to the store."""
-    out = git(cfg.root, "diff", "--raw", "-z", "--no-renames", "--diff-filter=AM", args.base, args.head)
+    # A partial clone may need to fetch changed blobs by object ID.  The
+    # default abbreviated ID is not reliably resolvable there.
+    out = git(
+        cfg.root, "diff", "--raw", "-z", "--abbrev=40", "--no-renames",
+        "--diff-filter=AM", args.base, args.head,
+    )
     fields = out.decode(errors="surrogateescape").split("\0")
     offenders = []
     for meta, path in zip(fields[0::2], fields[1::2]):
