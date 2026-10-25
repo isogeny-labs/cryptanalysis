@@ -9,7 +9,14 @@ The latter two are partial finite proofs, not formalizations of their full
 geometric interpretations.
 The gate's own fixture and audit sources under `tools/lean/` are checked by
 the separate self-test and excluded from the research-file count.
-It compares the result with the [October 25 CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json).
+It compares the result with the [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json).
+The [previous CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json)
+remains unchanged. Main's reviewed C analysis repairs have a new whole-file
+hash; the gate checks that source against its current live binding, while
+replaying the original selector assertions and both negative controls on
+the old pinned source and its byte-frozen receipt in
+`reports/ghs-pr-1104-main-integration-20261025/`. No Lean theorem, selector
+assertion or historical receipt is overwritten.
 The earlier [95-source receipt](../../reports/lean-current-corpus-20261025/receipt.json)
 remains preserved.
 The [October 24 receipt](../../reports/lean-current-corpus-20261024/receipt.json)

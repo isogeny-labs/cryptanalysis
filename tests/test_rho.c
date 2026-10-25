@@ -122,8 +122,10 @@ int main(void)
         CHECK(second.group_ops > first.group_ops);
         FILE *f = fopen(path, "ab");
         CHECK(f != NULL);
-        CHECK(fputc(0, f) != EOF);
-        CHECK(fclose(f) == 0);
+        if (f) {
+            CHECK(fputc(0, f) != EOF);
+            CHECK(fclose(f) == 0);
+        }
         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
                                         &got, NULL) == CA_ERR_INVALID);
         unlink(progress);

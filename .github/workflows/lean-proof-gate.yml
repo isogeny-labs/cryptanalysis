@@ -12,6 +12,8 @@ on:
       - 'reports/lean-current-corpus-20261024/**'
       - 'reports/lean-current-corpus-20261025/**'
       - 'reports/lean-current-corpus-20261025-cm/**'
+      - 'reports/lean-current-corpus-20261025-main-update/**'
+      - 'reports/ghs-pr-1104-main-integration-20261025/**'
       - '.github/workflows/lean-proof-gate.yml'
   push:
     branches: [main]
@@ -25,6 +27,8 @@ on:
       - 'reports/lean-current-corpus-20261024/**'
       - 'reports/lean-current-corpus-20261025/**'
       - 'reports/lean-current-corpus-20261025-cm/**'
+      - 'reports/lean-current-corpus-20261025-main-update/**'
+      - 'reports/ghs-pr-1104-main-integration-20261025/**'
       - '.github/workflows/lean-proof-gate.yml'
   workflow_dispatch:
 
@@ -51,4 +55,4 @@ jobs:
       - name: Exercise positive and negative proof fixtures
         run: tools/lean/selftest/run.sh
       - name: Check all 96 source and proof evidence rows
-        run: python3 tools/lean/current-corpus-gate.py --check-receipt reports/lean-current-corpus-20261025-cm/receipt.json
+        run: python3 tools/lean/current-corpus-gate.py --check-receipt reports/lean-current-corpus-20261025-main-update/receipt.json

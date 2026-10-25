@@ -23,8 +23,12 @@ GLV = ROOT / "experiments/glv-table-rule-confirm-20261022"
 ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
-LIVE_GLV_COMMIT = "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503"
-LIVE_GLV_SHA256 = "73469fbc151ad905b3659633b5c0702348c17899021458f411e97f752d6d0fef"
+HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
+HISTORICAL_GLV_SHA256 = "4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20"
+HISTORICAL_GLV_RECEIPT = ROOT / "reports/ghs-pr-1104-main-integration-20261025/prior-live-source-binding.json"
+HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278381e727ed193ab534"
+LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
+LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 DELTA = {
     "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
     "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
@@ -161,19 +165,24 @@ def check_delta() -> dict:
                 continue
             raise ValueError("GLV selector negative control admitted")
 
-    historical_live = json.loads((GLV / "live-source-binding.json").read_text())
+    require(digest(HISTORICAL_GLV_RECEIPT) == HISTORICAL_GLV_RECEIPT_SHA256,
+            "archived GLV live receipt bytes changed")
+    historical_live = json.loads(HISTORICAL_GLV_RECEIPT.read_text())
     expected_historical = {
         "schema": "glv-table-live-source-binding-v1",
-        "source_commit": binding.LIVE_SOURCE_COMMIT,
-        "source_sha256": binding.LIVE_SHA256,
+        "source_commit": HISTORICAL_GLV_COMMIT,
+        "source_sha256": HISTORICAL_GLV_SHA256,
         "historical_source_commit": binding.CURRENT_SOURCE_COMMIT,
         "historical_source_sha256": binding.CURRENT_SHA256,
         "divisor": 12, "loop_start": 8, "loop_cap": 32,
         "negative_controls_rejected": 2, "result": "pass",
     }
     require(historical_live == expected_historical, "historical GLV live receipt changed")
-    historical_bytes = run(["git", "show", f"{binding.LIVE_SOURCE_COMMIT}:src/curve.c"]).stdout.encode()
-    selector_negatives(historical_bytes, binding.LIVE_SHA256)
+    historical_bytes = run(["git", "show", f"{HISTORICAL_GLV_COMMIT}:src/curve.c"]).stdout.encode()
+    selector_negatives(historical_bytes, HISTORICAL_GLV_SHA256)
+    current_live = run(["python3", "check_lean_source_binding.py", "--live"], cwd=GLV)
+    require(current_live.stdout.encode() == (GLV / "live-source-binding.json").read_bytes(),
+            "current main GLV live receipt changed")
     live_bytes = (ROOT / "src/curve.c").read_bytes()
     pinned_live = run(["git", "show", f"{LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode()
     require(live_bytes == pinned_live, "live GLV source differs from the new pin")
@@ -244,7 +253,9 @@ def check_delta() -> dict:
     return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
-            "glv_historical_live_source_sha256": binding.LIVE_SHA256,
+            "glv_historical_live_source_sha256": HISTORICAL_GLV_SHA256,
+            "glv_historical_live_receipt_sha256": digest(HISTORICAL_GLV_RECEIPT),
+            "glv_live_binding_receipt_sha256": digest(GLV / "live-source-binding.json"),
             "glv_live_source_commit": LIVE_GLV_COMMIT,
             "glv_live_source_sha256": LIVE_GLV_SHA256,
             "cubic_axiom_stdout_sha256": hashlib.sha256(cubic.stdout.encode()).hexdigest(),
