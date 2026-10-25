@@ -1,0 +1,20 @@
+{
+  "status": "FROZEN_BEFORE_STAGE0_FRESH_REBUILD",
+  "source_commit": "5bd68957efb89a80162f7c2e5cb6cd574f6f1b5e",
+  "p": 20023,
+  "seed_rule": "enumerate every defined-j point of absolute Frobenius trace 64, then evaluate rational degree-2/3 Hecke rows once per seed point",
+  "frontier_rule": "evaluate all five torsion translates of each distinct trace-64 seed orbit once for degrees 2 and 3; add verified rational neighbors as stage-0 columns",
+  "acceptance": "all l+1 neighbors rational with defined j, verified modular polynomial and group sum",
+  "expected_seed_sources": 588,
+  "expected_seed_rows": 490,
+  "expected_frontier_sources": 2820,
+  "expected_frontier_rows": 1016,
+  "expected_columns": 1760,
+  "shift_radius": 3,
+  "target_seed": "hecke-natural-stage0-frozen-unseen-target-20261024-v1",
+  "target_law": "SHA-256 seed interpreted as a positive integer modulo 4021, multiplied by G=5(1,8630) to construct the public target point outside the online interval",
+  "rebuild_validation": "compare regenerated trace-64 source set, seed and first-frontier accepted row multisets, new-column set, and rejection counters to the saved original ledgers",
+  "work_record": "record exact source, degree-query, accepted-row, and shift-probe counts; local phase wall times are exploratory setup diagnostics only",
+  "candidate_id": null,
+  "timing_claim": null
+}

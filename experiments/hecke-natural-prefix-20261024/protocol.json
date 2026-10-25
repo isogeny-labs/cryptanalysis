@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN_BEFORE_NATURAL_PREFIX_REPLAY",
+  "p": 20023,
+  "curve": "y^2+y=x^3-x^2-10x-20",
+  "subgroup_order": 4021,
+  "seed_law": "all defined-j X0(11)(F_20023) points of absolute Frobenius trace 64, quotienting by five torsion translates",
+  "source_law": "process complete rational degree-2/3 Hecke neighbors for every five-translate source in each BFS frontier layer, retaining verified rows and new orbit representatives",
+  "stages": [0, 1, 2, 3, 4, 5],
+  "shift_radii": [1, 2, 3, 4],
+  "anchor": [1, 8630],
+  "prefix_rule": "stage k uses trace-64 seed columns, all newly reached orbit columns through layer k, the 490 frozen seed rows, and accepted Hecke rows from layers 0 through k",
+  "rank_rule": "include all Q+jG hits internal to the stage table for 1<=j<=radius; contract shift components and compute exact GF(4021) quotient rank with anchored generator row",
+  "work_record": "retain cumulative frontier source count, l=2/3 query count, accepted rows, distinct columns, shift lookup probes and successful edges separately",
+  "fresh_rebuild_gate": "rerun the first naturally produced stage with full anchored rank from the source law and compare its sources, row multiset and columns to the saved ledger",
+  "candidate_id": null,
+  "timing_claim": null
+}
