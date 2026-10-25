@@ -28,6 +28,9 @@ fn triangle(a: u64, b: u64, c: u64) -> bool {
     let (ab, bc, ca) = (a * b, b * c, c * a);
     ab * ab + bc * bc + ca * ca <= 2 * a * b * c * (a + b + c)
 }
+fn heron_discriminant(a: u64, b: u64, c: u64) -> i64 {
+    (2 * a * b * c * (a + b + c)) as i64 - ((a * b).pow(2) + (b * c).pow(2) + (c * a).pow(2)) as i64
+}
 fn pairing(v: [u64; 6], w: [u64; 6], q: u64, p: u64) -> u64 {
     (0..3).fold(0, |s, i| {
         (s + power(q, i as u64, p)
@@ -113,6 +116,7 @@ fn certificate() -> Result<Value> {
     }
     let mut degree_partitions = Vec::new();
     let mut triangle_survivors = Vec::new();
+    let mut cm_survivors = Vec::new();
     for a in 1..=17 {
         for b in a..=26 {
             if a + b >= 53 {
@@ -126,10 +130,15 @@ fn certificate() -> Result<Value> {
                 && norms.contains_key(&(a * c))
                 && norms.contains_key(&(b * c))
             {
-                let record = json!({"degrees":[a,b,c],"pair_products":[a*b,a*c,b*c],"norm_witnesses":[norms[&(a*b)],norms[&(a*c)],norms[&(b*c)]],"triangle_condition":triangle(a,b,c)});
+                let h = heron_discriminant(a, b, c);
+                let cm_condition = h >= 0 && h % 823 == 0;
+                let record = json!({"degrees":[a,b,c],"pair_products":[a*b,a*c,b*c],"norm_witnesses":[norms[&(a*b)],norms[&(a*c)],norms[&(b*c)]],"triangle_condition":triangle(a,b,c),"heron_discriminant":h,"CM_discriminant_divisibility":cm_condition});
                 degree_partitions.push(record.clone());
                 if triangle(a, b, c) {
-                    triangle_survivors.push(record);
+                    triangle_survivors.push(record.clone());
+                }
+                if cm_condition {
+                    cm_survivors.push(record);
                 }
             }
         }
@@ -140,8 +149,13 @@ fn certificate() -> Result<Value> {
     }).collect();
     let no_cube_trace = (-5i64..=5).all(|u| (u * u * u - 24 * u).abs() != 35);
     ensure!(no_cube_trace, "source Frobenius could be a cubic power");
+    ensure!(
+        cm_survivors.is_empty(),
+        "fixed CM discriminant obstruction failed"
+    );
+    ensure!(prime(137) && prime(239), "source subgroup primes");
     Ok(
-        json!({"kind":"fixed-cubic-cm-polarization-screen/v1","source_Q":512,"source_traces":[-35,35],"frobenius_discriminant":-823,"norm_form":[8,3,26],"norm_bound":676,"enumeration_bounds":{"x":[-10,10],"y":[-5,5]},"represented_degrees":norms,"positive_three_component_partitions":degree_partitions,"triangle_survivors":triangle_survivors,"prime_screens":prime_screens,"abstract_kernels":[kernel(-35,53)?,kernel(35,53)?],"no_integral_cube_trace_in_hasse_range":no_cube_trace,"geometric_hom_lattice_bridge_checked":false,"quotient_reconstructed":false,"log_transfer_verified":false,"novelty_established":false}),
+        json!({"kind":"fixed-cubic-cm-polarization-screen/v2","source_Q":512,"source_traces":[-35,35],"frobenius_discriminant":-823,"norm_form":[8,3,26],"norm_bound":676,"enumeration_bounds":{"x":[-10,10],"y":[-5,5]},"represented_degrees":norms,"positive_three_component_partitions":degree_partitions,"triangle_survivors":triangle_survivors,"CM_discriminant_survivors":cm_survivors,"prime_screens":prime_screens,"abstract_kernels":[kernel(-35,53)?,kernel(35,53)?],"source_prime_orders":[137,239],"no_integral_cube_trace_in_hasse_range":no_cube_trace,"geometric_hom_lattice_bridge_checked":false,"quotient_reconstructed":false,"log_transfer_verified":false,"novelty_established":false}),
     )
 }
 fn main() -> Result<()> {
@@ -164,5 +178,13 @@ mod tests {
         assert!(kernel(-35, 53).is_ok());
         assert!(kernel(35, 53).is_ok());
         assert!(kernel(35, 5).is_err());
+    }
+    #[test]
+    fn discriminant_obstruction_is_stronger_than_triangle() {
+        assert_eq!(heron_discriminant(8, 8, 37), 71680);
+        assert_eq!(heron_discriminant(8, 13, 32), 103360);
+        assert_ne!(heron_discriminant(8, 8, 37) % 823, 0);
+        assert_ne!(heron_discriminant(8, 13, 32) % 823, 0);
+        assert_eq!(heron_discriminant(8, 13, 16), 823 * 64);
     }
 }
