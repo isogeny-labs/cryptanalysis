@@ -100,3 +100,16 @@ the reported transitive axioms `propext` and `Quot.sound`; there is no
 the pinned toolchain file SHA-256 is
 `d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b`.
 The hosted proof gate on this new PR head is still required before merge.
+
+## Hosted static-analysis gate, 2026-10-25
+
+The exact-head hosted rerun at `1d3023db770cd51de10f31c32bf990a564c59c48`
+passed the assay, Lean corpus/source, and general CI checks, but its
+repository-wide `analysis` workflow failed `clang-tidy` and `cppcheck`. The
+unchanged base-main analysis run used Ubuntu 24.04 with clang-tidy 18 and
+cppcheck 2.13; this rerun used Ubuntu 26.04 with clang-tidy 21 and cppcheck
+2.19. The newer versions reported 36 candidate warnings in untouched C files.
+See the linked [runner drift problem](../../problems/static-analysis-ubuntu26-tool-drift.md)
+for exact run IDs, scope, and the required triage. This does not change the
+local Lean or SAW receipts; the PR's full code-validation gate remains red and
+no merge is claimed.
