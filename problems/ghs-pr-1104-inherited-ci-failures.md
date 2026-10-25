@@ -28,6 +28,10 @@ still-open research obligations, unaffected by this CI record.
   directory excluded by sparse checkout. A regression fails on the old
   puller with the same missing-parent error. Creating destination ancestors
   fixes it, and all ten artifact-tool tests pass locally.
+- **Observed:** the downstream workflow-wiring check also found a missing
+  GHS hydration step, now added and passing its scoped check. The global
+  check still fails for the unchanged `suite.yml`; its workflow and checker
+  blobs match the base. This inherited wiring defect also blocks artifacts.
 - **Suspected explanation:** the analyzer's individual findings need review;
   no general false-positive or tool-regression claim is made.
 - **Missing capability:** no implementation limitation prevents the
@@ -38,7 +42,8 @@ still-open research obligations, unaffected by this CI record.
 
 ## What would unblock it
 
-- [ ] Hosted artifact workflow passes with the sparse-pull fix.
+- [ ] Hosted artifact workflow passes with the sparse-pull/GHS wiring fixes
+  and a reviewed correction to the inherited suite wiring omission.
 - [ ] Inherited static-analysis findings receive reviewed fixes and all
   required/applicable checks succeed on PR 1104's final head.
 - [ ] Verify no blocking review or conflict, merge with an expected-head
@@ -65,3 +70,8 @@ Passing these gates permits the PR merge; it does not resolve the separate
 2026-10-25: CI logs inspected, inherited inputs compared, sparse-pull defect
 reproduced and fixed locally with ten passing tests. Hosted verification and
 inherited analysis remain unresolved. No failing check has been bypassed.
+
+2026-10-25, subsequent local gate: GHS workflow hydration added; direct scoped
+pull and wiring check pass. Global wiring still fails on the inherited
+suite workflow omission. Earlier outputs and the initial CI manifest remain
+frozen at 0cd35127, with the newer report/problem versions bound separately.

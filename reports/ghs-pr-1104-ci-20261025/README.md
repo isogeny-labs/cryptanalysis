@@ -81,6 +81,22 @@ The PR remains unmerged while these failures persist. Subsequent checks
 follow the requested minimum 50-minute cadence unless a new head or activity
 provides a reason for a new check.
 
+### Downstream workflow-wiring check
+
+Once the artifact setup failure was fixed locally, its later workflow-wiring
+check exposed two missing hydration steps: the newly introduced
+`ghs-sweeper.yml` and the unchanged `suite.yml`. The GHS workflow now has the
+standard hydration step scoped to `experiments/ghs-sweeper`. Its direct pull
+returns zero files, without S3 access, because this subtree currently has no
+store-backed inputs; the conservative scanner had climbed to the broader
+`experiments` ancestor. Future store inputs in this subtree will be hydrated.
+The scoped GHS wiring check passes. The global check still fails for
+`suite.yml`, whose exact base/head workflow and checker inputs match. The
+separate `sage-compatibility.yml` checkout-path note is advisory. The failed
+and corrected wiring outputs are retained, with explicit exit statuses.
+The inherited suite wiring defect is an additional artifact-workflow blocker;
+it is not suppressed or misreported as a passing global check.
+
 ## Frozen evidence
 
 The original scientific manifests are not regenerated. Their raw data,
@@ -90,3 +106,7 @@ active problem index changes `problems/README.md`, which is bound in the
 and the original byte-verified commit explicitly. The earlier four gate/
 problem transitions remain documented separately. This is a versioned
 index addition, not a change to any scientific result.
+
+The initial CI manifest remains byte-identical at commit `0cd35127`.
+The wiring supplement records new files and the newer report/problem versions
+with explicit old/new hashes rather than rewriting that manifest.
