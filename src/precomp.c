@@ -215,9 +215,13 @@ typedef struct pc_worker {
 static int pc_worker_push(pc_worker *wk, uint64_t fp, uint64_t exp)
 {
     if (wk->n == wk->cap) {
+        if (wk->cap > SIZE_MAX / 2) return -1;
         size_t nc = wk->cap ? wk->cap * 2 : 1024;
-        pc_entry *nb = realloc(wk->buf, nc * sizeof(pc_entry));
+        if (nc > SIZE_MAX / sizeof(pc_entry)) return -1;
+        pc_entry *nb = malloc(nc * sizeof(pc_entry));
         if (!nb) return -1;
+        if (wk->n) memcpy(nb, wk->buf, wk->n * sizeof(pc_entry));
+        free(wk->buf);
         wk->buf = nb;
         wk->cap = nc;
     }
