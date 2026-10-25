@@ -106,6 +106,28 @@ class RoundTrip(unittest.TestCase):
         self.assertIn("refused", r.stderr)
         self.assertFalse((self.repo / "research/r1/runs/a.jsonl").exists())
 
+    def test_same_size_corrupt_cache_is_refetched_or_refused(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        digest = hashlib.sha256(self.big).hexdigest()
+        cached = self.cache / "sha256" / digest[:2] / digest
+        dest = self.repo / "research/r1/runs/a.jsonl"
+        cached.chmod(0o644)
+        cached.write_bytes(b"x" * len(self.big))
+        dest.unlink()
+
+        self.art("pull", "research/r1/runs/a.jsonl")
+        self.assertEqual(dest.read_bytes(), self.big)
+        self.assertEqual(cached.read_bytes(), self.big)
+
+        cached.chmod(0o644)
+        cached.write_bytes(b"x" * len(self.big))
+        (self.remote / "sha256" / digest[:2] / digest).write_bytes(b"y" * len(self.big))
+        dest.unlink()
+        result = self.art("pull", "research/r1/runs/a.jsonl", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("refused", result.stderr)
+        self.assertFalse(dest.exists())
+
     def test_push_merges_existing_manifest_and_gitignore(self):
         (self.repo / "research/r1/runs/.gitignore").write_text("/tmp/\n")
         self.art("push", "research/r1/runs/a.jsonl")
