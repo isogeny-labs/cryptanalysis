@@ -1,0 +1,16 @@
+{
+  "status": "FROZEN_BEFORE_FINEGRID_SWEEP",
+  "parent_experiment": "hecke-shift-density-20261024",
+  "curve": "y^2+y=x^3-x^2-10x-20 over F_20023",
+  "subgroup_order": 4021,
+  "source_table": "original 3949 representatives in hecke-torsion-frontiers-20261024/p20023.result.json",
+  "relation_rows": "saved seed and degree-2/3 Hecke relations internal to each selected column set",
+  "subset_law": "retain the anchored generator column, then the first table_size-1 other original columns under SHA-256 of ASCII 'hecke-shift-density/v1:' plus seed label plus ':' plus decimal original column index",
+  "seeds": ["A", "B", "C", "D"],
+  "table_sizes": [3600, 3625, 3650, 3675, 3700, 3725, 3750, 3775, 3800],
+  "shift_rule": "include every checked Q+G edge internal to the selected table and contract each connected shift component",
+  "rank_rule": "compute exact GF(4021) rank of retained Hecke rows on shift components plus anchored generator row; record residual nullity and number of zero-incidence components",
+  "validation": "recompute every cell's component graph and quotient rank with Sage GF(4021), and replay saved logs and point identities",
+  "candidate_id": null,
+  "timing_claim": null
+}
