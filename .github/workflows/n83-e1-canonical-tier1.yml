@@ -28,7 +28,7 @@ env:
 
 jobs:
   paired-stage:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 125
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
               'runner_arch': os.environ.get('RUNNER_ARCH'),
               'image_os': os.environ.get('ImageOS'),
               'image_version': os.environ.get('ImageVersion'),
-              'advertised_runner': 'ubuntu-24.04 standard',
+              'advertised_runner': 'main standard',
               'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
               'observed_mem_total_kib': next((line.split()[1] for line in
                   Path('/proc/meminfo').read_text().splitlines()

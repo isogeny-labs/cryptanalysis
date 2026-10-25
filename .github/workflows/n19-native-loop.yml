@@ -5,7 +5,7 @@ name: N19 native relation loop, Sage smoke gate + repeated-pair Tier 1
 # process); the baseline is the current row's arm N (v3 arm.sage, Sage tauDlp with the
 # native per-shift solve, run 39387473809).
 #
-# Two jobs on fresh GitHub-hosted ubuntu-24.04 runners:
+# Two jobs on fresh GitHub-hosted main runners:
 #   sage-smoke  UNTIMED gate. Builds and tests both crates (v3 native/, unchanged, and the
 #               new native/) with the pinned toolchain, runs the verifier's planted-corruption
 #               tests and the pure-Python checks (CPython RNG, the planted arm's comparison,
@@ -61,7 +61,7 @@ env:
 
 jobs:
   sage-smoke:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
                                                      os.environ['GITHUB_JOB']),
                  'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
                  'image_version': os.environ.get('ImageVersion'),
-                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'advertised_runner': 'main standard (4 vCPU, 16 GB)',
                  'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
                  'sage_image': os.environ['SAGE_IMAGE'], 'git_sha': os.environ['GITHUB_SHA'],
                  'git_ref': os.environ['GITHUB_REF'],
@@ -199,7 +199,7 @@ jobs:
 
   timed:
     needs: sage-smoke
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 200
     steps:
       - uses: actions/checkout@v4
@@ -235,7 +235,7 @@ jobs:
                                                      os.environ['GITHUB_JOB']),
                  'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
                  'image_version': os.environ.get('ImageVersion'),
-                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'advertised_runner': 'main standard (4 vCPU, 16 GB)',
                  'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
                  'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
                                                  if l.startswith('MemTotal:')), None),

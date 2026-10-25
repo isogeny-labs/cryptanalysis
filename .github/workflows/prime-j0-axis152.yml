@@ -17,7 +17,7 @@ permissions:
 jobs:
   proof:
     name: Lean sixteen-step and sector proofs
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
 
   exact_replay:
     name: Exact census and two independent public-point panels
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +63,7 @@ jobs:
 
   native:
     name: Locked Rust build and two native public-point panels
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 30
     env:
       CARGO_TARGET_DIR: /tmp/axis152-native-target

@@ -16,7 +16,7 @@ permissions:
   contents: read
 jobs:
   portable-root-policy:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7

@@ -30,7 +30,7 @@ defaults:
 jobs:
   model:
     name: Frozen inputs and source model
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   native:
     name: Linux x86-64 point replay
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -111,7 +111,7 @@ jobs:
 
   proof:
     name: Pinned Lean reconstruction, digit cover, and termination proofs
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

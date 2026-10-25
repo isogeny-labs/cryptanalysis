@@ -1,6 +1,6 @@
 name: N19 native tau6 solve, end-to-end cold Tier 1 (protocol v2)
 
-# One fresh GitHub-hosted ubuntu-24.04 runner. The frozen protocol is
+# One fresh GitHub-hosted main runner. The frozen protocol is
 # experiments/volcano-n19-native-tau6-v2-20261019/protocol.json and the frozen run
 # order is schedule.json next to it: S0 (Sage variety == native variety),
 # O1 (the candidate reproduces the archived tau6 run 38520305068), then 16
@@ -46,7 +46,7 @@ env:
 
 jobs:
   n19native:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
                                                      os.environ['GITHUB_JOB']),
                  'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
                  'image_version': os.environ.get('ImageVersion'),
-                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'advertised_runner': 'main standard (4 vCPU, 16 GB)',
                  'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
                  'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
                                                  if l.startswith('MemTotal:')), None),

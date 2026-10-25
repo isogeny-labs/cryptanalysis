@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: [main, macos-15]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: [main, macos-15]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     steps:

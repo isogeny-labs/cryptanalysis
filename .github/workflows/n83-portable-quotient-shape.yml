@@ -15,7 +15,7 @@ jobs:
     # The one-shot run uses the frozen 25d0757f checkout. This archived
     # workflow is disabled until the first receipt has been reviewed.
     if: false
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 360
     env:
       QUERY_START: "6442450944"

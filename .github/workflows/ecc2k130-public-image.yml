@@ -23,7 +23,7 @@ permissions:
 jobs:
   build:
     name: build and check (${{ matrix.kind }})
-    runs-on: ubuntu-22.04
+    runs-on: main
     timeout-minutes: 120
     strategy:
       fail-fast: false

@@ -41,7 +41,7 @@ jobs:
     # One grouped PR measurement was dispatched from this frozen head. Later
     # receipt and documentation commits must not launch a repeat.
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.sha == '4a997c30ec6993ed2213fd31615ac9a28ddd7fc9' || (inputs.from_wave && github.event.pull_request.head.repo.full_name == 'aburan28/cryptanalysis' && github.event.pull_request.head.ref == 'codex/koblitz-pair-claw-toy')
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 360
     env:
       SEGMENT_QUERY_START: ${{ inputs.query_start || '1207959552' }}

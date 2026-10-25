@@ -24,7 +24,7 @@ jobs:
   # --------------------------------------------------------- clang-tidy ----
   clang-tidy:
     name: clang-tidy
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
@@ -57,7 +57,7 @@ jobs:
   # ----------------------------------------------------------- cppcheck ----
   cppcheck:
     name: cppcheck
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
@@ -85,7 +85,7 @@ jobs:
   # ------------------------------------------------------- gcc analyzer ----
   gcc-analyzer:
     name: gcc -fanalyzer
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
@@ -109,7 +109,7 @@ jobs:
   # ------------------------------------------------------------- format ----
   format:
     name: clang-format (changed lines)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -170,7 +170,7 @@ jobs:
   # --------------------------------------------------------- shell + yml ----
   lint-scripts:
     name: shellcheck + actionlint
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -200,7 +200,7 @@ jobs:
   # ----------------------------------------------------------- coverage ----
   coverage:
     name: coverage
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7

@@ -23,7 +23,7 @@ on:
       runs_on:
         description: "Runner label"
         required: false
-        default: ubuntu-24.04
+        default: main
 
 permissions:
   contents: read
@@ -40,7 +40,7 @@ env:
 
 jobs:
   analysis-gate-tests:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
   opcounts:
     if: github.event_name != 'pull_request'
     needs: analysis-gate-tests
-    runs-on: ${{ inputs.runs_on || 'ubuntu-24.04' }}
+    runs-on: ${{ inputs.runs_on || 'main' }}
     # Build about 15 min (two crates), kS about 5 min, kP about 16 min,
     # 20 x (cS 27 s + cP 51 s + rT 3 s) about 27 min on the stacked runner.
     timeout-minutes: 180
@@ -113,7 +113,7 @@ jobs:
           cpuinfo = Path('/proc/cpuinfo').read_text().splitlines()
           receipt = {
               'provider': 'github_actions',
-              'requested_runs_on': os.environ.get('REQUESTED_RUNS_ON') or 'ubuntu-24.04',
+              'requested_runs_on': os.environ.get('REQUESTED_RUNS_ON') or 'main',
               'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'],
                                                   os.environ['GITHUB_RUN_ATTEMPT'],
                                                   os.environ['GITHUB_JOB']),

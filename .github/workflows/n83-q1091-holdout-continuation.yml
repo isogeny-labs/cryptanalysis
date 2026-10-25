@@ -82,7 +82,7 @@ jobs:
           - 61
           - 62
           - 63
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 360
     env:
       SHARD_INDEX: ${{ matrix.shard }}

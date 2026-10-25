@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   arms:
-    runs-on: ubuntu-24.04
+    runs-on: main
     # Estimated 2-3.6 h (protocol.json "runtime"); GitHub-hosted jobs stop at 6 h.
     timeout-minutes: 350
     container:

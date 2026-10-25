@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   test-and-control-run:
-    runs-on: ubuntu-latest
+    runs-on: main
     defaults:
       run:
         working-directory: experiments/p256-isogeny-search-20261005
@@ -118,7 +118,7 @@ jobs:
           path: experiments/p256-isogeny-search-20261005/runs/ci
 
   sage-depth-one:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     container:
       image: sagemath/sagemath:10.6

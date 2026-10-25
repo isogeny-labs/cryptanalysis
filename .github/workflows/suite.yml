@@ -29,7 +29,7 @@ env:
 jobs:
   rust:
     name: Rust (stable)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 45
     defaults:
       run:
@@ -137,7 +137,7 @@ jobs:
     # runner has a GPU: this says the kernel builds and what it costs, not
     # how fast it is.  The emulator step of `rust` checks its answers.
     name: F4 kernel compile
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -172,7 +172,7 @@ jobs:
     # The floor declared in suite/Cargo.toml, re-checked here so that it
     # cannot drift from what actually compiles.
     name: Rust MSRV 1.87
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 45
     defaults:
       run:
@@ -206,7 +206,7 @@ jobs:
 
   rust-supply-chain:
     name: Rust supply chain (cargo-deny)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
@@ -227,7 +227,7 @@ jobs:
     # The stdlib-only engine `ca-ic fixed` drives, with the optional SAT back
     # ends installed so that the tests covering that path run too.
     name: Python engine ${{ matrix.python }}
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     strategy:
       fail-fast: false

@@ -17,7 +17,7 @@ permissions:
 jobs:
   proof:
     name: Lean coverage and top-sector proofs
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
 
   exact_replay:
     name: Exact tables and independent 512-point replay
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
 
   native:
     name: Locked Rust build and native 512-point replay
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 30
     env:
       CARGO_TARGET_DIR: /tmp/axis416-native-target

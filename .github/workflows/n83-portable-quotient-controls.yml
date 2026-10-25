@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   physical-x86-controls:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: warn
 
   paired-x86-scratch:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

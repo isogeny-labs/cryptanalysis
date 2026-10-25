@@ -16,7 +16,7 @@ permissions:
 jobs:
   native-replay:
     name: Exhaustive top rank and 512 native point replays
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4

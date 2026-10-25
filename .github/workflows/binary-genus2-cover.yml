@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   native:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +69,7 @@ jobs:
         run: tools/bootstrap_crypto_analysis_core.sh
       - run: tools/binary-genus2-cover/check.sh
   lean:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

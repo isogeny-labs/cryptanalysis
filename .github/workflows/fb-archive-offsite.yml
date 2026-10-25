@@ -37,7 +37,7 @@ env:
 jobs:
   archive:
     name: upload archived bases and recipes
-    runs-on: ubuntu-latest
+    runs-on: main
     # archives over 1 MiB are not in git; --rebuild-missing regenerates them (largest: n = 47, 8.4M points)
     timeout-minutes: 120
     steps:
@@ -66,7 +66,7 @@ jobs:
 
   sweep-points:
     name: sweep points ${{ matrix.sweep }}
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 240
     strategy:
       fail-fast: false

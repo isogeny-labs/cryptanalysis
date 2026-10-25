@@ -13,9 +13,9 @@ on:
   workflow_dispatch:
     inputs:
       runs_on:
-        description: "Runner label (e.g. ubuntu-24.04, ubuntu-22.04, ubuntu-24.04-arm)"
+        description: "Runner label (e.g. main, main, ubuntu-24.04-arm)"
         required: false
-        default: ubuntu-24.04
+        default: main
 
 permissions:
   contents: read
@@ -32,7 +32,7 @@ env:
 
 jobs:
   replay:
-    runs-on: ${{ inputs.runs_on || 'ubuntu-24.04' }}
+    runs-on: ${{ inputs.runs_on || 'main' }}
     # Build about 10 min, four rank processes about 40 min on the original
     # runner (more on a slower host), two cold processes about 1 min.
     timeout-minutes: 180
@@ -78,7 +78,7 @@ jobs:
                         if line.startswith('model name')), None)
           receipt = {
               'provider': 'github_actions',
-              'requested_runs_on': os.environ.get('REQUESTED_RUNS_ON') or 'ubuntu-24.04',
+              'requested_runs_on': os.environ.get('REQUESTED_RUNS_ON') or 'main',
               'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'],
                                                   os.environ['GITHUB_RUN_ATTEMPT'],
                                                   os.environ['GITHUB_JOB']),

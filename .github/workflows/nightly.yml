@@ -28,7 +28,7 @@ jobs:
   # ------------------------------------------------- slow tests, memcheck --
   valgrind-slow:
     name: Valgrind on the slow suites
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v7
@@ -58,7 +58,7 @@ jobs:
   # ----------------------------------------------------- sanitized soak ----
   sanitized-soak:
     name: ${{ matrix.sanitize }} over the benchmarks
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -92,7 +92,7 @@ jobs:
   # --------------------------------------------------------- benchmarks ----
   benchmarks:
     name: Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
@@ -138,7 +138,7 @@ jobs:
           - { os: macos-14,        cc: clang }
           - { os: macos-15,        cc: clang }
           - { os: ubuntu-24.04-arm, cc: clang }
-          - { os: ubuntu-22.04,    cc: gcc }
+          - { os: main,    cc: gcc }
     env:
       CC: ${{ matrix.cc }}
     steps:

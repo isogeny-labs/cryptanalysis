@@ -71,9 +71,9 @@ jobs:
       matrix:
         include:
           - python: "3.8"
-            runner: ubuntu-22.04
+            runner: main
           - python: "3.12"
-            runner: ubuntu-latest
+            runner: main
     steps:
       - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
@@ -90,7 +90,7 @@ jobs:
 
   chart:
     name: chart (lint, render, admission on kube-apiserver 1.37)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -150,7 +150,7 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: ubuntu-latest
+            runner: main
           - arch: arm64
             runner: ubuntu-22.04-arm
     steps:
@@ -235,7 +235,7 @@ jobs:
     name: publish ghcr.io/${{ github.repository_owner }}/gpu-health
     needs: image
     if: startsWith(github.ref, 'refs/tags/gpu-health-v')
-    runs-on: ubuntu-latest
+    runs-on: main
     permissions:
       contents: read
       packages: write

@@ -17,7 +17,7 @@ permissions:
   contents: read
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

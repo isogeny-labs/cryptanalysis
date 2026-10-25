@@ -19,7 +19,7 @@ permissions:
 jobs:
   proof:
     name: Lean top bound and orbit certificate
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
 
   design:
     name: Top table and frozen design replay
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
 
   holdout:
     name: Independent scalar and point replay
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

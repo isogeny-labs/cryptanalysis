@@ -36,7 +36,7 @@ defaults:
 jobs:
   corpus:
     name: regenerate and validate
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7

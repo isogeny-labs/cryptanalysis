@@ -17,7 +17,7 @@ jobs:
     # Run 36698966100 is executing from frozen commit 0647fdcb. Later PR
     # changes must not repeat the same query interval.
     if: false
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 360
     env:
       QUERY_START: "6710886400"

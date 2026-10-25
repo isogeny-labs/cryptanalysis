@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   store:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 10
     steps:
       # The merge commit and its first parent (the base); blobs on demand only.

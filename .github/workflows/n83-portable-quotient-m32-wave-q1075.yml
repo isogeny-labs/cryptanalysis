@@ -25,7 +25,7 @@ jobs:
           - "16642998272"
           - "17179869184"
           - "17716740096"
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 360
     env:
       QUERY_START: ${{ matrix.query_start }}

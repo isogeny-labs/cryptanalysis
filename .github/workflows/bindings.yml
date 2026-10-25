@@ -29,7 +29,7 @@ jobs:
 
   rust:
     name: Rust (stable)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     defaults:
       run:
@@ -61,7 +61,7 @@ jobs:
     # while cryptanalysis-cuda needs 1.88 for slice::as_chunks.  Both numbers
     # are declared in the manifests and re-checked here.
     name: Rust MSRV ${{ matrix.rust }} (${{ matrix.label }})
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -106,7 +106,7 @@ jobs:
 
   rust-cuda-ptx:
     name: Rust CUDA driver (PTX embedded)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -141,7 +141,7 @@ jobs:
 
   rust-supply-chain:
     name: Rust supply chain (cargo-deny)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -162,7 +162,7 @@ jobs:
 
   go:
     name: Go ${{ matrix.go }}
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -207,7 +207,7 @@ jobs:
 
   go-lint:
     name: Go lint (golangci-lint)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -241,13 +241,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [main]
         python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         include:
           # 3.8 is what pyproject.toml advertises and the suite really does
           # pass on it, but setup-python no longer ships a 3.8 build for the
-          # current ubuntu-latest image, so it runs on 22.04.
-          - os: ubuntu-22.04
+          # current main image, so it runs on 22.04.
+          - os: main
             python: "3.8"
     steps:
       - uses: actions/checkout@v4
@@ -265,7 +265,7 @@ jobs:
 
   python-package:
     name: Python packaging (pip install .)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -303,7 +303,7 @@ jobs:
 
   python-lint:
     name: Python lint (ruff + mypy)
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 20
     env:
       RUFF_VERSION: "0.15.8"

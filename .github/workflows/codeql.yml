@@ -19,7 +19,7 @@ concurrency:
 jobs:
   analyze:
     name: CodeQL (${{ matrix.language }})
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 40
     permissions:
       # Required to upload the SARIF results to the security tab.

@@ -16,7 +16,7 @@ concurrency:
 jobs:
   protocol:
     name: protocol and event path (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    runs-on: main
     services:
       postgres:
         image: postgres:16

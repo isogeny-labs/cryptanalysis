@@ -25,7 +25,7 @@ defaults:
 jobs:
   native:
     name: Linux x86-64 correctness
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4

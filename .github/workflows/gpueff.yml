@@ -21,7 +21,7 @@ env:
   PROMETHEUS_SHA256: 19700bdd42ec31ee162e4079ebda4cd0a44432df4daa637141bdbea4b1cd8927
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 10
     strategy:
       fail-fast: false

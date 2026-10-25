@@ -32,7 +32,7 @@ defaults:
 jobs:
   host:
     name: host test (${{ matrix.cxx }}, WALK=${{ matrix.walk }})
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -52,7 +52,7 @@ jobs:
 
   cuda:
     name: kernel compile (WALK=${{ matrix.walk }})
-    runs-on: ubuntu-latest
+    runs-on: main
     timeout-minutes: 30
     strategy:
       fail-fast: false

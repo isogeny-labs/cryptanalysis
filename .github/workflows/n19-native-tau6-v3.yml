@@ -6,7 +6,7 @@ name: N19 native tau6 solve, Sage smoke gate + repeated-pair Tier 1 (protocol v3
 # relation_digests (the Sage preparser made the literal 0 an Integer, and
 # json.dumps refused it; see the v3 diagnosis/README.md).
 #
-# Two jobs on fresh GitHub-hosted ubuntu-24.04 runners:
+# Two jobs on fresh GitHub-hosted main runners:
 #   sage-smoke  UNTIMED gate. Builds and tests the native library with the
 #               pinned toolchain, runs the verifier's planted-corruption tests,
 #               reproduces v2's failing calls in the pinned Sage image
@@ -58,7 +58,7 @@ env:
 
 jobs:
   sage-smoke:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -94,7 +94,7 @@ jobs:
                                                      os.environ['GITHUB_JOB']),
                  'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
                  'image_version': os.environ.get('ImageVersion'),
-                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'advertised_runner': 'main standard (4 vCPU, 16 GB)',
                  'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
                  'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
                                                  if l.startswith('MemTotal:')), None),
@@ -177,7 +177,7 @@ jobs:
 
   timed:
     needs: sage-smoke
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 200
     steps:
       - uses: actions/checkout@v4
@@ -213,7 +213,7 @@ jobs:
                                                      os.environ['GITHUB_JOB']),
                  'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
                  'image_version': os.environ.get('ImageVersion'),
-                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'advertised_runner': 'main standard (4 vCPU, 16 GB)',
                  'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
                  'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
                                                  if l.startswith('MemTotal:')), None),

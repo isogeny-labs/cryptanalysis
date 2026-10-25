@@ -1,6 +1,6 @@
 name: N83 one-target IC versus strong rho Tier 1
 
-# A fresh GitHub-hosted ubuntu-24.04 runner is the Tier 1 instance. The
+# A fresh GitHub-hosted main runner is the Tier 1 instance. The
 # frozen protocol is experiments/koblitz-single-target-n83-tier1-20261014/
 # tier1_protocol.json: one sequential rank stage, then Panel A (frozen Q0,
 # eight interleaved strong-rho/IC pairs), Panel B (16 public points, one pair
@@ -32,7 +32,7 @@ env:
 
 jobs:
   onetarget-tier1:
-    runs-on: ubuntu-24.04
+    runs-on: main
     timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
               'runner_arch': os.environ.get('RUNNER_ARCH'),
               'image_os': os.environ.get('ImageOS'),
               'image_version': os.environ.get('ImageVersion'),
-              'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+              'advertised_runner': 'main standard (4 vCPU, 16 GB)',
               'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
               'observed_cpu_model': next((line.split(':', 1)[1].strip() for line in
                   Path('/proc/cpuinfo').read_text().splitlines()

@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   explore:
-    runs-on: ubuntu-latest
+    runs-on: main
     container:
       image: sagemath/sagemath:10.6
       options: --user root
