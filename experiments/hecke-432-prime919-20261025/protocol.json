@@ -1,0 +1,14 @@
+{
+  "status": "FROZEN_BEFORE_SOURCE_AND_IMAGE_EVALUATION",
+  "frozen_utc": "2026-10-25T23:27:37Z",
+  "prime": 919,
+  "selection_reason": "p is 1 mod 3 and 7 mod 24; p=883 and p=907 are 1 mod 3 and 19 mod 24, while p=887 is 2 mod 3 and 23 mod 24",
+  "question": "Does the uniform 24-point rational fiber pattern persist when p mod 3 stays 1 but p mod 8 changes from 3 to 7?",
+  "source_policy": "All 919 j-values; one representative per generic quadratic-twist pair; three j=0 sextic representatives paired under quadratic twist; one j=1728 representative; cyclic nonbacktracking 16- and 27-isogeny chains",
+  "source_gate": "Paired chain count must equal the independent weight-two Hecke point count minus the rational cusp count",
+  "intermediate_map_sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2",
+  "image_policy": "Evaluate every noncuspidal chain with both intermediate j-invariants, Frobenius conjugacy, the exact twist, and the dual 3-isogeny",
+  "image_gate": "One filtered coordinate point per quarter-shift, one Frobenius pair, one rational B output per source, independent audit of source keys, B equation, fiber histogram, cusp image, and B group order",
+  "primary_outputs": ["noncuspidal source count", "noncuspidal image count", "rational fiber-size histogram", "full image and complement after cusp identity"],
+  "interpretation_rule": "A uniform 24-point histogram supports the p mod 3 hypothesis over the p mod 24=19 hypothesis for these tested primes; a nonuniform histogram rejects the former as a complete rule. Neither outcome alone proves a general congruence law."
+}
