@@ -1,7 +1,7 @@
 # PR 1104 inherited static-analysis failures
 
-- **Status:** open
-- **Kind:** inherited CI failures; artifact hydration and policy lookup verified on GitHub
+- **Status:** investigating
+- **Kind:** reviewed main CI repairs integrated; final-head hosted verification pending
 - **Affected work:** [PR 1104](https://github.com/aburan28/cryptanalysis/pull/1104), [CI evidence](../reports/ghs-pr-1104-ci-20261025/README.md)
 - **Next action owner:** repository CI/C maintainers; PR author tracks final-head checks
 - **Last updated:** 2026-10-25
@@ -48,6 +48,15 @@ still-open research obligations, unaffected by this CI record.
   [comparisons](../reports/ghs-pr-1104-ci-20261025/hosted-confirmation/README.md)
   preserve this result. Of the 33-path inventory, only the intentionally
   fixed artifact tool differs from base; C/shell/analyzer inputs match.
+- **Observed, main update:** main advanced through merged PR 1114 to
+  d90192b5, repairing the inherited analysis and workflow-scanner issues.
+  PR 1104 became conflicted. Integration a74d5404 resolves the equivalent
+  full-object-ID conflict, imports all other main repairs unchanged and
+  preserves historical GLV source evidence. All eleven artifact tests,
+  global workflow wiring and the 96-source corpus pass locally. The
+  [integration record](../reports/ghs-pr-1104-main-integration-20261025/README.md)
+  retains exact inputs and the new versioned corpus receipt. Hosted checks
+  on the final integration head remain pending.
 - **Suspected explanation:** the analyzer's individual findings need review;
   no general false-positive or tool-regression claim is made.
 - **Missing capability:** no implementation limitation prevents the
@@ -62,10 +71,10 @@ still-open research obligations, unaffected by this CI record.
   40168603888); GHS scoped wiring also passes locally.
 - [x] Hosted artifact policy succeeds with the full-object-ID fix (run
   40172185678), along with hydration and all eleven unit tests.
-- [ ] Artifact workflow completes after a reviewed correction to inherited
-  suite wiring.
-- [ ] Inherited static-analysis findings receive reviewed fixes and all
-  required/applicable checks succeed on PR 1104's final head.
+- [x] Reviewed main repairs are integrated; global workflow wiring passes
+  locally, and imported C/shell sources match main exactly.
+- [ ] All required/applicable hosted checks, including artifacts and analysis,
+  succeed on PR 1104's final integration head.
 - [ ] Verify no blocking review or conflict, merge with an expected-head
   guard, and confirm the resulting merge commit.
 
@@ -74,8 +83,8 @@ Passing these gates permits the PR merge; it does not resolve the separate
 
 ## Next discriminating step
 
-- **Action:** report hosted artifact-fix confirmation and the unchanged
-  inherited gates; track relevant base/review/CI activity at spaced intervals.
+- **Action:** push the main integration and versioned source-binding replay,
+  then track final-head hosted checks at spaced intervals.
   Do not push status-only commits for repeated unchanged failures.
 - **Inputs and controls:** exact head/base blobs; original failed job logs;
   file-store sparse-checkout, corruption and round-trip unit tests.
@@ -108,3 +117,9 @@ artifact policy. Rust, both Lean checks and ordinary CI pass. Inherited suite
 wiring and identical static-analysis diagnostic sets still fail. Full logs,
 source comparisons and explicit active-record transitions are retained.
 The PR remains open; no unrelated C cleanup or gate bypass is performed.
+
+2026-10-25, 15:06 UTC follow-up: merged main/PR 1114 provides the reviewed
+inherited-gate repairs. Integration a74d5404 resolves the artifact-checker
+conflict and retains every historical selector/negative control. Local
+artifact tests, global wiring and 96-source corpus pass. The problem remains
+investigating until final-head hosted gates and guarded merge are verified.
