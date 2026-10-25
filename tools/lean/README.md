@@ -1,14 +1,17 @@
 # Current Lean corpus gate
 
-`current-corpus-gate.py` checks the 95 tracked research Lean files at the reviewed
+`current-corpus-gate.py` checks the 96 tracked research Lean files at the reviewed
 source versions. It binds 91 byte-identical files and their effective Lean pins
 to the [October 21 native build archive](../../reports/lean-evidence-audit-20261021/report.md),
 then rebuilds and audits the two changed orbit files, the new GLV theorem,
-and the fixed cubic-gluing certificate. The latter is a partial finite module
-proof, not a formalization of the general gluing or geometric theorem.
+the fixed cubic-gluing certificate, and the CM degree-partition arithmetic.
+The latter two are partial finite proofs, not formalizations of their full
+geometric interpretations.
 The gate's own fixture and audit sources under `tools/lean/` are checked by
 the separate self-test and excluded from the research-file count.
-It compares the result with the [October 25 receipt](../../reports/lean-current-corpus-20261025/receipt.json).
+It compares the result with the [October 25 CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json).
+The earlier [95-source receipt](../../reports/lean-current-corpus-20261025/receipt.json)
+remains preserved.
 The [October 24 receipt](../../reports/lean-current-corpus-20261024/receipt.json)
 remains unchanged as historical evidence.
 The [workflow](../../.github/workflows/lean-proof-gate.yml) runs on Lean changes.

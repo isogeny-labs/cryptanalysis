@@ -46,7 +46,7 @@ fn kernel(trace: i64, p: u64) -> Result<Value> {
     let t = trace.rem_euclid(p as i64) as u64;
     let determinant = 512 % p;
     let roots: Vec<_> = (1..p)
-        .filter(|&x| (x * x + p * p - t * x + determinant) % p == 0)
+        .filter(|&x| (x * x + p * p - t * x + determinant).is_multiple_of(p))
         .collect();
     ensure!(roots.len() == 2, "split-distinct case required");
     let (alpha, beta) = (roots[0], roots[1]);
@@ -89,7 +89,7 @@ fn kernel(trace: i64, p: u64) -> Result<Value> {
     ensure!(intersections == [1, 1, 1], "coordinate intersection failed");
     // Coordinates 0,3,5 form the nonzero diagonal minor diag(1,-1,-1).
     ensure!(
-        b[0][0] * b[1][3] % p * b[2][5] % p != 0,
+        !(b[0][0] * b[1][3] % p * b[2][5]).is_multiple_of(p),
         "basis rank minor failed"
     );
     Ok(

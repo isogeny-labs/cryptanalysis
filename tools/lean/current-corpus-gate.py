@@ -2,7 +2,7 @@
 """Bind the current Lean corpus to archived native builds and fresh delta builds.
 
 The October 21 corpus audit compiled 93 files. This gate accepts only unchanged
-source and toolchain pins from that audit, plus four explicitly rebuilt files.
+source and toolchain pins from that audit, plus five explicitly rebuilt files.
 Any other source or pin change fails until native evidence is added here.
 """
 from __future__ import annotations
@@ -22,9 +22,11 @@ INDEX = ARCHIVE / "cryptanalysis-corpus-index-20261021.json"
 GLV = ROOT / "experiments/glv-table-rule-confirm-20261022"
 ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
+CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 LIVE_GLV_COMMIT = "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503"
 LIVE_GLV_SHA256 = "73469fbc151ad905b3659633b5c0702348c17899021458f411e97f752d6d0fef"
 DELTA = {
+    "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
     "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
     "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean": "32807cd33bdbed15ac178d40eb18b9d268b11d7db514b196ae515d4caba7acd7",
@@ -77,7 +79,7 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
     archived = {row["source"]: row for row in index["files"]}
     require(len(archived) == 93, "duplicate archived source")
     added = set(DELTA) - set(archived)
-    require(len(added) == 2 and len(current) == 95 and
+    require(len(added) == 3 and len(current) == 96 and
             set(current) == set(archived) | added, "current Lean corpus changed")
     reused = sorted(set(archived) - set(DELTA))
     require(len(reused) == 91, "unexpected archive reuse count")
@@ -215,6 +217,30 @@ def check_delta() -> dict:
     require(len(audited) == 9 and
             audited[-1] == "audited 8 theorems in [CubicGluing]; 0 failing, 0 trusted (native_decide)",
             "Cubic gluing transitive theorem audit changed")
+    require((CM / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
+            "CM arithmetic Lean toolchain changed")
+    require(json.loads((CM / "lake-manifest.json").read_text())["packages"] == [],
+            "CM arithmetic dependency set changed")
+    run(["lake", "build"], cwd=CM)
+    cm = run(["lake", "env", "lean", "CubicCM53.lean"], cwd=CM)
+    cm_names = {"sorted_bounds", "finite_exclusion", "no_admissible_partition", "no_cube_trace"}
+    cm_expected = {
+        "'CubicCM53.sorted_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'CubicCM53.no_admissible_partition' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'CubicCM53.finite_exclusion' does not depend on any axioms",
+        "'CubicCM53.no_cube_trace' does not depend on any axioms",
+    }
+    require(set(cm.stdout.splitlines()) == cm_expected and not cm.stderr,
+            "CM arithmetic theorem printout or foundations changed")
+    require(set(re.findall(r"^theorem\s+(\w+)", (CM / "CubicCM53.lean").read_text(), re.MULTILINE)) == cm_names,
+            "CM arithmetic theorem coverage changed")
+    cm_audit = run(["lake", "env", "lean", "--run",
+                    str(ROOT / "tools/lean/AuditAxioms.lean"), "CubicCM53"], cwd=CM)
+    cm_audited = [line for line in cm_audit.stdout.splitlines()
+                  if line.startswith("ok    ") or line.startswith("audited ")]
+    require(len(cm_audited) == 6 and
+            cm_audited[-1] == "audited 5 theorems in [CubicCM53]; 0 failing, 0 trusted (native_decide)",
+            "CM arithmetic transitive audit changed")
     return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
@@ -222,7 +248,9 @@ def check_delta() -> dict:
             "glv_live_source_commit": LIVE_GLV_COMMIT,
             "glv_live_source_sha256": LIVE_GLV_SHA256,
             "cubic_axiom_stdout_sha256": hashlib.sha256(cubic.stdout.encode()).hexdigest(),
-            "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest()}
+            "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest(),
+            "cm_axiom_stdout_sha256": hashlib.sha256(cm.stdout.encode()).hexdigest(),
+            "cm_transitive_audit_sha256": hashlib.sha256(("\n".join(cm_audited)+"\n").encode()).hexdigest()}
 
 
 def main() -> None:

@@ -265,11 +265,11 @@ fn verify(c: Coefficients) -> Result<Value> {
     let p = parameters(&base, &f9)?;
     ensure!(smooth(c, &p, &f9), "singular quartic rejected");
     let mut counts = [0; 3];
-    for i in 0..3 {
+    for (i, value) in counts.iter_mut().enumerate() {
         let d = 3 * (i as u32 + 1);
-        counts[i] = count(c, &point_rows(d, &base, &p)?);
+        *value = count(c, &point_rows(d, &base, &p)?);
         ensure!(
-            counts[i] == raw_count(c, d, &base, &p)?,
+            *value == raw_count(c, d, &base, &p)?,
             "raw count disagreement"
         );
     }

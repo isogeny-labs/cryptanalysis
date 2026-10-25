@@ -1,0 +1,13 @@
+digraph TransferScope {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.25, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#eef3f8", fontname="Latin Modern Roman", fontsize=10];
+  edge [fontname="Latin Modern Roman", fontsize=9];
+  source [label="Source model: F512 modulus 515\ny^2+xy=x^3+a*x^2+59, a=0/1\ntraces -35/+35; r=137/239\nNo selected subgroup generator"];
+  restriction [label="A = Res(F512/F8) E\nWeil polynomial T^6-t*T^3+512"];
+  abstract [label="Transverse 53-kernel: abstract module\nWritten CM proof: quotient indecomposable\nOne arithmetic twist is a Jacobian", fillcolor="#fff3d8"];
+  targets [label="33 explicit smooth O3 quartics over F8\n30 at t=-35; 3 at t=+35\nSame Weil polynomial; raw count replays", fillcolor="#e7f3e8"];
+  source -> restriction [label="rational-point correspondence"];
+  restriction -> abstract [label="existence; degree 53^3"];
+  restriction -> targets [style=dashed, label="isogeny-class relation only\nno evaluated map"];
+  abstract -> targets [style=dashed, label="polarized identification missing"];
+}
