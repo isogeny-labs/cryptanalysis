@@ -90,7 +90,7 @@ static void *worker(void *arg)
                 L->cap_out = (L->n_out + nh) * 2 + 64;
                 L->out = (Ps5Hit *)realloc(L->out, L->cap_out * sizeof(Ps5Hit));
             }
-            memcpy(L->out + L->n_out, buf, nh * sizeof(Ps5Hit));
+            if (nh) memcpy(L->out + L->n_out, buf, nh * sizeof(Ps5Hit));
             L->n_out += nh;
         }
         pthread_mutex_unlock(&L->mu);
@@ -305,7 +305,7 @@ int main(int argc, char **argv)
             pairs_run += valid_pairs;
             overflow += L.overflow;
             records += L.n_out;
-            qsort(L.out, L.n_out, sizeof(Ps5Hit), cmp_u32_rec);
+            if (L.n_out) qsort(L.out, L.n_out, sizeof(Ps5Hit), cmp_u32_rec);
             for (size_t r = 0; r < L.n_out; ++r) {
                 const Ps5Hit *h = &L.out[r];
                 for (int pass = 0; pass < 2; ++pass) {
@@ -446,5 +446,14 @@ int main(int argc, char **argv)
         (double)info[4] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
         (double)info[5] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
         (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, mismatches);
+    free(L.out);
+    free(rows);
+    free(jobs);
+    free(xb);
+    free(yb);
+    free(bx);
+    free(by);
+    ps5_free_corpus(&corp);
+    free(ctext);
     return mismatches ? 1 : 0;
 }

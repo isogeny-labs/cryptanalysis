@@ -258,5 +258,17 @@ int main(int argc, char **argv)
         (unsigned long long)forced_by_mode[2], (unsigned long long)forced_by_mode[3],
         (unsigned long long)forced_by_mode[4], (unsigned long long)forced_by_mode[5],
         (unsigned long long)forced_by_mode[6], (unsigned long long)forced_by_mode[7], bad);
+    free(hits);
+    free(inputs);
+    free(iw);
+    free(wires);
+    free(y2);
+    free(x2);
+    free(yb);
+    free(xb);
+    ps5_slp_free(&prog);
+    free(pb);
+    ps5_free_corpus(&corp);
+    free(ct);
     return bad ? 1 : 0;
 }
