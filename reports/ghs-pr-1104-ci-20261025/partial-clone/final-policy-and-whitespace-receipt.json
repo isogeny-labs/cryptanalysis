@@ -1,0 +1,30 @@
+[
+  {
+    "command": [
+      "python3",
+      "tools/artifacts/artifacts.py",
+      "check",
+      "origin/main",
+      "HEAD"
+    ],
+    "source_commit": "5f514304d345f79577f87af2a9a254183c3ce970",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 1.3895915009998134,
+    "stdout": "",
+    "stderr": "artifacts check: no data files committed\n"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "origin/main",
+      "HEAD"
+    ],
+    "source_commit": "5f514304d345f79577f87af2a9a254183c3ce970",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.04123233800055459,
+    "stdout": "",
+    "stderr": ""
+  }
+]

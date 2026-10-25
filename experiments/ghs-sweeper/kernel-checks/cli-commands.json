@@ -1,0 +1,83 @@
+[
+  {
+    "name": "certificate-a0",
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing_kernel",
+      "--",
+      "generate",
+      "--base-degree",
+      "3",
+      "--a",
+      "0",
+      "--b",
+      "24"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "replay-a0",
+    "argv": [
+      "experiments/ghs-sweeper/target/release/examples/three_gluing_kernel",
+      "verify",
+      "--certificate",
+      "experiments/ghs-sweeper/kernel-checks/certificate-a0.json"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "certificate-a1",
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing_kernel",
+      "--",
+      "generate",
+      "--base-degree",
+      "3",
+      "--a",
+      "1",
+      "--b",
+      "24"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "replay-a1",
+    "argv": [
+      "experiments/ghs-sweeper/target/release/examples/three_gluing_kernel",
+      "verify",
+      "--certificate",
+      "experiments/ghs-sweeper/kernel-checks/certificate-a1.json"
+    ],
+    "exit_code": 0,
+    "expected_exit_code": 0
+  },
+  {
+    "name": "corrupted-field-rejection",
+    "argv": [
+      "experiments/ghs-sweeper/target/release/examples/three_gluing_kernel",
+      "verify",
+      "--certificate",
+      "experiments/ghs-sweeper/kernel-checks/corrupted-field.json"
+    ],
+    "exit_code": 1,
+    "expected_exit_code": 1
+  }
+]

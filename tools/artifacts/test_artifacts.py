@@ -132,6 +132,19 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual((self.repo / "research/r1/runs/a.jsonl").read_bytes(), self.big)
         self.assertEqual(self.git("status", "--porcelain"), "")
 
+    def test_pull_recreates_parent_outside_sparse_checkout(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        self.git("commit", "-qm", "move data to the store")
+        target = self.repo / "research/r1/runs/a.jsonl"
+        target.unlink()
+        self.git("sparse-checkout", "set", "--no-cone", "/*", "!/research/")
+        self.assertFalse((self.repo / "research").exists())
+
+        result = self.art("pull", "research/r1/runs/a.jsonl", check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(target.read_bytes(), self.big)
+        self.assertFalse((target.parent / ".artifacts.json").exists())
+
     def test_check_gate(self):
         base = self.git("rev-parse", "HEAD").strip()
         (self.repo / "new.jsonl").write_bytes(os.urandom(100_000))
@@ -147,6 +160,27 @@ class RoundTrip(unittest.TestCase):
         self.art("push", "new.jsonl")
         self.git("commit", "-qm", "move it")
         self.assertEqual(self.art("check", base).returncode, 0)
+
+    def test_check_fetches_missing_blob_in_partial_clone(self):
+        base = self.git("rev-parse", "HEAD").strip()
+        outside = self.repo / "outside"
+        outside.mkdir()
+        (outside / "new.jsonl").write_bytes(os.urandom(90_000))
+        self.git("add", "outside/new.jsonl")
+        self.git("commit", "-qm", "add data outside checkout")
+        blob = self.git("rev-parse", "HEAD:outside/new.jsonl").strip()
+        self.git("config", "uploadpack.allowFilter", "true")
+        clone = Path(self.tmp.name) / "partial"
+        sh(self.tmp.name, "git", "clone", "--filter=blob:none", "--no-checkout",
+           self.repo.as_uri(), str(clone), env=self.env)
+        missing = sh(clone, "git", "rev-list", "--objects", "--all", "--missing=print",
+                     env=self.env).stdout.splitlines()
+        self.assertIn("?" + blob, missing)
+
+        result = self.art("check", base, cwd=clone, check=False)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("outside/new.jsonl", result.stdout)
+        self.assertIn("data file(s) belong in the store", result.stderr)
 
 
 class Policy(unittest.TestCase):

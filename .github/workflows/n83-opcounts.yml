@@ -53,6 +53,7 @@ jobs:
             /experiments/koblitz-n83-stacked-20261016/*.json
             /scripts/isolated_bench.py
             /tools/artifacts/
+            /.artifacts/
       - name: Pull store data this workflow reads (tools/artifacts)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
@@ -86,7 +87,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          want="$(grep -o 'PINS.sha256` (this commit) | `[0-9a-f]\{64\}' "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
+          want="$(grep -o "PINS.sha256\` (this commit) | \`[0-9a-f]\\{64\\}" "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
           echo "$want  $OPCOUNTS/PINS.sha256" | sha256sum -c -
           grep -v 'derived/' "$OPCOUNTS/PINS.sha256" | sha256sum -c -
 

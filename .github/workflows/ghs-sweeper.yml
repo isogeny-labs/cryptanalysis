@@ -1,0 +1,39 @@
+name: Rust GHS sweeper
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/ghs-sweeper/**'
+      - '.github/workflows/ghs-sweeper.yml'
+  push:
+    paths:
+      - 'experiments/ghs-sweeper/**'
+      - '.github/workflows/ghs-sweeper.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/ghs-sweeper
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Formatting
+        run: cargo fmt --manifest-path experiments/ghs-sweeper/Cargo.toml -- --check
+      - name: Clippy
+        run: cargo clippy --locked --manifest-path experiments/ghs-sweeper/Cargo.toml --all-targets -- -D warnings
+      - name: Fixed census, checkpoint and published-parameter regression tests
+        run: cargo test --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml --all-targets -- --test-threads=2

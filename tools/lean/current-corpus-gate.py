@@ -2,13 +2,14 @@
 """Bind the current Lean corpus to archived native builds and fresh delta builds.
 
 The October 21 corpus audit compiled 93 files. This gate accepts only unchanged
-source and toolchain pins from that audit, plus three explicitly rebuilt files.
+source and toolchain pins from that audit, plus five explicitly rebuilt files.
 Any other source or pin change fails until native evidence is added here.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -20,7 +21,17 @@ ARCHIVE = ROOT / "reports/lean-evidence-audit-20261021/evidence/corpus"
 INDEX = ARCHIVE / "cryptanalysis-corpus-index-20261021.json"
 GLV = ROOT / "experiments/glv-table-rule-confirm-20261022"
 ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
+CUBIC = ROOT / "experiments/ghs-sweeper/formal"
+CM = ROOT / "experiments/ghs-sweeper/cm-formal"
+HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
+HISTORICAL_GLV_SHA256 = "4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20"
+HISTORICAL_GLV_RECEIPT = ROOT / "reports/ghs-pr-1104-main-integration-20261025/prior-live-source-binding.json"
+HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278381e727ed193ab534"
+LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
+LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 DELTA = {
+    "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
+    "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
     "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean": "32807cd33bdbed15ac178d40eb18b9d268b11d7db514b196ae515d4caba7acd7",
     "experiments/glv-table-rule-confirm-20261022/TableBudget.lean": "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4",
@@ -72,7 +83,7 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
     archived = {row["source"]: row for row in index["files"]}
     require(len(archived) == 93, "duplicate archived source")
     added = set(DELTA) - set(archived)
-    require(len(added) == 1 and len(current) == 94 and
+    require(len(added) == 3 and len(current) == 96 and
             set(current) == set(archived) | added, "current Lean corpus changed")
     reused = sorted(set(archived) - set(DELTA))
     require(len(reused) == 91, "unexpected archive reuse count")
@@ -130,11 +141,52 @@ def check_delta() -> dict:
     # cached local build and a fresh CI runner. The three checked axiom lines
     # are the source-bound proof evidence; bind only those stable lines.
     orbit_axioms = "\n".join(expected_orbit) + "\n"
-    for mode, archived in (([], "lean-source-binding.json"),
-                           (["--live"], "live-source-binding.json")):
-        check = run(["python3", "check_lean_source_binding.py", *mode], cwd=GLV)
-        require(check.stdout.encode() == (GLV / archived).read_bytes(),
-                f"GLV source binding changed: {archived}")
+    check = run(["python3", "check_lean_source_binding.py"], cwd=GLV)
+    require(check.stdout.encode() == (GLV / "lean-source-binding.json").read_bytes(),
+            "GLV historical source binding changed")
+    # Main changed unrelated C code after the old live receipt. Preserve that
+    # receipt, replay its exact selector/guards and both negative controls on
+    # its pinned source, then bind today's live file separately. No historical
+    # source, receipt, or mathematical selector assertion is overwritten.
+    spec = importlib.util.spec_from_file_location("glv_binding", GLV / "check_lean_source_binding.py")
+    require(spec is not None and spec.loader is not None, "GLV validator unavailable")
+    binding = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(binding)
+
+    def selector_negatives(data: bytes, expected_hash: str) -> None:
+        binding.require_selector(data, expected_hash, 12)
+        for changed in (
+            data.replace(b"(12u * (uint64_t)lg)", b"(48u * (uint64_t)lg)"),
+            data.replace(b"rr * 2 <= 32", b"rr * 2 <= 64"),
+        ):
+            try:
+                binding.require_selector(changed, hashlib.sha256(changed).hexdigest(), 12)
+            except ValueError:
+                continue
+            raise ValueError("GLV selector negative control admitted")
+
+    require(digest(HISTORICAL_GLV_RECEIPT) == HISTORICAL_GLV_RECEIPT_SHA256,
+            "archived GLV live receipt bytes changed")
+    historical_live = json.loads(HISTORICAL_GLV_RECEIPT.read_text())
+    expected_historical = {
+        "schema": "glv-table-live-source-binding-v1",
+        "source_commit": HISTORICAL_GLV_COMMIT,
+        "source_sha256": HISTORICAL_GLV_SHA256,
+        "historical_source_commit": binding.CURRENT_SOURCE_COMMIT,
+        "historical_source_sha256": binding.CURRENT_SHA256,
+        "divisor": 12, "loop_start": 8, "loop_cap": 32,
+        "negative_controls_rejected": 2, "result": "pass",
+    }
+    require(historical_live == expected_historical, "historical GLV live receipt changed")
+    historical_bytes = run(["git", "show", f"{HISTORICAL_GLV_COMMIT}:src/curve.c"]).stdout.encode()
+    selector_negatives(historical_bytes, HISTORICAL_GLV_SHA256)
+    current_live = run(["python3", "check_lean_source_binding.py", "--live"], cwd=GLV)
+    require(current_live.stdout.encode() == (GLV / "live-source-binding.json").read_bytes(),
+            "current main GLV live receipt changed")
+    live_bytes = (ROOT / "src/curve.c").read_bytes()
+    pinned_live = run(["git", "show", f"{LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode()
+    require(live_bytes == pinned_live, "live GLV source differs from the new pin")
+    selector_negatives(live_bytes, LIVE_GLV_SHA256)
     lean_receipt = json.loads((GLV / "lean-receipt.json").read_text())
     require(digest(GLV / "TableBudget.lean") == lean_receipt["source_sha256"],
             "GLV theorem source differs from native receipt")
@@ -152,9 +204,64 @@ def check_delta() -> dict:
             all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
                 <= {"propext", "Quot.sound"} for _, names in printed),
             "GLV theorem coverage or axiom set changed")
+    require((CUBIC / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
+            "Cubic gluing Lean toolchain changed")
+    require(json.loads((CUBIC / "lake-manifest.json").read_text())["packages"] == [],
+            "Cubic gluing dependency set changed")
+    run(["lake", "build"], cwd=CUBIC)
+    cubic = run(["lake", "env", "lean", "CubicGluing.lean"], cwd=CUBIC)
+    names = {"coefficient_injectivity", "frobenius_stability", "basis_isotropy",
+             "coordinate_transversality", "determinant_binding"}
+    expected_cubic = {
+        f"'CubicGluing.{name}' depends on axioms: [propext]" for name in names}
+    require(set(cubic.stdout.splitlines()) == expected_cubic and not cubic.stderr,
+            "Cubic gluing theorem printout or foundations changed")
+    declared_cubic = set(re.findall(r"^theorem\s+(\w+)",
+                                   (CUBIC / "CubicGluing.lean").read_text(), re.MULTILINE))
+    require(declared_cubic == names, "Cubic gluing declaration coverage changed")
+    audit = run(["lake", "env", "lean", "--run",
+                 str(ROOT / "tools/lean/AuditAxioms.lean"), "CubicGluing"], cwd=CUBIC)
+    audited = [line for line in audit.stdout.splitlines()
+               if line.startswith("ok    ") or line.startswith("audited ")]
+    require(len(audited) == 9 and
+            audited[-1] == "audited 8 theorems in [CubicGluing]; 0 failing, 0 trusted (native_decide)",
+            "Cubic gluing transitive theorem audit changed")
+    require((CM / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
+            "CM arithmetic Lean toolchain changed")
+    require(json.loads((CM / "lake-manifest.json").read_text())["packages"] == [],
+            "CM arithmetic dependency set changed")
+    run(["lake", "build"], cwd=CM)
+    cm = run(["lake", "env", "lean", "CubicCM53.lean"], cwd=CM)
+    cm_names = {"sorted_bounds", "finite_exclusion", "no_admissible_partition", "no_cube_trace"}
+    cm_expected = {
+        "'CubicCM53.sorted_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'CubicCM53.no_admissible_partition' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'CubicCM53.finite_exclusion' does not depend on any axioms",
+        "'CubicCM53.no_cube_trace' does not depend on any axioms",
+    }
+    require(set(cm.stdout.splitlines()) == cm_expected and not cm.stderr,
+            "CM arithmetic theorem printout or foundations changed")
+    require(set(re.findall(r"^theorem\s+(\w+)", (CM / "CubicCM53.lean").read_text(), re.MULTILINE)) == cm_names,
+            "CM arithmetic theorem coverage changed")
+    cm_audit = run(["lake", "env", "lean", "--run",
+                    str(ROOT / "tools/lean/AuditAxioms.lean"), "CubicCM53"], cwd=CM)
+    cm_audited = [line for line in cm_audit.stdout.splitlines()
+                  if line.startswith("ok    ") or line.startswith("audited ")]
+    require(len(cm_audited) == 6 and
+            cm_audited[-1] == "audited 5 theorems in [CubicCM53]; 0 failing, 0 trusted (native_decide)",
+            "CM arithmetic transitive audit changed")
     return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
-            "glv_receipt_sha256": digest(GLV / "lean-receipt.json")}
+            "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
+            "glv_historical_live_source_sha256": HISTORICAL_GLV_SHA256,
+            "glv_historical_live_receipt_sha256": digest(HISTORICAL_GLV_RECEIPT),
+            "glv_live_binding_receipt_sha256": digest(GLV / "live-source-binding.json"),
+            "glv_live_source_commit": LIVE_GLV_COMMIT,
+            "glv_live_source_sha256": LIVE_GLV_SHA256,
+            "cubic_axiom_stdout_sha256": hashlib.sha256(cubic.stdout.encode()).hexdigest(),
+            "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest(),
+            "cm_axiom_stdout_sha256": hashlib.sha256(cm.stdout.encode()).hexdigest(),
+            "cm_transitive_audit_sha256": hashlib.sha256(("\n".join(cm_audited)+"\n").encode()).hexdigest()}
 
 
 def main() -> None:

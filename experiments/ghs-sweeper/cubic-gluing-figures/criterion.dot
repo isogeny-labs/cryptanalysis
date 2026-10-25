@@ -1,0 +1,16 @@
+digraph criterion {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.3, ranksep=0.35];
+  node [shape=box, style="rounded", fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=10];
+  M [label="Frobenius on E[ell]\nell = 2 mod 3, det M = q^3"];
+  S [label="M split semisimple\nscalar or two distinct rational eigenvalues"];
+  L [label="Stable transverse Lagrangian\nexplicit module basis"];
+  P [label="Principally polarized quotient\nno curve equation yet"];
+  C [label="Smooth genus-3 target + source twist\nindecomposability and reconstruction open", color="#a45500"];
+  T [label="Explicit prime-subgroup / planted-log transfer\nnot performed", color="#a45500"];
+  M -> S [label="recognition"];
+  S -> L [dir=both, label="proved equivalence"];
+  L -> P [label="standard isotropic quotient"];
+  P -> C [style=dashed, label="needs geometric checks"];
+  C -> T [style=dashed, label="needs evaluated homomorphism"];
+}

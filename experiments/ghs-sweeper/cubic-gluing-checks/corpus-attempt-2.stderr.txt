@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 212, in <module>
+    main()
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 196, in main
+    delta = check_delta()
+            ^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 137, in check_delta
+    check = run(["python3", "check_lean_source_binding.py", *mode], cwd=GLV)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 50, in run
+    require(result.returncode == 0, f"{args[0]} failed: {result.stderr[-1000:]}")
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 43, in require
+    raise ValueError(message)
+ValueError: python3 failed: Traceback (most recent call last):
+  File "/workspace/cryptanalysis/experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py", line 123, in <module>
+    main()
+  File "/workspace/cryptanalysis/experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py", line 77, in main
+    require_selector(current, LIVE_SHA256, 12)
+  File "/workspace/cryptanalysis/experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py", line 41, in require_selector
+    raise ValueError("src/curve.c SHA-256 differs from the pinned source")
+ValueError: src/curve.c SHA-256 differs from the pinned source
+

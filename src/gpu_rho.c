@@ -89,6 +89,8 @@ static int gpu_rho_checkpoint_load(const char *path,
     if (!f) { ca_set_error("gpu rho: cannot reopen checkpoint"); return 0; }
     gpu_rho_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
              memcmp(&h, expected, sizeof(h)) == 0;
     uint64_t checksum = h.checksum;
     h.checksum = 0;

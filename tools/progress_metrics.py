@@ -5,6 +5,7 @@ Sources (committed, read at --ref):
   experiments/ic-bench/history.csv                      append-only IC benchmark history (recorded_at, suite, ...)
   ecc2k130/runner/research/production/**/result.json    GPU paired A/B runs (return_rate_billion_per_second)
   ecc2k130/README.md                                    headline B/s (prose; parsed as a fallback only)
+  experiments/ghs-sweeper/quartic-cubic-checks/         exact local spectral census (no attack/novelty claim)
 Run: python3 tools/progress_metrics.py [--ref origin/main] [--since YYYY-MM-DD]
 """
 # ---- progress-metrics exporter boilerplate (copied verbatim into each repo's tools/progress_metrics.py) ----
@@ -171,11 +172,32 @@ def readme_headline(ref):
              label="ECC2K-130 README headline (one RTX PRO 6000)", source="ecc2k130/README.md")
 
 
+def ghs_quartic_evidence(ref, since):
+    """Exact committed census counts; spectral matches do not certify transfers."""
+    prefix = "experiments/ghs-sweeper/quartic-cubic-checks/"
+    for day, _, txt in file_history(ref, prefix + "census-attempt-1.json", since):
+        data = json.loads(txt)
+        targets = data["target_representatives"]
+        for trace in (-35, 35):
+            emit(f"ghs.o3.spectral_targets.trace_{'minus' if trace < 0 else 'plus'}35",
+                 sum(row["source_trace"] == trace for row in targets), date=day,
+                 problem="binary-cubic-gluing-target-and-novelty", unit="count",
+                 label=f"Published O3 spectral targets at trace {trace}; map unverified",
+                 source=prefix + "census-attempt-1.json")
+    for day, _, txt in file_history(ref, prefix + "local-missing-trace-audit.json", since):
+        data = json.loads(txt)
+        emit("ghs.o3.new_local_source_trace_classes", len(data["new_local_trace_classes_only"]),
+             date=day, problem="binary-cubic-gluing-target-and-novelty", unit="count",
+             label="Trace classes absent from the prior local journal; global novelty unproved",
+             source=prefix + "local-missing-trace-audit.json")
+
+
 def main():
     a = args()
     ic_bench(a.ref, a.since)
     ecc2k130_runs(a.ref, a.since)
     readme_headline(a.ref)
+    ghs_quartic_evidence(a.ref, a.since)
 
 
 if __name__ == "__main__":

@@ -445,6 +445,7 @@ def cache_insert(cfg: Config, src: Path, digest: str) -> None:
 
 def place_copy(src: Path, dest: Path) -> None:
     """Copy-on-write clone where the filesystem has it (APFS, btrfs, XFS), else a copy."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
     dest.unlink(missing_ok=True)
     flag = "-c" if sys.platform == "darwin" else "--reflink=auto"
     p = subprocess.run(["cp", flag, str(src), str(dest)], capture_output=True)
@@ -623,7 +624,10 @@ def cmd_status(cfg: Config, args) -> int:
 
 def cmd_check(cfg: Config, args) -> int:
     """Fail when BASE..HEAD adds or grows a tracked file the policy assigns to the store."""
-    out = git(cfg.root, "diff", "--raw", "-z", "--no-renames", "--diff-filter=AM", args.base, args.head)
+    # A full object ID lets a promisor remote fetch a blob omitted by a
+    # partial clone; an abbreviation cannot identify an object absent locally.
+    out = git(cfg.root, "diff", "--raw", "--no-abbrev", "-z", "--no-renames",
+              "--diff-filter=AM", args.base, args.head)
     fields = out.decode(errors="surrogateescape").split("\0")
     offenders = []
     for meta, path in zip(fields[0::2], fields[1::2]):

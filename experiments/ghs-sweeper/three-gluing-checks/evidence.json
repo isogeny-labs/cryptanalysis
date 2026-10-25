@@ -1,0 +1,203 @@
+{
+  "kind": "cubic-3-gluing-proof-and-software-evidence/v1",
+  "date": "2026-10-24",
+  "classification": [
+    "derived theorem",
+    "fixed software correctness verification"
+  ],
+  "frozen_check_commits": [
+    "805d3fc",
+    "12876b1"
+  ],
+  "new_campaign_data_collected": false,
+  "statistical_or_performance_claim": false,
+  "sources": [
+    {
+      "name": "tian-cubic-2020",
+      "url": "https://arxiv.org/abs/2012.07173",
+      "read_sections": [
+        "1",
+        "3"
+      ],
+      "accessed_utc_date": "2026-10-24",
+      "pdf": {
+        "sha256": "b7748c551bea45474f3785cb21c86987449ab858438719300f9273c3f6b9cb5d",
+        "bytes": 253618
+      },
+      "txt": {
+        "sha256": "a2c67868c933554e077d1998de9745d808377a9da880cbd9a483279e3bbab082",
+        "bytes": 58222
+      }
+    },
+    {
+      "name": "beauville-ritzenthaler-2010",
+      "url": "https://arxiv.org/abs/1005.3683",
+      "read_sections": [
+        "Introduction",
+        "3, especially Proposition 3.1 and characteristic-two discussion"
+      ],
+      "accessed_utc_date": "2026-10-24",
+      "pdf": {
+        "sha256": "c40d46b236b2c02c0a1a70448adfee0a1a1c4b95222bf47d30496e52df6d4273",
+        "bytes": 133064
+      },
+      "txt": {
+        "sha256": "66c59aa0038fe28f73d30accaf7f7252e1d64474f7a0e10cc30228b989ffbaeb",
+        "bytes": 19812
+      }
+    },
+    {
+      "name": "lachaud-ritzenthaler-zykin-2008",
+      "url": "https://arxiv.org/abs/0802.4017",
+      "read_sections": [
+        "Theorem 1.1.1"
+      ],
+      "accessed_utc_date": "2026-10-24",
+      "pdf": {
+        "sha256": "c5175c41cf7e2c41b560d99bc8b0400202771f48e29359e995347813973a4a54",
+        "bytes": 250135
+      },
+      "txt": {
+        "sha256": "907e2a9360b77467a9398768622fc4475035aef0263659fac86a147f0ef13ed1",
+        "bytes": 53731
+      }
+    },
+    {
+      "name": "moisio-kloosterman-2007",
+      "url": "https://arxiv.org/abs/0706.2112",
+      "read_sections": [
+        "7, Theorem 7.3 and Remark 7.4"
+      ],
+      "accessed_utc_date": "2026-10-24",
+      "pdf": {
+        "sha256": "133c0701f8f011a505b5b5b2769a2f24ca353f1fe8b9cdb65d61fcbe3b38c590",
+        "bytes": 246587
+      },
+      "txt": {
+        "sha256": "1c0abd7eb63e108931887306d15dcfbb1eefed03d81fc82fd3e074783ed70f5d",
+        "bytes": 65254
+      }
+    }
+  ],
+  "source_access_gaps": [
+    {
+      "url": "https://doi.org/10.1007/s00145-023-09474-2",
+      "status": "Publisher abstract/references read; full 2023 journal text not accessed; 2020 preprint read instead. No assertion of equivalence or novelty exclusion."
+    },
+    {
+      "name": "Murai restricted thesis",
+      "status": "unread"
+    }
+  ],
+  "source_download_failure_retained": {
+    "url": "https://math.univ-cotedazur.fr/u/beauvill/pubs/g3.pdf",
+    "error": "HTTP 503 via executor",
+    "resolution": "Primary text read through browser; arXiv PDF subsequently downloaded and hashed."
+  },
+  "theorem_claims": {
+    "module_condition": "iff, derived; independently checked by direct RREF subspace enumeration for all 48 GL2(F3) matrices",
+    "geometric_indecomposability": "derived proof from absence of degree-1/2 conjugate isogenies; not machine checked or independently mathematically reviewed",
+    "binary_corollary": "d>=2, full absolute degree b, specified root condition: genus-three Jacobian isogeny for one quadratic source twist",
+    "odd_d_simplification": "Tr(cube_root(b))=0; this condition itself is prior work, not novel",
+    "explicit_source_twist_selected": false,
+    "target_curve_instantiated": false,
+    "explicit_transfer_evaluated": false,
+    "planted_log_verified": false,
+    "novel_affected_family_established": false,
+    "publication_priority_established": false
+  },
+  "validation": {
+    "release_all_target_tests_passed": 29,
+    "new_tests": 4,
+    "old_tests": 25,
+    "finite_matrices": 48,
+    "lagrangians_per_weighted_form": 1120,
+    "format_exit_code": 0,
+    "clippy_exit_code": 0,
+    "clippy_warnings_denied": true,
+    "failed_unit_attempts": 0,
+    "render_attempts": [
+      {
+        "attempt": 1,
+        "exit_code": 0,
+        "warnings": "Fontconfig cache not writable; retained."
+      },
+      {
+        "attempt": 2,
+        "exit_code": 0,
+        "warnings": null
+      },
+      {
+        "attempt": 3,
+        "exit_code": 0,
+        "warnings": null
+      }
+    ]
+  },
+  "fixed_binary_control": {
+    "absolute_degree": 9,
+    "base_degree": 3,
+    "modulus": 515,
+    "b": 24,
+    "a_controls": [
+      0,
+      1
+    ],
+    "absolute_degree_b": 9,
+    "division_roots": [
+      2,
+      75
+    ],
+    "cube_root_b": 16,
+    "trace_cube_root": 0,
+    "subgroup_order": null,
+    "curve_id": null,
+    "candidate_id": null
+  },
+  "environment": {
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)"
+  },
+  "pdf_inspection": {
+    "file": "THREE_GLUING.pdf",
+    "sha256": "e12b20ac11445d626166c1d8be213307410ae9127aa958acb48bdf3d211cd938",
+    "pages": 6,
+    "visually_inspected_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "result": "All theorem text, labels, links and code legible; final page contains the graph-audit paragraph."
+  },
+  "engine_and_history": {
+    "core_source_or_dependency_changes": false,
+    "engine_matches_exploration_journal": true,
+    "pending_jobs": 355,
+    "historical_imported_complete_jobs": 1,
+    "new_weak_catalogue_entries": 0
+  },
+  "protocol_tool_status": {
+    "required_ref": "crypto-autoresearcher origin/main",
+    "inspected_commit": "4ea4e6a22ab30e4da6f4b7515e4fe2dfbdfa8a58",
+    "tool_present": false,
+    "sweep_remains_pending": true
+  },
+  "graph_audit": [
+    "experiments/hyperelliptic-cover-infrastructure/source-parity.json",
+    "experiments/ecc2k130-isogeny-class/gaps/G2-verify-weil-descent-ghs",
+    "experiments/ghs-sweeper/reference/prototype-branch-orbit.md",
+    "experiments/ic-candidate-catalog/curves.yaml",
+    "experiments/ic-candidate-catalog/isogeny_routes.json"
+  ],
+  "costs": {
+    "construction": null,
+    "transfer": null,
+    "solve": null,
+    "rho": null,
+    "rho_is_acceptance_gate": false
+  }
+}

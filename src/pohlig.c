@@ -150,11 +150,26 @@ typedef struct ph_checkpoint {
     uint64_t checksum;
 } ph_checkpoint;
 
+/* Feed semantic words in a fixed byte order. This matches the old raw-word
+ * FNV input on the little-endian checkpoint platforms and avoids hashing any
+ * object-representation padding. */
+static uint64_t ph_hash_words(const uint64_t *words, size_t count, uint64_t h)
+{
+    for (size_t i = 0; i < count; i++) {
+        uint64_t word = words[i];
+        for (unsigned byte = 0; byte < 8; byte++) {
+            h ^= (word >> (8 * byte)) & UINT64_C(0xff);
+            h *= UINT64_C(1099511628211);
+        }
+    }
+    return h;
+}
+
 static uint64_t ph_identity(const ca_group *g, const ca_elem *base,
                             const ca_elem *target, uint64_t n,
                             const ca_dlog_params *p)
 {
-    uint64_t bw[4], tw[4], alpha_bits;
+    uint64_t bw[4] = {0}, tw[4] = {0}, alpha_bits;
     ca_group_decode(g, bw, base); ca_group_decode(g, tw, target);
     memcpy(&alpha_bits, &p->grumpy.alpha, sizeof(alpha_bits));
     uint64_t v[] = {
@@ -169,7 +184,7 @@ static uint64_t ph_identity(const ca_group *g, const ca_elem *base,
         p->kangaroo.jumps, p->kangaroo.seed,
         p->grumpy.m, alpha_bits
     };
-    return dlog_ckpt_hash(v, sizeof(v), UINT64_C(14695981039346656037));
+    return ph_hash_words(v, sizeof(v) / sizeof(v[0]), UINT64_C(14695981039346656037));
 }
 
 static int ph_save(const char *path, ph_checkpoint *c)

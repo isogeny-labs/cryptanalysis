@@ -1,0 +1,17 @@
+digraph geometry {
+  graph [rankdir=TB,bgcolor="white",ranksep=0.3];
+  node [shape=box,style="rounded",fontname="Helvetica",fontsize=11];
+  edge [fontname="Helvetica",fontsize=10];
+  K [label="F512 / F8: full-degree binary sources\n5-screen positive, 3-screen negative"];
+  M [label="Explicit stable transverse 5-torsion module\nno evaluated elliptic torsion coordinates"];
+  G [label="Exclude geometric isogeny degrees 1..6\nFrobenius distances and modular polynomials"];
+  B [label="Indecomposable principally polarized quotient\nproved conditional implication"];
+  C [label="A genus-3 Jacobian for ONE source twist\nexistence theorem, twist not selected"];
+  T [label="Target equation and evaluated subgroup/log map\nnot constructed",color="#a45500"];
+  K -> M;
+  K -> G;
+  M -> B;
+  G -> B;
+  B -> C [label="arithmetic Torelli"];
+  C -> T [style=dashed];
+}

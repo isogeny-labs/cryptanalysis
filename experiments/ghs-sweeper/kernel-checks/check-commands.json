@@ -1,0 +1,46 @@
+[
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "fmt",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "log": "format-attempt-1.txt"
+  },
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "log": "clippy-attempt-1.txt"
+  },
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets",
+      "--",
+      "--test-threads=2"
+    ],
+    "exit_code": 0,
+    "log": "all-targets-attempt-1.txt"
+  }
+]

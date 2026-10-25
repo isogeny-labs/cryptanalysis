@@ -155,6 +155,8 @@ static int bsgs_checkpoint_load(const char *path, const bsgs_checkpoint_header *
     if (!f) { ca_set_error("bsgs: cannot reopen checkpoint"); return 0; }
     bsgs_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
              memcmp(&h, saved, sizeof(h)) == 0;
     struct stat fs;
     if (h.entries > (UINT64_MAX - sizeof(h)) / sizeof(ca_htab1_entry)) ok = 0;
@@ -501,11 +503,12 @@ ca_status ca_bsgs_solve_checkpointed(
         ca_group_inv(g, &tmp, &tmp);
         ca_group_op(g, &R, target, &tmp);
         ops++;
-        uint64_t steps = width_m1 / t.m + 1;
-        if (steps == 0) {
+        uint64_t steps = width_m1 / t.m;
+        if (steps == UINT64_MAX) {
             ca_set_error("bsgs: interval has too many giant steps");
             rc = CA_ERR_INVALID; goto done;
         }
+        steps++;
         if (giant_next > steps) {
             ca_set_error("bsgs: saved giant position is outside interval");
             rc = CA_ERR_INVALID; goto done;

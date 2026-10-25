@@ -29,7 +29,7 @@ static int class_of(const ca_group *g, const ca_elem *point, uint64_t beta,
     *key = sign ? minus_y : words[1];
     *orientation = j + 3 * sign;
     if (canonical) {
-        uint64_t encoded[4] = {xx[j], *key, 0, 0};
+        const uint64_t encoded[4] = {xx[j], *key, 0, 0};
         if (!ca_group_encode(g, canonical, encoded)) return 0;
     }
     return 1;
@@ -64,8 +64,8 @@ ca_status ca_sixclass_solve(const ca_group *g, const ca_elem *base,
      * x-rotation (beta*x,y) therefore acts as -endo_lambda. */
     uint64_t lambda = n - g->endo_lambda;
     uint64_t l2 = ca_mulmod(lambda, lambda, n);
-    uint64_t units[6] = {1, lambda, l2, n - 1, n - lambda, n - l2};
-    uint64_t inverse[6] = {1, l2, lambda, n - 1, n - l2, n - lambda};
+    const uint64_t units[6] = {1, lambda, l2, n - 1, n - lambda, n - l2};
+    const uint64_t inverse[6] = {1, l2, lambda, n - 1, n - l2, n - lambda};
     if (ca_powmod(beta, 3, g->p) != 1 || ca_powmod(lambda, 3, n) != 1)
         return CA_ERR_INVALID;
     ca_elem check, phi;

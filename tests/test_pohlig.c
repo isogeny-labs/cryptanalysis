@@ -1,25 +1,26 @@
 #include "test_fixtures.h"
 #include <unistd.h>
 
-/* Read the persisted aggregate from the private Pohlig checkpoint so the
- * elapsed-time regression can verify the exact returned boundary is durable. */
-typedef struct test_ph_checkpoint {
-    char magic[8];
-    uint64_t version, identity, n, fi, k, result, modulus, xk, qk;
-    ca_stats stats;
-    uint64_t checksum;
-} test_ph_checkpoint;
-
+/* Read the persisted aggregate from the private Pohlig checkpoint. The
+ * on-disk prefix is magic plus nine 64-bit words; the trailing word is its
+ * checksum. Keep the unused prefix as an array so this test does not claim to
+ * interpret private checkpoint fields it never verifies. */
 static int read_ph_checkpoint_stats(const char *path, ca_stats *stats)
 {
     FILE *f = fopen(path, "rb");
     if (!f) return 0;
-    test_ph_checkpoint c;
-    int read_ok = fread(&c, sizeof(c), 1, f) == 1;
+    char magic[8];
+    uint64_t header[9];
+    ca_stats persisted;
+    long expected_size =
+        (long)(sizeof(magic) + sizeof(header) + sizeof(persisted) + sizeof(uint64_t));
+    int ok = fseek(f, 0, SEEK_END) == 0 && ftell(f) == expected_size &&
+             fseek(f, 0, SEEK_SET) == 0 && fread(magic, sizeof(magic), 1, f) == 1 &&
+             fread(header, sizeof(header), 1, f) == 1 &&
+             fread(&persisted, sizeof(persisted), 1, f) == 1;
     int close_ok = fclose(f) == 0;
-    if (!read_ok || !close_ok) return 0;
-    if (memcmp(c.magic, "CADLOGC1", 8) != 0 || c.version != 1) return 0;
-    *stats = c.stats;
+    if (!ok || !close_ok || memcmp(magic, "CADLOGC1", 8) != 0 || header[0] != 1) return 0;
+    *stats = persisted;
     return 1;
 }
 
