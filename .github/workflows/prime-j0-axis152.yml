@@ -21,6 +21,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/prime-j0-axis152-20261012 experiments/prime-j0-axis416-20261012 experiments/prime-j0-radix919-terminal-unit-20261012 experiments/prime-j0-secp256k1-native experiments/prime-j0-sector-digit-20261010
       - name: Install elan for pinned Lean
         run: |
           set -euo pipefail
@@ -36,6 +42,12 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/prime-j0-axis152-20261012 experiments/prime-j0-axis416-20261012 experiments/prime-j0-radix919-terminal-unit-20261012 experiments/prime-j0-secp256k1-native experiments/prime-j0-sector-digit-20261010
       - name: Reconstruct the exact radix and table certificates
         run: |
           set -euo pipefail
@@ -57,6 +69,12 @@ jobs:
       CARGO_TARGET_DIR: /tmp/axis152-native-target
     steps:
       - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/prime-j0-axis152-20261012 experiments/prime-j0-axis416-20261012 experiments/prime-j0-radix919-terminal-unit-20261012 experiments/prime-j0-secp256k1-native experiments/prime-j0-sector-digit-20261010
       - name: Fetch locked Rust dependencies
         run: cargo fetch --locked --manifest-path experiments/prime-j0-secp256k1-native/Cargo.toml
       - name: Build disposable native evaluator

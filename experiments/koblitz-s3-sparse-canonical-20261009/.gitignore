@@ -2,3 +2,7 @@ target/
 __pycache__/
 *.log
 prior_v1/
+# >>> artifacts: managed by tools/artifacts; bytes live in the store (see .artifacts.json)
+!.artifacts.json
+/replay_base.json
+# <<< artifacts

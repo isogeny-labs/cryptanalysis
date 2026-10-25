@@ -2,3 +2,8 @@ __pycache__/
 *.log
 *.stdout
 *.stderr
+# >>> artifacts: managed by tools/artifacts; bytes live in the store (see .artifacts.json)
+!.artifacts.json
+/holdout-paths-width2.jsonl
+/offers-r1024-dual-priority.bin
+# <<< artifacts
