@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN_BEFORE_SHORT_SHIFT_SWEEP",
+  "curve": "y^2+y=x^3-x^2-10x-20 over F_20023",
+  "subgroup_order": 4021,
+  "source_table": "original 3949 projected orbit representatives in hecke-torsion-frontiers-20261024/p20023.result.json",
+  "relation_rows": "saved seed and degree-2/3 Hecke relations wholly internal to each selected column set",
+  "subset_law": "retain anchored generator column, then first table_size-1 other original columns under SHA-256 of ASCII 'hecke-shift-density/v1:' plus seed label plus ':' plus decimal original column index",
+  "seeds": ["A", "B", "C", "D"],
+  "table_sizes": [2800, 3000, 3200, 3400, 3600],
+  "shift_radii": [1, 2, 3, 4],
+  "edge_rule": "for every retained projected point Q, test Q+jG for every positive j no greater than radius; include exact point hits that survive in the selected table",
+  "work_accounting": "record table_size times radius point-lookup probes, all successful directed edges, and the minimal number of shifted edges needed for the graph spanning forest; naive per-point generation costs radius curve additions and radius lookups",
+  "rank_rule": "contract all included shift edges, reduce retained Hecke rows to component variables, append anchored log(G)=1, and compute exact GF(4021) rank and zero-incidence component count",
+  "validation": "independently check all point identities and saved logs, then recompute every component rank and edge count with Sage",
+  "candidate_id": null,
+  "timing_claim": null
+}

@@ -1,0 +1,21 @@
+{
+  "attempts": [
+    {
+      "sequence": 1,
+      "status": "FAILED_BEFORE_RESULT",
+      "cause": "The inherited radius-one component helper assumed every edge had log offset +1; a valid +2G edge triggered its offset-consistency assertion.",
+      "output_status": "No result.json was written; partial stdout was overwritten by the corrected rerun."
+    },
+    {
+      "sequence": 2,
+      "status": "PASS_PRODUCER",
+      "change": "Use unweighted graph connectivity for rank contraction; retain exact j-step point checks and independently replay log differences for every edge.",
+      "output": "result.json and producer_stdout.jsonl"
+    },
+    {
+      "sequence": 3,
+      "status": "PASS_INDEPENDENT_VALIDATOR",
+      "output": "validation.json and validator_stdout.jsonl"
+    }
+  ]
+}
