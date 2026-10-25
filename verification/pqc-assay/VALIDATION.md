@@ -47,3 +47,26 @@ it now relies on the prover exit status and explicit counterexample counts.
 The mathematical negative controls use SAW's `Invalid:` format, separately
 from LLVM's `Counterexample` format. These corrections did not change the
 production code or weaken a contract. The compact attempt logs are retained.
+
+## CI follow-up, 2026-10-25
+
+The native proof workflow and ordinary C CI passed on `5314ec7d8d20560402a67fd4ee43c7614936f898`.
+The changed-lines formatting check rejected the ABI wrappers' multiline layout.
+The harness now uses the one-line layout requested by that check; local
+clang-format 19.1.7 accepts it. SAW, all four specification controls and both
+source mutants were rerun successfully after formatting. Their new receipts
+are `evidence/format-fix-*.txt`; the original receipts remain unchanged.
+
+Other initial-head failures do not inspect changed production code:
+
+- [artifact hydration](https://github.com/aburan28/cryptanalysis/actions/runs/40150318534):
+  the existing sparse job tries to copy `docs/ecdlp-surfaces/report.pdf` into
+  an absent directory;
+- [analysis](https://github.com/aburan28/cryptanalysis/actions/runs/40150318557):
+  ShellCheck flags the literal `$HOME` test in unchanged `scripts/cli_smoke.sh`,
+  gcc reports an uninitialized-state warning in unchanged `src/ca_internal.h`,
+  and clang-tidy/cppcheck report findings in unchanged library/test files.
+
+Those checks remain merge gates. The port does not suppress their findings
+or change their policies. Merge is authorized, but remains pending successful
+applicable checks.
