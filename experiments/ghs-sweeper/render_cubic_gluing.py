@@ -20,7 +20,7 @@ fig = root / "cubic-gluing-figures"
 source = json.loads((root / "cubic-gluing-checks/binary-census-attempt-1.json").read_text())
 rows = [r for r in source["rows"] if r["five_module_status"] == "split_distinct" and not r["three_kernel"]]
 with (fig / "source-traces.csv").open("w", newline="") as handle:
-    writer = csv.writer(handle)
+    writer = csv.writer(handle, lineterminator="\n")
     writer.writerow(["source_trace", "exact_source_models"])
     writer.writerows((r["trace"], r["models"]) for r in rows)
 plt.rcParams.update({"font.size": 10, "svg.fonttype": "none"})
