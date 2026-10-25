@@ -35,7 +35,10 @@ static inline uint64_t ca_splitmix64(uint64_t *x)
 static inline void ca_rng_seed(ca_rng *r, uint64_t seed)
 {
     uint64_t x = seed;
-    for (int i = 0; i < 4; i++) r->s[i] = ca_splitmix64(&x);
+    r->s[0] = ca_splitmix64(&x);
+    r->s[1] = ca_splitmix64(&x);
+    r->s[2] = ca_splitmix64(&x);
+    r->s[3] = ca_splitmix64(&x);
     if ((r->s[0] | r->s[1] | r->s[2] | r->s[3]) == 0) r->s[0] = 1;
 }
 

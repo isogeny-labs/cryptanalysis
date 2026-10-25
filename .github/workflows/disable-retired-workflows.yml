@@ -28,7 +28,12 @@ jobs:
           while read -r w; do
             [ -n "$w" ] || continue
             if [ "$APPLY" = true ]; then
-              gh workflow disable "$w" -R "$REPO" && echo "disabled $w" || { echo "FAILED $w"; fail=1; }
+              if gh workflow disable "$w" -R "$REPO"; then
+                echo "disabled $w"
+              else
+                echo "FAILED $w"
+                fail=1
+              fi
             else
               echo "would disable $w"
             fi

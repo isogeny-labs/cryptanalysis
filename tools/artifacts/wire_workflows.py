@@ -47,9 +47,11 @@ def needed(text: str, moved: set[str], dirs: set[str]) -> list[str]:
     found = set()
     for m in PATH_RE.finditer(text):
         p = m.group(1).split("*", 1)[0].rstrip("/.")
-        while p and p not in moved and p not in dirs:
-            p = p.rsplit("/", 1)[0] if "/" in p else ""
-        if p:
+        # Manifests name individual moved files. A workflow naming an exact
+        # moved file or an exact ancestor directory needs a pull. Merely
+        # naming a different file below that ancestor (for example a CUDA
+        # fetch script beside moved benchmark data) does not.
+        if p in moved or p in dirs:
             found.add(p)
     return sorted(p for p in found if not any(p.startswith(q + "/") for q in found))
 
