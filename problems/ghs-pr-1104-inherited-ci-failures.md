@@ -1,7 +1,7 @@
 # PR 1104 inherited static-analysis failures
 
 - **Status:** open
-- **Kind:** inherited CI failures; artifact hydration verified; partial-clone policy lookup fixed locally
+- **Kind:** inherited CI failures; artifact hydration and policy lookup verified on GitHub
 - **Affected work:** [PR 1104](https://github.com/aburan28/cryptanalysis/pull/1104), [CI evidence](../reports/ghs-pr-1104-ci-20261025/README.md)
 - **Next action owner:** repository CI/C maintainers; PR author tracks final-head checks
 - **Last updated:** 2026-10-25
@@ -40,6 +40,14 @@ still-open research obligations, unaffected by this CI record.
   [new receipt](../reports/ghs-pr-1104-ci-20261025/partial-clone/README.md)
   preserves the full failed job and regression outputs. Rust and both Lean
   checks pass at c5838032; ordinary CI and analysis are still queued.
+- **Observed, hosted confirmation:** 8ffc01a1 passes ordinary CI, Rust and
+  both Lean workflows. Artifact run 40172185678 passes hydration, eleven
+  tests and the policy check; only inherited suite wiring fails. Analysis
+  run 40172185776 repeats exactly the earlier normalized diagnostic sets
+  (shellcheck 1, clang-tidy 38, cppcheck 34, gcc analyzer 1). Full logs and
+  [comparisons](../reports/ghs-pr-1104-ci-20261025/hosted-confirmation/README.md)
+  preserve this result. Of the 33-path inventory, only the intentionally
+  fixed artifact tool differs from base; C/shell/analyzer inputs match.
 - **Suspected explanation:** the analyzer's individual findings need review;
   no general false-positive or tool-regression claim is made.
 - **Missing capability:** no implementation limitation prevents the
@@ -52,8 +60,10 @@ still-open research obligations, unaffected by this CI record.
 
 - [x] Hosted hydration and unit tests verify the sparse-pull fix (run
   40168603888); GHS scoped wiring also passes locally.
-- [ ] Hosted artifact policy succeeds with the full-object-ID fix and the
-  workflow completes after a reviewed correction to inherited suite wiring.
+- [x] Hosted artifact policy succeeds with the full-object-ID fix (run
+  40172185678), along with hydration and all eleven unit tests.
+- [ ] Artifact workflow completes after a reviewed correction to inherited
+  suite wiring.
 - [ ] Inherited static-analysis findings receive reviewed fixes and all
   required/applicable checks succeed on PR 1104's final head.
 - [ ] Verify no blocking review or conflict, merge with an expected-head
@@ -64,8 +74,9 @@ Passing these gates permits the PR merge; it does not resolve the separate
 
 ## Next discriminating step
 
-- **Action:** push the full-object-ID fix with its failing/passing partial-
-  clone regression receipts, report the exact remaining gates, and track CI.
+- **Action:** report hosted artifact-fix confirmation and the unchanged
+  inherited gates; track relevant base/review/CI activity at spaced intervals.
+  Do not push status-only commits for repeated unchanged failures.
 - **Inputs and controls:** exact head/base blobs; original failed job logs;
   file-store sparse-checkout, corruption and round-trip unit tests.
 - **Limits:** no broad C cleanup, suppression, gate bypass or paid compute.
@@ -91,3 +102,9 @@ unit tests, exposing a second partial-clone lookup defect in the policy
 checker. Full object IDs fix a matching local regression; eleven unit tests
 pass. Rust/Lean are green, ordinary CI/analysis queued, hosted policy fix
 pending. Old manifests remain unchanged with explicit version transitions.
+
+2026-10-25, 08:14 UTC: 8ffc01a1 confirms hosted hydration, eleven tests and
+artifact policy. Rust, both Lean checks and ordinary CI pass. Inherited suite
+wiring and identical static-analysis diagnostic sets still fail. Full logs,
+source comparisons and explicit active-record transitions are retained.
+The PR remains open; no unrelated C cleanup or gate bypass is performed.
