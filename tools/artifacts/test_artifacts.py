@@ -84,6 +84,15 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual(self.art("verify", "--remote", cwd=clone).returncode, 0)
         self.assertEqual(sh(clone, "git", "status", "--porcelain").stdout, "")
 
+        # CI can read a tracked manifest from the index while its directory is
+        # absent from a sparse working tree. Pull must create that directory.
+        sparse = Path(self.tmp.name) / "sparse-clone"
+        sh(self.tmp.name, "git", "clone", "-q", str(self.repo), str(sparse))
+        sh(sparse, "git", "sparse-checkout", "set", "--no-cone", "/*", "!/research/")
+        self.assertFalse((sparse / "research").exists())
+        self.art("pull", "research/r1/runs/a.jsonl", cwd=sparse)
+        self.assertEqual((sparse / "research/r1/runs/a.jsonl").read_bytes(), self.big)
+
         # Editing a hydrated file in place is caught, and never corrupts the cache.
         (clone / "research/r1/runs/a.jsonl").write_bytes(b"tampered")
         self.assertEqual(self.art("verify", cwd=clone, check=False).returncode, 1)
