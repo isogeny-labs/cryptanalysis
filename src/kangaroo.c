@@ -76,7 +76,8 @@ static int k_sync_parent(const char *path)
     if (slash) {
         if (slash == dir) slash[1] = '\0';
         else *slash = '\0';
-    } else parent = ".";
+    } else
+        parent = ".";
     int fd = open(parent, O_RDONLY);
     int ok = fd >= 0 && fsync(fd) == 0;
     if (fd >= 0) close(fd);
@@ -180,7 +181,9 @@ static int k_load(const char *path, const k_checkpoint_header *saved,
     if (!f) { ca_set_error("kangaroo: cannot reopen checkpoint"); return 0; }
     k_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
-             memcmp(&h, saved, sizeof(h)) == 0; /* NOLINT(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c): both headers are raw fread() bytes of the same file, padding included */
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
+             memcmp(&h, saved, sizeof(h)) == 0;
     struct stat fs;
     uint64_t prefix = sizeof(h) + (uint64_t)total * sizeof(k_lane_record);
     if (h.entries > (UINT64_MAX - prefix) / sizeof(ca_htab_entry)) ok = 0;

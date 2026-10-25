@@ -187,7 +187,9 @@ static int grumpy_checkpoint_load(const char *path, const grumpy_checkpoint_head
     if (!f) { ca_set_error("grumpy: cannot reopen checkpoint"); return 0; }
     grumpy_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
-             memcmp(&h, saved, sizeof(h)) == 0; /* NOLINT(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c): both headers are raw fread() bytes of the same file, padding included */
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
+             memcmp(&h, saved, sizeof(h)) == 0;
     struct stat fs;
     uint64_t prefix = sizeof(h) + (size_t)3 * 4 * sizeof(uint64_t);
     if (h.entries > (UINT64_MAX - prefix) / sizeof(ca_htab_entry)) ok = 0;

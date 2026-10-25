@@ -183,7 +183,8 @@ static int rho_sync_parent(const char *path)
     if (slash) {
         if (slash == dir) slash[1] = '\0';
         else *slash = '\0';
-    } else parent = ".";
+    } else
+        parent = ".";
     int fd = open(parent, O_RDONLY);
     int ok = fd >= 0 && fsync(fd) == 0;
     if (fd >= 0) close(fd);
@@ -267,7 +268,9 @@ static int rho_checkpoint_load(rho_shared *sh, const rho_checkpoint_header *expe
     if (!f) { ca_set_error("rho: cannot reopen checkpoint"); return 0; }
     rho_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
-             memcmp(&h, expected, sizeof(h)) == 0; /* NOLINT(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c): both headers are raw fread() bytes of the same file, padding included */
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
+             memcmp(&h, expected, sizeof(h)) == 0;
     uint64_t checksum = h.checksum;
     h.checksum = 0;
     uint64_t hash = rho_hash_bytes(&h, sizeof(h), UINT64_C(14695981039346656037));
