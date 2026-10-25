@@ -161,6 +161,27 @@ class RoundTrip(unittest.TestCase):
         self.git("commit", "-qm", "move it")
         self.assertEqual(self.art("check", base).returncode, 0)
 
+    def test_check_fetches_missing_blob_in_partial_clone(self):
+        base = self.git("rev-parse", "HEAD").strip()
+        outside = self.repo / "outside"
+        outside.mkdir()
+        (outside / "new.jsonl").write_bytes(os.urandom(90_000))
+        self.git("add", "outside/new.jsonl")
+        self.git("commit", "-qm", "add data outside checkout")
+        blob = self.git("rev-parse", "HEAD:outside/new.jsonl").strip()
+        self.git("config", "uploadpack.allowFilter", "true")
+        clone = Path(self.tmp.name) / "partial"
+        sh(self.tmp.name, "git", "clone", "--filter=blob:none", "--no-checkout",
+           self.repo.as_uri(), str(clone), env=self.env)
+        missing = sh(clone, "git", "rev-list", "--objects", "--all", "--missing=print",
+                     env=self.env).stdout.splitlines()
+        self.assertIn("?" + blob, missing)
+
+        result = self.art("check", base, cwd=clone, check=False)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("outside/new.jsonl", result.stdout)
+        self.assertIn("data file(s) belong in the store", result.stderr)
+
 
 class Policy(unittest.TestCase):
     P = artifacts.DEFAULT_POLICY

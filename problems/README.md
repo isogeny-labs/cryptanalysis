@@ -9,7 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
-| [PR 1104 inherited CI failures](ghs-pr-1104-inherited-ci-failures.md) | open | merge of the Rust GHS research PR despite passing Rust/Lean checks | hosted sparse-pull fix verification and reviewed inherited C/shell analysis fixes with green final-head CI |
+| [PR 1104 inherited CI failures](ghs-pr-1104-inherited-ci-failures.md) | open | merge of the Rust GHS research PR despite passing Rust/Lean checks | hosted artifact-checker fix verification, inherited suite wiring and reviewed C/shell fixes with green final-head CI |
 | [Binary cubic gluing target and novelty](binary-cubic-gluing-target-and-novelty.md) | investigating | explicit quotient identification and globally novel affected-family claim; 33 spectral quartics and a CM criterion now recorded | primary-text priority comparison, polarized source-to-quartic identification and checked subgroup/log map |
 | [a=0 native genus-two full-solve compute](binary-genus2-a0-full-solve-compute.md) | investigating | completed full-order native-Jacobian timings at r=2417851639230796216685689; a=1 native panel 8/8 verified, a=0 still censored | retained checkpoints, durable compute or a verified new method, and actual full-target recoveries |
 | [ecbench binary genus-two full-subgroup adapter](ecbench-binary-genus2-full-subgroup-adapter.md) | open | sealed cross-representation n=83 comparison and qualified speed ratio; 24 external resumable completions do not satisfy it | explicit wide subgroup selection, registered Mumford-image adapter, common costs and independent replay |
