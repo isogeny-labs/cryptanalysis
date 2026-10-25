@@ -54,3 +54,16 @@ isogeny, preserve a planted large-prime log in a measured transfer, establish
 publication novelty, or compare costs. Curve/subgroup/IC IDs and all costs
 for an attack remain null. No weak-curve catalogue entry is authorized by a
 kernel certificate. The original 355 pending sweep jobs remain pending.
+
+## Addendum: exact order of the existing fixed controls
+
+The initial 32 all-target tests passed. The saved smoke journal contains
+42 degree-nine source trace classes, so add an exact source-order check
+for the same fixed (d,b)=(3,24), a=0,1 controls before interpreting novelty.
+Do not add curves or sample a population. Count the 512 rational x-fibres
+using both field algorithms; require agreement, divisibility by three and
+the quadratic-twist identity #E_0+#E_1=2(512+1). Print both exact orders in
+the retained unit output. Compare only those exact traces against the
+existing read-only journal; a historical trace match is local overlap,
+not an explicit map or a publication-priority conclusion. Commit this
+addendum and the assertion before its first execution.

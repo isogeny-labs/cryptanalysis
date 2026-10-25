@@ -535,6 +535,58 @@ fn main() -> Result<()> {
 mod tests {
     use super::*;
 
+    fn exact_control_order(f: Arithmetic<'_>, a: u32, b: u32) -> u64 {
+        let mut count = 2;
+        for x in 1..f.field.size {
+            let inverse_x2 = f.base_power(f.base_mul(x, x), f.field.size - 2);
+            let h = x ^ a ^ f.base_mul(b, inverse_x2);
+            if f.trace(h) == 0 {
+                count += 2;
+            }
+        }
+        count
+    }
+
+    #[test]
+    fn fixed_source_orders_for_historical_overlap_check() -> Result<()> {
+        let f = Field::new(9)?;
+        let raw = RawField {
+            degree: f.degree,
+            size: f.size,
+            modulus: f.modulus,
+            traces: Vec::new(),
+            inverses: Vec::new(),
+        };
+        let mut orders = Vec::new();
+        for a in [0, 1] {
+            let fast = exact_control_order(
+                Arithmetic {
+                    field: &f,
+                    raw: None,
+                },
+                a,
+                24,
+            );
+            let replay = exact_control_order(
+                Arithmetic {
+                    field: &f,
+                    raw: Some(&raw),
+                },
+                a,
+                24,
+            );
+            assert_eq!(fast, replay);
+            assert_eq!(fast % 3, 0);
+            println!(
+                "fixed_control a={a} b=24 modulus=515 order={fast} trace={}",
+                513 - fast as i64
+            );
+            orders.push(fast);
+        }
+        assert_eq!(orders[0] + orders[1], 1026);
+        Ok(())
+    }
+
     #[test]
     fn actual_kernel_on_both_fixed_twists() -> Result<()> {
         for a in [0, 1] {
