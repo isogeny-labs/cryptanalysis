@@ -32,6 +32,7 @@
  */
 #define _POSIX_C_SOURCE 200809L
 #include <pthread.h>
+#include <sys/resource.h>
 #include <time.h>
 
 #include "pdp_ps5_host.h"
@@ -47,6 +48,26 @@ void pdp_ps5_info(ps5_u32 out[8], const char **sha256);
 
 #define HIT_CAP    (1u << 15)
 #define CHUNK_JOBS 16u
+
+/* User + system CPU seconds of this process so far. */
+static double cpu_s(void)
+{
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    return (double)ru.ru_utime.tv_sec + 1e-6 * (double)ru.ru_utime.tv_usec +
+           (double)ru.ru_stime.tv_sec + 1e-6 * (double)ru.ru_stime.tv_usec;
+}
+
+static double loadavg1(void)
+{
+    double v = -1.0;
+    FILE *f = fopen("/proc/loadavg", "r");
+    if (f) {
+        if (fscanf(f, "%lf", &v) != 1) v = -1.0;
+        fclose(f);
+    }
+    return v;
+}
 
 static double now_s(void)
 {
@@ -259,7 +280,8 @@ int main(int argc, char **argv)
     uint64_t hit_lanes = 0, hit_confirmed = 0, hit_unconfirmed = 0, exc_lanes = 0,
              exc_with_root = 0, records = 0, roots_total = 0, root_set_mismatch = 0,
              verdict_mismatch = 0, unsupported = 0, found_targets = 0, pairs_run = 0;
-    double emu_secs = 0;
+    double emu_secs = 0, emu_cpu_secs = 0;
+    const double load_start = loadavg1();
     uint64_t overflow = 0;
 
     for (size_t ti = 0; ti < n_targets; ++ti) {
@@ -296,12 +318,13 @@ int main(int argc, char **argv)
             L.next = 0;
             L.n_out = 0;
             L.overflow = 0;
-            double t0 = now_s();
+            double t0 = now_s(), c0 = cpu_s();
             pthread_t th[64];
             if (threads > 64) threads = 64;
             for (int k = 0; k < threads; ++k) pthread_create(&th[k], NULL, worker, &L);
             for (int k = 0; k < threads; ++k) pthread_join(th[k], NULL);
             emu_secs += now_s() - t0;
+            emu_cpu_secs += cpu_s() - c0;
             pairs_run += valid_pairs;
             overflow += L.overflow;
             records += L.n_out;
@@ -410,6 +433,9 @@ int main(int argc, char **argv)
     if (full && (!dv_corpus || !dr_corpus)) ++mismatches;
     if (dv_expect == 0 || dr_expect == 0) ++mismatches;
 
+    struct rusage ru_end;
+    getrusage(RUSAGE_SELF, &ru_end);
+    const long peak_rss = ru_end.ru_maxrss;
     printf(
         "{\"tool\":\"pdp_ps5_parity\",\"what\":\"CPU emulation of the PS-5 kernel; not a device "
         "result\","
@@ -430,7 +456,8 @@ int main(int argc, char **argv)
         "\"bitops_fused_per_lane_slot\":%.4f,\"bitops_unfused_per_lane_slot\":%.4f,"
         "\"lane_utilisation\":%.6f,\"bitops_fused_per_valid_pair\":%.4f,"
         "\"bitops_unfused_per_valid_pair\":%.4f,\"lop3_thread_instructions_per_valid_pair\":%.4f,"
-        "\"threads\":%d,\"emulation_secs\":%.3f,\"mismatches\":%u}\n",
+        "\"threads\":%d,\"emulation_secs\":%.3f,\"emulation_cpu_secs\":%.3f,\"peak_rss_kib\":%ld,"
+        "\"loadavg1_start\":%.2f,\"loadavg1_end\":%.2f,\"mismatches\":%u}\n",
         PS5_L, PS5_N, prog_sha, corpus_path, corpus_sha, n_targets, corp.n_targets, m, nblk, n_jobs,
         (unsigned long long)lane_slots, (unsigned long long)want_pairs,
         (unsigned long long)pairs_run, tiling_ok ? "true" : "false", (unsigned long long)records,
@@ -445,7 +472,8 @@ int main(int argc, char **argv)
         (double)want_pairs / (double)lane_slots,
         (double)info[4] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
         (double)info[5] * (double)PS5_LANES * (double)n_jobs / (double)want_pairs,
-        (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, mismatches);
+        (double)info[4] * (double)n_jobs / (double)want_pairs, threads, emu_secs, emu_cpu_secs,
+        peak_rss, load_start, loadavg1(), mismatches);
     free(L.out);
     free(rows);
     free(jobs);
