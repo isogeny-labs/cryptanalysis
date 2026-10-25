@@ -41,6 +41,9 @@ CRAX="$CRAX_REPO/suite/target/release/crax"
 "$CRAX" --json aes block-encrypt \
   --key-hex 000102030405060708090a0b0c0d0e0f \
   --hex 00112233445566778899aabbccddeeff
+"$CRAX" aes aes-algebraic-equations
+"$CRAX" aes aes-slide-comparison --samples 32 --seed 42
+"$CRAX" aes aes-grover-cost --key-bits 192
 "$CRAX" --json aes-attack --technique differential --samples 4096
 "$CRAX" --json aes-attack --technique linear --samples 4096
 "$CRAX" --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
@@ -65,9 +68,12 @@ graph command enumerates 15 j-nodes without truncation for the fixture;
 its j-neighbours are not by themselves certified point-transport routes. See
 [the explicit-target guide](https://github.com/aburan28/crypto/blob/main/docs/ic/EXTERNAL_TARGET_CLI.md)
 for graph numeration, checked routes, and other input forms. Use
-`"$CRAX" aes <COMMAND> --help` for an individual AES command; all 7 sibling
-AES primitive commands and 32 cryptanalysis commands in the tested sibling
-build are reachable through this bridge.
+`"$CRAX" aes <COMMAND> --help` for an individual AES command. The bridge
+discovers the sibling `crypto` command tree, including its AES primitive and
+cryptanalysis commands. The algebraic command verifies the equations on all
+16 input/output pairs of a four-bit AES-like S-box; the slide command reports
+observations within its requested sample count; and the Grover command prints
+a logical resource estimate, not an executed key search.
 
 The explicit prime-field IC commands require a prime field modulus in
 `5..=1,000,000` and a prime subgroup order in `3..=4,000,000`. The explicit
