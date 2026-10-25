@@ -625,6 +625,10 @@ mod tests {
             .into_iter()
             .collect();
         let result = check(&decomposable, ar)?;
+        println!(
+            "negative_control decomposable {}",
+            serde_json::to_string(&result)?
+        );
         assert_eq!(result.nontrivial_product_pairings, 0);
         assert_eq!(result.coordinate_intersection_sizes, [3; 3]);
         assert!(result.frobenius_stable && !result.accepted);
@@ -635,6 +639,10 @@ mod tests {
             .into_iter()
             .collect();
         let result = check(&nonisotropic, ar)?;
+        println!(
+            "negative_control nonisotropic {}",
+            serde_json::to_string(&result)?
+        );
         assert_eq!(result.coordinate_intersection_sizes, [1; 3]);
         assert!(result.nontrivial_product_pairings > 0 && !result.accepted);
         assert!(verify(&nonisotropic).is_err());
