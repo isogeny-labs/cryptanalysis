@@ -132,6 +132,19 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual((self.repo / "research/r1/runs/a.jsonl").read_bytes(), self.big)
         self.assertEqual(self.git("status", "--porcelain"), "")
 
+    def test_pull_recreates_parent_outside_sparse_checkout(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        self.git("commit", "-qm", "move data to the store")
+        target = self.repo / "research/r1/runs/a.jsonl"
+        target.unlink()
+        self.git("sparse-checkout", "set", "--no-cone", "/*", "!/research/")
+        self.assertFalse((self.repo / "research").exists())
+
+        result = self.art("pull", "research/r1/runs/a.jsonl", check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(target.read_bytes(), self.big)
+        self.assertFalse((target.parent / ".artifacts.json").exists())
+
     def test_check_gate(self):
         base = self.git("rev-parse", "HEAD").strip()
         (self.repo / "new.jsonl").write_bytes(os.urandom(100_000))
