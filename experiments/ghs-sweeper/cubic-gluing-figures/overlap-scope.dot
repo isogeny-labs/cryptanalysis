@@ -1,0 +1,12 @@
+digraph overlap {
+  graph [rankdir=TB,bgcolor="white",ranksep=0.3];
+  node [shape=box,style="rounded",fontname="Helvetica",fontsize=11];
+  edge [fontname="Helvetica",fontsize=10];
+  models [label="252 five-positive / three-negative source models\n126 twist pairs, 12 source trace classes"];
+  history [label="Read-only historical genus-3 sweep lookup\n12 of 12 trace classes already recorded"];
+  result [label="New local source isogeny classes: 0\nrecognition / existence criterion remains derived"];
+  missing [label="Publication novelty and explicit quotient/log transfer\nstill unestablished",color="#a45500"];
+  models -> history [label="exact trace and verification flags"];
+  history -> result;
+  result -> missing [style=dashed];
+}
