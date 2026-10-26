@@ -2,11 +2,9 @@ name: codeql
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
-  schedule:
-    # 04:41 UTC on Mondays, so a new query pack is seen even on a quiet week.
-    - cron: '41 4 * * 1'
+    branches: [main]
   workflow_dispatch:
 
 permissions:

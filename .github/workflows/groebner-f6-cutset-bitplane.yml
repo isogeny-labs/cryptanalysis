@@ -1,6 +1,7 @@
 name: Groebner F6 cutset bitplane exactness
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-cutset-bitplane.yml'
       - 'experiments/groebner-f6-cutset-bitplane-20261010/**'
@@ -19,6 +20,7 @@ on:
       - 'experiments/groebner-f6-20261008/**'
       - 'experiments/pdp-scaling/gf2n.py'
   pull_request:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-cutset-bitplane.yml'
       - 'experiments/groebner-f6-cutset-bitplane-20261010/**'

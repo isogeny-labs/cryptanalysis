@@ -1,7 +1,9 @@
 name: Groebner certified F4 initial batching
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:

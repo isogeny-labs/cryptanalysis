@@ -2,6 +2,7 @@ name: Packed affine sharing cost screen
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round39/**'
       - '.github/workflows/block-affine-sharing.yml'

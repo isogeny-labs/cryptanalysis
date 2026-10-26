@@ -4,6 +4,7 @@ name: prime-j0-cycle-compression-native
 # separate host-isolated benchmark service and its strict preflight receipt.
 on:
   pull_request:
+    branches: [main]
     paths:
       - ".github/workflows/prime-j0-cycle-compression-native.yml"
       - "experiments/prime-j0-cycle-compression-20261011/**"

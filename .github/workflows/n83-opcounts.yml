@@ -10,6 +10,7 @@ name: N83 K1 block and cold panel with native work counted (section 5a band)
 # unchanged.
 on:
   pull_request:
+    branches: [main]
     paths:
       - '.github/workflows/n83-opcounts.yml'
       - 'experiments/koblitz-n83-opcounts-20261023/**'
@@ -17,7 +18,7 @@ on:
       - 'experiments/koblitz-n83-stacked-20261016/*.json'
       - 'scripts/isolated_bench.py'
   push:
-    branches: [claude/n83-opcounts-run, 'claude/n83-opcounts-run-*']
+    branches: [main]
   workflow_dispatch:
     inputs:
       runs_on:

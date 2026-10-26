@@ -2,6 +2,7 @@ name: Bounded bielliptic quartic diagnostic
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - '**/cryptanalysis/bielliptic_quartic.rs'
       - '**/bin/quartic_ic.rs'
@@ -12,7 +13,7 @@ on:
       - 'experiments/bielliptic-quartic/**'
       - '.github/workflows/bielliptic-quartic.yml'
   push:
-    branches: [main, claude/cryptanalysis-repo-setup-p59kek]
+    branches: [main]
     paths:
       - '**/cryptanalysis/bielliptic_quartic.rs'
       - '**/bin/quartic_ic.rs'

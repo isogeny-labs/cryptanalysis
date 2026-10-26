@@ -1,7 +1,9 @@
 name: Reusable Macaulay layouts
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 permissions:
   contents: read
 jobs:

@@ -2,6 +2,7 @@ name: Producer coefficient transform
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round67/**'
       - 'experiments/groebner-perf-20260924/round40/fixtures/**'

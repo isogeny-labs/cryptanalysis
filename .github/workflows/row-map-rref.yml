@@ -9,6 +9,7 @@ on:
       - 'experiments/groebner-perf-20260924/round7/local*'
       - '.github/workflows/row-map-rref.yml'
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round30/**'
       - 'experiments/groebner-perf-20260924/round29/active*'

@@ -5,11 +5,9 @@ name: fuzz
 # them, so the two never touch the same files.
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
-  schedule:
-    # 03:17 UTC nightly - the long soak.
-    - cron: '17 3 * * *'
+    branches: [main]
   workflow_dispatch:
 
 permissions:

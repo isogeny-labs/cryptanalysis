@@ -2,12 +2,14 @@ name: pqc-assay
 
 on:
   push:
+    branches: [main]
     paths:
       - 'include/cryptanalysis/ca_modarith.h'
       - 'include/cryptanalysis/ca_types.h'
       - 'verification/pqc-assay/**'
       - '.github/workflows/pqc-assay.yml'
   pull_request:
+    branches: [main]
     paths:
       - 'include/cryptanalysis/ca_modarith.h'
       - 'include/cryptanalysis/ca_types.h'

@@ -1,6 +1,7 @@
 name: Groebner F6 prepared-factor exactness
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-prepared.yml'
       - 'experiments/groebner-f6-prepared-20261009/**'
@@ -8,6 +9,7 @@ on:
       - 'experiments/groebner-f6-20261008/**'
       - 'experiments/pdp-scaling/gf2n.py'
   pull_request:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-prepared.yml'
       - 'experiments/groebner-f6-prepared-20261009/**'

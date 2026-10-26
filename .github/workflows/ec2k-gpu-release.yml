@@ -19,10 +19,12 @@ name: cryptanalysis-release
 
 on:
   push:
+    branches: [main]
     tags: ["cryptanalysis-v*", "ec2k-gpu-v*"]
   # A pull request that touches the client builds and self-checks both
   # tarballs, so a tag never runs a packaging path for the first time.
   pull_request:
+    branches: [main]
     paths:
       - "ecc2k130/**"
       - "fpga/model/**"

@@ -2,10 +2,12 @@ name: Rust GHS sweeper
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/ghs-sweeper/**'
       - '.github/workflows/ghs-sweeper.yml'
   push:
+    branches: [main]
     paths:
       - 'experiments/ghs-sweeper/**'
       - '.github/workflows/ghs-sweeper.yml'

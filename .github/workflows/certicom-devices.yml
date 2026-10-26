@@ -1,6 +1,7 @@
 name: Certicom CPU and GPU correctness
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'gpu/certicom/**'
       - 'src/cryptanalysis/certicom_dlp/**'

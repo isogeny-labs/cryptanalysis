@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths: ['ecc2k130/runner/**', '.github/workflows/ecc2k130-runner.yml']
   pull_request:
+    branches: [main]
     paths: ['ecc2k130/runner/**', '.github/workflows/ecc2k130-runner.yml']
 # A new commit supersedes runs for this PR or branch; manual runs stay independent.
 concurrency:
