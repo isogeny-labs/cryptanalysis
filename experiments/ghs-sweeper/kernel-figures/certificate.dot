@@ -1,0 +1,16 @@
+digraph KernelCertificate {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.3, ranksep=0.35,
+    label="Fixed binary source-kernel certificate; no constructed Jacobian or evaluated transfer",
+    labelloc=t, fontsize=10, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fa", color="#45627c",
+    fontname="DejaVu Sans", fontsize=10, margin="0.13,0.10"];
+  edge [color="#45627c", arrowsize=0.65, fontname="DejaVu Sans", fontsize=9];
+  source [label="Fixed E over K=F_512, modulus 515\nb=24; constants a=0 and a=1\nSource trace classes already recorded locally"];
+  torsion [label="L=K[u]/(u^2+u+1)\nActual independent three-torsion P,Q\nF_512(P)=P; F_512(Q)=-Q\nNumerical Weil pairing u or 1+u"];
+  kernel [label="Three actual tuple generators in the conjugate product\n27 geometric kernel points; 3 individually rational\nAll 729 additions close; all 729 product pairings are 1\nFrobenius-stable; zero coordinate intersections"];
+  quotient [label="A rational (3,3,3)-quotient exists by the proved criterion\nSource-coordinate kernel obligation is now checked\nThe particular Jacobian twist remains unselected"];
+  open [label="Still required: binary quotient reconstruction, twist character,\nexplicit isogeny evaluation, planted-log replay and priority audit\nNo new weak-curve catalogue row or cost claim",
+    fillcolor="#fff3dc", color="#95712b"];
+  source -> torsion -> kernel -> quotient;
+  quotient -> open [style=dashed, label="unimplemented target/map step", color="#95712b"];
+}

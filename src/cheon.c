@@ -377,8 +377,8 @@ static void cheon_pair_free(cheon_pair_table *tab)
     tab->count = 0;
 }
 
-static ca_status cheon_pair_insert(cheon_pair_table *tab, const ca_group *g,
-                                   const ca_elem *x, const ca_elem *y, uint64_t index)
+static void cheon_pair_insert(cheon_pair_table *tab, const ca_group *g, const ca_elem *x,
+                              const ca_elem *y, uint64_t index)
 {
     uint64_t hash = cheon_pair_hash(g, x, y);
     size_t pos = (size_t)hash & (tab->cap - 1);
@@ -391,11 +391,11 @@ static ca_status cheon_pair_insert(cheon_pair_table *tab, const ca_group *g,
             slot->x = *x;
             slot->y = *y;
             tab->count++;
-            return CA_OK;
+            return;
         }
         if (slot->hash == hash && ca_group_equal(g, &slot->x, x) &&
             ca_group_equal(g, &slot->y, y))
-            return CA_OK;
+            return;
         pos = (pos + 1) & (tab->cap - 1);
     }
 }
@@ -442,8 +442,7 @@ static ca_status cheon_pair_bsgs(const ca_group *g, cheon_f2 zeta_hat, uint64_t 
             rc = CA_ERR_LIMIT;
             goto out;
         }
-        rc = cheon_pair_insert(&tab, g, &x, &y, j);
-        if (rc != CA_OK) goto out;
+        cheon_pair_insert(&tab, g, &x, &y, j);
         z = cheon_f2_mul(z, zeta_hat, u, p);
     }
 

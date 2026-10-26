@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 254, in <module>
+    main()
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 235, in main
+    current = {path: digest(ROOT / path) for path in paths}
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/lean/current-corpus-gate.py", line 41, in digest
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/cryptanalysis/experiments/koblitz-n83-index-design-20260929/packed_index_e3_collisions_20261012/CollisionCancellation.lean'

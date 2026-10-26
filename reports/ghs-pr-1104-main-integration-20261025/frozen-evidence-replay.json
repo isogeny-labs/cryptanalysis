@@ -1,0 +1,203 @@
+{
+  "read_scope": "Working bytes where materialized, otherwise exact current indexed bytes for sparse-omitted tracked paths",
+  "manifests": [
+    {
+      "manifest": "experiments/ghs-sweeper/scope-checks/artifact-manifest.json",
+      "manifest_sha256": "e33991acd83108abd2a857e3e577dd44ad22b5d2ba34256374d000497d21830a",
+      "entries": 32,
+      "current_tree_byte_identical": 32,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/three-gluing-checks/artifact-manifest.json",
+      "manifest_sha256": "2e51ce96d1b31346c5818056fec0f50ea136b12ab198f7fb90713f0430a0c6ad",
+      "entries": 30,
+      "current_tree_byte_identical": 30,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/kernel-checks/artifact-manifest.json",
+      "manifest_sha256": "a526633579a9a6de530a3165fdaa068b564f17649843428fe9f26f5d620adb1e",
+      "entries": 63,
+      "current_tree_byte_identical": 63,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "manifest_sha256": "f83024343ffaf6f574f25016a6117045624c43f16613f8308d6faf4de62a1d91",
+      "entries": 89,
+      "current_tree_byte_identical": 85,
+      "explicit_historical_version_transitions": [
+        {
+          "path": ".github/workflows/lean-proof-gate.yml",
+          "old_commit": "9ddbe2c6",
+          "old_sha256": "33f54aca34e310dad1f9cbd416523ca73567aff70a8732957b0eea13f59e736c",
+          "current_sha256": "5c745643024aea2d457aa34a5cb54b6d91e95626d51909cdc610ae752a171d2a"
+        },
+        {
+          "path": "problems/binary-cubic-gluing-target-and-novelty.md",
+          "old_commit": "9ddbe2c6",
+          "old_sha256": "1f9bae537d419dca424fe229798f6cc6590ff82e671ea33c63d7188b507bbe35",
+          "current_sha256": "fcc05bff9a8db8b123097dc67ed899e5c36971690b6d94d58f609fb53f909182"
+        },
+        {
+          "path": "tools/lean/README.md",
+          "old_commit": "9ddbe2c6",
+          "old_sha256": "5fe202341a8b963422b955154654839f2f4c7a435c2bc76f018fc915b53edbe0",
+          "current_sha256": "139258199c9d1dec192755995f4d005d3343230a4baf3552a830b8e72fb8b19d"
+        },
+        {
+          "path": "tools/lean/current-corpus-gate.py",
+          "old_commit": "9ddbe2c6",
+          "old_sha256": "0b1ab1e2acfde0a13dd528ffba7f3173288457336a62d3fb676f4776ce6bdc2b",
+          "current_sha256": "f8f4efdfe587923318f309f2ad3cb4f499ff6c06b989650d93abfc1cbff06d76"
+        }
+      ]
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/additional-artifact-manifest.json",
+      "manifest_sha256": "77d4e8c8d03622b4fc9aae0bead9330417a0a57196f542e5ae425e7091e73209",
+      "entries": 15,
+      "current_tree_byte_identical": 15,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/quartic-cubic-checks/artifact-manifest.json",
+      "manifest_sha256": "fa4e493a937d2d41a8ea34a6d2f2310aab872fc01561ad4164a53fc4cfbd0ee4",
+      "entries": 84,
+      "current_tree_byte_identical": 80,
+      "explicit_historical_version_transitions": [
+        {
+          "path": ".github/workflows/lean-proof-gate.yml",
+          "old_commit": "0dc114d9",
+          "old_sha256": "e5d268d8420daeb53bc50f195a2a36847f9bc2ea44ac52829b6b517568ef34b8",
+          "current_sha256": "5c745643024aea2d457aa34a5cb54b6d91e95626d51909cdc610ae752a171d2a"
+        },
+        {
+          "path": "problems/README.md",
+          "old_commit": "0dc114d9",
+          "old_sha256": "276d94efea703aa8c79b5c01db3461eb1b39d0b23762569898524cee2bd6158d",
+          "current_sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+        },
+        {
+          "path": "tools/lean/README.md",
+          "old_commit": "0dc114d9",
+          "old_sha256": "48b73369b713aa34d12bc25dc1485c64ca8cd4fbf27209528c00b82a513c92be",
+          "current_sha256": "139258199c9d1dec192755995f4d005d3343230a4baf3552a830b8e72fb8b19d"
+        },
+        {
+          "path": "tools/lean/current-corpus-gate.py",
+          "old_commit": "0dc114d9",
+          "old_sha256": "9615d45b805bd9442f59e88d1a20f6b9a3519439d1993be80ae379898030efb9",
+          "current_sha256": "f8f4efdfe587923318f309f2ad3cb4f499ff6c06b989650d93abfc1cbff06d76"
+        }
+      ]
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/quartic-cubic-checks/metrics-artifact-manifest.json",
+      "manifest_sha256": "f479a78b270cff0b7cd744645aeb3ef3fa494ad03b20dee1b91019c31b12ec69",
+      "entries": 2,
+      "current_tree_byte_identical": 2,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/quartic-cubic-checks/metrics-full-artifact-manifest.json",
+      "manifest_sha256": "298dcc257442a42ac8d9feda293b75211959604bf292afd038f4d9203182c1da",
+      "entries": 1,
+      "current_tree_byte_identical": 1,
+      "explicit_historical_version_transitions": []
+    },
+    {
+      "manifest": "reports/ghs-pr-1104-ci-20261025/artifact-manifest.json",
+      "manifest_sha256": "53fdc3827e371d0d19b8f2fe59d9fbf21316201983120518954fbc9250d44efb",
+      "entries": 20,
+      "current_tree_byte_identical": 15,
+      "explicit_historical_version_transitions": [
+        {
+          "path": "problems/README.md",
+          "old_commit": "0cd35127",
+          "old_sha256": "031d91ac1e4b4c7a764cdf70816933310a7e9a994fa940ee689ced48922133f4",
+          "current_sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+        },
+        {
+          "path": "problems/ghs-pr-1104-inherited-ci-failures.md",
+          "old_commit": "0cd35127",
+          "old_sha256": "c63d7b04ca224ba061a96087335259acfb43dff55b35d112e46685128a752610",
+          "current_sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+        },
+        {
+          "path": "reports/ghs-pr-1104-ci-20261025/README.md",
+          "old_commit": "0cd35127",
+          "old_sha256": "6fc6de2168acdb6aeddf7e308779c962d382e897d6e419f6f73ce2374e802f96",
+          "current_sha256": "455c038f280c72c0bc55fa09a477dc5b1c97a0590734fce243b0486c4917bc4d"
+        },
+        {
+          "path": "tools/artifacts/artifacts.py",
+          "old_commit": "0cd35127",
+          "old_sha256": "fb912cf73daa6b08357db1aac254465cac641ff64ec0d5d1025275955f4792b4",
+          "current_sha256": "1c6c4a5308ff8af6bdb8319828e0ceea7d4be3703e161dea6173e74a5ce6488c"
+        },
+        {
+          "path": "tools/artifacts/test_artifacts.py",
+          "old_commit": "0cd35127",
+          "old_sha256": "4e0460e3fd1c9d4f782bc11be64d4675c6fcd9a38e05d0b2a728cd485a00bef8",
+          "current_sha256": "890cb9a2f48e1b91ca8994ec7c18609ded50170230c12b45275ed92e790729e1"
+        }
+      ]
+    },
+    {
+      "manifest": "reports/ghs-pr-1104-ci-20261025/wiring-artifact-manifest.json",
+      "manifest_sha256": "458576877686ea6c240a2523459675bde858bdd20de37baed430629b59bc7ca8",
+      "entries": 10,
+      "current_tree_byte_identical": 9,
+      "explicit_historical_version_transitions": [
+        {
+          "path": "problems/ghs-pr-1104-inherited-ci-failures.md",
+          "old_commit": "b0d27e9a",
+          "old_sha256": "e8a39f23d1f6d67be417cb04d78eee76ca1876f3436d852abb912ac6bd63d422",
+          "current_sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+        }
+      ]
+    },
+    {
+      "manifest": "reports/ghs-pr-1104-ci-20261025/partial-clone/artifact-manifest.json",
+      "manifest_sha256": "248345f67bd44d677f368c0d8fbc58a0ad89756256c3540d31b0ac1cc0d4e726",
+      "entries": 11,
+      "current_tree_byte_identical": 9,
+      "explicit_historical_version_transitions": [
+        {
+          "path": "problems/README.md",
+          "old_commit": "5f514304",
+          "old_sha256": "b5416438eec64c187b673d842dd16f0be6ab30fa5c4b0deb6f272a33b1c6496e",
+          "current_sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+        },
+        {
+          "path": "problems/ghs-pr-1104-inherited-ci-failures.md",
+          "old_commit": "5f514304",
+          "old_sha256": "7987b603a5e3e6a838f230de8c7170eee137c4555b31254e2f99ea05871b10f6",
+          "current_sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+        }
+      ]
+    },
+    {
+      "manifest": "reports/ghs-pr-1104-ci-20261025/hosted-confirmation/artifact-manifest.json",
+      "manifest_sha256": "c450acc4c550bb3f10d696ce0410c91288c190ed0f0d477467ef15f79f4f5268",
+      "entries": 11,
+      "current_tree_byte_identical": 9,
+      "explicit_historical_version_transitions": [
+        {
+          "path": "problems/README.md",
+          "old_commit": "fd03d2f9",
+          "old_sha256": "30b5e532093c9112f81a9e3b43f0864f69b956f4ad1d238fb91eff2e8479d617",
+          "current_sha256": "8cf46bc2c83d4032b8babb5111142bdef68a7718b69c8afeede8cd615dc9c63d"
+        },
+        {
+          "path": "problems/ghs-pr-1104-inherited-ci-failures.md",
+          "old_commit": "fd03d2f9",
+          "old_sha256": "4c76f047bb1148189d5ea3740d341e297f3059afd77008e5d9a934505fb08cfc",
+          "current_sha256": "963387af92c3fcae0d5a851a4a00dae41763af81fe44143958ed5545d11ef42d"
+        }
+      ]
+    }
+  ]
+}

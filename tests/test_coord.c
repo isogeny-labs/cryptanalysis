@@ -1677,10 +1677,8 @@ static double ingest_n(size_t n)
 
 static double median3(double a, double b, double c)
 {
-    if (a > b) { double tmp = a; a = b; b = tmp; }
-    if (b > c) { double tmp = b; b = c; c = tmp; }
-    if (a > b) { double tmp = a; a = b; b = tmp; }
-    return b;
+    double lo = a < b ? a : b, hi = a < b ? b : a;
+    return c < lo ? lo : (c > hi ? hi : c);
 }
 
 static void test_ingest_is_subquadratic(void)

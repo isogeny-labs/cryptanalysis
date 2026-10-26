@@ -149,13 +149,13 @@ jobs:
         run: |
           set +e
           want="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["pointer_chase"]["hugetlb_pages_requested"])' "$EXPERIMENT/protocol.json")"
-          sudo sysctl -w vm.nr_hugepages="$want" > "$PL_RECEIPT_DIR/hugetlb-reserve.txt" 2>&1
+          sudo sysctl -w vm.nr_hugepages="$want" 2>&1 | tee "$PL_RECEIPT_DIR/hugetlb-reserve.txt" >/dev/null
           got="$(cat /proc/sys/vm/nr_hugepages 2>/dev/null || echo 0)"
           echo "requested=$want reserved=$got" | tee -a "$PL_RECEIPT_DIR/hugetlb-reserve.txt"
           python3 "$EXPERIMENT/run_job.py" --bin-dir "$CARGO_TARGET_DIR/release" --pchase "$RUNNER_TEMP/pchase" \
             --log-table "$PL_LOG_TABLE" --receipt-dir "$PL_RECEIPT_DIR/panel" --cpu "$PL_CPU" --off-cpu "$PL_OFF_CPU" \
             --only P2 --hugetlb-pages "$got" | tee -a "$PL_RECEIPT_DIR/runner-stdout.jsonl"
-          sudo sysctl -w vm.nr_hugepages=0 >> "$PL_RECEIPT_DIR/hugetlb-reserve.txt" 2>&1
+          sudo sysctl -w vm.nr_hugepages=0 2>&1 | tee -a "$PL_RECEIPT_DIR/hugetlb-reserve.txt" >/dev/null
           echo "released=$(cat /proc/sys/vm/nr_hugepages)" | tee -a "$PL_RECEIPT_DIR/hugetlb-reserve.txt"
           exit 0
 
