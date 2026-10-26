@@ -103,7 +103,7 @@ jobs:
           if kernel.exists():
               shutil.copytree(kernel, out / 'native' / 'pdp-degree-heuristics', dirs_exist_ok=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: partial-locality-${{ matrix.os }}

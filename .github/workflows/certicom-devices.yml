@@ -100,7 +100,7 @@ jobs:
           CERTICOM_TEST_PHASE: ${{ matrix.phase }}
           CARGO_BUILD_JOBS: '2'
         run: bash gpu/certicom/qualify.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: certicom-metal-hosted-device-observation-${{ matrix.phase }}
@@ -129,7 +129,7 @@ jobs:
       - name: Qualify the requested device through the library and release CLI
         shell: bash
         run: bash gpu/certicom/qualify.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: certicom-${{ inputs.hardware_backend }}-device-correctness

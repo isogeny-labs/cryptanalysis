@@ -73,7 +73,7 @@ jobs:
         run: |
           python experiments/groebner-perf-20260924/round29/audit.py "$RUNNER_TEMP/active-rref" > "$RUNNER_TEMP/active-rref/audit.json"
           python experiments/groebner-perf-20260924/round29/test_audit.py --bundle "$RUNNER_TEMP/active-rref"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: active-rref-${{ matrix.threads }}

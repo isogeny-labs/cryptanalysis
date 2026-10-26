@@ -111,7 +111,7 @@ jobs:
           PY
       - name: Audit retained sources, binaries and original polynomial identities
         run: python -u experiments/groebner-perf-20260924/round65/audit.py --evidence independent-metal-transform-evidence --output independent-metal-transform-evidence/retained-artifact-audit.json > independent-metal-transform-evidence/retained-artifact-audit.log 2>&1
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: independent-metal-transform-${{ matrix.os }}

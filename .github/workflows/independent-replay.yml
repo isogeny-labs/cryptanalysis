@@ -98,7 +98,7 @@ jobs:
               with (out/'paired-audit.json').open('w') as stream:
                   subprocess.run([sys.executable,str(root/'replay_audit.py'),str(report)],stdout=stream,check=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: independent-replay-evidence-${{ matrix.os }}

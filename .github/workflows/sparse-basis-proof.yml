@@ -69,7 +69,7 @@ jobs:
               with (out/'audit.json').open('w') as target:
                   subprocess.run([sys.executable, str(root/'audit.py'), str(report)], stdout=target, check=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: sparse-proof-measurement-${{ matrix.os }}

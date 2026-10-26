@@ -65,7 +65,7 @@ jobs:
           --seconds "$BENCHMARK_SECONDS"
           --trials 7
           --output runs/sage/benchmark.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: p256-sage-horizontal-search
           path: experiments/p256-isogeny-search-20261005/runs/sage

@@ -93,7 +93,7 @@ jobs:
                   subprocess.run([sys.executable, str(root/'audit.py'), str(report)],
                                  stdout=target, check=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && github.event_name == 'pull_request'
         with:
           name: packed-truth-measurement-${{ matrix.os }}

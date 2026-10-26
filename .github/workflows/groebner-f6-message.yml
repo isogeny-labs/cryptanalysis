@@ -53,7 +53,7 @@ jobs:
         run: python experiments/groebner-f6-message-20261009/profile.py --output f6-message-evidence/profile --reps 5
       - name: Retain every target and build receipt
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-f6-message-${{ matrix.os }}
           path: |

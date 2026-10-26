@@ -59,7 +59,7 @@ jobs:
           python experiments/groebner-perf-20260924/round121/profile.py --reference-root "$GITHUB_WORKSPACE" --reference-report f4-obstruction-evidence/reference/panel/report.json --output f4-obstruction-evidence/paired --reps 1
       - name: Retain exact results and raw failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-field-obstruction-${{ matrix.os }}
           path: f4-obstruction-evidence
