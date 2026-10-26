@@ -1,0 +1,48 @@
+{
+  "checks": [
+    "one defined B point per source",
+    "point lies on B and maps to supplied E",
+    "point belongs to independent three-preimage list",
+    "each B fiber size at most geometric modular degree 24",
+    "fiber sizes sum to 1800",
+    "cusp identity absent from noncuspidal image",
+    "full image equals noncuspidal image plus identity"
+  ],
+  "expected_B_group_order": 1008,
+  "expected_noncuspidal_sources": 1800,
+  "expected_rational_cusps": 36,
+  "frozen_at_utc": "2026-10-26T02:35:00.062012+00:00",
+  "grouping_key": [
+    "x_B",
+    "y_B"
+  ],
+  "inputs": {
+    "branch": {
+      "path": "experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "branch_audit": {
+      "path": "experiments/hecke-432-b-coordinate-resolvent-20261025/census_verification.json",
+      "sha256": "2f1be32c1c2fb9da782ce760d3788ae787f9ef0d8828b5be3d899113173d39c4"
+    },
+    "chain_census": {
+      "path": "experiments/hecke-432-prime997-20261025/census.json",
+      "sha256": "3633892432afdce27e4d35ddb08633e8d94b21e54f2b341c7da3852e7047cba4"
+    },
+    "isogeny_preimages": {
+      "path": "experiments/hecke-432-prime997-20261025/image.json",
+      "sha256": "2d4c96722eb06a4b7e2c9ea3d0e764840a305a25a09464f6b43acb092c455350"
+    },
+    "paired_sources": {
+      "path": "experiments/hecke-432-original-C-lift-20261025/result.json",
+      "sha256": "30a51d70e8853d78b189f4882e1dc292b1d841bb0e1b09318a8a4fc27b0fbdf5"
+    }
+  },
+  "preserve_failures_and_exceptions": true,
+  "prime": 997,
+  "prior_full_B_image_bounds": [
+    79,
+    217
+  ],
+  "status": "FROZEN_BEFORE_EXACT_B_IMAGE_CENSUS"
+}
