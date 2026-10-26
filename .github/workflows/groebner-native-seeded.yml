@@ -22,7 +22,7 @@ jobs:
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round110
       - name: Fetch frozen reference audit source
         run: git fetch --no-tags --depth=1 origin 5c2aed25be6663b27577e45c303d03ed40580861
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build and verify native seeded completion

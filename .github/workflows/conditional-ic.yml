@@ -54,7 +54,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924 experiments/ic-bench experiments/ic-candidate-catalog experiments/pdp-degree-heuristics experiments/pdp-scaling
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install numerical dependency
