@@ -11,13 +11,14 @@ SAGE = '/Volumes/SSD990/cryptanalysis/sage'
 
 
 def main():
-    assert len(sys.argv) == 2 and sys.argv[1] in ('predict', 'fallback', 'observe', 'right_kummer')
+    assert len(sys.argv) == 2 and sys.argv[1] in ('predict', 'fallback', 'observe', 'right_kummer', 'taylor')
     stage = sys.argv[1]
     protocol_path = HERE / {
         'predict': 'protocol.json',
         'fallback': 'fallback_protocol.json',
         'observe': 'observation_protocol.json',
         'right_kummer': 'right_kummer_protocol.json',
+        'taylor': 'taylor_protocol.json',
     }[stage]
     protocol = json.loads(protocol_path.read_text())
     source_path = HERE / (stage + '_sage.py')
@@ -26,7 +27,7 @@ def main():
     try:
         run = subprocess.run(command, capture_output=True, text=True,
                              timeout=protocol['prediction_timeout_seconds'] if stage == 'predict'
-                             else protocol['timeout_seconds'] if stage in ('fallback', 'right_kummer')
+                             else protocol['timeout_seconds'] if stage in ('fallback', 'right_kummer', 'taylor')
                              else protocol['observation_timeout_seconds'])
         status = 'COMPLETED' if run.returncode == 0 else 'SAGE_ERROR'
         stdout, stderr, returncode = run.stdout, run.stderr, run.returncode
