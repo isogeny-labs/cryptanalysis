@@ -71,7 +71,7 @@ jobs:
         run: python experiments/groebner-f6-replay-plan-20261009/validate.py --output f6-replay-plan-evidence
       - name: Retain complete-query evidence and build receipts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-f6-replay-plan-${{ matrix.os }}
           path: |

@@ -37,7 +37,7 @@ jobs:
           python-version: '3.12'
       - name: Rebuild, preflight, measure and independently audit the frozen panel
         run: python -u experiments/groebner-perf-20260924/round62/run_validation.py --output packed-column-evidence
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: sparse-f4-packed-columns-${{ matrix.os }}

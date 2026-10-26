@@ -42,7 +42,7 @@ jobs:
           python experiments/groebner-perf-20260924/round116/test_large.py --output f4-initial-batch-evidence/large-proof.json
       - name: Retain exact results and failed attempts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-initial-batch-${{ matrix.os }}
           path: f4-initial-batch-evidence

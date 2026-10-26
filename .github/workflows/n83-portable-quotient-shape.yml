@@ -127,7 +127,7 @@ jobs:
                             'target_online_seconds': result['target_online_seconds']}))
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-q1065-M32-R28-start-6442450944

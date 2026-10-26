@@ -196,7 +196,7 @@ jobs:
 
       - name: Preserve host class, builds, raw runs, counts and the band
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-opcounts-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-opcounts/

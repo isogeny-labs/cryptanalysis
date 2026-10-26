@@ -50,7 +50,7 @@ jobs:
         run: python experiments/groebner-f6-prepared-20261009/profile.py --output f6-prepared-evidence/profile --reps 5
       - name: Retain build receipts, target statuses, and raw timings
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-f6-prepared-${{ matrix.os }}
           path: |

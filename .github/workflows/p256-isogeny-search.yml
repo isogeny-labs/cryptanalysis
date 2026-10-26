@@ -111,7 +111,7 @@ jobs:
             --verify
       - name: Run reproducible control experiment
         run: p256-isogeny run --output-dir runs/ci --seconds 0.1 --trials 2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.python-version == '3.12'
         with:
           name: p256-control-run
@@ -153,7 +153,7 @@ jobs:
           --trials 2
           --warmup-seconds 0.05
           --output runs/ci-sage/benchmark.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: p256-sage-depth-one
           path: experiments/p256-isogeny-search-20261005/runs/ci-sage

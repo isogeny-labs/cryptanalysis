@@ -37,7 +37,7 @@ jobs:
           python-version: '3.12'
       - name: Rebuild, check resource boundaries, and independently verify every success
         run: python -u experiments/groebner-perf-20260924/round56/run_validation.py --output sparse-f4-evidence
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: sparse-f4-redundancy-${{ matrix.os }}

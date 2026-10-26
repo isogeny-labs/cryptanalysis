@@ -56,7 +56,7 @@ jobs:
             --cpu-backend x86_pclmul \
             --out-dir "$RUNNER_TEMP/n83-zero-run-q1078"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-q1078-zero-run-physical-x86

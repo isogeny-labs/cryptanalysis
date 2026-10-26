@@ -61,7 +61,7 @@ jobs:
               if source.exists():
                   shutil.copytree(source, out / 'native' / f'round{version}', dirs_exist_ok=True)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: sparse-f4-query-timing-${{ matrix.os }}
