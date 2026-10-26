@@ -1,0 +1,31 @@
+[
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing",
+      "--",
+      "curve",
+      "--base-degree",
+      "3",
+      "--a",
+      "0",
+      "--b",
+      "24"
+    ],
+    "exit_code": 0
+  },
+  {
+    "argv": [
+      "python3",
+      "experiments/ghs-sweeper/render_three_gluing.py"
+    ],
+    "exit_code": 0
+  }
+]

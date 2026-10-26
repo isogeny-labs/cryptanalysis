@@ -1,0 +1,14 @@
+Loading file "build/mutant.saw"
+----------Counterexample----------
+  a: 11003246985130381741
+  b: 10226909036731037178
+  modulus: 14694579486221926396
+----------------------------------
+Stack trace:
+   (builtin) in z3
+   build/mutant.saw:13:66-13:68 in (callback)
+   (builtin) in llvm_verify
+   build/mutant.saw:13:5-13:68 in check
+   build/mutant.saw:17:1-17:38 (at top level)
+Proof failed.
+

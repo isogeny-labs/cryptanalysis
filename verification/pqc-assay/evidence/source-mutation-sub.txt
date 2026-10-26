@@ -1,0 +1,30 @@
+Loading file "build/mutant.saw"
+----------Counterexample----------
+  a: 3068573850154303486
+  b: 1915297065852731392
+  modulus: 4224354086134218753
+----------------------------------
+== Anticipated failure message ==
+Stack trace:
+   (builtin) in z3
+   build/mutant.saw:14:73-14:75 in (callback)
+   (builtin) in llvm_verify
+   build/mutant.saw:14:12-14:75 in (callback)
+   (builtin) in fails
+   build/mutant.saw:14:5-14:75 in check
+   build/mutant.saw:17:1-17:38 (at top level)
+Proof failed.
+
+----------Counterexample----------
+  a: 3413262028766946
+  b: 10368466547659235326
+  modulus: 10373161754409566492
+----------------------------------
+Stack trace:
+   (builtin) in z3
+   build/mutant.saw:13:66-13:68 in (callback)
+   (builtin) in llvm_verify
+   build/mutant.saw:13:5-13:68 in check
+   build/mutant.saw:18:1-18:38 (at top level)
+Proof failed.
+

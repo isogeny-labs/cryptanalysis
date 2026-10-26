@@ -239,7 +239,7 @@ jobs:
                             'target_online_seconds': full['target_online_seconds']}))
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-q1091-holdout-M32-R29-shard-${{ matrix.shard }}

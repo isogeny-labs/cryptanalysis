@@ -81,7 +81,7 @@ jobs:
         run: python3 make_figures.py "$OUT" || echo "figures failed"
       - name: Keep the receipts as an artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n131-ref-walk-${{ github.run_id }}-${{ github.run_attempt }}
           path: experiments/n131-ref-walk-20261015/results/ci/
@@ -93,7 +93,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OUT"
           git commit -m "n131-ref-walk: Tier 1 receipts of run ${{ github.run_id }} attempt ${{ github.run_attempt }}" || exit 0
-          for i in 1 2 3; do
+          for _ in 1 2 3; do
             git pull --rebase origin claude/n131-ref-walk && git push origin HEAD:claude/n131-ref-walk && break
             sleep 5
           done

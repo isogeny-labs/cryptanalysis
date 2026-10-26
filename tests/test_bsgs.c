@@ -74,12 +74,14 @@ int main(void)
         CHECK(finished.group_ops > giant.group_ops);
         FILE *f = fopen(path, "rb+");
         CHECK(f != NULL);
-        CHECK(fseek(f, -1, SEEK_END) == 0);
-        int last = fgetc(f);
-        CHECK(last != EOF);
-        CHECK(fseek(f, -1, SEEK_END) == 0);
-        CHECK(fputc(last ^ 1, f) != EOF);
-        CHECK(fclose(f) == 0);
+        if (f) {
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            int last = fgetc(f);
+            CHECK(last != EOF);
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 1, f) != EOF);
+            CHECK(fclose(f) == 0);
+        }
         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
             &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
         unlink(progress); unlink(path); rmdir(dir);

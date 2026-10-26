@@ -34,7 +34,7 @@ jobs:
             /**/*.lean
             /**/*lean-receipt.json
             /tools/audit_lean_evidence.py
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: python3 tools/audit_lean_evidence.py

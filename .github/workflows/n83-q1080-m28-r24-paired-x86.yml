@@ -160,7 +160,7 @@ jobs:
           print(json.dumps(result))
           PY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-q1080-M28-R24-physical-x86-paired

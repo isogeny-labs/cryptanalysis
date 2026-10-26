@@ -280,7 +280,10 @@ impl Walk {
     fn new(candidate: &Candidate, seed: u64) -> Self {
         let curve = Curve::new(&candidate.a, &candidate.b);
         let generator = Point::affine(&candidate.gx, &candidate.gy);
-        assert!(curve.on_curve(&generator), "generator is not on candidate curve");
+        assert!(
+            curve.on_curve(&generator),
+            "generator is not on candidate curve"
+        );
         let secret = BigUint::from(0x0c0d_ec0f_fee1_2345u64);
         let target = curve.scalar_mul(&generator, &secret);
         let order = U256::from_biguint(&candidate.n);
@@ -379,7 +382,10 @@ fn run_once(candidate: &Candidate, seconds: f64, seed: u64) -> (f64, u64, bool, 
 
 fn parse_big(value: &Value, key: &str) -> BigUint {
     BigUint::parse_bytes(
-        value[key].as_str().unwrap_or_else(|| panic!("missing {key}")) .as_bytes(),
+        value[key]
+            .as_str()
+            .unwrap_or_else(|| panic!("missing {key}"))
+            .as_bytes(),
         10,
     )
     .unwrap_or_else(|| panic!("invalid {key}"))
@@ -388,7 +394,10 @@ fn parse_big(value: &Value, key: &str) -> BigUint {
 fn parse_candidate(value: &Value) -> Candidate {
     let curve = &value["curve"];
     Candidate {
-        id: value["candidate_id"].as_str().expect("candidate_id").to_owned(),
+        id: value["candidate_id"]
+            .as_str()
+            .expect("candidate_id")
+            .to_owned(),
         a: parse_big(curve, "a"),
         b: parse_big(curve, "b"),
         n: parse_big(curve, "n"),
@@ -428,8 +437,7 @@ fn t95(df: usize) -> f64 {
     let v = df as f64;
     z + (z.powi(3) + z) / (4.0 * v)
         + (5.0 * z.powi(5) + 16.0 * z.powi(3) + 3.0 * z) / (96.0 * v.powi(2))
-        + (3.0 * z.powi(7) + 19.0 * z.powi(5) + 17.0 * z.powi(3) - 15.0 * z)
-            / (384.0 * v.powi(3))
+        + (3.0 * z.powi(7) + 19.0 * z.powi(5) + 17.0 * z.powi(3) - 15.0 * z) / (384.0 * v.powi(3))
 }
 
 fn mean_ci(values: &[f64]) -> (f64, f64, f64) {
@@ -459,7 +467,9 @@ fn options() -> Options {
     let args: Vec<String> = env::args().skip(1).collect();
     let mut index = 0;
     while index < args.len() {
-        let value = args.get(index + 1).unwrap_or_else(|| panic!("missing value for {}", args[index]));
+        let value = args
+            .get(index + 1)
+            .unwrap_or_else(|| panic!("missing value for {}", args[index]));
         match args[index].as_str() {
             "--candidates" => out.candidate_files.push(PathBuf::from(value)),
             "--candidate-id" => out.candidate_ids.push(value.clone()),
@@ -471,7 +481,10 @@ fn options() -> Options {
         }
         index += 2;
     }
-    assert!(!out.candidate_files.is_empty(), "at least one --candidates is required");
+    assert!(
+        !out.candidate_files.is_empty(),
+        "at least one --candidates is required"
+    );
     assert!(out.seconds > 0.0 && out.trials >= 2 && out.warmup_seconds >= 0.0);
     out
 }
@@ -505,7 +518,12 @@ fn main() {
     selected_ids.extend(opts.candidate_ids.clone());
     let candidates: Vec<Candidate> = selected_ids
         .iter()
-        .map(|id| by_id.get(id).unwrap_or_else(|| panic!("candidate not found: {id}")).clone())
+        .map(|id| {
+            by_id
+                .get(id)
+                .unwrap_or_else(|| panic!("candidate not found: {id}"))
+                .clone()
+        })
         .collect();
 
     for (index, candidate) in candidates.iter().enumerate() {
@@ -515,7 +533,11 @@ fn main() {
                 opts.warmup_seconds,
                 0x2026_1006_u64.wrapping_sub(104_729 + index as u64),
             );
-            assert!(relation, "warmup relation check failed for {}", candidate.id);
+            assert!(
+                relation,
+                "warmup relation check failed for {}",
+                candidate.id
+            );
         }
     }
 
@@ -541,7 +563,11 @@ fn main() {
             iterations[index].push(count);
             relations[index].push(relation);
             checksums[index].push(checksum);
-            assert!(relation, "rho relation check failed for {}", candidates[index].id);
+            assert!(
+                relation,
+                "rho relation check failed for {}",
+                candidates[index].id
+            );
         }
     }
 

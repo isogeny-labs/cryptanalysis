@@ -563,8 +563,7 @@ SH
 chmod +x "$tmp/forwarded"
 checks=$((checks + 1))
 rc=0
-# The literal $HOME checks that delegation preserves argv without expansion.
-# shellcheck disable=SC2016
+# shellcheck disable=SC2016  # '$HOME' is deliberately literal: this checks argv forwarding.
 out=$(CA_CRYPTO_BIN="$tmp/forwarded" "$CA" crypto 'two words' '$HOME') || rc=$?
 if [ "$rc" -ne 7 ] || [ "$out" != $'two words\n$HOME' ]; then
   printf 'FAIL: crypto delegation changed argv or exit status (rc=%d, out=%s)\n' "$rc" "$out" >&2
