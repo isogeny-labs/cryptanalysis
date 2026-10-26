@@ -16,6 +16,7 @@ from pathlib import Path
 TOOL = Path(__file__).resolve().parent / "artifacts.py"
 sys.path.insert(0, str(TOOL.parent))
 import artifacts  # noqa: E402
+import wire_workflows  # noqa: E402
 
 
 def sh(cwd, *argv, check=True, env=None):
@@ -84,6 +85,15 @@ class RoundTrip(unittest.TestCase):
         self.assertEqual(self.art("verify", "--remote", cwd=clone).returncode, 0)
         self.assertEqual(sh(clone, "git", "status", "--porcelain").stdout, "")
 
+        # CI can read a tracked manifest from the index while its directory is
+        # absent from a sparse working tree. Pull must create that directory.
+        sparse = Path(self.tmp.name) / "sparse-clone"
+        sh(self.tmp.name, "git", "clone", "-q", str(self.repo), str(sparse))
+        sh(sparse, "git", "sparse-checkout", "set", "--no-cone", "/*", "!/research/")
+        self.assertFalse((sparse / "research").exists())
+        self.art("pull", "research/r1/runs/a.jsonl", cwd=sparse)
+        self.assertEqual((sparse / "research/r1/runs/a.jsonl").read_bytes(), self.big)
+
         # Editing a hydrated file in place is caught, and never corrupts the cache.
         (clone / "research/r1/runs/a.jsonl").write_bytes(b"tampered")
         self.assertEqual(self.art("verify", cwd=clone, check=False).returncode, 1)
@@ -104,6 +114,28 @@ class RoundTrip(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("refused", r.stderr)
         self.assertFalse((self.repo / "research/r1/runs/a.jsonl").exists())
+
+    def test_same_size_corrupt_cache_is_refetched_or_refused(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        digest = hashlib.sha256(self.big).hexdigest()
+        cached = self.cache / "sha256" / digest[:2] / digest
+        dest = self.repo / "research/r1/runs/a.jsonl"
+        cached.chmod(0o644)
+        cached.write_bytes(b"x" * len(self.big))
+        dest.unlink()
+
+        self.art("pull", "research/r1/runs/a.jsonl")
+        self.assertEqual(dest.read_bytes(), self.big)
+        self.assertEqual(cached.read_bytes(), self.big)
+
+        cached.chmod(0o644)
+        cached.write_bytes(b"x" * len(self.big))
+        (self.remote / "sha256" / digest[:2] / digest).write_bytes(b"y" * len(self.big))
+        dest.unlink()
+        result = self.art("pull", "research/r1/runs/a.jsonl", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("refused", result.stderr)
+        self.assertFalse(dest.exists())
 
     def test_push_merges_existing_manifest_and_gitignore(self):
         (self.repo / "research/r1/runs/.gitignore").write_text("/tmp/\n")
@@ -161,6 +193,38 @@ class RoundTrip(unittest.TestCase):
         self.git("commit", "-qm", "move it")
         self.assertEqual(self.art("check", base).returncode, 0)
 
+    def test_pull_creates_missing_parent_in_blobless_sparse_clone(self):
+        self.art("push", "research/r1/runs/a.jsonl")
+        self.git("commit", "-qm", "move data into store")
+        self.git("config", "uploadpack.allowFilter", "true")
+
+        clone = Path(self.tmp.name) / "pull-blobless"
+        sh(self.tmp.name, "git", "clone", "-q", "--filter=blob:none", "--sparse",
+           self.repo.as_uri(), str(clone), env=self.env)
+        dest = clone / "research/r1/runs/a.jsonl"
+        self.assertFalse(dest.parent.exists())
+
+        self.art("pull", "research/r1/runs/a.jsonl", cwd=clone)
+        self.assertEqual(dest.read_bytes(), self.big)
+        self.assertEqual(sh(clone, "git", "status", "--porcelain").stdout, "")
+
+    def test_check_gate_in_blobless_sparse_clone(self):
+        runs = self.repo / "research" / "r1" / "runs"
+        (runs / "new.jsonl").write_bytes(os.urandom(100_000))
+        self.git("add", "-A")
+        self.git("commit", "-qm", "add data in an omitted directory")
+        self.git("config", "uploadpack.allowFilter", "true")
+
+        clone = Path(self.tmp.name) / "blobless"
+        sh(self.tmp.name, "git", "clone", "-q", "--filter=blob:none", "--sparse",
+           self.repo.as_uri(), str(clone), env=self.env)
+        sh(clone, "git", "config", "core.abbrev", "7")
+        self.assertFalse((clone / "research").exists())
+
+        result = self.art("check", "HEAD^", "HEAD", check=False, cwd=clone)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("research/r1/runs/new.jsonl", result.stdout)
+        self.assertNotIn("not a valid object name", result.stderr)
     def test_check_fetches_missing_blob_in_partial_clone(self):
         base = self.git("rev-parse", "HEAD").strip()
         outside = self.repo / "outside"
@@ -217,6 +281,22 @@ class S3Argv(unittest.TestCase):
     def test_rejects_non_digest(self):
         with self.assertRaises(SystemExit):
             artifacts.object_key("../../etc/passwd")
+
+
+class WorkflowPaths(unittest.TestCase):
+    def test_unrelated_sibling_does_not_pull_whole_archive(self):
+        moved = {"ecc2k130/research/runs/result.jsonl"}
+        dirs = {"ecc2k130", "ecc2k130/research", "ecc2k130/research/runs"}
+        text = "path: ecc2k130/build/cuda\nrun: ecc2k130/scripts/fetch_cuda.sh"
+        self.assertEqual(wire_workflows.needed(text, moved, dirs), [])
+
+    def test_named_file_and_directory_are_pulled(self):
+        moved = {"research/runs/result.jsonl"}
+        dirs = {"research", "research/runs"}
+        self.assertEqual(wire_workflows.needed("run: cat research/runs/result.jsonl", moved, dirs),
+                         ["research/runs/result.jsonl"])
+        self.assertEqual(wire_workflows.needed("run: cat research/runs/*", moved, dirs),
+                         ["research/runs"])
 
 
 if __name__ == "__main__":

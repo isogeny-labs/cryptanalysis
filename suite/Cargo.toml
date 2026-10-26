@@ -75,6 +75,7 @@ crypto_analysis_core = { package = "crypto-analysis-core", path = "vendor/crypto
 redis = { version = "0.32", optional = true, default-features = false, features = ["tls-rustls"] }
 # Portable CPU-time and peak-RSS measurements for the ic reports.
 libc = "0.2"
+fs2 = "0.4"
 num-bigint = { version = "0.4", features = ["rand"] }
 num-traits = "0.2"
 num-integer = "0.1"

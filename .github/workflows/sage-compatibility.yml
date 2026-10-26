@@ -54,7 +54,7 @@ jobs:
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/sage-binary-hardware experiments/sage-ic-campaign/five-opportunities-20260925 experiments/sage-ic-campaign/pari-result-20260926
       - name: Build and execute the native CPU kernel with UBSan
         run: python3 experiments/sage-binary-hardware/validate_native.py --ubsan --out build/native-compatibility
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: sage-native-${{ matrix.os }}

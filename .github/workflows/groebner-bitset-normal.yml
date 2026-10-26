@@ -24,7 +24,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build and independently audit the frozen reference
@@ -51,7 +51,7 @@ jobs:
           python experiments/groebner-perf-20260924/round120/test_manifest.py --manifest "$F4_BITSET_EVIDENCE_ROOT/isolated-manifest.json" --output "$F4_BITSET_EVIDENCE_ROOT/isolated-worker-smoke.json"
       - name: Retain exact results and failed attempts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-bitset-${{ matrix.os }}
           path: ${{ runner.temp }}/f4-bitset-evidence

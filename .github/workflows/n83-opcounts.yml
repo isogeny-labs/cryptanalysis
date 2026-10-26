@@ -60,7 +60,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Verify and test complete-panel analysis gate
@@ -196,7 +196,7 @@ jobs:
 
       - name: Preserve host class, builds, raw runs, counts and the band
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-opcounts-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-opcounts/

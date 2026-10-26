@@ -27,5 +27,9 @@ int main(void)
     CHECK_EQ_U64(accounted, stats.class_visits);
     CHECK(ca_sixclass_solve(&g, &base, &target, 19, 3, 4,
                             100, &answer, NULL) == CA_ERR_INVALID);
+    ca_elem identity;
+    ca_group_identity(&g, &identity);
+    CHECK(ca_sixclass_solve(&g, &identity, &identity, 19, 32, 4, 1, &answer, NULL) ==
+          CA_ERR_INVALID);
     return 0;
 }

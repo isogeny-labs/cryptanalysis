@@ -212,7 +212,7 @@ jobs:
 
       - name: Preserve allocation, host record, controls, budget, table checks, raw runs and the result
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-bl-rankprobe-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-bl-rankprobe/
@@ -221,7 +221,7 @@ jobs:
 
       - name: Preserve the BL table
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-bl-rankprobe-table-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-bl-rankprobe-table/

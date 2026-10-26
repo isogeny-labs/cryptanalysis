@@ -35,7 +35,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Independent row-map algebra model
@@ -60,7 +60,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install native M4RI
@@ -77,7 +77,7 @@ jobs:
         run: |
           python experiments/groebner-perf-20260924/round30/audit.py "$RUNNER_TEMP/row-map-rref" > "$RUNNER_TEMP/row-map-rref/audit.json"
           python experiments/groebner-perf-20260924/round30/test_audit.py --bundle "$RUNNER_TEMP/row-map-rref"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: row-map-rref-${{ matrix.threads }}

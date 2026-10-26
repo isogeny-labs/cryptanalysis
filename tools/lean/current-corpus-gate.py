@@ -2,9 +2,10 @@
 """Bind the frozen Lean corpus and natively check added Hecke theorem modules.
 
 The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
-byte-for-byte source-bound to the committed receipt. New Hecke modules are
-checked by the pinned Mathlib toolchain in addition to that frozen bridge.
-Other source or pin changes still fail until native evidence is added here.
+byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
+files and the PQC assay are separately pinned. New Hecke modules are checked
+by the pinned Mathlib toolchain in addition to that frozen bridge. Other
+source or pin changes still fail until native evidence is added here.
 """
 from __future__ import annotations
 
@@ -15,6 +16,7 @@ import json
 import os
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +27,8 @@ ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
+PQC = ROOT / "verification/pqc-assay/lean"
+PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
 HISTORICAL_GLV_SHA256 = "4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20"
 HISTORICAL_GLV_RECEIPT = ROOT / "reports/ghs-pr-1104-main-integration-20261025/prior-live-source-binding.json"
@@ -37,6 +41,7 @@ DELTA = {
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
     "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean": "32807cd33bdbed15ac178d40eb18b9d268b11d7db514b196ae515d4caba7acd7",
     "experiments/glv-table-rule-confirm-20261022/TableBudget.lean": "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4",
+    PQC_SOURCE: "83c8a9ec8cd48f0c49d686ad551977d170130b06b726cf0bd002227a89036170",
 }
 DIRECT_LOGS = {
     "orbit-audit.log": "cryptanalysis-orbit-audit-20261021.log",
@@ -85,7 +90,7 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
     archived = {row["source"]: row for row in index["files"]}
     require(len(archived) == 93, "duplicate archived source")
     added = set(DELTA) - set(archived)
-    require(len(added) == 3 and len(current) == 96 and
+    require(len(added) == 4 and len(current) == 97 and
             set(current) == set(archived) | added, "current Lean corpus changed")
     reused = sorted(set(archived) - set(DELTA))
     require(len(reused) == 91, "unexpected archive reuse count")
@@ -124,6 +129,33 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
                         f"missing direct proof log: {name}")
     return reused, {"index_sha256": digest(INDEX), "group_summaries": summaries,
                     "experiment_checks_sha256": digest(checks_file)}
+
+
+def check_pqc() -> dict:
+    pin = PQC / "lean-toolchain"
+    require(effective_pin(PQC_SOURCE) == str(pin.relative_to(ROOT)) and
+            pin.read_text().strip() == "leanprover/lean4:v4.34.1",
+            "PQC assay Lean toolchain changed")
+    with tempfile.TemporaryDirectory(prefix="pqc-lean-gate-") as scratch:
+        out = Path(scratch) / "receipt"
+        gate = run([str(ROOT / "tools/lean/proof-gate.sh"), "--out", str(out),
+                    PQC_SOURCE], timeout=900)
+        require(gate.stdout.startswith("PASS "), "PQC standalone gate did not pass")
+        slug = "verification_pqc-assay_lean_Modarith_lean"
+        receipt = out / slug
+        require((receipt / "status").read_text() == "PASS\n", "PQC gate status changed")
+        audit = (receipt / "audit.log").read_text()
+        checked = [line for line in audit.splitlines()
+                   if line.startswith("ok    ") or line.startswith("audited ")]
+        expected = [
+            "ok    PqcAssay.cAdd64_correct  [propext, Quot.sound]",
+            "ok    PqcAssay.cSub64_correct  [propext, Quot.sound]",
+            "audited 2 theorems in [Modarith]; 0 failing, 0 trusted (native_decide)",
+        ]
+        require(checked == expected, "PQC theorem coverage or axiom set changed")
+    return {"pqc_axiom_stdout_sha256": hashlib.sha256(
+                ("\n".join(expected) + "\n").encode()).hexdigest(),
+            "pqc_toolchain_sha256": digest(pin)}
 
 
 def check_delta() -> dict:
@@ -252,6 +284,7 @@ def check_delta() -> dict:
     require(len(cm_audited) == 6 and
             cm_audited[-1] == "audited 5 theorems in [CubicCM53]; 0 failing, 0 trusted (native_decide)",
             "CM arithmetic transitive audit changed")
+    pqc = check_pqc()
     return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
@@ -263,7 +296,8 @@ def check_delta() -> dict:
             "cubic_axiom_stdout_sha256": hashlib.sha256(cubic.stdout.encode()).hexdigest(),
             "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest(),
             "cm_axiom_stdout_sha256": hashlib.sha256(cm.stdout.encode()).hexdigest(),
-            "cm_transitive_audit_sha256": hashlib.sha256(("\n".join(cm_audited)+"\n").encode()).hexdigest()}
+            "cm_transitive_audit_sha256": hashlib.sha256(("\n".join(cm_audited)+"\n").encode()).hexdigest(),
+            **pqc}
 
 
 def check_new_hecke(paths: set[str]) -> dict[str, str]:

@@ -34,7 +34,7 @@ jobs:
           lake-package-directory: experiments/orbit-quotient-summation/lean
       - name: Check exact transitive axiom set
         run: experiments/orbit-quotient-summation/lean/check.sh
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Compare pair lookup with direct enumeration
