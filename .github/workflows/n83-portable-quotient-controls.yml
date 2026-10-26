@@ -55,7 +55,7 @@ jobs:
             --out "$RUNNER_TEMP/n83_x86_public_M20_R14.json"
           python3 -c 'import json, os; p=os.path.join(os.environ["RUNNER_TEMP"], "n83_x86_public_M20_R14.json"); n=json.load(open(p))["native_result"]; assert n["peak_rss_bytes"] >= n["bloom_bytes"]; assert n["bloom_positive_queries"] == 247 and n["exact_hit_queries"] == 0'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-physical-x86-controls
@@ -101,7 +101,7 @@ jobs:
             --table-log2 24 --query-reps-log2 20 --workers 2 \
             --measurement-label "native x86 Linux M24/R20 paired ABBA stage probe"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: n83-x86-scratch-abba

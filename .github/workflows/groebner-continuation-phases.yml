@@ -20,7 +20,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build and independently audit frozen early queries
@@ -37,7 +37,7 @@ jobs:
         run: python -m unittest discover -s experiments/groebner-f6-20261008 -p 'test_*.py' -v
       - name: Retain successes and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-continuation-phases-${{ matrix.os }}
           path: groebner-phase-evidence
@@ -60,7 +60,7 @@ jobs:
       - name: Fetch pinned crypto analysis crate
         run: tools/bootstrap_crypto_analysis_core.sh
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build complete-query F4 benchmark
@@ -74,7 +74,7 @@ jobs:
         run: python -c "import json; from pathlib import Path; root=Path('groebner-gpu-query-host-evidence'); reports=[(root/m,json.loads((root/m/'report.json').read_text())) for m in ('f4','f5')]; assert all(r['status']=='PASS' and len(r['rows'])==3 and all(row['status']=='verified-decomposition' for row in r['rows']) and all(json.loads((p/row['result']).read_text())['result']['independent_equation_checks']>0 for row in r['rows']) for p,r in reports)"
       - name: Retain successes and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-gpu-query-host-${{ matrix.os }}
           path: groebner-gpu-query-host-evidence

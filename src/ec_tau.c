@@ -2551,8 +2551,7 @@ int ca_ec_tau4_joint_prepare(const ca_group *g, const ca_elem *p, const ca_elem 
     for (size_t i = 0; i < 2; i++) {
         pre.identity[i] = !!base[i]->w[2];
         if (pre.identity[i]) {
-            for (size_t j = 0; j < 9; j++)
-                projective[9 * i + j] = (tau_jac){0, g->mont.r1, 0};
+            for (size_t j = 0; j < 9; j++) projective[9 * i + j] = (tau_jac){0, g->mont.r1, 0};
         } else {
             tau4_seed_jac(g, base[i], one_minus_beta, &projective[9 * i]);
             cost.tau_steps++;

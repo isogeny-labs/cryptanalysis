@@ -1,0 +1,50 @@
+[
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "cubic_gluing",
+      "--",
+      "exhaustive"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "revision": "0c80377787e5255767b9d2ac657027fe0d3ff4d4",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 2.5387680530548096,
+    "output": "experiments/ghs-sweeper/cubic-gluing-checks/exhaustive-attempt-1.json.gz",
+    "uncompressed_sha256": "34d5b0c8b57f3614c431cf3983e953f32b232dee3d7ecb9121b892279caeae99",
+    "stored_sha256": "ba256f67f082d54c1dbbf375fccd20f17d0c63d8e5dbc4cacbf3ed926a8c7d2d",
+    "stderr_sha256": "5296b31d1139ef105a7600ffd3898341cf81decf6b17d09f2687b2a22ed529d4",
+    "source_sha256": "c49d83a167af40f2a3c2c36229042a025716f620f0dbd7edbf795eb666aa9438",
+    "performance_claim": false
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "cubic_gluing",
+      "--",
+      "binary-census"
+    ],
+    "cwd": "/workspace/cryptanalysis",
+    "revision": "0c80377787e5255767b9d2ac657027fe0d3ff4d4",
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.4101078510284424,
+    "output": "experiments/ghs-sweeper/cubic-gluing-checks/binary-census-attempt-1.json",
+    "uncompressed_sha256": "b86e91fef8a11ccae9d83997f927e95cbea4db8995abc63435471f91d095c469",
+    "stored_sha256": "b86e91fef8a11ccae9d83997f927e95cbea4db8995abc63435471f91d095c469",
+    "stderr_sha256": "82785fd0e3f8f8d9be93f97f277d9ca8bc60b51c3f77365f491790404c028607",
+    "source_sha256": "c49d83a167af40f2a3c2c36229042a025716f620f0dbd7edbf795eb666aa9438",
+    "performance_claim": false
+  }
+]

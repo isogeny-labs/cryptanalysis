@@ -25,7 +25,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round112 experiments/groebner-perf-20260924/round119 experiments/groebner-perf-20260924/round122
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build and independently audit frozen reference
@@ -41,7 +41,7 @@ jobs:
           python experiments/groebner-perf-20260924/round122/profile.py --reference-root "$GITHUB_WORKSPACE" --reference-report "$FITCACHE_EVIDENCE_ROOT/reference/panel/report.json" --output "$FITCACHE_EVIDENCE_ROOT/paired" --reps 3
       - name: Retain exact results and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-fitcache-${{ matrix.os }}
           path: ${{ github.workspace }}/../f4-fitcache-evidence

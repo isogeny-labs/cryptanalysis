@@ -1,0 +1,16 @@
+{
+  "status": "FROZEN_BEFORE_FULL_E_SCREEN",
+  "frozen_utc": "2026-10-26T00:27:31Z",
+  "goal": "Search for a rational formula for normalized B x-coordinate using the original X0(27) point and the full projected E point",
+  "functions": ["x_C(q),y_C(q) from normalized 27a1", "x_B(q),y_B(q) from normalized 432a1", "x_E=(x_B^3-64)/x_B^2", "y_E=y_B*(x_B^3+128)/x_B^3"],
+  "ansatz": "A(x_C,y_C,x_E,y_E)*x_B+B(x_C,y_C,x_E,y_E)=0, monomials x_C^a*y_C^b*x_E^c*y_E^d with b,d in {0,1} and pole weight 2a+3b+2c+3d at most D for A and D+2 for B",
+  "weighted_degrees": [8, 16, 24],
+  "nesting_rule": "A full-rank result at D=24 excludes every lower bound of the same parity or smaller because all lower monomial spaces embed in the D=24 space",
+  "q_series_precision": 1150,
+  "stored_coefficients": [-3, 1050],
+  "training_exponents": ["minus (D+2)", 900],
+  "holdout_exponents": [901, 980],
+  "auxiliary_fields": [997, 1009],
+  "candidate_gate": "A(q) nonzero, common exact rational reconstruction, holdout vanishing in both fields, then modular-function identity proof and independent p997 point evaluation",
+  "output_if_no_candidate": "retain full ranks and replayable pivot minors for both primes, state the nested degree bound"
+}

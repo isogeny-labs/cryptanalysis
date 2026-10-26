@@ -261,7 +261,7 @@ fn distinct_linear_plaintexts(
 }
 
 fn square_ciphertext_sets(pairs: &[([u8; 16], [u8; 16])]) -> Result<Vec<Vec<[u8; 16]>>, String> {
-    if !(256..=1536).contains(&pairs.len()) || pairs.len() % 256 != 0 {
+    if !(256..=1536).contains(&pairs.len()) || !pairs.len().is_multiple_of(256) {
         return Err("Square recovery needs 1..=6 complete lambda sets".into());
     }
     let mut grouped: BTreeMap<[u8; 15], Vec<Option<[u8; 16]>>> = BTreeMap::new();
@@ -552,7 +552,7 @@ pub fn run(out: Out, args: &AesAttackArgs) -> CmdResult {
             })
         }
     };
-    let text = format!("{}", serde_json::to_string_pretty(&report).unwrap());
+    let text = serde_json::to_string_pretty(&report).unwrap();
     out.report(&report, text)?;
     if report["accepted"] != true {
         return Err(super::output::Failure::reported(

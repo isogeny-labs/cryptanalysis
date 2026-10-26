@@ -1,0 +1,155 @@
+{
+  "X0_27_coordinate_evaluator": null,
+  "candidate_id": null,
+  "cases": [
+    {
+      "R": "(619,674)",
+      "S_order": 108,
+      "T": "(624,860)",
+      "alternate_generator_checks": [
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 5
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 7
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 11
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 431
+        }
+      ],
+      "chosen_i": "151",
+      "dual_kernel_candidates": 1,
+      "field_degree": 1,
+      "frobenius_swaps_shift_kernels": null,
+      "input_curve_order": 864,
+      "input_generator": "(2,319)",
+      "input_generator_order": 432,
+      "middle_curve_ainvs": [
+        "0",
+        "0",
+        "0",
+        "310",
+        "261"
+      ],
+      "outputs": [
+        {
+          "curve_ainvs": [
+            "0",
+            "0",
+            "0",
+            "641",
+            "747"
+          ],
+          "curve_j": "780",
+          "level27_quotient_j": "682",
+          "shift": "plus",
+          "subgroup_generator": "(801,77)",
+          "subgroup_order": 27
+        },
+        {
+          "curve_ainvs": [
+            "0",
+            "0",
+            "0",
+            "486",
+            "444"
+          ],
+          "curve_j": "215",
+          "level27_quotient_j": "707",
+          "shift": "minus",
+          "subgroup_generator": "(855,330)",
+          "subgroup_order": 27
+        }
+      ],
+      "prime": 877,
+      "weil_pairing_R_T": "151"
+    },
+    {
+      "R": "(327,786)",
+      "S_order": 108,
+      "T": "(75,281*u + 321)",
+      "alternate_generator_checks": [
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 5
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 7
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 11
+        },
+        {
+          "minus_same": true,
+          "plus_same": true,
+          "unit": 431
+        }
+      ],
+      "chosen_i": "21*u + 841",
+      "dual_kernel_candidates": 1,
+      "field_degree": 2,
+      "frobenius_swaps_shift_kernels": true,
+      "input_curve_order": 864,
+      "input_generator": "(23,199)",
+      "input_generator_order": 432,
+      "middle_curve_ainvs": [
+        "0",
+        "0",
+        "0",
+        "819",
+        "449"
+      ],
+      "outputs": [
+        {
+          "curve_ainvs": [
+            "0",
+            "0",
+            "0",
+            "129*u + 19",
+            "315*u + 871"
+          ],
+          "curve_j": "318*u + 748",
+          "level27_quotient_j": "807*u + 408",
+          "shift": "plus",
+          "subgroup_generator": "(848*u + 46,107*u + 340)",
+          "subgroup_order": 27
+        },
+        {
+          "curve_ainvs": [
+            "0",
+            "0",
+            "0",
+            "754*u + 535",
+            "568*u + 365"
+          ],
+          "curve_j": "565*u + 254",
+          "level27_quotient_j": "76*u + 104",
+          "shift": "minus",
+          "subgroup_generator": "(35*u + 789,776*u + 768)",
+          "subgroup_order": 27
+        }
+      ],
+      "prime": 883,
+      "weil_pairing_R_T": "21*u + 841"
+    }
+  ],
+  "protocol_sha256": "54d919a0e68d5ed6732e9ed92b5da63e8ab28b3e86ca571f121b17edf38a2cb1",
+  "status": "PASS_MODULI_QUARTER_SHIFT_EVALUATOR",
+  "timing_claim": null
+}

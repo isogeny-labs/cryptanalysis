@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_check_fetches_missing_blob_in_partial_clone (tools.artifacts.test_artifacts.RoundTrip.test_check_fetches_missing_blob_in_partial_clone)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/artifacts/test_artifacts.py", line 181, in test_check_fetches_missing_blob_in_partial_clone
+    self.assertEqual(result.returncode, 1, result.stderr)
+AssertionError: 2 != 1 : artifacts: git cat-file -s 41860af: fatal: Not a valid object name 41860af
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.284s
+
+FAILED (failures=1)

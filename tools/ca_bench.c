@@ -109,7 +109,7 @@ static void sha256_init(sha256_ctx *c)
 
 static void sha256_block(sha256_ctx *c, const uint8_t *p)
 {
-    uint32_t w[64];
+    uint32_t w[64] = {0};
     for (size_t i = 0; i < 16; i++)
         w[i] = (uint32_t)p[4 * i] << 24 | (uint32_t)p[4 * i + 1] << 16 |
                (uint32_t)p[4 * i + 2] << 8 | (uint32_t)p[4 * i + 3];

@@ -1455,6 +1455,7 @@ static ca_status individual_log_zeta(ca_ic_ctx *ctx, uint64_t h, uint64_t *out, 
 
 ca_status ca_ic_log(ca_ic_ctx *ctx, uint64_t h, uint64_t *x, ca_stats *st)
 {
+    if (!ctx || !x || ctx->p < 2) return CA_ERR_INVALID;
     double t0 = ca_now();
     uint64_t p = ctx->p, pm1 = p - 1;
     h %= p;

@@ -1,0 +1,83 @@
+{
+  "audit_only_inputs": [
+    "audit_census",
+    "audit_correction",
+    "audit_corrected_00",
+    "audit_corrected_01",
+    "audit_corrected_02",
+    "audit_corrected_03"
+  ],
+  "construction": "derive source j sequence from C, build canonical curve variants, enumerate cyclic 16/27 paths, filter 27 path j sequence, evaluate modular B map, quotient source automorphisms, return every chain candidate for each C,E,B triple",
+  "inputs": {
+    "audit_census": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/census.json",
+      "sha256": "fa17b0caa23830e7482baf38bd3cf51e092286ec6bf2cc5597c6830f9a9ab1de"
+    },
+    "audit_corrected_00": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-automorphism-correction-20261025/corrected-00.json",
+      "sha256": "bbbf5720df091ac5115ab5ba6ed9964f28219827e99348d456a01a3420601a80"
+    },
+    "audit_corrected_01": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-automorphism-correction-20261025/corrected-01.json",
+      "sha256": "1817f3dc21cea3f3add8394ed8182836eb76ca4fac9472b46d1573f74bf410e3"
+    },
+    "audit_corrected_02": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-automorphism-correction-20261025/corrected-02.json",
+      "sha256": "8131dba71829890ed6e2ce8092706aa2d0964ccf43b269084538c14cd13f0219"
+    },
+    "audit_corrected_03": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-automorphism-correction-20261025/corrected-03.json",
+      "sha256": "e7979c7f6b95537c9173643b6d41815d84a2a5e90e278fca9a8964c6b85154aa"
+    },
+    "audit_correction": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-automorphism-correction-20261025/result.json",
+      "sha256": "1366893181dfc4692c79bc49a0e497cf22ab608b895ac1425406dab9c228d030"
+    },
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "coordinate_bridge": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/evaluate_sage.py",
+      "sha256": "0fd72e02e794e372bf37a3727d8281e0c80a8095853adc189ccd26777d526e21"
+    },
+    "forward_evaluator": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/evaluate_sage.py",
+      "sha256": "c2683a7a87606725958f180acdad9ea2ea8b5fcf44a461df3c10670df210f8e1"
+    },
+    "gcd_00": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-exact-gcd-inverse-20261025/p887-gcd-00.json",
+      "sha256": "7f9c68e951a0ff52d2522708797c2bdc725aec677efcd51433ef6c736db92e0a"
+    },
+    "gcd_01": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-exact-gcd-inverse-20261025/p887-gcd-01.json",
+      "sha256": "06e67015fb74681295fa0077cdaa38e535e6cf205c0e71e21f459b27f7fc8bc5"
+    },
+    "gcd_02": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-exact-gcd-inverse-20261025/p887-gcd-02.json",
+      "sha256": "12b37fe9f2885fe90c97cdf868222f3293dca1816bc9b340770e67eff7e528dd"
+    },
+    "gcd_03": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-exact-gcd-inverse-20261025/p887-gcd-03.json",
+      "sha256": "7a7914b58b3594b536620aec671cdc931eb2d78565286f2725e09e13592addcb"
+    },
+    "gcd_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-exact-gcd-inverse-20261025/result.json",
+      "sha256": "5610204f8b4cce68902351da0a22da2c1afe64e766d86968fef192b284acf871"
+    },
+    "intermediate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime887-20261025/intermediate_j.json",
+      "sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2"
+    },
+    "kernel_transport": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-kernel-transport-20261025/evaluate_sage.py",
+      "sha256": "a2f72399ff84bb91065b8a16ad1cecb9470fe4b4719354145ba0760f3fd05546"
+    },
+    "path_enumerator": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-stable-kernel-chains-20261025/enumerate_chains_sage.py",
+      "sha256": "81e2105f58b444077e36a82ce0cd1a96754552ff16e50c865062379d55ee338c"
+    }
+  },
+  "prime": 887,
+  "status": "FROZEN_BEFORE_DIRECT_P887_CHAIN_INVERSE"
+}

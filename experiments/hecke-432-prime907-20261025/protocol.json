@@ -1,0 +1,14 @@
+{
+  "status": "FROZEN_BEFORE_IMAGE_EVALUATION",
+  "frozen_utc": "2026-10-25T23:18:32Z",
+  "prime": 907,
+  "selection_reason": "p mod 24 is 19, matching p=883; p=887 has residue 23 and a different rational cusp count",
+  "question": "Does the p=883 uniform 24-point rational fiber pattern recur in a second prime of the same residue class?",
+  "source_policy": "All 907 j-values; one representative per generic quadratic-twist pair; three j=0 sextic representatives paired under quadratic twist; one j=1728 representative; cyclic nonbacktracking 16- and 27-isogeny chains",
+  "source_gate": "Paired chain count must equal the independent weight-two Hecke point count minus the rational cusp count",
+  "intermediate_map_sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2",
+  "image_policy": "Evaluate every noncuspidal chain with both intermediate j-invariants, Frobenius conjugacy, the exact twist, and the dual 3-isogeny",
+  "image_gate": "One filtered coordinate point per quarter-shift, one Frobenius pair, one rational B output per source, independent audit of source keys, B equation, fiber histogram, cusp image, and B group order",
+  "primary_outputs": ["noncuspidal source count", "noncuspidal image count", "rational fiber-size histogram", "full image and complement after cusp identity"],
+  "comparison": "Compare p=907 histogram with p=883 and p=887; do not infer a residue-class law from one additional prime"
+}

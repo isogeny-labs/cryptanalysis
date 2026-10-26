@@ -1,0 +1,2014 @@
+﻿2026-10-25T05:40:39.0378032Z Current runner version: '2.338.0'
+2026-10-25T05:40:39.0415169Z ##[group]Runner Image Provisioner
+2026-10-25T05:40:39.0416848Z Hosted Compute Agent
+2026-10-25T05:40:39.0417916Z Version: 20261021.618
+2026-10-25T05:40:39.0419235Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T05:40:39.0420923Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T05:40:39.0422150Z Worker ID: {2d6406e5-12b6-407d-a9b7-5d529a02fd26}
+2026-10-25T05:40:39.0423620Z Region: westus2
+2026-10-25T05:40:39.0424663Z Cloud: Azure
+2026-10-25T05:40:39.0425820Z ##[endgroup]
+2026-10-25T05:40:39.0428361Z ##[group]Operating System
+2026-10-25T05:40:39.0429509Z Ubuntu
+2026-10-25T05:40:39.0431061Z 24.04.5
+2026-10-25T05:40:39.0432065Z LTS
+2026-10-25T05:40:39.0433126Z ##[endgroup]
+2026-10-25T05:40:39.0434107Z ##[group]Runner Image
+2026-10-25T05:40:39.0435280Z Image: ubuntu-24.04
+2026-10-25T05:40:39.0436568Z Version: 20261012.334.1
+2026-10-25T05:40:39.0438895Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-25T05:40:39.0442254Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-25T05:40:39.0444197Z ##[endgroup]
+2026-10-25T05:40:39.0446099Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T05:40:39.0448743Z Contents: read
+2026-10-25T05:40:39.0449861Z Metadata: read
+2026-10-25T05:40:39.0451313Z ##[endgroup]
+2026-10-25T05:40:39.0454397Z Secret source: Actions
+2026-10-25T05:40:39.0455923Z Cache mode: write
+2026-10-25T05:40:39.0457221Z Prepare workflow directory
+2026-10-25T05:40:39.1169682Z Prepare all required actions
+2026-10-25T05:40:39.1242538Z Getting action download info
+2026-10-25T05:40:39.5275610Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-25T05:40:39.7152489Z Complete job name: clang-tidy
+2026-10-25T05:40:39.8022808Z ##[group]Run actions/checkout@v7
+2026-10-25T05:40:39.8023712Z with:
+2026-10-25T05:40:39.8024188Z   repository: aburan28/cryptanalysis
+2026-10-25T05:40:39.8028118Z   token: ***
+2026-10-25T05:40:39.8028587Z   ssh-strict: true
+2026-10-25T05:40:39.8029051Z   ssh-user: git
+2026-10-25T05:40:39.8029527Z   persist-credentials: true
+2026-10-25T05:40:39.8030043Z   clean: true
+2026-10-25T05:40:39.8030978Z   sparse-checkout-cone-mode: true
+2026-10-25T05:40:39.8031540Z   fetch-depth: 1
+2026-10-25T05:40:39.8031991Z   fetch-tags: false
+2026-10-25T05:40:39.8032460Z   show-progress: true
+2026-10-25T05:40:39.8032923Z   lfs: false
+2026-10-25T05:40:39.8033358Z   submodules: false
+2026-10-25T05:40:39.8033831Z   set-safe-directory: true
+2026-10-25T05:40:39.8034351Z   allow-unsafe-pr-checkout: false
+2026-10-25T05:40:39.8035213Z ##[endgroup]
+2026-10-25T05:40:39.9169920Z Syncing repository: aburan28/cryptanalysis
+2026-10-25T05:40:39.9173465Z ##[group]Getting Git version info
+2026-10-25T05:40:39.9175765Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T05:40:39.9179146Z [command]/usr/bin/git version
+2026-10-25T05:40:39.9266269Z git version 2.55.0
+2026-10-25T05:40:39.9292135Z ##[endgroup]
+2026-10-25T05:40:39.9307663Z Temporarily overriding HOME='/home/runner/work/_temp/01be3ac8-e0e5-47d3-b4de-8858672ab1bd' before making global git config changes
+2026-10-25T05:40:39.9310845Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:40:39.9317052Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:40:39.9373690Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T05:40:39.9376234Z ##[group]Determining repository object format
+2026-10-25T05:40:39.9378122Z ##[endgroup]
+2026-10-25T05:40:39.9379774Z ##[group]Initializing the repository
+2026-10-25T05:40:39.9382475Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:40:39.9597770Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T05:40:39.9599894Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T05:40:39.9603303Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T05:40:39.9604900Z hint: call:
+2026-10-25T05:40:39.9605766Z hint:
+2026-10-25T05:40:39.9606759Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T05:40:39.9608004Z hint:
+2026-10-25T05:40:39.9609220Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T05:40:39.9613814Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T05:40:39.9621031Z hint:
+2026-10-25T05:40:39.9627047Z hint: 	git branch -m <name>
+2026-10-25T05:40:39.9640872Z hint:
+2026-10-25T05:40:39.9642149Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T05:40:39.9643694Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-10-25T05:40:39.9646468Z [command]/usr/bin/git remote add origin https://github.com/aburan28/cryptanalysis
+2026-10-25T05:40:39.9649121Z ##[endgroup]
+2026-10-25T05:40:39.9650754Z ##[group]Disabling automatic garbage collection
+2026-10-25T05:40:39.9651852Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T05:40:39.9654658Z ##[endgroup]
+2026-10-25T05:40:39.9655863Z ##[group]Setting up auth
+2026-10-25T05:40:39.9656710Z Removing SSH command configuration
+2026-10-25T05:40:39.9659987Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:40:39.9694594Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T05:40:40.0052568Z Removing HTTP extra header
+2026-10-25T05:40:40.0054103Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:40:40.0219749Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T05:40:40.0372927Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:40:40.0381630Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:40:40.0415075Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T05:40:40.0650806Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T05:40:40.0689636Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:40:40.0722495Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:40:40.0756964Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:40:40.0789719Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:40:40.0825109Z ##[endgroup]
+2026-10-25T05:40:40.0827101Z ##[group]Fetching the repository
+2026-10-25T05:40:40.0832559Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6d6cbe802a3b7d7f4fd8d1b04193937d613181fc:refs/remotes/pull/1104/merge
+2026-10-25T05:40:49.0439217Z From https://github.com/aburan28/cryptanalysis
+2026-10-25T05:40:49.0442578Z  * [new ref]           6d6cbe802a3b7d7f4fd8d1b04193937d613181fc -> pull/1104/merge
+2026-10-25T05:40:49.0448855Z ##[endgroup]
+2026-10-25T05:40:49.0450865Z ##[group]Determining the checkout info
+2026-10-25T05:40:49.0452133Z ##[endgroup]
+2026-10-25T05:40:49.0456531Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T05:40:49.0508865Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T05:40:49.0542562Z ##[group]Checking out the ref
+2026-10-25T05:40:49.0544771Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1104/merge
+2026-10-25T05:40:50.1155745Z Updating files:  26% (15831/58978)
+2026-10-25T05:40:50.1566726Z Updating files:  27% (15925/58978)
+2026-10-25T05:40:50.2012939Z Updating files:  28% (16514/58978)
+2026-10-25T05:40:50.2384640Z Updating files:  29% (17104/58978)
+2026-10-25T05:40:50.2809331Z Updating files:  30% (17694/58978)
+2026-10-25T05:40:50.3255589Z Updating files:  31% (18284/58978)
+2026-10-25T05:40:50.3723009Z Updating files:  32% (18873/58978)
+2026-10-25T05:40:50.4094282Z Updating files:  33% (19463/58978)
+2026-10-25T05:40:50.4495515Z Updating files:  34% (20053/58978)
+2026-10-25T05:40:50.4732157Z Updating files:  35% (20643/58978)
+2026-10-25T05:40:50.5029973Z Updating files:  36% (21233/58978)
+2026-10-25T05:40:50.5396954Z Updating files:  37% (21822/58978)
+2026-10-25T05:40:50.5752850Z Updating files:  38% (22412/58978)
+2026-10-25T05:40:50.6116304Z Updating files:  39% (23002/58978)
+2026-10-25T05:40:50.6504324Z Updating files:  40% (23592/58978)
+2026-10-25T05:40:50.6958569Z Updating files:  41% (24181/58978)
+2026-10-25T05:40:50.7267331Z Updating files:  42% (24771/58978)
+2026-10-25T05:40:50.7704020Z Updating files:  43% (25361/58978)
+2026-10-25T05:40:50.8131381Z Updating files:  44% (25951/58978)
+2026-10-25T05:40:50.8464014Z Updating files:  45% (26541/58978)
+2026-10-25T05:40:50.8870600Z Updating files:  46% (27130/58978)
+2026-10-25T05:40:50.9265473Z Updating files:  47% (27720/58978)
+2026-10-25T05:40:50.9615388Z Updating files:  48% (28310/58978)
+2026-10-25T05:40:50.9982139Z Updating files:  49% (28900/58978)
+2026-10-25T05:40:51.0345175Z Updating files:  50% (29489/58978)
+2026-10-25T05:40:51.0706794Z Updating files:  51% (30079/58978)
+2026-10-25T05:40:51.1000476Z Updating files:  52% (30669/58978)
+2026-10-25T05:40:51.1110937Z Updating files:  52% (31058/58978)
+2026-10-25T05:40:51.1484720Z Updating files:  53% (31259/58978)
+2026-10-25T05:40:51.1830439Z Updating files:  54% (31849/58978)
+2026-10-25T05:40:51.2171191Z Updating files:  55% (32438/58978)
+2026-10-25T05:40:51.2487939Z Updating files:  56% (33028/58978)
+2026-10-25T05:40:51.2975921Z Updating files:  57% (33618/58978)
+2026-10-25T05:40:51.3281625Z Updating files:  58% (34208/58978)
+2026-10-25T05:40:51.3606690Z Updating files:  59% (34798/58978)
+2026-10-25T05:40:51.3940650Z Updating files:  60% (35387/58978)
+2026-10-25T05:40:51.4282493Z Updating files:  61% (35977/58978)
+2026-10-25T05:40:51.4623507Z Updating files:  62% (36567/58978)
+2026-10-25T05:40:51.4967072Z Updating files:  63% (37157/58978)
+2026-10-25T05:40:51.5292464Z Updating files:  64% (37746/58978)
+2026-10-25T05:40:51.5604623Z Updating files:  65% (38336/58978)
+2026-10-25T05:40:51.5944717Z Updating files:  66% (38926/58978)
+2026-10-25T05:40:51.6377086Z Updating files:  67% (39516/58978)
+2026-10-25T05:40:51.6912012Z Updating files:  68% (40106/58978)
+2026-10-25T05:40:51.7542042Z Updating files:  69% (40695/58978)
+2026-10-25T05:40:51.8266027Z Updating files:  70% (41285/58978)
+2026-10-25T05:40:51.8671185Z Updating files:  71% (41875/58978)
+2026-10-25T05:40:51.9292869Z Updating files:  72% (42465/58978)
+2026-10-25T05:40:52.0517247Z Updating files:  73% (43054/58978)
+2026-10-25T05:40:52.1012368Z Updating files:  74% (43644/58978)
+2026-10-25T05:40:52.1044289Z Updating files:  74% (44196/58978)
+2026-10-25T05:40:52.1842098Z Updating files:  75% (44234/58978)
+2026-10-25T05:40:52.2500774Z Updating files:  76% (44824/58978)
+2026-10-25T05:40:52.3116790Z Updating files:  77% (45414/58978)
+2026-10-25T05:40:52.3743105Z Updating files:  78% (46003/58978)
+2026-10-25T05:40:52.4437184Z Updating files:  79% (46593/58978)
+2026-10-25T05:40:52.5071964Z Updating files:  80% (47183/58978)
+2026-10-25T05:40:52.5784243Z Updating files:  81% (47773/58978)
+2026-10-25T05:40:52.6592979Z Updating files:  82% (48362/58978)
+2026-10-25T05:40:52.7302255Z Updating files:  83% (48952/58978)
+2026-10-25T05:40:52.7638934Z Updating files:  84% (49542/58978)
+2026-10-25T05:40:52.7832236Z Updating files:  85% (50132/58978)
+2026-10-25T05:40:52.8298755Z Updating files:  86% (50722/58978)
+2026-10-25T05:40:52.9053916Z Updating files:  87% (51311/58978)
+2026-10-25T05:40:52.9706270Z Updating files:  88% (51901/58978)
+2026-10-25T05:40:53.0051645Z Updating files:  89% (52491/58978)
+2026-10-25T05:40:53.0309591Z Updating files:  90% (53081/58978)
+2026-10-25T05:40:53.1605533Z Updating files:  91% (53670/58978)
+2026-10-25T05:40:53.1788746Z Updating files:  91% (53949/58978)
+2026-10-25T05:40:53.2091523Z Updating files:  92% (54260/58978)
+2026-10-25T05:40:53.2642383Z Updating files:  93% (54850/58978)
+2026-10-25T05:40:53.2960981Z Updating files:  94% (55440/58978)
+2026-10-25T05:40:53.3246624Z Updating files:  95% (56030/58978)
+2026-10-25T05:40:53.3594767Z Updating files:  96% (56619/58978)
+2026-10-25T05:40:53.3845183Z Updating files:  97% (57209/58978)
+2026-10-25T05:40:53.4633798Z Updating files:  98% (57799/58978)
+2026-10-25T05:40:53.5351230Z Updating files:  99% (58389/58978)
+2026-10-25T05:40:53.5353272Z Updating files: 100% (58978/58978)
+2026-10-25T05:40:53.5354070Z Updating files: 100% (58978/58978), done.
+2026-10-25T05:40:53.5935858Z Note: switching to 'refs/remotes/pull/1104/merge'.
+2026-10-25T05:40:53.5936674Z 
+2026-10-25T05:40:53.5937087Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T05:40:53.5937980Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T05:40:53.5938865Z state without impacting any branches by switching back to a branch.
+2026-10-25T05:40:53.5939323Z 
+2026-10-25T05:40:53.5939890Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T05:40:53.5940915Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T05:40:53.5941360Z 
+2026-10-25T05:40:53.5941546Z   git switch -c <new-branch-name>
+2026-10-25T05:40:53.5941835Z 
+2026-10-25T05:40:53.5942011Z Or undo this operation with:
+2026-10-25T05:40:53.5942285Z 
+2026-10-25T05:40:53.5942436Z   git switch -
+2026-10-25T05:40:53.5942643Z 
+2026-10-25T05:40:53.5943014Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T05:40:53.5943571Z 
+2026-10-25T05:40:53.5944210Z HEAD is now at 6d6cbe80 Merge 099e8c53e1d98781270a451c1228859d48ea66fb into c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503
+2026-10-25T05:40:53.6071937Z ##[endgroup]
+2026-10-25T05:40:53.6106722Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T05:40:53.6134097Z 6d6cbe802a3b7d7f4fd8d1b04193937d613181fc
+2026-10-25T05:40:53.6447942Z ##[group]Run python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign
+2026-10-25T05:40:53.6449027Z [36;1mpython3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign[0m
+2026-10-25T05:40:53.6738508Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:40:53.6739048Z env:
+2026-10-25T05:40:53.6739585Z   AWS_ACCESS_KEY_ID: ***
+2026-10-25T05:40:53.6739978Z   AWS_SECRET_ACCESS_KEY: ***
+2026-10-25T05:40:53.6740490Z   AWS_REGION: us-west-2
+2026-10-25T05:40:53.6740738Z ##[endgroup]
+2026-10-25T05:40:58.6898712Z hydrated 6 files (3.8 MB); 0 already present
+2026-10-25T05:40:58.7118838Z ##[group]Run sudo apt-get update || true
+2026-10-25T05:40:58.7119446Z [36;1msudo apt-get update || true[0m
+2026-10-25T05:40:58.7120331Z [36;1msudo apt-get install -y --no-install-recommends clang-tidy[0m
+2026-10-25T05:40:58.7216575Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:40:58.7217180Z ##[endgroup]
+2026-10-25T05:40:58.9569457Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-25T05:40:59.0064152Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-25T05:40:59.0069900Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-10-25T05:40:59.0110987Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-10-25T05:40:59.0219951Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-10-25T05:40:59.0551381Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-10-25T05:40:59.3681496Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [660 kB]
+2026-10-25T05:40:59.4089586Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.4 kB]
+2026-10-25T05:40:59.4176443Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [598 kB]
+2026-10-25T05:40:59.4891561Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1400 kB]
+2026-10-25T05:40:59.5105722Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [310 kB]
+2026-10-25T05:40:59.5171896Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1706 kB]
+2026-10-25T05:40:59.5623004Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [342 kB]
+2026-10-25T05:40:59.5661087Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1805 kB]
+2026-10-25T05:40:59.6068752Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [411 kB]
+2026-10-25T05:40:59.6771431Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1146 kB]
+2026-10-25T05:40:59.7025110Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-10-25T05:40:59.7064541Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1222 kB]
+2026-10-25T05:40:59.7496197Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-10-25T05:40:59.7972324Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1713 kB]
+2026-10-25T05:40:59.8147261Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [392 kB]
+2026-10-25T05:41:03.3973901Z Fetched 12.6 MB in 2s (6944 kB/s)
+2026-10-25T05:41:04.3590723Z Reading package lists...
+2026-10-25T05:41:04.3903055Z Reading package lists...
+2026-10-25T05:41:04.5825048Z Building dependency tree...
+2026-10-25T05:41:04.5832697Z Reading state information...
+2026-10-25T05:41:04.7315130Z The following NEW packages will be installed:
+2026-10-25T05:41:04.7321047Z   clang-tidy
+2026-10-25T05:41:04.7492424Z 0 upgraded, 1 newly installed, 0 to remove and 100 not upgraded.
+2026-10-25T05:41:04.7493332Z Need to get 5724 B of archives.
+2026-10-25T05:41:04.7493941Z After this operation, 21.5 kB of additional disk space will be used.
+2026-10-25T05:41:04.7494684Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-25T05:41:04.8351881Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 clang-tidy amd64 1:18.0-59~exp2 [5724 B]
+2026-10-25T05:41:05.0864045Z Fetched 5724 B in 0s (59.1 kB/s)
+2026-10-25T05:41:05.1108834Z Selecting previously unselected package clang-tidy.
+2026-10-25T05:41:05.1404740Z (Reading database ... 
+2026-10-25T05:41:05.1405219Z (Reading database ... 5%
+2026-10-25T05:41:05.1405924Z (Reading database ... 10%
+2026-10-25T05:41:05.1406397Z (Reading database ... 15%
+2026-10-25T05:41:05.1407399Z (Reading database ... 20%
+2026-10-25T05:41:05.1408491Z (Reading database ... 25%
+2026-10-25T05:41:05.1408984Z (Reading database ... 30%
+2026-10-25T05:41:05.1409408Z (Reading database ... 35%
+2026-10-25T05:41:05.1409965Z (Reading database ... 40%
+2026-10-25T05:41:05.1410759Z (Reading database ... 45%
+2026-10-25T05:41:05.1411382Z (Reading database ... 50%
+2026-10-25T05:41:05.1477939Z (Reading database ... 55%
+2026-10-25T05:41:05.2654754Z (Reading database ... 60%
+2026-10-25T05:41:05.4506863Z (Reading database ... 65%
+2026-10-25T05:41:05.6539579Z (Reading database ... 70%
+2026-10-25T05:41:05.8608040Z (Reading database ... 75%
+2026-10-25T05:41:05.9613865Z (Reading database ... 80%
+2026-10-25T05:41:06.1502648Z (Reading database ... 85%
+2026-10-25T05:41:06.3311809Z (Reading database ... 90%
+2026-10-25T05:41:06.4647368Z (Reading database ... 95%
+2026-10-25T05:41:06.4651695Z (Reading database ... 100%
+2026-10-25T05:41:06.4652665Z (Reading database ... 203540 files and directories currently installed.)
+2026-10-25T05:41:06.4693714Z Preparing to unpack .../clang-tidy_1%3a18.0-59~exp2_amd64.deb ...
+2026-10-25T05:41:06.4721436Z Unpacking clang-tidy (1:18.0-59~exp2) ...
+2026-10-25T05:41:06.5134546Z Setting up clang-tidy (1:18.0-59~exp2) ...
+2026-10-25T05:41:06.5159440Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-25T05:41:06.5180365Z Not building database; man-db/auto-update is not 'true'.
+2026-10-25T05:41:07.1542620Z 
+2026-10-25T05:41:07.1543474Z Running kernel seems to be up-to-date.
+2026-10-25T05:41:07.1544303Z 
+2026-10-25T05:41:07.1544941Z No services need to be restarted.
+2026-10-25T05:41:07.1545638Z 
+2026-10-25T05:41:07.1546113Z No containers need to be restarted.
+2026-10-25T05:41:07.1546748Z 
+2026-10-25T05:41:07.1547232Z No user sessions are running outdated binaries.
+2026-10-25T05:41:07.1547904Z 
+2026-10-25T05:41:07.1548542Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-25T05:41:08.0783601Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+2026-10-25T05:41:08.0784092Z [36;1mcmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \[0m
+2026-10-25T05:41:08.0784559Z [36;1m  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCA_BUILD_SHARED=OFF[0m
+2026-10-25T05:41:08.0846671Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:41:08.0847053Z ##[endgroup]
+2026-10-25T05:41:09.5038589Z -- The C compiler identification is GNU 13.3.0
+2026-10-25T05:41:09.6561541Z -- Detecting C compiler ABI info
+2026-10-25T05:41:09.8943302Z -- Detecting C compiler ABI info - done
+2026-10-25T05:41:09.9117372Z -- Check for working C compiler: /usr/bin/cc - skipped
+2026-10-25T05:41:09.9374324Z -- Detecting C compile features
+2026-10-25T05:41:09.9421098Z -- Detecting C compile features - done
+2026-10-25T05:41:09.9921528Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+2026-10-25T05:41:10.0684714Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+2026-10-25T05:41:10.0801290Z -- Found Threads: TRUE
+2026-10-25T05:41:10.3072578Z -- Configuring done (1.3s)
+2026-10-25T05:41:10.3571651Z -- Generating done (0.0s)
+2026-10-25T05:41:10.3575486Z -- Build files have been written to: /home/runner/work/cryptanalysis/cryptanalysis/build
+2026-10-25T05:41:10.3686513Z ##[group]Run clang-tidy -p build --quiet src/*.c tools/*.c tests/*.c
+2026-10-25T05:41:10.3687030Z [36;1mclang-tidy -p build --quiet src/*.c tools/*.c tests/*.c[0m
+2026-10-25T05:41:10.3748418Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:41:10.3748787Z ##[endgroup]
+2026-10-25T05:41:12.1644920Z [1/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/bsgs.c.
+2026-10-25T05:41:19.0873866Z 8227 warnings generated.
+2026-10-25T05:41:19.0881373Z [2/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/cheon.c.
+2026-10-25T05:41:24.1079466Z 11965 warnings generated.
+2026-10-25T05:41:24.1082516Z [3/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/coord.c.
+2026-10-25T05:41:31.0904564Z 17528 warnings generated.
+2026-10-25T05:41:31.0908583Z [4/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/coord_net.c.
+2026-10-25T05:41:35.5530641Z 28280 warnings generated.
+2026-10-25T05:41:35.5535352Z [5/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c.
+2026-10-25T05:41:39.8441164Z 36509 warnings generated.
+2026-10-25T05:41:39.8451029Z [6/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c.
+2026-10-25T05:45:30.8149821Z 40102 warnings generated.
+2026-10-25T05:45:30.8157978Z [7/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/ffi.c.
+2026-10-25T05:45:31.0044821Z 43468 warnings generated.
+2026-10-25T05:45:31.0047621Z [8/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/gpu_cuda_stub.c.
+2026-10-25T05:45:31.0845598Z 44398 warnings generated.
+2026-10-25T05:45:31.0847796Z [9/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/gpu_emulate.c.
+2026-10-25T05:45:33.2071707Z 47764 warnings generated.
+2026-10-25T05:45:33.2072819Z [10/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/gpu_rho.c.
+2026-10-25T05:45:37.2870265Z 55616 warnings generated.
+2026-10-25T05:45:37.2874135Z [11/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/group_common.c.
+2026-10-25T05:45:39.3226224Z 59786 warnings generated.
+2026-10-25T05:45:39.3228946Z [12/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/group_ec.c.
+2026-10-25T05:45:44.3296967Z 63149 warnings generated.
+2026-10-25T05:45:44.3301209Z [13/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/group_zp.c.
+2026-10-25T05:45:44.4391313Z 66515 warnings generated.
+2026-10-25T05:45:44.4394277Z [14/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c.
+2026-10-25T05:45:49.4366912Z 74744 warnings generated.
+2026-10-25T05:45:49.4370988Z [15/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/indexcalc.c.
+2026-10-25T05:46:00.3495465Z 83957 warnings generated.
+2026-10-25T05:46:00.3500508Z [16/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/kangaroo.c.
+2026-10-25T05:46:03.3181572Z 92184 warnings generated.
+2026-10-25T05:46:03.3186703Z [17/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/linalg.c.
+2026-10-25T05:46:07.9345175Z 95550 warnings generated.
+2026-10-25T05:46:07.9348128Z [18/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/modarith.c.
+2026-10-25T05:46:12.4413537Z 98676 warnings generated.
+2026-10-25T05:46:12.4417479Z [19/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c.
+2026-10-25T05:46:14.7325869Z 106526 warnings generated.
+2026-10-25T05:46:14.7329258Z [20/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/precomp.c.
+2026-10-25T05:46:20.1577906Z 115717 warnings generated.
+2026-10-25T05:46:20.1582732Z [21/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/rho.c.
+2026-10-25T05:46:24.4385934Z 124533 warnings generated.
+2026-10-25T05:46:24.4389816Z [22/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/sixclass.c.
+2026-10-25T05:46:25.0524195Z 127896 warnings generated.
+2026-10-25T05:46:25.0527488Z [23/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/src/util.c.
+2026-10-25T05:46:25.3225886Z 135264 warnings generated.
+2026-10-25T05:46:25.3241330Z [24/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_bench.c.
+2026-10-25T05:46:27.3258212Z 139665 warnings generated.
+2026-10-25T05:46:27.3262360Z [25/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_cli.c.
+2026-10-25T05:46:40.6474456Z 147992 warnings generated.
+2026-10-25T05:46:40.6478623Z [26/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_cli.c.
+2026-10-25T05:46:54.1501871Z 156319 warnings generated.
+2026-10-25T05:46:54.1506301Z [27/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_perfbench.c.
+2026-10-25T05:46:57.1129285Z 159979 warnings generated.
+2026-10-25T05:46:57.1132829Z [28/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_sixclass_bench.c.
+2026-10-25T05:46:57.2077701Z 163174 warnings generated.
+2026-10-25T05:46:57.2081995Z [29/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c.
+2026-10-25T05:46:59.1387464Z 170185 warnings generated.
+2026-10-25T05:46:59.1392140Z [30/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_cheon.c.
+2026-10-25T05:47:00.6725547Z 174559 warnings generated.
+2026-10-25T05:47:00.6729264Z [31/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_coord.c.
+2026-10-25T05:47:05.5132643Z 183294 warnings generated.
+2026-10-25T05:47:05.5137111Z [32/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c.
+2026-10-25T05:47:23.9266641Z 187667 warnings generated.
+2026-10-25T05:47:23.9272394Z [33/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_ffi.c.
+2026-10-25T05:47:25.0754984Z 191846 warnings generated.
+2026-10-25T05:47:25.0758625Z [34/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_glv_trace_accounting.c.
+2026-10-25T05:47:25.1774465Z 195992 warnings generated.
+2026-10-25T05:47:25.1777682Z [35/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_gpu.c.
+2026-10-25T05:47:27.5744902Z 200366 warnings generated.
+2026-10-25T05:47:27.5748423Z [36/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_group.c.
+2026-10-25T05:47:27.8532416Z 204737 warnings generated.
+2026-10-25T05:47:27.8536875Z [37/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c.
+2026-10-25T05:47:28.5045387Z 211748 warnings generated.
+2026-10-25T05:47:28.5049120Z [38/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c.
+2026-10-25T05:47:30.3434961Z 219071 warnings generated.
+2026-10-25T05:47:30.3439173Z [39/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_joint_tau.c.
+2026-10-25T05:47:34.2015952Z 223442 warnings generated.
+2026-10-25T05:47:34.2021948Z [40/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c.
+2026-10-25T05:47:35.2329313Z 230453 warnings generated.
+2026-10-25T05:47:35.2334991Z [41/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_linalg.c.
+2026-10-25T05:47:37.2492080Z 234824 warnings generated.
+2026-10-25T05:47:37.2495493Z [42/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_modarith.c.
+2026-10-25T05:47:37.4251696Z 239195 warnings generated.
+2026-10-25T05:47:37.4255805Z [43/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_pohlig.c.
+2026-10-25T05:47:37.7201780Z 246202 warnings generated.
+2026-10-25T05:47:37.7211072Z [44/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_precomp.c.
+2026-10-25T05:47:39.5095952Z 253212 warnings generated.
+2026-10-25T05:47:39.5101109Z [45/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c.
+2026-10-25T05:47:40.0891699Z 260223 warnings generated.
+2026-10-25T05:47:40.0893276Z [46/45] Processing file /home/runner/work/cryptanalysis/cryptanalysis/tests/test_sixclass.c.
+2026-10-25T05:47:40.3159672Z 264597 warnings generated.
+2026-10-25T05:47:40.3176219Z /home/runner/work/cryptanalysis/cryptanalysis/src/bsgs.c:158:14: error: comparing object representation of type 'bsgs_checkpoint_header' (aka 'struct bsgs_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3178983Z   158 |              memcmp(&h, saved, sizeof(h)) == 0;
+2026-10-25T05:47:40.3179496Z       |              ^
+2026-10-25T05:47:40.3182274Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:482:14: error: comparing object representation of type 'glv_checkpoint_header' (aka 'struct glv_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3185068Z   482 |              memcmp(&h, expected, sizeof(h)) == 0;
+2026-10-25T05:47:40.3185592Z       |              ^
+2026-10-25T05:47:40.3187202Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:509:35: error: narrowing conversion from 'uint32_t' (aka 'unsigned int') to signed type 'int' is implementation-defined [bugprone-narrowing-conversions,-warnings-as-errors]
+2026-10-25T05:47:40.3188975Z   509 |     *result = h.result; *solved = h.solved;
+2026-10-25T05:47:40.3189810Z       |                                   ^
+2026-10-25T05:47:40.3211641Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:521:9: error: Potential leak of memory pointed to by 'w.tmp' [clang-analyzer-unix.Malloc,-warnings-as-errors]
+2026-10-25T05:47:40.3213113Z   521 |         ca_set_error("glv: cannot create checkpoint"); return 0;
+2026-10-25T05:47:40.3213720Z       |         ^
+2026-10-25T05:47:40.3214486Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:680:9: note: Assuming the condition is false
+2026-10-25T05:47:40.3215440Z   680 |     if (ca_group_is_identity(g, target)) {
+2026-10-25T05:47:40.3215962Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3216758Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:680:5: note: Taking false branch
+2026-10-25T05:47:40.3217395Z   680 |     if (ca_group_is_identity(g, target)) {
+2026-10-25T05:47:40.3217701Z       |     ^
+2026-10-25T05:47:40.3218093Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:684:9: note: Assuming 'n' is >= 64
+2026-10-25T05:47:40.3218563Z   684 |     if (n < 64) {
+2026-10-25T05:47:40.3218783Z       |         ^~~~~~
+2026-10-25T05:47:40.3219176Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:684:5: note: Taking false branch
+2026-10-25T05:47:40.3219614Z   684 |     if (n < 64) {
+2026-10-25T05:47:40.3219822Z       |     ^
+2026-10-25T05:47:40.3220628Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:711:26: note: Assuming 'k' is >= field 'm'
+2026-10-25T05:47:40.3221613Z   711 |     for (uint32_t k = 1; k < c.m; k++)
+2026-10-25T05:47:40.3222136Z       |                          ^~~~~~~
+2026-10-25T05:47:40.3223174Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:711:5: note: Loop condition is false. Execution continues on line 713
+2026-10-25T05:47:40.3224271Z   711 |     for (uint32_t k = 1; k < c.m; k++)
+2026-10-25T05:47:40.3224756Z       |     ^
+2026-10-25T05:47:40.3225478Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:714:9: note: Assuming 'paired2' is 0
+2026-10-25T05:47:40.3226350Z   714 |     if (paired2) {
+2026-10-25T05:47:40.3226761Z       |         ^~~~~~~
+2026-10-25T05:47:40.3227470Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:714:5: note: Taking false branch
+2026-10-25T05:47:40.3228307Z   714 |     if (paired2) {
+2026-10-25T05:47:40.3228706Z       |     ^
+2026-10-25T05:47:40.3229490Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:747:12: note: Assuming the condition is false
+2026-10-25T05:47:40.3231320Z   747 |     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
+2026-10-25T05:47:40.3231976Z       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3232846Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:747:40: note: Left side of '&&' is false
+2026-10-25T05:47:40.3233878Z   747 |     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
+2026-10-25T05:47:40.3234522Z       |                                        ^
+2026-10-25T05:47:40.3235371Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:750:18: note: Assuming 'wcap' is >= 1
+2026-10-25T05:47:40.3236545Z   750 |     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
+2026-10-25T05:47:40.3237292Z       |                  ^~~~~~~~
+2026-10-25T05:47:40.3238103Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:750:18: note: '?' condition is false
+2026-10-25T05:47:40.3239427Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:750:34: note: Assuming 'wcap' is <= GLV_MAX_WALKS
+2026-10-25T05:47:40.3240886Z   750 |     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
+2026-10-25T05:47:40.3241705Z       |                                  ^~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3242626Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:750:34: note: '?' condition is false
+2026-10-25T05:47:40.3243958Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:754:9: note: Assuming the condition is false
+2026-10-25T05:47:40.3245055Z   754 |     if (per_walk >= 2.0) dp = glv_ilog2((uint64_t)per_walk);
+2026-10-25T05:47:40.3245923Z       |         ^~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3246702Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:754:5: note: Taking false branch
+2026-10-25T05:47:40.3247681Z   754 |     if (per_walk >= 2.0) dp = glv_ilog2((uint64_t)per_walk);
+2026-10-25T05:47:40.3248283Z       |     ^
+2026-10-25T05:47:40.3248988Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:756:9: note: 'dp' is >= 'min_dp'
+2026-10-25T05:47:40.3249895Z   756 |     if (dp < min_dp) dp = min_dp;
+2026-10-25T05:47:40.3250897Z       |         ^~
+2026-10-25T05:47:40.3251634Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:756:5: note: Taking false branch
+2026-10-25T05:47:40.3252525Z   756 |     if (dp < min_dp) dp = min_dp;
+2026-10-25T05:47:40.3253023Z       |     ^
+2026-10-25T05:47:40.3253703Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:757:9: note: 'dp' is >= 0
+2026-10-25T05:47:40.3254558Z   757 |     if (dp < 0) dp = 0;
+2026-10-25T05:47:40.3255016Z       |         ^~
+2026-10-25T05:47:40.3255731Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:757:5: note: Taking false branch
+2026-10-25T05:47:40.3256582Z   757 |     if (dp < 0) dp = 0;
+2026-10-25T05:47:40.3257021Z       |     ^
+2026-10-25T05:47:40.3257694Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:758:9: note: 'dp' is <= 48
+2026-10-25T05:47:40.3258510Z   758 |     if (dp > 48) dp = 48;
+2026-10-25T05:47:40.3258964Z       |         ^~
+2026-10-25T05:47:40.3259687Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:758:5: note: Taking false branch
+2026-10-25T05:47:40.3260809Z   758 |     if (dp > 48) dp = 48;
+2026-10-25T05:47:40.3261253Z       |     ^
+2026-10-25T05:47:40.3261897Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:760:17: note: 'dp' is 0
+2026-10-25T05:47:40.3262775Z   760 |     c.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
+2026-10-25T05:47:40.3263317Z       |                 ^~
+2026-10-25T05:47:40.3264118Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:760:17: note: '?' condition is false
+2026-10-25T05:47:40.3265397Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:766:9: note: 'existing' is >= 0
+2026-10-25T05:47:40.3266320Z   766 |     if (existing < 0) return CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3266870Z       |         ^~~~~~~~
+2026-10-25T05:47:40.3267643Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:766:5: note: Taking false branch
+2026-10-25T05:47:40.3268563Z   766 |     if (existing < 0) return CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3269344Z       |     ^
+2026-10-25T05:47:40.3270068Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:767:31: note: 'existing' is 0
+2026-10-25T05:47:40.3271641Z   767 |     uint64_t effective_seed = existing ? saved.seed : ca_seed_or_random(seed);
+2026-10-25T05:47:40.3272409Z       |                               ^~~~~~~~
+2026-10-25T05:47:40.3273305Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:767:31: note: '?' condition is false
+2026-10-25T05:47:40.3274642Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Assuming field 'M' is non-null
+2026-10-25T05:47:40.3275776Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3276467Z       |         ^~~~
+2026-10-25T05:47:40.3277241Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3278572Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:17: note: Assuming field 'alpha' is non-null
+2026-10-25T05:47:40.3279738Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3280719Z       |                 ^~~~~~~~
+2026-10-25T05:47:40.3281586Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3282705Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3283416Z       |         ^
+2026-10-25T05:47:40.3284378Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:29: note: Assuming field 'beta' is non-null
+2026-10-25T05:47:40.3285036Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3285424Z       |                             ^~~~~~~
+2026-10-25T05:47:40.3285891Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3286465Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3286848Z       |         ^
+2026-10-25T05:47:40.3287272Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:40: note: Assuming 'scratch' is non-null
+2026-10-25T05:47:40.3287858Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3288244Z       |                                        ^~~~~~~~
+2026-10-25T05:47:40.3288713Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3289266Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3289622Z       |         ^
+2026-10-25T05:47:40.3290047Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:52: note: Assuming 'walks' is non-null
+2026-10-25T05:47:40.3291413Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3291833Z       |                                                    ^~~~~~
+2026-10-25T05:47:40.3293022Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3294981Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3295688Z       |         ^
+2026-10-25T05:47:40.3298751Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:62: note: Assuming 'Yn' is non-null
+2026-10-25T05:47:40.3300885Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3301898Z       |                                                              ^~~
+2026-10-25T05:47:40.3303530Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3304638Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3305407Z       |         ^
+2026-10-25T05:47:40.3307078Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:69: note: Assuming 'B' is non-null
+2026-10-25T05:47:40.3308021Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3323989Z       |                                                                     ^~
+2026-10-25T05:47:40.3325366Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:790:5: note: Taking false branch
+2026-10-25T05:47:40.3327423Z   790 |     if (!c.M || !c.alpha || !c.beta || !scratch || !walks || !Yn || !B) goto nomem;
+2026-10-25T05:47:40.3328459Z       |     ^
+2026-10-25T05:47:40.3329824Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:791:26: note: 'i' is < field 'r'
+2026-10-25T05:47:40.3330915Z   791 |     for (uint32_t i = 0; i < c.r; i++) {
+2026-10-25T05:47:40.3331556Z       |                          ^
+2026-10-25T05:47:40.3335472Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:791:5: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3336354Z   791 |     for (uint32_t i = 0; i < c.r; i++) {
+2026-10-25T05:47:40.3336960Z       |     ^
+2026-10-25T05:47:40.3338411Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:794:13: note: Assuming 'batch_table' is not equal to 0
+2026-10-25T05:47:40.3339296Z   794 |         if (!batch_table && !glv_startup_combination(&c, &c.M[i],
+2026-10-25T05:47:40.3339985Z       |             ^~~~~~~~~~~~
+2026-10-25T05:47:40.3341392Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:794:26: note: Left side of '&&' is false
+2026-10-25T05:47:40.3342512Z   794 |         if (!batch_table && !glv_startup_combination(&c, &c.M[i],
+2026-10-25T05:47:40.3343193Z       |                          ^
+2026-10-25T05:47:40.3344308Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:791:26: note: Assuming 'i' is >= field 'r'
+2026-10-25T05:47:40.3359139Z   791 |     for (uint32_t i = 0; i < c.r; i++) {
+2026-10-25T05:47:40.3359752Z       |                          ^~~~~~~
+2026-10-25T05:47:40.3360791Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:791:5: note: Loop condition is false. Execution continues on line 800
+2026-10-25T05:47:40.3362300Z   791 |     for (uint32_t i = 0; i < c.r; i++) {
+2026-10-25T05:47:40.3362876Z       |     ^
+2026-10-25T05:47:40.3363659Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:800:9: note: 'batch_table' is not equal to 0
+2026-10-25T05:47:40.3365053Z   800 |     if (batch_table) {
+2026-10-25T05:47:40.3370867Z       |         ^~~~~~~~~~~
+2026-10-25T05:47:40.3371957Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:800:5: note: Taking true branch
+2026-10-25T05:47:40.3401891Z   800 |     if (batch_table) {
+2026-10-25T05:47:40.3402341Z       |     ^
+2026-10-25T05:47:40.3403154Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:802:30: note: Assuming 'startup' is null
+2026-10-25T05:47:40.3404214Z   802 |         double batch_start = startup ? ca_now() : 0.0;
+2026-10-25T05:47:40.3404836Z       |                              ^~~~~~~
+2026-10-25T05:47:40.3405731Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:802:30: note: '?' condition is false
+2026-10-25T05:47:40.3407040Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:803:18: note: Assuming 'plane_format' is 0
+2026-10-25T05:47:40.3407988Z   803 |         int ok = plane_format
+2026-10-25T05:47:40.3408467Z       |                  ^~~~~~~~~~~~
+2026-10-25T05:47:40.3409303Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:803:18: note: '?' condition is false
+2026-10-25T05:47:40.3411001Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:806:15: note: Assuming 'tau_pair_steered' is 0
+2026-10-25T05:47:40.3411983Z   806 |             : tau_pair_steered
+2026-10-25T05:47:40.3412473Z       |               ^~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3413303Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:806:15: note: '?' condition is false
+2026-10-25T05:47:40.3414573Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:809:15: note: Assuming 'free_gauge' is 0
+2026-10-25T05:47:40.3415713Z   809 |             : free_gauge
+2026-10-25T05:47:40.3416183Z       |               ^~~~~~~~~~
+2026-10-25T05:47:40.3416998Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:809:15: note: '?' condition is false
+2026-10-25T05:47:40.3418311Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:814:13: note: Assuming 'ok' is not equal to 0
+2026-10-25T05:47:40.3419240Z   814 |         if (!ok) {
+2026-10-25T05:47:40.3419683Z       |             ^~~
+2026-10-25T05:47:40.3420735Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:814:9: note: Taking false branch
+2026-10-25T05:47:40.3421611Z   814 |         if (!ok) {
+2026-10-25T05:47:40.3422020Z       |         ^
+2026-10-25T05:47:40.3422832Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:818:9: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3423421Z   818 |         for (uint32_t i = 0; i < c.r; i++)
+2026-10-25T05:47:40.3423709Z       |         ^
+2026-10-25T05:47:40.3424241Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:818:9: note: Loop condition is false. Execution continues on line 820
+2026-10-25T05:47:40.3425080Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:820:9: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3425633Z   820 |         for (uint32_t i = 0; i < c.r; i++)
+2026-10-25T05:47:40.3425903Z       |         ^
+2026-10-25T05:47:40.3426389Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:820:9: note: Loop condition is false. Execution continues on line 823
+2026-10-25T05:47:40.3427299Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:823:13: note: 'startup' is null
+2026-10-25T05:47:40.3427743Z   823 |         if (startup) {
+2026-10-25T05:47:40.3427978Z       |             ^~~~~~~
+2026-10-25T05:47:40.3428379Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:823:9: note: Taking false branch
+2026-10-25T05:47:40.3428826Z   823 |         if (startup) {
+2026-10-25T05:47:40.3429047Z       |         ^
+2026-10-25T05:47:40.3429473Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:837:37: note: Assuming the condition is false
+2026-10-25T05:47:40.3430603Z   837 |     if (ca_htab_init(&tab, (size_t)(exp_dps < 1e8 ? exp_dps : 1e8)) != CA_OK) goto nomem;
+2026-10-25T05:47:40.3431393Z       |                                     ^~~~~~~~~~~~~
+2026-10-25T05:47:40.3431917Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:837:37: note: '?' condition is false
+2026-10-25T05:47:40.3432609Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:837:9: note: Assuming the condition is false
+2026-10-25T05:47:40.3433240Z   837 |     if (ca_htab_init(&tab, (size_t)(exp_dps < 1e8 ? exp_dps : 1e8)) != CA_OK) goto nomem;
+2026-10-25T05:47:40.3433865Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3434538Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:837:5: note: Taking false branch
+2026-10-25T05:47:40.3435147Z   837 |     if (ca_htab_init(&tab, (size_t)(exp_dps < 1e8 ? exp_dps : 1e8)) != CA_OK) goto nomem;
+2026-10-25T05:47:40.3435553Z       |     ^
+2026-10-25T05:47:40.3435912Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:840:9: note: 'existing' is 0
+2026-10-25T05:47:40.3436346Z   840 |     if (existing) {
+2026-10-25T05:47:40.3436575Z       |         ^~~~~~~~
+2026-10-25T05:47:40.3436972Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:840:5: note: Taking false branch
+2026-10-25T05:47:40.3437800Z   840 |     if (existing) {
+2026-10-25T05:47:40.3438080Z       |     ^
+2026-10-25T05:47:40.3438429Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:857:30: note: 'w' is < 'W'
+2026-10-25T05:47:40.3438874Z   857 |         for (uint32_t w = 0; w < W; w++) {
+2026-10-25T05:47:40.3439155Z       |                              ^
+2026-10-25T05:47:40.3439660Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:857:9: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3440493Z   857 |         for (uint32_t w = 0; w < W; w++) {
+2026-10-25T05:47:40.3440946Z       |         ^
+2026-10-25T05:47:40.3441636Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:858:13: note: Taking false branch
+2026-10-25T05:47:40.3442379Z   858 |             if (!glv_restart(&c, &walks[w], &rng, &ops)) {
+2026-10-25T05:47:40.3442690Z       |             ^
+2026-10-25T05:47:40.3443096Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:857:30: note: Assuming 'w' is >= 'W'
+2026-10-25T05:47:40.3443571Z   857 |         for (uint32_t w = 0; w < W; w++) {
+2026-10-25T05:47:40.3443864Z       |                              ^~~~~
+2026-10-25T05:47:40.3444411Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:857:9: note: Loop condition is false. Execution continues on line 863
+2026-10-25T05:47:40.3445145Z   857 |         for (uint32_t w = 0; w < W; w++) {
+2026-10-25T05:47:40.3445573Z       |         ^
+2026-10-25T05:47:40.3446213Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:869:9: note: Assuming 'max_ops' is 0
+2026-10-25T05:47:40.3446728Z   869 |     if (max_ops && max_ops < cap) cap = max_ops;
+2026-10-25T05:47:40.3447022Z       |         ^~~~~~~
+2026-10-25T05:47:40.3447439Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:869:17: note: Left side of '&&' is false
+2026-10-25T05:47:40.3447939Z   869 |     if (max_ops && max_ops < cap) cap = max_ops;
+2026-10-25T05:47:40.3448231Z       |                 ^
+2026-10-25T05:47:40.3448905Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:870:40: note: Assuming 'progress_interval' is 0
+2026-10-25T05:47:40.3449960Z   870 |     double next_progress = ca_now() + (progress_interval ? progress_interval : 5);
+2026-10-25T05:47:40.3450679Z       |                                        ^~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3451162Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:870:40: note: '?' condition is false
+2026-10-25T05:47:40.3451869Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:871:42: note: Assuming 'checkpoint_interval' is 0
+2026-10-25T05:47:40.3452753Z   871 |     double next_checkpoint = ca_now() + (checkpoint_interval ? checkpoint_interval : 60);
+2026-10-25T05:47:40.3453494Z       |                                          ^~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3453994Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:871:42: note: '?' condition is false
+2026-10-25T05:47:40.3454668Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:872:19: note: 'checkpoint_path' is non-null
+2026-10-25T05:47:40.3455331Z   872 |     int monitor = checkpoint_path || verbose;
+2026-10-25T05:47:40.3455819Z       |                   ^~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3456295Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:872:35: note: Left side of '||' is true
+2026-10-25T05:47:40.3456801Z   872 |     int monitor = checkpoint_path || verbose;
+2026-10-25T05:47:40.3457104Z       |                                   ^
+2026-10-25T05:47:40.3457520Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:873:9: note: 'monitor' is 1
+2026-10-25T05:47:40.3458277Z   873 |     if (monitor && !dlog_ckpt_progress(checkpoint_path, "glv", "walk", "running",
+2026-10-25T05:47:40.3458777Z       |         ^~~~~~~
+2026-10-25T05:47:40.3459195Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:873:9: note: Left side of '&&' is true
+2026-10-25T05:47:40.3459830Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:873:5: note: Taking true branch
+2026-10-25T05:47:40.3460782Z   873 |     if (monitor && !dlog_ckpt_progress(checkpoint_path, "glv", "walk", "running",
+2026-10-25T05:47:40.3461189Z       |     ^
+2026-10-25T05:47:40.3461598Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:875:77: note: Control jumps to line 1179
+2026-10-25T05:47:40.3462209Z   875 |         ca_set_error("glv: cannot persist progress"); rc = CA_ERR_INTERNAL; goto done;
+2026-10-25T05:47:40.3462657Z       |                                                                             ^
+2026-10-25T05:47:40.3463502Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1179:9: note: 'have_tab' is 1
+2026-10-25T05:47:40.3464257Z  1179 |     if (have_tab && checkpoint_ready) {
+2026-10-25T05:47:40.3464552Z       |         ^~~~~~~~
+2026-10-25T05:47:40.3465004Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1179:9: note: Left side of '&&' is true
+2026-10-25T05:47:40.3465654Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1179:21: note: 'checkpoint_ready' is 1
+2026-10-25T05:47:40.3466474Z  1179 |     if (have_tab && checkpoint_ready) {
+2026-10-25T05:47:40.3466777Z       |                     ^~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3467213Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1179:5: note: Taking true branch
+2026-10-25T05:47:40.3467801Z  1179 |     if (have_tab && checkpoint_ready) {
+2026-10-25T05:47:40.3468255Z       |     ^
+2026-10-25T05:47:40.3468883Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1181:13: note: 'checkpoint_path' is non-null
+2026-10-25T05:47:40.3469503Z  1181 |         if (checkpoint_path && !glv_checkpoint_save(checkpoint_path, &identity,
+2026-10-25T05:47:40.3469893Z       |             ^~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3470477Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1181:13: note: Left side of '&&' is true
+2026-10-25T05:47:40.3471238Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1183:17: note: 'rc' is not equal to CA_OK
+2026-10-25T05:47:40.3472091Z  1183 |                 rc == CA_OK ? *x : 0, rc == CA_OK)) rc = CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3472432Z       |                 ^~
+2026-10-25T05:47:40.3473007Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1183:17: note: '?' condition is false
+2026-10-25T05:47:40.3473676Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:1181:33: note: Calling 'glv_checkpoint_save'
+2026-10-25T05:47:40.3474605Z  1181 |         if (checkpoint_path && !glv_checkpoint_save(checkpoint_path, &identity,
+2026-10-25T05:47:40.3475259Z       |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3475666Z  1182 |                 walks, &tab, &rng, effective_seed, ops, steps, elapsed,
+2026-10-25T05:47:40.3476064Z       |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3476450Z  1183 |                 rc == CA_OK ? *x : 0, rc == CA_OK)) rc = CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3476804Z       |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3477257Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:518:10: note: 'path' is non-null
+2026-10-25T05:47:40.3477719Z   518 |     if (!path) return 1;
+2026-10-25T05:47:40.3477959Z       |          ^~~~
+2026-10-25T05:47:40.3478340Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:518:5: note: Taking false branch
+2026-10-25T05:47:40.3478778Z   518 |     if (!path) return 1;
+2026-10-25T05:47:40.3479008Z       |     ^
+2026-10-25T05:47:40.3479416Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:520:10: note: Calling 'dlog_ckpt_begin'
+2026-10-25T05:47:40.3479911Z   520 |     if (!dlog_ckpt_begin(&w, path)) {
+2026-10-25T05:47:40.3480345Z       |          ^~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3480865Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:55:14: note: Calling 'dlog_ckpt_path'
+2026-10-25T05:47:40.3481457Z    55 |     w->tmp = dlog_ckpt_path(path, ".tmp.XXXXXX");
+2026-10-25T05:47:40.3481781Z       |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3482297Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:30:17: note: Memory is allocated
+2026-10-25T05:47:40.3482820Z    30 |     char *out = malloc(n);
+2026-10-25T05:47:40.3483070Z       |                 ^~~~~~~~~
+2026-10-25T05:47:40.3483571Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:31:9: note: Assuming 'out' is non-null
+2026-10-25T05:47:40.3484156Z    31 |     if (out) snprintf(out, n, "%s%s", path, suffix);
+2026-10-25T05:47:40.3484457Z       |         ^~~
+2026-10-25T05:47:40.3485054Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:31:5: note: Taking true branch
+2026-10-25T05:47:40.3485615Z    31 |     if (out) snprintf(out, n, "%s%s", path, suffix);
+2026-10-25T05:47:40.3485911Z       |     ^
+2026-10-25T05:47:40.3486371Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:55:14: note: Returned allocated memory
+2026-10-25T05:47:40.3486948Z    55 |     w->tmp = dlog_ckpt_path(path, ".tmp.XXXXXX");
+2026-10-25T05:47:40.3487264Z       |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3487799Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:56:13: note: Field 'tmp' is non-null
+2026-10-25T05:47:40.3488331Z    56 |     if (!w->tmp) return 0;
+2026-10-25T05:47:40.3488580Z       |             ^
+2026-10-25T05:47:40.3489034Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:56:5: note: Taking false branch
+2026-10-25T05:47:40.3489544Z    56 |     if (!w->tmp) return 0;
+2026-10-25T05:47:40.3489778Z       |     ^
+2026-10-25T05:47:40.3490343Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:58:12: note: Assuming 'fd' is < 0
+2026-10-25T05:47:40.3490894Z    58 |     w->f = fd >= 0 ? fdopen(fd, "wb+") : NULL;
+2026-10-25T05:47:40.3491183Z       |            ^~~~~~~
+2026-10-25T05:47:40.3491655Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:58:12: note: '?' condition is false
+2026-10-25T05:47:40.3492401Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:59:13: note: Field 'f' is null
+2026-10-25T05:47:40.3493043Z    59 |     if (!w->f && fd >= 0) close(fd);
+2026-10-25T05:47:40.3493305Z       |             ^
+2026-10-25T05:47:40.3493768Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:59:9: note: Left side of '&&' is true
+2026-10-25T05:47:40.3494300Z    59 |     if (!w->f && fd >= 0) close(fd);
+2026-10-25T05:47:40.3494562Z       |         ^
+2026-10-25T05:47:40.3494979Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:59:18: note: 'fd' is < 0
+2026-10-25T05:47:40.3495470Z    59 |     if (!w->f && fd >= 0) close(fd);
+2026-10-25T05:47:40.3495732Z       |                  ^~
+2026-10-25T05:47:40.3496200Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:59:5: note: Taking false branch
+2026-10-25T05:47:40.3496716Z    59 |     if (!w->f && fd >= 0) close(fd);
+2026-10-25T05:47:40.3496965Z       |     ^
+2026-10-25T05:47:40.3497359Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:520:10: note: Returned allocated memory
+2026-10-25T05:47:40.3497855Z   520 |     if (!dlog_ckpt_begin(&w, path)) {
+2026-10-25T05:47:40.3498134Z       |          ^~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3498558Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:520:5: note: Taking true branch
+2026-10-25T05:47:40.3499014Z   520 |     if (!dlog_ckpt_begin(&w, path)) {
+2026-10-25T05:47:40.3499277Z       |     ^
+2026-10-25T05:47:40.3499749Z /home/runner/work/cryptanalysis/cryptanalysis/src/curve.c:521:9: note: Potential leak of memory pointed to by 'w.tmp'
+2026-10-25T05:47:40.3500485Z   521 |         ca_set_error("glv: cannot create checkpoint"); return 0;
+2026-10-25T05:47:40.3500818Z       |         ^
+2026-10-25T05:47:40.3501577Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:23:40: error: Assigned value is garbage or undefined [clang-analyzer-core.uninitialized.Assign,-warnings-as-errors]
+2026-10-25T05:47:40.3502490Z    23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:47:40.3502860Z       |                                        ^
+2026-10-25T05:47:40.3503396Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:256:9: note: Assuming 'progress_interval' is not equal to 0
+2026-10-25T05:47:40.3504003Z   256 |     if (!progress_interval || !checkpoint_interval) {
+2026-10-25T05:47:40.3504320Z       |         ^~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3504935Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:256:9: note: Left side of '||' is false
+2026-10-25T05:47:40.3505690Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:256:31: note: Assuming 'checkpoint_interval' is not equal to 0
+2026-10-25T05:47:40.3506289Z   256 |     if (!progress_interval || !checkpoint_interval) {
+2026-10-25T05:47:40.3506621Z       |                               ^~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3507079Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:256:5: note: Taking false branch
+2026-10-25T05:47:40.3507584Z   256 |     if (!progress_interval || !checkpoint_interval) {
+2026-10-25T05:47:40.3507888Z       |     ^
+2026-10-25T05:47:40.3508298Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:261:9: note: Assuming 'params' is non-null
+2026-10-25T05:47:40.3508862Z   261 |     if (!params) { ca_dlog_params_default(&def); params = &def; }
+2026-10-25T05:47:40.3509200Z       |         ^~~~~~~
+2026-10-25T05:47:40.3509597Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:261:5: note: Taking false branch
+2026-10-25T05:47:40.3510265Z   261 |     if (!params) { ca_dlog_params_default(&def); params = &def; }
+2026-10-25T05:47:40.3510601Z       |     ^
+2026-10-25T05:47:40.3511036Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:262:9: note: Assuming field 'order' is not equal to 0
+2026-10-25T05:47:40.3511553Z   262 |     if (!g->order) {
+2026-10-25T05:47:40.3511785Z       |         ^~~~~~~~~
+2026-10-25T05:47:40.3512176Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:262:5: note: Taking false branch
+2026-10-25T05:47:40.3512739Z   262 |     if (!g->order) {
+2026-10-25T05:47:40.3512958Z       |     ^
+2026-10-25T05:47:40.3513370Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:268:9: note: Assuming 'n' is not equal to 0
+2026-10-25T05:47:40.3513853Z   268 |     if (!n) n = g->order;
+2026-10-25T05:47:40.3514087Z       |         ^~
+2026-10-25T05:47:40.3514458Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:268:5: note: Taking false branch
+2026-10-25T05:47:40.3514909Z   268 |     if (!n) n = g->order;
+2026-10-25T05:47:40.3515142Z       |     ^
+2026-10-25T05:47:40.3515554Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:269:9: note: Assuming the condition is false
+2026-10-25T05:47:40.3516192Z   269 |     if (!ca_check_members(g, base, target, n, "Pohlig-Hellman")) return CA_ERR_NOT_FOUND;
+2026-10-25T05:47:40.3516651Z       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3517133Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:269:5: note: Taking false branch
+2026-10-25T05:47:40.3517721Z   269 |     if (!ca_check_members(g, base, target, n, "Pohlig-Hellman")) return CA_ERR_NOT_FOUND;
+2026-10-25T05:47:40.3518126Z       |     ^
+2026-10-25T05:47:40.3518505Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:273:21: note: Assuming 'st' is null
+2026-10-25T05:47:40.3518989Z   273 |     ca_stats *acc = st ? st : &local_stats;
+2026-10-25T05:47:40.3519277Z       |                     ^~
+2026-10-25T05:47:40.3519711Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:273:21: note: '?' condition is false
+2026-10-25T05:47:40.3520527Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:274:20: note: Assuming 'checkpoint_prefix' is null
+2026-10-25T05:47:40.3521203Z   274 |     char *parent = checkpoint_prefix ? dlog_ckpt_path(checkpoint_prefix, ".ckpt") : NULL;
+2026-10-25T05:47:40.3521641Z       |                    ^~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3522091Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:274:20: note: '?' condition is false
+2026-10-25T05:47:40.3522757Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:275:9: note: 'checkpoint_prefix' is null
+2026-10-25T05:47:40.3523303Z   275 |     if (checkpoint_prefix && !parent) return CA_ERR_NOMEM;
+2026-10-25T05:47:40.3523626Z       |         ^~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3524060Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:275:27: note: Left side of '&&' is false
+2026-10-25T05:47:40.3524704Z   275 |     if (checkpoint_prefix && !parent) return CA_ERR_NOMEM;
+2026-10-25T05:47:40.3525038Z       |                           ^
+2026-10-25T05:47:40.3525469Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:277:25: note: Calling 'ph_identity'
+2026-10-25T05:47:40.3526013Z   277 |     uint64_t identity = ph_identity(g, base, target, n, params);
+2026-10-25T05:47:40.3526396Z       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3526890Z /home/runner/work/cryptanalysis/cryptanalysis/src/pohlig.c:172:12: note: Calling 'dlog_ckpt_hash'
+2026-10-25T05:47:40.3527456Z   172 |     return dlog_ckpt_hash(v, sizeof(v), UINT64_C(14695981039346656037));
+2026-10-25T05:47:40.3527870Z       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3528501Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:23:5: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3529176Z    23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:47:40.3529520Z       |     ^
+2026-10-25T05:47:40.3529991Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:23:31: note: The value 1 is assigned to 'i'
+2026-10-25T05:47:40.3530734Z    23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:47:40.3531091Z       |                               ^~~
+2026-10-25T05:47:40.3531656Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:23:5: note: Loop condition is true.  Entering loop body
+2026-10-25T05:47:40.3532424Z    23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:47:40.3532758Z       |     ^
+2026-10-25T05:47:40.3533257Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:23:40: note: Assigned value is garbage or undefined
+2026-10-25T05:47:40.3533897Z    23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:47:40.3534258Z       |                                        ^  ~~~~
+2026-10-25T05:47:40.3535639Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:43:12: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.3537031Z    43 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3537288Z       |            ^~~~~~
+2026-10-25T05:47:40.3538350Z /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:43:12: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.3539460Z    43 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3539705Z       |            ^~~~~~
+2026-10-25T05:47:40.3540890Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:541:12: error: performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3542085Z   541 |     return (bits <= 32 ? 3u : 4u) * CA_ENDO_RADIX8_MAGNITUDES;
+2026-10-25T05:47:40.3542416Z       |            ^
+2026-10-25T05:47:40.3542896Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:541:12: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3543490Z    46 |     return (bits <= 32 ? 3u : 4u) * CA_ENDO_RADIX8_MAGNITUDES;
+2026-10-25T05:47:40.3543852Z       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3544179Z       |            (size_t)(                                         )
+2026-10-25T05:47:40.3544827Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:541:12: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3545404Z   541 |     return (bits <= 32 ? 3u : 4u) * CA_ENDO_RADIX8_MAGNITUDES;
+2026-10-25T05:47:40.3545736Z       |            ^~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3545989Z       |             (size_t)
+2026-10-25T05:47:40.3547039Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:551:31: error: performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3548211Z   551 |     if (!entries || entries > 4 * CA_ENDO_RADIX8_MAGNITUDES) return 0;
+2026-10-25T05:47:40.3548576Z       |                               ^
+2026-10-25T05:47:40.3549093Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:551:31: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3549716Z   551 |     if (!entries || entries > 4 * CA_ENDO_RADIX8_MAGNITUDES) return 0;
+2026-10-25T05:47:40.3550221Z       |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3550556Z       |                               (size_t)(                    )
+2026-10-25T05:47:40.3551091Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:551:31: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3551685Z   551 |     if (!entries || entries > 4 * CA_ENDO_RADIX8_MAGNITUDES) return 0;
+2026-10-25T05:47:40.3552035Z       |                               ^
+2026-10-25T05:47:40.3552422Z       |                               (long)
+2026-10-25T05:47:40.3553858Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:784:12: error: performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3555177Z   784 |     return (bits <= 32 ? 4u : 7u) * CA_JOINT_WINDOW4_ORBITS;
+2026-10-25T05:47:40.3555515Z       |            ^
+2026-10-25T05:47:40.3556087Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:784:12: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3557095Z   784 |     return (bits <= 32 ? 4u : 7u) * CA_JOINT_WINDOW4_ORBITS;
+2026-10-25T05:47:40.3557685Z       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3558216Z       |            (size_t)(                                       )
+2026-10-25T05:47:40.3559101Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:784:12: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3560221Z   784 |     return (bits <= 32 ? 4u : 7u) * CA_JOINT_WINDOW4_ORBITS;
+2026-10-25T05:47:40.3560756Z       |            ^~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3561155Z       |             (size_t)
+2026-10-25T05:47:40.3562925Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:796:31: error: performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3564977Z   796 |     if (!entries || entries > 7 * CA_JOINT_WINDOW4_ORBITS) return 0;
+2026-10-25T05:47:40.3565546Z       |                               ^
+2026-10-25T05:47:40.3566408Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:796:31: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3567408Z   796 |     if (!entries || entries > 7 * CA_JOINT_WINDOW4_ORBITS) return 0;
+2026-10-25T05:47:40.3568042Z       |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3568572Z       |                               (size_t)(                  )
+2026-10-25T05:47:40.3569524Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:796:31: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3570749Z   796 |     if (!entries || entries > 7 * CA_JOINT_WINDOW4_ORBITS) return 0;
+2026-10-25T05:47:40.3571575Z       |                               ^
+2026-10-25T05:47:40.3572030Z       |                               (long)
+2026-10-25T05:47:40.3573618Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:858:21: error: 'signed char' to 'int' conversion; consider casting to 'unsigned char' first. [bugprone-signed-char-misuse,cert-str34-c,-warnings-as-errors]
+2026-10-25T05:47:40.3575295Z   858 |             int x = pre.rep_x[orbit], y = pre.rep_y[orbit];
+2026-10-25T05:47:40.3575843Z       |                     ^
+2026-10-25T05:47:40.3577413Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:858:43: error: 'signed char' to 'int' conversion; consider casting to 'unsigned char' first. [bugprone-signed-char-misuse,cert-str34-c,-warnings-as-errors]
+2026-10-25T05:47:40.3579081Z   858 |             int x = pre.rep_x[orbit], y = pre.rep_y[orbit];
+2026-10-25T05:47:40.3579594Z       |                                           ^
+2026-10-25T05:47:40.3581381Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:1236:17: error: 'signed char' to 'int' conversion; consider casting to 'unsigned char' first. [bugprone-signed-char-misuse,cert-str34-c,-warnings-as-errors]
+2026-10-25T05:47:40.3583223Z  1236 |         int x = ca_joint_pair_digit_x[residue], y = ca_joint_pair_digit_y[residue];
+2026-10-25T05:47:40.3583925Z       |                 ^
+2026-10-25T05:47:40.3585443Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:1236:53: error: 'signed char' to 'int' conversion; consider casting to 'unsigned char' first. [bugprone-signed-char-misuse,cert-str34-c,-warnings-as-errors]
+2026-10-25T05:47:40.3587420Z  1236 |         int x = ca_joint_pair_digit_x[residue], y = ca_joint_pair_digit_y[residue];
+2026-10-25T05:47:40.3588168Z       |                                                     ^
+2026-10-25T05:47:40.3590423Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:2557:56: error: result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3592632Z  2557 |             tau4_seed_jac(g, base[i], one_minus_beta, &projective[9 * i]);
+2026-10-25T05:47:40.3593322Z       |                                                        ^
+2026-10-25T05:47:40.3594331Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:2557:67: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3595480Z  2557 |             tau4_seed_jac(g, base[i], one_minus_beta, &projective[9 * i]);
+2026-10-25T05:47:40.3596193Z       |                                                                   ^~~~~
+2026-10-25T05:47:40.3596823Z       |                                                                   (ptrdiff_t)( )
+2026-10-25T05:47:40.3597845Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:2557:67: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3598950Z  2557 |             tau4_seed_jac(g, base[i], one_minus_beta, &projective[9 * i]);
+2026-10-25T05:47:40.3599655Z       |                                                                   ^
+2026-10-25T05:47:40.3600419Z       |                                                                   (ptrdiff_t)
+2026-10-25T05:47:40.3602315Z /home/runner/work/cryptanalysis/cryptanalysis/src/ec_tau.c:3547:23: error: either cast from 'int' to 'size_t' (aka 'unsigned long') is ineffective, or there is loss of precision before the conversion [bugprone-misplaced-widening-cast,-warnings-as-errors]
+2026-10-25T05:47:40.3604320Z  3547 |         size_t slot = (size_t)(((int)da.seed * 9 + (int)db.seed) * 6 + relative);
+2026-10-25T05:47:40.3604999Z       |                       ^
+2026-10-25T05:47:40.3607782Z /home/runner/work/cryptanalysis/cryptanalysis/src/gpu_rho.c:92:14: error: comparing object representation of type 'gpu_rho_checkpoint_header' (aka 'struct gpu_rho_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3610744Z    92 |              memcmp(&h, expected, sizeof(h)) == 0;
+2026-10-25T05:47:40.3611251Z       |              ^
+2026-10-25T05:47:40.3613838Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:190:14: error: comparing object representation of type 'grumpy_checkpoint_header' (aka 'struct grumpy_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3616608Z   190 |              memcmp(&h, saved, sizeof(h)) == 0;
+2026-10-25T05:47:40.3617105Z       |              ^
+2026-10-25T05:47:40.3618963Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:192:35: error: performing an implicit widening conversion to type 'unsigned long' of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3621197Z   192 |     uint64_t prefix = sizeof(h) + 3 * 4 * sizeof(uint64_t);
+2026-10-25T05:47:40.3621778Z       |                                   ^
+2026-10-25T05:47:40.3622734Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:192:35: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3623831Z   192 |     uint64_t prefix = sizeof(h) + 3 * 4 * sizeof(uint64_t);
+2026-10-25T05:47:40.3624412Z       |                                   ^~~~~
+2026-10-25T05:47:40.3625084Z       |                                   (unsigned long)( )
+2026-10-25T05:47:40.3626046Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:192:35: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3627137Z   192 |     uint64_t prefix = sizeof(h) + 3 * 4 * sizeof(uint64_t);
+2026-10-25T05:47:40.3627711Z       |                                   ^
+2026-10-25T05:47:40.3628172Z       |                                   (long)
+2026-10-25T05:47:40.3629465Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:310:5: error: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores,-warnings-as-errors]
+2026-10-25T05:47:40.3630860Z   310 |     rc = CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3631278Z       |     ^    ~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3632112Z /home/runner/work/cryptanalysis/cryptanalysis/src/grumpy.c:310:5: note: Value stored to 'rc' is never read
+2026-10-25T05:47:40.3633015Z   310 |     rc = CA_ERR_INTERNAL;
+2026-10-25T05:47:40.3633433Z       |     ^    ~~~~~~~~~~~~~~~
+2026-10-25T05:47:40.3635852Z /home/runner/work/cryptanalysis/cryptanalysis/src/indexcalc.c:160:9: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.3638306Z   160 |         strcpy(dir, ".");
+2026-10-25T05:47:40.3638714Z       |         ^~~~~~
+2026-10-25T05:47:40.3640739Z /home/runner/work/cryptanalysis/cryptanalysis/src/indexcalc.c:160:9: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.3642679Z   160 |         strcpy(dir, ".");
+2026-10-25T05:47:40.3643079Z       |         ^~~~~~
+2026-10-25T05:47:40.3645440Z /home/runner/work/cryptanalysis/cryptanalysis/src/indexcalc.c:281:5: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.3647904Z   281 |     strcpy(path + prefix, name);
+2026-10-25T05:47:40.3648348Z       |     ^~~~~~
+2026-10-25T05:47:40.3650500Z /home/runner/work/cryptanalysis/cryptanalysis/src/indexcalc.c:281:5: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.3652495Z   281 |     strcpy(path + prefix, name);
+2026-10-25T05:47:40.3652942Z       |     ^~~~~~
+2026-10-25T05:47:40.3655265Z /home/runner/work/cryptanalysis/cryptanalysis/src/kangaroo.c:78:12: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.3657725Z    78 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3658160Z       |            ^~~~~~
+2026-10-25T05:47:40.3660031Z /home/runner/work/cryptanalysis/cryptanalysis/src/kangaroo.c:78:12: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.3662126Z    78 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3662556Z       |            ^~~~~~
+2026-10-25T05:47:40.3665246Z /home/runner/work/cryptanalysis/cryptanalysis/src/kangaroo.c:182:14: error: comparing object representation of type 'k_checkpoint_header' (aka 'struct k_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3668109Z   182 |              memcmp(&h, saved, sizeof(h)) == 0;
+2026-10-25T05:47:40.3668615Z       |              ^
+2026-10-25T05:47:40.3671105Z /home/runner/work/cryptanalysis/cryptanalysis/src/rho.c:185:12: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.3673504Z   185 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3673939Z       |            ^~~~~~
+2026-10-25T05:47:40.3675752Z /home/runner/work/cryptanalysis/cryptanalysis/src/rho.c:185:12: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.3677669Z   185 |     } else strcpy(dir, ".");
+2026-10-25T05:47:40.3678094Z       |            ^~~~~~
+2026-10-25T05:47:40.3680814Z /home/runner/work/cryptanalysis/cryptanalysis/src/rho.c:269:14: error: comparing object representation of type 'rho_checkpoint_header' (aka 'struct rho_checkpoint_header') which does not have a unique object representation; consider comparing the members of the object manually [bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c,-warnings-as-errors]
+2026-10-25T05:47:40.3683516Z   269 |              memcmp(&h, expected, sizeof(h)) == 0;
+2026-10-25T05:47:40.3684026Z       |              ^
+2026-10-25T05:47:40.3685447Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:77:15: error: Null pointer passed to 1st parameter expecting 'nonnull' [clang-analyzer-core.NonNullParamChecker,-warnings-as-errors]
+2026-10-25T05:47:40.3687019Z    77 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.3687514Z       |               ^
+2026-10-25T05:47:40.3688302Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3689202Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3689587Z       |           ^~~~
+2026-10-25T05:47:40.3690538Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:47:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3691474Z    47 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3691931Z       |               ^
+2026-10-25T05:47:40.3692866Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3693756Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3694136Z       |           ^~~~
+2026-10-25T05:47:40.3694852Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:47:9: note: Taking false branch
+2026-10-25T05:47:40.3695718Z    47 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3696167Z       |         ^
+2026-10-25T05:47:40.3696928Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3697809Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3698196Z       |     ^
+2026-10-25T05:47:40.3699000Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:47:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3700015Z    47 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3700622Z       |         ^
+2026-10-25T05:47:40.3701392Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3702295Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3702722Z       |                     ^
+2026-10-25T05:47:40.3703539Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:58:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3704608Z    58 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3705393Z       |               ^
+2026-10-25T05:47:40.3706178Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3707061Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3707447Z       |           ^~~~
+2026-10-25T05:47:40.3708175Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:58:9: note: Taking false branch
+2026-10-25T05:47:40.3709162Z    58 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3709780Z       |         ^
+2026-10-25T05:47:40.3710706Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3711600Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3711978Z       |     ^
+2026-10-25T05:47:40.3712780Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:58:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3713879Z    58 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3714497Z       |         ^
+2026-10-25T05:47:40.3715251Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3716150Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3716580Z       |                     ^
+2026-10-25T05:47:40.3717440Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:60:15: note: Assuming field 'table_entries' is > 0
+2026-10-25T05:47:40.3718519Z    60 |         CHECK(baby.table_entries > 0 && baby.iterations == 0);
+2026-10-25T05:47:40.3719096Z       |               ^
+2026-10-25T05:47:40.3719879Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3720911Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3721295Z       |           ^~~~
+2026-10-25T05:47:40.3722047Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:60:15: note: Left side of '&&' is true
+2026-10-25T05:47:40.3723044Z    60 |         CHECK(baby.table_entries > 0 && baby.iterations == 0);
+2026-10-25T05:47:40.3723612Z       |               ^
+2026-10-25T05:47:40.3724470Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:60:41: note: Assuming field 'iterations' is equal to 0
+2026-10-25T05:47:40.3725552Z    60 |         CHECK(baby.table_entries > 0 && baby.iterations == 0);
+2026-10-25T05:47:40.3726145Z       |                                         ^
+2026-10-25T05:47:40.3727178Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3728537Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3729042Z       |           ^~~~
+2026-10-25T05:47:40.3730006Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:60:9: note: Taking false branch
+2026-10-25T05:47:40.3731455Z    60 |         CHECK(baby.table_entries > 0 && baby.iterations == 0);
+2026-10-25T05:47:40.3732130Z       |         ^
+2026-10-25T05:47:40.3733146Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3734212Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3802420Z       |     ^
+2026-10-25T05:47:40.3803304Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:60:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3804332Z    60 |         CHECK(baby.table_entries > 0 && baby.iterations == 0);
+2026-10-25T05:47:40.3804865Z       |         ^
+2026-10-25T05:47:40.3805587Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3806402Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3806796Z       |                     ^
+2026-10-25T05:47:40.3807566Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:61:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3808668Z    61 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3809288Z       |               ^
+2026-10-25T05:47:40.3818816Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3819773Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3820426Z       |           ^~~~
+2026-10-25T05:47:40.3821218Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:61:15: note: Left side of '&&' is true
+2026-10-25T05:47:40.3822254Z    61 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3822871Z       |               ^
+2026-10-25T05:47:40.3823711Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:61:42: note: Assuming the condition is true
+2026-10-25T05:47:40.3824771Z    61 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3825420Z       |                                          ^
+2026-10-25T05:47:40.3826292Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3827127Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3827486Z       |           ^~~~
+2026-10-25T05:47:40.3828150Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:61:9: note: Taking false branch
+2026-10-25T05:47:40.3829052Z    61 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3829619Z       |         ^
+2026-10-25T05:47:40.3830522Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3831330Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3831700Z       |     ^
+2026-10-25T05:47:40.3832479Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:61:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3833541Z    61 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3834154Z       |         ^
+2026-10-25T05:47:40.3834891Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3835776Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3836188Z       |                     ^
+2026-10-25T05:47:40.3836955Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:63:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3837948Z    63 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3838520Z       |               ^
+2026-10-25T05:47:40.3839517Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3840526Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3840889Z       |           ^~~~
+2026-10-25T05:47:40.3841552Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:63:9: note: Taking false branch
+2026-10-25T05:47:40.3842459Z    63 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3843030Z       |         ^
+2026-10-25T05:47:40.3843726Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3844575Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3844942Z       |     ^
+2026-10-25T05:47:40.3845690Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:63:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3846774Z    63 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3847411Z       |         ^
+2026-10-25T05:47:40.3848201Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3849106Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3849533Z       |                     ^
+2026-10-25T05:47:40.3850630Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:67:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3851717Z    67 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3852305Z       |               ^
+2026-10-25T05:47:40.3853204Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3854013Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3854369Z       |           ^~~~
+2026-10-25T05:47:40.3855032Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:67:9: note: Taking false branch
+2026-10-25T05:47:40.3855937Z    67 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3856510Z       |         ^
+2026-10-25T05:47:40.3857219Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3858054Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3858417Z       |     ^
+2026-10-25T05:47:40.3859169Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:67:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3860343Z    67 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3860921Z       |         ^
+2026-10-25T05:47:40.3861608Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3862456Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3862855Z       |                     ^
+2026-10-25T05:47:40.3863646Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:69:15: note: Assuming field 'iterations' is > 0
+2026-10-25T05:47:40.3864522Z    69 |         CHECK(giant.iterations > 0);
+2026-10-25T05:47:40.3865038Z       |               ^
+2026-10-25T05:47:40.3865756Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3866585Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3866945Z       |           ^~~~
+2026-10-25T05:47:40.3867662Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:69:9: note: Taking false branch
+2026-10-25T05:47:40.3868541Z    69 |         CHECK(giant.iterations > 0);
+2026-10-25T05:47:40.3869018Z       |         ^
+2026-10-25T05:47:40.3869790Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3871026Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3871388Z       |     ^
+2026-10-25T05:47:40.3872109Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:69:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3873061Z    69 |         CHECK(giant.iterations > 0);
+2026-10-25T05:47:40.3873508Z       |         ^
+2026-10-25T05:47:40.3874452Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3875337Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3875794Z       |                     ^
+2026-10-25T05:47:40.3876657Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:71:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3877722Z    71 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3878317Z       |               ^
+2026-10-25T05:47:40.3879270Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3880325Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3880733Z       |           ^~~~
+2026-10-25T05:47:40.3882212Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:71:9: note: Taking false branch
+2026-10-25T05:47:40.3883226Z    71 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3883602Z       |         ^
+2026-10-25T05:47:40.3884039Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3884544Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3884773Z       |     ^
+2026-10-25T05:47:40.3885225Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:71:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3885847Z    71 |         CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3886381Z       |         ^
+2026-10-25T05:47:40.3886805Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3887304Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3887560Z       |                     ^
+2026-10-25T05:47:40.3888019Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:73:9: note: Assuming '_a' is equal to '_b'
+2026-10-25T05:47:40.3888539Z    73 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.3888806Z       |         ^
+2026-10-25T05:47:40.3889251Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:9: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3889755Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.3889986Z       |         ^~~~~~~~
+2026-10-25T05:47:40.3890698Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:73:9: note: Taking false branch
+2026-10-25T05:47:40.3891182Z    73 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.3891458Z       |         ^
+2026-10-25T05:47:40.3891905Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:5: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3892417Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.3892640Z       |     ^
+2026-10-25T05:47:40.3893093Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:73:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3893620Z    73 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.3893885Z       |         ^
+2026-10-25T05:47:40.3894325Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:20:28: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3894849Z    20 | #define CHECK_EQ_U64(a, b) do { \
+2026-10-25T05:47:40.3895115Z       |                            ^
+2026-10-25T05:47:40.3895659Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:74:15: note: Assuming 'finished.group_ops' is > 'giant.group_ops'
+2026-10-25T05:47:40.3896276Z    74 |         CHECK(finished.group_ops > giant.group_ops);
+2026-10-25T05:47:40.3896588Z       |               ^
+2026-10-25T05:47:40.3897028Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3897521Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3897743Z       |           ^~~~
+2026-10-25T05:47:40.3898144Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:74:9: note: Taking false branch
+2026-10-25T05:47:40.3898793Z    74 |         CHECK(finished.group_ops > giant.group_ops);
+2026-10-25T05:47:40.3899096Z       |         ^
+2026-10-25T05:47:40.3899519Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3900004Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3900577Z       |     ^
+2026-10-25T05:47:40.3901032Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:74:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3901602Z    74 |         CHECK(finished.group_ops > giant.group_ops);
+2026-10-25T05:47:40.3901904Z       |         ^
+2026-10-25T05:47:40.3902330Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3902825Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3903076Z       |                     ^
+2026-10-25T05:47:40.3903500Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:75:9: note: 'f' initialized here
+2026-10-25T05:47:40.3903991Z    75 |         FILE *f = fopen(path, "rb+");
+2026-10-25T05:47:40.3904261Z       |         ^~~~~~~
+2026-10-25T05:47:40.3904707Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:76:15: note: Assuming 'f' is equal to null
+2026-10-25T05:47:40.3905207Z    76 |         CHECK(f != NULL);
+2026-10-25T05:47:40.3905441Z       |               ^
+2026-10-25T05:47:40.3905879Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3906495Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3906718Z       |           ^~~~
+2026-10-25T05:47:40.3907115Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:76:9: note: Taking true branch
+2026-10-25T05:47:40.3907582Z    76 |         CHECK(f != NULL);
+2026-10-25T05:47:40.3907813Z       |         ^
+2026-10-25T05:47:40.3908231Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3908714Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3908942Z       |     ^
+2026-10-25T05:47:40.3909389Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:76:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3909906Z    76 |         CHECK(f != NULL);
+2026-10-25T05:47:40.3910414Z       |         ^
+2026-10-25T05:47:40.3911132Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3911804Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3912062Z       |                     ^
+2026-10-25T05:47:40.3912612Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_bsgs.c:77:15: note: Null pointer passed to 1st parameter expecting 'nonnull'
+2026-10-25T05:47:40.3913238Z    77 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.3913528Z       |               ^
+2026-10-25T05:47:40.3913974Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3914468Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3914694Z       |           ^~~~
+2026-10-25T05:47:40.3915374Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_coord.c:1681:41: error: Value stored to 'c' is never read [clang-analyzer-deadcode.DeadStores,-warnings-as-errors]
+2026-10-25T05:47:40.3916145Z  1681 |     if (b > c) { double tmp = b; b = c; c = tmp; }
+2026-10-25T05:47:40.3916464Z       |                                         ^   ~~~
+2026-10-25T05:47:40.3916993Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_coord.c:1681:41: note: Value stored to 'c' is never read
+2026-10-25T05:47:40.3917553Z  1681 |     if (b > c) { double tmp = b; b = c; c = tmp; }
+2026-10-25T05:47:40.3917862Z       |                                         ^   ~~~
+2026-10-25T05:47:40.3918582Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_coord.c:1682:34: error: Value stored to 'a' is never read [clang-analyzer-deadcode.DeadStores,-warnings-as-errors]
+2026-10-25T05:47:40.3919471Z  1682 |     if (a > b) { double tmp = a; a = b; b = tmp; }
+2026-10-25T05:47:40.3919784Z       |                                  ^   ~
+2026-10-25T05:47:40.3920583Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_coord.c:1682:34: note: Value stored to 'a' is never read
+2026-10-25T05:47:40.3921150Z  1682 |     if (a > b) { double tmp = a; a = b; b = tmp; }
+2026-10-25T05:47:40.3921455Z       |                                  ^   ~
+2026-10-25T05:47:40.3922614Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:495:32: error: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3923857Z   495 |     CHECK_EQ_U64(endo_doubles, 8 * (endo_pre.positions - 1));
+2026-10-25T05:47:40.3924213Z       |                                ^
+2026-10-25T05:47:40.3924791Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:495:32: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3925440Z   495 |     CHECK_EQ_U64(endo_doubles, 8 * (endo_pre.positions - 1));
+2026-10-25T05:47:40.3925790Z       |                                ^
+2026-10-25T05:47:40.3926062Z       |                                (uint64_t)(
+2026-10-25T05:47:40.3926595Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3927123Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3927521Z       |                              ^
+2026-10-25T05:47:40.3928035Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:495:32: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3928648Z   495 |     CHECK_EQ_U64(endo_doubles, 8 * (endo_pre.positions - 1));
+2026-10-25T05:47:40.3928984Z       |                                ^
+2026-10-25T05:47:40.3929242Z       |                                (uint64_t)
+2026-10-25T05:47:40.3929759Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3930565Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3930846Z       |                              ^
+2026-10-25T05:47:40.3931995Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:496:29: error: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3933219Z   496 |     CHECK_EQ_U64(endo_adds, 127 * endo_pre.positions);
+2026-10-25T05:47:40.3933553Z       |                             ^
+2026-10-25T05:47:40.3934103Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:496:29: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3934720Z   496 |     CHECK_EQ_U64(endo_adds, 127 * endo_pre.positions);
+2026-10-25T05:47:40.3935040Z       |                             ^
+2026-10-25T05:47:40.3935308Z       |                             (uint64_t)(
+2026-10-25T05:47:40.3935830Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3936357Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3936620Z       |                              ^
+2026-10-25T05:47:40.3937142Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:496:29: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3937747Z   496 |     CHECK_EQ_U64(endo_adds, 127 * endo_pre.positions);
+2026-10-25T05:47:40.3938066Z       |                             ^
+2026-10-25T05:47:40.3938323Z       |                             (uint64_t)
+2026-10-25T05:47:40.3938838Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3939368Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3939631Z       |                              ^
+2026-10-25T05:47:40.3941161Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:504:33: error: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3942433Z   504 |     CHECK_EQ_U64(joint_doubles, 4 * (joint_pre.positions - 1));
+2026-10-25T05:47:40.3942791Z       |                                 ^
+2026-10-25T05:47:40.3943350Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:504:33: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3944002Z   504 |     CHECK_EQ_U64(joint_doubles, 4 * (joint_pre.positions - 1));
+2026-10-25T05:47:40.3944360Z       |                                 ^
+2026-10-25T05:47:40.3944629Z       |                                 (uint64_t)(
+2026-10-25T05:47:40.3945153Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3945682Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3945947Z       |                              ^
+2026-10-25T05:47:40.3946462Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:504:33: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3947076Z   504 |     CHECK_EQ_U64(joint_doubles, 4 * (joint_pre.positions - 1));
+2026-10-25T05:47:40.3947423Z       |                                 ^
+2026-10-25T05:47:40.3947809Z       |                                 (uint64_t)
+2026-10-25T05:47:40.3948324Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3948843Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3949101Z       |                              ^
+2026-10-25T05:47:40.3950493Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:505:30: error: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3951718Z   505 |     CHECK_EQ_U64(joint_adds, 85 * joint_pre.positions);
+2026-10-25T05:47:40.3952047Z       |                              ^
+2026-10-25T05:47:40.3952596Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:505:30: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3953221Z   505 |     CHECK_EQ_U64(joint_adds, 85 * joint_pre.positions);
+2026-10-25T05:47:40.3953543Z       |                              ^
+2026-10-25T05:47:40.3953810Z       |                              (uint64_t)(
+2026-10-25T05:47:40.3954331Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3954862Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3955125Z       |                              ^
+2026-10-25T05:47:40.3955642Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:505:30: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3956233Z   505 |     CHECK_EQ_U64(joint_adds, 85 * joint_pre.positions);
+2026-10-25T05:47:40.3956552Z       |                              ^
+2026-10-25T05:47:40.3956810Z       |                              (uint64_t)
+2026-10-25T05:47:40.3957326Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3957859Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3958121Z       |                              ^
+2026-10-25T05:47:40.3959253Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:506:35: error: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'unsigned int' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+2026-10-25T05:47:40.3960718Z   506 |     CHECK_EQ_U64(joint_rotations, 8 * joint_pre.positions);
+2026-10-25T05:47:40.3961227Z       |                                   ^
+2026-10-25T05:47:40.3961799Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:506:35: note: make conversion explicit to silence this warning
+2026-10-25T05:47:40.3962435Z   506 |     CHECK_EQ_U64(joint_rotations, 8 * joint_pre.positions);
+2026-10-25T05:47:40.3962774Z       |                                   ^
+2026-10-25T05:47:40.3963058Z       |                                   (uint64_t)(
+2026-10-25T05:47:40.3963588Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3964135Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3964401Z       |                              ^
+2026-10-25T05:47:40.3964962Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_curve.c:506:35: note: perform multiplication in a wider type
+2026-10-25T05:47:40.3965565Z   506 |     CHECK_EQ_U64(joint_rotations, 8 * joint_pre.positions);
+2026-10-25T05:47:40.3965904Z       |                                   ^
+2026-10-25T05:47:40.3966178Z       |                                   (uint64_t)
+2026-10-25T05:47:40.3966699Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:21:30: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.3967222Z    21 |     uint64_t _a = (a), _b = (b); \
+2026-10-25T05:47:40.3967484Z       |                              ^
+2026-10-25T05:47:40.3968308Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:63:15: error: Null pointer passed to 1st parameter expecting 'nonnull' [clang-analyzer-core.NonNullParamChecker,-warnings-as-errors]
+2026-10-25T05:47:40.3969293Z    63 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.3969578Z       |               ^
+2026-10-25T05:47:40.3970023Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3970753Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3970998Z       |           ^~~~
+2026-10-25T05:47:40.3971457Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:37:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3971985Z    37 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3972253Z       |               ^
+2026-10-25T05:47:40.3972694Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3973184Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3973413Z       |           ^~~~
+2026-10-25T05:47:40.3973822Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:37:9: note: Taking false branch
+2026-10-25T05:47:40.3974328Z    37 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3974589Z       |         ^
+2026-10-25T05:47:40.3975016Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3975505Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3975726Z       |     ^
+2026-10-25T05:47:40.3976196Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:37:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3976742Z    37 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.3977003Z       |         ^
+2026-10-25T05:47:40.3977426Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3977931Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3978181Z       |                     ^
+2026-10-25T05:47:40.3978656Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:48:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3979271Z    48 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3979642Z       |               ^
+2026-10-25T05:47:40.3980353Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3980907Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3981277Z       |           ^~~~
+2026-10-25T05:47:40.3981697Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:48:9: note: Taking false branch
+2026-10-25T05:47:40.3982285Z    48 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3982645Z       |         ^
+2026-10-25T05:47:40.3983067Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3983556Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3983789Z       |     ^
+2026-10-25T05:47:40.3984252Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:48:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3984899Z    48 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.3985259Z       |         ^
+2026-10-25T05:47:40.3985693Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3986198Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3986451Z       |                     ^
+2026-10-25T05:47:40.3986945Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:50:15: note: Assuming field 'table_entries' is > 0
+2026-10-25T05:47:40.3987502Z    50 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.3987779Z       |               ^
+2026-10-25T05:47:40.3988217Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3988821Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3989056Z       |           ^~~~
+2026-10-25T05:47:40.3989470Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:50:9: note: Taking false branch
+2026-10-25T05:47:40.3989962Z    50 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.3990641Z       |         ^
+2026-10-25T05:47:40.3991090Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3991589Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3991820Z       |     ^
+2026-10-25T05:47:40.3992281Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:50:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.3992837Z    50 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.3993112Z       |         ^
+2026-10-25T05:47:40.3993875Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3994390Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.3994734Z       |                     ^
+2026-10-25T05:47:40.3995291Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:51:15: note: Assuming the condition is true
+2026-10-25T05:47:40.3996006Z    51 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3996427Z       |               ^
+2026-10-25T05:47:40.3996879Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.3997542Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.3997779Z       |           ^~~~
+2026-10-25T05:47:40.3998218Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:51:15: note: Left side of '&&' is true
+2026-10-25T05:47:40.3998966Z    51 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.3999311Z       |               ^
+2026-10-25T05:47:40.3999942Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:51:42: note: Assuming the condition is true
+2026-10-25T05:47:40.4000888Z    51 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4001497Z       |                                          ^
+2026-10-25T05:47:40.4002298Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4003170Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4003415Z       |           ^~~~
+2026-10-25T05:47:40.4004186Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:51:9: note: Taking false branch
+2026-10-25T05:47:40.4004809Z    51 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4005280Z       |         ^
+2026-10-25T05:47:40.4005716Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4006344Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4006573Z       |     ^
+2026-10-25T05:47:40.4007036Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:51:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4007813Z    51 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4008161Z       |         ^
+2026-10-25T05:47:40.4008723Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4009236Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4009543Z       |                     ^
+2026-10-25T05:47:40.4010394Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:53:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4011269Z    53 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4011644Z       |               ^
+2026-10-25T05:47:40.4012094Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4012591Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4013010Z       |           ^~~~
+2026-10-25T05:47:40.4013424Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:53:9: note: Taking false branch
+2026-10-25T05:47:40.4013996Z    53 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4014361Z       |         ^
+2026-10-25T05:47:40.4014781Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4015270Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4015496Z       |     ^
+2026-10-25T05:47:40.4015964Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:53:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4016592Z    53 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4016946Z       |         ^
+2026-10-25T05:47:40.4017366Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4017948Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4018199Z       |                     ^
+2026-10-25T05:47:40.4018671Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:57:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4019270Z    57 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4019635Z       |               ^
+2026-10-25T05:47:40.4020276Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4020797Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4021027Z       |           ^~~~
+2026-10-25T05:47:40.4021442Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:57:9: note: Taking false branch
+2026-10-25T05:47:40.4022003Z    57 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4022356Z       |         ^
+2026-10-25T05:47:40.4022771Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4023267Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4023493Z       |     ^
+2026-10-25T05:47:40.4023949Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:57:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4024569Z    57 |         CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4024928Z       |         ^
+2026-10-25T05:47:40.4025485Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4025983Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4026230Z       |                     ^
+2026-10-25T05:47:40.4026696Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:59:9: note: Assuming '_a' is equal to '_b'
+2026-10-25T05:47:40.4027217Z    59 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4027483Z       |         ^
+2026-10-25T05:47:40.4027920Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:9: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4028431Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4028668Z       |         ^~~~~~~~
+2026-10-25T05:47:40.4029085Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:59:9: note: Taking false branch
+2026-10-25T05:47:40.4029568Z    59 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4029829Z       |         ^
+2026-10-25T05:47:40.4030564Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:5: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4031091Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4031315Z       |     ^
+2026-10-25T05:47:40.4031774Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:59:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4032319Z    59 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4032588Z       |         ^
+2026-10-25T05:47:40.4033028Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:20:28: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4033684Z    20 | #define CHECK_EQ_U64(a, b) do { \
+2026-10-25T05:47:40.4033949Z       |                            ^
+2026-10-25T05:47:40.4034504Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:60:15: note: Assuming 'second.group_ops' is > 'first.group_ops'
+2026-10-25T05:47:40.4035120Z    60 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4035424Z       |               ^
+2026-10-25T05:47:40.4035867Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4036368Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4036591Z       |           ^~~~
+2026-10-25T05:47:40.4037001Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:60:9: note: Taking false branch
+2026-10-25T05:47:40.4037507Z    60 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4037809Z       |         ^
+2026-10-25T05:47:40.4038233Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4038723Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4038944Z       |     ^
+2026-10-25T05:47:40.4039399Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:60:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4039980Z    60 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4040595Z       |         ^
+2026-10-25T05:47:40.4041029Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4041527Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4041779Z       |                     ^
+2026-10-25T05:47:40.4042214Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:61:9: note: 'f' initialized here
+2026-10-25T05:47:40.4042708Z    61 |         FILE *f = fopen(path, "rb+");
+2026-10-25T05:47:40.4042980Z       |         ^~~~~~~
+2026-10-25T05:47:40.4043442Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:62:15: note: Assuming 'f' is equal to null
+2026-10-25T05:47:40.4043948Z    62 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4044188Z       |               ^
+2026-10-25T05:47:40.4044622Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4045114Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4045194Z       |           ^~~~
+2026-10-25T05:47:40.4045616Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:62:9: note: Taking true branch
+2026-10-25T05:47:40.4045707Z    62 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4045792Z       |         ^
+2026-10-25T05:47:40.4046102Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4046186Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4046266Z       |     ^
+2026-10-25T05:47:40.4046618Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:62:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4046708Z    62 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4046788Z       |         ^
+2026-10-25T05:47:40.4047102Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4047195Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4047281Z       |                     ^
+2026-10-25T05:47:40.4047688Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_grumpy.c:63:15: note: Null pointer passed to 1st parameter expecting 'nonnull'
+2026-10-25T05:47:40.4047806Z    63 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.4047891Z       |               ^
+2026-10-25T05:47:40.4048194Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4048284Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4048365Z       |           ^~~~
+2026-10-25T05:47:40.4049145Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:65:15: error: Null pointer passed to 1st parameter expecting 'nonnull' [clang-analyzer-core.NonNullParamChecker,-warnings-as-errors]
+2026-10-25T05:47:40.4049262Z    65 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.4049345Z       |               ^
+2026-10-25T05:47:40.4049654Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4049743Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4049823Z       |           ^~~~
+2026-10-25T05:47:40.4050398Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:36:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4050516Z    36 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4050595Z       |               ^
+2026-10-25T05:47:40.4050903Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4050995Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4051072Z       |           ^~~~
+2026-10-25T05:47:40.4051365Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:36:9: note: Taking false branch
+2026-10-25T05:47:40.4051473Z    36 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4051549Z       |         ^
+2026-10-25T05:47:40.4051859Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4051943Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4052027Z       |     ^
+2026-10-25T05:47:40.4052384Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:36:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4052484Z    36 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4052564Z       |         ^
+2026-10-25T05:47:40.4052871Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4052968Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4053058Z       |                     ^
+2026-10-25T05:47:40.4053387Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:50:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4053588Z    50 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4053675Z       |               ^
+2026-10-25T05:47:40.4053973Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4054194Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4054281Z       |           ^~~~
+2026-10-25T05:47:40.4054570Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:50:9: note: Taking false branch
+2026-10-25T05:47:40.4054764Z    50 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4054844Z       |         ^
+2026-10-25T05:47:40.4055147Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4055244Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4055319Z       |     ^
+2026-10-25T05:47:40.4055675Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:50:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4055871Z    50 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4055946Z       |         ^
+2026-10-25T05:47:40.4056259Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4056360Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4056441Z       |                     ^
+2026-10-25T05:47:40.4056797Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:52:15: note: Assuming field 'table_entries' is > 0
+2026-10-25T05:47:40.4056914Z    52 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4056992Z       |               ^
+2026-10-25T05:47:40.4057301Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4057500Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4057577Z       |           ^~~~
+2026-10-25T05:47:40.4057871Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:52:9: note: Taking false branch
+2026-10-25T05:47:40.4057979Z    52 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4058063Z       |         ^
+2026-10-25T05:47:40.4058369Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4058453Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4058533Z       |     ^
+2026-10-25T05:47:40.4058889Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:52:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4058993Z    52 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4059073Z       |         ^
+2026-10-25T05:47:40.4059371Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4059478Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4059563Z       |                     ^
+2026-10-25T05:47:40.4059894Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:53:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4060206Z    53 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4060292Z       |               ^
+2026-10-25T05:47:40.4060599Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4060688Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4060779Z       |           ^~~~
+2026-10-25T05:47:40.4061092Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:53:15: note: Left side of '&&' is true
+2026-10-25T05:47:40.4061269Z    53 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4061352Z       |               ^
+2026-10-25T05:47:40.4061683Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:53:42: note: Assuming the condition is true
+2026-10-25T05:47:40.4061854Z    53 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4061951Z       |                                          ^
+2026-10-25T05:47:40.4062256Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4062343Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4062555Z       |           ^~~~
+2026-10-25T05:47:40.4062851Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:53:9: note: Taking false branch
+2026-10-25T05:47:40.4063020Z    53 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4063096Z       |         ^
+2026-10-25T05:47:40.4063400Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4063490Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4063568Z       |     ^
+2026-10-25T05:47:40.4063924Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:53:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4064088Z    53 |         CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4064168Z       |         ^
+2026-10-25T05:47:40.4064470Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4064567Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4064653Z       |                     ^
+2026-10-25T05:47:40.4065017Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:55:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4065208Z    55 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4065291Z       |               ^
+2026-10-25T05:47:40.4065601Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4065794Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4065876Z       |           ^~~~
+2026-10-25T05:47:40.4066162Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:55:9: note: Taking false branch
+2026-10-25T05:47:40.4066355Z    55 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4066435Z       |         ^
+2026-10-25T05:47:40.4066736Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4066823Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4066903Z       |     ^
+2026-10-25T05:47:40.4067253Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:55:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4067442Z    55 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4067523Z       |         ^
+2026-10-25T05:47:40.4067823Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4067927Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4068007Z       |                     ^
+2026-10-25T05:47:40.4068339Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:59:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4068529Z    59 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4068607Z       |               ^
+2026-10-25T05:47:40.4068914Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4069000Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4069077Z       |           ^~~~
+2026-10-25T05:47:40.4069368Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:59:9: note: Taking false branch
+2026-10-25T05:47:40.4069558Z    59 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4069637Z       |         ^
+2026-10-25T05:47:40.4069944Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4070027Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4070226Z       |     ^
+2026-10-25T05:47:40.4070584Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:59:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4070768Z    59 |         CHECK(ca_kangaroo_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+2026-10-25T05:47:40.4070975Z       |         ^
+2026-10-25T05:47:40.4071281Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4071372Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4071458Z       |                     ^
+2026-10-25T05:47:40.4071787Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:61:9: note: Assuming '_a' is equal to '_b'
+2026-10-25T05:47:40.4071891Z    61 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4071975Z       |         ^
+2026-10-25T05:47:40.4072293Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:9: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4072380Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4072465Z       |         ^~~~~~~~
+2026-10-25T05:47:40.4072751Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:61:9: note: Taking false branch
+2026-10-25T05:47:40.4072856Z    61 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4072941Z       |         ^
+2026-10-25T05:47:40.4073261Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:5: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4073349Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4073429Z       |     ^
+2026-10-25T05:47:40.4073772Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:61:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4073877Z    61 |         CHECK_EQ_U64(answer, 424242);
+2026-10-25T05:47:40.4074060Z       |         ^
+2026-10-25T05:47:40.4074387Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:20:28: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4074492Z    20 | #define CHECK_EQ_U64(a, b) do { \
+2026-10-25T05:47:40.4074576Z       |                            ^
+2026-10-25T05:47:40.4074974Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:62:15: note: Assuming 'second.group_ops' is > 'first.group_ops'
+2026-10-25T05:47:40.4075112Z    62 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4075190Z       |               ^
+2026-10-25T05:47:40.4075496Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4075585Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4075663Z       |           ^~~~
+2026-10-25T05:47:40.4075952Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:62:9: note: Taking false branch
+2026-10-25T05:47:40.4076081Z    62 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4076161Z       |         ^
+2026-10-25T05:47:40.4076465Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4076548Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4076628Z       |     ^
+2026-10-25T05:47:40.4076978Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:62:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4077104Z    62 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4077187Z       |         ^
+2026-10-25T05:47:40.4077495Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4077590Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4077673Z       |                     ^
+2026-10-25T05:47:40.4077966Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:63:9: note: 'f' initialized here
+2026-10-25T05:47:40.4078078Z    63 |         FILE *f = fopen(path, "rb+");
+2026-10-25T05:47:40.4078163Z       |         ^~~~~~~
+2026-10-25T05:47:40.4078484Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:64:15: note: Assuming 'f' is equal to null
+2026-10-25T05:47:40.4078580Z    64 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4078663Z       |               ^
+2026-10-25T05:47:40.4078964Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4079147Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4079233Z       |           ^~~~
+2026-10-25T05:47:40.4079516Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:64:9: note: Taking true branch
+2026-10-25T05:47:40.4079609Z    64 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4079683Z       |         ^
+2026-10-25T05:47:40.4079991Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4080192Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4080270Z       |     ^
+2026-10-25T05:47:40.4080633Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:64:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4080723Z    64 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4080798Z       |         ^
+2026-10-25T05:47:40.4081102Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4081197Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4081284Z       |                     ^
+2026-10-25T05:47:40.4081702Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_kangaroo.c:65:15: note: Null pointer passed to 1st parameter expecting 'nonnull'
+2026-10-25T05:47:40.4081817Z    65 |         CHECK(fseek(f, -1, SEEK_END) == 0);
+2026-10-25T05:47:40.4081900Z       |               ^
+2026-10-25T05:47:40.4082204Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4082409Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4082493Z       |           ^~~~
+2026-10-25T05:47:40.4083145Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:125:15: error: Null pointer passed to 2nd parameter expecting 'nonnull' [clang-analyzer-core.NonNullParamChecker,-warnings-as-errors]
+2026-10-25T05:47:40.4083244Z   125 |         CHECK(fputc(0, f) != EOF);
+2026-10-25T05:47:40.4083327Z       |               ^
+2026-10-25T05:47:40.4083639Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4083723Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4083807Z       |           ^~~~
+2026-10-25T05:47:40.4084118Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:39:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4084212Z    39 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4084292Z       |     ^
+2026-10-25T05:47:40.4084589Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4084680Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4084762Z       |         ^~~~~~~
+2026-10-25T05:47:40.4085032Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:39:5: note: Taking false branch
+2026-10-25T05:47:40.4085125Z    39 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4085200Z       |     ^
+2026-10-25T05:47:40.4085502Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4085595Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4085669Z       |     ^
+2026-10-25T05:47:40.4086004Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:39:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4086097Z    39 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4086171Z       |     ^
+2026-10-25T05:47:40.4086476Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4086576Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4086656Z       |                     ^
+2026-10-25T05:47:40.4086970Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:43:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4087056Z    43 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4087136Z       |     ^
+2026-10-25T05:47:40.4087437Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4087521Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4087726Z       |         ^~~~~~~
+2026-10-25T05:47:40.4088004Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:43:5: note: Taking false branch
+2026-10-25T05:47:40.4088091Z    43 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4088171Z       |     ^
+2026-10-25T05:47:40.4088470Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4088557Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4088640Z       |     ^
+2026-10-25T05:47:40.4088968Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:43:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4089060Z    43 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4089139Z       |     ^
+2026-10-25T05:47:40.4089438Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4089536Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4089619Z       |                     ^
+2026-10-25T05:47:40.4089928Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:52:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4090018Z    52 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4090215Z       |     ^
+2026-10-25T05:47:40.4090527Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4090617Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4090694Z       |         ^~~~~~~
+2026-10-25T05:47:40.4091083Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:52:5: note: Taking false branch
+2026-10-25T05:47:40.4091173Z    52 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4091247Z       |     ^
+2026-10-25T05:47:40.4091542Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4091630Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4091705Z       |     ^
+2026-10-25T05:47:40.4092039Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:52:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4092124Z    52 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4092203Z       |     ^
+2026-10-25T05:47:40.4092507Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4092598Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4092682Z       |                     ^
+2026-10-25T05:47:40.4092993Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:56:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4093081Z    56 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4093160Z       |     ^
+2026-10-25T05:47:40.4093461Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4093558Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4093643Z       |         ^~~~~~~
+2026-10-25T05:47:40.4093919Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:56:5: note: Taking false branch
+2026-10-25T05:47:40.4094014Z    56 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4094099Z       |     ^
+2026-10-25T05:47:40.4094405Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4094494Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4094573Z       |     ^
+2026-10-25T05:47:40.4094904Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:56:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4095002Z    56 |     CHECK(ratio < 6.0);
+2026-10-25T05:47:40.4095076Z       |     ^
+2026-10-25T05:47:40.4095392Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4095493Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4095576Z       |                     ^
+2026-10-25T05:47:40.4095896Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:60:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4096112Z    60 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4096189Z       |     ^
+2026-10-25T05:47:40.4096493Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4096577Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4096661Z       |         ^~~~~~~
+2026-10-25T05:47:40.4096939Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:60:5: note: Taking false branch
+2026-10-25T05:47:40.4097026Z    60 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4097108Z       |     ^
+2026-10-25T05:47:40.4097410Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4097494Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4097572Z       |     ^
+2026-10-25T05:47:40.4097905Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:60:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4097991Z    60 |     CHECK(ratio < 8.0);
+2026-10-25T05:47:40.4098072Z       |     ^
+2026-10-25T05:47:40.4098377Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4098474Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4098559Z       |                     ^
+2026-10-25T05:47:40.4098870Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:80:11: note: Assuming the condition is true
+2026-10-25T05:47:40.4099011Z    80 |     CHECK(ca_group_zp_init(&g, 1000003, 0) == CA_OK);
+2026-10-25T05:47:40.4099210Z       |           ^
+2026-10-25T05:47:40.4099512Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4099600Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4099678Z       |           ^~~~
+2026-10-25T05:47:40.4099954Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:80:5: note: Taking false branch
+2026-10-25T05:47:40.4100202Z    80 |     CHECK(ca_group_zp_init(&g, 1000003, 0) == CA_OK);
+2026-10-25T05:47:40.4100284Z       |     ^
+2026-10-25T05:47:40.4100591Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4100679Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4100754Z       |     ^
+2026-10-25T05:47:40.4101094Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:80:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4101223Z    80 |     CHECK(ca_group_zp_init(&g, 1000003, 0) == CA_OK);
+2026-10-25T05:47:40.4101302Z       |     ^
+2026-10-25T05:47:40.4101606Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4101700Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4101783Z       |                     ^
+2026-10-25T05:47:40.4102093Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:82:5: note: Assuming the condition is false
+2026-10-25T05:47:40.4102204Z    82 |     CHECK(ca_group_encode(&g, &gen, w));
+2026-10-25T05:47:40.4102286Z       |     ^
+2026-10-25T05:47:40.4102589Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:9: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4102671Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4102754Z       |         ^~~~~~~
+2026-10-25T05:47:40.4103026Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:82:5: note: Taking false branch
+2026-10-25T05:47:40.4103133Z    82 |     CHECK(ca_group_encode(&g, &gen, w));
+2026-10-25T05:47:40.4103217Z       |     ^
+2026-10-25T05:47:40.4103514Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4103601Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4103681Z       |     ^
+2026-10-25T05:47:40.4104008Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:82:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4104116Z    82 |     CHECK(ca_group_encode(&g, &gen, w));
+2026-10-25T05:47:40.4104198Z       |     ^
+2026-10-25T05:47:40.4104623Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4104723Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4104809Z       |                     ^
+2026-10-25T05:47:40.4105114Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:92:11: note: Assuming the condition is true
+2026-10-25T05:47:40.4105310Z    92 |     CHECK(ca_rho_solve(&g, &gen, &h, &p, &got, NULL) == CA_ERR_LIMIT);
+2026-10-25T05:47:40.4105389Z       |           ^
+2026-10-25T05:47:40.4105702Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4105793Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4105871Z       |           ^~~~
+2026-10-25T05:47:40.4106145Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:92:5: note: Taking false branch
+2026-10-25T05:47:40.4106322Z    92 |     CHECK(ca_rho_solve(&g, &gen, &h, &p, &got, NULL) == CA_ERR_LIMIT);
+2026-10-25T05:47:40.4106401Z       |     ^
+2026-10-25T05:47:40.4106706Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4106794Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4106868Z       |     ^
+2026-10-25T05:47:40.4107201Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:92:5: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4107370Z    92 |     CHECK(ca_rho_solve(&g, &gen, &h, &p, &got, NULL) == CA_ERR_LIMIT);
+2026-10-25T05:47:40.4107556Z       |     ^
+2026-10-25T05:47:40.4107861Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4107953Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4108038Z       |                     ^
+2026-10-25T05:47:40.4108349Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:98:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4108454Z    98 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4108542Z       |               ^
+2026-10-25T05:47:40.4108846Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4108930Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4109011Z       |           ^~~~
+2026-10-25T05:47:40.4109277Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:98:9: note: Taking false branch
+2026-10-25T05:47:40.4109381Z    98 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4109465Z       |         ^
+2026-10-25T05:47:40.4109765Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4109853Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4109934Z       |     ^
+2026-10-25T05:47:40.4110377Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:98:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4110482Z    98 |         CHECK(mkdtemp(dir) != NULL);
+2026-10-25T05:47:40.4110558Z       |         ^
+2026-10-25T05:47:40.4110867Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4110963Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4111042Z       |                     ^
+2026-10-25T05:47:40.4111364Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:109:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4111561Z   109 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4111643Z       |               ^
+2026-10-25T05:47:40.4111949Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4112036Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4112112Z       |           ^~~~
+2026-10-25T05:47:40.4112389Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:109:9: note: Taking false branch
+2026-10-25T05:47:40.4112695Z   109 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4112777Z       |         ^
+2026-10-25T05:47:40.4113080Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4113165Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4113268Z       |     ^
+2026-10-25T05:47:40.4113615Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:109:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4124768Z   109 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4124900Z       |         ^
+2026-10-25T05:47:40.4125275Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4125377Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4125468Z       |                     ^
+2026-10-25T05:47:40.4125818Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:111:15: note: Assuming field 'table_entries' is > 0
+2026-10-25T05:47:40.4125943Z   111 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4126029Z       |               ^
+2026-10-25T05:47:40.4126341Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4126435Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4126516Z       |           ^~~~
+2026-10-25T05:47:40.4126799Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:111:9: note: Taking false branch
+2026-10-25T05:47:40.4127098Z   111 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4127180Z       |         ^
+2026-10-25T05:47:40.4127496Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4127589Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4127665Z       |     ^
+2026-10-25T05:47:40.4128010Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:111:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4128128Z   111 |         CHECK(first.table_entries > 0);
+2026-10-25T05:47:40.4128204Z       |         ^
+2026-10-25T05:47:40.4128517Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4128616Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4128703Z       |                     ^
+2026-10-25T05:47:40.4129027Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:112:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4129142Z   112 |         CHECK(access(path, F_OK) == 0);
+2026-10-25T05:47:40.4129225Z       |               ^
+2026-10-25T05:47:40.4129538Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4129624Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4129708Z       |           ^~~~
+2026-10-25T05:47:40.4129989Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:112:9: note: Taking false branch
+2026-10-25T05:47:40.4130275Z   112 |         CHECK(access(path, F_OK) == 0);
+2026-10-25T05:47:40.4130361Z       |         ^
+2026-10-25T05:47:40.4130670Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4130755Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4130834Z       |     ^
+2026-10-25T05:47:40.4131165Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:112:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4131281Z   112 |         CHECK(access(path, F_OK) == 0);
+2026-10-25T05:47:40.4131360Z       |         ^
+2026-10-25T05:47:40.4131679Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4131777Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4131864Z       |                     ^
+2026-10-25T05:47:40.4132181Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:113:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4132442Z   113 |         CHECK(access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4132529Z       |               ^
+2026-10-25T05:47:40.4132832Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4132921Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4132998Z       |           ^~~~
+2026-10-25T05:47:40.4133276Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:113:9: note: Taking false branch
+2026-10-25T05:47:40.4133396Z   113 |         CHECK(access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4133471Z       |         ^
+2026-10-25T05:47:40.4133775Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4133862Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4133937Z       |     ^
+2026-10-25T05:47:40.4134272Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:113:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4134389Z   113 |         CHECK(access(progress, F_OK) == 0);
+2026-10-25T05:47:40.4134464Z       |         ^
+2026-10-25T05:47:40.4134767Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4134860Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4134947Z       |                     ^
+2026-10-25T05:47:40.4135270Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:115:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4135567Z   115 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4135651Z       |               ^
+2026-10-25T05:47:40.4135974Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4136061Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4136142Z       |           ^~~~
+2026-10-25T05:47:40.4136425Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:115:9: note: Taking false branch
+2026-10-25T05:47:40.4136619Z   115 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4136699Z       |         ^
+2026-10-25T05:47:40.4137010Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4137101Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4137181Z       |     ^
+2026-10-25T05:47:40.4137519Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:115:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4137707Z   115 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4137788Z       |         ^
+2026-10-25T05:47:40.4138092Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4138191Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4138277Z       |                     ^
+2026-10-25T05:47:40.4138594Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:119:15: note: Assuming the condition is true
+2026-10-25T05:47:40.4138775Z   119 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4138854Z       |               ^
+2026-10-25T05:47:40.4139160Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4139249Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4139326Z       |           ^~~~
+2026-10-25T05:47:40.4139602Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:119:9: note: Taking false branch
+2026-10-25T05:47:40.4139784Z   119 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4139859Z       |         ^
+2026-10-25T05:47:40.4140293Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4140384Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4140460Z       |     ^
+2026-10-25T05:47:40.4140926Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:119:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4141102Z   119 |         CHECK(ca_rho_solve_checkpointed(&g, &gen, &h, &rp, path, 1, 1, 0,
+2026-10-25T05:47:40.4141180Z       |         ^
+2026-10-25T05:47:40.4141490Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4141582Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4141668Z       |                     ^
+2026-10-25T05:47:40.4141992Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:121:9: note: Assuming '_a' is equal to '_b'
+2026-10-25T05:47:40.4142091Z   121 |         CHECK_EQ_U64(got, 424242);
+2026-10-25T05:47:40.4142171Z       |         ^
+2026-10-25T05:47:40.4142507Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:9: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4142591Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4142675Z       |         ^~~~~~~~
+2026-10-25T05:47:40.4142951Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:121:9: note: Taking false branch
+2026-10-25T05:47:40.4143052Z   121 |         CHECK_EQ_U64(got, 424242);
+2026-10-25T05:47:40.4143131Z       |         ^
+2026-10-25T05:47:40.4143458Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:23:5: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4143545Z    23 |     if (_a != _b) { \
+2026-10-25T05:47:40.4143623Z       |     ^
+2026-10-25T05:47:40.4144068Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:121:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4144169Z   121 |         CHECK_EQ_U64(got, 424242);
+2026-10-25T05:47:40.4144245Z       |         ^
+2026-10-25T05:47:40.4144574Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:20:28: note: expanded from macro 'CHECK_EQ_U64'
+2026-10-25T05:47:40.4144677Z    20 | #define CHECK_EQ_U64(a, b) do { \
+2026-10-25T05:47:40.4144761Z       |                            ^
+2026-10-25T05:47:40.4145146Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:122:15: note: Assuming 'second.group_ops' is > 'first.group_ops'
+2026-10-25T05:47:40.4145286Z   122 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4145366Z       |               ^
+2026-10-25T05:47:40.4145679Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4145768Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4145849Z       |           ^~~~
+2026-10-25T05:47:40.4146126Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:122:9: note: Taking false branch
+2026-10-25T05:47:40.4146255Z   122 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4146335Z       |         ^
+2026-10-25T05:47:40.4146640Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4146723Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4146803Z       |     ^
+2026-10-25T05:47:40.4147148Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:122:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4147273Z   122 |         CHECK(second.group_ops > first.group_ops);
+2026-10-25T05:47:40.4147354Z       |         ^
+2026-10-25T05:47:40.4147665Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4147757Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4147845Z       |                     ^
+2026-10-25T05:47:40.4148122Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:123:9: note: 'f' initialized here
+2026-10-25T05:47:40.4148231Z   123 |         FILE *f = fopen(path, "ab");
+2026-10-25T05:47:40.4148316Z       |         ^~~~~~~
+2026-10-25T05:47:40.4148627Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:124:15: note: Assuming 'f' is equal to null
+2026-10-25T05:47:40.4148721Z   124 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4148803Z       |               ^
+2026-10-25T05:47:40.4149197Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4149287Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4149368Z       |           ^~~~
+2026-10-25T05:47:40.4149636Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:124:9: note: Taking true branch
+2026-10-25T05:47:40.4149728Z   124 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4149802Z       |         ^
+2026-10-25T05:47:40.4150223Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:5: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4150312Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4150387Z       |     ^
+2026-10-25T05:47:40.4150723Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:124:9: note: Loop condition is false.  Exiting loop
+2026-10-25T05:47:40.4150814Z   124 |         CHECK(f != NULL);
+2026-10-25T05:47:40.4150888Z       |         ^
+2026-10-25T05:47:40.4151195Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4151292Z    13 | #define CHECK(cond) do { \
+2026-10-25T05:47:40.4151371Z       |                     ^
+2026-10-25T05:47:40.4151775Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_rho.c:125:15: note: Null pointer passed to 2nd parameter expecting 'nonnull'
+2026-10-25T05:47:40.4151875Z   125 |         CHECK(fputc(0, f) != EOF);
+2026-10-25T05:47:40.4151956Z       |               ^
+2026-10-25T05:47:40.4152419Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:15:11: note: expanded from macro 'CHECK'
+2026-10-25T05:47:40.4152502Z    15 |     if (!(cond)) { \
+2026-10-25T05:47:40.4152584Z       |           ^~~~
+2026-10-25T05:47:40.4153731Z /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_cli.c:259:5: error: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119 [clang-analyzer-security.insecureAPI.strcpy,-warnings-as-errors]
+2026-10-25T05:47:40.4153827Z   259 |     strcpy(child[0], binary);
+2026-10-25T05:47:40.4153910Z       |     ^~~~~~
+2026-10-25T05:47:40.4154781Z /home/runner/work/cryptanalysis/cryptanalysis/tools/ca_cli.c:259:5: note: Call to function 'strcpy' is insecure as it does not provide bounding of the memory buffer. Replace unbounded copy functions with analogous functions that support length arguments such as 'strlcpy'. CWE-119
+2026-10-25T05:47:40.4154875Z   259 |     strcpy(child[0], binary);
+2026-10-25T05:47:40.4154954Z       |     ^~~~~~
+2026-10-25T05:47:40.4165730Z ##[error]Process completed with exit code 1.
+2026-10-25T05:47:40.4298044Z Post job cleanup.
+2026-10-25T05:47:40.5200873Z [command]/usr/bin/git version
+2026-10-25T05:47:40.5243517Z git version 2.55.0
+2026-10-25T05:47:40.5289432Z Temporarily overriding HOME='/home/runner/work/_temp/0485398e-3849-4b13-862b-086e5cee09b9' before making global git config changes
+2026-10-25T05:47:40.5289996Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:47:40.5291605Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:47:40.5333908Z Removing SSH command configuration
+2026-10-25T05:47:40.5334998Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:47:40.5378853Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T05:47:40.5671842Z Removing HTTP extra header
+2026-10-25T05:47:40.5672528Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:47:40.5716261Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T05:47:40.6119674Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:47:40.6125237Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:47:40.6176269Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T05:47:40.6192222Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T05:47:40.6208916Z includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:47:40.6210496Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:47:40.6212932Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T05:47:40.6230428Z /home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:47:40.6261142Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-9580563e\-e48c\-4c7d\-9c83\-714e0612a451\.config
+2026-10-25T05:47:40.6319553Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T05:47:40.6360581Z /home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:47:40.6377285Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-9580563e\-e48c\-4c7d\-9c83\-714e0612a451\.config
+2026-10-25T05:47:40.6441455Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:47:40.6474640Z /github/runner_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:47:40.6510886Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-9580563e\-e48c\-4c7d\-9c83\-714e0612a451\.config
+2026-10-25T05:47:40.6542891Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:47:40.6577390Z /github/runner_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config
+2026-10-25T05:47:40.6614959Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-9580563e\-e48c\-4c7d\-9c83\-714e0612a451\.config
+2026-10-25T05:47:40.6638454Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T05:47:40.6937542Z Removing credentials config '/home/runner/work/_temp/git-credentials-9580563e-e48c-4c7d-9c83-714e0612a451.config'
+2026-10-25T05:47:40.7084164Z Cleaning up orphan processes

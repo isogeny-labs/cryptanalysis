@@ -411,7 +411,7 @@ def cache_path(cfg: Config, digest: str) -> Path:
 
 def ensure_cached(cfg: Config, remote: Remote, digest: str, size: int) -> Path:
     c = cache_path(cfg, digest)
-    if c.exists() and c.stat().st_size == size:
+    if c.exists() and c.stat().st_size == size and sha256_file(c) == digest:
         return c
     (cfg.cache / "tmp").mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=cfg.cache / "tmp")
@@ -432,19 +432,27 @@ def ensure_cached(cfg: Config, remote: Remote, digest: str, size: int) -> Path:
 
 def cache_insert(cfg: Config, src: Path, digest: str) -> None:
     c = cache_path(cfg, digest)
-    if c.exists():
+    if c.exists() and sha256_file(c) == digest:
         return
     c.parent.mkdir(parents=True, exist_ok=True)
     (cfg.cache / "tmp").mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=cfg.cache / "tmp")
     os.close(fd)
-    place_copy(src, Path(tmp))
-    Path(tmp).chmod(0o444)
-    os.replace(tmp, c)
+    try:
+        place_copy(src, Path(tmp))
+        if sha256_file(Path(tmp)) != digest:
+            die(f"source changed while caching {digest[:12]}; refused")
+        Path(tmp).chmod(0o444)
+        os.replace(tmp, c)
+    finally:
+        Path(tmp).unlink(missing_ok=True)
 
 
 def place_copy(src: Path, dest: Path) -> None:
     """Copy-on-write clone where the filesystem has it (APFS, btrfs, XFS), else a copy."""
+    # A sparse checkout can expose a tracked manifest through the index while
+    # leaving its directory absent from the working tree.
+    dest.parent.mkdir(parents=True, exist_ok=True)
     dest.unlink(missing_ok=True)
     flag = "-c" if sys.platform == "darwin" else "--reflink=auto"
     p = subprocess.run(["cp", flag, str(src), str(dest)], capture_output=True)
@@ -623,7 +631,10 @@ def cmd_status(cfg: Config, args) -> int:
 
 def cmd_check(cfg: Config, args) -> int:
     """Fail when BASE..HEAD adds or grows a tracked file the policy assigns to the store."""
-    out = git(cfg.root, "diff", "--raw", "-z", "--no-renames", "--diff-filter=AM", args.base, args.head)
+    # A full object ID lets a promisor remote fetch a blob omitted by a
+    # partial clone; an abbreviation cannot identify an object absent locally.
+    out = git(cfg.root, "diff", "--raw", "--no-abbrev", "-z", "--no-renames",
+              "--diff-filter=AM", args.base, args.head)
     fields = out.decode(errors="surrogateescape").split("\0")
     offenders = []
     for meta, path in zip(fields[0::2], fields[1::2]):

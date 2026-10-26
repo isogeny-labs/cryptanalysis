@@ -53,13 +53,14 @@ jobs:
             /experiments/koblitz-n83-stacked-20261016/*.json
             /scripts/isolated_bench.py
             /tools/artifacts/
+            /.artifacts/
       - name: Pull store data this workflow reads (tools/artifacts)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Verify and test complete-panel analysis gate
@@ -86,7 +87,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          want="$(grep -o 'PINS.sha256` (this commit) | `[0-9a-f]\{64\}' "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
+          want="$(grep -o "PINS.sha256\` (this commit) | \`[0-9a-f]\\{64\\}" "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
           echo "$want  $OPCOUNTS/PINS.sha256" | sha256sum -c -
           grep -v 'derived/' "$OPCOUNTS/PINS.sha256" | sha256sum -c -
 
@@ -195,7 +196,7 @@ jobs:
 
       - name: Preserve host class, builds, raw runs, counts and the band
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-opcounts-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-opcounts/

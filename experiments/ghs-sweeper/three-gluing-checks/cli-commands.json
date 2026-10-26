@@ -1,0 +1,51 @@
+[
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing",
+      "--",
+      "curve",
+      "--base-degree",
+      "3",
+      "--a",
+      "0",
+      "--b",
+      "24"
+    ],
+    "exit_code": 0,
+    "stdout": "experiments/ghs-sweeper/three-gluing-checks/cubic-cli-control.json",
+    "stderr": "experiments/ghs-sweeper/three-gluing-checks/cubic-cli-control.txt"
+  },
+  {
+    "argv": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "three_gluing",
+      "--",
+      "matrix",
+      "--q-mod-3",
+      "2",
+      "--entries",
+      "1",
+      "0",
+      "0",
+      "2"
+    ],
+    "exit_code": 0,
+    "stdout": "experiments/ghs-sweeper/three-gluing-checks/matrix-cli-control.json",
+    "stderr": "experiments/ghs-sweeper/three-gluing-checks/matrix-cli-control.txt"
+  }
+]

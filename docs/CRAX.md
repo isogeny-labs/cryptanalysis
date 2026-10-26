@@ -38,9 +38,15 @@ CRAX="$CRAX_REPO/suite/target/release/crax"
 
 "$CRAX" --json hash --algorithm sha256 --text abc
 "$CRAX" --json hash --algorithm sha3-256 --text abc
+"$CRAX" crypto cryptanalysis hash-joux-reduced \
+  --hash sha256 --truncate-bits 16 --chain-length 3 --seed 42
 "$CRAX" --json aes block-encrypt \
   --key-hex 000102030405060708090a0b0c0d0e0f \
   --hex 00112233445566778899aabbccddeeff
+"$CRAX" aes aes-algebraic-equations
+"$CRAX" aes aes-slide-comparison --samples 32 --seed 42
+"$CRAX" aes aes-grover-cost --key-bits 192
+"$CRAX" aes aes-biclique-small-scale --ciphertext 5a67
 "$CRAX" --json aes-attack --technique differential --samples 4096
 "$CRAX" --json aes-attack --technique linear --samples 4096
 "$CRAX" --json ecdlp-nist solve P-256 --secret 12345 --interval-bits 16
@@ -56,6 +62,12 @@ CRAX="$CRAX_REPO/suite/target/release/crax"
 "$CRAX" isogeny-walk --help
 ```
 
+The `hash-joux-reduced`, `aes-algebraic-equations`,
+`aes-slide-comparison`, `aes-grover-cost`, and
+`aes-biclique-small-scale` examples require the sibling commands from
+[crypto PR #2117](https://github.com/aburan28/crypto/pull/2117) or a later
+`crypto` revision containing that PR.
+
 The AES block command above returns
 `69c4e0d86a7b0430d8cdb78070b4c55a`. The bounded P-256 interval command
 returns verified scalar 12345; pass `--point X,Y` with a public point and an
@@ -65,9 +77,14 @@ graph command enumerates 15 j-nodes without truncation for the fixture;
 its j-neighbours are not by themselves certified point-transport routes. See
 [the explicit-target guide](https://github.com/aburan28/crypto/blob/main/docs/ic/EXTERNAL_TARGET_CLI.md)
 for graph numeration, checked routes, and other input forms. Use
-`"$CRAX" aes <COMMAND> --help` for an individual AES command; all 7 sibling
-AES primitive commands and 32 cryptanalysis commands in the tested sibling
-build are reachable through this bridge.
+`"$CRAX" aes <COMMAND> --help` for an individual AES command. The bridge
+discovers the sibling `crypto` command tree, including its seven AES primitive
+commands and 25 AES analysis commands. The algebraic command checks a four-bit
+AES-like S-box, the slide command reports bounded pair observations, the Grover
+command estimates logical resources, and the biclique command searches only
+its four-key small-scale grid. The Joux command replays a reduced SHA-256
+compression-state collision chain with 8..24 state bits retained after each
+block; it does not produce a full-width SHA-256 collision.
 
 The explicit prime-field IC commands require a prime field modulus in
 `5..=1,000,000` and a prime subgroup order in `3..=4,000,000`. The explicit
@@ -362,7 +379,16 @@ SHAKE, cSHAKE, and Skein require `--output-bytes` in 1..=64;
 BLAKE2b and BLAKE2s allow 1..=64 and 1..=32 respectively, defaulting to their
 maximum digest sizes. cSHAKE also accepts `--function-name-hex` and
 `--custom-hex`, and the report records both inputs. SHA-3 uses a sponge, so
-Merkle-Damgård length extension does not apply. `aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
+Merkle-Damgård length extension does not apply. The sibling
+`crypto cryptanalysis hash-joux-reduced` command constructs a 1..8-link
+multicollision chain for MD4, MD5, SHA-1, SHA-256, or SHA-512 with the
+compression state truncated to 8..24 bits after every block. Its JSON output
+contains both blocks at each link, the initial and final reduced states, a
+2^links represented-path count, and a replay-verification flag. A bounded
+search can exhaust its trial cap and report an unknown outcome. It does not
+assert a collision of the ordinary full-width digest.
+
+`aes-sbox-table` exports exact 256-by-256 AES S-box DDT, LAT, BCT, and DLCT tables, or one input row. DDT counts XOR transitions, LAT gives signed linear imbalance, BCT counts boomerang switches, and DLCT gives half the signed differential-linear parity sum. `aes-attack` runs verified key recovery on the implemented
 AES-128 reduced-round differential (2), linear (1), or integral (4) models.
 For captured reduced-round data, `--pairs-file` accepts a JSON object with
 `schema_version: 1`, `cipher_model: "aes128-reduced-final-no-mixcolumns/v1"`,

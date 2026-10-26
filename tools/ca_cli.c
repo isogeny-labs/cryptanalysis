@@ -243,6 +243,10 @@ static _Noreturn void usage(void)
  * The child owns stdout, stderr, and the exit status. */
 static int delegate_cli(const char *env_name, const char *default_binary)
 {
+    if (argc_g < 2) {
+        fprintf(stderr, "error: delegated command is missing\n");
+        return 2;
+    }
     const char *configured = getenv(env_name);
     const char *binary = configured && *configured ? configured : default_binary;
     char **child = calloc((size_t)argc_g, sizeof(*child));
@@ -250,20 +254,21 @@ static int delegate_cli(const char *env_name, const char *default_binary)
         fprintf(stderr, "error: cannot allocate argument vector\n");
         return 2;
     }
-    child[0] = malloc(strlen(binary) + 1);
-    if (!child[0]) {
+    char *binary_copy = malloc(strlen(binary) + 1);
+    if (!binary_copy) {
         free(child);
         fprintf(stderr, "error: cannot allocate binary name\n");
         return 2;
     }
-    memcpy(child[0], binary, strlen(binary) + 1);
+    memcpy(binary_copy, binary, strlen(binary) + 1);
+    child[0] = binary_copy;
     for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
     child[argc_g - 1] = NULL;
     execvp(binary, child);
     int saved_errno = errno;
     fprintf(stderr, "error: cannot execute %s for %s: %s\n", binary, env_name,
             strerror(saved_errno));
-    free(child[0]);
+    free(binary_copy);
     free(child);
     return saved_errno == ENOENT ? 127 : 126;
 }
@@ -726,7 +731,7 @@ static int ic_dir_empty(const char *dir)
 {
     DIR *d = opendir(dir);
     if (!d) return 0;
-    struct dirent *e;
+    const struct dirent *e;
     int empty = 1;
     while ((e = readdir(d))) {
         if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..") &&

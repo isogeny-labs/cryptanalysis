@@ -23,7 +23,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/pdp-scaling
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: python -m pip install sympy==1.14.0
@@ -34,7 +34,7 @@ jobs:
       - run: python -m unittest discover -s experiments/pdp-scaling -p test_five_sum_mitm.py -v
       - run: python -m unittest discover -s experiments/pdp-scaling -p test_target_fiber.py -v
       - run: python -m groebner_compare.runner groebner_compare/smoke.json --output /tmp/groebner-smoke
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: boolean-protocol-smoke
@@ -50,7 +50,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/pdp-scaling
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: git clone --depth 1 https://github.com/manschga/M5GB.git /tmp/m5gb-upstream
@@ -71,7 +71,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/pdp-scaling
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - uses: julia-actions/setup-julia@v2
@@ -83,7 +83,7 @@ jobs:
         env:
           TEST_GROEBNER_JULIA: '1'
         run: python -m unittest groebner_compare.test_protocol.ProtocolTests.test_julia_adapter -v
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: julia-adapter-environment

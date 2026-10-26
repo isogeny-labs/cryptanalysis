@@ -41,7 +41,8 @@ static inline int dlog_ckpt_sync_parent(const char *path)
     if (slash) {
         if (slash == dir) slash[1] = '\0';
         else *slash = '\0';
-    } else parent = ".";
+    } else
+        parent = ".";
     int fd = open(parent, O_RDONLY);
     int ok = fd >= 0 && fsync(fd) == 0;
     if (fd >= 0) close(fd);
@@ -58,7 +59,10 @@ static inline int dlog_ckpt_begin(dlog_ckpt_file *w, const char *path)
     int fd = mkstemp(w->tmp);
     w->f = fd >= 0 ? fdopen(fd, "wb+") : NULL;
     if (!w->f) {
-        if (fd >= 0) { close(fd); unlink(w->tmp); }
+        if (fd >= 0) {
+            close(fd);
+            unlink(w->tmp);
+        }
         free(w->tmp);
         w->tmp = NULL;
     }

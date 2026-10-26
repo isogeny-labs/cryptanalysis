@@ -1,0 +1,56 @@
+name: pqc-assay
+
+on:
+  push:
+    paths:
+      - 'include/cryptanalysis/ca_modarith.h'
+      - 'include/cryptanalysis/ca_types.h'
+      - 'verification/pqc-assay/**'
+      - '.github/workflows/pqc-assay.yml'
+  pull_request:
+    paths:
+      - 'include/cryptanalysis/ca_modarith.h'
+      - 'include/cryptanalysis/ca_types.h'
+      - 'verification/pqc-assay/**'
+      - '.github/workflows/pqc-assay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pqc-assay-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  c-modarith:
+    runs-on: ubuntu-24.04
+    container: debian:13-slim
+    timeout-minutes: 20
+    steps:
+      - name: Install the pinned compiler and bootstrap dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates clang-19=1:19.1.7-3+b1 curl git gcc libc6-dev
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            include
+            verification/pqc-assay
+      - uses: actions/cache@v4
+        with:
+          path: verification/pqc-assay/.cache
+          key: assay-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('verification/pqc-assay/toolchain.env') }}
+      - name: Install the pinned proof tools
+        run: verification/pqc-assay/setup.sh
+      - name: Prove the production functions, the modulo contracts and four negative controls
+        run: verification/pqc-assay/verify.sh
+      - name: Reject wrong implementations of both operations
+        run: verification/pqc-assay/mutations.sh
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: pqc-assay-c-modarith
+          path: verification/pqc-assay/build/*.txt
+          if-no-files-found: warn

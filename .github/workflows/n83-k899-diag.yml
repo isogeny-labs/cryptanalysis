@@ -54,7 +54,7 @@ jobs:
           python3 scripts/isolated_bench.py probe-host > "$out/host-probe.json"
           grep -m1 'model name' /proc/cpuinfo | tee "$out/cpu.txt"
           free -g | tee -a "$out/cpu.txt"
-          cat /sys/kernel/mm/transparent_hugepage/enabled | tee -a "$out/cpu.txt"
+          tee -a "$out/cpu.txt" < /sys/kernel/mm/transparent_hugepage/enabled
           echo "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} ${GITHUB_SHA}" | tee "$out/run.txt"
 
       - name: Restore the pinned crypto revision (rank-probe restore, pins checked)
@@ -83,7 +83,7 @@ jobs:
 
       - name: Preserve the diagnostic
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-k899-diag-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-k899-diag/
