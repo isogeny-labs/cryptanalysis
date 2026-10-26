@@ -2,12 +2,14 @@ name: Elliptic-curve surface tools
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'tools/ecdlp-surfaces/**'
       - 'docs/ecdlp-surfaces/**'
       - 'research/ecdlp_surfaces_n83_20261012/**'
       - '.github/workflows/ecdlp-surfaces.yml'
   push:
+    branches: [main]
     paths:
       - 'tools/ecdlp-surfaces/**'
       - 'docs/ecdlp-surfaces/**'

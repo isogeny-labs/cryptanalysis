@@ -1,11 +1,13 @@
 name: Boolean Groebner certificates
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/pdp-scaling/**'
       - 'experiments/groebner-perf-20260924/**'
       - '.github/workflows/boolean-groebner.yml'
   push:
+    branches: [main]
     paths:
       - 'experiments/pdp-scaling/**'
       - 'experiments/groebner-perf-20260924/**'

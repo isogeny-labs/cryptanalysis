@@ -29,7 +29,7 @@ name: gpu-health
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     tags: ["gpu-health-v*"]
     paths:
       - "deploy/gpu-health/**"
@@ -42,6 +42,7 @@ on:
       - "fpga/model/**"
       - ".github/workflows/gpu-health.yml"
   pull_request:
+    branches: [main]
     paths:
       - "deploy/gpu-health/**"
       - "deploy/helm/gpu-health/**"

@@ -2,6 +2,7 @@ name: ecc2k130-public-images
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - "ecc2k130/runner/public/**"
       - "ecc2k130/runner/aws/rds_gpu.py"
@@ -13,6 +14,7 @@ on:
       - "fpga/model/ecc2k130.*"
       - ".github/workflows/ecc2k130-public-image.yml"
   push:
+    branches: [main]
     tags: ["ecc2k130-public-v*"]
   workflow_dispatch:
 

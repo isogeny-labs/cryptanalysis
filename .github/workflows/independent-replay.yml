@@ -1,6 +1,7 @@
 name: Independent scalar replay
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round26/**'
       - 'experiments/groebner-perf-20260924/round25/**'

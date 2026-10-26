@@ -1,6 +1,7 @@
 name: Groebner comparison protocol
 on:
   pull_request:
+    branches: [main]
     paths: ['groebner_compare/**', 'experiments/pdp-scaling/**', '.github/workflows/groebner-comparison.yml']
   push:
     branches: [main]

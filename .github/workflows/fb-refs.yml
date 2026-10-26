@@ -8,12 +8,13 @@ name: fb-refs
 # experiments/fb-archive/README.md ("Citation guard").
 on:
   pull_request:
+    branches: [main]
     paths:
       - "experiments/**"
       - "ecc2k130/research/**"
       - ".github/workflows/fb-refs.yml"
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "experiments/**"
       - "ecc2k130/research/**"

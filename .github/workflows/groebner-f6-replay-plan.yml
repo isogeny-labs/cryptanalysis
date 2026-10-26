@@ -1,6 +1,7 @@
 name: Groebner F6 replay plan exactness
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-replay-plan.yml'
       - 'experiments/groebner-f6-replay-plan-20261009/**'
@@ -18,6 +19,7 @@ on:
       - 'experiments/groebner-f6-20261008/**'
       - 'experiments/pdp-scaling/gf2n.py'
   pull_request:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-replay-plan.yml'
       - 'experiments/groebner-f6-replay-plan-20261009/**'

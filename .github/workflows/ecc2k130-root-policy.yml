@@ -1,12 +1,14 @@
 name: ECC2K-130 root policy
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'ecc2k130/runner/include/collective_inverse.cuh'
       - 'ecc2k130/runner/include/collective_root_policy.h'
       - 'ecc2k130/runner/research/table-walk-small-blocks-20261005/**'
       - '.github/workflows/ecc2k130-root-policy.yml'
   push:
+    branches: [main]
     paths:
       - 'ecc2k130/runner/include/collective_inverse.cuh'
       - 'ecc2k130/runner/include/collective_root_policy.h'

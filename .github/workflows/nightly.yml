@@ -1,11 +1,8 @@
 name: nightly
 
-# The checks that are too slow for a pull request.  Nothing here is a merge
-# gate; a failure is a bug report against the default branch.
+# The checks that are too slow for a pull request remain available on demand.
+# Nothing here is a merge gate.
 on:
-  schedule:
-    # 02:23 UTC, before the fuzz soak at 03:17 so the two do not compete.
-    - cron: '23 2 * * *'
   workflow_dispatch:
     inputs:
       bits:

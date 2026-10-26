@@ -17,7 +17,7 @@ name: deploy
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "deploy/**"
       - "bindings/go/cmd/ca-coordinator/**"
@@ -26,6 +26,7 @@ on:
       - "include/cryptanalysis/ca_coord.h"
       - ".github/workflows/deploy.yml"
   pull_request:
+    branches: [main]
     paths:
       - "deploy/**"
       - "bindings/go/cmd/ca-coordinator/**"

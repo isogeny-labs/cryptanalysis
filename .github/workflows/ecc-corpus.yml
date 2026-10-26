@@ -12,11 +12,12 @@ name: ecc-corpus
 # workflow changes; ordinary pushes stay fast.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "challenges/ecc/**"
       - ".github/workflows/ecc-corpus.yml"
   pull_request:
+    branches: [main]
     paths:
       - "challenges/ecc/**"
       - ".github/workflows/ecc-corpus.yml"

@@ -1,6 +1,7 @@
 name: Ordered independent certificate
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round15/**'
       - 'experiments/groebner-perf-20260924/round14/**'
@@ -8,6 +9,7 @@ on:
       - 'experiments/pdp-scaling/**'
       - '.github/workflows/ordered-certificate.yml'
   push:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round15/**'
       - 'experiments/groebner-perf-20260924/round14/**'

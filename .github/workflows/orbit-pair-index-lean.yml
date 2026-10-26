@@ -2,6 +2,7 @@ name: Orbit pair-index Lean proof
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - experiments/orbit-quotient-summation/**
       - .github/workflows/orbit-pair-index-lean.yml

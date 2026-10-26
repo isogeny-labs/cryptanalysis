@@ -2,6 +2,7 @@ name: strict-homogeneous
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/homogeneous-fraction/**'
       - '.github/workflows/strict-homogeneous.yml'

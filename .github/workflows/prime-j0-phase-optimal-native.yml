@@ -3,6 +3,7 @@ name: prime-j0-phase-optimal-native
 # Correctness replay only; wall-time ratios require the isolated host gate.
 on:
   pull_request:
+    branches: [main]
     paths:
       - ".github/workflows/prime-j0-phase-optimal-native.yml"
       - "experiments/prime-j0-phase-optimal-20261011/**"

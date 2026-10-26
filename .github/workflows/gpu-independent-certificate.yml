@@ -1,6 +1,7 @@
 name: Independent GPU certificate experiment
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round16/**'
       - 'experiments/groebner-perf-20260924/round15/**'
@@ -9,6 +10,7 @@ on:
       - 'experiments/pdp-scaling/**'
       - '.github/workflows/gpu-independent-certificate.yml'
   push:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round16/**'
       - 'experiments/groebner-perf-20260924/round15/**'

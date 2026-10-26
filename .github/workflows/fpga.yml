@@ -11,11 +11,12 @@ name: fpga
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "fpga/**"
       - ".github/workflows/fpga.yml"
   pull_request:
+    branches: [main]
     paths:
       - "fpga/**"
       - ".github/workflows/fpga.yml"

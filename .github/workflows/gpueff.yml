@@ -7,6 +7,7 @@ on:
     paths: ['gpueff/**', 'ecc2k130/runner/aws/worker.py',
             'ecc2k130/runner/benchmarks/hardware-limits/result.json', '.github/workflows/gpueff.yml']
   pull_request:
+    branches: [main]
     paths: ['gpueff/**', 'ecc2k130/runner/aws/worker.py',
             'ecc2k130/runner/benchmarks/hardware-limits/result.json', '.github/workflows/gpueff.yml']
 # A new commit supersedes runs for this PR or branch; manual runs stay independent.

@@ -2,6 +2,7 @@ name: Sage binary batch evidence
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/sage-binary-batch/**'
       - 'experiments/sage-binary-native-addition/**'

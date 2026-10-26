@@ -1,6 +1,7 @@
 name: Sparse verifier in one-target IC
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round25/**'
       - 'experiments/groebner-perf-20260924/round23/**'

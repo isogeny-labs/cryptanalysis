@@ -1,12 +1,14 @@
 name: Groebner F6 packed separator exactness
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-packed.yml'
       - 'experiments/groebner-f6-packed-20261009/**'
       - 'experiments/groebner-f6-20261008/**'
       - 'experiments/pdp-scaling/gf2n.py'
   pull_request:
+    branches: [main]
     paths:
       - '.github/workflows/groebner-f6-packed.yml'
       - 'experiments/groebner-f6-packed-20261009/**'

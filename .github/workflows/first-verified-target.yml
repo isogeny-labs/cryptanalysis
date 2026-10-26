@@ -1,6 +1,7 @@
 name: First verified target relation
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/groebner-perf-20260924/round21/**'
       - 'experiments/groebner-perf-20260924/round20/**'

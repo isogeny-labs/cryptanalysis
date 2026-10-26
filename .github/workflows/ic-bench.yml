@@ -7,6 +7,7 @@ name: ic-bench
 # intentional.
 on:
   pull_request:
+    branches: [main]
     paths:
       - "experiments/ic-bench/**"
       - "experiments/fb-archive/**"
@@ -24,7 +25,7 @@ on:
       - "ecc2k130/runner/codegen/indexcalc.py"
       - ".github/workflows/ic-bench.yml"
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "experiments/ic-bench/**"
       - "experiments/fb-archive/**"
