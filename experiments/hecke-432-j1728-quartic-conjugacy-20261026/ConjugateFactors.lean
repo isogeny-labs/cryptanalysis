@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.Ideal.Maps
 
 namespace J1728QuarticConjugacy
@@ -16,7 +17,15 @@ theorem conjugate_ideal_membership (σ : R ≃+* R) (I : Ideal R) (a : R)
     (ha : a ∈ I) : σ a ∈ I.map σ.toRingHom := by
   exact Ideal.mem_map_of_mem σ.toRingHom ha
 
+/-- An exact coefficient conjugacy gives an isomorphism of quotient presentations. -/
+noncomputable def conjugate_quotient_equiv (σ : R ≃+* R)
+    (f g : Polynomial R) (h : f.map (σ : R →+* R) = g) :
+    AdjoinRoot f ≃+* AdjoinRoot g :=
+  AdjoinRoot.mapRingEquiv σ f g (by
+    rw [h])
+
 #print axioms conjugate_factor_identity
 #print axioms conjugate_ideal_membership
+#print axioms conjugate_quotient_equiv
 
 end J1728QuarticConjugacy
