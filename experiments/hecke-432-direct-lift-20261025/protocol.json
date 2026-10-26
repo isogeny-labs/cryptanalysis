@@ -1,0 +1,15 @@
+{
+  "status": "FROZEN_BEFORE_QSERIES_SCREEN",
+  "frozen_utc": "2026-10-25T23:47:57Z",
+  "goal": "Find a direct rational formula for the normalized B x-coordinate from the original X0(27) coordinates and the projected E x-coordinate",
+  "functions": ["x_C(q) and y_C(q) from the normalized 27a1 map", "x_B(q) from the normalized 432a1 map", "x_E(q)=(x_B(q)^3-64)/x_B(q)^2"],
+  "ansatz": "A(x_C,y_C,x_E)*x_B+B(x_C,y_C,x_E)=0, with y_C exponent 0 or 1 and weighted pole degree 2*a+3*b+2*c at most D for A and D+2 for B",
+  "weighted_degrees": [4, 6, 8, 10, 12, 14],
+  "q_series_precision": 360,
+  "training_exponents": ["minus (D+2)", 240],
+  "holdout_exponents": [241, 280],
+  "auxiliary_fields": [997, 1009],
+  "candidate_gate": "A(q) must be nonzero; the relation must vanish on training and held-out coefficients in both auxiliary fields with the same rational coefficients before any formula is promoted",
+  "output_if_no_candidate": "Report kernel dimensions and nontrivial denominator-projection dimensions for every D and field; retain the bounded search scope",
+  "next_gate_if_candidate": "Reconstruct exact rational coefficients, prove the modular-function identity by a divisor or pole bound, then evaluate it independently on all p=997 source records"
+}
