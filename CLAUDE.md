@@ -22,3 +22,9 @@ change causes, and merges once green. Any model tier does this, Claude Opus
 and Fable included. A non-required check queued for 24 hours without starting
 does not block the merge. AGENTS.md, "Continue through the PR: track it and
 merge it".
+
+**Resume checkpoints** (owner, 2026-10-24): before any experiment run, fill
+`.resume/RESUME.md` (`scripts/checkpoint.sh init`) so a fresh session could
+resume the effort from it alone. The hooks push it to S3 with the specs,
+leads and unpushed work, and refuse run launchers until that succeeds.
+AGENTS.md, "Resume checkpoints in S3 before every run".

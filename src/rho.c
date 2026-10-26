@@ -151,7 +151,13 @@ typedef struct rho_checkpoint_header {
     uint64_t p, a, b, order, cofactor;
     uint64_t base[4], target[4];
     uint32_t kind, endo_kind, aut_order, r, dp_bits, negmap;
-    uint32_t entry_size, threads, walks;
+    uint32_t entry_size;
+    /* Reserved in the native CARHODP2 layout.  Keep both words so old
+     * checkpoints retain their exact header size and checksum offsets. */
+    // cppcheck-suppress unusedStructMember
+    uint32_t threads;
+    // cppcheck-suppress unusedStructMember
+    uint32_t walks;
     uint64_t endo_lambda, endo_c_mont;
     uint64_t seed, walk_ops, setup_ops, dps, restarts, entries, result;
     double elapsed_seconds;
@@ -178,12 +184,14 @@ static int rho_sync_parent(const char *path)
 {
     char *dir = strdup(path);
     if (!dir) return 0;
+    const char *parent = dir;
     char *slash = strrchr(dir, '/');
     if (slash) {
         if (slash == dir) slash[1] = '\0';
         else *slash = '\0';
-    } else strcpy(dir, ".");
-    int fd = open(dir, O_RDONLY);
+    } else
+        parent = ".";
+    int fd = open(parent, O_RDONLY);
     int ok = fd >= 0 && fsync(fd) == 0;
     if (fd >= 0) close(fd);
     free(dir);
@@ -266,6 +274,8 @@ static int rho_checkpoint_load(rho_shared *sh, const rho_checkpoint_header *expe
     if (!f) { ca_set_error("rho: cannot reopen checkpoint"); return 0; }
     rho_checkpoint_header h = {0};
     int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
              memcmp(&h, expected, sizeof(h)) == 0;
     uint64_t checksum = h.checksum;
     h.checksum = 0;

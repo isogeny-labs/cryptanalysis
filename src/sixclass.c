@@ -29,7 +29,7 @@ static int class_of(const ca_group *g, const ca_elem *point, uint64_t beta,
     *key = sign ? minus_y : words[1];
     *orientation = j + 3 * sign;
     if (canonical) {
-        uint64_t encoded[4] = {xx[j], *key, 0, 0};
+        const uint64_t encoded[4] = {xx[j], *key, 0, 0};
         if (!ca_group_encode(g, canonical, encoded)) return 0;
     }
     return 1;
@@ -53,10 +53,10 @@ ca_status ca_sixclass_solve(const ca_group *g, const ca_elem *base,
     ca_sixclass_stats local = {0};
     if (!stats) stats = &local;
     memset(stats, 0, sizeof(*stats));
-    if (!g || !base || !target || !x || g->kind != CA_GROUP_EC ||
-        g->endo_kind != 1 || g->aut_order != 6 || !g->order ||
-        r < 2 || (r & (r - 1)) || r > 2048 || dp_bits > 24 ||
-        !ca_group_is_valid(g, base) || !ca_group_is_valid(g, target))
+    if (!g || !base || !target || !x || g->kind != CA_GROUP_EC || g->endo_kind != 1 ||
+        g->aut_order != 6 || !g->order || r < 2 || (r & (r - 1)) || r > 2048 || dp_bits > 24 ||
+        !ca_group_is_valid(g, base) || !ca_group_is_valid(g, target) ||
+        ca_group_is_identity(g, base))
         return CA_ERR_INVALID;
     uint64_t n = g->order;
     uint64_t beta = ca_mont_from(&g->mont, g->endo_c_mont);
@@ -64,8 +64,8 @@ ca_status ca_sixclass_solve(const ca_group *g, const ca_elem *base,
      * x-rotation (beta*x,y) therefore acts as -endo_lambda. */
     uint64_t lambda = n - g->endo_lambda;
     uint64_t l2 = ca_mulmod(lambda, lambda, n);
-    uint64_t units[6] = {1, lambda, l2, n - 1, n - lambda, n - l2};
-    uint64_t inverse[6] = {1, l2, lambda, n - 1, n - l2, n - lambda};
+    const uint64_t units[6] = {1, lambda, l2, n - 1, n - lambda, n - l2};
+    const uint64_t inverse[6] = {1, l2, lambda, n - 1, n - l2, n - lambda};
     if (ca_powmod(beta, 3, g->p) != 1 || ca_powmod(lambda, 3, n) != 1)
         return CA_ERR_INVALID;
     ca_elem check, phi;

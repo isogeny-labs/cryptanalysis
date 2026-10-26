@@ -32,7 +32,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build optimized and UBSan packed factors
@@ -45,7 +45,7 @@ jobs:
           python experiments/groebner-f6-packed-20261009/semantic_screen.py --output f6-packed-evidence/semantic.json
       - name: Retain all target statuses and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-f6-packed-${{ matrix.os }}
           path: f6-packed-evidence

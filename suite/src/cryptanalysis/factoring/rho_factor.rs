@@ -384,8 +384,10 @@ mod tests {
         for split in [20u32, 30, 40] {
             for _ in 0..4 {
                 let p = (next() >> (64 - split)) | 1 | (1 << (split - 1));
-                let q = (next() >> (64 - (100 - split))) | 1 | (1 << (100 - split - 1));
-                ns.push(p as u128 * q as u128);
+                let q_bits = 100 - split;
+                let q_sample = ((next() as u128) << 64) | next() as u128;
+                let q = (q_sample >> (128 - q_bits)) | 1 | (1u128 << (q_bits - 1));
+                ns.push(p as u128 * q);
             }
         }
         for &n in &ns {

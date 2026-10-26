@@ -1,0 +1,66 @@
+Debian clang version 19.1.7 (3+b1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /workspace/toolchains/clang19/usr/lib/llvm-19/bin
+1.5.1 (1f227d9 (release tag v1.5.1))
+ae164157f4776d6c15551eb0f673a30401d6a999c6e414c7484723803d045ed5  sources.sha256
+4824bd26b91836e9990af28813d06d44cf0ffab19b618beac2b5da8399daab82  harness.c
+c8aea4682af43ce68d6597fc118b7f220c3de6650fe3cf52f06d52d9cf58b074  Modarith.cry
+7bcb379d34bcad6c8d174d80c6336817dff081dcc98cea94bb7eb53ed4962c08  modarith.saw
+a43787c362a93188c32bf8f3027b47b6ba9cecc909fe1537a3885a31ac6b153a  build/native.bc
+Loading file "modarith.saw"
+----------Counterexample----------
+  a: 3068573850154303486
+  b: 1915297065852731392
+  modulus: 4224354086134218753
+----------------------------------
+== Anticipated failure message ==
+Stack trace:
+   (builtin) in z3
+   modarith.saw:14:73-14:75 in (callback)
+   (builtin) in llvm_verify
+   modarith.saw:14:12-14:75 in (callback)
+   (builtin) in fails
+   modarith.saw:14:5-14:75 in check
+   modarith.saw:17:1-17:38 (at top level)
+Proof failed.
+
+----------Counterexample----------
+  a: 2269261610523766780
+  b: 2557927747646973497
+  modulus: 4476628113938293309
+----------------------------------
+== Anticipated failure message ==
+Stack trace:
+   (builtin) in z3
+   modarith.saw:14:73-14:75 in (callback)
+   (builtin) in llvm_verify
+   modarith.saw:14:12-14:75 in (callback)
+   (builtin) in fails
+   modarith.saw:14:5-14:75 in check
+   modarith.saw:18:1-18:38 (at top level)
+Proof failed.
+
+== Anticipated failure message ==
+Stack trace:
+   (builtin) in z3
+   modarith.saw:25:20-25:22 in (callback)
+   (builtin) in prove_print
+   modarith.saw:25:8-27:80 in (callback)
+   (builtin) in fails
+   modarith.saw:25:1-27:80 (at top level)
+prove: 1 unsolved subgoal(s)
+Invalid: [a = 1231853099896390924, b = 16020806258246911, modulus = 9811280210099225866]
+
+== Anticipated failure message ==
+Stack trace:
+   (builtin) in z3
+   modarith.saw:31:20-31:22 in (callback)
+   (builtin) in prove_print
+   modarith.saw:31:8-33:96 in (callback)
+   (builtin) in fails
+   modarith.saw:31:1-33:96 (at top level)
+prove: 1 unsolved subgoal(s)
+Invalid: [a = 1294450710151392015, b = 3632412926738208794, modulus = 6271825989446446635]
+
+ASSAY COMPLETE: two C proofs, two modulo proofs and four solver-rejected mutants

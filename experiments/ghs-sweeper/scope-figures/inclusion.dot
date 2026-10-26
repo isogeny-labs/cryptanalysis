@@ -1,0 +1,14 @@
+digraph HessScope {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.25, ranksep=0.3,
+         label="Published-construction inclusion: symbolic objects, no instantiated EC1/IC1 or measured attack", labelloc=t, fontsize=11];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fa", color="#45627c", fontname="DejaVu Sans", fontsize=10, margin="0.12,0.09"];
+  edge [color="#45627c", arrowsize=0.6, fontname="DejaVu Sans", fontsize=9];
+  source [label="Ordinary E over K = F_(q^N), characteristic 2\nb has full relative degree N >= 2; either trace class of a"];
+  split [label="s = sqrt(b); choose gamma with Tr(gamma)=0\nbeta = s/gamma; Tr(beta) != 0\nTrace lemma (N>=3), direct choice gamma=1 (N=2)"];
+  constants [label="T+1 divides the joint annihilator\nExact constants hold; Frobenius lift exists\nHess equation (10), Theorem 11"];
+  genus [label="Published k-curve C0 with genus <= 2^N - 2\nHess Theorem 12; target need not be hyperelliptic"];
+  transfer [label="Full pair period N follows from full degree of b\nNorm-after-conorm kernel is killed by 2^(m-1)\nHess Theorem 14: injective on odd-prime subgroups"];
+  open [label="Still open: a new useful low-genus / low-cost criterion\nNo explicit C0, subgroup or planted log in this check\nNo new vulnerable family or publication-novelty claim", fillcolor="#fff5df", color="#98783c"];
+  source -> split -> constants -> genus -> transfer;
+  transfer -> open [style=dashed, label="separate research obligation", color="#98783c"];
+}

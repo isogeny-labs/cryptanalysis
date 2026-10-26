@@ -44,7 +44,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round108 experiments/groebner-perf-20260924/round11 experiments/groebner-perf-20260924/round110 experiments/groebner-perf-20260924/round112 experiments/groebner-perf-20260924/round116 experiments/groebner-perf-20260924/round118 experiments/groebner-perf-20260924/round119 experiments/groebner-perf-20260924/round121
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Build and independently audit the frozen reference
@@ -59,7 +59,7 @@ jobs:
           python experiments/groebner-perf-20260924/round121/profile.py --reference-root "$GITHUB_WORKSPACE" --reference-report f4-obstruction-evidence/reference/panel/report.json --output f4-obstruction-evidence/paired --reps 1
       - name: Retain exact results and raw failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: groebner-field-obstruction-${{ matrix.os }}
           path: f4-obstruction-evidence

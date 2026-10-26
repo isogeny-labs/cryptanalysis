@@ -1,0 +1,95 @@
+   Compiling ghs-sweeper v0.1.0 (/workspace/cryptanalysis/experiments/ghs-sweeper)
+    Finished `release` profile [optimized] target(s) in 1.76s
+     Running unittests src/lib.rs (experiments/ghs-sweeper/target/release/deps/ghs_sweeper-d88aa8ec0cfc17aa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (experiments/ghs-sweeper/target/release/deps/ghs_sweeper-0cbc34133e386ada)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sweeper.rs (experiments/ghs-sweeper/target/release/deps/sweeper-9c014054acdfe543)
+
+running 21 tests
+test candidate_insertion_and_checkpoint_roll_back_together ... ok
+test abandoned_claim_is_recovered_without_duplicate_models ... ok
+test canonical_comparison_keeps_lift_condition_and_koblitz_control ... ok
+test changed_engine_is_readable_but_cannot_extend_old_run ... ok
+test configs_and_subfields_fail_closed ... ok
+test embeddings_preserve_subfield_products ... ok
+test exclusive_writer_and_existing_file_are_protected ... ok
+test failed_jobs_require_explicit_retry ... ok
+test fast_fields_equal_independent_raw_fields ... ok
+test local_history_flags_controls_isogeny_classes_and_twists ... ok
+test native_cli_runs_without_python_and_refuses_clobbers ... ok
+test nonfree_affine_orbits_cover_all_irreducibles ... ok
+{"candidates":2,"completed_this_run":1,"event":"job_complete","job_id":"1fe852cee2e69257369ce668f21f480c762bd7c1db7da7b814e5071639e1b9ca","wall_seconds":0.000036128}
+{"candidates":2,"completed_this_run":1,"event":"job_complete","job_id":"5dec5512fed7df0151fe18c8116c794cfa2aaabe91f4f3c33775c1b3d9aa4598","wall_seconds":0.000020891}
+{"candidates":2,"completed_this_run":2,"event":"job_complete","job_id":"e1611e7288e686b189dc00f1a63288fa6e866a6332e7aad85c2b0da720c70ac9","wall_seconds":0.000024861}
+test parallel_resume_limits_and_cancellation_preserve_coverage ... ok
+test positives_and_elliptic_models_have_independent_counts ... ok
+{"event":"candidate_counts_checked","spectral_model_id":"3e177d18279bdfad50cd98cdaf1f1c2632cba4225d7ea805d6194cefc531ec9b","wall_seconds":0.000038535}
+{"event":"candidate_counts_checked","spectral_model_id":"57ae897d64f875fa451ab24549bf843cf58f0e6c252bade0034aed4e2c6bdaef","wall_seconds":0.00002193}
+{"event":"candidate_counts_checked","spectral_model_id":"7622867bfa7376ebae709c05310b3480a1a0f3d46bbb2a4b882d284be53aad66","wall_seconds":0.000019445}
+{"event":"candidate_counts_checked","spectral_model_id":"97f4925f35cf63d2ff7c0439f84b2a9347a8d2e82d0f94790090916cb483a57d","wall_seconds":0.000016728}
+{"event":"candidate_counts_checked","spectral_model_id":"b50203247d13fcf54354f764454569e8cb07b715a0cac5ac9e2b2da712135279","wall_seconds":0.00001619}
+{"event":"candidate_counts_checked","spectral_model_id":"d341771c97dacb6a0b41b1dfcc53a8d80c138c7be6289471c998179234ff96c7","wall_seconds":0.000015243}
+test python_journal_import_preserves_coverage_but_resets_verification ... ok
+test review_gates_reject_novelty_shortcuts_and_escaping_references ... ok
+{"event":"candidate_counts_checked","spectral_model_id":"3e177d18279bdfad50cd98cdaf1f1c2632cba4225d7ea805d6194cefc531ec9b","wall_seconds":0.000038151}
+{"event":"candidate_counts_checked","spectral_model_id":"57ae897d64f875fa451ab24549bf843cf58f0e6c252bade0034aed4e2c6bdaef","wall_seconds":0.000033678}
+{"event":"candidate_counts_checked","spectral_model_id":"7622867bfa7376ebae709c05310b3480a1a0f3d46bbb2a4b882d284be53aad66","wall_seconds":0.000021447}
+{"event":"candidate_counts_checked","spectral_model_id":"97f4925f35cf63d2ff7c0439f84b2a9347a8d2e82d0f94790090916cb483a57d","wall_seconds":0.000018743}
+{"event":"candidate_counts_checked","spectral_model_id":"b50203247d13fcf54354f764454569e8cb07b715a0cac5ac9e2b2da712135279","wall_seconds":0.000017445}
+{"event":"candidate_counts_checked","spectral_model_id":"d341771c97dacb6a0b41b1dfcc53a8d80c138c7be6289471c998179234ff96c7","wall_seconds":0.000016202}
+{"base_degree":1,"event":"sources_identified","relative_degree":5,"trace_classes":1,"wall_seconds":0.000016307}
+{"base_degree":1,"event":"sources_identified","relative_degree":5,"trace_classes":3,"wall_seconds":0.000022503}
+test source_matching_and_checks_resume_monotonically ... ok
+test stale_retained_reference_reopens_review_gate ... ok
+test walsh_matches_defining_character_sum ... ok
+{"error":"invalid job denominator","event":"job_failed","job_id":"1fe852cee2e69257369ce668f21f480c762bd7c1db7da7b814e5071639e1b9ca"}
+{"error":"invalid job denominator","event":"job_failed","job_id":"5dec5512fed7df0151fe18c8116c794cfa2aaabe91f4f3c33775c1b3d9aa4598"}
+{"error":"invalid job denominator","event":"job_failed","job_id":"e1611e7288e686b189dc00f1a63288fa6e866a6332e7aad85c2b0da720c70ac9"}
+test worker_failures_are_retained_as_failed_jobs ... ok
+test complete_saved_censuses_match_candidates_counts_and_survival ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+     Running unittests examples/hess_scope.rs (experiments/ghs-sweeper/target/release/examples/hess_scope-bb3afe104c8a570a)
+
+running 4 tests
+test tests::cubic_fixed_control_has_the_expected_hess_parameters ... ok
+test tests::proper_subfield_koblitz_singular_and_trivial_inputs_are_outside_scope ... ok
+test tests::quadratic_controls_cover_both_constant_traces ... ok
+test tests::even_degree_and_historical_trace_one_controls ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/three_gluing.rs (experiments/ghs-sweeper/target/release/examples/three_gluing-59645a4c8712167f)
+
+running 4 tests
+test tests::explicit_kernels_and_invalid_inputs ... ok
+test tests::fixed_binary_coefficients_and_scope ... ok
+test tests::odd_degree_trace_and_half_trace_certificate ... ok
+test tests::all_forty_eight_matrices_against_independent_subspaces ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests examples/three_gluing_kernel.rs (experiments/ghs-sweeper/target/release/examples/three_gluing_kernel-c0540cd7c67f675a)
+
+running 4 tests
+test tests::altered_certificates_and_bad_inputs_are_rejected ... ok
+fixed_control a=0 b=24 modulus=515 order=480 trace=33
+fixed_control a=1 b=24 modulus=515 order=546 trace=-33
+test tests::fixed_source_orders_for_historical_overlap_check ... ok
+negative_control decomposable {"accepted":false,"source_basis_pairing":[0,1],"conjugate_basis_pairings":[[0,1],[1,1],[0,1]],"auxiliary_pairing_agrees":true,"kernel_cardinality":27,"closed_under_addition":true,"frobenius_stable":true,"individually_rational_points":3,"coordinate_intersection_sizes":[3,3,3],"ordered_pairings_evaluated":729,"nontrivial_product_pairings":0}
+negative_control nonisotropic {"accepted":false,"source_basis_pairing":[0,1],"conjugate_basis_pairings":[[0,1],[1,1],[0,1]],"auxiliary_pairing_agrees":true,"kernel_cardinality":27,"closed_under_addition":true,"frobenius_stable":false,"individually_rational_points":3,"coordinate_intersection_sizes":[1,1,1],"ordered_pairings_evaluated":729,"nontrivial_product_pairings":432}
+test tests::structural_negative_controls_do_not_pass ... ok
+test tests::actual_kernel_on_both_fixed_twists ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

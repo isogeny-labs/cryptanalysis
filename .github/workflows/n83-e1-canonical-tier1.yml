@@ -141,7 +141,7 @@ jobs:
 
       - name: Preserve preflight, raw pairs, failures, and verdict
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-e1-canonical-tier1-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-e1-canonical-tier1/

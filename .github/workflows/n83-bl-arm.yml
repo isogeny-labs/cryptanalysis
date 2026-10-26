@@ -201,7 +201,7 @@ jobs:
 
       - name: Preserve allocation, controls, precomputations, raw runs and the result
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-bl-arm-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-bl-arm/
@@ -210,7 +210,7 @@ jobs:
 
       - name: Preserve the stored BL table (table.bin, SHA-256 in the receipt)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n83-bl-arm-table-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n83-bl-arm-table/

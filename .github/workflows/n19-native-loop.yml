@@ -115,7 +115,8 @@ jobs:
           python3 "$EXPERIMENT/make_schedule.py" --check
           python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["status"] == "frozen" and p["frozen_before_any_timing"], p["status"]' "$EXPERIMENT/protocol.json"
           (cd "$EXPERIMENT" && python3 -m unittest -v tests/test_verify_receipt.py 2>&1 | tee "$N19_RD/verifier-tests.txt")
-          (cd "$EXPERIMENT" && sha256sum $FROZEN_LIST) | tee "$N19_RD/frozen.sha256"
+          read -r -a frozen_files <<< "$FROZEN_LIST"
+          (cd "$EXPERIMENT" && sha256sum "${frozen_files[@]}") | tee "$N19_RD/frozen.sha256"
 
       - name: Install the pinned toolchain, test and build both crates
         shell: bash
@@ -148,7 +149,7 @@ jobs:
           docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
             'sage --version; sage -python -c "import sys, platform, time; print(sys.version); print(platform.platform()); print(time.get_clock_info(\"process_time\"))"; grep -m1 "model name" /proc/cpuinfo; nproc; head -2 /proc/schedstat; cat /proc/self/cgroup; ldd /rd/lib/tau6dlp' \
             | tee "$N19_RD/sage-runtime.txt"
-          docker run --rm --user root -e N19_LIB=/rd/lib/libtau6loop.so -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w /w/$EXPERIMENT \
+          docker run --rm --user root -e N19_LIB=/rd/lib/libtau6loop.so -v "$GITHUB_WORKSPACE:/w" -v "$N19_RD:/rd" -w "/w/$EXPERIMENT" \
             --entrypoint /bin/bash "$SAGE_IMAGE" -c 'sage -python -m unittest -v tests/test_pyrand.py' 2>&1 \
             | tee "$N19_RD/sage-python-rng.txt"
 
@@ -189,7 +190,7 @@ jobs:
 
       - name: Preserve the smoke receipt, artifacts and profile
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n19-native-loop-smoke-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n19nl
@@ -264,7 +265,8 @@ jobs:
           chmod +x "$RUNNER_TEMP/n19nl/lib/tau6dlp"  # artifact upload drops the mode bits
           (cd "$RUNNER_TEMP/n19nl/lib" && sha256sum -c ../binaries.sha256) | tee "$N19_RD/binaries-check.txt"
           cp "$RUNNER_TEMP/n19nl/binaries.sha256" "$N19_RD/"
-          (cd "$EXPERIMENT" && sha256sum $FROZEN_LIST) | tee "$N19_RD/frozen.sha256"
+          read -r -a frozen_files <<< "$FROZEN_LIST"
+          (cd "$EXPERIMENT" && sha256sum "${frozen_files[@]}") | tee "$N19_RD/frozen.sha256"
           diff "$N19_RD/frozen.sha256" "$RUNNER_TEMP/n19nl/frozen.sha256"
 
       - name: Pull the pinned Sage image and record its runtime (outside every timed interval)
@@ -299,7 +301,7 @@ jobs:
 
       - name: Preserve allocation, raw rows and the result
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: n19-native-loop-timed-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/n19nlt

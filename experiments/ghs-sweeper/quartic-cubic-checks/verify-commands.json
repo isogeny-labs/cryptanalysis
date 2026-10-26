@@ -1,0 +1,52 @@
+[
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "quartic_cubic",
+      "--",
+      "verify",
+      "--coefficients",
+      "3",
+      "7",
+      "7",
+      "4",
+      "4",
+      "0"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 3.3176572320007836,
+    "stdout": "verify-trace-plus35.json",
+    "stderr": "verify-trace-plus35.stderr.txt"
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "run",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--example",
+      "quartic_cubic",
+      "--",
+      "verify",
+      "--coefficients",
+      "5",
+      "7",
+      "7",
+      "6",
+      "0",
+      "0"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.5657008039997891,
+    "stdout": "verify-trace-minus35.json",
+    "stderr": "verify-trace-minus35.stderr.txt"
+  }
+]

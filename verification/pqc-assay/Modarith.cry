@@ -1,0 +1,16 @@
+// Independent exact-width specification: widen before doing arithmetic.
+module Modarith where
+
+valid : [64] -> [64] -> [64] -> Bit
+valid a b m = (m != 0) && (a < m) && (b < m)
+
+widen : [64] -> [65]
+widen a = zero # a
+
+add_mod : [64] -> [64] -> [64] -> [64]
+add_mod a b m = drop`{1} (if s >= widen m then s - widen m else s)
+  where s = widen a + widen b
+
+sub_mod : [64] -> [64] -> [64] -> [64]
+sub_mod a b m = drop`{1} (if a >= b then widen a - widen b
+                                  else widen a + widen m - widen b)
