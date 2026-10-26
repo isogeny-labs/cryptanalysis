@@ -317,3 +317,89 @@ BLS12-381 modules, and the speed-oriented PQC benchmarks.  Those are either
 research records, or primitives no attack here reaches, or a parallel
 campaign this repository already has production versions of (`cuda/`,
 `fpga/`, `orchestrator/`); they stay upstream.
+
+## Certicom ECC2-131 and ECCp-131
+
+The Rust curve catalog includes the random binary ECC2-131 and prime-field
+ECCp-131 challenges. `ECC2-130` and `ECCp-130` are accepted aliases for the
+published names. These are distinct from the Koblitz ECC2K-130 challenge.
+[`src/ecc/certicom.rs`](src/ecc/certicom.rs) provides `binary_challenge` and
+`prime_challenge`, each returning exact curve parameters and the published
+target Q from [Certicom's parameter list](https://www.certicom.com/en/curves-list).
+
+From `suite/`:
+
+```sh
+cargo run --release --bin ca-icx -- inspect ECC2-130 --json
+cargo run --release --bin ca-icx -- inspect ECCp-130 --json
+cargo test --release --lib ecc::certicom
+```
+
+The tests check the published generators and targets against their curve
+equations and verify `[n]G = [n]Q = O`. Both catalogs retain the published
+131-bit parameters. The root C library remains limited to 64-bit moduli;
+these challenges use the Rust suite's full-width arithmetic. Parameter
+coverage does not establish a full-width challenge solution or an IC speedup.
+
+Use the exact-curve solver entry point for rho, BSGS, and index calculus:
+
+```sh
+cargo run --release --bin ca-icx -- solve ECC2-130 --method bsgs --secret 12345 --interval-width 65536 --json
+cargo run --release --bin ca-icx -- solve ECCp-130 --method rho --challenge --max-iterations 16 --max-restarts 0 --json
+cargo run --release --bin ca-icx -- solve ECC2-130 --method index-calculus --challenge --factor-base-size 16 --max-iterations 32 --json
+```
+
+The same interface is available as `crax icx solve`. Each method accepts either
+curve and its aliases. `solve` uses the published 131-bit parameters;
+`--challenge` selects the published target.
+`ca-icx run` remains the separate smaller-analogue experiment interface. Use
+`--point X,Y` for an external target or `--secret K` for a known-answer target.
+Scalars, coordinates, interval bounds and relation coefficients retain their
+full width. An unfinished search reports `budget_exhausted`, no scalar, and a
+nonzero exit. BSGS caps its baby table with `--max-table-entries`; rho's iteration
+limit is per restart. IC caps relation and descent queries separately and
+honors `--max-table-entries` and `--max-matrix-entries`.
+
+The native [solver API](src/cryptanalysis/certicom_dlp/mod.rs) exposes `rho`,
+`bsgs`, and `index_calculus`. The IC pipeline builds a cofactor-cleared low-x
+factor base, decomposes public points into signed pairs, collects verified
+relations, solves their full-width system modulo the subgroup order, verifies
+every recovered base log, and descends the target. It requires full rank and
+never falls back to another DLP method. These challenge solvers use Rust's
+full-width arithmetic; the root C group API retains its 64-bit limit.
+
+`--preparation FILE.json` supplies external IC work using these fields:
+
+| field | contents |
+| --- | --- |
+| `curve` | The exact challenge name or alias. |
+| `factor_base` | An array of `{ "x": "0x...", "y": "0x..." }` public subgroup points. |
+| `relation_queries` | Integer strings `a` whose points `[a]G` are decomposed into relations. |
+| `descent_shifts` | Integer strings `a` for target queries `Q + [a]G`. |
+| `label` | Optional provenance text retained in the output. |
+
+Integers accept decimal or `0x` hex. No base logs or target log are accepted.
+The pipeline checks points, subgroup membership, duplicate sign orbits, rank,
+and scalar replay. [Functional tests](tests/certicom_solvers.rs) exercise both
+exact curves with a BSGS scalar above `2^100`, the special rho target `Q = -G`,
+and a constructed IC workload that learns three base logs and descends a new
+target. They establish correctness of the executed paths; they are not
+natural-target yield or speed measurements.
+
+All three exact-curve methods support portable CPUs, NVIDIA CUDA and Apple
+Metal. CPU execution is the default. From the repository root:
+
+```sh
+make -C gpu/certicom cuda ARCH=sm_80
+suite/target/release/ca-icx solve ECCp-130 --method rho --challenge --max-iterations 16 --max-restarts 0 --backend cuda --gpu-worker gpu/certicom/certicom_cuda --json
+# On a Mac with Metal:
+make -C gpu/certicom metal
+suite/target/release/ca-icx solve ECC2-130 --method bsgs --secret 12345 --interval-width 65536 --backend metal --gpu-worker gpu/certicom/certicom_metal --json
+```
+
+Explicit GPU selection fails on unavailable hardware. `--backend auto` may
+choose CPU and records that choice; `gpu-emulator` is labelled host execution.
+GPU rho runs parallel walks, BSGS batches points, and IC offloads point queries
+and decomposition. Modular linear algebra and independent scalar verification
+stay on CPU. See [GPU setup and hardware qualification](../gpu/certicom/README.md)
+for device selection, resource budgets, deadlines and tests.
