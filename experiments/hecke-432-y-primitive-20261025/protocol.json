@@ -1,0 +1,16 @@
+{
+  "status": "FROZEN_BEFORE_Y_PRIMITIVE_SCREEN",
+  "frozen_utc": "2026-10-26T00:47:34Z",
+  "geometric_fiber_input": "experiments/hecke-432-geometric-fiber-20261025/evaluation.json",
+  "qseries_input": "experiments/hecke-432-full-e-lift-20261025/qseries_modp.json",
+  "primary_question": "Does the E y-coordinate alone separate all 24 geometric level-16 lifts above the selected original C point?",
+  "secondary_question": "At which tested pole-weight bound does a linear-in-x_B rational relation over Q(x_C,y_C,y_E) first appear?",
+  "ansatz": "A(x_C,y_C,y_E)*x_B+B(x_C,y_C,y_E)=0, monomials x_C^a*y_C^b*y_E^k with b in {0,1} and pole weight 2a+3b+3k; A weight at most D, B weight at most D+2",
+  "weighted_degrees": [24, 32, 40, 48],
+  "auxiliary_fields": [997, 1009],
+  "training_exponents": "from -(D+2) through 900 inclusive",
+  "holdout_exponents": [901, 980],
+  "candidate_gate": "nonzero denominator, exact common rational reconstruction from both fields, independent holdout, then a global modular-function identity and independent finite-field evaluation",
+  "full_rank_interpretation": "a nonzero minor modulo either auxiliary prime excludes a rational-coefficient relation in the nested tested space",
+  "point_status_rule": "retain all 24 paths and both coordinate multiplicity histograms; preserve any failed evaluation"
+}
