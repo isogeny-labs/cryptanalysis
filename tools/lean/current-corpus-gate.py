@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Bind the current Lean corpus to archived native builds and fresh delta builds.
+"""Bind the frozen Lean corpus and natively check added Hecke theorem modules.
 
-The October 21 corpus audit compiled 93 files. This gate accepts only unchanged
-source and toolchain pins from that audit, plus six explicitly rebuilt files.
-Any other source or pin change fails until native evidence is added here.
+The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
+byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
+files and the PQC assay are separately pinned. New Hecke modules are checked
+by the pinned Mathlib toolchain in addition to that frozen bridge. Other
+source or pin changes still fail until native evidence is added here.
 """
 from __future__ import annotations
 
@@ -24,6 +26,7 @@ GLV = ROOT / "experiments/glv-table-rule-confirm-20261022"
 ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
+HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -297,6 +300,47 @@ def check_delta() -> dict:
             **pqc}
 
 
+def check_new_hecke(paths: set[str]) -> dict[str, str]:
+    """Build every added Hecke source; never admit an unbuilt corpus addition."""
+    if not paths:
+        return {}
+    require(HECKE_CI.joinpath("lean-toolchain").read_text().strip() ==
+            "leanprover/lean4:v4.35.0-rc4", "Hecke Lean toolchain changed")
+    manifest = json.loads(HECKE_CI.joinpath("lake-manifest.json").read_text())
+    mathlib = [p for p in manifest["packages"] if p["name"] == "mathlib"]
+    require(len(mathlib) == 1 and
+            mathlib[0]["rev"] == "021c46bdd042f67b538b9f9871d556a93713a9a9",
+            "Hecke Mathlib revision changed")
+    checked = {}
+    for path in sorted(paths):
+        require(path.startswith("experiments/hecke-") and "/formal/" in path and
+                path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
+        pin = ROOT / effective_pin(path)
+        require(pin.read_text().strip() == "leanprover/lean4:v4.35.0-rc4",
+                f"Hecke theorem toolchain changed: {path}")
+        source = (ROOT / path).read_text()
+        require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+                f"forbidden proof escape in {path}")
+        declared = re.findall(r"^(?:theorem|lemma)\s+(\w+)", source, re.MULTILINE)
+        requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+        require(declared and len(declared) == len(set(declared)) and
+                set(declared) == set(requested) and len(declared) == len(requested),
+                f"incomplete declaration audit in {path}")
+        result = run(["lake", "env", "lean", "-R", str(ROOT), str(ROOT / path)],
+                     cwd=HECKE_CI, timeout=900)
+        printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                             result.stdout, re.MULTILINE)
+        require(len(printed) == len(declared) and
+                {name.rsplit(".", 1)[-1] for name, _ in printed} == set(declared),
+                f"incomplete native axiom output for {path}")
+        require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                    <= {"propext", "Classical.choice", "Quot.sound"}
+                    for _, names in printed),
+                f"unexpected foundation in {path}")
+        checked[path] = digest(ROOT / path)
+    return checked
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-receipt", type=Path)
@@ -306,11 +350,15 @@ def main() -> None:
              if not path.startswith("tools/lean/")]
     current = {path: digest(ROOT / path) for path in paths}
     require(len(current) == len(paths), "duplicate tracked Lean path")
-    reused, archive = check_archive(index, current)
+    frozen_paths = {row["source"] for row in index["files"]} | set(DELTA)
+    require(frozen_paths <= set(current), "frozen Lean source missing")
+    additions = set(current) - frozen_paths
+    frozen = {path: current[path] for path in frozen_paths}
+    reused, archive = check_archive(index, frozen)
     delta = check_delta()
     output = {"schema": "cryptanalysis.current_lean_corpus_bridge.v1",
               "archive_source_commit": index["source_commit"],
-              "current_lean_files": len(current), "archived_byte_identical_files": len(reused),
+              "current_lean_files": len(frozen), "archived_byte_identical_files": len(reused),
               "fresh_native_files": sorted(DELTA), "archive_evidence": archive,
               "fresh_native_source_sha256": {path: current[path] for path in sorted(DELTA)},
               "fresh_native_evidence": delta,
@@ -320,6 +368,8 @@ def main() -> None:
         require(args.check_receipt.read_bytes() == encoded, "committed corpus receipt differs")
     else:
         print(encoded.decode(), end="")
+    checked = check_new_hecke(additions)
+    print(f"native Hecke theorem modules checked: {len(checked)}")
 
 
 if __name__ == "__main__":
