@@ -264,20 +264,6 @@ pub fn prime_curve(name: &str) -> Option<CurveParams> {
     })
 }
 
-#[cfg(test)]
-mod certicom_tests {
-    use super::*;
-
-    #[test]
-    fn eccp131_profile_checks_published_generator_and_target() {
-        let params = named("eccp-131").unwrap();
-        assert_eq!(params.name, "ECCp-131");
-        assert!(params.point.is_some());
-        let report = inspect(params, "Certicom curves list".into()).unwrap();
-        assert_eq!(report["status"], "checks_passed", "{report}");
-        assert_eq!(prime_curve("eccp131").unwrap().name, "ECCp-131");
-    }
-}
 pub fn load(path: &Path) -> Result<(Parameters, String), String> {
     let mut data = Vec::new();
     File::open(path)
@@ -291,6 +277,7 @@ pub fn load(path: &Path) -> Result<(Parameters, String), String> {
     let p = serde_json::from_slice(&data).map_err(|e| format!("invalid parameter JSON: {e}"))?;
     Ok((p, blake3::hash(&data).to_hex().to_string()))
 }
+
 fn poly_rem(mut a: BigUint, b: &BigUint) -> BigUint {
     while !a.is_zero() && a.bits() >= b.bits() {
         let shift = a.bits() - b.bits();
@@ -701,4 +688,19 @@ pub fn inspect(p: Parameters, source: String) -> Result<Value, String> {
             "imported_target_solving":false,"factor_base_built":false,"relation_collection":false,"linear_algebra":false},
         "limitations":["Primality screens are not proofs.","Missing or unsupported checks are explicitly listed.","Imported parameters are never passed to the synthetic solver."]}),
     )
+}
+
+#[cfg(test)]
+mod certicom_tests {
+    use super::*;
+
+    #[test]
+    fn eccp131_profile_checks_published_generator_and_target() {
+        let params = named("eccp-131").unwrap();
+        assert_eq!(params.name, "ECCp-131");
+        assert!(params.point.is_some());
+        let report = inspect(params, "Certicom curves list".into()).unwrap();
+        assert_eq!(report["status"], "checks_passed", "{report}");
+        assert_eq!(prime_curve("eccp131").unwrap().name, "ECCp-131");
+    }
 }
