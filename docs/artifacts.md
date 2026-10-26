@@ -36,11 +36,12 @@ python3 tools/artifacts/artifacts.py plan [PATH]            # what the policy wo
   index. Commit those two files with your change.
 - Policy (`tools/artifacts/artifacts.py`, `DEFAULT_POLICY`): a non-code file
   over 1 MiB, or a data-suffixed file (`.jsonl .gz .json.xz .npy .bin .csv .log
-  .pdf .png ...`, and `.part-NNNN` splits) over 64 KiB, belongs in the store.
+  .png ...`, and `.part-NNNN` splits) over 64 KiB, belongs in the store.
   Source and text suffixes (`.rs .py .md .lean .yml .tex ...`) never move.
+  PDFs stay in Git at any size.
 - `keep` in `.artifacts/config.json` lists tracked files that stay in Git
-  although the policy would move them: 51 data files that code or CI outside the
-  data trees names by path, and `docs/ic/*.pdf`, regenerated on most PRs. Add a
+  although the policy would move them: data files that code or CI outside the
+  data trees names by path. Add a
   path only with the reader that needs it in the same change.
 - The `artifacts` workflow runs `artifacts.py check` on every pull request and
   fails one that adds a file the policy assigns to the store. The
