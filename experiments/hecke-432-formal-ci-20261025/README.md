@@ -5,7 +5,8 @@ This Lake project pins Lean 4 `v4.35.0-rc4` and Mathlib revision
 modules added after the frozen 96-file Lean corpus receipt.
 
 The `Lean corpus evidence bridge` workflow fetches the pinned Mathlib
-cache and runs `tools/lean/current-corpus-gate.py`. That gate continues
+cache when Hecke theorem modules are present, then runs
+`tools/lean/current-corpus-gate.py`. That gate continues
 to compare the original 96-file evidence with its committed receipt,
 then natively builds every additional tracked Hecke `formal/*.lean`
 module. It checks that each theorem or lemma has a corresponding
