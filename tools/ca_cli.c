@@ -714,22 +714,22 @@ static int ic_atomic_file(const char *dir, const char *name, const char *body)
     return ok;
 }
 
-static int ic_manifest_matches(const char *dir, const char *expected)
+static int ic_manifest_matches(const char *dir, const char *expected, size_t capacity)
 {
     char *path = ic_path(dir, "manifest.json");
     if (!path) return 0;
     FILE *f = fopen(path, "rb");
     free(path);
     if (!f) return 0;
-    /* Every caller formats expected in a stack buffer of at most 2048 bytes.
-     * Keep the comparison bounded even if the checkpoint file is untrusted. */
-    char got[2048];
-    size_t n = strnlen(expected, sizeof got);
-    if (n == sizeof got) {
+    size_t n = strnlen(expected, capacity);
+    if (n == capacity) {
         fclose(f);
         return 0;
     }
-    int ok = fread(got, 1, n, f) == n && fgetc(f) == EOF && memcmp(got, expected, n) == 0;
+    char *got = malloc(n ? n : 1);
+    int ok = got && fread(got, 1, n, f) == n && fgetc(f) == EOF &&
+             memcmp(got, expected, n) == 0;
+    free(got);
     fclose(f);
     return ok;
 }
@@ -854,13 +854,13 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
                 !ca_group_is_identity(g, target))
@@ -994,13 +994,13 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 4096 &&
                 !ca_group_is_identity(g, target))
@@ -1124,13 +1124,13 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no interval checkpoint found for --resume");
         }
@@ -1249,14 +1249,14 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(table_path, F_OK) != 0 ||
                  access(online_path, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore precomp artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(table_path, F_OK) != 0) die("no precomp table checkpoint found for --resume");
         }
@@ -1388,13 +1388,13 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore dlog artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no dlog checkpoint found for --resume");
         }
@@ -1503,13 +1503,13 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             uint64_t effective_hi = hi ? hi : g->order ? g->order - 1 : 0;
             int trivial = effective_hi >= lo && effective_hi - lo < 256;
@@ -1629,13 +1629,13 @@ static int cmd_ic(void)
             free(manifest_path); free(journal_path); free(precomp_path);
             /* Validate local ownership before a download can overwrite its
              * manifest or state.  Only an empty directory may lack identity. */
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir))
                 die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             journal_path = ic_path(state_dir, "relations.ckpt");
             precomp_path = ic_path(state_dir, "relations.ckpt.precomp");

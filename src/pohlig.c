@@ -37,7 +37,7 @@ static ca_status brute_force_ec_batch(const ca_group *g, const ca_elem *base,
                                       const ca_elem *start, uint64_t *x, ca_stats *st)
 {
     enum { LANES = 64 };
-    ca_elem offsets[LANES], addends[LANES], left[LANES], candidates[LANES];
+    ca_elem offsets[LANES], addends[LANES] = {0}, left[LANES] = {0}, candidates[LANES];
     uint64_t scratch[2 * LANES];
     ca_group_identity(g, &offsets[0]);
     offsets[1] = *base;

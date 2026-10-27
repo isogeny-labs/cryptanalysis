@@ -183,6 +183,10 @@ static int grumpy_checkpoint_save(const char *path, const grumpy_checkpoint_head
 static int grumpy_checkpoint_load(const char *path, const grumpy_checkpoint_header *saved,
                                    const ca_group *g, ca_elem walk[3], ca_htab *tab)
 {
+    if (!path) {
+        ca_set_error("grumpy: missing checkpoint path");
+        return 0;
+    }
     FILE *f = fopen(path, "rb");
     if (!f) { ca_set_error("grumpy: cannot reopen checkpoint"); return 0; }
     grumpy_checkpoint_header h = {0};

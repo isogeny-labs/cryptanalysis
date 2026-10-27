@@ -264,7 +264,7 @@ cmd_push() {
   stamp="$(date -u +%Y%m%dT%H%M%SZ)-$sha"
   key="$PREFIX/$repo/$branch/$stamp"
   stage="$(mktemp -d "${TMPDIR:-/tmp}/checkpoint.XXXXXX")"
-  trap 'rm -rf "$stage"; trap - RETURN' RETURN
+  trap 'rm -rf -- "$stage"; trap - RETURN' RETURN
 
   [ -f .resume/RESUME.md ] && cp .resume/RESUME.md "$stage/RESUME.md"
 

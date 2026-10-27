@@ -166,7 +166,7 @@ static void test_walk_invariant(const ca_group *g, const ca_elem *base, const ca
             } else {
                 uint64_t wy = state[4 * w + 1];
                 lhs.w[0] = wx;
-                lhs.w[1] = a.kind == CA_GPU_KIND_EC ? wy : 0;
+                lhs.w[1] = a.kind == CA_GPU_KIND_EC ? state[4 * w + 1] : 0;
                 lhs.w[2] = 0;
                 lhs.w[3] = 0;
                 CHECK(ca_group_is_valid(g, &lhs));
