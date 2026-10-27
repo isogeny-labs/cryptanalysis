@@ -307,6 +307,80 @@ def check_delta() -> dict:
             **pqc}
 
 
+def reviewed_quartic_sources() -> dict[str, str]:
+    """Bind the original locations and build pins of the reviewed certificates."""
+    file = ROOT / "tools/ci/quartic_certificates.json"
+    if not file.is_file():
+        return {}
+    manifest = json.loads(file.read_text())
+    require(manifest["schema"] == "quartic-certificate-replay/v1" and
+            manifest["toolchain"] == HECKE_TOOLCHAIN and
+            manifest["mathlib"] == HECKE_MATHLIB_REV and
+            manifest["project"] == str(HECKE_CI.relative_to(ROOT)),
+            "reviewed quartic build pins changed")
+    rows = manifest["formal"]
+    sources = {row["path"]: row["sha256"] for row in rows}
+    require(len(sources) == len(rows) == 37,
+            "reviewed quartic source inventory changed")
+    for path, expected in sources.items():
+        relative = Path(path)
+        require(not relative.is_absolute() and ".." not in relative.parts and
+                path.startswith("experiments/hecke-432-") and
+                path.endswith(".lean") and
+                manifest["inputs"].get(path) == expected,
+                f"invalid reviewed quartic source binding: {path}")
+    for name in ("lean-toolchain", "lake-manifest.json", "lakefile.toml"):
+        path = HECKE_CI / name
+        require(digest(path) == manifest["inputs"].get(str(path.relative_to(ROOT))),
+                f"reviewed quartic project input changed: {name}")
+    return sources
+
+
+def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
+    """Compile original bytes, audit every requested declaration and all theorems."""
+    file = ROOT / path
+    require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
+            f"reviewed quartic source escapes repository: {path}")
+    require(digest(file) == expected, f"reviewed quartic source changed: {path}")
+    source = file.read_text()
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            f"forbidden proof escape in {path}")
+    requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", source, re.MULTILINE)
+    require(requested and len(requested) == len(set(requested)),
+            f"missing or duplicate declaration audit in {path}")
+    with tempfile.TemporaryDirectory(prefix="quartic-corpus-") as scratch:
+        output = Path(scratch) / Path(path).with_suffix(".olean")
+        output.parent.mkdir(parents=True)
+        result = run(["lake", "env", "lean", "-R", str(ROOT), "-o", str(output),
+                      str(file)], cwd=HECKE_CI, timeout=900)
+        printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                             result.stdout, re.MULTILINE)
+        free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                          result.stdout, re.MULTILINE)
+        names = [name for name, _ in printed] + free
+        require(len(names) == len(requested) and
+                {name.rsplit(".", 1)[-1] for name in names} ==
+                {name.rsplit(".", 1)[-1] for name in requested},
+                f"incomplete native declaration audit in {path}")
+        require(all({a.strip() for a in axs.split(",") if a.strip()} <=
+                    {"propext", "Classical.choice", "Quot.sound"}
+                    for _, axs in printed), f"unexpected foundation in {path}")
+        env = {**os.environ, "LEAN_PATH": scratch + os.pathsep + lean_path}
+        audit = run(["lean", "--run", str(ROOT / "tools/lean/AuditHeckeAxioms.lean"),
+                     path[:-5].replace("/", ".")], cwd=HECKE_CI, env=env)
+        print(result.stdout, end="", flush=True)
+        print(audit.stdout, end="", flush=True)
+        summary = re.findall(r"^audited ([1-9][0-9]*) theorems; 0 failing, 0 trusted$",
+                             audit.stdout, re.MULTILINE)
+        require(len(summary) == 1 and
+                len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == int(summary[0]),
+                f"incomplete exhaustive theorem audit in {path}")
+        print(f"quartic native audit: {path}: {len(requested)} declarations, "
+              f"{summary[0]} theorems", flush=True)
+    require(digest(file) == expected, f"quartic source changed during audit: {path}")
+    return expected
+
+
 def check_new_hecke(paths: set[str]) -> dict[str, str]:
     """Build every added Hecke source; never admit an unbuilt corpus addition."""
     if not paths:
@@ -318,8 +392,13 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     require(len(mathlib) == 1 and
             mathlib[0]["rev"] == HECKE_MATHLIB_REV,
             "Hecke Mathlib revision changed")
+    reviewed = reviewed_quartic_sources()
+    lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
     checked = {}
     for path in sorted(paths):
+        if path in reviewed:
+            checked[path] = check_reviewed_quartic(path, reviewed[path], lean_path)
+            continue
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
         pin = ROOT / effective_pin(path)
