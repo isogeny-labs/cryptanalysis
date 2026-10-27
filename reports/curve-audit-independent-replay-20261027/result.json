@@ -1,0 +1,103 @@
+{
+  "auditor_source_sha256": "21c9b414ce9972b8652eb12cf9c56fd739c81f9ce4ca378d362496f893926eea",
+  "claim_boundary": "Independent exact-integer certificate and point replay; archived Rust/Sage fields consistent. This does not authenticate archived execution or replace an independent finite-field cardinality computation or full Lean bridge.",
+  "curves": {
+    "P-192": {
+      "archived_field_consistency": true,
+      "candidate_divisible": true,
+      "candidate_hasse_bound": true,
+      "candidate_order": "6277101735386680763835789423176059013767194773182842284081",
+      "certificate_counts": {
+        "nodes": 9,
+        "small_factors": 41,
+        "small_nodes": 0
+      },
+      "controls": [
+        {
+          "name": "wrong_input_hash",
+          "reason": "certificate is bound to different input bytes",
+          "status": "rejected"
+        },
+        {
+          "name": "witness_one",
+          "reason": "Lucas witness out of range",
+          "status": "rejected"
+        },
+        {
+          "name": "factor_exponent_plus_one",
+          "reason": "factor product exceeds n-1",
+          "status": "rejected"
+        },
+        {
+          "name": "off_curve_generator",
+          "reason": "generator is off curve",
+          "status": "rejected"
+        },
+        {
+          "name": "candidate_order_plus_one",
+          "reason": "candidate order not divisible by selected prime",
+          "status": "rejected"
+        }
+      ],
+      "discriminant_nonzero": true,
+      "generator_on_curve": true,
+      "p": "6277101735386680763835789423207666416083908700390324961279",
+      "r": "6277101735386680763835789423176059013767194773182842284081",
+      "r_times_generator_is_infinity": true,
+      "strict_spacing": true,
+      "trace": "31607402316713927207482677199",
+      "twist_order": "6277101735386680763835789423239273818400622627597807638479"
+    },
+    "P-224": {
+      "archived_field_consistency": true,
+      "candidate_divisible": true,
+      "candidate_hasse_bound": true,
+      "candidate_order": "26959946667150639794667015087019625940457807714424391721682722368061",
+      "certificate_counts": {
+        "nodes": 8,
+        "small_factors": 40,
+        "small_nodes": 0
+      },
+      "controls": [
+        {
+          "name": "wrong_input_hash",
+          "reason": "certificate is bound to different input bytes",
+          "status": "rejected"
+        },
+        {
+          "name": "witness_one",
+          "reason": "Lucas witness out of range",
+          "status": "rejected"
+        },
+        {
+          "name": "factor_exponent_plus_one",
+          "reason": "factor product exceeds n-1",
+          "status": "rejected"
+        },
+        {
+          "name": "off_curve_generator",
+          "reason": "generator is off curve",
+          "status": "rejected"
+        },
+        {
+          "name": "candidate_order_plus_one",
+          "reason": "candidate order not divisible by selected prime",
+          "status": "rejected"
+        }
+      ],
+      "discriminant_nonzero": true,
+      "generator_on_curve": true,
+      "p": "26959946667150639794667015087019630673557916260026308143510066298881",
+      "r": "26959946667150639794667015087019625940457807714424391721682722368061",
+      "r_times_generator_is_infinity": true,
+      "strict_spacing": true,
+      "trace": "4733100108545601916421827343930821",
+      "twist_order": "26959946667150639794667015087019635406658024805628224565337410229703"
+    }
+  },
+  "input_manifest_sha256": "a1d1803fe4e70d10c207ba8996a6650a2a15cbed9f2520224142369f7840be31",
+  "producer_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+  "python_version": "3.9.25",
+  "schema": "cryptanalysis.curve_audit_independent_replay.v1",
+  "verifier": "replay.py"
+}
