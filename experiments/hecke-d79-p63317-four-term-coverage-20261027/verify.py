@@ -38,7 +38,8 @@ def main():
     assert result['four_uncovered_scalars'] == []
     assert result['candidate_id'] is None and result['target_online_ms'] is None
     build = (HERE / 'formal/build-output.txt').read_text()
-    assert 'Built FourTermCoverage' in build and 'does not depend on any axioms' in build
+    assert ('Built FourTermCoverage' in build or 'Replayed FourTermCoverage' in build)
+    assert 'Build completed successfully' in build and 'does not depend on any axioms' in build
     assert build.count('does not depend on any axioms') == 29
     assert 'sorry' not in (HERE / 'formal/FourTermCoverage.lean').read_text()
     assert 'admit' not in (HERE / 'formal/FourTermCoverage.lean').read_text()
