@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Bind the frozen Lean corpus and natively check added Hecke theorem modules.
+"""Bind the frozen Lean corpus and natively check admitted theorem modules.
 
 The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
 byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
-files and the PQC assay are separately pinned. New Hecke modules are checked
-by the pinned Mathlib toolchain in addition to that frozen bridge. Other
-source or pin changes still fail until native evidence is added here.
+files and the PQC assay are separately pinned. New Hecke modules use the
+pinned Mathlib workspace, including modules whose recorded build dependencies
+override the repository's inherited root pin. The reviewed Hasse-square module
+uses its own pinned toolchain. Other source or pin changes still fail until
+native evidence is added here.
 """
 from __future__ import annotations
 
@@ -27,6 +29,11 @@ ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
+HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
+HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
+HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
+HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -305,19 +312,31 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     if not paths:
         return {}
     require(HECKE_CI.joinpath("lean-toolchain").read_text().strip() ==
-            "leanprover/lean4:v4.35.0-rc4", "Hecke Lean toolchain changed")
+            HECKE_TOOLCHAIN, "Hecke Lean toolchain changed")
     manifest = json.loads(HECKE_CI.joinpath("lake-manifest.json").read_text())
     mathlib = [p for p in manifest["packages"] if p["name"] == "mathlib"]
     require(len(mathlib) == 1 and
-            mathlib[0]["rev"] == "021c46bdd042f67b538b9f9871d556a93713a9a9",
+            mathlib[0]["rev"] == HECKE_MATHLIB_REV,
             "Hecke Mathlib revision changed")
     checked = {}
     for path in sorted(paths):
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
         pin = ROOT / effective_pin(path)
-        require(pin.read_text().strip() == "leanprover/lean4:v4.35.0-rc4",
-                f"Hecke theorem toolchain changed: {path}")
+        if pin.read_text().strip() != HECKE_TOOLCHAIN:
+            # Some archived Hecke sources have no local lean-toolchain file.
+            # Their build records explicitly name the shared Mathlib workspace;
+            # do not treat the inherited root pin as their build environment.
+            require(pin == ROOT / "lean-toolchain",
+                    f"Hecke theorem toolchain changed: {path}")
+            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            require(dependencies.is_file(),
+                    f"Hecke build dependencies missing: {path}")
+            recorded = json.loads(dependencies.read_text())
+            require(recorded.get("lean_toolchain") == HECKE_TOOLCHAIN and
+                    (recorded.get("mathlib_revision") or
+                     recorded.get("mathlib_git_rev")) == HECKE_MATHLIB_REV,
+                    f"Hecke recorded build dependencies changed: {path}")
         source = (ROOT / path).read_text()
         require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
                 f"forbidden proof escape in {path}")
@@ -330,8 +349,11 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                      cwd=HECKE_CI, timeout=900)
         printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
                              result.stdout, re.MULTILINE)
-        require(len(printed) == len(declared) and
-                {name.rsplit(".", 1)[-1] for name, _ in printed} == set(declared),
+        axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                                result.stdout, re.MULTILINE)
+        printed_names = [name for name, _ in printed] + axiom_free
+        require(len(printed_names) == len(declared) and
+                {name.rsplit(".", 1)[-1] for name in printed_names} == set(declared),
                 f"incomplete native axiom output for {path}")
         require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
                     <= {"propext", "Classical.choice", "Quot.sound"}
@@ -339,6 +361,49 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                 f"unexpected foundation in {path}")
         checked[path] = digest(ROOT / path)
     return checked
+
+
+def check_new_hasse() -> str:
+    """Rebuild the source-bound Nat bridge and audit its transitive axioms."""
+    require((HASSE_FORMAL / "lean-toolchain").read_text().strip() ==
+            "leanprover/lean4:v4.34.1", "Hasse theorem toolchain changed")
+    source = (ROOT / HASSE_SOURCE).read_text()
+    require(digest(ROOT / HASSE_SOURCE) == HASSE_SHA256,
+            "Hasse theorem source changed without review")
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            "forbidden proof escape in Hasse theorem source")
+    declared = set(re.findall(r"^theorem\s+(\w+)", source, re.MULTILINE))
+    requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+    require(declared == {
+        "squared_deviations_have_short_sum",
+        "unique_multiple_from_squared_center_bounds",
+        "unsignedDelta_center_bounds",
+        "unique_multiple_from_hasse_squared_checks",
+    } and len(requested) == len(declared) and set(requested) == declared,
+            "Hasse theorem declaration or axiom printout coverage changed")
+    with tempfile.TemporaryDirectory(prefix="hasse-corpus-") as temporary:
+        env = {**os.environ, "LEAN_PATH": temporary}
+        run(["lean", "-o", str(Path(temporary) / "HasseUnique.olean"),
+             "HasseUnique.lean"], cwd=HASSE_FORMAL, env=env)
+        built = run(["lean", "-o", str(Path(temporary) / "HasseSquareBounds.olean"),
+                     "HasseSquareBounds.lean"], cwd=HASSE_FORMAL, env=env)
+        printed = re.findall(r"^'CurveAudit\.([^']+)' depends on axioms: \[([^]]*)\]$",
+                             built.stdout, re.MULTILINE)
+        require(len(printed) == len(declared) and
+                {name for name, _ in printed} == declared and
+                all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                    <= {"propext", "Classical.choice", "Quot.sound"}
+                    for _, names in printed),
+                "Hasse native axiom printout changed")
+        audit = run(["lean", "--run", str(ROOT / "tools/lean/AuditAxioms.lean"),
+                     "HasseSquareBounds"], cwd=HASSE_FORMAL, env=env)
+        audited = [line for line in audit.stdout.splitlines()
+                   if line.startswith("ok    ") or line.startswith("audited ")]
+        require(len(audited) == 6 and
+                audited[-1] ==
+                "audited 5 theorems in [HasseSquareBounds]; 0 failing, 0 trusted (native_decide)",
+                "Hasse transitive theorem audit changed")
+    return HASSE_SHA256
 
 
 def main() -> None:
@@ -368,8 +433,11 @@ def main() -> None:
         require(args.check_receipt.read_bytes() == encoded, "committed corpus receipt differs")
     else:
         print(encoded.decode(), end="")
-    checked = check_new_hecke(additions)
-    print(f"native Hecke theorem modules checked: {len(checked)}")
+    hasse_addition = HASSE_SOURCE in additions
+    checked = check_new_hecke(additions - {HASSE_SOURCE})
+    if hasse_addition:
+        checked[HASSE_SOURCE] = check_new_hasse()
+    print(f"native added theorem modules checked: {len(checked)}")
 
 
 if __name__ == "__main__":
