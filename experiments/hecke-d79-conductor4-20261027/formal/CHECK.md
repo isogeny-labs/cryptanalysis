@@ -1,0 +1,5 @@
+# Lean finite certificate and boundary
+
+The pinned Lean toolchain is `leanprover/lean4:v4.35.0-rc4`, with no external packages. `python3 generate.py` checks [ShortP317.lean](ShortP317.lean) against the four hash-bound search inputs, complete search output and independently checked Sage validation. `gtimeout 300 lake build ShortP317` exited zero; [build-output.txt](build-output.txt) retains the theorem-level `#print axioms` audit. Root/order and projection proofs report no axioms. The displayed minor and signed-row identities report only standard `propext`.
+
+The module checks finite modulo-13 Frobenius arithmetic, modulo-61 row/projection arithmetic, a displayed inverse of a 38×38 minor, and the exact signed integer identities for the 15 selected rows. Full formalization remains partial: Lean does not define the D=-79 CM curve's 13-torsion, its Frobenius action on kernel lines, the X_0(11) Hecke neighbor map, or the F_317 elliptic-curve group. The map from saved points and traces to those objects and the abstract rank theorem are independently replayed in checked Sage and stated with their assumptions in [../RESULT.md](../RESULT.md).

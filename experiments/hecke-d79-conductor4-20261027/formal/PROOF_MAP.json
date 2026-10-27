@@ -1,0 +1,36 @@
+{
+  "schema": "hecke-d79-conductor4-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "For trace magnitude two at p=317, 4 and 11 are distinct characteristic-polynomial roots modulo 13, and their ratio 11 has exact order twelve.",
+      "lean_declarations": ["ShortP317.characteristic_roots", "ShortP317.eigenvalue_ratio", "ShortP317.ratio_order_twelve"],
+      "status": "checked",
+      "hypotheses": "Explicit characteristic polynomial X^2-2X+317 modulo 13; a simultaneous sign change preserves the ratio."
+    },
+    {
+      "result": "All 103 saved baseline and accepted rows annihilate a nonzero 39-coordinate vector modulo 61.",
+      "lean_declarations": ["ShortP317.rows_annihilate_projection", "ShortP317.projection_nonzero"],
+      "status": "checked",
+      "hypotheses": "Finite rows and cofactor-five projection coordinates generated from the hash-bound receipts."
+    },
+    {
+      "result": "The selected 38 rows contain the displayed 38 by 38 minor with explicit inverse modulo 61.",
+      "lean_declarations": ["ShortP317.minor_matches_rows", "ShortP317.minor_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Finite selected row list and pivot columns generated from the hash-bound receipts."
+    },
+    {
+      "result": "Each selected integer class row equals the stated signed combination of saved source class parts.",
+      "lean_declarations": ["ShortP317.signed_row_0", "ShortP317.signed_row_1", "ShortP317.signed_row_2", "ShortP317.signed_row_3", "ShortP317.signed_row_4", "ShortP317.signed_row_5", "ShortP317.signed_row_6", "ShortP317.signed_row_7", "ShortP317.signed_row_8", "ShortP317.signed_row_9", "ShortP317.signed_row_11", "ShortP317.signed_row_12", "ShortP317.signed_row_13", "ShortP317.signed_row_14", "ShortP317.signed_row_15"],
+      "status": "checked",
+      "hypotheses": "Saved degree-13 source class parts at p=317."
+    },
+    {
+      "result": "The finite certificates and true X_0(11)(F_317) trace equations imply rank 38 over F61 and Q for the generated class rows.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Define the CM E[13] Frobenius action, Hecke neighbor map, F317 elliptic-curve group and saved source equations in Lean, then prove the abstract row-rank consequence of the inverse minor and nonzero annihilator. Independently checked in Sage for this instance."
+    }
+  ]
+}
