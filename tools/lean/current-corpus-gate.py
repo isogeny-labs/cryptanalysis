@@ -4,9 +4,10 @@
 The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
 byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
 files and the PQC assay are separately pinned. New Hecke modules use the
-pinned Mathlib toolchain; the reviewed Hasse-square module uses its own pinned
-toolchain. Other source or pin changes still fail until native evidence is
-added here.
+pinned Mathlib workspace, including modules whose recorded build dependencies
+override the repository's inherited root pin. The reviewed Hasse-square module
+uses its own pinned toolchain. Other source or pin changes still fail until
+native evidence is added here.
 """
 from __future__ import annotations
 
@@ -28,6 +29,8 @@ ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
+HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
+HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -309,19 +312,31 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     if not paths:
         return {}
     require(HECKE_CI.joinpath("lean-toolchain").read_text().strip() ==
-            "leanprover/lean4:v4.35.0-rc4", "Hecke Lean toolchain changed")
+            HECKE_TOOLCHAIN, "Hecke Lean toolchain changed")
     manifest = json.loads(HECKE_CI.joinpath("lake-manifest.json").read_text())
     mathlib = [p for p in manifest["packages"] if p["name"] == "mathlib"]
     require(len(mathlib) == 1 and
-            mathlib[0]["rev"] == "021c46bdd042f67b538b9f9871d556a93713a9a9",
+            mathlib[0]["rev"] == HECKE_MATHLIB_REV,
             "Hecke Mathlib revision changed")
     checked = {}
     for path in sorted(paths):
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
         pin = ROOT / effective_pin(path)
-        require(pin.read_text().strip() == "leanprover/lean4:v4.35.0-rc4",
-                f"Hecke theorem toolchain changed: {path}")
+        if pin.read_text().strip() != HECKE_TOOLCHAIN:
+            # Some archived Hecke sources have no local lean-toolchain file.
+            # Their build records explicitly name the shared Mathlib workspace;
+            # do not treat the inherited root pin as their build environment.
+            require(pin == ROOT / "lean-toolchain",
+                    f"Hecke theorem toolchain changed: {path}")
+            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            require(dependencies.is_file(),
+                    f"Hecke build dependencies missing: {path}")
+            recorded = json.loads(dependencies.read_text())
+            require(recorded.get("lean_toolchain") == HECKE_TOOLCHAIN and
+                    (recorded.get("mathlib_revision") or
+                     recorded.get("mathlib_git_rev")) == HECKE_MATHLIB_REV,
+                    f"Hecke recorded build dependencies changed: {path}")
         source = (ROOT / path).read_text()
         require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
                 f"forbidden proof escape in {path}")
