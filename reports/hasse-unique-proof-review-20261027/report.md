@@ -44,8 +44,11 @@ An unknown module exited 1 rather than silently auditing zero theorems.
 Lean compiled both an actual adjacent-multiples counterexample at `width=r=7`
 and a nonvacuous positive case at `r=7,width=3,n=m=14`. Inputs, exits, digests
 and complete logs are in [control-receipt.json](control-receipt.json),
-[FalseControl.lean](FalseControl.lean), and
-[BoundaryControl.lean](BoundaryControl.lean). The counterexample shows why the
+[FalseControl.lean.txt](FalseControl.lean.txt), and
+[BoundaryControl.lean.txt](BoundaryControl.lean.txt). The fixture bytes ran as
+`FalseControl.lean` and `BoundaryControl.lean` in the isolated scratch tree;
+the archived `.txt` suffix keeps intentional test inputs outside the tracked
+research theorem source inventory. The counterexample shows why the
 strict bound is load bearing; it is not a failure of the stated theorem.
 
 ## Independent review and concrete claim boundary

@@ -24,7 +24,7 @@ The exact Lean declaration `CurveAudit.unique_multiple_in_short_interval` proves
 
 The producer theorem source SHA-256 is `0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7`; the pin is Lean 4.34.1. An isolated exact-source build exited zero. The transitive audit found one theorem, zero failures, and axioms `propext` and `Quot.sound`; no `native_decide` exception was used. Pre/post source, pin, and auditor hashes matched. The trust boundary is the installed pinned Lean kernel; an independent `lean4checker --fresh` binary was unavailable.
 
-A deliberately false theorem with `sorry` compiled, but its axiom audit exited 1 and printed `sorryAx`. Auditing an unknown module exited 1. A Lean checked concrete counterexample at `width = r = 7` shows the strict bound is sharp; `r = 7`, `width = 3`, `n = m = 14` shows the original assumptions are satisfiable. Full commands, exits, digests, and logs accompany this PDF in `machine-receipt.json` and `control-receipt.json`.
+A deliberately false theorem with `sorry` compiled, but its axiom audit exited 1 and printed `sorryAx`. Auditing an unknown module exited 1. A Lean checked concrete counterexample at `width = r = 7` shows the strict bound is sharp; `r = 7`, `width = 3`, `n = m = 14` shows the original assumptions are satisfiable. Full commands, exits, digests, and logs accompany this PDF in `machine-receipt.json` and `control-receipt.json`. Test input bytes are archived as `.lean.txt` to exclude them from the repository's theorem inventory.
 
 == Independent fidelity review
 
