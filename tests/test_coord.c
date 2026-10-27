@@ -1215,11 +1215,7 @@ static test_server *server_start(server_script script)
     }
     s->fd = socket(AF_INET, SOCK_STREAM, 0);
     CHECK(s->fd >= 0);
-    if (s->fd < 0) {
-        pthread_mutex_destroy(&s->lock);
-        free(s);
-        return NULL;
-    }
+    if (s->fd < 0) goto fail;
     int one = 1;
     ok = setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) == 0;
     CHECK(ok);

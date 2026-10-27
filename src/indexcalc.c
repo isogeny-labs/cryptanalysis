@@ -201,15 +201,13 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want, re
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        int invalid = r.marker != UINT32_C(0x43493152) || r.index >= complete_count ||
-                      r.count > complete_count;
-        if (!invalid) {
-            /* complete_count is exactly the calloc length above, and the
-             * untrusted index was bounded before this access. */
-            // NOLINTNEXTLINE(clang-analyzer-security.ArrayBound)
-            invalid = complete[r.index] != 0;
+        if (r.marker != UINT32_C(0x43493152) || r.index >= complete_count ||
+            r.count > complete_count) {
+            ca_set_error("checkpoint contains an out-of-range sieve unit");
+            fclose(f);
+            return NULL;
         }
-        if (invalid) {
+        if (complete[r.index]) {
             ca_set_error("checkpoint contains an invalid or duplicate sieve unit");
             fclose(f);
             return NULL;
@@ -646,8 +644,6 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
         ca_set_error("random-exponent checkpoint payload is too large");
         return -1;
     }
-    /* The payload length and header count match exactly after the checks above. */
-    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     relation *saved = malloc(saved_bytes);
     if (!saved) { fclose(f); return -2; }
     ok = fread(saved, sizeof(*saved), h.count, f) == h.count && fgetc(f) == EOF;

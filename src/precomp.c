@@ -539,8 +539,6 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
         ca_set_error("precomp checkpoint payload is too large");
         return CA_ERR_INVALID;
     }
-    /* The payload length and header count match exactly after the checks above. */
-    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     pc_entry *entries = malloc(entry_bytes ? entry_bytes : sizeof(*entries));
     if (!entries) { fclose(f); return CA_ERR_NOMEM; }
     ok = fread(entries, sizeof(*entries), h.count, f) == h.count;

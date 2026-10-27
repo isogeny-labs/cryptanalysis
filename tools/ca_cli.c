@@ -264,8 +264,8 @@ static int delegate_cli(const char *env_name, const char *default_binary)
     child[0] = binary_copy;
     for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
     child[argc_g - 1] = NULL;
-    /* The named environment override intentionally selects the executable.
-     * execvp passes an argv vector directly; no shell parses these bytes. */
+    /* The operator explicitly selects this delegate through the documented
+     * environment override; it is intentionally an executable, not remote input. */
     // NOLINTNEXTLINE(clang-analyzer-optin.taint.GenericTaint)
     execvp(binary, child);
     int saved_errno = errno;

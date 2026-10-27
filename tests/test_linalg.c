@@ -5,9 +5,8 @@
 static void random_system(uint32_t rows, uint32_t cols, uint32_t per_row, uint64_t q,
                           ca_spmat *A, uint64_t *b, uint64_t *xtrue, ca_rng *rng)
 {
-    if (!A || !b || !xtrue || !rng) abort();
     for (uint32_t j = 0; j < cols; j++) xtrue[j] = ca_rng_below(rng, q);
-    if (ca_spmat_init(A, cols, rows, rows * per_row) != CA_OK) abort();
+    CHECK(ca_spmat_init(A, cols, rows, rows * per_row) == CA_OK);
     uint32_t *tc = malloc(per_row * sizeof(uint32_t));
     int32_t *tv = malloc(per_row * sizeof(int32_t));
     if (!tc || !tv) {
