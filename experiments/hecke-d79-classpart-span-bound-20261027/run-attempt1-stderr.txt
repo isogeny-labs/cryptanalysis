@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-classpart-span-bound-20261027/run_sage.py", line 97, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-classpart-span-bound-20261027/run_sage.py", line 38, in main
+    pair_index = module(PLAN["pair_index"])
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-classpart-span-bound-20261027/run_sage.py", line 22, in module
+    sealed(path, item["sha256"])
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-classpart-span-bound-20261027/run_sage.py", line 17, in sealed
+    return json.loads(raw)
+           ~~~~~~~~~~^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/decoder.py", line 348, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 1 column 3 (char 2)
