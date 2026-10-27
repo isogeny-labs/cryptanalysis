@@ -1,0 +1,39 @@
+{
+  "anchor_policy": "first nonzero 25*P_i in ascending class index, known log 1 relative to that point",
+  "candidate_id": null,
+  "class_size": 40,
+  "cofactor": 25,
+  "curve": "y^2+y=x^3-x^2-10*x-20",
+  "curve_order": 63275,
+  "field_element_encoding": "least nonnegative integer",
+  "frozen": {
+    "analysis.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/analysis.json",
+      "sha256": "644194be1d0b7da5fd98737700ed8598d6d96700c2ce3aa5d312fa3f8ead44f8"
+    },
+    "audit.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/audit.json",
+      "sha256": "bda82aa583f4350632608fd02bf8d23d5e43b78ac654756fd64302986ca4c812"
+    },
+    "class-result.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/class-result.json",
+      "sha256": "a2e44632c52281338a18fbf65122de576227fff532937066b2022ee88d36394f"
+    }
+  },
+  "no_replacement_after_freeze": true,
+  "p": 63317,
+  "pair_index": "distinct i<j, each sign in [-1,+1], first lexicographic witness per point",
+  "point_encoding": "affine [x,y], identity null",
+  "q": 2531,
+  "query_statuses": [
+    "VERIFIED_PAIR",
+    "NO_RELATION"
+  ],
+  "row_family": "degree-2/5 base plus direct and Hecke signed support<=4 rows",
+  "schema": "hecke-d79-p63317-target-pair-inputs-v1",
+  "target_count": 1,
+  "target_counter_cap": 100,
+  "target_online_ms": null,
+  "target_scalar_rule": "1 + sha256(seed || decimal(counter)) mod 2530; first Q outside projected class points",
+  "target_seed": "hecke-d79-p63317-target-pair-20261027-v1"
+}
