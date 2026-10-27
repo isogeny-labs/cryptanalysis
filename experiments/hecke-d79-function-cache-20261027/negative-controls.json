@@ -1,0 +1,25 @@
+{
+  "artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "results": [
+    {
+      "control": "changed_byte",
+      "exception": "ValueError",
+      "reason": "ARTIFACT_DIGEST_MISMATCH",
+      "status": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "control": "noncanonical_json",
+      "exception": "ValueError",
+      "reason": "ARTIFACT_NONCANONICAL_JSON",
+      "status": "REJECTED_AS_EXPECTED"
+    },
+    {
+      "control": "nonreduced_rational",
+      "exception": "AssertionError",
+      "reason": "noncanonical rational",
+      "status": "REJECTED_AS_EXPECTED"
+    }
+  ],
+  "schema": "hecke-d79-function-cache-controls-v1",
+  "status": "PASS"
+}

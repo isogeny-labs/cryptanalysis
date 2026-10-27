@@ -1,0 +1,71 @@
+{
+  "attempts": [
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/build_artifact.py",
+      "exit_code": 0,
+      "result_sha256": "184ce1c97c405d0ad7c35f7077e06f466afda959964c5a97dbc980adbd2f3e61",
+      "stage": "build_artifact",
+      "stderr_sha256": "4797f171e43b5686f99df67ecbcd3a9bf4e2798b6186f9c4a1444980572027ea",
+      "stdout_sha256": "9114b24c4e63fc60109cf43bbba12e55a7171313e4a631c3c6f9eaafaee4daab"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/audit_build.py",
+      "exit_code": 0,
+      "result_sha256": "2f14b6e0eddd03ab19152bf4b82da9583d97e969eee28b330e77c2369750afe3",
+      "stage": "fresh_build_audit",
+      "stderr_sha256": "0d5c43cb4c7a288ca87fae32dd0fed779eb9bf88322b31936718b2e5246225e3",
+      "stdout_sha256": "63ac8aaaa28633b9354f1b9ca0a40ca8cddb22d04c2b7fd134221e07776c7c6f"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/negative_controls.py",
+      "exit_code": 0,
+      "result_sha256": "33cd5f8d9ac452dde49308afed77deaba3f83ae7b4a9bc6f533bb7ce2b0a8949",
+      "stage": "negative_controls",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c3397033476a932372204cf013fa29bdb0c3dfb07b471323e43d809e37ae7b33"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/load_replay.py --run-number 1 --p 8597",
+      "exit_code": 0,
+      "p": 8597,
+      "result_sha256": "4738e6e32a6f074e718e08c0fe3988a7ae8f778eb79bd34ca11c107100a6ffe8",
+      "run_number": 1,
+      "stage": "load_replay",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "96f0f385b5bcd17ea622b0b7dd675ee0076c678363048ce9af06d5ffd29d43f2"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/load_replay.py --run-number 2 --p 12197",
+      "exit_code": 0,
+      "p": 12197,
+      "result_sha256": "198c3eb02e011455fd523fcfeb95adbf4a0771aba12d6594168be60d1d4ac928",
+      "run_number": 2,
+      "stage": "load_replay",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ad7e4198c25167eedb34f7006c1f95dc8aa066334bf142db0127c9ff46b517b1"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/load_replay.py --run-number 3 --p 12197",
+      "exit_code": 0,
+      "p": 12197,
+      "result_sha256": "914dfd76522de5b2002ec786a129377ff05da988902aad602b1a39977f7a0109",
+      "run_number": 3,
+      "stage": "load_replay",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3ff9f3bec3a84b0c1176e59c69359d1ace8d8c9b91c16da2d07b12b3bc3ce779"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-function-cache-20261027/load_replay.py --run-number 4 --p 8597",
+      "exit_code": 0,
+      "p": 8597,
+      "result_sha256": "8ebef3b80a75e16c7dc70a3ea3c473a94056e4b5583521e41ecb307051f986c0",
+      "run_number": 4,
+      "stage": "load_replay",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a02bf9104c3a92decd0feaebc894c1042217cc83225cedaf20497665c00670ae"
+    }
+  ],
+  "runtime_info_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "schema": "hecke-d79-function-cache-attempts-v1",
+  "status": "PASS"
+}
