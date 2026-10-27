@@ -1209,7 +1209,10 @@ static test_server *server_start(server_script script)
     s->script = script;
     int ok = pthread_mutex_init(&s->lock, NULL) == 0;
     CHECK(ok);
-    if (!ok) { free(s); return NULL; }
+    if (!ok) {
+        free(s);
+        return NULL;
+    }
     s->fd = socket(AF_INET, SOCK_STREAM, 0);
     CHECK(s->fd >= 0);
     if (s->fd < 0) goto fail;

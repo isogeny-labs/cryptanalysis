@@ -725,9 +725,11 @@ static int ic_manifest_matches(const char *dir, const char *expected)
      * Keep the comparison bounded even if the checkpoint file is untrusted. */
     char got[2048];
     size_t n = strnlen(expected, sizeof got);
-    if (n == sizeof got) { fclose(f); return 0; }
-    int ok = fread(got, 1, n, f) == n && fgetc(f) == EOF &&
-             memcmp(got, expected, n) == 0;
+    if (n == sizeof got) {
+        fclose(f);
+        return 0;
+    }
+    int ok = fread(got, 1, n, f) == n && fgetc(f) == EOF && memcmp(got, expected, n) == 0;
     fclose(f);
     return ok;
 }

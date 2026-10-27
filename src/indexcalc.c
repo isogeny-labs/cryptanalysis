@@ -167,9 +167,8 @@ static int ic_sync_parent(const char *path)
     return ok;
 }
 
-static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
-                             rel_list *rels, uint8_t *complete, size_t complete_len,
-                             uint64_t *candidates)
+static FILE *ic_journal_open(const char *path, const ic_journal_header *want, rel_list *rels,
+                             uint8_t *complete, size_t complete_len, uint64_t *candidates)
 {
     FILE *f = fopen(path, "rb+");
     if (!f && errno == ENOENT) {
@@ -199,8 +198,8 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        int invalid = r.marker != UINT32_C(0x43493152) ||
-                      r.index >= complete_len || r.count > 2 * want->C + 1;
+        int invalid = r.marker != UINT32_C(0x43493152) || r.index >= complete_len ||
+                      r.count > 2 * want->C + 1;
         if (!invalid) {
             /* complete_len is exactly the caller's calloc length, and the
              * untrusted index was bounded above before this access. */
@@ -1129,9 +1128,8 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             header.ncols = ncols; header.target = target;
             header.relation_size = sizeof(relation);
             uint64_t replay_candidates = 0;
-            s.journal = ic_journal_open(checkpoint_path, &header, &rels,
-                                        s.complete, (size_t)2 * C + 1,
-                                        &replay_candidates);
+            s.journal = ic_journal_open(checkpoint_path, &header, &rels, s.complete,
+                                        (size_t)2 * C + 1, &replay_candidates);
             if (!s.journal) {
                 free(s.complete); pthread_mutex_destroy(&s.lock);
                 free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
