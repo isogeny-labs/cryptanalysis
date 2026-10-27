@@ -1,0 +1,161 @@
+name: Hecke frozen-input replay
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/hecke-commutator-boundary-20261027/**'
+      - 'experiments/hecke-d1295-multiplicity-replay-20261026/**'
+      - 'experiments/hecke-d2631-atkin-commutation-20261026/**'
+      - 'experiments/hecke-d2631-fricke-eigenspaces-20261026/**'
+      - 'experiments/hecke-d2631-multiplicity-replay-20261026/**'
+      - 'experiments/hecke-d7-f60-f90-multiplicity-20261027/**'
+      - 'experiments/hecke-d7-local-commutator-20261027/**'
+      - 'experiments/hecke-d7-recovered-row-dependencies-20261027/**'
+      - 'experiments/hecke-d79-second-prime-20261027/**'
+      - 'experiments/hecke-degree13-orbit-20261027/**'
+      - 'experiments/hecke-degree13-repeated-20261027/**'
+      - 'experiments/hecke-f6-multiplicity-census-20261027/**'
+      - 'experiments/hecke-fricke-rank-panel-20261026/**'
+      - 'experiments/hecke-frobenius-orbit-20261027/**'
+      - 'experiments/hecke-mixed-degree-witness-20261027/**'
+      - 'experiments/hecke-multiplicity-collector-20261026/**'
+      - 'experiments/hecke-new-quotient-holdout-20261026/**'
+      - 'experiments/hecke-orbit-cancellation-20261027/**'
+      - 'experiments/hecke-trace-short-relations-20261027/**'
+      - 'experiments/ecdlp-hecke-cross-discriminant-20261012/**'
+      - 'experiments/ecdlp-hecke-floor-rank-20261012/**'
+      - 'experiments/hecke-two-sheet-small-order-20261023/**'
+      - 'experiments/hecke-d39-f6-norm3-20261019/**'
+      - 'experiments/hecke-d1407-f6-20261023/**'
+      - 'experiments/hecke-d1407-fresh-prime-20261023/**'
+      - 'experiments/hecke-floor-incidence-20261020/**'
+      - 'experiments/hecke-floor-overlap-holdout-20261023/**'
+      - 'experiments/hecke-regular-branch-second-class-20261023/**'
+      - 'experiments/hecke-split3-holdout-20261023/**'
+      - 'experiments/hecke-split3-qualified-holdout-20261023/**'
+      - 'experiments/hecke-split3-revised-holdout-20261023/**'
+      - 'tools/ci/*hecke*'
+      - '.github/workflows/hecke-archive-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  frozen-inputs-and-integer-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/
+            /.artifacts/
+            /tools/artifacts/
+            /tools/ci/
+            /experiments/hecke*/**
+            /experiments/ecdlp-hecke*/**
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-new-quotient-holdout-20261026
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Recovery refuses corrupt objects and unsafe destinations
+        run: python3 -m unittest discover -s tools/ci -p test_recover_hecke_inputs.py -v
+      - name: Read only the reviewed content-addressed store inputs
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-east-2' }}
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hecke-awscli"
+          "$RUNNER_TEMP/hecke-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
+          export ARTIFACTS_AWS="$RUNNER_TEMP/hecke-awscli/bin/aws"
+          python3 tools/ci/recover_hecke_inputs.py \
+            --report "$RUNNER_TEMP/hecke-recovery.json" \
+            --export "$RUNNER_TEMP/hecke-recovered"
+      - name: Retain hash-verified inputs and recovery diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hecke-frozen-input-recovery
+          path: |
+            ${{ runner.temp }}/hecke-recovery.json
+            ${{ runner.temp }}/hecke-recovered/
+          if-no-files-found: warn
+      - name: Replay each submitted independent integer validator
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          manifest = json.load(open('tools/ci/hecke_required_inputs.json'))
+          for path in manifest['validators']:
+              print('REPLAY', path, flush=True)
+              subprocess.run(['python3', path], check=True)
+          subprocess.run(['git', 'diff', '--exit-code', '--', *manifest['studies']], check=True)
+          PY
+
+  pinned-lean-proofs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/ci/
+            /experiments/hecke*/formal/**
+            /tools/artifacts/
+            /.artifacts/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-new-quotient-holdout-20261026
+      - name: Install the toolchain manager without selecting an unpinned Lean
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          bash "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check all ten exact proof sources and their axiom reports
+        run: python3 tools/ci/check_hecke_formal.py
