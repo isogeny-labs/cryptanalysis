@@ -41,8 +41,11 @@ def main():
     assert ('Built FourTermCoverage' in build or 'Replayed FourTermCoverage' in build)
     assert 'Build completed successfully' in build and 'does not depend on any axioms' in build
     assert build.count('does not depend on any axioms') == 29
-    assert 'sorry' not in (HERE / 'formal/FourTermCoverage.lean').read_text()
-    assert 'admit' not in (HERE / 'formal/FourTermCoverage.lean').read_text()
+    assert 'all_scalars_have_four_distinct_sources' in build
+    assert 'sorryAx' not in build
+    for name in ('FourTermCoverage.lean', 'FourTermCoverageChunks.lean'):
+        source = (HERE / 'formal' / name).read_text()
+        assert 'sorry' not in source and 'admit' not in source
     receipt = read('post_audit.json')
     for name, expected in receipt['sha256'].items():
         assert sha(HERE / name) == expected, name
