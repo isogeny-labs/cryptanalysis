@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-d79-second-prime-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "For positive CM trace 20 at p=179, 2 and 5 are distinct roots modulo 13 and their projective ratio 3 has exact order 3.",
+      "lean_declarations": ["FrobeniusRatio.p179_characteristic_roots", "FrobeniusRatio.p179_eigenvalue_ratio", "FrobeniusRatio.p179_ratio_order_three"],
+      "status": "checked",
+      "hypotheses": "Explicit integer modulus 13 and the displayed characteristic polynomial; negative trace changes both eigenvalue signs and preserves their ratio."
+    },
+    {
+      "result": "For positive CM trace 4 at p=83, 7 and 10 are distinct roots modulo 13 and their projective ratio 7 has exact order 12.",
+      "lean_declarations": ["FrobeniusRatio.p83_characteristic_roots", "FrobeniusRatio.p83_eigenvalue_ratio", "FrobeniusRatio.p83_ratio_order_twelve"],
+      "status": "checked",
+      "hypotheses": "Explicit integer modulus 13 and the displayed characteristic polynomial; negative trace changes both eigenvalue signs and preserves their ratio."
+    },
+    {
+      "result": "These projective orders induce the saved degree-13 neighbor-x fiber patterns and the p=179 group-law relation ranks.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Definitions of the CM curve's E[13], Frobenius action on kernel lines, the Hecke neighbor-x map and elliptic-curve group, followed by the exact matrix-rank bridge."
+    }
+  ]
+}
