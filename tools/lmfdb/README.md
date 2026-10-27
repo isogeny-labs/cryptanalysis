@@ -5,6 +5,9 @@ The index files and their manifests live outside this repository on the NAS;
 the verified SSD cache on this Mac supports faster repeated queries. The
 query tool does not need the broader PostgreSQL export to be complete.
 
+For another Python 3.9+ environment, install the tested dependency with
+`python3 -m pip install -r tools/lmfdb/requirements.txt`.
+
 | View | Content | Scope |
 | --- | --- | --- |
 | `ec_q` | elliptic curves over Q | selected columns from `ec_curvedata` |
