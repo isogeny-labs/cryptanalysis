@@ -266,6 +266,29 @@ def github_repo_releases(owner_repo: str, get, max_results: int = 5) -> list[dic
     return items
 
 
+def github_repo_commits(owner_repo: str, get, max_results: int = 5) -> list[dict]:
+    """Latest default-branch commits, for repositories that publish without releases."""
+    data = json.loads(get(f"/repos/{owner_repo}/commits?per_page={max_results}"))
+    items = []
+    for c in (data or [])[:max_results]:
+        commit = c.get("commit") or {}
+        message = commit.get("message") or ""
+        author = c.get("author") or {}
+        items.append({
+            "source": "github",
+            "ext_id": f"commit:{owner_repo}@{c.get('sha', '')[:12]}",
+            "title": f"{owner_repo}: {message.splitlines()[0] if message else c.get('sha', '')[:12]}",
+            "authors": [author["login"]] if author.get("login") else [],
+            "url": c.get("html_url", ""),
+            "published": _iso_day((commit.get("committer") or {}).get("date")),
+            "updated": None,
+            "abstract": message[:2000],
+            "categories": [],
+            "extra": {"kind": "commit", "sha": c.get("sha")},
+        })
+    return items
+
+
 def today_iso() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
