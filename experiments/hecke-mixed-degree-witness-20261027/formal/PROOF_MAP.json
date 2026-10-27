@@ -1,0 +1,20 @@
+{
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "build_command": "lake build MixedDegreeWitness",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "results": [
+    {
+      "bridge": "Frozen matrix rows are matched by input hashes, corrected-row multiset, and independent integer replay in verify.py.",
+      "claim": "For every coordinate i in Fin 32, 3 R_2(25)[i] equals R_7(11)[i] plus the specified eight archived-row combination.",
+      "hypotheses": "None beyond the explicit sparse integer row definitions in MixedDegreeWitness.lean; i : Fin 32 is universally quantified.",
+      "lean_declaration": "MixedDegreeWitness.exact_identity",
+      "status": "checked"
+    }
+  ],
+  "schema": "hecke-mixed-degree-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4"
+}
