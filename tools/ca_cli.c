@@ -1950,9 +1950,12 @@ static const char *coord_token(void)
         const char *got = fgets(buf, sizeof(buf), f);
         fclose(f);
         if (!got) die("--token-file is empty");
-        size_t end = strcspn(buf, "\r\n");
-        if (end >= sizeof(buf)) die("--token-file is too long");
-        buf[end] = 0;
+        for (size_t i = 0; i < sizeof buf; i++) {
+            if (buf[i] == '\r' || buf[i] == '\n' || buf[i] == '\0') {
+                buf[i] = '\0';
+                break;
+            }
+        }
         if (!buf[0]) die("--token-file is empty");
         return buf;
     }
@@ -1979,20 +1982,34 @@ static const char *coord_url(void)
  */
 static size_t coord_url_split(const char *list, char **out, size_t max)
 {
+    if (!list) return 0;
+    /* Coordinator URLs travel in bounded job documents. Reject an overlong
+     * command-line list before using any input-derived offset or allocation. */
+    size_t total = strnlen(list, CA_COORD_LINE_MAX);
+    if (total == CA_COORD_LINE_MAX) return 0;
     size_t n = 0;
-    const char *p = list;
-    while (p && *p && n < max) {
-        while (*p == ' ' || *p == ',') p++;
-        if (!*p) break;
-        const char *end = strchr(p, ',');
-        const char *trim_end = end ? end : p + strlen(p);
-        while (trim_end > p && trim_end[-1] == ' ') trim_end--;
-        size_t len = (size_t)(trim_end - p);
-        char *dup = strndup(p, len);
+    size_t start = 0;
+    while (start < total && n < max) {
+        while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+        if (start == total) break;
+        size_t end = start;
+        while (end < total && list[end] != ',') end++;
+        size_t trim = end;
+        while (trim > start && list[trim - 1] == ' ') trim--;
+        size_t len = trim - start;
+        /* list[start] is a non-space, non-comma byte because the leading
+         * separator loop advanced past both; trimming cannot make len zero. */
+        char *dup = malloc(len + 1);
         if (!dup) break;
+        memcpy(dup, list + start, len);
+        dup[len] = 0;
         out[n++] = dup;
-        if (!end) break;
-        p = end + 1;
+        start = end + 1;
+    }
+    while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+    if (start < total) {
+        for (size_t i = 0; i < n; i++) free(out[i]);
+        return 0;
     }
     return n;
 }
@@ -2074,9 +2091,12 @@ static ca_coord_ctx *coord_load(int allow_remote)
         const char *got = fgets(line, sizeof(line), f);
         fclose(f);
         if (!got) die("--job is empty");
-        size_t end = strcspn(line, "\r\n");
-        if (end >= sizeof(line)) die("--job line is too long");
-        line[end] = 0;
+        for (size_t i = 0; i < sizeof line; i++) {
+            if (line[i] == '\r' || line[i] == '\n' || line[i] == '\0') {
+                line[i] = '\0';
+                break;
+            }
+        }
         ca_status rc = ca_coord_job_decode(&job, line);
         if (rc != CA_OK) die_status(rc);
     } else if (allow_remote && coord_url()) {
@@ -2263,7 +2283,10 @@ static int cmd_work(void)
     uint32_t shards = ca_coord_ctx_job(ctx)->shards;
     char *urls[CA_COORD_SHARDS_MAX];
     size_t nurl = 0;
-    if (coord_url()) nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+    if (coord_url()) {
+        nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+        if (!nurl) die("--coordinator must contain a bounded, nonempty URL list");
+    }
     if (nurl && nurl != (size_t)shards) {
         char msg[192];
         snprintf(msg, sizeof(msg),
