@@ -16,3 +16,7 @@ The explicit replay manifest binds 31 input paths to their previously recorded S
 CI uses the repository's existing artifact identity to read only these reviewed content-addressed keys. Each result must match its frozen hash before appearing at the expected path; a present conflicting record is preserved and fails. The workflow retains verified bytes and failure diagnostics, then runs every submitted independent integer validator and rejects tracked evidence changes. The store is read-only in this workflow. Recovery or replay failure blocks integration; a saved earlier success is not substituted for a current check.
 
 The raw scientific Sage producers are not rerun by this software repair. Conditional Lean statements remain conditional, and successful integer replay would establish only the recorded finite checks. No performance or general ECDLP claim is made.
+
+## Exact-path Git history search
+
+All 21 still-missing original input paths were also searched with `git log --all -- <exact path>` across the fetched main and research refs. None has a history entry. This complements the authenticated S3 404s, current-tree/content-digest search and lossless-format checks; no original was found. The pinned input checks remain intact.
