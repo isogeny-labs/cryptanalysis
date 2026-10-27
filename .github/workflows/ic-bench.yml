@@ -81,7 +81,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/runner experiments/fb-archive experiments/fb-search experiments/ic-bench experiments/ic-candidate-catalog experiments/pdp-degree-heuristics
+          python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/research/volcano-m83/outputs ecc2k130/runner experiments/ecc2k130-isogeny-class/data experiments/fb-archive experiments/fb-search experiments/ic-bench experiments/ic-candidate-catalog experiments/koblitz-pair-claw-20260929/runs experiments/pdp-degree-heuristics experiments/volcano-ic/results
 
       - uses: actions/setup-python@v7
         with:
@@ -174,7 +174,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/runner experiments/fb-archive experiments/fb-search experiments/ic-bench experiments/ic-candidate-catalog experiments/pdp-degree-heuristics
+          python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130/research/volcano-m83/outputs ecc2k130/runner experiments/ecc2k130-isogeny-class/data experiments/fb-archive experiments/fb-search experiments/ic-bench experiments/ic-candidate-catalog experiments/koblitz-pair-claw-20260929/runs experiments/pdp-degree-heuristics experiments/volcano-ic/results
 
       - uses: actions/setup-python@v7
         with:
