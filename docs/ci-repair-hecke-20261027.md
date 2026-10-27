@@ -20,3 +20,15 @@ The raw scientific Sage producers are not rerun by this software repair. Conditi
 ## Exact-path Git history search
 
 All 21 still-missing original input paths were also searched with `git log --all -- <exact path>` across the fetched main and research refs. None has a history entry. This complements the authenticated S3 404s, current-tree/content-digest search and lossless-format checks; no original was found. The pinned input checks remain intact.
+
+## Historical store lookup
+
+The shared storage contract keeps the former `crypto-autoresearcher` bucket
+read-only; current writers use `setec-astronomy-artifacts`. A manual replay now
+also attempts the same reviewed hashes against that historical store, retaining
+a separate report and separately exported checksum-verified bytes. It invokes
+the unchanged recovery helper, with no upload or producer rerun. The original
+canonical-store failure remains a failure; this diagnostic cannot substitute
+for a fresh successful canonical replay. No input hash or integer/proof gate is
+relaxed. Historical-store availability and access are not assumed until the
+authenticated results arrive.

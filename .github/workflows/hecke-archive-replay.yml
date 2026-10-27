@@ -99,6 +99,21 @@ jobs:
           python3 tools/ci/recover_hecke_inputs.py \
             --report "$RUNNER_TEMP/hecke-recovery.json" \
             --export "$RUNNER_TEMP/hecke-recovered"
+      - name: Inspect the historical read-only store for the same frozen inputs
+        if: always() && github.event_name == 'workflow_dispatch'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-2
+          ARTIFACTS_REMOTE: s3://crypto-autoresearcher/store
+        run: |
+          # The lab contract permits reads from this legacy bucket. This
+          # diagnostic performs no upload and cannot turn the earlier
+          # canonical-store failure into a passing job.
+          export ARTIFACTS_AWS="$RUNNER_TEMP/hecke-awscli/bin/aws"
+          python3 tools/ci/recover_hecke_inputs.py \
+            --report "$RUNNER_TEMP/hecke-legacy-recovery.json" \
+            --export "$RUNNER_TEMP/hecke-legacy-recovered"
       - name: Retain hash-verified inputs and recovery diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -107,6 +122,8 @@ jobs:
           path: |
             ${{ runner.temp }}/hecke-recovery.json
             ${{ runner.temp }}/hecke-recovered/
+            ${{ runner.temp }}/hecke-legacy-recovery.json
+            ${{ runner.temp }}/hecke-legacy-recovered/
           if-no-files-found: warn
       - name: Replay each submitted independent integer validator
         run: |
