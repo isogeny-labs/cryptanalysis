@@ -2006,6 +2006,11 @@ static size_t coord_url_split(const char *list, char **out, size_t max)
         out[n++] = dup;
         start = end + 1;
     }
+    while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+    if (start < total) {
+        for (size_t i = 0; i < n; i++) free(out[i]);
+        return 0;
+    }
     return n;
 }
 
@@ -2278,7 +2283,10 @@ static int cmd_work(void)
     uint32_t shards = ca_coord_ctx_job(ctx)->shards;
     char *urls[CA_COORD_SHARDS_MAX];
     size_t nurl = 0;
-    if (coord_url()) nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+    if (coord_url()) {
+        nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+        if (!nurl) die("--coordinator must contain a bounded, nonempty URL list");
+    }
     if (nurl && nurl != (size_t)shards) {
         char msg[192];
         snprintf(msg, sizeof(msg),
