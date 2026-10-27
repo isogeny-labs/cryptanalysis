@@ -1,0 +1,9 @@
+{
+  "schema": "hecke-d79-coset-q-panel-attempts-v1",
+  "runs": [
+    {"stage":"class_producer","command":"./sage -python experiments/hecke-d79-coset-q-panel-20261027/class_producer.py","status":"COMPLETE","stdout":"producer-stdout.txt","stderr":"producer-stderr.txt"},
+    {"stage":"direct_analysis","command":"python3 experiments/hecke-d79-coset-q-panel-20261027/analyze.py","status":"COMPLETE","stdout":"analysis-stdout.txt","stderr":"analysis-stderr.txt"},
+    {"stage":"independent_audit","command":"./sage -python experiments/hecke-d79-coset-q-panel-20261027/audit_sage.py","status":"PASS","stdout":"audit-stdout.txt","stderr":"audit-stderr.txt"},
+    {"stage":"formal","command":"lake build CosetPanel","status":"PASS","stdout":"formal/build-output.txt"}
+  ]
+}
