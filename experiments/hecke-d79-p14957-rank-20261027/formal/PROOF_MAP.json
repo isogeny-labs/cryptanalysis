@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-d79-p14957-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Three elements projected into residues 1 or 4, or into residues 2 or 3, cannot sum to zero under an additive order-five projection; balanced four-residue patterns can project to zero.",
+      "lean_declarations": ["CosetPanel.no_three_in_antipodal_class", "CosetPanel.no_three_in_double_antipodal_class", "CosetPanel.balanced_four_residues_can_cancel"],
+      "status": "checked",
+      "hypotheses": "An arbitrary type with zero and addition, an addition-preserving projection to Fin 5, and each of three images in the stated two-element residue set."
+    },
+    {
+      "result": "Both support-four row systems have rank 39 over F1489 and 40 over Q.",
+      "lean_declarations": ["RankP14957.direct_all_rows_annihilate_kernel", "RankP14957.direct_kernel_nonzero", "RankP14957.direct1489_rows_in_all", "RankP14957.direct1489_minor_matches", "RankP14957.direct1489_inverse_certificate", "RankP14957.direct3_rows_in_all", "RankP14957.direct3_minor_matches", "RankP14957.direct3_inverse_certificate", "RankP14957.hecke_all_rows_annihilate_kernel", "RankP14957.hecke_kernel_nonzero", "RankP14957.hecke1489_rows_in_all", "RankP14957.hecke1489_minor_matches", "RankP14957.hecke1489_inverse_certificate", "RankP14957.hecke3_rows_in_all", "RankP14957.hecke3_minor_matches", "RankP14957.hecke3_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Exact numerical matrices generated from the hash-pinned producer receipt and independently audited support-four rows. Lean checks selected-row membership, a nonzero F1489 kernel and its annihilation by every row, invertible 39-minors over F1489, and invertible 40-minors over F3. The general linear-algebra rank implications are stated in the written proof and not yet formalized in Lean."
+    },
+    {
+      "result": "The actual E11a1(F14957) class and degree-13 outside traces have projections 1 and 2 respectively, zero signed relations through support three, and the reported support-four cancellations.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Formalize the general kernel/minor rank implications, the finite-field curve, multiplication-by-2978 projection, all 40 class points and outside traces, and bridge the audited group identities to the generated Lean row matrices. The written proof and independent Sage replay retain the curve-specific result."
+    }
+  ]
+}

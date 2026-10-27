@@ -1,0 +1,5 @@
+# p14957 projection and rank certificates
+
+The toolchain is pinned to `leanprover/lean4:v4.35.0-rc4` without external dependencies. `lake build CosetPanel RankP14957` builds the actual theorem modules and prints each theorem's axioms in `build-output.txt`. `python3 generate.py` checks that the checked-in rank module matches its hash-pinned source receipts; `python3 generate.py --write` is used only when producing a new version.
+
+The structural module proves both three-term order-five obstructions and the finite residue possibility at support four. The generated rank module contains each complete numerical row system, checks selected-row membership, a nonzero F1489 kernel, invertible F1489 39-minors and invertible F3 40-minors for each arm. These certificates imply exact ranks for the explicit matrices by standard linear algebra; this general rank implication remains a Lean proof obligation. The curve and row-identity bridge is independently audited in Sage and also remains open, as tracked in `PROOF_MAP.json`.
