@@ -1,0 +1,7 @@
+# Frozen one-target pair-index control
+
+Use one deterministic public point on the order-199 subgroup of the p73757 curve. The seed, scalar derivation, rejection of identity or projected class points, and cap of 100 counters are frozen in `inputs.json` before fixture generation. The scalar and public point are retained in separate fixture/public files; the target producer reads only the public point and hash-pinned class-log receipt. Do not substitute a different target after seeing a relation outcome.
+
+The target-independent preparation loads the hash-pinned anchored class logs, projects the 40 class points by 370, and builds an exact signed pair index for all distinct `i<j`. Record index size, coverage, construction time and memory. The target-dependent interval begins after that index is ready, looks up the public point, verifies the pair relation, derives a scalar from the two known class logs, and verifies `kT=Q`. Preserve NO_RELATION, timeout and errors as run statuses. The independent Sage audit checks the fixture scalar, public point, pair equation, and recovered scalar.
+
+This is an operational target-relation control using precomputed class logs. It does not specify the full IC candidate manifest, cold relation preparation cost, or paired same-point rho benchmark; keep `candidate_id` and `target_online_ms` null and report component timings separately. Use the checked repository Sage launcher for Sage jobs and save its runtime receipt before measured work.

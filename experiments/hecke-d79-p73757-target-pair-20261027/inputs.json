@@ -1,0 +1,50 @@
+{
+  "candidate_id": null,
+  "cofactor": 370,
+  "curve": "y^2+y=x^3-x^2-10*x-20",
+  "field_element_encoding": "least nonnegative integer",
+  "frozen": {
+    "anchor-audit.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/anchor-audit.json",
+      "sha256": "9780fcc25fd4af58cb97a80ac12f67ce30264909f0444f8b14f7e400061ea37c"
+    },
+    "anchor-solve.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/anchor-solve.json",
+      "sha256": "8d7bdb638e7230b4fbd3da8fc7fcea0e0f100835e49ae5bea9615482ab4ebbdb"
+    },
+    "audit.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/audit.json",
+      "sha256": "e85e471b8dff3a210b5951dfeae2dd6916083a6fb340a95457fbd31f87596cfc"
+    },
+    "class-result.json": {
+      "path": "experiments/hecke-d79-support5-order-holdout-20261027/class-result.json",
+      "sha256": "6b7a48d191e95c8bb9e721428c44929145bb38138b4a56e7ae06fbfeac8e1c13"
+    },
+    "inputs.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/inputs.json",
+      "sha256": "d81e7c108cdde9d91869ae97c41f23db0945139f2d0a31c6812886b5a8013042"
+    },
+    "post_audit.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/post_audit.json",
+      "sha256": "b1c0c25dfc8915eef74a99223e3e584a1ccc9cf6902926dbc95fc5a4f576886f"
+    },
+    "result.json": {
+      "path": "experiments/hecke-d79-p73757-kernel-20261027/result.json",
+      "sha256": "64d311cf9612dfeea20732ea127fc8ceaa4cd156b97b71e80ae9a46dec547eac"
+    }
+  },
+  "generator_policy": "T=370 times first class point with nonzero q projection, pinned parent anchor index 0",
+  "input_law": "deterministic seeded, one previously unseen public point, no target replacement after freeze",
+  "p": 73757,
+  "pair_index": "all i<j of 40 class points, signs in [-1,+1] for each, group sum of 370*P_i and 370*P_j, first lexicographic witness retained per point",
+  "point_encoding": "affine [x,y], identity null",
+  "q": 199,
+  "query_stop": "first exact pair witness or NO_RELATION; recover scalar from precomputed anchored class logs and verify k*T=Q",
+  "resource_cap_seconds": 1800,
+  "schema": "hecke-d79-p73757-target-pair-inputs-v1",
+  "target_count": 1,
+  "target_counter_cap": 100,
+  "target_online_ms": null,
+  "target_scalar_rule": "1 + sha256(seed || decimal(counter)) mod 198; choose first counter with Q not identity and Q not among the 40 projected class points",
+  "target_seed": "hecke-d79-p73757-target-pair-20261027-v1"
+}
