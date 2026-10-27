@@ -1,0 +1,449 @@
+{
+  "base_commit": "0b9fb897336b9c8b01f7c865eee5ee5a0342f1ae",
+  "source_sha256": {
+    "experiments/fb-archive/ps1.py": "a2be0cac107c49c066e94d95206dc8dcf414111266fc15c6feb5d2f1e4650f53",
+    "src/bsgs.c": "503487110699d5c39a888bae7ad4a786bb34c282bba27abf0eb826e101721790",
+    "src/ec_tau.c": "12bf6d419212f1380d83257c37be1fb9625907990c06e1e9fdfccfc6052e7f2a",
+    "src/grumpy.c": "20af6099401780ff6343ec1f492fcf90e3be730824dce613b0faa6d0f908006a",
+    "src/indexcalc.c": "61aade280f7e71f1895154280e8dea2e798b96bf1e57df03e1a05d210bf26b21",
+    "src/pohlig.c": "4f4d275c34cb3e22927152f24b6fda6918358d67a2759a7eceaf74771dac9682",
+    "src/precomp.c": "530b16aa5b76ca4acd88ccec0d16c3c87f77611d2ffcf214ec9f791b644f1543",
+    "tests/test_coord.c": "ec631f594c34292af74670d90c395ab46b5b0ba25cc174b9bf406c8166edc9ac",
+    "tests/test_gpu.c": "d6c8b9a268e93e879da4e77dd5e12c57514637169fa39b3621cb21ba48cfd693",
+    "tests/test_linalg.c": "164bbade33f11ff5061489010393e60cb7d6d317fc76b4a6212716aa5c35bd71",
+    "tools/ca_bench.c": "148fb4e009263f2811070645be75e6bb33d3c5a2fd6c1ecf689b047269cb5e6f",
+    "tools/ca_cli.c": "81b2db566fb757f8be323c2933254a1558129643c2c49849b9ce8565fe62090c",
+    "tools/ca_perfbench.c": "99b772d806c65010b31649440dfea68fd3040aef816a029fd3f1c4560988d600",
+    "experiments/fb-archive/test_ps1_index.py": "9618786570192aaf917cfd5eb62a3daa3d031a65490c557e6e02566723fba011"
+  },
+  "environment": {
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "clang_tidy": "21.1.8",
+    "cppcheck": "2.19.0",
+    "python": "3.12.14"
+  },
+  "final_gates": {
+    "clang_tidy": {
+      "returncode": 0,
+      "command": "clang-tidy-21 -p /workspace/cryptanalysis-build --quiet src/*.c tools/*.c tests/*.c"
+    },
+    "cppcheck": {
+      "returncode": 0,
+      "command": "cppcheck --enable=warning,performance,portability,style --inline-suppr --std=c11 --error-exitcode=1 --suppress=missingIncludeSystem -Iinclude -Isrc -Icuda --quiet src tools tests"
+    },
+    "sanitizers": {
+      "returncode": 0,
+      "command": "cmake --build /workspace/cryptanalysis-build-asan -j2 && ctest --test-dir /workspace/cryptanalysis-build-asan --output-on-failure -j2",
+      "tests": 19,
+      "passed": 19
+    },
+    "python": [
+      {
+        "command": "python -m pytest -q experiments/pdp-degree-heuristics",
+        "returncode": 0,
+        "tail": [
+          "...........................                                              [100%]",
+          "27 passed in 2.24s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/ic-bench",
+        "returncode": 0,
+        "tail": [
+          "..............................                                           [100%]",
+          "30 passed in 1.57s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/fb-archive",
+        "returncode": 0,
+        "tail": [
+          ".........................................................                [100%]",
+          "57 passed in 24.92s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/fb-search",
+        "returncode": 0,
+        "tail": [
+          ".........................                                                [100%]",
+          "25 passed in 6.92s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/frobenius-quotient-m4/test_fqm4_factor_bases.py",
+        "returncode": 0,
+        "tail": [
+          "...                                                                      [100%]",
+          "3 passed in 0.14s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/linearized-half-decomposition/test_lhd_factor_bases.py",
+        "returncode": 0,
+        "tail": [
+          "...                                                                      [100%]",
+          "3 passed in 11.05s"
+        ]
+      },
+      {
+        "command": "python -m pytest -q experiments/sage-ic-campaign/pb-bulk-halftrace-20260924/test_pbbulk_factor_bases.py",
+        "returncode": 0,
+        "tail": [
+          "..                                                                       [100%]",
+          "2 passed in 0.36s"
+        ]
+      }
+    ]
+  },
+  "logs": [
+    {
+      "file": "cryptanalysis-clang-cli-final.log.gz",
+      "raw_sha256": "59746cc1d4c9dc09516442fbae38f9d2eae9ed6400c92d2b6730030a7526698b",
+      "raw_bytes": 51
+    },
+    {
+      "file": "cryptanalysis-clang-final-full.log.gz",
+      "raw_sha256": "db2485860a56ad85cac9ea86554b0ccc69431b9e2953ae306a8c96af49d259fa",
+      "raw_bytes": 4308
+    },
+    {
+      "file": "cryptanalysis-clang-final-verified.log.gz",
+      "raw_sha256": "db2485860a56ad85cac9ea86554b0ccc69431b9e2953ae306a8c96af49d259fa",
+      "raw_bytes": 4308
+    },
+    {
+      "file": "cryptanalysis-clang-repaired-first.log.gz",
+      "raw_sha256": "f3d4358c140bc9858a32913cbc187b9ded89b052265899fb0c3c08f5014dca3b",
+      "raw_bytes": 45270
+    },
+    {
+      "file": "cryptanalysis-clang-repaired-fourth.log.gz",
+      "raw_sha256": "49f65e6aaa447c2396cc9972ddb07d78e4e5666e035dd16fd3bc4eba32e4c926",
+      "raw_bytes": 178
+    },
+    {
+      "file": "cryptanalysis-clang-repaired-second.log.gz",
+      "raw_sha256": "67194fdf59f197da55addea0347b7552696231ae46fd1c290943884b4a7e9a0d",
+      "raw_bytes": 27711
+    },
+    {
+      "file": "cryptanalysis-clang-repaired-third.log.gz",
+      "raw_sha256": "5bb2b8a3952654177ed4ec170dcc1351e9dfa44509114569b0ff616ab81e0283",
+      "raw_bytes": 17240
+    },
+    {
+      "file": "cryptanalysis-cppcheck-cli-final.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "file": "cryptanalysis-cppcheck-final-full.log.gz",
+      "raw_sha256": "a2b8101fe163a33d14e9630dd1f952a20a6a67fddd442b73dbc114aee516cecc",
+      "raw_bytes": 567
+    },
+    {
+      "file": "cryptanalysis-cppcheck-final-verified.log.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "file": "cryptanalysis-cppcheck-repaired-first.log.gz",
+      "raw_sha256": "c5ea249a9433053dbcff55912bc5c4e660b95f3291918c83be8a5eec3f29110d",
+      "raw_bytes": 13661
+    },
+    {
+      "file": "cryptanalysis-asan-build.log.gz",
+      "raw_sha256": "4541c919f6eae0aa51710e179dd6c2bc5a40b8ae6916bf57a81b1e2159fe0605",
+      "raw_bytes": 5262
+    },
+    {
+      "file": "cryptanalysis-asan-configure.log.gz",
+      "raw_sha256": "900bdca5b1f8dee1068ffe945bd7107234aa73e7f9c02099dbdc23f1173ad41a",
+      "raw_bytes": 538
+    },
+    {
+      "file": "cryptanalysis-asan-final-build.log.gz",
+      "raw_sha256": "ea62a65c114184c556f287151f511c120eabb8d48fee30556d16e3fe34ca6091",
+      "raw_bytes": 998
+    },
+    {
+      "file": "cryptanalysis-asan-final-tests.log.gz",
+      "raw_sha256": "29a903163de0c3999ea265e007f81fecd1c772a6c5cad26e488ee011669d06a0",
+      "raw_bytes": 2034
+    },
+    {
+      "file": "cryptanalysis-asan-tests.log.gz",
+      "raw_sha256": "f0eaf73abed3b3a8d37adaaa9a0af9f69a64cbe864a4ec875175567bc347baf8",
+      "raw_bytes": 2034
+    },
+    {
+      "file": "cryptanalysis-c-ctest-first.log.gz",
+      "raw_sha256": "9af917700738e1831a16cbaeae1c69c6d4ba9c624ccc658b7f46eba715405497",
+      "raw_bytes": 3445
+    },
+    {
+      "file": "cryptanalysis-c-ctest-second.log.gz",
+      "raw_sha256": "04967e15b4af306b049f238d2ccbfc9413c0289ee2c4362498ea445c21ca080b",
+      "raw_bytes": 2024
+    },
+    {
+      "file": "cryptanalysis-icbench-python-1.log.gz",
+      "raw_sha256": "a596160ce15a3d75d09822fcb5e831c4b5ee680a6d1c61e52d2e1d0afebb5cc9",
+      "raw_bytes": 99
+    },
+    {
+      "file": "cryptanalysis-icbench-python-2.log.gz",
+      "raw_sha256": "f7f908be916703e80193c47ba395fa2cadd3a8b57c6b5b720be63b930e90c00d",
+      "raw_bytes": 99
+    },
+    {
+      "file": "cryptanalysis-icbench-python-3.log.gz",
+      "raw_sha256": "9d347ece9c0e15291ea4e143ec3152a7c719fc32d179b077c8ddcf5733068f90",
+      "raw_bytes": 100
+    },
+    {
+      "file": "cryptanalysis-icbench-python-4.log.gz",
+      "raw_sha256": "3c162a59337a761d5f7bc6fa238ccc8e643fbcb81c7881796b03e6f0e9d9b5e3",
+      "raw_bytes": 99
+    },
+    {
+      "file": "cryptanalysis-icbench-python-5.log.gz",
+      "raw_sha256": "b6c51b401d65a9c69435f8b86cecab752d65ded7188228aab3de3eb010990b60",
+      "raw_bytes": 98
+    },
+    {
+      "file": "cryptanalysis-icbench-python-6.log.gz",
+      "raw_sha256": "8092930836e9385d544a02eca4380af1800005960635965d6ab655e24cc7d237",
+      "raw_bytes": 99
+    },
+    {
+      "file": "cryptanalysis-icbench-python-7.log.gz",
+      "raw_sha256": "c9104009f8d316fbd88020f3dfb1ea271692c623b1a4c29dd4a2d2c07cbc4862",
+      "raw_bytes": 98
+    },
+    {
+      "file": "cryptanalysis-complete-icbench-python.log.gz",
+      "raw_sha256": "21c8b5fab7f3c7db77e1d4543f27e4eb80cda2870311ce6fbcb42703b3405751",
+      "raw_bytes": 3411
+    }
+  ],
+  "catalog_and_format_followup": {
+    "before_commit": "5b33ddc9855884aa36776a28e914a24d919ca9ab",
+    "source_sha256": {
+      "experiments/ic-candidate-catalog/test_validate_semantics.py": "bd981faecb244c338f6226d686ac26480de20169d3613363cd633a05b7984a71",
+      "experiments/ic-candidate-catalog/validate_semantics.py": "9408f0619677d09b31d73ada22af3e349eaa5549a012a92ed136ab93d390dd22",
+      "src/indexcalc.c": "7fc08e8c7730d3a0e679027193a9a8df8d93262f98539a28c57f136f582561fb",
+      "src/precomp.c": "778c33e94c7a213c8cfd06954f8ece6f35f03b02814e91eb8a687983dc8b2449"
+    },
+    "catalog_tests": {
+      "passed": 37,
+      "returncode": 0
+    },
+    "proposal_generation_check": {
+      "returncode": 0,
+      "restored_manifest_sha256": "6b92a862405b896bbc46e9c8a9527fb3ef87526cf3c0b002310e7280bcc59619"
+    },
+    "whole_pr_git_clang_format": {
+      "returncode": 0,
+      "base": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+      "stdout": "clang-format did not modify any files"
+    },
+    "peer_metadata": {
+      "returncode": 0,
+      "peer": "crypto-history"
+    },
+    "ci_benchmark": {
+      "command": "python bench.py run --suite ci --jobs 4 --out-dir /workspace/cryptanalysis-ci-bench-verification",
+      "returncode": 0,
+      "rows": 12,
+      "complete_and_verified": 12,
+      "contract_returncode": 0,
+      "baseline_tolerance": 0.05,
+      "baseline_comparison": "PASS",
+      "exact_replay": "3/3",
+      "comparison_command": "python experiments/ic-bench/compare.py experiments/ic-bench/baseline/ci.csv /workspace/cryptanalysis-ci-bench-verification/ci.csv --tolerance 0.05 --summary /workspace/cryptanalysis-ci-bench-verification/comparison.md",
+      "timing_scope": "local CI control, not an independent scientific performance comparison"
+    },
+    "environment": {
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+      "cpu": {
+        "lscpu": [
+          {
+            "field": "Architecture:",
+            "data": "x86_64"
+          },
+          {
+            "field": "CPU op-mode(s):",
+            "data": "32-bit, 64-bit"
+          },
+          {
+            "field": "Address sizes:",
+            "data": "46 bits physical, 48 bits virtual"
+          },
+          {
+            "field": "Byte Order:",
+            "data": "Little Endian"
+          },
+          {
+            "field": "CPU(s):",
+            "data": "5"
+          },
+          {
+            "field": "On-line CPU(s) list:",
+            "data": "0-4"
+          },
+          {
+            "field": "Vendor ID:",
+            "data": "AuthenticAMD"
+          },
+          {
+            "field": "Model name:",
+            "data": "AMD EPYC 9V45 96-Core Processor"
+          },
+          {
+            "field": "CPU family:",
+            "data": "26"
+          },
+          {
+            "field": "Model:",
+            "data": "2"
+          },
+          {
+            "field": "Thread(s) per core:",
+            "data": "1"
+          },
+          {
+            "field": "Core(s) per socket:",
+            "data": "5"
+          },
+          {
+            "field": "Socket(s):",
+            "data": "1"
+          },
+          {
+            "field": "Stepping:",
+            "data": "1"
+          },
+          {
+            "field": "BogoMIPS:",
+            "data": "5192.20"
+          },
+          {
+            "field": "Flags:",
+            "data": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 clzero xsaveerptr arat npt nrip_save tsc_scale vmcb_clean flushbyasid pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect arch_capabilities"
+          },
+          {
+            "field": "Hypervisor vendor:",
+            "data": "KVM"
+          },
+          {
+            "field": "Virtualization type:",
+            "data": "full"
+          },
+          {
+            "field": "L1d cache:",
+            "data": "144 KiB (3 instances)"
+          },
+          {
+            "field": "L1i cache:",
+            "data": "96 KiB (3 instances)"
+          },
+          {
+            "field": "L2 cache:",
+            "data": "3 MiB (3 instances)"
+          },
+          {
+            "field": "L3 cache:",
+            "data": "32 MiB (1 instance)"
+          },
+          {
+            "field": "NUMA node(s):",
+            "data": "1"
+          },
+          {
+            "field": "NUMA node0 CPU(s):",
+            "data": "0-4"
+          },
+          {
+            "field": "Vulnerability Gather data sampling:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Ghostwrite:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Indirect target selection:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Itlb multihit:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability L1tf:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Mds:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Meltdown:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Mmio stale data:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Old microcode:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Reg file data sampling:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Retbleed:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Spec rstack overflow:",
+            "data": "Vulnerable"
+          },
+          {
+            "field": "Vulnerability Spec store bypass:",
+            "data": "Vulnerable"
+          },
+          {
+            "field": "Vulnerability Spectre v1:",
+            "data": "Vulnerable: __user pointer sanitization and usercopy barriers only; no swapgs barriers"
+          },
+          {
+            "field": "Vulnerability Spectre v2:",
+            "data": "Vulnerable; STIBP: disabled; PBRSB-eIBRS: Not affected; BHI: Not affected"
+          },
+          {
+            "field": "Vulnerability Srbds:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Tsa:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Tsx async abort:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Vmscape:",
+            "data": "Not affected"
+          }
+        ]
+      }
+    }
+  }
+}
