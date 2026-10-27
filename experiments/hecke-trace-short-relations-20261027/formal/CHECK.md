@@ -1,0 +1,7 @@
+# Formal certificates and proof boundary
+
+The project pins `leanprover/lean4:v4.35.0-rc4` with no external dependencies. `python3 generate.py` checks that [ShortTrace.lean](ShortTrace.lean) matches the hashed input rows, selected candidates, and independent projection receipt. `lake build ShortTrace` completed; see [build-output.txt](build-output.txt). The source contains no `sorry`, `admit`, native evaluation, or custom axiom.
+
+`#print axioms` reports no axioms for the projection annihilation and nonzero checks. The two cancellation identities, minor extraction, and 19-by-19 inverse certificate use only standard `propext`. The module checks the full product `A B = I` modulo 5 for an explicit minor of 19 selected independent rows, and a nonzero 20-coordinate vector annihilated by all 27 saved rows.
+
+The written rank proof uses two standard implications: an invertible 19-by-19 minor gives rank at least 19, and a nonzero right-kernel vector gives rank at most 19. Those implications are not themselves formalized in this small Lean module, so formalization of the complete matrix-rank theorem is partial. The checked-Sage validator independently computes rank 19 and confirms that its one-dimensional right kernel is the order-5 projection of the frozen class points. The elliptic-curve point and Frobenius-trace bridges also remain outside Lean and are checked by the saved finite-field receipts.
