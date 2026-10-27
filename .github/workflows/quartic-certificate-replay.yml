@@ -24,7 +24,11 @@ concurrency:
 
 jobs:
   migrate-original-censuses:
-    if: github.event_name == 'workflow_dispatch' && inputs.migrate_original_censuses
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.migrate_original_censuses) ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'codex/repair-quartic-certificate-backlog-20261027')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -63,12 +67,17 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-2
+          ARTIFACTS_REMOTE: s3://setec-astronomy-artifacts/store
+          TRUSTED_BASE: ${{ github.event.pull_request.base.sha || github.sha }}
         run: |
           python3 -m venv "$RUNNER_TEMP/quartic-migration-awscli"
           "$RUNNER_TEMP/quartic-migration-awscli/bin/python" -m pip install awscli==1.46.2
           export ARTIFACTS_AWS="$RUNNER_TEMP/quartic-migration-awscli/bin/aws"
+          git fetch --no-tags origin "$TRUSTED_BASE"
+          git show "$TRUSTED_BASE:tools/artifacts/artifacts.py" > "$RUNNER_TEMP/quartic-owner-artifacts.py"
+          git diff --exit-code "$TRUSTED_BASE" HEAD -- .artifacts/config.json
           python3 - <<'PY'
-          import hashlib, json, subprocess
+          import hashlib, json, os, subprocess
           from pathlib import Path
           manifest = json.loads(Path('tools/ci/quartic_certificates.json').read_text())
           paths = [
@@ -77,8 +86,9 @@ jobs:
               'experiments/hecke-432-sign-branch-holdout-20261026/source_census.json']
           for name in paths:
               assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == manifest['inputs'][name]
-          subprocess.run(['python3', 'tools/artifacts/artifacts.py', 'push', *paths], check=True)
-          subprocess.run(['python3', 'tools/artifacts/artifacts.py', 'verify', '--remote', *paths], check=True)
+          tool = str(Path(os.environ['RUNNER_TEMP']) / 'quartic-owner-artifacts.py')
+          subprocess.run(['python3', tool, 'push', *paths], check=True)
+          subprocess.run(['python3', tool, 'verify', '--remote', *paths], check=True)
           PY
       - name: Export storage pointers for a normal reviewed Git commit
         uses: actions/upload-artifact@v4

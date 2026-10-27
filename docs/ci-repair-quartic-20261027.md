@@ -87,3 +87,19 @@ its pointer/ignore metadata for an ordinary reviewed Git commit. The job has
 no GitHub write permission and cannot push or merge. Migration and a fresh
 hosted retrieval remain pending at this checkpoint. No policy exception or
 large-file override is used.
+
+
+The initial manual dispatch returned GitHub HTTP 404 because this new workflow
+is not yet on the default branch. The migration job therefore also runs only
+for this same-repository repair branch. It still has no GitHub write permission:
+it exports pointer metadata for review and a normal local commit. Its writer is
+read from the exact protected base commit, with an unchanged base artifact
+configuration and the canonical store explicitly selected. Only the three
+original hash-checked census files may be uploaded. The full replay and proof
+jobs remain separate and still run on every applicable PR head.
+
+A path-and-hash audit found 460 exact protocol input bindings. Of these, 459
+match current committed bytes; the remaining binding is the original PARI
+checkpoint awaiting authenticated retrieval. Historical failed source-version
+hashes and semantic coefficient-array hashes are not silently treated as
+current filesystem inputs.
