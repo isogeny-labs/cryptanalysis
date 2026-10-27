@@ -1,0 +1,52 @@
+{
+  "candidate_id": null,
+  "cofactor": 25,
+  "frozen": {
+    "audit.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/audit.json",
+      "sha256": "7c875ea3c83dc99168e73498c327c39f330d2acc9d02e3bb407a6ad3bdd00cdb"
+    },
+    "class-logs.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/class-logs.json",
+      "sha256": "70ed4124d63c8270b1dbf64643d71cadd1e1b5b1ab449cd192a6e270c0cd0e57"
+    },
+    "class-result.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/class-result.json",
+      "sha256": "a2e44632c52281338a18fbf65122de576227fff532937066b2022ee88d36394f"
+    },
+    "fixture.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/fixture.json",
+      "sha256": "4796598a1c4c1164d8e38025259c71fd555f3577f982543b91451b41dadbbf9f"
+    },
+    "inputs.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/inputs.json",
+      "sha256": "d67436f9bd426cf1859f270425671b8557862e812f32e3d1d1e3bc35e4a20eb1"
+    },
+    "post_audit.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/post_audit.json",
+      "sha256": "39ffd768a0f5cbe0ddbd92fa30acf1d725c6440e42a148e46380af43ecff2198"
+    },
+    "public-target.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/public-target.json",
+      "sha256": "eb9a0f72362dc9a883500e1eca77d023cee1e8bead39ceb33be9e959960afcf8"
+    },
+    "result.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/result.json",
+      "sha256": "8ed6aeba17730073e95352ef6ddf04446f13e8075004975bcca5a3307a26baac"
+    },
+    "sumset-audit.json": {
+      "path": "experiments/hecke-d79-p63317-target-pair-20261027/sumset-audit.json",
+      "sha256": "ad843cd324082b31e54aa94acc48da3e59c34b6cbeea15eb8fd1a964279e3e72"
+    }
+  },
+  "p": 63317,
+  "pair_index": "all i<j among 40 class points, signs -1 then +1 for each, retain all witnesses in lexicographic construction order",
+  "probe_order": "for k=0..39, third sign -1 then +1; residual Q - third_sign*B_k; scan every pair witness for residual and require k distinct from i,j",
+  "q": 2531,
+  "same_target_as_parent": true,
+  "schema": "hecke-d79-p63317-target-triple-inputs-v1",
+  "stop": "first verified three-distinct-source relation or after 80 residual probes",
+  "target_count": 1,
+  "target_online_ms": null,
+  "wall_cap_seconds": 1800
+}
