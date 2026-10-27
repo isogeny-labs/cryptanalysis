@@ -26,8 +26,11 @@ a stage operation count is insufficient.
   divisors. Eight complete domain constructions per block method consume 515
   blocks, 58 without hits. The chain uses 45,973 group operations and
   2.351736994 CPU seconds; reused-table BSGS uses 77,662 and 0.262263897.
-  These are unisolated historical CPU component observations, not qualified
-  speed ratios or complete single-target DLP measurements.
+  These are unisolated historical partial component observations. Sorting hits,
+  maintaining the collected domain, and antipodal scalar recovery/verification
+  are unmeasured and uncounted, including 353 recovery opportunities per method.
+  Complete construction costs and their ratios are unknown; see the
+  [accounting correction](../experiments/prime-field-frobenius-blocks-20261027/ERRATA.md).
 - **Derived:** for fixed invariants and irreducible quadratic/cubic orbit
   polynomials, B prescribed orbit parameters yield at most 2B nonzero traces.
   A uniform independent labeled sampler has success probability at most 2B/r.
@@ -85,3 +88,7 @@ restricted mathematical statement, not rule out new constructions.
 2026-10-27: imported the preserved code/data package and recorded the precise
 construction, solver, formalization and provenance gaps. **Unresolved.**
 Publishing the package or merging its PR does not resolve the original requirement.
+
+2026-10-27: review identified collection/recovery work omitted from historical
+cost sums. Corrected the publication labels and PDF, preserving all archive
+bytes. Full collection/recovery accounting remains a future measurement gap.

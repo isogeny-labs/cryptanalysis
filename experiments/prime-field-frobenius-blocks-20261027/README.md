@@ -12,6 +12,12 @@ Its local source commit is `820693c998f88b4f7ee213c70c8b99be23734f1b`;
 labels, including the other repository's `failed_or_overfit` vocabulary, are
 historical and are not a new lab classification.
 
+**Accounting correction (2026-10-27):** the preserved fields named
+`complete_cpu_s` and `construction_group_ops` omit collection bookkeeping and
+antipodal recovery. They are partial component sums, not complete construction
+costs. [ERRATA.md](ERRATA.md) identifies the exact boundary and supersedes the
+archive's stronger cost wording without changing its bytes.
+
 ## Requested work and evidence
 
 | Requirement | Recorded implementation and checks | Remaining gap |
@@ -55,26 +61,33 @@ to be formalized. The original full statement is preserved.
 The following are historical CPU-only component observations on the original
 host. Isolation, affinity, cgroup/hardware placement, A/A noise gates and a
 qualified timing confidence interval were not retained. An isolation tier and
-a qualified speedup are therefore **unknown**. These are eight complete
-labeled-domain constructions per method, not single-target DLP times.
+a qualified speedup are therefore **unknown**. Each of eight trials per method
+collects the complete usable coordinate domain, but its recorded cost sum is
+partial. Complete construction costs and their ratios are **unknown**.
 
-| Method | Sum of CPU seconds, 8 trials | Charged group operations | Blocks / failed blocks |
+| Method | Recorded CPU component sum, 8 trials (s) | Counted component group operations | Blocks / failed blocks |
 | --- | ---: | ---: | ---: |
 | Binomial chain | 2.351736994 | 45,973 | 515 / 58 |
 | Coordinate products | 2.276435383 | 45,973 | 515 / 58 |
 | Sequential scan | 2.755015272 | 1,080,978 | 515 / 58 |
 | Reused-table interval BSGS | 0.262263897 | 77,662 | 515 / 58 |
 
-![All eight observed full-construction CPU times per method](timings.svg)
+![All eight recorded partial CPU component sums per method](timings.svg)
 
 The plot displays every trial and the observed min/max span; these are not
 confidence intervals. Exact input: `E/F_65537: y^2=x^3+2x+25`, full order
 65,371, raw coset size 64, 33 usable abscissae, progression blocks of length
 2,048. Each method uses the same starts and complete-domain stopping rule.
-BSGS uses a 2,048-point table tuned for reuse. Setup, input generation,
-failed blocks, index recovery and scalar verification count. Early identity
-and antipodal opportunities were recorded while the construction continued.
-This does not measure a complete attack. Same-target rho, final relation
+BSGS uses a 2,048-point table tuned for reuse. Recorded components include
+solver/sampler setup, charged raw-domain/catalog preparation, input sampling,
+solver work on failed and successful blocks, solver index recovery, and
+`scalar_verify()` checks of hits and identity indices. They exclude hit sorting,
+maintaining `known`, checking termination, transcript handling, and antipodal
+scalar recovery and its `E.mul()` verification. There are 353 antipodal
+opportunities per method; their recovery arithmetic is outside both recorded
+CPU and group-operation sums. See [ERRATA.md](ERRATA.md) for source boundaries.
+Those missing costs cannot be reconstructed from the stored measurements.
+This does not measure a complete construction or attack. Same-target rho, final relation
 linear algebra, descent, and the primary one-target online metric were not
 measured here; their costs and speed ratios are unknown, not zero.
 

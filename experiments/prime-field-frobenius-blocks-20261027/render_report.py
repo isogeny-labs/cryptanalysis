@@ -74,7 +74,7 @@ def chart(records):
              ('interval_bsgs', 'Reused-table BSGS')]
     limit = max(r['complete_cpu_s'] for r in records)*1.08
     x0, width = 195, 500
-    label(d, 195, 351, 'CPU seconds per complete 33-coordinate construction', 12)
+    label(d, 195, 351, 'Recorded CPU components per 33-coordinate collection (s)', 12)
     for index, (key, title) in enumerate(names):
         values = [r['complete_cpu_s'] for r in records if r['algorithm'] == key]
         assert len(values) == 8
@@ -94,7 +94,7 @@ def chart(records):
         value = limit*i/5; x = x0+width*i/5
         d.add(Line(x, 45, x, 40, strokeColor=INK))
         label(d, x, 24, f'{value:.2f}', 10, anchor='middle')
-    label(d, 195, 4, 'Dots: trials. Black tick: median. Span: min/max, not a confidence interval.', 10)
+    label(d, 195, 4, 'Partial sums; collection/recovery excluded. Dots: trials; tick: median; span: range.', 10)
     return d
 
 
@@ -138,12 +138,12 @@ def main():
     text(y, 'Sources: archive/WRITEUP.md; archive/experiments/ideas/lift_benchmark.json; archive/experiments/ideas/lift_witnesses.json. No new scientific experiment was run for this report.')
     footer(1); c.showPage()
 
-    y = heading(792, 'Historical complete-domain construction costs')
+    y = heading(792, 'Historical partial construction components')
     text(y, 'Input: y^2=x^3+2*x+25 over F_65537, full prime order 65,371. Each trial collects all 33 usable abscissae of a 64-coordinate coset, using blocks of length 2,048. All methods receive identical starts and stopping rules.')
     figure(timing, 425)
-    y = heading(400, 'Totals for eight trials per method')
+    y = heading(400, 'Recorded component sums: eight trials per method')
     c.setFont('Helvetica-Bold', 9)
-    for x, title in [(42, 'Method'), (235, 'CPU seconds'), (350, 'Group operations')]:
+    for x, title in [(42, 'Method'), (235, 'Partial CPU seconds'), (350, 'Counted group operations')]:
         c.drawString(x, y, title)
     y -= 20
     for key, title in [('binomial_chain', 'Binomial chain'),
@@ -156,9 +156,9 @@ def main():
         c.drawString(235, y, f"{totals['complete_cpu_s']:.9f}")
         c.drawString(350, y, f"{totals['construction_group_ops']:,}")
         y -= 18
-    y = text(y-12, 'Each arm includes 515 blocks, 58 failed blocks, setup, query generation, index recovery and scalar verification. BSGS uses a 2,048-point table tuned for reuse. Early identity and antipodal opportunities are retained; collection deliberately continues to a complete domain.')
-    y = text(y, 'These are CPU-only construction components, not complete DLP times. Host isolation and placement receipts and a qualified uncertainty protocol were not retained. No isolation tier, same-target rho ratio, single-target online IC speedup or cryptographic-scale extrapolation is assigned.')
-    text(y, 'The chart shows all observed trials and sample ranges. Raw source: archive/experiments/ideas/block_benchmark.json. The binomial chain still uses approximately M-scale field work, despite reducing group additions. The conjectural O~(B+sqrt(M)) total bound was not achieved.')
+    y = text(y-12, 'CORRECTION: these partial sums omit sorting hits, maintaining known coordinates, termination and transcript work, and antipodal scalar recovery/verification. Each method has 353 antipodal opportunities; the recovery E.mul() calls are uncounted. Complete construction costs and their ratios are unknown. Archive bytes and numbers are unchanged; see ERRATA.md.')
+    y = text(y, 'Counted: charged setup, sampling, successful/failed solves, solver index recovery, and scalar_verify() hit/identity checks. Per arm: 515 blocks, 58 empty. BSGS reuses a 2,048-point table. CPU-only; isolation/placement and qualified uncertainty receipts are absent. No qualified speedup is assigned.')
+    text(y, 'All trials and sample ranges are shown. Raw source: archive/experiments/ideas/block_benchmark.json. The chain retains M-scale field work; the conjectural O~(B+sqrt(M)) total bound was not achieved.')
     footer(2); c.showPage()
 
     y = heading(792, 'Small prescribed domains: the scoped restriction')
