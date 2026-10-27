@@ -1,0 +1,10 @@
+⚠ [632/633] Built IncrementalPrefix (2.0s)
+warning: IncrementalPrefix.lean:33:7: automatically included section variable(s) unused in theorem `IncrementalPrefix.prefix_mono`:
+  [DecidableEq R]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq R] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: IncrementalPrefix.lean:41:0: 'IncrementalPrefix.prefix_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: IncrementalPrefix.lean:42:0: 'IncrementalPrefix.prefix_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (633 jobs).
