@@ -349,8 +349,11 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                      cwd=HECKE_CI, timeout=900)
         printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
                              result.stdout, re.MULTILINE)
-        require(len(printed) == len(declared) and
-                {name.rsplit(".", 1)[-1] for name, _ in printed} == set(declared),
+        axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                                result.stdout, re.MULTILINE)
+        printed_names = [name for name, _ in printed] + axiom_free
+        require(len(printed_names) == len(declared) and
+                {name.rsplit(".", 1)[-1] for name in printed_names} == set(declared),
                 f"incomplete native axiom output for {path}")
         require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
                     <= {"propext", "Classical.choice", "Quot.sound"}
