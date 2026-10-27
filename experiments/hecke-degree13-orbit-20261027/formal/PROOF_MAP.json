@@ -1,0 +1,27 @@
+{
+  "axioms": [],
+  "build_command": "lake build RankWitness",
+  "open_obligations": [
+    "Formalize the extension-field Hecke neighbor and trace calculation in Lean.",
+    "Formalize exact rational rank 17 and the baseline F5 rank 16 in Lean; these are independently computed in Sage and Python.",
+    "Formalize the general dot-product linearity implication from the explicit separator to nonmembership in the old F5 row span."
+  ],
+  "results": [
+    {
+      "bridge": "formal/generate.py checks hashed corrected and degree5-cancellation input rows before generating source.",
+      "claim": "The explicit 20-coordinate F5 witness annihilates all 20 preceding relation rows.",
+      "hypotheses": "None; exact baseline rows and witness are explicit Nat lists reduced modulo 5.",
+      "lean_declaration": "RankWitness.baseline_annihilated",
+      "status": "checked"
+    },
+    {
+      "bridge": "Source-3 row is reconstructed from saved Frobenius orbit trace coordinates and independently checked F83 group law.",
+      "claim": "The same witness has dot product 3 mod 5 with the degree13 source-3 row.",
+      "hypotheses": "None; the exact source-3 row is explicit in the generated Lean source.",
+      "lean_declaration": "RankWitness.new_row_separated",
+      "status": "checked"
+    }
+  ],
+  "schema": "hecke-degree13-rank-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4"
+}

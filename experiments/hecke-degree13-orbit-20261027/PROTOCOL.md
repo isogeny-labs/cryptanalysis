@@ -1,0 +1,9 @@
+# D=-79 conductor-2 degree-13 orbit-trace panel
+
+The frozen class is the same 20-point record over F_83 used by the degree-5 orbit experiments. Its Frobenius characteristic polynomial is `X^2 - 4X + 83`. The projective action modulo 13 has orbit lengths `1,1,12`; this is a preflight prediction of the degree-13 cyclic-kernel pattern, not an assumption about the saved neighbor-x polynomial. Inputs, code source, degree, source order, and caps are pinned in `inputs.json` before output.
+
+Use the checked repository Sage launcher. Build degree-13 Hecke functions once. For each source 0..19, factor the degree-14 neighbor-x polynomial over F_83 and retain degrees and multiplicities. The extension-degree cap is 12, the process wall cap is 600 seconds, and the host has 48 GiB physical RAM with 137 GiB free on the workspace volume at protocol time. For squarefree fibers within the cap, lift all 14 roots to F_(83^d), solve their y-coordinates from the fourteen `T_13(x^k y)` moments, then verify every moment, curve point, modular-polynomial root, and Hecke group sum. Retain failures and repeated roots as explicit statuses.
+
+Partition verified neighbors into Frobenius orbits and calculate each orbit trace in `11a1(F_83)`. Record whether every trace is identity, a frozen class point, or an outside-class point. Insert a class-only row only when all traces are identity or in the frozen class. Also test exact-coordinate equality with the degree-5 outside traces as a separate join diagnostic; do not infer a class row from an unpaired auxiliary trace.
+
+Report exact rational and F_5 ranks for the corrected degree-2 matrix plus all previously verified degree-5 class rows, then after any new individually class-closed degree-13 rows. Do not use this panel's outputs to change its source set or acceptance rule. Preserve the runtime receipt, producer status/logs, and an independent group/rank replay.
