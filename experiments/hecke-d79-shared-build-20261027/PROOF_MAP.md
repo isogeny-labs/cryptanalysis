@@ -1,0 +1,5 @@
+# Proof map for shared function reuse
+
+This experiment adds an implementation equality result, not a new curve or rank theorem. Each of the four checked-Sage runs recomputes the visited degree-13 fibers, cancellations and rank paths, and asserts exact equality with the SHA-256-pinned prefix results before recording `COMPLETE`. The six serialized `H.build([13])` results have one digest, and the shared runs pass the same `(funcs,jfun)` object to two `Reduced` instances over different prime fields. The separate runs reconstruct that object before each instance. The `verify.py` receipt checker audits those identities and all phase/operation counts.
+
+The mathematical rank proof map and pinned Lean modules are in [the prefix experiment](../hecke-d79-source-prefix-20261027/PROOF_MAP.md). Their exact 40-column matrices and row sets are unchanged here. The structural Lean implication from the checked kernel/minor certificates to abstract rank, and the curve-to-Lean bridge, remain open as stated there. No new mathematical result is being substituted for those obligations.

@@ -1,0 +1,69 @@
+{
+  "schema": "hecke-d79-shared-build-inputs-v1",
+  "source_path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+  "source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "prefix_runner_path": "experiments/hecke-d79-source-prefix-20261027/run.py",
+  "prefix_runner_sha256": "4de8f66bf61394ed91077e29b279f7f5c55c840f07dcc64f270888e0f5113886",
+  "cases": [
+    {
+      "p": 8597,
+      "prefix_result_path": "experiments/hecke-d79-source-prefix-20261027/p8597-result.json",
+      "prefix_result_sha256": "80020edea9ce78fb4f1aadf927eed98fb34a01af94a02063f4c8c4306fdeb9fd",
+      "prefix_audit_path": "experiments/hecke-d79-source-prefix-20261027/p8597-audit-v2.json",
+      "prefix_audit_sha256": "83c19198dba739c83acb30b15daaa4081660e7ad4b7b0ed4595276687a664a93",
+      "parent_producer_path": "experiments/hecke-d79-remaining-five-20261027/p8597/result.json",
+      "parent_producer_sha256": "1fa9c5a779d798da6fa726c41384f40ca03552e7e1f13e8539fe85e4d21a3a58",
+      "parent_analysis_path": "experiments/hecke-d79-remaining-five-20261027/p8597/analysis.json",
+      "parent_analysis_sha256": "600dbdca92a3205d40c7dda8567313efd201c97a82da20de5984bb1604a08022"
+    },
+    {
+      "p": 12197,
+      "prefix_result_path": "experiments/hecke-d79-source-prefix-20261027/p12197-result.json",
+      "prefix_result_sha256": "63e393cf6b529a8a6395497b76bc91c4bcbdc301ada3ba548e8cf1f34d9f28ca",
+      "prefix_audit_path": "experiments/hecke-d79-source-prefix-20261027/p12197-audit-v2.json",
+      "prefix_audit_sha256": "db8740eac1940ffc9d39bb72e969679256a97cfcb123f86b14e83df776d0e247",
+      "parent_producer_path": "experiments/hecke-d79-remaining-five-20261027/p12197/result.json",
+      "parent_producer_sha256": "5d96cfbf71c95a8bbc3d0b32d7189793ec66c6c0306d078888d53655ad2dcd60",
+      "parent_analysis_path": "experiments/hecke-d79-remaining-five-20261027/p12197/analysis.json",
+      "parent_analysis_sha256": "be8b877d92dae462f44117e94fa6a7d87b9ad5022c23b5a90b6cf2baa911ce68"
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "shared-a",
+      "mode": "shared",
+      "order": [
+        8597,
+        12197
+      ]
+    },
+    {
+      "run_id": "separate-b",
+      "mode": "separate",
+      "order": [
+        12197,
+        8597
+      ]
+    },
+    {
+      "run_id": "separate-a",
+      "mode": "separate",
+      "order": [
+        8597,
+        12197
+      ]
+    },
+    {
+      "run_id": "shared-b",
+      "mode": "shared",
+      "order": [
+        12197,
+        8597
+      ]
+    }
+  ],
+  "wall_cap_seconds_per_run": 1800,
+  "candidate_id": null,
+  "target_online_ms": null,
+  "runner_sha256": "6decf1fa89b951eb2fcaf9428f9142818cb8991d4551924f10e0a3a8c54f6223"
+}
