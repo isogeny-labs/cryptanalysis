@@ -7364,8 +7364,8 @@ static int tau_wide_wavefront_block(const ca_group *g, ca_tau_wide_precomp *pre,
             if (parent_id >= atlas.entries || unit > 5 || packed[parent_id] >> 30 != depth - 1)
                 return 0;
             ca_elem parent = pre->point[offset + parent_id];
-            unsigned power = unit % 3;
             if (!parent.w[2]) {
+                unsigned power = unit % 3;
                 if (power == 1)
                     parent.w[0] = fm(g, pre->pos.base.beta, parent.w[0]);
                 else if (power == 2)

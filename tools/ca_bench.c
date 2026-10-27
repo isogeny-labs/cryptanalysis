@@ -182,7 +182,10 @@ static int sha256_file(const char *path, char hex[65])
     sha256_init(&c);
     uint8_t buf[1 << 16];
     size_t got;
-    while ((got = fread(buf, 1, sizeof buf, f)) > 0) sha256_update(&c, buf, got);
+    do {
+        got = fread(buf, 1, sizeof buf, f);
+        if (got) sha256_update(&c, buf, got);
+    } while (got == sizeof buf && !ferror(f));
     const int err = ferror(f);
     fclose(f);
     if (err) return -1;
@@ -361,7 +364,7 @@ static void run_generic(const unsigned *bits, int nb, unsigned reps, unsigned th
     enum { NALG = 5 };
     static const char *names[NALG] = {"bsgs", "rho-1", "rho-T", "kangaroo", "grumpy"};
     static const double theory[NALG] = {0.5, 0.5, 0.5, 0.5, 0.5};
-    double Nv[16], cost[NALG][16];
+    double Nv[16] = {0}, cost[NALG][16] = {{0}};
     if (nb > 16) nb = 16;
     printf("| grp | bits | algorithm | S=ops/sqrtn | seconds    | Mops/s   | ok  |\n");
     printf("|-----|------|-----------|-------------|------------|----------|-----|\n");
@@ -444,7 +447,7 @@ static void run_interval(const unsigned *bits, int nb, unsigned reps, int ec)
         g.cofactor = 1;
     }
     ca_group_find_generator(&g, &gen, 1);
-    double Nv[16], cost[NALG][16];
+    double Nv[16] = {0}, cost[NALG][16] = {{0}};
     if (nb > 16) nb = 16;
     printf("| grp | width | algorithm | S=ops/sqrtw | seconds    | ok  |\n");
     printf("|-----|-------|-----------|-------------|------------|-----|\n");
@@ -634,7 +637,7 @@ static void run_precomp(const unsigned *bits, int nb, unsigned reps, unsigned th
 {
     static const char *names[2] = {"precomp build", "precomp online"};
     static const double theory[2] = {2.0 / 3.0, 1.0 / 3.0};
-    double Nv[16], cost[2][16];
+    double Nv[16] = {0}, cost[2][16] = {{0}};
     if (nb > 16) nb = 16;
     printf("| grp | bits |  t |   chains | precomp ops | P/n^2/3 | build s | online ops | T/n^1/3 |"
            " sqrtN/T | ok  |\n");
@@ -751,7 +754,7 @@ static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
                                          "grumpy", "precomp build", "precomp online"};
     static const char *scope[CX_NALG] = {"global", "global", "global", "global", "step", "step"};
     static const double theory[CX_NALG] = {0.5, 0.5, 0.5, 0.5, 2.0 / 3.0, 1.0 / 3.0};
-    double Nv[16];
+    double Nv[16] = {0};
     double cost[CX_NALG][16];
     if (nb > 16) nb = 16;
 
