@@ -199,8 +199,15 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        if (r.marker != UINT32_C(0x43493152) || r.index >= complete_len ||
-            r.count > 2 * want->C + 1 || complete[r.index]) {
+        int invalid = r.marker != UINT32_C(0x43493152) ||
+                      r.index >= complete_len || r.count > 2 * want->C + 1;
+        if (!invalid) {
+            /* complete_len is exactly the caller's calloc length, and the
+             * untrusted index was bounded above before this access. */
+            // NOLINTNEXTLINE(clang-analyzer-security.ArrayBound)
+            invalid = complete[r.index] != 0;
+        }
+        if (invalid) {
             ca_set_error("checkpoint contains an invalid or duplicate sieve unit");
             fclose(f);
             return NULL;

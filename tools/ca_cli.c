@@ -1995,10 +1995,8 @@ static size_t coord_url_split(const char *list, char **out, size_t max)
         size_t trim = end;
         while (trim > start && list[trim - 1] == ' ') trim--;
         size_t len = trim - start;
-        if (!len) {
-            start = end + 1;
-            continue;
-        }
+        /* list[start] is a non-space, non-comma byte because the leading
+         * separator loop advanced past both; trimming cannot make len zero. */
         char *dup = malloc(len + 1);
         if (!dup) break;
         memcpy(dup, list + start, len);
