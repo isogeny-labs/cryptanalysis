@@ -16,7 +16,7 @@ import math
 import platform
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Tuple
 
 
 HERE = Path(__file__).resolve().parent
@@ -132,7 +132,7 @@ def verify_cert(cert: Any, input_bytes: bytes, p: int, r: int) -> dict[str, int]
     return counters
 
 
-Point = tuple[int, int] | None
+Point = Optional[Tuple[int, int]]
 
 
 def add(left: Point, right: Point, p: int, a: int) -> Point:
