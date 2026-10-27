@@ -1,8 +1,10 @@
 name: N83 K1 block and cold panel with native work counted (section 5a band)
 
 # Runs experiments/koblitz-n83-opcounts-20261023/PROTOCOL.md, frozen in the
-# commit before this workflow. Not a PR job: it runs on a push to the
-# dedicated run branch, or by hand. The restore, toolchain, frozen-crate
+# commit before this workflow. The analysis regression gate runs on every
+# main-targeted PR because branch protection requires its check name. The
+# experiment job remains excluded from PRs and runs on main pushes or by hand.
+# The restore, toolchain, frozen-crate
 # build and log-table steps are copied from n83-replay.yml (the stacked
 # producer's); the counted producer is derived from the frozen stacked
 # source by make_counted_source.py and built with --features op-counts. The
@@ -11,12 +13,6 @@ name: N83 K1 block and cold panel with native work counted (section 5a band)
 on:
   pull_request:
     branches: [main]
-    paths:
-      - '.github/workflows/n83-opcounts.yml'
-      - 'experiments/koblitz-n83-opcounts-20261023/**'
-      - 'experiments/koblitz-n83-stacked-20261016/*.py'
-      - 'experiments/koblitz-n83-stacked-20261016/*.json'
-      - 'scripts/isolated_bench.py'
   push:
     branches: [main]
   workflow_dispatch:
