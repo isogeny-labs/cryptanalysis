@@ -142,6 +142,10 @@ int main(void)
         const uint64_t b[4] = {5, 1, 9, 12};
         uint64_t x[4];
         uint8_t known[4];
+        CHECK(ca_linsolve_mod_prime(NULL, b, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, NULL, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, NULL, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, x, NULL, 1, NULL) == CA_ERR_INVALID);
         CHECK(ca_linsolve_mod_prime(&A, b, q, x, known, 1, NULL) == CA_OK);
         CHECK(known[0] && known[1] && known[2] && known[3]);
         CHECK_EQ_U64(x[0], 2); CHECK_EQ_U64(x[1], 3); CHECK_EQ_U64(x[2], 5); CHECK_EQ_U64(x[3], 7);
