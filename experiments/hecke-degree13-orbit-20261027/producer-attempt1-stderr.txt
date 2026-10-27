@@ -1,0 +1,22 @@
+  q-expansions to O(q^5136) ready (7.8s)
+  Hecke functions for l=13 identified (49.0s)
+  cusp 0 is (16 : -61 : 1); j = A/(x - 16)^11
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-degree13-orbit-20261027/run.py", line 192, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-degree13-orbit-20261027/run.py", line 182, in main
+    (HERE / "result.json").write_text(json.dumps(output, indent=2, sort_keys=True) + "\n")
+                                      ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/__init__.py", line 242, in dumps
+    **kw).encode(obj)
+          ~~~~~~^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/encoder.py", line 202, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/encoder.py", line 263, in iterencode
+    return _iterencode(o, 0)
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/encoder.py", line 182, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type Integer is not JSON serializable
+when serializing dict item 'existing_rank_mod5'

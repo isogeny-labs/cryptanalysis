@@ -1,0 +1,5 @@
+# Lean check and boundary
+
+Pinned toolchain: `leanprover/lean4:v4.35.0-rc4`; no external packages. From this directory, `lake build FrobeniusRatio` exited zero and produced [build-output.txt](build-output.txt). Every `#print axioms` query reports no axioms. The six declarations check the characteristic-polynomial root substitutions and the exact projective eigenvalue-ratio orders modulo 13 at p=179 and p=83.
+
+Formalization of the complete geometric result remains partial. The Lean file does not yet define the degree-13 isogeny kernel, its projective Frobenius action, the X_0(11) Hecke neighbor polynomial, or the elliptic-curve group and relation matrix. The checked-Sage producer and two independent replays establish the stated finite-field fibers, group equations, class completeness, and exact ranks under the pinned implementation. A general Lean bridge must show that the eigenvalue ratio acts on the kernel lines giving the saved neighbor roots, including image collisions and exceptional fibers.
