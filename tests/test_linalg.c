@@ -5,10 +5,12 @@
 static void random_system(uint32_t rows, uint32_t cols, uint32_t per_row, uint64_t q,
                           ca_spmat *A, uint64_t *b, uint64_t *xtrue, ca_rng *rng)
 {
+    if (!A || !b || !xtrue || !rng) abort();
     for (uint32_t j = 0; j < cols; j++) xtrue[j] = ca_rng_below(rng, q);
-    CHECK(ca_spmat_init(A, cols, rows, rows * per_row) == CA_OK);
+    if (ca_spmat_init(A, cols, rows, rows * per_row) != CA_OK) abort();
     uint32_t *tc = malloc(per_row * sizeof(uint32_t));
     int32_t *tv = malloc(per_row * sizeof(int32_t));
+    if (!tc || !tv) abort();
     for (uint32_t i = 0; i < rows; i++) {
         for (uint32_t k = 0; k < per_row; k++) {
             tc[k] = (uint32_t)ca_rng_below(rng, cols);
@@ -37,6 +39,7 @@ int main(void)
         uint32_t n = 40;
         uint64_t *M = calloc((size_t)n * n, sizeof(uint64_t)), *rhs = calloc(n, sizeof(uint64_t));
         uint64_t *xt = calloc(n, sizeof(uint64_t)), *x = calloc(n, sizeof(uint64_t));
+        if (!M || !rhs || !xt || !x) abort();
         for (uint32_t j = 0; j < n; j++) xt[j] = ca_rng_below(&rng, q);
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t j = 0; j < n; j++) {
@@ -58,6 +61,7 @@ int main(void)
             uint64_t *M = calloc((size_t)n * n, sizeof(uint64_t)),
                      *rhs = calloc(n, sizeof(uint64_t));
             uint64_t *xt = calloc(n, sizeof(uint64_t)), *x = calloc(n, sizeof(uint64_t));
+            if (!M || !rhs || !xt || !x) abort();
             for (uint32_t j = 0; j < n; j++) xt[j] = ca_rng_below(&rng, q);
             for (uint32_t i = 0; i < n; i++) {
                 uint64_t acc = 0;
@@ -87,6 +91,7 @@ int main(void)
             uint64_t *xt = malloc(cols * sizeof(uint64_t));
             uint64_t *x = malloc(cols * sizeof(uint64_t));
             uint8_t *known = malloc(cols);
+            if (!b || !xt || !x || !known) abort();
             random_system(rows, cols, 12, q, &A, b, xt, &rng);
             ca_linsolve_report rep;
             ca_status rc = ca_linsolve_mod_prime(&A, b, q, x, known, 5, &rep);
@@ -126,6 +131,10 @@ int main(void)
         const uint64_t b[4] = {5, 1, 9, 12};
         uint64_t x[4];
         uint8_t known[4];
+        CHECK(ca_linsolve_mod_prime(NULL, b, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, NULL, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, NULL, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, x, NULL, 1, NULL) == CA_ERR_INVALID);
         CHECK(ca_linsolve_mod_prime(&A, b, q, x, known, 1, NULL) == CA_OK);
         CHECK(known[0] && known[1] && known[2] && known[3]);
         CHECK_EQ_U64(x[0], 2); CHECK_EQ_U64(x[1], 3); CHECK_EQ_U64(x[2], 5); CHECK_EQ_U64(x[3], 7);

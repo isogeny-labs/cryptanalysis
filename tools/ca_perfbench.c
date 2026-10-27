@@ -1451,7 +1451,7 @@ static void add_filters(options *o, const char *arg)
     char *s = filter_buf + filter_used;
     memcpy(s, arg, len + 1);
     filter_used += len + 1;
-    for (char *tok = strtok(s, ","); tok; tok = strtok(NULL, ",")) {
+    for (const char *tok = strtok(s, ","); tok; tok = strtok(NULL, ",")) {
         if (o->nfilters >= 256) usage();
         o->filters[o->nfilters++] = tok;
     }
