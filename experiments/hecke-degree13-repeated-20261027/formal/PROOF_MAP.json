@@ -1,0 +1,26 @@
+{
+  "axioms": [],
+  "build_command": "lake build RepeatedRoot",
+  "open_obligations": [
+    "Formalize the extension-field Hecke moment solution and modular polynomial bridge.",
+    "Formalize the F83 group trace equation and its outside-class point (18,31); independent Python replay checks both."
+  ],
+  "results": [
+    {
+      "bridge": "The checked Sage producer identifies x=4 as the repeated Hecke neighbor root.",
+      "claim": "The only F83 rational y-coordinates over x=4 on y^2+y=x^3-x^2-10x-20 are 38 and 44.",
+      "hypotheses": "y is any residue in Fin 83; x is fixed to 4.",
+      "lean_declaration": "RepeatedRoot.rational_y_roots",
+      "status": "checked"
+    },
+    {
+      "bridge": "The Hecke moment system yields the weighted y-sum 82, verified by all fourteen moments.",
+      "claim": "Among unordered pairs of those rational curve lifts, the saved y-sum 82 has the unique pair 38,44.",
+      "hypotheses": "a,b in Fin 83, a<=b, both on the curve at x=4, and (a+b) mod83=82.",
+      "lean_declaration": "RepeatedRoot.unique_unordered_pair",
+      "status": "checked"
+    }
+  ],
+  "schema": "hecke-degree13-repeated-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4"
+}
