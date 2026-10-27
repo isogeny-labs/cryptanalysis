@@ -228,5 +228,222 @@
       "raw_sha256": "21c8b5fab7f3c7db77e1d4543f27e4eb80cda2870311ce6fbcb42703b3405751",
       "raw_bytes": 3411
     }
-  ]
+  ],
+  "catalog_and_format_followup": {
+    "before_commit": "5b33ddc9855884aa36776a28e914a24d919ca9ab",
+    "source_sha256": {
+      "experiments/ic-candidate-catalog/test_validate_semantics.py": "bd981faecb244c338f6226d686ac26480de20169d3613363cd633a05b7984a71",
+      "experiments/ic-candidate-catalog/validate_semantics.py": "9408f0619677d09b31d73ada22af3e349eaa5549a012a92ed136ab93d390dd22",
+      "src/indexcalc.c": "7fc08e8c7730d3a0e679027193a9a8df8d93262f98539a28c57f136f582561fb",
+      "src/precomp.c": "778c33e94c7a213c8cfd06954f8ece6f35f03b02814e91eb8a687983dc8b2449"
+    },
+    "catalog_tests": {
+      "passed": 37,
+      "returncode": 0
+    },
+    "proposal_generation_check": {
+      "returncode": 0,
+      "restored_manifest_sha256": "6b92a862405b896bbc46e9c8a9527fb3ef87526cf3c0b002310e7280bcc59619"
+    },
+    "whole_pr_git_clang_format": {
+      "returncode": 0,
+      "base": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+      "stdout": "clang-format did not modify any files"
+    },
+    "peer_metadata": {
+      "returncode": 0,
+      "peer": "crypto-history"
+    },
+    "ci_benchmark": {
+      "command": "python bench.py run --suite ci --jobs 4 --out-dir /workspace/cryptanalysis-ci-bench-verification",
+      "returncode": 0,
+      "rows": 12,
+      "complete_and_verified": 12,
+      "contract_returncode": 0,
+      "baseline_tolerance": 0.05,
+      "baseline_comparison": "PASS",
+      "exact_replay": "3/3",
+      "comparison_command": "python experiments/ic-bench/compare.py experiments/ic-bench/baseline/ci.csv /workspace/cryptanalysis-ci-bench-verification/ci.csv --tolerance 0.05 --summary /workspace/cryptanalysis-ci-bench-verification/comparison.md",
+      "timing_scope": "local CI control, not an independent scientific performance comparison"
+    },
+    "environment": {
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+      "cpu": {
+        "lscpu": [
+          {
+            "field": "Architecture:",
+            "data": "x86_64"
+          },
+          {
+            "field": "CPU op-mode(s):",
+            "data": "32-bit, 64-bit"
+          },
+          {
+            "field": "Address sizes:",
+            "data": "46 bits physical, 48 bits virtual"
+          },
+          {
+            "field": "Byte Order:",
+            "data": "Little Endian"
+          },
+          {
+            "field": "CPU(s):",
+            "data": "5"
+          },
+          {
+            "field": "On-line CPU(s) list:",
+            "data": "0-4"
+          },
+          {
+            "field": "Vendor ID:",
+            "data": "AuthenticAMD"
+          },
+          {
+            "field": "Model name:",
+            "data": "AMD EPYC 9V45 96-Core Processor"
+          },
+          {
+            "field": "CPU family:",
+            "data": "26"
+          },
+          {
+            "field": "Model:",
+            "data": "2"
+          },
+          {
+            "field": "Thread(s) per core:",
+            "data": "1"
+          },
+          {
+            "field": "Core(s) per socket:",
+            "data": "5"
+          },
+          {
+            "field": "Socket(s):",
+            "data": "1"
+          },
+          {
+            "field": "Stepping:",
+            "data": "1"
+          },
+          {
+            "field": "BogoMIPS:",
+            "data": "5192.20"
+          },
+          {
+            "field": "Flags:",
+            "data": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 clzero xsaveerptr arat npt nrip_save tsc_scale vmcb_clean flushbyasid pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm avx512_vp2intersect arch_capabilities"
+          },
+          {
+            "field": "Hypervisor vendor:",
+            "data": "KVM"
+          },
+          {
+            "field": "Virtualization type:",
+            "data": "full"
+          },
+          {
+            "field": "L1d cache:",
+            "data": "144 KiB (3 instances)"
+          },
+          {
+            "field": "L1i cache:",
+            "data": "96 KiB (3 instances)"
+          },
+          {
+            "field": "L2 cache:",
+            "data": "3 MiB (3 instances)"
+          },
+          {
+            "field": "L3 cache:",
+            "data": "32 MiB (1 instance)"
+          },
+          {
+            "field": "NUMA node(s):",
+            "data": "1"
+          },
+          {
+            "field": "NUMA node0 CPU(s):",
+            "data": "0-4"
+          },
+          {
+            "field": "Vulnerability Gather data sampling:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Ghostwrite:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Indirect target selection:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Itlb multihit:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability L1tf:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Mds:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Meltdown:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Mmio stale data:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Old microcode:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Reg file data sampling:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Retbleed:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Spec rstack overflow:",
+            "data": "Vulnerable"
+          },
+          {
+            "field": "Vulnerability Spec store bypass:",
+            "data": "Vulnerable"
+          },
+          {
+            "field": "Vulnerability Spectre v1:",
+            "data": "Vulnerable: __user pointer sanitization and usercopy barriers only; no swapgs barriers"
+          },
+          {
+            "field": "Vulnerability Spectre v2:",
+            "data": "Vulnerable; STIBP: disabled; PBRSB-eIBRS: Not affected; BHI: Not affected"
+          },
+          {
+            "field": "Vulnerability Srbds:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Tsa:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Tsx async abort:",
+            "data": "Not affected"
+          },
+          {
+            "field": "Vulnerability Vmscape:",
+            "data": "Not affected"
+          }
+        ]
+      }
+    }
+  }
 }

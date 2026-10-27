@@ -623,16 +623,14 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
     }
     ic_rexp_header h;
     struct stat sb;
-    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
-             memcmp(h.magic, "CAICRX1", 8) == 0 &&
-             h.p == want->p && h.g == want->g && h.zeta == want->zeta &&
-             h.B == want->B && h.C == want->C && h.nfb == want->nfb &&
-             h.ncols == want->ncols && h.target == want->target &&
-             h.threads == want->threads && h.relation_size == sizeof(relation) &&
-             h.fb_hash == want->fb_hash && (!requested_seed || h.seed == want->seed) &&
-             h.seed != 0 && h.count >= 1 && h.elapsed_seconds >= 0 &&
-             isfinite(h.elapsed_seconds) &&
-             fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+    int ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, "CAICRX1", 8) == 0 &&
+             h.p == want->p && h.g == want->g && h.zeta == want->zeta && h.B == want->B &&
+             h.C == want->C && h.nfb == want->nfb && h.ncols == want->ncols &&
+             h.target == want->target && h.threads == want->threads &&
+             h.relation_size == sizeof(relation) && h.fb_hash == want->fb_hash &&
+             (!requested_seed || h.seed == want->seed) && h.seed != 0 && h.count >= 1 &&
+             h.elapsed_seconds >= 0 && isfinite(h.elapsed_seconds) && fstat(fileno(f), &sb) == 0 &&
+             sb.st_size >= 0 &&
              (uint64_t)sb.st_size == sizeof(h) + (uint64_t)h.count * sizeof(relation);
     if (!ok || (uint64_t)h.count > (uint64_t)want->target + 64 * (uint64_t)want->threads + 1) {
         fclose(f);
