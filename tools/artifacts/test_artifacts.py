@@ -299,5 +299,37 @@ class WorkflowPaths(unittest.TestCase):
                          ["research/runs"])
 
 
+
+class WorkflowBootstrap(unittest.TestCase):
+    def test_sparse_clone_can_load_tool_and_remote_configuration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            sh(root, "git", "init", "-q", "-b", "main")
+            for name, content in {".github/scripts/scope.py": "", "tools/artifacts/artifacts.py": TOOL.read_text(), ".artifacts/config.json": '{"remote":"file:///test-store"}'}.items():
+                p = root / name
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(content)
+            sh(root, "git", "add", ".")
+            sh(root, "git", "-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-qm", "fixture")
+            block = ["      - uses: actions/checkout@v4", "        with:", "          sparse-checkout: .github/scripts"]
+            wired = wire_workflows.add_sparse_pattern(block, "      ")
+            patterns = [line.strip() for line in wired[3:]]
+            sh(root, "git", "sparse-checkout", "set", "--cone", *patterns)
+            self.assertTrue((root / "tools/artifacts/artifacts.py").is_file())
+            self.assertEqual(artifacts.Config.load(root).remote, "file:///test-store")
+
+    def test_conditional_full_checkout_is_preserved(self):
+        block = ["      - uses: actions/checkout@v4", "        with:", "          sparse-checkout: ${{ needs.changes.outputs.full_checkout != 'true' && env.SPARSE_RULES || '' }}", "          sparse-checkout-cone-mode: false"]
+        self.assertEqual(wire_workflows.add_sparse_pattern(block, "      "), block)
+
+    def test_rewiring_refreshes_paths_and_keeps_checkout_condition(self):
+        source = "jobs:\n  test:\n    steps:\n      - uses: actions/checkout@v4\n        if: needs.changes.outputs.run == 'true'\n      - run: make check\n"
+        once, _ = wire_workflows.wire(source, ["data/new"])
+        self.assertEqual(once, wire_workflows.wire(once, ["data/new"])[0])
+        stale = once.replace("pull --jobs 16 data/new", "pull data/old")
+        self.assertEqual(once, wire_workflows.wire(stale, ["data/new"])[0])
+        self.assertEqual(once.count("if: needs.changes.outputs.run == 'true'"), 2)
+        self.assertIn('export ARTIFACTS_AWS="$RUNNER_TEMP/aws-bin/aws"', once)
+
 if __name__ == "__main__":
     unittest.main()
