@@ -19,5 +19,7 @@ Producer source SHA-256: `26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d
 
 Blind reviewer A derived the implication and sharp boundary without producer source. Reviewer B checked the Lean statements against the proof map and Rust predicate, disclosing extra generic process and neighboring Rust reads beyond the plan's literal list, but no sibling review access. These attestations were self-reported.
 
+At the reviewed producer revision `f1c2dca`, the README omitted this new partial bridge. Documentation commit `03ca9ea` added the link and clarified the remaining obligations without changing the reviewed Lean source or machine inputs.
+
 == Remaining work
 A complete certificate still needs a concrete prime field and elliptic group, exact point order and Lagrange divisibility, Hasse for the actual cardinality, Rust BigUint and parser correspondence, and P-192/P-224 input binding. The installed Lean kernel is the machine trust boundary; independent `lean4checker --fresh` was unavailable. No measured performance quantity changed, so existing performance graphs and dashboard values remain as they were.
