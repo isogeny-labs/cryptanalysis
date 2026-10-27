@@ -1,0 +1,30 @@
+{
+  "schema": "hecke-d79-p179-short-cancellations-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "All 28 saved baseline and accepted rows annihilate a nonzero 20-coordinate vector modulo 13.",
+      "lean_declarations": ["ShortP179.rows_annihilate_projection", "ShortP179.projection_nonzero"],
+      "status": "checked",
+      "hypotheses": "Finite rows and projection coordinates generated from the hashed receipts."
+    },
+    {
+      "result": "The selected 19 rows contain the displayed 19 by 19 minor with explicit inverse modulo 13.",
+      "lean_declarations": ["ShortP179.minor_matches_rows", "ShortP179.minor_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Finite selected row list and 19 pivot columns generated from the hashed receipts."
+    },
+    {
+      "result": "Each of eight selected integer class rows is the stated signed combination of degree-13 source class parts.",
+      "lean_declarations": ["ShortP179.signed_row_0", "ShortP179.signed_row_1", "ShortP179.signed_row_3", "ShortP179.signed_row_4", "ShortP179.signed_row_5", "ShortP179.signed_row_6", "ShortP179.signed_row_7", "ShortP179.signed_row_8"],
+      "status": "checked",
+      "hypotheses": "The 19 source class parts from the hashed p=179 orbit receipt."
+    },
+    {
+      "result": "The short outside trace group sums cancel in X_0(11)(F_179), and the resulting true relation span has rank 19 over F13 and Q.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Define the F179 elliptic-curve group and Frobenius trace points in Lean, prove saved source equations and group cancellation, and connect the finite inverse and annihilator certificates to row-space rank. Independently verified in checked Sage."
+    }
+  ]
+}

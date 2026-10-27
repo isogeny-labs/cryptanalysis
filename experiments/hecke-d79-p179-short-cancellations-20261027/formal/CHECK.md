@@ -1,0 +1,5 @@
+# Lean finite certificate and boundary
+
+The pinned Lean toolchain is `leanprover/lean4:v4.35.0-rc4`, with no external dependencies. `python3 generate.py` checked that [ShortP179.lean](ShortP179.lean) matches the hashed inputs, produced result and independent validation. `lake build ShortP179` exited zero; [build-output.txt](build-output.txt) retains the theorem-level `#print axioms` audit. Projection annihilation and nonzero proofs have no axioms; minor and signed-row identities list only standard `propext`.
+
+The module checks finite arrays, their modular arithmetic and exact signed integer row identities. Full formalization remains partial: Lean does not define the X_0(11) group law over F_179, the degree-13 Hecke orbit traces, the map from saved point coordinates to `E(F_179)`, or the abstract theorem that an inverse minor and nonzero annihilator imply exact row rank 19. The checked-Sage replay verifies the curve/group bridge and computes both exact ranks independently. The written proof in [../RESULT.md](../RESULT.md) states the structural implication with its explicit assumptions.
