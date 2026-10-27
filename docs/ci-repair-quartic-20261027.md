@@ -103,3 +103,15 @@ match current committed bytes; the remaining binding is the original PARI
 checkpoint awaiting authenticated retrieval. Historical failed source-version
 hashes and semantic coefficient-array hashes are not silently treated as
 current filesystem inputs.
+
+
+The protected-base migration job 122502927897 succeeded in run 40593214995.
+Pointer artifact 12775192096 was independently checked against all three
+original census hashes and sizes. Only their Git index entries are removed;
+the original local bytes remain and their expected digests stay unchanged.
+The six new pointer/ignore files add transport metadata to the input manifest.
+The original checkpoint was retrieved through artifact 12775167092, verified
+against its expected 9,260,825 bytes and SHA-256, and never deserialized. All
+1,404 resulting input hashes now verify locally. The original unavailable-input
+record is retained alongside the new recovery receipt. Fresh hosted retrieval
+and complete integer/proof replay are still required on the final pointer head.
