@@ -1210,6 +1210,11 @@ static test_server *server_start(server_script script)
     pthread_mutex_init(&s->lock, NULL);
     s->fd = socket(AF_INET, SOCK_STREAM, 0);
     CHECK(s->fd >= 0);
+    if (s->fd < 0) {
+        pthread_mutex_destroy(&s->lock);
+        free(s);
+        return NULL;
+    }
     int one = 1;
     setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
     struct sockaddr_in sin;
