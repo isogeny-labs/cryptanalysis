@@ -1980,27 +1980,31 @@ static const char *coord_url(void)
  */
 static size_t coord_url_split(const char *list, char **out, size_t max)
 {
+    if (!list) return 0;
+    /* Coordinator URLs travel in bounded job documents. Reject an overlong
+     * command-line list before using any input-derived offset or allocation. */
+    size_t total = strnlen(list, CA_COORD_LINE_MAX);
+    if (total == CA_COORD_LINE_MAX) return 0;
     size_t n = 0;
-    const char *p = list;
-    while (p && *p && n < max) {
-        while (*p == ' ' || *p == ',') p++;
-        if (!*p) break;
-        const char *end = strchr(p, ',');
-        const char *trim_end = end ? end : p + strlen(p);
-        while (trim_end > p && trim_end[-1] == ' ') trim_end--;
-        size_t len = (size_t)(trim_end - p);
+    size_t start = 0;
+    while (start < total && n < max) {
+        while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+        if (start == total) break;
+        size_t end = start;
+        while (end < total && list[end] != ',') end++;
+        size_t trim = end;
+        while (trim > start && list[trim - 1] == ' ') trim--;
+        size_t len = trim - start;
         if (!len) {
-            if (!end) break;
-            p = end + 1;
+            start = end + 1;
             continue;
         }
         char *dup = malloc(len + 1);
         if (!dup) break;
-        memcpy(dup, p, len);
+        memcpy(dup, list + start, len);
         dup[len] = 0;
         out[n++] = dup;
-        if (!end) break;
-        p = end + 1;
+        start = end + 1;
     }
     return n;
 }
