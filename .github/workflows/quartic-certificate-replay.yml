@@ -57,7 +57,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin
       - name: Store only the reviewed original bytes and verify each remote object
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
@@ -71,10 +71,10 @@ jobs:
           import hashlib, json, subprocess
           from pathlib import Path
           manifest = json.loads(Path('tools/ci/quartic_certificates.json').read_text())
-          paths = [f'experiments/{study}/source_census.json' for study in (
-              'hecke-432-j1728-path-holdout-20261026',
-              'hecke-432-j1728-product-holdout-20261026',
-              'hecke-432-sign-branch-holdout-20261026')]
+          paths = [
+              'experiments/hecke-432-j1728-path-holdout-20261026/source_census.json',
+              'experiments/hecke-432-j1728-product-holdout-20261026/source_census.json',
+              'experiments/hecke-432-sign-branch-holdout-20261026/source_census.json']
           for name in paths:
               assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == manifest['inputs'][name]
           subprocess.run(['python3', 'tools/artifacts/artifacts.py', 'push', *paths], check=True)
@@ -128,7 +128,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -197,7 +197,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin
       - name: Install the toolchain manager without selecting an unpinned Lean
         run: |
           curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
