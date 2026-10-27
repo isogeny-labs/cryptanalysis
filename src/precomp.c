@@ -512,12 +512,11 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
         return CA_ERR_INTERNAL;
     }
     pc_ckpt_header h;
-    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
-        memcmp(h.magic, "CAPREPC1", 8) == 0 && h.version == 1 &&
-        h.ready <= 1 && h.identity == identity &&
-        (!requested_seed || h.seed == requested_seed) && h.seed != 0 &&
-        h.bloom_words == (bd->bloom ? bd->bloom->nwords : 0) &&
-        h.stored >= h.count && h.starts >= h.stored;
+    int ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, "CAPREPC1", 8) == 0 &&
+             h.version == 1 && h.ready <= 1 && h.identity == identity &&
+             (!requested_seed || h.seed == requested_seed) && h.seed != 0 &&
+             h.bloom_words == (bd->bloom ? bd->bloom->nwords : 0) && h.stored >= h.count &&
+             h.starts >= h.stored;
     struct stat file_info;
     if (ok) {
         ok = fstat(fileno(f), &file_info) == 0 && file_info.st_size >= 0 &&
