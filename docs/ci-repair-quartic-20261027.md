@@ -31,15 +31,17 @@ Three refusal controls pass: changed/missing inputs fail; parent and symlink
 escapes fail before reading outside the replay root; missing or nonstandard
 axiom output cannot stand in for a proof.
 
-## CI replay and remaining verification
+## Hosted replay and corpus registration
 
 The scoped workflow replays all 42 submitted integer checkers and all 37 proof
-modules. Its input manifest fixes 1,398 exact digests, including the original
+modules. Its original input manifest fixes 1,398 exact digests; six added transport
+metadata digests bring the current total to 1,404, including the original
 9,260,825-byte PARI checkpoint SHA-256
 `b7f7588ee150c5c3ebe09fd0057f640eb6291d8a1463546d904bd1a086ebce27`.
-That checkpoint is absent locally; its content-addressed pointer is preserved,
-and the existing authenticated CI reader must retrieve and verify it. No
-replacement bytes are generated. The checkpoint is hashed, never executed or
+The checkpoint was initially absent locally. The authenticated CI reader
+retrieved its original bytes, which now verify locally against that exact hash
+and size. Its content-addressed pointer and original unavailable-input record
+are preserved. No replacement bytes were generated. The checkpoint is hashed, never executed or
 deserialized by these Python audit jobs.
 
 Several frozen protocols and terminal receipts contain the original absolute
@@ -50,10 +52,29 @@ ordinary hosted runner does correctness checks only; no Sage experiment,
 benchmark, new held-out selection or performance measurement is launched.
 Raw successes and failures are retained even when another checker fails.
 
-The full hosted integer replay and all current-head required/applicable checks
-remain unverified until their jobs complete. This report does not treat the
-planned 42 checks as passed. A missing/corrupt input or changed output fails the
-job; the manifest is not a license to replace expected bytes after a failure.
+Hosted run `40594036846` on exact head
+`2908016e9ec047f4994c2742ca0b9094be6e27b9` passed all 42 integer checkers
+and all 37 proof modules, including all 113 requested declaration axiom reports.
+The complete ZIP outputs and their hashes are retained in the evidence directory.
+Every frozen input was checked before and after integer replay. The separate
+corpus job failed because it accepted only `formal/` paths and equated axiom
+printouts with theorem declarations; three original proof files use their study
+root, and one prints three definitions as well as four theorems.
+
+The repaired corpus registration binds all 37 original paths and SHA-256 values
+to the reviewed manifest and its exact Lean/Mathlib project inputs. It compiles
+each original file into a temporary module, checks every original declaration
+printout, and separately audits every theorem in that module with native Lean
+reflection. All 37 modules, 113 declaration reports and 142 noninternal theorems
+passed locally. The original 97-file corpus receipt, source bytes and thresholds
+are unchanged. Six registration refusal controls pass; real pinned-Lean controls
+accept a proof and reject an unproved axiom, an empty theorem module and an
+ill-typed proof. The old Lean 4.34 auditor remains unchanged; the new 4.35 auditor
+has no trust-manifest exemption.
+
+The final integrated head must still pass all applicable hosted checks. A
+missing/corrupt input or changed output fails; the manifest is not a license
+to replace expected bytes after a failure.
 
 ## Claim boundaries
 
@@ -84,8 +105,8 @@ holdout. Their original digests remain in the input manifest. A separate,
 manual-only migration job checks those exact bytes, uses the unchanged shared
 artifact tool to store them and verify the remote objects, and exports only
 its pointer/ignore metadata for an ordinary reviewed Git commit. The job has
-no GitHub write permission and cannot push or merge. Migration and a fresh
-hosted retrieval remain pending at this checkpoint. No policy exception or
+no GitHub write permission and cannot push or merge. Migration and fresh hosted retrieval completed on head `2908016e`; the original
+bytes were verified before both hosted replay jobs passed. No policy exception or
 large-file override is used.
 
 
@@ -113,5 +134,6 @@ The six new pointer/ignore files add transport metadata to the input manifest.
 The original checkpoint was retrieved through artifact 12775167092, verified
 against its expected 9,260,825 bytes and SHA-256, and never deserialized. All
 1,404 resulting input hashes now verify locally. The original unavailable-input
-record is retained alongside the new recovery receipt. Fresh hosted retrieval
-and complete integer/proof replay are still required on the final pointer head.
+record is retained alongside the new recovery receipt. Hosted retrieval and complete integer/proof replay subsequently passed on
+head `2908016e`, as recorded above. New integration commits still require their
+own current-head checks.
