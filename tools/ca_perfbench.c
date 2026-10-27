@@ -30,6 +30,9 @@
  * same search as tools/ca_bench.c) and re-checked in setup: n prime and
  * n*G = O, so a wrong constant aborts rather than benchmarks nonsense.
  */
+/* The benchmark case ABI is run(void *): read-only fixtures still have to
+ * implement that callback type, so a const-qualified parameter is incompatible. */
+// cppcheck-suppress-file constParameterCallback
 #include "cryptanalysis/cryptanalysis.h"
 #include "ca_internal.h"
 #include "linalg.h"

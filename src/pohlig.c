@@ -45,6 +45,8 @@ static ca_status brute_force_ec_batch(const ca_group *g, const ca_elem *base,
         ca_elem offset;
         ca_group_dbl(g, &offset, &offsets[span / 2]);
         for (size_t i = 0; i < span; i++) addends[i] = offset;
+        /* The batch consumes exactly the initialized span entries. */
+        // cppcheck-suppress uninitvar
         ca_group_batch_op(g, offsets + span, offsets, addends, span, scratch);
         if (st) st->group_ops += span + 1; /* additions and one doubling */
     }
@@ -56,6 +58,8 @@ static ca_status brute_force_ec_batch(const ca_group *g, const ca_elem *base,
         uint64_t remaining = hi - k;
         size_t count = remaining < LANES ? (size_t)remaining + 1 : LANES;
         for (size_t i = 0; i < count; i++) left[i] = cur;
+        /* The batch consumes exactly the initialized count entries. */
+        // cppcheck-suppress uninitvar
         ca_group_batch_op(g, candidates, left, offsets, count, scratch);
         if (st) st->group_ops += count; /* charge all computed candidates */
         for (size_t i = 0; i < count; i++) {

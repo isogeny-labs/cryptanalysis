@@ -275,6 +275,8 @@ static ca_status bsgs_table_solve_impl(const ca_bsgs_table *t, const ca_elem *ta
     for (uint64_t i0 = 0; i0 < steps; i0 += BSGS_LANES) {
         const uint64_t n = steps - i0 < BSGS_LANES ? steps - i0 : BSGS_LANES;
         for (uint64_t k = 0; k < n; k++) Rrep[k] = R;
+        /* Only the initialized prefix of Rrep is passed to the batch operation. */
+        // cppcheck-suppress uninitvar
         ca_group_batch_op(g, Rs, Rrep, t->giant, n, scratch);
         uint64_t hs[BSGS_LANES];
         for (uint64_t k = 0; k < n; k++) {
@@ -523,6 +525,8 @@ ca_status ca_bsgs_solve_checkpointed(
                               steps - giant_next : BSGS_LANES;
             ca_elem Rs[BSGS_LANES], Rrep[BSGS_LANES];
             for (uint64_t k = 0; k < nblock; k++) Rrep[k] = R;
+            /* Only the initialized prefix of Rrep is passed to the batch operation. */
+            // cppcheck-suppress uninitvar
             ca_group_batch_op(g, Rs, Rrep, t.giant, nblock, scratch);
             uint64_t hs[BSGS_LANES];
             for (uint64_t k = 0; k < nblock; k++) {

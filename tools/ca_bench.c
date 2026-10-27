@@ -422,6 +422,8 @@ static void run_generic(const unsigned *bits, int nb, unsigned reps, unsigned th
             cost[a][si] = ops[a] / reps;
         }
     }
+    /* Every Nv[si] for si < nb was assigned in the loop above. */
+    // cppcheck-suppress uninitvar
     cx_summary(ec ? "ec" : "zp", "n", names, theory, Nv, cost, NALG, nb);
 }
 
@@ -492,6 +494,8 @@ static void run_interval(const unsigned *bits, int nb, unsigned reps, int ec)
             cost[a][si] = ops[a] / reps;
         }
     }
+    /* Every Nv[si] for si < nb was assigned in the loop above. */
+    // cppcheck-suppress uninitvar
     cx_summary(ec ? "ec" : "zp", "w", names, theory, Nv, cost, NALG, nb);
 }
 
@@ -698,6 +702,8 @@ static void run_precomp(const unsigned *bits, int nb, unsigned reps, unsigned th
         cost[0][si] = (double)precomp_ops;
         cost[1][si] = online;
     }
+    /* Every Nv[si] for si < nb was assigned in the loop above. */
+    // cppcheck-suppress uninitvar
     cx_summary(ec ? "ec" : "zp", "n", names, theory, Nv, cost, 2, nb);
 }
 
@@ -845,6 +851,8 @@ static void run_complexity(const unsigned *bits, int nb, unsigned reps, int ec)
     printf("| algorithm       | scope  | theory   | fitted alpha | R^2    | const @ N^theory |\n");
     printf("|-----------------|--------|----------|--------------|--------|------------------|\n");
     for (int a = 0; a < CX_NALG; a++) {
+        /* Every Nv[si] for si < nb was assigned in the loop above. */
+        // cppcheck-suppress uninitvar
         cx_fit f = fit_power_law(Nv, cost[a], nb, theory[a]);
         printf("| %-15s | %-6s | N^%.3f | %12.3f | %6.4f | %16.3f |\n", names[a], scope[a],
                theory[a], f.alpha, f.r2, f.c_theory);
