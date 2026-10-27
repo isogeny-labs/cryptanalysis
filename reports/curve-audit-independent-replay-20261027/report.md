@@ -1,5 +1,13 @@
 # P-192/P-224 curve-audit certificates: independent replay
 
+**Dated followup, 2026-10-27 05:49 UTC:** A fresh native Rust build found and
+repaired a pinned `sha2` compilation error. The repaired package passed all
+15 tests, and fresh P-192/P-224 CLI audits matched the archived mathematical
+fields. See the [separate native validation report](native-rust/report.md),
+[raw receipts](native-rust/native-cli-receipt.json), and
+[current followup PDF](native-rust/report.pdf). The text and PDF below retain
+the original independent-Python packet's earlier execution boundary.
+
 2026-10-27 UTC · Conductor T-499 · producer commit
 `dc73f9791dc7d2c61e0c77572d2c3aaeedb30436` · review branch checker commit
 `b0f44d3`. This is a deterministic validation of archived claims, not a new
