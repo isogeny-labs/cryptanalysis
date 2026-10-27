@@ -94,7 +94,8 @@ def run_ic(args, curve: ToyCurve, s: int, Q: tuple[int, int]) -> dict:
     ok = bool(d["verified"]) and d["scalar"] == s
     return {"online_ms": d["online_wall_ns"] / 1e6 if d["recovered"] else None, "verified": int(ok),
             "status": "complete" if ok else ("budget" if not d["recovered"] else "error"),
-            "attempts": d["attempts"], "candidate_id": cid, "workload_id": wid,
+            "attempts": d["attempts"], "recovered_scalar": d.get("scalar"),
+            "candidate_id": cid, "workload_id": wid,
             "setup_queries": res["monitor"]["attempts"], "final_rank": res["final_rank"]}
 
 
@@ -102,7 +103,8 @@ def run_rho(args, curve: ToyCurve, s: int, Q: tuple[int, int]) -> dict:
     out = bench.rho_one_target(curve, Q, f"isolated-panel|{curve.curve_id}|{args.panel_key}|{args.index}")
     ok = bool(out["verified"]) and out["scalar"] == s
     return {"online_ms": out["online_wall_ns"] / 1e6, "verified": int(ok), "status": out["status"],
-            "steps": out["steps"], "restarts": out["restarts"]}
+            "steps": out["steps"], "restarts": out["restarts"],
+            "recovered_scalar": out.get("scalar")}
 
 
 def main() -> None:
