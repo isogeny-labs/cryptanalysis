@@ -35,3 +35,14 @@ Local raw test logs are retained in `ci-repair-tooling-20261027/`.
 
 All current-head required and applicable checks and reviews must finish before
 merge. Earlier heads' results do not validate this integration.
+
+## Hosted parity finding
+
+On head 6ee60ba8, all 29 emitted checks completed; the only failed job was
+`parity`. The original LMFDB PR supplied its skill body only on `.agents`,
+while the repository requires a relative adapter on `.claude` as well. Added
+the same directory-symlink convention used by the existing skills, preserving
+the original skill body's bytes. The complete existing skills-parity check
+now passes for all 13 skills, and the shared-code lock passes all four listed
+files. No lock hash or validator was relaxed. Fresh hosted checks remain
+necessary for this corrected head.
