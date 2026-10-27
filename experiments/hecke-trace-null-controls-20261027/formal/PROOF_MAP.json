@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-trace-null-controls-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Every group element a has a completion -a to a+b=0, and any such b is uniquely -a.",
+      "lean_declarations": ["NullCompletion.pair_completion_exists", "NullCompletion.pair_completion_unique"],
+      "status": "checked",
+      "hypotheses": "An arbitrary type with the standard associative addition, identity and two-sided inverse laws stated in AddGroupData."
+    },
+    {
+      "result": "For any a,b there is a unique c solving (a+b)+c=0; if a+b is nonzero then c is nonzero.",
+      "lean_declarations": ["NullCompletion.triple_completion_exists", "NullCompletion.triple_completion_unique", "NullCompletion.nonzero_sum_has_nonzero_completion"],
+      "status": "checked",
+      "hypotheses": "The same abstract group laws and a nonzero partial sum for the last statement."
+    },
+    {
+      "result": "For m iid uniform nonidentity draws from a finite group of order N, the exact expected signed support-two and support-three counts are 2 choose(m,2)/(N-1) and 4 choose(m,3)(N-2)/(N-1)^2.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "A pinned finite-cardinality and uniform-probability development connecting unique group completions to the count of admissible assignments and linearity of expectation. The written proof and three exact numeric instances are independently replayed."
+    }
+  ]
+}
