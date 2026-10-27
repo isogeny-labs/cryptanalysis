@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-d79-direct-rank-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "All 18 baseline and 122 direct integer rows annihilate the frozen nonzero 39-coordinate vector modulo 61.",
+      "lean_declarations": ["DirectRankP317.all_rows_annihilate_projection", "DirectRankP317.projection_nonzero"],
+      "status": "checked",
+      "hypotheses": "Exact numerical row and projection lists generated from the hash-pinned p317 receipts."
+    },
+    {
+      "result": "A selected 38 by 38 minor modulo 61 and a 39 by 39 direct-row minor modulo 2 each have an explicit inverse.",
+      "lean_declarations": ["DirectRankP317.mod61_minor_matches", "DirectRankP317.mod61_inverse_certificate", "DirectRankP317.mod2_minor_matches", "DirectRankP317.mod2_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Exact finite matrices extracted from the frozen direct rows; standard Lean propext is the only reported axiom."
+    },
+    {
+      "result": "The direct-row matrix has rank 38 over F61 and rank 39 over Q, and each row represents an exact E11a1(F317) point identity.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "A Lean matrix/rank development proving the implications from the explicit nonzero kernel vector and invertible minors, plus a formal finite-field elliptic-curve bridge tying the integer rows to the 39 supplied point coordinates. The written proof and independent checked-Sage replay retain the full claim."
+    }
+  ]
+}
