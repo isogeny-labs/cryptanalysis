@@ -1,0 +1,26 @@
+{
+  "cache_artifact_path": "experiments/hecke-d79-function-cache-20261027/artifacts/hecke13-131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac.json",
+  "cache_artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "cache_function_digest": "ebc29c5c9b4f3de35bc45afa4ac9f3b40db2f1a68c5a9912396a0ab67dca24ea",
+  "candidate_id": null,
+  "comparator": "ascending point index",
+  "prefix_runner_path": "experiments/hecke-d79-source-prefix-20261027/run.py",
+  "prefix_runner_sha256": "4de8f66bf61394ed91077e29b279f7f5c55c840f07dcc64f270888e0f5113886",
+  "priority_policy": "partition the x-then-y sorted 40 class points by order-five residue; visit nonempty residues in ascending residue number round-robin, with ascending point index within each residue",
+  "relation_policy": "base degree-2/5 rows plus direct support<=4 rows; enumerate signed Hecke outside-trace cancellations at support<=4; stop first rational rank 40 or after 40 sources",
+  "schema": "hecke-d79-priority-holdout-inputs-v1",
+  "selection": {
+    "curve": "y^2+y=x^3-x^2-10*x-20",
+    "no_replacement_on_failure": true,
+    "order_rule": "5 divides #E(Fp), 5 does not divide p-1, largest prime divisor of #E(Fp) >=53",
+    "p_rule": "p=v*v+316 prime",
+    "take_first": 2,
+    "v_end": 500,
+    "v_start": 251,
+    "v_step": 2
+  },
+  "source_path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+  "source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "target_online_ms": null,
+  "wall_cap_seconds_per_job": 1800
+}
