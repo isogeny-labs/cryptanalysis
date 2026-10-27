@@ -272,7 +272,7 @@ static ca_status grumpy_solve_impl(const ca_group *g, const ca_elem *base, const
     uint64_t i = 0;
     double elapsed_prior = 0;
     rc = CA_ERR_INTERNAL;
-    if (existing) {
+    if (existing && checkpoint_path) {
         if (!grumpy_checkpoint_load(checkpoint_path, &saved, g, walk, &tab)) {
             rc = CA_ERR_INVALID;
             goto out;

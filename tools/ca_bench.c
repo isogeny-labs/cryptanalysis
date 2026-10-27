@@ -181,13 +181,18 @@ static int sha256_file(const char *path, char hex[65])
     sha256_ctx c;
     sha256_init(&c);
     uint8_t buf[1 << 16];
-    size_t got;
-    while ((got = fread(buf, 1, sizeof buf, f)) > 0) sha256_update(&c, buf, got);
-    const int err = ferror(f);
-    fclose(f);
-    if (err) return -1;
-    sha256_final(&c, hex);
-    return 0;
+    for (;;) {
+        size_t got = fread(buf, 1, sizeof buf, f);
+        if (got) sha256_update(&c, buf, got);
+        if (got == sizeof buf) continue;
+        /* A short read ends this regular-file stream. Do not read again after
+         * an error or EOF; the stream's position may be indeterminate. */
+        const int err = ferror(f) || !feof(f);
+        fclose(f);
+        if (err) return -1;
+        sha256_final(&c, hex);
+        return 0;
+    }
 }
 
 /* A JSON string: quotes, backslashes and control characters escaped, every

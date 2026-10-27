@@ -529,6 +529,9 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
               h.bloom_words * sizeof(uint64_t)) % sizeof(pc_entry) == 0;
     }
     if (!ok) { fclose(f); ca_set_error("precomp checkpoint identity or header mismatch"); return CA_ERR_INVALID; }
+    /* Header identity, element overflow, and exact file payload length were
+     * checked above. Memory exhaustion is returned to the caller. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     pc_entry *entries = malloc((h.count ? h.count : 1) * sizeof(*entries));
     if (!entries) { fclose(f); return CA_ERR_NOMEM; }
     ok = fread(entries, sizeof(*entries), h.count, f) == h.count;

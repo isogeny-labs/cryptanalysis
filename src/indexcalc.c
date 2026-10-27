@@ -168,7 +168,8 @@ static int ic_sync_parent(const char *path)
 }
 
 static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
-                             rel_list *rels, uint8_t *complete, uint64_t *candidates)
+                             rel_list *rels, uint8_t *complete, size_t complete_len,
+                             uint64_t *candidates)
 {
     FILE *f = fopen(path, "rb+");
     if (!f && errno == ENOENT) {
@@ -198,7 +199,7 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        if (r.marker != UINT32_C(0x43493152) || r.index > 2 * want->C ||
+        if (r.marker != UINT32_C(0x43493152) || r.index >= complete_len ||
             r.count > 2 * want->C + 1 || complete[r.index]) {
             ca_set_error("checkpoint contains an invalid or duplicate sieve unit");
             fclose(f);
@@ -632,6 +633,9 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
         ca_set_error("random-exponent checkpoint identity or header mismatch");
         return -1;
     }
+    /* The header count is checked against the run identity and the exact
+     * on-disk payload length above; allocation failure remains an error. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.TaintedAlloc)
     relation *saved = malloc((size_t)h.count * sizeof(*saved));
     if (!saved) { fclose(f); return -2; }
     ok = fread(saved, sizeof(*saved), h.count, f) == h.count && fgetc(f) == EOF;
@@ -1119,7 +1123,8 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             header.relation_size = sizeof(relation);
             uint64_t replay_candidates = 0;
             s.journal = ic_journal_open(checkpoint_path, &header, &rels,
-                                        s.complete, &replay_candidates);
+                                        s.complete, (size_t)2 * C + 1,
+                                        &replay_candidates);
             if (!s.journal) {
                 free(s.complete); pthread_mutex_destroy(&s.lock);
                 free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);

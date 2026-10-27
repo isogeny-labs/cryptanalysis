@@ -264,6 +264,9 @@ static int delegate_cli(const char *env_name, const char *default_binary)
     child[0] = binary_copy;
     for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
     child[argc_g - 1] = NULL;
+    /* The named environment override intentionally selects the executable.
+     * execvp passes an argv vector directly; no shell parses these bytes. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.GenericTaint)
     execvp(binary, child);
     int saved_errno = errno;
     fprintf(stderr, "error: cannot execute %s for %s: %s\n", binary, env_name,
@@ -718,11 +721,13 @@ static int ic_manifest_matches(const char *dir, const char *expected)
     FILE *f = fopen(path, "rb");
     free(path);
     if (!f) return 0;
-    size_t n = strlen(expected);
-    char *got = malloc(n ? n : 1);
-    int ok = got && fread(got, 1, n, f) == n && fgetc(f) == EOF &&
+    /* Every caller formats expected in a stack buffer of at most 2048 bytes.
+     * Keep the comparison bounded even if the checkpoint file is untrusted. */
+    char got[2048];
+    size_t n = strnlen(expected, sizeof got);
+    if (n == sizeof got) { fclose(f); return 0; }
+    int ok = fread(got, 1, n, f) == n && fgetc(f) == EOF &&
              memcmp(got, expected, n) == 0;
-    free(got);
     fclose(f);
     return ok;
 }
@@ -1943,7 +1948,12 @@ static const char *coord_token(void)
         const char *got = fgets(buf, sizeof(buf), f);
         fclose(f);
         if (!got) die("--token-file is empty");
-        buf[strcspn(buf, "\r\n")] = 0;
+        for (size_t i = 0; i < sizeof buf; i++) {
+            if (buf[i] == '\r' || buf[i] == '\n' || buf[i] == '\0') {
+                buf[i] = '\0';
+                break;
+            }
+        }
         if (!buf[0]) die("--token-file is empty");
         return buf;
     }
@@ -1976,8 +1986,9 @@ static size_t coord_url_split(const char *list, char **out, size_t max)
         while (*p == ' ' || *p == ',') p++;
         if (!*p) break;
         const char *end = strchr(p, ',');
-        size_t len = end ? (size_t)(end - p) : strlen(p);
-        while (len && (p[len - 1] == ' ')) len--;
+        const char *trim_end = end ? end : p + strlen(p);
+        while (trim_end > p && trim_end[-1] == ' ') trim_end--;
+        size_t len = (size_t)(trim_end - p);
         if (!len) {
             if (!end) break;
             p = end + 1;
@@ -2071,7 +2082,12 @@ static ca_coord_ctx *coord_load(int allow_remote)
         const char *got = fgets(line, sizeof(line), f);
         fclose(f);
         if (!got) die("--job is empty");
-        line[strcspn(line, "\r\n")] = 0;
+        for (size_t i = 0; i < sizeof line; i++) {
+            if (line[i] == '\r' || line[i] == '\n' || line[i] == '\0') {
+                line[i] = '\0';
+                break;
+            }
+        }
         ca_status rc = ca_coord_job_decode(&job, line);
         if (rc != CA_OK) die_status(rc);
     } else if (allow_remote && coord_url()) {
