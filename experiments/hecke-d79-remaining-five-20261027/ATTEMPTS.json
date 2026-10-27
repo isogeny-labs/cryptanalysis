@@ -1,0 +1,258 @@
+{
+  "attempts": [
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p3797/run.py",
+      "exit_code": 0,
+      "output_sha256": "028b5333582f1d56fb1c1d7689688c86767ec539f787a44e099bf86000298c79",
+      "p": 3797,
+      "stage": "producer",
+      "status": "PASS",
+      "stderr_sha256": "a9c18a339826c7eed3195ecf50e30250280cce393018ef8125760a3a13f68b2f",
+      "stdout_sha256": "1856e839f21cefc696a77c04530fc7bda54db2caa37f3b83df730a0ff0879fce"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p3797/analyze.py",
+      "exit_code": 0,
+      "output_sha256": "eb5fb937bda0ee0c6c482cdbb86d45adc02819eba5239d1bd6f31937f159fd57",
+      "p": 3797,
+      "stage": "support4_analysis",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "85b334797a650b1768cdfe22e3cbec3007e519bd85990a5f21987f6ea7742aee"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p3797/audit_sage.py",
+      "exit_code": 0,
+      "output_sha256": "6de20ca5881afbeff6998840136f57ae56685714722a4f517437e8ab78b76b99",
+      "p": 3797,
+      "stage": "independent_sage_audit",
+      "status": "PASS",
+      "stderr_sha256": "d2b66acc83d52d2555251c52c16eb1cb9b05241d5e7db07543e25feb75f13dce",
+      "stdout_sha256": "85ce4db8f1282c2d046332ce59d71c8f3827b032aa7edb9b134f5ced86bab15a"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p3797/audit_q_logs_sage.py",
+      "exit_code": 0,
+      "output_sha256": "0bd9a0264ab4f39756a8b512a65c5c5869046bea16953592044cbda7db4c5cef",
+      "p": 3797,
+      "stage": "q_log_audit",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e01ca4ef51b539fc8f3235967f9b9867e6fc8a30a1fd23e84e86e7caabf0c780"
+    },
+    {
+      "command": "cd experiments/hecke-d79-remaining-five-20261027/p3797/formal && lake build RankP3797",
+      "exit_code": 0,
+      "output_sha256": "1042397bb63f65dd1ac08360c612c4b2febe802596928b6fa2cf466ebfe73aa3",
+      "p": 3797,
+      "stage": "lean_rank_certificates",
+      "status": "PASS",
+      "stderr_sha256": null,
+      "stdout_sha256": "dd76eb67e908441fc7bcb6f617e4115f76b2cd202ada55e5c624b1ad0b325f29"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8237/run.py",
+      "exit_code": 0,
+      "output_sha256": "c8506c60e4536700b57f4fe92f26f0b098e8c24313d0bbd525bc0661a2e73949",
+      "p": 8237,
+      "stage": "producer",
+      "status": "PASS",
+      "stderr_sha256": "e06a40683d65dacbc51201b126dd02f00d9ce69183a40d7036f5066361c251e0",
+      "stdout_sha256": "7dc5b7adc06132ed122f450e036abce9ad3fea497c7d99bbbe0a099d93164934"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8237/analyze.py",
+      "exit_code": 0,
+      "output_sha256": "11c6ebb49a911fec7980f67c77b8f85322c189a8467410d6ee2bdba1f6b51d25",
+      "p": 8237,
+      "stage": "support4_analysis",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9f7c76a54c1dad33955db9bd63fc18ac272f0fb3511a1e51c256ea0056d96e81"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8237/audit_sage.py",
+      "exit_code": 0,
+      "output_sha256": "a7c99458adfacc41bbb7db5e387a085b8827414e74f960f8c08d10ab2164153d",
+      "p": 8237,
+      "stage": "independent_sage_audit",
+      "status": "PASS",
+      "stderr_sha256": "828a9cc7c56a0f3cb188de93839fcea820d8250ffe6a8ba00c203e5193dd2df2",
+      "stdout_sha256": "d3e0553fa52ad2d72b7eb43e103e854c939acf68bd63d34a3e5968c648122a84"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8237/audit_q_logs_sage.py",
+      "exit_code": 0,
+      "output_sha256": "b89190a69f1c5dd9b985be50649822c6baa6518fe5594c78738a38af3a9155d6",
+      "p": 8237,
+      "stage": "q_log_audit",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4af03707210b01f061d0f8e5a0c89d389c4bd0999dc35df3924b2bf8f549fbd8"
+    },
+    {
+      "command": "cd experiments/hecke-d79-remaining-five-20261027/p8237/formal && lake build RankP8237",
+      "exit_code": 0,
+      "output_sha256": "c4923334da4cbc41850c18b759eb0e334f63096f775bb027228b230f04079d99",
+      "p": 8237,
+      "stage": "lean_rank_certificates",
+      "status": "PASS",
+      "stderr_sha256": null,
+      "stdout_sha256": "2daef61e07225fbf50ae55ee89d31a45164cef6562317e967485e0bbe219fc6e"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8597/run.py",
+      "exit_code": 0,
+      "output_sha256": "1fa9c5a779d798da6fa726c41384f40ca03552e7e1f13e8539fe85e4d21a3a58",
+      "p": 8597,
+      "stage": "producer",
+      "status": "PASS",
+      "stderr_sha256": "9084df52071e9183f4e5b8f9077a66f36dc8b168367d649fda61d5ae2cb19382",
+      "stdout_sha256": "ef99a04a9aa34c42bf5c5307a3eafa3a11787e18b6a37f1258486ebeb2bd2a6c"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8597/analyze.py",
+      "exit_code": 0,
+      "output_sha256": "600dbdca92a3205d40c7dda8567313efd201c97a82da20de5984bb1604a08022",
+      "p": 8597,
+      "stage": "support4_analysis",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0b2c5d39d10967dbb4d35ae93132711d72266803500dd17065bd897443c30fe9"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8597/audit_sage.py",
+      "exit_code": 0,
+      "output_sha256": "6c2bda279593e28358fab6ec5a93111c500070fda80a6557b2dc7bf7b22ee0eb",
+      "p": 8597,
+      "stage": "independent_sage_audit",
+      "status": "PASS",
+      "stderr_sha256": "b675ad304fffcc3f716792d3c1a2fb216d957ba021d49304b8abe5c3dca527e6",
+      "stdout_sha256": "0a70ea97649cd1ee55ffafc490199d47a6fbd81d14c67970eec68e73806114b5"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p8597/audit_q_logs_sage.py",
+      "exit_code": 0,
+      "output_sha256": "8526c56562c8891a370aa6a1389c5388d1c8ddaa0440513b518ac381404f635f",
+      "p": 8597,
+      "stage": "q_log_audit",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1221ef96855dfdea896f3a7f554074825d6e3cba402eba67916a2c28b543b293"
+    },
+    {
+      "command": "cd experiments/hecke-d79-remaining-five-20261027/p8597/formal && lake build RankP8597",
+      "exit_code": 0,
+      "output_sha256": "4f970306cc81f6e74aabde557892303bcf2ced091fc0b831a024ed1c333579ab",
+      "p": 8597,
+      "stage": "lean_rank_certificates",
+      "status": "PASS",
+      "stderr_sha256": null,
+      "stdout_sha256": "6f6cbf9a978d1c666c1d5b3e0cf789f5427ff5fc2370f810a3bcc528cc3c6f38"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12197/run.py",
+      "exit_code": 0,
+      "output_sha256": "5d96cfbf71c95a8bbc3d0b32d7189793ec66c6c0306d078888d53655ad2dcd60",
+      "p": 12197,
+      "stage": "producer",
+      "status": "PASS",
+      "stderr_sha256": "c3953eaf0284438fd92ef392bb67a410aee2cfeb8d63ee2994edbb0e42926a6f",
+      "stdout_sha256": "af195c9ddeb1b35945eb8343f9f22096e0111f78b0cda1621d7aa8cbaa6f0448"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12197/analyze.py",
+      "exit_code": 0,
+      "output_sha256": "be8b877d92dae462f44117e94fa6a7d87b9ad5022c23b5a90b6cf2baa911ce68",
+      "p": 12197,
+      "stage": "support4_analysis",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ad54390051e3f0e0ee59bbbfc606c0447f8aa7e7a9ffa4b4ff9b3a134f3479d2"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12197/audit_sage.py",
+      "exit_code": 0,
+      "output_sha256": "028967c5de328f53da1d41f761961be2dd65c54786d0feaee665fb250c3cdaed",
+      "p": 12197,
+      "stage": "independent_sage_audit",
+      "status": "PASS",
+      "stderr_sha256": "696e40cdeab444e05aedbb88bbe3855a018ba7fd63b379cf5dffb21e355e4e88",
+      "stdout_sha256": "882147075a41980e8d4acb124a910bbec522f37213596c4da5fd828e3ad34896"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12197/audit_q_logs_sage.py",
+      "exit_code": 0,
+      "output_sha256": "7320cc78abe37a445b433e95aedbb9b4ba2f072ecbb536b7c4a39f4c8cb9217f",
+      "p": 12197,
+      "stage": "q_log_audit",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4c9e4e76efc6a71b4ddf1d22143249413dfba918c2f3a74fba034883027d03cb"
+    },
+    {
+      "command": "cd experiments/hecke-d79-remaining-five-20261027/p12197/formal && lake build RankP12197",
+      "exit_code": 0,
+      "output_sha256": "b2df8109952e8c35878d11a52bb7958ac76152d41dee2dc45bcd45e0f8b29953",
+      "p": 12197,
+      "stage": "lean_rank_certificates",
+      "status": "PASS",
+      "stderr_sha256": null,
+      "stdout_sha256": "029e703bf08f5a64197675e39b0ed43c7e53ba2a20dba977b3905ad580cd4e37"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12637/run.py",
+      "exit_code": 0,
+      "output_sha256": "c25e8c7cb4c950f3aa8bc23c6ba026778b2923d04362c60f457489cd48a92b2b",
+      "p": 12637,
+      "stage": "producer",
+      "status": "PASS",
+      "stderr_sha256": "93ff9ca9695fcefc973d379c4a76c20812b00f2f8eba5b7890c6fdca037a5e0c",
+      "stdout_sha256": "1856e839f21cefc696a77c04530fc7bda54db2caa37f3b83df730a0ff0879fce"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12637/analyze.py",
+      "exit_code": 0,
+      "output_sha256": "b744446c9955f04d8ff6e219cc4aa23f59df93202e8fc8eb7f6f761fdaa8e9c5",
+      "p": 12637,
+      "stage": "support4_analysis",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e5a141db5f1a1667761f9c46f92795a73abfea307dbea23cc732482c5b27f259"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12637/audit_sage.py",
+      "exit_code": 0,
+      "output_sha256": "f8917907d689e848f01a422ea2cae590ae6f1064fcc94376c3e1d715a8a0726f",
+      "p": 12637,
+      "stage": "independent_sage_audit",
+      "status": "PASS",
+      "stderr_sha256": "aea020bf31a2cdfb1f9a64bea8c5a55c2a6ec2402c6f59c1c0dff23e932881f1",
+      "stdout_sha256": "e52556ef192bffac8601f8a6ced0bafa8b187af10680068e35f0bd6befa0188f"
+    },
+    {
+      "command": "./sage -python experiments/hecke-d79-remaining-five-20261027/p12637/audit_q_logs_sage.py",
+      "exit_code": 0,
+      "output_sha256": "10561bfaa44d01b607a5be1c2d8ad3f46823a08ba9a20b13ee10a841a33bd99c",
+      "p": 12637,
+      "stage": "q_log_audit",
+      "status": "PASS",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "37e67b91abfbbb3e228a52652909c8711d4698a645e3799c0eb84ed47382c8ec"
+    },
+    {
+      "command": "cd experiments/hecke-d79-remaining-five-20261027/p12637/formal && lake build RankP12637",
+      "exit_code": 0,
+      "output_sha256": "a064aa8fb081b0579043cdf9769a6134315ca0060a18b3e8ef1c9936117ba186",
+      "p": 12637,
+      "stage": "lean_rank_certificates",
+      "status": "PASS",
+      "stderr_sha256": null,
+      "stdout_sha256": "0afe796637d507ab9aeb42d3b64eeff09756fe810d2020a913a1325244042aa9"
+    }
+  ],
+  "formal_generation_check_sha256": "80879459c52e2ed3db5051745ebc2710ddccc5f88e2a1295544e25d73b55f1e2",
+  "sage_runtime_info_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "schema": "hecke-d79-remaining-five-attempts-v1",
+  "status": "PASS"
+}
