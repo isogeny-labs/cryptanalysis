@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Bind the frozen Lean corpus and natively check added Hecke theorem modules.
+"""Bind the frozen Lean corpus and natively check admitted theorem modules.
 
 The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
 byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
-files and the PQC assay are separately pinned. New Hecke modules are checked
-by the pinned Mathlib toolchain in addition to that frozen bridge. Other
-source or pin changes still fail until native evidence is added here.
+files and the PQC assay are separately pinned. New Hecke modules use the
+pinned Mathlib toolchain; the reviewed Hasse-square module uses its own pinned
+toolchain. Other source or pin changes still fail until native evidence is
+added here.
 """
 from __future__ import annotations
 
@@ -27,6 +28,9 @@ ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
+HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
+HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
+HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -341,6 +345,49 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     return checked
 
 
+def check_new_hasse() -> str:
+    """Rebuild the source-bound Nat bridge and audit its transitive axioms."""
+    require((HASSE_FORMAL / "lean-toolchain").read_text().strip() ==
+            "leanprover/lean4:v4.34.1", "Hasse theorem toolchain changed")
+    source = (ROOT / HASSE_SOURCE).read_text()
+    require(digest(ROOT / HASSE_SOURCE) == HASSE_SHA256,
+            "Hasse theorem source changed without review")
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            "forbidden proof escape in Hasse theorem source")
+    declared = set(re.findall(r"^theorem\s+(\w+)", source, re.MULTILINE))
+    requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+    require(declared == {
+        "squared_deviations_have_short_sum",
+        "unique_multiple_from_squared_center_bounds",
+        "unsignedDelta_center_bounds",
+        "unique_multiple_from_hasse_squared_checks",
+    } and len(requested) == len(declared) and set(requested) == declared,
+            "Hasse theorem declaration or axiom printout coverage changed")
+    with tempfile.TemporaryDirectory(prefix="hasse-corpus-") as temporary:
+        env = {**os.environ, "LEAN_PATH": temporary}
+        run(["lean", "-o", str(Path(temporary) / "HasseUnique.olean"),
+             "HasseUnique.lean"], cwd=HASSE_FORMAL, env=env)
+        built = run(["lean", "-o", str(Path(temporary) / "HasseSquareBounds.olean"),
+                     "HasseSquareBounds.lean"], cwd=HASSE_FORMAL, env=env)
+        printed = re.findall(r"^'CurveAudit\.([^']+)' depends on axioms: \[([^]]*)\]$",
+                             built.stdout, re.MULTILINE)
+        require(len(printed) == len(declared) and
+                {name for name, _ in printed} == declared and
+                all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                    <= {"propext", "Classical.choice", "Quot.sound"}
+                    for _, names in printed),
+                "Hasse native axiom printout changed")
+        audit = run(["lean", "--run", str(ROOT / "tools/lean/AuditAxioms.lean"),
+                     "HasseSquareBounds"], cwd=HASSE_FORMAL, env=env)
+        audited = [line for line in audit.stdout.splitlines()
+                   if line.startswith("ok    ") or line.startswith("audited ")]
+        require(len(audited) == 6 and
+                audited[-1] ==
+                "audited 5 theorems in [HasseSquareBounds]; 0 failing, 0 trusted (native_decide)",
+                "Hasse transitive theorem audit changed")
+    return HASSE_SHA256
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-receipt", type=Path)
@@ -368,8 +415,11 @@ def main() -> None:
         require(args.check_receipt.read_bytes() == encoded, "committed corpus receipt differs")
     else:
         print(encoded.decode(), end="")
-    checked = check_new_hecke(additions)
-    print(f"native Hecke theorem modules checked: {len(checked)}")
+    hasse_addition = HASSE_SOURCE in additions
+    checked = check_new_hecke(additions - {HASSE_SOURCE})
+    if hasse_addition:
+        checked[HASSE_SOURCE] = check_new_hasse()
+    print(f"native added theorem modules checked: {len(checked)}")
 
 
 if __name__ == "__main__":
