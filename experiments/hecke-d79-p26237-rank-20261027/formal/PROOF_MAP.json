@@ -1,0 +1,31 @@
+{
+  "schema": "hecke-d79-p26237-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "For three signed terms with order-five residues in {0,1,4}, zero projection occurs exactly for three zeros or one zero and opposite nonzero residues.",
+      "lean_declarations": ["MixedProjection.triple_zero_characterization"],
+      "status": "checked",
+      "hypotheses": "Three elements of Fin 5, each in {0,1,4}; the statement is a finite projection characterization, not an elliptic-curve identity."
+    },
+    {
+      "result": "The frozen 0:20,1:20 class gives 12160 projection-eligible signed triples out of 39520 and 197695 eligible signed quadruples out of 731120; uniform-in-coset means are 320/137 and 10405/274.",
+      "lean_declarations": ["MixedProjection.frozen_support_three_count_arithmetic", "MixedProjection.frozen_support_four_count_arithmetic"],
+      "status": "partial",
+      "missing": "Formalize the full signed-index enumeration and bijection from the 20/20 class partition to the binomial counting formulas; connect the frozen Sage projection list to that partition in Lean. The exact Python enumeration and Lean arithmetic checks are retained."
+    },
+    {
+      "result": "The explicit direct, Hecke-trace and combined matrices have respective ranks 35, 35 and 39 over F137, and 35, 35 and 40 over Q.",
+      "lean_declarations": ["RankP26237.direct_all_rows_annihilate_q_kernels", "RankP26237.direct_all_rows_annihilate_z_kernels", "RankP26237.hecke_all_rows_annihilate_q_kernels", "RankP26237.hecke_all_rows_annihilate_z_kernels", "RankP26237.both_all_rows_annihilate_q_kernels"],
+      "status": "partial",
+      "hypotheses": "Hash-pinned numerical rows checked by independent Sage replay. Generated Lean declarations check complete-row kernels, free-coordinate independence patterns, selected-row membership and invertible minors over F137 and F3.",
+      "missing": "Formalize the general implications from independent kernel vectors and invertible minors to exact matrix rank. The checked certificates and written linear-algebra argument retain the numerical result."
+    },
+    {
+      "result": "The actual E11a1(F26237) class has the frozen 0/1 order-five projection, the exact relation counts and complementary support-four rank contributions.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Formalize the finite-field curve, multiplication-by-5206 projection, all 40 class points and degree-13 trace sums, all group identities, and the bridge from audited rows to Lean matrices. The written proof and independent Sage replay retain the curve-specific result."
+    }
+  ]
+}
