@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="380" viewBox="0 0 1180 380">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:Arial,sans-serif;fill:#182230}.title{font-size:26px;font-weight:bold}.label{font-size:17px}.small{font-size:14px}.axis{stroke:#526174;stroke-width:2}.fresh{fill:#2878b5}.control{fill:#d88b24}.good{fill:#31865b}.warn{fill:#bd5a45}.box{fill:#f3f6f9;stroke:#536579;stroke-width:2}</style>
+<text x="40" y="42" class="title">Audited live collector: saved-evidence flow</text>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#526174"/></marker></defs>
+<rect x="45" y="140" width="185" height="96" rx="8" class="box"/>
+<text x="137" y="178" text-anchor="middle" class="small">Frozen classes, q fields,</text>
+<text x="137" y="202" text-anchor="middle" class="small">source order and cap</text>
+<rect x="275" y="140" width="185" height="96" rx="8" class="box"/>
+<text x="367" y="178" text-anchor="middle" class="small">Collect degree-13</text>
+<text x="367" y="202" text-anchor="middle" class="small">lifts; journal each</text>
+<rect x="505" y="140" width="185" height="96" rx="8" class="box"/>
+<text x="597" y="178" text-anchor="middle" class="small">Enumerate exact rows</text>
+<text x="597" y="202" text-anchor="middle" class="small">with support &lt;= 7</text>
+<rect x="735" y="140" width="185" height="96" rx="8" class="box"/>
+<text x="827" y="178" text-anchor="middle" class="small">Update F_q rank; stop</text>
+<text x="827" y="202" text-anchor="middle" class="small">at 39 or source cap</text>
+<rect x="965" y="140" width="185" height="96" rx="8" class="box"/>
+<text x="1057" y="178" text-anchor="middle" class="small">Independent Sage audit;</text>
+<text x="1057" y="202" text-anchor="middle" class="small">replay anchored logs</text>
+<line x1="230" y1="188" x2="268" y2="188" stroke="#526174" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="460" y1="188" x2="498" y2="188" stroke="#526174" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="690" y1="188" x2="728" y2="188" stroke="#526174" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="920" y1="188" x2="958" y2="188" stroke="#526174" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="45" y="300" class="label">Frozen panel: 7/8 fresh classes rank 39; p1825517 remains rank 38 at 40 sources.</text>
+<text x="45" y="330" class="small">Only saved records are summarized here; no new lift collection or relation search was run.</text>
+</svg>
