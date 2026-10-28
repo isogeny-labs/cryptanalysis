@@ -1,0 +1,5 @@
+# Versioned producer resume
+
+The sealed original replay completed seven cases, then the process ended during a host interruption. Its partial p3538477 journal and the seven-case index/stdout/stderr snapshot are retained under `interrupted-run/`. `pre-resume.json` seals those identities and `resume_sage.py`; the latter changes only startup to verify and skip the seven complete cases and continue the remaining two with the same sealed group kernels and inputs.
+
+The first resume launcher invocation failed before entering Sage because the temporary directory target of the repository `.sage-build-tmp` symlink had disappeared after the host restart. Its stderr is retained as `interrupted-run/launcher-failure-stderr.txt`. The missing `/private/tmp/cryptanalysis-sage-build-cache-20261019` directory was recreated, and the checked launcher returned `resume-runtime-info.txt` before the replay resumed. The two runtime-info files have identical content. The failed launcher performed no experiment work.
