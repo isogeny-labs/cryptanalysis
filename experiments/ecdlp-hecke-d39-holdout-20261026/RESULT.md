@@ -1,4 +1,6 @@
-# Independent low-conductor `D_K=-39` Hecke rank control
+# Exploratory low-conductor `D_K=-39` Hecke rank control
+
+> **Exploratory, not an independently verifiable holdout.** `PROTOCOL.md` and the completed result are first published together in this PR. Although the protocol records that inputs and predictions were fixed before the producer ran, this repository does not establish an earlier public freeze; the agreement below is therefore a post-run exploratory comparison.
 
 The prespecified `D_K=-39`, conductor-6 class walk on `X_0(11)/F_367` reached 64 rational points, and its 48 verified Hecke relations have rank 40. Both numbers match the frozen prediction from the earlier `D_K=-7` empirical rule. The 64 Atkin–Lehner rows raise rank to 52, also matching the frozen deficiency prediction of 11. A prior `D_K=-39`, conductor-30 run over `F_8779` had already established cross-discriminant behavior; this run adds a smaller, different-field check at conductor 6 and norm-2 class order 12, versus order 24 in that earlier conductor-30 case.
 
