@@ -535,6 +535,13 @@ class GeneralCurveTests(unittest.TestCase):
         self.assertNotEqual(C.G[0], kernel.INF_X)
         self.assertEqual(C.tag[0], "o")
 
+    def test_ordinary_curve_indices_give_distinct_curves(self):
+        from toycurve import pick_ordinary_a6
+
+        for n, a2 in ((7, 0), (9, 0), (13, 1)):
+            picks = [pick_ordinary_a6(n, a2, i) for i in range(6)]
+            self.assertEqual(len(set(picks)), len(picks), (n, a2, picks))
+
     def test_ordinary_curve_decomposition_agrees_with_the_oracle(self):
         import profile as prof
 

@@ -340,11 +340,12 @@ class ToyCurve:
 def pick_ordinary_a6(n: int, a2: int, index: int, max_cofactor: int = 4, tries: int = 4000) -> int:
     """A deterministic 'random' a6 (not 0, 1) whose curve y^2+xy=x^3+a2 x^2+a6 has #E = h r, r prime, h in {2, 4}.
 
-    The stream is seeded by (n, a2, index); earlier accepted a6 for lower indices are skipped, so the index-th
-    curve is distinct.  h is always even (the point (0, sqrt(a6)) has order 2).
+    One stream per (n, a2) is walked and the index-th accepted a6 is returned, so distinct indices give
+    distinct curves.  h is always even (the point (0, sqrt(a6)) has order 2).
     """
-    rng = random.Random(f"ordinary-a6|{n}|{a2}|{index}")
+    rng = random.Random(f"ordinary-a6|{n}|{a2}|0")
     seen: set[int] = set()
+    accepted = 0
     while len(seen) < tries:
         a6 = rng.randrange(2, 1 << n)
         if a6 in seen:
@@ -354,5 +355,8 @@ def pick_ordinary_a6(n: int, a2: int, index: int, max_cofactor: int = 4, tries: 
         order = trace_count_order(K)
         for h in (2, 4):
             if h <= max_cofactor and order % h == 0 and is_probable_prime(order // h) and (order // h).bit_length() >= n - 1:
-                return a6
+                if accepted == index:
+                    return a6
+                accepted += 1
+                break
     raise RuntimeError(f"no ordinary a6 found for n={n}, a2={a2}")
