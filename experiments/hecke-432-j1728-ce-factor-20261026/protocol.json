@@ -1,0 +1,22 @@
+{
+  "inputs": {
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "eliminant": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-cubic-twist-holdout-20261026/elimination_result.json",
+      "sha256": "68159a86b24fc4e8db6b9e5a8eea0c63c98ccacc2b823abf1d838c934606aae3"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    }
+  },
+  "lower_bound_inclusive": 5000,
+  "prediction": "for selected class-1 primes, every C-E resolvent factor degree is even and there are zero rational C-E pairs; for selected class-11 primes, each C resolvent has four linear and four quadratic factors and at least one rational C-E pair; for selected class-5 primes, the rational source-j1728 C fiber is empty",
+  "preserve_zero_cells": true,
+  "selection_rule": "scan ascending primes in each p mod 12 class; select first three class-1 primes with at least 18 rational source-j1728 C points, first three class-11 primes with at least two such C points, and first three class-5 primes irrespective of C count; source-free selection uses exact x eliminant and source-j map only",
+  "status": "FROZEN_BEFORE_PROSPECTIVE_SOURCE_SELECTION",
+  "upper_bound_exclusive": 10000
+}
