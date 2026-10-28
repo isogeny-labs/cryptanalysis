@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Known-label Lean corpus admission](lean-corpus-known-label-admission.md) | investigating | passing current-main Lean corpus gate and native evidence for four proposed ring identities | exact-source native build, named and module axiom audits, all current-head CI, guarded merge |
 | [Ubuntu 26 static-analysis runner drift](static-analysis-ubuntu26-tool-drift.md) | investigating | exact-head code-validation gate for modular arithmetic assay PR #1109; 36 newer-tool candidate findings in unchanged C files | reproduce on unchanged base, triage each finding, then pass exact-head checks |
 | [PR 1104 inherited CI failures](ghs-pr-1104-inherited-ci-failures.md) | investigating | final merge of Rust GHS research PR; reviewed main repairs integrated and local gates pass | green final-head hosted checks and a verified guarded merge |
 | [Binary cubic gluing target and novelty](binary-cubic-gluing-target-and-novelty.md) | investigating | explicit quotient identification and globally novel affected-family claim; 33 spectral quartics and a CM criterion now recorded | primary-text priority comparison, polarized source-to-quartic identification and checked subgroup/log map |
