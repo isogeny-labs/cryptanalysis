@@ -1,0 +1,3 @@
+# Version 2 zero-query rule
+
+The v1 scorer stopped on p2105717 because the frozen base, earlier eight-source rows, and the current source's lower-support rows already had rank 39 before that source's eight-source query loop. Preserve v1 pre-design.json, score.py, design-stdout.jsonl, and design-stderr.txt as the failed attempt. In v2, assign every query policy probe position 0 for a class whose pre-eight rank is already 39. This is a shared zero-query outcome, so it cannot select among the four orders. All other policy definitions, class inputs, eight-class aggregate criterion, and tie rule in DESIGN_PROTOCOL.md remain fixed.
