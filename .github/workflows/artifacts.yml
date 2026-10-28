@@ -18,7 +18,10 @@ concurrency:
 jobs:
   store:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # A large integration's lazy Git blobs are checked before workflow wiring.
+    # Run 40604596682 passed policy/unit checks but was cancelled at ten minutes
+    # during wiring. Keep the complete checks and allow their cold I/O to finish.
+    timeout-minutes: 30
     steps:
       # The merge commit and its first parent (the base); blobs on demand only.
       - uses: actions/checkout@v4
