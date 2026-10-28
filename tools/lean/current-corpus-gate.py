@@ -358,13 +358,20 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
 
 def check_known_label_algebra(lean_path: str) -> str:
     """Check the fixed proposed ring lemmas; no elliptic-group bridge is asserted."""
+    check_known_label_project_inputs()
+    checked = check_pinned_mathlib_source(
+        KNOWN_LABEL_SOURCE, KNOWN_LABEL_SHA256, lean_path,
+        label="known-label", exact_names=KNOWN_LABEL_THEOREMS)
+    check_known_label_project_inputs()
+    return checked
+
+
+def check_known_label_project_inputs() -> None:
+    """Bind workspace input bytes before and after the native commands."""
     for name, expected in KNOWN_LABEL_PROJECT_INPUTS.items():
         file = HECKE_CI / name
         require(not file.is_symlink() and digest(file) == expected,
                 f"known-label project input changed: {name}")
-    return check_pinned_mathlib_source(
-        KNOWN_LABEL_SOURCE, KNOWN_LABEL_SHA256, lean_path,
-        label="known-label", exact_names=KNOWN_LABEL_THEOREMS)
 
 
 def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,

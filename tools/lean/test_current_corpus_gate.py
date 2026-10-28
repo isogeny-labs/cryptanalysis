@@ -206,6 +206,25 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                 gate.check_new_hecke({gate.KNOWN_LABEL_SOURCE.replace("Algebra", "Other")})
             self.assertEqual(known.call_count, 1)
 
+    def test_workspace_mutation_during_each_native_command_refused(self):
+        for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
+            for phase in ("compile", "audit"):
+                with self.subTest(name=name, phase=phase):
+                    file = self.project / name
+                    original = file.read_bytes()
+                    def runtime(args, **kwargs):
+                        auditing = args[:2] == ["lean", "--run"]
+                        if auditing == (phase == "audit"):
+                            file.write_bytes(original + b"\n")
+                        return SimpleNamespace(stdout=self.audited if auditing else self.printed)
+                    try:
+                        with patch.object(gate, "run", side_effect=runtime), \
+                             contextlib.redirect_stdout(io.StringIO()):
+                            with self.assertRaisesRegex(ValueError, "known-label project input changed"):
+                                gate.check_known_label_algebra("")
+                    finally:
+                        file.write_bytes(original)
+
 
 if __name__ == "__main__":
     unittest.main()

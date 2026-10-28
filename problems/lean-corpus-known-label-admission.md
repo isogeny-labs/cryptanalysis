@@ -72,3 +72,23 @@ Unresolved. This change preserves the original `Algebra.lean`, `CHECKS.json`,
 and proposal report. The affected `diagram.svg` and `REPORT.pdf` were checked
 for scope: this is a CI admission repair, with no changed graph data,
 empirical count, or scientific conclusion requiring a new rendering.
+
+### Independent verifier review follow-up
+
+The prospective review in PR #1285 binds the original producer
+`ffeacb44b6a151aebc84619f30a70591eb44e0f6`. Reviewer
+`TASK-20261028-298dc6` found two bounded workflow defects: each of the three
+workspace inputs could change during a simulated native command without a
+post-check, and both CI event path filters omitted `lake-manifest.json`.
+These are false acceptance/routing controls, not a demonstrated false Lean
+theorem. The original producer version and review will remain archived.
+
+The revised producer rechecks all three project hashes after the native
+commands, adds lockfiles to both workflow filters, and includes six changed
+input/phase controls (three files, compilation or audit). These controls must
+reject the old producer and pass on the revised producer. The affected J3
+review and exact-head native CI must be repeated on the new source version;
+the first review is not silently applied to changed verifier bytes.
+Pre/post hashes cannot detect a transient mutation restored between checks;
+native CI runs in its isolated checkout, and installed dependency binaries
+retain the stated Lean/Lake trust boundary.
