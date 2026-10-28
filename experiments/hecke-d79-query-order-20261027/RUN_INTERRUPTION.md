@@ -1,0 +1,3 @@
+# Producer interruption and restart
+
+The first sealed producer process was terminated while the interactive tool wait was aborted. Its complete known-control case and 33 checkpointed source records for p3280037 are retained under `interrupted-run/`. The interrupted fresh case has no final summary or rank-replay certificate and is excluded from the holdout aggregate. The same sealed producer, inputs, order policy, and runtime were restarted from the beginning in a detached process; the second run uses fresh `cases/`, `index.json`, stdout, and stderr artifacts. No source code or frozen input changed between the two launches.
