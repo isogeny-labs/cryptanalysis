@@ -31,6 +31,8 @@ CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
 HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
 HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+KNOWN_LABEL_SOURCE = "docs/known-label-next-leads-20261028/Algebra.lean"
+KNOWN_LABEL_SHA256 = "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -336,19 +338,20 @@ def reviewed_quartic_sources() -> dict[str, str]:
     return sources
 
 
-def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
+def check_reviewed_quartic(path: str, expected: str, lean_path: str, *,
+                          kind: str = "quartic", expected_theorems: int | None = None) -> str:
     """Compile original bytes, audit every requested declaration and all theorems."""
     file = ROOT / path
     require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
-            f"reviewed quartic source escapes repository: {path}")
-    require(digest(file) == expected, f"reviewed quartic source changed: {path}")
+            f"reviewed {kind} source escapes repository: {path}")
+    require(digest(file) == expected, f"reviewed {kind} source changed: {path}")
     source = file.read_text()
     require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
             f"forbidden proof escape in {path}")
     requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", source, re.MULTILINE)
     require(requested and len(requested) == len(set(requested)),
             f"missing or duplicate declaration audit in {path}")
-    with tempfile.TemporaryDirectory(prefix="quartic-corpus-") as scratch:
+    with tempfile.TemporaryDirectory(prefix=f"{kind}-corpus-") as scratch:
         output = Path(scratch) / Path(path).with_suffix(".olean")
         output.parent.mkdir(parents=True)
         result = run(["lake", "env", "lean", "-R", str(ROOT), "-o", str(output),
@@ -375,9 +378,13 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
         require(len(summary) == 1 and
                 len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == int(summary[0]),
                 f"incomplete exhaustive theorem audit in {path}")
-        print(f"quartic native audit: {path}: {len(requested)} declarations, "
+        if expected_theorems is not None:
+            require(len(requested) == expected_theorems and
+                    int(summary[0]) == expected_theorems,
+                    f"reviewed theorem count changed in {path}")
+        print(f"{kind} native audit: {path}: {len(requested)} declarations, "
               f"{summary[0]} theorems", flush=True)
-    require(digest(file) == expected, f"quartic source changed during audit: {path}")
+    require(digest(file) == expected, f"{kind} source changed during audit: {path}")
     return expected
 
 
@@ -398,6 +405,11 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     for path in sorted(paths):
         if path in reviewed:
             checked[path] = check_reviewed_quartic(path, reviewed[path], lean_path)
+            continue
+        if path == KNOWN_LABEL_SOURCE:
+            checked[path] = check_reviewed_quartic(
+                path, KNOWN_LABEL_SHA256, lean_path,
+                kind="known-label", expected_theorems=4)
             continue
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")

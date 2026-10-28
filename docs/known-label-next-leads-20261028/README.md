@@ -147,10 +147,15 @@ they contain no empirical elliptic-curve performance comparison. Run:
 
     python -m unittest discover -s docs/known-label-next-leads-20261028 -p test_algebra.py -v
 
-`Algebra.lean` contains proposed ring-identity proofs. Lean and Lake were
-unavailable on this host, so that source is UNBUILT and unverified. The full
-graph-to-elliptic-group bridge, finite-field signature injectivity, and
-probability statement remain unformalized. Symbolic checks do not replace them.
+`Algebra.lean` contains proposed proofs of four ring identities. The initial publication had
+no native build and was rejected by the active corpus-admission check. The
+corrective gate integration binds the exact source SHA to the existing pinned
+Lean/Mathlib compiler and exhaustive axiom auditor. Local Lean/Lake remain
+unavailable: a successful current-head `corpus` CI job is required before
+claiming native verification. See [CI_INTEGRATION.md](CI_INTEGRATION.md) for
+the original failure, fixed build path and proof map. The full graph-to-elliptic-
+group bridge, signature injectivity and probability statement remain
+unformalized. Ring identities and symbolic checks do not replace those proofs.
 
 Before any new benchmark, freeze the protocol and full cost boundaries, obtain
 the repository checkpoint receipt, and follow current curve-identity, execution,

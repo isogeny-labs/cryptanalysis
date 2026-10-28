@@ -25,6 +25,17 @@ The [workflow](../../.github/workflows/lean-proof-gate.yml) runs on Lean changes
 Any new or changed source outside the reviewed set fails until it receives new
 native evidence and a reviewed gate update.
 
+The four ring identities in
+`docs/known-label-next-leads-20261028/Algebra.lean` have a dedicated source-SHA
+binding in the gate and use the existing pinned Lean 4.35/Mathlib workspace.
+Admission requires native compilation to an `.olean`, all four requested axiom
+printouts, and an exhaustive module audit reporting exactly four theorems with
+zero failing or trusted exceptions. Changed source bytes and other unreviewed
+documentation modules still fail. The Python refusal tests simulate failures;
+they are not native proof evidence. Only a successful current-head `corpus` CI
+job establishes this module's native checks. Its algebraic identities do not
+formalize the label-graph/elliptic-group bridge or the probability theorem.
+
 The older `proof-gate.sh` is used only for explicit standalone positive and
 negative [fixtures](selftest/run.sh). Its automatic target discovery was removed:
 it cannot build repository files that import local modules before their
