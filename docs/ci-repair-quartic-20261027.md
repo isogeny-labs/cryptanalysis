@@ -137,3 +137,20 @@ against its expected 9,260,825 bytes and SHA-256, and never deserialized. All
 record is retained alongside the new recovery receipt. Hosted retrieval and complete integer/proof replay subsequently passed on
 head `2908016e`, as recorded above. New integration commits still require their
 own current-head checks.
+
+
+## Complete the cold artifact-policy verification
+
+Head a83fcaa2 completed the proof, integer, corpus and all other reported checks
+successfully. Artifact run 40604596682 passed its own unit tests and reported
+no committed store-policy offenders. It was cancelled after approximately ten
+minutes while checking workflow wiring; the job had a ten-minute limit. Its
+source-policy check alone spent about five and a half minutes materializing
+lazy Git blobs for this 905-file integration, leaving less than five minutes
+for complete workflow dependency inspection. The cancellation is infrastructure
+verification left incomplete, not a failed certificate or a scientific result.
+
+The artifact job now has a 30-minute envelope. All original checks, file policy,
+workflow dependency inspection and failure propagation remain. No research
+execution cap, frozen input or expected output is changed. The final head still
+requires every applicable hosted check and review to complete.
