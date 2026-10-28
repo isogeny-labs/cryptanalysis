@@ -264,6 +264,9 @@ static int delegate_cli(const char *env_name, const char *default_binary)
     child[0] = binary_copy;
     for (int i = 2; i < argc_g; i++) child[i - 1] = argv_g[i];
     child[argc_g - 1] = NULL;
+    /* The operator explicitly selects this delegate through the documented
+     * environment override; it is intentionally an executable, not remote input. */
+    // NOLINTNEXTLINE(clang-analyzer-optin.taint.GenericTaint)
     execvp(binary, child);
     int saved_errno = errno;
     fprintf(stderr, "error: cannot execute %s for %s: %s\n", binary, env_name,
@@ -711,14 +714,18 @@ static int ic_atomic_file(const char *dir, const char *name, const char *body)
     return ok;
 }
 
-static int ic_manifest_matches(const char *dir, const char *expected)
+static int ic_manifest_matches(const char *dir, const char *expected, size_t capacity)
 {
     char *path = ic_path(dir, "manifest.json");
     if (!path) return 0;
     FILE *f = fopen(path, "rb");
     free(path);
     if (!f) return 0;
-    size_t n = strlen(expected);
+    size_t n = strnlen(expected, capacity);
+    if (n == capacity) {
+        fclose(f);
+        return 0;
+    }
     char *got = malloc(n ? n : 1);
     int ok = got && fread(got, 1, n, f) == n && fgetc(f) == EOF &&
              memcmp(got, expected, n) == 0;
@@ -847,13 +854,13 @@ static int cmd_rho_durable(const ca_group *g, const ca_elem *base, const ca_elem
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 64 &&
                 !ca_group_is_identity(g, target))
@@ -987,13 +994,13 @@ static int cmd_gpu_rho_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0 && g->order >= 4096 &&
                 !ca_group_is_identity(g, target))
@@ -1117,13 +1124,13 @@ static int cmd_interval_durable(const char *alg, const ca_group *g,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no interval checkpoint found for --resume");
         }
@@ -1242,14 +1249,14 @@ static int cmd_precomp_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(table_path, F_OK) != 0 ||
                  access(online_path, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore precomp artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(table_path, F_OK) != 0) die("no precomp table checkpoint found for --resume");
         }
@@ -1381,13 +1388,13 @@ static int cmd_dlog_durable(const ca_group *g, const ca_elem *base,
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore dlog artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (access(checkpoint, F_OK) != 0) die("no dlog checkpoint found for --resume");
         }
@@ -1496,13 +1503,13 @@ static int cmd_kangaroo_durable(const ca_group *g, const ca_elem *base, const ca
             if (!manifest_path) die("out of memory");
             int have_local = access(manifest_path, F_OK) == 0;
             free(manifest_path);
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || access(checkpoint, F_OK) != 0) && s3_uri &&
                 !ic_s3_sync(s3_uri, state_dir)) die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             uint64_t effective_hi = hi ? hi : g->order ? g->order - 1 : 0;
             int trivial = effective_hi >= lo && effective_hi - lo < 256;
@@ -1622,13 +1629,13 @@ static int cmd_ic(void)
             free(manifest_path); free(journal_path); free(precomp_path);
             /* Validate local ownership before a download can overwrite its
              * manifest or state.  Only an empty directory may lack identity. */
-            if (have_local && !ic_manifest_matches(state_dir, manifest))
+            if (have_local && !ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             if (!have_local && !ic_dir_empty(state_dir))
                 die("cannot restore into a nonempty directory without a run manifest");
             if ((!have_local || !have_state) && s3_uri && !ic_s3_sync(s3_uri, state_dir))
                 die("cannot restore run artifacts from S3");
-            if (!ic_manifest_matches(state_dir, manifest))
+            if (!ic_manifest_matches(state_dir, manifest, sizeof(manifest)))
                 die("run manifest does not match these arguments");
             journal_path = ic_path(state_dir, "relations.ckpt");
             precomp_path = ic_path(state_dir, "relations.ckpt.precomp");
@@ -1943,7 +1950,12 @@ static const char *coord_token(void)
         const char *got = fgets(buf, sizeof(buf), f);
         fclose(f);
         if (!got) die("--token-file is empty");
-        buf[strcspn(buf, "\r\n")] = 0;
+        for (size_t i = 0; i < sizeof buf; i++) {
+            if (buf[i] == '\r' || buf[i] == '\n' || buf[i] == '\0') {
+                buf[i] = '\0';
+                break;
+            }
+        }
         if (!buf[0]) die("--token-file is empty");
         return buf;
     }
@@ -1970,26 +1982,34 @@ static const char *coord_url(void)
  */
 static size_t coord_url_split(const char *list, char **out, size_t max)
 {
+    if (!list) return 0;
+    /* Coordinator URLs travel in bounded job documents. Reject an overlong
+     * command-line list before using any input-derived offset or allocation. */
+    size_t total = strnlen(list, CA_COORD_LINE_MAX);
+    if (total == CA_COORD_LINE_MAX) return 0;
     size_t n = 0;
-    const char *p = list;
-    while (p && *p && n < max) {
-        while (*p == ' ' || *p == ',') p++;
-        if (!*p) break;
-        const char *end = strchr(p, ',');
-        size_t len = end ? (size_t)(end - p) : strlen(p);
-        while (len && (p[len - 1] == ' ')) len--;
-        if (!len) {
-            if (!end) break;
-            p = end + 1;
-            continue;
-        }
+    size_t start = 0;
+    while (start < total && n < max) {
+        while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+        if (start == total) break;
+        size_t end = start;
+        while (end < total && list[end] != ',') end++;
+        size_t trim = end;
+        while (trim > start && list[trim - 1] == ' ') trim--;
+        size_t len = trim - start;
+        /* list[start] is a non-space, non-comma byte because the leading
+         * separator loop advanced past both; trimming cannot make len zero. */
         char *dup = malloc(len + 1);
         if (!dup) break;
-        memcpy(dup, p, len);
+        memcpy(dup, list + start, len);
         dup[len] = 0;
         out[n++] = dup;
-        if (!end) break;
-        p = end + 1;
+        start = end + 1;
+    }
+    while (start < total && (list[start] == ' ' || list[start] == ',')) start++;
+    if (start < total) {
+        for (size_t i = 0; i < n; i++) free(out[i]);
+        return 0;
     }
     return n;
 }
@@ -2071,7 +2091,12 @@ static ca_coord_ctx *coord_load(int allow_remote)
         const char *got = fgets(line, sizeof(line), f);
         fclose(f);
         if (!got) die("--job is empty");
-        line[strcspn(line, "\r\n")] = 0;
+        for (size_t i = 0; i < sizeof line; i++) {
+            if (line[i] == '\r' || line[i] == '\n' || line[i] == '\0') {
+                line[i] = '\0';
+                break;
+            }
+        }
         ca_status rc = ca_coord_job_decode(&job, line);
         if (rc != CA_OK) die_status(rc);
     } else if (allow_remote && coord_url()) {
@@ -2258,7 +2283,10 @@ static int cmd_work(void)
     uint32_t shards = ca_coord_ctx_job(ctx)->shards;
     char *urls[CA_COORD_SHARDS_MAX];
     size_t nurl = 0;
-    if (coord_url()) nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+    if (coord_url()) {
+        nurl = coord_url_split(coord_url(), urls, CA_COORD_SHARDS_MAX);
+        if (!nurl) die("--coordinator must contain a bounded, nonempty URL list");
+    }
     if (nurl && nurl != (size_t)shards) {
         char msg[192];
         snprintf(msg, sizeof(msg),

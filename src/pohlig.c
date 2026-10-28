@@ -37,7 +37,7 @@ static ca_status brute_force_ec_batch(const ca_group *g, const ca_elem *base,
                                       const ca_elem *start, uint64_t *x, ca_stats *st)
 {
     enum { LANES = 64 };
-    ca_elem offsets[LANES], addends[LANES], left[LANES], candidates[LANES];
+    ca_elem offsets[LANES], addends[LANES] = {0}, left[LANES] = {0}, candidates[LANES];
     uint64_t scratch[2 * LANES];
     ca_group_identity(g, &offsets[0]);
     offsets[1] = *base;
@@ -93,9 +93,9 @@ static ca_status brute_force(const ca_group *g, const ca_elem *base, const ca_el
 static ca_solver resolve_prime_solver(const ca_group *g, uint64_t lo, uint64_t hi,
                                        const ca_dlog_params *params)
 {
-    uint64_t width = hi - lo;
     ca_solver s = params->solver;
     if (s == CA_SOLVER_AUTO) {
+        uint64_t width = hi - lo;
         uint64_t limit = params->bsgs_max_prime ? params->bsgs_max_prime : (1ULL << 36);
         /* Keep the old brute behavior below 4096 when a caller caps BSGS
          * below this EC interval; the cap must not select kangaroo here. */

@@ -1,0 +1,12 @@
+AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    CurveAudit.squared_deviations_have_short_sum  [propext, Quot.sound]
+ok    CurveAudit.unique_multiple_from_hasse_squared_checks  [propext, Quot.sound]
+ok    CurveAudit.unique_multiple_from_squared_center_bounds  [propext, Quot.sound]
+ok    CurveAudit.unsignedDelta.eq_1  []
+ok    CurveAudit.unsignedDelta_center_bounds  [propext, Quot.sound]
+audited 5 theorems in [HasseSquareBounds]; 0 failing, 0 trusted (native_decide)
