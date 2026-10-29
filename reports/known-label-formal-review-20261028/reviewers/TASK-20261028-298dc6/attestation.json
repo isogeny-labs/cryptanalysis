@@ -1,0 +1,118 @@
+{
+  "review_attestation": {
+    "all_writes_within_assigned_scratch": true,
+    "archive_task": "TASK-20261028-871ca0",
+    "artifact_sha256": {
+      "diagnostic-output.json": "1de7e036e84ce1fb97258144ab5e27d364f976463e84ac68ecf6eba4f63869c4",
+      "diagnostic.py": "016885c16cf3e07cf5427f79ab3485fc273602bad8c131413e64a1e0b7080632",
+      "existing-tests.txt": "787752520bb9e5f41fa020308ddc99c50079e95ef950435cfcab1d5419e14881",
+      "report.md": "d5bf287ddb212fefe14314c4dfec3c6b9c258c43fdf5edfc0956b644b8f169ce",
+      "source-ledger.json": "db3e0c9fd6b2d8fef7c57822fe7d416d65ec5deb332cd099bc5eba7e3e0475c0"
+    },
+    "commit_ancestry_independently_verified": false,
+    "conductor_task": "T-765",
+    "delegated_agents": false,
+    "deviations": [],
+    "existing_python_tests": {
+      "exit_code": 0,
+      "failed": 0,
+      "native_outputs_mocked": true,
+      "passed": 18,
+      "tests_run": 18
+    },
+    "findings": [
+      {
+        "cases": 6,
+        "evidence_kind": "scratch Python fixture, compiler and auditor subprocess outputs mocked",
+        "finding": "All three bound project files may change after initial hash checks and still return the accepted source digest.",
+        "id": "J3-F1",
+        "verdict": "breaks"
+      },
+      {
+        "evidence_kind": "static workflow inspection plus local pattern matching",
+        "finding": "The pull_request and push path filters omit lake-manifest.json.",
+        "id": "J3-F2",
+        "verdict": "breaks"
+      }
+    ],
+    "generated_artifacts_read": [
+      "diagnostic.py",
+      "diagnostic-output.json",
+      "existing-tests.txt",
+      "source-ledger.json",
+      "report.md"
+    ],
+    "heavy_builds_experiments_benchmarks_cloud_or_pr_actions": false,
+    "independent_probes": {
+      "accepted": 8,
+      "actual_subprocess_control": "Python exit 7 rejected",
+      "cases": 21,
+      "compiler_auditor_outputs_mocked": true,
+      "refused": 13
+    },
+    "independent_review_session": true,
+    "joints_owned": [
+      "J3"
+    ],
+    "native_ci_expected_from_plan": {
+      "job_id": 122995320061,
+      "run_id": 40739043598,
+      "state": "pending at dispatch; terminal result not read"
+    },
+    "native_ci_result_read": false,
+    "native_lean_executed": false,
+    "native_proof_validity": "not_verified",
+    "policy": "review-adversarial",
+    "producer": "ffeacb44b6a151aebc84619f30a70591eb44e0f6",
+    "producer_hashes_verified_unchanged": 11,
+    "producer_source_changed": false,
+    "prospective_plan_commit_supplied": "dcebcd1842d112ebc3d985f02245cf0a8b7a8391",
+    "read_blind_brief": false,
+    "read_linked_docs_outside_inputs": false,
+    "read_memory": false,
+    "read_sibling_reports": false,
+    "read_unrelated_repository_material": false,
+    "repository_edits": false,
+    "scratch_root": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-298dc6",
+    "source_access_extension": {
+      "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+      "reason": "Explicitly allowed existing-unit-test dependency; copied and hashed by those tests; exact content inspected for source admission."
+    },
+    "source_sha256": {
+      ".github/workflows/lean-proof-gate.yml": "9972f0054d75b55d3531f06b42e07f82f42c9bd97903665863537608bebbcf63",
+      "docs/known-label-next-leads-20261028/Algebra.lean": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "experiments/hecke-432-formal-ci-20261025/lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+      "experiments/hecke-432-formal-ci-20261025/lakefile.toml": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+      "experiments/hecke-432-formal-ci-20261025/lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "reports/known-label-formal-review-20261028/gate-handoff.json": "9a2b66b68ee4dd40cf06dd2e1036c7c78cdf83fb5540c744bf37c5f4d8628a80",
+      "reports/known-label-formal-review-20261028/inputs.json": "7e56a082b8daa59be27cc282dec32379823dbbdbeaecef30a144f6b032387fb0",
+      "reports/known-label-formal-review-20261028/review-plan.json": "2579b4dd93b2f1df7a54eca0b952fb30a51917c3c5259f7c8b6b3c9ae21724f1",
+      "tools/ci/quartic_certificates.json": "98a5a500c53a1a579524a23063f1eef96e09d0bde646a4a235b2e1cb6ae56078",
+      "tools/lean/AuditHeckeAxioms.lean": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "tools/lean/README.md": "5b62ba399a527fd8e7ffbf842a8c499d05955072ca6e78f35b7404fbfa0ca635",
+      "tools/lean/current-corpus-gate.py": "04c6e27b5c7eab5e4de7f29726b0c44636e95a17535b39d03e688f5f18d37fdb",
+      "tools/lean/hecke-audit-selftest.py": "1b0c1e53dbfa46ca47ed5d7a2a37ad9d6eec442bcbeef0242bfb5e20064d59be",
+      "tools/lean/test_current_corpus_gate.py": "9ada224a8b8ed6695d1c0e2ac00683b1850844d6662cd868ae864d43b7d7fe26"
+    },
+    "sources_read": [
+      "reports/known-label-formal-review-20261028/gate-handoff.json",
+      "reports/known-label-formal-review-20261028/review-plan.json",
+      "reports/known-label-formal-review-20261028/inputs.json",
+      "tools/lean/current-corpus-gate.py",
+      "tools/lean/test_current_corpus_gate.py",
+      "tools/lean/AuditHeckeAxioms.lean",
+      "tools/lean/hecke-audit-selftest.py",
+      "tools/lean/README.md",
+      ".github/workflows/lean-proof-gate.yml",
+      "tools/ci/quartic_certificates.json",
+      "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "docs/known-label-next-leads-20261028/Algebra.lean"
+    ],
+    "sources_read_are_complete": true,
+    "task_id": "TASK-20261028-298dc6",
+    "verdict": "breaks",
+    "verdict_scope": "Full J3 project-pin and automatic CI-routing guarantees; fixed-source/name/empty-audit/nonzero refusal controls hold within the tested immutable workspace and trusted-tool boundary."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "handoff": {
+    "id": "TASK-20261028-68d1a5",
+    "from": "coordinator",
+    "to": "reviewer",
+    "objective": "Re-review only affected J3 on revised producer 0b353c9bf78e9340c3c100b71175127bb7d91d44",
+    "uncertainty_reduced": "Independent scoped evidence, with native status kept separate",
+    "inputs": [
+      "reports/known-label-formal-review-20261028/review-plan-v2.json",
+      "reports/known-label-formal-review-20261028/inputs-v2.json",
+      "docs/known-label-next-leads-20261028/Algebra.lean",
+      "tools/lean/current-corpus-gate.py",
+      "tools/lean/test_current_corpus_gate.py",
+      "tools/lean/AuditHeckeAxioms.lean",
+      "tools/lean/hecke-audit-selftest.py",
+      "tools/lean/README.md",
+      ".github/workflows/lean-proof-gate.yml",
+      "tools/ci/quartic_certificates.json",
+      "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/report.md",
+      "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/diagnostic.py"
+    ],
+    "constraints": [
+      "mutual blindness",
+      "no heavy build, experiment, cloud call, source edit or PR mutation",
+      "write only assigned scratch output; coordinator archives later",
+      "No reading J1/J2 reports; same reviewer may use own original J3 report and diagnostic only"
+    ],
+    "deliverables": [
+      "report.md",
+      "attestation.json",
+      "optional minimal diagnostic source/output"
+    ],
+    "artifact_paths": [
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-68d1a5"
+    ],
+    "archived_by": "TASK-20261028-871ca0",
+    "inference": {
+      "policy": "review-adversarial",
+      "reasoning_effort": "xhigh",
+      "fallback_allowed": false,
+      "degraded_allowed": false,
+      "independent_session_required": true,
+      "delivery": "interactive"
+    },
+    "completion_gate": [
+      "report covers only owned joint with actual reads and concrete checks",
+      "attestation declares truthful blindness and deviations"
+    ],
+    "return_format": "report.md plus JSON review_attestation",
+    "prior_task": "TASK-20261028-298dc6"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "review_attestation": {
+    "task_id": "TASK-20261028-32bc7d",
+    "joints_owned": ["J1"],
+    "sources_read": [
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md",
+        "kind": "sole_supplied_input",
+        "sha256": "754c5ee3187316fff1a8efb9e39ad3d9cdcd1b1291ab771c02cb682e4a5323d3",
+        "operations": ["sha256sum", "cat"]
+      },
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+        "kind": "own_authored_artifact",
+        "operations": ["sha256sum"]
+      },
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+        "kind": "own_authored_artifact",
+        "operations": ["python3 -m json.tool", "sha256sum"]
+      }
+    ],
+    "read_sibling_reports": false,
+    "blind_from_respected": true,
+    "verdict": "holds",
+    "verdict_scope": "J1 only: the four universal identities. Unconditional cancellation of 2 or division/cancellation by (a-c)(b-c) is not endorsed; explicit failures and sufficient conditions are in report.md.",
+    "derived_results": ["2*a", "2*(a-c)*(b-c)", "6*c*(a-c)*(b-c)", "2*a*b"],
+    "commands": [
+      "sha256sum /home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md && cat /home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md",
+      "mkdir -p /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d",
+      "python3 -m json.tool /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json >/dev/null && sha256sum /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json"
+    ],
+    "non_shell_file_operations": [
+      {
+        "tool": "apply_patch",
+        "operation": "create",
+        "paths": [
+          "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+          "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json"
+        ]
+      }
+    ],
+    "evidence_method": "Independent formal ring expansion and explicit counterexamples, written in ordinary mathematical notation; no proof assistant execution.",
+    "diagnostic_run": false,
+    "lean_or_mathlib_build_run": false,
+    "experiment_or_benchmark_run": false,
+    "cloud_action_taken": false,
+    "additional_agents_spawned": false,
+    "deviations": []
+  }
+}

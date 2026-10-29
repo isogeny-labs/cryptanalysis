@@ -1,0 +1,226 @@
+name: Quartic certificate replay
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/hecke-432*/**'
+      - 'experiments/hecke-27-coordinate-bridge-20261025/**'
+      - 'tools/ci/*quartic*'
+      - '.github/workflows/quartic-certificate-replay.yml'
+  workflow_dispatch:
+    inputs:
+      migrate_original_censuses:
+        description: Store the three original large census files without changing their bytes
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  migrate-original-censuses:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.migrate_original_censuses) ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'codex/repair-quartic-certificate-backlog-20261027')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: |
+            tools/artifacts
+            tools/ci
+            .artifacts
+            experiments/hecke-432-j1728-path-holdout-20261026
+            experiments/hecke-432-j1728-product-holdout-20261026
+            experiments/hecke-432-sign-branch-holdout-20261026
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-path-holdout-20261026 experiments/hecke-432-j1728-product-holdout-20261026 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin experiments/hecke-432-sign-branch-holdout-20261026
+      - name: Store only the reviewed original bytes and verify each remote object
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-2
+          ARTIFACTS_REMOTE: s3://setec-astronomy-artifacts/store
+          TRUSTED_BASE: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          python3 -m venv "$RUNNER_TEMP/quartic-migration-awscli"
+          "$RUNNER_TEMP/quartic-migration-awscli/bin/python" -m pip install awscli==1.46.2
+          export ARTIFACTS_AWS="$RUNNER_TEMP/quartic-migration-awscli/bin/aws"
+          git fetch --no-tags origin "$TRUSTED_BASE"
+          git show "$TRUSTED_BASE:tools/artifacts/artifacts.py" > "$RUNNER_TEMP/quartic-owner-artifacts.py"
+          git diff --exit-code "$TRUSTED_BASE" HEAD -- .artifacts/config.json
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          manifest = json.loads(Path('tools/ci/quartic_certificates.json').read_text())
+          paths = [
+              'experiments/hecke-432-j1728-path-holdout-20261026/source_census.json',
+              'experiments/hecke-432-j1728-product-holdout-20261026/source_census.json',
+              'experiments/hecke-432-sign-branch-holdout-20261026/source_census.json']
+          for name in paths:
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == manifest['inputs'][name]
+          tool = str(Path(os.environ['RUNNER_TEMP']) / 'quartic-owner-artifacts.py')
+          subprocess.run(['python3', tool, 'push', *paths], check=True)
+          subprocess.run(['python3', tool, 'verify', '--remote', *paths], check=True)
+          PY
+      - name: Export storage pointers for a normal reviewed Git commit
+        uses: actions/upload-artifact@v4
+        with:
+          name: quartic-original-census-pointers
+          include-hidden-files: true
+          path: |
+            experiments/hecke-432-j1728-path-holdout-20261026/.artifacts.json
+            experiments/hecke-432-j1728-path-holdout-20261026/.gitignore
+            experiments/hecke-432-j1728-product-holdout-20261026/.artifacts.json
+            experiments/hecke-432-j1728-product-holdout-20261026/.gitignore
+            experiments/hecke-432-sign-branch-holdout-20261026/.artifacts.json
+            experiments/hecke-432-sign-branch-holdout-20261026/.gitignore
+          if-no-files-found: error
+
+  exact-integer-certificates:
+    if: github.event_name != 'workflow_dispatch' || !inputs.migrate_original_censuses
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/ci/
+            /tools/artifacts/
+            /.artifacts/
+            /experiments/hecke-432*/**
+            /experiments/hecke-27-coordinate-bridge-20261025/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-path-holdout-20261026 experiments/hecke-432-j1728-product-holdout-20261026 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin experiments/hecke-432-sign-branch-holdout-20261026
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the exact symbolic verifier dependency
+        run: python3 -m pip install sympy==1.14.0
+      - name: Refusal controls
+        run: python3 -m unittest discover -s tools/ci -p 'test_quartic*.py' -v
+      - name: Retain the exact verified checkpoint for independent replay
+        uses: actions/upload-artifact@v4
+        with:
+          name: quartic-original-checkpoint
+          path: experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin
+          if-no-files-found: error
+      - name: Replay in an isolated copy with the frozen original path layout
+        env:
+          PYTHONINTMAXSTRDIGITS: '10000'
+        run: |
+          # Several immutable protocols and command receipts contain this
+          # original absolute path. Recreate it on this disposable runner;
+          # preserve the source files, protocols and expected output bytes.
+          test ! -e /Volumes/SSD990/cryptanalysis
+          sudo mkdir -p /Volumes/SSD990/cryptanalysis
+          sudo chown "$(id -u):$(id -g)" /Volumes/SSD990/cryptanalysis
+          cp -a experiments /Volumes/SSD990/cryptanalysis/
+          python3 tools/ci/check_quartic_certificates.py integer \
+            --root /Volumes/SSD990/cryptanalysis \
+            --evidence "$RUNNER_TEMP/quartic-integer"
+      - name: Retain successes, failures and exact verifier output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quartic-integer-replay
+          path: ${{ runner.temp }}/quartic-integer/
+          if-no-files-found: warn
+
+  pinned-lean-proofs:
+    if: github.event_name != 'workflow_dispatch' || !inputs.migrate_original_censuses
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/ci/
+            /experiments/hecke-432*/**
+            /tools/artifacts/
+            /.artifacts/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/hecke-432-j1728-path-holdout-20261026 experiments/hecke-432-j1728-product-holdout-20261026 experiments/hecke-432-j1728-relative-quartic-splitting-20261026/rnf-checkpoint.bin experiments/hecke-432-sign-branch-holdout-20261026
+      - name: Install the toolchain manager without selecting an unpinned Lean
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          bash "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check all 37 original modules and their standard-axiom reports
+        run: python3 tools/ci/check_quartic_certificates.py formal --evidence "$RUNNER_TEMP/quartic-formal"
+      - name: Retain fresh proof logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quartic-formal-replay
+          path: |
+            ${{ runner.temp }}/quartic-formal/results.json
+            ${{ runner.temp }}/quartic-formal/*.txt
+          if-no-files-found: warn

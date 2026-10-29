@@ -1,0 +1,24 @@
+{
+  "inputs": {
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "inverse_filter": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-inverse-filter-crossprime-20261025/inverse_filter.py",
+      "sha256": "92766978eb1ef3d481e4ed49c1574ffda722a7576cfbcd71ebe6f7c0acd52183"
+    },
+    "prior_p1039_screen": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime1039-collision-prediction-20261026/screen_result.json",
+      "sha256": "348d473cb284c669461005e7c44371401992b7c7198a4488932804ea263e4047"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    }
+  },
+  "preserve_zero_cells": true,
+  "prime_cap_exclusive": 5000,
+  "selection_rule": "in ascending primes p>1039 with p congruent 7 modulo 12 and -15 a nonzero square, select the first with at least one source-free valid C,E,B triple satisfying x_B^3=1",
+  "status": "FROZEN_BEFORE_SPECIAL_B_SIEVE"
+}
