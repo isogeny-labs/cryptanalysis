@@ -116,7 +116,7 @@ impl FactorBase {
 
 /// Build Lemma 11's Boolean language without consulting a factor-base list.
 /// The interface is each Ai's infinity flag, x bits and y bits, all little-endian.
-/// For nontrivial cofactor, free Si are projected to Ai=[c]Si. Multiple preimages
+/// For nontrivial cofactor, free Si are projected to `Ai=[c]Si`. Multiple preimages
 /// are counted as assignments, while the projected language is unchanged.
 pub fn decomposition_network(
     curve: &Curve,
