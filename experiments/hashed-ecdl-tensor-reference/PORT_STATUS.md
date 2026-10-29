@@ -6,12 +6,14 @@ Rust `hashed_ecdl` API and does not claim a complete replication of the paper.
 
 | User requirement | Status | Evidence or remaining gap |
 | --- | --- | --- |
-| Upload code and create PRs in Isogeny Labs crypto and cryptanalysis | publication in progress | Code lives here; the paired crypto change links it without introducing a Python execution path |
+| Upload code and create PRs in Isogeny Labs crypto and cryptanalysis | uploaded, hosted gates pending | [cryptanalysis #1299](https://github.com/isogeny-labs/cryptanalysis/pull/1299), [crypto #2887](https://github.com/isogeny-labs/crypto/pull/2887); native Rust API unchanged |
 | Implement the scalar contraction construction | implemented, bounded correctness checks passed | `tensor_contraction.py`, `tensor_ring.py`, recursive identity and two-level tests |
 | Encode binary-curve validity/addition and hashed membership | implemented, bounded checks passed | `tensor_encoding.py`; actual-target graph statistics and structural checks |
-| Implement the complete original prime-field/native Rust backend | not implemented | Original Rust API remains separate; the current coordinate encoder is for binary curves |
+| Add the Certicom prime-field counterpart | implemented, bounded correctness checks passed | Official ECCp-131 parameters, `eccp.py`, `tensor_prime.py`; 39 combined tests, 16 OpenSSL point multiples; see `prime-development/README.md` |
+| Implement the complete original prime-field/native Rust backend | partial | Prime-field coordinates now compose with scalar BTN; native integration, general ell and independent correctness/complexity audit remain open |
 | Independently establish the claimed asymptotic theorem | unresolved | Tests and experimental recursion parameters are not a proof or complexity audit |
 | Solve Certicom ECC2K-130 | unresolved | Recorded default-policy run reaches exact summation and exceeds its budget; no challenge relation or scalar |
+| Solve the prime-field challenge, officially ECCp-131 | unresolved | Actual-target graph compiled and structurally checked; u_0=0 exact-leaf preflight exceeds 2,000,000-operation budget; no challenge relation or scalar |
 
 ## Scope and provenance
 
@@ -32,10 +34,10 @@ quadratic-size multipliers and its own frozen results. No novelty claim follows
 from this import. The native Rust sources, existing paper/diagrams and accepted
 leaderboard entries are unchanged.
 
-The copied source snapshots and outputs retain their original scope. Their
+The copied source snapshots and historical outputs retain their original scope. Their
 timings are unisolated development measurements. No cloud experiment,
 resource booking, S3 checkpoint, or publication to a leaderboard was performed
-as part of this repository import. Future experiment runs must satisfy the
+as part of this repository import or the prime-field development checks. Future experiment runs must satisfy the
 existing checkpoint, compute, accounting and validation rules first.
 
 ## Next work
@@ -43,4 +45,4 @@ existing checkpoint, compute, accounting and validation rules first.
 Port the required scalar operations to the native Rust implementation owner,
 audit the full coordinate encoding and theorem prerequisites, and check the
 result against independent contractions before collecting new performance
-evidence. Keep the actual ECC2K-130 solve requirement open throughout.
+evidence. Keep both actual Certicom solve requirements open throughout.

@@ -1,0 +1,109 @@
+{
+  "scope": "development correctness and bounded preflight only; retrospective, no IC/rho or speed claim",
+  "CHECKPOINT_SKIP": "development correctness checks, not an experiment run",
+  "challenge_solved": false,
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "eccp.py",
+        "validate",
+        "--output",
+        "prime-development/challenge-validation.json"
+      ],
+      "exit_status": 0,
+      "raw_output": "prime-development/validate.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "eccp.py",
+        "demo",
+        "--fixture-scalar",
+        "7",
+        "--backend",
+        "tensor_indexed",
+        "--output",
+        "prime-development/demo-tensor-indexed.json"
+      ],
+      "exit_status": 0,
+      "raw_output": "prime-development/demo.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "eccp.py",
+        "verify",
+        "--certificate",
+        "prime-development/demo-tensor-indexed.json"
+      ],
+      "exit_status": 0,
+      "raw_output": "prime-development/verify.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "eccp.py",
+        "hashed",
+        "--output",
+        "prime-development/challenge-hashed-preflight.json"
+      ],
+      "exit_status": 2,
+      "raw_output": "prime-development/hashed.txt"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_ecc2k",
+        "test_tensor_contraction",
+        "test_tensor_encoding",
+        "test_eccp"
+      ],
+      "exit_status": 0,
+      "raw_output": "prime-unit-tests.txt",
+      "result": "39 passed, no failures or skips"
+    },
+    {
+      "command": [
+        "python3",
+        "tensor_cli.py",
+        "challenge",
+        "--instance",
+        "eccp131",
+        "--slots",
+        "2",
+        "--max-operations",
+        "2000000",
+        "--seconds",
+        "60",
+        "--output",
+        "prime-development/challenge-tensor.json"
+      ],
+      "exit_status": 2,
+      "raw_output": "prime-development/challenge-tensor.txt",
+      "result": "compiled_graph_verified; u_0=0 exact-leaf budget exceeded"
+    }
+  ],
+  "parameter_sha256": "807bde4ec7b3dedb1a7711962ba46d326ec3d596407a865835091483702373e8",
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "sympy": "1.14.0",
+    "openssl": "OpenSSL 3.5.8 25 Aug 2026",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "performance_isolated": false
+  },
+  "producer_parent_commit": "a182e2a63c53f4de804744df2c43b0876a9f2c59",
+  "source_sha256": {
+    "eccp.py": "a42e43d82efa252425266d618569baf63f2b26c21cc61edc761350ca4effde82",
+    "eccp131.json": "807bde4ec7b3dedb1a7711962ba46d326ec3d596407a865835091483702373e8",
+    "tensor_prime.py": "ee9992898c1af73d17d8fd865c6aa84ce765e8e045ebfcf1ca519a9e5635d53b",
+    "ecc2k.py": "73d67dfea5dc84ff7e575bb97765941f768a772ff0dab553820cc05c8deac0fd",
+    "tensor_cli.py": "3b854302631f7e219ae5b20e986feb62006a0aac660a8bcc841c47a9d2cfb254",
+    "tensor_relations.py": "d33e180a94ce8c30989c3b76c5c302c07c45d66735ffbc2ca3f76d4828028463",
+    "test_eccp.py": "3bbc033fe7b65a0ecb613181d519f1b95c15b2ed2dfd8d7ffc1dfdf75b43fbaf",
+    "test_ecc2k.py": "9a706886819df210acc6a49cc614a315e6af387a38e22f1470b2ee51ee036dc0"
+  }
+}

@@ -17,6 +17,8 @@ import math
 from pathlib import Path
 import random
 import time
+import os
+import tempfile
 from typing import Iterator
 
 from sympy import isprime, nextprime
@@ -244,6 +246,9 @@ class Instance:
 
     @classmethod
     def from_dict(cls, d: dict) -> Instance:
+        if d.get("field_type") == "prime":
+            from eccp import PrimeInstance
+            return PrimeInstance.from_dict(d)
         field = BinaryField(d["degree"], number(d["polynomial"]))
         return cls(d["name"], BinaryCurve(field, number(d["a"]), number(d["b"])),
                    number(d["order"]), d["cofactor"], parse_point(d["P"]), parse_point(d["Q"]))
@@ -268,7 +273,8 @@ def challenge() -> Instance:
                     number(d["order"]), d["cofactor"], parse_point(d["P"]), parse_point(d["Q"]))
 
 
-def toy(degree: int = 19, secret: int = 114415) -> Instance:
+def toy(degree: int = 19, fixture_scalar: int = 114415) -> Instance:
+    """Generate a public known-answer fixture, never a production key."""
     params = {7: (0x83, 29, 4), 13: (0x201B, 2003, 4), 19: (0x80027, 130873, 4)}
     if degree not in params:
         raise ValueError("supported demo degrees: 7, 13, 19")
@@ -280,11 +286,14 @@ def toy(degree: int = 19, secret: int = 114415) -> Instance:
             point = curve.mul(cofactor, point)
             if point is not None:
                 return Instance(f"DEMO-GF2^{degree}", curve, order, cofactor,
-                                point, curve.mul(secret % order, point))
+                                point, curve.mul(fixture_scalar % order, point))
     raise RuntimeError("no generator found")
 
 
 def validate(instance: Instance) -> dict:
+    if instance.as_dict().get("field_type") == "prime":
+        from eccp import validate as validate_prime
+        return validate_prime(instance)
     c, n = instance.curve, instance.order
     checks = {"field_polynomial_irreducible": c.field.irreducible(),
               "subgroup_order_prime": bool(isprime(n)),
@@ -585,9 +594,17 @@ def bsgs(instance: Instance, bound: int, max_states: int, seconds: float) -> dic
 
 def atomic_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(data, indent=2) + "\n")
-    temporary.replace(path)
+    # Results can contain recovered scalars. Create with owner-only access,
+    # including the temporary file, independent of the process umask.
+    descriptor, temporary_name = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w") as stream:
+            json.dump(data, stream, indent=2)
+            stream.write("\n")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def rho(instance: Instance, max_steps: int, seconds: float, seed: int,
@@ -672,8 +689,8 @@ def main() -> int:
     parser.add_argument("--backend", choices=["meet_in_middle", "tensor_indexed", "tensor_coordinates"], default="meet_in_middle")
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--degree", type=int, choices=[7, 13, 19], default=19)
-    parser.add_argument("--secret", type=lambda x: int(x, 0), default=114415,
-                        help="demo generation only; never passed to the solver")
+    parser.add_argument("--fixture-scalar", "--secret", dest="fixture_scalar", type=lambda x: int(x, 0), default=114415,
+                        help="public demo target generation only; never passed to the solver")
     parser.add_argument("--max-states", type=int, default=200000)
     parser.add_argument("--max-candidates", type=int, default=200000)
     parser.add_argument("--seconds", type=float, default=30)
@@ -686,7 +703,7 @@ def main() -> int:
     if min(args.max_states, args.max_candidates, args.seconds, args.steps) <= 0:
         parser.error("budgets must be positive")
     try:
-        instance = toy(args.degree, args.secret) if args.command == "demo" else challenge()
+        instance = toy(args.degree, args.fixture_scalar) if args.command == "demo" else challenge()
         if args.command == "validate":
             result = validate(instance)
             d = json.loads((ROOT / "challenge.json").read_text())
@@ -701,7 +718,7 @@ def main() -> int:
                                   args.max_candidates, args.seconds, backend=args.backend)
             if args.command == "demo" and result["status"] == "solved":
                 result["demo_only"] = True
-                result["demo_expected_scalar"] = str(args.secret % instance.order)
+                result["demo_expected_scalar"] = str(args.fixture_scalar % instance.order)
                 result["certificate_verification"] = verify_certificate(result)
         elif args.command == "verify":
             if not args.certificate:

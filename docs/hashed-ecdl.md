@@ -9,9 +9,11 @@ An independently executable [scalar BTN reference](../experiments/hashed-ecdl-te
 now accompanies this bounded native reduction. It implements the ell=1
 Cauchy/mode/Hermite recursion and coordinate constraints using compact integer
 Fourier multiplication and a tested binary-polynomial Fourier adaptation.
+It now also includes official Certicom ECCp-131 parameters and prime-field
+coordinate constraints, hashed membership, relation collection and replay.
 The companion is Python and is not wired into the Rust API below.
 
-Its 28 development correctness tests include exact rational checks,
+Its 39 development correctness tests include exact rational checks,
 independent direct contractions, two recursion levels and an OpenSSL arithmetic
 comparison. The recorded ECC2K-130 graph has 2,694,680 edges and maximum degree
 1,032. The paper's default u_0 is zero at this size; the attempt selects exact
@@ -20,7 +22,11 @@ relation or scalar. Historical timings are retrospective local diagnostics,
 not admitted speed measurements. The small indexed tensor fixture is explicitly
 separate from the coordinate construction and has no compact-encoding guarantee.
 
-Full prime-field replication, native Rust integration, general ell>1,
+The added ECCp-131 target graph has 1,564,506 edges and degree 1,032, and also
+selects u_0=0 and exceeds its exact-leaf budget. Sixteen published P/Q multiples
+match OpenSSL. See the separate [prime validation report](../experiments/hashed-ecdl-tensor-reference/prime-development/README.md).
+
+Complete theorem replication, native Rust integration, general ell>1,
 formal verification and the asymptotic audit remain unresolved in the linked
 canonical problem. See the companion's requirement/status table.
 

@@ -1,5 +1,12 @@
 # Scalar tensor companion import checks — 2026-10-29
 
+Prime-field follow-up: the reference now includes the officially named Certicom
+ECCp-131 instance, modular coordinate constraints and shared relation/certificate
+plumbing. The combined development suite passes 39 tests. See the separate
+[prime validation receipt](../experiments/hashed-ecdl-tensor-reference/prime-development/README.md)
+for commands, exact published parameters, graph checks and the unresolved
+challenge solve. The original 28-test import receipt below is preserved.
+
 This is a repository-import and development-correctness receipt, not a
 performance experiment or an IC/rho comparison.
 
@@ -25,13 +32,13 @@ The complete current import-check output is retained separately as
 `import-unit-tests.txt` in the study. Historical `results/test-results.txt`
 is not overwritten.
 
-## Remaining validation and setup gaps
+## Import-time validation and setup gaps
 
 - The default-policy challenge attempt remains a budget-exhausted exact leaf;
   it is not a recovered relation or scalar and not a mathematical obstruction.
-- The general ell>1 case, native Rust tensor integration, full prime-field
-  composition, formal verification and an independent asymptotic audit remain
-  open. The current scalar/bin-field prototype does not discharge them.
+- The prime-field composition missing at import is now implemented in the
+  companion described above. General ell>1, native Rust tensor integration,
+  formal verification and an independent asymptotic audit remain open.
 - `cargo test --release --lib` was attempted in crypto and exited 127 because
   Cargo is not installed in this execution environment. No Rust tests or
   full-library pass are claimed for this documentation-only companion update.

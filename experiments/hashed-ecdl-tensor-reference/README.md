@@ -1,6 +1,32 @@
-# ECC2K-130 experiments
+# Certicom ECC2K-130 and ECCp-131 tensor references
 
 **The Certicom ECC2K-130 discrete logarithm has not been recovered by this work.**
+**The added ECCp-131 discrete logarithm has not been recovered either.**
+
+The user-requested prime-field counterpart is officially named **ECCp-131**
+in [Certicom's parameter list](https://www.certicom.com/en/curves-list), rather
+than ECCp-130. Its exact published P and Q are in [eccp131.json](eccp131.json).
+`eccp.py` implements prime-field arithmetic and canonical point compression;
+`tensor_prime.py` composes integer Fourier multiplication, bounded modular
+quotient/remainder constraints, all point-addition cases, fixed-cofactor image
+witnesses and affine hash membership with the shared tensor engine.
+
+```bash
+python eccp.py validate
+python eccp.py demo --fixture-scalar 7 --backend tensor_indexed --output /tmp/eccp-demo.json
+python eccp.py verify --certificate /tmp/eccp-demo.json
+python tensor_cli.py challenge --instance eccp131 --slots 2 --output /tmp/eccp-tensor.json
+python -m unittest -v test_ecc2k test_tensor_contraction test_tensor_encoding test_eccp
+```
+
+The combined suite passes 39 development tests, including all 361 point pairs
+on the 19-point prime-field fixture and 16 independent OpenSSL multiples of the
+published ECCp-131 points. The actual two-slot prime-field network compiles to
+1,564,506 edges, 654,523 variables and maximum degree 1,032. Default contraction
+again selects u_0=0 and rejects exact summation under the configured budget.
+See [the prime-field validation report](prime-development/README.md) for source,
+commands, raw outputs, the diagram/PDF and remaining requirements. These are
+correctness diagnostics, with no performance comparison or theorem proof.
 
 The scalar (ell=1) tensor-contraction engine and a coordinate relation encoder
 are now implemented. The engine includes unramified extension-ring arithmetic,

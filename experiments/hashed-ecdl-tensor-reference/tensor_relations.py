@@ -53,7 +53,11 @@ class CoordinateTensorRelations:
 
     def find(self, target):
         from tensor_encoding import BinaryCurveEncoding, bits_value
-        encoding = BinaryCurveEncoding(self.instance.curve)
+        if self.instance.as_dict().get("field_type") == "prime":
+            from tensor_prime import PrimeCurveEncoding
+            encoding = PrimeCurveEncoding(self.instance.curve)
+        else:
+            encoding = BinaryCurveEncoding(self.instance.curve)
         seeds = [{"prime": b.prime, "alpha": b.alpha, "beta": b.beta, "threshold": b.threshold} for b in self.bases]
         points = encoding.relation(target, seeds, self.instance.order, self.instance.cofactor)
         interface = tuple(v for point in points for word in point.words for v in word)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the recursive tensor engine or encode the real ECC2K-130 target."""
+"""Run the recursive tensor engine or encode a published Certicom target."""
 
 import argparse
 from collections import Counter
@@ -35,13 +35,20 @@ def recursive_check(args):
 
 
 def challenge_network(args):
-    instance, rng = challenge(), random.Random(args.seed)
+    if args.instance == "eccp131":
+        from eccp import challenge as prime_challenge, validate
+        from tensor_prime import PrimeCurveEncoding
+        instance, encoding_class = prime_challenge(), PrimeCurveEncoding
+        validate(instance)
+    else:
+        instance, encoding_class = challenge(), BinaryCurveEncoding
+    rng = random.Random(args.seed)
     settings = parameters(instance, args.slots)
     prime = int(settings["hash_prime"])
     seeds = [{"prime": prime, "alpha": rng.randrange(1, prime), "beta": rng.randrange(prime),
               "threshold": settings["threshold"]} for _ in range(args.slots)]
     started = time.monotonic()
-    encoding = BinaryCurveEncoding(instance.curve)
+    encoding = encoding_class(instance.curve)
     points = encoding.relation(instance.Q, seeds, instance.order, instance.cofactor)
     interface = tuple(v for point in points for word in point.words for v in word)
     stats = encoding.circuit.statistics(interface)
@@ -53,7 +60,7 @@ def challenge_network(args):
     engine = TensorContraction(budget=WorkBudget(args.max_operations, args.seconds))
     plan = engine.plan(stats["boolean_network_edges"], stats["boolean_network_edges"] + 1)
     result = {"instance": instance.name, "instance_sha256": instance.fingerprint,
-              "target": "published Q", "encoding": "implicit binary point coordinates",
+              "target": "published Q", "encoding": "implicit prime-field point coordinates" if args.instance == "eccp131" else "implicit binary point coordinates",
               "factor_base_seed": args.seed, "factor_base_seeds": seeds,
               "network": stats, "contraction_plan": plan,
               "backend": "recursive_cauchy_modes_hermite", "scalar_ring_ell": 1,
@@ -82,6 +89,7 @@ def challenge_network(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["recursive-check", "challenge"])
+    parser.add_argument("--instance", choices=["ecc2k130", "eccp131"], default="ecc2k130")
     parser.add_argument("--slots", type=int, default=2)
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--seconds", type=float, default=60)

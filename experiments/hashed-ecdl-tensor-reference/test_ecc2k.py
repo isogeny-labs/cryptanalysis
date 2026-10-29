@@ -17,13 +17,15 @@ from ecc2k import (BinaryField, BudgetExceeded, FactorBase, MITMRelations,
 
 
 def openssl_multiply(instance, scalar, point):
-    """Independent binary-field arithmetic via the system OpenSSL library."""
+    """Independent binary/prime-field arithmetic via system OpenSSL."""
     path = ctypes.util.find_library("crypto")
     if path is None:
         raise unittest.SkipTest("system OpenSSL unavailable")
     lib = ct.CDLL(path)
-    if not hasattr(lib, "EC_GROUP_new_curve_GF2m"):
-        raise unittest.SkipTest("system OpenSSL lacks binary-field curves")
+    prime_field = instance.as_dict().get("field_type") == "prime"
+    constructor = "EC_GROUP_new_curve_GFp" if prime_field else "EC_GROUP_new_curve_GF2m"
+    if not hasattr(lib, constructor):
+        raise unittest.SkipTest("system OpenSSL lacks requested curve constructor")
     signatures = {
         "BN_bin2bn": ([ct.c_void_p, ct.c_int, ct.c_void_p], ct.c_void_p),
         "BN_new": ([], ct.c_void_p),
@@ -31,7 +33,7 @@ def openssl_multiply(instance, scalar, point):
         "BN_bn2binpad": ([ct.c_void_p, ct.c_void_p, ct.c_int], ct.c_int),
         "BN_CTX_new": ([], ct.c_void_p),
         "BN_CTX_free": ([ct.c_void_p], None),
-        "EC_GROUP_new_curve_GF2m": ([ct.c_void_p] * 4, ct.c_void_p),
+        constructor: ([ct.c_void_p] * 4, ct.c_void_p),
         "EC_GROUP_free": ([ct.c_void_p], None),
         "EC_POINT_new": ([ct.c_void_p], ct.c_void_p),
         "EC_POINT_free": ([ct.c_void_p], None),
@@ -57,9 +59,10 @@ def openssl_multiply(instance, scalar, point):
 
     try:
         c = instance.curve
-        group = lib.EC_GROUP_new_curve_GF2m(bn(c.field.polynomial), bn(c.a), bn(c.b), ctx)
+        modulus = c.field.size if prime_field else c.field.polynomial
+        group = getattr(lib, constructor)(bn(modulus), bn(c.a), bn(c.b), ctx)
         if not group:
-            raise unittest.SkipTest("OpenSSL build rejects binary-field groups")
+            raise unittest.SkipTest("OpenSSL build rejects requested field group")
         source, destination = lib.EC_POINT_new(group), lib.EC_POINT_new(group)
         points.extend([source, destination])
         if lib.EC_POINT_set_affine_coordinates(group, source, bn(point[0]), bn(point[1]), ctx) != 1:
