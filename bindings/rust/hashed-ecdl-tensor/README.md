@@ -8,8 +8,15 @@ report that fact. No practical or asymptotic performance result is claimed.
 
 Public modules provide exact arithmetic and prime certification, certified
 curves, graph construction, compact arithmetic/point/hash encodings, exact
-contraction, deterministic witness extraction, relation collection and
+contraction, deterministic witness extraction, exact prefix-count sampling, relation collection and
 independent algebraic certificate replay. Resource exhaustion is an error.
+
+`Counter::sample` implements Lemma 1's random prefix choices using caller
+randomness. It samples interface words uniformly when the encoding is
+parsimonious; otherwise each word is weighted by its number of satisfying
+auxiliary assignments. Pins condition this distribution. Forced branches use
+no entropy, and entropy or work failures remain errors rather than empty
+languages. `Counter::witness` remains the deterministic relation oracle.
 
 ```sh
 cargo test --locked --release

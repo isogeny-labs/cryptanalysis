@@ -161,3 +161,74 @@ fn coupled_nested_contraction_preserves_old_packet_creation_precision() {
         expected
     );
 }
+
+#[test]
+fn both_taper_levels_match_direct_counts_for_crossing_and_local_ports() {
+    let mut meter = Meter::new(Limits {
+        steps: 5_000_000_000,
+        ..Limits::default()
+    });
+    let ring = Ring::new(4, 3, &mut meter).unwrap();
+    let parameters = Parameters {
+        radix: 2,
+        u: 2,
+        a: 2,
+        length: 4,
+        array: 16,
+    };
+    // Existing forced controls retain only odd Hermite nodes (u=1).
+    // Here both v2(t)=0 and v2(t)=1 contribute, selecting different label
+    // coordinates and different multiplicities/child precisions.
+    for (rows, columns) in [(0, 3), (1, 2), (2, 2)] {
+        for (left_table, right_table) in [(6, 15), (9, 6), (15, 15)] {
+            let graph = Bipartite {
+                left: vec![TensorVertex {
+                    tensor: predicate(2, left_table),
+                    edges: vec![0, 1],
+                }],
+                right: vec![TensorVertex {
+                    tensor: predicate(2, right_table),
+                    edges: vec![0, 1],
+                }],
+                edges: vec![
+                    Edge {
+                        left: (0, 0),
+                        right: (0, 0),
+                    },
+                    Edge {
+                        left: (0, 1),
+                        right: (0, 1),
+                    },
+                ],
+            };
+            let packing = packing::pack_labels(
+                &graph,
+                &parameters,
+                vec![rows],
+                vec![columns],
+                false,
+                &mut meter,
+            )
+            .unwrap();
+            let expected =
+                brute_tensor(&graph, &ring, &mut Statistics::default(), &mut meter).unwrap();
+            let actual = active(
+                &graph,
+                &ring,
+                &parameters,
+                &packing,
+                false,
+                usize::MAX,
+                &mut |child, child_ring, work| {
+                    brute_tensor(child, child_ring, &mut Statistics::default(), work)
+                },
+                &mut meter,
+            )
+            .unwrap();
+            assert_eq!(
+                actual, expected,
+                "labels {rows}/{columns}, tables {left_table}/{right_table}"
+            );
+        }
+    }
+}

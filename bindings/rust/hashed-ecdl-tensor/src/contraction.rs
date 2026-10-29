@@ -9,6 +9,7 @@ mod deformation;
 mod packing;
 mod recursive;
 
+use crate::arithmetic::{random_below, RandomSource};
 use crate::network::{increment, Network, Predicate};
 use crate::ring::{Element, Ring};
 use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
@@ -229,6 +230,51 @@ impl Counter {
                 total = zero;
                 word.push(false);
             }
+        }
+        Ok(Some(word))
+    }
+
+    /// Sample an interface word by the exact prefix-count probabilities of
+    /// Lemma 1, using uniform caller bytes. For a parsimonious encoding this
+    /// is uniform over accepted words. For an arbitrary encoding, each word
+    /// is weighted by its number of satisfying auxiliary assignments.
+    ///
+    /// Uses at most one initial contraction and one per unfixed interface bit.
+    /// `None` certifies an empty language; counting and entropy errors propagate.
+    pub fn sample(
+        &mut self,
+        network: &Network,
+        pins: &[Option<bool>],
+        rng: &mut impl RandomSource,
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<bool>>> {
+        let mut pins = pins.to_vec();
+        let mut total = self.count(network, &pins, meter)?;
+        if total.is_zero() {
+            return Ok(None);
+        }
+        let mut word = Vec::with_capacity(network.interface().len());
+        for &edge in network.interface() {
+            if let Some(bit) = pins[edge] {
+                word.push(bit);
+                continue;
+            }
+            pins[edge] = Some(false);
+            let zero = self.count(network, &pins, meter)?;
+            if zero > total {
+                return Err(integrity("prefix contraction increased after pinning"));
+            }
+            let one = &total - &zero;
+            let bit = if zero.is_zero() {
+                true
+            } else if one.is_zero() {
+                false
+            } else {
+                random_below(&total, rng, meter)? >= zero
+            };
+            pins[edge] = Some(bit);
+            total = if bit { one } else { zero };
+            word.push(bit);
         }
         Ok(Some(word))
     }
@@ -473,5 +519,129 @@ mod tests {
             );
             assert_eq!(counter.statistics.last_backend, Some(Backend::Functional));
         }
+    }
+
+    struct Draws {
+        bytes: std::collections::VecDeque<u8>,
+        calls: usize,
+    }
+    impl RandomSource for Draws {
+        fn fill(&mut self, bytes: &mut [u8]) -> Result<()> {
+            self.calls += 1;
+            for byte in bytes {
+                *byte = self
+                    .bytes
+                    .pop_front()
+                    .ok_or_else(|| invalid("fixture entropy exhausted"))?;
+            }
+            Ok(())
+        }
+    }
+
+    fn or_network(interface: Vec<usize>, meter: &mut Meter) -> Network {
+        let mut builder = GraphBuilder::new();
+        let a = builder.vertex(FnPredicate::new(2, |x, _| Ok(x[0] || x[1])));
+        let b = builder.vertex(FnPredicate::new(2, |_, _| Ok(true)));
+        builder.edge(a, b, meter).unwrap();
+        builder.edge(a, b, meter).unwrap();
+        builder.finish(interface).unwrap()
+    }
+
+    #[test]
+    fn exact_sampling_uses_counts_and_preserves_auxiliary_multiplicity() {
+        let mut meter = Meter::new(Limits::default());
+        let graph = or_network(vec![0, 1], &mut meter);
+        let mut frequencies = std::collections::BTreeMap::new();
+        // All six equiprobable root/child draws. No statistical tolerance:
+        // the three accepted words must each have exactly two preimages.
+        for root in 0..3 {
+            for child in 0..2 {
+                let mut draws = Draws {
+                    bytes: [root, child].into(),
+                    calls: 0,
+                };
+                let mut counter = Counter::default();
+                let word = counter
+                    .sample(&graph, &[None, None], &mut draws, &mut meter)
+                    .unwrap()
+                    .unwrap();
+                assert!(graph.evaluate(&word, &mut meter).unwrap());
+                assert_eq!(counter.statistics.contractions, 3);
+                *frequencies.entry(word).or_insert(0) += 1;
+            }
+        }
+        assert_eq!(frequencies.len(), 3);
+        assert!(frequencies.values().all(|&count| count == 2));
+
+        // Hiding the second edge gives one extension of 0 and two of 1.
+        // Interface words must have weights 1:2, not be reported as uniform.
+        let graph = or_network(vec![0], &mut meter);
+        for root in 0..3 {
+            let mut draws = Draws {
+                bytes: [root].into(),
+                calls: 0,
+            };
+            let word = Counter::default()
+                .sample(&graph, &[None, None], &mut draws, &mut meter)
+                .unwrap()
+                .unwrap();
+            assert_eq!(word, vec![root != 0]);
+            assert_eq!(draws.calls, 1);
+        }
+    }
+
+    #[test]
+    fn sampling_respects_pins_empty_languages_and_failure_boundaries() {
+        let mut meter = Meter::new(Limits::default());
+        let graph = or_network(vec![0, 1], &mut meter);
+        let mut no_entropy = Draws {
+            bytes: [].into(),
+            calls: 0,
+        };
+        let mut counter = Counter::default();
+        assert_eq!(
+            counter
+                .sample(&graph, &[Some(false), None], &mut no_entropy, &mut meter)
+                .unwrap(),
+            Some(vec![false, true])
+        );
+        assert_eq!(counter.statistics.contractions, 2);
+        assert_eq!(no_entropy.calls, 0);
+        assert_eq!(
+            counter
+                .sample(
+                    &graph,
+                    &[Some(false), Some(false)],
+                    &mut no_entropy,
+                    &mut meter
+                )
+                .unwrap(),
+            None
+        );
+        assert!(matches!(
+            counter.sample(&graph, &[], &mut no_entropy, &mut meter),
+            Err(Error::Invalid(_))
+        ));
+        assert!(matches!(
+            counter.sample(&graph, &[None, None], &mut no_entropy, &mut meter),
+            Err(Error::Invalid(_))
+        ));
+        let mut exhausted = Meter::new(Limits {
+            steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            counter.sample(&graph, &[None, None], &mut no_entropy, &mut exhausted),
+            Err(Error::Limit(_))
+        ));
+
+        // An empty interface still distinguishes satisfiable from empty.
+        let graph = or_network(vec![], &mut meter);
+        assert_eq!(
+            counter
+                .sample(&graph, &[None, None], &mut no_entropy, &mut meter)
+                .unwrap(),
+            Some(vec![])
+        );
     }
 }
