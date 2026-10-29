@@ -1,16 +1,15 @@
-"""Refusal controls for source-bound Mathlib corpus registration.
-
-Compiler/auditor mocks below test fail-closed orchestration, not native proofs.
-The corpus CI job must execute the real compiler and exhaustive axiom auditor.
-"""
+"""Admission/refusal controls; mocked Lean outputs are not native proof evidence."""
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -91,12 +90,10 @@ class QuarticRegistrationControls(unittest.TestCase):
 
     def test_known_label_dispatch_requires_native_checker(self):
         with patch.object(gate, "run") as run, patch.object(
-                gate, "check_reviewed_quartic", return_value=gate.KNOWN_LABEL_SHA256) as check:
+                gate, "check_known_label_algebra", return_value=gate.KNOWN_LABEL_SHA256) as check:
             run.return_value.stdout = "dependency-path\n"
             result = gate.check_new_hecke({gate.KNOWN_LABEL_SOURCE})
-            check.assert_called_once_with(gate.KNOWN_LABEL_SOURCE,
-                                          gate.KNOWN_LABEL_SHA256, "dependency-path",
-                                          kind="known-label", expected_theorems=4)
+            check.assert_called_once_with("dependency-path")
             self.assertEqual(result, {gate.KNOWN_LABEL_SOURCE: gate.KNOWN_LABEL_SHA256})
 
     def test_another_documentation_module_remains_unreviewed(self):
@@ -110,16 +107,14 @@ class QuarticRegistrationControls(unittest.TestCase):
         file = self.root / gate.KNOWN_LABEL_SOURCE
         file.write_text(file.read_text() + "\n-- changed\n")
         with patch.object(gate, "run") as run:
-            with self.assertRaisesRegex(ValueError, "reviewed known-label source changed"):
-                gate.check_reviewed_quartic(gate.KNOWN_LABEL_SOURCE, gate.KNOWN_LABEL_SHA256,
-                                           "", kind="known-label", expected_theorems=4)
+            with self.assertRaisesRegex(ValueError, "known-label source changed"):
+                gate.check_known_label_algebra("")
             run.assert_not_called()
 
     def test_known_label_compiler_failure_is_not_admission(self):
         with patch.object(gate, "run", side_effect=ValueError("native compiler failed")) as run:
             with self.assertRaisesRegex(ValueError, "native compiler failed"):
-                gate.check_reviewed_quartic(gate.KNOWN_LABEL_SOURCE, gate.KNOWN_LABEL_SHA256,
-                                           "", kind="known-label", expected_theorems=4)
+                gate.check_known_label_algebra("")
             self.assertEqual(run.call_count, 1)
 
     def test_known_label_three_audited_theorems_cannot_pass(self):
@@ -133,8 +128,7 @@ class QuarticRegistrationControls(unittest.TestCase):
             run.side_effect = [type("Output", (), {"stdout": printed})(),
                                type("Output", (), {"stdout": audit})()]
             with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
-                gate.check_reviewed_quartic(gate.KNOWN_LABEL_SOURCE, gate.KNOWN_LABEL_SHA256,
-                                           "", kind="known-label", expected_theorems=4)
+                gate.check_known_label_algebra("")
             self.assertEqual(run.call_count, 2)
 
     def test_known_label_nonstandard_axiom_refused(self):
@@ -145,9 +139,155 @@ class QuarticRegistrationControls(unittest.TestCase):
         with patch.object(gate, "run") as run:
             run.return_value.stdout = printed
             with self.assertRaisesRegex(ValueError, "unexpected foundation"):
-                gate.check_reviewed_quartic(gate.KNOWN_LABEL_SOURCE, gate.KNOWN_LABEL_SHA256,
-                                           "", kind="known-label", expected_theorems=4)
+                gate.check_known_label_algebra("")
             self.assertEqual(run.call_count, 1)
+
+
+class KnownLabelRegistrationControls(unittest.TestCase):
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        self.project = self.root / PROJECT
+        self.project.mkdir(parents=True)
+        for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
+            shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
+        self.source = self.root / gate.KNOWN_LABEL_SOURCE
+        self.source.parent.mkdir(parents=True)
+        shutil.copyfile(REPOSITORY / gate.KNOWN_LABEL_SOURCE, self.source)
+        for name, value in (("ROOT", self.root), ("HECKE_CI", self.project)):
+            active = patch.object(gate, name, value)
+            active.start()
+            self.addCleanup(active.stop)
+        self.names = sorted(gate.KNOWN_LABEL_THEOREMS)
+        self.printed = "".join(f"'{n}' depends on axioms: [propext, Quot.sound]\n"
+                               for n in self.names)
+        self.audited = ("".join(f"ok    {n}  [propext, Quot.sound]\n" for n in self.names)
+                        + "audited 4 theorems; 0 failing, 0 trusted\n")
+
+    def check_with_outputs(self, printed=None, audited=None):
+        with patch.object(gate, "run") as run, contextlib.redirect_stdout(io.StringIO()):
+            run.side_effect = [
+                SimpleNamespace(stdout=self.printed if printed is None else printed),
+                SimpleNamespace(stdout=self.audited if audited is None else audited),
+            ]
+            value = gate.check_known_label_algebra("pinned-dependencies")
+            calls = run.call_args_list
+        return value, calls
+
+    def test_native_commands_use_original_bytes_isolated_output_and_module_audit(self):
+        before = self.source.read_bytes()
+        value, calls = self.check_with_outputs()
+        self.assertEqual(value, gate.KNOWN_LABEL_SHA256)
+        self.assertEqual(self.source.read_bytes(), before)
+        build, audit = calls
+        self.assertEqual(build.args[0][:5], ["lake", "env", "lean", "-R", str(self.root)])
+        self.assertEqual(build.args[0][-1], str(self.source))
+        output = Path(build.args[0][build.args[0].index("-o") + 1])
+        self.assertFalse(output.is_relative_to(self.root))
+        self.assertEqual(build.kwargs["cwd"], self.project)
+        self.assertEqual(audit.args[0][-1], gate.KNOWN_LABEL_SOURCE[:-5].replace("/", "."))
+        self.assertIn("AuditHeckeAxioms.lean", audit.args[0][-2])
+        self.assertTrue(audit.kwargs["env"]["LEAN_PATH"].endswith("pinned-dependencies"))
+
+    def test_extra_audited_theorem_refused(self):
+        audited = self.audited.replace("audited 4 theorems", "ok    Unexpected.extra  []\naudited 5 theorems")
+        with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
+            self.check_with_outputs(audited=audited)
+
+    def test_changed_source_refused_before_compilation(self):
+        self.source.write_text(self.source.read_text() + "\n-- changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "known-label source changed"):
+                gate.check_known_label_algebra("")
+            run.assert_not_called()
+
+    def test_each_workspace_input_is_bound(self):
+        for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
+            with self.subTest(name=name):
+                file = self.project / name
+                original = file.read_bytes()
+                file.write_bytes(original + b"\n")
+                with patch.object(gate, "run") as run:
+                    with self.assertRaisesRegex(ValueError, "known-label project input changed"):
+                        gate.check_known_label_algebra("")
+                    run.assert_not_called()
+                file.write_bytes(original)
+
+    def test_matching_source_through_symlink_refused(self):
+        target = self.root / "original.lean"
+        self.source.rename(target)
+        self.source.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, "escapes repository"):
+            gate.check_known_label_algebra("")
+
+    def test_native_printout_cannot_substitute_same_short_names_in_other_namespace(self):
+        with self.assertRaisesRegex(ValueError, "native theorem identities changed"):
+            self.check_with_outputs(printed=self.printed.replace("KnownLabelLeads.", "Other."))
+
+    def test_missing_printout_refused(self):
+        with self.assertRaisesRegex(ValueError, "incomplete native declaration audit"):
+            self.check_with_outputs(printed="\n".join(self.printed.splitlines()[:-1]))
+
+    def test_nonstandard_axiom_refused(self):
+        with self.assertRaisesRegex(ValueError, "unexpected foundation"):
+            self.check_with_outputs(printed=self.printed.replace("Quot.sound", "sorryAx"))
+
+    def test_zero_or_failed_module_audit_refused(self):
+        for output in ("", "audited 0 theorems; 0 failing, 0 trusted\n",
+                       self.audited.replace("0 failing", "1 failing")):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError, "incomplete exhaustive"):
+                self.check_with_outputs(audited=output)
+
+    def test_plausible_audit_count_with_wrong_names_refused(self):
+        with self.assertRaisesRegex(ValueError, "named theorems missing"):
+            self.check_with_outputs(audited=self.audited.replace("KnownLabelLeads.", "Other."))
+
+    def test_native_compile_failure_propagates(self):
+        with patch.object(gate, "run", side_effect=ValueError("native compiler failed")) as run:
+            with self.assertRaisesRegex(ValueError, "native compiler failed"):
+                gate.check_known_label_algebra("")
+            self.assertEqual(run.call_count, 1)
+
+    def test_source_mutation_during_audit_refused(self):
+        def runtime(args, **kwargs):
+            if args[:2] == ["lean", "--run"]:
+                self.source.write_bytes(self.source.read_bytes() + b"\n")
+                return SimpleNamespace(stdout=self.audited)
+            return SimpleNamespace(stdout=self.printed)
+        with patch.object(gate, "run", side_effect=runtime), contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaisesRegex(ValueError, "source changed during audit"):
+                gate.check_known_label_algebra("")
+
+    def test_only_exact_added_path_has_new_dispatch(self):
+        with patch.object(gate, "reviewed_quartic_sources", return_value={}), \
+             patch.object(gate, "run", return_value=SimpleNamespace(stdout="dependencies\n")), \
+             patch.object(gate, "check_known_label_algebra", return_value=gate.KNOWN_LABEL_SHA256) as known:
+            self.assertEqual(gate.check_new_hecke({gate.KNOWN_LABEL_SOURCE}),
+                             {gate.KNOWN_LABEL_SOURCE: gate.KNOWN_LABEL_SHA256})
+            known.assert_called_once_with("dependencies")
+            with self.assertRaisesRegex(ValueError, "unreviewed Lean corpus addition"):
+                gate.check_new_hecke({gate.KNOWN_LABEL_SOURCE.replace("Algebra", "Other")})
+            self.assertEqual(known.call_count, 1)
+
+    def test_workspace_mutation_during_each_native_command_refused(self):
+        for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
+            for phase in ("compile", "audit"):
+                with self.subTest(name=name, phase=phase):
+                    file = self.project / name
+                    original = file.read_bytes()
+                    def runtime(args, **kwargs):
+                        auditing = args[:2] == ["lean", "--run"]
+                        if auditing == (phase == "audit"):
+                            file.write_bytes(original + b"\n")
+                        return SimpleNamespace(stdout=self.audited if auditing else self.printed)
+                    try:
+                        with patch.object(gate, "run", side_effect=runtime), \
+                             contextlib.redirect_stdout(io.StringIO()):
+                            with self.assertRaisesRegex(ValueError, "known-label project input changed"):
+                                gate.check_known_label_algebra("")
+                    finally:
+                        file.write_bytes(original)
 
 
 if __name__ == "__main__":
