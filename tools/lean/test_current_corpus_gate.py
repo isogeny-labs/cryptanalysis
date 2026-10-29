@@ -4,6 +4,8 @@ import hashlib
 import importlib.util
 import io
 import json
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 import shutil
 import tempfile
@@ -31,6 +33,9 @@ class QuarticRegistrationControls(unittest.TestCase):
         self.manifest = self.root / "tools/ci/quartic_certificates.json"
         self.manifest.parent.mkdir(parents=True)
         shutil.copyfile(REPOSITORY / "tools/ci/quartic_certificates.json", self.manifest)
+        known_label = self.root / gate.KNOWN_LABEL_SOURCE
+        known_label.parent.mkdir(parents=True)
+        shutil.copyfile(REPOSITORY / gate.KNOWN_LABEL_SOURCE, known_label)
         self.root_patch = patch.object(gate, "ROOT", self.root)
         self.project_patch = patch.object(gate, "HECKE_CI", self.project)
         self.root_patch.start()
@@ -83,6 +88,60 @@ class QuarticRegistrationControls(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "escapes repository"):
             gate.check_reviewed_quartic(path, hashlib.sha256(target.read_bytes()).hexdigest(), "")
 
+    def test_known_label_dispatch_requires_native_checker(self):
+        with patch.object(gate, "run") as run, patch.object(
+                gate, "check_known_label_algebra", return_value=gate.KNOWN_LABEL_SHA256) as check:
+            run.return_value.stdout = "dependency-path\n"
+            result = gate.check_new_hecke({gate.KNOWN_LABEL_SOURCE})
+            check.assert_called_once_with("dependency-path")
+            self.assertEqual(result, {gate.KNOWN_LABEL_SOURCE: gate.KNOWN_LABEL_SHA256})
+
+    def test_another_documentation_module_remains_unreviewed(self):
+        with patch.object(gate, "run") as run:
+            run.return_value.stdout = "dependency-path\n"
+            with self.assertRaisesRegex(ValueError, "unreviewed Lean corpus addition"):
+                gate.check_new_hecke({"docs/unreviewed/Other.lean"})
+            self.assertEqual(run.call_count, 1)
+
+    def test_known_label_changed_source_refused_before_compilation(self):
+        file = self.root / gate.KNOWN_LABEL_SOURCE
+        file.write_text(file.read_text() + "\n-- changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "known-label source changed"):
+                gate.check_known_label_algebra("")
+            run.assert_not_called()
+
+    def test_known_label_compiler_failure_is_not_admission(self):
+        with patch.object(gate, "run", side_effect=ValueError("native compiler failed")) as run:
+            with self.assertRaisesRegex(ValueError, "native compiler failed"):
+                gate.check_known_label_algebra("")
+            self.assertEqual(run.call_count, 1)
+
+    def test_known_label_three_audited_theorems_cannot_pass(self):
+        names = ["triangle_identity", "signed_second_moment", "signed_third_moment",
+                 "positive_pair_product"]
+        printed = "\n".join(f"'KnownLabelLeads.{name}' depends on axioms: [propext]"
+                            for name in names) + "\n"
+        audit = "\n".join(f"ok    KnownLabelLeads.{name}  [propext]" for name in names[:3])
+        audit += "\naudited 3 theorems; 0 failing, 0 trusted\n"
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = [type("Output", (), {"stdout": printed})(),
+                               type("Output", (), {"stdout": audit})()]
+            with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
+                gate.check_known_label_algebra("")
+            self.assertEqual(run.call_count, 2)
+
+    def test_known_label_nonstandard_axiom_refused(self):
+        names = ["triangle_identity", "signed_second_moment", "signed_third_moment",
+                 "positive_pair_product"]
+        printed = "\n".join(f"'KnownLabelLeads.{name}' depends on axioms: [ClaimAsAxiom]"
+                            for name in names) + "\n"
+        with patch.object(gate, "run") as run:
+            run.return_value.stdout = printed
+            with self.assertRaisesRegex(ValueError, "unexpected foundation"):
+                gate.check_known_label_algebra("")
+            self.assertEqual(run.call_count, 1)
+
 
 class KnownLabelRegistrationControls(unittest.TestCase):
     def setUp(self):
@@ -130,6 +189,11 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         self.assertEqual(audit.args[0][-1], gate.KNOWN_LABEL_SOURCE[:-5].replace("/", "."))
         self.assertIn("AuditHeckeAxioms.lean", audit.args[0][-2])
         self.assertTrue(audit.kwargs["env"]["LEAN_PATH"].endswith("pinned-dependencies"))
+
+    def test_extra_audited_theorem_refused(self):
+        audited = self.audited.replace("audited 4 theorems", "ok    Unexpected.extra  []\naudited 5 theorems")
+        with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
+            self.check_with_outputs(audited=audited)
 
     def test_changed_source_refused_before_compilation(self):
         self.source.write_text(self.source.read_text() + "\n-- changed\n")

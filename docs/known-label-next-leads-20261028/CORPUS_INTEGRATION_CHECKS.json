@@ -1,0 +1,20 @@
+{
+  "kind": "corpus-admission-correction-validation",
+  "original_failure": {
+    "job_id": 122949254132,
+    "head": "cb1ba765106a06782aff18ab8b03b78c607ca141",
+    "message": "unreviewed Lean corpus addition: docs/known-label-next-leads-20261028/Algebra.lean"
+  },
+  "local_tests": {
+    "command": "python tools/lean/test_current_corpus_gate.py -v",
+    "exit_code": 0,
+    "output": "test_another_documentation_module_remains_unreviewed (__main__.QuarticRegistrationControls.test_another_documentation_module_remains_unreviewed) ... ok\ntest_changed_build_pin_refused (__main__.QuarticRegistrationControls.test_changed_build_pin_refused) ... ok\ntest_changed_project_bytes_refused (__main__.QuarticRegistrationControls.test_changed_project_bytes_refused) ... ok\ntest_changed_registered_source_refused_before_compilation (__main__.QuarticRegistrationControls.test_changed_registered_source_refused_before_compilation) ... ok\ntest_known_label_changed_source_refused_before_compilation (__main__.QuarticRegistrationControls.test_known_label_changed_source_refused_before_compilation) ... ok\ntest_known_label_compiler_failure_is_not_admission (__main__.QuarticRegistrationControls.test_known_label_compiler_failure_is_not_admission) ... ok\ntest_known_label_dispatch_requires_native_checker (__main__.QuarticRegistrationControls.test_known_label_dispatch_requires_native_checker) ... ok\ntest_known_label_nonstandard_axiom_refused (__main__.QuarticRegistrationControls.test_known_label_nonstandard_axiom_refused) ... ok\ntest_known_label_three_audited_theorems_cannot_pass (__main__.QuarticRegistrationControls.test_known_label_three_audited_theorems_cannot_pass) ... ok\ntest_original_bare_paths_are_explicitly_bound (__main__.QuarticRegistrationControls.test_original_bare_paths_are_explicitly_bound) ... ok\ntest_symlink_source_refused_even_with_matching_bytes (__main__.QuarticRegistrationControls.test_symlink_source_refused_even_with_matching_bytes) ... ok\ntest_unknown_bare_source_still_refused_without_compilation (__main__.QuarticRegistrationControls.test_unknown_bare_source_still_refused_without_compilation) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.055s\n\nOK\n",
+    "passed": 12,
+    "compiler_and_auditor_outputs_simulated_for_refusal_tests": true
+  },
+  "native_lean_build_performed_locally": false,
+  "native_verification_status": "Pending corrective-head corpus CI; no native proof claimed",
+  "lean_source_changed": false,
+  "workflow_or_gate_disabled": false,
+  "full_probability_theorem_formalized": false
+}
