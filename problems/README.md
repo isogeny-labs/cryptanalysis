@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Hashed ECDL tensor backend](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md) | open | full conditional subexponential replication | canonical crypto record: compact encoder, exact fast contraction backend and independent validation |
 | [Concrete source field and discriminant/resultant bridge](hecke432-discriminant-field-bridge.md) | open | Saved polynomial and relative-factor discriminant norms are not yet connected in Lean to the concrete degree-18 source field. | Concrete encodings and axiom-audited connecting lemmas; see acceptance criteria |
 | [Concrete integral basis and field-index discriminants](hecke432-field-index-integral-basis-bridge.md) | open | The general trace-Gram determinant theorem and saved integer equalities do not identify the saved discriminants with those of the concrete degree-18 field and integral basis. | Concrete encodings and axiom-audited connecting lemmas; see acceptance criteria |
 | [Concrete prime ideals and valuation-table interpretation](hecke432-relative-ideal-encoding-bridge.md) | open | The eight kernel-checked finite table declarations do not prove that their rows are valuations of the serialized elements at the specified prime ideals of K. | Concrete encodings and axiom-audited connecting lemmas; see acceptance criteria |

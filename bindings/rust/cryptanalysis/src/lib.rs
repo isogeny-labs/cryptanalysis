@@ -50,6 +50,7 @@ pub mod curve;
 mod error;
 pub mod gpu;
 mod group;
+pub mod hashed_ecdl;
 pub mod index_calculus;
 mod nt;
 mod options;
@@ -79,6 +80,31 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hashed_ecdl_agrees_with_independent_c_arithmetic() {
+        let curve = hashed_ecdl::Curve::new(211, 0, 7, 199).unwrap();
+        let group = Group::ec(211, 0, 7, 199).unwrap();
+        let generator = Elem::ec(3, 33);
+        for scalar in 0..199 {
+            let point = group.mul(&generator, scalar).unwrap();
+            let affine = if point.is_infinity() {
+                None
+            } else {
+                Some((point.x(), point.y()))
+            };
+            assert_eq!(curve.mul(Some((3, 33)), scalar).unwrap(), affine);
+        }
+        let target = group.mul(&generator, 42).unwrap();
+        let certificate = hashed_ecdl::solve(
+            &curve,
+            Some((3, 33)),
+            Some((target.x(), target.y())),
+            &hashed_ecdl::Config::default(),
+        )
+        .unwrap();
+        assert_eq!(group.mul(&generator, certificate.scalar).unwrap(), target);
+    }
 
     #[test]
     fn version_is_semver_like() {
