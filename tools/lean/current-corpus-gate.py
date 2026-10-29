@@ -361,7 +361,8 @@ def check_known_label_algebra(lean_path: str) -> str:
     check_known_label_project_inputs()
     checked = check_pinned_mathlib_source(
         KNOWN_LABEL_SOURCE, KNOWN_LABEL_SHA256, lean_path,
-        label="known-label", exact_names=KNOWN_LABEL_THEOREMS)
+        label="known-label", exact_names=KNOWN_LABEL_THEOREMS,
+        expected_theorems=4)
     check_known_label_project_inputs()
     return checked
 
@@ -375,7 +376,8 @@ def check_known_label_project_inputs() -> None:
 
 
 def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
-                               label: str, exact_names: frozenset[str] | None = None) -> str:
+                               label: str, exact_names: frozenset[str] | None = None,
+                               expected_theorems: int | None = None) -> str:
     """Compile original bytes; audit requested declarations and non-internal theorems."""
     file = ROOT / path
     require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
@@ -417,6 +419,10 @@ def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
         require(len(summary) == 1 and
                 len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == int(summary[0]),
                 f"incomplete exhaustive theorem audit in {path}")
+        if expected_theorems is not None:
+            require(len(requested) == expected_theorems and
+                    int(summary[0]) == expected_theorems,
+                    f"reviewed theorem count changed in {path}")
         if exact_names is not None:
             audited_names = set(re.findall(r"^ok    (\S+)  \[", audit.stdout, re.MULTILINE))
             require(exact_names <= audited_names,

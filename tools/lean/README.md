@@ -76,3 +76,13 @@ checks at the stated versions. It does not show that every Lean declaration's
 transitive axioms were exhaustively audited, that every statement faithfully models
 its research claim, that a historical experiment ran as reported, or that all
 historical claims have proofs.
+
+### Integration reconciliation (2026-10-29)
+
+The separate main-branch correction is documented in
+`docs/known-label-next-leads-20261028/CI_INTEGRATION.md`. Its requirement of
+exactly four audited theorems is retained alongside fully qualified theorem
+identity checks and before/after checks of all three pinned project inputs.
+All main-branch refusal cases remain tested through the final known-label route;
+neighboring documentation modules remain unreviewed and rejected. Historical
+producer reports and native receipts remain bound to their original revisions.
