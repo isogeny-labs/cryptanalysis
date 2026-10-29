@@ -1,4 +1,5 @@
 """Checked-Sage comparison of distinct-root and repeated-root Hecke kernels."""
+import argparse
 import hashlib
 import importlib.util
 import json
@@ -49,7 +50,7 @@ def rank(rows, modulus, columns):
     return len(pivots)
 
 
-def main():
+def main(output_path):
     for path, expected in EXPECTED.items():
         assert digest(path) == expected, path
     data = json.loads(SOURCE.read_text())
@@ -95,10 +96,14 @@ def main():
               'old_kernel_sha256': digest(OLD), 'new_kernel_sha256': digest(NEW),
               'points_scanned': len(points), 'root_patterns': {str(k): dict(v) for k, v in patterns.items()},
               'added': added, 'ranks': ranks}
-    (HERE / 'scan.json').write_text(json.dumps(output, indent=2, sort_keys=True) + '\n')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(output, indent=2, sort_keys=True) + '\n')
     print(json.dumps({k: v for k, v in output.items() if k != 'added'}, sort_keys=True))
     print(json.dumps({'added_count': len(added), 'sources': [item['source_column'] for item in added]}))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', type=Path, required=True,
+                        help='write the receipt to a unique attempt directory')
+    main(parser.parse_args().output)
