@@ -29,10 +29,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
-        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
-      - uses: leanprover/lean-action@v1
-        with:
-          lake-package-directory: experiments/orbit-quotient-summation/lean
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/orbit-quotient-summation
+      - name: Install the project's pinned Lean toolchain
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat experiments/orbit-quotient-summation/lean/lean-toolchain)"
       - name: Check exact transitive axiom set
         run: experiments/orbit-quotient-summation/lean/check.sh
       - uses: actions/setup-python@v7
