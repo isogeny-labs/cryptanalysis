@@ -19,12 +19,28 @@ from quartic_portable_replay import copy_verified, new_output
 
 RESOLVENT = "experiments/hecke-432-j1728-resolvent-field-20261026"
 SQRT2 = "experiments/hecke-432-j1728-sqrt2-split-20261026"
+RESULTANTS = "experiments/hecke-432-j1728-sqrt2-resultants-20261026"
+MILLION = "experiments/hecke-432-j1728-sqrt2-million-20261026"
 MODES = {
     "resolvent-producer": (RESOLVENT, "field_factor_sage.py",
                            ("coordinate_field.json", "factor_certificate.json", "field_factor_result.json")),
     "resolvent-check": (RESOLVENT, "check_certificate_sage.py", ("certificate_check.json",)),
     "sqrt2-producer": (SQRT2, "export_sqrt2_sage.py", ("sqrt2_factor_certificate.json",)),
     "sqrt2-check": (SQRT2, "check_certificate_sage.py", ("certificate_check.json",)),
+    "sqrt2-select": (SQRT2, "select_holdout_sage.py", ("holdout_selection.json",)),
+    "sqrt2-test": (SQRT2, "test_holdout_sage.py", ("holdout_result.json",)),
+    "sqrt2-audit": (SQRT2, "audit_holdout.py", ("holdout_audit.json",)),
+    "norms-producer": (RESULTANTS, "resultant_norms_sage.py", ("resultant_norms.json",)),
+    "bridge-producer": (RESULTANTS, "bridge_gate_sage.py", ("bridge_gate.json",)),
+    "norms-check": (RESULTANTS, "audit_norms_sage.py", ("norm_audit.json",)),
+    "bad-primes-check": (RESULTANTS, "audit_bad_primes.py", ("bad_prime_audit.json",)),
+    "branch-producer": (RESULTANTS, "validate_pairs.py", ("branch_result.json",)),
+    "branch-check": (RESULTANTS, "audit_branch.py", ("branch_audit.json",)),
+    "bounded-gate-check": (RESULTANTS, "bounded_gate_audit.py", ("bounded_result.json",)),
+    "million-scan": (MILLION, "scan.py", ("result.json",)),
+    "million-exceptions": (MILLION, "audit_new_exceptions.py", ("exception_result.json",)),
+    "million-check": (MILLION, "audit_scan.py", ("audit_result.json",)),
+    "million-sage-check": (MILLION, "replay_new_exceptions_sage.py", ("sage_replay.json",)),
 }
 
 
@@ -123,7 +139,8 @@ def main(argv=None):
         command = checked_command(args.sage_root, script)
         metadata = {"mode": args.mode, "command": command, "timeout_seconds": args.timeout_seconds,
                     "source_sha256": sha256(script.read_bytes()).hexdigest(),
-                    "protocol_sha256": sha256((script.parent / "protocol.json").read_bytes()).hexdigest(),
+                    "protocol_sha256": {p.name: sha256(p.read_bytes()).hexdigest()
+                                        for p in sorted(script.parent.glob("*protocol*.json"))},
                     "manifest_sha256": sha256(MANIFEST.read_bytes()).hexdigest()}
         metadata.update(execute(command, script.parent, output, MODES[args.mode][2], args.timeout_seconds))
         (output / "attempt.json").write_text(json.dumps(metadata, indent=2) + "\n")

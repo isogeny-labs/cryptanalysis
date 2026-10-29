@@ -71,3 +71,21 @@ Current-head CI and fresh review before merging PR #1293. No accepted Sage image
 ### Errors
 
 The prior portable helper handled only integer auditors and did not launch the original Sage workers. The dedicated helper closes the path/launch implementation gap without claiming those mathematical replays ran. Conductor is absent (127); scope was declared before edits.
+
+## 12:07 UTC — Cover the complete workers cited by the remaining path reviews
+
+### What was done
+
+Extended the same checked canonical-layout runner to all 18 original workers in the resolvent, sqrt(2) split, resultants and million-cap studies, including selection, direct exception enumeration, integer audits and Sage checks. Verified preparation for all 18 exact source files, selected old-output removal and all 1,404 frozen source hashes. The same 21 refusal/execution I/O controls pass across every mode.
+
+### Decisions made
+
+Use explicit pinned worker/output allowlists. Preserve prime caps, selection inputs and all source/receipt labels as historical artifacts; do not equate a rerun of a jointly published holdout with prospective evidence. No worker or Sage image was executed in these preparation checks.
+
+### Open threads
+
+Published-head CI and fresh review on #1293, then original review reconciliation. Actual checked-Sage mathematical replay is still unperformed.
+
+### Errors
+
+The initial four-mode helper did not cover the additional workers explicitly cited in #1164–#1166. The expanded allowlist includes them, without touching frozen studies or claiming a new mathematical result.
