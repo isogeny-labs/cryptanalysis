@@ -383,6 +383,23 @@ def validate_routes(directory: Path, by_ref: dict, errors: list[str]) -> dict:
     return routes
 
 
+def check_pdp_stage(pdp: dict, errors: list[str], where: str) -> None:
+    summands = pdp.get("summands")
+    family = pdp.get("solver_family")
+    if "summands" not in pdp and "solver_family" not in pdp:
+        # bench.candidate_manifest's original half-trace format uses
+        # summand_count and an exact implementation path, not the XL keys.
+        # Read that frozen format without changing its content-addressed ID.
+        summands = pdp.get("summand_count")
+        if (type(summands) is int and summands == 2
+                and pdp.get("implementation") ==
+                "experiments/pdp-degree-heuristics/htsolver.py"):
+            family = "ht"
+    check(type(summands) is int and summands >= 2
+          and pdp.get("stage_code") == f"PDP{summands}{family}",
+          errors, where, "PDP stage code disagrees with summands or solver family")
+
+
 def validate_candidates(root: Path, routes: dict, errors: list[str]) -> None:
     base = root / "experiments/ic-bench"
     archive = root / "experiments/fb-archive/index.csv"
@@ -404,9 +421,7 @@ def validate_candidates(root: Path, routes: dict, errors: list[str]) -> None:
         check("candidate_id" not in item, errors, where, "candidate_id must not enter its own hash input")
         stages = [item.get(k, {}).get("stage_code", "") for k in
                   ("point_decomposition", "relation_collection", "relation_linear_algebra", "target_descent")]
-        summands = item.get("point_decomposition", {}).get("summands")
-        family = item.get("point_decomposition", {}).get("solver_family")
-        check(stages[0] == f"PDP{summands}{family}", errors, where, "PDP stage code disagrees with summands or solver family")
+        check_pdp_stage(item.get("point_decomposition", {}), errors, where)
         check(all(re.fullmatch(prefix + r"[a-z0-9]+", code) for prefix, code in
                   zip(("PDP", "RC", "LA", "TD"), stages)), errors, where, "invalid stage code")
         count = fb.get("actual_usable_point_count")

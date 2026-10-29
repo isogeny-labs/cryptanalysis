@@ -41,6 +41,12 @@ class HarnessTest(unittest.TestCase):
         cpus, nodes, cgroup = load_runner().require_manifest(m)
         self.assertEqual((cpus, nodes), ({2, 3}, {0}))
         self.assertEqual(len(m["cases"]), 3)
+        self.assertEqual(m["result_field"], "recovered_scalar")
+        for case in m["cases"]:
+            self.assertEqual(set(case["expected_fields"]), set(m["pair_fields"]))
+            self.assertEqual(case["expected_result"], case["expected_fields"]["fixture_scalar"])
+            for variant in ("reference", "candidate"):
+                self.assertNotIn(case["expected_result"], case[variant])
         self.assertEqual([c["reference"][3] for c in m["cases"]], ["rho"] * 3)
         self.assertEqual([c["candidate"][3] for c in m["cases"]], ["ic"] * 3)
 
@@ -54,6 +60,7 @@ class HarnessTest(unittest.TestCase):
             self.assertEqual(p.returncode, 0, p.stderr[-2000:])
             out[v] = fields(p.stdout)
             self.assertEqual(out[v]["verified"], "1")
+            self.assertEqual(out[v]["recovered_scalar"], out[v]["fixture_scalar"])
             self.assertGreater(float(out[v]["online_ms"]), 0)
         for k in mk.build(Path(sys.executable), ROOT, Path("/sys/fs/cgroup/x"), "0", 0, "0", {19: 1}, 1)["pair_fields"]:
             self.assertEqual(out["ic"][k], out["rho"][k], k)

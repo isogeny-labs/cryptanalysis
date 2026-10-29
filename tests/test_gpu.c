@@ -158,14 +158,14 @@ static void test_walk_invariant(const ca_group *g, const ca_elem *base, const ca
         for (uint32_t tid = 0; tid < nthreads; tid++) ca_dev_rho_thread(&a, tid);
         dps_total += dp_count;
         for (size_t w = 0; w < nwalks; w++) {
-            uint64_t wx = state[4 * w], wy = state[4 * w + 1];
+            uint64_t wx = state[4 * w];
             uint64_t wa = state[4 * w + 2], wb = state[4 * w + 3];
             ca_elem lhs, t1, t2;
             if (a.kind == CA_GPU_KIND_EC && wx == g->p) {
                 ca_group_identity(g, &lhs);
             } else {
                 lhs.w[0] = wx;
-                lhs.w[1] = a.kind == CA_GPU_KIND_EC ? wy : 0;
+                lhs.w[1] = a.kind == CA_GPU_KIND_EC ? state[4 * w + 1] : 0;
                 lhs.w[2] = 0;
                 lhs.w[3] = 0;
                 CHECK(ca_group_is_valid(g, &lhs));
