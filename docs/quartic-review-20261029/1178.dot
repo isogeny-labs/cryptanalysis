@@ -1,0 +1,14 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="Pinned inputs: original source and protocols"];
+n1 [label="Certify unramified local quadratic factors and order\nindices"];
+n2 [label="Submitted exact arithmetic / algebra certificates"];
+n3 [label="Pinned Lean project and theorem axiom audit"];
+n4 [label="Full concrete field / ideal / transport bridge:\nonly established where separately proved"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n2 [label="scope condition / recorded check", style=solid];
+n2 -> n3 [label="scope condition / recorded check", style=solid];
+n3 -> n4 [label="scope condition / recorded check", style=dashed];
+}

@@ -1,0 +1,78 @@
+{
+  "1164": {
+    "labels": [
+      "C rows checked",
+      "C rows passing"
+    ],
+    "values": [
+      6,
+      6
+    ],
+    "unit": "source C rows",
+    "source": "experiments/hecke-432-j1728-sqrt2-split-20261026/holdout_result.json",
+    "sha256": "1bac73fbce6500c9d6a93acc6ad0af632b0889b16b04e61e8e99af9f0a13c459",
+    "scope": "Six saved C rows at primes 8123, 8147 and 8171. Retrospective verification."
+  },
+  "1167": {
+    "labels": [
+      "Eligible primes",
+      "Gate certified",
+      "Excluded primes"
+    ],
+    "values": [
+      83047,
+      83036,
+      11
+    ],
+    "unit": "prime cells",
+    "source": "experiments/hecke-432-j1728-octic-collision-holdout-20261026/scan_result.json",
+    "sha256": "c07fd68502d15999ab5383038cff708f52ce49e4a5f51e46c7a765e9cc474fa9",
+    "scope": "7 <= p < 10,000,000; p congruent 11 mod 24. Excluded does not imply a rational pair."
+  },
+  "1170": {
+    "labels": [
+      "414340033",
+      "431435018569"
+    ],
+    "values": [
+      426,
+      426
+    ],
+    "unit": "C-E point pairs",
+    "source": "experiments/hecke-432-j1728-octic-factor-search-20261026/audit_result.json",
+    "sha256": "db09d23491de66af86e1b230288eefba734a79193f986da7f83286e0a46785dd",
+    "scope": "Two saved primes, 18 rational source points per prime. The nearby control is documented separately."
+  },
+  "1171": {
+    "labels": [
+      "414340033",
+      "431435018569",
+      "414340153",
+      "4335978784654674076339691"
+    ],
+    "values": [
+      3,
+      3,
+      0,
+      1
+    ],
+    "unit": "branch-zero x-roots",
+    "source": "experiments/hecke-432-j1728-fiber-overlap-20261026/audit_result.json",
+    "sha256": "792c12fdd3037bff1ea4d36d798997ad729c28e3b64f2d262f7da08adc6fba2d",
+    "scope": "Four saved finite fields; seven total branch-zero x-roots among 499 rational roots."
+  },
+  "1173": {
+    "labels": [
+      "Matched coefficients",
+      "Mismatched coefficients"
+    ],
+    "values": [
+      728,
+      0
+    ],
+    "unit": "coefficient comparisons",
+    "source": "experiments/hecke-432-j1728-resultant-projection-20261026/result.json",
+    "sha256": "91fd9f3da6d5a8754e118105eb01cd3b212cabaf11ee672559c4a00aab7fb8f2",
+    "scope": "13 coefficients for each of 56 saved source points. All coefficient identities match."
+  }
+}
