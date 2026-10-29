@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="470" viewBox="0 0 920 470">
+<rect width="920" height="470" fill="#fff"/>
+<g font-family="sans-serif" fill="#142d41">
+<text x="30" y="35" font-size="23" font-weight="bold">Hashed ECDL: implemented reduction and open tensor backend</text>
+<text x="30" y="62" font-size="15">Bochum v0.2, Figure 2 · correctness reference only · no speed measurements</text>
+<g fill="#e9f3f7" stroke="#27627d" stroke-width="2">
+<rect x="30" y="100" width="255" height="110" rx="8"/>
+<rect x="332" y="100" width="255" height="110" rx="8"/>
+<rect x="635" y="100" width="255" height="110" rx="8"/>
+<rect x="332" y="300" width="255" height="110" rx="8"/>
+</g>
+<g font-size="17" text-anchor="middle">
+<text x="157" y="130" font-weight="bold">1. Affine hash bases</text>
+<text x="157" y="158">enc(A) = 2x + parity(y)</text>
+<text x="157" y="186">Inverse-hash enumeration</text>
+<text x="459" y="130" font-weight="bold">2. Relations</text>
+<text x="459" y="158">[u]P + [v]Q = sum A_i</text>
+<text x="459" y="186">Check every witness</text>
+<text x="762" y="130" font-weight="bold">3. Cancel columns</text>
+<text x="762" y="158">N+1 rows; slots distinct</text>
+<text x="762" y="186">Nonzero dependency</text>
+<text x="459" y="330" font-weight="bold">4. Extract and replay</text>
+<text x="459" y="358">xi = -U/V mod r, V != 0</text>
+<text x="459" y="386">Verify [xi]P = Q</text>
+</g>
+<g stroke="#27627d" stroke-width="2" fill="none">
+<path d="M285 155h47m-9 -5 9 5 -9 5M587 155h48m-9 -5 9 5 -9 5"/>
+<path d="M762 210v145H587m9 -5 -9 5 9 5"/>
+</g>
+<rect x="30" y="285" width="255" height="125" rx="8" fill="#fff5e8" stroke="#9a5d16" stroke-width="2" stroke-dasharray="7 4"/>
+<g font-size="16" text-anchor="middle" fill="#75420c">
+<text x="157" y="314" font-weight="bold">Open implementation gap</text>
+<text x="157" y="341">Compact arithmetic BTN</text>
+<text x="157" y="366">Fast exact contraction</text>
+<text x="157" y="391">Default uses enumeration</text>
+</g>
+<text x="30" y="451" font-size="14">Bounds: p &lt;= 65521, cofactor 1, prime order, m = 2..8, at most 512 dense columns.</text>
+</g>
+</svg>
