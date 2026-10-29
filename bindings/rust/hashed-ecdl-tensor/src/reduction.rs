@@ -526,7 +526,7 @@ pub fn solve(
             dependency,
             scalar,
         };
-        verify(curve, target, &certificate, meter)?;
+        verify_with_rng(curve, target, &certificate, rng, meter)?;
         return Ok(certificate);
     }
     Err(Error::Limit("fresh-seed trials exhausted".into()))
@@ -534,10 +534,31 @@ pub fn solve(
 
 /// Replay all hash memberships, group equations, slot-column cancellations and
 /// scalar extraction without using tensor hints, counters, or the solver.
+/// OS randomness supplies Tonelli–Shanks nonresidues. Successful extraction
+/// gives the same canonical points; work limits still propagate as errors.
 pub fn verify(
     curve: &Curve,
     target: &Point,
     certificate: &Certificate,
+    meter: &mut Meter,
+) -> Result<()> {
+    verify_with_rng(
+        curve,
+        target,
+        certificate,
+        &mut crate::arithmetic::OsRandom,
+        meter,
+    )
+}
+
+/// Replay using caller-supplied randomness for root extraction. Uniform bytes
+/// retain expected-polynomial root extraction; a seeded source is useful for
+/// reproducible public fixtures without asserting that runtime hypothesis.
+pub fn verify_with_rng(
+    curve: &Curve,
+    target: &Point,
+    certificate: &Certificate,
+    rng: &mut impl RandomSource,
     meter: &mut Meter,
 ) -> Result<()> {
     if certificate.version != 1
@@ -582,9 +603,8 @@ pub fn verify(
         .collect::<Result<Vec<_>>>()?;
     // Enumeration is independently reproduced, not trusted from the certificate.
     // Root extraction is deterministic as a point encoding regardless of the
-    // nonresidue selected by this public fixture generator.
-    let mut rng = crate::arithmetic::Seeded(0x766572696679);
-    let indexes = indexed_bases(curve, &bases, &mut rng, meter)?;
+    // nonresidue selected from the caller's randomness.
+    let indexes = indexed_bases(curve, &bases, rng, meter)?;
     let columns: usize = indexes.iter().map(BTreeMap::len).sum();
     if certificate.relations.len()
         != columns
@@ -698,6 +718,25 @@ mod tests {
         assert_eq!(counter.statistics.last_backend, Some(Backend::Functional));
         assert!(counter.statistics.contractions > 13);
         verify(&curve, &target, &certificate, &mut meter).unwrap();
+        struct CountedRandom {
+            source: Seeded,
+            calls: usize,
+        }
+        impl RandomSource for CountedRandom {
+            fn fill(&mut self, bytes: &mut [u8]) -> Result<()> {
+                self.calls += 1;
+                self.source.fill(bytes)
+            }
+        }
+        let mut replay_rng = CountedRandom {
+            source: Seeded(17),
+            calls: 0,
+        };
+        verify_with_rng(&curve, &target, &certificate, &mut replay_rng, &mut meter).unwrap();
+        assert!(
+            replay_rng.calls > 0,
+            "replay must use the supplied entropy source"
+        );
         let bytes = serde_json::to_vec(&certificate).unwrap();
         let restored: Certificate = serde_json::from_slice(&bytes).unwrap();
         assert_eq!(restored, certificate);

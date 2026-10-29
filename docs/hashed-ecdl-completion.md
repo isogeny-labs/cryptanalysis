@@ -30,7 +30,7 @@ the complete code testable without rebuilding unrelated root-library code.
 | Recursive contraction | Exact ring/kernel/Hermite/mode tests and forced small recursion compared with direct contraction | implemented; coupled ports, quadratic modes and two recursion levels agree with direct counts; independent general audit open |
 | General reduction | Arbitrary-precision coordinates, certified hash-prime selection, known-answer and corrupted-certificate replay | implemented; full tiny pipeline and file replay pass |
 | Both integrations | Byte-identical native sources, public Rust API, checked builds/lint and paired PRs | API/parity, core lint, MSRV, supply chain and binding checks pass; publication pending |
-| Prior validation gaps | Repair own post-merge lint failure and complete the required broad root regression | maintained strict lint passes; uncapped root regression running |
+| Prior validation gaps | Repair own post-merge lint failure and complete the required broad root regression | strict maintained lint and full parent root command pass; 5389 passed, 123 existing ignored |
 
 The paper's recursive constants imply brute-force fallback at all practical
 network sizes. The implementation must report the backend actually used and
