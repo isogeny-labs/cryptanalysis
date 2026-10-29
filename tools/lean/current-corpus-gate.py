@@ -461,7 +461,7 @@ def collect_elaborated_types(path: str, names: frozenset[str],
     retain_evidence("type-output", {"stdout.txt": result.stdout.encode()},
                     {"module": path, "names": sorted(names)})
     found = re.findall(
-        r"^@?([A-Za-z_][A-Za-z0-9_.]*?)(?:\.\{[^}\n]+\})?\s*:\s*\S",
+        r"^@?([A-Za-z_][A-Za-z0-9_.]*?)(?:\.\{[^{}]+\})?\s*:\s*\S",
         result.stdout, re.MULTILINE)
     require(len(found) == len(names) and set(found) == names,
             f"incomplete native elaborated types in {path}")

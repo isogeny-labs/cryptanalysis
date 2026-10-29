@@ -1,6 +1,7 @@
 """Admission/refusal controls; mocked Lean outputs are not native proof evidence."""
 import contextlib
 import hashlib
+import gzip
 import importlib.util
 import io
 import json
@@ -422,11 +423,29 @@ class ElaboratedTypeControls(unittest.TestCase):
         self.names = gate.KNOWN_LABEL_THEOREMS
         self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in sorted(self.names))
 
-    def collect(self, output):
+    def collect(self, output, source=gate.KNOWN_LABEL_SOURCE):
         with patch.object(gate, "run", return_value=SimpleNamespace(stdout=output)), \
              contextlib.redirect_stdout(io.StringIO()):
             return gate.collect_elaborated_types(
-                gate.KNOWN_LABEL_SOURCE, self.names, self.scratch.name, "dependencies")
+                source, self.names, self.scratch.name, "dependencies")
+
+    def test_real_native_pair_index_wrapped_universe_headers(self):
+        fixtures = REPOSITORY / "tools/lean/fixtures"
+        meta = json.loads((fixtures / "pair-index-native-wrapped-types.json").read_text())
+        raw = gzip.decompress((fixtures / "pair-index-native-wrapped-types.txt.gz").read_bytes())
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), meta["native_stdout_sha256"])
+        self.assertEqual(set(meta["names"]), gate.PAIR_INDEX_THEOREMS)
+        self.names = gate.PAIR_INDEX_THEOREMS
+        self.assertEqual(self.collect(raw.decode(), gate.PAIR_INDEX_SOURCE), raw.decode())
+
+    def test_wrapped_headers_still_reject_missing_duplicate_and_unclosed_lists(self):
+        wrapped = self.types.replace("{u_1}", "{u_1,\n    u_2}")
+        first = sorted(self.names)[0]
+        header = f"@{first}.{{u_1,\n    u_2}} : Type u_1\n"
+        for output in (wrapped.replace(header, ""), wrapped + header,
+                       wrapped.replace("u_2}", "u_2", 1)):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError, "incomplete native"):
+                self.collect(output)
 
     def test_wrapper_imports_compiled_original_and_prints_exact_names(self):
         self.assertEqual(self.collect(self.types), self.types)
