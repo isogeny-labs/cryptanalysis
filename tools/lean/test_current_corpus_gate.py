@@ -4,6 +4,9 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
+import sys
+import subprocess
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
@@ -21,6 +24,11 @@ REPOSITORY = gate.ROOT
 PROJECT = gate.HECKE_CI.relative_to(REPOSITORY)
 
 
+def fixture_object(args):
+    if "-o" in args:
+        Path(args[args.index("-o") + 1]).write_bytes(b"synthetic unit fixture, NOT Lean output")
+
+
 class QuarticRegistrationControls(unittest.TestCase):
     def setUp(self):
         self.scratch = tempfile.TemporaryDirectory()
@@ -28,6 +36,9 @@ class QuarticRegistrationControls(unittest.TestCase):
         self.root = Path(self.scratch.name)
         self.project = self.root / PROJECT
         self.project.mkdir(parents=True)
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPOSITORY / "tools/lean/AuditHeckeAxioms.lean", auditor)
         for name in ("lean-toolchain", "lakefile.toml", "lake-manifest.json"):
             shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
         self.manifest = self.root / "tools/ci/quartic_certificates.json"
@@ -139,8 +150,14 @@ class QuarticRegistrationControls(unittest.TestCase):
                           for n in names)
         audited = ("".join(f"ok    KnownLabelPairIndex.{n}  [propext]\n" for n in names[:6])
                    + "audited 6 theorems; 0 failing, 0 trusted\n")
+        outputs = iter([SimpleNamespace(stdout=printed), SimpleNamespace(stdout=audited)])
+
+        def native_metadata_stub(args, **_kwargs):
+            fixture_object(args)
+            return next(outputs)
+
         with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
-            run.side_effect = [SimpleNamespace(stdout=printed), SimpleNamespace(stdout=audited)]
+            run.side_effect = native_metadata_stub
             with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
                 gate.check_pair_index_algebra("")
 
@@ -166,8 +183,11 @@ class QuarticRegistrationControls(unittest.TestCase):
         audit = "\n".join(f"ok    KnownLabelLeads.{name}  [propext]" for name in names[:3])
         audit += "\naudited 3 theorems; 0 failing, 0 trusted\n"
         with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
-            run.side_effect = [type("Output", (), {"stdout": printed})(),
-                               type("Output", (), {"stdout": audit})()]
+            outputs = iter([printed, audit])
+            def runtime(args, **kwargs):
+                fixture_object(args)
+                return SimpleNamespace(stdout=next(outputs))
+            run.side_effect = runtime
             with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
                 gate.check_known_label_algebra("")
             self.assertEqual(run.call_count, 2)
@@ -191,6 +211,9 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         self.root = Path(self.scratch.name)
         self.project = self.root / PROJECT
         self.project.mkdir(parents=True)
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPOSITORY / "tools/lean/AuditHeckeAxioms.lean", auditor)
         for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
             shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
         self.source = self.root / gate.KNOWN_LABEL_SOURCE
@@ -205,13 +228,17 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                                for n in self.names)
         self.audited = ("".join(f"ok    {n}  [propext, Quot.sound]\n" for n in self.names)
                         + "audited 4 theorems; 0 failing, 0 trusted\n")
+        # Synthetic headers test orchestration only; no proposition is verified.
+        self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in self.names)
 
     def check_with_outputs(self, printed=None, audited=None):
         with patch.object(gate, "run") as run, contextlib.redirect_stdout(io.StringIO()):
-            run.side_effect = [
-                SimpleNamespace(stdout=self.printed if printed is None else printed),
-                SimpleNamespace(stdout=self.audited if audited is None else audited),
-            ]
+            outputs = iter([self.printed if printed is None else printed,
+                            self.audited if audited is None else audited, self.types])
+            def runtime(args, **kwargs):
+                fixture_object(args)
+                return SimpleNamespace(stdout=next(outputs))
+            run.side_effect = runtime
             value = gate.check_known_label_algebra("pinned-dependencies")
             calls = run.call_args_list
         return value, calls
@@ -221,7 +248,7 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         value, calls = self.check_with_outputs()
         self.assertEqual(value, gate.KNOWN_LABEL_SHA256)
         self.assertEqual(self.source.read_bytes(), before)
-        build, audit = calls
+        build, audit, types = calls
         self.assertEqual(build.args[0][:5], ["lake", "env", "lean", "-R", str(self.root)])
         self.assertEqual(build.args[0][-1], str(self.source))
         output = Path(build.args[0][build.args[0].index("-o") + 1])
@@ -230,6 +257,9 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         self.assertEqual(audit.args[0][-1], gate.KNOWN_LABEL_SOURCE[:-5].replace("/", "."))
         self.assertIn("AuditHeckeAxioms.lean", audit.args[0][-2])
         self.assertTrue(audit.kwargs["env"]["LEAN_PATH"].endswith("pinned-dependencies"))
+        self.assertEqual(types.args[0][0], "lean")
+        self.assertEqual(Path(types.args[0][1]).name, "CollectedTypes.lean")
+        self.assertEqual(types.kwargs["env"]["LEAN_PATH"], audit.kwargs["env"]["LEAN_PATH"])
 
     def test_extra_audited_theorem_refused(self):
         audited = self.audited.replace("audited 4 theorems", "ok    Unexpected.extra  []\naudited 5 theorems")
@@ -292,6 +322,7 @@ class KnownLabelRegistrationControls(unittest.TestCase):
 
     def test_source_mutation_during_audit_refused(self):
         def runtime(args, **kwargs):
+            fixture_object(args)
             if args[:2] == ["lean", "--run"]:
                 self.source.write_bytes(self.source.read_bytes() + b"\n")
                 return SimpleNamespace(stdout=self.audited)
@@ -299,6 +330,55 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         with patch.object(gate, "run", side_effect=runtime), contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaisesRegex(ValueError, "source changed during audit"):
                 gate.check_known_label_algebra("")
+
+    def test_missing_compiled_object_cannot_reuse_plausible_stdout(self):
+        with patch.object(gate, "run", return_value=SimpleNamespace(stdout=self.printed)):
+            with self.assertRaisesRegex(ValueError, "compiled object missing"):
+                gate.check_known_label_algebra("")
+
+    def test_auditor_change_refused_before_native(self):
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.write_bytes(auditor.read_bytes() + b"\n")
+        with patch.object(gate, "run") as native:
+            with self.assertRaisesRegex(ValueError, "runtime auditor changed"):
+                gate.check_known_label_algebra("")
+            native.assert_not_called()
+
+    def test_compiled_object_and_auditor_mutations_refused_at_phase_boundaries(self):
+        for phase in ("audit", "types"):
+            for target in ("object", "remove", "sidecar", "auditor", "snapshot"):
+                with self.subTest(phase=phase, target=target):
+                    auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+                    original = auditor.read_bytes()
+                    compiled = None
+                    audit_snapshot = None
+                    def runtime(args, **kwargs):
+                        nonlocal compiled, audit_snapshot
+                        if "-o" in args:
+                            fixture_object(args)
+                            compiled = Path(args[args.index("-o") + 1])
+                            return SimpleNamespace(stdout=self.printed)
+                        auditing = args[:2] == ["lean", "--run"]
+                        if auditing:
+                            audit_snapshot = Path(args[2])
+                        if ("audit" if auditing else "types") == phase:
+                            if target == "object":
+                                compiled.write_bytes(b"replaced")
+                            elif target == "remove":
+                                compiled.unlink()
+                            elif target == "sidecar":
+                                compiled.with_name(compiled.name + ".private").write_bytes(b"added")
+                            elif target == "auditor":
+                                auditor.write_bytes(original + b"\n")
+                            else:
+                                audit_snapshot.write_bytes(original + b"\n")
+                        return SimpleNamespace(stdout=self.audited if auditing else self.types)
+                    try:
+                        with patch.object(gate, "run", side_effect=runtime), redirect_stdout(StringIO()):
+                            with self.assertRaisesRegex(ValueError, "compiled object|runtime auditor"):
+                                gate.check_known_label_algebra("")
+                    finally:
+                        auditor.write_bytes(original)
 
     def test_only_exact_added_path_has_new_dispatch(self):
         with patch.object(gate, "reviewed_quartic_sources", return_value={}), \
@@ -313,15 +393,19 @@ class KnownLabelRegistrationControls(unittest.TestCase):
 
     def test_workspace_mutation_during_each_native_command_refused(self):
         for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
-            for phase in ("compile", "audit"):
+            for phase in ("compile", "audit", "types"):
                 with self.subTest(name=name, phase=phase):
                     file = self.project / name
                     original = file.read_bytes()
                     def runtime(args, **kwargs):
+                        fixture_object(args)
                         auditing = args[:2] == ["lean", "--run"]
-                        if auditing == (phase == "audit"):
+                        typing = args[0] == "lean" and not auditing
+                        current_phase = "audit" if auditing else "types" if typing else "compile"
+                        if current_phase == phase:
                             file.write_bytes(original + b"\n")
-                        return SimpleNamespace(stdout=self.audited if auditing else self.printed)
+                        return SimpleNamespace(stdout=self.audited if auditing else
+                                               self.types if typing else self.printed)
                     try:
                         with patch.object(gate, "run", side_effect=runtime), \
                              contextlib.redirect_stdout(io.StringIO()):
@@ -329,6 +413,108 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                                 gate.check_known_label_algebra("")
                     finally:
                         file.write_bytes(original)
+
+
+class ElaboratedTypeControls(unittest.TestCase):
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.names = gate.KNOWN_LABEL_THEOREMS
+        self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in sorted(self.names))
+
+    def collect(self, output):
+        with patch.object(gate, "run", return_value=SimpleNamespace(stdout=output)), \
+             contextlib.redirect_stdout(io.StringIO()):
+            return gate.collect_elaborated_types(
+                gate.KNOWN_LABEL_SOURCE, self.names, self.scratch.name, "dependencies")
+
+    def test_wrapper_imports_compiled_original_and_prints_exact_names(self):
+        self.assertEqual(self.collect(self.types), self.types)
+        wrapper = (Path(self.scratch.name) / "CollectedTypes.lean").read_text()
+        self.assertTrue(wrapper.startswith(
+            "import «docs».«known-label-next-leads-20261028».«Algebra»\n"))
+        self.assertIn("set_option pp.fullNames true", wrapper)
+        self.assertEqual([line for line in wrapper.splitlines() if line.startswith("#check")],
+                         [f"#check @{n}" for n in sorted(self.names)])
+
+    def test_empty_missing_duplicate_and_wrong_namespace_outputs_refused(self):
+        lines = self.types.splitlines(keepends=True)
+        for output in ("", "".join(lines[:-1]), "".join(lines[:-1] + [lines[0]]),
+                       self.types.replace("KnownLabelLeads", "Other")):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError, "incomplete native"):
+                self.collect(output)
+
+    def test_empty_type_body_refused(self):
+        with self.assertRaisesRegex(ValueError, "incomplete native"):
+            self.collect("\n".join(f"@{n} :" for n in self.names))
+
+    def test_native_type_command_failure_propagates(self):
+        with patch.object(gate, "run", side_effect=ValueError("native type command failed")):
+            with self.assertRaisesRegex(ValueError, "native type command failed"):
+                gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE, self.names,
+                                             self.scratch.name, "dependencies")
+
+    def test_changed_wrapper_refused(self):
+        def native(args, **kwargs):
+            Path(args[-1]).write_text("#check True\n")
+            return SimpleNamespace(stdout=self.types)
+        with patch.object(gate, "run", side_effect=native):
+            with self.assertRaisesRegex(ValueError, "wrapper changed"):
+                gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE, self.names,
+                                             self.scratch.name, "dependencies")
+
+    def test_unsafe_module_or_empty_names_refused_before_native(self):
+        for path, names in (("../escape.lean", self.names), (gate.KNOWN_LABEL_SOURCE, frozenset()),
+                            (gate.KNOWN_LABEL_SOURCE, frozenset({"x\n#check True"}))):
+            with self.subTest(path=path, names=names), patch.object(gate, "run") as native:
+                with self.assertRaisesRegex(ValueError, "invalid"):
+                    gate.collect_elaborated_types(path, names, self.scratch.name, "dependencies")
+                native.assert_not_called()
+
+
+class DurableDiagnosticsControls(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        active = patch.dict(os.environ, {"LEAN_CORPUS_EVIDENCE_DIR": str(self.root)})
+        active.start()
+        self.addCleanup(active.stop)
+
+    def test_real_nonzero_child_retains_complete_bytes_and_exit(self):
+        args = [sys.executable, "-c", "import os; os.write(1,b'out\\xff'); os.write(2,b'E'*4000); raise SystemExit(7)"]
+        with self.assertRaisesRegex(ValueError, "exited 7"):
+            gate.run(args, timeout=5)
+        directory, = self.root.glob("command-*")
+        self.assertEqual((directory / "stdout.bin").read_bytes(), b"out\xff")
+        self.assertEqual((directory / "stderr.bin").read_bytes(), b"E" * 4000)
+        record = json.loads((directory / "record.json").read_text())
+        self.assertEqual(record["returncode"], 7)
+        self.assertEqual(record["argv"], args)
+        self.assertFalse(record["timed_out"])
+
+    def test_timeout_retains_partial_output_and_unknown_exit(self):
+        failure = subprocess.TimeoutExpired(["lean"], 5, output=b"partial", stderr=b"error")
+        with patch.object(gate.subprocess, "run", side_effect=failure):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                gate.run(["lean"], timeout=5)
+        directory, = self.root.glob("command-*")
+        record = json.loads((directory / "record.json").read_text())
+        self.assertIsNone(record["returncode"])
+        self.assertTrue(record["timed_out"])
+        self.assertEqual((directory / "stdout.bin").read_bytes(), b"partial")
+        self.assertEqual((directory / "stderr.bin").read_bytes(), b"error")
+
+    def test_malformed_zero_exit_types_and_wrapper_survive_cleanup(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            with patch.object(gate, "run", return_value=SimpleNamespace(stdout="wrong output\n")):
+                with self.assertRaisesRegex(ValueError, "incomplete native"):
+                    gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE,
+                                                 gate.KNOWN_LABEL_THEOREMS, scratch, "deps")
+        wrapper, = self.root.glob("type-wrapper-*/CollectedTypes.lean")
+        self.assertEqual(wrapper.read_text().count("#check @KnownLabelLeads."), 4)
+        output, = self.root.glob("type-output-*/stdout.txt")
+        self.assertEqual(output.read_text(), "wrong output\n")
 
 
 if __name__ == "__main__":
