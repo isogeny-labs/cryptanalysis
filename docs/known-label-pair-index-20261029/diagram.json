@@ -1,0 +1,12 @@
+{
+  "title": "Coordinate polynomial index and signed labels",
+  "rows": [
+    [["Actual usable points", "Distinct x_i; labels unknown"], ["Field-only pair factors", "H = product S_3(x_i,x_j,Z)"], ["Known-labeled query batch", "Evaluate H by remainder trees"]],
+    [["Localize all zero leaves", "Return pairs; charge output"], ["Verify signed witnesses", "R_i + s R_j = t T"], ["Signed cycle or anchor", "Recover and replay labels"]]
+  ],
+  "notes": [
+    "Explicit degree n(n-1); quadratic information is retained.",
+    "An unbalanced even cycle can recover labels; balanced cycles need an anchor.",
+    "Complete cost improvement UNKNOWN. No benchmark or attack-speedup claim."
+  ]
+}

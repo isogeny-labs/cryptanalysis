@@ -1,6 +1,7 @@
 """Admission/refusal controls; mocked Lean outputs are not native proof evidence."""
 import contextlib
 import hashlib
+import gzip
 import importlib.util
 import io
 import json
@@ -47,6 +48,9 @@ class QuarticRegistrationControls(unittest.TestCase):
         known_label = self.root / gate.KNOWN_LABEL_SOURCE
         known_label.parent.mkdir(parents=True)
         shutil.copyfile(REPOSITORY / gate.KNOWN_LABEL_SOURCE, known_label)
+        pair_index = self.root / gate.PAIR_INDEX_SOURCE
+        pair_index.parent.mkdir(parents=True)
+        shutil.copyfile(REPOSITORY / gate.PAIR_INDEX_SOURCE, pair_index)
         self.root_patch = patch.object(gate, "ROOT", self.root)
         self.project_patch = patch.object(gate, "HECKE_CI", self.project)
         self.root_patch.start()
@@ -113,6 +117,50 @@ class QuarticRegistrationControls(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "unreviewed Lean corpus addition"):
                 gate.check_new_hecke({"docs/unreviewed/Other.lean"})
             self.assertEqual(run.call_count, 1)
+
+    def test_pair_index_dispatch_requires_seven_native_audits(self):
+        with patch.object(gate, "run") as run, patch.object(
+                gate, "check_pair_index_algebra", return_value=gate.PAIR_INDEX_SHA256) as check:
+            run.return_value.stdout = "dependency-path\n"
+            result = gate.check_new_hecke({gate.PAIR_INDEX_SOURCE})
+            check.assert_called_once_with("dependency-path")
+            self.assertEqual(result, {gate.PAIR_INDEX_SOURCE: gate.PAIR_INDEX_SHA256})
+
+    def test_pair_index_native_checker_requires_exact_names(self):
+        with patch.object(gate, "check_pinned_mathlib_source",
+                          return_value=gate.PAIR_INDEX_SHA256) as check:
+            self.assertEqual(gate.check_pair_index_algebra("deps"), gate.PAIR_INDEX_SHA256)
+            check.assert_called_once_with(
+                gate.PAIR_INDEX_SOURCE, gate.PAIR_INDEX_SHA256, "deps",
+                label="known-label-pair-index", exact_names=gate.PAIR_INDEX_THEOREMS,
+                expected_theorems=7)
+
+    def test_pair_index_changed_source_refused_before_native_compilation(self):
+        file = self.root / gate.PAIR_INDEX_SOURCE
+        file.write_bytes(file.read_bytes()+b"\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                gate.check_pair_index_algebra("")
+            run.assert_not_called()
+
+    def test_pair_index_incomplete_native_module_audit_refused(self):
+        source = (self.root / gate.PAIR_INDEX_SOURCE).read_text()
+        names = gate.re.findall(r"^#print axioms\s+(\w+)", source, gate.re.MULTILINE)
+        self.assertEqual(len(names), 7)
+        printed = "".join(f"'KnownLabelPairIndex.{n}' depends on axioms: [propext]\n"
+                          for n in names)
+        audited = ("".join(f"ok    KnownLabelPairIndex.{n}  [propext]\n" for n in names[:6])
+                   + "audited 6 theorems; 0 failing, 0 trusted\n")
+        outputs = iter([SimpleNamespace(stdout=printed), SimpleNamespace(stdout=audited)])
+
+        def native_metadata_stub(args, **_kwargs):
+            fixture_object(args)
+            return next(outputs)
+
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = native_metadata_stub
+            with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
+                gate.check_pair_index_algebra("")
 
     def test_known_label_changed_source_refused_before_compilation(self):
         file = self.root / gate.KNOWN_LABEL_SOURCE
@@ -375,11 +423,29 @@ class ElaboratedTypeControls(unittest.TestCase):
         self.names = gate.KNOWN_LABEL_THEOREMS
         self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in sorted(self.names))
 
-    def collect(self, output):
+    def collect(self, output, source=gate.KNOWN_LABEL_SOURCE):
         with patch.object(gate, "run", return_value=SimpleNamespace(stdout=output)), \
              contextlib.redirect_stdout(io.StringIO()):
             return gate.collect_elaborated_types(
-                gate.KNOWN_LABEL_SOURCE, self.names, self.scratch.name, "dependencies")
+                source, self.names, self.scratch.name, "dependencies")
+
+    def test_real_native_pair_index_wrapped_universe_headers(self):
+        fixtures = REPOSITORY / "tools/lean/fixtures"
+        meta = json.loads((fixtures / "pair-index-native-wrapped-types.json").read_text())
+        raw = gzip.decompress((fixtures / "pair-index-native-wrapped-types.txt.gz").read_bytes())
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), meta["native_stdout_sha256"])
+        self.assertEqual(set(meta["names"]), gate.PAIR_INDEX_THEOREMS)
+        self.names = gate.PAIR_INDEX_THEOREMS
+        self.assertEqual(self.collect(raw.decode(), gate.PAIR_INDEX_SOURCE), raw.decode())
+
+    def test_wrapped_headers_still_reject_missing_duplicate_and_unclosed_lists(self):
+        wrapped = self.types.replace("{u_1}", "{u_1,\n    u_2}")
+        first = sorted(self.names)[0]
+        header = f"@{first}.{{u_1,\n    u_2}} : Type u_1\n"
+        for output in (wrapped.replace(header, ""), wrapped + header,
+                       wrapped.replace("u_2}", "u_2", 1)):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError, "incomplete native"):
+                self.collect(output)
 
     def test_wrapper_imports_compiled_original_and_prints_exact_names(self):
         self.assertEqual(self.collect(self.types), self.types)
@@ -472,3 +538,4 @@ class DurableDiagnosticsControls(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
