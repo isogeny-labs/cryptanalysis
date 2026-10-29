@@ -43,6 +43,7 @@ metadata; the mirrored standalone lock is also committed for reproducibility.
 | `diff -ru --exclude=target` between the mirrored crate trees; source-manifest checks in both directories | identical; all 16 hashes pass |
 | New post-merge workflow, pinned repository actionlint wrapper | exit 0 |
 | Typst 0.15 report build and all-page visual inspection | 3 pages, 64238 bytes; all pages inspected; unused italic font subset removed to satisfy the existing 64 KiB store limit |
+| Existing artifact-policy checker, `python3 tools/artifacts/artifacts.py check origin/main HEAD`, on the committed packaging follow-up | exit 0; no waiver or policy change |
 | Uncapped root `cargo test --release --lib` | restarted after execution-environment interruption; no complete-root pass claimed in this snapshot; final status belongs to the paired crypto PR |
 | Maintained root strict clippy, existing `scripts/clippy-maintained.sh` | exit 0 after restoring sparse compile inputs; includes the compatibility module's MSRV fix |
 | Binding-core debug tests | interrupted by execution-environment restart before completion; no full debug pass claimed; complete selected-package release panel passed |
