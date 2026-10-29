@@ -35,3 +35,21 @@ Published-head store/CI checks and final review before merge. Original stacked P
 ### Errors
 
 The first output format embedded raster diagrams and needlessly exceeded the storage limit. Retained that failed hosted check and corrected the output format; no gate was weakened or bypassed.
+
+## 2026-10-29 — Embed the plot text font
+
+### What was done
+
+Reused the report's embedded DejaVu Sans font for vector diagram/plot text. All 27 PDFs now have a maximum of 50,688 bytes and no missing glyphs. The resultant-count page was visually checked after font embedding; all labels and values are legible.
+
+### Decisions made
+
+Embed fonts so the PDF viewer does not need a system-font substitution. Retain exact counts, editable SVG text and existing storage thresholds.
+
+### Open threads
+
+Fresh published-head CI and review.
+
+### Errors
+
+The first text-based SVG conversion fell back to an unembedded Helvetica font and rendered plot labels poorly in the local viewer. Explicitly sharing the embedded report font corrected the rendering and reduced file sizes further.

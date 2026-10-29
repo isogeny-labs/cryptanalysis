@@ -72,7 +72,11 @@ for entry in studies:
   block=block.strip()
   if not block:continue
   if block.startswith('!['):
-   name=f'{pr}-counts.svg' if 'Retained counts' in block else f'{pr}.svg';drawing=svg2rlg(str(OUT/name));iw,ih=drawing.width,drawing.height;scale=min(460/iw,420/ih,1);drawing.scale(scale,scale);drawing.width=iw*scale;drawing.height=ih*scale
+   name=f'{pr}-counts.svg' if 'Retained counts' in block else f'{pr}.svg';drawing=svg2rlg(str(OUT/name))
+   def embed_font(shape):
+    if hasattr(shape,'fontName'):shape.fontName='DejaVuSans'
+    for child in getattr(shape,'contents',[]):embed_font(child)
+   embed_font(drawing);iw,ih=drawing.width,drawing.height;scale=min(460/iw,420/ih,1);drawing.scale(scale,scale);drawing.width=iw*scale;drawing.height=ih*scale
    story.extend([Spacer(1,8),drawing,Spacer(1,10)]);continue
   level=3 if block.startswith('### ') else 2 if block.startswith('## ') else 1 if block.startswith('# ') else 0
   clean=block.lstrip('# ').replace('`','');clean=re.sub(r'\[([^]]+)\]\(([^)]+)\)',r'\1 (\2)',clean);clean=html.escape(clean).replace('\n','<br/>');story.append(Paragraph(clean,styles[f'Heading{level}'] if level else styles['BodyText']))
