@@ -1,0 +1,39 @@
+{
+  "handoff": {
+    "id": "TASK-20261028-32bc7d",
+    "from": "coordinator",
+    "to": "reviewer",
+    "objective": "Review only J1 as prospectively assigned",
+    "uncertainty_reduced": "Independent scoped evidence, with native status kept separate",
+    "inputs": [
+      "reports/known-label-formal-review-20261028/blind-math-only.md"
+    ],
+    "constraints": [
+      "mutual blindness",
+      "no heavy build, experiment, cloud call, source edit or PR mutation",
+      "write only assigned scratch output; coordinator archives later"
+    ],
+    "deliverables": [
+      "report.md",
+      "attestation.json",
+      "optional minimal diagnostic source/output"
+    ],
+    "artifact_paths": [
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d"
+    ],
+    "archived_by": "TASK-20261028-871ca0",
+    "inference": {
+      "policy": "review-adversarial",
+      "reasoning_effort": "xhigh",
+      "fallback_allowed": false,
+      "degraded_allowed": false,
+      "independent_session_required": true,
+      "delivery": "interactive"
+    },
+    "completion_gate": [
+      "report covers only owned joint with actual reads and concrete checks",
+      "attestation declares truthful blindness and deviations"
+    ],
+    "return_format": "report.md plus JSON review_attestation"
+  }
+}

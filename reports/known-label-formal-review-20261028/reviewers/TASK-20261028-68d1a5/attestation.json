@@ -1,0 +1,238 @@
+{
+  "review_attestation": {
+    "all_writes_within_assigned_scratch": true,
+    "archive_task": "TASK-20261028-871ca0",
+    "artifact_sha256": {
+      "diagnostic-output.json": "d8001b66a6ab6920cf9ec573bc1be1ab06ea999f7be5e16ec1908ac9d5187d72",
+      "diagnostic-stdout.txt": "d8001b66a6ab6920cf9ec573bc1be1ab06ea999f7be5e16ec1908ac9d5187d72",
+      "diagnostic.py": "016885c16cf3e07cf5427f79ab3485fc273602bad8c131413e64a1e0b7080632",
+      "existing-tests.txt": "b97fed069e076a5d6e71621a1d9b932a0e94da85d6e2b1bdda7f9e3a74d7022a",
+      "report.md": "90a12e4e2229bc029b1445ee3e947a3231c5fc84f27fa4d991441dacb050503c",
+      "review-results.json": "2f569ba8239ad0235a04ecdaacf19fe6ccdd775848e984b4ef0cffbf32eb8c8a",
+      "source-ledger.json": "77cc9710751e7b2e8789bf17673d38b021613778ee197222c3de5778fbe82437"
+    },
+    "commit_ancestry_independently_verified": false,
+    "conductor_task": "T-765",
+    "coordinator_plan_summary_exposure": "Required review-plan-v2.json includes coordinator summaries; no J1/J2 reports or underlying finding artifacts were read or used for J3 judgment.",
+    "delegated_agents": false,
+    "deviations": [],
+    "existing_python_tests": {
+      "exit_code": 0,
+      "failed": 0,
+      "known_label_tests": 13,
+      "native_outputs_mocked": true,
+      "new_mutation_subcases": 6,
+      "passed": 19,
+      "quartic_tests": 6,
+      "tests_run": 19
+    },
+    "generated_artifacts_read": [
+      "report.md",
+      "diagnostic.py",
+      "diagnostic-output.json",
+      "diagnostic-stdout.txt",
+      "existing-tests.txt",
+      "source-ledger.json",
+      "review-results.json"
+    ],
+    "heavy_builds_experiments_benchmarks_external_jobs_cloud_or_pr_actions": false,
+    "independent_from_producer": true,
+    "independent_probes": {
+      "accepted": 2,
+      "accepted_cases": [
+        "baseline",
+        "contradictory_stdout_from_untrusted_auditor"
+      ],
+      "actual_subprocess_control": "Python exit 7 rejected",
+      "cases": 21,
+      "compiler_auditor_outputs_mocked": true,
+      "refused": 19,
+      "same_original_diagnostic_bytes": true,
+      "six_original_mutations_all_refused": true
+    },
+    "joints_owned": [
+      "J3"
+    ],
+    "native_ci_expected_from_plan": {
+      "head": "0b353c9bf78e9340c3c100b71175127bb7d91d44",
+      "status": "not inspected; exact-head native check required"
+    },
+    "native_ci_result_read": false,
+    "native_lean_executed": false,
+    "native_proof_validity": "not_verified",
+    "original_findings": [
+      {
+        "disposition": "repaired",
+        "evidence": "All six unchanged independent persistent-project-mutation probes now refuse with the project-input error; before and after project hashes are checked.",
+        "id": "J3-F1"
+      },
+      {
+        "disposition": "repaired",
+        "evidence": "Both pull_request and push filters match the bound project manifest via **/lake-manifest.json.",
+        "id": "J3-F2"
+      }
+    ],
+    "original_task_outputs_modified": false,
+    "policy": "review-adversarial",
+    "prior_archived_artifact_hashes_verified_unchanged": 2,
+    "prior_task": "TASK-20261028-298dc6",
+    "producer": "0b353c9bf78e9340c3c100b71175127bb7d91d44",
+    "producer_hashes_verified_unchanged": 11,
+    "producer_source_changed": false,
+    "prospective_plan_commit_supplied": "35ed5772e98fb3c8754b7fb6367d7ae1ebd83188",
+    "read_blind_brief": false,
+    "read_linked_docs_outside_inputs": false,
+    "read_memory": false,
+    "read_own_prior_report_and_diagnostic": true,
+    "read_sibling_reports": false,
+    "read_unrelated_repository_material": false,
+    "repository_edits": false,
+    "retained_limits": [
+      "Before/after hashes do not authenticate a continuously immutable snapshot; restored transient mutations are outside the guarantee.",
+      "Installed executables and dependency binaries, inherited environment, and tool resolution remain trusted; no independent lean4checker receipt.",
+      "Contradictory mock auditor output is still accepted if paired with a success summary and zero exit; this does not reproduce behavior of the declared auditor.",
+      "Conditional Hecke cache and native-control routing remains coupled to broader Hecke formal-source inventory.",
+      "Native Lean proof validity and exact-head hosted CI remain unverified in this review."
+    ],
+    "review_round": 2,
+    "review_session_relation": "Same independent J3 reviewer continued in isolated reviewer session under the new prospective task; expressly authorized prior self-review access. No claim of a new independent second opinion.",
+    "scratch_root": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-68d1a5",
+    "sources_read": [
+      "reports/known-label-formal-review-20261028/gate-r2-handoff.json",
+      "reports/known-label-formal-review-20261028/review-plan-v2.json",
+      "reports/known-label-formal-review-20261028/inputs-v2.json",
+      "docs/known-label-next-leads-20261028/Algebra.lean",
+      "tools/lean/current-corpus-gate.py",
+      "tools/lean/test_current_corpus_gate.py",
+      "tools/lean/AuditHeckeAxioms.lean",
+      "tools/lean/hecke-audit-selftest.py",
+      "tools/lean/README.md",
+      ".github/workflows/lean-proof-gate.yml",
+      "tools/ci/quartic_certificates.json",
+      "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/report.md",
+      "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/diagnostic.py"
+    ],
+    "sources_read_are_complete": true,
+    "sources_read_details": [
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/gate-r2-handoff.json",
+        "declared_sha256": null,
+        "matches_declared": null,
+        "path": "reports/known-label-formal-review-20261028/gate-r2-handoff.json",
+        "sha256": "216478a9b5b1779a36c3581dc350e6fbce0d35baeb5e1c48296d215000fe1144"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/review-plan-v2.json",
+        "declared_sha256": null,
+        "matches_declared": null,
+        "path": "reports/known-label-formal-review-20261028/review-plan-v2.json",
+        "sha256": "c84411cb27a7a70468191b75021f664cad68755fb4bb752dbd31d2bd4d15e286"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/inputs-v2.json",
+        "declared_sha256": null,
+        "matches_declared": null,
+        "path": "reports/known-label-formal-review-20261028/inputs-v2.json",
+        "sha256": "d95779328b575eb64e25c9203bc4970d55420a6ede861ee9d8010b5132057746"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/docs/known-label-next-leads-20261028/Algebra.lean",
+        "declared_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+        "matches_declared": true,
+        "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+        "sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/current-corpus-gate.py",
+        "declared_sha256": "2f86b91ccbb0b785e8627a46ad48da041504f8a58b68e819217f5c01fc7a83fb",
+        "matches_declared": true,
+        "path": "tools/lean/current-corpus-gate.py",
+        "sha256": "2f86b91ccbb0b785e8627a46ad48da041504f8a58b68e819217f5c01fc7a83fb"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/test_current_corpus_gate.py",
+        "declared_sha256": "aca452f1bd43cb8aa023282c2a882ebe7d82fb2cdad43eb5244bc2eeed4c00e4",
+        "matches_declared": true,
+        "path": "tools/lean/test_current_corpus_gate.py",
+        "sha256": "aca452f1bd43cb8aa023282c2a882ebe7d82fb2cdad43eb5244bc2eeed4c00e4"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/AuditHeckeAxioms.lean",
+        "declared_sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+        "matches_declared": true,
+        "path": "tools/lean/AuditHeckeAxioms.lean",
+        "sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/hecke-audit-selftest.py",
+        "declared_sha256": "1b0c1e53dbfa46ca47ed5d7a2a37ad9d6eec442bcbeef0242bfb5e20064d59be",
+        "matches_declared": true,
+        "path": "tools/lean/hecke-audit-selftest.py",
+        "sha256": "1b0c1e53dbfa46ca47ed5d7a2a37ad9d6eec442bcbeef0242bfb5e20064d59be"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/README.md",
+        "declared_sha256": "5b62ba399a527fd8e7ffbf842a8c499d05955072ca6e78f35b7404fbfa0ca635",
+        "matches_declared": true,
+        "path": "tools/lean/README.md",
+        "sha256": "5b62ba399a527fd8e7ffbf842a8c499d05955072ca6e78f35b7404fbfa0ca635"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/.github/workflows/lean-proof-gate.yml",
+        "declared_sha256": "b0dc11834186edf44c875f340ce48cec64bd9a0d75acbd80534b0e8b84104b26",
+        "matches_declared": true,
+        "path": ".github/workflows/lean-proof-gate.yml",
+        "sha256": "b0dc11834186edf44c875f340ce48cec64bd9a0d75acbd80534b0e8b84104b26"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/ci/quartic_certificates.json",
+        "declared_sha256": "98a5a500c53a1a579524a23063f1eef96e09d0bde646a4a235b2e1cb6ae56078",
+        "matches_declared": true,
+        "path": "tools/ci/quartic_certificates.json",
+        "sha256": "98a5a500c53a1a579524a23063f1eef96e09d0bde646a4a235b2e1cb6ae56078"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+        "declared_sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+        "matches_declared": true,
+        "path": "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+        "sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+        "declared_sha256": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+        "matches_declared": true,
+        "path": "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+        "sha256": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+        "declared_sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+        "matches_declared": true,
+        "path": "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+        "sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/report.md",
+        "declared_sha256": null,
+        "matches_declared": null,
+        "path": "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/report.md",
+        "sha256": "d5bf287ddb212fefe14314c4dfec3c6b9c258c43fdf5edfc0956b644b8f169ce"
+      },
+      {
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/diagnostic.py",
+        "declared_sha256": null,
+        "matches_declared": null,
+        "path": "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/diagnostic.py",
+        "sha256": "016885c16cf3e07cf5427f79ab3485fc273602bad8c131413e64a1e0b7080632"
+      }
+    ],
+    "sources_read_format": "path strings",
+    "task_id": "TASK-20261028-68d1a5",
+    "verdict": "holds",
+    "verdict_scope": "Static admission and routing re-review of revised J3, including closure of the two original findings, within the declared trusted-tool and stable-workspace boundary. No native proof-validity conclusion."
+  }
+}

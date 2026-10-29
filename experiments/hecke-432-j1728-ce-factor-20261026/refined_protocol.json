@@ -1,0 +1,23 @@
+{
+  "inputs": {
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "eliminant": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-cubic-twist-holdout-20261026/elimination_result.json",
+      "sha256": "68159a86b24fc4e8db6b9e5a8eea0c63c98ccacc2b823abf1d838c934606aae3"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    }
+  },
+  "lower_bound_inclusive": 7000,
+  "origin": "refinement follows frozen protocol failure at p5003 and p5051 and success at p5039; these previous cells are excluded from refined selection",
+  "prediction": "post-failure refined prediction: p congruent 23 mod 24 has four linear and four quadratic C-E factors at each selected C point and at least one rational C-E pair per selected prime; p congruent 11 mod 24 and p congruent 1 mod 12 have only even-degree C-E factors and zero rational C-E pairs",
+  "preserve_zero_cells": true,
+  "selection_rule": "scan ascending primes 7000<=p<20000; select first three p congruent 23 mod 24 with >=2 rational j1728 C points, first three p congruent 11 mod 24 with >=2 C points, and first three p congruent 1 mod 12 with >=18 C points; selection uses only x eliminant and source-j map",
+  "status": "FROZEN_BEFORE_REFINED_SOURCE_SELECTION",
+  "upper_bound_exclusive": 20000
+}

@@ -18,6 +18,28 @@ IS_CRYPTANALYSIS = DIRECTORY.name == "ic-candidate-catalog"
 
 
 class SemanticValidatorTests(unittest.TestCase):
+    def test_original_half_trace_format_keeps_its_frozen_identity(self):
+        pdp = {"stage_code": "PDP2ht", "summand_count": 2,
+               "implementation": "experiments/pdp-degree-heuristics/htsolver.py"}
+        errors = []
+        gate.check_pdp_stage(pdp, errors, "half-trace")
+        self.assertEqual(errors, [])
+        for changed in ({"stage_code": "PDP2xl"}, {"summand_count": 3},
+                        {"implementation": "unknown.py"}, {"summand_count": True},
+                        {"solver_family": "ht"}, {"summands": 2}):
+            with self.subTest(changed=changed):
+                errors = []
+                gate.check_pdp_stage({**pdp, **changed}, errors, "half-trace")
+                self.assertTrue(errors)
+
+    def test_explicit_solver_family_still_has_to_match_the_stage(self):
+        pdp = {"stage_code": "PDP3xl", "summands": 3, "solver_family": "xl"}
+        errors = []
+        gate.check_pdp_stage(pdp, errors, "explicit")
+        self.assertEqual(errors, [])
+        gate.check_pdp_stage({**pdp, "solver_family": "ht"}, errors, "explicit")
+        self.assertTrue(errors)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
