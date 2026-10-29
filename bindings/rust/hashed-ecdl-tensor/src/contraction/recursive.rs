@@ -14,6 +14,10 @@ use std::collections::BTreeSet;
 // BigInt alias would introduce a second integer version into cryptanalysis.
 type BigRational = num_rational::Ratio<BigInt>;
 
+#[cfg(test)]
+#[path = "coupled_controls.rs"]
+mod coupled_controls;
+
 #[derive(Clone, Debug)]
 pub(super) struct Parameters {
     pub radix: usize,
