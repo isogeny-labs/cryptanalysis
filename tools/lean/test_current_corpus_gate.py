@@ -4,6 +4,9 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
+import sys
+import subprocess
 from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
@@ -354,6 +357,51 @@ class ElaboratedTypeControls(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "invalid"):
                     gate.collect_elaborated_types(path, names, self.scratch.name, "dependencies")
                 native.assert_not_called()
+
+
+class DurableDiagnosticsControls(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        active = patch.dict(os.environ, {"LEAN_CORPUS_EVIDENCE_DIR": str(self.root)})
+        active.start()
+        self.addCleanup(active.stop)
+
+    def test_real_nonzero_child_retains_complete_bytes_and_exit(self):
+        args = [sys.executable, "-c", "import os; os.write(1,b'out\\xff'); os.write(2,b'E'*4000); raise SystemExit(7)"]
+        with self.assertRaisesRegex(ValueError, "exited 7"):
+            gate.run(args, timeout=5)
+        directory, = self.root.glob("command-*")
+        self.assertEqual((directory / "stdout.bin").read_bytes(), b"out\xff")
+        self.assertEqual((directory / "stderr.bin").read_bytes(), b"E" * 4000)
+        record = json.loads((directory / "record.json").read_text())
+        self.assertEqual(record["returncode"], 7)
+        self.assertEqual(record["argv"], args)
+        self.assertFalse(record["timed_out"])
+
+    def test_timeout_retains_partial_output_and_unknown_exit(self):
+        failure = subprocess.TimeoutExpired(["lean"], 5, output=b"partial", stderr=b"error")
+        with patch.object(gate.subprocess, "run", side_effect=failure):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                gate.run(["lean"], timeout=5)
+        directory, = self.root.glob("command-*")
+        record = json.loads((directory / "record.json").read_text())
+        self.assertIsNone(record["returncode"])
+        self.assertTrue(record["timed_out"])
+        self.assertEqual((directory / "stdout.bin").read_bytes(), b"partial")
+        self.assertEqual((directory / "stderr.bin").read_bytes(), b"error")
+
+    def test_malformed_zero_exit_types_and_wrapper_survive_cleanup(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            with patch.object(gate, "run", return_value=SimpleNamespace(stdout="wrong output\n")):
+                with self.assertRaisesRegex(ValueError, "incomplete native"):
+                    gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE,
+                                                 gate.KNOWN_LABEL_THEOREMS, scratch, "deps")
+        wrapper, = self.root.glob("type-wrapper-*/CollectedTypes.lean")
+        self.assertEqual(wrapper.read_text().count("#check @KnownLabelLeads."), 4)
+        output, = self.root.glob("type-output-*/stdout.txt")
+        self.assertEqual(output.read_text(), "wrong output\n")
 
 
 if __name__ == "__main__":
