@@ -89,6 +89,12 @@ the counters, rebuilds bases, verifies every group equation and slot-column
 cancellation, requires a nonzero dependency and V, and checks [scalar]P=Q.
 No receipt attests discarded trials or execution time.
 
+Standalone replay obtains root-extraction randomness from the OS.
+`verify_with_rng` accepts an explicit source for reproducible public fixtures;
+the solver forwards its caller's source through self-verification. Selecting
+a nonresidue changes work, not the canonical decoded point. Fixed test seeds
+are not used internally for production replay.
+
 ## Algorithm and finite-size behavior
 
 The encoder uses the paper's integer J/k/L parameters, canonical words over

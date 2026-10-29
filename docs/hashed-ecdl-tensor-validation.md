@@ -10,7 +10,7 @@ Host: Linux x86-64 cloud container. Rust 1.99.1
 The crate has declared MSRV 1.78. The standalone and binding sources are
 byte-identical. The [source manifest](hashed-ecdl-tensor-sources.sha256)
 covers Cargo metadata and all Rust source files; its SHA-256 is
-`cc78ba18a3253daa59b202008cd50d7d7551a38e7c39debf26eb68bd5e737480`.
+`a2fdf1300848c29e7a37d5265c1c2d129aae0d3f23a515daf446b908186b3d0f`.
 The bounded compatibility/export module now hashes to
 `21c5f18243bcd0a8d8dd722d254d48ff9ba2b2bd29941c1b27acf568d63c45e1`.
 
@@ -29,6 +29,7 @@ metadata; the mirrored standalone lock is also committed for reproducibility.
 | --- | --- |
 | `cargo test --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml` | 25 passed; native runner and doc targets also compiled; [compact transcript](hashed-ecdl-tensor-tests.txt) |
 | `cargo test --locked --release --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor -p cryptanalysis` after adding coupled controls | 27 core, 20 binding-unit, 19 FFI-parity and 14 documentation tests passed; [full selected-package transcript](hashed-ecdl-tensor-full-tests.txt) |
+| Same complete selected-package command after replay randomness correction | 27/20/19/14 passed again; [final replay panel](hashed-ecdl-tensor-replay-tests.txt); counted-RNG assertion confirms caller propagation |
 | `cargo clippy --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings` | exit 0 |
 | `cargo fmt --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --check` | exit 0 |
 | `cargo +1.78.0 check --locked --manifest-path bindings/rust/Cargo.toml -p cryptanalysis -p hashed-ecdl-tensor --all-targets` | exit 0; both the crate and Rust/C integration compile on the declared floor |
@@ -44,7 +45,7 @@ metadata; the mirrored standalone lock is also committed for reproducibility.
 | New post-merge workflow, pinned repository actionlint wrapper | exit 0 |
 | Typst 0.15 report build and all-page visual inspection | 3 pages, 64238 bytes; all pages inspected; unused italic font subset removed to satisfy the existing 64 KiB store limit |
 | Existing artifact-policy checker, `python3 tools/artifacts/artifacts.py check origin/main HEAD`, on the committed packaging follow-up | exit 0; no waiver or policy change |
-| Uncapped root `cargo test --release --lib` | restarted after execution-environment interruption; no complete-root pass claimed in this snapshot; final status belongs to the paired crypto PR |
+| Uncapped root `cargo test --release --lib` | exit 0: 5389 passed, zero failures, 123 existing ignored tests; [compact parent-process receipt](hashed-ecdl-tensor-root-tests.txt) |
 | Maintained root strict clippy, existing `scripts/clippy-maintained.sh` | exit 0 after restoring sparse compile inputs; includes the compatibility module's MSRV fix |
 | Binding-core debug tests | interrupted by execution-environment restart before completion; no full debug pass claimed; complete selected-package release panel passed |
 
@@ -60,6 +61,16 @@ library execution path. The full selected-package release panel then passed
 the first 25-test snapshot used the 15-file manifest
 `cedddbec1c6348e5592da9ef0e490c68b90d457e865a4778cd1dbd33f70486e3`.
 Strict lint and Rust 1.78 all-target compilation also passed with the new tests.
+The first coupled-control snapshot used manifest
+`cc78ba18a3253daa59b202008cd50d7d7551a38e7c39debf26eb68bd5e737480`;
+the final replay correction uses the manifest at the top of this receipt.
+
+Final audit replaced replay's internal fixed fixture RNG. The solver now
+forwards caller randomness through `verify_with_rng`, and standalone `verify`
+uses OS randomness. A counted-RNG control asserts that replay actually consumes
+the supplied source. This preserves the expected-polynomial root-extraction
+hypothesis when uniform randomness is supplied. The stored public fixture's
+mathematics remains replayable; diagnostic counters are historical observations.
 
 The [native fixture receipt](hashed-ecdl-tensor-fixture.json) has SHA-256
 `54f3a724feb70fc1cc7465371caf43a1c93578b168dec5487bed94729d42f63c`.
@@ -143,6 +154,17 @@ Large raw regression logs follow the artifact-store policy. This runtime has
 no configured artifact-store identity, so an oversized local trace is not a
 durable remote artifact and must not be represented as uploaded. Compact
 diagnostics and the precise completion result are retained here when available.
+
+The last root case was
+`cryptanalysis::jv_isogeny_walk::tests::end_to_end_from_a_non_weak_curve_recovers_and_verifies`.
+It exercises existing extension-field isogeny walking and sieving, with no
+reference to the added module. It completed successfully, and the parent
+command exited 0 with 5389 passes and 123 existing ignored tests. The full
+482359-byte trace is local, SHA-256
+`9b6f0a11eb71566010bbb7d63e02289e4b3969af92b47b7e65111004c6eb4cd8`,
+and NOT_UPLOADED; the compact receipt records that storage limitation.
+The later replay-helper change is covered by the complete native panel and
+renewed maintained-root lint; the broad root tests do not call that helper.
 
 The [canonical audit record](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md)
 keeps independent general correctness and complexity obligations open. No
