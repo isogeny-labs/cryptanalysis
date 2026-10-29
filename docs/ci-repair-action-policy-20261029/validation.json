@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-29",
+  "base": "934bf8329bcff52d943e282be59e0c9b62275f66",
+  "cause": "Organization allows only enterprise-owned, GitHub-created or verified Marketplace actions.",
+  "observed_errors": {
+    "40825853426": "leanprover/lean-action@v1 is not allowed",
+    "40825857835": "dtolnay/rust-toolchain@stable is not allowed"
+  },
+  "sources": [
+    "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40825853426",
+    "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40825857835",
+    "https://github.com/leanprover/lean-action/blob/fe408643ea7367d8c0404a8be3975bb145f5fb64/action.yml"
+  ],
+  "preserved": [
+    "project-pinned Lean 4.34.1",
+    "exact three reviewed transitive axiom sets",
+    "Python pair lookup controls",
+    "stable Rust and rustfmt/clippy",
+    "all existing Rust format/lint/release-test commands",
+    "all experiment protocols and frozen evidence"
+  ],
+  "local_validation": {
+    "python_tests": 5,
+    "ghs_release_tests": 48,
+    "ghs_release_suites": 11,
+    "rust": "stable 1.99.1",
+    "lean": "4.34.1",
+    "actionlint_shellcheck": "pass",
+    "clippy_warnings_denied": "pass"
+  },
+  "pending": [
+    "published-head hosted validation and applicable current-head checks",
+    "review and guarded merge"
+  ],
+  "additional_active_workflows": [
+    "binary-genus2-cover.yml",
+    "certicom-devices.yml"
+  ],
+  "cache_replacement": "GitHub-owned actions/cache preserves Cargo registry/git caches and the selected workspace target directory.",
+  "active_workflow_audit": "All remaining third-party references in active definitions are verified Azure Helm setup; retired workflow definitions were audited by state and retained.",
+  "validation_limits": [
+    "Certicom CUDA compilation and real-device qualification require the existing hosted CI/device jobs; no hardware qualification is claimed locally.",
+    "Binary genus-two native and pinned Lean validation remain required on the published head."
+  ]
+}

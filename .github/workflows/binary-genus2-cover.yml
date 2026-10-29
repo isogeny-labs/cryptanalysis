@@ -78,9 +78,10 @@ jobs:
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
           python3 tools/artifacts/artifacts.py pull --jobs 16 docs/ecdlp-surfaces research/binary_genus2_cover_20261014
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+      - name: Install stable Rust with formatting and lint tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Verify pinned crypto analysis dependency
         run: tools/bootstrap_crypto_analysis_core.sh
       - run: tools/binary-genus2-cover/check.sh
