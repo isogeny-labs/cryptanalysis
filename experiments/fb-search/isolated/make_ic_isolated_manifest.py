@@ -25,6 +25,8 @@ import json
 import sys
 from pathlib import Path
 
+import one_target  # The same frozen public-fixture law used by both executables.
+
 PANEL_KEY = "fb06-ic-rho-v1"
 BASES = {
     19: {"family": "geomtraceu", "l": 6, "seed": 4,
@@ -54,11 +56,21 @@ def build(python: Path, workdir: Path, cgroup: Path, cpus: str, execution_cpu: i
     cases = []
     for n, count in targets.items():
         b = BASES[n]
+        curve = one_target.ToyCurve(n)
         common = ["--n", str(n), "--family", b["family"], "--l", str(b["l"]), "--seed", str(b["seed"]),
                   "--mode", "ht", "--rerandomize", "walk", "--panel-key", PANEL_KEY]
         for index in range(count):
             tail = common + ["--index", str(index)]
+            scalar = one_target.fixture_scalar(PANEL_KEY, curve, index)
+            target = curve.K.smul(curve.G, scalar)
+            expected = {
+                "curve_id": curve.curve_id, "subgroup_order": str(curve.r),
+                "target_x": str(target[0]), "target_y": str(target[1]),
+                "fixture_scalar": str(scalar), "panel_key": PANEL_KEY,
+                "panel_index": str(index),
+            }
             cases.append({"id": f"n{n}-target-{index}",
+                          "expected_fields": expected, "expected_result": str(scalar),
                           "reference": [str(python), str(script), "--variant", "rho"] + tail,
                           "candidate": [str(python), str(script), "--variant", "ic"] + tail})
     return {
@@ -74,6 +86,7 @@ def build(python: Path, workdir: Path, cgroup: Path, cpus: str, execution_cpu: i
         "artifacts": [str(workdir / p) for p in ARTIFACTS],
         "timeout_s": timeout_s,
         "repetitions": 1,
+        "result_field": "recovered_scalar",
         "measurement_boundary": (
             "candidate online_ms: monitor.collect's per-target interval, from the first target rerandomization "
             "(walk step [a0]G) through the independent scalar replay [log Q]G == Q, every failed attempt "
