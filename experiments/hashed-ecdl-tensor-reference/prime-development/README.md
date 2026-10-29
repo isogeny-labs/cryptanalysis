@@ -47,6 +47,10 @@ every prerequisite of the external theorem. Those obligations remain open.
 ![Prime-field constraint pipeline](pipeline.svg)
 
 [Editable diagram](pipeline.dot) · [PDF report](report.pdf) · [PDF source](report.tex).
+Rebuild with `bash build-report.sh` (Graphviz, pdfLaTeX and Ghostscript). The
+first PDF exceeded the repository's 64 KiB store threshold; Times font selection
+and Ghostscript font/vector compression reduce it below that limit without
+removing content. The failed hosted store check remains in the PR history.
 The native `docs/hashed-ecdl.svg` and its PDF describe a separate implementation
 and are not changed by this companion. No isogeny, curve neighbor or graph route
 is proposed; the candidate curve registry has no existing ECCp-131 match.
