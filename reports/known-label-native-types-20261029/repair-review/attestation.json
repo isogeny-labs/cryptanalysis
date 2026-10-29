@@ -1,0 +1,290 @@
+{
+  "schema": "review_attestation/v1",
+  "reviewer_task": "TASK-20261029-b339cc",
+  "conductor_task": "T-790",
+  "review_policy": "review-adversarial",
+  "requested_reasoning_effort": "xhigh",
+  "review_kind": "affected-joint repair re-review",
+  "reviewed_at_utc": "2026-10-29T06:22:47.856045+00:00",
+  "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+  "prior_revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+  "pull_request": "https://github.com/isogeny-labs/cryptanalysis/pull/1289",
+  "frozen_proof_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+  "gate_sha256": "f84a1c1307e10453d558331ac10e7923b47ef07a3b4663eb245ec141b3692789",
+  "joints_owned": [
+    "F1 diagnostics, timeout, malformed-output and wrapper retention",
+    "F2 runtime auditor snapshot and primary object/sidecar boundary binding"
+  ],
+  "verdict": "holds",
+  "verdict_scope": "F1/F2 software repairs under the explicitly stated point-in-time boundary-check and trusted-runner contract. This is not full native validation.",
+  "machine_status": "not_verified",
+  "fidelity": "not_reviewed",
+  "review_outcome": "inconclusive",
+  "review_outcome_scope": "Full native Lean collection and semantic fidelity remain pending; software repair verdict above is holds.",
+  "findings": [
+    {
+      "id": "F1",
+      "verdict": "holds",
+      "status": "addressed_scoped",
+      "source_locations": [
+        "tools/lean/current-corpus-gate.py:104",
+        "tools/lean/current-corpus-gate.py:438",
+        ".github/workflows/lean-proof-gate.yml:92"
+      ],
+      "remaining": "Hosted artifact upload and retrieval still require actual verification."
+    },
+    {
+      "id": "F2",
+      "verdict": "holds",
+      "status": "addressed_scoped_with_explicit_contract_narrowing",
+      "source_locations": [
+        "tools/lean/current-corpus-gate.py:461",
+        "tools/lean/current-corpus-gate.py:489",
+        "tools/lean/current-corpus-gate.py:525",
+        "tools/lean/current-corpus-gate.py:558"
+      ],
+      "remaining": "Native import not executed. Source/workspace and dependencies are not immutable; transient edits, runtime binaries/cache and runner integrity retain the documented trust boundary."
+    }
+  ],
+  "new_blocking_defects_demonstrated": [],
+  "sources_read": [
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "f84a1c1307e10453d558331ac10e7923b47ef07a3b4663eb245ec141b3692789",
+      "bytes": 40162,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:tools/lean/current-corpus-gate.py"
+    },
+    {
+      "path": "tools/lean/test_current_corpus_gate.py",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "557cf8dd97d06f972ccacdfc63d2802529bd57a3a9db3274b73a6fad72b3e863",
+      "bytes": 25603,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:tools/lean/test_current_corpus_gate.py"
+    },
+    {
+      "path": "tools/lean/AuditHeckeAxioms.lean",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "bytes": 1686,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:tools/lean/AuditHeckeAxioms.lean"
+    },
+    {
+      "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "bytes": 911,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:docs/known-label-next-leads-20261028/Algebra.lean"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "bytes": 29,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:experiments/hecke-432-formal-ci-20261025/lean-toolchain"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+      "bytes": 186,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:experiments/hecke-432-formal-ci-20261025/lakefile.toml"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+      "bytes": 3170,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:experiments/hecke-432-formal-ci-20261025/lake-manifest.json"
+    },
+    {
+      "path": ".github/workflows/lean-proof-gate.yml",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "c4699892bb54c210500907affbda233abfb539a22233f844f274401f42e5571b",
+      "bytes": 4025,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:.github/workflows/lean-proof-gate.yml"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/README.md",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "00175f2463d9dfb9859b22e3ed6e544e64fd7966a0bc89dc5a369e4426557a2b",
+      "bytes": 2867,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/README.md"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/bindings.json",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "19774796c1c4bf474faa93430624fca0e81a5c546507d3cc833e7ec7c5f1df25",
+      "bytes": 1273,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/bindings.json"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/unit-tests.txt",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "f2307af62c8ccad7d3e233e89105bdeb362b3954134287ba94f5e989ecafb4f1",
+      "bytes": 3106,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/unit-tests.txt"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/review-plan.json",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "a89f5bd56240ae86ec68862fe653f265bfaa32dbcfc0d068385ab2494d7a7b8b",
+      "bytes": 2662,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/review-plan.json"
+    },
+    {
+      "path": "AGENTS.md",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "894806c9cd787f8b869ba8dbfb9a54d7e098a3e8aa188cdfc99e6c101055e7ec",
+      "bytes": 58471,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:AGENTS.md"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/review-response.md",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "8efa7bf51243a94fe02ba7d5f2cb46e6a7d3d602b891e887014efb3be7e88e7a",
+      "bytes": 2397,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/review-response.md"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/unit-tests-f2.txt",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "ec8e09a58b4fe7a41a356710b10d25fac6b8cd27c80564abd88c4c65da18f719",
+      "bytes": 4941,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/unit-tests-f2.txt"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/repair-bindings.json",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "8a2675815ea71e9401eaf0496f94afa46616640d5e9dbfd88e723e1670692a12",
+      "bytes": 600,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/repair-bindings.json"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/review-plan-repair.json",
+      "revision": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "sha256": "adf5ae6063824be5666191800dce0f06c4137833e7d6cb13a7dfaa792d3b9cc1",
+      "bytes": 3105,
+      "kind": "immutable_repository_input",
+      "origin": "git show 42fb95ed95a6bbf06ea38422b32cc3e22988b08d:reports/known-label-native-types-20261029/review-plan-repair.json"
+    },
+    {
+      "path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/report.md",
+      "kind": "own_original_review_explicitly_permitted",
+      "sha256": "4f4058d099527d3dfe645e7131c79617edf0dee2570de406355b59f93dd6736e",
+      "bytes": 12483
+    }
+  ],
+  "policy_sources_reused": [
+    {
+      "path": "/var/lib/spot-codex/home/skills/review-evidence/SKILL.md",
+      "sha256": "faadf52e1364483b09e8cb3c18b613477918df55e40f4ed404627f1eb0756fd7",
+      "kind": "applicable_policy_read_in_original_review_and_reused_in_same_session"
+    },
+    {
+      "path": "/var/lib/spot-codex/home/skills/review-evidence/references/lean-review.md",
+      "sha256": "86886a664aa8aa59411cfd6441848399ced79128e186d0afe9aa8673f03ec4c7",
+      "kind": "applicable_policy_read_in_original_review_and_reused_in_same_session"
+    },
+    {
+      "path": "/var/lib/spot-codex/home/plugins/cache/openai-curated-remote/cloud-environment/0.1.2/skills/runtime/SKILL.md",
+      "sha256": "c23513e361a6f9dbe1c28e5c41de635f355469b4ec1740ae1cd2de1d38a91bd3",
+      "kind": "applicable_policy_read_in_original_review_and_reused_in_same_session"
+    }
+  ],
+  "generated_artifacts_read": [
+    "independent-controls/sources.json",
+    "independent-controls/results.json",
+    "independent-controls/producer-selected-tests.txt",
+    "independent-controls/snapshot/* (copies of enumerated immutable inputs)",
+    "independent-controls/evidence/* (reviewer-generated controls)",
+    "independent-controls/producer-fixture-evidence/* (reviewer-generated selected-test fixtures)",
+    "report.md"
+  ],
+  "sibling_report_access": false,
+  "sibling_message_access": false,
+  "memory_access": false,
+  "session_history_access": false,
+  "own_original_report_access": true,
+  "blind_rederivation": {
+    "required": false,
+    "performed": false,
+    "compliance": "Assigned workflow repair review; not a mathematical derivation."
+  },
+  "input_boundary_compliance": {
+    "repair_plan_read_first": true,
+    "all_repository_inputs_from_exact_git_show": true,
+    "mutable_producer_source_read": false,
+    "snapshot_hashes_rechecked": true,
+    "source_snapshot_unchanged": true,
+    "only_scratch_test_fixtures_mutated": true,
+    "prior_review_preserved": true,
+    "unlisted_quartic_fixture_not_read": true
+  },
+  "execution": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 independent-controls/run_controls.py",
+    "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/repair-review",
+    "independent_scenarios": 36,
+    "selected_producer_tests": 26,
+    "all_assertions_passed": true,
+    "accepted_scenarios": [
+      "positive_bound_pipeline",
+      "declared_transient_edit_limit"
+    ],
+    "rejected_scenarios": 34,
+    "producer_class_not_run": "QuarticRegistrationControls: fixture is outside permitted inputs",
+    "native_lean_or_lake_executed": false,
+    "real_commands": "Bounded Python children plus nonexistent-executable failure control",
+    "synthetic_output_is_proof_evidence": false,
+    "native_builds": 0,
+    "experiments": 0,
+    "network_calls": 0,
+    "installations": 0,
+    "new_capacity": 0,
+    "paid_jobs_launched": 0,
+    "total_cloud_billing_measured": false,
+    "resource_constraints": "Preserved $25/day, no new capacity, no local heavy work, other task heavy reservation untouched"
+  },
+  "pending_native_validation": [
+    "Actual hosted exact-final-head original-source compile on pinned Lean and Mathlib",
+    "Actual fresh original-module import and four-name exhaustive axiom audit",
+    "Actual full elaborated-type output for all four qualified theorem identities",
+    "Hosted evidence upload, retrieval and per-file hash/run-attempt verification linked to complete gate outcome",
+    "Independent source-to-elaborated-type comparison for each identity",
+    "Affected-joint review after further material changes and exact-final-head CI before guarded merge"
+  ],
+  "claims_not_made": [
+    "End-to-end theorem validity",
+    "Native Lean success",
+    "Native stale-object exploit",
+    "Semantic fidelity approval",
+    "Immutable execution",
+    "Detection of transient edits",
+    "Graph/group/probability bridge",
+    "Historical execution verification",
+    "Scientific promotion",
+    "Merged PR or passing current-head CI"
+  ],
+  "seal": {
+    "path": "independent-controls/seal.json",
+    "sha256": "db44a1e8339ef98406ec098ddc6b136495c99f3c900f2a7890ac8ff70e3ef5af",
+    "files": 840,
+    "self_attestation_excluded": true
+  }
+}
