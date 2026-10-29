@@ -46,6 +46,14 @@ KNOWN_LABEL_PROJECT_INPUTS = {
     "lakefile.toml": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
     "lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
 }
+PAIR_INDEX_SOURCE = "docs/known-label-pair-index-20261029/PairIndex.lean"
+PAIR_INDEX_SHA256 = "68dd10106b5499ad8b3fba35b95980a5ed1e6c46c0433047e0d5034e90c135c8"
+PAIR_INDEX_THEOREMS = frozenset({
+    "KnownLabelPairIndex.affine_composition", "KnownLabelPairIndex.affine_path",
+    "KnownLabelPairIndex.cycle_constraint", "KnownLabelPairIndex.cycle_recovery",
+    "KnownLabelPairIndex.label_recovery", "KnownLabelPairIndex.signed_square",
+    "KnownLabelPairIndex.semaev_pair_identity",
+})
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -375,6 +383,17 @@ def check_known_label_project_inputs() -> None:
                 f"known-label project input changed: {name}")
 
 
+def check_pair_index_algebra(lean_path: str) -> str:
+    """Build the new path/cycle and addition lemmas without changing old pins."""
+    check_known_label_project_inputs()
+    checked = check_pinned_mathlib_source(
+        PAIR_INDEX_SOURCE, PAIR_INDEX_SHA256, lean_path,
+        label="known-label-pair-index", exact_names=PAIR_INDEX_THEOREMS,
+        expected_theorems=7)
+    check_known_label_project_inputs()
+    return checked
+
+
 def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
                                label: str, exact_names: frozenset[str] | None = None,
                                expected_theorems: int | None = None) -> str:
@@ -453,6 +472,9 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
             continue
         if path in reviewed:
             checked[path] = check_reviewed_quartic(path, reviewed[path], lean_path)
+            continue
+        if path == PAIR_INDEX_SOURCE:
+            checked[path] = check_pair_index_algebra(lean_path)
             continue
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
@@ -576,3 +598,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

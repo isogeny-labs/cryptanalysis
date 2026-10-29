@@ -92,3 +92,21 @@ Publishing the package or merging its PR does not resolve the original requireme
 2026-10-27: review identified collection/recovery work omitted from historical
 cost sums. Corrected the publication labels and PDF, preserving all archive
 bytes. Full collection/recovery accounting remains a future measurement gap.
+
+2026-10-29: a separate [coordinate polynomial pair index and signed-label
+prototype](../docs/known-label-pair-index-20261029/README.md) implements a
+concrete witness oracle for the October 28 graph proposal. Its degree-n(n-1)
+polynomial replaces pair-table group additions with polynomial work; batched
+remainder-tree tests localize all signed pair witnesses. Signed cycles can
+label even components when their path multiplier is nontrivial. Ten bounded
+correctness controls pass, including actual point and label replay. These are
+not performance measurements or a new attack exponent. The seven new Lean
+lemmas are source-bound for native CI and remain locally unbuilt. The earlier
+four-lemma native evidence from PR #1283 is preserved and has narrower scope.
+The [prospective comparison protocol](../docs/known-label-pair-index-20261029/PROTOCOL.md)
+requires complete matched costs against signed pair dictionaries and tuned
+reusable multi-target BSGS, including all failure/recovery/bookkeeping work.
+The efficient-construction requirement and every original exit criterion
+remain open. No benchmark, official hypothesis-state change, or alteration to
+the historical archive was made by this continuation.
+

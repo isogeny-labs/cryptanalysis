@@ -86,3 +86,14 @@ identity checks and before/after checks of all three pinned project inputs.
 All main-branch refusal cases remain tested through the final known-label route;
 neighboring documentation modules remain unreviewed and rejected. Historical
 producer reports and native receipts remain bound to their original revisions.
+
+## Coordinate pair-index path/cycle lemmas
+
+`docs/known-label-pair-index-20261029/PairIndex.lean` is separately source-bound
+and must natively compile in the same pinned workspace. Its seven explicit
+theorems, including the folded affine path and label-recovery statements, must
+pass the existing exhaustive module audit with exactly seven audited theorems
+and zero failing/trusted exceptions. The previous four-theorem source binding
+and all historical receipts remain unchanged. Refusal-control mocks are not
+native proof evidence. See that note for the concrete elliptic instantiation,
+executable-algorithm and cost formalizations still missing.
