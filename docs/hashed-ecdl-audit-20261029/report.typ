@@ -10,6 +10,8 @@ deterministic witness finder, Fourier multiplier, exceptional point addition,
 affine-hashed bases and source parameter guards. Its byte-identical mirror is
 in cryptanalysis. This change adds the previously absent random sampling path
 of Bochum Lemma 1 and strengthens forced recursive controls.
+Coordinate predicates access x and y, placing this reduction outside the
+generic-group oracle model; that fact alone establishes no speed advantage.
 
 == Exact prefix sampling
 For current count C and zero-prefix count C0, choose zero with probability
@@ -51,7 +53,8 @@ map, pinned primary-source links and remaining obligations are in `README.md`.
 Primary review covered Bochum v0.2 §§2–3 and the October 25 OpenAI manuscript,
 Appendix D.4.1–D.4.6, including immutable creation precision and tapered recovery.
 
-Literal admission guards select finite-size fallback on practical networks.
+On this 64-bit build, lambda is at most 64 and root_u=lambda/131072 is zero:
+the public API always selects finite-size fallback. Forced tests bypass admission.
 General correctness, complexity and space accounting remain independently
 unaudited. No benchmark, cloud experiment, deployed-curve run, new theorem or
 Lean proof is claimed. No canonical IC/rho graph changes because no admitted

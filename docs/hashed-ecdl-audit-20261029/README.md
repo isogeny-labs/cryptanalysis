@@ -20,6 +20,11 @@ the byte-identical mirror is `bindings/rust/hashed-ecdl-tensor/src/`.
 | Hashed factor bases | `reduction.rs`: `FactorBase`; `encoding.rs`: `hash_member`; `decomposition_network` | Present. Inverse-hash enumeration, canonical coordinate hash predicates, subgroup checks and cofactor projection. Coverage is a probability over random seeds, not a guarantee for each fixed base. |
 | Cost and m choice | `reduction.rs`: `Config::for_curve`; `contraction/recursive.rs`: `Setup` | Present as parameter choices and admission guards. These do not certify this implementation's asymptotic cost. The normalized illustrative crossover below is not a measurement. |
 
+The coordinate hash and field-arithmetic predicates inspect x and y, which
+generic group algorithms cannot access. The paper's reduction therefore lies
+outside the generic-group lower-bound model. Coordinate access alone does not
+establish a faster algorithm: the actual counter and its cost still matter.
+
 The earlier Python binary-curve bucket/cutset prototype is a distinct execution
 path, with a quadratic multiplier and stand-in contractor. It is not the native
 prime-field Fourier/Appendix D implementation examined here. No Python research
@@ -105,6 +110,13 @@ complexity audit remain partial. The public backend still follows literal
 admission guards, with finite-size fallback on practical graphs. No speedup,
 asymptotic replication proof, deployed-curve run or new mathematical theorem
 is established. No Lean theorem is claimed for these software controls.
+
+More precisely, on this 64-bit build `Setup::new` has lambda at most 64,
+whereas `Setup::parameters` sets root_u=lambda/131072. Thus u=0 for every
+graph representable by the public API on this build, and admitted recursion
+is unreachable there. Forced tests deliberately supply small alternative
+parameters. This is a source/representation observation, not a counterexample
+to the external asymptotic theorem or a practical speed measurement.
 
 The next discriminating audit is to cross-check multi-coordinate packet/mode
 identities and retained creation precision against direct contraction on richer
