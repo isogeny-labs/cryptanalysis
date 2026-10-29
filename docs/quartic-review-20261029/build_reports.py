@@ -3,16 +3,17 @@ import json, subprocess, hashlib, re, textwrap, html, shutil, posixpath
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.utils import ImageReader
+from svglib.svglib import svg2rlg
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab import rl_config
 from matplotlib import font_manager
 rl_config.invariant = 1
 plt.rcParams["svg.hashsalt"] = "quartic-review-20261029"
+plt.rcParams["svg.fonttype"] = "none"
 pdfmetrics.registerFont(TTFont("DejaVuSans", font_manager.findfont("DejaVu Sans")))
 pdfmetrics.registerFont(TTFont("DejaVuSansBold", font_manager.findfont(font_manager.FontProperties(family="DejaVu Sans", weight="bold"))))
 ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'docs/quartic-review-20261029';OUT.mkdir(exist_ok=True)
@@ -38,7 +39,7 @@ d,p,h=read(1173,'result.json');charts[1173]={'labels':['Matched coefficients','M
 for pr,c in charts.items():
  fig,ax=plt.subplots(figsize=(8,3.8));bars=ax.bar(range(len(c['values'])),c['values'],color='#155e75');ax.set_xticks(range(len(c['labels'])),c['labels'],fontsize=9);ax.set_ylabel(c['unit']);ax.set_title('Retained exact census: PR #'+str(pr),fontsize=12)
  for b,v in zip(bars,c['values']):ax.annotate(f'{v:,}',(b.get_x()+b.get_width()/2,v),xytext=(0,5),textcoords='offset points',ha='center',fontsize=10)
- ax.set_ylim(0,max(c['values'])*1.2 if max(c['values']) else 1);ax.spines[['top','right']].set_visible(False);fig.tight_layout();fig.savefig(OUT/f'{pr}-counts.svg',metadata={'Date':None});fig.savefig(OUT/f'{pr}-counts.png',dpi=170);plt.close(fig)
+ ax.set_ylim(0,max(c['values'])*1.2 if max(c['values']) else 1);ax.spines[['top','right']].set_visible(False);fig.tight_layout();fig.savefig(OUT/f'{pr}-counts.svg',metadata={'Date':None});plt.close(fig)
 (OUT/'quantitative-sources.json').write_text(json.dumps(charts,indent=2)+'\n')
 styles=getSampleStyleSheet()
 for sty in styles.byName.values():sty.fontName='DejaVuSansBold' if sty.name.startswith('Heading') or sty.name=='Title' else 'DejaVuSans'
@@ -57,7 +58,7 @@ for entry in studies:
  for i,n in enumerate(nodes):dot.append(f'n{i} [label={json.dumps('\n'.join(textwrap.fill(line,width=52) for line in n.splitlines()),ensure_ascii=False)}];')
  edges={1167:[(0,1),(1,2),(1,3),(3,4)],1170:[(0,1),(1,2),(0,3),(2,4),(3,4)],1171:[(0,1),(1,2),(2,3),(0,4)],1173:[(0,1),(2,1),(1,3),(1,4)]}.get(pr,[(i,i+1) for i in range(len(nodes)-1)])
  for a,b in edges:dot.append(f'n{a} -> n{b} [label="scope condition / recorded check", style='+('dashed' if b==4 else 'solid')+'];')
- dot.append('}');(OUT/f'{pr}.dot').write_text('\n'.join(dot)+'\n');subprocess.run(['dot','-Tsvg',str(OUT/f'{pr}.dot'),'-o',str(OUT/f'{pr}.svg')],check=True);subprocess.run(['dot','-Tpng','-Gdpi=140',str(OUT/f'{pr}.dot'),'-o',str(OUT/f'{pr}.png')],check=True)
+ dot.append('}');(OUT/f'{pr}.dot').write_text('\n'.join(dot)+'\n');subprocess.run(['dot','-Tsvg',str(OUT/f'{pr}.dot'),'-o',str(OUT/f'{pr}.svg')],check=True)
  formal=[e['path'] for e in manifest['formal'] if e['path'].startswith(root+'/')];frozen={p:h for p,h in manifest['inputs'].items() if p.startswith(root+'/')};problems=problem_links.get(pr,[])
  prose=f'''# Review addendum: PR #{pr}\n\nDate: 2026-10-29. {entry['title']}.\n\nOriginal author head: `{entry['head']}`. The original study and every frozen source, protocol, result, failed attempt and timing cap are preserved. This addendum takes precedence over unqualified experimental-status language in the archived report.\n\n## Recorded finding and its scope\n\n{summary}\n\nThe paragraph above describes the retained certificate record, not a new experiment. Source: [{root}/RESULT.md](../../{root}/RESULT.md). This review treats publication of protocol and results together as retrospective/exploratory unless an independent earlier publication witness is supplied. An archived PASS_PROSPECTIVE status is a literal historical label, not evidence of pre-observation registration. In particular, PR #1164's six-row holdout and PR #1190's 62/62 correctness checks retain their numerical results with this qualification.\n\n## Evidence-linked explanation\n\n{title}. Symbols C, B, E and K denote the frozen coordinate models or coefficient field, not newly registered subgroup instances. This diagram records algebra/certificate dependencies; it does not introduce a verified isogeny edge, EC1 identity, ISO1 route, or ECDLP transport claim.\n\n![{title}]({pr}.svg)\n\nEditable source: [{pr}.dot]({pr}.dot). Report and visual: [{pr}.pdf]({pr}.pdf).\n\n## Replay and proof map\n\nThe exact manifest binds {len(frozen)} files in this study. The shared project pins Lean {manifest['toolchain']} and Mathlib `{manifest['mathlib']}`. All 37 original modules, 113 requested declaration reports and 142 noninternal theorems passed the integrated proof replay; this does not formalize every concrete Sage/PARI field or ideal interpretation. The source manifest and proof map are [tools/ci/quartic_certificates.json](../../tools/ci/quartic_certificates.json) and [the original integration report](../ci-repair-quartic-20261027.md).\n\nThis study's original modules: {', '.join('`'+p+'`' for p in formal) or 'see the shared manifest; no new theorem is introduced by this addendum'}.\n\nA new portable replay ran all 42 original integer auditors successfully in a disposable canonical-layout container. The checkout was read-only and all 1,404 original input hashes were verified before and after replay. See [portable replay evidence](portable-replay/results.json). The separate field-index successor runner uses new output directories, unchanged source/protocol bytes, original timeout limits and the checked Sage launcher. Preparation and I/O controls are not a new Sage experiment.\n\n## Remaining obligations and graph review\n\nArithmetic table certificates and universal ring/permutation identities retain their precise hypotheses. Concrete number-field encodings, integral bases, ideals, Hensel lifting and Frobenius interpretation require their own bridges. No security, speedup, prospective-validation or general impossibility claim is added.\n'''
  if problems:prose+='\n'+ '\n'.join(f'- Open, indexed obligation: [{p}](../../problems/{p}.md).' for p in problems)+'\n'
@@ -71,9 +72,12 @@ for entry in studies:
   block=block.strip()
   if not block:continue
   if block.startswith('!['):
-   name=f'{pr}-counts.png' if 'Retained counts' in block else f'{pr}.png';p=OUT/name;iw,ih=ImageReader(str(p)).getSize();width=min(460,iw);height=ih*width/iw
-   if height>420:width*=420/height;height=420
-   story.extend([Spacer(1,8),Image(str(p),width=width,height=height),Spacer(1,10)]);continue
+   name=f'{pr}-counts.svg' if 'Retained counts' in block else f'{pr}.svg';drawing=svg2rlg(str(OUT/name))
+   def embed_font(shape):
+    if hasattr(shape,'fontName'):shape.fontName='DejaVuSans'
+    for child in getattr(shape,'contents',[]):embed_font(child)
+   embed_font(drawing);iw,ih=drawing.width,drawing.height;scale=min(460/iw,420/ih,1);drawing.scale(scale,scale);drawing.width=iw*scale;drawing.height=ih*scale
+   story.extend([Spacer(1,8),drawing,Spacer(1,10)]);continue
   level=3 if block.startswith('### ') else 2 if block.startswith('## ') else 1 if block.startswith('# ') else 0
   clean=block.lstrip('# ').replace('`','');clean=re.sub(r'\[([^]]+)\]\(([^)]+)\)',r'\1 (\2)',clean);clean=html.escape(clean).replace('\n','<br/>');story.append(Paragraph(clean,styles[f'Heading{level}'] if level else styles['BodyText']))
   if not level:story.append(Spacer(1,7))
