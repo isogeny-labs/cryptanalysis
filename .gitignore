@@ -3,6 +3,7 @@ build/
 build-*/
 cmake-build-*/
 build-cuda-kernel/
+ecc2k130/dist/
 *.o
 *.a
 *.so
@@ -16,7 +17,7 @@ compile_commands.json
 *.cubin
 *.fatbin
 
-# Rust
+# Rust (bindings)
 bindings/rust/target/
 
 # Go
@@ -33,8 +34,18 @@ bindings/python/cryptanalysis/*.dylib
 
 # experiments/pdp-scaling: derived data that is recomputed on demand
 experiments/pdp-scaling/sumpoly_cache.pkl
+.cache/macaulay/
+.cache/macaulay-kind/
+.tilt-build/
 
 # editors
 .vscode/
 .idea/
 *.swp
+
+# Rust (attack suite)
+suite/target/
+
+# Isolated Sage build temporary files and caches.
+/.sage-build-tmp/
+/scripts/modal/.build/

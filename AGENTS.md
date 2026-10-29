@@ -10,7 +10,13 @@ they enter a new comparison. **Always** use the candidate and measurement
 rules below when comparing IC variants. A campaign may impose stricter claim
 rules. The [candidate catalog](experiments/ic-candidate-catalog/README.md)
 contains design proposals; its [measurement contract](experiments/ic-candidate-catalog/MEASUREMENT.md)
-specifies the empirical stage record and promotion gates.
+specifies the empirical stage record and promotion gates. The
+[IC benchmark](experiments/ic-bench/README.md) is the reference harness for
+named, fully charged, verified toy-curve runs. It holds the calibrated `rps` unit,
+candidate/workload manifests, `history.csv`, and the CI baseline gate. Record a new
+baseline there when a change is intended. Archive factor bases (record, point set,
+digests) with [fb-archive](experiments/fb-archive/README.md); a recipe-only
+archive keeps `B` null.
 
 ### Three distinct identifiers
 
@@ -25,6 +31,12 @@ specifies the empirical stage record and promotion gates.
    Use
 
    `IC1N<n>C<curve-tag>fb<B>PDP<m><solver>RC<collector>LA<matrix-solver>TD<descent>ISO<0|1>h<12hex>`
+
+   For prime fields use the parallel form `IC1P<b>C<curve-tag>...`, where
+   `P<b>` is the bit length of the prime field modulus. Its curve ID is
+   `EC1P<b>C<curve-tag>h<12hex>`. The manifest, not the bit length, binds the
+   exact modulus. This keeps prime-field scaled experiments in the same receipt
+   namespace without pretending that `N<b>` means a field of size `2^b`.
 
    For example, the *illustrative* name
    `IC1N53Ckb1fb64PDP5f4RCwalkLAbwTDdirectISO0h<12hex>` means a
@@ -42,10 +54,26 @@ specifies the empirical stage record and promotion gates.
    Form the workload ID from the first 12 hex digits of SHA-256 over its
    canonical workload record.
 
+For each new finalized curve, add a readable entry to the
+[`curves.yaml` registry](experiments/ic-candidate-catalog/curves.yaml).
+Use a short alias such as `ecc2k130_pb` in prose, but retain the full
+`EC1...h...` ID in candidate manifests, run records, and isogeny links.
+The YAML entry contains the exact `field` and `curve` hash input, with
+`curve_id` stored separately, plus provenance, endomorphism status, and
+incoming/outgoing route references. Hash only `{"field": ..., "curve": ...}`
+using the canonical JSON rule above; alias, evidence, and route metadata
+never change the curve ID. Unknown values remain `null`. A readable alias
+cannot stand in for an exact field representation or subgroup.
+
 A design proposal may use a `Q<number>` catalog ID while exact base points,
 algorithm wiring, or isogeny maps are unresolved. Keep `candidate_id: null`
 and all measured costs null until those gates are satisfied. A proposal ID is
 never an `IC1` result, and a nominal dimension is never an actual `fb` count.
+A measured PDP-stage profile of an exact base without final relation LA or
+target descent (`experiments/pdp-degree-heuristics/`) also keeps
+`candidate_id: null`. Label it `PS1N<n>C<curve-tag>fb<B>PDP<m><solver>h<12hex>`,
+hashing its factor-base and point-decomposition records. Its run ID is
+`<PS1-id>W<workload>R<run>`, and it is never an `IC1` result.
 
 For an isogenous curve, preserve its own immutable curve ID and use the
 [volcano-position and isogeny-walk convention](experiments/ic-candidate-catalog/VOLCANO_NAMING.md).
@@ -68,11 +96,31 @@ There are no separators or zero-padded numbers in an ID. Structural tags
 (`kb1`, `f4`, `walk`, `bw`, etc.), the `fb` tag, and hex digits are lowercase.
 The stage codes are short, stable, and recorded in the candidate manifest.
 The compact ID is a label; load the manifest for the exact configuration.
-Suggested codes: `PDP5f4`, `PDP5f5`, `PDP5sat`, `PDP5hybrid`, and `PDP4root`
-for the compact four-summand S3 root index; `RCwalk`, `RCsample`, `RCdirect`,
-and `RCguided` for pivot-guided relation collection;
-`LAbw`, `LAwied`, `LAgauss` for **final sparse relation-matrix** solving;
-`TDdirect`, `TDpdp`, `TDdescent` for target handling; `ISO0` for no isogeny
+Suggested codes: `PDP5f4`, `PDP5f5`, `PDP5sat`, `PDP5hybrid`,
+`PDP5mitm` for five-summand group meet in the middle, `PDP4mitm` for
+four-summand pair-index meet in the middle, `PDP8mitm` for eight-summand
+four-pair indexed meet in the middle, and `PDP4root` for the compact
+four-summand S3 root index; `PDP3direct` for exact same-base point-pair
+lookup, and `PDP2orbit` for the prime-field two-summand automorphism-orbit
+peel/lookup oracle for the compact four-summand S3 root index; `PDP2xl` for a
+dense Macaulay/XL degree scan and `PDP2xlsym` for the same scan over the
+symmetric-function (`e_k` in `V^(k)`) formulation, with the XL or closure mode
+in the manifest; `PDP3eval` for Boolean evaluation with Buchberger-Moeller
+basis construction and an independently checked exact Boolean basis
+certificate; `PDP2eval` for the corresponding two-summand evaluation method,
+and `PDP2cond` for two-summand conditional linear solving with independent
+branch-count and exact Boolean basis certification;
+`RCwalk`, `RCsample`, `RCdirect`, `RClp` for single-large-prime collection,
+and `RCguided` for pivot-guided relation collection; `RCstream` for verified
+relations inserted in worker-completion order until target-span recovery,
+including cooperative cancellation and worker drain; `RCenum` for verified
+distinct decompositions enumerated for one fixed known-scalar setup target,
+inserting rank-increasing rows until the factor-base log system is solved;
+`LAbw`, `LAwied`, `LAgauss`, `LAgraph` for exact one/two-term gain-graph
+solving, for **final sparse relation-matrix** solving;
+`TDdirect`, `TDpdp`, `TDdescent`, `TDlearn` for an ordered descent that adds
+verified differences to a shared logarithm database, for target handling;
+`ISO0` for no isogeny
 transport and `ISO1` for a specified route. A solver's internal Macaulay
 matrix reduction belongs under `PDP`, including its RREF/M4RI/GPU kernel. It
 is not the `LA` stage. Extend the vocabulary in this file when a genuinely
@@ -130,6 +178,16 @@ construction and stays outside both timed intervals. Keep all correctness
 checks, including scalar replay, in the result record; if they are outside the
 online interval, report their timing separately and do not imply they were
 charged to it.
+
+The paired Pollard-rho reference must solve that same single target. Its clock
+starts at the first target-dependent walk computation and stops when the
+scalar is recovered and independently verified; exclude launch and fixture
+construction. Parallel workers are allowed when they work on the same target
+within the frozen resource envelope. Do not use multi-target rho batches,
+cross-target distinguished-point tables, batch throughput divided by target
+count, or shared collision work as the one-target baseline. Record rho's
+target, walk and collision policy, worker count, distinguished-point memory,
+online interval, and correctness certificate alongside the IC row.
 
 Multi-target or batch workloads are secondary only. Run them only after the
 single-target measurement has been completed and explicitly identify a
@@ -191,3 +249,114 @@ for rates and paired costs. Planted decompositions are correctness controls,
 not estimates of natural relation yield. An unverified isogeny neighbor or
 conductor guess is a proposal only: `ISO1` requires an explicit verified map,
 ordered edge links, subgroup/log transport, and charged route costs.
+
+## Remote compute
+
+A cloud-agent VM has 4 CPUs, 15 GB and no GPU. Run bigger work, such as
+multi-core sweeps, Sage/F4/SAT grids, long test suites or CUDA, with the
+tools in [`cloud/`](cloud/README.md). Both run the command on a copy of the
+working tree and copy the results back into the checkout:
+
+- `cloud/modal_run.py run [--image cpu|cuda|sage] [--cpu N] [--memory GB]
+  [--gpu TYPE] [--shards K] [--out PATH | --changed] [--detach] -- CMD` runs
+  on Modal and is billed per second.
+- `cloud/fleet.py run rp-cpu-1|rp-gpu-1 [--out PATH | --changed] -- CMD`
+  runs on the Runpod pods; `cloud/fleet.py status` and `up NAME` show and
+  start them.
+
+If `FLEET_WORKER_NAME` is set, you are already on a fleet pod: run locally,
+up to `$FLEET_CPUS` wide. Stop or kill whatever you start, never write
+credentials into the tree, and copy the hardware from each shard's
+`status.json` into the run record.
+
+## CPU performance isolation gate
+
+Treat CPU timing ratios from a contended or unverified host as exploratory.
+Promote a new CPU wall-time speedup claim only with a receipt from the
+[isolated benchmark service](docs/ISOLATED_BENCHMARKS.md), or an equivalent
+auditable host-level isolation record. The record must identify the physical
+CPU model, core and SMT topology, NUMA node, exclusive CPU partition,
+execution CPU affinity, memory policy, fixed frequency, IRQ routing, CPU
+quota, code and workload hashes, paired run order, raw failures, throttling,
+steal time, interrupts, and correctness. A container's visible affinity mask
+does not establish host-wide isolation. If the isolation preflight or any
+noise gate fails, preserve the row and keep aggregate speedup unknown.
+Re-evaluate earlier measurements lacking this evidence before citing them as
+controlled speedup results. Correctness runs and algorithmic diagnostics may
+still run on ordinary hosts when labeled accordingly.
+
+## Local Sage runs
+
+**Required rule:** Agents must launch all new and resumed local Sage jobs
+through this repository's `sage` launcher, which selects our accepted
+optimized build. This includes jobs they write, run, or configure for later
+execution:
+
+```sh
+# From this repository:
+./sage -python path/to/job.py
+./sage path/to/job.sage
+
+# From another directory, including local worker and scheduler commands:
+/Volumes/SSD990/cryptanalysis/sage -python /absolute/path/to/job.py
+```
+
+This applies to commands written by agents, shell scripts, and Python
+subprocesses. Use the absolute repository launcher in subprocess argument
+lists; do not rely on a scheduler's PATH or a system `python3` to select Sage.
+The launcher verifies the accepted source and native binaries against
+`experiments/sage-binary-arithmetic/runtime-current.json` before starting each
+job, and gives child commands named `sage` the same checked launcher on PATH.
+If verification fails, fix the installation before running the job; do not
+bypass the check or fall back to another installation.
+
+For measured runs, save `./sage --runtime-info` output alongside the results
+before starting the workload. Keep this startup check outside the arithmetic
+or single-target online timing interval. The output records the actual
+imported modules, manifest hash, installation receipt, and native dispatch.
+Restart existing Python/Sage processes after an accepted build changes so
+they load its new modules.
+
+Import the installed `sage.schemes.elliptic_curves` modules for ordinary
+local work. Eligible scalar operations use the installed acceleration
+automatically; independent point batches can use the public `binary_batch`
+APIs documented in `experiments/sage-binary-arithmetic/README.md`.
+When running the hardware experiment harness against the accepted build,
+set `SAGE_BINARY_USE_INSTALLED=1`; its default loader selects a development
+prototype. Prototype loaders and `SAGE_BINARY_CANDIDATE`,
+`SAGE_BINARY_NATIVE`, or `SAGE_BINARY_CODEC` overrides belong only in explicit
+candidate comparisons, with their sources recorded separately.
+
+Do not silently substitute `/usr/local/bin/sage`, which launches the older
+application on this host. Explicit baseline comparisons may use that
+application, with its runtime recorded separately. The user-level `sage`
+shim also forwards to this repository, but persisted local job commands
+should use the repository launcher explicitly.
+
+## Sage hardware compatibility
+
+**Required rule:** Preserve correctness and a portable CPU path when changing
+Sage arithmetic. Validate the installed build on each hardware/backend for
+which compatibility or a speedup is claimed. Rebuild native extensions on
+the target platform; do not reuse this host's archived macOS binaries in
+cross-platform tests. Keep architecture-specific instructions and optional
+GPU libraries behind explicit capability checks, with the existing Sage/CPU
+fallback available when those capabilities are absent.
+
+Use `experiments/sage-binary-hardware/validate_compatibility.py` through the
+checked Sage launcher for installed scalar, batch, and selected-backend
+correctness. Use `validate_native.py` in the same directory for a separately
+built portable CPU kernel check. Cover ARM64 and x86-64 CPUs, and the selected
+Apple Metal, NVIDIA CUDA, or AMD/Intel OpenCL backend where applicable.
+HIP/ROCm packed-kernel replay is a separate check, not proof that the complete
+Sage API has been validated on that device.
+
+Record the architecture, OS, compiler/runtime, device/backend, source and
+binary hashes, and exact-output test results. A requested backend that fails
+or is unavailable must remain an explicit result. Distinguish physical
+hardware runs from emulation/translation, compilation checks, and untested
+platforms. Rosetta execution does not establish physical Intel/AMD coverage.
+Correctness passes do not establish speedups: require matched full-operation
+benchmarks on each claimed device, including conversion and transfer costs,
+before enabling device-specific automatic routing or making performance
+claims. Keep unmeasured backends opt-in.
