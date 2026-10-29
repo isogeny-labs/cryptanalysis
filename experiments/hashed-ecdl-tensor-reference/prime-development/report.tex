@@ -40,6 +40,11 @@ fixture recovers scalar 7 and passes full relation-certificate replay.
 Producer and certificate verifier share arithmetic; OpenSSL supplies an
 independent arithmetic comparison, not a full proof of the tensor program.
 
+The separately landed native Rust backend also passes its 27-test regression
+suite. The added published ECCp-131 runner input loads, but the bundled native
+budget stops exact AKS prime certification before tensor search, with no
+recovery receipt. This differs from the Python graph's later leaf limit.
+
 The published target's two-slot, seed-1 network compiles to 1,564,506 edges,
 654,523 variables and maximum degree 1,032. Compiled graph statistics agree
 with construction statistics. The default policy selects $u_0=0$; exact
@@ -51,9 +56,11 @@ preflight. Neither failure proves nonexistence or a mathematical obstruction.
 These are retrospective development checks, not a benchmark or admitted
 IC/rho comparison. Times in raw outputs are unisolated diagnostics.
 No new mathematical theorem, novelty, Lean proof, asymptotic speedup, native
-Rust integration or scientific cloud experiment is claimed. General
-$\ell>1$, independent complete-encoding and complexity audits, native
-integration and actual challenge relations/scalars remain open.
+Rust backend port or scientific cloud experiment is claimed. A separate native
+tensor crate landed on main during this work; this change adds the published
+ECCp-131 runner input alongside it. The companion's general $\ell>1$ case,
+independent complete-encoding, native-parity and complexity audits, and actual
+challenge relations/scalars remain open.
 
 The companion directory retains commands, exit statuses, parameter/source
 hashes, environment, test output, fixture certificate and failed challenge

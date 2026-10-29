@@ -8,7 +8,10 @@ There is no ECCp-130 entry in that list. ECC2K-130 remains separately supported.
 
 This is an engineering extension of the existing scalar reference, with no new
 mathematical theorem, novelty claim, performance comparison or Lean proof. It
-does not replace either repository's native Rust API. The original paper's
+does not replace either repository's native Rust API. A separate native tensor
+crate landed on main during this work; this change preserves it and adds a
+decimal-string ECCp-131 problem input in both mirrored native example sets.
+The original paper's
 full implementation/audit requirements and both actual challenge solves remain
 open in [PORT_STATUS.md](../PORT_STATUS.md).
 
@@ -61,6 +64,8 @@ is proposed; the candidate curve registry has no existing ECCp-131 match.
 | Published target graph, two slots, seed 1 | 1,564,506 edges; 654,523 variables; max degree 1,032; compiled statistics agree | [graph receipt](challenge-tensor.json) |
 | Published target contraction | u_0=0, exact leaf exceeds 2,000,000-operation budget; no witness | same receipt, exit 2 |
 | Published target factor-base collection | Preflight requires 157481772803551985380 candidates, exceeds 200000 limit | [failure receipt](challenge-hashed-preflight.json), exit 2 |
+| Separately landed native backend regression suite | 27 passed, zero failed; runner/doc targets pass | [native output](native-tests.txt), exit 0 |
+| Native ECCp-131 runner input | Loads input; exact prime certification exceeds its budget before relation search | [native preflight](native-preflight.txt), exit 1: `AKS multiplicative order` |
 
 The fixture scalar is public target-generation input and is never supplied to
 the relation finder. The producer and certificate verifier share curve
@@ -92,14 +97,21 @@ scientific experiment; no cloud compute, S3 experiment checkpoint, leaderboard
 or speed comparison is claimed. Future experiments require the existing
 checkpoint, execution, budget and validation protocols.
 
+The native input is mirrored at `crypto:crates/hashed-ecdl-tensor/examples/eccp131.json`
+and `bindings/rust/hashed-ecdl-tensor/examples/eccp131.json` here. It omits the
+fixture seed and secret scalar. Its current two-million-step preflight stops
+at exact AKS certification, before tensor search; this is a distinct earlier
+limit than the Python graph's leaf budget. The installed native toolchain is
+Rust 1.99.1; commands and outcomes are in the manifest and raw files above.
+
 ## Open requirements and next discriminating check
 
-The native Rust integration, general ell>1, independent full encoding/complexity
-audit and actual challenge relations/scalars remain unresolved. The concrete
+The companion's general ell>1 case, independent native parity/full encoding/
+complexity audit and actual challenge relations/scalars remain unresolved. The concrete
 observed contraction blocker is the default u_0=0 exact-leaf policy at this
 graph size, not missing challenge parameters or a mathematical impossibility.
-The next implementation check is to port/audit these field constraints in the
-native owner, compare bounded-network counts/witnesses with independent exact
+The next implementation check is to audit/cross-check these field constraints
+against the separately landed native implementation and compare counts/witnesses with independent exact
 evaluation, and justify any alternate contraction policy against the pinned
 theorem before claiming its bound. A budget exhaustion or faster isolated
 stage would not close the solve or end-to-end performance requirements.

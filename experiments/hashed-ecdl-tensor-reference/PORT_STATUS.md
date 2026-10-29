@@ -10,7 +10,7 @@ Rust `hashed_ecdl` API and does not claim a complete replication of the paper.
 | Implement the scalar contraction construction | implemented, bounded correctness checks passed | `tensor_contraction.py`, `tensor_ring.py`, recursive identity and two-level tests |
 | Encode binary-curve validity/addition and hashed membership | implemented, bounded checks passed | `tensor_encoding.py`; actual-target graph statistics and structural checks |
 | Add the Certicom prime-field counterpart | implemented, bounded correctness checks passed | Official ECCp-131 parameters, `eccp.py`, `tensor_prime.py`; 39 combined tests, 16 OpenSSL point multiples; see `prime-development/README.md` |
-| Implement the complete original prime-field/native Rust backend | partial | Prime-field coordinates now compose with scalar BTN; native integration, general ell and independent correctness/complexity audit remain open |
+| Implement the complete original prime-field/native Rust backend | code available, general audit open | A separate native tensor crate landed on main while this companion was prepared; native ECCp-131 runner input is added in both repos. This Python companion is not that crate's backend; independent general correctness/complexity audit remains open |
 | Independently establish the claimed asymptotic theorem | unresolved | Tests and experimental recursion parameters are not a proof or complexity audit |
 | Solve Certicom ECC2K-130 | unresolved | Recorded default-policy run reaches exact summation and exceeds its budget; no challenge relation or scalar |
 | Solve the prime-field challenge, officially ECCp-131 | unresolved | Actual-target graph compiled and structurally checked; u_0=0 exact-leaf preflight exceeds 2,000,000-operation budget; no challenge relation or scalar |
@@ -42,7 +42,7 @@ existing checkpoint, compute, accounting and validation rules first.
 
 ## Next work
 
-Port the required scalar operations to the native Rust implementation owner,
-audit the full coordinate encoding and theorem prerequisites, and check the
-result against independent contractions before collecting new performance
-evidence. Keep both actual Certicom solve requirements open throughout.
+Audit/cross-check the separate native implementation and this scalar reference,
+including coordinate encoding and theorem prerequisites, against independent
+contractions before collecting new performance evidence. The companion's
+general ell>1 case and both actual Certicom solve requirements remain open.

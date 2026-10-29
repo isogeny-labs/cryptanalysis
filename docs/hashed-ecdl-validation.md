@@ -55,3 +55,12 @@ test result lines are unchanged; the original transcript remains in commit
 The packaging-only follow-up needs no repeated arithmetic tests. Text diff
 checks pass with the PDF correctly classified. Paired implementation:
 [crypto #2878](https://github.com/isogeny-labs/crypto/pull/2878).
+
+## Historical receipt; tensor follow-up
+
+PR1297 merged as `fecb0698bf9697bf72360c0752ae02175ad0fad5` at
+2026-10-29T21:01:28Z. The hashes and outcomes above describe the first bounded
+reference and packaging correction. The native compact encoder, contraction
+backend and tensor relation reduction have a separate
+[current validation receipt](hashed-ecdl-tensor-validation.md); no historical
+outcome or source hash above is overwritten.

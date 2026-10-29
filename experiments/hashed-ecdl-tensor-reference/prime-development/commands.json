@@ -105,5 +105,43 @@
     "tensor_relations.py": "d33e180a94ce8c30989c3b76c5c302c07c45d66735ffbc2ca3f76d4828028463",
     "test_eccp.py": "3bbc033fe7b65a0ecb613181d519f1b95c15b2ed2dfd8d7ffc1dfdf75b43fbaf",
     "test_ecc2k.py": "9a706886819df210acc6a49cc614a315e6af387a38e22f1470b2ee51ee036dc0"
+  },
+  "native_main_merged": {
+    "crypto": "037bfc872342ff66a0cc4c6a5e1d46b1efac3029",
+    "cryptanalysis": "0366546e2a26c4acc8d3a32890b2427fb9d6a844"
+  },
+  "native_preflight": {
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--release",
+      "--manifest-path",
+      "crates/hashed-ecdl-tensor/Cargo.toml",
+      "--",
+      "solve",
+      "crates/hashed-ecdl-tensor/examples/eccp131.json",
+      "/tmp/eccp131-native-receipt.json"
+    ],
+    "working_directory": "crypto",
+    "exit_status": 1,
+    "raw_output": "prime-development/native-preflight.txt",
+    "result": "resource limit: AKS multiplicative order; before tensor search; no receipt"
+  },
+  "native_regression": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--release",
+      "--manifest-path",
+      "crates/hashed-ecdl-tensor/Cargo.toml"
+    ],
+    "working_directory": "crypto",
+    "exit_status": 0,
+    "result": "27 passed, 0 failed; runner and doc test targets passed",
+    "raw_output": "prime-development/native-tests.txt",
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "native_problem_sha256": "47da1dae89307bd5ded251a1109155e352ef11c25dadcadeebe7eb3c109c4c81"
   }
 }

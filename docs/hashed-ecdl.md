@@ -1,12 +1,14 @@
-# Hashed-factor-base ECDL reference
+# Hashed-factor-base ECDL: native tensor implementation
 
-2026-10-29. **Native Rust reference: executable reduction; the native tensor
-backend and conditional asymptotic replication remain open.**
+2026-10-29. The compact encoder, exact contraction algorithm and relation
+pipeline are implemented in Rust in both repositories. Small-case correctness
+checks do not establish the manuscript's asymptotic bound or a practical speedup.
 
 ## Scalar tensor companion
 
+
 An independently executable [scalar BTN reference](../experiments/hashed-ecdl-tensor-reference/README.md)
-now accompanies this bounded native reduction. It implements the ell=1
+accompanies the native implementation as a separately scoped development reference. It implements the ell=1
 Cauchy/mode/Hermite recursion and coordinate constraints using compact integer
 Fourier multiplication and a tested binary-polynomial Fourier adaptation.
 It now also includes official Certicom ECCp-131 parameters and prime-field
@@ -26,134 +28,172 @@ The added ECCp-131 target graph has 1,564,506 edges and degree 1,032, and also
 selects u_0=0 and exceeds its exact-leaf budget. Sixteen published P/Q multiples
 match OpenSSL. See the separate [prime validation report](../experiments/hashed-ecdl-tensor-reference/prime-development/README.md).
 
-Complete theorem replication, native Rust integration, general ell>1,
-formal verification and the asymptotic audit remain unresolved in the linked
-canonical problem. See the companion's requirement/status table.
+The native tensor implementation is now available on main; this companion is
+not its backend. The companion's general ell>1 case, independent cross-checks,
+formal verification and complete algorithm/complexity audit remain open. See the companion's requirement/status table.
 
-## Native reference scope
+## Native implementation
 
-The requested source is Akshima et al., *A Subexponential Time Algorithm for
-Elliptic Curve Discrete Logarithm*, v0.2 (October 29, 2026),
-[upstream revision 1ee44e5](https://github.com/bochum-crypto/subexponential-ecdl/tree/1ee44e562b1b9a50ea339f3b8f81112b5a24b96f).
-That revision contains only a PDF. This is an independent Rust implementation
-of its §3.2–3.5 reduction and Figure 2, not copied upstream code.
+The source is Akshima et al., *A Subexponential Time Algorithm for Elliptic
+Curve Discrete Logarithm*, v0.2,
+[pinned Bochum revision](https://github.com/bochum-crypto/subexponential-ecdl/tree/1ee44e562b1b9a50ea339f3b8f81112b5a24b96f).
+Upstream contains a PDF, with no executable implementation. This independent
+implementation follows §2, §3 and Figure 2. Its recursive backend follows
+Appendix D.1/D.4 of OpenAI's October 25 manuscript,
+[pinned revision](https://github.com/openai/math/tree/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026).
+The Bochum theorem is conditional on that external result; general correctness
+and the complexity proof have not received an independent audit here.
 
-| Requested requirement | Status | Evidence / remaining gap |
+| Requested component | Delivery | Validation boundary |
 | --- | --- | --- |
-| Add code to `isogeny-labs/crypto` and `isogeny-labs/cryptanalysis` | implemented | Public `hashed_ecdl` modules in both Rust APIs; byte-identical algorithm source |
-| Replicate affine-hashed factor bases | implemented, unit-tested | `HashBase::enumerate`; inverse-hash enumeration cross-checked against every point in the fixture group |
-| Replicate randomized relations and scalar extraction | implemented, unit-tested | `solve`, `solve_with_oracle`, `verify`; slot-specific columns, N+1 rows, modular dependency, nonzero V, scalar replay |
-| Compact low-degree Boolean tensor encoding | not implemented | Requires the arithmetic networks of §2 and composition of §3.3 |
-| Claimed fast Boolean tensor contraction | not implemented | Theorem 2 assumes external [Ope26] Theorem D.1; no executable solver is supplied by the linked repository |
-| Reproduce the subexponential complexity | unresolved | Neither enumeration nor passing toy tests establishes the conditional asymptotic bound |
+| Code in crypto and cryptanalysis | Identical `hashed-ecdl-tensor` sources, public Rust exports and native runner | Integration commands and actual outcomes in the tensor validation receipt |
+| Compact low-degree Boolean encoding | Ripple operations, two-stage Fourier integer products, canonical modular products, exceptional point-addition branches, affine hashes and cofactor clearing | Independent integer products through 513-bit words; degree/edge bounds; exhaustive small-curve pairs |
+| Exact tensor contraction | Unramified 2-adic ring; conditional-expectation packing; integral Cauchy deformation; weighted modes; implicit packet tensors; tapered Hermite recovery and depth-first recursion | Exact ring/interpolation tests; forced small recursion versus independent direct contraction; retained entries preserve creation precision |
+| Full relation reduction | Inverse-hash bases, deterministic tensor witnesses, N+1 relations, slot-specific columns, modular dependency, V=0 retries and scalar replay | Full tiny known-answer pipeline; cofactor projection; certificate corruption controls |
+| General field/subgroup inputs | Arbitrary-precision integers, exact AKS primality, Tonelli–Shanks and certified full cardinality c*r | Explicit resource limits; fixed-cofactor asymptotics only; no deployed-size run |
+| Conditional asymptotic claim | Source algorithm transcribed, including its admission guards | Not independently proved or measured; no performance conclusion |
 
-## Using the code
+## Use the tensor API
 
-In crypto:
+In crypto the API is `crypto_lib::cryptanalysis::hashed_ecdl::tensor`; in
+cryptanalysis it is `cryptanalysis::hashed_ecdl::tensor`. Both also depend on
+the standalone `hashed_ecdl_tensor` crate. The earlier bounded `hashed_ecdl`
+API remains available for comparison; its generic residual-enumeration oracle
+and field bound are not the implementation of the tensor path.
 
 ```rust
-use crypto_lib::cryptanalysis::hashed_ecdl::{Curve, Config, solve, verify};
+use crypto_lib::cryptanalysis::hashed_ecdl::tensor::{
+    arithmetic::OsRandom, contraction::Counter, curve::{Curve, Point},
+    reduction::{self, Config}, Limits, Meter,
+};
 
-let curve = Curve::new(211, 0, 7, 199)?;
-let generator = Some((3, 33));
-let target = curve.mul(generator, 42)?; // Public known-answer fixture only.
-let certificate = solve(&curve, generator, target, &Config::default())?;
-assert_eq!(certificate.scalar, 42);
-verify(&curve, generator, target, &certificate)?;
-# Ok::<(), crypto_lib::cryptanalysis::hashed_ecdl::Error>(())
+let mut meter = Meter::new(Limits { steps: 2_000_000_000, ..Limits::default() });
+let generator = Point::Affine { x: 0u8.into(), y: 1u8.into() };
+let curve = Curve::new(5u8.into(), 2u8.into(), 1u8.into(), 7u8.into(),
+                       generator, &mut meter)?;
+let target = Point::Affine { x: 3u8.into(), y: 2u8.into() }; // Public fixture.
+let mut counter = Counter::default();
+let certificate = reduction::solve(&curve, &target, &Config::for_curve(&curve),
+    &mut OsRandom, &mut counter, &mut meter)?;
+reduction::verify(&curve, &target, &certificate, &mut meter)?;
+assert_eq!(certificate.scalar, 4u8.into());
+# Ok::<(), crypto_lib::cryptanalysis::hashed_ecdl::tensor::Error>(())
 ```
 
-In cryptanalysis, import `cryptanalysis::hashed_ecdl` instead. This addition is
-in its Rust API; the existing C ABI, Python and Go APIs are unchanged.
+`Curve::with_cofactor` accepts a certified full cardinality c*r, prime r>c,
+and a nonzero r-torsion generator. A unique Hasse-interval multiple certifies
+cardinality when possible; ambiguous cases are counted exactly under the same
+meter. For fixed c the ambiguity is confined to a finite parameter range.
+The encoder projects free Si to Ai=[c]Si; assignment counts can include several
+Si preimages, while witnesses still project exactly onto subgroup decompositions.
 
-The generator and target are public points. The oracle never receives the
-known scalar, generator, or query coefficients. Every decomposition is checked
-for membership in each slot and for its group sum before entering the matrix.
-The certificate contains the successful trial's hash seeds, relations and row
-dependency. Replay rebuilds the bases and matrix, verifies each relation and
-nonzero dependency, checks V != 0 and recomputes `[scalar]P = Q`. Trial/attempt
-counters describe execution but are not attestations of discarded trial history.
+`GraphBuilder` accepts arbitrary Boolean predicates, including parallel edges
+and isolated scalar vertices. `Counter::count` returns an exact integer.
+`Counter::witness` fixes interface bits through exact prefix counts, using at
+most one initial count and one count per unfixed interface bit. `None` means
+an exact zero contraction. `Error::Limit` means unknown, never unsatisfiable.
 
-## Implemented choices and differences from the theorem
+## Run and replay from files
 
-- `enc(A) = 2x + (y mod 2)`; independent affine hashes over the first prime
-  s in `[2p,4p]`. Multiplier is nonzero. Enumeration inverts each hash for
-  `0 <= t < tau`, decodes the point and sorts by coordinates.
-- The default tau is the integer ceiling of
-  `s * max(ceil(r^(1/m)), 10m) / (r-1)`. There are no floating-point roots.
-  If tau exceeds s, an error is returned rather than silently clamping it.
-  Explicit tau overrides are allowed for tiny correctness fixtures and have
-  no claimed coverage guarantee.
-- The default `Enumerate` oracle exhausts the first m-1 bases and tests the
-  final group residual in the last base. It is **generic decomposition
-  (bounded by sqrt(r); cannot beat rho)** under the repository's track naming,
-  not the algebraic/tensor track. Its per-query work can grow as the product
-  of m-1 base sizes. It does not implement or emulate the claimed fast solver.
-- Each `(slot, point)` is a separate column, including points shared by slots.
-  Each trial collects N+1 relations or stops after 20(N+1) targets. Elimination
-  depends on incidence rows only, not on u or v; V=0 restarts with fresh bases.
-- Seeded SplitMix64 with rejection sampling supplies reproducible public
-  fixtures; it is not a cryptographic RNG or a proof of genuinely independent
-  uniform sampling. No probabilistic runtime guarantee is asserted for it.
-- Cofactor one and full odd-prime cardinality are checked by exact counting.
-  Supported p is at most 65521, m is 2 through 8, dense columns at most 512,
-  and fresh trials at most 1000. Default limits are 16 trials and 1,000,000
-  first-m-1 tuples per query. Work exhaustion is `Error::Limit`, never
-  `None`/a false nonexistence certificate.
-- Small-curve arithmetic is intentionally self-contained so the identical
-  module can be checked without the large root crate. A square-root lookup
-  table is constructed in O(p) time/space, unlike the paper's polynomial-in-b
-  square-root routine. General-size fields and fixed-cofactor support remain
-  absent. The independent C-arithmetic cross-check is in cryptanalysis's
-  Rust library tests.
-
-## Validation
-
-These are development correctness tests, not experimental performance evidence.
-No IC/rho comparison, speed ratio, benchmark, deployed-curve run, or asymptotic
-verification was performed. No new mathematical theorem or Lean proof is claimed.
-
-The shared module can be checked in isolation without the full dependency tree:
+From crypto:
 
 ```sh
-# crypto checkout
-rustc --edition 2021 --test -O -D warnings -D missing-docs \
-  src/cryptanalysis/hashed_ecdl.rs -o /tmp/hashed-ecdl-tests
-/tmp/hashed-ecdl-tests
-
-# cryptanalysis checkout, including independent C arithmetic
-cargo test --release --manifest-path bindings/rust/Cargo.toml -p cryptanalysis --lib
-cargo clippy --manifest-path bindings/rust/Cargo.toml -p cryptanalysis --lib -- -D warnings
+cargo run --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml -- \
+  solve crates/hashed-ecdl-tensor/examples/fixture.json /tmp/hashed-ecdl-receipt.json
+cargo run --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml -- \
+  verify /tmp/hashed-ecdl-receipt.json
 ```
 
-Nine shared tests include complete-group hash enumeration, every target in a
-199-point group for the decomposition oracle, all logarithms in a 19-point
-group for full recovery, seeded two- and three-slot solves, deterministic
-reproduction, invalid curve orders and coordinates, overlapping columns,
-uninformative V=0 extraction, empty bases, exhausted work/trials, malicious
-oracle output and corrupted certificate rejection. See the PR validation
-section for actual integration commands and outcomes on the published head.
+In cryptanalysis replace the manifest and fixture prefixes with
+`bindings/rust/hashed-ecdl-tensor/`. The output path must be new: the runner
+never silently replaces an existing receipt. Inputs use unsigned decimal
+strings; a null target is the identity. Omit `fixture_seed` for OS randomness.
+The seeded generator is only a reproducibility aid for public correctness
+fixtures; it does not satisfy ideal independent-uniform runtime hypotheses.
 
-## Literature and prior-code review
+Receipts contain the input problem, successful trial's seeds, relations, row
+dependency, scalar and informational execution counters. Big integers inside
+the certificate use num-bigint's JSON array of little-endian 32-bit limbs;
+problem coordinates and `scalar_decimal` are decimal strings. Replay ignores
+the counters, rebuilds bases, verifies every group equation and slot-column
+cancellation, requires a nonzero dependency and V, and checks [scalar]P=Q.
+No receipt attests discarded trials or execution time.
 
-The primary source's abstract, Theorems 2 and 4, §3.2–3.5, and limitations
-explicitly make the asymptotic conclusion conditional and disclaim a concrete
-improved attack on deployed curves. The linked repository supplies neither the
-external [Ope26] manuscript nor a solver; that theorem was not independently
-verified here. This is an implementation gap, not a proof of impossibility.
+Standalone replay obtains root-extraction randomness from the OS.
+`verify_with_rng` accepts an explicit source for reproducible public fixtures;
+the solver forwards its caller's source through self-verification. Selecting
+a nonresidue changes work, not the canonical decoded point. Fixed test seeds
+are not used internally for production replay.
 
-Checked local prior work: crypto's
-`research/notes/index-calculus/RESEARCH_IC_BOUNDARY_LEDGER.md`,
-`src/cryptanalysis/semaev_decomp.rs`, `aps_single_relation.rs`, and
-cryptanalysis's `bindings/rust/cryptanalysis/src/index_calculus.rs`. The latter
-implements multiplicative finite-field IC, not this elliptic-curve reduction.
-The ECDLP atlas was searched for tensor, subexponential and randomly hashed
-factor-base leads; no exact tensor-reduction entry matched. Its
-`ic-engine/LEAD-ICE-first-fall-degree-assumptions.yaml` was read as adjacent
-prior work; this addition makes no first-fall-degree or novelty claim.
+## Algorithm and finite-size behavior
 
-[Pipeline diagram](hashed-ecdl.svg) · [PDF report](hashed-ecdl.pdf) ·
-[open implementation obstruction](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md).
-The IC scoreboard, progress timeline, leaderboard and curve diagrams stay
-unchanged: this code supplies no admitted measurement or new mathematical
-curve/route finding to plot. No frozen evidence or ledger row is modified.
+The encoder uses the paper's integer J/k/L parameters, canonical words over
+Z/(2^J+1), two-stage Fourier transforms, unique carry witnesses and checked
+quotient identities. Hash tests use coordinate bits and modular arithmetic,
+without consulting enumerated base lists. Point predicates include identity,
+inverse, ordinary addition and doubling. Boolean zero tests replace the
+source's inverse witnesses without changing the stated edge/degree orders.
+
+Contraction subdivides edges to obtain a bipartite network and uses precision
+E+1 to recover an integer count. The recursive branch checks the source's
+u/a/L/D/degree/shrink conditions. Packet entries are evaluated at their
+immutable creation precision before canonical lifting. Mode tuples are
+streamed; child tensors materialize their local description instead of
+composing callbacks to old tensor evaluators. Hermite reconstruction uses
+exact rational arithmetic and rejects a nonunit final denominator.
+
+The literal source constants make the recursive admission threshold
+astronomical: u=floor(ceil(log2(s))/131072), with s the source's network-size
+parameter here, is zero for all practically
+addressable networks. The implementation therefore uses the manuscript's
+finite-size fallback there. For built-in encodings, private unique-witness
+metadata permits exact enumeration over free input bits rather than every
+auxiliary edge. Arbitrary caller predicates cannot attach these hints.
+`last_backend` reports `Direct`, `Functional` or `Recursive`; a functional
+leaf is not reported as a measured fast contraction. Forced small-recursion
+tests bypass size/shrink admission only and compare the same kernel, modes,
+packet entries and reconstruction with independent direct contraction.
+
+Factor-base enumeration inverts each t<tau and uses Tonelli–Shanks, with no
+root table. Prime certification follows
+[AKS §4](https://www.cse.iitk.ac.in/users/manindra/algebra/primality_v6.pdf),
+with trial division only below a fixed 16-bit prefix. `Config::for_curve`
+chooses the integer version of ceil((log2(b))^(1/4)), at least two.
+Default tau is a conservative integer-root version of Lemma 13, clamped to s
+when finite-size coverage hypotheses fail. An override need not satisfy the
+coverage theorem. Each trial makes at most 20(N+1) attempts, and V=0 restarts.
+Decomposition and dependency selection receive no u/v information.
+
+Steps, vector lengths, integer precision, columns and trials all have explicit
+caller bounds. These may stop a run far below cryptographic sizes. The code
+does not certify the source theorem, reproduce its general asymptotic bound,
+or establish a security consequence for any deployed curve. No performance
+experiment, IC/rho comparison, new mathematical result or Lean proof is claimed.
+
+## Validation and provenance
+
+Use the [tensor validation receipt](hashed-ecdl-tensor-validation.md) for
+current commands, source hashes, failures and outcomes. The
+[first reference receipt](hashed-ecdl-validation.md) records the earlier
+bounded implementation and capped broad regression; its historical hashes
+and outcomes remain unchanged. The completion table is in
+[the workstream record](hashed-ecdl-completion.md).
+
+Prior review included crypto's index-calculus boundary ledger,
+`semaev_decomp.rs`, `aps_single_relation.rs`, cryptanalysis's multiplicative
+finite-field IC binding and the ECDLP atlas's first-fall-degree lead. None
+supplied this exact BTN implementation. No novelty claim follows from that
+search. The external manuscript and AKS primary source were read before
+implementing their algorithms.
+
+During implementation, a separate binary-curve bucket/cutset prototype landed
+in crypto at `research/btn_ecdl_20261029/`. Its README and contractor were reviewed at
+main `57bb19c48`; it uses a quadratic multiplier and a stand-in contractor,
+with an untested GPU path. Its files and historical outputs are preserved.
+The native prime-field Fourier and Appendix D.4 implementation here does not
+execute or extend that Python path.
+
+[Diagram](hashed-ecdl.svg) · [PDF](hashed-ecdl.pdf) ·
+[remaining independent-audit obligations](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md).
+No scoreboard, leaderboard, frozen run, curve route or measurement gate is
+changed: this addition supplies development correctness evidence only.

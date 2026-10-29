@@ -1,39 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="470" viewBox="0 0 920 470">
-<rect width="920" height="470" fill="#fff"/>
-<g font-family="sans-serif" fill="#142d41">
-<text x="30" y="35" font-size="23" font-weight="bold">Hashed ECDL: implemented reduction and open tensor backend</text>
-<text x="30" y="62" font-size="15">Bochum v0.2, Figure 2 · correctness reference only · no speed measurements</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+<rect width="960" height="620" fill="#fff"/>
+<g font-family="DejaVu Sans, sans-serif" fill="#142d41">
+<text x="28" y="34" font-size="24" font-weight="bold">Hashed ECDL: native encoder, contraction and reduction</text>
+<text x="28" y="60" font-size="15">Bochum v0.2 + pinned Appendix D.4 · development correctness controls</text>
 <g fill="#e9f3f7" stroke="#27627d" stroke-width="2">
-<rect x="30" y="100" width="255" height="110" rx="8"/>
-<rect x="332" y="100" width="255" height="110" rx="8"/>
-<rect x="635" y="100" width="255" height="110" rx="8"/>
-<rect x="332" y="300" width="255" height="110" rx="8"/>
+<rect x="28" y="92" width="270" height="112" rx="8"/>
+<rect x="345" y="92" width="270" height="112" rx="8"/>
+<rect x="662" y="92" width="270" height="112" rx="8"/>
+<rect x="28" y="263" width="270" height="120" rx="8"/>
+<rect x="345" y="263" width="270" height="120" rx="8"/>
+<rect x="662" y="263" width="270" height="120" rx="8"/>
 </g>
-<g font-size="17" text-anchor="middle">
-<text x="157" y="130" font-weight="bold">1. Affine hash bases</text>
-<text x="157" y="158">enc(A) = 2x + parity(y)</text>
-<text x="157" y="186">Inverse-hash enumeration</text>
-<text x="459" y="130" font-weight="bold">2. Relations</text>
-<text x="459" y="158">[u]P + [v]Q = sum A_i</text>
-<text x="459" y="186">Check every witness</text>
-<text x="762" y="130" font-weight="bold">3. Cancel columns</text>
-<text x="762" y="158">N+1 rows; slots distinct</text>
-<text x="762" y="186">Nonzero dependency</text>
-<text x="459" y="330" font-weight="bold">4. Extract and replay</text>
-<text x="459" y="358">xi = -U/V mod r, V != 0</text>
-<text x="459" y="386">Verify [xi]P = Q</text>
+<g font-size="16" text-anchor="middle">
+<text x="163" y="122" font-weight="bold">1. Seeded affine bases</text>
+<text x="163" y="151">Invert hash; extract root</text>
+<text x="163" y="178">Separate column for each slot</text>
+<text x="480" y="122" font-weight="bold">2. Compact Boolean graph</text>
+<text x="480" y="151">Fourier integer products</text>
+<text x="480" y="178">Curve, hash and sum predicates</text>
+<text x="797" y="122" font-weight="bold">3. Exact contraction</text>
+<text x="797" y="151">Counts; prefix witnesses</text>
+<text x="797" y="178">Report the actual backend</text>
+<text x="163" y="295" font-weight="bold">6. Certificate replay</text>
+<text x="163" y="325">Group equations + hash bases</text>
+<text x="163" y="353">Verify [scalar]P = Q</text>
+<text x="480" y="295" font-weight="bold">5. Modular cancellation</text>
+<text x="480" y="325">N+1 rows; matrix kernel</text>
+<text x="480" y="353">scalar = -U/V; retry if V = 0</text>
+<text x="797" y="295" font-weight="bold">4. Verified decompositions</text>
+<text x="797" y="325">Target and seed only</text>
+<text x="797" y="353">No u/v supplied to search</text>
 </g>
 <g stroke="#27627d" stroke-width="2" fill="none">
-<path d="M285 155h47m-9 -5 9 5 -9 5M587 155h48m-9 -5 9 5 -9 5"/>
-<path d="M762 210v145H587m9 -5 -9 5 9 5"/>
+<path d="M298 148h47m-9 -5 9 5 -9 5M615 148h47m-9 -5 9 5 -9 5M797 204v59m-5 -9 5 9 5 -9"/>
+<path d="M662 323h-47m9 -5 -9 5 9 5M345 323h-47m9 -5 -9 5 9 5"/>
 </g>
-<rect x="30" y="285" width="255" height="125" rx="8" fill="#fff5e8" stroke="#9a5d16" stroke-width="2" stroke-dasharray="7 4"/>
-<g font-size="16" text-anchor="middle" fill="#75420c">
-<text x="157" y="314" font-weight="bold">Open implementation gap</text>
-<text x="157" y="341">Compact arithmetic BTN</text>
-<text x="157" y="366">Fast exact contraction</text>
-<text x="157" y="391">Default uses enumeration</text>
+<rect x="28" y="430" width="904" height="148" rx="8" fill="#fff5e8" stroke="#9a5d16" stroke-width="2"/>
+<g fill="#75420c" font-size="16">
+<text x="48" y="459" font-weight="bold">Implemented recursive path</text>
+<text x="48" y="487">Exact 2-adic ring → packet packing → Cauchy modes → child tensors → Hermite recovery</text>
+<text x="48" y="518">Source guards force exact finite-size fallback on practical graphs; tests also force small recursion.</text>
+<text x="48" y="549">Creation precision is retained. Resource exhaustion means unknown. No speed or security claim.</text>
 </g>
-<text x="30" y="451" font-size="14">Bounds: p &lt;= 65521, cofactor 1, prime order, m = 2..8, at most 512 dense columns.</text>
+<text x="28" y="607" font-size="14">Arbitrary-precision inputs · fixed-cofactor extension · explicit work policies · independent algebraic replay</text>
 </g>
 </svg>
