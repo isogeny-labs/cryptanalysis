@@ -1,6 +1,30 @@
 # Hashed-factor-base ECDL reference
 
-2026-10-29. **Partial replication: executable reduction, no fast tensor solver.**
+2026-10-29. **Native Rust reference: executable reduction; the native tensor
+backend and conditional asymptotic replication remain open.**
+
+## Scalar tensor companion
+
+An independently executable [scalar BTN reference](../experiments/hashed-ecdl-tensor-reference/README.md)
+now accompanies this bounded native reduction. It implements the ell=1
+Cauchy/mode/Hermite recursion and coordinate constraints using compact integer
+Fourier multiplication and a tested binary-polynomial Fourier adaptation.
+The companion is Python and is not wired into the Rust API below.
+
+Its 28 development correctness tests include exact rational checks,
+independent direct contractions, two recursion levels and an OpenSSL arithmetic
+comparison. The recorded ECC2K-130 graph has 2,694,680 edges and maximum degree
+1,032. The paper's default u_0 is zero at this size; the attempt selects exact
+summation and exceeds its configured work budget, without finding a challenge
+relation or scalar. Historical timings are retrospective local diagnostics,
+not admitted speed measurements. The small indexed tensor fixture is explicitly
+separate from the coordinate construction and has no compact-encoding guarantee.
+
+Full prime-field replication, native Rust integration, general ell>1,
+formal verification and the asymptotic audit remain unresolved in the linked
+canonical problem. See the companion's requirement/status table.
+
+## Native reference scope
 
 The requested source is Akshima et al., *A Subexponential Time Algorithm for
 Elliptic Curve Discrete Logarithm*, v0.2 (October 29, 2026),

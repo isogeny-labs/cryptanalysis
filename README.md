@@ -3,7 +3,10 @@
 The Rust API includes a [hashed-factor-base elliptic-curve index-calculus
 reference](docs/hashed-ecdl.md) for the Bochum v0.2 paper. This is a bounded
 correctness implementation; the compact tensor encoder and fast contraction
-solver remain unimplemented.
+solver remain unimplemented in that Rust API. The separately scoped
+[scalar tensor companion](experiments/hashed-ecdl-tensor-reference/README.md)
+provides an executable reference and binary-field coordinate encoder, without
+a demonstrated practical speedup or recovered ECC2K-130 scalar.
 
 A fast, self-contained C11 library of discrete-logarithm algorithms with
 Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust

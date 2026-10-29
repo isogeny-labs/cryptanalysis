@@ -1,0 +1,48 @@
+# Scalar tensor companion import checks — 2026-10-29
+
+This is a repository-import and development-correctness receipt, not a
+performance experiment or an IC/rho comparison.
+
+- Destination: `isogeny-labs/cryptanalysis`, with a paired documentation update
+  in `isogeny-labs/crypto`.
+- Cryptanalysis base: `9bd6f84bbf8742da38cbd9147ef48bb2d6abb387`.
+- Crypto base: `d0ddf51582cadec6e9b39a4b0f4a376e5dab8535`.
+- The existing Rust implementation and its API declarations are unchanged.
+- Local Python unit check: 28 passed, zero failed, including the OpenSSL
+  comparisons, recursive contractions and coordinate witness checks.
+- The original source snapshots and compact result records are retained in
+  the study with their original, narrower interpretation. No new experiment
+  or admitted speed measurement was run during this import.
+
+Reproduction:
+
+```sh
+cd experiments/hashed-ecdl-tensor-reference
+python -m unittest -v test_ecc2k test_tensor_contraction test_tensor_encoding
+```
+
+The complete current import-check output is retained separately as
+`import-unit-tests.txt` in the study. Historical `results/test-results.txt`
+is not overwritten.
+
+## Remaining validation and setup gaps
+
+- The default-policy challenge attempt remains a budget-exhausted exact leaf;
+  it is not a recovered relation or scalar and not a mathematical obstruction.
+- The general ell>1 case, native Rust tensor integration, full prime-field
+  composition, formal verification and an independent asymptotic audit remain
+  open. The current scalar/bin-field prototype does not discharge them.
+- `cargo test --release --lib` was attempted in crypto and exited 127 because
+  Cargo is not installed in this execution environment. No Rust tests or
+  full-library pass are claimed for this documentation-only companion update.
+- Conductor is absent (127). The documented warn-and-allow setup fallback in
+  `crypto:docs/CONDUCTOR.md` applies; no shared reservation is claimed.
+- Two sparse-checkout setup commands used an unsupported option or the wrong
+  working directory. They were corrected from the repository root. These
+  setup errors did not change source, tests or frozen outputs.
+- An initial PR was opened against the wrong personal paper fork. It was
+  closed without merging. The user then identified these two Isogeny Labs
+  repositories; the corrected changes are scoped here.
+
+Hosted CI, review and merge status belong to the corresponding PRs and are
+not asserted by this local receipt.
