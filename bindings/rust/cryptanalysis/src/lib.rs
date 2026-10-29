@@ -107,6 +107,43 @@ mod tests {
     }
 
     #[test]
+    fn tensor_curve_agrees_with_independent_c_arithmetic() {
+        use hashed_ecdl::tensor::{curve, BigUint, Limits, Meter};
+        let mut meter = Meter::new(Limits::default());
+        let generator = curve::Point::Affine {
+            x: 3u8.into(),
+            y: 33u8.into(),
+        };
+        let tensor_curve = curve::Curve::new(
+            211u16.into(),
+            0u8.into(),
+            7u8.into(),
+            199u8.into(),
+            generator.clone(),
+            &mut meter,
+        )
+        .unwrap();
+        let group = Group::ec(211, 0, 7, 199).unwrap();
+        for scalar in 0..199u64 {
+            let point = group.mul(&Elem::ec(3, 33), scalar).unwrap();
+            let expected = if point.is_infinity() {
+                curve::Point::Infinity
+            } else {
+                curve::Point::Affine {
+                    x: BigUint::from(point.x()),
+                    y: BigUint::from(point.y()),
+                }
+            };
+            assert_eq!(
+                tensor_curve
+                    .mul(&generator, &scalar.into(), &mut meter)
+                    .unwrap(),
+                expected
+            );
+        }
+    }
+
+    #[test]
     fn version_is_semver_like() {
         let v = version();
         assert_eq!(v.split('.').count(), 3, "{v}");
