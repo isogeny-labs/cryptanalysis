@@ -145,7 +145,7 @@ jobs:
       - name: Install the exact symbolic verifier dependency
         run: python3 -m pip install sympy==1.14.0
       - name: Refusal controls
-        run: python3 -m unittest discover -s tools/ci -p test_quartic_certificates.py -v
+        run: python3 -m unittest discover -s tools/ci -p 'test_quartic*.py' -v
       - name: Retain the exact verified checkpoint for independent replay
         uses: actions/upload-artifact@v4
         with:
