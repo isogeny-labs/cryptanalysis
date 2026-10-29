@@ -1,0 +1,83 @@
+{
+  "schema": "known-label-native-evidence/v1",
+  "head": "0b353c9bf78e9340c3c100b71175127bb7d91d44",
+  "checkout_merge": "6d2e09d15",
+  "base": "47865467f9cc28c316a12ddab017017047815f19",
+  "source_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+  "run": 40741310214,
+  "job": 123003327508,
+  "attempt": 1,
+  "status": "passed",
+  "log_sha256": "0a51cc321892cdba1a9254f22078c25b1183bf42ebfaa03745ba7810650d2f4d",
+  "selected_lines": [
+    {
+      "line": 1355,
+      "text": "2026-10-28T18:02:29.2680642Z HEAD is now at 6d2e09d15 Merge 0b353c9bf78e9340c3c100b71175127bb7d91d44 into 47865467f9cc28c316a12ddab017017047815f19"
+    },
+    {
+      "line": 1689,
+      "text": "2026-10-28T18:09:18.5764940Z 'KnownLabelLeads.triangle_identity' depends on axioms: [propext]"
+    },
+    {
+      "line": 1690,
+      "text": "2026-10-28T18:09:18.5766811Z 'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "line": 1691,
+      "text": "2026-10-28T18:09:18.5768613Z 'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "line": 1692,
+      "text": "2026-10-28T18:09:18.5770254Z 'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]"
+    },
+    {
+      "line": 1693,
+      "text": "2026-10-28T18:09:18.5771405Z ok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]"
+    },
+    {
+      "line": 1694,
+      "text": "2026-10-28T18:09:18.5773116Z ok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]"
+    },
+    {
+      "line": 1695,
+      "text": "2026-10-28T18:09:18.5774137Z ok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]"
+    },
+    {
+      "line": 1696,
+      "text": "2026-10-28T18:09:18.5774926Z ok    KnownLabelLeads.triangle_identity  [propext]"
+    },
+    {
+      "line": 1697,
+      "text": "2026-10-28T18:09:18.5775656Z audited 4 theorems; 0 failing, 0 trusted"
+    },
+    {
+      "line": 1698,
+      "text": "2026-10-28T18:09:18.5776974Z known-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems"
+    },
+    {
+      "line": 2036,
+      "text": "2026-10-28T18:16:18.2027420Z native added theorem modules checked: 70"
+    },
+    {
+      "line": 2050,
+      "text": "2026-10-28T18:16:21.7602566Z PASS native control: Positive"
+    },
+    {
+      "line": 2053,
+      "text": "2026-10-28T18:16:24.5409359Z PASS native control: Assumed"
+    },
+    {
+      "line": 2056,
+      "text": "2026-10-28T18:16:27.3685355Z PASS native control: Empty"
+    },
+    {
+      "line": 2060,
+      "text": "2026-10-28T18:16:28.2850398Z PASS native control: IllTyped"
+    }
+  ],
+  "limits": [
+    "Trusted Lean/Lake toolchain and dependencies; no independent lean4checker receipt.",
+    "No elaborated-type printout in this job; independent source-type review only.",
+    "This receipt binds the old producer and base; it does not prove later merged revisions."
+  ]
+}
