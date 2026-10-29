@@ -25,10 +25,13 @@ def main():
     assert "Build completed successfully" in output
     names = ("relation_reduces", "no_dependent_lift", "all_compatible_lifts_blocked",
              "dotHom_surjective", "zero_relation_fiber_count", "zeroFiber_count",
-             "bounded_relation_union_count")
+             "bounded_relation_union_count", "intCast_ne_zero_of_natAbs_lt",
+             "bounded_intVector_cast_nonzero", "integer_candidate_union_count",
+             "xedniSampleMap_involutive", "xedniSampleMap_bijective")
     for name in names:
         line = next(line for line in output.splitlines() if f"XedniObstruction.{name}' depends on axioms:" in line)
-        assert "[propext, Classical.choice, Quot.sound]" in line
+        assert line.endswith("[propext, Classical.choice, Quot.sound]") or line.endswith(
+            "[propext, Quot.sound]")
     assert "sorryAx" not in output
     print(json.dumps({"status": "PASS", "checked_theorems": len(names),
                       "source_sha256": sha(FORMAL / "XedniObstruction.lean")}, sort_keys=True))

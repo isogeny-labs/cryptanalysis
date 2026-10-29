@@ -1,6 +1,8 @@
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.GroupTheory.Index
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 The deterministic reduction-map obstruction behind the bounded-coefficient
@@ -63,6 +65,53 @@ theorem all_compatible_lifts_blocked (red : H →+ G)
   have hred : Relation reduced coeff := by
     simpa only [Relation, hcompat] using relation_reduces red lifts coeff hrel
   exact no_small_reduced_relation coeff hnon hsmall hred
+
+end XedniObstruction
+
+namespace XedniObstruction
+
+variable {r q : ℕ}
+
+/-- An integer of magnitude below the modulus cannot vanish on reduction
+unless it was already zero. -/
+theorem intCast_ne_zero_of_natAbs_lt {a : ℤ}
+    (ha : a ≠ 0) (hbound : a.natAbs < q) : (a : ZMod q) ≠ 0 := by
+  intro hcast
+  have hd : (q : ℤ) ∣ a := (ZMod.intCast_zmod_eq_zero_iff_dvd a q).mp hcast
+  have hlt : a.natAbs < (q : ℤ).natAbs := by simpa using hbound
+  exact ha (Int.eq_zero_of_dvd_of_natAbs_lt_natAbs hd hlt)
+
+/-- Every nontrivial coefficient vector in a box of radius below `q`
+remains nonzero when passed to the subgroup scalar field. -/
+theorem bounded_intVector_cast_nonzero (bound : ℕ) (hbound : bound < q)
+    (coeff : Fin r → ℤ) (hnon : Nontrivial coeff)
+    (hsmall : Bounded bound coeff) :
+    ∃ i, (coeff i : ZMod q) ≠ 0 := by
+  obtain ⟨i, hi⟩ := hnon
+  exact ⟨i, intCast_ne_zero_of_natAbs_lt hi
+    (lt_of_le_of_lt (hsmall i) hbound)⟩
+
+noncomputable def reducedCandidates (candidates : Finset (Fin r → ℤ)) :
+    Finset (Fin r → ZMod q) := by
+  classical
+  exact candidates.image (fun coeff i => (coeff i : ZMod q))
+
+/-- With fixed public coefficients `s` and fixed target scalar `w`, choosing
+the `t` coefficients uniformly is equivalent to choosing the reduced points
+uniformly: the map is its own inverse. -/
+def xedniSampleMap {F : Type*} [Field F]
+    (s : Fin r → F) (w : F) (t : Fin r → F) : Fin r → F :=
+  fun i => s i * w - t i
+
+theorem xedniSampleMap_involutive {F : Type*} [Field F]
+    (s : Fin r → F) (w : F) : Function.Involutive (xedniSampleMap s w) := by
+  intro t
+  funext i
+  simp [xedniSampleMap]
+
+theorem xedniSampleMap_bijective {F : Type*} [Field F]
+    (s : Fin r → F) (w : F) : Function.Bijective (xedniSampleMap s w) :=
+  (xedniSampleMap_involutive s w).bijective
 
 end XedniObstruction
 
@@ -131,6 +180,33 @@ theorem bounded_relation_union_count [Fintype F] [DecidableEq F]
 
 end XedniObstruction
 
+namespace XedniObstruction
+
+variable {r q : ℕ}
+
+/-- A finite list of bounded nontrivial integer relations inherits the exact
+finite-field union bound after reduction modulo a prime order `q`. -/
+theorem integer_candidate_union_count [Fact q.Prime]
+    (bound : ℕ) (hbound : bound < q)
+    (candidates : Finset (Fin r → ℤ))
+    (hvalid : ∀ coeff ∈ candidates,
+      Nontrivial coeff ∧ Bounded bound coeff) :
+    ((reducedCandidates (q := q) candidates).biUnion (zeroFiber (F := ZMod q))).card *
+      Nat.card (ZMod q) ≤
+      candidates.card * Nat.card (Fin r → ZMod q) := by
+  classical
+  have hnon : ∀ coeff ∈ reducedCandidates (q := q) candidates,
+      ∃ i, coeff i ≠ (0 : ZMod q) := by
+    intro coeff hc
+    obtain ⟨a, ha, rfl⟩ := Finset.mem_image.mp hc
+    exact bounded_intVector_cast_nonzero bound hbound a
+      (hvalid a ha).1 (hvalid a ha).2
+  have hcount := bounded_relation_union_count (F := ZMod q)
+    (reducedCandidates (q := q) candidates) hnon
+  exact hcount.trans (Nat.mul_le_mul_right _ Finset.card_image_le)
+
+end XedniObstruction
+
 #print axioms XedniObstruction.relation_reduces
 #print axioms XedniObstruction.no_dependent_lift
 #print axioms XedniObstruction.all_compatible_lifts_blocked
@@ -138,3 +214,8 @@ end XedniObstruction
 #print axioms XedniObstruction.zero_relation_fiber_count
 #print axioms XedniObstruction.zeroFiber_count
 #print axioms XedniObstruction.bounded_relation_union_count
+#print axioms XedniObstruction.intCast_ne_zero_of_natAbs_lt
+#print axioms XedniObstruction.bounded_intVector_cast_nonzero
+#print axioms XedniObstruction.integer_candidate_union_count
+#print axioms XedniObstruction.xedniSampleMap_involutive
+#print axioms XedniObstruction.xedniSampleMap_bijective
