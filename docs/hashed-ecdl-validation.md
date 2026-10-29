@@ -39,3 +39,19 @@ The fast tensor encoder/backend, general-size fields, fixed cofactors and
 the paper's conditional asymptotic conclusion remain unresolved. See the
 [implementation documentation](hashed-ecdl.md) and canonical problem link there.
 CI and merge status are reported by the PR, not asserted by this local receipt.
+
+## Packaging correction after PR #1296
+
+PR #1296 merged on 2026-10-29. A final cross-commit whitespace check showed
+that the first pre-add working-tree check had not covered new untracked files:
+the generated PDF was heuristically treated as text, and the test transcript
+ended with a blank line. Declare this one PDF path binary in `.gitattributes`
+and remove only that final transcript blank line. The algorithm, PDF bytes and
+test result lines are unchanged; the original transcript remains in commit
+`ff11fd7a653f064d1fc6f85b62f5b8a7494caa14`.
+
+`cargo clippy --manifest-path bindings/rust/Cargo.toml -p cryptanalysis
+--all-targets -- -D warnings` also passed (exit 0), including the test targets.
+The packaging-only follow-up needs no repeated arithmetic tests. Text diff
+checks pass with the PDF correctly classified. Paired implementation:
+[crypto #2878](https://github.com/isogeny-labs/crypto/pull/2878).
