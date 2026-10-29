@@ -9,8 +9,8 @@ Host: Linux x86-64 cloud container. Rust 1.99.1
 `58cf8f9c3`, with additional Rust 1.78.0 checks. All fixtures are public.
 The crate has declared MSRV 1.78. The standalone and binding sources are
 byte-identical. The [source manifest](hashed-ecdl-tensor-sources.sha256)
-covers both manifests and all Rust source files; its SHA-256 is
-`cedddbec1c6348e5592da9ef0e490c68b90d457e865a4778cd1dbd33f70486e3`.
+covers Cargo metadata and all Rust source files; its SHA-256 is
+`cc78ba18a3253daa59b202008cd50d7d7551a38e7c39debf26eb68bd5e737480`.
 The bounded compatibility/export module now hashes to
 `21c5f18243bcd0a8d8dd722d254d48ff9ba2b2bd29941c1b27acf568d63c45e1`.
 
@@ -28,6 +28,7 @@ metadata; the mirrored standalone lock is also committed for reproducibility.
 | Command / check | Observed outcome |
 | --- | --- |
 | `cargo test --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml` | 25 passed; native runner and doc targets also compiled; [compact transcript](hashed-ecdl-tensor-tests.txt) |
+| `cargo test --locked --release --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor -p cryptanalysis` after adding coupled controls | 27 core, 20 binding-unit, 19 FFI-parity and 14 documentation tests passed; [full selected-package transcript](hashed-ecdl-tensor-full-tests.txt) |
 | `cargo clippy --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings` | exit 0 |
 | `cargo fmt --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --check` | exit 0 |
 | `cargo +1.78.0 check --locked --manifest-path bindings/rust/Cargo.toml -p cryptanalysis -p hashed-ecdl-tensor --all-targets` | exit 0; both the crate and Rust/C integration compile on the declared floor |
@@ -39,17 +40,25 @@ metadata; the mirrored standalone lock is also committed for reproducibility.
 | Native runner solve, seeded fixture 1, p=5, order=7, explicit two-billion-step policy | scalar 4; 13 successful-trial relations; actual backend `Functional`, zero recursive calls |
 | Native runner replay, separate process | exit 0; independently verified scalar 4 |
 | Change receipt scalar to 5 and replay | exit 1, `verification failed: certificate extraction` |
-| `diff -ru --exclude=target` between the mirrored crate trees; source-manifest checks in both directories | identical; all 15 hashes pass |
+| `diff -ru --exclude=target` between the mirrored crate trees; source-manifest checks in both directories | identical; all 16 hashes pass |
 | New post-merge workflow, pinned repository actionlint wrapper | exit 0 |
-| Typst 0.15 report build and all-page visual inspection | 3 pages; diagram spacing corrected and rechecked |
+| Typst 0.15 report build and all-page visual inspection | 3 pages, 64238 bytes; all pages inspected; unused italic font subset removed to satisfy the existing 64 KiB store limit |
 | Uncapped root `cargo test --release --lib` | restarted after execution-environment interruption; no complete-root pass claimed in this snapshot; final status belongs to the paired crypto PR |
 | Maintained root strict clippy, existing `scripts/clippy-maintained.sh` | exit 0 after restoring sparse compile inputs; includes the compatibility module's MSRV fix |
-| Binding-core debug tests | interrupted by execution-environment restart before completion; no full debug pass claimed; final executable-source release panel passed25/25 |
+| Binding-core debug tests | interrupted by execution-environment restart before completion; no full debug pass claimed; complete selected-package release panel passed |
 
 The compact core transcript preserves the complete final executable-source
 panel with the terminal separator blank line omitted. The subsequent
 cofactor-formula correction changes documentation only; strict Rustdoc was
 rerun. It does not change arithmetic, encodings, counters or the solver.
+
+Two subsequent test-only controls exercise correlated ports, quadratic mode
+terms and two recursion levels. They are behind `cfg(test)` and change no
+library execution path. The full selected-package release panel then passed
+27 core tests. Its source manifest is the current 16-file manifest above;
+the first 25-test snapshot used the 15-file manifest
+`cedddbec1c6348e5592da9ef0e490c68b90d457e865a4778cd1dbd33f70486e3`.
+Strict lint and Rust 1.78 all-target compilation also passed with the new tests.
 
 The [native fixture receipt](hashed-ecdl-tensor-fixture.json) has SHA-256
 `54f3a724feb70fc1cc7465371caf43a1c93578b168dec5487bed94729d42f63c`.
@@ -78,7 +87,19 @@ The source's normal admission guards select finite-size fallback on practical
 graphs; the runner reports that fact. Counters are diagnostics, not calibrated
 costs and not attestations of discarded-trial history.
 
+The extended controls add two correlated ports at one vertex, degree-two
+incoming modes with mixed coefficient 2, and a second recursive layer that
+retains the first packet's creation precision. All agree with direct counts.
+
 ## Failures and setup retained
+
+- Implementation PR1298 merged at 2026-10-29T22:23:42Z as
+  `7e58a9036ce9f839903f963a9a91d85a03cb925a`. Its store job flagged the
+  74400-byte report. The corrected Typst source uses a roman paper-title
+  citation, removing an unused italic font subset; the PDF is now 64238 bytes.
+  The typography-only candidate's extracted text matched the old report after
+  whitespace normalization. The final report also documents the added tests.
+  No source text was compressed, policy threshold changed or waiver applied.
 
 - The first inner Clippy MSRV attribute was not accepted in ordinary Rust;
   supported outer annotations preserve the old compiler and fix the two

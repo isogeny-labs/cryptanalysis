@@ -6,8 +6,8 @@
 
 The compact encoder, exact contraction machinery and Figure 2 relation
 reduction are implemented in both isogeny-labs/crypto and cryptanalysis.
-The source is Akshima et al., _A Subexponential Time Algorithm for Elliptic
-Curve Discrete Logarithm_, v0.2, revision
+The source is Akshima et al., A Subexponential Time Algorithm for Elliptic
+Curve Discrete Logarithm, v0.2, revision
 #text(size: 8pt)[1ee44e562b1b9a50ea339f3b8f81112b5a24b96f].
 #link("https://github.com/bochum-crypto/subexponential-ecdl")[Bochum source].
 The external contraction algorithm is OpenAI's October 25 manuscript,
@@ -70,7 +70,7 @@ Execution counters are informational and do not attest discarded trials.
 
 #pagebreak()
 == Validation and limits
-The 25 core controls include arbitrary graph truth tables and prefix witnesses,
+The 27 core controls include arbitrary graph truth tables and prefix witnesses,
 parallel edges, exact ring units/interpolation, creation-precision retention,
 Cauchy kernels, tapered Hermite recovery, weighted tuples and a full forced
 packet recursion versus independent direct contraction. Arithmetic products
@@ -78,6 +78,9 @@ are checked independently through 513-bit input words, with explicit edge and
 degree inequalities. Point networks cover every pair on two small curves,
 including infinity, inverses, doubling and two-torsion. Hash enumeration is
 compared with a subgroup scan.
+
+Coupled controls check parallel ports and quadratic modes, then retain an old
+packet's creation precision through two recursion levels, against direct counts.
 
 The full tiny relation pipeline recovers a public scalar and rejects corrupted
 relations, dependencies and scalar certificates. Cofactor projection is checked
