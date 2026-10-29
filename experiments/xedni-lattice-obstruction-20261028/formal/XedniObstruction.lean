@@ -3,6 +3,7 @@ import Mathlib.GroupTheory.Index
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Field.ZMod
+import Mathlib.Data.Finset.Preimage
 
 /-!
 The deterministic reduction-map obstruction behind the bounded-coefficient
@@ -205,6 +206,33 @@ theorem integer_candidate_union_count [Fact q.Prime]
     (reducedCandidates (q := q) candidates) hnon
   exact hcount.trans (Nat.mul_le_mul_right _ Finset.card_image_le)
 
+/-- The full-support sampling law transports each finite event without
+changing its number of samples. -/
+theorem xedni_sample_event_card {F : Type*} [Field F] [Fintype F]
+    (s : Fin r → F) (w : F) (event : Finset (Fin r → F)) :
+    (event.preimage (xedniSampleMap s w)
+      (xedniSampleMap_bijective s w).1.injOn).card = event.card := by
+  classical
+  rw [Finset.card_preimage]
+  simp [Function.Surjective.range_eq (xedniSampleMap_bijective s w).2]
+
+/-- For fixed public coefficients and target scalar, a finite family of
+bounded integer relations occupies at most `|candidates|/q` of the uniform
+sample space. The count uses the exact preimage event under xedni sampling. -/
+theorem sampled_integer_candidate_union_count [Fact q.Prime]
+    (bound : ℕ) (hbound : bound < q)
+    (candidates : Finset (Fin r → ℤ))
+    (hvalid : ∀ coeff ∈ candidates,
+      Nontrivial coeff ∧ Bounded bound coeff)
+    (s : Fin r → ZMod q) (w : ZMod q) :
+    (((reducedCandidates (q := q) candidates).biUnion
+      (zeroFiber (F := ZMod q))).preimage (xedniSampleMap s w)
+      (xedniSampleMap_bijective s w).1.injOn).card *
+        Nat.card (ZMod q) ≤
+      candidates.card * Nat.card (Fin r → ZMod q) := by
+  rw [xedni_sample_event_card]
+  exact integer_candidate_union_count bound hbound candidates hvalid
+
 end XedniObstruction
 
 #print axioms XedniObstruction.relation_reduces
@@ -219,3 +247,5 @@ end XedniObstruction
 #print axioms XedniObstruction.integer_candidate_union_count
 #print axioms XedniObstruction.xedniSampleMap_involutive
 #print axioms XedniObstruction.xedniSampleMap_bijective
+#print axioms XedniObstruction.xedni_sample_event_card
+#print axioms XedniObstruction.sampled_integer_candidate_union_count
