@@ -53,3 +53,21 @@ Fresh published-head CI and review.
 ### Errors
 
 The first text-based SVG conversion fell back to an unembedded Helvetica font and rendered plot labels poorly in the local viewer. Explicitly sharing the embedded report font corrected the rendering and reduced file sizes further.
+
+## 12:03 UTC — Preserve frozen Sage paths in a disposable checked-runtime replay
+
+### What was done
+
+Added four original-worker modes for the resolvent and sqrt(2) producers/checkers. Each stages the verified frozen inputs into their recorded absolute namespace inside an offline disposable container, removes only old outputs of the selected worker, invokes the existing checked Sage release launcher, and records fresh output hashes, failures and process-group timeouts. All four real input preparations pass; 21 transport/refusal controls pass; all 1,404 input hashes are unchanged. No new Sage mathematical replay ran.
+
+### Decisions made
+
+Reuse the existing canonical-layout integer replay design and the accepted optimized Sage launcher described in AGENTS.md and scripts/sage_release.py. Require a digest-pinned operator-supplied accepted image and explicit correctness cap because the two original protocols contain no execution timeout. Preserve every protocol/source byte instead of rewriting absolute paths or resealing certificates.
+
+### Open threads
+
+Current-head CI and fresh review before merging PR #1293. No accepted Sage image is available locally; actual Sage execution remains unperformed. Reconcile original PR reviews using the exact scope of verified repairs, and retain the disclosed proof bridge problems as open.
+
+### Errors
+
+The prior portable helper handled only integer auditors and did not launch the original Sage workers. The dedicated helper closes the path/launch implementation gap without claiming those mathematical replays ran. Conductor is absent (127); scope was declared before edits.

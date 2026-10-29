@@ -16,6 +16,10 @@ python3 tools/ci/quartic_portable_replay.py --out /tmp/quartic-replay-new-run
 
 The output path must be new. Docker builds the pinned Python/SymPy verifier, then replays without network access, mounting the source read-only. The managed-cloud proxy CA is supplied as a build secret when configured. The 42 original scripts run only in the disposable historical layout.
 
+For the original resolvent and sqrt(2) Sage workers, use `tools/ci/quartic_sage_replay.py`. Its four modes are `resolvent-check`, `sqrt2-check`, `resolvent-producer` and `sqrt2-producer`. Supply `--out` as a new external directory, `--image` as an existing image pinned by its full `@sha256:` digest, `--sage-root` as the absolute in-image path to the accepted optimized Sage checkout, and an explicit `--timeout-seconds` correctness-replay cap. These two frozen protocols specify no execution timeout; the helper does not invent or reseal one. The container runs offline with a read-only source checkout, copies every verified input to the original `/Volumes/SSD990/cryptanalysis` namespace, removes only the selected worker's old outputs, and invokes `scripts/sage_release.py run --sage ... -- -python ...`. That launcher verifies the pinned Sage revision, installed accelerators and actual runtime imports before executing the original worker. Protocol paths, source code and hashes stay unchanged. A fresh attempt records stdout/stderr, timeout/failure and exported output hashes; exit zero without all expected new outputs fails. Apply the repository's experiment/backend rules before any producer campaign.
+
+All four actual frozen-worker preparations pass and all 1,404 source hashes remain unchanged. The expanded suite passes 21 transport/refusal controls, including synthetic worker failure, timeout and missing-output controls. No accepted Sage image is available in this repair environment, so no new Sage mathematical replay is claimed. The integer replay above remains the actual 42-auditor result. See [Sage preparation evidence](sage-replay-preparation.json) and [I/O controls](sage-io-controls.log).
+
 For field-index producer preparation:
 
 ```sh
