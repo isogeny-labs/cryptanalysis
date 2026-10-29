@@ -375,6 +375,45 @@ def check_known_label_project_inputs() -> None:
                 f"known-label project input changed: {name}")
 
 
+def collect_elaborated_types(path: str, names: frozenset[str],
+                             scratch: str, lean_path: str) -> str:
+    """Import the freshly built module and retain actual native type output.
+
+    Header checks establish output completeness, not semantic fidelity. The
+    frozen producer source is never edited to add printing commands.
+    """
+    parts = Path(path).with_suffix("").parts
+    require(parts and all(re.fullmatch(r"[A-Za-z0-9_-]+", p) for p in parts),
+            "invalid module path for type collection")
+    require(names and all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.]*", n) for n in names),
+            "invalid theorem names for type collection")
+    module = ".".join(f"«{part}»" for part in parts)
+    wrapper = (f"import {module}\n"
+               "set_option pp.universes true\n"
+               "set_option pp.explicit true\n"
+               "set_option pp.fullNames true\n" +
+               "".join(f"#check @{name}\n" for name in sorted(names)))
+    file = Path(scratch) / "CollectedTypes.lean"
+    file.write_text(wrapper)
+    env = {**os.environ, "LEAN_PATH": scratch + os.pathsep + lean_path}
+    result = run(["lean", str(file)], cwd=HECKE_CI, env=env)
+    found = re.findall(
+        r"^@?([A-Za-z_][A-Za-z0-9_.]*?)(?:\.\{[^}\n]+\})?\s*:\s*\S",
+        result.stdout, re.MULTILINE)
+    require(len(found) == len(names) and set(found) == names,
+            f"incomplete native elaborated types in {path}")
+    require(file.read_text() == wrapper, "type wrapper changed during collection")
+    print("BEGIN NATIVE ELABORATED TYPES", flush=True)
+    print(json.dumps({"module": path, "names": sorted(names),
+                      "wrapper_sha256": hashlib.sha256(wrapper.encode()).hexdigest(),
+                      "stdout_sha256": hashlib.sha256(result.stdout.encode()).hexdigest()}),
+          flush=True)
+    print(wrapper, end="", flush=True)
+    print(result.stdout, end="", flush=True)
+    print("END NATIVE ELABORATED TYPES", flush=True)
+    return result.stdout
+
+
 def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
                                label: str, exact_names: frozenset[str] | None = None,
                                expected_theorems: int | None = None) -> str:
@@ -429,6 +468,9 @@ def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
                     f"named theorems missing from module audit in {path}")
         print(f"{label} native audit: {path}: {len(requested)} declarations, "
               f"{summary[0]} theorems", flush=True)
+        require(digest(file) == expected, f"{label} source changed during audit: {path}")
+        if exact_names is not None:
+            collect_elaborated_types(path, exact_names, scratch, lean_path)
     require(digest(file) == expected, f"{label} source changed during audit: {path}")
     return expected
 

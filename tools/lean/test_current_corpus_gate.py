@@ -164,12 +164,15 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                                for n in self.names)
         self.audited = ("".join(f"ok    {n}  [propext, Quot.sound]\n" for n in self.names)
                         + "audited 4 theorems; 0 failing, 0 trusted\n")
+        # Synthetic headers test orchestration only; no proposition is verified.
+        self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in self.names)
 
     def check_with_outputs(self, printed=None, audited=None):
         with patch.object(gate, "run") as run, contextlib.redirect_stdout(io.StringIO()):
             run.side_effect = [
                 SimpleNamespace(stdout=self.printed if printed is None else printed),
                 SimpleNamespace(stdout=self.audited if audited is None else audited),
+                SimpleNamespace(stdout=self.types),
             ]
             value = gate.check_known_label_algebra("pinned-dependencies")
             calls = run.call_args_list
@@ -180,7 +183,7 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         value, calls = self.check_with_outputs()
         self.assertEqual(value, gate.KNOWN_LABEL_SHA256)
         self.assertEqual(self.source.read_bytes(), before)
-        build, audit = calls
+        build, audit, types = calls
         self.assertEqual(build.args[0][:5], ["lake", "env", "lean", "-R", str(self.root)])
         self.assertEqual(build.args[0][-1], str(self.source))
         output = Path(build.args[0][build.args[0].index("-o") + 1])
@@ -189,6 +192,9 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         self.assertEqual(audit.args[0][-1], gate.KNOWN_LABEL_SOURCE[:-5].replace("/", "."))
         self.assertIn("AuditHeckeAxioms.lean", audit.args[0][-2])
         self.assertTrue(audit.kwargs["env"]["LEAN_PATH"].endswith("pinned-dependencies"))
+        self.assertEqual(types.args[0][0], "lean")
+        self.assertEqual(Path(types.args[0][1]).name, "CollectedTypes.lean")
+        self.assertEqual(types.kwargs["env"]["LEAN_PATH"], audit.kwargs["env"]["LEAN_PATH"])
 
     def test_extra_audited_theorem_refused(self):
         audited = self.audited.replace("audited 4 theorems", "ok    Unexpected.extra  []\naudited 5 theorems")
@@ -272,15 +278,18 @@ class KnownLabelRegistrationControls(unittest.TestCase):
 
     def test_workspace_mutation_during_each_native_command_refused(self):
         for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
-            for phase in ("compile", "audit"):
+            for phase in ("compile", "audit", "types"):
                 with self.subTest(name=name, phase=phase):
                     file = self.project / name
                     original = file.read_bytes()
                     def runtime(args, **kwargs):
                         auditing = args[:2] == ["lean", "--run"]
-                        if auditing == (phase == "audit"):
+                        typing = args[0] == "lean" and not auditing
+                        current_phase = "audit" if auditing else "types" if typing else "compile"
+                        if current_phase == phase:
                             file.write_bytes(original + b"\n")
-                        return SimpleNamespace(stdout=self.audited if auditing else self.printed)
+                        return SimpleNamespace(stdout=self.audited if auditing else
+                                               self.types if typing else self.printed)
                     try:
                         with patch.object(gate, "run", side_effect=runtime), \
                              contextlib.redirect_stdout(io.StringIO()):
@@ -288,6 +297,63 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                                 gate.check_known_label_algebra("")
                     finally:
                         file.write_bytes(original)
+
+
+class ElaboratedTypeControls(unittest.TestCase):
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.names = gate.KNOWN_LABEL_THEOREMS
+        self.types = "".join(f"@{n}.{{u_1}} : Type u_1\n" for n in sorted(self.names))
+
+    def collect(self, output):
+        with patch.object(gate, "run", return_value=SimpleNamespace(stdout=output)), \
+             contextlib.redirect_stdout(io.StringIO()):
+            return gate.collect_elaborated_types(
+                gate.KNOWN_LABEL_SOURCE, self.names, self.scratch.name, "dependencies")
+
+    def test_wrapper_imports_compiled_original_and_prints_exact_names(self):
+        self.assertEqual(self.collect(self.types), self.types)
+        wrapper = (Path(self.scratch.name) / "CollectedTypes.lean").read_text()
+        self.assertTrue(wrapper.startswith(
+            "import «docs».«known-label-next-leads-20261028».«Algebra»\n"))
+        self.assertIn("set_option pp.fullNames true", wrapper)
+        self.assertEqual([line for line in wrapper.splitlines() if line.startswith("#check")],
+                         [f"#check @{n}" for n in sorted(self.names)])
+
+    def test_empty_missing_duplicate_and_wrong_namespace_outputs_refused(self):
+        lines = self.types.splitlines(keepends=True)
+        for output in ("", "".join(lines[:-1]), "".join(lines[:-1] + [lines[0]]),
+                       self.types.replace("KnownLabelLeads", "Other")):
+            with self.subTest(output=output), self.assertRaisesRegex(ValueError, "incomplete native"):
+                self.collect(output)
+
+    def test_empty_type_body_refused(self):
+        with self.assertRaisesRegex(ValueError, "incomplete native"):
+            self.collect("\n".join(f"@{n} :" for n in self.names))
+
+    def test_native_type_command_failure_propagates(self):
+        with patch.object(gate, "run", side_effect=ValueError("native type command failed")):
+            with self.assertRaisesRegex(ValueError, "native type command failed"):
+                gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE, self.names,
+                                             self.scratch.name, "dependencies")
+
+    def test_changed_wrapper_refused(self):
+        def native(args, **kwargs):
+            Path(args[-1]).write_text("#check True\n")
+            return SimpleNamespace(stdout=self.types)
+        with patch.object(gate, "run", side_effect=native):
+            with self.assertRaisesRegex(ValueError, "wrapper changed"):
+                gate.collect_elaborated_types(gate.KNOWN_LABEL_SOURCE, self.names,
+                                             self.scratch.name, "dependencies")
+
+    def test_unsafe_module_or_empty_names_refused_before_native(self):
+        for path, names in (("../escape.lean", self.names), (gate.KNOWN_LABEL_SOURCE, frozenset()),
+                            (gate.KNOWN_LABEL_SOURCE, frozenset({"x\n#check True"}))):
+            with self.subTest(path=path, names=names), patch.object(gate, "run") as native:
+                with self.assertRaisesRegex(ValueError, "invalid"):
+                    gate.collect_elaborated_types(path, names, self.scratch.name, "dependencies")
+                native.assert_not_called()
 
 
 if __name__ == "__main__":
