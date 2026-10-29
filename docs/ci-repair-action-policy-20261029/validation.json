@@ -29,8 +29,17 @@
     "clippy_warnings_denied": "pass"
   },
   "pending": [
-    "published-head hosted workflow validation",
-    "review and applicable current-head checks",
-    "audit remaining third-party setup references"
+    "published-head hosted validation and applicable current-head checks",
+    "review and guarded merge"
+  ],
+  "additional_active_workflows": [
+    "binary-genus2-cover.yml",
+    "certicom-devices.yml"
+  ],
+  "cache_replacement": "GitHub-owned actions/cache preserves Cargo registry/git caches and the selected workspace target directory.",
+  "active_workflow_audit": "All remaining third-party references in active definitions are verified Azure Helm setup; retired workflow definitions were audited by state and retained.",
+  "validation_limits": [
+    "Certicom CUDA compilation and real-device qualification require the existing hosted CI/device jobs; no hardware qualification is claimed locally.",
+    "Binary genus-two native and pinned Lean validation remain required on the published head."
   ]
 }
