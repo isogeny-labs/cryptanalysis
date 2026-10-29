@@ -24,6 +24,11 @@ REPOSITORY = gate.ROOT
 PROJECT = gate.HECKE_CI.relative_to(REPOSITORY)
 
 
+def fixture_object(args):
+    if "-o" in args:
+        Path(args[args.index("-o") + 1]).write_bytes(b"synthetic unit fixture, NOT Lean output")
+
+
 class QuarticRegistrationControls(unittest.TestCase):
     def setUp(self):
         self.scratch = tempfile.TemporaryDirectory()
@@ -31,6 +36,9 @@ class QuarticRegistrationControls(unittest.TestCase):
         self.root = Path(self.scratch.name)
         self.project = self.root / PROJECT
         self.project.mkdir(parents=True)
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPOSITORY / "tools/lean/AuditHeckeAxioms.lean", auditor)
         for name in ("lean-toolchain", "lakefile.toml", "lake-manifest.json"):
             shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
         self.manifest = self.root / "tools/ci/quartic_certificates.json"
@@ -128,8 +136,11 @@ class QuarticRegistrationControls(unittest.TestCase):
         audit = "\n".join(f"ok    KnownLabelLeads.{name}  [propext]" for name in names[:3])
         audit += "\naudited 3 theorems; 0 failing, 0 trusted\n"
         with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
-            run.side_effect = [type("Output", (), {"stdout": printed})(),
-                               type("Output", (), {"stdout": audit})()]
+            outputs = iter([printed, audit])
+            def runtime(args, **kwargs):
+                fixture_object(args)
+                return SimpleNamespace(stdout=next(outputs))
+            run.side_effect = runtime
             with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
                 gate.check_known_label_algebra("")
             self.assertEqual(run.call_count, 2)
@@ -153,6 +164,9 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         self.root = Path(self.scratch.name)
         self.project = self.root / PROJECT
         self.project.mkdir(parents=True)
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPOSITORY / "tools/lean/AuditHeckeAxioms.lean", auditor)
         for name in gate.KNOWN_LABEL_PROJECT_INPUTS:
             shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
         self.source = self.root / gate.KNOWN_LABEL_SOURCE
@@ -172,11 +186,12 @@ class KnownLabelRegistrationControls(unittest.TestCase):
 
     def check_with_outputs(self, printed=None, audited=None):
         with patch.object(gate, "run") as run, contextlib.redirect_stdout(io.StringIO()):
-            run.side_effect = [
-                SimpleNamespace(stdout=self.printed if printed is None else printed),
-                SimpleNamespace(stdout=self.audited if audited is None else audited),
-                SimpleNamespace(stdout=self.types),
-            ]
+            outputs = iter([self.printed if printed is None else printed,
+                            self.audited if audited is None else audited, self.types])
+            def runtime(args, **kwargs):
+                fixture_object(args)
+                return SimpleNamespace(stdout=next(outputs))
+            run.side_effect = runtime
             value = gate.check_known_label_algebra("pinned-dependencies")
             calls = run.call_args_list
         return value, calls
@@ -260,6 +275,7 @@ class KnownLabelRegistrationControls(unittest.TestCase):
 
     def test_source_mutation_during_audit_refused(self):
         def runtime(args, **kwargs):
+            fixture_object(args)
             if args[:2] == ["lean", "--run"]:
                 self.source.write_bytes(self.source.read_bytes() + b"\n")
                 return SimpleNamespace(stdout=self.audited)
@@ -267,6 +283,55 @@ class KnownLabelRegistrationControls(unittest.TestCase):
         with patch.object(gate, "run", side_effect=runtime), contextlib.redirect_stdout(io.StringIO()):
             with self.assertRaisesRegex(ValueError, "source changed during audit"):
                 gate.check_known_label_algebra("")
+
+    def test_missing_compiled_object_cannot_reuse_plausible_stdout(self):
+        with patch.object(gate, "run", return_value=SimpleNamespace(stdout=self.printed)):
+            with self.assertRaisesRegex(ValueError, "compiled object missing"):
+                gate.check_known_label_algebra("")
+
+    def test_auditor_change_refused_before_native(self):
+        auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+        auditor.write_bytes(auditor.read_bytes() + b"\n")
+        with patch.object(gate, "run") as native:
+            with self.assertRaisesRegex(ValueError, "runtime auditor changed"):
+                gate.check_known_label_algebra("")
+            native.assert_not_called()
+
+    def test_compiled_object_and_auditor_mutations_refused_at_phase_boundaries(self):
+        for phase in ("audit", "types"):
+            for target in ("object", "remove", "sidecar", "auditor", "snapshot"):
+                with self.subTest(phase=phase, target=target):
+                    auditor = self.root / "tools/lean/AuditHeckeAxioms.lean"
+                    original = auditor.read_bytes()
+                    compiled = None
+                    audit_snapshot = None
+                    def runtime(args, **kwargs):
+                        nonlocal compiled, audit_snapshot
+                        if "-o" in args:
+                            fixture_object(args)
+                            compiled = Path(args[args.index("-o") + 1])
+                            return SimpleNamespace(stdout=self.printed)
+                        auditing = args[:2] == ["lean", "--run"]
+                        if auditing:
+                            audit_snapshot = Path(args[2])
+                        if ("audit" if auditing else "types") == phase:
+                            if target == "object":
+                                compiled.write_bytes(b"replaced")
+                            elif target == "remove":
+                                compiled.unlink()
+                            elif target == "sidecar":
+                                compiled.with_name(compiled.name + ".private").write_bytes(b"added")
+                            elif target == "auditor":
+                                auditor.write_bytes(original + b"\n")
+                            else:
+                                audit_snapshot.write_bytes(original + b"\n")
+                        return SimpleNamespace(stdout=self.audited if auditing else self.types)
+                    try:
+                        with patch.object(gate, "run", side_effect=runtime), redirect_stdout(StringIO()):
+                            with self.assertRaisesRegex(ValueError, "compiled object|runtime auditor"):
+                                gate.check_known_label_algebra("")
+                    finally:
+                        auditor.write_bytes(original)
 
     def test_only_exact_added_path_has_new_dispatch(self):
         with patch.object(gate, "reviewed_quartic_sources", return_value={}), \
@@ -286,6 +351,7 @@ class KnownLabelRegistrationControls(unittest.TestCase):
                     file = self.project / name
                     original = file.read_bytes()
                     def runtime(args, **kwargs):
+                        fixture_object(args)
                         auditing = args[:2] == ["lean", "--run"]
                         typing = args[0] == "lean" and not auditing
                         current_phase = "audit" if auditing else "types" if typing else "compile"
