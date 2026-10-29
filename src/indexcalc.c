@@ -167,9 +167,12 @@ static int ic_sync_parent(const char *path)
     return ok;
 }
 
-static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
-                             rel_list *rels, uint8_t *complete, uint64_t *candidates)
+static FILE *ic_journal_open(const char *path, const ic_journal_header *want, rel_list *rels,
+                             uint8_t **complete_out, size_t complete_count, uint64_t *candidates)
 {
+    uint8_t *complete = calloc(complete_count, 1);
+    *complete_out = complete;
+    if (!complete) return NULL;
     FILE *f = fopen(path, "rb+");
     if (!f && errno == ENOENT) {
         int fd = open(path, O_RDWR | O_CREAT | O_EXCL, 0600);
@@ -198,8 +201,13 @@ static FILE *ic_journal_open(const char *path, const ic_journal_header *want,
             if (ftruncate(fileno(f), start) != 0) goto io_error;
             break;
         }
-        if (r.marker != UINT32_C(0x43493152) || r.index > 2 * want->C ||
-            r.count > 2 * want->C + 1 || complete[r.index]) {
+        if (r.marker != UINT32_C(0x43493152) || r.index >= complete_count ||
+            r.count > complete_count) {
+            ca_set_error("checkpoint contains an out-of-range sieve unit");
+            fclose(f);
+            return NULL;
+        }
+        if (complete[r.index]) {
             ca_set_error("checkpoint contains an invalid or duplicate sieve unit");
             fclose(f);
             return NULL;
@@ -615,24 +623,28 @@ static int rexp_snapshot_load(const char *path, const ic_rexp_header *want,
     }
     ic_rexp_header h;
     struct stat sb;
-    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
-             memcmp(h.magic, "CAICRX1", 8) == 0 &&
-             h.p == want->p && h.g == want->g && h.zeta == want->zeta &&
-             h.B == want->B && h.C == want->C && h.nfb == want->nfb &&
-             h.ncols == want->ncols && h.target == want->target &&
-             h.threads == want->threads && h.relation_size == sizeof(relation) &&
-             h.fb_hash == want->fb_hash && (!requested_seed || h.seed == want->seed) &&
-             h.seed != 0 && h.count >= 1 && h.elapsed_seconds >= 0 &&
-             isfinite(h.elapsed_seconds) &&
-             (uint64_t)h.count <= (uint64_t)h.target + 64 * (uint64_t)h.threads + 1 &&
-             fstat(fileno(f), &sb) == 0 && sb.st_size >= 0 &&
+    int ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, "CAICRX1", 8) == 0 &&
+             h.p == want->p && h.g == want->g && h.zeta == want->zeta && h.B == want->B &&
+             h.C == want->C && h.nfb == want->nfb && h.ncols == want->ncols &&
+             h.target == want->target && h.threads == want->threads &&
+             h.relation_size == sizeof(relation) && h.fb_hash == want->fb_hash &&
+             (!requested_seed || h.seed == want->seed) && h.seed != 0 && h.count >= 1 &&
+             h.elapsed_seconds >= 0 && isfinite(h.elapsed_seconds) && fstat(fileno(f), &sb) == 0 &&
+             sb.st_size >= 0 &&
              (uint64_t)sb.st_size == sizeof(h) + (uint64_t)h.count * sizeof(relation);
-    if (!ok) {
+    if (!ok || (uint64_t)h.count > (uint64_t)want->target + 64 * (uint64_t)want->threads + 1) {
         fclose(f);
         ca_set_error("random-exponent checkpoint identity or header mismatch");
         return -1;
     }
-    relation *saved = malloc((size_t)h.count * sizeof(*saved));
+    /* The checked file length, not a deserialized allocation size, owns the buffer. */
+    size_t saved_bytes = (size_t)((uint64_t)sb.st_size - sizeof(h));
+    if (saved_bytes / sizeof(relation) != h.count) {
+        fclose(f);
+        ca_set_error("random-exponent checkpoint payload is too large");
+        return -1;
+    }
+    relation *saved = malloc(saved_bytes);
     if (!saved) { fclose(f); return -2; }
     ok = fread(saved, sizeof(*saved), h.count, f) == h.count && fgetc(f) == EOF;
     fclose(f);
@@ -1105,12 +1117,6 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
         atomic_store(&s.candidates, 0);
         pthread_mutex_init(&s.lock, NULL);
         if (checkpoint_path) {
-            s.complete = calloc((size_t)2 * C + 1, 1);
-            if (!s.complete) {
-                pthread_mutex_destroy(&s.lock);
-                free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
-                return CA_ERR_NOMEM;
-            }
             ic_journal_header header = {0};
             memcpy(header.magic, "CAICJ1", 6);
             header.p = p; header.g = g; header.zeta = ctx->zeta;
@@ -1118,12 +1124,13 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             header.ncols = ncols; header.target = target;
             header.relation_size = sizeof(relation);
             uint64_t replay_candidates = 0;
-            s.journal = ic_journal_open(checkpoint_path, &header, &rels,
-                                        s.complete, &replay_candidates);
+            s.journal = ic_journal_open(checkpoint_path, &header, &rels, &s.complete,
+                                        (size_t)2 * C + 1, &replay_candidates);
             if (!s.journal) {
+                ca_status failure = s.complete ? CA_ERR_INVALID : CA_ERR_NOMEM;
                 free(s.complete); pthread_mutex_destroy(&s.lock);
                 free(tids); free(fb_log2); free(rels.r); ca_ic_free(ctx);
-                return CA_ERR_INVALID;
+                return failure;
             }
             atomic_store(&s.candidates, replay_candidates);
             for (uint32_t i = 0; i <= 2 * C; i++) s.completed += s.complete[i];

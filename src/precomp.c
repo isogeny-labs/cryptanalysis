@@ -512,13 +512,11 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
         return CA_ERR_INTERNAL;
     }
     pc_ckpt_header h;
-    int ok = fread(&h, sizeof(h), 1, f) == 1 &&
-        memcmp(h.magic, "CAPREPC1", 8) == 0 && h.version == 1 &&
-        h.ready <= 1 && h.identity == identity &&
-        (!requested_seed || h.seed == requested_seed) && h.seed != 0 &&
-        h.bloom_words == (bd->bloom ? bd->bloom->nwords : 0) &&
-        h.count <= SIZE_MAX / sizeof(pc_entry) &&
-        h.stored >= h.count && h.starts >= h.stored;
+    int ok = fread(&h, sizeof(h), 1, f) == 1 && memcmp(h.magic, "CAPREPC1", 8) == 0 &&
+             h.version == 1 && h.ready <= 1 && h.identity == identity &&
+             (!requested_seed || h.seed == requested_seed) && h.seed != 0 &&
+             h.bloom_words == (bd->bloom ? bd->bloom->nwords : 0) && h.stored >= h.count &&
+             h.starts >= h.stored;
     struct stat file_info;
     if (ok) {
         ok = fstat(fileno(f), &file_info) == 0 && file_info.st_size >= 0 &&
@@ -528,8 +526,20 @@ static ca_status pc_checkpoint_load(const char *path, pc_build *bd, pc_worker *w
              ((uint64_t)file_info.st_size - sizeof(h) -
               h.bloom_words * sizeof(uint64_t)) % sizeof(pc_entry) == 0;
     }
-    if (!ok) { fclose(f); ca_set_error("precomp checkpoint identity or header mismatch"); return CA_ERR_INVALID; }
-    pc_entry *entries = malloc((h.count ? h.count : 1) * sizeof(*entries));
+    if (!ok || h.count > SIZE_MAX / sizeof(pc_entry)) {
+        fclose(f);
+        ca_set_error("precomp checkpoint identity or header mismatch");
+        return CA_ERR_INVALID;
+    }
+    /* Header checks above bind this payload exactly to count and the live bloom size. */
+    size_t bloom_bytes = (bd->bloom ? bd->bloom->nwords : 0) * sizeof(uint64_t);
+    size_t entry_bytes = (size_t)((uint64_t)file_info.st_size - sizeof(h) - bloom_bytes);
+    if (entry_bytes / sizeof(pc_entry) != h.count) {
+        fclose(f);
+        ca_set_error("precomp checkpoint payload is too large");
+        return CA_ERR_INVALID;
+    }
+    pc_entry *entries = malloc(entry_bytes ? entry_bytes : sizeof(*entries));
     if (!entries) { fclose(f); return CA_ERR_NOMEM; }
     ok = fread(entries, sizeof(*entries), h.count, f) == h.count;
     uint64_t expected = h.checksum;

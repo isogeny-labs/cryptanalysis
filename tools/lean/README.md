@@ -1,10 +1,11 @@
 # Current Lean corpus gate
 
-`current-corpus-gate.py` checks the 96 tracked research Lean files at the reviewed
-source versions. It binds 91 byte-identical files and their effective Lean pins
+`current-corpus-gate.py` preserves a frozen 97-source bridge and separately
+checks admitted additions. It binds 91 byte-identical files and their effective Lean pins
 to the [October 21 native build archive](../../reports/lean-evidence-audit-20261021/report.md),
 then rebuilds and audits the two changed orbit files, the new GLV theorem,
-the fixed cubic-gluing certificate, and the CM degree-partition arithmetic.
+the fixed cubic-gluing certificate, the CM degree-partition arithmetic, and
+the PQC modular-arithmetic assay.
 The latter two are partial finite proofs, not formalizations of their full
 geometric interpretations.
 The gate's own fixture and audit sources under `tools/lean/` are checked by
@@ -25,6 +26,45 @@ The [workflow](../../.github/workflows/lean-proof-gate.yml) runs on Lean changes
 Any new or changed source outside the reviewed set fails until it receives new
 native evidence and a reviewed gate update.
 
+## Known-label proposed algebra source
+
+At main `47865467f9cc28c316a12ddab017017047815f19`, the tracked research set
+contains 167 Lean files: the frozen 97, 68 Hecke additions, the Hasse-square
+module, and [Algebra.lean](../../docs/known-label-next-leads-20261028/Algebra.lean).
+That count is a source inventory, not a semantic proof-coverage measure.
+The [original checks](../../docs/known-label-next-leads-20261028/CHECKS.json)
+explicitly record that the last source was unbuilt. They remain unchanged.
+
+The gate now attempts this exact source SHA-256:
+`d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d`.
+It uses Lean `leanprover/lean4:v4.35.0-rc4` and Mathlib
+`021c46bdd042f67b538b9f9871d556a93713a9a9` through the existing
+`experiments/hecke-432-formal-ci-20261025` project. All three project input
+files are hash-bound independently of the historical producer report.
+
+| Declaration in `KnownLabelLeads` | Statement scope |
+| --- | --- |
+| `triangle_identity` | `2*a = (a+b) - (b+c) + (c+a)` |
+| `signed_second_moment` | `(a+b-c)^2 - (a^2+b^2-c^2) = 2*(a-c)*(b-c)` |
+| `signed_third_moment` | `-(a+b-c)^3 + 3*(a+b-c)*(a^2+b^2-c^2) - 2*(a^3+b^3-c^3) = 6*c*(a-c)*(b-c)` |
+| `positive_pair_product` | `2*a*b = (a+b-c)^2 - (a^2+b^2-c^2) + 2*c*(a+b-c)` |
+
+Every statement quantifies over arbitrary `a b c : K` with `[CommRing K]`.
+The gate compiles original bytes into an isolated temporary module, requires
+all four fully qualified native axiom printouts, and invokes
+`AuditHeckeAxioms.lean` on the module. The latter enumerates every non-internal
+theorem in that module and accepts only `propext`, `Classical.choice`, and
+`Quot.sound` as transitive axioms. It rejects an empty or failing audit and
+requires the four named theorems to occur in its output. Source hashes are
+checked before and after compilation/audit.
+
+These ring identities do not formalize an elliptic-group interpretation,
+graph-label recovery (including invertibility assumptions), a probability
+theorem, or a performance result. The local Python refusal controls mock
+compiler output and establish gate behavior only. A passing native hosted
+run at the exact PR head is still required; see the
+[open admission record](../../problems/lean-corpus-known-label-admission.md).
+
 The older `proof-gate.sh` is used only for explicit standalone positive and
 negative [fixtures](selftest/run.sh). Its automatic target discovery was removed:
 it cannot build repository files that import local modules before their
@@ -36,3 +76,13 @@ checks at the stated versions. It does not show that every Lean declaration's
 transitive axioms were exhaustively audited, that every statement faithfully models
 its research claim, that a historical experiment ran as reported, or that all
 historical claims have proofs.
+
+### Integration reconciliation (2026-10-29)
+
+The separate main-branch correction is documented in
+`docs/known-label-next-leads-20261028/CI_INTEGRATION.md`. Its requirement of
+exactly four audited theorems is retained alongside fully qualified theorem
+identity checks and before/after checks of all three pinned project inputs.
+All main-branch refusal cases remain tested through the final known-label route;
+neighboring documentation modules remain unreviewed and rejected. Historical
+producer reports and native receipts remain bound to their original revisions.

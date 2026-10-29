@@ -8,7 +8,9 @@ on:
       - '**/lean-toolchain'
       - '**/lakefile.toml'
       - '**/lakefile.lean'
+      - '**/lake-manifest.json'
       - 'tools/lean/**'
+      - 'tools/ci/quartic_certificates.json'
       - 'reports/lean-evidence-audit-20261021/evidence/corpus/**'
       - 'reports/lean-current-corpus-20261024/**'
       - 'reports/lean-current-corpus-20261025/**'
@@ -23,7 +25,9 @@ on:
       - '**/lean-toolchain'
       - '**/lakefile.toml'
       - '**/lakefile.lean'
+      - '**/lake-manifest.json'
       - 'tools/lean/**'
+      - 'tools/ci/quartic_certificates.json'
       - 'reports/lean-evidence-audit-20261021/evidence/corpus/**'
       - 'reports/lean-current-corpus-20261024/**'
       - 'reports/lean-current-corpus-20261025/**'
@@ -55,6 +59,8 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Exercise positive and negative proof fixtures
         run: tools/lean/selftest/run.sh
+      - name: Refuse changed quartic sources and build pins
+        run: python3 tools/lean/test_current_corpus_gate.py
       - name: Detect Hecke theorem sources
         id: hecke
         run: |
@@ -83,5 +89,8 @@ jobs:
         run: |
           cd experiments/hecke-432-formal-ci-20261025
           lake exe cache get
-      - name: Check frozen corpus and build new Hecke theorem modules
+      - name: Check frozen corpus and build admitted theorem modules
         run: python3 tools/lean/current-corpus-gate.py --check-receipt reports/lean-current-corpus-20261025-main-update/receipt.json
+      - name: Check exhaustive Hecke audit refusal controls
+        if: steps.hecke.outputs.present == 'true'
+        run: python3 tools/lean/hecke-audit-selftest.py

@@ -1,0 +1,325 @@
+{
+  "all_native_build_and_audit_outputs_mocked": true,
+  "cases": [
+    {
+      "case": "baseline",
+      "decision": "accepted",
+      "module_command_observations": [
+        {
+          "audited_module": "docs.known-label-next-leads-20261028.Algebra",
+          "path": "tmp/mathlib-corpus-qcfpgh6e/docs/known-label-next-leads-20261028/Algebra.olean",
+          "private_output_outside_fixture_root": true,
+          "private_search_prefix": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-298dc6/tmp/mathlib-corpus-qcfpgh6e",
+          "source_argument_is_original": true
+        }
+      ],
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "wrong_path",
+      "decision": "refused",
+      "error": "unreviewed Lean corpus addition: docs/known-label-next-leads-20261028/Other.lean",
+      "native_calls_mocked": [],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "changed_source_hash",
+      "decision": "refused",
+      "error": "known-label source changed: docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": false
+    },
+    {
+      "case": "wrong_printed_namespace",
+      "decision": "refused",
+      "error": "native theorem identities changed in docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "wrong_audited_namespace",
+      "decision": "refused",
+      "error": "named theorems missing from module audit in docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "empty_audit",
+      "decision": "refused",
+      "error": "incomplete exhaustive theorem audit in docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "zero_audit",
+      "decision": "refused",
+      "error": "incomplete exhaustive theorem audit in docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "nonstandard_printed_axiom",
+      "decision": "refused",
+      "error": "unexpected foundation in docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "native_auditor_nonzero",
+      "decision": "refused",
+      "error": "lean failed: audit failed",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "source_mutated_during_audit",
+      "decision": "refused",
+      "error": "known-label source changed during audit: docs/known-label-next-leads-20261028/Algebra.lean",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": false
+    },
+    {
+      "case": "prechanged_lean-toolchain",
+      "decision": "refused",
+      "error": "known-label project input changed: lean-toolchain",
+      "native_calls_mocked": [],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": false
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "lean-toolchain_mutated_during_build",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": false
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "lean-toolchain_mutated_during_audit",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": false
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "prechanged_lakefile.toml",
+      "decision": "refused",
+      "error": "known-label project input changed: lakefile.toml",
+      "native_calls_mocked": [],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": false,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "lakefile.toml_mutated_during_build",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": false,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "lakefile.toml_mutated_during_audit",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": false,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "prechanged_lake-manifest.json",
+      "decision": "refused",
+      "error": "known-label project input changed: lake-manifest.json",
+      "native_calls_mocked": [],
+      "project_hashes_match": {
+        "lake-manifest.json": false,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "source_hash_matches": true
+    },
+    {
+      "case": "lake-manifest.json_mutated_during_build",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": false,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "lake-manifest.json_mutated_during_audit",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": false,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "contradictory_stdout_from_untrusted_auditor",
+      "decision": "accepted",
+      "native_calls_mocked": [
+        "build",
+        "audit"
+      ],
+      "project_hashes_match": {
+        "lake-manifest.json": true,
+        "lakefile.toml": true,
+        "lean-toolchain": true
+      },
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "source_hash_matches": true
+    },
+    {
+      "case": "actual_nonzero_subprocess",
+      "decision": "refused",
+      "error": "/usr/bin/python3 failed: "
+    }
+  ],
+  "known_label_alone_satisfies_hecke_detector": false,
+  "native_lean_run": false,
+  "schema": "known-label-j3-diagnostic/v1",
+  "workflow_event_pattern_matches": {
+    "pull_request": {
+      "lake-manifest.json": [],
+      "lakefile.toml": [
+        "**/lakefile.toml"
+      ],
+      "lean-toolchain": [
+        "**/lean-toolchain"
+      ]
+    },
+    "push": {
+      "lake-manifest.json": [],
+      "lakefile.toml": [
+        "**/lakefile.toml"
+      ],
+      "lean-toolchain": [
+        "**/lean-toolchain"
+      ]
+    }
+  }
+}

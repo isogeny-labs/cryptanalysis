@@ -1,0 +1,99 @@
+{
+  "review_attestation": {
+    "task_id": "TASK-20261028-32bc7d",
+    "joints_owned": ["J1"],
+    "sources_read": [
+      "/home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md",
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json"
+    ],
+    "sources_read_details": [
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md",
+        "kind": "sole_supplied_input",
+        "sha256": "754c5ee3187316fff1a8efb9e39ad3d9cdcd1b1291ab771c02cb682e4a5323d3",
+        "operations": ["sha256sum", "cat"]
+      },
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+        "kind": "own_authored_artifact",
+        "operations": ["sha256sum"]
+      },
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+        "kind": "own_authored_artifact",
+        "operations": ["python3 -m json.tool", "sha256sum"]
+      },
+      {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json",
+        "kind": "own_authored_artifact_format_correction",
+        "operations": ["python3 -m json.tool", "sha256sum"]
+      }
+    ],
+    "read_sibling_reports": false,
+    "blind_from_respected": true,
+    "verdict": "holds",
+    "verdict_scope": "J1 only: the four universal identities. Unconditional cancellation of 2 or division/cancellation by (a-c)(b-c) is not endorsed; explicit failures and sufficient conditions are in report.md.",
+    "derived_results": ["2*a", "2*(a-c)*(b-c)", "6*c*(a-c)*(b-c)", "2*a*b"],
+    "commands": [
+      "sha256sum /home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md && cat /home/ec2-user/scratch/known-label-review-20261028/blind-input/brief.md",
+      "mkdir -p /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d",
+      "python3 -m json.tool /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json >/dev/null && sha256sum /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+      "sha256sum /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json && cat /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+      "python3 -m json.tool /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json >/dev/null && sha256sum /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json /home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json"
+    ],
+    "non_shell_file_operations": [
+      {
+        "tool": "apply_patch",
+        "operation": "create",
+        "paths": [
+          "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+          "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json"
+        ]
+      },
+      {
+        "tool": "apply_patch",
+        "operation": "create",
+        "paths": [
+          "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json"
+        ]
+      }
+    ],
+    "evidence_method": "Independent formal ring expansion and explicit counterexamples, written in ordinary mathematical notation; no proof assistant execution.",
+    "diagnostic_run": false,
+    "lean_or_mathlib_build_run": false,
+    "experiment_or_benchmark_run": false,
+    "cloud_action_taken": false,
+    "additional_agents_spawned": false,
+    "deviations": [],
+    "format_correction": {
+      "requested_by": "Archive TASK-20261028-871ca0 via coordinator",
+      "reason": "The pinned independence checker requires sources_read to contain nonempty path strings. This additive artifact moves the original rich read objects to sources_read_details, lists their exact paths in sources_read, and records the additional reads and commands for this correction.",
+      "scope": "Format only; no mathematical review, verdict, or joint ownership change. Original report.md and attestation.json are preserved byte-for-byte.",
+      "original_attestation": {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+        "sha256": "ee35e605dd06911dc41dcd5442589213481170bb884bb4bd22a88dd1464bb6a8"
+      },
+      "original_report": {
+        "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+        "sha256": "334f96b8d34620221a23fc00b8e98144d48fda87c9936e3a064d6e07bafbce74"
+      },
+      "additional_read_details": [
+        {
+          "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/report.md",
+          "operations": ["sha256sum before correction", "sha256sum after correction"]
+        },
+        {
+          "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation.json",
+          "operations": ["sha256sum before correction", "cat", "sha256sum after correction"]
+        },
+        {
+          "path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-32bc7d/attestation-checker.json",
+          "operations": ["python3 -m json.tool", "sha256sum"]
+        }
+      ],
+      "new_external_material_read": false
+    }
+  }
+}
