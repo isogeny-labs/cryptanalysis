@@ -17,3 +17,21 @@ Published-head CI, fresh PR review and guarded merge remain required. Then recon
 ### Errors
 
 Conductor is unavailable (127); scopes were reported before edits. The first portable container lacked SymPy, so its 13 import failures are preserved and the existing CI dependency is now explicitly pinned in the runtime. Four copied relative links in the new report summaries were rebased, and PDF fonts/heading flow were corrected after visual inspection. Original reports, receipts, attempts, caps and proofs were never rewritten.
+
+## 10:47 UTC — Render compact vector PDFs within the existing storage policy
+
+### What was done
+
+The hosted store check identified all 27 raster-image PDFs above the 64 KiB data-file threshold. Rebuilt the same report content using SVG vector drawings and editable plot text. All 27 PDFs now satisfy the existing threshold, with maximum 64,324 bytes. Text extraction has no missing glyphs; the updated chart/report rendering was visually inspected. All 1,404 original input hashes are unchanged.
+
+### Decisions made
+
+Preserve colocated report sources/PDFs using standard vector document rendering. The storage policy and exceptions are unchanged. The renderer uses svglib 1.5.1 with ReportLab and Matplotlib; numeric plot sources and statements are unchanged.
+
+### Open threads
+
+Published-head store/CI checks and final review before merge. Original stacked PRs still await review reconciliation.
+
+### Errors
+
+The first output format embedded raster diagrams and needlessly exceeded the storage limit. Retained that failed hosted check and corrected the output format; no gate was weakened or bypassed.
