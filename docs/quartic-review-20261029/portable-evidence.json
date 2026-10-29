@@ -1,0 +1,27 @@
+{
+  "frozen_inputs": 1404,
+  "frozen_inputs_verified_before_after": true,
+  "integer_auditors": 42,
+  "passed": 42,
+  "exit_code": 0,
+  "unit_controls": 13,
+  "actual_sage_producer_runs": 0,
+  "original_lean_sources_changed": 0,
+  "archives": [
+    {
+      "attempt": 1,
+      "path": "portable-replay-1.zip",
+      "bytes": 15040,
+      "sha256": "cbf6dd0f8fec33419337662ecb6c352e724225077275fcc3073c6a933bfda671",
+      "status": "missing-symbolic-dependency"
+    },
+    {
+      "attempt": 2,
+      "path": "portable-replay-2.zip",
+      "bytes": 14840,
+      "sha256": "a58bab8d62e5913b9e6d2c985643a17850bebf9f833c324720b61e23629750e5",
+      "status": "all-42-auditors-pass"
+    }
+  ],
+  "notes": "Attempt 1 used the plain Python base image and failed 13 imports for missing SymPy. Attempt 2 uses the CI-pinned SymPy 1.14.0 with hashed mpmath dependency in a content-tagged container built from the exact pinned Python base. Both records are retained."
+}
