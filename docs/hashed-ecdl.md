@@ -4,6 +4,36 @@
 pipeline are implemented in Rust in both repositories. Small-case correctness
 checks do not establish the manuscript's asymptotic bound or a practical speedup.
 
+## Scalar tensor companion
+
+
+An independently executable [scalar BTN reference](../experiments/hashed-ecdl-tensor-reference/README.md)
+accompanies the native implementation as a separately scoped development reference. It implements the ell=1
+Cauchy/mode/Hermite recursion and coordinate constraints using compact integer
+Fourier multiplication and a tested binary-polynomial Fourier adaptation.
+It now also includes official Certicom ECCp-131 parameters and prime-field
+coordinate constraints, hashed membership, relation collection and replay.
+The companion is Python and is not wired into the Rust API below.
+
+Its 39 development correctness tests include exact rational checks,
+independent direct contractions, two recursion levels and an OpenSSL arithmetic
+comparison. The recorded ECC2K-130 graph has 2,694,680 edges and maximum degree
+1,032. The paper's default u_0 is zero at this size; the attempt selects exact
+summation and exceeds its configured work budget, without finding a challenge
+relation or scalar. Historical timings are retrospective local diagnostics,
+not admitted speed measurements. The small indexed tensor fixture is explicitly
+separate from the coordinate construction and has no compact-encoding guarantee.
+
+The added ECCp-131 target graph has 1,564,506 edges and degree 1,032, and also
+selects u_0=0 and exceeds its exact-leaf budget. Sixteen published P/Q multiples
+match OpenSSL. See the separate [prime validation report](../experiments/hashed-ecdl-tensor-reference/prime-development/README.md).
+
+The native tensor implementation is now available on main; this companion is
+not its backend. The companion's general ell>1 case, independent cross-checks,
+formal verification and complete algorithm/complexity audit remain open. See the companion's requirement/status table.
+
+## Native implementation
+
 The source is Akshima et al., *A Subexponential Time Algorithm for Elliptic
 Curve Discrete Logarithm*, v0.2,
 [pinned Bochum revision](https://github.com/bochum-crypto/subexponential-ecdl/tree/1ee44e562b1b9a50ea339f3b8f81112b5a24b96f).

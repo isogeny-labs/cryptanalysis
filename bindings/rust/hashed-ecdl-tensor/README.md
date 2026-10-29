@@ -22,7 +22,7 @@ cargo run --locked --release -- verify /tmp/hashed-receipt.json
 The file runner uses decimal-string problem coordinates and an exclusive new
 output path. Omit the fixture seed for OS randomness. Certificates serialize
 large integers as little-endian 32-bit-limb arrays. Replay checks mathematics,
-not execution counters. All bundled examples are public tiny fixtures.
+not execution counters. All bundled examples are public inputs; the challenge example below is not a tiny fixture.
 
 Sources and implementation boundaries:
 [implementation report](https://github.com/isogeny-labs/crypto/blob/main/docs/hashed-ecdl.md),
@@ -31,3 +31,23 @@ Sources and implementation boundaries:
 
 This crate is mirrored in crypto and cryptanalysis. Its source files must
 remain byte-identical; the owning repositories have separate integration locks.
+
+
+## Certicom ECCp-131 input
+
+`examples/eccp131.json` contains the exact public prime-field challenge from
+[Certicom's curve list](https://www.certicom.com/en/curves-list). The official
+name is ECCp-131, rather than ECCp-130. It supplies the 131-bit field and
+subgroup order, cofactor one, generator P and published target Q. It has no
+known scalar and omits fixture_seed, so admitted random choices use the OS RNG.
+
+```sh
+cargo run --locked --release -- solve examples/eccp131.json /tmp/eccp131-receipt.json
+```
+
+The bundled input bounds work at 2,000,000 charged steps, 200,000 vector entries
+and 4,096 integer bits. An exhausted prime-certification, enumeration or tensor
+budget is an error with unknown result, not a solution or proof that no solution
+exists. These bounds do not make the challenge feasible. No ECCp-131 scalar
+has been recovered by the development checks. A successful receipt would need
+independent replay with the existing verify command.
