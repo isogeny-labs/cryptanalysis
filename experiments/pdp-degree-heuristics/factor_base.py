@@ -329,7 +329,7 @@ class FactorBase:
         keys: dict[int, int] = {}
         col_of = np.full(len(self.xs), -1, dtype=np.int64)
         coeff = np.zeros(len(self.xs), dtype=object)
-        lam = c.frobenius_eigenvalue() if self.frobenius_stable else None
+        lam = c.frobenius_eigenvalue() if self.frobenius_stable and c.frobenius_endo else None
         reps: list[tuple[int, int]] = []
         for i in range(len(self.xs)):
             if not self.usable[i]:
@@ -428,7 +428,7 @@ class FactorBase:
             "geometric_point_count": self.geometric_points,
             "actual_usable_point_count": self.usable_points,
             "strict_subgroup_point_count": self.strict_points,
-            "quotient_rule": "sign+frobenius" if self.frobenius_stable else "sign",
+            "quotient_rule": "sign+frobenius" if self.frobenius_stable and self.curve.frobenius_endo else "sign",
             "effective_columns": self.effective_columns,
         }
 

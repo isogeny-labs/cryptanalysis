@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bind the frozen Lean corpus and natively check admitted theorem modules.
 
-The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
+The October 21 corpus audit compiled 93 files. Its 97-file bridge remains
 byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
 files and the PQC assay are separately pinned. New Hecke modules use the
 pinned Mathlib workspace, including modules whose recorded build dependencies
@@ -31,6 +31,21 @@ CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
 HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
 HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+KNOWN_LABEL_SOURCE = "docs/known-label-next-leads-20261028/Algebra.lean"
+KNOWN_LABEL_SHA256 = "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
+KNOWN_LABEL_THEOREMS = frozenset({
+    "KnownLabelLeads.triangle_identity",
+    "KnownLabelLeads.signed_second_moment",
+    "KnownLabelLeads.signed_third_moment",
+    "KnownLabelLeads.positive_pair_product",
+})
+# These are the new check's inputs, not a claim about the producer's environment.
+# The original CHECKS.json explicitly says the proposed Lean source was unbuilt.
+KNOWN_LABEL_PROJECT_INPUTS = {
+    "lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+    "lakefile.toml": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+    "lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+}
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
@@ -337,18 +352,44 @@ def reviewed_quartic_sources() -> dict[str, str]:
 
 
 def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
-    """Compile original bytes, audit every requested declaration and all theorems."""
+    return check_pinned_mathlib_source(path, expected, lean_path,
+                                      label="reviewed quartic")
+
+
+def check_known_label_algebra(lean_path: str) -> str:
+    """Check the fixed proposed ring lemmas; no elliptic-group bridge is asserted."""
+    check_known_label_project_inputs()
+    checked = check_pinned_mathlib_source(
+        KNOWN_LABEL_SOURCE, KNOWN_LABEL_SHA256, lean_path,
+        label="known-label", exact_names=KNOWN_LABEL_THEOREMS,
+        expected_theorems=4)
+    check_known_label_project_inputs()
+    return checked
+
+
+def check_known_label_project_inputs() -> None:
+    """Bind workspace input bytes before and after the native commands."""
+    for name, expected in KNOWN_LABEL_PROJECT_INPUTS.items():
+        file = HECKE_CI / name
+        require(not file.is_symlink() and digest(file) == expected,
+                f"known-label project input changed: {name}")
+
+
+def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
+                               label: str, exact_names: frozenset[str] | None = None,
+                               expected_theorems: int | None = None) -> str:
+    """Compile original bytes; audit requested declarations and non-internal theorems."""
     file = ROOT / path
     require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
-            f"reviewed quartic source escapes repository: {path}")
-    require(digest(file) == expected, f"reviewed quartic source changed: {path}")
+            f"{label} source escapes repository: {path}")
+    require(digest(file) == expected, f"{label} source changed: {path}")
     source = file.read_text()
     require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
             f"forbidden proof escape in {path}")
     requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", source, re.MULTILINE)
     require(requested and len(requested) == len(set(requested)),
             f"missing or duplicate declaration audit in {path}")
-    with tempfile.TemporaryDirectory(prefix="quartic-corpus-") as scratch:
+    with tempfile.TemporaryDirectory(prefix="mathlib-corpus-") as scratch:
         output = Path(scratch) / Path(path).with_suffix(".olean")
         output.parent.mkdir(parents=True)
         result = run(["lake", "env", "lean", "-R", str(ROOT), "-o", str(output),
@@ -362,6 +403,9 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
                 {name.rsplit(".", 1)[-1] for name in names} ==
                 {name.rsplit(".", 1)[-1] for name in requested},
                 f"incomplete native declaration audit in {path}")
+        if exact_names is not None:
+            require(len(names) == len(exact_names) and set(names) == exact_names,
+                    f"native theorem identities changed in {path}")
         require(all({a.strip() for a in axs.split(",") if a.strip()} <=
                     {"propext", "Classical.choice", "Quot.sound"}
                     for _, axs in printed), f"unexpected foundation in {path}")
@@ -375,9 +419,17 @@ def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
         require(len(summary) == 1 and
                 len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == int(summary[0]),
                 f"incomplete exhaustive theorem audit in {path}")
-        print(f"quartic native audit: {path}: {len(requested)} declarations, "
+        if expected_theorems is not None:
+            require(len(requested) == expected_theorems and
+                    int(summary[0]) == expected_theorems,
+                    f"reviewed theorem count changed in {path}")
+        if exact_names is not None:
+            audited_names = set(re.findall(r"^ok    (\S+)  \[", audit.stdout, re.MULTILINE))
+            require(exact_names <= audited_names,
+                    f"named theorems missing from module audit in {path}")
+        print(f"{label} native audit: {path}: {len(requested)} declarations, "
               f"{summary[0]} theorems", flush=True)
-    require(digest(file) == expected, f"quartic source changed during audit: {path}")
+    require(digest(file) == expected, f"{label} source changed during audit: {path}")
     return expected
 
 
@@ -396,6 +448,9 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
     lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
     checked = {}
     for path in sorted(paths):
+        if path == KNOWN_LABEL_SOURCE:
+            checked[path] = check_known_label_algebra(lean_path)
+            continue
         if path in reviewed:
             checked[path] = check_reviewed_quartic(path, reviewed[path], lean_path)
             continue
