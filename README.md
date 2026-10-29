@@ -1,9 +1,9 @@
 # cryptanalysis
 
-The Rust API includes a [hashed-factor-base elliptic-curve index-calculus
-reference](docs/hashed-ecdl.md) for the Bochum v0.2 paper. This is a bounded
-correctness implementation; the compact tensor encoder and fast contraction
-solver remain unimplemented.
+The Rust API includes a [hashed-factor-base elliptic-curve tensor
+implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
+encodings, exact contraction and certificate replay. Correctness controls
+do not establish the conditional asymptotic bound or a practical speedup.
 
 A fast, self-contained C11 library of discrete-logarithm algorithms with
 Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust
