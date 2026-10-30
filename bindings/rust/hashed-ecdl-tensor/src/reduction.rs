@@ -96,11 +96,12 @@ impl FactorBase {
         meter.vector(count, "factor-base enumeration")?;
         let inv = inverse(&self.seed.alpha, &self.prime)?;
         let mut points = Vec::new();
+        let mut decoder = curve.decoder()?;
         for t in 0..count {
             meter.charge(1, "inverse-hash enumeration")?;
             let z = &inv * ((BigUint::from(t) + &self.prime - &self.seed.beta) % &self.prime)
                 % &self.prime;
-            if let Some(point) = curve.decode(&z, rng, meter)? {
+            if let Some(point) = decoder.decode(&z, rng, meter)? {
                 if curve.in_subgroup(&point, meter)? {
                     points.push(point);
                 }
@@ -835,5 +836,70 @@ mod tests {
             ),
             Err(Error::Limit(_))
         ));
+    }
+
+    #[test]
+    fn factor_base_enumeration_reuses_square_root_setup() {
+        struct Nonresidue {
+            calls: usize,
+        }
+        impl RandomSource for Nonresidue {
+            fn fill(&mut self, bytes: &mut [u8]) -> Result<()> {
+                self.calls += 1;
+                bytes.fill(3); // 3 is a quadratic nonresidue modulo 17.
+                Ok(())
+            }
+        }
+        let mut meter = Meter::new(Limits::default());
+        let curve = Curve::new(
+            17u8.into(),
+            2u8.into(),
+            2u8.into(),
+            19u8.into(),
+            Point::Affine {
+                x: 5u8.into(),
+                y: 1u8.into(),
+            },
+            &mut meter,
+        )
+        .unwrap();
+        let base = FactorBase::new(
+            &curve,
+            37u8.into(),
+            37u8.into(),
+            HashSeed {
+                alpha: 1u8.into(),
+                beta: 0u8.into(),
+            },
+            &mut meter,
+        )
+        .unwrap();
+        let mut expected: Vec<_> = (1u8..19)
+            .map(|scalar| {
+                curve
+                    .mul(curve.generator(), &scalar.into(), &mut meter)
+                    .unwrap()
+            })
+            .collect();
+        expected.sort();
+        let mut one_shot = Nonresidue { calls: 0 };
+        let mut decoded = Vec::new();
+        for encoding in 0u8..34 {
+            if let Some(point) = curve
+                .decode(&encoding.into(), &mut one_shot, &mut meter)
+                .unwrap()
+            {
+                decoded.push(point);
+            }
+        }
+        decoded.sort();
+        assert_eq!(decoded, expected);
+        assert_eq!(one_shot.calls, 18);
+        let mut batched = Nonresidue { calls: 0 };
+        assert_eq!(
+            base.enumerate(&curve, &mut batched, &mut meter).unwrap(),
+            expected
+        );
+        assert_eq!(batched.calls, 1, "one setup must serve the entire base");
     }
 }

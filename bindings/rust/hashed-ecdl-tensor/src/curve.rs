@@ -1,6 +1,6 @@
 //! Arbitrary-precision, certified short-Weierstrass curves and subgroups.
 
-use crate::arithmetic::{floor_root, inverse, is_prime, modpow, square_root, RandomSource};
+use crate::arithmetic::{floor_root, inverse, is_prime, modpow, RandomSource, SquareRootContext};
 use crate::{integrity, invalid, BigUint, Meter, Result};
 use num_integer::Integer;
 use num_traits::{One, Zero};
@@ -321,21 +321,53 @@ impl Curve {
         rng: &mut impl RandomSource,
         meter: &mut Meter,
     ) -> Result<Option<Point>> {
-        if z >= &(&self.p << 1) {
+        self.decoder()?.decode(z, rng, meter)
+    }
+
+    /// Prepare a decoder that reuses square-root setup for many encodings of
+    /// this certified curve. Randomness and work are consumed lazily by decode.
+    pub fn decoder(&self) -> Result<PointDecoder<'_>> {
+        Ok(PointDecoder {
+            curve: self,
+            roots: SquareRootContext::new(&self.p)?,
+        })
+    }
+}
+
+/// Batch compressed-point decoding tied to one certified curve.
+/// Modulus parameters and one lazily sampled nonresidue are reused; coordinate
+/// parity and the curve equation are checked for every decoded point.
+pub struct PointDecoder<'curve> {
+    curve: &'curve Curve,
+    roots: SquareRootContext<'curve>,
+}
+
+impl PointDecoder<'_> {
+    /// Decode one nonidentity encoding, preserving canonical point selection.
+    /// Nonsquares and out-of-range encodings return `None`; exhausted resources
+    /// and random-source failures remain errors.
+    pub fn decode(
+        &mut self,
+        z: &BigUint,
+        rng: &mut impl RandomSource,
+        meter: &mut Meter,
+    ) -> Result<Option<Point>> {
+        let curve = self.curve;
+        if z >= &(&curve.p << 1) {
             return Ok(None);
         }
         let x = z >> 1;
-        let Some(mut y) = square_root(&self.rhs(&x), &self.p, rng, meter)? else {
+        let Some(mut y) = self.roots.root(&curve.rhs(&x), rng, meter)? else {
             return Ok(None);
         };
         if y.bit(0) != z.bit(0) {
-            y = (&self.p - y) % &self.p;
+            y = (&curve.p - y) % &curve.p;
         }
         if y.bit(0) != z.bit(0) {
             return Ok(None);
         }
         let point = Point::Affine { x, y };
-        if !self.contains(&point) {
+        if !curve.contains(&point) {
             return Err(integrity("compressed point replay"));
         }
         Ok(Some(point))
