@@ -1,5 +1,10 @@
 # Native tensor ECDL development validation — 2026-10-29
 
+This is the historical implementation receipt. Its transcripts and source
+manifest are preserved. The later [sampling audit](hashed-ecdl-audit-20261029/README.md)
+records the extended API, new tests and a separate source manifest; use that
+manifest for the updated source rather than treating this snapshot as current.
+
 This receipt covers the compact encoder, contraction backend and full tensor
 reduction. The earlier [reference receipt](hashed-ecdl-validation.md) remains
 historical evidence for the bounded generic implementation. No performance

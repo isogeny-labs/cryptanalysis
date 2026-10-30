@@ -98,6 +98,10 @@ and isolated scalar vertices. `Counter::count` returns an exact integer.
 `Counter::witness` fixes interface bits through exact prefix counts, using at
 most one initial count and one count per unfixed interface bit. `None` means
 an exact zero contraction. `Error::Limit` means unknown, never unsatisfiable.
+`Counter::sample` uses the same counts for random prefix choices. It is uniform
+over words for parsimonious encodings; other encodings weight words by their
+auxiliary completions. See the [sampling and recursive audit](hashed-ecdl-audit-20261029/README.md)
+for exact distribution controls and the additional two-level taper checks.
 
 ## Run and replay from files
 

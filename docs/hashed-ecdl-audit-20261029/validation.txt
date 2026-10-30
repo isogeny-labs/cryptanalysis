@@ -1,0 +1,74 @@
+Native hashed ECDL sampling / recursive audit, 2026-10-29
+Scope: development correctness only. No isolated timing or speed claim.
+Bases:
+  crypto 037bfc872342ff66a0cc4c6a5e1d46b1efac3029
+  cryptanalysis 0366546e2a26c4acc8d3a32890b2427fb9d6a844
+Host: managed Linux x86-64 development container; four-vCPU quota.
+Compiler: rustc 1.99.1 (58cf8f9c3 2026-10-13)
+MSRV compiler: rustc 1.78.0 (9b00956e5 2024-04-29)
+
+Observed commands and outcomes:
+1. Unmodified crypto:
+   cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml
+   PASS: 27 tests, zero failed; runner/doc targets pass.
+2. New targeted recursion control:
+   cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml both_taper_levels
+   PASS: one test containing nine direct-count comparisons.
+3. New exact sampling controls:
+   cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml sampling_
+   PASS: two tests, exact draw enumeration and failure/pin controls.
+4. Final crypto:
+   cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml
+   PASS: 30 tests, zero failed, zero ignored; runner/doc targets pass.
+   Compact transcript (terminal separator blank line omitted): crypto-native-tests.txt.
+5. Final mirror (CARGO_TARGET_DIR reused development build cache):
+   cargo test --locked --release --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor
+   PASS: 30 tests, zero failed, zero ignored; runner/doc targets pass.
+   Compact transcript (terminal separator blank line omitted): mirror-native-tests.txt.
+6. Native strict lint and formatting, both manifests:
+   cargo clippy --locked --manifest-path <crate Cargo.toml> --all-targets -- -D warnings
+   cargo fmt --manifest-path <crate Cargo.toml> --check
+   PASS: exit 0 in both repositories.
+7. Minimum supported Rust:
+   cargo +1.78.0 check --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets
+   cargo +1.78.0 check --locked --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor --all-targets
+   PASS: exit 0 for each.
+8. Strict API docs:
+   RUSTDOCFLAGS='-D warnings' cargo doc --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --no-deps
+   PASS: exit 0.
+9. Independent C/Rust integration:
+   cargo test --locked --release --manifest-path bindings/rust/Cargo.toml -p cryptanalysis
+   PASS after restoring tracked CUDA header: 20 unit, 19 FFI parity, 14 doc tests.
+   Compact transcript (terminal separator blank line omitted): binding-tests.txt.
+10. diff -ru --exclude=target between standalone and mirrored crate trees:
+    PASS: byte-identical, including README, lock, metadata and all sources.
+    sha256sum -c sources.sha256 from each crate directory: all 16 hashes PASS.
+11. Typst compile of report.typ, PDF render and visual inspection:
+    PASS: one inspected page; 40651-byte PDF, below 64 KiB policy.
+12. crypto root cargo test --locked --release --lib:
+    PENDING: full regression compiling; no pass claimed yet.
+13. Selected binding/core strict Clippy:
+    PASS: cargo clippy --locked --manifest-path bindings/rust/Cargo.toml -p cryptanalysis -p hashed-ecdl-tensor --all-targets -- -D warnings; exit 0.
+
+Setup failures retained (none was hidden by skipping a test):
+- Initial rustfmt invocation lacked the optional component; installed rustfmt
+  and clippy, then reran the unchanged native format/lint commands successfully.
+- Initial root invocation could not resolve the sparse isogeny_algos path crate.
+  Restored tracked source/path crates. The compile-input materializer next
+  failed because cone mode rejects its /file patterns. The first local config
+  update was shadowed by config.worktree. Switched the actual worktree setting
+  to non-cone and reran the existing materializer successfully: 187 compile-time
+  inputs restored. No research archive or source input was declared absent.
+- Initial mirror invocation lacked workspace-member manifests; restored the
+  tracked bindings/rust tree, then ran the final native suite successfully.
+- The first C/Rust integration build lacked cuda/ca_device.cuh in the sparse
+  checkout. Restored tracked cuda/ and reran the exact command successfully.
+- A redundant format command used a root-relative manifest from the crate
+  directory and failed path lookup; root-relative format checks already pass.
+- Conductor is not installed. The attempted conductor check returned exit 127;
+  docs/CONDUCTOR.md documents a warning-and-allow fallback in this situation.
+
+Historical receipts and manifests are preserved. General external-theorem
+correctness, admitted-recursion complexity and performance are unresolved;
+forced small parameters are correctness controls only. No cloud experiment,
+benchmark, deployed-curve input or leaderboard promotion was performed.
