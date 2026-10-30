@@ -1,0 +1,20 @@
+digraph implementation {
+  graph [rankdir=TB,bgcolor="white",pad=0.15,nodesep=0.22,ranksep=0.3,
+    fontname="Helvetica",fontsize=12,label="Native finite-size paths: correctness checks only",labelloc=t];
+  node [shape=box,style="rounded,filled",fontname="Helvetica",fontsize=11,
+    color="#25486c",fillcolor="#e7f4ec",margin=0.12];
+  edge [color="#52677d",arrowsize=0.7];
+  original [label="Original solver / v1 replay\nPRESERVED"];
+  selector [label="1. Selector inputs\nIMPLEMENTED"];
+  exact [label="2. Exact rank/cutset solver\nSchoolbook option\nIMPLEMENTED"];
+  partial [label="4. Nested partial rows\nOdd-order provenance\nIMPLEMENTED"];
+  binary [label="5. Binary XOR/orbits\nVerified coefficients\nIMPLEMENTED"];
+  plans [label="3. Local structural plans\nIMPLEMENTED\nSource packet proof: OPEN",fillcolor="#fff3dc"];
+  replay [label="Independent graph / group / certificate replay\nBOUNDED DEVELOPMENT CHECKS"];
+  future [label="Scientific comparison / lower-bit crossover\nNative execution + protocol admission: PENDING",fillcolor="#f3f3f3"];
+  {rank=same;selector;exact;partial;binary;}
+  original -> selector; original -> exact; original -> partial; original -> binary;
+  exact -> plans -> replay;
+  selector -> replay; partial -> replay; binary -> replay;
+  replay -> future;
+}

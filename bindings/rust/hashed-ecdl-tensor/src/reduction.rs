@@ -162,8 +162,26 @@ pub fn decompose(
     counter: &mut Counter,
     meter: &mut Meter,
 ) -> Result<Option<Vec<Point>>> {
+    decompose_with(
+        curve,
+        bases,
+        target,
+        |network, work| counter.witness(network, &vec![None; network.edge_count()], work),
+        meter,
+    )
+}
+
+/// Opt-in exact witness backend for the existing point-coordinate language.
+/// Returned interface words receive the same independent point/hash/sum replay.
+pub fn decompose_with(
+    curve: &Curve,
+    bases: &[FactorBase],
+    target: &Point,
+    mut witness: impl FnMut(&Network, &mut Meter) -> Result<Option<Vec<bool>>>,
+    meter: &mut Meter,
+) -> Result<Option<Vec<Point>>> {
     let network = decomposition_network(curve, bases, target, meter)?;
-    let Some(word) = counter.witness(&network, &vec![None; network.edge_count()], meter)? else {
+    let Some(word) = witness(&network, meter)? else {
         return Ok(None);
     };
     let width = curve.modulus().bits() as usize;
@@ -458,6 +476,63 @@ pub fn solve(
     counter: &mut Counter,
     meter: &mut Meter,
 ) -> Result<Certificate> {
+    solve_using(
+        curve,
+        target,
+        config,
+        rng,
+        &mut |curve, bases, point, work| decompose(curve, bases, point, counter, work),
+        meter,
+    )
+}
+
+/// Opt-in relation oracle. It receives only curve, bases and query point, never
+/// the hidden random relation labels or their RNG. Every supplied witness is
+/// independently checked before it enters the original certificate reduction.
+pub fn solve_with_oracle(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    mut oracle: impl FnMut(&Curve, &[FactorBase], &Point, &mut Meter) -> Result<Option<Vec<Point>>>,
+    meter: &mut Meter,
+) -> Result<Certificate> {
+    solve_using(
+        curve,
+        target,
+        config,
+        rng,
+        &mut |curve, bases, point, work| {
+            let answer = oracle(curve, bases, point, work)?;
+            if let Some(points) = &answer {
+                if points.len() != bases.len() {
+                    return Err(integrity("oracle slot count"));
+                }
+                let mut sum = Point::Infinity;
+                for (base, point) in bases.iter().zip(points) {
+                    if !base.contains(curve, point, work)? {
+                        return Err(integrity("oracle membership replay"));
+                    }
+                    sum = curve.add(&sum, point, work)?;
+                }
+                if &sum != point {
+                    return Err(integrity("oracle sum replay"));
+                }
+            }
+            Ok(answer)
+        },
+        meter,
+    )
+}
+
+fn solve_using(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    oracle: &mut impl FnMut(&Curve, &[FactorBase], &Point, &mut Meter) -> Result<Option<Vec<Point>>>,
+    meter: &mut Meter,
+) -> Result<Certificate> {
     if config.slots < 2 || config.trials == 0 || !curve.in_subgroup(target, meter)? {
         return Err(invalid("reduction input"));
     }
@@ -527,7 +602,7 @@ pub fn solve(
             let left = curve.mul(curve.generator(), &u, meter)?;
             let right = curve.mul(target, &v, meter)?;
             let point = curve.add(&left, &right, meter)?;
-            if let Some(points) = decompose(curve, &bases, &point, counter, meter)? {
+            if let Some(points) = oracle(curve, &bases, &point, meter)? {
                 let relation = Relation { u, v, points };
                 matrix.push(matrix_row(&relation, &indexes, columns)?);
                 relations.push(relation);
