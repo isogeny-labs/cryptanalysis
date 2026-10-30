@@ -305,6 +305,9 @@ resume the effort are checked into S3**, and kept current while it runs.
 
 A checkpoint is a safety net, not the record: the spec, protocol and results
 still land in a PR under the rules above.
+Switching runtimes when a budget runs out (Claude Code ↔ Codex):
+[docs/runtime-relay.md](docs/runtime-relay.md); on a pending `.resume/HANDOFF.md`, run
+`python3 scripts/relay.py accept` first.
 
 ## Track research work in pull requests
 
