@@ -9,7 +9,8 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
-| [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | open | Six-arm finite Hecke scalar-closure audit | Working checkpoint upload, retained run and independent checks |
+| [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | resolved for this session | Checkpoint access for finite audit | Successful uploads, six-arm audit and independent controls retained |
+| [Sparse Hecke closure and target descent](hecke-d39-sparse-closure-and-descent.md) | open | Scalable IC advantage over generic scalar closure | Larger sparse fixtures, matched generic controls and verified target descent |
 | [Hashed ECDL tensor backend](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md) | open | full conditional subexponential replication | canonical crypto record: compact encoder, exact fast contraction backend and independent validation |
 | [Concrete source field and discriminant/resultant bridge](hecke432-discriminant-field-bridge.md) | open | Saved polynomial and relative-factor discriminant norms are not yet connected in Lean to the concrete degree-18 source field. | Concrete encodings and axiom-audited connecting lemmas; see acceptance criteria |
 | [Concrete integral basis and field-index discriminants](hecke432-field-index-integral-basis-bridge.md) | open | The general trace-Gram determinant theorem and saved integer equalities do not identify the saved discriminants with those of the concrete degree-18 field and integral basis. | Concrete encodings and axiom-audited connecting lemmas; see acceptance criteria |

@@ -1,6 +1,6 @@
 # Checkpoint access for the D39 scalar-closure discriminator
 
-- **Status:** open
+- **Status:** resolved
 - **Kind:** access/tool limit; relation-generation hypothesis untested
 - **Affected work:** [protocol](../experiments/hecke-d39-scalar-closure-20261030/PROTOCOL.md)
 - **Next action owner:** environment owner for checkpoint setup; research agent for execution
@@ -47,3 +47,15 @@ Recheck after checkpoint configuration changes. No paid compute is needed.
 ## Resolution and history
 
 Unresolved. 2026-10-30: protocol and checker prepared, no research run launched.
+
+## 2026-10-30 resolution
+
+Session-scoped credentials enabled successful pre-run and post-run checkpoint
+uploads. The frozen six-arm audit and the follow-up Hecke-free controls both
+exited zero; all rank and scalar replay controls passed. See
+[RESULT.md](../experiments/hecke-d39-scalar-closure-20261030/RESULT.md) and its
+linked receipts. This resolves this access obstruction for this session only;
+no credentials were persisted, and future sessions need configured access.
+The [sparse-closure and descent problem](hecke-d39-sparse-closure-and-descent.md)
+tracks the separate unresolved research requirement. Earlier failure evidence
+is retained above, not replaced by the successful run.
