@@ -9,7 +9,7 @@ namespace MixedSix
 
 /-- Two floor coordinates with opposite cycle/pair ratios force both
 coefficients to vanish. -/
-public theorem local_mixed_zero (cycle pair : ℚ)
+theorem local_mixed_zero (cycle pair : ℚ)
     (positive_coordinate : cycle + pair = 0)
     (negative_coordinate : -cycle + pair = 0) :
     cycle = 0 ∧ pair = 0 := by
@@ -17,7 +17,7 @@ public theorem local_mixed_zero (cycle pair : ℚ)
 
 /-- If each of six cycles meets each of its eight pair blocks in both
 orientations, the 54 coefficients of a vanishing combination are zero. -/
-public theorem six_by_eight_mixed_zero
+theorem six_by_eight_mixed_zero
     (cycle : Fin 6 → ℚ) (pair : Fin 6 → Fin 8 → ℚ)
     (positive_coordinates : ∀ i j, cycle i + pair i j = 0)
     (negative_coordinates : ∀ i j, -cycle i + pair i j = 0) :
@@ -30,7 +30,7 @@ public theorem six_by_eight_mixed_zero
     exact (local_mixed_zero (cycle i) (pair i j)
       (positive_coordinates i j) (negative_coordinates i j)).2
 
-end MixedSix
+#print axioms local_mixed_zero
+#print axioms six_by_eight_mixed_zero
 
-#print axioms MixedSix.local_mixed_zero
-#print axioms MixedSix.six_by_eight_mixed_zero
+end MixedSix
