@@ -1,0 +1,91 @@
+    Checking transfer-audit v0.1.0 (/workspace/cryptanalysis-transfer-audit/tools/transfer-audit)
+    Finished `release` profile [optimized] target(s) in 1.11s
+   Compiling transfer-audit v0.1.0 (/workspace/cryptanalysis-transfer-audit/tools/transfer-audit)
+    Finished `release` profile [optimized] target(s) in 14.20s
+     Running unittests src/lib.rs (tools/transfer-audit/target/release/deps/transfer_audit-040755e4e13fc9d4)
+
+running 62 tests
+test binary_ecc::cover_transfer::tests::construction_checks_geometry_and_rejects_invalid_inputs ... ok
+test binary_ecc::cover_transfer::tests::infinity_and_exceptional_two_torsion_are_explicit ... ok
+test binary_ecc::curve::tests::double_equals_self_add ... ok
+test binary_ecc::curve::tests::double_stays_on_curve ... ok
+test binary_ecc::curve::tests::legacy_binary_generators_are_on_curve ... ok
+test binary_ecc::cover_transfer::tests::subgroup_status_and_arbitrary_pushforward_boundary ... ok
+test binary_ecc::curve::tests::low_security_binary_base_points_match_published_constants ... ok
+test binary_ecc::curve::tests::low_security_binary_catalog_security_categories ... ok
+test binary_ecc::curve::tests::scalar_mul_by_order_is_identity ... ignored
+test binary_ecc::curve::tests::point_plus_neg_is_infinity ... ok
+test binary_ecc::curve::tests::scalar_mul_small_consistency ... ok
+test binary_ecc::curve::tests::sect163_base_points_match_sec2_constants ... ok
+test binary_ecc::curve::tests::scalar_mul_matches_handcomputed ... ok
+test binary_ecc::curve::tests::sect163_nominal_security_category_is_80_bit ... ok
+test binary_ecc::f2m::tests::add_is_xor ... ok
+test binary_ecc::f2m::tests::debug_output_is_unchanged ... ok
+test binary_ecc::f2m::tests::flt_inverse_deg16_sanity ... ok
+test binary_ecc::f2m::tests::flt_inverse_of_zero_is_none ... ok
+test binary_ecc::f2m::tests::flt_inverse_roundtrip ... ok
+test binary_ecc::f2m::tests::frobenius_endomorphism ... ok
+test binary_ecc::f2m::tests::inline_and_heap_storage_agree_across_the_boundary ... ok
+test binary_ecc::f2m::tests::inverse_roundtrip_all_fields ... ok
+test binary_ecc::f2m::tests::mul_by_one_is_identity ... ok
+test binary_ecc::f2m::tests::mul_commutes ... ok
+test binary_ecc::curve::tests::low_security_order_times_generator_is_identity ... ok
+test binary_ecc::f2m::tests::reduction_works_at_boundary ... ok
+test binary_ecc::f2m::tests::schoolbook_and_karatsuba_agree ... ok
+test binary_ecc::f2m::tests::soft_clmul_matches_shift_xor ... ok
+test binary_ecc::curve::tests::sect163_order_times_generator_is_identity ... ok
+test binary_ecc::f2m::tests::word_mul_matches_bitwise_reference ... ok
+test binary_ecc::f2m::tests::word_square_matches_mul ... ok
+test binary_ecc::hyperelliptic::tests::checked_curve_constructor_binds_field_degree_and_smoothness_errors ... ok
+test binary_ecc::hyperelliptic::tests::checked_divisor_api_rejects_malformed_public_pairs_without_debug_asserts ... ok
+test binary_ecc::hyperelliptic::tests::bsgs_finds_small_dlp ... ok
+test binary_ecc::hyperelliptic::tests::double_equals_self_add ... ok
+test binary_ecc::hyperelliptic::tests::explicit_f8_cubic_cover_map_holds_on_every_affine_pair ... ok
+test binary_ecc::hyperelliptic::tests::identity_is_identity ... ok
+test binary_ecc::hyperelliptic::tests::neg_then_add_is_identity ... ok
+test binary_ecc::cover_transfer::tests::exhaustive_f8_models_points_maps_and_compositions ... ok
+test binary_ecc::hyperelliptic::tests::ramified_origin_has_a_valid_mumford_pair_and_order_two ... ok
+test binary_ecc::hyperelliptic::tests::scalar_mul_distributes_over_zero ... ok
+test binary_ecc::poly_f2m::tests::add_is_xor ... ok
+test binary_ecc::poly_f2m::tests::divrem_invariant ... ok
+test binary_ecc::poly_f2m::tests::divrem_random_nonmonic_163 ... ok
+test binary_ecc::poly_f2m::tests::divrem_self_is_one_zero ... ok
+test binary_ecc::poly_f2m::tests::eval_horner ... ok
+test binary_ecc::poly_f2m::tests::ext_gcd_bezout ... ok
+test binary_ecc::poly_f2m::tests::gcd_monic ... ok
+test binary_ecc::poly_f2m::tests::mul_degree_adds ... ok
+test binary_ecc::f2m::tests::reduce_words_matches_bitwise_reduction ... ok
+test tests::exact_bounds ... ok
+test tests::fields ... ok
+test tests::gcd_requires_multiple_euclidean_steps ... ok
+test tests::independent_point_counts ... ok
+test binary_ecc::hyperelliptic::tests::nontrivial_shared_support_divisors_cover_both_cantor_gcd_branches ... ok
+test tests::primes ... ok
+test tests::rank ... ok
+test tests::replay_and_tamper ... FAILED
+test tests::spectral_classification_controls ... FAILED
+test tests::invalid_inputs_and_proofs ... ok
+test tests::b163_parameters_and_obstruction ... ok
+test binary_ecc::hyperelliptic::tests::exhaustive_f8_reduced_domain_has_closure_inverses_and_scalar_consistency ... ok
+
+failures:
+
+---- tests::replay_and_tamper stdout ----
+
+thread 'tests::replay_and_tamper' (3044) panicked at src/lib.rs:735:31:
+called `Result::unwrap()` on an `Err` value: declared subgroup order does not divide verified source order
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- tests::spectral_classification_controls stdout ----
+
+thread 'tests::spectral_classification_controls' (3045) panicked at src/lib.rs:814:32:
+called `Result::unwrap()` on an `Err` value: declared subgroup order does not divide verified source order
+
+
+failures:
+    tests::replay_and_tamper
+    tests::spectral_classification_controls
+
+test result: FAILED. 59 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2.51s
+
+error: test failed, to rerun pass `--lib`
