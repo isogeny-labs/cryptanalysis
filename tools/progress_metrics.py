@@ -75,6 +75,7 @@ def args():
 # ---- end boilerplate ----
 
 import csv
+import hashlib
 import io
 import re
 import statistics
@@ -199,6 +200,7 @@ def main():
     readme_headline(a.ref)
     ghs_quartic_evidence(a.ref, a.since)
     hecke_d39_finite(a.ref, a.since)
+    hecke_sparse_study(a.ref, a.since)
 
 
 def hecke_d39_finite(ref, since):
@@ -234,6 +236,42 @@ def hecke_d39_finite(ref, since):
             emit("hecke.d39_f6.independent_scalar_replays", data.get("scalars_checked"),
                  date=day, problem="hecke-d39-sparse-closure-and-descent", unit="count",
                  label="D39 toy scalar labels independently replayed", source=prefix + path)
+
+
+def hecke_sparse_study(ref, since):
+    """Source-bound finite stage counts, deliberately without speedup metrics."""
+    day = "2026-10-30"
+    if day < since:
+        return
+    prefix = "experiments/hecke-sparse-target-20261030/runs/"
+    independent = show(ref, prefix + "independent-01/receipt.json")
+    if not independent:
+        return
+    checked = {row["p"]: row for row in json.loads(independent)["results"]}
+    for cell in ("f6-small-01", "f6-medium-01", "f6-large-01", "f30-01"):
+        path = prefix + cell + "/receipt.json"
+        text = show(ref, path)
+        if not text:
+            continue
+        data = json.loads(text)
+        if data.get("status") != "verified_finite_diagnostic" or data.get("p") not in checked:
+            continue
+        if checked[data["p"]].get("receipt_sha256") != hashlib.sha256(text.encode()).hexdigest():
+            continue
+        for key, suffix in (("bootstrap", "hecke_free_logs"), ("generic_bootstrap", "generic_free_logs")):
+            emit(f"hecke.sparse.p{data['p']}.{suffix}", data[key]["free_logs_solved_generically"],
+                 date=day, problem="hecke-d39-sparse-closure-and-descent", unit="queries",
+                 label=f"Hecke study p{data['p']}: {suffix}; partial stage count", source=path)
+        emit(f"hecke.sparse.p{data['p']}.initial_target_verified",
+             data["target"]["status"] == "verified", date=day,
+             problem="hecke-d39-sparse-closure-and-descent", unit="boolean",
+             label="Initial bounded target status; failures retained", source=path)
+    growth = show(ref, prefix + "growth-01/receipt.json")
+    if growth:
+        data = json.loads(growth)
+        emit("hecke.sparse.trace_extra_constraints.p206477", data["extra_constraints_on_original"],
+             date=day, problem="hecke-d39-sparse-closure-and-descent", unit="rank",
+             label="Extra original-column constraints after eliminating trace columns", source=prefix + "growth-01/receipt.json")
 
 
 if __name__ == "__main__":
