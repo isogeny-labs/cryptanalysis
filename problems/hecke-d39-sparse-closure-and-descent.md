@@ -1,6 +1,6 @@
 # Sparse Hecke relation closure and arbitrary-target descent
 
-- **Status:** open
+- **Status:** investigating
 - **Kind:** untested scaling hypothesis; missing target-descent implementation
 - **Affected work:** [D39 result](../experiments/hecke-d39-scalar-closure-20261030/RESULT.md)
 - **Next action owner:** research agent, future larger-class study
@@ -51,3 +51,32 @@ evidence, not a negative mathematical result.
 ## Resolution and history
 
 Unresolved. 2026-10-30: opened after the dense toy audit and Hecke-free control.
+
+## 2026-10-30 four-part study and continuation update
+
+The [four-part result](../experiments/hecke-sparse-target-20261030/RESULT.md)
+now verifies sparse fixed-geometry cells, deduplicated/folded information,
+actual extension traces and bounded public-target recovery. At subgroup
+orders16,319 and206,477, there are32 folded base columns, zero doubling/tripling
+rows, and20 Hecke constraints. The frozen bootstrap therefore needs12 rather
+than32 generic log queries. All labels replay independently. This addresses
+the dense-scalar-collision ambiguity; it does not establish total cost or speed.
+
+The largest original target failed256 shifts. Explicit known-label trace growth
+recovered it in3 attempts; a matched201-point generic base recovered it in10,
+and cost70 additions to grow versus528 for trace derivation. New trace columns
+at r206477 add zero constraints on the original32 columns after elimination.
+The attempted cheap higher-arity reuse controls also failed their65/256 caps.
+The larger conductor30 selector exhausted200 candidates without an eligible
+field; that continuation is missing evidence, with every rejection retained.
+
+Remaining acceptance conditions are now specific: reduce the12 sparse-f6 free
+logs without introducing equally many unanchored variables; verify target
+connection on fresh public points rather than only exploratory continuations;
+record exclusive phase costs and matched strong-rho evidence on the required
+benchmark host; and complete the faithful Lean bridge/certificates. Lean4 and
+mathlib are absent here, so no kernel-checked theorem is claimed. The source
+report links all exact scopes, raw successes, failures and verification receipts.
+
+The original finite experiment requirements are now executed within their
+frozen limits. The scalable, fully measured IC improvement remains unresolved.
