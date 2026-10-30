@@ -187,6 +187,7 @@ impl Collector {
     /// Admit, eliminate and, when possible, recover a scalar. An error invalidates
     /// continuation of this collector; callers must not treat it as rejection.
     pub fn push(&mut self, relation: Relation, meter: &mut Meter) -> Result<Outcome> {
+        crate::metrics::phase("relation_check")?;
         if self.finished {
             return Err(invalid("partial collector already solved"));
         }
@@ -215,6 +216,7 @@ impl Collector {
         };
         self.columns.extend(row.columns.keys().cloned());
         self.relations.push(relation);
+        crate::metrics::phase("linear_algebra")?;
         let modulus = self.curve.order();
         for (column, pivot) in &self.pivots {
             let Some(scale) = row.columns.get(column).cloned() else {
@@ -253,6 +255,7 @@ impl Collector {
         if row.v.is_zero() {
             return Ok(Outcome::Degenerate);
         }
+        crate::metrics::phase("recovery_check")?;
         let scalar = (modulus - row.u) * inverse(&row.v, modulus)? % modulus;
         let mut dependency = vec![BigUint::zero(); self.relations.len()];
         for (i, value) in row.weights {
@@ -328,27 +331,52 @@ pub fn solve(
     rng: &mut impl RandomSource,
     meter: &mut Meter,
 ) -> Result<Certificate> {
+    solve_with_options(
+        curve,
+        target,
+        bases,
+        max_relations,
+        max_columns,
+        attempts,
+        &crate::finite::Options::default(),
+        &mut crate::finite::Statistics::default(),
+        rng,
+        meter,
+    )
+}
+
+/// The same checked collector with an explicit selector policy and diagnostics.
+/// The original entry keeps its default policy and random stream unchanged.
+#[allow(clippy::too_many_arguments)]
+pub fn solve_with_options(
+    curve: &Curve,
+    target: &Point,
+    bases: Vec<NestedBase>,
+    max_relations: usize,
+    max_columns: usize,
+    attempts: usize,
+    options: &crate::finite::Options,
+    statistics: &mut crate::finite::Statistics,
+    rng: &mut impl RandomSource,
+    meter: &mut Meter,
+) -> Result<Certificate> {
     if attempts == 0 {
         return Err(invalid("partial attempt policy"));
     }
     let outer: Vec<_> = bases.iter().map(|b| b.outer.clone()).collect();
     let mut collector = Collector::new(curve, target, bases, max_relations, max_columns, meter)?;
-    let mut statistics = crate::finite::Statistics::default();
     for _ in 0..attempts {
+        crate::metrics::phase("relation_target")?;
         meter.charge(1, "partial relation query")?;
         let u = random_below(curve.order(), rng, meter)?;
         let v = random_below(curve.order(), rng, meter)?;
         let left = curve.mul(curve.generator(), &u, meter)?;
         let right = curve.mul(target, &v, meter)?;
         let query = curve.add(&left, &right, meter)?;
-        if let Some(points) = crate::finite::prime_decompose(
-            curve,
-            &outer,
-            &query,
-            &crate::finite::Options::default(),
-            &mut statistics,
-            meter,
-        )? {
+        crate::metrics::phase("relation_search")?;
+        if let Some(points) =
+            crate::finite::prime_decompose(curve, &outer, &query, options, statistics, meter)?
+        {
             if let Outcome::Solved(certificate) =
                 collector.push(Relation { u, v, points }, meter)?
             {

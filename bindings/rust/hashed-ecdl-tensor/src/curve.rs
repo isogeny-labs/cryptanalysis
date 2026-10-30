@@ -272,6 +272,7 @@ impl Curve {
     /// Checked affine group addition, including every exceptional branch.
     pub fn add(&self, left: &Point, right: &Point, meter: &mut Meter) -> Result<Point> {
         meter.charge(1, "curve addition")?;
+        crate::metrics::group(left == right && left != &Point::Infinity)?;
         if !self.contains(left) || !self.contains(right) {
             return Err(invalid("curve point"));
         }
@@ -318,6 +319,7 @@ impl Curve {
     /// Scalar multiplication without reducing the scalar first (also used to
     /// certify the declared order).
     pub fn mul(&self, point: &Point, scalar: &BigUint, meter: &mut Meter) -> Result<Point> {
+        crate::metrics::scalar()?;
         if !self.contains(point) {
             return Err(invalid("curve point"));
         }

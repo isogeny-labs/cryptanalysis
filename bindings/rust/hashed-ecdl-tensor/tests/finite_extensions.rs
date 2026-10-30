@@ -157,6 +157,7 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
         ..Config::default()
     };
     let mut stats = Statistics::default();
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
     let certificate = reduction::solve_with_oracle(
         &curve,
         &target,
@@ -166,6 +167,11 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
         &mut meter,
     )
     .unwrap();
+    let snapshot = session.finish().unwrap();
+    assert!(snapshot.phases["witness_check"].scalar_mults > 0);
+    assert_eq!(snapshot.phases["matrix_build"].scalar_mults, 0);
+    assert_eq!(snapshot.phases["matrix_build"].adds, 0);
+    assert_eq!(snapshot.phases["matrix_build"].doubles, 0);
     assert_eq!(certificate.scalar, BigUint::from(3u8));
     reduction::verify(&curve, &target, &certificate, &mut meter).unwrap();
     assert!(stats.derived_checks > 0);
@@ -179,6 +185,64 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
     )
     .unwrap_err();
     assert!(matches!(error, Error::Integrity(_)));
+}
+
+#[test]
+fn external_oracle_replay_has_independent_group_work_and_matrix_accounting() {
+    let mut setup = Meter::new(Limits::default());
+    let curve = curve(&mut setup);
+    let target = curve
+        .mul(curve.generator(), &3u8.into(), &mut setup)
+        .unwrap();
+    let config = Config {
+        threshold: Some(11u8.into()),
+        columns: 64,
+        trials: 32,
+        ..Config::default()
+    };
+    let mut plain = Meter::new(Limits::default());
+    let mut plain_rng = Seeded(42);
+    let solve = |rng: &mut Seeded, work: &mut Meter| {
+        reduction::solve_with_oracle(
+            &curve,
+            &target,
+            &config,
+            rng,
+            |c, b, q, w| {
+                finite::prime_decompose(c, b, q, &Options::default(), &mut Statistics::default(), w)
+            },
+            work,
+        )
+        .unwrap()
+    };
+    let expected = solve(&mut plain_rng, &mut plain);
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
+    let mut observed = Meter::new(Limits::default());
+    let mut observed_rng = Seeded(42);
+    let actual = solve(&mut observed_rng, &mut observed);
+    let snapshot = session.finish().unwrap();
+    assert_eq!(actual.scalar, expected.scalar);
+    assert_eq!(actual.relations, expected.relations);
+    assert_eq!(actual.dependency, expected.dependency);
+    assert_eq!(observed_rng.0, plain_rng.0);
+    assert_eq!(observed.used, plain.used);
+    let replay = &snapshot.phases["witness_check"];
+    assert!(replay.scalar_mults > 0, "membership needs subgroup replay");
+    assert!(
+        replay.adds + replay.doubles > 0,
+        "group-sum replay is charged"
+    );
+    let matrix = &snapshot.phases["matrix_build"];
+    assert_eq!(matrix.adds + matrix.doubles + matrix.scalar_mults, 0);
+    assert_eq!(
+        snapshot.phases.values().map(|p| p.meter_steps).sum::<u64>(),
+        observed.used
+    );
+    assert_eq!(
+        snapshot.online_phases_ns.values().sum::<u64>(),
+        snapshot.online_wall_ns.unwrap()
+    );
+    reduction::verify(&curve, &target, &actual, &mut setup).unwrap();
 }
 
 fn nested(curve: &Curve, slots: usize, meter: &mut Meter) -> Vec<NestedBase> {
@@ -277,6 +341,65 @@ fn partial_collection_recovers_from_bounded_random_label_queries() {
     .unwrap();
     assert_eq!(certificate.scalar, BigUint::from(3u8));
     partial::verify(&curve, &target, &bases, &certificate, &mut meter).unwrap();
+}
+
+#[test]
+fn observed_explicit_partial_defaults_preserve_certificate_rng_and_work() {
+    let mut setup = Meter::new(Limits::default());
+    let curve = curve(&mut setup);
+    let target = curve
+        .mul(curve.generator(), &3u8.into(), &mut setup)
+        .unwrap();
+    let bases = nested(&curve, 2, &mut setup);
+    let mut plain = Meter::new(Limits::default());
+    let mut plain_rng = Seeded(701);
+    let expected = partial::solve(
+        &curve,
+        &target,
+        bases.clone(),
+        64,
+        64,
+        128,
+        &mut plain_rng,
+        &mut plain,
+    )
+    .unwrap();
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
+    let mut observed = Meter::new(Limits::default());
+    let mut observed_rng = Seeded(701);
+    let mut statistics = Statistics::default();
+    let actual = partial::solve_with_options(
+        &curve,
+        &target,
+        bases,
+        64,
+        64,
+        128,
+        &Options::default(),
+        &mut statistics,
+        &mut observed_rng,
+        &mut observed,
+    )
+    .unwrap();
+    let snapshot = session.finish().unwrap();
+    assert_eq!(actual.scalar, expected.scalar);
+    assert_eq!(actual.relations, expected.relations);
+    assert_eq!(actual.dependency, expected.dependency);
+    assert_eq!(observed_rng.0, plain_rng.0);
+    assert_eq!(observed.used, plain.used);
+    assert_eq!(
+        snapshot.phases.values().map(|p| p.meter_steps).sum::<u64>(),
+        observed.used
+    );
+    assert!(
+        snapshot
+            .phases
+            .values()
+            .map(|p| p.adds + p.doubles)
+            .sum::<u64>()
+            > 0
+    );
+    assert!(statistics.decodes > 0);
 }
 
 #[test]

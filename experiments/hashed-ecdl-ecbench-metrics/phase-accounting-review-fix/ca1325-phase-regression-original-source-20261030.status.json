@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "+1.98.0",
+    "test",
+    "--release",
+    "--locked",
+    "--test",
+    "finite_extensions",
+    "external_oracle_replay_has_independent_group_work_and_matrix_accounting",
+    "--",
+    "--exact"
+  ],
+  "exit_code": 101,
+  "seconds": 15.851427662011702,
+  "log": "/workspace/ca1325-phase-regression-original-source-20261030.log",
+  "sha256": "20db848d9387a4502dfa13e9cf88c0915fa029c161144872db4db35a813fc966",
+  "scope": "Actual regression control on original production implementation before timing fix; expected failure, not a successful validation."
+}
