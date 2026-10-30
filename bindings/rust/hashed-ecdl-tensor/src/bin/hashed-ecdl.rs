@@ -3,6 +3,7 @@
 use hashed_ecdl_tensor::arithmetic::{OsRandom, Seeded};
 use hashed_ecdl_tensor::contraction::Counter;
 use hashed_ecdl_tensor::curve::{Curve, Point};
+use hashed_ecdl_tensor::primality::PrimeCertificate;
 use hashed_ecdl_tensor::reduction::{self, Certificate, Config};
 use hashed_ecdl_tensor::{BigUint, Error, Limits, Meter};
 use serde_json::{json, Value};
@@ -31,6 +32,7 @@ struct Problem {
     bits: Option<usize>,
     // Only for reproducible public fixtures. Omit to use operating-system RNG.
     fixture_seed: Option<u64>,
+    prime_certificates: Option<Vec<PrimeCertificate>>,
 }
 json_record!(
     Problem,
@@ -51,7 +53,8 @@ json_record!(
         steps,
         vector,
         bits,
-        fixture_seed
+        fixture_seed,
+        prime_certificates
     }
 );
 
@@ -94,13 +97,14 @@ fn prepare(problem: &Problem) -> Result<(Curve, Point, Config, Meter), Error> {
         vector: problem.vector.unwrap_or(defaults.vector),
         bits: problem.bits.unwrap_or(defaults.bits),
     });
-    let curve = Curve::with_cofactor(
+    let curve = Curve::with_cofactor_and_certificates(
         integer(&problem.p)?,
         integer(&problem.a)?,
         integer(&problem.b)?,
         integer(&problem.r)?,
         integer(&problem.cofactor)?,
         point(&problem.generator)?,
+        problem.prime_certificates.as_deref().unwrap_or(&[]),
         &mut meter,
     )?;
     let target = problem
@@ -143,6 +147,16 @@ fn read(path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
+        Some("validate") if args.len() == 3 => {
+            let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
+            let (curve, target, _, mut meter) = prepare(&problem)?;
+            if !curve.in_subgroup(&target, &mut meter)? {
+                return Err("target is outside the certified subgroup".into());
+            }
+            println!("{}", json!({"status":"validated", "p":curve.modulus().to_string(),
+                "r":curve.order().to_string(), "charged_steps":meter.used,
+                "challenge_solved":false}));
+        }
         Some("solve") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
             let (curve, target, config, mut meter) = prepare(&problem)?;
@@ -158,6 +172,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "recursive_calls": counter.statistics.recursive_calls,
                 "edge_assignments": counter.statistics.edge_assignments,
                 "functional_assignments": counter.statistics.functional_assignments,
+                "witness_searches": counter.statistics.witness_searches,
                 "charged_steps": meter.used,
                 "scalar_decimal": certificate.scalar.to_string(),
             });
@@ -174,7 +189,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }
-        _ => return Err("usage: hashed-ecdl solve PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
+        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
     }
     Ok(())
 }

@@ -38,6 +38,36 @@ Sources and implementation boundaries:
 This crate is mirrored in crypto and cryptanalysis. Its source files must
 remain byte-identical; the owning repositories have separate integration locks.
 
+## Exact validation and witness search
+
+Primality now uses deterministic bounded tests throughout u64, with the first
+twelve prime bases and the published Sorenson/Webster bound. Larger values
+retain AKS unless independently checked Pocklington certificates are supplied.
+`Curve::with_cofactor_and_certificates` verifies every supplied proof node and
+the existing curve/order/cofactor conditions; a missing proof uses the original
+exact fallback. The runner includes proof data in its receipt for replay.
+
+```sh
+cargo run --locked --release -- validate examples/eccp131-certified.json
+```
+
+The certified input supplies four small proof nodes for the official p/r. The
+original `eccp131.json` remains an uncertified-input control. Parameter validation
+does not recover the challenge scalar or establish feasible relation search.
+
+Built-in functional leaves now select the same least interface word in a
+single input search. A free-input interface permits stopping at the first
+valid assignment in interface order; derived interface bits require a complete
+pass to find the least word. Every returned assignment still passes full graph
+evaluation. Exact count queries and the source recursion guards are unchanged.
+Set `Counter::functional_witnesses = false` or call `witness_by_counts` to use
+the original prefix-count control. Arbitrary caller predicates retain it.
+
+Correctness controls compare complete seeded certificates and retain forged
+proof, UNSAT, alias/pin, derived-interface and resource-limit cases. See the
+paired optimization report for actual checks and open benchmark requirements;
+these changes alone do not establish a runtime or end-to-end speedup.
+
 
 ## Certicom ECCp-131 input
 

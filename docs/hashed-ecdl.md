@@ -1,5 +1,11 @@
 # Hashed-factor-base ECDL: native tensor implementation
 
+For the 2026-10-30 exact-primality and functional-witness engineering update,
+see the separate [validation scope](hashed-ecdl-speedup-validation.md). It
+preserves the original count path and reports 34 passing native tests and
+complete seeded certificate parity. Matched profiling and performance
+evaluation remain blocked; no runtime or end-to-end gain is asserted.
+
 2026-10-29. The compact encoder, exact contraction algorithm and relation
 pipeline are implemented in Rust in both repositories. Small-case correctness
 checks do not establish the manuscript's asymptotic bound or a practical speedup.

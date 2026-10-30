@@ -13,6 +13,7 @@ use crate::network::{increment, Network, Predicate};
 use crate::ring::{Element, Ring};
 use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
 use num_traits::{One, Zero};
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 /// Actual backend used for a contraction.
@@ -37,6 +38,8 @@ pub struct Statistics {
     pub edge_assignments: u64,
     /// Free program input assignments actually visited.
     pub functional_assignments: u64,
+    /// Built-in functional witness searches, separate from exact count queries.
+    pub witness_searches: u64,
     /// Backend used by the most recent public call.
     pub last_backend: Option<Backend>,
 }
@@ -46,6 +49,9 @@ pub struct Counter {
     /// Permit unique-witness arithmetic-program evaluation in the leaf range.
     /// Arbitrary user predicates cannot attach such metadata.
     pub functional_leaves: bool,
+    /// Use the single-pass built-in witness search in the functional leaf range.
+    /// Disable to retain the original prefix-count path for exact comparisons.
+    pub functional_witnesses: bool,
     /// Actual work diagnostics.
     pub statistics: Statistics,
 }
@@ -53,6 +59,7 @@ impl Default for Counter {
     fn default() -> Self {
         Self {
             functional_leaves: true,
+            functional_witnesses: true,
             statistics: Statistics::default(),
         }
     }
@@ -197,10 +204,128 @@ impl Counter {
         Ok(count)
     }
 
-    /// Lemma 1: deterministically select a language word by prefix counts.
-    /// At most one initial count and one count per unfixed interface bit are used.
-    /// Resource errors propagate; `None` means an exact zero contraction.
+    /// Select the same lexicographically least interface word as prefix counts.
+    /// Built-in functional leaves search inputs once and stop at the first valid
+    /// word only when their order proves it is least. Derived interface bits
+    /// require a full pass. Other networks retain the prefix-count algorithm.
+    /// Resource errors propagate; `None` is returned only after exact exhaustion.
     pub fn witness(
+        &mut self,
+        network: &Network,
+        pins: &[Option<bool>],
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<bool>>> {
+        network.check_pins(pins)?;
+        if self.functional_leaves && self.functional_witnesses && network.model.is_some() {
+            meter.vector(network.edge_count(), "contraction graph")?;
+            meter.bits(
+                network
+                    .edge_count()
+                    .checked_add(1)
+                    .ok_or_else(|| overflow("count precision"))?,
+                "exact count precision",
+            )?;
+            let edges = network
+                .edge_count()
+                .checked_mul(2)
+                .ok_or_else(|| overflow("bipartite subdivision"))?;
+            let setup =
+                recursive::Setup::new(edges.max(2), network.maximum_degree().max(2), meter)?;
+            if setup.parameters(edges, 0)?.is_none() || edges <= setup.leaf_size {
+                self.statistics.last_backend = Some(Backend::Functional);
+                event(
+                    &mut self.statistics.witness_searches,
+                    "functional witness searches",
+                )?;
+                return self.functional_witness(network, pins, meter);
+            }
+        }
+        self.witness_by_counts(network, pins, meter)
+    }
+
+    fn functional_witness(
+        &mut self,
+        network: &Network,
+        pins: &[Option<bool>],
+        meter: &mut Meter,
+    ) -> Result<Option<Vec<bool>>> {
+        let program = network
+            .model
+            .as_ref()
+            .ok_or_else(|| invalid("missing built-in witness program"))?;
+        let Some(signal_pins) = program.signal_pins(pins)? else {
+            return Ok(None);
+        };
+        let positions: BTreeMap<_, _> = program
+            .free
+            .iter()
+            .enumerate()
+            .map(|(i, &s)| (s, i))
+            .collect();
+        let mut order = Vec::new();
+        let mut seen = BTreeSet::new();
+        let mut interface_is_input = true;
+        // Prioritize interface signals, respecting aliases and fixed values.
+        for &edge in network.interface() {
+            let signal = program.edge_signals[edge];
+            if signal_pins[signal].is_some() {
+                continue;
+            }
+            if let Some(&position) = positions.get(&signal) {
+                if seen.insert(position) {
+                    order.push(position);
+                }
+            } else {
+                interface_is_input = false;
+            }
+        }
+        for (position, &signal) in program.free.iter().enumerate() {
+            if signal_pins[signal].is_none() && seen.insert(position) {
+                order.push(position);
+            }
+        }
+        // increment() changes its first digit fastest. Reverse the priorities so
+        // interface[0] changes slowest, matching prefix false-before-true order.
+        order.reverse();
+        let mut digits = vec![false; order.len()];
+        let mut values: Vec<_> = program
+            .free
+            .iter()
+            .map(|&s| signal_pins[s].unwrap_or(false))
+            .collect();
+        let mut best: Option<Vec<bool>> = None;
+        loop {
+            meter.charge(1, "functional witness assignment")?;
+            event(
+                &mut self.statistics.functional_assignments,
+                "functional assignment count",
+            )?;
+            for (&position, &bit) in order.iter().zip(&digits) {
+                values[position] = bit;
+            }
+            if let Some(assignment) = program.materialize(&values, &signal_pins, network, meter)? {
+                let word: Vec<_> = network
+                    .interface()
+                    .iter()
+                    .map(|&edge| assignment[edge])
+                    .collect();
+                if interface_is_input {
+                    return Ok(Some(word));
+                }
+                if best.as_ref().map_or(true, |old| word < *old) {
+                    best = Some(word);
+                }
+            }
+            if !increment(&mut digits) {
+                return Ok(best);
+            }
+        }
+    }
+
+    /// Lemma 1's original deterministic self-reduction, retained for exact
+    /// comparisons and callers that explicitly require prefix count queries.
+    /// Uses at most one initial count and one per unfixed interface bit.
+    pub fn witness_by_counts(
         &mut self,
         network: &Network,
         pins: &[Option<bool>],
@@ -473,5 +598,140 @@ mod tests {
             );
             assert_eq!(counter.statistics.last_backend, Some(Backend::Functional));
         }
+    }
+
+    #[test]
+    fn functional_input_witness_preserves_prefix_order_without_recounts() {
+        let mut meter = Meter::new(Limits::default());
+        let mut encoder = crate::encoding::Encoder::new();
+        let input = encoder.input_word(4, &meter).unwrap();
+        // Reversing the input interface is intentional: enumeration must follow
+        // the requested interface order, rather than the program's input order.
+        let reversed = crate::network::Word(input.0.iter().rev().copied().collect());
+        encoder.mark_interface(&reversed, &meter).unwrap();
+        let network = encoder.finish(&meter).unwrap();
+        for prefix in [None, Some(false), Some(true)] {
+            let mut pins = vec![None; network.edge_count()];
+            pins[network.interface()[1]] = prefix;
+            let mut baseline = Counter::default();
+            let expected = baseline
+                .witness_by_counts(&network, &pins, &mut meter)
+                .unwrap();
+            let mut candidate = Counter::default();
+            assert_eq!(
+                candidate.witness(&network, &pins, &mut meter).unwrap(),
+                expected
+            );
+            assert_eq!(candidate.statistics.functional_assignments, 1);
+            assert_eq!(candidate.statistics.contractions, 0);
+            assert_eq!(candidate.statistics.witness_searches, 1);
+            assert!(baseline.statistics.functional_assignments > 1);
+            if prefix.is_none() {
+                assert_eq!(baseline.statistics.functional_assignments, 31);
+            }
+        }
+    }
+
+    #[test]
+    fn functional_derived_interfaces_match_prefixes_for_all_output_pins() {
+        let mut meter = Meter::new(Limits::default());
+        let mut encoder = crate::encoding::Encoder::new();
+        let a = encoder.input_word(2, &meter).unwrap();
+        let b = encoder.input_word(2, &meter).unwrap();
+        let sum = encoder.integer_add(&a, &b, &meter).unwrap();
+        encoder.mark_interface(&sum, &meter).unwrap();
+        let network = encoder.finish(&meter).unwrap();
+        for mut code in 0..27 {
+            let mut pins = vec![None; network.edge_count()];
+            for &edge in network.interface() {
+                pins[edge] = [None, Some(false), Some(true)][code % 3];
+                code /= 3;
+            }
+            let expected = Counter::default()
+                .witness_by_counts(&network, &pins, &mut meter)
+                .unwrap();
+            let mut candidate = Counter::default();
+            assert_eq!(
+                candidate.witness(&network, &pins, &mut meter).unwrap(),
+                expected
+            );
+            assert_eq!(candidate.statistics.last_backend, Some(Backend::Functional));
+        }
+    }
+
+    #[test]
+    fn functional_witness_aliases_empty_unsat_and_limits_are_exact() {
+        let mut meter = Meter::new(Limits::default());
+        let mut encoder = crate::encoding::Encoder::new();
+        let input = encoder.input_word(1, &meter).unwrap();
+        let negated = encoder.not(&input, &meter).unwrap();
+        encoder.zero_test(&input, &meter).unwrap();
+        encoder
+            .assert_equal(
+                &negated,
+                &crate::encoding::Encoder::constant(1, &BigUint::one()).unwrap(),
+                &meter,
+            )
+            .unwrap();
+        encoder.mark_interface(&input, &meter).unwrap();
+        let network = encoder.finish(&meter).unwrap();
+        let program = network.model.as_ref().unwrap();
+        let alias = program
+            .edge_signals
+            .iter()
+            .enumerate()
+            .filter(|(_, s)| **s == program.free[0])
+            .map(|(e, _)| e)
+            .collect::<Vec<_>>();
+        assert!(alias.len() >= 2);
+        let mut pins = vec![None; network.edge_count()];
+        pins[alias[0]] = Some(false);
+        pins[alias[1]] = Some(true);
+        assert_eq!(
+            Counter::default()
+                .witness(&network, &pins, &mut meter)
+                .unwrap(),
+            None
+        );
+        let mut empty = Meter::new(Limits {
+            steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            Counter::default().witness(&network, &vec![None; network.edge_count()], &mut empty),
+            Err(Error::Limit(_))
+        ));
+        let mut encoder = crate::encoding::Encoder::new();
+        let input = encoder.input_word(1, &meter).unwrap();
+        encoder
+            .assert_equal(
+                &input,
+                &crate::encoding::Encoder::constant(1, &BigUint::zero()).unwrap(),
+                &meter,
+            )
+            .unwrap();
+        encoder
+            .assert_equal(
+                &input,
+                &crate::encoding::Encoder::constant(1, &BigUint::one()).unwrap(),
+                &meter,
+            )
+            .unwrap();
+        let network = encoder.finish(&meter).unwrap();
+        assert_eq!(
+            Counter::default()
+                .witness(&network, &vec![None; network.edge_count()], &mut meter)
+                .unwrap(),
+            None
+        );
+        let mut encoder = crate::encoding::Encoder::new();
+        encoder.input_word(1, &meter).unwrap();
+        let network = encoder.finish(&meter).unwrap();
+        assert_eq!(
+            Counter::default()
+                .witness(&network, &vec![None; network.edge_count()], &mut meter)
+                .unwrap(),
+            Some(vec![])
+        );
     }
 }
