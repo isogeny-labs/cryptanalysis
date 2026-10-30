@@ -59,6 +59,12 @@ PAIR_INDEX_THEOREMS = frozenset({
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
+HASSE_UNIQUE_SOURCE = "bindings/rust/curve-audit/formal/HasseUnique.lean"
+HASSE_UNIQUE_SHA256 = "f72e23b6d89fa7259b2502348b5af850bc18b8cf5f429b143a7292427358c400"
+HASSE_UNIQUE_THEOREMS = frozenset({
+    "unique_multiple_in_short_interval",
+    "unique_multiple_from_center_bounds",
+})
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -68,6 +74,7 @@ HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278
 LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
 LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 DELTA = {
+    HASSE_UNIQUE_SOURCE: HASSE_UNIQUE_SHA256,
     "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
     "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
@@ -163,7 +170,7 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
     require(len(added) == 4 and len(current) == 97 and
             set(current) == set(archived) | added, "current Lean corpus changed")
     reused = sorted(set(archived) - set(DELTA))
-    require(len(reused) == 91, "unexpected archive reuse count")
+    require(len(reused) == 90, "unexpected archive reuse count")
     for path in reused:
         row = archived[path]
         require(current[path] == row["sha256"], f"Lean source changed without native replay: {path}")
@@ -231,6 +238,39 @@ def check_pqc() -> dict:
 def check_delta() -> dict:
     require((ROOT / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
             "root Lean toolchain changed")
+    # HasseUnique left the 2021 frozen archive when centered-interval
+    # uniqueness was proved; keep its bytes and native axiom audit pinned.
+    unique = ROOT / HASSE_UNIQUE_SOURCE
+    require(digest(unique) == HASSE_UNIQUE_SHA256,
+            "Hasse uniqueness source changed without review")
+    unique_source = unique.read_text()
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", unique_source),
+            "forbidden proof escape in Hasse uniqueness source")
+    unique_declared = re.findall(r"^theorem\s+(\w+)", unique_source, re.MULTILINE)
+    unique_requested = re.findall(r"^#print axioms\s+(\w+)", unique_source, re.MULTILINE)
+    require(len(unique_declared) == len(set(unique_declared)) and
+            set(unique_declared) == set(unique_requested) == HASSE_UNIQUE_THEOREMS,
+            "Hasse uniqueness declaration or axiom printout coverage changed")
+    with tempfile.TemporaryDirectory(prefix="hasse-unique-") as temporary:
+        unique_env = {**os.environ, "LEAN_PATH": temporary}
+        unique_built = run(["lean", "-o", str(Path(temporary) / "HasseUnique.olean"),
+                            "HasseUnique.lean"], cwd=HASSE_FORMAL, env=unique_env, timeout=900)
+        unique_printed = re.findall(r"^'CurveAudit\.([^']+)' depends on axioms: \[([^]]*)\]$",
+                                    unique_built.stdout, re.MULTILINE)
+        require(len(unique_printed) == len(HASSE_UNIQUE_THEOREMS) and
+                {name for name, _ in unique_printed} == HASSE_UNIQUE_THEOREMS and
+                all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                    <= {"propext", "Classical.choice", "Quot.sound"}
+                    for _, names in unique_printed),
+                "Hasse uniqueness native axiom printout changed")
+        unique_audit = run(["lean", "--run", str(ROOT / "tools/lean/AuditAxioms.lean"),
+                            "HasseUnique"], cwd=HASSE_FORMAL, env=unique_env, timeout=900)
+        unique_audited = [line for line in unique_audit.stdout.splitlines()
+                          if line.startswith("ok    ") or line.startswith("audited ")]
+        require(len(unique_audited) == len(HASSE_UNIQUE_THEOREMS) + 1 and
+                unique_audited[-1] ==
+                "audited 2 theorems in [HasseUnique]; 0 failing, 0 trusted (native_decide)",
+                "Hasse uniqueness transitive theorem audit changed")
     require((ORBIT / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
             "Orbit Lean toolchain changed")
     orbit = run([str(ORBIT / "check.sh")], timeout=900)
