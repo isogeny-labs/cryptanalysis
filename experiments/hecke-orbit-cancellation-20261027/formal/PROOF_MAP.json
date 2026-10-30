@@ -1,0 +1,40 @@
+{
+  "axioms": [],
+  "build_command": "lake build OrbitCancellation",
+  "open_obligations": [
+    "Formalize the 11a1/F83 group law and prove the saved trace coordinates arise from the extension-field Hecke fibers.",
+    "Formalize exact rational rank 16 of the 20-column combined relation matrix."
+  ],
+  "results": [
+    {
+      "bridge": "The expanded rows and outside coordinate are reconstructed from pinned Frobenius trace receipts in verify.py.",
+      "claim": "For every coordinate in Fin 21, expanded row 19 minus expanded row 8 equals the saved class-only cancellation row, including zero in the shared outside-trace coordinate.",
+      "hypotheses": "None; all 21 integer coordinates are explicitly defined in OrbitCancellation.lean.",
+      "lean_declaration": "OrbitCancellation.cancel_8_19",
+      "status": "checked"
+    },
+    {
+      "bridge": "The expanded rows and outside coordinate are reconstructed from pinned Frobenius trace receipts in verify.py.",
+      "claim": "For every coordinate in Fin 21, expanded row 4 minus expanded row 2 equals the saved class-only cancellation row, including zero in the shared outside-trace coordinate.",
+      "hypotheses": "None; all 21 integer coordinates are explicitly defined in OrbitCancellation.lean.",
+      "lean_declaration": "OrbitCancellation.cancel_2_4",
+      "status": "checked"
+    },
+    {
+      "bridge": "The expanded rows and outside coordinate are reconstructed from pinned Frobenius trace receipts in verify.py.",
+      "claim": "For every coordinate in Fin 21, expanded row 9 minus expanded row 7 equals the saved class-only cancellation row, including zero in the shared outside-trace coordinate.",
+      "hypotheses": "None; all 21 integer coordinates are explicitly defined in OrbitCancellation.lean.",
+      "lean_declaration": "OrbitCancellation.cancel_7_9",
+      "status": "checked"
+    },
+    {
+      "bridge": "The expanded rows and outside coordinate are reconstructed from pinned Frobenius trace receipts in verify.py.",
+      "claim": "For every coordinate in Fin 21, expanded row 15 minus expanded row 11 equals the saved class-only cancellation row, including zero in the shared outside-trace coordinate.",
+      "hypotheses": "None; all 21 integer coordinates are explicitly defined in OrbitCancellation.lean.",
+      "lean_declaration": "OrbitCancellation.cancel_11_15",
+      "status": "checked"
+    }
+  ],
+  "schema": "hecke-orbit-cancellation-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4"
+}
