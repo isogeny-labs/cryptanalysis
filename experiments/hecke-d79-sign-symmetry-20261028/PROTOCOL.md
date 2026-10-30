@@ -1,0 +1,7 @@
+# Frozen D79 opposite-sign triple-cache A/B
+
+The tested implementation stores four signed sums per prior source triple, fixing the first sign to +1. For queries with first sign -1, it negates the stored triple with the opposite remaining signs, using `-(A+B+C)=(-A)+(-B)+(-C)`. This preserves the reverse-lexicographic source and sign query stream, triple bucket order, relation verification, immediate modular rank insertion, rank-39 stop, caps, and current-source signed pair cache. Cache construction and each added negation are charged. The comparator is the full eight-sign triple cache from PR #1280.
+
+Replay the nine audited source journals (one known control and eight fresh classes) with alternating arm order. Pin exact source selection, index, audits, both kernel sources and checked Sage runtime before measurement. Require identical emitted rows, probes, ranks and anchored log vectors. Record per-source `add` and `neg` calls, cache insertions and entry counts, shallow cache byte estimates, paired-process RSS and component wall intervals. Preserve any censored or failed arm.
+
+The primary diagnostic is the full-versus-symmetric cache entry and shallow-byte count at the rank stop, with charged additions and negations alongside it. Local wall time is exploratory under the repository CPU tier contract. This is a relation-collection component replay with `candidate_id` and `target_online_ms` null. Audit source hashes, exact rows, cache recurrences, per-source operation-count identities, phase sums and anchored replays before publication.
