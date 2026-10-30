@@ -1,0 +1,55 @@
+{
+  "artifact_path": "experiments/hecke-d79-function-cache-20261027/artifacts/hecke13-131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac.json",
+  "artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "baselines": [
+    "support4",
+    "support4_plus_direct5"
+  ],
+  "candidate_id": null,
+  "class_size": 40,
+  "coefficient_convention": "strictly increasing source indices; first coefficient +1, rest -1 then +1",
+  "frozen": {
+    "class": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/class-result.json",
+      "sha256": "a2e44632c52281338a18fbf65122de576227fff532937066b2022ee88d36394f"
+    },
+    "q_log_audit": {
+      "path": "experiments/hecke-d79-p68437-support5-20261027/q-log-audit.json",
+      "sha256": "0e1184ab9ca7c4759f4e5e57f0b6271ca10af92daa221c24774c0111808ea848"
+    },
+    "source": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/source-result.json",
+      "sha256": "80eb194dbd68b630d57c65e7148260ff6d01bad7832132e930aa74d098ff9381"
+    },
+    "support4": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/analysis.json",
+      "sha256": "644194be1d0b7da5fd98737700ed8598d6d96700c2ce3aa5d312fa3f8ead44f8"
+    },
+    "support5": {
+      "path": "experiments/hecke-d79-p68437-support5-20261027/result.json",
+      "sha256": "458ab6ef577b57f0f73f6f973e0f8fa9339f45138f8bd2bdfd32206ebedfa055"
+    },
+    "support5_audit": {
+      "path": "experiments/hecke-d79-p68437-support5-20261027/audit.json",
+      "sha256": "cc07b6fb69c7721f0fd177b5dc4a174dfee6dc8cb6a378e10beaa1f293ecd3ea"
+    }
+  },
+  "function_digest": "ebc29c5c9b4f3de35bc45afa4ac9f3b40db2f1a68c5a9912396a0ab67dca24ea",
+  "orders": [
+    "ascending",
+    "priority"
+  ],
+  "p": 68437,
+  "prefix_runner_path": "experiments/hecke-d79-source-prefix-20261027/run.py",
+  "prefix_runner_sha256": "4de8f66bf61394ed91077e29b279f7f5c55c840f07dcc64f270888e0f5113886",
+  "q": 109,
+  "schema": "hecke-d79-p68437-support5-prefix-inputs-v1",
+  "shared_runner_path": "experiments/hecke-d79-shared-build-20261027/run_shared.py",
+  "shared_runner_sha256": "6decf1fa89b951eb2fcaf9428f9142818cb8991d4551924f10e0a3a8c54f6223",
+  "source_path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+  "source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "source_stop": "first rational rank 40 for both baselines, or after 40 sources",
+  "support_max": 5,
+  "target_online_ms": null,
+  "wall_cap_seconds": 1800
+}
