@@ -1,0 +1,5 @@
+# Lean structural check and boundary
+
+The pinned toolchain is `leanprover/lean4:v4.35.0-rc4`, with no external package dependencies. `lake build NullCompletion` exited zero; [build-output.txt](build-output.txt) retains `#print axioms` for all five declarations, each reporting no axioms. The module works over a type with explicitly stated standard group laws and proves unique solutions to pair and triple cancellation equations, plus nonzero completion for a nonzero partial sum.
+
+Formalization of the full expectation result is partial. Core `Init` in this pinned project does not provide a finite-group cardinality/counting library such as `Fintype`/`Finset`. The remaining obligation is to count nonzero first/second assignments, apply the completion lemmas to show exactly `(N−1)(N−2)` admissible ordered triples for each sign choice, and derive the expectation formulas by finite uniform probability and linearity. The report gives that written proof; the producer and independent Sage replay check the exact rational formulas for the three frozen group orders.
