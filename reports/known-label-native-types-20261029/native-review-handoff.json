@@ -1,0 +1,47 @@
+{
+  "handoff": {
+    "id": "TASK-20261029-d45962",
+    "from": "coordinator",
+    "to": "reviewer",
+    "objective": "Actual native type fidelity and evidence linkage for all four identities",
+    "uncertainty_reduced": "Whether actual native elaborated types faithfully express all four frozen source identities and are tied to the claimed hosted run.",
+    "inputs": [
+      "Immutable producer source/gate/pins at42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+      "Published native-40828001123 packet and review-plan-native.json in the dispatch snapshot",
+      "Original docs/known-label-next-leads-20261028/README.md and Algebra.lean, with historical source status preserved",
+      "AGENTS.md, review-evidence Lean workflow and directly relevant contracts"
+    ],
+    "constraints": [
+      "Do not read repair-review, prior sibling reviews, synthesis, memory or session histories.",
+      "Read only immutable inputs; write only designated scratch output.",
+      "No Lean/Lake builds, experiments, installation, cloud writes or repository edits.",
+      "Native evidence supplied from existing completed hosted run; do not rerun."
+    ],
+    "deliverables": [
+      "report.md with per-claim machine/fidelity/outcome judgments",
+      "attestation.json with complete sources_read, joint ownership and sibling-access declaration",
+      "seal.sha256 covering all output files"
+    ],
+    "artifact_paths": [
+      "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-d45962"
+    ],
+    "archived_by": "TASK-20261029-54d4bf",
+    "inference": {
+      "policy": "review-adversarial",
+      "reasoning_effort": "xhigh",
+      "fallback_allowed": false,
+      "degraded_allowed": false,
+      "independent_session_required": true,
+      "delivery": "interactive"
+    },
+    "budget": {
+      "maximum_native_runs": 0
+    },
+    "completion_gate": [
+      "All four exact types compared independently; limitations and any breaking evidence recorded.",
+      "No global validity, performance or scientific status promotion."
+    ],
+    "return_format": "Separate sealed report and attestation; preserve all diagnostics.",
+    "review_plan": "reports/known-label-native-types-20261029/review-plan-native.json"
+  }
+}

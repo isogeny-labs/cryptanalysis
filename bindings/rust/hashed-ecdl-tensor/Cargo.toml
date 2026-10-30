@@ -1,0 +1,23 @@
+[package]
+name = "hashed-ecdl-tensor"
+default-run = "hashed-ecdl"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.78"
+license = "MIT"
+publish = false
+description = "Exact Boolean tensor encodings and the conditional hashed ECDL reduction"
+
+[dependencies]
+num-bigint = { version = "=0.5.1", features = ["serde"] }
+num-integer = "0.1"
+num-rational = { version = "0.4", default-features = false, features = ["std"] }
+num-traits = "0.2"
+getrandom = "0.2"
+serde = "1"
+serde_json = "1"
+
+[lints.clippy]
+needless_range_loop = "allow"
+too_many_arguments = "allow"
+type_complexity = "allow"

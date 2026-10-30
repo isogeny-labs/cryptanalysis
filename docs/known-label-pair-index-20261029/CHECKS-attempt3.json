@@ -1,0 +1,26 @@
+{
+  "kind": "bounded unit correctness controls; not an empirical performance benchmark",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/known-label-pair-index-20261029/docs/known-label-pair-index-20261029",
+    "-p",
+    "test_pair_index.py",
+    "-v"
+  ],
+  "recorded_at_utc": "2026-10-29T15:10:57.799897+00:00",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_actual_seven_root_coset_is_filtered_to_curve_points (test_pair_index.PairIndexTests.test_actual_seven_root_coset_is_filtered_to_curve_points) ... ok\ntest_all_pair_factors_and_exact_coverage (test_pair_index.PairIndexTests.test_all_pair_factors_and_exact_coverage) ... ok\ntest_batch_localization_matches_complete_point_control (test_pair_index.PairIndexTests.test_batch_localization_matches_complete_point_control) ... ok\ntest_full_witness_graph_and_label_replay (test_pair_index.PairIndexTests.test_full_witness_graph_and_label_replay) ... ok\ntest_invalid_or_unsupported_index_inputs_refused (test_pair_index.PairIndexTests.test_invalid_or_unsupported_index_inputs_refused) ... ok\ntest_symbolic_cleared_addition_identity (test_pair_index.PairIndexTests.test_symbolic_cleared_addition_identity) ... ok\ntest_balanced_even_cycle_needs_anchor (test_pair_index.SignedCycleTests.test_balanced_even_cycle_needs_anchor) ... ok\ntest_cycle_defect_is_dlp_certificate (test_pair_index.SignedCycleTests.test_cycle_defect_is_dlp_certificate) ... ok\ntest_difference_cycles_keep_root_free (test_pair_index.SignedCycleTests.test_difference_cycles_keep_root_free) ... ok\ntest_unbalanced_even_cycle_recovers_without_anchor (test_pair_index.SignedCycleTests.test_unbalanced_even_cycle_recovers_without_anchor) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.149s\n\nOK\n",
+  "input_refinement": "Use the existing registered p827/r823 curve; earlier provisional-fixture controls remain preserved",
+  "fixture": "CURVE_FIXTURE.json",
+  "code_sha256": {
+    "docs/known-label-pair-index-20261029/pair_index.py": "36045afc2b0dbebccbad87fb53c7a43ec7f198b78627b3daee71d4cca0b618eb",
+    "docs/known-label-pair-index-20261029/signed_labels.py": "dad9c3ab57a25c7c567c53764dc2f334262a65a2efe60aac6f17172e916f3f2c",
+    "docs/known-label-pair-index-20261029/test_pair_index.py": "921debd23644fc5c77de2a847ecddf3b6cff6269b37bc9b71d8644720aeafc9f",
+    "docs/known-label-pair-index-20261029/PairIndex.lean": "68dd10106b5499ad8b3fba35b95980a5ed1e6c46c0433047e0d5034e90c135c8"
+  }
+}
