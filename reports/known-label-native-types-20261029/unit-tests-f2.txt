@@ -1,0 +1,54 @@
+test_malformed_zero_exit_types_and_wrapper_survive_cleanup (__main__.DurableDiagnosticsControls) ... retained type-wrapper evidence: /tmp/tmp2uzpeft5/type-wrapper-4_0_xss1
+retained type-output evidence: /tmp/tmp2uzpeft5/type-output-6ukdvfj8
+ok
+test_real_nonzero_child_retains_complete_bytes_and_exit (__main__.DurableDiagnosticsControls) ... retained command evidence: /tmp/tmpwg6sbd6c/command-785shghl
+ok
+test_timeout_retains_partial_output_and_unknown_exit (__main__.DurableDiagnosticsControls) ... retained command evidence: /tmp/tmpvjxh0g2v/command-7wmgpxjr
+ok
+test_changed_wrapper_refused (__main__.ElaboratedTypeControls) ... retained type-wrapper evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/type-wrapper-71_g9f8q
+retained type-output evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/type-output-s2eqen9x
+ok
+test_empty_missing_duplicate_and_wrong_namespace_outputs_refused (__main__.ElaboratedTypeControls) ... ok
+test_empty_type_body_refused (__main__.ElaboratedTypeControls) ... ok
+test_native_type_command_failure_propagates (__main__.ElaboratedTypeControls) ... retained type-wrapper evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/type-wrapper-pnprh6ns
+ok
+test_unsafe_module_or_empty_names_refused_before_native (__main__.ElaboratedTypeControls) ... ok
+test_wrapper_imports_compiled_original_and_prints_exact_names (__main__.ElaboratedTypeControls) ... ok
+test_auditor_change_refused_before_native (__main__.KnownLabelRegistrationControls) ... ok
+test_changed_source_refused_before_compilation (__main__.KnownLabelRegistrationControls) ... ok
+test_compiled_object_and_auditor_mutations_refused_at_phase_boundaries (__main__.KnownLabelRegistrationControls) ... ok
+test_each_workspace_input_is_bound (__main__.KnownLabelRegistrationControls) ... ok
+test_extra_audited_theorem_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_matching_source_through_symlink_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_missing_compiled_object_cannot_reuse_plausible_stdout (__main__.KnownLabelRegistrationControls) ... retained module-inputs evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/module-inputs-rzq2zkyj
+ok
+test_missing_printout_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_native_commands_use_original_bytes_isolated_output_and_module_audit (__main__.KnownLabelRegistrationControls) ... ok
+test_native_compile_failure_propagates (__main__.KnownLabelRegistrationControls) ... retained module-inputs evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/module-inputs-xg2vwo6c
+ok
+test_native_printout_cannot_substitute_same_short_names_in_other_namespace (__main__.KnownLabelRegistrationControls) ... ok
+test_nonstandard_axiom_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_only_exact_added_path_has_new_dispatch (__main__.KnownLabelRegistrationControls) ... ok
+test_plausible_audit_count_with_wrong_names_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_source_mutation_during_audit_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_workspace_mutation_during_each_native_command_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_zero_or_failed_module_audit_refused (__main__.KnownLabelRegistrationControls) ... ok
+test_another_documentation_module_remains_unreviewed (__main__.QuarticRegistrationControls) ... ok
+test_changed_build_pin_refused (__main__.QuarticRegistrationControls) ... ok
+test_changed_project_bytes_refused (__main__.QuarticRegistrationControls) ... ok
+test_changed_registered_source_refused_before_compilation (__main__.QuarticRegistrationControls) ... ok
+test_known_label_changed_source_refused_before_compilation (__main__.QuarticRegistrationControls) ... ok
+test_known_label_compiler_failure_is_not_admission (__main__.QuarticRegistrationControls) ... retained module-inputs evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/module-inputs-f05dvyp8
+ok
+test_known_label_dispatch_requires_native_checker (__main__.QuarticRegistrationControls) ... ok
+test_known_label_nonstandard_axiom_refused (__main__.QuarticRegistrationControls) ... retained module-inputs evidence: /home/ec2-user/scratch/known-label-native-types-20261029/producer-f2-diagnostics/module-inputs-0ok2pu7k
+ok
+test_known_label_three_audited_theorems_cannot_pass (__main__.QuarticRegistrationControls) ... ok
+test_original_bare_paths_are_explicitly_bound (__main__.QuarticRegistrationControls) ... ok
+test_symlink_source_refused_even_with_matching_bytes (__main__.QuarticRegistrationControls) ... ok
+test_unknown_bare_source_still_refused_without_compilation (__main__.QuarticRegistrationControls) ... ok
+
+----------------------------------------------------------------------
+Ran 38 tests in 4.381s
+
+OK

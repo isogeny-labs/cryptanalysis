@@ -1,0 +1,32 @@
+retained type-wrapper evidence: /tmp/tmpb8plvttl/type-wrapper-b1gz9sn2
+retained type-output evidence: /tmp/tmpb8plvttl/type-output-7k59xd8q
+.retained command evidence: /tmp/tmp40psz0ih/command-lolvmu3d
+.retained command evidence: /tmp/tmpse4nj7xr/command-e7j8zh30
+.retained type-wrapper evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-wrapper-8t9f4lr0
+retained type-output evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-output-f9olebin
+...retained type-wrapper evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-wrapper-_u8zg0_4
+.E.........retained module-inputs evidence: /tmp/tmp4fxu6wkg/.lean-corpus-evidence/module-inputs-5p7r6kfz
+...retained module-inputs evidence: /tmp/tmpm4q7p4ou/.lean-corpus-evidence/module-inputs-fdztthsp
+.............retained module-inputs evidence: /tmp/tmp29_8pafd/.lean-corpus-evidence/module-inputs-u68yui8r
+..retained module-inputs evidence: /tmp/tmpy_kmsr5v/.lean-corpus-evidence/module-inputs-lh8hi8n0
+.........
+======================================================================
+ERROR: test_real_native_pair_index_wrapped_universe_headers (test_current_corpus_gate.ElaboratedTypeControls.test_real_native_pair_index_wrapped_universe_headers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis-pair-index-repair/tools/lean/test_current_corpus_gate.py", line 439, in test_real_native_pair_index_wrapped_universe_headers
+    self.assertEqual(self.collect(raw.decode(), gate.PAIR_INDEX_SOURCE), raw.decode())
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis-pair-index-repair/tools/lean/test_current_corpus_gate.py", line 429, in collect
+    return gate.collect_elaborated_types(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis-pair-index-repair/tools/lean/current-corpus-gate.py", line 466, in collect_elaborated_types
+    require(len(found) == len(names) and set(found) == names,
+  File "/workspace/cryptanalysis-pair-index-repair/tools/lean/current-corpus-gate.py", line 91, in require
+    raise ValueError(message)
+ValueError: incomplete native elaborated types in docs/known-label-pair-index-20261029/PairIndex.lean
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.140s
+
+FAILED (errors=1)
