@@ -1,0 +1,5 @@
+# Same-target three-summand extension
+
+Use exactly the public p63317 point and class logs pinned from the `NO_RELATION` pair experiment. The earlier miss remains a retained result. Before running the triple search, freeze the pair-index construction, all-witness storage, third-source/sign probe order, distinct-index filter, 80-probe cap and first-verified stop in `inputs.json`. Do not change the target or search order after seeing outcomes.
+
+Construct the pair index before the target-dependent interval. For `k=0..39` and sign `-1,+1`, query the residual `Q-sign*B_k`, scan all pair witnesses in frozen order, require `i,j,k` distinct, group-check the three-term relation, derive the scalar from anchored class logs and verify it against the public point. Record every attempted residual and outcome, all target-dependent costs, and a capped failure if absent. Independently recompute the first witness and full three-term coverage in checked Sage. This is a target-relation component; `candidate_id` and `target_online_ms` remain null.
