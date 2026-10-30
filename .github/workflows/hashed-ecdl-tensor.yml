@@ -1,6 +1,14 @@
 name: hashed ECDL tensor correctness
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'bindings/rust/hashed-ecdl-tensor/**'
+      - 'bindings/rust/cryptanalysis/**'
+      - 'bindings/rust/Cargo.toml'
+      - 'bindings/rust/Cargo.lock'
+      - '.github/workflows/hashed-ecdl-tensor.yml'
   push:
     branches: [main]
     paths:
