@@ -1,0 +1,44 @@
+{
+  "axioms": [
+    "propext"
+  ],
+  "build_command": "lake build ShortTrace",
+  "open_obligations": [
+    "Formalize the standard inverse-minor and kernel-vector implications into a single rank-equals-19 theorem.",
+    "Formalize the elliptic-curve Frobenius traces and the F83 group law; currently checked by the Sage producer receipts and independent checked-Sage validator."
+  ],
+  "results": [
+    {
+      "bridge": "Projection vector is independently reconstructed from 18 times each frozen F83 class point in verify.py.",
+      "claim": "The explicit nonzero 20-coordinate order-5 projection is annihilated by every one of the 27 saved relation rows.",
+      "hypotheses": "Exact Nat lists in ShortTrace.lean, reduced modulo 5.",
+      "lean_declarations": [
+        "ShortTrace.rows_annihilate_projection",
+        "ShortTrace.projection_nonzero"
+      ],
+      "status": "checked"
+    },
+    {
+      "bridge": "The standard inverse-implies-rank implication is given in RESULT.md and remains outside this Lean module.",
+      "claim": "An explicit 19-by-19 minor of the saved row matrix has a displayed right inverse modulo 5.",
+      "hypotheses": "The 19 row and column indices and both matrices are explicit.",
+      "lean_declarations": [
+        "ShortTrace.minor_matches_rows",
+        "ShortTrace.minor_inverse_certificate"
+      ],
+      "status": "checked arithmetic certificate"
+    },
+    {
+      "bridge": "The source traces and group sums are independently replayed by verify.py.",
+      "claim": "The two selected degree-13 row differences cancel their shared outside trace coordinate and equal the saved class-only rows.",
+      "hypotheses": "Each 21-coordinate expanded row is explicit; coordinate 20 is the shared auxiliary point.",
+      "lean_declarations": [
+        "ShortTrace.cancel_13_13_minus_13_15",
+        "ShortTrace.cancel_13_14_minus_13_16"
+      ],
+      "status": "checked"
+    }
+  ],
+  "schema": "hecke-short-trace-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4"
+}

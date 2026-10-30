@@ -1,0 +1,11 @@
+# Short auxiliary-trace relation search at D=-79, conductor 2
+
+Use the 20 frozen class points over F_83 and the exact degree-5 and degree-13 Frobenius-orbit receipts pinned in `inputs.json`. The baseline is the corrected degree-2 matrix plus six individually closed degree-5 rows, four exact duplicate-trace cancellation rows, and five individually closed degree-13 rows. Verify its Q and F_5 ranks before adding anything.
+
+Form one expanded equation for every saved source with exactly one outside-class orbit trace of multiplicity one. Its class part is the sum of in-class orbit traces minus the Hecke eigenvalue times its source, and its auxiliary part is the exact outside F_83 point. Include the degree-13 repeated source 19 when its lift is unique. Sort row IDs by `(degree, source)`.
+
+Enumerate supports of one, two, and three distinct expanded rows in that order. For each support, fix the first coefficient to `+1` and enumerate later coefficients in `(-1,+1)` lexicographic order. Keep a candidate only when the signed sum of its auxiliary F_83 points is the elliptic-curve identity. Add the same signed combination of class parts to obtain an integer class-only relation; verify its full group sum in `11a1(F_83)`. Retain all accepted candidates, including dependent and zero rows. Greedily select rank-increasing candidates in this fixed order, using rank over F_5 as the selection gate; record Q and F_5 rank after each selected row. Run the entire support-at-most-three search even if rank reaches the group-theoretic ceiling.
+
+As a control, multiply each frozen class point by the cofactor 18 to obtain its order-5 component. Verify that at least one image is nonzero and that every accepted relation annihilates these images. This establishes a 19-dimensional ceiling for true F_5 relations among the 20 columns; it is not used to create or select candidate rows. No scalar-log expression for an auxiliary point is allowed in row production.
+
+The candidate law, support cap, ordering, input hashes, baseline, and F_5 selection gate are frozen before the producer output. Save complete candidate and selected-row receipts, a 60-second wall cap, and an independent checked-Sage verification of point arithmetic and ranks.
