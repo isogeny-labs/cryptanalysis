@@ -722,6 +722,7 @@ mod tests {
         // the entire seeded certificate, not only the scalar, to stay identical.
         let mut reference = Counter {
             functional_witnesses: false,
+            functional_pruning: false,
             ..Counter::default()
         };
         let reference_certificate = solve(
