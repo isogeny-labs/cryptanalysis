@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-d79-p941-rank-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Two independent 40-coordinate vectors annihilate every direct and Hecke row modulo 5.",
+      "lean_declarations": ["RankP941.all_rows_kernelA", "RankP941.all_rows_kernelB", "RankP941.all_hecke_rows_kernelA", "RankP941.all_hecke_rows_kernelB", "RankP941.kernels_independent_coordinates"],
+      "status": "checked",
+      "hypotheses": "Exact integer rows from the hash-pinned p941 receipts, reduced modulo 5; independence is witnessed by an identity 2 by 2 coordinate minor."
+    },
+    {
+      "result": "Both complete row systems have an invertible 38 by 38 minor modulo 5 and an invertible 40 by 40 minor modulo 7.",
+      "lean_declarations": ["RankP941.mod5_minor_matches", "RankP941.mod5_inverse_certificate", "RankP941.mod7_minor_matches", "RankP941.mod7_inverse_certificate", "RankP941.heckeMod5_minor_matches", "RankP941.heckeMod5_inverse_certificate", "RankP941.heckeMod7_minor_matches", "RankP941.heckeMod7_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Exact finite matrices generated from the class, direct-row and Hecke-row receipts. Standard propext is the only reported axiom for these finite inverse identities."
+    },
+    {
+      "result": "The two p941 matrices have rank 38 over F5 and rank 40 over Q, and every row is an E11a1(F941) point identity.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "A Lean matrix/rank development for the two-kernel upper bound and invertible-minor lower bound, and a formal finite-field curve bridge from the audited point coordinates to the generated integer rows. The written proof and independent checked-Sage replay retain the full result."
+    }
+  ]
+}
