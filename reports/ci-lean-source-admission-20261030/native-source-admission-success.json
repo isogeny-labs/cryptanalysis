@@ -1,0 +1,124 @@
+{
+  "schema": "lean-evidence-source-native-admission/v1",
+  "recorded_at": "2026-10-30T15:06:17.676396+00:00",
+  "source_head": "f3aa8028fd09303e520e7a468e85e52ade25487b",
+  "merged_as": "c401534604f2b1539c5e746d6aec305e9d9e54b2",
+  "run_id": 41065718030,
+  "job_id": 124096459169,
+  "conclusion": "success",
+  "added_native_modules": 77,
+  "lean_toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "declarations": [
+    {
+      "declaration": "XedniBoundedWitness.relation_reduces",
+      "foundations": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:17.7225722Z 'XedniBoundedWitness.relation_reduces' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "declaration": "XedniBoundedWitness.no_dependent_lift",
+      "foundations": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:17.7226360Z 'XedniBoundedWitness.no_dependent_lift' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "declaration": "XedniBoundedWitness.all_compatible_lifts_blocked",
+      "foundations": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:17.7226940Z 'XedniBoundedWitness.all_compatible_lifts_blocked' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "declaration": "XedniBoundedWitness.zero_tuple_has_bounded_witness",
+      "foundations": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:17.7227434Z 'XedniBoundedWitness.zero_tuple_has_bounded_witness' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "declaration": "XedniBoundedWitness.zero_tuple_has_unbounded_relations",
+      "foundations": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:17.7227931Z 'XedniBoundedWitness.zero_tuple_has_unbounded_relations' depends on axioms: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "declaration": "XedniCoreCompatibility.constant_bound",
+      "foundations": [],
+      "original_native_log_line": "2026-10-30T13:56:21.4668601Z 'XedniCoreCompatibility.constant_bound' does not depend on any axioms"
+    },
+    {
+      "declaration": "XedniCoreCompatibility.successor_nonzero",
+      "foundations": [
+        "propext"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:21.4669141Z 'XedniCoreCompatibility.successor_nonzero' depends on axioms: [propext]"
+    },
+    {
+      "declaration": "XedniCoreCompatibility.bound_contradiction",
+      "foundations": [
+        "propext"
+      ],
+      "original_native_log_line": "2026-10-30T13:56:21.4669607Z 'XedniCoreCompatibility.bound_contradiction' depends on axioms: [propext]"
+    }
+  ],
+  "source_custody": [
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d",
+      "identical_at_tested_source_and_followup_base": true
+    },
+    {
+      "path": "experiments/xedni-bounded-witness-20261030/formal/WitnessObstruction.lean",
+      "sha256": "6aa4475da5af80cc9db15407efb6f02ce792dbd6c18dac0d1e74f5c3fa208645",
+      "identical_at_tested_source_and_followup_base": true
+    },
+    {
+      "path": "reports/ci-xedni-proof-elaboration-repair-20261030/xedni-core-arithmetic-compatibility-controls-20261030.lean",
+      "sha256": "19dd7b84d1d90d5e7eb81efdb84899f8b08370d5c7d87c87052934349b619947",
+      "identical_at_tested_source_and_followup_base": true
+    },
+    {
+      "path": "experiments/xedni-bounded-witness-20261030/formal/lean-toolchain",
+      "sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "identical_at_tested_source_and_followup_base": true
+    },
+    {
+      "path": "experiments/xedni-bounded-witness-20261030/formal/lakefile.toml",
+      "sha256": "ebba543c6a4244c41176c874dae4bca34f979f79106e70df15d1725fea201784",
+      "identical_at_tested_source_and_followup_base": true
+    },
+    {
+      "path": "experiments/xedni-bounded-witness-20261030/formal/lake-manifest.json",
+      "sha256": "2501ee303b4c65292d91158afec85e64bfac15a337da73868009a78c37b28c48",
+      "identical_at_tested_source_and_followup_base": true
+    }
+  ],
+  "complete_decoded_log": {
+    "file": "source-f3aa-native-admission-success.log.gz",
+    "raw_bytes": 417292,
+    "raw_sha256": "c814b3fd674771299f9209cbc9b003b587d7570fc62c74c8832aacc70a1934e1",
+    "gzip_bytes": 58889,
+    "gzip_sha256": "0ce5df00ba6d1828414bb058dea0cf53b6d370e2b8e5bf9217e7aa73f40cf7e9",
+    "roundtrip_verified": true,
+    "custody": "Exact retained connector-decoded text, UTF8 encoding and gzip mtime0; not a locally verified artifact ZIP."
+  },
+  "limits": [
+    "No lean4checker --fresh qualification.",
+    "Height/Lang witness bridge and actual curve-selection law remain open.",
+    "Software unit controls do not substitute for these actual native compiler results."
+  ]
+}

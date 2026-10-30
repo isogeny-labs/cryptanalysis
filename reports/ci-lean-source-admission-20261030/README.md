@@ -12,7 +12,10 @@ All53software controls pass, including positive admission, complete discovery,
 unknown/changed source refusal, changed context refusal, missing/extra/duplicate
 native outputs and forbidden foundations. Existing experiment declaration
 sets are unchanged under the indentation-aware parser. These controls do not
-qualify the pending new three-lemma native build.
+substitute for the actual compiler. Subsequent pinned job124096459169 passed
+all77 added modules, including all three original engineering lemmas. The
+source-qualified native-source-admission-success.json retains the actual eight
+foundation audits, source hashes and complete lossless log custody.
 
 Separately, the actual bounded-witness source passed its own native five-
 declaration build and foundation checks in run41058369134/job124071531124.

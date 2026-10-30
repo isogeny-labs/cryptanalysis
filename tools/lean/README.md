@@ -116,6 +116,6 @@ Changed source, build pins, missing/extra/duplicate outputs and nonstandard
 foundations are refused. The source count rises from173to174; the frozen97-file
 bridge remains unchanged. Software mocks test orchestration, not native proofs.
 See [the admission record](../../problems/lean-ci-evidence-source-admission.md)
-for the actual pending current-source native validation.
+for actual source-f3aa native success:77 added modules, including all three original engineering controls.
 
 After complete declaration and foundation validation, the checker now prints the original native axiom output lines into the successful job log too; complete raw command evidence remains retained. This improves readable custody without changing proof admission.
