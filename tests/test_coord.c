@@ -1207,28 +1207,44 @@ static test_server *server_start(server_script script)
     CHECK(s != NULL);
     if (!s) return NULL;
     s->script = script;
-    pthread_mutex_init(&s->lock, NULL);
-    s->fd = socket(AF_INET, SOCK_STREAM, 0);
-    CHECK(s->fd >= 0);
-    if (s->fd < 0) {
-        pthread_mutex_destroy(&s->lock);
+    int ok = pthread_mutex_init(&s->lock, NULL) == 0;
+    CHECK(ok);
+    if (!ok) {
         free(s);
         return NULL;
     }
+    s->fd = socket(AF_INET, SOCK_STREAM, 0);
+    CHECK(s->fd >= 0);
+    if (s->fd < 0) goto fail;
     int one = 1;
-    setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    ok = setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     sin.sin_port = 0;
-    CHECK(bind(s->fd, (struct sockaddr *)&sin, sizeof(sin)) == 0);
-    CHECK(listen(s->fd, 8) == 0);
+    ok = bind(s->fd, (struct sockaddr *)&sin, sizeof(sin)) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
+    ok = listen(s->fd, 8) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     socklen_t slen = sizeof(sin);
-    CHECK(getsockname(s->fd, (struct sockaddr *)&sin, &slen) == 0);
+    ok = getsockname(s->fd, (struct sockaddr *)&sin, &slen) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     s->port = ntohs(sin.sin_port);
-    CHECK(pthread_create(&s->thread, NULL, server_main, s) == 0);
+    ok = pthread_create(&s->thread, NULL, server_main, s) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     return s;
+fail:
+    if (s->fd >= 0) close(s->fd);
+    pthread_mutex_destroy(&s->lock);
+    free(s);
+    return NULL;
 }
 
 static void server_stop(test_server *s)

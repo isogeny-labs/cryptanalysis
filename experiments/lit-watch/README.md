@@ -39,7 +39,9 @@ export GITHUB_TOKEN="$(gh auth token)"   # or a fine-grained PAT, no scopes need
 - `eprint.queries`: targeted search terms on top of the always-fetched RSS
   feed; `max_search_pages` bounds HTML result pages (100/page).
 - `github.queries` + `min_stars`: repos created in the window above the star
-  floor; `watch_repos` (`owner/name`) adds release feeds.
+  floor; `watch_repos` (`owner/name`) adds release feeds, and `watch_commits`
+  adds default-branch commits for repositories that publish without releases.
+  Explicitly watched releases and commits appear at least in the watch tier.
 - `lookback_days` (default 7) bounds digests; `request_delay_seconds`
   (default 3.0) paces requests; `db_path` is resolved relative to the config.
 
@@ -49,7 +51,7 @@ export GITHUB_TOKEN="$(gh auth token)"   # or a fine-grained PAT, no scopes need
 |---|---|---|---|
 | arXiv | `export.arxiv.org/api/query` (Atom) | none | ~3s between calls per arXiv guidance; custom User-Agent |
 | ePrint | `rss/rss.xml` + `/search` HTML | none | RSS is 100 items; search abstracts are truncated by the site |
-| GitHub | REST search + releases | token recommended | stays far under 30 search req/min |
+| GitHub | REST search + releases + watched commits | token recommended | stays far under 30 search req/min |
 
 ## Scheduling
 
@@ -71,8 +73,8 @@ artifact. It is deliberately not scheduled, to avoid surprise CI load.
   The store keeps the longest seen.
 - arXiv `max_results_per_query` caps recall per query; widen queries or the
   cap for exhaustive sweeps.
-- GitHub code search is intentionally not used (noisy); repo + release
-  signals only.
+- GitHub code search is intentionally not used (noisy); signals are repository
+  search, watched releases, and watched default-branch commits.
 - Runtime state (`litwatch.db`) is git-ignored; digests are local unless you
   commit them deliberately.
 - First run ingests full search history, so expect a large bootstrap digest.

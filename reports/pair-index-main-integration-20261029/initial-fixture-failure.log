@@ -1,0 +1,29 @@
+retained type-wrapper evidence: /tmp/tmp3dhekpyb/type-wrapper-_2d0w03d
+retained type-output evidence: /tmp/tmp3dhekpyb/type-output-ed3pea1w
+.retained command evidence: /tmp/tmp4yfmcrw0/command-64ce4zsv
+.retained command evidence: /tmp/tmpi04fe0h5/command-ug0jlp6s
+.retained type-wrapper evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-wrapper-9_u0f5e6
+retained type-output evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-output-bywadwut
+...retained type-wrapper evidence: /workspace/cryptanalysis-pair-index-repair/.lean-corpus-evidence/type-wrapper-muesrrb3
+.........retained module-inputs evidence: /tmp/tmpcbap9zr5/.lean-corpus-evidence/module-inputs-1we8jdk_
+...retained module-inputs evidence: /tmp/tmpkvkcn1jp/.lean-corpus-evidence/module-inputs-r4dkhxh3
+.............retained module-inputs evidence: /tmp/tmpodby4ys3/.lean-corpus-evidence/module-inputs-xwxp0n95
+..retained module-inputs evidence: /tmp/tmpeujk67vd/.lean-corpus-evidence/module-inputs-h_4kbs8n
+.....F...
+======================================================================
+FAIL: test_pair_index_incomplete_native_module_audit_refused (test_current_corpus_gate.QuarticRegistrationControls.test_pair_index_incomplete_native_module_audit_refused)
+----------------------------------------------------------------------
+ValueError: compiled object missing or symlinked
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis-pair-index-repair/tools/lean/test_current_corpus_gate.py", line 155, in test_pair_index_incomplete_native_module_audit_refused
+    with self.assertRaisesRegex(ValueError, "reviewed theorem count changed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "reviewed theorem count changed" does not match "compiled object missing or symlinked"
+
+----------------------------------------------------------------------
+Ran 42 tests in 0.060s
+
+FAILED (failures=1)

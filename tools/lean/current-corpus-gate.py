@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Bind the frozen Lean corpus and natively check added Hecke theorem modules.
+"""Bind the frozen Lean corpus and natively check admitted theorem modules.
 
-The October 21 corpus audit compiled 93 files. Its 96-file bridge remains
+The October 21 corpus audit compiled 93 files. Its 97-file bridge remains
 byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
-files and the PQC assay are separately pinned. New Hecke modules are checked
-by the pinned Mathlib toolchain in addition to that frozen bridge. Other
-source or pin changes still fail until native evidence is added here.
+files and the PQC assay are separately pinned. New Hecke modules use the
+pinned Mathlib workspace, including modules whose recorded build dependencies
+override the repository's inherited root pin. The reviewed Hasse-square module
+uses its own pinned toolchain. Other source or pin changes still fail until
+native evidence is added here.
 """
 from __future__ import annotations
 
@@ -19,6 +21,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+LOADED_GATE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+AUDITOR_SHA256 = "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241"
 ROOT = Path(__file__).resolve().parents[2]
 ARCHIVE = ROOT / "reports/lean-evidence-audit-20261021/evidence/corpus"
 INDEX = ARCHIVE / "cryptanalysis-corpus-index-20261021.json"
@@ -27,6 +31,34 @@ ORBIT = ROOT / "experiments/orbit-quotient-summation/lean"
 CUBIC = ROOT / "experiments/ghs-sweeper/formal"
 CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
+HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
+HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+KNOWN_LABEL_SOURCE = "docs/known-label-next-leads-20261028/Algebra.lean"
+KNOWN_LABEL_SHA256 = "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
+KNOWN_LABEL_THEOREMS = frozenset({
+    "KnownLabelLeads.triangle_identity",
+    "KnownLabelLeads.signed_second_moment",
+    "KnownLabelLeads.signed_third_moment",
+    "KnownLabelLeads.positive_pair_product",
+})
+# These are the new check's inputs, not a claim about the producer's environment.
+# The original CHECKS.json explicitly says the proposed Lean source was unbuilt.
+KNOWN_LABEL_PROJECT_INPUTS = {
+    "lean-toolchain": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+    "lakefile.toml": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+    "lake-manifest.json": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+}
+PAIR_INDEX_SOURCE = "docs/known-label-pair-index-20261029/PairIndex.lean"
+PAIR_INDEX_SHA256 = "68dd10106b5499ad8b3fba35b95980a5ed1e6c46c0433047e0d5034e90c135c8"
+PAIR_INDEX_THEOREMS = frozenset({
+    "KnownLabelPairIndex.affine_composition", "KnownLabelPairIndex.affine_path",
+    "KnownLabelPairIndex.cycle_constraint", "KnownLabelPairIndex.cycle_recovery",
+    "KnownLabelPairIndex.label_recovery", "KnownLabelPairIndex.signed_square",
+    "KnownLabelPairIndex.semaev_pair_identity",
+})
+HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
+HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
+HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -59,12 +91,50 @@ def require(ok: bool, message: str) -> None:
         raise ValueError(message)
 
 
+def evidence_directory() -> Path:
+    """Durable diagnostics, separate from disposable module build directories."""
+    root = Path(os.environ.get("LEAN_CORPUS_EVIDENCE_DIR", ROOT / ".lean-corpus-evidence"))
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def retain_evidence(kind: str, files: dict[str, bytes], metadata: dict) -> Path:
+    directory = Path(tempfile.mkdtemp(prefix=kind + "-", dir=evidence_directory()))
+    for name, data in files.items():
+        (directory / name).write_bytes(data)
+    metadata = {**metadata, "files": {
+        name: hashlib.sha256(data).hexdigest() for name, data in files.items()}}
+    (directory / "record.json").write_text(json.dumps(metadata, indent=2) + "\n")
+    print(f"retained {kind} evidence: {directory}", flush=True)
+    return directory
+
+
 def run(args: list[str], *, cwd: Path = ROOT, env: dict | None = None,
         timeout: int = 900) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(args, cwd=cwd, env=env, text=True,
-                            capture_output=True, timeout=timeout, check=False)
-    require(result.returncode == 0, f"{args[0]} failed: {result.stderr[-1000:]}")
-    return result
+    metadata = {"argv": args, "cwd": str(cwd), "timeout_seconds": timeout,
+                "gate_sha256": LOADED_GATE_SHA256,
+                "LEAN_PATH": (env or os.environ).get("LEAN_PATH"),
+                "github_sha": os.environ.get("GITHUB_SHA")}
+    try:
+        # Keep original bytes, including invalid UTF-8, before decoding for parsers.
+        result = subprocess.run(args, cwd=cwd, env=env, capture_output=True,
+                                timeout=timeout, check=False)
+    except (subprocess.TimeoutExpired, OSError) as error:
+        files = {"stdout.bin": getattr(error, "stdout", None) or b"",
+                 "stderr.bin": getattr(error, "stderr", None) or b""}
+        retain_evidence("command", files, {**metadata, "returncode": None,
+                        "timed_out": isinstance(error, subprocess.TimeoutExpired),
+                        "exception": repr(error)})
+        raise
+    record = retain_evidence("command", {"stdout.bin": result.stdout,
+                             "stderr.bin": result.stderr},
+                             {**metadata, "returncode": result.returncode,
+                              "timed_out": False})
+    require(result.returncode == 0,
+            f"{args[0]} exited {result.returncode}; complete diagnostics: {record}")
+    return subprocess.CompletedProcess(args, result.returncode,
+                                       result.stdout.decode("utf-8"),
+                                       result.stderr.decode("utf-8"))
 
 
 def effective_pin(path: str) -> str:
@@ -300,24 +370,261 @@ def check_delta() -> dict:
             **pqc}
 
 
+def reviewed_quartic_sources() -> dict[str, str]:
+    """Bind the original locations and build pins of the reviewed certificates."""
+    file = ROOT / "tools/ci/quartic_certificates.json"
+    if not file.is_file():
+        return {}
+    manifest = json.loads(file.read_text())
+    require(manifest["schema"] == "quartic-certificate-replay/v1" and
+            manifest["toolchain"] == HECKE_TOOLCHAIN and
+            manifest["mathlib"] == HECKE_MATHLIB_REV and
+            manifest["project"] == str(HECKE_CI.relative_to(ROOT)),
+            "reviewed quartic build pins changed")
+    rows = manifest["formal"]
+    sources = {row["path"]: row["sha256"] for row in rows}
+    require(len(sources) == len(rows) == 37,
+            "reviewed quartic source inventory changed")
+    for path, expected in sources.items():
+        relative = Path(path)
+        require(not relative.is_absolute() and ".." not in relative.parts and
+                path.startswith("experiments/hecke-432-") and
+                path.endswith(".lean") and
+                manifest["inputs"].get(path) == expected,
+                f"invalid reviewed quartic source binding: {path}")
+    for name in ("lean-toolchain", "lake-manifest.json", "lakefile.toml"):
+        path = HECKE_CI / name
+        require(digest(path) == manifest["inputs"].get(str(path.relative_to(ROOT))),
+                f"reviewed quartic project input changed: {name}")
+    return sources
+
+
+def check_reviewed_quartic(path: str, expected: str, lean_path: str) -> str:
+    return check_pinned_mathlib_source(path, expected, lean_path,
+                                      label="reviewed quartic")
+
+
+def check_known_label_algebra(lean_path: str) -> str:
+    """Check the fixed proposed ring lemmas; no elliptic-group bridge is asserted."""
+    check_known_label_project_inputs()
+    checked = check_pinned_mathlib_source(
+        KNOWN_LABEL_SOURCE, KNOWN_LABEL_SHA256, lean_path,
+        label="known-label", exact_names=KNOWN_LABEL_THEOREMS,
+        expected_theorems=4)
+    check_known_label_project_inputs()
+    return checked
+
+
+def check_known_label_project_inputs() -> None:
+    """Bind workspace input bytes before and after the native commands."""
+    for name, expected in KNOWN_LABEL_PROJECT_INPUTS.items():
+        file = HECKE_CI / name
+        require(not file.is_symlink() and digest(file) == expected,
+                f"known-label project input changed: {name}")
+
+
+def check_pair_index_algebra(lean_path: str) -> str:
+    """Build the new path/cycle and addition lemmas without changing old pins."""
+    check_known_label_project_inputs()
+    checked = check_pinned_mathlib_source(
+        PAIR_INDEX_SOURCE, PAIR_INDEX_SHA256, lean_path,
+        label="known-label-pair-index", exact_names=PAIR_INDEX_THEOREMS,
+        expected_theorems=7)
+    check_known_label_project_inputs()
+    return checked
+
+
+def collect_elaborated_types(path: str, names: frozenset[str],
+                             scratch: str, lean_path: str) -> str:
+    """Import the freshly built module and retain actual native type output.
+
+    Header checks establish output completeness, not semantic fidelity. The
+    frozen producer source is never edited to add printing commands.
+    """
+    parts = Path(path).with_suffix("").parts
+    require(parts and all(re.fullmatch(r"[A-Za-z0-9_-]+", p) for p in parts),
+            "invalid module path for type collection")
+    require(names and all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_.]*", n) for n in names),
+            "invalid theorem names for type collection")
+    module = ".".join(f"«{part}»" for part in parts)
+    wrapper = (f"import {module}\n"
+               "set_option pp.universes true\n"
+               "set_option pp.explicit true\n"
+               "set_option pp.fullNames true\n" +
+               "".join(f"#check @{name}\n" for name in sorted(names)))
+    file = Path(scratch) / "CollectedTypes.lean"
+    file.write_text(wrapper)
+    retain_evidence("type-wrapper", {"CollectedTypes.lean": wrapper.encode()},
+                    {"module": path, "names": sorted(names)})
+    env = {**os.environ, "LEAN_PATH": scratch + os.pathsep + lean_path}
+    result = run(["lean", str(file)], cwd=HECKE_CI, env=env)
+    retain_evidence("type-output", {"stdout.txt": result.stdout.encode()},
+                    {"module": path, "names": sorted(names)})
+    found = re.findall(
+        r"^@?([A-Za-z_][A-Za-z0-9_.]*?)(?:\.\{[^{}]+\})?\s*:\s*\S",
+        result.stdout, re.MULTILINE)
+    require(len(found) == len(names) and set(found) == names,
+            f"incomplete native elaborated types in {path}")
+    require(file.read_text() == wrapper, "type wrapper changed during collection")
+    print("BEGIN NATIVE ELABORATED TYPES", flush=True)
+    print(json.dumps({"module": path, "names": sorted(names),
+                      "wrapper_sha256": hashlib.sha256(wrapper.encode()).hexdigest(),
+                      "stdout_sha256": hashlib.sha256(result.stdout.encode()).hexdigest()}),
+          flush=True)
+    print(wrapper, end="", flush=True)
+    print(result.stdout, end="", flush=True)
+    print("END NATIVE ELABORATED TYPES", flush=True)
+    return result.stdout
+
+
+def compiled_identity(output: Path) -> dict[str, str]:
+    """Bind the primary object and any Lean sidecars; this is a boundary check."""
+    require(output.is_file() and not output.is_symlink(),
+            "compiled object missing or symlinked")
+    files = [output, *sorted(output.parent.glob(output.name + ".*"))]
+    require(all(p.is_file() and not p.is_symlink() for p in files),
+            "compiled sidecar missing or symlinked")
+    return {p.name: digest(p) for p in files}
+
+
+def check_compiled_identity(output: Path, expected: dict[str, str]) -> None:
+    require(compiled_identity(output) == expected, "compiled object changed between phases")
+
+
+def check_pinned_mathlib_source(path: str, expected: str, lean_path: str, *,
+                               label: str, exact_names: frozenset[str] | None = None,
+                               expected_theorems: int | None = None) -> str:
+    """Compile original bytes; audit requested declarations and non-internal theorems."""
+    file = ROOT / path
+    require(file.resolve().is_relative_to(ROOT.resolve()) and not file.is_symlink(),
+            f"{label} source escapes repository: {path}")
+    require(digest(file) == expected, f"{label} source changed: {path}")
+    source = file.read_text()
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            f"forbidden proof escape in {path}")
+    requested = re.findall(r"^#print axioms\s+([\w.]+)\s*$", source, re.MULTILINE)
+    require(requested and len(requested) == len(set(requested)),
+            f"missing or duplicate declaration audit in {path}")
+    auditor = ROOT / "tools/lean/AuditHeckeAxioms.lean"
+    if exact_names is not None:
+        require(auditor.is_file() and not auditor.is_symlink() and
+                digest(auditor) == AUDITOR_SHA256, "runtime auditor changed")
+        binding = retain_evidence("module-inputs", {
+            "Source.lean": file.read_bytes(),
+            "AuditHeckeAxioms.lean": auditor.read_bytes(),
+            **{name: (HECKE_CI / name).read_bytes() for name in KNOWN_LABEL_PROJECT_INPUTS},
+        }, {"source": path, "source_sha256": expected,
+            "gate_sha256": LOADED_GATE_SHA256, "auditor_sha256": AUDITOR_SHA256,
+            "trust_boundary": "Point-in-time hashes, not protection against transient edits; "
+                              "trust Lean executable, dependencies/cache and runner integrity"})
+        audit_input = binding / "AuditHeckeAxioms.lean"
+    else:
+        audit_input = auditor
+    with tempfile.TemporaryDirectory(prefix="mathlib-corpus-") as scratch:
+        output = Path(scratch) / Path(path).with_suffix(".olean")
+        output.parent.mkdir(parents=True)
+        result = run(["lake", "env", "lean", "-R", str(ROOT), "-o", str(output),
+                      str(file)], cwd=HECKE_CI, timeout=900)
+        printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                             result.stdout, re.MULTILINE)
+        free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                          result.stdout, re.MULTILINE)
+        names = [name for name, _ in printed] + free
+        require(len(names) == len(requested) and
+                {name.rsplit(".", 1)[-1] for name in names} ==
+                {name.rsplit(".", 1)[-1] for name in requested},
+                f"incomplete native declaration audit in {path}")
+        if exact_names is not None:
+            require(len(names) == len(exact_names) and set(names) == exact_names,
+                    f"native theorem identities changed in {path}")
+        require(all({a.strip() for a in axs.split(",") if a.strip()} <=
+                    {"propext", "Classical.choice", "Quot.sound"}
+                    for _, axs in printed), f"unexpected foundation in {path}")
+        object_identity = None
+        if exact_names is not None:
+            object_identity = compiled_identity(output)
+            retain_evidence("compiled-object", {}, {"module": path,
+                            "sha256": object_identity, "source_sha256": expected,
+                            "gate_sha256": LOADED_GATE_SHA256,
+                            "auditor_sha256": AUDITOR_SHA256})
+            require(digest(auditor) == digest(audit_input) == AUDITOR_SHA256,
+                    "runtime auditor changed")
+        env = {**os.environ, "LEAN_PATH": scratch + os.pathsep + lean_path}
+        audit = run(["lean", "--run", str(audit_input),
+                     path[:-5].replace("/", ".")], cwd=HECKE_CI, env=env)
+        if object_identity is not None:
+            check_compiled_identity(output, object_identity)
+            require(digest(auditor) == digest(audit_input) == AUDITOR_SHA256,
+                    "runtime auditor changed")
+        print(result.stdout, end="", flush=True)
+        print(audit.stdout, end="", flush=True)
+        summary = re.findall(r"^audited ([1-9][0-9]*) theorems; 0 failing, 0 trusted$",
+                             audit.stdout, re.MULTILINE)
+        require(len(summary) == 1 and
+                len(re.findall(r"^ok    ", audit.stdout, re.MULTILINE)) == int(summary[0]),
+                f"incomplete exhaustive theorem audit in {path}")
+        if expected_theorems is not None:
+            require(len(requested) == expected_theorems and
+                    int(summary[0]) == expected_theorems,
+                    f"reviewed theorem count changed in {path}")
+        if exact_names is not None:
+            audited_names = set(re.findall(r"^ok    (\S+)  \[", audit.stdout, re.MULTILINE))
+            require(exact_names <= audited_names,
+                    f"named theorems missing from module audit in {path}")
+        print(f"{label} native audit: {path}: {len(requested)} declarations, "
+              f"{summary[0]} theorems", flush=True)
+        require(digest(file) == expected, f"{label} source changed during audit: {path}")
+        if exact_names is not None:
+            check_compiled_identity(output, object_identity)
+            collect_elaborated_types(path, exact_names, scratch, lean_path)
+            check_compiled_identity(output, object_identity)
+            require(digest(auditor) == digest(audit_input) == AUDITOR_SHA256,
+                    "runtime auditor changed")
+    require(digest(file) == expected, f"{label} source changed during audit: {path}")
+    return expected
+
+
 def check_new_hecke(paths: set[str]) -> dict[str, str]:
     """Build every added Hecke source; never admit an unbuilt corpus addition."""
     if not paths:
         return {}
     require(HECKE_CI.joinpath("lean-toolchain").read_text().strip() ==
-            "leanprover/lean4:v4.35.0-rc4", "Hecke Lean toolchain changed")
+            HECKE_TOOLCHAIN, "Hecke Lean toolchain changed")
     manifest = json.loads(HECKE_CI.joinpath("lake-manifest.json").read_text())
     mathlib = [p for p in manifest["packages"] if p["name"] == "mathlib"]
     require(len(mathlib) == 1 and
-            mathlib[0]["rev"] == "021c46bdd042f67b538b9f9871d556a93713a9a9",
+            mathlib[0]["rev"] == HECKE_MATHLIB_REV,
             "Hecke Mathlib revision changed")
+    reviewed = reviewed_quartic_sources()
+    lean_path = run(["lake", "env", "printenv", "LEAN_PATH"], cwd=HECKE_CI).stdout.strip()
     checked = {}
     for path in sorted(paths):
+        if path == KNOWN_LABEL_SOURCE:
+            checked[path] = check_known_label_algebra(lean_path)
+            continue
+        if path in reviewed:
+            checked[path] = check_reviewed_quartic(path, reviewed[path], lean_path)
+            continue
+        if path == PAIR_INDEX_SOURCE:
+            checked[path] = check_pair_index_algebra(lean_path)
+            continue
         require(path.startswith("experiments/hecke-") and "/formal/" in path and
                 path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
         pin = ROOT / effective_pin(path)
-        require(pin.read_text().strip() == "leanprover/lean4:v4.35.0-rc4",
-                f"Hecke theorem toolchain changed: {path}")
+        if pin.read_text().strip() != HECKE_TOOLCHAIN:
+            # Some archived Hecke sources have no local lean-toolchain file.
+            # Their build records explicitly name the shared Mathlib workspace;
+            # do not treat the inherited root pin as their build environment.
+            require(pin == ROOT / "lean-toolchain",
+                    f"Hecke theorem toolchain changed: {path}")
+            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            require(dependencies.is_file(),
+                    f"Hecke build dependencies missing: {path}")
+            recorded = json.loads(dependencies.read_text())
+            require(recorded.get("lean_toolchain") == HECKE_TOOLCHAIN and
+                    (recorded.get("mathlib_revision") or
+                     recorded.get("mathlib_git_rev")) == HECKE_MATHLIB_REV,
+                    f"Hecke recorded build dependencies changed: {path}")
         source = (ROOT / path).read_text()
         require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
                 f"forbidden proof escape in {path}")
@@ -330,8 +637,11 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                      cwd=HECKE_CI, timeout=900)
         printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
                              result.stdout, re.MULTILINE)
-        require(len(printed) == len(declared) and
-                {name.rsplit(".", 1)[-1] for name, _ in printed} == set(declared),
+        axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                                result.stdout, re.MULTILINE)
+        printed_names = [name for name, _ in printed] + axiom_free
+        require(len(printed_names) == len(declared) and
+                {name.rsplit(".", 1)[-1] for name in printed_names} == set(declared),
                 f"incomplete native axiom output for {path}")
         require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
                     <= {"propext", "Classical.choice", "Quot.sound"}
@@ -339,6 +649,49 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                 f"unexpected foundation in {path}")
         checked[path] = digest(ROOT / path)
     return checked
+
+
+def check_new_hasse() -> str:
+    """Rebuild the source-bound Nat bridge and audit its transitive axioms."""
+    require((HASSE_FORMAL / "lean-toolchain").read_text().strip() ==
+            "leanprover/lean4:v4.34.1", "Hasse theorem toolchain changed")
+    source = (ROOT / HASSE_SOURCE).read_text()
+    require(digest(ROOT / HASSE_SOURCE) == HASSE_SHA256,
+            "Hasse theorem source changed without review")
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            "forbidden proof escape in Hasse theorem source")
+    declared = set(re.findall(r"^theorem\s+(\w+)", source, re.MULTILINE))
+    requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+    require(declared == {
+        "squared_deviations_have_short_sum",
+        "unique_multiple_from_squared_center_bounds",
+        "unsignedDelta_center_bounds",
+        "unique_multiple_from_hasse_squared_checks",
+    } and len(requested) == len(declared) and set(requested) == declared,
+            "Hasse theorem declaration or axiom printout coverage changed")
+    with tempfile.TemporaryDirectory(prefix="hasse-corpus-") as temporary:
+        env = {**os.environ, "LEAN_PATH": temporary}
+        run(["lean", "-o", str(Path(temporary) / "HasseUnique.olean"),
+             "HasseUnique.lean"], cwd=HASSE_FORMAL, env=env)
+        built = run(["lean", "-o", str(Path(temporary) / "HasseSquareBounds.olean"),
+                     "HasseSquareBounds.lean"], cwd=HASSE_FORMAL, env=env)
+        printed = re.findall(r"^'CurveAudit\.([^']+)' depends on axioms: \[([^]]*)\]$",
+                             built.stdout, re.MULTILINE)
+        require(len(printed) == len(declared) and
+                {name for name, _ in printed} == declared and
+                all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                    <= {"propext", "Classical.choice", "Quot.sound"}
+                    for _, names in printed),
+                "Hasse native axiom printout changed")
+        audit = run(["lean", "--run", str(ROOT / "tools/lean/AuditAxioms.lean"),
+                     "HasseSquareBounds"], cwd=HASSE_FORMAL, env=env)
+        audited = [line for line in audit.stdout.splitlines()
+                   if line.startswith("ok    ") or line.startswith("audited ")]
+        require(len(audited) == 6 and
+                audited[-1] ==
+                "audited 5 theorems in [HasseSquareBounds]; 0 failing, 0 trusted (native_decide)",
+                "Hasse transitive theorem audit changed")
+    return HASSE_SHA256
 
 
 def main() -> None:
@@ -368,9 +721,13 @@ def main() -> None:
         require(args.check_receipt.read_bytes() == encoded, "committed corpus receipt differs")
     else:
         print(encoded.decode(), end="")
-    checked = check_new_hecke(additions)
-    print(f"native Hecke theorem modules checked: {len(checked)}")
+    hasse_addition = HASSE_SOURCE in additions
+    checked = check_new_hecke(additions - {HASSE_SOURCE})
+    if hasse_addition:
+        checked[HASSE_SOURCE] = check_new_hasse()
+    print(f"native added theorem modules checked: {len(checked)}")
 
 
 if __name__ == "__main__":
     main()
+

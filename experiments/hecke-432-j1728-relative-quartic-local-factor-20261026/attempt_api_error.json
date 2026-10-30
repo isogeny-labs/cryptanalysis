@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Volumes/SSD990/cryptanalysis/sage",
+    "-python",
+    "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/run_sage.py"
+  ],
+  "elapsed_seconds": 31.655,
+  "protocol_sha256": "f851a93fccb8a888bcffbc09208120893e4f6938aa29ff6e7d660f547afcfb0e",
+  "returncode": 1,
+  "source_sha256": "6c4e11386224306dbb39c14bd8dbf4e97da5f59ac58a8fb90457a33987a1a2b3",
+  "status": "SAGE_ERROR",
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/run_sage.py\", line 82, in <module>\n    main()\n    ~~~~^^\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/run_sage.py\", line 44, in main\n    e_base = int(P.ramification_index())\n                 ~~~~~~~~~~~~~~~~~~~~^^\n  File \"/Volumes/SSD990/cryptanalysis/third_party/sage-binary/local/var/lib/sage/venv-python3.14/lib/python3.14/site-packages/sage/rings/number_field/number_field_ideal_rel.py\", line 742, in ramification_index\n    raise NotImplementedError(\"For an ideal in a relative number field you must use relative_ramification_index or absolute_ramification_index as appropriate\")\nNotImplementedError: For an ideal in a relative number field you must use relative_ramification_index or absolute_ramification_index as appropriate\n",
+  "stdout": "{\"elapsed_seconds\": 0.5, \"phase\": \"relative_base_constructed\"}\n"
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "read-only lead and literature atlas matching",
+  "source_repository": "isogeny-labs/crypto-autoresearcher",
+  "source_ref": "3df4a9ffdbbf9e2c797c279e9ddfc6518c9a91e9",
+  "catalog_files_hash_verified": 199,
+  "command_environment": {
+    "PYTHONPATH": "audit snapshot root"
+  },
+  "results": [
+    {
+      "query": "known label factor base pair decomposition signed graph bootstrap odd cycle",
+      "exit_code": 0,
+      "stdout": "   20  LEAD-ICB-kic-golden-base-exact-decomp        open_next_step     Co-designed binary factor bases with exact decomposition: affine 2-flats, orbit-canonical abscissa lookup, SAT vs exact MITM (KIC lane)\n   19  LEAD-ICB-cofactor-torsion-quotients          closed_obstructed  Spending the cofactor and 2-torsion of binary curves: quotient labels, k-tree filters, 2-torsion translation quotients of the factor base\n   17  LEAD-ICB-generic-table-oracle                closed_obstructed  Generic decomposition oracles for Koblitz IC: pair tables, compact-orbit 4-sum, MITM and enumeration, cap-locus arity, known-log pools\n   16  LEAD-ICP-coppersmith-smallroot-semaev        open_next_step     Small-root (Coppersmith / Jochemsz-May) decomposition with lattice-describable (window, AP, GAP) factor bases\n   14  LEAD-ICE-decomposition-probability-audit     open_next_step     Decomposition probability P(decomp) vs factor-base size, charged p_solve, and learned decomposability predictors\n   12  KR-IC-b0fcda                                 known_result       Frobenius-invariant factor bases for subfield (Koblitz) curves\n   12  LEAD-ICB-composite-degree-c2pnb              open_next_step     Composite-degree ANSI X9.62 binary curves (c2pnb176/208/272/304/368): Gaudry-Diem n = 4 with a pi_16 orbit base\n   12  LEAD-ICE-semaev-yield-model-coset-typing     open_next_step     Semaev yield model (eq. 11, the m! factor) and coset-typed / trace-parity factor bases\n",
+      "stderr": ""
+    },
+    {
+      "query": "four seed cubic polynomial moments compact arithmetic circuit known labels",
+      "exit_code": 0,
+      "stdout": "    6  LEAD-TRF-cover-catalog-jacobian-transfer     open_blocked       Catalogued cover maps (1,940 prime quadratic pullbacks, 160 binary cubic pullbacks): executable pushforward and subgroup recovery\n    6  LEAD-TRF-curve-parameter-transfer-audits     closed_known       Transfer-safety audits of deployed curves: embedding degree, anomaly, twist, subfield/descent, seed provenance\n    5  LEAD-EXO-quantum-ecdlp-resources             open_next_step     Quantum ECDLP: reversible secp256k1 point-addition circuits for Shor (resource reduction)\n    5  LEAD-ICP-prime-ic-constant-engineering       open_next_step     Constant-factor engineering of the prime-field IC pipeline (native arithmetic, batching, pair-table build, generator, LA filter, planner)\n    5  LEAD-RHO-lhw-polymem-collision-walks         open_next_step     Low-Hamming-weight DLP with polynomial memory: collision walks on the weight-w class\n    5  LEAD-RHO-native-step-cost                    open_next_step     Native cost of one rho step: canonicalisation, field arithmetic and admitted CPU timing\n    5  LEAD-TRF-pairing-target-field-recost         open_next_step     Recompute the post-MOV target-field DLP cost (exTNFS in GF(p^12)) for BLS12-381 and BN254 with memory charged\n    4  KR-IC-73db3f                                 known_result       Choosing the factor-base vector space V (small product spaces)\n",
+      "stderr": ""
+    },
+    {
+      "query": "signed moment Prony reconstruction two plus one minus relation",
+      "exit_code": 0,
+      "stdout": "    9  LEAD-ICE-relation-graph-rank-large-prime     open_next_step     Relation-stage rank accounting, large-prime / cycle-basis enrichment and rank-aware collection\n    8  LEAD-ICE-rootfind-pairtable-oracle           open_blocked       Root-finding / pair-table decomposition oracle in place of a Groebner solve\n    6  LEAD-ICB-orbit-linear-algebra                exhausted_at_scale Linear algebra of the orbit-folded relation matrix (equivariant blocks, sparse filters, Wiedemann, CADO-style merge)\n    6  LEAD-ICP-isogeny-transported-relation-yield  open_blocked       Isogeny-transported or volcano-level factor bases and the arity-3 relation oracle (crater vs floor)\n    6  LEAD-ICP-xedni-function-field-sections       closed_obstructed  Function-field xedni - Mordell-Weil sections of elliptic surfaces over F_p(t) as a relation source\n    6  LEAD-RHO-correlated-walks-shared-sums        closed_obstructed  Correlated walks: one shared index sequence or shared precomputed sums across walks\n    6  LEAD-TRF-anomalous-padic-lift                closed_known       Smart / Satoh-Araki / Semaev p-adic lift for anomalous (trace one) curves\n    5  KR-RHO-cb1c58                                known_result       Simultaneous (batched) inversion\n",
+      "stderr": ""
+    }
+  ],
+  "first_attempt": "atlas-match-attempt1.json"
+}
