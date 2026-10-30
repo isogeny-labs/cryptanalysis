@@ -1,0 +1,19 @@
+⚠ [1617/1618] Built ClasspartSpanBound (5.4s)
+warning: ClasspartSpanBound.lean:26:7: automatically included section variable(s) unused in theorem `ClasspartSpanBound.derived_mem_source_span`:
+  [Fintype H]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype H] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: ClasspartSpanBound.lean:43:7: automatically included section variable(s) unused in theorem `ClasspartSpanBound.augmented_span_le`:
+  [Fintype B]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype B] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: ClasspartSpanBound.lean:69:0: 'ClasspartSpanBound.derived_mem_source_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ClasspartSpanBound.lean:70:0: 'ClasspartSpanBound.derived_span_le_source_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ClasspartSpanBound.lean:71:0: 'ClasspartSpanBound.augmented_span_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ClasspartSpanBound.lean:72:0: 'ClasspartSpanBound.augmented_rank_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ClasspartSpanBound.lean:73:0: 'ClasspartSpanBound.rank_gain_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (1618 jobs).
