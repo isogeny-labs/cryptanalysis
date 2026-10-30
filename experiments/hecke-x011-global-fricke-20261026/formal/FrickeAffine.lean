@@ -11,7 +11,7 @@ variable {A : Type*} [AddCommGroup A]
 
 /-- An affine map with linear part `±1` which exchanges the origin and a
 point of order greater than two must have linear part `-1`. -/
-public theorem from_cusp_exchange (T : A) (u : A →+ A)
+theorem from_cusp_exchange (T : A) (u : A →+ A)
     (hlinear : (∀ P, u P = P) ∨ (∀ P, u P = -P))
     (hswap : T + u T = 0) (hnot_two : T + T ≠ 0) :
     ∀ P, T + u P = T - P := by
@@ -23,18 +23,18 @@ public theorem from_cusp_exchange (T : A) (u : A →+ A)
     abel
 
 /-- The resulting affine map is an involution and exchanges the two cusps. -/
-public theorem affine_involution (T P : A) : T - (T - P) = P := by
+theorem affine_involution (T P : A) : T - (T - P) = P := by
   abel
 
-public theorem cusp_infinity_image (T : A) : T - (0 : A) = T := by
+theorem cusp_infinity_image (T : A) : T - (0 : A) = T := by
   abel
 
-public theorem cusp_zero_image (T : A) : T - T = 0 := by
+theorem cusp_zero_image (T : A) : T - T = 0 := by
   abel
+
+#print axioms from_cusp_exchange
+#print axioms affine_involution
+#print axioms cusp_infinity_image
+#print axioms cusp_zero_image
 
 end FrickeAffine
-
-#print axioms FrickeAffine.from_cusp_exchange
-#print axioms FrickeAffine.affine_involution
-#print axioms FrickeAffine.cusp_infinity_image
-#print axioms FrickeAffine.cusp_zero_image
