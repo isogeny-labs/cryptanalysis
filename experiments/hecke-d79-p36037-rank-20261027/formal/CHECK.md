@@ -1,0 +1,5 @@
+# p36037 projection and rank certificate checks
+
+The toolchain is pinned to `leanprover/lean4:v4.35.0-rc4` without external dependencies. From this directory run `lake build CosetPanel RankP36037`; `build-output.txt` retains the `#print axioms` audit. `python3 generate.py` checks that the committed rank module matches the SHA-256-bound producer receipt and independently audited analysis; `--write` is used only for a new version.
+
+The structural module proves the two three-term order-five obstructions and a finite residue possibility at support four. The generated rank module checks complete-row finite and integer kernels, their free-coordinate independence patterns, membership of selected rows in the full matrix, and invertible F1451 and F3 minors for each arm and the combined system. Its `#print axioms` output uses standard `propext`, `Classical.choice`, and `Quot.sound` as applicable; no research-claim axiom or unverified native evaluation appears. These certificates imply the numerical ranks by standard linear algebra. Formalizing that general implication and the curve-specific identities in Lean remains open in `PROOF_MAP.json`.

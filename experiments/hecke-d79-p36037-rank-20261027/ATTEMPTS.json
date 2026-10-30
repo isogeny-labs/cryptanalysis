@@ -1,0 +1,16 @@
+{
+  "schema": "hecke-d79-p36037-attempts-v1",
+  "runs": [
+    {"stage":"runtime","command":"./sage --runtime-info","status":"PASS","stdout":"sage-runtime-info.txt"},
+    {"stage":"degree13_producer","command":"gtimeout 1800 ./sage -python experiments/hecke-d79-p36037-rank-20261027/run.py","status":"COMPLETE","stdout":"producer-stdout.txt","stderr":"producer-stderr.txt"},
+    {"stage":"support4_analysis","command":"gtimeout 900 python3 experiments/hecke-d79-p36037-rank-20261027/analyze.py","status":"COMPLETE","stdout":"analysis-stdout.txt","stderr":"analysis-stderr.txt"},
+    {"stage":"audit_attempt1","command":"gtimeout 900 ./sage -python experiments/hecke-d79-p36037-rank-20261027/audit_sage.py","status":"FAILED_COPIED_TRACE_BOUND","stdout":"audit-attempt1-stdout.txt","stderr":"audit-attempt1-stderr.txt"},
+    {"stage":"audit_attempt2","command":"gtimeout 900 ./sage -python experiments/hecke-d79-p36037-rank-20261027/audit_sage.py","status":"PASS","stdout":"audit-stdout.txt","stderr":"audit-stderr.txt"},
+    {"stage":"q_log_audit","command":"./sage -python experiments/hecke-d79-p36037-rank-20261027/audit_q_logs_sage.py","status":"PASS","stdout":"q-log-audit-stdout.txt","stderr":"q-log-audit-stderr.txt"},
+    {"stage":"formal_generation_check","command":"python3 generate.py","status":"PASS","stdout":"formal/generation-check-output.txt"},
+    {"stage":"formal_build","command":"lake build CosetPanel RankP36037","status":"PASS","stdout":"formal/build-output.txt"},
+    {"stage":"python_syntax","command":"python3 -m py_compile run.py analyze.py audit_sage.py audit_q_logs_sage.py formal/generate.py","status":"PASS"},
+    {"stage":"go_vet","command":"GOTMPDIR=/tmp go vet ./...","status":"PASS"},
+    {"stage":"go_test","command":"GOTMPDIR=/tmp go test ./...","status":"PASS"}
+  ]
+}

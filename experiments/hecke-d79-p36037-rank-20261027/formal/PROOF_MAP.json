@@ -1,0 +1,25 @@
+{
+  "schema": "hecke-d79-p36037-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Three terms whose order-five images lie in residues 1 or 4, or residues 2 or 3, cannot sum to zero under an additive projection. Balanced four-term residue patterns can project to zero.",
+      "lean_declarations": ["CosetPanel.no_three_in_antipodal_class", "CosetPanel.no_three_in_double_antipodal_class", "CosetPanel.balanced_four_residues_can_cancel"],
+      "status": "checked",
+      "hypotheses": "Arbitrary type with zero and addition, a map to Fin 5 preserving both, and the stated residue restrictions on each of three terms."
+    },
+    {
+      "result": "The explicit direct, Hecke-trace and combined matrices have respective ranks 37, 34 and 39 over F1451, and 37, 34 and 40 over Q.",
+      "lean_declarations": ["RankP36037.direct_all_rows_annihilate_q_kernels", "RankP36037.direct_all_rows_annihilate_z_kernels", "RankP36037.hecke_all_rows_annihilate_q_kernels", "RankP36037.hecke_all_rows_annihilate_z_kernels", "RankP36037.both_all_rows_annihilate_q_kernels"],
+      "status": "partial",
+      "hypotheses": "Hash-pinned numerical rows checked by independent Sage replay. Generated Lean declarations check complete-row kernels, free-coordinate independence patterns, selected-row membership and invertible minors over F1451 and F3.",
+      "missing": "Formalize the general implications from independent kernel vectors and invertible minors to exact matrix rank. The checked certificates and written linear-algebra argument retain the numerical result."
+    },
+    {
+      "result": "The actual E11a1(F36037) class and aggregate degree-13 traces have projection distributions 1:20,4:20 and 2:20,3:20, zero signed relations through support three, and complementary support-four rank contributions.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Formalize the finite-field curve, multiplication-by-7255 projection, all 40 class points and degree-13 traces, all group identities, and bridge audited rows to Lean matrices. The written proof and independent Sage replay retain the curve-specific result."
+    }
+  ]
+}
