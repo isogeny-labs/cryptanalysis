@@ -1,0 +1,30 @@
+{
+  "schema": "hecke-d79-p1277-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Under an additive map into the order-five cyclic group, three terms each projecting to plus or minus one generator cannot sum to zero.",
+      "lean_declarations": ["ProjectionP1277.signed_triple_residue_nonzero", "ProjectionP1277.no_three_in_opposite_cosets"],
+      "status": "checked",
+      "hypotheses": "An arbitrary type G, a specified zero and addition, a map to Fin 5 preserving zero and addition, and each of the three images equal to 1 or 4. No conclusion is assumed."
+    },
+    {
+      "result": "The residues 2-1-1 and -2+1+1 vanish modulo five, allowing mixed Hecke source projections to pass the order-five gate.",
+      "lean_declarations": ["ProjectionP1277.mixed_source_residues_allow_zero"],
+      "status": "checked",
+      "hypotheses": "Finite cyclic arithmetic modulo five; this is a possibility condition, not an existence claim for a full curve relation."
+    },
+    {
+      "result": "The 22 direct baseline rows have an invertible F53 minor; the 49 Hecke baseline rows have a nonzero F53 kernel vector, an invertible 39 by 39 F53 minor, and an invertible 40 by 40 F3 minor.",
+      "lean_declarations": ["RankP1277.direct53_minor_matches", "RankP1277.direct53_inverse_certificate", "RankP1277.all_hecke_rows_annihilate_kernel", "RankP1277.kernel_nonzero", "RankP1277.hecke53_minor_matches", "RankP1277.hecke53_inverse_certificate", "RankP1277.hecke3_minor_matches", "RankP1277.hecke3_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Exact numerical matrices generated from the hash-pinned class receipt and independently audited direct and Hecke rows."
+    },
+    {
+      "result": "For the actual E11a1(F1277) class points, the direct relation rank is 22 over F53 and the Hecke relation rank is 39 over F53 and 40 over Q; no signed direct triple relation exists.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Formalize E11a1(F1277), the multiplication-by-265 projection and its 20/20 class-point census, then connect the audited integer rows to Lean matrices and prove the generic kernel/minor rank implications. The written structural proof and independent Sage replay retain the full numerical and curve-specific result."
+    }
+  ]
+}

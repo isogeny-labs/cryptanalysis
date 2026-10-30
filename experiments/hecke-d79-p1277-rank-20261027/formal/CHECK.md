@@ -1,0 +1,5 @@
+# Projection and rank proof checks
+
+The pinned toolchain is `leanprover/lean4:v4.35.0-rc4` with no external dependencies. From the experiment directory, `python3 formal/generate.py` checks the generated rank module against the hash-pinned producer receipt and independent Sage audit. From this directory, `lake build ProjectionP1277 RankP1277` builds both modules; [build-output.txt](build-output.txt) retains the `#print axioms` audit. Only standard `propext` appears in the finite arithmetic and inverse identities.
+
+[ProjectionP1277.lean](ProjectionP1277.lean) proves the conditional structural obstruction: any three terms with images in the two opposite nonzero order-five classes have nonzero sum under an additive projection. The independent Sage audit verifies those projection hypotheses for the 40 actual class points. [RankP1277.lean](RankP1277.lean) checks exact direct/Hecke row minors and a Hecke right-kernel vector. The generic finite-matrix rank implications and formal curve-to-matrix bridge remain partial, as recorded in [PROOF_MAP.json](PROOF_MAP.json).

@@ -1,0 +1,29 @@
+{
+  "schema": "hecke-d79-p1277-attempts-v1",
+  "attempts": [
+    {
+      "name": "class_and_fibers",
+      "command": "gtimeout 900 ./sage -python experiments/hecke-d79-p1277-rank-20261027/run.py",
+      "exit_code": 0,
+      "output": "result.json",
+      "stdout": "producer-stdout.txt",
+      "stderr": "producer-stderr.txt"
+    },
+    {
+      "name": "relation_analysis",
+      "command": "gtimeout 120 python3 experiments/hecke-d79-p1277-rank-20261027/analyze.py",
+      "exit_code": 0,
+      "output": "analysis.json",
+      "stdout": "analysis-stdout.txt",
+      "stderr": "analysis-stderr.txt"
+    },
+    {
+      "name": "independent_sage_audit",
+      "command": "gtimeout 240 ./sage -python experiments/hecke-d79-p1277-rank-20261027/audit_sage.py",
+      "exit_code": 0,
+      "output": "audit.json",
+      "stdout": "audit-stdout.txt",
+      "stderr": "audit-stderr.txt"
+    }
+  ]
+}
