@@ -1,0 +1,13 @@
+# Proof map for the p68437 support-five rank result
+
+The exact 40 columns are the sorted conductor-four D79 class points on `E: y²+y=x³−x²−10x−20` over `F_68437`; `#E(F_68437)=68670` and its largest prime factor is `109`. The baseline has 20 degree-2/5 rows, 200 signed direct rows and 196 degree-13 trace rows at support at most four. The new direct and trace arms contribute 196 and 87 canonical signed support-five rows, respectively. Every row is an exact group equation in the independently checked Sage audit.
+
+| Result | Finite Lean certificate | Full theorem status |
+| --- | --- | --- |
+| Baseline plus direct support-five: rank 39 over `Q` and `F_109`. | `RankP68437Direct`: one integer kernel and one mod-109 kernel annihilate all 612 rows, with free-coordinate independence; invertible 39-minors modulo 3 and 109 provide lower bounds. | Finite certificates checked. The general matrix-rank implication and curve-to-row bridge remain written proof obligations. |
+| Baseline plus trace support-five: rank 40 over `Q`, rank 39 over `F_109`. | `RankP68437Hecke`: invertible 40-minor modulo 11; one mod-109 kernel and invertible 39-minor modulo 109. | Finite certificates checked; general and curve bridges remain open in Lean. |
+| Baseline plus both support-five arms: rank 40 over `Q`, rank 39 over `F_109`. | `RankP68437Both`: the same form of 40-minor modulo 11, mod-109 kernel and 39-minor modulo 109, for all 699 rows. | Finite certificates checked; general and curve bridges remain open in Lean. |
+
+The mathematical implication is elementary but kept explicit. An invertible `r×r` minor among matrix rows gives rank at least `r`. A nonzero kernel vector annihilating every row gives rank at most 39 in 40 columns; the direct arm's nonzero integer kernel gives rational rank at most 39. The auxiliary-prime 40-minors are nonzero integer determinants, hence force rational rank 40. The full Sage audit independently reconstructs the candidate sets, verifies each relation on the curve, and recomputes the ranks; 38 of the 40 class points have nonzero projection to the order-109 subgroup.
+
+The Lean modules contain exact row, kernel and inverse-minor data and `#print axioms` for each finite theorem. They use pinned Lean `v4.35.0-rc4` and no external package; no `sorry`, `admit`, custom claim axiom, kernel bypass or native evaluation appears. These finite declarations do not yet formalize `Matrix.rank` for the curve-derived matrices, so the full mathematical result is marked **partial formalization**. The next formal step is a reusable kernel/minor-to-rank theorem and a faithful row construction from elliptic-curve group equations. `lean4checker --fresh` is unavailable on this host.

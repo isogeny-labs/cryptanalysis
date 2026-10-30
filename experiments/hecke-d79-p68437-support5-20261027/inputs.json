@@ -1,0 +1,43 @@
+{
+  "arms": [
+    "direct",
+    "degree13_outside_trace"
+  ],
+  "baseline_support_max": 4,
+  "candidate_id": null,
+  "cap_seconds": 1800,
+  "class_size": 40,
+  "curve": "y^2+y=x^3-x^2-10*x-20 over F_68437",
+  "curve_order": 68670,
+  "frozen": {
+    "analysis.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/analysis.json",
+      "sha256": "644194be1d0b7da5fd98737700ed8598d6d96700c2ce3aa5d312fa3f8ead44f8"
+    },
+    "audit.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/audit.json",
+      "sha256": "bda82aa583f4350632608fd02bf8d23d5e43b78ac654756fd64302986ca4c812"
+    },
+    "class-result.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/class-result.json",
+      "sha256": "a2e44632c52281338a18fbf65122de576227fff532937066b2022ee88d36394f"
+    },
+    "inputs.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/inputs.json",
+      "sha256": "f031081b7496f8c4557d78057182d72939f7b87d8fe861020bfa3f110affee93"
+    },
+    "source-result.json": {
+      "path": "experiments/hecke-d79-priority-holdout-20261027/source-result.json",
+      "sha256": "80eb194dbd68b630d57c65e7148260ff6d01bad7832132e930aa74d098ff9381"
+    }
+  },
+  "independent_audit_method": "exhaustive 40-choose-5 times 16 sign patterns using pair-sum equality and Sage group replay of every hit",
+  "largest_prime_factor": 109,
+  "new_support": 5,
+  "p": 68437,
+  "producer_method": "indexed signed triples against signed pairs, then distinct-index canonicalization",
+  "question": "does adding exact signed five-source relations to the frozen support<=4 base+direct+Hecke matrix increase rational or mod-109 rank above 34?",
+  "schema": "hecke-d79-p68437-support5-inputs-v1",
+  "signed_convention": "indices strictly ascending; first coefficient +1; remaining signs in {-1,+1}",
+  "target_online_ms": null
+}
