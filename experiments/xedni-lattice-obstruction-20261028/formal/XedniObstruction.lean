@@ -36,36 +36,48 @@ theorem relation_reduces (red : H →+ G) (lifts : Fin r → H)
     _ = 0 := by rw [h]; simp
 
 /-- A checked absence of bounded relations downstairs excludes every
-nontrivial dependent lift covered by the coefficient bound. -/
+nontrivial dependent lift, provided every nontrivial lifted relation yields
+some nontrivial relation inside the same coefficient bound.
+
+The hypothesis is deliberately stated as an existence statement: a bound on
+the coefficients of *every* nontrivial relation is unsatisfiable whenever one
+exists, because a relation scaled by `bound + 1` is again a relation and is
+not bounded by `bound`. -/
 theorem no_dependent_lift (red : H →+ G) (lifts : Fin r → H)
     (bound : ℕ)
-    (height_bound : ∀ coeff, Nontrivial coeff → Relation lifts coeff →
-      Bounded bound coeff)
+    (bounded_relation_of_relation : ∀ coeff, Nontrivial coeff →
+      Relation lifts coeff →
+      ∃ small, Nontrivial small ∧ Bounded bound small ∧ Relation lifts small)
     (no_small_reduced_relation : ∀ coeff, Nontrivial coeff →
       Bounded bound coeff →
       ¬ Relation (fun i => red (lifts i)) coeff) :
     ∀ coeff, Nontrivial coeff → ¬ Relation lifts coeff := by
   intro coeff hnon hrel
-  exact no_small_reduced_relation coeff hnon
-    (height_bound coeff hnon hrel) (relation_reduces red lifts coeff hrel)
+  obtain ⟨small, hsmall_non, hsmall_bound, hsmall_rel⟩ :=
+    bounded_relation_of_relation coeff hnon hrel
+  exact no_small_reduced_relation small hsmall_non hsmall_bound
+    (relation_reduces red lifts small hsmall_rel)
 
 /-- The same obstruction applies to every lift of a fixed reduced tuple,
-including lifts selected by any auxiliary condition. -/
+including lifts selected by any auxiliary condition.  As above, the bounded
+relation hypothesis is an existence statement, not a bound on every relation. -/
 theorem all_compatible_lifts_blocked (red : H →+ G)
     (reduced : Fin r → G) (bound : ℕ)
-    (height_bound : ∀ lifts : Fin r → H,
+    (bounded_relation_of_relation : ∀ lifts : Fin r → H,
       (∀ i, red (lifts i) = reduced i) →
-      ∀ coeff, Nontrivial coeff → Relation lifts coeff → Bounded bound coeff)
+      ∀ coeff, Nontrivial coeff → Relation lifts coeff →
+      ∃ small, Nontrivial small ∧ Bounded bound small ∧ Relation lifts small)
     (no_small_reduced_relation : ∀ coeff, Nontrivial coeff →
       Bounded bound coeff → ¬ Relation reduced coeff) :
     ∀ lifts : Fin r → H,
       (∀ i, red (lifts i) = reduced i) →
       ∀ coeff, Nontrivial coeff → ¬ Relation lifts coeff := by
   intro lifts hcompat coeff hnon hrel
-  have hsmall := height_bound lifts hcompat coeff hnon hrel
-  have hred : Relation reduced coeff := by
-    simpa only [Relation, hcompat] using relation_reduces red lifts coeff hrel
-  exact no_small_reduced_relation coeff hnon hsmall hred
+  obtain ⟨small, hsmall_non, hsmall_bound, hsmall_rel⟩ :=
+    bounded_relation_of_relation lifts hcompat coeff hnon hrel
+  have hred : Relation reduced small := by
+    simpa only [Relation, hcompat] using relation_reduces red lifts small hsmall_rel
+  exact no_small_reduced_relation small hsmall_non hsmall_bound hred
 
 end XedniObstruction
 
