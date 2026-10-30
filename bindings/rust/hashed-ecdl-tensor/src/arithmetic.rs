@@ -124,10 +124,11 @@ fn aks_identity(n: &BigUint, r: usize, a: usize, meter: &mut Meter) -> Result<bo
     Ok(answer == expected)
 }
 
-/// Deterministic exact primality (bounded u64 tests, then AKS).
+/// Deterministic exact primality (bounded tests, bounded proof search, then AKS).
 ///
-/// A fixed finite range uses trial division and exact bounded-base tests. Above
-/// u64, perfect-power rejection,
+/// A fixed finite range uses trial division and exact bounded-base tests. Larger
+/// values first attempt a bounded Pocklington proof. When that fails,
+/// perfect-power rejection,
 /// the multiplicative-order parameter, gcd tests and cyclic polynomial identities
 /// give a polynomial-bit-complexity algorithm. Resource exhaustion is an error;
 /// no probable prime is ever silently accepted as a certified prime.
@@ -143,6 +144,12 @@ pub fn is_prime(n: &BigUint, meter: &mut Meter) -> Result<bool> {
     }
     if let Some(value) = n.to_u64() {
         return crate::primality::is_prime_u64(value, meter);
+    }
+    if let Some(decision) = crate::primality::bounded_primality(n, meter)? {
+        return Ok(decision);
+    }
+    if crate::primality::prime_certificate(n, meter)?.is_some() {
+        return Ok(true);
     }
     aks(n, bits, meter)
 }
@@ -620,6 +627,30 @@ mod tests {
             is_prime(&BigUint::from(65537u32), &mut meter),
             Err(Error::Limit(_))
         ));
+    }
+
+    #[test]
+    fn prime_fast_paths_complete_within_the_old_aks_work_budget() {
+        // Development regression, not a calibrated timing comparison. The
+        // baseline branch above u64 was exactly this call to AKS.
+        for n in [
+            BigUint::from(u64::MAX) + 14u8,
+            (BigUint::one() << 127usize) - BigUint::one(),
+        ] {
+            let limits = Limits {
+                steps: 2_000_000,
+                ..Limits::default()
+            };
+            let mut baseline = Meter::new(limits.clone());
+            let width = n.bits() as usize;
+            assert!(matches!(
+                aks(&n, width, &mut baseline),
+                Err(Error::Limit(_))
+            ));
+            let mut candidate = Meter::new(limits);
+            assert!(is_prime(&n, &mut candidate).unwrap());
+            eprintln!("prime={n}; AKS exhausted {}; exact fast path completed {}; uncalibrated development steps", baseline.used, candidate.used);
+        }
     }
 
     #[test]

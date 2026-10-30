@@ -406,3 +406,17 @@ measurement run IDs. Keep `candidate_id`, `workload_id`, and `run_id`
 in a separate benchmark table under the AGENTS.md measurement contract.
 This format is a storage substrate for a future nonlinear orbit-union
 generator, not evidence that such a base improves relation yield at N131.
+
+## Small prime-field CM/Hecke source snapshots
+
+The `heckecm` family archives the exact cofactor-projected nonzero point sets
+from `experiments/hecke-sparse-target-20261030/`. Here `n=1` is field degree,
+`l` is the saved conductor and `seed` is the prime modulus. Each source is
+bound by SHA-256 to the independent short-model replay; full EC1/UID
+preimages and negation representatives are retained. The four new entries
+append to the existing index without rewriting historical rows.
+
+`fbarchive.py verify --rebuild` reconstructs this family from its committed
+source snapshot using `hecke_source_archive.py`; this is not a fresh CM
+class enumeration. The study's separately retained producer performs that
+enumeration and verifies actual Hecke group relations and extension traces.

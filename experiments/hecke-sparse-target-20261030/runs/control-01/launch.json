@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/workspace/scratch/hecke-math-venv/bin/python",
+    "-c",
+    "import sys;sys.path.insert(0,'experiments/hecke-sparse-target-20261030');from modular import *;m=Modular(367,[2,3]); print('constructed',m.cusp_x,m.a);f=Field(367);pts,s=cm_points(m,f,6,8);import json;old=json.load(open('experiments/ecdlp-hecke-d39-holdout-20261026/data/exp11_class_walk_D39_f6.json'));expected=[tuple(map(int,x.strip('()').split(' : ')[:2])) for x in old['column_points']];assert pts==expected;print('saved point set reproduced',len(pts),s);print(m.fiber(2,pts[0],True))"
+  ],
+  "cap_seconds": 120,
+  "exit_code": 1,
+  "wall_seconds_diagnostic_only": 0.25371033599731163,
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "commit": "66529d75af08e28363a8c9a442c37ec74b814d13"
+}

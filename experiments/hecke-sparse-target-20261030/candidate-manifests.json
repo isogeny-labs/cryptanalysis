@@ -1,0 +1,355 @@
+[
+  {
+    "cell": "f6-small-01",
+    "candidate_id": "IC1P14Cx011fb64PDP2pairRCHeckeLAflintTDshiftISO0h68a8d324d5a1",
+    "candidate_uid": "urn:ec-candidate:1:sha256:68a8d324d5a1ba5b5512d9625ec232efb19bebd659f47b6fa06df879aa2733ff",
+    "candidate_sha256": "68a8d324d5a1ba5b5512d9625ec232efb19bebd659f47b6fa06df879aa2733ff",
+    "manifest": {
+      "field": {
+        "characteristic": 11587,
+        "degree": 1,
+        "element_encoding": "integer modulo characteristic",
+        "representation": "prime"
+      },
+      "curve": {
+        "coefficients": [
+          0,
+          -1,
+          1,
+          -10,
+          -20
+        ],
+        "cofactor": 15,
+        "curve_order": 11535,
+        "generator": [
+          10078,
+          5351
+        ],
+        "model": "generalized Weierstrass",
+        "subgroup_order": 769,
+        "target_group": "prime-order subgroup",
+        "trace": 53,
+        "curve_id": "EC1P14Cx011h566f75825f4f"
+      },
+      "method": "Hecke relations with generic log bootstrap and bounded signed two-sum descent",
+      "stages": {
+        "PDP": {
+          "arity": 2,
+          "solver": "signed-pair-index"
+        },
+        "RC": {
+          "method": "Hecke",
+          "degrees": [
+            2,
+            3
+          ]
+        },
+        "LA": {
+          "method": "FLINT dense with independent sparse rank check"
+        },
+        "TD": {
+          "method": "Q+[a]G pair lookup",
+          "offset_cap": 256
+        }
+      },
+      "bootstrap": {
+        "method": "shared-table BSGS on free base-log variables"
+      },
+      "factor_base": {
+        "curve_id": "EC1P14Cx011h566f75825f4f",
+        "curve_uid": "urn:ec-record:1:sha256:566f75825f4f98a0b779bf2d07645854854bda214ded5fafbb7bbbc660617544",
+        "factor_base_sha256": "829c2e7588459d50d5043f5c4eabd301bab2a5fae3aacb6470cdb2683d438468",
+        "enumerated_set_sha256": "cabaf3747283b7d2c9cd43539b578a0711c92542f53cb37c83db276e6ce61176",
+        "archive": "experiments/fb-archive/bases/EC1P14Cx011h566f75825f4f/heckecm-l6-s11587-829c2e758845.json.gz",
+        "points": 64,
+        "effective_columns": 32
+      },
+      "isogeny": "none",
+      "implementation": {
+        "sources_sha256": {
+          "PROTOCOL.md": "ce19876f66fa22aa7cf5f295d166d692fefe1e528f5ac25f347ed4ed5ffabdaa",
+          "modular.py": "c77536b87d6f4f8d324e788f996aac82571a485cdd3f075a05dea06f1f9a9968",
+          "study.py": "c70537df434546953e0eaca43f1d92d1c06a9aada92ee8ed7853ae7112cad002"
+        }
+      }
+    },
+    "workload": {
+      "curve_uid": "urn:ec-record:1:sha256:566f75825f4f98a0b779bf2d07645854854bda214ded5fafbb7bbbc660617544",
+      "target_count": 1,
+      "targets": [
+        [
+          6634,
+          8537
+        ]
+      ],
+      "kind": "public point generated without supplied scalar"
+    },
+    "workload_sha256": "d25835c407b6b6ea9a43193186e7ed92a2a1ee5b172aa0f4eb54790bdfbfb904",
+    "status": "finite diagnostic; no performance promotion"
+  },
+  {
+    "cell": "f6-medium-01",
+    "candidate_id": "IC1P18Cx011fb64PDP2pairRCHeckeLAflintTDshiftISO0h3d6ae0e9bb1c",
+    "candidate_uid": "urn:ec-candidate:1:sha256:3d6ae0e9bb1c829a6ab90cadb64b5ea801775ec873f3a8a40a90ee7fe9d0661a",
+    "candidate_sha256": "3d6ae0e9bb1c829a6ab90cadb64b5ea801775ec873f3a8a40a90ee7fe9d0661a",
+    "manifest": {
+      "field": {
+        "characteristic": 163567,
+        "degree": 1,
+        "element_encoding": "integer modulo characteristic",
+        "representation": "prime"
+      },
+      "curve": {
+        "coefficients": [
+          0,
+          -1,
+          1,
+          -10,
+          -20
+        ],
+        "cofactor": 10,
+        "curve_order": 163190,
+        "generator": [
+          28978,
+          131110
+        ],
+        "model": "generalized Weierstrass",
+        "subgroup_order": 16319,
+        "target_group": "prime-order subgroup",
+        "trace": 378,
+        "curve_id": "EC1P18Cx011hda40c99b303c"
+      },
+      "method": "Hecke relations with generic log bootstrap and bounded signed two-sum descent",
+      "stages": {
+        "PDP": {
+          "arity": 2,
+          "solver": "signed-pair-index"
+        },
+        "RC": {
+          "method": "Hecke",
+          "degrees": [
+            2,
+            3
+          ]
+        },
+        "LA": {
+          "method": "FLINT dense with independent sparse rank check"
+        },
+        "TD": {
+          "method": "Q+[a]G pair lookup",
+          "offset_cap": 256
+        }
+      },
+      "bootstrap": {
+        "method": "shared-table BSGS on free base-log variables"
+      },
+      "factor_base": {
+        "curve_id": "EC1P18Cx011hda40c99b303c",
+        "curve_uid": "urn:ec-record:1:sha256:da40c99b303c381e664750d5c94fbea5142166001259b54d47b26a3243f69010",
+        "factor_base_sha256": "56161330ee454109f60c6c33ac5cee945f53320538d2ccedb0efef46669f1b48",
+        "enumerated_set_sha256": "a4bf623462b9ce89225d29524faaf74a3a9c6f0ca0e9ea6e37f8c0eaca788e3d",
+        "archive": "experiments/fb-archive/bases/EC1P18Cx011hda40c99b303c/heckecm-l6-s163567-56161330ee45.json.gz",
+        "points": 64,
+        "effective_columns": 32
+      },
+      "isogeny": "none",
+      "implementation": {
+        "sources_sha256": {
+          "PROTOCOL.md": "ce19876f66fa22aa7cf5f295d166d692fefe1e528f5ac25f347ed4ed5ffabdaa",
+          "modular.py": "c77536b87d6f4f8d324e788f996aac82571a485cdd3f075a05dea06f1f9a9968",
+          "study.py": "c70537df434546953e0eaca43f1d92d1c06a9aada92ee8ed7853ae7112cad002"
+        }
+      }
+    },
+    "workload": {
+      "curve_uid": "urn:ec-record:1:sha256:da40c99b303c381e664750d5c94fbea5142166001259b54d47b26a3243f69010",
+      "target_count": 1,
+      "targets": [
+        [
+          1310,
+          106443
+        ]
+      ],
+      "kind": "public point generated without supplied scalar"
+    },
+    "workload_sha256": "b137c0aa51ec31423c9cdf87526e7dfafbe6810cf538f76f893f9003895e480b",
+    "status": "finite diagnostic; no performance promotion"
+  },
+  {
+    "cell": "f6-large-01",
+    "candidate_id": "IC1P20Cx011fb64PDP2pairRCHeckeLAflintTDshiftISO0h04729692eb3c",
+    "candidate_uid": "urn:ec-candidate:1:sha256:04729692eb3c892652e7ef4bd5790bb27371e20d4b5ff5f30f00cfc6f7b5b979",
+    "candidate_sha256": "04729692eb3c892652e7ef4bd5790bb27371e20d4b5ff5f30f00cfc6f7b5b979",
+    "manifest": {
+      "field": {
+        "characteristic": 1032607,
+        "degree": 1,
+        "element_encoding": "integer modulo characteristic",
+        "representation": "prime"
+      },
+      "curve": {
+        "coefficients": [
+          0,
+          -1,
+          1,
+          -10,
+          -20
+        ],
+        "cofactor": 5,
+        "curve_order": 1032385,
+        "generator": [
+          112775,
+          668584
+        ],
+        "model": "generalized Weierstrass",
+        "subgroup_order": 206477,
+        "target_group": "prime-order subgroup",
+        "trace": 223,
+        "curve_id": "EC1P20Cx011h4ee315e578d9"
+      },
+      "method": "Hecke relations with generic log bootstrap and bounded signed two-sum descent",
+      "stages": {
+        "PDP": {
+          "arity": 2,
+          "solver": "signed-pair-index"
+        },
+        "RC": {
+          "method": "Hecke",
+          "degrees": [
+            2,
+            3
+          ]
+        },
+        "LA": {
+          "method": "FLINT dense with independent sparse rank check"
+        },
+        "TD": {
+          "method": "Q+[a]G pair lookup",
+          "offset_cap": 256
+        }
+      },
+      "bootstrap": {
+        "method": "shared-table BSGS on free base-log variables"
+      },
+      "factor_base": {
+        "curve_id": "EC1P20Cx011h4ee315e578d9",
+        "curve_uid": "urn:ec-record:1:sha256:4ee315e578d9101afc65fbb36c3d01939cede5005175cc650ee88eb3e461a8cb",
+        "factor_base_sha256": "db0262cc8723422d956bd4839914bda935a90e256828e0b74766766b1d6b5a49",
+        "enumerated_set_sha256": "2a0cf77e4b6e3969c7306a28a7ab844c36357bacc9b738ecfbd925b3fb1a9320",
+        "archive": "experiments/fb-archive/bases/EC1P20Cx011h4ee315e578d9/heckecm-l6-s1032607-db0262cc8723.json.gz",
+        "points": 64,
+        "effective_columns": 32
+      },
+      "isogeny": "none",
+      "implementation": {
+        "sources_sha256": {
+          "PROTOCOL.md": "ce19876f66fa22aa7cf5f295d166d692fefe1e528f5ac25f347ed4ed5ffabdaa",
+          "modular.py": "c77536b87d6f4f8d324e788f996aac82571a485cdd3f075a05dea06f1f9a9968",
+          "study.py": "c70537df434546953e0eaca43f1d92d1c06a9aada92ee8ed7853ae7112cad002"
+        }
+      }
+    },
+    "workload": {
+      "curve_uid": "urn:ec-record:1:sha256:4ee315e578d9101afc65fbb36c3d01939cede5005175cc650ee88eb3e461a8cb",
+      "target_count": 1,
+      "targets": [
+        [
+          851421,
+          466635
+        ]
+      ],
+      "kind": "public point generated without supplied scalar"
+    },
+    "workload_sha256": "08cc7850228cb20d528ee6aef6baa4442d89f531e99d13b44716af7cc5f840e0",
+    "status": "finite diagnostic; no performance promotion"
+  },
+  {
+    "cell": "f30-01",
+    "candidate_id": "IC1P18Cx011fb318PDP2pairRCHeckeLAflintTDshiftISO0h429819f4076d",
+    "candidate_uid": "urn:ec-candidate:1:sha256:429819f4076d985a22dd933c0bd26849102cad80d15b434ecb1517d17b522621",
+    "candidate_sha256": "429819f4076d985a22dd933c0bd26849102cad80d15b434ecb1517d17b522621",
+    "manifest": {
+      "field": {
+        "characteristic": 231559,
+        "degree": 1,
+        "element_encoding": "integer modulo characteristic",
+        "representation": "prime"
+      },
+      "curve": {
+        "coefficients": [
+          0,
+          -1,
+          1,
+          -10,
+          -20
+        ],
+        "cofactor": 5,
+        "curve_order": 231365,
+        "generator": [
+          169155,
+          94863
+        ],
+        "model": "generalized Weierstrass",
+        "subgroup_order": 46273,
+        "target_group": "prime-order subgroup",
+        "trace": 195,
+        "curve_id": "EC1P18Cx011h6370ca521fb9"
+      },
+      "method": "Hecke relations with generic log bootstrap and bounded signed two-sum descent",
+      "stages": {
+        "PDP": {
+          "arity": 2,
+          "solver": "signed-pair-index"
+        },
+        "RC": {
+          "method": "Hecke",
+          "degrees": [
+            2,
+            3,
+            5
+          ]
+        },
+        "LA": {
+          "method": "FLINT dense with independent sparse rank check"
+        },
+        "TD": {
+          "method": "Q+[a]G pair lookup",
+          "offset_cap": 256
+        }
+      },
+      "bootstrap": {
+        "method": "shared-table BSGS on free base-log variables"
+      },
+      "factor_base": {
+        "curve_id": "EC1P18Cx011h6370ca521fb9",
+        "curve_uid": "urn:ec-record:1:sha256:6370ca521fb9a371098d6d1887a42a5322852bf9e3b13f83761c1542c10b2808",
+        "factor_base_sha256": "ff60c424b55966350a8f808496c6ab18007e9d786e08415f7aa2c81e9f97fa12",
+        "enumerated_set_sha256": "4a99fddb48724ad28e352f31f9633b69fff19d2e6390b216db7b8d84edd367fd",
+        "archive": "experiments/fb-archive/bases/EC1P18Cx011h6370ca521fb9/heckecm-l30-s231559-ff60c424b559.json.gz",
+        "points": 318,
+        "effective_columns": 159
+      },
+      "isogeny": "none",
+      "implementation": {
+        "sources_sha256": {
+          "PROTOCOL.md": "ce19876f66fa22aa7cf5f295d166d692fefe1e528f5ac25f347ed4ed5ffabdaa",
+          "modular.py": "c77536b87d6f4f8d324e788f996aac82571a485cdd3f075a05dea06f1f9a9968",
+          "study.py": "c70537df434546953e0eaca43f1d92d1c06a9aada92ee8ed7853ae7112cad002"
+        }
+      }
+    },
+    "workload": {
+      "curve_uid": "urn:ec-record:1:sha256:6370ca521fb9a371098d6d1887a42a5322852bf9e3b13f83761c1542c10b2808",
+      "target_count": 1,
+      "targets": [
+        [
+          186469,
+          95261
+        ]
+      ],
+      "kind": "public point generated without supplied scalar"
+    },
+    "workload_sha256": "5eba415c4841a8deac59d098d444124fa414743a80d3efda76434d15d54ae536",
+    "status": "finite diagnostic; no performance promotion"
+  }
+]

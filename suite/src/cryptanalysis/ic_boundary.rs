@@ -678,9 +678,9 @@ impl Hasher for MixHasher {
     }
 }
 
-type FastMap<V> = HashMap<u64, V, BuildHasherDefault<MixHasher>>;
+pub(crate) type FastMap<V> = HashMap<u64, V, BuildHasherDefault<MixHasher>>;
 
-fn fast_map<V>(capacity: usize) -> FastMap<V> {
+pub(crate) fn fast_map<V>(capacity: usize) -> FastMap<V> {
     HashMap::with_capacity_and_hasher(capacity, BuildHasherDefault::default())
 }
 
@@ -2844,7 +2844,7 @@ impl<E: Copy> FactorBase<E> {
         self.point_index.get(&key).copied()
     }
 
-    fn empty(description: String) -> Self {
+    pub(crate) fn empty(description: String) -> Self {
         Self {
             points: Vec::new(),
             neg_index: Vec::new(),

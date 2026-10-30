@@ -1,0 +1,21 @@
+{
+  "repository": "isogeny-labs/cryptanalysis",
+  "pr": 1315,
+  "head_sha": "fb3134b97dcb37f12ab19c7df164518415bc069d",
+  "run_id": 41005457350,
+  "job_id": 123899219508,
+  "failed_step": "Verify source-bound native and Lean certificates",
+  "exit_code": 127,
+  "failure": "check.sh: line 20: rg: command not found",
+  "before_failure_verified": [
+    "official rustup install",
+    "pinned Lean install",
+    "formatting",
+    "Clippy",
+    "62 library/native tests",
+    "1 CLI test",
+    "native certificate replay"
+  ],
+  "fix": "use existing Python for the same pinned version check; require the exact 4.34.1 comma delimiter",
+  "hosted_fix_verified": false
+}
