@@ -5,14 +5,16 @@ digraph Evidence {
   control [label="CONTROL: reproduce saved p367 class\n64 points, 48 rows, rank40\n128 explicit fiber traces checked"];
   sparse [label="SPARSE f6: p163567 / r16319 and p1032607 / r206477\n64 unique projected points -> 32 folded unknowns\nHecke rank20; scalar-only rank0\nGeneric base-label queries: 32 -> 12",fillcolor="#e4f3e5"];
   conductor [label="f30: p231559 / r46273\n320 raw -> 318 projected -> 159 folded\nAdding degree5: folded rank100 -> 112\nAll base labels independently replayed",fillcolor="#e4f3e5"];
+  reuse [label="STRONGER GENERIC CONTROL: reuse pair collisions\nSame pair-construction curve sums; extra bookkeeping / LA\nGeneric vs Hecke+pair free logs: 1/1, 11/1, 31/12, 1/1\nMarginal Hecke ranks: 0, 10, 19, 0\nAll 57,475 pairs independently checked",fillcolor="#e4f3e5"];
   trace [label="ACTUAL EXTENSION TRACES\nEliminate every new column before counting information\nf6 r206477: 132 new columns, 100 more rank\nZERO extra constraints on original logs",fillcolor="#fff0d4"];
   target [label="Same r206477 public target\nOriginal two-sum: no match in256 queries\nTrace-grown201-point base: recovered at3\nMatched201-point generic base: recovered at10\nGeneric base cheaper to grow: 70 vs528 additions",fillcolor="#fff0d4"];
   limits [label="OPEN: 12 remaining sparse-f6 bootstrap logs\nComplete cost / strong-rho comparison / Lean proof\nLarger f30 selector exhausted200 candidates\nNo qualified speed or asymptotic claim",fillcolor="#f1f1f1"];
   control -> sparse;
   control -> conductor;
-  sparse -> trace;
-  sparse -> target;
-  conductor -> trace;
+  sparse -> reuse;
+  conductor -> reuse;
+  reuse -> trace;
+  reuse -> target;
   trace -> limits;
   target -> limits;
 }

@@ -11,6 +11,7 @@ independent arithmetic/rank replay have the following exact scope.
 | Reported ranks | FLINT dense, sparse elimination and independent NumPy reduction | finite checked; Lean row-operation certificates not implemented |
 | New-column elimination measures original information | rank([A B])-rank(B), applied to retained matrices | written linear-algebra justification below; no Lean quotient-image bridge |
 | Base labels and target outputs | separate short-model scalar replay | finite checked on exact recorded points; no scaling theorem |
+| Pair-index collision relations and ranks | every pair re-enumerated with short-model arithmetic; all collision rows ranked independently; explicit witness checks | finite checked on all four fixed cells; no generic lower bound or total-cost claim |
 | Hecke interpretation of formal functions | sourced modular parametrization, surplus q-coefficient checks, saved Sage control | general modular-correspondence theorem remains unformalized |
 
 For new-column elimination, let A map old coordinates and B map new coordinates
