@@ -1,0 +1,38 @@
+{
+  "attempts": [
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-shared-build-20261027/run_shared.py --run-id shared-a",
+      "exit_code": 0,
+      "result_sha256": "ad6837b1ec32fac4ba631df1c17a62498bf4e521787433232a1760c452b61810",
+      "run_id": "shared-a",
+      "stderr_sha256": "8943796dd6965fcfd4f07cb47d7002804503faa3f5d886176b68f54048fd1fc0",
+      "stdout_sha256": "e47e7fe8e1d995a699024db1d9b9c4ed9b6838a4b9a529d6e24fe1e8c99879d7"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-shared-build-20261027/run_shared.py --run-id separate-b",
+      "exit_code": 0,
+      "result_sha256": "c3043b9d667940c750b28acc97210cd9b7341c71ec03ec134cb6747bc2814efb",
+      "run_id": "separate-b",
+      "stderr_sha256": "dcb27796bc8b81d95a3bd94625955b8edf92bf85a82c0db0dd06a224645e76e2",
+      "stdout_sha256": "8c8fbffdb5f1d5b7db8a85875dae833c111c75a20bdfce3b510f16b0fed79c73"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-shared-build-20261027/run_shared.py --run-id separate-a",
+      "exit_code": 0,
+      "result_sha256": "d553b640663368dc7a99c3c4d3d0da63030225e0fccff4a1f7e4d80887859025",
+      "run_id": "separate-a",
+      "stderr_sha256": "b9587084347a5e5fe7f90d3e1249f12ccb75b505dcf436805943b735d982fe32",
+      "stdout_sha256": "352799ac8f1694ef7e421d882d286fca08fa355efc4a6bef6604c853db42718b"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-shared-build-20261027/run_shared.py --run-id shared-b",
+      "exit_code": 0,
+      "result_sha256": "61dfd014bc5d0a4f218ee4a61c26c34277eed05b1e39dc6735fb0d2ae06e0b25",
+      "run_id": "shared-b",
+      "stderr_sha256": "18c44a653b3a30064dbb75f73c38d142be54e7908d7cce993aab34bdf95e18b7",
+      "stdout_sha256": "a6dc47ebe7ee53102ce1fd9695ed505b4ec0c5133d3cf4a4d20b76a5edc28c24"
+    }
+  ],
+  "schema": "hecke-d79-shared-build-attempts-v1",
+  "status": "PASS"
+}

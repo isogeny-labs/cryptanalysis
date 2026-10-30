@@ -1,0 +1,78 @@
+{
+  "build_content_sha256": "ebc29c5c9b4f3de35bc45afa4ac9f3b40db2f1a68c5a9912396a0ab67dca24ea",
+  "build_invocations": {
+    "separate": 2,
+    "shared": 1
+  },
+  "candidate_id": null,
+  "exploratory_median_two_prime_total_ms": {
+    "separate": 72810.99543750001,
+    "shared": 34509.8366245
+  },
+  "runs": [
+    {
+      "build_count": 1,
+      "build_wall_ms": 32069.8335,
+      "mode": "shared",
+      "order": [
+        8597,
+        12197
+      ],
+      "output_sha256": "ad6837b1ec32fac4ba631df1c17a62498bf4e521787433232a1760c452b61810",
+      "peak_rss_bytes": 1465745408,
+      "phase_sum_wall_ms": 33546.75571,
+      "run_id": "shared-a",
+      "total_wall_ms": 33559.694208,
+      "unallocated_wall_ms": 12.938498
+    },
+    {
+      "build_count": 2,
+      "build_wall_ms": 71440.273875,
+      "mode": "separate",
+      "order": [
+        12197,
+        8597
+      ],
+      "output_sha256": "c3043b9d667940c750b28acc97210cd9b7341c71ec03ec134cb6747bc2814efb",
+      "peak_rss_bytes": 2049212416,
+      "phase_sum_wall_ms": 72843.296625,
+      "run_id": "separate-b",
+      "total_wall_ms": 72884.51375,
+      "unallocated_wall_ms": 41.217125
+    },
+    {
+      "build_count": 2,
+      "build_wall_ms": 71307.91375,
+      "mode": "separate",
+      "order": [
+        8597,
+        12197
+      ],
+      "output_sha256": "d553b640663368dc7a99c3c4d3d0da63030225e0fccff4a1f7e4d80887859025",
+      "peak_rss_bytes": 1996554240,
+      "phase_sum_wall_ms": 72693.862829,
+      "run_id": "separate-a",
+      "total_wall_ms": 72737.477125,
+      "unallocated_wall_ms": 43.614296
+    },
+    {
+      "build_count": 1,
+      "build_wall_ms": 34048.233583,
+      "mode": "shared",
+      "order": [
+        12197,
+        8597
+      ],
+      "output_sha256": "61dfd014bc5d0a4f218ee4a61c26c34277eed05b1e39dc6735fb0d2ae06e0b25",
+      "peak_rss_bytes": 1882128384,
+      "phase_sum_wall_ms": 35445.728833,
+      "run_id": "shared-b",
+      "total_wall_ms": 35459.979041,
+      "unallocated_wall_ms": 14.250208
+    }
+  ],
+  "runtime_info_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "schema": "hecke-d79-shared-build-summary-v1",
+  "status": "PASS",
+  "target_online_ms": null
+}
