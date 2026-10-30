@@ -314,63 +314,271 @@ pub fn square_root(
     rng: &mut impl RandomSource,
     meter: &mut Meter,
 ) -> Result<Option<BigUint>> {
-    if a >= p || p <= &BigUint::from(2u8) || !p.bit(0) {
-        return Err(invalid("square-root parameters"));
-    }
-    if a.is_zero() {
-        return Ok(Some(BigUint::zero()));
-    }
-    let one = BigUint::one();
-    let pm1 = p - &one;
-    if modpow(a, &(&pm1 >> 1), p, meter)? != one {
-        return Ok(None);
-    }
-    if p % 4u8 == BigUint::from(3u8) {
-        return Ok(Some(modpow(a, &((p + &one) >> 2), p, meter)?));
-    }
-    let mut q = pm1.clone();
-    let mut s = 0usize;
-    while !q.bit(0) {
-        q >>= 1;
-        s += 1;
-    }
-    let z = loop {
-        let z = random_below(p, rng, meter)?;
-        if !z.is_zero() && modpow(&z, &(&pm1 >> 1), p, meter)? == pm1 {
-            break z;
+    SquareRootContext::new(p)?.root(a, rng, meter)
+}
+
+/// Reusable Tonelli–Shanks setup for one fixed odd prime modulus.
+///
+/// The caller must certify primality, just as for [`square_root`]. Parameters
+/// are prepared lazily; a nonresidue is sampled from the caller's randomness
+/// only when a nonzero square first needs it, then reused. This stores O(log p)
+/// bits rather than a table of roots. The returned root's sign is unspecified.
+pub struct SquareRootContext<'p> {
+    modulus: &'p BigUint,
+    parameters: Option<SquareRootParameters>,
+}
+
+struct SquareRootParameters {
+    minus_one: BigUint,
+    legendre_exponent: BigUint,
+    odd_part: BigUint,
+    root_exponent: BigUint,
+    twos: usize,
+    nonresidue_power: Option<BigUint>,
+}
+
+impl<'p> SquareRootContext<'p> {
+    /// Bind a context to an odd prime greater than two, without consuming
+    /// randomness or allocating its arithmetic parameters yet.
+    pub fn new(modulus: &'p BigUint) -> Result<Self> {
+        if modulus <= &BigUint::from(2u8) || !modulus.bit(0) {
+            return Err(invalid("square-root parameters"));
         }
-    };
-    let mut c = modpow(&z, &q, p, meter)?;
-    let mut x = modpow(a, &((&q + &one) >> 1), p, meter)?;
-    let mut t = modpow(a, &q, p, meter)?;
-    let mut m = s;
-    while t != one {
-        meter.charge(1, "Tonelli-Shanks")?;
-        let mut power = t.clone();
-        let mut i = 0;
-        while power != one && i < m {
-            power = &power * &power % p;
-            i += 1;
-        }
-        if i == m {
-            return Err(integrity("Tonelli-Shanks requires an odd prime modulus"));
-        }
-        let b = modpow(&c, &(BigUint::one() << (m - i - 1)), p, meter)?;
-        x = x * &b % p;
-        c = &b * &b % p;
-        t = t * &c % p;
-        m = i;
+        Ok(Self {
+            modulus,
+            parameters: None,
+        })
     }
-    if &x * &x % p != *a {
-        return Err(integrity("square-root replay"));
+
+    /// Extract a root of a canonical residue. A nonsquare returns `None`;
+    /// random-source failures and resource exhaustion remain errors. Cached
+    /// parameters never bypass the bounds of a subsequent caller's meter.
+    pub fn root(
+        &mut self,
+        a: &BigUint,
+        rng: &mut impl RandomSource,
+        meter: &mut Meter,
+    ) -> Result<Option<BigUint>> {
+        let p = self.modulus;
+        if a >= p {
+            return Err(invalid("square-root parameters"));
+        }
+        if a.is_zero() {
+            return Ok(Some(BigUint::zero()));
+        }
+        let width = usize::try_from(p.bits()).map_err(|_| overflow("square-root width"))?;
+        meter.bits(width, "square-root parameters")?;
+        if self.parameters.is_none() {
+            let minus_one = p - BigUint::one();
+            let legendre_exponent = &minus_one >> 1;
+            let mut odd_part = minus_one.clone();
+            let mut twos = 0;
+            while !odd_part.bit(0) {
+                odd_part >>= 1;
+                twos += 1;
+            }
+            let root_exponent = (&odd_part + BigUint::one()) >> 1;
+            self.parameters = Some(SquareRootParameters {
+                minus_one,
+                legendre_exponent,
+                odd_part,
+                root_exponent,
+                twos,
+                nonresidue_power: None,
+            });
+        }
+        let parameters = self.parameters.as_mut().unwrap();
+        let one = BigUint::one();
+        if parameters.twos == 1 {
+            // For p=3 mod4, square the candidate instead of first computing a
+            // separate Legendre symbol. This also rejects every nonsquare.
+            let root = modpow(a, &parameters.root_exponent, p, meter)?;
+            return Ok((&root * &root % p == *a).then_some(root));
+        }
+        if modpow(a, &parameters.legendre_exponent, p, meter)? != one {
+            return Ok(None);
+        }
+        let mut c = if let Some(initial) = &parameters.nonresidue_power {
+            initial.clone()
+        } else {
+            let z = loop {
+                let z = random_below(p, rng, meter)?;
+                if !z.is_zero()
+                    && modpow(&z, &parameters.legendre_exponent, p, meter)? == parameters.minus_one
+                {
+                    break z;
+                }
+            };
+            let initial = modpow(&z, &parameters.odd_part, p, meter)?;
+            parameters.nonresidue_power = Some(initial.clone());
+            initial
+        };
+        let mut x = modpow(a, &parameters.root_exponent, p, meter)?;
+        let mut t = modpow(a, &parameters.odd_part, p, meter)?;
+        let mut m = parameters.twos;
+        while t != one {
+            meter.charge(1, "Tonelli-Shanks")?;
+            let mut power = t.clone();
+            let mut i = 0;
+            while power != one && i < m {
+                power = &power * &power % p;
+                i += 1;
+            }
+            if i == m {
+                return Err(integrity("Tonelli-Shanks requires an odd prime modulus"));
+            }
+            let b = modpow(&c, &(BigUint::one() << (m - i - 1)), p, meter)?;
+            x = x * &b % p;
+            c = &b * &b % p;
+            t = t * &c % p;
+            m = i;
+        }
+        if &x * &x % p != *a {
+            return Err(integrity("square-root replay"));
+        }
+        Ok(Some(x))
     }
-    Ok(Some(x))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::Limits;
+
+    #[test]
+    fn three_mod_four_roots_fit_a_single_exponentiation_budget() {
+        struct NoRandom;
+        impl RandomSource for NoRandom {
+            fn fill(&mut self, _: &mut [u8]) -> Result<()> {
+                Err(invalid("shortcut must not consume randomness"))
+            }
+        }
+        let p = BigUint::from(7u8);
+        let mut roots = SquareRootContext::new(&p).unwrap();
+        // One two-bit modular exponentiation is charged five abstract steps.
+        // Squaring the returned candidate independently certifies membership.
+        for (a, expected) in [(2u8, Some(4u8)), (3, None)] {
+            let mut meter = Meter::new(Limits {
+                steps: 5,
+                ..Limits::default()
+            });
+            let got = roots.root(&a.into(), &mut NoRandom, &mut meter).unwrap();
+            assert_eq!(got, expected.map(BigUint::from));
+            if let Some(root) = got {
+                assert_eq!(&root * &root % &p, a.into());
+            }
+        }
+    }
+
+    #[test]
+    fn reused_square_roots_match_independent_residue_tables_in_both_orders() {
+        for p in [3u64, 5, 7, 17, 19, 43, 97, 257] {
+            let modulus = BigUint::from(p);
+            let mut roots = SquareRootContext::new(&modulus).unwrap();
+            let mut rng = Seeded(11);
+            let mut meter = Meter::new(Limits::default());
+            let inputs: Vec<_> = (0..p).chain((0..p).rev()).collect();
+            for a in inputs {
+                let root = roots.root(&a.into(), &mut rng, &mut meter).unwrap();
+                let exists = (0..p).any(|x| x * x % p == a);
+                assert_eq!(root.is_some(), exists, "p={p}, a={a}");
+                if let Some(root) = root {
+                    assert!(root < modulus);
+                    assert_eq!(&root * &root % &modulus, a.into());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn root_setup_is_lazy_reused_and_charged_only_when_performed() {
+        struct Nonresidue(usize);
+        impl RandomSource for Nonresidue {
+            fn fill(&mut self, bytes: &mut [u8]) -> Result<()> {
+                self.0 += 1;
+                bytes.fill(3);
+                Ok(())
+            }
+        }
+        let p = BigUint::from(17u8);
+        let mut roots = SquareRootContext::new(&p).unwrap();
+        let mut cached_rng = Nonresidue(0);
+        let mut fresh_rng = Nonresidue(0);
+        let mut cached_meter = Meter::new(Limits::default());
+        let mut fresh_meter = Meter::new(Limits::default());
+        for a in [0u8, 3, 4, 9, 16, 8, 2, 1] {
+            let cached = roots
+                .root(&a.into(), &mut cached_rng, &mut cached_meter)
+                .unwrap();
+            let fresh = square_root(&a.into(), &p, &mut fresh_rng, &mut fresh_meter).unwrap();
+            assert_eq!(cached.is_some(), fresh.is_some());
+            if a == 0 || a == 3 {
+                assert_eq!(
+                    cached_rng.0, 0,
+                    "zero/nonsquare must not sample a nonresidue"
+                );
+            }
+            if let Some(root) = cached {
+                assert_eq!(&root * &root % &p, a.into());
+            }
+        }
+        assert_eq!(cached_rng.0, 1);
+        assert_eq!(fresh_rng.0, 6);
+        assert!(cached_meter.used < fresh_meter.used);
+    }
+
+    #[test]
+    fn reused_roots_preserve_failures_and_enforce_each_new_meter() {
+        struct Broken;
+        impl RandomSource for Broken {
+            fn fill(&mut self, _: &mut [u8]) -> Result<()> {
+                Err(Error::Limit("test randomness unavailable".into()))
+            }
+        }
+        for p in [0u8, 1, 2, 4] {
+            assert!(SquareRootContext::new(&p.into()).is_err());
+        }
+        let p = BigUint::from(17u8);
+        let mut roots = SquareRootContext::new(&p).unwrap();
+        let mut meter = Meter::new(Limits::default());
+        assert!(matches!(
+            roots.root(&4u8.into(), &mut Broken, &mut meter),
+            Err(Error::Limit(_))
+        ));
+        let mut rng = Seeded(19);
+        let root = roots
+            .root(&4u8.into(), &mut rng, &mut meter)
+            .unwrap()
+            .unwrap();
+        assert_eq!(&root * &root % &p, 4u8.into());
+        assert!(matches!(
+            roots.root(&p, &mut rng, &mut meter),
+            Err(Error::Invalid(_))
+        ));
+        let mut narrow = Meter::new(Limits {
+            bits: 2,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            roots.root(&4u8.into(), &mut rng, &mut narrow),
+            Err(Error::Limit(_))
+        ));
+        let mut exhausted = Meter::new(Limits {
+            steps: 0,
+            ..Limits::default()
+        });
+        assert!(matches!(
+            roots.root(&4u8.into(), &mut rng, &mut exhausted),
+            Err(Error::Limit(_))
+        ));
+        assert_eq!(
+            roots
+                .root(&BigUint::zero(), &mut Broken, &mut exhausted)
+                .unwrap(),
+            Some(BigUint::zero())
+        );
+    }
+
     #[test]
     fn exact_small_primality_and_square_roots() {
         let mut meter = Meter::new(Limits::default());
