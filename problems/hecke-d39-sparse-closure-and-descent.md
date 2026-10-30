@@ -106,3 +106,12 @@ ordinary correctness work or the mathematical possibility of a Hecke advantage.
 Acceptance: configure that execution capability, freeze complete costs and a
 stronger generic comparator, run fresh public-point controls, independently
 replay every result, then reassess the same-total-budget claim.
+
+The [prepared fixed-base workload](../experiments/hecke-sparse-target-20261030/COST_CELL_PROTOCOL.md)
+now charges geometry, pair bookkeeping, LA, tuned memory-capped BSGS, recovery
+and label replay. Eight unit tests pass, including tiny-table completeness and
+the missing-device guard. Its retained preflight exits2 with
+`benchmark_executed=false`; the actual workload remains unverified on the
+required host. Running and qualifying it would settle only this fixed-base
+preparation comparison. Full base generation, fresh target descent and matched
+rho costs would still be owed for a pipeline claim.

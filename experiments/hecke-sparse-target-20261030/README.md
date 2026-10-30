@@ -5,6 +5,9 @@
 [Current pair-index reuse result](PAIR_REUSE_RESULT.md) strengthens the generic
 control and reduces bootstrap queries without additional pair-construction
 curve sums. It explicitly updates the interpretation of the earlier controls.
+[Prepared cost comparison](COST_CELL_PROTOCOL.md) records the next complete
+fixed-base workload and its retained no-CUDA preflight failure. No benchmark
+execution or qualified speed comparison is claimed.
 
 The primary protocol covers four fields and all four user-requested questions.
 Follow-up protocols explicitly distinguish post-result continuation controls.

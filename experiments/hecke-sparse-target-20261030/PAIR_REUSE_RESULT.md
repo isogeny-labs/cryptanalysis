@@ -82,6 +82,9 @@ base-label checks across the three arms (255 points per arm).
 Two additional unit tests check dependent/independent coefficient rows, a
 hand-known five-torsion collision, zero identities, and rejection of a
 corrupted witness. The earlier four arithmetic tests remain required.
+Two cost-workload tests additionally check complete BSGS search under tiny
+table caps and fail-closed handling of an absent CUDA device. All eight pass;
+the prepared cost workload itself has not run on an accepted benchmark host.
 The geometric interpretation and Lean limitations remain as stated in
 [PROOF_MAP.md](PROOF_MAP.md); no new global theorem is claimed.
 
@@ -103,3 +106,14 @@ Qualified cost/rho measurement is blocked on
 that execution capability; ordinary-host correctness diagnostics do not
 substitute for it. This is an access/measurement gap, not a proof that a
 Hecke advantage is impossible. The source problem record retains the goal.
+
+[COST_CELL_PROTOCOL.md](COST_CELL_PROTOCOL.md) and [cost_cell.py](cost_cell.py)
+make the next fixed-base discriminator concrete: charge geometry, pair
+bookkeeping, LA, a tuned shared BSGS table, recovery and label replay. The
+generic control uses the same table-memory cap. Full base generation and fresh
+target descent remain separate pipeline costs. The
+[preflight attempt](runs/blocked-cost-cell-01/receipt.json) exited with status2
+and `benchmark_executed=false` because no CUDA device was accessible; it ran
+no benchmark arithmetic. Execution and qualification of this workload remain
+blocked. An accepted harness must also supply isolation, calibration,
+alternating repetitions, A/A and positive controls before any speed ratio.
