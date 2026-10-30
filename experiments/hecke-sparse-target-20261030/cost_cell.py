@@ -168,7 +168,7 @@ def main():
                             peak_process_rss_platform_units=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
                             attempt_wall_seconds=time.perf_counter()-attempt_wall,
                             attempt_cpu_seconds=time.process_time()-attempt_cpu,
-                            timing_scope='Failure attempt includes input loading; complete preparation cost is unknown.')
+                            timing_scope='Failure attempt includes input loading; completed phases and any available preparation totals are retained separately.')
             finally:
                 signal.alarm(0)
                 signal.signal(signal.SIGALRM,previous_handler)
