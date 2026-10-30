@@ -31,44 +31,58 @@ impl serde::Serialize for Point {
         serde::Serialize::serialize(&value, serializer)
     }
 }
+
+struct AffineCoordinates {
+    x: BigUint,
+    y: BigUint,
+}
+json_record!(AffineCoordinates, required { x, y }, optional {});
+
 impl<'de> serde::Deserialize<'de> for Point {
     fn deserialize<D: serde::Deserializer<'de>>(
         deserializer: D,
     ) -> std::result::Result<Self, D::Error> {
-        let value = <serde_json::Value as serde::Deserialize>::deserialize(deserializer)?;
-        if value == "Infinity" {
-            return Ok(Self::Infinity);
+        struct PointVisitor;
+        impl<'de> serde::de::Visitor<'de> for PointVisitor {
+            type Value = Point;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("\"Infinity\" or a single Affine object")
+            }
+
+            fn visit_str<E: serde::de::Error>(
+                self,
+                variant: &str,
+            ) -> std::result::Result<Point, E> {
+                if variant == "Infinity" {
+                    Ok(Point::Infinity)
+                } else {
+                    Err(serde::de::Error::unknown_variant(variant, &["Infinity"]))
+                }
+            }
+
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut map: A,
+            ) -> std::result::Result<Point, A::Error> {
+                match map.next_key::<String>()?.as_deref() {
+                    Some("Affine") => {
+                        let AffineCoordinates { x, y } = map.next_value()?;
+                        if let Some(field) = map.next_key::<String>()? {
+                            return Err(if field == "Affine" {
+                                serde::de::Error::duplicate_field("Affine")
+                            } else {
+                                serde::de::Error::unknown_field(&field, &["Affine"])
+                            });
+                        }
+                        Ok(Point::Affine { x, y })
+                    }
+                    Some(variant) => Err(serde::de::Error::unknown_variant(variant, &["Affine"])),
+                    None => Err(serde::de::Error::missing_field("Affine")),
+                }
+            }
         }
-        let mut outer = value
-            .as_object()
-            .cloned()
-            .ok_or_else(|| serde::de::Error::custom("point object"))?;
-        let value = outer
-            .remove("Affine")
-            .ok_or_else(|| serde::de::Error::custom("point variant"))?;
-        if !outer.is_empty() {
-            return Err(serde::de::Error::custom("unknown point variant"));
-        }
-        let mut fields = value
-            .as_object()
-            .cloned()
-            .ok_or_else(|| serde::de::Error::custom("affine object"))?;
-        let x = serde_json::from_value(
-            fields
-                .remove("x")
-                .ok_or_else(|| serde::de::Error::missing_field("x"))?,
-        )
-        .map_err(serde::de::Error::custom)?;
-        let y = serde_json::from_value(
-            fields
-                .remove("y")
-                .ok_or_else(|| serde::de::Error::missing_field("y"))?,
-        )
-        .map_err(serde::de::Error::custom)?;
-        if !fields.is_empty() {
-            return Err(serde::de::Error::custom("unknown affine field"));
-        }
-        Ok(Self::Affine { x, y })
+        deserializer.deserialize_any(PointVisitor)
     }
 }
 

@@ -178,8 +178,13 @@ experiment, IC/rho comparison, new mathematical result or Lean proof is claimed.
 
 ## Validation and provenance
 
+The [strict-input validation receipt](hashed-ecdl-tensor-input-validation.md)
+records the later duplicate-field and bounded-reader correction, its regression
+controls, and the current source manifest. Earlier receipts retain their
+historical source hashes and results.
+
 Use the [tensor validation receipt](hashed-ecdl-tensor-validation.md) for
-current commands, source hashes, failures and outcomes. The
+the original tensor implementation's commands, source hashes, failures and outcomes. The
 [first reference receipt](hashed-ecdl-validation.md) records the earlier
 bounded implementation and capped broad regression; its historical hashes
 and outcomes remain unchanged. The completion table is in
