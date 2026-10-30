@@ -59,3 +59,32 @@ theorem's Lean bridge is still open: formal definitions of `X_0(11)`, its
 Fricke moduli automorphism, this Weierstrass coordinate isomorphism, and
 the classification of origin-preserving automorphisms for the curve are not
 in this module. The written proof uses those mathematical inputs explicitly.
+
+## Visual report and graph review (2026-10-30)
+
+The [PDF report](report.pdf) contains this report, the
+[global-identity evidence diagram](evidence.svg) (editable [Graphviz source](evidence.dot)),
+and the [saved finite-field coverage plot](coverage.svg). Rebuild it with
+`python3 experiments/hecke-x011-global-fricke-20261026/build_report.py`;
+the renderer requires Graphviz, ReportLab and PyMuPDF. The
+[rendering receipt](visuals-validation.json) records versions, exact source
+hashes and the saved coverage counts. This documentation build does not rerun
+Sage or Lean and supplies no new experimental or proof evidence.
+
+The diagram distinguishes the written modular-curve inputs, the conditional
+Lean step and the remaining formalization bridge. The plot reports exact
+saved point counts, with no statistical uncertainty: 10, 10 and 25 enumerated
+points over F7, F13 and F23, and only three distinguished points over F23743.
+Those checks corroborate the implementation; they do not prove the global
+identity or establish an ECDLP speedup.
+
+Affected-graph check: inspected the sources for
+`experiments/volcano-ic/figures/census.svg` and `ecdlp.svg` (Koblitz descendant
+counts, yield and solve-work comparisons), and
+`experiments/hecke-d39-scalar-closure-20261030/evidence.dot` and `result.dot`
+(the fixed F367 rank/control fixture). Their source data and finite claims do
+not change under this documentation correction, so their figures are retained.
+The associated `experiments/ic-candidate-catalog/curves.yaml` was checked;
+this addition creates no curve record, isogeny route, subgroup-transport claim
+or ISO1 admission. The new diagram records the global Fricke interpretation
+without relabeling a conditional Lean lemma as the complete modular theorem.
