@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Transfer audit completeness and geometric proof bridges](transfer-audit-completeness.md) | investigating | classification of all efficient transfers and cryptographic-size isogeny paths | explicit transfer universe, verified path provider, geometric Lean bridges and restored checkpoint transport |
 | [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | resolved for this session | Checkpoint access for finite audit | Successful uploads, six-arm audit and independent controls retained |
 | [Sparse Hecke closure and target descent](hecke-d39-sparse-closure-and-descent.md) | open | Scalable and fully measured IC improvement; sparse Hecke constraints now verified | Reduce12 remaining bootstrap logs, fresh-target descent, complete costs and strong-rho comparison |
 | [Hashed ECDL tensor backend](https://github.com/isogeny-labs/crypto/blob/main/problems/hashed-ecdl-tensor-backend.md) | open | full conditional subexponential replication | canonical crypto record: compact encoder, exact fast contraction backend and independent validation |

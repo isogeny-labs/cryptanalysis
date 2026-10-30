@@ -1,0 +1,23 @@
+digraph primality {
+  graph [rankdir=TB, bgcolor="white", pad=0.2];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fa", color="#395470", fontname="Helvetica", fontsize=12];
+  edge [color="#395470", fontname="Helvetica", fontsize=10];
+  input [label="Ordinary exact primality call\nCaller width / work limits"];
+  bounded [label="Deterministic bounded witnesses\nStrictly below the published cutoff"];
+  bundle [label="Covered public integer?\nVerify bundled Pocklington proofs"];
+  build [label="Bounded Pocklington proof search\nCertified factors of n - 1; F squared > n"];
+  replay [label="Independent proof verifier\nNo probable-prime acceptance"];
+  aks [label="No proof produced\nOriginal exact AKS fallback", fillcolor="#fff1d6"];
+  exact [label="Exact prime / composite decision", fillcolor="#e3f3e8"];
+  unknown [label="Caller budget exhausted\nError: result remains unknown", fillcolor="#fbe8e8"];
+  input -> bounded;
+  bounded -> exact [label="within cutoff, or failed witness"];
+  bounded -> bundle [label="passes beyond cutoff"];
+  bundle -> replay [label="covered"];
+  bundle -> build [label="uncovered"];
+  build -> replay [label="proof found"];
+  build -> aks [label="bounded attempt inconclusive"];
+  replay -> exact;
+  aks -> exact [label="finishes"];
+  aks -> unknown [label="resource limit"];
+}

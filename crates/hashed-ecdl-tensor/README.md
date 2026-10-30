@@ -51,3 +51,8 @@ budget is an error with unknown result, not a solution or proof that no solution
 exists. These bounds do not make the challenge feasible. No ECCp-131 scalar
 has been recovered by the development checks. A successful receipt would need
 independent replay with the existing verify command.
+
+The Hexagon integration adds `factoring`, `weighted` and the bounded native
+`tensor-factor` runner in both tensor copies. See
+[the source review and validation](../../docs/ic/hexagon-cscc-20261030/README.md).
+These exact/reference APIs do not establish the source papers' runtime bounds.
