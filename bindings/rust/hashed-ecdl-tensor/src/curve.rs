@@ -1,9 +1,10 @@
 //! Arbitrary-precision, certified short-Weierstrass curves and subgroups.
 
 use crate::arithmetic::{floor_root, inverse, is_prime, modpow, square_root, RandomSource};
-use crate::{integrity, invalid, BigUint, Meter, Result};
+use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
 use num_integer::Integer;
 use num_traits::{One, Zero};
+use std::collections::BTreeSet;
 
 /// Canonical point representation; the identity has no affine coordinates.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -96,6 +97,9 @@ pub struct Curve {
     r: BigUint,
     cofactor: BigUint,
     generator: Point,
+    // Only the checked proof verifier populates this private context. Retain
+    // auxiliary hash primes as well as p/r for construction and replay.
+    certified_primes: BTreeSet<BigUint>,
 }
 
 impl Curve {
@@ -168,6 +172,7 @@ impl Curve {
             r,
             cofactor,
             generator,
+            certified_primes: primes,
         };
         if curve.generator == Point::Infinity
             || !curve.contains(&curve.generator)
@@ -205,6 +210,19 @@ impl Curve {
             return Err(invalid("declared order is not full cardinality"));
         }
         Ok(curve)
+    }
+
+    pub(crate) fn certifies_prime(&self, value: &BigUint, meter: &mut Meter) -> Result<bool> {
+        if self.certified_primes.contains(value) {
+            meter.bits(
+                usize::try_from(value.bits()).map_err(|_| overflow("certified prime width"))?,
+                "certified prime width",
+            )?;
+            meter.charge(1, "checked prime reuse")?;
+            Ok(true)
+        } else {
+            is_prime(value, meter)
+        }
     }
 
     /// Field modulus.
