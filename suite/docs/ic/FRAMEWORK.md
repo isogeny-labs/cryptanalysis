@@ -721,11 +721,27 @@ worse than none:
 
 | stage | trait | plug-ins |
 |:--|:--|:--|
-| factor base | `FactorBaseBuilder` | `prime-abscissa`, `binary-subspace`, `koblitz-orbit` |
+| factor base | `FactorBaseBuilder` | `prime-abscissa`, `hashed-affine`, `binary-subspace`, `koblitz-orbit` |
 | targets | `Targets` | `random`, `walk` |
-| point decomposition | `DecompositionOracle` | `subtract`, `mitm`, `mitm-frobenius`, `descent-algebraic` |
+| point decomposition | `DecompositionOracle` | `subtract`, `mitm`, `hashed-tensor`, `mitm-frobenius`, `descent-algebraic` |
 | polynomial solver | `SystemSolver` | `f4-f2`, `buchberger-f2`, `matrix-f4`, `matrix-f5`, `inherited-f4`, `crossbred-f2`, `xl-f2`, `sat-cdcl`, `fes-f2`, `fes-f2-wide`, `exhaustive` |
 | relation matrix | `RelationSolver` | `incremental-gauss`, `structured-gauss` |
+
+### Hashed-affine / hashed-tensor
+
+`hashed-affine` is the union of `slots` independent affine-hashed bases
+(`(α·encode(A) + β) mod s < τ`) and `hashed-tensor` is the exact Boolean
+tensor-contraction oracle over those slots, from the vendored
+`crates/hashed-ecdl-tensor`. Both read `slots`, `seed`, `tau` and `s`; the
+two specifications must agree, and `prepare` refuses the run when the base
+is not the same point list.
+
+The contraction's Boolean edge-assignment work is reported as
+`hashed_tensor_steps`, an **uncalibrated** charged-primitive count; curve
+additions and Tonelli-Shanks calls are charged to `GroupOps` and
+`sqrt_solves`. Because the Boolean steps have no ratio, `S` does not price
+most of the relation phase. Treat this arm as a stage diagnostic, not as a
+comparable end-to-end `S`, until that step has a calibration.
 
 `ic bench --list` prints this with every parameter each plug-in reads.
 

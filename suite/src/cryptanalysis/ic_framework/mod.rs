@@ -62,6 +62,7 @@
 //! worked example of adding a solver, how to run a sweep, and how to
 //! report what comes out.
 
+pub mod hashed;
 pub mod linalg;
 pub mod plugins;
 pub mod solvers;
@@ -274,6 +275,7 @@ pub fn run_pipeline<G: CountedGroup>(
     oracle.prepare(ctx, &fb, &spec.oracle_params, &mut prep_ops)?;
     let mut prep_cost = PhaseCost::default();
     prep_cost.group_ops.merge(prep_ops);
+    prep_cost.native = oracle.setup_native();
     prep_cost.wall_ns = prep_started.elapsed().as_nanos() as u64;
 
     // ── Stages 3 and 4: relations, then the matrix ─────────────────
@@ -292,7 +294,7 @@ pub fn run_pipeline<G: CountedGroup>(
         Targets::Random => TargetSource::Random,
         Targets::Walk => TargetSource::Walk,
     };
-    let outcome: PipelineOutcome = collect_and_solve_with(
+    let mut outcome: PipelineOutcome = collect_and_solve_with(
         ctx.group,
         ctx.generator,
         ctx.target,
@@ -306,6 +308,10 @@ pub fn run_pipeline<G: CountedGroup>(
         matrix.as_mut(),
         |ops, counters, point| oracle.decompose(ctx, &fb, ops, counters, point),
     );
+
+    for (name, value) in oracle.relation_counters() {
+        outcome.relations.count(&name, value);
+    }
 
     // ── The report ─────────────────────────────────────────────────
     let mut fb_phase = fb_cost;
