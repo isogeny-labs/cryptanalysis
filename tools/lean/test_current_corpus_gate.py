@@ -524,6 +524,31 @@ class DurableDiagnosticsControls(unittest.TestCase):
         self.assertEqual((directory / "stdout.bin").read_bytes(), b"partial")
         self.assertEqual((directory / "stderr.bin").read_bytes(), b"error")
 
+    def test_opted_in_real_failure_prints_bounded_tail_and_retains_all_bytes(self):
+        args = [sys.executable, "-c", "import os; os.write(1,b'out\\xff'); os.write(2,b'E'*10000+b'END'); raise SystemExit(7)"]
+        console = io.StringIO()
+        with contextlib.redirect_stdout(console):
+            with self.assertRaisesRegex(ValueError, "exited 7"):
+                gate.run(args, timeout=5, failure_diagnostics=True)
+        directory, = self.root.glob("command-*")
+        self.assertEqual((directory / "stdout.bin").read_bytes(), b"out\xff")
+        self.assertEqual((directory / "stderr.bin").read_bytes(), b"E" * 10000 + b"END")
+        rendered = console.getvalue()
+        self.assertIn("out\\xff", rendered)
+        self.assertIn("last 8192 of 10003 raw bytes", rendered)
+        self.assertNotIn("E" * 10000, rendered)
+        self.assertTrue(rendered.rstrip().endswith("END"))
+        self.assertEqual(json.loads((directory / "record.json").read_text())["returncode"], 7)
+
+    def test_success_does_not_print_failure_payload(self):
+        args = [sys.executable, "-c", "print('successful child output')"]
+        console = io.StringIO()
+        with contextlib.redirect_stdout(console):
+            result = gate.run(args, timeout=5, failure_diagnostics=True)
+        self.assertEqual(result.stdout, "successful child output\n")
+        self.assertNotIn("failure stdout", console.getvalue())
+        self.assertNotIn("successful child output", console.getvalue())
+
     def test_malformed_zero_exit_types_and_wrapper_survive_cleanup(self):
         with tempfile.TemporaryDirectory() as scratch:
             with patch.object(gate, "run", return_value=SimpleNamespace(stdout="wrong output\n")):
