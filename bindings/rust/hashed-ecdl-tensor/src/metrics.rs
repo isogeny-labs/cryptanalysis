@@ -50,7 +50,7 @@ fn add(value: &mut u64, n: u64) -> Result<()> {
 fn online_name(phase: &str) -> &'static str {
     match phase {
         "relation_search" | "network_build" | "contraction" => "target_PDP",
-        "relation_check" | "witness_check" => "target_relation_check",
+        "relation_check" | "witness_check" | "matrix_build" => "target_relation_check",
         "linear_algebra" | "recovery_check" => "target_recovery_check",
         _ => "target_query", // includes target-caused seed/base retries
     }

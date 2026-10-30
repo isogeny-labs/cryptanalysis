@@ -508,6 +508,7 @@ pub fn solve_with_oracle(
         &mut |curve, bases, point, work| {
             let answer = oracle(curve, bases, point, work)?;
             if let Some(points) = &answer {
+                crate::metrics::phase("relation_check")?;
                 if points.len() != bases.len() {
                     return Err(integrity("oracle slot count"));
                 }
@@ -609,7 +610,7 @@ fn solve_using(
             let point = curve.add(&left, &right, meter)?;
             crate::metrics::phase("relation_search")?;
             if let Some(points) = oracle(curve, &bases, &point, meter)? {
-                crate::metrics::phase("relation_check")?;
+                crate::metrics::phase("matrix_build")?;
                 let relation = Relation { u, v, points };
                 matrix.push(matrix_row(&relation, &indexes, columns)?);
                 relations.push(relation);
