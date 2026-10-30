@@ -1,0 +1,43 @@
+{
+  "observed_at": "2026-10-30T00:07:27.138754+00:00",
+  "base": "1caa747d9bb888e0b98c739a59b17fbb1bd92e99",
+  "failure": {
+    "run": 40973574762,
+    "url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40973574762",
+    "conclusion": "startup_failure",
+    "jobs": 0,
+    "policy_error": "The actions dtolnay/rust-toolchain@stable, swatinem/rust-cache@v2, and dtolnay/rust-toolchain@1.78.0 are not allowed in isogeny-labs/cryptanalysis because all actions must be from a repository owned by your enterprise, created by GitHub, or verified in the GitHub Marketplace."
+  },
+  "source_review": [
+    {
+      "url": "https://docs.github.com/en/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization",
+      "finding": "Respect the existing organization verified-creator/GitHub-owned action policy; no permission change."
+    },
+    {
+      "url": "https://rust-lang.github.io/rustup/concepts/profiles.html",
+      "finding": "Minimal installs compiler/stdlib/Cargo; request rustfmt and clippy explicitly for stable."
+    },
+    {
+      "path": ".github/workflows/ghs-sweeper.yml",
+      "ref": "1caa747d9bb888e0b98c739a59b17fbb1bd92e99",
+      "finding": "Reuse the direct rustup setup already adopted by this repository."
+    }
+  ],
+  "assertions": {
+    "Format": true,
+    "Strict lint for the tensor crate and binding": true,
+    "Exact arithmetic, recursive controls and full reduction": true,
+    "Declared minimum Rust version": true,
+    "events": true,
+    "permissions": true,
+    "concurrency": true,
+    "runner": true,
+    "timeout": true,
+    "working_directory": true,
+    "checkout_and_sparse_inputs": true,
+    "only_github_owned_actions": true,
+    "stable_toolchain_explicit": true,
+    "minimum_toolchain_explicit": true
+  },
+  "scope": "Workflow setup/cache only; scientific and Rust/C code unchanged. Hosted execution pending; no native test success claimed from structural assertions."
+}
