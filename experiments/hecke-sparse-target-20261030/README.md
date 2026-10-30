@@ -2,6 +2,13 @@
 
 [Results](RESULT.md), [PDF](report.pdf), [diagram](evidence.svg), [plots](counts.svg).
 
+[Current pair-index reuse result](PAIR_REUSE_RESULT.md) strengthens the generic
+control and reduces bootstrap queries without additional pair-construction
+curve sums. It explicitly updates the interpretation of the earlier controls.
+[Prepared cost comparison](COST_CELL_PROTOCOL.md) records the next complete
+fixed-base workload and its retained no-CUDA preflight failure. No benchmark
+execution or qualified speed comparison is claimed.
+
 The primary protocol covers four fields and all four user-requested questions.
 Follow-up protocols explicitly distinguish post-result continuation controls.
 Raw receipts remain loose because verifiers and archived source snapshots name
@@ -21,3 +28,11 @@ Rebuild the report from this directory with `python3 build_report.py`.
 The four point-set archives rebuild from immutable independently checked
 source receipts; they are source-snapshot rebuilds, not new CM enumerations.
 No result is a qualified wall-speed or sub-rho claim.
+
+Failure-receipt repair (2026-10-30): the pending cost workload now retains
+timeouts, arithmetic errors and interruptions in its unique output. Completed
+phase costs stay separate from incomplete phase measurements; unknown complete
+preparation costs remain null. The alarm is cancelled during cleanup. The
+checkpoint/GPU gates, 600-second cap, algorithms and 4096-entry table cap are
+unchanged. This is tested with injected failures; the GPU cost comparison
+remains unexecuted and unqualified.

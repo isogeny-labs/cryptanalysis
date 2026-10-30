@@ -1,6 +1,6 @@
 # Sparse Hecke relation closure and arbitrary-target descent
 
-- **Status:** investigating
+- **Status:** open
 - **Kind:** untested scaling hypothesis; missing target-descent implementation
 - **Affected work:** [D39 result](../experiments/hecke-d39-scalar-closure-20261030/RESULT.md)
 - **Next action owner:** research agent, future larger-class study
@@ -80,3 +80,38 @@ report links all exact scopes, raw successes, failures and verification receipts
 
 The original finite experiment requirements are now executed within their
 frozen limits. The scalable, fully measured IC improvement remains unresolved.
+
+## 2026-10-30 pair-index reuse and stronger generic control
+
+The [pair-reuse continuation](../experiments/hecke-sparse-target-20261030/PAIR_REUSE_RESULT.md)
+now checks all57,475 pairs and all21,118 nonzero collision rows independently.
+It reuses the already-required index before base-log preparation. Required
+queries decrease9→1,12→1 and45→1 in three cells; the sparse r206477 cell
+remains at12. Generic pair-only preprocessing has rank31 on r769 and rank158
+on the conductor30 field, so the earlier scalar-only comparison must not be
+read as the strongest available generic baseline. Hecke supplies10 and19
+marginal constraints on the medium and sparse f6 fields over this stronger
+control. All base labels replay; target coverage and statuses are unchanged.
+
+The external same-budget goal is not complete: geometric generation, coefficient
+tracking and LA are not fully priced, and stronger generic collectors have not
+been ruled out. A no-extra-curve-sums stage improvement does not make this
+zero-cost preprocessing or establish a generic lower bound.
+
+The next qualified comparison needs the repository-required CUDA benchmark
+host. Device and compute-binding presence checks find no available NVIDIA
+device or configured RunPod/Modal/fleet binding in this environment; see the
+linked access receipt. This blocks qualified cost/rho measurement here, not
+ordinary correctness work or the mathematical possibility of a Hecke advantage.
+Acceptance: configure that execution capability, freeze complete costs and a
+stronger generic comparator, run fresh public-point controls, independently
+replay every result, then reassess the same-total-budget claim.
+
+The [prepared fixed-base workload](../experiments/hecke-sparse-target-20261030/COST_CELL_PROTOCOL.md)
+now charges geometry, pair bookkeeping, LA, tuned memory-capped BSGS, recovery
+and label replay. Eight unit tests pass, including tiny-table completeness and
+the missing-device guard. Its retained preflight exits2 with
+`benchmark_executed=false`; the actual workload remains unverified on the
+required host. Running and qualifying it would settle only this fixed-base
+preparation comparison. Full base generation, fresh target descent and matched
+rho costs would still be owed for a pipeline claim.

@@ -4,6 +4,13 @@
 speedup or sub-rho claim.** The four requested studies ran, followed by
 target-growth and arity controls and an attempted larger conductor-30 continuation.
 
+**Current baseline update:** the later [pair-index reuse study](PAIR_REUSE_RESULT.md)
+harvests relations from the index already needed for target descent. It reduces
+the required generic queries9→1,12→1 and45→1 in three cells; the sparsest cell
+remains at12. The generic pair-only control closes two systems without Hecke.
+Read the earlier scalar-only comparison below as its exact historical method,
+not the strongest generic baseline. Same-total-budget superiority is unestablished.
+
 ## Main result: information survives sparse projections
 
 For D_K=-39, conductor6 and degrees2,3, all three selected fields retain64
