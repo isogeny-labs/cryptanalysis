@@ -1,0 +1,36 @@
+{
+  "schema": "hecke-d79-third-prime-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "For trace magnitude 24 at p=223, 4 and 7 are distinct roots modulo 13 and their projective ratio 5 has exact order four.",
+      "lean_declarations": ["ShortP223.characteristic_roots", "ShortP223.eigenvalue_ratio", "ShortP223.ratio_order_four"],
+      "status": "checked",
+      "hypotheses": "The displayed characteristic polynomial modulo 13; changing both eigenvalue signs preserves the ratio."
+    },
+    {
+      "result": "All 34 saved baseline and accepted rows annihilate a nonzero projection vector modulo 41.",
+      "lean_declarations": ["ShortP223.rows_annihilate_projection", "ShortP223.projection_nonzero"],
+      "status": "checked",
+      "hypotheses": "Finite rows and projection coordinates generated from the hashed receipts."
+    },
+    {
+      "result": "The selected 19 rows contain the displayed invertible 19 by 19 minor modulo 41.",
+      "lean_declarations": ["ShortP223.minor_matches_rows", "ShortP223.minor_inverse_certificate"],
+      "status": "checked",
+      "hypotheses": "Finite selected row list and pivot columns generated from the hashed receipts."
+    },
+    {
+      "result": "Each of nine selected integer class rows equals its exact signed combination of saved source class parts.",
+      "lean_declarations": ["ShortP223.signed_row_0", "ShortP223.signed_row_1", "ShortP223.signed_row_2", "ShortP223.signed_row_3", "ShortP223.signed_row_4", "ShortP223.signed_row_6", "ShortP223.signed_row_8", "ShortP223.signed_row_9", "ShortP223.signed_row_10"],
+      "status": "checked",
+      "hypotheses": "The saved degree-13 source class parts at p=223."
+    },
+    {
+      "result": "The degree-13 neighbor-x pattern follows from the projective Frobenius action, and the true group-law class relation matrix has rank 19 over F41 and Q.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Define the CM E[13] Frobenius action, Hecke neighbor-x map, F223 elliptic-curve group and source equations in Lean, then derive rank from the finite projection and inverse-minor certificates. The instantiated curve and ranks are independently checked in Sage."
+    }
+  ]
+}
