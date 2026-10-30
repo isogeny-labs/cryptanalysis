@@ -395,7 +395,8 @@ def check_delta() -> dict:
             cm_audited[-1] == "audited 5 theorems in [CubicCM53]; 0 failing, 0 trusted (native_decide)",
             "CM arithmetic transitive audit changed")
     pqc = check_pqc()
-    return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
+    return {"hasse_unique_audit_sha256": hashlib.sha256(("\n".join(unique_audited) + "\n").encode()).hexdigest(),
+            "orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
             "glv_historical_live_source_sha256": HISTORICAL_GLV_SHA256,
