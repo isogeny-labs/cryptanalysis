@@ -20,6 +20,7 @@ pub mod curve;
 pub mod encoding;
 pub mod factoring;
 pub mod finite;
+pub mod metrics;
 pub mod network;
 pub mod partial;
 pub mod primality;
@@ -90,6 +91,7 @@ impl Meter {
     }
     /// Charge before doing work; limits never wrap or become successful results.
     pub fn charge(&mut self, n: u64, phase: &str) -> Result<()> {
+        crate::metrics::work(n)?;
         self.used = self
             .used
             .checked_add(n)

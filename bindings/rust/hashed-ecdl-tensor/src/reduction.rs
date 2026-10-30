@@ -180,10 +180,13 @@ pub fn decompose_with(
     mut witness: impl FnMut(&Network, &mut Meter) -> Result<Option<Vec<bool>>>,
     meter: &mut Meter,
 ) -> Result<Option<Vec<Point>>> {
+    crate::metrics::phase("network_build")?;
     let network = decomposition_network(curve, bases, target, meter)?;
+    crate::metrics::phase("contraction")?;
     let Some(word) = witness(&network, meter)? else {
         return Ok(None);
     };
+    crate::metrics::phase("witness_check")?;
     let width = curve.modulus().bits() as usize;
     let stride = 1usize
         .checked_add(
@@ -551,6 +554,7 @@ fn solve_using(
         });
     }
     for _ in 0..config.trials {
+        crate::metrics::phase("factor_base")?;
         meter.charge(1, "fresh-seed trial")?;
         let prime = if let Some(prime) = &config.hash_prime {
             prime.clone()
@@ -597,12 +601,15 @@ fn solve_using(
         let mut relations = Vec::with_capacity(required);
         let mut matrix = Vec::with_capacity(required);
         for _ in 0..attempts {
+            crate::metrics::phase("relation_target")?;
             let u = random_below(curve.order(), rng, meter)?;
             let v = random_below(curve.order(), rng, meter)?;
             let left = curve.mul(curve.generator(), &u, meter)?;
             let right = curve.mul(target, &v, meter)?;
             let point = curve.add(&left, &right, meter)?;
+            crate::metrics::phase("relation_search")?;
             if let Some(points) = oracle(curve, &bases, &point, meter)? {
+                crate::metrics::phase("relation_check")?;
                 let relation = Relation { u, v, points };
                 matrix.push(matrix_row(&relation, &indexes, columns)?);
                 relations.push(relation);
@@ -614,11 +621,13 @@ fn solve_using(
         if relations.len() != required {
             continue;
         }
+        crate::metrics::phase("linear_algebra")?;
         let dependency = row_dependency(&matrix, curve.order(), meter)?;
         let (u, v) = combined_scalars(&relations, &dependency, curve.order());
         if v.is_zero() {
             continue;
         }
+        crate::metrics::phase("recovery_check")?;
         let scalar = (curve.order() - u) * inverse(&v, curve.order())? % curve.order();
         if curve.mul(curve.generator(), &scalar, meter)? != *target {
             return Err(integrity("recovered scalar replay"));

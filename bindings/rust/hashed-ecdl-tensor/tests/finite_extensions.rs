@@ -280,6 +280,65 @@ fn partial_collection_recovers_from_bounded_random_label_queries() {
 }
 
 #[test]
+fn observed_explicit_partial_defaults_preserve_certificate_rng_and_work() {
+    let mut setup = Meter::new(Limits::default());
+    let curve = curve(&mut setup);
+    let target = curve
+        .mul(curve.generator(), &3u8.into(), &mut setup)
+        .unwrap();
+    let bases = nested(&curve, 2, &mut setup);
+    let mut plain = Meter::new(Limits::default());
+    let mut plain_rng = Seeded(701);
+    let expected = partial::solve(
+        &curve,
+        &target,
+        bases.clone(),
+        64,
+        64,
+        128,
+        &mut plain_rng,
+        &mut plain,
+    )
+    .unwrap();
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
+    let mut observed = Meter::new(Limits::default());
+    let mut observed_rng = Seeded(701);
+    let mut statistics = Statistics::default();
+    let actual = partial::solve_with_options(
+        &curve,
+        &target,
+        bases,
+        64,
+        64,
+        128,
+        &Options::default(),
+        &mut statistics,
+        &mut observed_rng,
+        &mut observed,
+    )
+    .unwrap();
+    let snapshot = session.finish().unwrap();
+    assert_eq!(actual.scalar, expected.scalar);
+    assert_eq!(actual.relations, expected.relations);
+    assert_eq!(actual.dependency, expected.dependency);
+    assert_eq!(observed_rng.0, plain_rng.0);
+    assert_eq!(observed.used, plain.used);
+    assert_eq!(
+        snapshot.phases.values().map(|p| p.meter_steps).sum::<u64>(),
+        observed.used
+    );
+    assert!(
+        snapshot
+            .phases
+            .values()
+            .map(|p| p.adds + p.doubles)
+            .sum::<u64>()
+            > 0
+    );
+    assert!(statistics.decodes > 0);
+}
+
+#[test]
 fn selector_tensor_counts_distinct_decoded_tuples_and_replays_edges() {
     use hashed_ecdl_tensor::contraction::Counter;
     let mut meter = Meter::new(Limits::default());
