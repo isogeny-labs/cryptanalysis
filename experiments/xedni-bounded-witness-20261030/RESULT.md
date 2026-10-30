@@ -71,4 +71,8 @@ The initial source-validation receipt and report PDF remain historical records
 of the initial pending state. The theorem statements, editable implication
 diagram, scientific hypotheses and open height bridge have not changed.
 The separate three-lemma compiler regression source is now explicitly admitted
-at its exact source hash and proof context; its fresh pinned CI run is pending.
+at its exact source hash and proof context. Actual pinned job124096459169
+passed all77 added modules, including all three original engineering controls
+with foundations none/propext/propext, respectively. The five witness
+declarations also passed, each with propext/Classical.choice/Quot.sound.
+See the [native admission receipt](../../reports/ci-lean-source-admission-20261030/native-source-admission-success.json).
