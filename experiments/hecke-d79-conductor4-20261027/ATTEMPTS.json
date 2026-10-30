@@ -1,0 +1,29 @@
+{
+  "schema": "hecke-d79-conductor4-producer-attempts-v1",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "FAILED_ASSERTION",
+      "exit_code": 1,
+      "source": "run_attempt1.py",
+      "source_sha256": "09aaad32915978639ae826442af953b9377733ea2cad6a7d6db3792625a826d2",
+      "stdout": "producer-attempt1-stdout.txt",
+      "stdout_sha256": "e2f4afac1ddf05526cb4e1aa66275f15787f3c0f851a59fde3749a78ef149d52",
+      "stderr": "producer-attempt1-stderr.txt",
+      "stderr_sha256": "d9eb5cccbb331e8165c6076864eb5b7dba21aadb6929e4bc9332ebd8caefcb98",
+      "failure": "Source 7 has a lifted neighbor with x=16, the pole of the rational j-map; the first source asserted every neighbor had finite j before the orbit census."
+    },
+    {
+      "attempt": 2,
+      "status": "COMPLETE",
+      "exit_code": 0,
+      "source": "run.py",
+      "source_sha256": "603aafda472db118f3879983db51d67cb3bfa0d275e833d715d3942ab374f764",
+      "stdout": "producer-stdout.txt",
+      "stdout_sha256": "27f365b27cb59e78192b7364d39ef5ae0f4b62e201182bf95919bd56b293164c",
+      "stderr": "producer-stderr.txt",
+      "stderr_sha256": "05ad989f042341d64ec41c4086ce92d061cfa534073d04a8105f6ad888967793",
+      "change": "Count neighbors at the j-map pole explicitly; check the modular polynomial for all other lifted neighbors, while retaining on-curve, moment, Hecke-sum and Frobenius-trace checks for all fourteen."
+    }
+  ]
+}
