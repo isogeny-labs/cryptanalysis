@@ -1,0 +1,13 @@
+digraph witness {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.25", ranksep="0.35"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=12, color="#334155", fillcolor="#eff6ff", margin="0.18,0.12"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+  dependence [label="Lifted dependence\nSome nontrivial integer relation"];
+  bridge [label="EXPLICIT HYPOTHESIS\nDependence supplies some bounded witness\nHeight-theoretic bridge remains OPEN", fillcolor="#fff7ed", color="#c2410c"];
+  reduction [label="Reduction homomorphism\nThe witness keeps its integer coefficients"];
+  forbidden [label="A bounded relation downstairs\nContradicts the bounded-relation exclusion", fillcolor="#fef2f2", color="#b91c1c"];
+  conclusion [label="Conditional conclusion\nNo dependent compatible lift"];
+  dependence -> bridge -> reduction -> forbidden -> conclusion;
+  old [label="Historical universal bound\nAlready excludes dependence by scaling\nNot the corrected witness hypothesis", fillcolor="#f1f5f9", color="#64748b"];
+  bridge -> old [style=dashed, arrowhead=none, label="distinguish"];
+}

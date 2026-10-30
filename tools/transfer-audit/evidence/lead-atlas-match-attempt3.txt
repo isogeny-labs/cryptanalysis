@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/workspace/crypto-autoresearcher/tools/build_frontier_map.py", line 43, in <module>
+    import fast_yaml
+ModuleNotFoundError: No module named 'fast_yaml'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 728, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 678, in main
+    res = match(a.match, a.limit)
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/crypto-autoresearcher/tools/lead_atlas.py", line 527, in match
+    import build_frontier_map as bfm  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/crypto-autoresearcher/tools/build_frontier_map.py", line 45, in <module>
+    from orchestration import fast_yaml
+ModuleNotFoundError: No module named 'orchestration'

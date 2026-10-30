@@ -1,0 +1,45 @@
+{
+  "schema": "transfer-audit-ci-fix/v1",
+  "failed_head": "a5c4e5b2a7d3886e62b9365e751b0d59d514c79f",
+  "failed_run": 41004956606,
+  "failure": "organization rejects third-party dtolnay/rust-toolchain action",
+  "actionlint_version": "1.7.12",
+  "actionlint_archive_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+  "actionlint_exit_code": 0,
+  "scoped_workflow_wiring_exit_code": 0,
+  "hosted_fix_verified": false,
+  "transition": {
+    "path": ".github/workflows/transfer-audit.yml",
+    "from_commit": "a5c4e5b2a7d3886e62b9365e751b0d59d514c79f",
+    "from_sha256": "e64fed3f5051807f2ce12af7d133d83e43872a365f704fdde9cc1b111a1dc5cf",
+    "to_sha256": "eb4f8df9875ea537e2f6a99272613dc60f960f7c312ebda6f2f7e372bec7ba95",
+    "reason": "replace disallowed third-party action with official rustup CLI, matching reviewed main GHS workflow"
+  },
+  "entries": [
+    {
+      "path": "tools/transfer-audit/evidence/hosted-startup-41004956606/actionlint.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-startup-41004956606/annotation.txt",
+      "bytes": 216,
+      "sha256": "308d69809d8ce909ddd1901f5678b88233ee2746c12deab41be50566fa09c053"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-startup-41004956606/snapshot.json",
+      "bytes": 723,
+      "sha256": "d7fd8dd45e9687d407dac36a2529bf2dd1a7d01f82f603206dc73ebad4195bac"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-startup-41004956606/wiring.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-startup-41004956606/workflow-before.yml.txt",
+      "bytes": 1624,
+      "sha256": "e64fed3f5051807f2ce12af7d133d83e43872a365f704fdde9cc1b111a1dc5cf"
+    }
+  ]
+}
