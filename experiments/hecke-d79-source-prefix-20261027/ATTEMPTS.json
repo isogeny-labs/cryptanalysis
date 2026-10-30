@@ -1,0 +1,62 @@
+{
+  "attempts": [
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-source-prefix-20261027/run.py --p 8597",
+      "exit_code": 0,
+      "p": 8597,
+      "result_sha256": "80020edea9ce78fb4f1aadf927eed98fb34a01af94a02063f4c8c4306fdeb9fd",
+      "stage": "producer",
+      "stderr_sha256": "a91f490e8d33242c0a9cc484729ef0c8394a3feaff95f5cbd38b5a65a1ec77b6",
+      "stdout_sha256": "65172f32cb828d76f33bb72e58ee3740480e239d73feaefb9e0bdbe2600c3346"
+    },
+    {
+      "command": "python3 experiments/hecke-d79-source-prefix-20261027/audit.py --p 8597",
+      "exit_code": 1,
+      "p": 8597,
+      "result_sha256": null,
+      "stage": "audit_v1",
+      "stderr_sha256": "c5974dfb9894ccbee76954029ff4b46a3b2d3e0a9f4e4e7a6e2127e31aecd8b9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 experiments/hecke-d79-source-prefix-20261027/audit_v2.py --p 8597",
+      "exit_code": 0,
+      "p": 8597,
+      "result_sha256": "83c19198dba739c83acb30b15daaa4081660e7ad4b7b0ed4595276687a664a93",
+      "stage": "audit_v2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "414212b8f691bd0dca962d91b26e2bb373b76d342faa060b4b85a3daf7faa6e7"
+    },
+    {
+      "command": "gtimeout 1800 ./sage -python experiments/hecke-d79-source-prefix-20261027/run.py --p 12197",
+      "exit_code": 0,
+      "p": 12197,
+      "result_sha256": "63e393cf6b529a8a6395497b76bc91c4bcbdc301ada3ba548e8cf1f34d9f28ca",
+      "stage": "producer",
+      "stderr_sha256": "9c47706e86ea54d78c8af888b5f8bd71af0fe3498324b5200bac4c032623f0f4",
+      "stdout_sha256": "bbff2ba9c77828fd40559ea2b263de75c0bc06d554973651088efbf5ac51618d"
+    },
+    {
+      "command": "python3 experiments/hecke-d79-source-prefix-20261027/audit.py --p 12197",
+      "exit_code": 1,
+      "p": 12197,
+      "result_sha256": null,
+      "stage": "audit_v1",
+      "stderr_sha256": "c5974dfb9894ccbee76954029ff4b46a3b2d3e0a9f4e4e7a6e2127e31aecd8b9",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "python3 experiments/hecke-d79-source-prefix-20261027/audit_v2.py --p 12197",
+      "exit_code": 0,
+      "p": 12197,
+      "result_sha256": "db8740eac1940ffc9d39bb72e969679256a97cfcb123f86b14e83df776d0e247",
+      "stage": "audit_v2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b8122f2e11059698825741fde9c3a4ccc374b7e308e2df3f3734ec4f054eae84"
+    }
+  ],
+  "lean_build_output_sha256": "ba4ed71afac354050bdb24fa867b410bcf87f3df40853385bbaf010433af1872",
+  "sage_runtime_info_sha256": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+  "schema": "hecke-d79-source-prefix-attempts-v1",
+  "status": "PASS"
+}

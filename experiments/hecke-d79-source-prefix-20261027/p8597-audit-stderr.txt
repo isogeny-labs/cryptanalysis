@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-source-prefix-20261027/audit.py", line 171, in <module>
+    main(parser.parse_args().p)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-d79-source-prefix-20261027/audit.py", line 156, in main
+    assert sorted(map(json.dumps, parent_subset)) == sorted(map(json.dumps, candidates))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

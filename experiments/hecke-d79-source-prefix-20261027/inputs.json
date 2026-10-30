@@ -1,0 +1,100 @@
+{
+  "schema": "hecke-d79-source-prefix-inputs-v1",
+  "source_path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+  "source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "cases": [
+    {
+      "p": 8597,
+      "v": 91,
+      "curve_order": 8520,
+      "q": 71,
+      "expected_factor_pattern": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "producer_receipt": "experiments/hecke-d79-remaining-five-20261027/p8597/result.json",
+      "producer_sha256": "1fa9c5a779d798da6fa726c41384f40ca03552e7e1f13e8539fe85e4d21a3a58",
+      "analysis_receipt": "experiments/hecke-d79-remaining-five-20261027/p8597/analysis.json",
+      "analysis_sha256": "600dbdca92a3205d40c7dda8567313efd201c97a82da20de5984bb1604a08022"
+    },
+    {
+      "p": 12197,
+      "v": 109,
+      "curve_order": 12280,
+      "q": 307,
+      "expected_factor_pattern": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          1
+        ]
+      ],
+      "producer_receipt": "experiments/hecke-d79-remaining-five-20261027/p12197/result.json",
+      "producer_sha256": "5d96cfbf71c95a8bbc3d0b32d7189793ec66c6c0306d078888d53655ad2dcd60",
+      "analysis_receipt": "experiments/hecke-d79-remaining-five-20261027/p12197/analysis.json",
+      "analysis_sha256": "be8b877d92dae462f44117e94fa6a7d87b9ad5022c23b5a90b6cf2baa911ce68"
+    }
+  ],
+  "policy": {
+    "source_order": "ascending frozen class-point index 0 through 39",
+    "build_degrees": [
+      13
+    ],
+    "support_max": 4,
+    "coefficient_order": [
+      -1,
+      1
+    ],
+    "first_coefficient": 1,
+    "baseline": "frozen base plus all direct support-at-most-four rows",
+    "stop": "first prefix whose independently verified base-plus-direct-plus-prefix-Hecke row matrix has rank 40 over QQ",
+    "max_sources": 40,
+    "source_count_zero_handling": "retain zero-yield source as a row with zero candidates",
+    "wall_cap_seconds": 1800
+  },
+  "candidate_id": null,
+  "target_online_ms": null,
+  "runner_sha256": "4de8f66bf61394ed91077e29b279f7f5c55c840f07dcc64f270888e0f5113886",
+  "auditor_sha256": "5d207c4bc8558db5f94519f6c4635333f8ee43942781bed0cf0c35feaaf7620f"
+}
