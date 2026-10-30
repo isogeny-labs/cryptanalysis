@@ -12,7 +12,8 @@ matplotlib.rcParams['svg.hashsalt'] = 'hecke-d39-rank-chart'
 import matplotlib.pyplot as plt
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from pypdf import PdfWriter
 import build_report
 
 HERE = Path(__file__).resolve().parent
@@ -39,10 +40,10 @@ def main():
         chart = HERE/'ranks.svg'
         fig.savefig(chart, metadata={'Date': None})
         chart.write_text('\n'.join(line.rstrip() for line in chart.read_text().splitlines())+'\n')
-        fig.savefig(temp/'ranks.png', dpi=170)
+        fig.savefig(temp/'ranks.pdf')
         plt.close(fig)
         subprocess.run(['dot','-Tsvg',str(HERE/'result.dot'),'-o',str(HERE/'result.svg')],check=True)
-        subprocess.run(['dot','-Tpng','-Gdpi=160',str(HERE/'result.dot'),'-o',str(temp/'diagram.png')],check=True)
+        subprocess.run(['dot','-Tpdf',str(HERE/'result.dot'),'-o',str(temp/'diagram.pdf')],check=True)
         styles = getSampleStyleSheet()
         styles['BodyText'].fontSize=9
         styles['BodyText'].leading=13
@@ -67,15 +68,14 @@ def main():
             else:
                 pending.append(line)
         flush()
-        for title, filename in [('Evidence and control map','diagram.png'), ('Exact rank comparison','ranks.png')]:
-            story.extend([PageBreak(),Paragraph(title,styles['Heading1'])])
-            image=Image(str(temp/filename))
-            scale=min(6.5*inch/image.imageWidth,8.3*inch/image.imageHeight)
-            image.drawWidth=image.imageWidth*scale
-            image.drawHeight=image.imageHeight*scale
-            story.append(image)
-        SimpleDocTemplate(str(HERE/'result.pdf'),title='Hecke D39 closure and generic doubling control',
+        SimpleDocTemplate(str(temp/'body.pdf'),title='Hecke D39 closure and generic doubling control',
                           leftMargin=.7*inch,rightMargin=.7*inch).build(story)
+        writer = PdfWriter()
+        for filename in ('body.pdf', 'diagram.pdf', 'ranks.pdf'):
+            writer.append(str(temp/filename))
+        writer.add_metadata({'/Title': 'Hecke D39 closure and generic doubling control'})
+        with (HERE/'result.pdf').open('wb') as output:
+            writer.write(output)
 
 
 if __name__ == '__main__':
