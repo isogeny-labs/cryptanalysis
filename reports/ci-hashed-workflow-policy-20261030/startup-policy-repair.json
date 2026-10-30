@@ -65,5 +65,7 @@
     "pull_requests_use_same_branches_and_paths": true
   },
   "coverage_repair": "The original workflow ran only after main pushes or manual dispatch. PR1302 has28green checks but none runs these native Rust commands. Add a pull_request trigger with the same existing main branch/five path filters, preserving original push/manual behavior. This gates native correctness before merging future changes.",
-  "updated_at": "2026-10-30T00:30:41.778986+00:00"
+  "updated_at": "2026-10-30T00:30:41.778986+00:00",
+  "integrated_main": "cf35a825b25c3f1ece5d7d36dd98d78ea66a4022",
+  "integration": "Normal merge; only30October journal add/add, both entire parent histories verified. Native job must execute after conflict resolution;7old CodeQLsuccesses are not native tests."
 }
