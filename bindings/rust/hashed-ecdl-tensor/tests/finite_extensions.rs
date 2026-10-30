@@ -187,6 +187,64 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
     assert!(matches!(error, Error::Integrity(_)));
 }
 
+#[test]
+fn external_oracle_replay_has_independent_group_work_and_matrix_accounting() {
+    let mut setup = Meter::new(Limits::default());
+    let curve = curve(&mut setup);
+    let target = curve
+        .mul(curve.generator(), &3u8.into(), &mut setup)
+        .unwrap();
+    let config = Config {
+        threshold: Some(11u8.into()),
+        columns: 64,
+        trials: 32,
+        ..Config::default()
+    };
+    let mut plain = Meter::new(Limits::default());
+    let mut plain_rng = Seeded(42);
+    let solve = |rng: &mut Seeded, work: &mut Meter| {
+        reduction::solve_with_oracle(
+            &curve,
+            &target,
+            &config,
+            rng,
+            |c, b, q, w| {
+                finite::prime_decompose(c, b, q, &Options::default(), &mut Statistics::default(), w)
+            },
+            work,
+        )
+        .unwrap()
+    };
+    let expected = solve(&mut plain_rng, &mut plain);
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
+    let mut observed = Meter::new(Limits::default());
+    let mut observed_rng = Seeded(42);
+    let actual = solve(&mut observed_rng, &mut observed);
+    let snapshot = session.finish().unwrap();
+    assert_eq!(actual.scalar, expected.scalar);
+    assert_eq!(actual.relations, expected.relations);
+    assert_eq!(actual.dependency, expected.dependency);
+    assert_eq!(observed_rng.0, plain_rng.0);
+    assert_eq!(observed.used, plain.used);
+    let replay = &snapshot.phases["witness_check"];
+    assert!(replay.scalar_mults > 0, "membership needs subgroup replay");
+    assert!(
+        replay.adds + replay.doubles > 0,
+        "group-sum replay is charged"
+    );
+    let matrix = &snapshot.phases["matrix_build"];
+    assert_eq!(matrix.adds + matrix.doubles + matrix.scalar_mults, 0);
+    assert_eq!(
+        snapshot.phases.values().map(|p| p.meter_steps).sum::<u64>(),
+        observed.used
+    );
+    assert_eq!(
+        snapshot.online_phases_ns.values().sum::<u64>(),
+        snapshot.online_wall_ns.unwrap()
+    );
+    reduction::verify(&curve, &target, &actual, &mut setup).unwrap();
+}
+
 fn nested(curve: &Curve, slots: usize, meter: &mut Meter) -> Vec<NestedBase> {
     (0..slots)
         .map(|_| {

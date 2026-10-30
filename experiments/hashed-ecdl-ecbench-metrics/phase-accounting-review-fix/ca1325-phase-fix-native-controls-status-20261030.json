@@ -1,0 +1,45 @@
+[
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "fmt",
+      "--",
+      "--check"
+    ],
+    "exit_code": 1,
+    "seconds": 0.15317105100257322,
+    "log": "/workspace/ca1325-phase-fix-native-controls-0-20261030.log",
+    "sha256": "e235409f0fd79996dd6fad49f8d804d6b57f970bebcea889e4c0b73163e89fd7"
+  },
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "test",
+      "--release",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "seconds": 105.4744227140036,
+    "log": "/workspace/ca1325-phase-fix-native-controls-1-20261030.log",
+    "sha256": "7a6abf35bc8138f3a0480dbb250f4464f6fc8be29cfa8af5dda15693ecfc5c70"
+  },
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "clippy",
+      "--release",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 4.032162907999009,
+    "log": "/workspace/ca1325-phase-fix-native-controls-2-20261030.log",
+    "sha256": "33aaf1f05a265ac7b8bfb285258e06ef707f7bb816b1d1d097f14350d74329ee"
+  }
+]

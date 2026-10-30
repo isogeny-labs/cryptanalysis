@@ -19,7 +19,7 @@ between default/unobserved and explicit/observed runs. Session cleanup and
 clock partitions are checked separately. No solver RNG, work policy, old
 fixture, source recursion guard or dependency changes.
 
-The final native package passes **96 tests** (64 library, 5 runner, 3 source
+The pre-reconciliation native package passes **96 tests** (64 library, 5 runner, 3 source
 panel, 6 hash-prime, 1 factoring CLI, 10 finite-extension, 3 strict JSON and
 4 width-extension), formatting, strict all-target clippy and Rust 1.78 all-target
 checks. [Lossless raw logs](validation/) and the exact package
@@ -57,3 +57,15 @@ Sources: the pinned
 current native source, crypto's `docs/ecbench/README.md` unit/replay contract,
 the canonical experiment-protocol checker and maintained Iso Lab submission
 contract. This is instrumentation/compatibility work, not a new theorem.
+
+Concurrent published fix017a1d1 and local324f804 were merged without rebase or
+force. Both complete parent journals and all original evidence are retained.
+The final shared wrapper uses `witness_check` for independent replay; the
+concurrent fix's historical `relation_check` spelling has the same canonical
+online category. Both regression controls are retained, including its entire
+certificate/RNG/work comparison. The final affected suite has **11** passing
+finite-extension controls (one additional control,97 total package cases),
+with fresh fmt, strict all-target clippy and Rust1.78 all-target receipts.
+No second full97-test invocation is claimed for the merged spelling. Final
+source is bound by `validation/reconciled-native-sources.sha256`; the earlier
+96-test and concurrent97-test logs remain bound to their original sources.
