@@ -117,7 +117,7 @@ def retain_evidence(kind: str, files: dict[str, bytes], metadata: dict) -> Path:
 
 
 def run(args: list[str], *, cwd: Path = ROOT, env: dict | None = None,
-        timeout: int = 900) -> subprocess.CompletedProcess[str]:
+        timeout: int = 900, failure_diagnostics: bool = False) -> subprocess.CompletedProcess[str]:
     metadata = {"argv": args, "cwd": str(cwd), "timeout_seconds": timeout,
                 "gate_sha256": LOADED_GATE_SHA256,
                 "LEAN_PATH": (env or os.environ).get("LEAN_PATH"),
@@ -137,6 +137,15 @@ def run(args: list[str], *, cwd: Path = ROOT, env: dict | None = None,
                              "stderr.bin": result.stderr},
                              {**metadata, "returncode": result.returncode,
                               "timed_out": False})
+    if result.returncode != 0 and failure_diagnostics:
+        # Keep the complete original bytes above. A bounded console tail makes
+        # a native compiler failure diagnosable even when artifact downloads
+        # are unavailable; it never changes the command result or audit gate.
+        for name, data in (("stdout", result.stdout), ("stderr", result.stderr)):
+            tail = data[-8192:]
+            print(f"failure {name}: last {len(tail)} of {len(data)} raw bytes; "
+                  f"complete bytes: {record / (name + '.bin')}", flush=True)
+            print(tail.decode("utf-8", errors="backslashreplace"), flush=True)
     require(result.returncode == 0,
             f"{args[0]} exited {result.returncode}; complete diagnostics: {record}")
     return subprocess.CompletedProcess(args, result.returncode,
@@ -689,8 +698,9 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                 set(declared) == {name.rsplit(".", 1)[-1] for name in requested} and
                 len(declared) == len(requested),
                 f"incomplete declaration audit in {path}")
+        print(f"compiling current proof source: {path}", flush=True)
         result = run(["lake", "env", "lean", "-R", str(ROOT), str(ROOT / path)],
-                     cwd=HECKE_CI, timeout=900)
+                     cwd=HECKE_CI, timeout=900, failure_diagnostics=True)
         printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
                              result.stdout, re.MULTILINE)
         axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$",
