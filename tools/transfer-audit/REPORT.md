@@ -14,7 +14,9 @@ not be conflated. None is an exhaustive classification of all useful ECDLP
 algorithms. No new weak family or solver-speed claim is made.
 
 The implementation is based on main ae8994ab14e942c774818704dc19402f6671d848,
-on branch codex/transfer-audit-classification. Native cover/arithmetic sources
+on branch codex/transfer-audit-classification; main 82eb1eac was subsequently
+integrated without changing the imported native sources or tool implementation.
+Native cover/arithmetic sources
 are imported unchanged by path from suite/src/binary_ecc. The old GHS research
 files, source snapshots, PDFs and manifests are untouched.
 
