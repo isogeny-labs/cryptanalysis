@@ -1,0 +1,27 @@
+  q-expansions to O(q^480) ready (0.3s)
+  Hecke functions for l=5 identified (0.9s)
+  cusp 0 is (16 : -61 : 1); j = A/(x - 16)^11
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-frobenius-orbit-20261027/run.py", line 171, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/hecke-frobenius-orbit-20261027/run.py", line 163, in main
+    print(json.dumps({"statuses": status, "accepted_trace_rows": len(accepted),
+          ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      "rank_with_trace_rows_qq": output["rank_with_trace_rows_qq"],
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      "factor_patterns": dict(Counter(tuple((item["degree"], item["multiplicity"])
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                     for item in source["factor_pattern"])
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                              for source in result))}, sort_keys=True))
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/__init__.py", line 242, in dumps
+    **kw).encode(obj)
+          ~~~~~~^^^^^
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/encoder.py", line 202, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Volumes/SSD990/cryptanalysis/third_party/sage-binary/build-deps/cpython/cpython-3.14.3-macos-aarch64-none/lib/python3.14/json/encoder.py", line 263, in iterencode
+    return _iterencode(o, 0)
+TypeError: keys must be str, int, float, bool or None, not tuple
+when serializing dict item 'factor_patterns'
