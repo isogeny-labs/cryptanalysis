@@ -25,6 +25,7 @@ struct Problem {
     target: Option<[String; 2]>,
     slots: Option<usize>,
     threshold: Option<String>,
+    hash_prime: Option<String>,
     trials: Option<usize>,
     columns: Option<usize>,
     steps: Option<u64>,
@@ -48,6 +49,7 @@ json_record!(
     optional {
         slots,
         threshold,
+        hash_prime,
         trials,
         columns,
         steps,
@@ -118,6 +120,7 @@ fn prepare(problem: &Problem) -> Result<(Curve, Point, Config, Meter), Error> {
         config.slots = slots;
     }
     config.threshold = problem.threshold.as_deref().map(integer).transpose()?;
+    config.hash_prime = problem.hash_prime.as_deref().map(integer).transpose()?;
     if let Some(trials) = problem.trials {
         config.trials = trials;
     }
@@ -149,12 +152,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     match args.get(1).map(String::as_str) {
         Some("validate") if args.len() == 3 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
-            let (curve, target, _, mut meter) = prepare(&problem)?;
+            let (curve, target, config, mut meter) = prepare(&problem)?;
+            config.validate_hash_prime(&curve, &mut meter)?;
             if !curve.in_subgroup(&target, &mut meter)? {
                 return Err("target is outside the certified subgroup".into());
             }
             println!("{}", json!({"status":"validated", "p":curve.modulus().to_string(),
                 "r":curve.order().to_string(), "charged_steps":meter.used,
+                "hash_prime":config.hash_prime.as_ref().map(ToString::to_string),
                 "challenge_solved":false}));
         }
         Some("solve") if args.len() == 4 => {
@@ -185,7 +190,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         Some("verify") if args.len() == 3 => {
             let receipt: Receipt = serde_json::from_slice(&read(&args[2])?)?;
             if receipt.schema != "hashed-ecdl-tensor/v1" { return Err("unsupported receipt schema".into()); }
-            let (curve, target, _, mut meter) = prepare(&receipt.problem)?;
+            let (curve, target, config, mut meter) = prepare(&receipt.problem)?;
+            config.validate_hash_prime(&curve, &mut meter)?;
+            if target != Point::Infinity && config.hash_prime.as_ref().is_some_and(|s| s != &receipt.certificate.prime) {
+                return Err("receipt hash prime differs from the configured modulus".into());
+            }
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }

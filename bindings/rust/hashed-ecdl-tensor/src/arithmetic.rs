@@ -284,13 +284,24 @@ pub fn random_below(
     }
 }
 
-/// Choose and certify a prime in `[2p,4p]` by uniform sampling and exact AKS.
+/// Choose and certify a prime in `[2p,4p]` by uniform sampling and exact primality.
 pub fn hash_prime(p: &BigUint, rng: &mut impl RandomSource, meter: &mut Meter) -> Result<BigUint> {
+    hash_prime_by(p, rng, meter, is_prime)
+}
+
+// Only crate-owned checked contexts may replace the primality decision. The
+// candidate stream and rejection-sampling draws are independent of this hook.
+pub(crate) fn hash_prime_by(
+    p: &BigUint,
+    rng: &mut impl RandomSource,
+    meter: &mut Meter,
+    mut certify: impl FnMut(&BigUint, &mut Meter) -> Result<bool>,
+) -> Result<BigUint> {
     let lo = p << 1;
     let range = (p << 1) + BigUint::one();
     loop {
         let candidate = &lo + random_below(&range, rng, meter)?;
-        if is_prime(&candidate, meter)? {
+        if certify(&candidate, meter)? {
             return Ok(candidate);
         }
     }
@@ -401,5 +412,42 @@ mod tests {
             is_prime(&BigUint::from(65537u32), &mut meter),
             Err(Error::Limit(_))
         ));
+    }
+
+    #[test]
+    fn checked_hash_selection_preserves_the_candidate_and_rng_stream() {
+        use crate::curve::{Curve, Point};
+        use crate::primality::PrimeCertificate;
+        let mut setup = Meter::new(Limits::default());
+        let curve = Curve::with_cofactor_and_certificates(
+            5u8.into(),
+            2u8.into(),
+            1u8.into(),
+            7u8.into(),
+            1u8.into(),
+            Point::Affine {
+                x: 0u8.into(),
+                y: 1u8.into(),
+            },
+            &[PrimeCertificate {
+                value: "11".into(),
+                witness: "2".into(),
+                factors: vec![],
+            }],
+            &mut setup,
+        )
+        .unwrap();
+        for seed in 1..=32 {
+            let mut original = Seeded(seed);
+            let mut checked = Seeded(seed);
+            let mut meter = Meter::new(Limits::default());
+            let expected = hash_prime(curve.modulus(), &mut original, &mut meter).unwrap();
+            let actual = hash_prime_by(curve.modulus(), &mut checked, &mut meter, |value, work| {
+                curve.certifies_prime(value, work)
+            })
+            .unwrap();
+            assert_eq!(actual, expected);
+            assert_eq!(checked.0, original.0);
+        }
     }
 }
