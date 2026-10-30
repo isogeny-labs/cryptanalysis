@@ -1,0 +1,24 @@
+{
+  "schema": "hecke-d79-coset-panel-proof-map-v1",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "results": [
+    {
+      "result": "Under an addition-preserving map to the cyclic order-five group, three terms whose images are each 1 or 4 cannot sum to zero.",
+      "lean_declarations": ["CosetPanel.no_three_in_antipodal_class", "CosetPanel.opposite_residues_block_three"],
+      "status": "checked",
+      "hypotheses": "An arbitrary type with specified zero and addition, a map to Fin 5 preserving them, and each of the three projected terms equal to 1 or 4. No conclusion is assumed."
+    },
+    {
+      "result": "The four frozen projection count vectors each contain 40 points, while the mixed residue patterns permit a zero projection sum.",
+      "lean_declarations": ["CosetPanel.four_frozen_projection_summaries", "CosetPanel.mixed_residues_can_cancel"],
+      "status": "checked",
+      "hypotheses": "The exact integer residue count vectors from the four-panel receipt and finite arithmetic modulo five. The mixed pattern is only a possibility condition."
+    },
+    {
+      "result": "For the four actual E11a1(Fp) classes, p397 has zero signed direct triples; the other three have 44, 35, and 31 verified triples and the recorded Q/mod-q ranks.",
+      "lean_declarations": [],
+      "status": "partial",
+      "missing": "Formalize the four finite-field elliptic curves, multiplication-by-N/5 maps and class-point projection census; bridge every audited point identity to a Lean matrix and prove the numerical rank certificates. The full result and independent Sage replay are retained in the report."
+    }
+  ]
+}

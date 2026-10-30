@@ -1,0 +1,29 @@
+{
+  "schema": "hecke-d79-coset-panel-attempts-v1",
+  "attempts": [
+    {
+      "name": "class_producer",
+      "command": "gtimeout 900 ./sage -python experiments/hecke-d79-coset-panel-20261027/class_producer.py",
+      "exit_code": 0,
+      "output": "class-result.json",
+      "stdout": "producer-stdout.txt",
+      "stderr": "producer-stderr.txt"
+    },
+    {
+      "name": "direct_relation_analysis",
+      "command": "gtimeout 120 python3 experiments/hecke-d79-coset-panel-20261027/analyze.py",
+      "exit_code": 0,
+      "output": "analysis.json",
+      "stdout": "analysis-stdout.txt",
+      "stderr": "analysis-stderr.txt"
+    },
+    {
+      "name": "independent_sage_audit",
+      "command": "gtimeout 900 ./sage -python experiments/hecke-d79-coset-panel-20261027/audit_sage.py",
+      "exit_code": 0,
+      "output": "audit.json",
+      "stdout": "audit-stdout.txt",
+      "stderr": "audit-stderr.txt"
+    }
+  ]
+}
