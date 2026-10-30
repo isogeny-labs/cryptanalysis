@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Bind the frozen Lean corpus and natively check admitted theorem modules.
 
-The October 21 corpus audit compiled 93 files. Its 97-file bridge remains
-byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
-files and the PQC assay are separately pinned. New Hecke modules use the
+The October 21 corpus audit compiled 93 files. Its 97-file bridge keeps
+90 unchanged archive sources and seven pinned sources checked natively.
+The changed centered-interval module is rebuilt and audited separately.
+New Hecke modules use the
 pinned Mathlib workspace, including modules whose recorded build dependencies
 override the repository's inherited root pin. The reviewed Hasse-square module
 uses its own pinned toolchain. Other source or pin changes still fail until
@@ -59,6 +60,9 @@ PAIR_INDEX_THEOREMS = frozenset({
 HASSE_FORMAL = ROOT / "bindings/rust/curve-audit/formal"
 HASSE_SOURCE = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
 HASSE_SHA256 = "26e3e7bbf28aad0f60f72137fca027427b435f05bcef9f5de5881d7979307c42"
+HASSE_UNIQUE_SOURCE = "bindings/rust/curve-audit/formal/HasseUnique.lean"
+HASSE_UNIQUE_SHA256 = "f72e23b6d89fa7259b2502348b5af850bc18b8cf5f429b143a7292427358c400"
+HASSE_UNIQUE_AUDITOR_SHA256 = "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc"
 PQC = ROOT / "verification/pqc-assay/lean"
 PQC_SOURCE = "verification/pqc-assay/lean/Modarith.lean"
 HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
@@ -68,6 +72,7 @@ HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278
 LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
 LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
 DELTA = {
+    HASSE_UNIQUE_SOURCE: HASSE_UNIQUE_SHA256,
     "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
     "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
@@ -163,7 +168,7 @@ def check_archive(index: dict, current: dict[str, str]) -> tuple[list[str], dict
     require(len(added) == 4 and len(current) == 97 and
             set(current) == set(archived) | added, "current Lean corpus changed")
     reused = sorted(set(archived) - set(DELTA))
-    require(len(reused) == 91, "unexpected archive reuse count")
+    require(len(reused) == 90, "unexpected archive reuse count")
     for path in reused:
         row = archived[path]
         require(current[path] == row["sha256"], f"Lean source changed without native replay: {path}")
@@ -355,6 +360,7 @@ def check_delta() -> dict:
             cm_audited[-1] == "audited 5 theorems in [CubicCM53]; 0 failing, 0 trusted (native_decide)",
             "CM arithmetic transitive audit changed")
     pqc = check_pqc()
+    hasse_unique = check_changed_hasse_unique()
     return {"orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
             "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
@@ -367,7 +373,7 @@ def check_delta() -> dict:
             "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest(),
             "cm_axiom_stdout_sha256": hashlib.sha256(cm.stdout.encode()).hexdigest(),
             "cm_transitive_audit_sha256": hashlib.sha256(("\n".join(cm_audited)+"\n").encode()).hexdigest(),
-            **pqc}
+            **pqc, **hasse_unique}
 
 
 def reviewed_quartic_sources() -> dict[str, str]:
@@ -649,6 +655,59 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                 f"unexpected foundation in {path}")
         checked[path] = digest(ROOT / path)
     return checked
+
+
+def check_changed_hasse_unique() -> dict[str, str]:
+    """Rebuild the exact changed archive module; never reuse its old hash."""
+    pin = HASSE_FORMAL / "lean-toolchain"
+    require(effective_pin(HASSE_UNIQUE_SOURCE) == str(pin.relative_to(ROOT)) and
+            pin.read_text().strip() == "leanprover/lean4:v4.34.1",
+            "Hasse interval toolchain changed")
+    source = (ROOT / HASSE_UNIQUE_SOURCE).read_text()
+    require(digest(ROOT / HASSE_UNIQUE_SOURCE) == HASSE_UNIQUE_SHA256,
+            "Hasse interval source changed without review")
+    require(digest(ROOT / "tools/lean/AuditAxioms.lean") == HASSE_UNIQUE_AUDITOR_SHA256,
+            "Hasse interval auditor changed")
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            "forbidden proof escape in Hasse interval source")
+    names = {"unique_multiple_in_short_interval", "unique_multiple_from_center_bounds"}
+    declared = re.findall(r"^theorem\s+(\w+)", source, re.MULTILINE)
+    requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+    require(len(declared) == len(requested) == 2 and
+            set(declared) == set(requested) == names,
+            "Hasse interval declaration or printout coverage changed")
+    allowed = {"propext", "Classical.choice", "Quot.sound"}
+    with tempfile.TemporaryDirectory(prefix="hasse-interval-corpus-") as temporary:
+        env = {**os.environ, "LEAN_PATH": temporary,
+               "ELAN_TOOLCHAIN": "leanprover/lean4:v4.34.1"}
+        built = run(["lean", "-o", str(Path(temporary) / "HasseUnique.olean"),
+                     "HasseUnique.lean"], cwd=HASSE_FORMAL, env=env)
+        printed = re.findall(r"^'CurveAudit\.([^']+)' depends on axioms: \[([^]]*)\]$",
+                             built.stdout, re.MULTILINE)
+        require(not built.stderr.strip() and len(printed) == 2 and
+                {name for name, _ in printed} == names and
+                all({axiom.strip() for axiom in axioms.split(",") if axiom.strip()}
+                    <= allowed for _, axioms in printed),
+                "Hasse interval native printout or foundations changed")
+        audited = run(["lean", "--run", str(ROOT / "tools/lean/AuditAxioms.lean"),
+                       "HasseUnique"], cwd=HASSE_FORMAL, env=env)
+        lines = [line for line in audited.stdout.splitlines()
+                 if line.startswith("ok    ") or line.startswith("audited ")]
+        declarations = re.findall(r"^ok\s+CurveAudit\.(\w+)\s+\[([^]]*)\]$",
+                                  "\n".join(lines), re.MULTILINE)
+        require(len(lines) == 3 and len(declarations) == 2 and
+                {name for name, _ in declarations} == names and
+                all({axiom.strip() for axiom in axioms.split(",") if axiom.strip()}
+                    <= allowed for _, axioms in declarations) and
+                lines[-1] ==
+                "audited 2 theorems in [HasseUnique]; 0 failing, 0 trusted (native_decide)",
+                "Hasse interval transitive audit changed")
+    return {
+        "hasse_unique_axiom_stdout_sha256": hashlib.sha256(built.stdout.encode()).hexdigest(),
+        "hasse_unique_transitive_audit_sha256": hashlib.sha256(
+            ("\n".join(lines) + "\n").encode()).hexdigest(),
+        "hasse_unique_toolchain_sha256": digest(pin),
+    }
 
 
 def check_new_hasse() -> str:

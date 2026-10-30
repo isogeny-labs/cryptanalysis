@@ -1,0 +1,46 @@
+{
+  "observed_at": "2026-10-30T04:30:34.583652+00:00",
+  "base": "4e74633c082f2405d7a51ce5bcae800c73e32600",
+  "original_failure": {
+    "run": 40993657774,
+    "job": 123861684586,
+    "source": "e818d0787b",
+    "error": "Lean source changed without native replay: bindings/rust/curve-audit/formal/HasseUnique.lean"
+  },
+  "repair": "Only changed reviewed HasseUnique source moves from historical byte-reuse into the strict native delta. Historical93-file archive and old receipt untouched; full frozen bridge still97files,90unchanged reused plus7natively checked.",
+  "prior_native_evidence": {
+    "report": "reports/hasse-interval-bridge-20261027/report.md",
+    "machine_receipt": "reports/hasse-interval-bridge-20261027/attempt-1-machine-receipt.json",
+    "producer_commit": "f4489073826e85854ebb1a142db9e94c957d9794",
+    "auditor_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+    "toolchain": "leanprover/lean4:v4.34.1",
+    "inputs": {
+      "bindings/rust/curve-audit/formal/HasseUnique.lean": "f72e23b6d89fa7259b2502348b5af850bc18b8cf5f429b143a7292427358c400",
+      "bindings/rust/curve-audit/formal/lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+      "tools/lean/AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc"
+    },
+    "source_steps": [
+      {
+        "name": "source-build",
+        "exit_code": 0,
+        "stdout_sha256": "ee84235e3f04d83beca5bf0b4f0a996254e89e6ae9390b7f075534ecea1798b5",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "source-audit",
+        "exit_code": 0,
+        "stdout_sha256": "ee9c50f4e51842548e03aac4a9d976620570766c344aa9a2b2b93d262f842a0e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "original_boundary_control_failure": "Retained exact original attempt expected_exits_met=false; later control-correction receipt preserved separately. Only actual successful source-build/source-audit outputs seed new deterministic expectations."
+  },
+  "new_native_status": "Pending final-head hosted execution. New receipt is expected output seeded from exact-source prior native evidence, not a fresh execution claim. Job must actually build and exhaustively audit both theorems under pinned4.34.1 and compare complete receipt.",
+  "refusal_controls": {
+    "existing": 44,
+    "new": 13,
+    "mocked_controls_are_native_proof": false,
+    "passed": true
+  },
+  "limits": "Same two conditional Nat lemmas. No new theorem, curve-order bridge, performance observation, security claim or data-dependent experiment."
+}
