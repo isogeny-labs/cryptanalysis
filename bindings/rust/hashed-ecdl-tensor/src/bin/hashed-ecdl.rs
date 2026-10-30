@@ -6,6 +6,7 @@ use hashed_ecdl_tensor::curve::{Curve, Point};
 use hashed_ecdl_tensor::reduction::{self, Certificate, Config};
 use hashed_ecdl_tensor::{BigUint, Error, Limits, Meter};
 use serde_json::{json, Value};
+use std::io::Read;
 use std::path::Path;
 
 #[macro_use]
@@ -122,11 +123,21 @@ fn prepare(problem: &Problem) -> Result<(Curve, Point, Config, Meter), Error> {
     Ok((curve, target, config, meter))
 }
 
-fn read(path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    if std::fs::metadata(path)?.len() > 16 * 1024 * 1024 {
+const INPUT_LIMIT: usize = 16 * 1024 * 1024;
+
+fn read_input(input: impl Read) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let mut bytes = Vec::new();
+    // One extra byte distinguishes an exact-limit input from a truncated input.
+    // This also bounds growing files and streams whose metadata reports zero.
+    input.take(INPUT_LIMIT as u64 + 1).read_to_end(&mut bytes)?;
+    if bytes.len() > INPUT_LIMIT {
         return Err("input file exceeds 16 MiB runner policy".into());
     }
-    Ok(std::fs::read(path)?)
+    Ok(bytes)
+}
+
+fn read(path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    read_input(std::fs::File::open(path)?)
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -172,5 +183,116 @@ fn main() {
     if let Err(error) = run() {
         eprintln!("{error}");
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const FIXTURE: &str = include_str!("../../examples/fixture.json");
+
+    #[test]
+    fn strict_json_problem_rejects_duplicates_even_after_null() {
+        for field in ["target", "slots", "fixture_seed"] {
+            let duplicate = format!("{{\"{field}\":null,{}", &FIXTURE.trim()[1..]);
+            let error = serde_json::from_str::<Problem>(&duplicate)
+                .err()
+                .expect("duplicate must be rejected")
+                .to_string();
+            assert!(error.contains("duplicate field"), "{field}: {error}");
+        }
+    }
+
+    #[test]
+    fn strict_json_problem_keeps_optional_defaults_and_required_target() {
+        let mut problem: Value = serde_json::from_str(FIXTURE).unwrap();
+        for field in [
+            "slots",
+            "threshold",
+            "trials",
+            "columns",
+            "steps",
+            "vector",
+            "bits",
+            "fixture_seed",
+        ] {
+            problem.as_object_mut().unwrap().remove(field);
+        }
+        problem["target"] = Value::Null;
+        let minimal: Problem = serde_json::from_value(problem.clone()).unwrap();
+        assert!(minimal.target.is_none());
+        assert!(minimal.slots.is_none());
+        assert!(minimal.fixture_seed.is_none());
+        problem.as_object_mut().unwrap().remove("target");
+        assert!(serde_json::from_value::<Problem>(problem.clone()).is_err());
+        problem["target"] = Value::Null;
+        problem["unknown"] = Value::Null;
+        assert!(serde_json::from_value::<Problem>(problem).is_err());
+    }
+
+    #[test]
+    fn strict_json_receipt_rejects_duplicate_fields_and_nested_problems() {
+        let value = json!({
+            "schema": "hashed-ecdl-tensor/v1",
+            "problem": serde_json::to_value(serde_json::from_str::<Problem>(FIXTURE).unwrap()).unwrap(),
+            "certificate": {
+                "version": 1, "prime": [], "threshold": [], "seeds": [],
+                "relations": [], "dependency": [], "scalar": []
+            },
+            "diagnostics": null
+        });
+        let encoded = value.to_string();
+        let receipt: Receipt = serde_json::from_str(&encoded).unwrap();
+        assert_eq!(serde_json::to_value(receipt).unwrap(), value);
+        for (field, content) in value.as_object().unwrap() {
+            let duplicate = format!("{{\"{field}\":{content},{}", &encoded[1..]);
+            let error = serde_json::from_str::<Receipt>(&duplicate)
+                .err()
+                .expect("duplicate receipt field must be rejected")
+                .to_string();
+            assert!(error.contains("duplicate field"), "{field}: {error}");
+        }
+        let duplicate = encoded.replace("\"target\":", "\"target\":null,\"target\":");
+        let error = serde_json::from_str::<Receipt>(&duplicate)
+            .err()
+            .expect("nested duplicate must be rejected")
+            .to_string();
+        assert!(error.contains("duplicate field"), "{error}");
+    }
+
+    #[test]
+    fn input_limit_applies_to_bytes_read_from_a_stream() {
+        let empty = read_input(std::io::empty()).unwrap();
+        assert!(empty.is_empty());
+        let exact = read_input(std::io::repeat(b' ').take(INPUT_LIMIT as u64)).unwrap();
+        assert_eq!(exact.len(), INPUT_LIMIT);
+        // Model a source without EOF, but fail promptly if the reader overreads.
+        struct Stream(usize);
+        impl Read for Stream {
+            fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
+                assert!(self.0 > 0, "read beyond the one-byte lookahead");
+                let n = buffer.len().min(self.0);
+                buffer[..n].fill(b' ');
+                self.0 -= n;
+                Ok(n)
+            }
+        }
+        let mut stream = Stream(INPUT_LIMIT + 1);
+        let error = read_input(&mut stream).unwrap_err().to_string();
+        assert!(error.contains("exceeds 16 MiB"), "{error}");
+        assert_eq!(stream.0, 0);
+    }
+
+    #[test]
+    fn input_reader_preserves_io_errors() {
+        struct Broken;
+        impl Read for Broken {
+            fn read(&mut self, _: &mut [u8]) -> std::io::Result<usize> {
+                Err(std::io::Error::other("test read failure"))
+            }
+        }
+        let error = read_input(Broken).unwrap_err().to_string();
+        assert!(error.contains("test read failure"), "{error}");
     }
 }
