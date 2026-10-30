@@ -21,6 +21,22 @@ theorem unique_multiple_in_short_interval
   · have heq : k = l := by omega
     simp [hn, hm, heq]
 
+/-- Two multiples of `r` that lie in the same symmetric natural-number
+    interval about `center` coincide when its diameter is less than `r`.
+    A separate Hasse or certificate argument must establish these center
+    bounds for the actual curve cardinality and the proposed order. -/
+theorem unique_multiple_from_center_bounds
+    (r radius center n m k l : Nat)
+    (hdiameter : radius + radius < r)
+    (hn : n = k * r) (hm : m = l * r)
+    (hnLower : center ≤ n + radius) (hnUpper : n ≤ center + radius)
+    (hmLower : center ≤ m + radius) (hmUpper : m ≤ center + radius) : n = m := by
+  apply unique_multiple_in_short_interval r (radius + radius) n m k l
+    hdiameter hn hm
+  · omega
+  · omega
+
 #print axioms unique_multiple_in_short_interval
+#print axioms unique_multiple_from_center_bounds
 
 end CurveAudit

@@ -1,0 +1,9 @@
+AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    centered_boundary  []
+ok    centered_positive  []
+audited 2 theorems in [BoundaryControl]; 0 failing, 0 trusted (native_decide)
