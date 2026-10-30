@@ -1,0 +1,30 @@
+{
+  "schema": "cryptanalysis.curve_audit_replay_execution.v1",
+  "producer_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+  "plan_commit": "906c7c6",
+  "checker_commit": "b0f44d3",
+  "command": [
+    "python3",
+    "-I",
+    "replay.py"
+  ],
+  "working_directory": "/tmp/cryptanalysis-curve-replay-20261027/reports/curve-audit-independent-replay-20261027",
+  "observed_utc": "2026-10-27T05:00:14.646309+00:00",
+  "python_version": "3.9.25",
+  "exit_code": 0,
+  "script_sha256": "fa72891688e29e5e66f68298b4c84c99f27397f925bc4f004fb525c7f20c43b8",
+  "script_matches_frozen_commit": true,
+  "input_manifest_sha256": "a1d1803fe4e70d10c207ba8996a6650a2a15cbed9f2520224142369f7840be31",
+  "result_sha256": "92c059c737e61bce8a60740be417c0550312ccf0553b86bc4ecde94e8d18f6b1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "first_attempt": {
+    "checker_commit": "95a1cce",
+    "exit_code": 1,
+    "reason": "Python 3.9 cannot evaluate the PEP 604 type alias at module load",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "ba02d140d44516ca163f6662accc00883f607099cfb456865995db0c89ed1031"
+  },
+  "native_rust_execution": "not_executed_concurrent_heavy_build",
+  "native_sage_execution": "not_available_on_host",
+  "trust_boundary": "Python exact integer arithmetic and this checker; receipt is reproducibility metadata, not execution attestation"
+}

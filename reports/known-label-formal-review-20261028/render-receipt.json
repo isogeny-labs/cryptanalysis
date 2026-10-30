@@ -1,0 +1,32 @@
+{
+  "schema": "review-render/v1",
+  "producer": "0b353c9bf78e9340c3c100b71175127bb7d91d44",
+  "command": "uv run --no-project --python 3.11 --with reportlab==4.4.10 python render_report.py",
+  "inputs_and_outputs": {
+    "report.md": {
+      "sha256": "f7abaf5c714db4873a0fa01ada568df3462937f68e77e240b1a2fa3400e98aea",
+      "bytes": 9759
+    },
+    "render_report.py": {
+      "sha256": "4d79b7cd7e9da269945d1c5b1d91cc08ae06155d55c9b1f75bc16e70d3f19dfc",
+      "bytes": 4498
+    },
+    "proof-boundary.svg": {
+      "sha256": "a1520abd054eb9b25b8f58c59c43d2c84ce1df8d338b95fa5aeefffd72ead3f6",
+      "bytes": 2571
+    },
+    "report.pdf": {
+      "sha256": "27ae1eebd1821e2d043036d085cb70eae1676a8ec0c30e488084743c91adeaf0",
+      "bytes": 10217
+    },
+    "native-ci/receipt.json": {
+      "sha256": "207a6c5659783f161ffcb83b840c4857041eb95857782a8f78b81af5972f6ad7",
+      "bytes": 2980
+    },
+    "independence-round2.json": {
+      "sha256": "958b4b2ea94013d13a748a3337f37ee0cdaf8d700bda2e2b824239aeea2cf106",
+      "bytes": 2011
+    }
+  },
+  "scope": "Derived review diagram and PDF; no measurements or new proof execution."
+}

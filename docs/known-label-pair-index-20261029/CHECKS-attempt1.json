@@ -1,0 +1,19 @@
+{
+  "kind": "bounded symbolic and small-curve correctness controls, not a performance benchmark",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/known-label-pair-index-20261029/docs/known-label-pair-index-20261029",
+    "-p",
+    "test_pair_index.py",
+    "-v"
+  ],
+  "started_date_utc": "2026-10-29T14:52:39.598829+00:00",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_actual_seven_root_coset_is_filtered_to_curve_points (test_pair_index.PairIndexTests.test_actual_seven_root_coset_is_filtered_to_curve_points) ... ok\ntest_all_pair_factors_and_exact_coverage (test_pair_index.PairIndexTests.test_all_pair_factors_and_exact_coverage) ... ok\ntest_batch_localization_matches_complete_point_control (test_pair_index.PairIndexTests.test_batch_localization_matches_complete_point_control) ... ok\ntest_full_witness_graph_and_label_replay (test_pair_index.PairIndexTests.test_full_witness_graph_and_label_replay) ... ok\ntest_invalid_or_unsupported_index_inputs_refused (test_pair_index.PairIndexTests.test_invalid_or_unsupported_index_inputs_refused) ... ok\ntest_symbolic_cleared_addition_identity (test_pair_index.PairIndexTests.test_symbolic_cleared_addition_identity) ... ok\ntest_balanced_even_cycle_needs_anchor (test_pair_index.SignedCycleTests.test_balanced_even_cycle_needs_anchor) ... ok\ntest_cycle_defect_is_dlp_certificate (test_pair_index.SignedCycleTests.test_cycle_defect_is_dlp_certificate) ... ok\ntest_difference_cycles_keep_root_free (test_pair_index.SignedCycleTests.test_difference_cycles_keep_root_free) ... ok\ntest_unbalanced_even_cycle_recovers_without_anchor (test_pair_index.SignedCycleTests.test_unbalanced_even_cycle_recovers_without_anchor) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.084s\n\nOK\n",
+  "hidden_fixture_logs_supplied_to_constructor": false
+}
