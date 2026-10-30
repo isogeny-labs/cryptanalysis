@@ -1,0 +1,7 @@
+# Prospective baseline-incidence source order
+
+Select the first eight eligible D79 conductor-four 40-point classes at odd v=903..1301 using the pinned public prime/order/q prescreen, with at most 20 eligible candidates. This range is disjoint from the earlier v=581..901 panel. Freeze exact points, base and direct rows, q, and both 40-source orders before any degree-13 lift. Keep `candidate_id` and `target_online_ms` null.
+
+The control order is class point order 0..39. The proposed priority order sorts points by increasing number of nonzero appearances in the degree-2/5 base rows and direct rows, breaking ties by the original point index. This score uses only baseline data, not degree-13 outcomes. It is a fixed structural diversification heuristic, not a trained rule. For each class, lift each source once and retain its verified source equation. Replay the same frozen lifted source records in both orders through the pinned pair index and F_q rank basis, stopping each replay at rank 39 or 40 sources. Count verified rows, novel directions, and first rank-gain prefix. Compare orders within each identical class and q field. No order is a win unless it reaches rank 39 earlier and independent anchor-log replay passes.
+
+Seal selection and the two orders before lift output. Audit all source equations, row sets, ranks, and replay when attainable. Retain failures, censored cases, and full-cap cases. Local phase timing is exploratory unless Tier 0/1 isolation receipts are present.
