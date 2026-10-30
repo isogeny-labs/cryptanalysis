@@ -18,12 +18,14 @@ pub mod binary;
 pub mod contraction;
 pub mod curve;
 pub mod encoding;
+pub mod factoring;
 pub mod finite;
 pub mod network;
 pub mod partial;
 pub mod primality;
 pub mod reduction;
 pub mod ring;
+pub mod weighted;
 pub mod width;
 
 pub use num_bigint::{BigInt, BigUint};
