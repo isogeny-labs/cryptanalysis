@@ -687,7 +687,8 @@ static void *rho_thread_main(void *arg)
                         wk->win = RHO_WINDOW;
                     } else {
                         wk->win--;
-                        in_cycle = wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved);
+                        in_cycle =
+                            wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved);
                     }
                 }
                 if (in_cycle) {
@@ -697,15 +698,17 @@ static void *rho_thread_main(void *arg)
 #ifdef CA_RHO_TRACE
                     uint32_t cl_ =
 #endif
-                    walk_escape_cycle(sh, wk, &ops);
+                        walk_escape_cycle(sh, wk, &ops);
                     h = wk->h;
 #ifdef CA_RHO_TRACE
                     {
                         rho_trace *tr = &sh->tr;
                         tr->escape_ops += ops - o0_;
                         tr->escapes++;
-                        if (cl_ == 0) tr->escape_unclosed++;
-                        else tr->cycle_len[cl_]++;
+                        if (cl_ == 0)
+                            tr->escape_unclosed++;
+                        else
+                            tr->cycle_len[cl_]++;
                         /* committed points that lie on the cycle: the last c steps repeat the
                          * point cl_ earlier, plus the first traversal */
                         uint64_t c = 0, avail = wk->ring_n;
@@ -934,7 +937,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.alpha = calloc(sh.r, sizeof(uint64_t));
     sh.beta = calloc(sh.r, sizeof(uint64_t));
     if (!sh.M || !sh.alpha || !sh.beta) {
-        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     ca_rng rng;
@@ -944,7 +950,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         sh.fb_bits = ilog2_u64(n) + 1;
         sh.fb_base = calloc(2 * (size_t)sh.fb_bits, sizeof(ca_elem));
         if (!sh.fb_base) {
-            free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+            free(sh.M);
+            free(sh.alpha);
+            free(sh.beta);
+            free(sh.fb_base);
             return CA_ERR_NOMEM;
         }
         sh.fb_target = sh.fb_base + sh.fb_bits;
@@ -970,7 +979,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 #endif
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
-        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     pthread_mutex_init(&sh.lock, NULL);
@@ -978,7 +990,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.status = CA_ERR_INTERNAL;
     if (existing && !rho_checkpoint_load(&sh, &saved)) {
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_INVALID;
     }
@@ -989,7 +1004,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         if (!rho_checkpoint_save(&sh, ca_now() - t0) ||
             !rho_progress(&sh, ca_now() - t0, verbose)) {
             ca_htab_free(&sh.tab);
-            free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+            free(sh.M);
+            free(sh.alpha);
+            free(sh.beta);
+            free(sh.fb_base);
             pthread_mutex_destroy(&sh.lock);
             return CA_ERR_INTERNAL;
         }
@@ -1003,7 +1021,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         free(ths);
         free(created);
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_NOMEM;
     }
@@ -1125,7 +1146,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     free(ths);
     free(created);
     ca_htab_free(&sh.tab);
-    free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+    free(sh.M);
+    free(sh.alpha);
+    free(sh.beta);
+    free(sh.fb_base);
     pthread_mutex_destroy(&sh.lock);
     return rc;
 }
