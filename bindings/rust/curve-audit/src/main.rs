@@ -16,7 +16,17 @@ const CRITERIA: &str = include_str!("../catalog/criteria.json");
 const ATTACK_MAP: &str = include_str!("../catalog/attack_map.json");
 
 fn sha256(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    hex_lower(&Sha256::digest(bytes))
+}
+
+fn hex_lower(bytes: &[u8]) -> String {
+    const DIGITS: &[u8; 16] = b"0123456789abcdef";
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        text.push(DIGITS[(byte >> 4) as usize] as char);
+        text.push(DIGITS[(byte & 0x0f) as usize] as char);
+    }
+    text
 }
 fn auditor_source_sha256() -> String {
     let mut digest = Sha256::new();
@@ -33,8 +43,9 @@ fn auditor_source_sha256() -> String {
         digest.update([0]);
         digest.update(bytes);
     }
-    format!("{:x}", digest.finalize())
+    hex_lower(&digest.finalize())
 }
+
 fn number(n: &BigUint) -> String {
     n.to_str_radix(10)
 }
@@ -601,6 +612,14 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sha256_uses_standard_lowercase_hex() {
+        assert_eq!(
+            sha256(b"abc"),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+    }
 
     fn fixture(bytes: &[u8], max_k: u32) -> Value {
         audit(
