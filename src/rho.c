@@ -9,10 +9,11 @@
  * {Y, -Y} after each step (negating (a, b) when needed), and idx() is
  * evaluated on the canonical form.  Fruitless 2-cycles are suppressed by
  * the look-ahead rule "if idx(Y + M_i) == i use M_{i+1} instead" and
- * longer cycles are caught by a sliding-window self-comparison; a walk
- * caught in a cycle escapes deterministically from the minimum element of
- * the cycle by doubling, so two walks that merged inside the cycle stay
- * merged.
+ * longer cycles are caught by a sliding-window self-comparison, and 2- and
+ * 4-cycles at once by comparing each new point with the points two and four
+ * steps back; a walk caught in a cycle escapes deterministically from the
+ * minimum element of the cycle by doubling, so two walks that merged inside
+ * the cycle stay merged.
  *
  * Distinguished points (hash with dp_bits trailing zeros) are stored in a
  * shared table with their (a, b).  A second arrival at the same point with
@@ -21,6 +22,7 @@
 #include "cryptanalysis/ca_rho.h"
 #include "dlog_internal.h"
 
+#include <math.h>
 #include <pthread.h>
 #include <stdatomic.h>
 #include <errno.h>
@@ -104,6 +106,10 @@ typedef struct rho_shared {
     uint64_t max_ops, max_table;
     uint64_t setup_ops;
     uint64_t setup_prior;
+    /* Elliptic curves: 2^b * base and 2^b * target, so that a walk start or a
+     * table entry is a sum over the set bits of its scalars. */
+    int fb_bits;
+    ca_elem *fb_base, *fb_target;
     double elapsed_prior;
     const char *checkpoint_path;
 
@@ -129,6 +135,9 @@ typedef struct rho_walk {
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
+    ca_elem hist[4]; /* the last committed points, newest first */
+    uint64_t hist_h[4];
+    uint32_t hist_n;
 #ifdef CA_RHO_TRACE
     uint64_t ring[RHO_RING];
     uint64_t ring_n;   /* committed points since the walk start or the last escape */
@@ -408,14 +417,43 @@ static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d)
     *a = ca_addmod(*a, d, n);
 }
 
+/* k * (the base the table was built from) as the sum of the stored
+ * 2^b * base over the set bits of k.  Each set bit costs one operation, as
+ * ca_group_mul charges it; the doublings that built the table were charged
+ * to the setup. */
+static void rho_fb_mul(const rho_shared *sh, ca_elem *r, const ca_elem *pow, uint64_t k,
+                       uint64_t *ops)
+{
+    ca_elem acc;
+    ca_group_identity(sh->g, &acc);
+    for (int b = 0; k >> b; b++)
+        if ((k >> b) & 1) {
+            ca_group_op(sh->g, &acc, &acc, &pow[b]);
+            (*ops)++;
+        }
+    *r = acc;
+}
+
+/* a * base and b * target for a walk start or a table entry. */
+static void rho_start_mul(const rho_shared *sh, ca_elem *t1, ca_elem *t2, uint64_t a, uint64_t b,
+                          uint64_t *ops)
+{
+    if (sh->fb_base) {
+        rho_fb_mul(sh, t1, sh->fb_base, a, ops);
+        rho_fb_mul(sh, t2, sh->fb_target, b, ops);
+    } else {
+        ca_group_mul(sh->g, t1, &sh->base, a, ops);
+        ca_group_mul(sh->g, t2, &sh->target, b, ops);
+    }
+}
+
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     w->a = ca_rng_below(rng, sh->n);
     w->b = ca_rng_below(rng, sh->n);
     ca_elem t1, t2;
-    ca_group_mul(g, &t1, &sh->base, w->a, ops);
-    ca_group_mul(g, &t2, &sh->target, w->b, ops);
+    rho_start_mul(sh, &t1, &t2, w->a, w->b, ops);
     ca_group_op(g, &w->Y, &t1, &t2);
     (*ops)++;
     if (sh->negmap && ca_group_canonicalize(g, &w->Y)) {
@@ -426,6 +464,7 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
     w->retry = 0;
     w->since_dp = 0;
     w->win = 0;
+    w->hist_n = 0;
 #ifdef CA_RHO_TRACE
     w->ring_n = 0;
     w->charged = 0;
@@ -504,6 +543,7 @@ static uint32_t walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
     w->h = ca_group_hash(g, &w->Y);
     w->retry = 0;
     w->win = 0;
+    w->hist_n = 0;
     return cycle_len;
 }
 
@@ -629,45 +669,60 @@ static void *rho_thread_main(void *arg)
 #endif
 
             if (sh->negmap) {
-                if (wk->win == 0) {
-                    wk->saved = wk->Y;
-                    wk->win = RHO_WINDOW;
-                } else {
-                    wk->win--;
-                    if (wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved)) {
-#ifdef CA_RHO_TRACE
-                        uint64_t o0_ = ops;
-#endif
-#ifdef CA_RHO_TRACE
-                        uint32_t cl_ =
-#endif
-                        walk_escape_cycle(sh, wk, &ops);
-                        h = wk->h;
-#ifdef CA_RHO_TRACE
-                        {
-                            rho_trace *tr = &sh->tr;
-                            tr->escape_ops += ops - o0_;
-                            tr->escapes++;
-                            if (cl_ == 0) tr->escape_unclosed++;
-                            else tr->cycle_len[cl_]++;
-                            /* committed points that lie on the cycle: the last c steps repeat the
-                             * point cl_ earlier, plus the first traversal */
-                            uint64_t c = 0, avail = wk->ring_n;
-                            if (cl_) {
-                                while (c + cl_ < RHO_RING && c + cl_ < avail &&
-                                       wk->ring[(wk->ring_n - 1 - c) % RHO_RING] ==
-                                           wk->ring[(wk->ring_n - 1 - c - cl_) % RHO_RING])
-                                    c++;
-                            }
-                            uint64_t cyc = cl_ ? c + cl_ : 0;
-                            if (cyc > avail) cyc = avail;
-                            if (cyc > wk->since_dp - wk->charged) cyc = wk->since_dp - wk->charged;
-                            tr->escape_cycle_steps += cyc;
-                            wk->charged += cyc;
-                            wk->ring_n = 0; /* the jump leaves the cycle */
-                        }
-#endif
+                /* a repeat of the point two or four steps back is a 2- or 4-cycle */
+                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[1] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[1])) ||
+                               (wk->hist_n >= 4 && h == wk->hist_h[3] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[3]));
+                if (!in_cycle) {
+                    for (int k = 3; k > 0; k--) {
+                        wk->hist[k] = wk->hist[k - 1];
+                        wk->hist_h[k] = wk->hist_h[k - 1];
                     }
+                    wk->hist[0] = wk->Y;
+                    wk->hist_h[0] = h;
+                    if (wk->hist_n < 4) wk->hist_n++;
+                    if (wk->win == 0) {
+                        wk->saved = wk->Y;
+                        wk->win = RHO_WINDOW;
+                    } else {
+                        wk->win--;
+                        in_cycle = wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved);
+                    }
+                }
+                if (in_cycle) {
+#ifdef CA_RHO_TRACE
+                    uint64_t o0_ = ops;
+#endif
+#ifdef CA_RHO_TRACE
+                    uint32_t cl_ =
+#endif
+                    walk_escape_cycle(sh, wk, &ops);
+                    h = wk->h;
+#ifdef CA_RHO_TRACE
+                    {
+                        rho_trace *tr = &sh->tr;
+                        tr->escape_ops += ops - o0_;
+                        tr->escapes++;
+                        if (cl_ == 0) tr->escape_unclosed++;
+                        else tr->cycle_len[cl_]++;
+                        /* committed points that lie on the cycle: the last c steps repeat the
+                         * point cl_ earlier, plus the first traversal */
+                        uint64_t c = 0, avail = wk->ring_n;
+                        if (cl_) {
+                            while (c + cl_ < RHO_RING && c + cl_ < avail &&
+                                   wk->ring[(wk->ring_n - 1 - c) % RHO_RING] ==
+                                       wk->ring[(wk->ring_n - 1 - c - cl_) % RHO_RING])
+                                c++;
+                        }
+                        uint64_t cyc = cl_ ? c + cl_ : 0;
+                        if (cyc > avail) cyc = avail;
+                        if (cyc > wk->since_dp - wk->charged) cyc = wk->since_dp - wk->charged;
+                        tr->escape_cycle_steps += cyc;
+                        wk->charged += cyc;
+                        wk->ring_n = 0; /* the jump leaves the cycle */
+                    }
+#endif
                 }
             }
 
@@ -812,7 +867,20 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         uint64_t budget = sqrt_n / (48u * (uint64_t)lg);
         uint32_t r = 8;
         uint32_t cap = sh.negmap ? 1024u : 32u;
-        while ((uint64_t)r * 2 <= budget && r * 2 <= cap) r *= 2;
+        if (sh.negmap) {
+            /* A table of r multipliers costs about r * log2(n) operations
+             * once the scalar multiplications use fixed-base tables, while
+             * each step is rejected by the look-ahead with probability 1/r
+             * and falls into a fruitless cycle at a similar rate; the sum is
+             * smallest near sqrt(steps / log2(n)), and steps grow like
+             * sqrt(n).  Take the power of two nearest to
+             * 1.5 * sqrt(sqrt(n) / log2(n)), within [8, 1024]
+             * (experiments/rho-selection-20261024). */
+            double want = 1.5 * sqrt((double)sqrt_n / (double)lg);
+            while ((double)r * 1.41421356 <= want && r * 2 <= cap) r *= 2;
+        } else {
+            while ((uint64_t)r * 2 <= budget && r * 2 <= cap) r *= 2;
+        }
         sh.r = r;
     }
     if (sh.r < 4) sh.r = 4;
@@ -842,7 +910,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     if (dp < 0) {
         double expected = 1.25 * (double)sqrt_n / (sh.negmap ? 1.4142 : 1.0);
         double total_walks = (double)threads * W;
-        double per_walk = expected / (32.0 * total_walks);
+        /* Distinguished points per walk: more of them shorten the wait between
+         * a collision and its detection; 128 with the negation map, where the
+         * wait is a larger share of the cost. */
+        double per_walk = expected / ((sh.negmap ? 128.0 : 32.0) * total_walks);
         dp = per_walk >= 2.0 ? ilog2_u64((uint64_t)per_walk) : 0;
         /* keep the DP table under ~2^24 entries */
         int min_dp = ilog2_u64((uint64_t)expected) - 24;
@@ -863,18 +934,33 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.alpha = calloc(sh.r, sizeof(uint64_t));
     sh.beta = calloc(sh.r, sizeof(uint64_t));
     if (!sh.M || !sh.alpha || !sh.beta) {
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     ca_rng rng;
     ca_rng_seed(&rng, sh.seed);
     uint64_t setup_ops = 0;
+    if (g->kind == CA_GROUP_EC) {
+        sh.fb_bits = ilog2_u64(n) + 1;
+        sh.fb_base = calloc(2 * (size_t)sh.fb_bits, sizeof(ca_elem));
+        if (!sh.fb_base) {
+            free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
+            return CA_ERR_NOMEM;
+        }
+        sh.fb_target = sh.fb_base + sh.fb_bits;
+        sh.fb_base[0] = *base;
+        sh.fb_target[0] = *target;
+        for (int b = 1; b < sh.fb_bits; b++) {
+            ca_group_dbl(g, &sh.fb_base[b], &sh.fb_base[b - 1]);
+            ca_group_dbl(g, &sh.fb_target[b], &sh.fb_target[b - 1]);
+            setup_ops += 2;
+        }
+    }
     for (uint32_t i = 0; i < sh.r; i++) {
         sh.alpha[i] = ca_rng_below(&rng, n);
         sh.beta[i] = ca_rng_below(&rng, n);
         ca_elem t1, t2;
-        ca_group_mul(g, &t1, base, sh.alpha[i], &setup_ops);
-        ca_group_mul(g, &t2, target, sh.beta[i], &setup_ops);
+        rho_start_mul(&sh, &t1, &t2, sh.alpha[i], sh.beta[i], &setup_ops);
         ca_group_op(g, &sh.M[i], &t1, &t2);
         setup_ops++;
     }
@@ -884,7 +970,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 #endif
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     pthread_mutex_init(&sh.lock, NULL);
@@ -892,7 +978,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.status = CA_ERR_INTERNAL;
     if (existing && !rho_checkpoint_load(&sh, &saved)) {
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_INVALID;
     }
@@ -903,7 +989,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         if (!rho_checkpoint_save(&sh, ca_now() - t0) ||
             !rho_progress(&sh, ca_now() - t0, verbose)) {
             ca_htab_free(&sh.tab);
-            free(sh.M); free(sh.alpha); free(sh.beta);
+            free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
             pthread_mutex_destroy(&sh.lock);
             return CA_ERR_INTERNAL;
         }
@@ -917,7 +1003,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         free(ths);
         free(created);
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_NOMEM;
     }
@@ -1039,7 +1125,7 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     free(ths);
     free(created);
     ca_htab_free(&sh.tab);
-    free(sh.M); free(sh.alpha); free(sh.beta);
+    free(sh.M); free(sh.alpha); free(sh.beta); free(sh.fb_base);
     pthread_mutex_destroy(&sh.lock);
     return rc;
 }
