@@ -157,6 +157,7 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
         ..Config::default()
     };
     let mut stats = Statistics::default();
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
     let certificate = reduction::solve_with_oracle(
         &curve,
         &target,
@@ -166,6 +167,11 @@ fn selector_oracle_runs_full_reduction_and_rejects_forged_witnesses() {
         &mut meter,
     )
     .unwrap();
+    let snapshot = session.finish().unwrap();
+    assert!(snapshot.phases["witness_check"].scalar_mults > 0);
+    assert_eq!(snapshot.phases["matrix_build"].scalar_mults, 0);
+    assert_eq!(snapshot.phases["matrix_build"].adds, 0);
+    assert_eq!(snapshot.phases["matrix_build"].doubles, 0);
     assert_eq!(certificate.scalar, BigUint::from(3u8));
     reduction::verify(&curve, &target, &certificate, &mut meter).unwrap();
     assert!(stats.derived_checks > 0);

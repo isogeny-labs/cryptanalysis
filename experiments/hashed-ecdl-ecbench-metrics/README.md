@@ -23,9 +23,18 @@ The final native package passes **96 tests** (64 library, 5 runner, 3 source
 panel, 6 hash-prime, 1 factoring CLI, 10 finite-extension, 3 strict JSON and
 4 width-extension), formatting, strict all-target clippy and Rust 1.78 all-target
 checks. [Lossless raw logs](validation/) and the exact package
-[source manifest](validation/native-sources.sha256) retain that scope.
+[source manifest](validation/review-native-sources.sha256) retain that scope.
+The initial source manifest remains unchanged in the same directory.
 The common new metrics, partial and finite-test files equal crypto's copies;
 existing integration-specific differences remain intact.
+
+The phase-attribution review finding in PR #1325 is corrected in both copies:
+the oracle wrapper enters `witness_check` before independently replaying the
+factor-base memberships and group sum. Row assembly has its own `matrix_build`
+phase. The existing selector integration control now asserts that membership
+scalar calls occur in checking and row assembly has no group calls; totals,
+solver randomness and choices are unchanged. Original source/check receipts
+remain alongside additive `review-*` checks and the final source manifest.
 
 The paired [diagram](pipeline.svg) and inspected [PDF](report.pdf) are the
 crypto study's pre-data engineering handoff, with editable sources beside
