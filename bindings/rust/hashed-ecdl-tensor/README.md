@@ -63,6 +63,20 @@ evaluation. Exact count queries and the source recursion guards are unchanged.
 Set `Counter::functional_witnesses = false` or call `witness_by_counts` to use
 the original prefix-count control. Arbitrary caller predicates retain it.
 
+Functional leaves also propagate conservative input dependencies through the
+built-in program. When a constraint rejects an input, enumeration skips only
+the remaining assignments whose changing bits cannot affect that rejection.
+Successful assignments retain their full multiplicity, derived output pins
+retain their input dependencies, and witnesses keep the same interface order.
+Dependency preparation is charged to the resource meter. Set
+`Counter::functional_pruning = false` for exhaustive input enumeration; disable
+both functional flags to reproduce the original prefix-count control.
+`Statistics::functional_pruned_blocks` counts rejected blocks actually skipped,
+while `functional_assignments` counts only inputs actually evaluated. The
+[pruning report](https://github.com/isogeny-labs/crypto/blob/main/docs/hashed-ecdl-functional-plan.md)
+records the soundness invariant and correctness checks. These diagnostics are
+not calibrated work units or an end-to-end performance result.
+
 Correctness controls compare complete seeded certificates and retain forged
 proof, UNSAT, alias/pin, derived-interface and resource-limit cases. See the
 paired optimization report for actual checks and open benchmark requirements;
