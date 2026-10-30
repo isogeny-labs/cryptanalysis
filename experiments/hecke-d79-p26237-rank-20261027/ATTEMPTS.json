@@ -1,0 +1,18 @@
+{
+  "schema": "hecke-d79-p26237-attempts-v1",
+  "runs": [
+    {"stage":"projection_null","command":"python3 experiments/hecke-d79-p26237-rank-20261027/projection_null.py","status":"PASS","stdout":"projection-null-stdout.txt","stderr":"projection-null-stderr.txt"},
+    {"stage":"runtime","command":"./sage --runtime-info","status":"PASS","stdout":"sage-runtime-info.txt"},
+    {"stage":"degree13_producer","command":"gtimeout 1800 ./sage -python experiments/hecke-d79-p26237-rank-20261027/run.py","status":"COMPLETE","stdout":"producer-stdout.txt","stderr":"producer-stderr.txt"},
+    {"stage":"support4_analysis","command":"gtimeout 900 python3 experiments/hecke-d79-p26237-rank-20261027/analyze.py","status":"COMPLETE","stdout":"analysis-stdout.txt","stderr":"analysis-stderr.txt"},
+    {"stage":"independent_audit","command":"gtimeout 900 ./sage -python experiments/hecke-d79-p26237-rank-20261027/audit_sage.py","status":"PASS","stdout":"audit-stdout.txt","stderr":"audit-stderr.txt"},
+    {"stage":"q_log_audit","command":"./sage -python experiments/hecke-d79-p26237-rank-20261027/audit_q_logs_sage.py","status":"PASS","stdout":"q-log-audit-stdout.txt","stderr":"q-log-audit-stderr.txt"},
+    {"stage":"projection_formal_attempt1","command":"lake build MixedProjection","status":"FAILED_DECIDABLE_INSTANCE","note":"The quantified by decide proof could not synthesize Decidable; replaced with explicit permitted-residue cases."},
+    {"stage":"projection_formal_attempt2","command":"lake build MixedProjection","status":"PASS","stdout":"formal/projection-build-output.txt"},
+    {"stage":"formal_generator","command":"python3 generate.py","status":"PASS","stdout":"formal/generation-check-output.txt"},
+    {"stage":"formal_build","command":"lake build MixedProjection RankP26237","status":"PASS","stdout":"formal/build-output.txt"},
+    {"stage":"python_syntax","command":"python3 -m py_compile projection_null.py run.py analyze.py audit_sage.py audit_q_logs_sage.py formal/generate.py","status":"PASS"},
+    {"stage":"go_vet","command":"GOTMPDIR=/tmp go vet ./...","status":"PASS"},
+    {"stage":"go_test","command":"GOTMPDIR=/tmp go test ./...","status":"PASS"}
+  ]
+}
