@@ -765,8 +765,12 @@ def main() -> None:
     parser.add_argument("--check-receipt", type=Path)
     args = parser.parse_args()
     index = json.loads(INDEX.read_text())
+    # Corpus sources are admitted theorem modules. Core-only compatibility
+    # diagnostics kept as CI evidence under reports/ci-* are not corpus and are
+    # left out of the bridge rather than silently admitted.
     paths = [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
-             if not path.startswith("tools/lean/")]
+             if not path.startswith("tools/lean/")
+             and not (path.startswith("reports/ci-") and path.endswith(".lean"))]
     current = {path: digest(ROOT / path) for path in paths}
     require(len(current) == len(paths), "duplicate tracked Lean path")
     frozen_paths = {row["source"] for row in index["files"]} | set(DELTA)
