@@ -237,7 +237,87 @@ pub(crate) struct Program {
     pub edge_signals: Vec<usize>,
 }
 
+/// Conservative dependence on enumeration digits (digit zero changes fastest).
+/// A failed step with cutoff k is independent of every digit below k.
+pub(crate) struct PruningPlan {
+    step_cutoffs: Vec<usize>,
+}
+
+pub(crate) enum Evaluation {
+    Accepted(Vec<bool>),
+    Rejected(usize),
+}
+
 impl Program {
+    pub(crate) fn pruning_plan(
+        &self,
+        order: &[usize],
+        signal_pins: &[Option<bool>],
+        meter: &mut Meter,
+    ) -> Result<PruningPlan> {
+        if signal_pins.len() != self.signals {
+            return Err(invalid("dependency pin shape"));
+        }
+        meter.vector(self.signals, "program dependency ranks")?;
+        meter.vector(self.steps.len(), "program dependency steps")?;
+        let constant = order.len();
+        let mut ranks = vec![constant; self.signals];
+        let mut seen = BTreeSet::new();
+        for (rank, &position) in order.iter().enumerate() {
+            meter.charge(1, "program input dependency")?;
+            let signal = *self
+                .free
+                .get(position)
+                .ok_or_else(|| invalid("dependency input position"))?;
+            if signal_pins[signal].is_some() || !seen.insert(position) {
+                return Err(invalid("dependency input order"));
+            }
+            ranks[signal] = rank;
+        }
+        for (position, &signal) in self.free.iter().enumerate() {
+            meter.charge(1, "program dependency coverage")?;
+            if signal_pins[signal].is_none() && !seen.contains(&position) {
+                return Err(invalid("missing dependency input"));
+            }
+        }
+        let mut step_cutoffs = Vec::with_capacity(self.steps.len());
+        for step in &self.steps {
+            meter.charge(1, "program dependency step")?;
+            let mut cutoff = constant;
+            match step {
+                Step::Define {
+                    inputs, outputs, ..
+                } => {
+                    for &bit in inputs.iter().flat_map(|word| &word.0) {
+                        meter.charge(1, "program dependency input bit")?;
+                        if let Bit::Signal(signal) = bit {
+                            cutoff = cutoff.min(ranks[signal]);
+                        }
+                    }
+                    for &bit in outputs.iter().flat_map(|word| &word.0) {
+                        meter.charge(1, "program dependency output bit")?;
+                        let Bit::Signal(signal) = bit else {
+                            return Err(integrity("dependency output is not a signal"));
+                        };
+                        // Even a pinned derived output depends on its inputs:
+                        // the computed value must still agree with that pin.
+                        ranks[signal] = cutoff;
+                    }
+                }
+                Step::Check { ports, .. } => {
+                    for &bit in ports {
+                        meter.charge(1, "program dependency check bit")?;
+                        if let Bit::Signal(signal) = bit {
+                            cutoff = cutoff.min(ranks[signal]);
+                        }
+                    }
+                }
+            }
+            step_cutoffs.push(cutoff);
+        }
+        Ok(PruningPlan { step_cutoffs })
+    }
+
     pub(crate) fn signal_pins(&self, pins: &[Option<bool>]) -> Result<Option<Vec<Option<bool>>>> {
         if pins.len() != self.edge_signals.len() {
             return Err(invalid("program pin shape"));
@@ -264,6 +344,20 @@ impl Program {
         network: &Network,
         meter: &mut Meter,
     ) -> Result<Option<Vec<bool>>> {
+        match self.evaluate(free_values, signal_pins, network, None, meter)? {
+            Evaluation::Accepted(assignment) => Ok(Some(assignment)),
+            Evaluation::Rejected(_) => Ok(None),
+        }
+    }
+
+    pub(crate) fn evaluate(
+        &self,
+        free_values: &[bool],
+        signal_pins: &[Option<bool>],
+        network: &Network,
+        plan: Option<&PruningPlan>,
+        meter: &mut Meter,
+    ) -> Result<Evaluation> {
         if free_values.len() != self.free.len() || signal_pins.len() != self.signals {
             return Err(invalid("program input shape"));
         }
@@ -271,12 +365,13 @@ impl Program {
         let mut values = vec![false; self.signals];
         for (&signal, &value) in self.free.iter().zip(free_values) {
             if signal_pins[signal].is_some_and(|p| p != value) {
-                return Ok(None);
+                return Ok(Evaluation::Rejected(0));
             }
             values[signal] = value;
         }
-        for step in &self.steps {
+        for (index, step) in self.steps.iter().enumerate() {
             meter.charge(1, "parsimonious program evaluation")?;
+            let cutoff = plan.map_or(0, |p| p.step_cutoffs[index]);
             match step {
                 Step::Define {
                     inputs,
@@ -290,7 +385,7 @@ impl Program {
                     }
                     for (word, value) in outputs.iter().zip(output) {
                         if value.bits() > word.width() as u64 {
-                            return Ok(None);
+                            return Ok(Evaluation::Rejected(cutoff));
                         }
                         for (i, &bit) in word.0.iter().enumerate() {
                             let Bit::Signal(signal) = bit else {
@@ -298,7 +393,7 @@ impl Program {
                             };
                             let value = value.bit(i as u64);
                             if signal_pins[signal].is_some_and(|p| p != value) {
-                                return Ok(None);
+                                return Ok(Evaluation::Rejected(cutoff));
                             }
                             values[signal] = value;
                         }
@@ -307,7 +402,7 @@ impl Program {
                 Step::Check { vertex, ports } => {
                     let bits: Vec<_> = ports.iter().map(|&bit| bit.read(&values)).collect();
                     if !network.vertices[*vertex].predicate.evaluate(&bits, meter)? {
-                        return Ok(None);
+                        return Ok(Evaluation::Rejected(cutoff));
                     }
                 }
             }
@@ -320,7 +415,7 @@ impl Program {
         if !network.evaluate(&assignment, meter)? {
             return Err(integrity("program witness disagrees with graph"));
         }
-        Ok(Some(assignment))
+        Ok(Evaluation::Accepted(assignment))
     }
 }
 
