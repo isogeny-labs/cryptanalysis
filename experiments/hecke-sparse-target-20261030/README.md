@@ -28,3 +28,11 @@ Rebuild the report from this directory with `python3 build_report.py`.
 The four point-set archives rebuild from immutable independently checked
 source receipts; they are source-snapshot rebuilds, not new CM enumerations.
 No result is a qualified wall-speed or sub-rho claim.
+
+Failure-receipt repair (2026-10-30): the pending cost workload now retains
+timeouts, arithmetic errors and interruptions in its unique output. Completed
+phase costs stay separate from incomplete phase measurements; unknown complete
+preparation costs remain null. The alarm is cancelled during cleanup. The
+checkpoint/GPU gates, 600-second cap, algorithms and 4096-entry table cap are
+unchanged. This is tested with injected failures; the GPU cost comparison
+remains unexecuted and unqualified.
