@@ -1,0 +1,82 @@
+{
+  "degree2_targets": {
+    "150": [
+      239,
+      524
+    ],
+    "210": [
+      430,
+      721
+    ],
+    "42": [
+      67,
+      88
+    ],
+    "60": [
+      134,
+      145
+    ],
+    "70": [
+      9,
+      216
+    ],
+    "90": [
+      157,
+      311
+    ]
+  },
+  "discovery_conductors": [
+    60,
+    90
+  ],
+  "heldout_conductors": [
+    42,
+    70,
+    150,
+    210
+  ],
+  "inputs": [
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f42.json",
+      "sha256": "f4a8b964dad70fc8d697d1163f2fa8a963a44882731ae18518e1ace2951c311d"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f60.json",
+      "sha256": "39faa7734979733b3035fb6c25c39b1c0a5e389bd4c54a6c65965da1d8cce434"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f70.json",
+      "sha256": "efe387fe31c22001b9eeaabe72d920835f80a2300b1aaa4d151015b05d2357ef"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f90.json",
+      "sha256": "4cb80fb8f8a10a138455dbf6be0c3fb229af6d6367f255000bf06ab9010f38b8"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f150.json",
+      "sha256": "49e33851a0ed64e470f1693001664c6f76f58aea9e2e65b6974d1618dfa15e06"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/data/exp11_class_walk_D7_f210.json",
+      "sha256": "616c4583ac761e9eb965c9ce36b366e3a67b104b881d9eb8a8cee47f2799844e"
+    },
+    {
+      "path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+      "sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb"
+    },
+    {
+      "path": "experiments/hecke-multiplicity-collector-20261026/multiplicity.py",
+      "sha256": "89a6cfd5951666587589834d8b8e288aaf0dfc48d9e310df62ef44c48f5bca1e"
+    },
+    {
+      "path": "experiments/hecke-multiplicity-collector-20261026/replay.json",
+      "sha256": "ae6ebfb14cb56863ad93dddf58b3a2196217d3bc579cfde2c2b00f9f81c643bd"
+    },
+    {
+      "path": "experiments/hecke-d7-f60-f90-multiplicity-20261027/replay.json",
+      "sha256": "516abaaab2b7a0a5f8769c05d0af0d3788ac408b2cb6638c8d95f268f595640f"
+    }
+  ],
+  "schema": "hecke-d7-local-commutator-v1",
+  "selection": "for each target enumerate available odd Hecke degrees ascending, then source columns ascending; accept first full commutator identity whose archived terms omit only that target degree-2 row"
+}

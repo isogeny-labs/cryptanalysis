@@ -1,0 +1,23 @@
+{
+  "module": "HeckeCommutator.lean",
+  "results": [
+    {
+      "name": "shifted_commutator",
+      "declaration": "HeckeCommutator.shifted_commutator",
+      "hypotheses": "R is a commutative ring, M an R-module, A and B are R-linear endomorphisms, and A(B(x)) = B(A(x)) at the stated x",
+      "conclusion": "the shifted operators B-bI and A-aI commute at x",
+      "verification": "lake build HeckeCommutator passed; #print axioms lists only standard Lean foundations",
+      "finite_bridge": "run.py checks complete class fibers, actual Hecke eigenvalues, archived-row availability, and zero integer commutator at every selected anchor"
+    },
+    {
+      "name": "isolate_one_missing",
+      "declaration": "HeckeCommutator.isolate_one_missing",
+      "hypotheses": "K is a field, V a K-module, coefficient is nonzero, and coefficient times target plus known equals zero",
+      "conclusion": "target equals minus the inverse coefficient times known",
+      "verification": "lake build HeckeCommutator passed; #print axioms lists only standard Lean foundations",
+      "finite_bridge": "validate.py verifies the selected coefficient and the full integer row identity for each of twelve concrete targets"
+    }
+  ],
+  "standard_axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "full_modular_curve_formalization": "open: the concrete level-11 Hecke operators and their rational-fiber class restriction are checked by executable receipts, not encoded in Lean"
+}
