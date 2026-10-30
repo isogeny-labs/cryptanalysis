@@ -2,9 +2,11 @@
 
 use crate::arithmetic::inverse;
 use crate::curve::{Curve, Point};
+use crate::finite::{Domain, PrimeDomain};
 use crate::network::{
     Bit, FnPredicate, Network, Predicate, Program, Step, ValueFunction, Vertex, Word,
 };
+use crate::reduction::FactorBase;
 use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
 use num_traits::{One, ToPrimitive, Zero};
 use std::sync::Arc;
@@ -706,6 +708,84 @@ impl Encoder {
         let sum = self.integer_add(&quotient_product, &Self::pad(&z, 2 * x.width())?, meter)?;
         self.assert_equal(&Self::pad(&product, sum.width())?, &sum, meter)?;
         Ok(z)
+    }
+
+    /// Optional quadratic-edge schoolbook product with local ripple gates.
+    /// Useful for comparing finite contraction width; the Fourier default stays
+    /// unchanged. The output has the full sum of input widths, without truncation.
+    pub fn schoolbook_multiply(&mut self, a: &Word, b: &Word, meter: &Meter) -> Result<Word> {
+        if a.width() == 0 || b.width() == 0 {
+            return Err(invalid("schoolbook input width"));
+        }
+        let width = a
+            .width()
+            .checked_add(b.width())
+            .ok_or_else(|| overflow("schoolbook product"))?;
+        meter.bits(width, "schoolbook output")?;
+        meter.vector(width, "schoolbook row")?;
+        let mut sum = Self::constant(width, &BigUint::zero())?;
+        for j in 0..b.width() {
+            let mut row = vec![Bit::Constant(false); width];
+            for i in 0..a.width() {
+                row[i + j] = self
+                    .and(&Self::slice(a, i, 1), &Self::slice(b, j, 1), meter)?
+                    .0[0];
+            }
+            let next = self.integer_add(&sum, &Word(row), meter)?;
+            self.assert_equal(
+                &Self::slice(&next, width, 1),
+                &Self::constant(1, &BigUint::zero())?,
+                meter,
+            )?;
+            sum = Self::slice(&next, 0, width);
+        }
+        Ok(sum)
+    }
+
+    /// Free inverse-hash selector with a uniquely derived canonical point.
+    /// Invalid codes produce a rejected identity sentinel, not a false UNSAT.
+    /// This finite decoder predicate has polynomial arithmetic cost; no small
+    /// factor-rank promise or source assignment-count equivalence is asserted.
+    pub fn selector_point(
+        &mut self,
+        curve: &Curve,
+        base: &FactorBase,
+        meter: &mut Meter,
+    ) -> Result<PointWords> {
+        let domain = PrimeDomain::new(base.clone(), meter)?;
+        domain.validate(curve, meter)?;
+        let input_width = (base.threshold() - BigUint::one()).bits().max(1) as usize;
+        let input = self.input_word(input_width, meter)?;
+        let width = curve.modulus().bits() as usize;
+        let curve = curve.clone();
+        let output = self.define(
+            &[input],
+            &[1, width, width],
+            Arc::new(move |values, work| {
+                let point = if &values[0] >= domain.limit() {
+                    None
+                } else {
+                    domain.decode(&curve, &values[0], work)?
+                };
+                Ok(match point {
+                    Some(Point::Affine { x, y }) => vec![BigUint::zero(), x, y],
+                    _ => vec![BigUint::one(), BigUint::zero(), BigUint::zero()],
+                })
+            }),
+            true,
+            meter,
+        )?;
+        let point = PointWords {
+            infinity: output[0].clone(),
+            x: output[1].clone(),
+            y: output[2].clone(),
+        };
+        self.assert_equal(
+            &point.infinity,
+            &Self::constant(1, &BigUint::zero())?,
+            meter,
+        )?;
+        Ok(point)
     }
 
     /// Free point coordinates with an optional identity bit, followed by exact

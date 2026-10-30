@@ -1,10 +1,11 @@
 //! File-based native runner and independent certificate replay.
 
-use hashed_ecdl_tensor::arithmetic::{OsRandom, Seeded};
+use hashed_ecdl_tensor::arithmetic::{OsRandom, RandomSource, Seeded};
 use hashed_ecdl_tensor::contraction::Counter;
 use hashed_ecdl_tensor::curve::{Curve, Point};
 use hashed_ecdl_tensor::primality::PrimeCertificate;
 use hashed_ecdl_tensor::reduction::{self, Certificate, Config};
+use hashed_ecdl_tensor::{finite, width};
 use hashed_ecdl_tensor::{BigUint, Error, Limits, Meter};
 use serde_json::{json, Value};
 use std::io::Read;
@@ -147,6 +148,51 @@ fn read(path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     read_input(std::fs::File::open(path)?)
 }
 
+fn solve_command(
+    command: &str,
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    counter: &mut Counter,
+    statistics: &mut finite::Statistics,
+    meter: &mut Meter,
+) -> Result<Certificate, Error> {
+    match command {
+        "solve-selectors" => reduction::solve_with_oracle(
+            curve,
+            target,
+            config,
+            rng,
+            |c, b, q, w| {
+                finite::prime_decompose(c, b, q, &finite::Options::default(), statistics, w)
+            },
+            meter,
+        ),
+        "solve-width" => reduction::solve_with_oracle(
+            curve,
+            target,
+            config,
+            rng,
+            |c, b, q, w| {
+                reduction::decompose_with(
+                    c,
+                    b,
+                    q,
+                    |network, work| {
+                        let pins = vec![None; network.edge_count()];
+                        let plan = width::plan(network, &pins, &width::Policy::default(), work)?;
+                        width::witness(network, &pins, &plan, work)
+                    },
+                    w,
+                )
+            },
+            meter,
+        ),
+        _ => reduction::solve(curve, target, config, rng, counter, meter),
+    }
+}
+
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
@@ -162,16 +208,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "hash_prime":config.hash_prime.as_ref().map(ToString::to_string),
                 "challenge_solved":false}));
         }
-        Some("solve") if args.len() == 4 => {
+        Some("solve" | "solve-selectors" | "solve-width") if args.len() == 4 => {
             let problem: Problem = serde_json::from_slice(&read(&args[2])?)?;
             let (curve, target, config, mut meter) = prepare(&problem)?;
             let mut counter = Counter::default();
+            let mut finite_statistics = finite::Statistics::default();
             let certificate = if let Some(seed) = problem.fixture_seed {
-                reduction::solve(&curve, &target, &config, &mut Seeded(seed), &mut counter, &mut meter)?
+                solve_command(&args[1], &curve, &target, &config, &mut Seeded(seed), &mut counter, &mut finite_statistics, &mut meter)?
             } else {
-                reduction::solve(&curve, &target, &config, &mut OsRandom, &mut counter, &mut meter)?
+                solve_command(&args[1], &curve, &target, &config, &mut OsRandom, &mut counter, &mut finite_statistics, &mut meter)?
             };
-            let diagnostics = json!({
+            let mut diagnostics = json!({
                 "backend": format!("{:?}", counter.statistics.last_backend),
                 "contractions": counter.statistics.contractions,
                 "recursive_calls": counter.statistics.recursive_calls,
@@ -181,6 +228,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "charged_steps": meter.used,
                 "scalar_decimal": certificate.scalar.to_string(),
             });
+            if args[1] == "solve-selectors" {
+                diagnostics["backend"] = json!("SelectorWitness");
+                diagnostics["selector_decodes"] = json!(finite_statistics.decodes);
+                diagnostics["selector_cache_hits"] = json!(finite_statistics.cache_hits);
+                diagnostics["derived_checks"] = json!(finite_statistics.derived_checks);
+            } else if args[1] == "solve-width" {
+                diagnostics["backend"] = json!("WidthWitness");
+            }
             let receipt = Receipt { schema: "hashed-ecdl-tensor/v1".into(), problem, certificate, diagnostics };
             // Creation is exclusive: evidence files are never silently replaced.
             let file = std::fs::OpenOptions::new().write(true).create_new(true).open(Path::new(&args[3]))?;
@@ -198,7 +253,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             reduction::verify(&curve, &target, &receipt.certificate, &mut meter)?;
             println!("certificate verified: scalar {}", receipt.certificate.scalar);
         }
-        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
+        _ => return Err("usage: hashed-ecdl validate PROBLEM.json | hashed-ecdl solve|solve-selectors|solve-width PROBLEM.json NEW_RECEIPT.json | hashed-ecdl verify RECEIPT.json".into()),
     }
     Ok(())
 }
