@@ -10,7 +10,7 @@ variable {A : Type*} [AddCommGroup A]
 
 /-- Three neighbors summing to `-2P` retain that equation after the
 coordinate involution `Q ↦ T-Q`, provided `5T=0`. -/
-public theorem degree_two (T P q₀ q₁ q₂ : A)
+theorem degree_two (T P q₀ q₁ q₂ : A)
     (hT : T + T + T + T + T = 0)
     (hrow : q₀ + q₁ + q₂ = -(P + P)) :
     (T - q₀) + (T - q₁) + (T - q₂) = -((T - P) + (T - P)) := by
@@ -24,7 +24,7 @@ public theorem degree_two (T P q₀ q₁ q₂ : A)
 
 /-- Four neighbors summing to `-P` retain that equation after the same
 order-five affine involution. -/
-public theorem degree_three (T P q₀ q₁ q₂ q₃ : A)
+theorem degree_three (T P q₀ q₁ q₂ q₃ : A)
     (hT : T + T + T + T + T = 0)
     (hrow : q₀ + q₁ + q₂ + q₃ = -P) :
     (T - q₀) + (T - q₁) + (T - q₂) + (T - q₃) = -(T - P) := by
@@ -36,7 +36,7 @@ public theorem degree_three (T P q₀ q₁ q₂ q₃ : A)
     _ = -T + P := by rw [hT]; abel
     _ = -(T - P) := by abel
 
-end AffineTransport
+#print axioms degree_two
+#print axioms degree_three
 
-#print axioms AffineTransport.degree_two
-#print axioms AffineTransport.degree_three
+end AffineTransport
