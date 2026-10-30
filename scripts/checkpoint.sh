@@ -408,7 +408,7 @@ resolve_ref() {
 }
 
 cmd_share() {
-  local ref="" days=7 a
+  local ref="" days=7
   while [ $# -gt 0 ]; do case "$1" in --days) days="$2"; shift ;; *) ref="$1" ;; esac; shift; done
   [ -n "$ref" ] || die "usage: share <repo>/<branch>[/<stamp>] [--days N]"
   local -a ref_parts
