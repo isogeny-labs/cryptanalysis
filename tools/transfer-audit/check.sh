@@ -17,7 +17,7 @@ cargo build --release --locked --manifest-path "$audit_root/Cargo.toml"
 "$audit_root/target/release/transfer-audit" verify --certificate "$audit_out/b163-certificate.json"
 # Fixed-fixture correctness replay only. Research sweeps require checkpoint.sh gate.
 lean --version | tee "$audit_out/lean-version.txt"
-lean --version | rg -q 'version 4\.34\.1'
+python3 -c 'import pathlib,sys; assert "version 4.34.1," in pathlib.Path(sys.argv[1]).read_text(), "unexpected Lean version"' "$audit_out/lean-version.txt"
 lean -o "$audit_out/TransferAudit.olean" tools/lean/transfer-audit/TransferAudit.lean > "$audit_out/lean-build.txt" 2>&1
 LEAN_PATH="$audit_out" lean --run tools/lean/AuditAxioms.lean TransferAudit > "$audit_out/lean-audit.txt" 2>&1
 python3 - "$audit_out" <<'PY'
