@@ -1,0 +1,9 @@
+# D79 larger-q order-five projection panel
+
+The experiment tests whether the order-five projection of the conductor-four class predicts an exact absence of three-point signed relations. The prescreen was fixed before computing any class points: ascending odd `v` from 53 to 250, `p=v²+316` prime, `5 | #E(Fp)`, `5 ∤ p−1`, and largest prime factor `q ≥ 53`; retain the first eight. The curve is `y²+y=x³−x²−10x−20`. The eight frozen cases are in `inputs.json`.
+
+For each case, seed from rational roots of `H_{−79}` with trace magnitude `2v`, then close under degree-2 and degree-5 neighbors with the same trace. Record all class points, order, group invariants, base Hecke rows, and residues of `(#E/5)P` in the order-five subgroup. The conditional theorem predicts zero signed support-three relations if every residue is 1 or 4. Enumerate all support-one, -two, and -three signed relations with first coefficient +1 and remaining coefficients in `[-1,1]`; compare rational and modulo-q ranks with base rows. Preserve every case, including class-size mismatches.
+
+The independent audit enumerates the rational point fibers above the roots of `H_{−79f²}` for `f∈{1,2,4}`, then checks class identity, projections, relations and ranks in Sage. This audit is independent of the neighbor walk, but its class completeness is relative to these three ring-class strata. The predeclared follow-up choice is the first ascending-v case with all nonzero antipodal residues. If none qualifies, record that outcome and do not substitute a case.
+
+The run is an algorithmic diagnostic on a local host. It records stage times as exploratory; `candidate_id` and `target_online_ms` remain null. The structural order-five implication is formalized in Lean; the elliptic-curve and matrix-rank bridges are checked by the independent audit and tracked separately in the proof map.
