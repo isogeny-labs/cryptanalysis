@@ -649,8 +649,22 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
         if path == PAIR_INDEX_SOURCE:
             checked[path] = check_pair_index_algebra(lean_path)
             continue
-        require(path.startswith("experiments/hecke-") and "/formal/" in path and
-                path.endswith(".lean"), f"unreviewed Lean corpus addition: {path}")
+        recorded_formal = path.startswith("experiments/xedni-") and "/formal/" in path
+        require((path.startswith("experiments/hecke-") or recorded_formal) and
+                "/formal/" in path and path.endswith(".lean"),
+                f"unreviewed Lean corpus addition: {path}")
+        if recorded_formal:
+            # A non-Hecke formalization is admitted only with an explicit
+            # dependency record naming the shared reviewed workspace.
+            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            require(dependencies.is_file(),
+                    f"recorded build dependencies missing: {path}")
+            recorded = json.loads(dependencies.read_text())
+            require((recorded.get("lean_toolchain") or recorded.get("toolchain")) ==
+                    HECKE_TOOLCHAIN and
+                    (recorded.get("mathlib_revision") or recorded.get("mathlib_git_rev") or
+                     recorded.get("mathlib_rev")) == HECKE_MATHLIB_REV,
+                    f"recorded build dependencies changed: {path}")
         pin = ROOT / effective_pin(path)
         if pin.read_text().strip() != HECKE_TOOLCHAIN:
             # Some archived Hecke sources have no local lean-toolchain file.
@@ -670,9 +684,10 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
         require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
                 f"forbidden proof escape in {path}")
         declared = re.findall(r"^(?:theorem|lemma)\s+(\w+)", source, re.MULTILINE)
-        requested = re.findall(r"^#print axioms\s+(\w+)", source, re.MULTILINE)
+        requested = re.findall(r"^#print axioms\s+([\w.]+)", source, re.MULTILINE)
         require(declared and len(declared) == len(set(declared)) and
-                set(declared) == set(requested) and len(declared) == len(requested),
+                set(declared) == {name.rsplit(".", 1)[-1] for name in requested} and
+                len(declared) == len(requested),
                 f"incomplete declaration audit in {path}")
         result = run(["lake", "env", "lean", "-R", str(ROOT), str(ROOT / path)],
                      cwd=HECKE_CI, timeout=900)
