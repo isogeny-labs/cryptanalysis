@@ -1,0 +1,16 @@
+# Degree-13 source order changes the rational rank-stop point
+
+The previously measured ascending source order reaches rational rank 40 after 12 fibers at p8597 and 15 at p12197. A deterministic shuffled repetition chosen before its fresh replay needed 19 and 26 fibers, respectively. Both fresh runs loaded the pinned degree-13 rational functions with zero `H.build` calls, verified every visited fiber and group relation, and reproduced the full-receipt candidate subset at each prefix. Their final rank was 40 over `Q` and 39 modulo the largest subgroup prime.
+
+The exact baseline matrix has rational rank 39 in each case. A nonzero rational null vector computed from the selected 39 rows annihilates every base and direct row. Pairing the 251 and 206 previously verified Hecke candidate rows with that vector identifies 81 and 8 rank-raising rows, respectively. The 256 deterministic permutations then measure the first prefix containing all sources of one such row. These are retrospective scheduling diagnostics on frozen 40-source data; the original full receipts and the earlier ascending outcomes were known before this experiment.
+
+| Prime | Rank-raising rows / all Hecke rows | Ascending fibers | Shuffled rep 0 fibers | 256-order min / Q1 / median / Q3 / max | Orders earlier / equal / later than ascending |
+| ---: | ---: | ---: | ---: | --- | --- |
+| 8597 | 81 / 251 | 12 | 19 | 4 / 12 / 14 / 16 / 23 | 63 / 29 / 164 |
+| 12197 | 8 / 206 | 15 | 26 | 9 / 19 / 23 / 26 / 34 | 24 / 8 / 224 |
+
+The fresh p8597 replay enumerated 35,245 signed patterns and retained 9 verified candidates over 19 sources. At p12197 it enumerated 130,676 patterns and retained 29 verified candidates over 26 sources. Their source-lift/search/rank phase sums were 459/725/19 ms and 832/2,775/27 ms. The cache loads took 31.5 and 33.7 ms. These single-run timings are ordinary-host stage diagnostics; no matched wall-time speed comparison is inferred from them. The run receipts preserve per-source phase timings, candidates, ranks and resource use. `candidate_id` and `target_online_ms` are null.
+
+`inputs.json` freezes the two case receipts, code identities, artifact, permutation rule, repetition count and stopping criterion. `post_inputs.json` pins the generated analysis and replay code before the two checked-Sage replays. The independent [verifier](verify.py) recomputes all 512 permutation stop counts with a different prefix-set scan, checks each replayed candidate count and rational-rank transition against the pinned full census, and checks the closed-form count of signed patterns visited. It passes. The launcher identity is retained in `sage-runtime-info.txt`.
+
+This result makes source scheduling a measurable part of the Hecke relation collector: the earliest known ascending stop is better than most of these source-independent shuffles, especially at p12197. A next experiment should prespecify a priority score using only information available before the degree-13 lift, then test it on new D79 primes and compare its source count with ascending order under the same cap. The existing row-rank and curve-identity proof maps remain in the preceding D79 experiments; no new general rank theorem is asserted here.

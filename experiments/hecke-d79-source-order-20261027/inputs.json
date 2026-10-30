@@ -1,0 +1,40 @@
+{
+  "artifact_path": "experiments/hecke-d79-function-cache-20261027/artifacts/hecke13-131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac.json",
+  "artifact_sha256": "131d0dc58a1a92a5c8f7aa2f79870dbd3b906accd17e019ee0e72d054ebc86ac",
+  "cache_api_path": "experiments/hecke-d79-cache-interface-20261027/cache_api.py",
+  "candidate_id": null,
+  "cases": [
+    {
+      "analysis_path": "experiments/hecke-d79-remaining-five-20261027/p8597/analysis.json",
+      "analysis_sha256": "600dbdca92a3205d40c7dda8567313efd201c97a82da20de5984bb1604a08022",
+      "p": 8597,
+      "result_path": "experiments/hecke-d79-remaining-five-20261027/p8597/result.json",
+      "result_sha256": "1fa9c5a779d798da6fa726c41384f40ca03552e7e1f13e8539fe85e4d21a3a58"
+    },
+    {
+      "analysis_path": "experiments/hecke-d79-remaining-five-20261027/p12197/analysis.json",
+      "analysis_sha256": "be8b877d92dae462f44117e94fa6a7d87b9ad5022c23b5a90b6cf2baa911ce68",
+      "p": 12197,
+      "result_path": "experiments/hecke-d79-remaining-five-20261027/p12197/result.json",
+      "result_sha256": "5d96cfbf71c95a8bbc3d0b32d7189793ec66c6c0306d078888d53655ad2dcd60"
+    }
+  ],
+  "function_digest": "ebc29c5c9b4f3de35bc45afa4ac9f3b40db2f1a68c5a9912396a0ab67dca24ea",
+  "policy": {
+    "baseline": "base rows plus all direct rows, QQ rank 39",
+    "max_sources": 40,
+    "permutation": "sort source indices i=0..39 by SHA256 UTF-8 of hecke-d79-order-v1|p|rep|i, ascending digest, ascending index tie break",
+    "repetitions": 256,
+    "replay_rep": 0,
+    "stop": "first prefix containing a Hecke support<=4 candidate outside baseline QQ row space",
+    "wall_cap_seconds": 1800
+  },
+  "prefix_runner_path": "experiments/hecke-d79-source-prefix-20261027/run.py",
+  "prefix_runner_sha256": "4de8f66bf61394ed91077e29b279f7f5c55c840f07dcc64f270888e0f5113886",
+  "schema": "hecke-d79-source-order-inputs-v1",
+  "shared_runner_path": "experiments/hecke-d79-shared-build-20261027/run_shared.py",
+  "shared_runner_sha256": "6decf1fa89b951eb2fcaf9428f9142818cb8991d4551924f10e0a3a8c54f6223",
+  "source_path": "experiments/ecdlp-hecke-floor-rank-20261012/tools/hecke11.py",
+  "source_sha256": "7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb",
+  "target_online_ms": null
+}
