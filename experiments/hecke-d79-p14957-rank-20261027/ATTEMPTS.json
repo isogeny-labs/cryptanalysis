@@ -1,0 +1,16 @@
+{
+  "schema": "hecke-d79-p14957-attempts-v1",
+  "runs": [
+    {"stage":"runtime","command":"./sage --runtime-info","status":"PASS","stdout":"sage-runtime-info.txt"},
+    {"stage":"degree13_producer","command":"gtimeout 1800 ./sage -python experiments/hecke-d79-p14957-rank-20261027/run.py","status":"COMPLETE","stdout":"producer-stdout.txt","stderr":"producer-stderr.txt"},
+    {"stage":"support3_analysis","command":"python3 experiments/hecke-d79-p14957-rank-20261027/analyze.py","status":"COMPLETE","stdout":"analysis-stdout.txt","stderr":"analysis-stderr.txt"},
+    {"stage":"support3_audit","command":"gtimeout 900 ./sage -python experiments/hecke-d79-p14957-rank-20261027/audit_sage.py","status":"PASS","stdout":"audit-stdout.txt","stderr":"audit-stderr.txt"},
+    {"stage":"support4_analysis","command":"gtimeout 900 python3 experiments/hecke-d79-p14957-rank-20261027/analyze4.py","status":"COMPLETE","stdout":"analysis4-stdout.txt","stderr":"analysis4-stderr.txt"},
+    {"stage":"support4_audit","command":"gtimeout 900 ./sage -python experiments/hecke-d79-p14957-rank-20261027/audit4_sage.py","status":"PASS","stdout":"audit4-stdout.txt","stderr":"audit4-stderr.txt"},
+    {"stage":"formal_generation_check","command":"python3 generate.py","status":"PASS","stdout":"formal/generation-check-output.txt"},
+    {"stage":"formal_build","command":"lake build CosetPanel RankP14957","status":"PASS","stdout":"formal/build-output.txt"},
+    {"stage":"python_syntax","command":"python3 -m py_compile run.py analyze.py analyze4.py audit_sage.py audit4_sage.py formal/generate.py","status":"PASS"},
+    {"stage":"go_vet","command":"GOTMPDIR=/tmp go vet ./...","status":"PASS"},
+    {"stage":"go_test","command":"GOTMPDIR=/tmp go test ./...","status":"PASS"}
+  ]
+}
