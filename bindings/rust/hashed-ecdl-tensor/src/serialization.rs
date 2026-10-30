@@ -1,6 +1,6 @@
 // JSON records use explicit fields without a derive/procedural-macro toolchain.
 // This keeps the existing cryptanalysis supply-chain/licence policy unchanged.
-// Required fields and unknown fields are rejected; only declared options default.
+// Missing, duplicate and unknown fields are rejected; only declared options default.
 macro_rules! json_record {
     ($name:ty, required { $($required:ident),* $(,)? }, optional { $($optional:ident),* $(,)? }) => {
         impl serde::Serialize for $name {
@@ -15,20 +15,45 @@ macro_rules! json_record {
         }
         impl<'de> serde::Deserialize<'de> for $name {
             fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
-                let mut fields = <serde_json::Map<String, serde_json::Value> as serde::Deserialize>::deserialize(deserializer)?;
-                let record = Self {
-                    $($required: serde_json::from_value(fields.remove(stringify!($required))
-                        .ok_or_else(|| <D::Error as serde::de::Error>::missing_field(stringify!($required)))?)
-                        .map_err(serde::de::Error::custom)?,)*
-                    $($optional: match fields.remove(stringify!($optional)) {
-                        Some(value) => serde_json::from_value(value).map_err(serde::de::Error::custom)?,
-                        None => Default::default(),
-                    },)*
-                };
-                if let Some(field) = fields.keys().next() {
-                    return Err(serde::de::Error::custom(format!("unknown field {field}")));
+                struct RecordVisitor;
+                impl<'de> serde::de::Visitor<'de> for RecordVisitor {
+                    type Value = $name;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "a {} object", stringify!($name))
+                    }
+
+                    fn visit_map<A: serde::de::MapAccess<'de>>(self, mut map: A) -> std::result::Result<Self::Value, A::Error> {
+                        $(let mut $required = None;)*
+                        $(let mut $optional = None;)*
+                        while let Some(field) = map.next_key::<String>()? {
+                            match field.as_str() {
+                                $(stringify!($required) => {
+                                    if $required.is_some() {
+                                        return Err(serde::de::Error::duplicate_field(stringify!($required)));
+                                    }
+                                    $required = Some(map.next_value()?);
+                                },)*
+                                $(stringify!($optional) => {
+                                    if $optional.is_some() {
+                                        return Err(serde::de::Error::duplicate_field(stringify!($optional)));
+                                    }
+                                    $optional = Some(map.next_value()?);
+                                },)*
+                                _ => return Err(serde::de::Error::unknown_field(&field,
+                                    &[$(stringify!($required),)* $(stringify!($optional),)*])),
+                            }
+                        }
+                        Ok(Self::Value {
+                            $($required: $required.ok_or_else(|| serde::de::Error::missing_field(stringify!($required)))?,)*
+                            $($optional: $optional.unwrap_or_default(),)*
+                        })
+                    }
                 }
-                Ok(record)
+                // Deserialize nested fields directly. A Value intermediary would
+                // discard duplicate keys before their record visitor sees them.
+                deserializer.deserialize_struct(stringify!($name),
+                    &[$(stringify!($required),)* $(stringify!($optional),)*], RecordVisitor)
             }
         }
     };

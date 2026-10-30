@@ -1,8 +1,44 @@
 # Hashed-factor-base ECDL: native tensor implementation
 
+For the 2026-10-30 exact-primality and functional-witness engineering update,
+see the separate [validation scope](hashed-ecdl-speedup-validation.md). It
+preserves the original count path and reports 34 passing native tests and
+complete seeded certificate parity. Matched profiling and performance
+evaluation remain blocked; no runtime or end-to-end gain is asserted.
+
 2026-10-29. The compact encoder, exact contraction algorithm and relation
 pipeline are implemented in Rust in both repositories. Small-case correctness
 checks do not establish the manuscript's asymptotic bound or a practical speedup.
+
+## Scalar tensor companion
+
+
+An independently executable [scalar BTN reference](../experiments/hashed-ecdl-tensor-reference/README.md)
+accompanies the native implementation as a separately scoped development reference. It implements the ell=1
+Cauchy/mode/Hermite recursion and coordinate constraints using compact integer
+Fourier multiplication and a tested binary-polynomial Fourier adaptation.
+It now also includes official Certicom ECCp-131 parameters and prime-field
+coordinate constraints, hashed membership, relation collection and replay.
+The companion is Python and is not wired into the Rust API below.
+
+Its 39 development correctness tests include exact rational checks,
+independent direct contractions, two recursion levels and an OpenSSL arithmetic
+comparison. The recorded ECC2K-130 graph has 2,694,680 edges and maximum degree
+1,032. The paper's default u_0 is zero at this size; the attempt selects exact
+summation and exceeds its configured work budget, without finding a challenge
+relation or scalar. Historical timings are retrospective local diagnostics,
+not admitted speed measurements. The small indexed tensor fixture is explicitly
+separate from the coordinate construction and has no compact-encoding guarantee.
+
+The added ECCp-131 target graph has 1,564,506 edges and degree 1,032, and also
+selects u_0=0 and exceeds its exact-leaf budget. Sixteen published P/Q multiples
+match OpenSSL. See the separate [prime validation report](../experiments/hashed-ecdl-tensor-reference/prime-development/README.md).
+
+The native tensor implementation is now available on main; this companion is
+not its backend. The companion's general ell>1 case, independent cross-checks,
+formal verification and complete algorithm/complexity audit remain open. See the companion's requirement/status table.
+
+## Native implementation
 
 The source is Akshima et al., *A Subexponential Time Algorithm for Elliptic
 Curve Discrete Logarithm*, v0.2,
@@ -146,8 +182,13 @@ experiment, IC/rho comparison, new mathematical result or Lean proof is claimed.
 
 ## Validation and provenance
 
+The [strict-input validation receipt](hashed-ecdl-tensor-input-validation.md)
+records the later duplicate-field and bounded-reader correction, its regression
+controls, and the current source manifest. Earlier receipts retain their
+historical source hashes and results.
+
 Use the [tensor validation receipt](hashed-ecdl-tensor-validation.md) for
-current commands, source hashes, failures and outcomes. The
+the original tensor implementation's commands, source hashes, failures and outcomes. The
 [first reference receipt](hashed-ecdl-validation.md) records the earlier
 bounded implementation and capped broad regression; its historical hashes
 and outcomes remain unchanged. The completion table is in
