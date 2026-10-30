@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
+<title id="title">P-192 and P-224 native validation boundary</title>
+<desc id="desc">The pinned Rust build initially failed at digest formatting. A source fix then passed 15 tests and fresh P-192 and P-224 CLI audits and controls. A full Lean curve proof and fresh Sage point count remain open.</desc>
+<style>text{font-family:Arial,sans-serif;fill:#18314e}.head{font-size:21px;font-weight:700}.body{font-size:15px}.small{font-size:12px}.fail{fill:#fee7e7;stroke:#a83737;stroke-width:2}.pass{fill:#e5f5eb;stroke:#258056;stroke-width:2}.open{fill:#fff2de;stroke:#bd7a21;stroke-width:2}.arrow{stroke:#63748b;stroke-width:2;fill:none;marker-end:url(#tip)}</style>
+<defs><marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#63748b"/></marker></defs>
+<text class="head" x="28" y="38">Native curve-audit validation · 2026-10-27</text>
+<rect class="fail" x="28" y="75" width="245" height="125" rx="11"/>
+<text class="body" x="46" y="105" font-weight="700">Original build failed</text>
+<text class="small" x="46" y="135">sha2 0.11.1 digest: no LowerHex</text>
+<text class="small" x="46" y="160">cargo test exit 101, E0277</text>
+<rect class="pass" x="327" y="75" width="545" height="125" rx="11"/>
+<text class="body" x="347" y="105" font-weight="700">Repaired source validated for these fixtures</text>
+<text class="small" x="347" y="135">15/15 tests; P-192 and P-224 CLI audits match archived fields</text>
+<text class="small" x="347" y="160">No cert: unverified; altered input + old cert: rejected</text>
+<path class="arrow" d="M274 137H322"/>
+<rect class="open" x="114" y="235" width="672" height="86" rx="11"/>
+<text class="body" x="133" y="265" font-weight="700">Still open for a complete claim</text>
+<text class="small" x="133" y="288">Actual curve cardinality in Lean; Rust refinement; fresh Sage point count; full criteria coverage</text>
+<path class="arrow" d="M600 201V230"/>
+</svg>
