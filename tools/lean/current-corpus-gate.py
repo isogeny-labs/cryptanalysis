@@ -33,6 +33,20 @@ CM = ROOT / "experiments/ghs-sweeper/cm-formal"
 HECKE_CI = ROOT / "experiments/hecke-432-formal-ci-20261025"
 HECKE_TOOLCHAIN = "leanprover/lean4:v4.35.0-rc4"
 HECKE_MATHLIB_REV = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+# These exact engineering regression lemmas are native-checked, not excluded
+# because their historical source lives in a CI evidence packet. Their build
+# context is the explicitly recorded, unchanged bounded-witness project.
+CORE_COMPATIBILITY_SOURCE = (
+    "reports/ci-xedni-proof-elaboration-repair-20261030/"
+    "xedni-core-arithmetic-compatibility-controls-20261030.lean"
+)
+CORE_COMPATIBILITY_SHA256 = "19dd7b84d1d90d5e7eb81efdb84899f8b08370d5c7d87c87052934349b619947"
+CORE_COMPATIBILITY_CONTEXT = (
+    "experiments/xedni-bounded-witness-20261030/formal/WitnessObstruction.lean"
+)
+CORE_COMPATIBILITY_THEOREMS = frozenset({
+    "constant_bound", "successor_nonzero", "bound_contradiction",
+})
 KNOWN_LABEL_SOURCE = "docs/known-label-next-leads-20261028/Algebra.lean"
 KNOWN_LABEL_SHA256 = "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
 KNOWN_LABEL_THEOREMS = frozenset({
@@ -658,14 +672,19 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
         if path == PAIR_INDEX_SOURCE:
             checked[path] = check_pair_index_algebra(lean_path)
             continue
-        recorded_formal = path.startswith("experiments/xedni-") and "/formal/" in path
-        require((path.startswith("experiments/hecke-") or recorded_formal) and
-                "/formal/" in path and path.endswith(".lean"),
+        context = path
+        if path == CORE_COMPATIBILITY_SOURCE:
+            require(digest(ROOT / path) == CORE_COMPATIBILITY_SHA256,
+                    "core compatibility source changed without native review")
+            context = CORE_COMPATIBILITY_CONTEXT
+        recorded_formal = context.startswith("experiments/xedni-") and "/formal/" in context
+        require((context.startswith("experiments/hecke-") or recorded_formal) and
+                "/formal/" in context and path.endswith(".lean"),
                 f"unreviewed Lean corpus addition: {path}")
         if recorded_formal:
             # A non-Hecke formalization is admitted only with an explicit
             # dependency record naming the shared reviewed workspace.
-            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            dependencies = (ROOT / context).parent / "DEPENDENCIES.json"
             require(dependencies.is_file(),
                     f"recorded build dependencies missing: {path}")
             recorded = json.loads(dependencies.read_text())
@@ -674,14 +693,14 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                     (recorded.get("mathlib_revision") or recorded.get("mathlib_git_rev") or
                      recorded.get("mathlib_rev")) == HECKE_MATHLIB_REV,
                     f"recorded build dependencies changed: {path}")
-        pin = ROOT / effective_pin(path)
+        pin = ROOT / effective_pin(context)
         if pin.read_text().strip() != HECKE_TOOLCHAIN:
             # Some archived Hecke sources have no local lean-toolchain file.
             # Their build records explicitly name the shared Mathlib workspace;
             # do not treat the inherited root pin as their build environment.
             require(pin == ROOT / "lean-toolchain",
                     f"Hecke theorem toolchain changed: {path}")
-            dependencies = (ROOT / path).parent / "DEPENDENCIES.json"
+            dependencies = (ROOT / context).parent / "DEPENDENCIES.json"
             require(dependencies.is_file(),
                     f"Hecke build dependencies missing: {path}")
             recorded = json.loads(dependencies.read_text())
@@ -692,8 +711,11 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
         source = (ROOT / path).read_text()
         require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
                 f"forbidden proof escape in {path}")
-        declared = re.findall(r"^(?:theorem|lemma)\s+(\w+)", source, re.MULTILINE)
+        declared = re.findall(r"^[ \t]*(?:theorem|lemma)\s+(\w+)", source, re.MULTILINE)
         requested = re.findall(r"^#print axioms\s+([\w.]+)", source, re.MULTILINE)
+        if path == CORE_COMPATIBILITY_SOURCE:
+            require(set(declared) == CORE_COMPATIBILITY_THEOREMS,
+                    "core compatibility declaration coverage changed")
         require(declared and len(declared) == len(set(declared)) and
                 set(declared) == {name.rsplit(".", 1)[-1] for name in requested} and
                 len(declared) == len(requested),
@@ -713,6 +735,12 @@ def check_new_hecke(paths: set[str]) -> dict[str, str]:
                     <= {"propext", "Classical.choice", "Quot.sound"}
                     for _, names in printed),
                 f"unexpected foundation in {path}")
+        # Keep validated native foundation outputs readable in the job log as
+        # well as the complete retained command evidence, including on success.
+        print(f"verified native axiom outputs: {path}", flush=True)
+        for line in result.stdout.splitlines():
+            if re.fullmatch(r"'[^']+' (?:depends on axioms: \[[^]]*\]|does not depend on any axioms)", line):
+                print(line, flush=True)
         checked[path] = digest(ROOT / path)
     return checked
 
@@ -760,17 +788,18 @@ def check_new_hasse() -> str:
     return HASSE_SHA256
 
 
+def tracked_corpus_sources() -> list[str]:
+    """Discover every tracked Lean source; only the separate gate selftests differ."""
+    return [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
+            if not path.startswith("tools/lean/")]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-receipt", type=Path)
     args = parser.parse_args()
     index = json.loads(INDEX.read_text())
-    # Corpus sources are admitted theorem modules. Core-only compatibility
-    # diagnostics kept as CI evidence under reports/ci-* are not corpus and are
-    # left out of the bridge rather than silently admitted.
-    paths = [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
-             if not path.startswith("tools/lean/")
-             and not (path.startswith("reports/ci-") and path.endswith(".lean"))]
+    paths = tracked_corpus_sources()
     current = {path: digest(ROOT / path) for path in paths}
     require(len(current) == len(paths), "duplicate tracked Lean path")
     frozen_paths = {row["source"] for row in index["files"]} | set(DELTA)

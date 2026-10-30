@@ -561,6 +561,105 @@ class DurableDiagnosticsControls(unittest.TestCase):
         self.assertEqual(output.read_text(), "wrong output\n")
 
 
+class EngineeringSourceAdmissionControls(unittest.TestCase):
+    """Synthetic compiler responses check refusal behavior, never prove lemmas."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.project = self.root / PROJECT
+        self.project.mkdir(parents=True)
+        for name in ("lean-toolchain", "lakefile.toml", "lake-manifest.json"):
+            shutil.copyfile(REPOSITORY / PROJECT / name, self.project / name)
+        context = Path(gate.CORE_COMPATIBILITY_CONTEXT).parent
+        (self.root / context).mkdir(parents=True)
+        for name in ("lean-toolchain", "DEPENDENCIES.json"):
+            shutil.copyfile(REPOSITORY / context / name, self.root / context / name)
+        self.source = self.root / gate.CORE_COMPATIBILITY_SOURCE
+        self.source.parent.mkdir(parents=True)
+        shutil.copyfile(REPOSITORY / gate.CORE_COMPATIBILITY_SOURCE, self.source)
+        for name, value in (("ROOT", self.root), ("HECKE_CI", self.project)):
+            active = patch.object(gate, name, value)
+            active.start()
+            self.addCleanup(active.stop)
+        active = patch.object(gate, "reviewed_quartic_sources", return_value={})
+        active.start()
+        self.addCleanup(active.stop)
+        self.lines = [
+            "'XedniCoreCompatibility.constant_bound' does not depend on any axioms\n",
+            "'XedniCoreCompatibility.successor_nonzero' depends on axioms: [propext]\n",
+            "'XedniCoreCompatibility.bound_contradiction' depends on axioms: [propext]\n",
+        ]
+
+    def native(self, output):
+        def response(args, **kwargs):
+            return SimpleNamespace(stdout="dependencies" if "printenv" in args else output)
+        return response
+
+    def test_discovery_retains_ci_reports_and_separates_only_existing_selftests(self):
+        unknown = "reports/ci-new/Unreviewed.lean"
+        paths = [gate.CORE_COMPATIBILITY_SOURCE, unknown,
+                 gate.CORE_COMPATIBILITY_CONTEXT, "tools/lean/selftest/Positive.lean"]
+        with patch.object(gate, "run", return_value=SimpleNamespace(stdout="\n".join(paths))):
+            self.assertEqual(gate.tracked_corpus_sources(), paths[:-1])
+
+    def test_unregistered_ci_report_is_rejected_before_any_compilation(self):
+        with patch.object(gate, "run", side_effect=self.native("")) as native:
+            with self.assertRaisesRegex(ValueError, "unreviewed Lean corpus addition"):
+                gate.check_new_hecke({"reports/ci-new/Unreviewed.lean"})
+            self.assertEqual(native.call_count, 1)
+            self.assertIn("printenv", native.call_args.args[0])
+
+    def test_exact_indented_regression_source_requires_all_three_native_audits(self):
+        with patch.object(gate, "run", side_effect=self.native("".join(self.lines))) as native:
+            console = StringIO()
+            with redirect_stdout(console):
+                checked = gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
+            self.assertEqual(checked, {gate.CORE_COMPATIBILITY_SOURCE:
+                                       gate.CORE_COMPATIBILITY_SHA256})
+            self.assertEqual(native.call_count, 2)
+            self.assertEqual(native.call_args.kwargs["cwd"], self.project)
+            self.assertEqual(native.call_args.kwargs["timeout"], 900)
+            self.assertTrue(native.call_args.kwargs["failure_diagnostics"])
+            self.assertIn("verified native axiom outputs:", console.getvalue())
+            for line in self.lines:
+                self.assertIn(line, console.getvalue())
+
+    def test_changed_regression_source_is_rejected_before_compilation(self):
+        self.source.write_text(self.source.read_text() + "\n-- changed\n")
+        with patch.object(gate, "run", side_effect=self.native("")) as native:
+            with self.assertRaisesRegex(ValueError, "core compatibility source changed"):
+                gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
+            self.assertEqual(native.call_count, 1)
+
+    def test_missing_extra_and_duplicate_native_audits_are_rejected(self):
+        for lines in (self.lines[:-1], self.lines + [self.lines[0]],
+                      [self.lines[0], self.lines[1], self.lines[1]]):
+            with self.subTest(lines=lines), patch.object(
+                    gate, "run", side_effect=self.native("".join(lines))):
+                with redirect_stdout(StringIO()), self.assertRaisesRegex(
+                        ValueError, "incomplete native axiom output"):
+                    gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
+
+    def test_nonstandard_foundation_is_rejected(self):
+        output = "".join(self.lines).replace("[propext]", "[ClaimAsAxiom]", 1)
+        with patch.object(gate, "run", side_effect=self.native(output)):
+            with redirect_stdout(StringIO()), self.assertRaisesRegex(
+                    ValueError, "unexpected foundation"):
+                gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
+
+    def test_changed_recorded_build_context_is_rejected(self):
+        dependencies = (self.root / gate.CORE_COMPATIBILITY_CONTEXT).parent / "DEPENDENCIES.json"
+        record = json.loads(dependencies.read_text())
+        record["mathlib_revision"] = "0" * 40
+        dependencies.write_text(json.dumps(record))
+        with patch.object(gate, "run", side_effect=self.native("")) as native:
+            with self.assertRaisesRegex(ValueError, "recorded build dependencies changed"):
+                gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
+            self.assertEqual(native.call_count, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
 
