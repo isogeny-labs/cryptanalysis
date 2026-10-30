@@ -19,6 +19,12 @@ target preflight succeeds in 17,471 uncalibrated charged steps under the origina
 2,000,000-step policy. This is setup validation, not a challenge solve or an
 admitted timing result. Logs, commands and hashes are attached here.
 
+Integration refresh: merged main `238d5bb6061429ce464b60b6fcf7637064667fb4`
+as `ce518d3e`, retaining its independent weighted/factoring modules and both
+complete ordered session-log histories. The refreshed full package panel passes
+**94 tests**, and strict all-target clippy/MSRV checks pass. The primality-module
+hash remains unchanged; `integrated-*` records supplement the earlier evidence.
+
 Primary sources read before choosing the implementation:
 
 - [Sorenson/Webster Theorem 1.1](https://arxiv.org/pdf/1509.00864): the
