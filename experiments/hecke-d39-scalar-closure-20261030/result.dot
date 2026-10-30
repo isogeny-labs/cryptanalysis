@@ -1,0 +1,16 @@
+digraph Result {
+  graph [rankdir=TB, bgcolor="white", pad="0.25"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#e8f2ff"];
+  edge [fontname="Helvetica", fontsize=10];
+  source [label="SAME SAVED FIXTURE\n64 points on X_0(11) / F_367\nprojection [35] covers all 11 subgroup elements"];
+  baseline [label="Hecke + Atkin-Lehner\n112 rows; rank 52; nullity 12"];
+  combined [label="Add equalities OR doubling\nrank 63; nullity 1\n4 anchored solutions, 64 logs each", fillcolor="#e7f4e8"];
+  generic [label="CONTROL: doubling ONLY\nzero Hecke rows\n396 rows; rank 63; nullity 1", fillcolor="#fff3d6"];
+  replay [label="Separate short-model implementation\nall 256 prior scalar labels verified\nY^2 = X^3 + 112X + 55 over F_367", fillcolor="#e7f4e8"];
+  next [label="NO Hecke-specific advantage established\nNext: sparse larger classes, generic controls\nand verified arbitrary-target descent", fillcolor="#f0f0f0"];
+  source -> baseline -> combined;
+  source -> generic;
+  combined -> replay;
+  generic -> next;
+  replay -> next;
+}

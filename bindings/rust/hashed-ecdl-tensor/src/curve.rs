@@ -1,9 +1,10 @@
 //! Arbitrary-precision, certified short-Weierstrass curves and subgroups.
 
 use crate::arithmetic::{floor_root, inverse, is_prime, modpow, RandomSource, SquareRootContext};
-use crate::{integrity, invalid, BigUint, Meter, Result};
+use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
 use num_integer::Integer;
 use num_traits::{One, Zero};
+use std::collections::BTreeSet;
 
 /// Canonical point representation; the identity has no affine coordinates.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -96,6 +97,9 @@ pub struct Curve {
     r: BigUint,
     cofactor: BigUint,
     generator: Point,
+    // Only the checked proof verifier populates this private context. Retain
+    // auxiliary hash primes as well as p/r for construction and replay.
+    certified_primes: BTreeSet<BigUint>,
 }
 
 impl Curve {
@@ -128,10 +132,27 @@ impl Curve {
         generator: Point,
         meter: &mut Meter,
     ) -> Result<Self> {
+        Self::with_cofactor_and_certificates(p, a, b, r, cofactor, generator, &[], meter)
+    }
+
+    /// Certify the same curve using optional, independently verified primality
+    /// proofs. Uncovered p/r values retain the exact default primality path;
+    /// invalid supplied proofs are errors, never trusted prime assertions.
+    pub fn with_cofactor_and_certificates(
+        p: BigUint,
+        a: BigUint,
+        b: BigUint,
+        r: BigUint,
+        cofactor: BigUint,
+        generator: Point,
+        proofs: &[crate::primality::PrimeCertificate],
+        meter: &mut Meter,
+    ) -> Result<Self> {
+        let primes = crate::primality::verify_certificates(proofs, meter)?;
         if p <= BigUint::from(3u8)
             || r <= BigUint::from(2u8)
-            || !is_prime(&p, meter)?
-            || !is_prime(&r, meter)?
+            || (!primes.contains(&p) && !is_prime(&p, meter)?)
+            || (!primes.contains(&r) && !is_prime(&r, meter)?)
             || a >= p
             || b >= p
             || cofactor.is_zero()
@@ -151,6 +172,7 @@ impl Curve {
             r,
             cofactor,
             generator,
+            certified_primes: primes,
         };
         if curve.generator == Point::Infinity
             || !curve.contains(&curve.generator)
@@ -188,6 +210,19 @@ impl Curve {
             return Err(invalid("declared order is not full cardinality"));
         }
         Ok(curve)
+    }
+
+    pub(crate) fn certifies_prime(&self, value: &BigUint, meter: &mut Meter) -> Result<bool> {
+        if self.certified_primes.contains(value) {
+            meter.bits(
+                usize::try_from(value.bits()).map_err(|_| overflow("certified prime width"))?,
+                "certified prime width",
+            )?;
+            meter.charge(1, "checked prime reuse")?;
+            Ok(true)
+        } else {
+            is_prime(value, meter)
+        }
     }
 
     /// Field modulus.

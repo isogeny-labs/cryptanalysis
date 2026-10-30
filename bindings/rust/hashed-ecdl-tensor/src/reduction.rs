@@ -5,7 +5,7 @@
 //! A certificate is replayed using curve arithmetic and a matrix dependency,
 //! independently of the contraction implementation and its execution counters.
 
-use crate::arithmetic::{floor_root, hash_prime, inverse, is_prime, random_below, RandomSource};
+use crate::arithmetic::{floor_root, hash_prime_by, inverse, random_below, RandomSource};
 use crate::contraction::Counter;
 use crate::curve::{Curve, Point};
 use crate::encoding::Encoder;
@@ -48,7 +48,7 @@ impl FactorBase {
             || seed.alpha.is_zero()
             || seed.alpha >= prime
             || seed.beta >= prime
-            || !is_prime(&prime, meter)?
+            || !curve.certifies_prime(&prime, meter)?
         {
             return Err(invalid("factor-base parameters"));
         }
@@ -221,6 +221,10 @@ pub struct Config {
     /// Override tau; `None` uses a conservative integer version of Lemma 13,
     /// clamped to s in the finite range where its large-size hypotheses fail.
     pub threshold: Option<BigUint>,
+    /// Optional fixed prime s in [2p,4p], as permitted by the source. Supplied
+    /// proofs are checked by the curve constructor; an uncovered s retains the
+    /// exact primality fallback. None preserves the original random selection.
+    pub hash_prime: Option<BigUint>,
     /// Maximum fresh-seed trials; reaching it returns a resource error.
     pub trials: usize,
     /// Maximum total number of slot/point columns admitted in one trial.
@@ -231,6 +235,7 @@ impl Default for Config {
         Self {
             slots: 2,
             threshold: None,
+            hash_prime: None,
             trials: 16,
             columns: 4096,
         }
@@ -238,6 +243,24 @@ impl Default for Config {
 }
 
 impl Config {
+    /// Certify an explicitly selected hash modulus without enumerating a base
+    /// or building a tensor graph. Does no work when no modulus is specified.
+    pub fn validate_hash_prime(&self, curve: &Curve, meter: &mut Meter) -> Result<()> {
+        if let Some(prime) = &self.hash_prime {
+            FactorBase::new(
+                curve,
+                prime.clone(),
+                BigUint::one(),
+                HashSeed {
+                    alpha: BigUint::one(),
+                    beta: BigUint::zero(),
+                },
+                meter,
+            )?;
+        }
+        Ok(())
+    }
+
     /// Use Theorem 4's integer slot choice `ceil((log2(b))^(1/4))`, with
     /// a minimum of two in the finite range. Other fields keep explicit defaults.
     /// This is a parameter choice, not a proved runtime guarantee for this code.
@@ -439,6 +462,7 @@ pub fn solve(
         return Err(invalid("reduction input"));
     }
     meter.vector(config.slots, "factor-base slots")?;
+    config.validate_hash_prime(curve, meter)?;
     // Identity has an immediate, independently checkable certificate.
     if target == &Point::Infinity {
         return Ok(Certificate {
@@ -453,7 +477,13 @@ pub fn solve(
     }
     for _ in 0..config.trials {
         meter.charge(1, "fresh-seed trial")?;
-        let prime = hash_prime(curve.modulus(), rng, meter)?;
+        let prime = if let Some(prime) = &config.hash_prime {
+            prime.clone()
+        } else {
+            hash_prime_by(curve.modulus(), rng, meter, |value, work| {
+                curve.certifies_prime(value, work)
+            })?
+        };
         let tau = threshold(curve, &prime, config, meter)?;
         let mut bases = Vec::with_capacity(config.slots);
         for _ in 0..config.slots {
@@ -717,7 +747,26 @@ mod tests {
         assert_eq!(certificate.scalar, 4u8.into());
         assert_eq!(certificate.relations.len(), 13);
         assert_eq!(counter.statistics.last_backend, Some(Backend::Functional));
-        assert!(counter.statistics.contractions > 13);
+        assert_eq!(counter.statistics.contractions, 0);
+        assert!(counter.statistics.witness_searches >= 13);
+        // The original count-based implementation remains selectable. Require
+        // the entire seeded certificate, not only the scalar, to stay identical.
+        let mut reference = Counter {
+            functional_witnesses: false,
+            functional_pruning: false,
+            ..Counter::default()
+        };
+        let reference_certificate = solve(
+            &curve,
+            &target,
+            &Config::default(),
+            &mut Seeded(1),
+            &mut reference,
+            &mut meter,
+        )
+        .unwrap();
+        assert_eq!(reference_certificate, certificate);
+        assert!(reference.statistics.contractions > 13);
         verify(&curve, &target, &certificate, &mut meter).unwrap();
         struct CountedRandom {
             source: Seeded,

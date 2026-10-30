@@ -198,6 +198,42 @@ def main():
     ecc2k130_runs(a.ref, a.since)
     readme_headline(a.ref)
     ghs_quartic_evidence(a.ref, a.since)
+    hecke_d39_finite(a.ref, a.since)
+
+
+def hecke_d39_finite(ref, since):
+    """Exact finite ranks; these diagnostics do not establish an IC speedup."""
+    prefix = "experiments/hecke-d39-scalar-closure-20261030/runs/"
+    launch_text = show(ref, prefix + "20261030T030848Z/launch.json")
+    if not launch_text:
+        return
+    launch = json.loads(launch_text)
+    stamp = launch.get("attempt", "")
+    if len(stamp) < 8 or launch.get("exit_code") != 0:
+        return
+    day = f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:8]}"
+    if day < since:
+        return
+    for path, status, selected in (
+        ("20261030T030848Z/receipt.json", "verified_finite_diagnostic", ("baseline", "all")),
+        ("20261030-controls/receipt.json", "verified_finite_control", ("double_only",)),
+    ):
+        text = show(ref, prefix + path)
+        if not text:
+            continue
+        data = json.loads(text)
+        if data.get("status") != status:
+            continue
+        for arm in data.get("arms", []):
+            if arm.get("arm") in selected:
+                emit("hecke.d39_f6.rank." + arm["arm"], arm.get("rank"),
+                     date=day, problem="hecke-d39-sparse-closure-and-descent", unit="rank mod 11",
+                     label="D39 toy finite rank: " + arm["arm"] + "; no speed claim",
+                     source=prefix + path)
+        if status == "verified_finite_control":
+            emit("hecke.d39_f6.independent_scalar_replays", data.get("scalars_checked"),
+                 date=day, problem="hecke-d39-sparse-closure-and-descent", unit="count",
+                 label="D39 toy scalar labels independently replayed", source=prefix + path)
 
 
 if __name__ == "__main__":
