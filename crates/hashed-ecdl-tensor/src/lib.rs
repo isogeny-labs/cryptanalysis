@@ -17,9 +17,11 @@ pub mod arithmetic;
 pub mod contraction;
 pub mod curve;
 pub mod encoding;
+pub mod factoring;
 pub mod network;
 pub mod reduction;
 pub mod ring;
+pub mod weighted;
 
 pub use num_bigint::{BigInt, BigUint};
 
