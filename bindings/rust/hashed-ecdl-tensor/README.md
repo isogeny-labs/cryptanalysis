@@ -24,6 +24,12 @@ output path. Omit the fixture seed for OS randomness. Certificates serialize
 large integers as little-endian 32-bit-limb arrays. Replay checks mathematics,
 not execution counters. All bundled examples are public inputs; the challenge example below is not a tiny fixture.
 
+Problem, receipt, certificate and point records reject duplicate and unknown
+fields at every typed level. An optional field set to null still counts as
+present for duplicate detection. File inputs are limited to 16 MiB of actual
+content; the reader uses one extra byte to reject oversized inputs, including
+growing files and streams.
+
 Sources and implementation boundaries:
 [implementation report](https://github.com/isogeny-labs/crypto/blob/main/docs/hashed-ecdl.md),
 [Bochum v0.2](https://github.com/bochum-crypto/subexponential-ecdl/tree/1ee44e562b1b9a50ea339f3b8f81112b5a24b96f),
