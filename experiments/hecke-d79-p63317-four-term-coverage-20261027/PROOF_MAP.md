@@ -1,0 +1,10 @@
+# Proof map
+
+| Result | Lean declaration | Exact scope | Status |
+| --- | --- | --- | --- |
+| Four-term group relation transports through a map preserving addition | `FourTermCoverage.four_transport` | Arbitrary types `G,H`, binary operations, map `φ`, universal addition preservation, and an explicit four-term relation | Kernel checked; no axioms |
+| Each of the 28 enumerated triple residual scalars has the reported signed four-log sum modulo 2531 | `FourTermCoverage.residual_0` through `residual_27` | Concrete integer logs and scalar in each frozen row, exact modulus 2531 | Kernel checked; no axioms |
+| Every subgroup scalar has a signed four-distinct-source representation in the anchored log model | `FourTermCoverageChunks.all_scalars_have_four_distinct_sources` | Exact 40 anchored logs, all `z : Fin 2531`, signed four-term witness table, strict source-index order and modulus 2531 | Kernel checked from 40 bounded chunk lemmas; only standard Lean foundations |
+| Curve-group interpretation of all 28 witnesses | None yet | `E/F_63317: y²+y=x³−x²−10x−20`, order-2531 subgroup, projected class points and log equalities | Independently checked in Sage; Lean curve definitions and bridge open |
+
+The checked modules use Lean 4 `v4.35.0-rc4`, pinned in `formal/lean-toolchain`, with `Init` and Lean's bundled `omega` tactic. `cd formal && lake build` builds the transport, 28 residual certificates, 40 bounded chunks, and the quantified all-scalar theorem. `formal/build-output.txt` retains every `#print axioms` result. The quantified theorem reports `propext`, `Classical.choice`, and `Quot.sound`, the standard Lean foundations used by the finite `decide` checks; it reports no `sorryAx`. The earlier monolithic `FourTermCoverageFull` source and interrupted output remain as an implementation comparison outside the default target; bounded chunks replace its resource-heavy reduction. `lean4checker --fresh` was unavailable in this environment. No `sorry`, `admit`, custom axioms or native evaluation occur in the checked modules.
