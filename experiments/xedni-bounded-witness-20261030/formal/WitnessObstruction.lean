@@ -77,6 +77,7 @@ theorem zero_tuple_has_bounded_witness :
   · exact ⟨0, by decide⟩
   · simp [Relation]
   · intro i
+    change (1 : ℤ).natAbs ≤ 1
     decide
 
 /-- That same tuple has relations outside every proposed universal bound. -/
@@ -84,10 +85,13 @@ theorem zero_tuple_has_unbounded_relations (bound : ℕ) :
     ∃ coeff : Fin 1 → ℤ,
       Nontrivial coeff ∧ Relation (fun _ => (0 : ℤ)) coeff ∧ ¬ Bounded bound coeff := by
   refine ⟨fun _ => ((bound + 1 : ℕ) : ℤ), ?_, ?_, ?_⟩
-  · exact ⟨0, by simp⟩
+  · refine ⟨0, ?_⟩
+    change ((bound + 1 : ℕ) : ℤ) ≠ 0
+    exact Int.ofNat_ne_zero.mpr (Nat.succ_ne_zero bound)
   · simp [Relation]
   · intro h
-    have bad : bound + 1 ≤ bound := by simpa using h 0
+    have bad := h (0 : Fin 1)
+    change bound + 1 ≤ bound at bad
     exact Nat.not_succ_le_self bound bad
 
 end XedniBoundedWitness

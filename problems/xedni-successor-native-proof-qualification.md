@@ -1,14 +1,14 @@
 # Xedni successor native proof qualification
 
 - **Status:** investigating
-- **Kind:** observed native compilation failure; unknown precise source/error; artifact access limit
+- **Kind:** identified proof elaboration failure; pending pinned native verification; historical artifact access limit
 - **Affected work:** [bounded-witness successor](../experiments/xedni-bounded-witness-20261030/RESULT.md), PR #1288 and its original circular-hypothesis review
 - **Next action owner:** CI repair maintainer
 - **Last updated:** 2026-10-30
 
 ## Problem
 
-The five successor declarations cannot yet be reported as kernel-checked because current-source corpus compilation exits nonzero before its retained compiler diagnostics can be inspected locally.
+The five successor declarations cannot yet be reported as kernel-checked because the pinned native build failed with three identified proof-elaboration errors; the targeted source correction is awaiting a successful fresh build.
 
 The successor replaces the circular universal bound on all integer relations with existence of a bounded witness under the explicit height/witness assumptions. Successful compilation and exact declaration/foundation audits remain required; the original fourteen historical declarations do not qualify it.
 
@@ -39,3 +39,5 @@ These conditions qualify the successor formal statements only. The height/Lang w
 ## Resolution and history
 
 2026-10-30: Recorded the observed failure and preserved its complete job log. Added tested failure diagnostics without changing the theorem, proof policy or pins. Unresolved; publication of this record does not establish a proof.
+
+2026-10-30 native diagnostics update: Source832e01578 run41042594820/job124018778233 identifies WitnessObstruction.lean errors at lines80,87,90: free-variable decide, integer-successor nonzero simplification, and natAbs/cast simplification. The targeted elaboration correction preserves every statement and principal proof. Core-only Lean4.34.1 compatibility controls pass: one is axiom-free and two use only standard propext; they do not qualify the pinned4.35.0-rc4 project. See [the complete failure and repair receipt](../reports/ci-xedni-proof-elaboration-repair-20261030/README.md). Fresh native5-declaration build/audits remain the exit condition.
