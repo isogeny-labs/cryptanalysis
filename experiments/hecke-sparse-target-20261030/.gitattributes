@@ -1,5 +1,8 @@
 report.pdf binary
+pair-reuse.pdf binary
 runs/**/receipt.json linguist-generated=true
 runs/f30-large-01/selection.json linguist-generated=true
 counts.svg linguist-generated=true
 evidence.svg linguist-generated=true
+# Preserve the exact machine transcript, including its trailing blank line.
+runs/pair-reuse-01/stdout.txt whitespace=-blank-at-eof

@@ -2,6 +2,10 @@
 
 [Results](RESULT.md), [PDF](report.pdf), [diagram](evidence.svg), [plots](counts.svg).
 
+[Current pair-index reuse result](PAIR_REUSE_RESULT.md) strengthens the generic
+control and reduces bootstrap queries without additional pair-construction
+curve sums. It explicitly updates the interpretation of the earlier controls.
+
 The primary protocol covers four fields and all four user-requested questions.
 Follow-up protocols explicitly distinguish post-result continuation controls.
 Raw receipts remain loose because verifiers and archived source snapshots name
