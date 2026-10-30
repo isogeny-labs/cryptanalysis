@@ -108,3 +108,12 @@ budget is an error with unknown result, not a solution or proof that no solution
 exists. These bounds do not make the challenge feasible. No ECCp-131 scalar
 has been recovered by the development checks. A successful receipt would need
 independent replay with the existing verify command.
+
+## Opt-in finite-size extensions
+
+See [FINITE_SIZE.md](FINITE_SIZE.md) for selector-domain witnesses and graphs,
+optional schoolbook multiplication, bounded exact width planning/conditioning,
+partial-relation elimination and odd-degree binary/Frobenius support. The file
+runner adds `solve-selectors` and `solve-width`; the original `solve` remains
+available. Exact limits return unknown-result errors. Small-parameter source
+packet recursion and scientific performance validation remain open.
