@@ -1,0 +1,38 @@
+name: Read-only tool fixtures
+
+on:
+  pull_request:
+    paths:
+      - 'tools/lmfdb/**'
+      - 'experiments/lit-watch/**'
+      - '.github/workflows/readonly-tooling.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/lmfdb/**'
+      - 'experiments/lit-watch/**'
+      - '.github/workflows/readonly-tooling.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools/lmfdb
+            experiments/lit-watch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the tested local query dependency
+        run: python -m pip install -r tools/lmfdb/requirements.txt
+      - name: Replay fixtures without live services or research data
+        run: |
+          python -m unittest discover -s experiments/lit-watch/tests
+          python -m unittest discover -s tools/lmfdb -p 'test_*.py'

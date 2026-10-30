@@ -86,17 +86,26 @@ fixed-base probable-prime screen and any supplied order remains
 of 256. A missing degree within the bound is reported as
 `not_found_within_bound`, not as an all-degree result.
 
-The [Lean theorem](formal/HasseUnique.lean) proves the interval uniqueness
-step for arbitrary natural-number multiples and an interval width less than
-`r`. Its exact hypotheses are `n=k*r`, `m=l*r`, `n≤m+width`,
-`m≤n+width`, and `width<r`; it concludes `n=m`. The proof map is therefore
-**partial** for the full elliptic-curve theorem: the Lucas primality
-criterion, the elliptic group law, Lagrange divisibility, Hasse's bound,
-and the conversion of the squared inequalities into interval bounds remain
-outside this Lean module. The Rust certificate verifier checks the concrete
-P-192 and P-224 arithmetic, and independent checked-Sage point counts confirm
-their orders and traces. The pinned Lean toolchain and build/axiom output are in
-[`formal/`](formal/). `lean4checker --fresh` was unavailable on this host.
+The [Lean interval theorem](formal/HasseUnique.lean) proves uniqueness for
+arbitrary natural-number multiples whose separation is less than `r`. Its
+hypotheses are `n=k*r`, `m=l*r`, `n≤m+width`, `m≤n+width`, and `width<r`.
+The [squared-predicate bridge](formal/HasseSquareBounds.lean) now proves the
+corresponding **conditional natural-number** result using the same unsigned
+difference from `p+1`, squared deviation checks `≤4p`, and strict spacing
+check `r²>16p` as the Rust certificate route. Its
+[proof map](formal/SQUARE_BOUND_PROOF_MAP.md) and
+[independent review](../../../reports/hasse-square-bridge-20261027/report.md)
+give the exact statements, controls, and build receipts.
+
+The full elliptic-curve proof remains **partial**. Lean has not yet proved the
+Lucas primality criterion, the concrete prime-field and curve group laws,
+exact generator order and Lagrange divisibility, Hasse's bound for the actual
+cardinality, the Rust BigUint/parser correspondence, or P-192/P-224 input
+binding. The Rust verifier checks the concrete certificate arithmetic, and
+independent checked-Sage point counts confirm the orders and traces; those
+computations are separate from the Lean theorem. The pinned toolchain and
+build/axiom outputs are in [`formal/`](formal/) and the dated review packet.
+`lean4checker --fresh` was unavailable on this host.
 
 Independent replay command (run through the repository launcher):
 

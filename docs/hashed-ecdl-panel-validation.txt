@@ -1,0 +1,124 @@
+Native frozen-panel preparer: development validation, 2026-10-30.
+No scientific solve, profile, benchmark, or remote experiment was launched.
+Any elapsed times below are unisolated development diagnostics, not performance evidence.
+
+Actual initial build failure (subsequently corrected):
+cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --bin hashed-ecdl-panel
+exit 101: error[E0282]: type annotations needed for Option<(_, _)>
+  src/bin/hashed-ecdl-panel.rs:248:27, closure parameter `point`.
+Corrected by annotating the independent-oracle conversion closure as `Point`.
+
+Actual current access/coordination checks:
+cloud_environment.environment_status: observations_current=true, network enforced/unrestricted,
+  capabilities=[], secrets=[], runtime_variables=[], outbound_identities=[].
+OIC_MANIFEST_PATH was not configured. AWS CLI, kubectl, perf and valgrind were absent.
+conductor check --summary 'Prepare the frozen native hashed ECDL panel without executing benchmarks' --scope path:crates/hashed-ecdl-tensor/src/bin/hashed-ecdl-panel.rs --scope path:docs/hashed-ecdl-panel.md --scope path:backlog/2026-10-30-hashed-ecdl-native-ab.md --scope path:docs/session-logs/2026-10-30.md
+exit 127: conductor: command not found.
+docs/CONDUCTOR.md documents the warning-and-allow fallback; no reservation is claimed.
+scripts/checkpoint.sh gate
+exit 1:
+checkpoint: no way to upload: no AWS profile 'ecc-challenges-new', no CHECKPOINT_UPLOAD_TOKEN, no /home/agent/.config/checkpoint/upload-token
+checkpoint: cannot upload, so nothing was checkpointed
+No run followed this failed gate.
+
+Validation commands used CHECKPOINT_SKIP with an explicit development-only reason.
+No production panel directory was prepared; tests exercise temporary fixture files only.
+Historical receipts, protocol and source manifests are unchanged.
+
+crypto: cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --bin hashed-ecdl-panel
+exit 0; complete output:
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/crypto/crates/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 0.75s
+     Running unittests src/bin/hashed-ecdl-panel.rs (crates/hashed-ecdl-tensor/target/release/deps/hashed_ecdl_panel-b9850214598f0c14)
+
+running 3 tests
+test tests::oracle_checks_full_cardinality_and_all_native_multiples ... ok
+test tests::panel_preserves_every_frozen_case_and_separates_answers ... ok
+test tests::preparation_is_complete_and_existing_evidence_is_never_replaced ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+crypto: cargo clippy --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings
+exit 0; complete output:
+    Checking hashed-ecdl-tensor v0.1.0 (/workspace/crypto/crates/hashed-ecdl-tensor)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
+
+crypto: cargo +1.78.0 check --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets
+exit 0; complete output:
+    Checking hashed-ecdl-tensor v0.1.0 (/workspace/crypto/crates/hashed-ecdl-tensor)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+
+cryptanalysis: cargo test --locked --release --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor --bin hashed-ecdl-panel
+exit 0; complete output:
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 2.12s
+     Running unittests src/bin/hashed-ecdl-panel.rs (bindings/rust/target/release/deps/hashed_ecdl_panel-43cdc1b2578d76cd)
+
+running 3 tests
+test tests::oracle_checks_full_cardinality_and_all_native_multiples ... ok
+test tests::panel_preserves_every_frozen_case_and_separates_answers ... ok
+test tests::preparation_is_complete_and_existing_evidence_is_never_replaced ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+cryptanalysis: cargo clippy --locked --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor --all-targets -- -D warnings
+exit 0; complete output:
+    Checking hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.18s
+
+cryptanalysis: cargo +1.78.0 check --locked --manifest-path bindings/rust/Cargo.toml -p hashed-ecdl-tensor --all-targets
+exit 0; complete output:
+    Checking hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.20s
+
+cargo fmt --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --check
+cargo fmt --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml --check
+Both exit 0 with no output. New native binary source matches byte-for-byte across repositories.
+
+crypto: cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --lib
+exit 0; complete output (elapsed time is not a benchmark):
+    Finished `release` profile [optimized] target(s) in 0.03s
+     Running unittests src/lib.rs (crates/hashed-ecdl-tensor/target/release/deps/hashed_ecdl_tensor-3825d88d6fdc6fb0)
+
+running 34 tests
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::functional_derived_interfaces_match_prefixes_for_all_output_pins ... ok
+test contraction::tests::functional_input_witness_preserves_prefix_order_without_recounts ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test contraction::tests::functional_witness_aliases_empty_unsat_and_limits_are_exact ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test primality::tests::bounded_primality_matches_independent_sieve_and_handles_u64_edges ... ok
+test primality::tests::challenge_proofs_verify_in_any_order_with_exact_u64_leaves ... ok
+test primality::tests::forged_and_incomplete_pocklington_proofs_are_rejected ... ok
+test primality::tests::official_curve_and_target_validate_within_original_budget ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 188.22s
+
+End of development transcript. No benchmark was run.

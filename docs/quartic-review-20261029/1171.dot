@@ -1,0 +1,14 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="Specialized q4 and q8;\n499 saved rational factor roots"];
+n1 [label="Derivative gcd within each factor"];
+n2 [label="7 repeated x-roots\nacross four certified fields"];
+n3 [label="7 branch-zero x-values\n(same saved roots)"];
+n4 [label="Original cross-factor-overlap\nprediction failed; retained mismatch"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n2 [label="scope condition / recorded check", style=solid];
+n2 -> n3 [label="scope condition / recorded check", style=solid];
+n0 -> n4 [label="scope condition / recorded check", style=dashed];
+}

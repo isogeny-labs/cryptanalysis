@@ -313,6 +313,10 @@ out:
 ca_status ca_linsolve_mod_prime(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
                                 uint8_t *known, uint64_t seed, ca_linsolve_report *rep)
 {
+    if (!A || !b || !x || !known) {
+        ca_set_error("linsolve: null input or output");
+        return CA_ERR_INVALID;
+    }
     double t0 = ca_now();
     uint32_t R = A->rows, C = A->cols;
     ca_linsolve_report lrep = {0};

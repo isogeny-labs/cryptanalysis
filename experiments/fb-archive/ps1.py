@@ -31,7 +31,8 @@ def source_sha256(paths: list[str]) -> dict:
 def index_row(n: int, family: str, l: int, seed: int = 1) -> dict:
     with open(HERE / "index.csv", newline="") as fh:
         rows = [r for r in csv.DictReader(fh)
-                if (int(r["n"]), r["family"], int(r["l"]), int(r["seed"])) == (n, family, l, seed)]
+                if r["l"] != ""
+                and (int(r["n"]), r["family"], int(r["l"]), int(r["seed"])) == (n, family, l, seed)]
     if len(rows) != 1:
         raise LookupError(f"expected one archive row for n={n} {family} l={l} s={seed}, found {len(rows)}")
     return rows[0]

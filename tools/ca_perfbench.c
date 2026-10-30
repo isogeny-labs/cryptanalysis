@@ -119,7 +119,7 @@ typedef struct pb_kernel {
     int full;         /* 0 = Quick, 1 = Full */
     void *(*setup)(void);
     void (*prepare)(void *);  /* untimed per-sample restore; NULL = none */
-    uint64_t (*run)(void *);  /* the timed work; returns the fingerprint */
+    uint64_t (*run)(void *);  /* shared mutable-context ABI; returns the fingerprint */
     void (*teardown)(void *); /* NULL = free() */
 } pb_kernel;
 
@@ -242,6 +242,10 @@ static void fp_solve(pb_fp *f, const dlp_fix *d, uint32_t i, ca_status rc, uint6
     fp_stats(f, st);
 }
 
+/* Read-only runners retain the same void* function-pointer signature as stateful
+ * runners. Adding pointed-to const would require incompatible callback casts.
+ * The individual constParameterCallback annotations preserve that shared ABI. */
+
 /* ======================= field_ec: F_p and E(F_p) arithmetic =============== */
 
 /* --- Montgomery multiplication throughput (header-inline ca_mont_mul) --- */
@@ -267,6 +271,7 @@ static void *setup_mont_mul_x8(void)
     return s;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_mont_mul_x8(void *p)
 {
     const mont_fix *s = p;
@@ -300,6 +305,7 @@ static void *setup_zp_op_chain(void)
     return s;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_zp_op_chain(void *p)
 {
     const zpop_fix *s = p;
@@ -345,6 +351,7 @@ static void *setup_modarith(void)
 
 /* ca_powmod: the plain (128-bit remainder) exponentiation every group
  * constructor, primality test and square root goes through. */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_powmod(void *p)
 {
     const ma_fix *s = p;
@@ -362,6 +369,7 @@ static uint64_t run_powmod(void *p)
 }
 
 /* ca_mont_pow on the four moduli (Montgomery-form exponentiation). */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_mont_pow(void *p)
 {
     const ma_fix *s = p;
@@ -380,6 +388,7 @@ static uint64_t run_mont_pow(void *p)
 }
 
 /* ca_invmod and ca_mont_inv: the per-operation cost of affine EC. */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_invmod(void *p)
 {
     const ma_fix *s = p;
@@ -425,6 +434,7 @@ static void *setup_sqrtmod(void)
     return s;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_sqrtmod(void *p)
 {
     const sqrt_fix *s = p;
@@ -501,6 +511,7 @@ static void *setup_factorize(void)
     return s;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_factorize(void *p)
 {
     const fact_fix *s = p;
@@ -550,6 +561,7 @@ static void *setup_ec_batch_add(void) { return ec_ops_setup("field_ec/c_ec_batch
 static void *setup_ec_scalar_mul(void) { return ec_ops_setup("field_ec/c_ec_scalar_mul"); }
 
 /* ca_group_op (affine add, one field inversion) and ca_group_dbl chains. */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_ec_add_chain(void *p)
 {
     const ecop_fix *s = p;
@@ -582,6 +594,7 @@ static uint64_t run_ec_batch_add(void *p)
 
 /* ca_group_mul, 60-bit scalars (double-and-add in affine coordinates):
  * walk starts, multiplier tables, verification, Pohlig-Hellman lifts. */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_ec_scalar_mul(void *p)
 {
     const ecop_fix *s = p;
@@ -642,6 +655,7 @@ static void *setup_rho_ec44(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_rho(void *p)
 {
     const dlp_fix *d = p;
@@ -669,6 +683,7 @@ static void *setup_rho_ec44_mt(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_rho_mt(void *p)
 {
     const dlp_fix *d = p;
@@ -718,6 +733,7 @@ static void *setup_kangaroo_zp61(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_kangaroo(void *p)
 {
     const dlp_fix *d = p;
@@ -754,6 +770,7 @@ static void *setup_bsgs_zp36(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_bsgs(void *p)
 {
     const dlp_fix *d = p;
@@ -779,6 +796,7 @@ static void *setup_grumpy_ec32(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_grumpy(void *p)
 {
     const dlp_fix *d = p;
@@ -815,6 +833,7 @@ static void *setup_pohlig_zp61s(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_pohlig(void *p)
 {
     const dlp_fix *d = p;
@@ -849,6 +868,7 @@ static void *setup_precomp_build(void)
 
 /* Table build (n^{2/3} walk steps, batched), then two online solves so the
  * table's content, not just its size, is covered by the fingerprint. */
+// cppcheck-suppress constParameterCallback
 static uint64_t run_precomp_build(void *p)
 {
     const dlp_fix *d = p;
@@ -891,6 +911,7 @@ static void *setup_precomp_online(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_precomp_online(void *p)
 {
     const dlp_fix *d = p;
@@ -919,6 +940,7 @@ static void *setup_glv_j0(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_glv(void *p)
 {
     const dlp_fix *d = p;
@@ -943,6 +965,7 @@ static void *setup_gpu_emulate(void)
     return d;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_gpu_emulate(void *p)
 {
     const dlp_fix *d = p;
@@ -997,6 +1020,7 @@ static void *setup_cheon(void)
     return s;
 }
 
+// cppcheck-suppress constParameterCallback
 static uint64_t run_cheon(void *p)
 {
     const cheon_fix *s = p;
@@ -1451,7 +1475,7 @@ static void add_filters(options *o, const char *arg)
     char *s = filter_buf + filter_used;
     memcpy(s, arg, len + 1);
     filter_used += len + 1;
-    for (char *tok = strtok(s, ","); tok; tok = strtok(NULL, ",")) {
+    for (const char *tok = strtok(s, ","); tok; tok = strtok(NULL, ",")) {
         if (o->nfilters >= 256) usage();
         o->filters[o->nfilters++] = tok;
     }
