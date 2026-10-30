@@ -114,10 +114,27 @@ impl Curve {
         generator: Point,
         meter: &mut Meter,
     ) -> Result<Self> {
+        Self::with_cofactor_and_certificates(p, a, b, r, cofactor, generator, &[], meter)
+    }
+
+    /// Certify the same curve using optional, independently verified primality
+    /// proofs. Uncovered p/r values retain the exact default primality path;
+    /// invalid supplied proofs are errors, never trusted prime assertions.
+    pub fn with_cofactor_and_certificates(
+        p: BigUint,
+        a: BigUint,
+        b: BigUint,
+        r: BigUint,
+        cofactor: BigUint,
+        generator: Point,
+        proofs: &[crate::primality::PrimeCertificate],
+        meter: &mut Meter,
+    ) -> Result<Self> {
+        let primes = crate::primality::verify_certificates(proofs, meter)?;
         if p <= BigUint::from(3u8)
             || r <= BigUint::from(2u8)
-            || !is_prime(&p, meter)?
-            || !is_prime(&r, meter)?
+            || (!primes.contains(&p) && !is_prime(&p, meter)?)
+            || (!primes.contains(&r) && !is_prime(&r, meter)?)
             || a >= p
             || b >= p
             || cofactor.is_zero()

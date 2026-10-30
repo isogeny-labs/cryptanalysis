@@ -716,7 +716,25 @@ mod tests {
         assert_eq!(certificate.scalar, 4u8.into());
         assert_eq!(certificate.relations.len(), 13);
         assert_eq!(counter.statistics.last_backend, Some(Backend::Functional));
-        assert!(counter.statistics.contractions > 13);
+        assert_eq!(counter.statistics.contractions, 0);
+        assert!(counter.statistics.witness_searches >= 13);
+        // The original count-based implementation remains selectable. Require
+        // the entire seeded certificate, not only the scalar, to stay identical.
+        let mut reference = Counter {
+            functional_witnesses: false,
+            ..Counter::default()
+        };
+        let reference_certificate = solve(
+            &curve,
+            &target,
+            &Config::default(),
+            &mut Seeded(1),
+            &mut reference,
+            &mut meter,
+        )
+        .unwrap();
+        assert_eq!(reference_certificate, certificate);
+        assert!(reference.statistics.contractions > 13);
         verify(&curve, &target, &certificate, &mut meter).unwrap();
         struct CountedRandom {
             source: Seeded,

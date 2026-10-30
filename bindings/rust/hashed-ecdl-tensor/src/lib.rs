@@ -18,6 +18,7 @@ pub mod contraction;
 pub mod curve;
 pub mod encoding;
 pub mod network;
+pub mod primality;
 pub mod reduction;
 pub mod ring;
 

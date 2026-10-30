@@ -124,9 +124,10 @@ fn aks_identity(n: &BigUint, r: usize, a: usize, meter: &mut Meter) -> Result<bo
     Ok(answer == expected)
 }
 
-/// Deterministic exact primality (AKS, §4 of *PRIMES is in P*).
+/// Deterministic exact primality (bounded u64 tests, then AKS).
 ///
-/// A fixed finite range uses trial division. Above it, perfect-power rejection,
+/// A fixed finite range uses trial division and exact bounded-base tests. Above
+/// u64, perfect-power rejection,
 /// the multiplicative-order parameter, gcd tests and cyclic polynomial identities
 /// give a polynomial-bit-complexity algorithm. Resource exhaustion is an error;
 /// no probable prime is ever silently accepted as a certified prime.
@@ -139,6 +140,9 @@ pub fn is_prime(n: &BigUint, meter: &mut Meter) -> Result<bool> {
     if bits <= 16 {
         meter.charge(256, "small exact primality")?;
         return Ok(small_prime(n.to_u64().unwrap()));
+    }
+    if let Some(value) = n.to_u64() {
+        return crate::primality::is_prime_u64(value, meter);
     }
     aks(n, bits, meter)
 }
