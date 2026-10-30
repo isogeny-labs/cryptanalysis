@@ -1,0 +1,67 @@
+name: hashed ECDL tensor correctness
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'bindings/rust/hashed-ecdl-tensor/**'
+      - 'bindings/rust/cryptanalysis/**'
+      - 'bindings/rust/Cargo.toml'
+      - 'bindings/rust/Cargo.lock'
+      - '.github/workflows/hashed-ecdl-tensor.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'bindings/rust/hashed-ecdl-tensor/**'
+      - 'bindings/rust/cryptanalysis/**'
+      - 'bindings/rust/Cargo.toml'
+      - 'bindings/rust/Cargo.lock'
+      - '.github/workflows/hashed-ecdl-tensor.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hashed-ecdl-tensor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: bindings/rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: |
+            bindings/rust
+            src
+            include
+            cuda
+      - name: Install stable Rust with formatting and lint tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            bindings/rust/target
+          key: ${{ runner.os }}-hashed-ecdl-${{ hashFiles('bindings/rust/Cargo.lock', 'bindings/rust/**/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-hashed-ecdl-
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Strict lint for the tensor crate and binding
+        run: cargo clippy --locked -p hashed-ecdl-tensor -p cryptanalysis --all-targets -- -D warnings
+      - name: Exact arithmetic, recursive controls and full reduction
+        run: cargo test --locked --release -p hashed-ecdl-tensor -p cryptanalysis
+      - name: Install the declared minimum Rust version
+        run: rustup toolchain install 1.78.0 --profile minimal
+      - name: Declared minimum Rust version
+        run: cargo +1.78.0 check --locked -p hashed-ecdl-tensor -p cryptanalysis --all-targets
