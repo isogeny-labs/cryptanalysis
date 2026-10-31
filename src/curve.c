@@ -742,12 +742,16 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
      * grows sooner than the walk budget: a small table makes walks fall into
      * fruitless cycles and retry the look-ahead far more often, which costs
      * more than the extra table entries from about 28 bits up
-     * (experiments/glv-table-rule-20261022). */
+     * (experiments/glv-table-rule-20261022).  The table is capped at 128
+     * entries: a held-out round at 42-46 bits saved about 2% of group
+     * operations against the former cap of 32
+     * (experiments/glv-table-confirm-above40-20261102); 64 entries was not
+     * confirmed, and nothing below 42 bits is. */
     uint64_t sqrt_nm = ca_isqrt(n / c.m) + 1;
     int lg = glv_ilog2(n) + 1;
     uint64_t rbudget = sqrt_nm / (12u * (uint64_t)lg);
     uint32_t rr = 8;
-    while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
+    while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 128) rr *= 2;
     c.r = rr;
     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
