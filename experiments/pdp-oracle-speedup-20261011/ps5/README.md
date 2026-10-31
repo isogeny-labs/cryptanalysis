@@ -42,7 +42,7 @@ corpus for `l = 8..12`, and the digests and root sets equal PS-0's.  Counted bit
 | 15 | Rust bridge extending `fes_gpu.rs` (paired PR with `crypto`) | **not attempted**.  `suite/src/cryptanalysis/fes_gpu.rs` is untouched | n/a |
 | 16 | Layout: kernel plus CPU emulation in `suite/cuda/` (pattern of `f4_gf2_*`); parity checkable on a CPU host and in CI without a device | **done for the CPU host**; no CI job was added (the repository cut workflow fan-out; adding a job is a separate decision) | `suite/cuda/` |
 | 17 | Visual report (graph + PDF) | **done**: figure and PDF under [`report/`](report/) | section 7 |
-| 18 | Repository rules in `AGENTS.md` that apply to this change (read on `main` at 379faa0f1) | **done except as listed**: *Name the obstruction*: record added and indexed (`problems/`); *Data files live in the artifact store*: no data file over the thresholds is committed (`python3 tools/artifacts/artifacts.py check origin/main HEAD` is clean; the six program files were removed from the branch for this reason, the report PDF is under 64 KiB); *Hardware and placement*: `raw/manifest.json` carries the fields (CPU, caches, kernel, virtualization, cgroup limits, allowed CPUs and NUMA nodes, memory technology `unknown`, co-runners, hashes of sources and binaries); *CPU performance evidence tiers*: every timing here is **exploratory (no tier)**: shared host, one run, no A/A, no isolation receipt; `clang-format`: clean; sanitizers: ASan and UBSan clean on the drivers at `l = 8` (4.7).  **Not done:** GitHub auto-merge was not enabled and the PR is not tracked or merged by this session (the coordinator's instruction for this task is to open the PR and stop; `AGENTS.md` on `main` says otherwise); `clang-tidy` with the core's profile reports 41 style and robustness findings in these research host tools (the core's CI gate does not cover `suite/cuda`), not addressed; no `VALIDATION.json` gate exists in this repository (it is only named in the reports-in-S3 section) | section 4.7, [`problems/`](../../../problems/pdp-ps5-gpu-device-run-blocked.md) |
+| 18 | Repository rules in `AGENTS.md` that apply to this change (read on `main` at 379faa0f1) | **done except as listed**: *Name the obstruction*: record added and indexed (`problems/`); *Data files live in the artifact store*: no data file over the thresholds is committed (`python3 tools/artifacts/artifacts.py check origin/main HEAD` is clean; the six program files were removed from the branch for this reason, the report PDF is under 64 KiB); *Hardware and placement*: `raw/manifest.json` carries the fields (CPU, caches, kernel, virtualization, cgroup limits, allowed CPUs and NUMA nodes, memory technology `unknown`, co-runners, hashes of sources and binaries); *CPU performance evidence tiers*: every timing here is **exploratory (no tier)**: shared host, one run, no A/A, no isolation receipt; `clang-format`: clean; sanitizers: ASan and UBSan clean on the drivers at `l = 8` (4.7).  **Not done:** GitHub auto-merge was not enabled by the authoring session, and the session does not track or merge the PR: the repository's `AGENTS.md`/`CLAUDE.md` on `main` say the opening session does, but for this task the coordinating session took over tracking and merging; `clang-tidy` with the core's profile reports 41 style and robustness findings in these research host tools (the core's CI gate does not cover `suite/cuda`), not addressed; no `VALIDATION.json` gate exists in this repository (it is only named in the reports-in-S3 section) | section 4.7, [`problems/`](../../../problems/pdp-ps5-gpu-device-run-blocked.md) |
 
 ## 2. What the kernel is
 
@@ -119,8 +119,7 @@ No corpus target is degenerate (`unsupported_targets` is 0 in every record); the
 The 459 hit lanes yield 153 distinct roots; the corpus has few positives per rung, which is why the self-test exists.
 
 **Model build.**  The same replay with every gate run through the `lop3` model `ps5_lop3(a, b, c, table)` (`raw/parity_l*_model.jsonl`, `raw/selftest_l*_model.jsonl`; self-test with 20 repetitions): for every rung 0 mismatches, 0 unconfirmed hit lanes,
-the same hit lanes, roots, verdict digest and root digest as the `plain` build (96, 105, 90, 78, 90 confirmed hit lanes at `l = 8..12`), both digests equal PS-0's; self-test 0 mismatches (163,720 lanes per rung).  Emulation wall seconds (3 threads, one run each) were 2.12, 4.86, 14.18, 55.84, 232.92
-for `l = 8..12` against 0.48, 1.34, 5.48, 28.47, 131.57 for `plain`.
+the same hit lanes, roots, verdict digest and root digest as the `plain` build (96, 105, 90, 78, 90 confirmed hit lanes at `l = 8..12`), both digests equal PS-0's; self-test 0 mismatches (163,720 lanes per rung).  Times are in 4.5.
 
 ### 4.2 Self-test (CPU emulation; `raw/selftest_l*.jsonl`, 50 repetitions per rung, seed 20261018)
 
@@ -178,21 +177,23 @@ would raise `u` for large `l`; not tried.  (Arithmetic only: the layout's ceilin
 Reading (observations): `ptxas` kept the program's gates almost one to one (63,752 `LOP3` for 63,630 gates, tables as emitted); it spills (the F4 kernel's CI gate fails a build that spills; this kernel would not pass that
 gate).  Whether 255 registers plus spills is fast or slow on a device is **not known**; it is a reason to expect the device figure to depend on how the straight-line program is blocked, and nothing more.
 
-**Not done:** the `l = 11..13` kernels were not compiled.  `nvcc` needed about 20 minutes for the 65,000-statement `l = 8` kernel (almost all of it in the front end before `ptxas`, which took 77 s); an attempt to queue the `l = 11` compile behind the shared benchmark lock was abandoned when the lock stayed held by other sessions for over an hour, and no compile result at `l >= 9` exists.  `build_pdp_ps5.sh -n NVCC` and `run_ps5.sh nvcc L` are written for it and were exercised only through the `l = 8` run (with the earlier procedure of a direct `nvcc -cubin`, then `nvcc -ptx`; the committed script now runs `nvcc -ptx` then `ptxas`, which has not been executed).
+**Not done:** the `l = 11..13` kernels were not compiled.  `nvcc` needed about 20 minutes for the 65,000-statement `l = 8` kernel (almost all of it in the front end before `ptxas`, which took 77 s); an attempt to queue the `l = 11` compile behind the shared benchmark lock was abandoned when the lock stayed held by other sessions for over an hour, and no compile result at `l >= 9` exists.  `build_pdp_ps5.sh -n NVCC` and `run_ps5.sh nvcc L` are written for it and were exercised only through the `l = 8` run (with the earlier procedure of a direct `nvcc -cubin`, then `nvcc -ptx`).  The committed script now runs `nvcc -ptx` then `ptxas`; its flow was exercised once on `l = 8` with the `nvcc` front end replaced by a copy of the PTX the real `nvcc` made earlier (`raw/nvcc_l8_script_check_fake_nvcc_frontend.log`): `ptxas` on that PTX gave the same registers, stack and spills and the same SASS histogram as the first procedure (`raw/ptxas_l8_sm_80_from_ptx.txt`, `raw/sass_hist_l8_sm_80_from_ptx.txt`; 79.6 s).  That check does not exercise `nvcc -ptx` inside the script.
 
-### 4.5 CPU-emulation wall times (exploratory; not a device figure)
+### 4.5 CPU-emulation times (exploratory, evidence tier: none; not a device figure)
 
-One run per rung, 3 threads, wall seconds of the whole replay (80 targets, all pairs), shared host, no A/A, no isolation receipt (`emulation_secs` in `raw/parity_l*.jsonl`).  The last column is wall x 3 / pairs, which assumes three busy threads (CPU time was not measured).
+One run per rung, 3 threads, the whole replay (80 targets, every pair), on the shared host of `raw/manifest.json` (other sessions' jobs ran on it: 1-minute load average 1.0 at the start of `l = 8` rising to 3.0 at the end of the `model` `l = 12` run, `loadavg1_start/end` in each record), through the benchmark lock, no A/A, no isolation receipt, no pinning.
+Columns are from `raw/parity_l*.jsonl`: wall seconds and process CPU seconds (user + system, all threads, of the replay loop only) are separate; peak RSS is of the whole process.  The last column is CPU seconds / valid pairs.
 
-| `l` | pairs replayed | `plain` build, wall s | `model` build, wall s | `plain`: thread-microseconds per valid pair |
-|--:|--:|--:|--:|--:|
-| 8 | 660,480 | 0.484 | 2.117 | 2.20 |
-| 9 | 2,570,480 | 1.339 | 4.860 | 1.56 |
-| 10 | 8,630,400 | 5.478 | 14.178 | 1.90 |
-| 11 | 40,602,240 | 28.467 | 55.837 | 2.10 |
-| 12 | 158,802,240 | 131.574 | 232.919 | 2.49 |
+| `l` | pairs replayed | `plain`: wall s | `plain`: CPU s | `plain`: peak RSS KiB | `plain`: CPU microseconds per valid pair | `model`: wall s | `model`: CPU s |
+|--:|--:|--:|--:|--:|--:|--:|--:|
+| 8 | 660,480 | 0.371 | 0.921 | 4,520 | 1.39 | 2.126 | 5.589 |
+| 9 | 2,570,480 | 1.391 | 3.855 | 5,036 | 1.50 | 4.515 | 12.683 |
+| 10 | 8,630,400 | 5.875 | 16.652 | 5,624 | 1.93 | 12.273 | 35.328 |
+| 11 | 40,602,240 | 29.190 | 85.113 | 6,324 | 2.10 | 57.211 | 168.519 |
+| 12 | 158,802,240 | 135.170 | 399.011 | 7,548 | 2.51 | 240.906 | 714.368 |
+| 13 (3 targets) | 24,634,134 | 22.834 | 67.561 | 8,504 | 2.74 | n/a | n/a |
 
-This is a scalar, memory-resident evaluation of the gate list on the host.  It is not comparable with PS-3's per-core vector figures (different code, different host class) and says nothing about any device.
+This is a scalar, memory-resident evaluation of the gate list on the host.  It is not comparable with PS-3's per-core vector figures (different code, different host class, no isolation) and says nothing about any device.  Single runs: no variability is reported, so none of these is a timing claim.  An earlier run of the same sources (before the CPU-time fields were added; commit `d93bedfd7`) gave `plain` wall seconds 0.52, 1.57, 6.17, 28.72, 129.07 for `l = 8..12`, which shows the run-to-run spread on this host (about 5 to 25 percent).
 
 ### 4.6 `l = 13` (optional)
 
@@ -201,6 +202,10 @@ Optional and **timing-only in the plan** (PS-0 froze no `l = 13` corpus).  What 
 (144,148 gates, 1,872 inputs), is **first recorded by this PR**; PS-2/PS-3 froze no `l = 13` program.  Result (`raw/parity_l13.jsonl`, `raw/selftest_l13.jsonl`, `plain` build): 4,052 base points, 24,634,134 pairs replayed, tiling check true, 0 hit lanes, verdict digest
 `04700f1a...5d03` and root digest `3d1325c7...0203` equal the sample's, 0 mismatches; self-test (50 repetitions) 0 mismatches in 409,300 lanes and 4,672,640 wires.  Counted bit operations: `G/8 = 18,018.5` fused per lane slot, `u = 0.9354`, 19,263.5 fused per valid pair.
 **All three sample targets are refuted (no roots)**, so this replay cannot detect a missed hit; the self-test covers that.  Emulation wall time 21.8 s (3 threads).  `l = 14, 15, 16`: not attempted.
+
+### 4.7 Sanitizers and the one defect they found
+
+`run_ps5.sh sanitize` builds the drivers (`pdp_ps5_parity.c`, `pdp_ps5_selftest.c`, the headers) with `-fsanitize=address,undefined -fno-sanitize-recover=undefined` against the existing, uninstrumented emulation object and runs them at `l = 8` (`raw/sanitizers_l8.txt`): the first run (commit `0577a7331` sources) stopped on a UBSan error, `memcpy` with a null destination for an empty hit list (`pdp_ps5_parity.c`), and LeakSanitizer reported unfreed buffers in both drivers.  Both were fixed (guard the copy; free the buffers) and every CPU result in this PR was regenerated from the fixed sources.  The final run: parity exit 0 and self-test exit 0, no sanitizer report.  The generated code itself was not sanitized.
 
 ## 5. Deviations, gaps and open requirements (all of them)
 

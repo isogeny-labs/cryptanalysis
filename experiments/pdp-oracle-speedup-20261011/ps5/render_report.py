@@ -1,7 +1,7 @@
 """Render report/ps5_report.pdf from raw/ and figures/ (Typst source kept beside it).
 Rendering only: every number in a table is read from raw/; the prose is fixed text.
 
-    python3 render_report.py     (needs the `typst` Python package)
+    python3 render_report.py     (needs the `typst` and `pikepdf` Python packages)
 """
 import glob
 import json
@@ -128,9 +128,20 @@ if p13:
                f"{'yes' if p13['digest_verdicts_equal_corpus'] and p13['digest_roots_equal_corpus'] else 'NO'}; "
                f"emulation wall {p13['emulation_secs']} s.")
 
+# One font family everywhere keeps the PDF small (the data-file rule of AGENTS.md puts PDFs over 64 KiB in the artifact store):
+# the figures are copied with their font names replaced, for rendering only.
+import shutil
+svgdir = os.path.join(OUT, "_svg")
+os.makedirs(svgdir, exist_ok=True)
+for name in ("ps5_pipeline.svg", "ps5_ops_and_coverage.svg"):
+    t = open(os.path.join(HERE, "figures", name)).read()
+    t = t.replace("Helvetica, Arial, sans-serif", "Libertinus Serif").replace("'DejaVu Sans'", "'Libertinus Serif'").replace("'Inter'", "'Libertinus Serif'")
+    open(os.path.join(svgdir, name), "w").write(t)
+
 typ = f"""
 #set page(paper: "a4", margin: (x: 1.5cm, y: 1.6cm), numbering: "1")
-#set text(size: 9pt)
+#set text(size: 9pt, font: "Libertinus Serif")
+#show raw: set text(font: "Libertinus Serif", size: 8.5pt)
 #set par(justify: false)
 #show heading: set block(above: 1em, below: 0.5em)
 #show table: set text(size: 7.8pt)
@@ -145,7 +156,7 @@ Protocol: `crypto` `research/pdp_oracle_speedup_20261011/protocols/PS-5.md`; thi
 PS-3's straight-line program (hash-frozen, `pdp-slp/1`) is turned by `pdp_ps5_emit` into one statement per gate; every gate is one `lop3` (the fused xor-and is one ternary operation). The same generated
 statements are compiled by `nvcc` as the CUDA kernel (never run) and by a C compiler as the CPU emulation, which a parity driver runs over the PS-0 corpus.
 
-#figure(image("/figures/ps5_pipeline.svg", width: 100%), caption: [Pipeline and what was run. Source: `figures/ps5_pipeline.svg`.])
+#figure(image("/report/_svg/ps5_pipeline.svg", width: 100%), caption: [Pipeline and what was run. Source: `figures/ps5_pipeline.svg`.])
 
 == Requirement status (summary; the full table is in the README)
 #table(columns: (1.2fr, 2.2fr), inset: 4pt, stroke: 0.4pt + luma(160),
@@ -177,7 +188,7 @@ statements are compiled by `nvcc` as the CUDA kernel (never run) and by a C comp
 Per lane slot: bit operations = G x 32 / (8 tasks x 32 lanes) = G / 8 (fused: xand = 1; two-input: xand = 2). Per valid pair: divide by the lane utilisation u = valid pairs / lane slots of this job layout.
 {table(9, ["l", "G (lop3/run)", "xand", "fused / lane slot", "two-input / lane slot", "u", "fused / valid pair", "two-input / valid pair", "lop3 / valid pair"], bo_rows)}
 
-#figure(image("/figures/ps5_ops_and_coverage.svg", width: 100%), caption: [Left: counted gates per lane slot by kind (n = 8 tasks per program). Right: pairs replayed through the CPU emulation per rung (80 targets). Source: `raw/emit`, `raw/parity_l*.jsonl`; `figures/ps5_ops_and_coverage.svg`.])
+#figure(image("/report/_svg/ps5_ops_and_coverage.svg", width: 100%), caption: [Left: counted gates per lane slot by kind (n = 8 tasks per program). Right: pairs replayed through the CPU emulation per rung (80 targets). Source: `raw/emit`, `raw/parity_l*.jsonl`; `figures/ps5_ops_and_coverage.svg`.])
 
 == Compile evidence, l = 8 (sm_80, nvcc 13.3.73 -O3; nothing run)
 ptxas: {regs} registers, {m.group(1)} bytes stack, {m.group(2)} bytes spill stores, {m.group(3)} bytes spill loads. SASS (static): {n_sass} instructions, of which LOP3 {hist.get("LOP3")}
@@ -187,8 +198,16 @@ The program has 46,360 xand, 12,334 xor, 4,008 and, 880 or, 48 not gates. These 
 == Gaps and open requirements
 The device run and everything that needs it (pairs per second, A/A, ABAB against PS-3, the 50x and 20x thresholds, the expected ratio) stay open. Also: the Gray-position mapping is moot and was not built; the emulation keeps wires in an array and
 runs operators proved equal to the `lop3` tables (hardware `lop3` semantics not verified here); the job layout wastes lanes (u = 0.25 to 0.87); the l = 8 kernel needs 255 registers and spills; the PS-0 corpus has no exceptional
-lanes; no Rust bridge, NVRTC path or CI job; l = 14..16 not attempted. Host: {manifest["host"]["cpu_model"]}, {manifest["host"]["cpus"]} vCPU, kernel {manifest["host"]["kernel"]}, shared; GPU devices: none.
+lanes; no Rust bridge, NVRTC path or CI job; l = 14..16 not attempted. Host: {manifest["cpu"]["model_name"]}, {manifest["cpu"]["cpus"]} vCPU, kernel {manifest["os"]["kernel"]}, shared host, evidence tier: none (exploratory); GPU devices: none.
 """
 open(os.path.join(OUT, "ps5_report.typ"), "w").write(typ)
 typst.compile(os.path.join(OUT, "ps5_report.typ"), output=os.path.join(OUT, "ps5_report.pdf"), root=HERE)
+shutil.rmtree(svgdir)
+# Typst writes no object streams; rewriting them takes the PDF from about 100 KB to about 62 KB (under the 64 KiB store threshold).
+import pikepdf
+
+pdf_path = os.path.join(OUT, "ps5_report.pdf")
+with pikepdf.open(pdf_path, allow_overwriting_input=True) as pdf:
+    pdf.save(pdf_path, object_stream_mode=pikepdf.ObjectStreamMode.generate, compress_streams=True,
+             recompress_flate=True, stream_decode_level=pikepdf.StreamDecodeLevel.generalized)
 print("wrote", os.path.join(OUT, "ps5_report.pdf"))

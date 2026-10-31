@@ -1,6 +1,7 @@
 
 #set page(paper: "a4", margin: (x: 1.5cm, y: 1.6cm), numbering: "1")
-#set text(size: 9pt)
+#set text(size: 9pt, font: "Libertinus Serif")
+#show raw: set text(font: "Libertinus Serif", size: 8.5pt)
 #set par(justify: false)
 #show heading: set block(above: 1em, below: 0.5em)
 #show table: set text(size: 7.8pt)
@@ -15,7 +16,7 @@ Protocol: `crypto` `research/pdp_oracle_speedup_20261011/protocols/PS-5.md`; thi
 PS-3's straight-line program (hash-frozen, `pdp-slp/1`) is turned by `pdp_ps5_emit` into one statement per gate; every gate is one `lop3` (the fused xor-and is one ternary operation). The same generated
 statements are compiled by `nvcc` as the CUDA kernel (never run) and by a C compiler as the CPU emulation, which a parity driver runs over the PS-0 corpus.
 
-#figure(image("/figures/ps5_pipeline.svg", width: 100%), caption: [Pipeline and what was run. Source: `figures/ps5_pipeline.svg`.])
+#figure(image("/report/_svg/ps5_pipeline.svg", width: 100%), caption: [Pipeline and what was run. Source: `figures/ps5_pipeline.svg`.])
 
 == Requirement status (summary; the full table is in the README)
 #table(columns: (1.2fr, 2.2fr), inset: 4pt, stroke: 0.4pt + luma(160),
@@ -44,9 +45,9 @@ statements are compiled by `nvcc` as the CUDA kernel (never run) and by a C comp
   [all], [], [], [], [211,265,840], [459 / 0], [0], [], [0 / 0], [5 of 5], [5 of 5],
 )
 
-Not run in this report.
+lop3-model build: l = 8: 96 hit lanes confirmed, 0 mismatches, digests equal yes; l = 9: 105 hit lanes confirmed, 0 mismatches, digests equal yes; l = 10: 90 hit lanes confirmed, 0 mismatches, digests equal yes; l = 11: 78 hit lanes confirmed, 0 mismatches, digests equal yes; l = 12: 90 hit lanes confirmed, 0 mismatches, digests equal yes.
 
-Not run.
+l = 13 (PS-3's 3-target sample, program hash first recorded by PS-5): 24,634,134 pairs, 0 mismatches, verdict and root digests equal the sample's: yes; emulation wall 22.834 s.
 
 == Self-test (CPU emulation, 50 repetitions per rung)
 #table(columns: (auto, auto, auto, auto, auto, auto), inset: 4pt, stroke: 0.4pt + luma(160), align: (left,) + (right,) * 5,
@@ -69,7 +70,7 @@ Per lane slot: bit operations = G x 32 / (8 tasks x 32 lanes) = G / 8 (fused: xa
   [12], [124,886], [107,320], [15,610.75], [29,025.75], [0.8677], [17,990.4], [33,450.3], [562.20],
 )
 
-#figure(image("/figures/ps5_ops_and_coverage.svg", width: 100%), caption: [Left: counted gates per lane slot by kind (n = 8 tasks per program). Right: pairs replayed through the CPU emulation per rung (80 targets). Source: `raw/emit`, `raw/parity_l*.jsonl`; `figures/ps5_ops_and_coverage.svg`.])
+#figure(image("/report/_svg/ps5_ops_and_coverage.svg", width: 100%), caption: [Left: counted gates per lane slot by kind (n = 8 tasks per program). Right: pairs replayed through the CPU emulation per rung (80 targets). Source: `raw/emit`, `raw/parity_l*.jsonl`; `figures/ps5_ops_and_coverage.svg`.])
 
 == Compile evidence, l = 8 (sm_80, nvcc 13.3.73 -O3; nothing run)
 ptxas: 255 registers, 4584 bytes stack, 9724 bytes spill stores, 14396 bytes spill loads. SASS (static): 70976 instructions, of which LOP3 63752
@@ -79,4 +80,4 @@ The program has 46,360 xand, 12,334 xor, 4,008 and, 880 or, 48 not gates. These 
 == Gaps and open requirements
 The device run and everything that needs it (pairs per second, A/A, ABAB against PS-3, the 50x and 20x thresholds, the expected ratio) stay open. Also: the Gray-position mapping is moot and was not built; the emulation keeps wires in an array and
 runs operators proved equal to the `lop3` tables (hardware `lop3` semantics not verified here); the job layout wastes lanes (u = 0.25 to 0.87); the l = 8 kernel needs 255 registers and spills; the PS-0 corpus has no exceptional
-lanes; no Rust bridge, NVRTC path or CI job; l = 14..16 not attempted. Host: Intel(R) Xeon(R) Processor @ 2.10GHz, 4 vCPU, kernel 6.18.44-fc-v139, shared; GPU devices: none.
+lanes; no Rust bridge, NVRTC path or CI job; l = 14..16 not attempted. Host: Intel(R) Xeon(R) Processor @ 2.10GHz, 4 vCPU, kernel 6.18.44-fc-v153, shared host, evidence tier: none (exploratory); GPU devices: none.
