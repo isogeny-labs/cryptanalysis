@@ -1,0 +1,12 @@
+--- a/src/curve.c
++++ b/src/curve.c
+@@ -748,6 +748,9 @@
+     uint64_t rbudget = sqrt_nm / (12u * (uint64_t)lg);
+     uint32_t rr = 8;
+     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
++#ifdef CA_GLV_FORCE_R /* measurement only: experiments/glv-table-confirm-above40-20261102 */
++    rr = CA_GLV_FORCE_R;
++#endif
+     c.r = rr;
+     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
+     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
