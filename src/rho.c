@@ -447,6 +447,7 @@ static void rho_start_mul(const rho_shared *sh, ca_elem *t1, ca_elem *t2, uint64
     }
 }
 
+// cppcheck-suppress constParameterPointer ; CA_RHO_TRACE builds write through sh (trail_counter)
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
