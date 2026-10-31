@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Prime-field arity-three CDCL(T) implementation](prime-field-m3-cdclt-implementation.md) | open | Freezing and running the corrected `m=3`, `s=6..14` prime-field PDP exponent screen | Canonical generator, source-bound `F_p` theory and explanation checker, matched exporters, complete accounting, power/preflight and immutable freeze |
 | [Xedni successor native proof qualification](xedni-successor-native-proof-qualification.md) | investigating | Qualifying the five bounded-witness declarations and resolving the original circular-hypothesis review | Exact-source native compilation and five foundation audits, with complete retained diagnostics and all applicable CI passing |
 | [Transfer audit completeness and geometric proof bridges](transfer-audit-completeness.md) | investigating | classification of all efficient transfers and cryptographic-size isogeny paths | explicit transfer universe, verified path provider, geometric Lean bridges and restored checkpoint transport |
 | [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | resolved for this session | Checkpoint access for finite audit | Successful uploads, six-arm audit and independent controls retained |
