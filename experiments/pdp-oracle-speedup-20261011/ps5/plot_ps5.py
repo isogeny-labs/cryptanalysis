@@ -10,6 +10,8 @@ import os
 import matplotlib
 
 matplotlib.use("Agg")
+matplotlib.rcParams["svg.fonttype"] = "none"  # text stays text: small file, selectable labels
+matplotlib.rcParams["svg.hashsalt"] = "ps5"  # stable ids
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
