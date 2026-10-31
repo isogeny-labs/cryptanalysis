@@ -1,5 +1,5 @@
 {
-  "schema": "lean.outside-receipt-reconciliation/v2",
+  "schema": "lean.outside-receipt-reconciliation/v3",
   "source_inventory": {
     "repo": "aburan28/crypto-autoresearcher",
     "pr_head": "f4330e1a29feb8fdea9f1eab7131ae5cde2e2b6f",
@@ -11,7 +11,20 @@
     "job_head_sha": "d3673ee089dd2a3a4ba15da087b95ebf2fb8e123",
     "job_conclusion": "success",
     "job_log_sha256": "9e0c9a0acb5184add97faf84129024327904a5c7d98e33bce6e9d78008463916",
-    "gate_sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d"
+    "gate_sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d",
+    "transfer": {
+      "producer_pr": 1315,
+      "producer_head": "e11e4e0b87376f63233ddeeb3822319f4b28cbaf",
+      "hosted_check": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41009248637/job/123911146641",
+      "hosted_conclusion": "success",
+      "source_sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+      "source_identical_at_frozen_commit": true,
+      "archived_audit": "tools/transfer-audit/evidence/final-check-attempt3/lean-audit.txt",
+      "audited_theorems": 12,
+      "audit_failures": 0,
+      "audit_trusted": 0,
+      "archived_audit_sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c"
+    }
   },
   "counts": {
     "outside_receipt": 87,
@@ -19,7 +32,8 @@
     "generic_native_builds_with_declared_axiom_outputs": 37,
     "separate_hasse_source": 1,
     "verifier_self_test_fixtures": 7,
-    "verifier_implementations": 3
+    "verifier_implementations": 2,
+    "separate_transfer_theorem_source": 1
   },
   "rows": [
     {
@@ -948,15 +962,30 @@
     {
       "path": "tools/lean/transfer-audit/TransferAudit.lean",
       "receipt_coverage": "outside_97_source_receipt",
-      "role": "verifier_implementation",
-      "machine_status": "not_a_theorem_source",
-      "software_review": "not_reconciled_in_this_packet"
+      "role": "tool_certificate_theorem_source",
+      "machine_status": "separate_source_bound_gate_success",
+      "software_review": "not_reconciled_in_this_packet",
+      "machine_details": {
+        "producer_pr": 1315,
+        "producer_head": "e11e4e0b87376f63233ddeeb3822319f4b28cbaf",
+        "hosted_check": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41009248637/job/123911146641",
+        "hosted_conclusion": "success",
+        "source_sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+        "source_identical_at_frozen_commit": true,
+        "archived_audit": "tools/transfer-audit/evidence/final-check-attempt3/lean-audit.txt",
+        "audited_theorems": 12,
+        "audit_failures": 0,
+        "audit_trusted": 0,
+        "archived_audit_sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c"
+      },
+      "review_outcome": "semantic_and_geometric_bridges_not_independently_reconciled"
     }
   ],
   "limits": [
     "A successful compiler/axiom gate does not establish theorem-to-research-claim fidelity.",
     "Generic route checks declared theorem/lemma names and their #print axioms output; it does not perform the exhaustive module audit used for the 39 dedicated sources.",
-    "The three verifier implementations are infrastructure sources, not research theorem claims.",
-    "The 97-source receipt and this separate gate are distinct evidence routes."
+    "The two verifier implementations are infrastructure sources, not research theorem claims.",
+    "The 97-source receipt and this separate gate are distinct evidence routes.",
+    "TransferAudit.lean is a separate theorem source about tool-certificate semantics; its finite-group and geometric bridges are not supplied by the corpus job."
   ]
 }

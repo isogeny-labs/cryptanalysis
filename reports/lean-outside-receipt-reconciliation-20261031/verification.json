@@ -1,11 +1,13 @@
 {
-  "schema": "lean.outside-receipt-report-verification/v1",
+  "schema": "lean.outside-receipt-report-verification/v2",
   "frozen_commit": "d3673ee089dd2a3a4ba15da087b95ebf2fb8e123",
   "source_manifest_sha256": "b7e8bbb2540b5f8337c171a5c7295bd3f83720b0bda6a329e542b8bd14cf00cb",
-  "job_log_sha256": "9e0c9a0acb5184add97faf84129024327904a5c7d98e33bce6e9d78008463916",
-  "gate_sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d",
-  "reconciliation_sha256": "510143446ee5535c848507cab69d16adebf71f9054ebd00b758e928b61a3ecb1",
-  "verifier_positive": "PASS: 87 paths partitioned; 39 exhaustive audits, 37 generic builds, 1 Hasse, 7 fixtures, 3 verifier implementations",
+  "corpus_job_log_sha256": "9e0c9a0acb5184add97faf84129024327904a5c7d98e33bce6e9d78008463916",
+  "corpus_gate_sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d",
+  "transfer_source_sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+  "transfer_audit_sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c",
+  "reconciliation_sha256": "5e807ac6d2612ece121b35a36df01f31f41734ee1d02f87dfaf422e20ac4220a",
+  "verifier_positive": "PASS: 87 paths partitioned; 39 corpus module audits, 37 generic builds, 1 Hasse, 1 transfer theorem source, 7 fixtures, 2 auditor implementations",
   "negative_control": {
     "mutation": "replace first registered path with falsified.lean",
     "exit_code": 1,
@@ -14,7 +16,8 @@
   "pdf": {
     "pages": 1,
     "rendered_from": "report.typ",
-    "scope_svg_sha256": "c67c9015bda30f413270b32285be59960e268b9208a14875347fd9ac3ad28844",
+    "scope_svg_sha256": "7feca578dd3becdbf0cc511b388ab13cee93c66b3d6a1af9604ab195edc875d9",
+    "sha256": "dd3d9431bfa68f1033d1d4b1a3f06863f5168aeff68f6cf7ec2e6cfdf87188f3",
     "visually_inspected": true,
     "inspect_method": "pdftoppm page 1 at 110 dpi and image inspection"
   }

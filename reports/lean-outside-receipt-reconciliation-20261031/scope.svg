@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
 <title id="title">Lean source-tree receipt boundary and separate machine evidence</title>
-<desc id="desc">At the frozen cryptanalysis commit, 184 tracked Lean files split into 97 in one corpus receipt and 87 outside it. The 87 outside paths split into 39 dedicated native audits, 37 generic native builds, one Hasse module, seven verifier fixtures, and three verifier implementations.</desc>
+<desc id="desc">At the frozen cryptanalysis commit, 184 tracked Lean files split into 97 in one corpus receipt and 87 outside it. The 87 outside paths split into 39 dedicated native audits, 37 generic native builds, one Hasse module, seven verifier fixtures, one separately audited TransferAudit theorem source, and two auditor implementations.</desc>
 <rect width="960" height="560" fill="#f7f9fc"/>
 <text x="48" y="54" font-family="DejaVu Sans, sans-serif" font-size="25" font-weight="bold" fill="#162541">Cryptanalysis Lean source-tree scope</text>
 <text x="48" y="83" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#4b5870">Frozen commit d3673ee · 184 tracked .lean files · file counts, not proved claims</text>
@@ -14,7 +14,8 @@
 <rect x="435" y="275" width="367" height="50" fill="#5a85ba"/>
 <rect x="802" y="275" width="10" height="50" fill="#8363a5"/>
 <rect x="812" y="275" width="70" height="50" fill="#8b9cae"/>
-<rect x="882" y="275" width="30" height="50" fill="#bdc7d2"/>
+<rect x="882" y="275" width="10" height="50" fill="#bb754b"/>
+<rect x="892" y="275" width="20" height="50" fill="#bdc7d2"/>
 <text x="60" y="305" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="bold" fill="#fff">39 dedicated module audits</text>
 <text x="447" y="305" font-family="DejaVu Sans, sans-serif" font-size="15" font-weight="bold" fill="#fff">37 generic native builds</text>
 <rect x="48" y="349" width="12" height="12" fill="#8363a5"/>
@@ -22,10 +23,12 @@
 <rect x="275" y="349" width="12" height="12" fill="#8b9cae"/>
 <text x="295" y="360" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#283a54">7 verifier fixtures</text>
 <rect x="535" y="349" width="12" height="12" fill="#bdc7d2"/>
-<text x="555" y="360" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#283a54">3 gate sources</text>
-<text x="48" y="397" font-family="DejaVu Sans, sans-serif" font-size="13" fill="#4b5870">Segment widths are proportional to file counts within the 87 outside paths.</text>
-<text x="48" y="440" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">The 77 theorem/control sources passed the exact-commit corpus job.</text>
-<text x="48" y="468" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">Dedicated audits and generic builds have different machine-check scopes.</text>
-<text x="48" y="496" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">Semantic fidelity and execution replay require separate reviews.</text>
-<text x="48" y="537" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#65738a">Source: frozen inventory manifest; cryptanalysis corpus job 124428817573 on d3673ee</text>
+<text x="555" y="360" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#283a54">2 auditor sources</text>
+<rect x="48" y="373" width="12" height="12" fill="#bb754b"/>
+<text x="68" y="384" font-family="DejaVu Sans, sans-serif" font-size="14" fill="#283a54">1 separate TransferAudit theorem source</text>
+<text x="48" y="416" font-family="DejaVu Sans, sans-serif" font-size="13" fill="#4b5870">Segment widths are proportional to file counts within the 87 outside paths.</text>
+<text x="48" y="452" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">The 77 corpus sources passed the exact-commit job; TransferAudit has a separate gate.</text>
+<text x="48" y="480" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">Dedicated audits and generic builds have different machine-check scopes.</text>
+<text x="48" y="508" font-family="DejaVu Sans, sans-serif" font-size="15" fill="#283a54">Semantic fidelity and execution replay require separate reviews.</text>
+<text x="48" y="545" font-family="DejaVu Sans, sans-serif" font-size="12" fill="#65738a">Source: frozen inventory manifest; cryptanalysis corpus job 124428817573 on d3673ee</text>
 </svg>

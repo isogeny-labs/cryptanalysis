@@ -25,6 +25,9 @@ def main() -> None:
     parser.add_argument("--job", type=Path, required=True)
     parser.add_argument("--log", type=Path, required=True)
     parser.add_argument("--gate", type=Path, required=True)
+    parser.add_argument("--transfer-source", type=Path, required=True)
+    parser.add_argument("--transfer-job", type=Path, required=True)
+    parser.add_argument("--transfer-audit", type=Path, required=True)
     parser.add_argument("--reconciliation", type=Path, default=Path(__file__).with_name("reconciliation.json"))
     args = parser.parse_args()
     report = json.loads(args.reconciliation.read_text())
@@ -33,7 +36,7 @@ def main() -> None:
     lines = args.log.read_text().splitlines()
     body = [line.split("Z ", 1)[-1] for line in lines]
 
-    require(report["schema"] == "lean.outside-receipt-reconciliation/v2", "wrong report schema")
+    require(report["schema"] == "lean.outside-receipt-reconciliation/v3", "wrong report schema")
     source = report["source_inventory"]
     require(sha256(args.manifest) == source["manifest_sha256"], "manifest hash changed")
     expected = manifest["cryptanalysis_corpus_boundary"]["outside_this_receipt_paths"]
@@ -46,6 +49,15 @@ def main() -> None:
     evidence = report["evidence"]
     require(sha256(args.log) == evidence["job_log_sha256"], "job log hash changed")
     require(sha256(args.gate) == evidence["gate_sha256"], "gate hash changed")
+    transfer = evidence["transfer"]
+    transfer_job = json.loads(args.transfer_job.read_text())
+    require(transfer_job["id"] == 123911146641 and transfer_job["head_sha"] == transfer["producer_head"]
+            and transfer_job["status"] == "completed" and transfer_job["conclusion"] == "success",
+            "transfer hosted job differs")
+    require(sha256(args.transfer_source) == transfer["source_sha256"], "transfer source hash changed")
+    require(sha256(args.transfer_audit) == transfer["archived_audit_sha256"], "transfer audit hash changed")
+    require("audited 12 theorems in [TransferAudit]; 0 failing, 0 trusted (native_decide)"
+            in args.transfer_audit.read_text(), "transfer audit summary differs")
 
     native = {}
     generic_build = {}
@@ -79,10 +91,10 @@ def main() -> None:
     require(any("native added theorem modules checked: 77" in line for line in body),
             "aggregate native module count changed")
     hasse = "bindings/rust/curve-audit/formal/HasseSquareBounds.lean"
-    implementations = {"tools/lean/AuditAxioms.lean", "tools/lean/AuditHeckeAxioms.lean",
-                       "tools/lean/transfer-audit/TransferAudit.lean"}
-    require(set(expected) == set(native) | set(generic_build) | {hasse} | set(fixtures)
-            | implementations, "job/source-role partition differs")
+    transfer_source = "tools/lean/transfer-audit/TransferAudit.lean"
+    implementations = {"tools/lean/AuditAxioms.lean", "tools/lean/AuditHeckeAxioms.lean"}
+    require(set(expected) == set(native) | set(generic_build) | {hasse, transfer_source}
+            | set(fixtures) | implementations, "job/source-role partition differs")
     for row in report["rows"]:
         path = row["path"]
         if path in native:
@@ -103,6 +115,10 @@ def main() -> None:
                     f"fixture row differs: {path}")
         elif path == hasse:
             require(row["machine_status"] == "passed_separate_hasse_gate", "Hasse row differs")
+        elif path == transfer_source:
+            require(row["machine_status"] == "separate_source_bound_gate_success"
+                    and row["role"] == "tool_certificate_theorem_source"
+                    and row["machine_details"] == transfer, "transfer theorem row differs")
         else:
             require(path in implementations and row["role"] == "verifier_implementation",
                     f"implementation row differs: {path}")
@@ -111,9 +127,10 @@ def main() -> None:
                                  "generic_native_builds_with_declared_axiom_outputs": 37,
                                  "separate_hasse_source": 1,
                                  "verifier_self_test_fixtures": 7,
-                                 "verifier_implementations": 3}, "reported counts differ")
-    print("PASS: 87 paths partitioned; 39 exhaustive audits, 37 generic builds, 1 Hasse, "
-          "7 fixtures, 3 verifier implementations")
+                                 "verifier_implementations": 2,
+                                 "separate_transfer_theorem_source": 1}, "reported counts differ")
+    print("PASS: 87 paths partitioned; 39 corpus module audits, 37 generic builds, "
+          "1 Hasse, 1 transfer theorem source, 7 fixtures, 2 auditor implementations")
 
 
 if __name__ == "__main__":
