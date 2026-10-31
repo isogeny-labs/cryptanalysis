@@ -46,7 +46,7 @@ Not measured here. The default in the protocol keeps cap = 128 for all lg >= 40 
 
 ## Distance to matched rho (descriptive, raw group ops, not priced)
 
-No rho reference was run in this round. Main's mean S = group_ops / sqrt(n/m) is 1.45-1.52 in every cell (`results.md`), i.e. group_ops / sqrt(n) of about 0.75 (j = 1728) and 0.61 (j = 0); plain negation-map rho is about 1.58 sqrt(n) in earlier rounds, so raw GLV operations are roughly 0.48 and 0.39 of rho's before pricing native work. Pricing at 0 / 0.1 / 1 GAE (AGENTS.md 5a) is not done here; no cross-method ranking is claimed. A 3% saving moves these ratios by about 0.01 to 0.015.
+No rho reference was run in this round (the confirmation round, PR #1340, ran it on 60 targets per cell at 40-43 bits: GLV main used about 0.72 (j = 1728) and 0.60 (j = 0) of rho's raw group operations on the same targets, rho S = group_ops / sqrt(n) about 1.0). Main's mean S = group_ops / sqrt(n/m) here is 1.45-1.52 in every cell (`results.md`). Native work is not priced (AGENTS.md 5a band not computed) and no ranking is claimed. An earlier version of this paragraph used 1.58 sqrt(n) for rho from the task brief; the measured negation-map rho in #1340 is about 1.0 sqrt(n), so the ratio quoted before was wrong and is replaced here.
 
 ## Limits
 
