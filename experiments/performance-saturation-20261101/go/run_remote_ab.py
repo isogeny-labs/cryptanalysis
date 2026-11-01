@@ -97,6 +97,34 @@ def git(repo: Path, *argv: str) -> str:
     return command(["git", "-C", str(repo), *argv])
 
 
+def commit_parents(repo: Path, commit: str) -> list[str]:
+    """Read parent ids from the commit object's raw header.
+
+    Pretty-format placeholders such as ``%P`` intentionally hide parents at
+    a shallow boundary.  The parent header remains part of the commit object
+    and is therefore the identity source that works for an exact depth-one
+    HTTP checkout without fetching or dereferencing the parent object.
+    """
+    raw = subprocess.check_output(
+        ["git", "-C", str(repo), "cat-file", "commit", commit]
+    )
+    headers, separator, _ = raw.partition(b"\n\n")
+    if not separator:
+        raise RuntimeError(f"commit object has no header terminator: {commit}")
+    parents = []
+    for line in headers.splitlines():
+        if not line.startswith(b"parent "):
+            continue
+        try:
+            parent = line.removeprefix(b"parent ").decode("ascii")
+        except UnicodeDecodeError as error:
+            raise RuntimeError(f"commit has a non-ASCII parent id: {commit}") from error
+        if re.fullmatch(r"[0-9a-f]{40,64}", parent) is None:
+            raise RuntimeError(f"commit has an invalid parent id: {parent!r}")
+        parents.append(parent)
+    return parents
+
+
 def require_tools() -> dict[str, str]:
     versions = {}
     probes = {
@@ -258,13 +286,25 @@ def install_go(work: Path) -> tuple[Path, dict[str, Any]]:
     return go, receipt
 
 
-def ensure_object(repo: Path, commit: str) -> None:
+def ensure_commit(repo: Path, commit: str) -> None:
     found = subprocess.run(
         ["git", "-C", str(repo), "cat-file", "-e", f"{commit}^{{commit}}"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     ).returncode == 0
     if not found:
         command(["git", "-C", str(repo), "fetch", "--quiet", "--no-tags", "--depth=1", "origin", commit])
+    observed = git(repo, "rev-parse", "--verify", f"{commit}^{{commit}}")
+    if observed != commit:
+        raise RuntimeError(f"commit identity mismatch: expected {commit}, observed {observed}")
+
+
+def require_object_type(repo: Path, object_id: str, expected_type: str) -> None:
+    observed_type = git(repo, "cat-file", "-t", object_id)
+    if observed_type != expected_type:
+        raise RuntimeError(
+            f"object type mismatch for {object_id}: "
+            f"expected {expected_type}, observed {observed_type}"
+        )
 
 
 def archive_commit(repo: Path, commit: str, destination: Path) -> None:
@@ -294,7 +334,12 @@ def tree_manifest(root: Path) -> dict[str, str]:
 
 def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]:
     for commit in (BASELINE_COMMIT, BENCHMARK_COMMIT, CANDIDATE_COMMIT):
-        ensure_object(repo, commit)
+        ensure_commit(repo, commit)
+    candidate_parents = commit_parents(repo, CANDIDATE_COMMIT)
+    if len(candidate_parents) != 1:
+        raise RuntimeError(
+            f"candidate must have exactly one recorded parent: {candidate_parents}"
+        )
     identities = {
         "baseline_commit": git(repo, "rev-parse", BASELINE_COMMIT),
         "baseline_tree": git(repo, "rev-parse", f"{BASELINE_COMMIT}^{{tree}}"),
@@ -302,9 +347,9 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
         "benchmark_commit": git(repo, "rev-parse", BENCHMARK_COMMIT),
         "benchmark_blob": git(repo, "rev-parse", f"{BENCHMARK_COMMIT}:bindings/go/coord_benchmark_test.go"),
         "candidate_commit": git(repo, "rev-parse", CANDIDATE_COMMIT),
-        # Read the parent recorded in the commit object. A depth-one HTTP
-        # checkout need not contain the parent object itself.
-        "candidate_parent": git(repo, "show", "-s", "--format=%P", CANDIDATE_COMMIT),
+        # The raw commit header retains this id at a shallow boundary even
+        # though pretty-format %P reports an empty parent list there.
+        "candidate_parent": candidate_parents[0],
         "candidate_tree": git(repo, "rev-parse", f"{CANDIDATE_COMMIT}^{{tree}}"),
         "candidate_coord_blob": git(repo, "rev-parse", f"{CANDIDATE_COMMIT}:bindings/go/coord.go"),
         # The merge base was derived before this runner was committed. The
@@ -326,6 +371,8 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
     }
     if identities != expected:
         raise RuntimeError(f"source identity mismatch: {identities}")
+    for blob in (BASELINE_COORD_BLOB, BENCHMARK_BLOB, CANDIDATE_COORD_BLOB):
+        require_object_type(repo, blob, "blob")
 
     baseline = work / "baseline-source"
     candidate = work / "candidate-source"
