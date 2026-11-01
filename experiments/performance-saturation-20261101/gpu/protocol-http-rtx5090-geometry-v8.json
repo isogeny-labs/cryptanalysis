@@ -1,0 +1,846 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "gpu-f4-update-grid-ab-rtx5090-http-20261101",
+  "version": 8,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/gpu",
+  "authors": [
+    "Codex performance-saturation study lane"
+  ],
+  "links": {
+    "literature": "LITERATURE.md",
+    "runner": "run_gpu_geometry_ab.sh",
+    "analysis": "analyze_gpu_geometry_ab.py",
+    "retained_aa_baseline": "V7_REPORT.md"
+  },
+  "question": "Does changing only the production CUDA F4 update-grid target from four to six resident blocks per RTX 5090 SM materially reduce primary device time without a greater-than-two-percent complete-stage or holdout regression?",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Both arms reproduce every registered matrix shape, rank, refuted result, pinned count, and word-operation count exactly.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-correctness"
+      ],
+      "if_supported": "the timing rows are correctness-admissible",
+      "if_not_supported": "the session is invalid and no timing or mechanism claim is admitted"
+    },
+    {
+      "id": "C2",
+      "text": "The six-block target improves primary k0n13m2d6 device-stage time by at least two percent on the registered RTX 5090 session.",
+      "class": "comparative",
+      "decided_by": [
+        "C-geometry"
+      ],
+      "if_supported": "report a device-stage engineering speedup scoped to this exact session",
+      "if_not_supported": "do not retain the production candidate for performance"
+    },
+    {
+      "id": "C3",
+      "text": "The six-block target has no greater-than-two-percent complete-stage regression on any registered cell and no greater-than-two-percent device-stage regression on any non-primary cell.",
+      "class": "comparative",
+      "decided_by": [
+        "C-geometry"
+      ],
+      "if_supported": "the candidate passes the prospective non-regression family",
+      "if_not_supported": "the candidate is rejected even if the primary point estimate improves"
+    },
+    {
+      "id": "C4",
+      "text": "Nsys shows exactly the registered four-to-six-block update-grid transformation while launch order, all non-update geometry, and update resource use remain fixed.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-mechanism"
+      ],
+      "if_supported": "the observed timing comparison has the registered mechanism",
+      "if_not_supported": "the session is invalid for the geometry claim"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "More update blocks expose additional independent work on the primary matrix without changing arithmetic work.",
+      "mechanism": "The update kernel remains at 256 threads, 31 registers per thread, 16 KiB static shared memory, and zero local bytes per thread; six blocks fill the RTX 5090's 48-warp per-SM limit when enough tiles exist.",
+      "predictions": [
+        {
+          "id": "P1",
+          "metric": "device_ms",
+          "direction": "lower",
+          "minimum_effect": "median paired baseline/candidate speedup >= 1.02 and simultaneous lower bound > 1 on k0n13m2d6",
+          "provenance": {
+            "written_at": "2026-11-01",
+            "first_recorded_in": "LITERATURE.md V8 prospective update-grid A/B",
+            "data_seen": [
+              {
+                "path": "V7_REPORT.md",
+                "measured": "v7 baseline showed update as 51.7% of primary kernel time; no six-block candidate data existed"
+              }
+            ],
+            "sample_status": "partially_in_sample",
+            "decisive_scope": "all v8 rows are fresh; v7 selected the mechanism but supplied no candidate outcome"
+          },
+          "role": "decisive"
+        }
+      ]
+    }
+  ],
+  "arms": [
+    {
+      "id": "baseline",
+      "role": "baseline",
+      "description": "The candidate commit build-closure archive with only suite/src/cryptanalysis/f4_gpu.rs overlaid from the retained v7 production commit, preserving the four-block-per-SM target.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "archive_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "overlay_origin_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "update_blocks_per_sm": 4,
+        "update_threads": 256,
+        "update_tile_words": 32,
+        "maximum_parts": 32
+      }
+    },
+    {
+      "id": "candidate",
+      "role": "candidate",
+      "description": "The same candidate commit build-closure archive without an overlay, containing only the registered six-block-per-SM production change relative to the constructed baseline tree.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "archive_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "overlay_origin_commit": null,
+        "update_blocks_per_sm": 6,
+        "update_threads": 256,
+        "update_tile_words": 32,
+        "maximum_parts": 32
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": false,
+      "comparison": null,
+      "not_applicable_reason": "The immediately preceding frozen v7 run is a retained byte-identical A/A noise calibration on the same Secure RTX 5090 five-cell path. V8 spends its single allocation on the one-factor A/B and does not reuse any v7 timing row in its distribution."
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every execution is a deterministic known-answer control; any shape, answer, or work mismatch invalidates the session before timing is interpreted."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "This fixed-input engineering comparison makes no discovery, detector-yield, or population claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "update_blocks_per_sm",
+        "levels": [
+          4,
+          6
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "arm_source_tree",
+        "treatment": "fixed",
+        "value": "one candidate build-closure archive copied twice; baseline overlays one exact registered production file",
+        "how": "the runner refuses unless a recursive comparison reports only suite/src/cryptanalysis/f4_gpu.rs and its two hashes plus scoped git diff match this protocol"
+      },
+      {
+        "name": "workloads_and_answers",
+        "treatment": "fixed",
+        "value": "extensions.workloads",
+        "how": "the frozen analyzer is the executable workload registry and exact oracle"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "crossed",
+        "value": "baseline first in rounds 1,3,5; candidate first in rounds 2,4,6",
+        "how": "each arm runs first exactly three times"
+      },
+      {
+        "name": "process_layout_and_cache",
+        "treatment": "randomized",
+        "value": "fresh process per cell and arm",
+        "how": "one complete warmup per arm and cell is excluded"
+      },
+      {
+        "name": "gpu",
+        "treatment": "fixed",
+        "value": "one NVIDIA GeForce RTX 5090 in Runpod Secure Cloud",
+        "how": "controller and runner refuse any other model or count"
+      },
+      {
+        "name": "gpu_state",
+        "treatment": "measured",
+        "value": "200 ms nvidia-smi telemetry",
+        "how": "UUID, pstate, temperature, utilization, memory, power, and clocks are retained per execution; >=90 C invalidates the row"
+      },
+      {
+        "name": "numeric_isolation",
+        "treatment": "measured",
+        "value": "per-execution pre/post PSI, cgroup, memory-event, and steal snapshots",
+        "how": "CPU some avg10 <=10, CPU full avg10=0, memory some/full avg10=0, and zero throttle/memory/steal deltas are mandatory"
+      },
+      {
+        "name": "profiling_overhead",
+        "treatment": "fixed",
+        "value": "post-timing diagnostic only",
+        "how": "all 70 unprofiled rows gate before one Nsys capture per arm; profiled durations never enter a timing statistic and NCU is forbidden"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "value": "hash-pinned standard-library analyzer",
+        "how": "all exact arithmetic, multiplicity, mechanism checks, verdict precedence, rows, and export writing are frozen before data"
+      },
+      {
+        "name": "provider_placement",
+        "treatment": "measured",
+        "value": "one exact Secure pod ID with >=16 vCPU and >=62 GB RAM",
+        "how": "the authenticated receipt records provider placement, price, lifetime, result hashes, and exact-ID cleanup; physical host exclusivity is not claimed"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-correctness",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "known-answer and exact-work gate",
+        "threshold": "exact equality to all extensions.workloads fields in every warmup, measured row, and profile"
+      },
+      {
+        "id": "C-geometry",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [
+          "update_blocks_per_sm"
+        ],
+        "design": "one_factor",
+        "reason": "the constructed trees and scoped source hashes make update_blocks_per_sm the only production variable",
+        "threshold": "primary device median paired speedup >=1.02 with simultaneous lower >1; all registered non-regression medians and lower bounds >=50/51"
+      },
+      {
+        "id": "C-mechanism",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [
+          "update_blocks_per_sm"
+        ],
+        "design": "absolute",
+        "reason": "post-timing Nsys launch/resource identity gate",
+        "threshold": "2,941 update launches per arm with exact four-versus-six formula, unchanged non-update geometry, 256 threads, 31 registers/thread, 16 KiB static shared, zero dynamic shared and zero local bytes/thread"
+      }
+    ],
+    "aa_not_applicable": "A separate retained v7 protocol supplies the planning noise calibration; no prior rows decide v8.",
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": null,
+    "seed_derivation": {
+      "method": "harness_drawn",
+      "seeds": [],
+      "nonce": null,
+      "note": "The frozen analyzer's WORKLOADS registry selects deterministic matrices and the harness consumes no algorithm seed; export rows record zero as an explicit unused receipt value."
+    },
+    "instance_sampling": {
+      "rule": "The five exact v7 cells are fixed before candidate timing; no cell is added, removed, or reweighted after observation.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "The analyzer, exact resampling distribution, thresholds, and verdict vocabulary are frozen and labels are required for the mechanism gate.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 5,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 10,
+      "correction": "bonferroni",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "This requested fixed-N engineering screen enumerates all 6^6 paired resamples. It is not a generic power calculation. Ten one-sided lower bounds use exact lower-tail probability 1/200; the material-effect gate additionally requires a primary median >=1.02."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1200,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 3600,
+      "measured_on": "The retained v7 remote scientific command completed in 226.551 seconds with one build, 70 unprofiled processes, and two Nsys traces. V8 conservatively budgets one hour for two isolated cold-target builds, a fixed 30-second post-build settle, the same process count, SQLite mechanism checks, export generation, and variance. No v8 GPU row existed at registration."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "device_ms",
+        "name": "CUDA elimination device interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "The verbose device interval from queued panel work through final CUDA synchronization; upload, download, build, startup, profiles, and analysis are excluded.",
+        "source": "raw/*/*/*/*.log F4_F2_ECHELON device field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "the exact decimal text emitted by the production instrument",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "complete_ms",
+        "name": "charged CUDA F4 upload plus device plus download interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "Exact-decimal sum of the production verbose upload, device, and download fields; matrix construction, process startup, build, verification, profile, and analysis remain excluded.",
+        "source": "analyze_gpu_geometry_ab.py Fraction(upload_ms)+Fraction(device_ms)+Fraction(download_ms)",
+        "formula": "upload_ms + device_ms + download_ms",
+        "aggregation": "paired_ratio",
+        "resolution": "the exact decimal text emitted for each component",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "word_ops",
+        "name": "word XOR operations",
+        "unit": "64-bit word XORs",
+        "kind": "counted",
+        "definition": "Exact pivot-history and trailing-update work emitted by the production harness.",
+        "source": "raw JSON word_ops",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "1",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "answer_gate",
+        "name": "exact answer and matrix-shape gate",
+        "unit": "pass/fail",
+        "kind": "exact",
+        "definition": "Exact equality of rows, columns, rank, refuted, pinned, and word_ops in every execution.",
+        "source": "analyze_gpu_geometry_ab.py validate_execution",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "exact",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "nsys_geometry",
+        "name": "ordered CUDA launch geometry and resources",
+        "unit": "trace",
+        "kind": "exact",
+        "definition": "Post-timing SQLite rows for all primary kernels, including exact update launch sequence and resource fields.",
+        "source": "profiles/nsys/*/k0n13m2d6.sqlite CUPTI_ACTIVITY_KIND_KERNEL",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "one launch",
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "word_ops",
+      "rank",
+      "refuted",
+      "pinned",
+      "rows",
+      "cols",
+      "cgroup.nr_throttled",
+      "cgroup.throttled_usec",
+      "cgroup.memory.events",
+      "steal_jiffies",
+      "cpu.psi",
+      "memory.psi",
+      "nvidia_smi.telemetry"
+    ],
+    "record": [
+      "provider",
+      "requested_cloud",
+      "pod_id",
+      "machine_id",
+      "cpu_model",
+      "cpu_count",
+      "memory_bytes",
+      "kernel",
+      "gpu_uuid",
+      "gpu_name",
+      "compute_capability",
+      "driver_version",
+      "rustc_version",
+      "cargo_version",
+      "nsys_version",
+      "tooling_commit",
+      "candidate_archive_sha256",
+      "baseline_f4_sha256",
+      "candidate_f4_sha256",
+      "production_diff_sha256",
+      "binary_sha256",
+      "source_tree_diff_count",
+      "foreign_compute_processes",
+      "arm_order",
+      "numeric_isolation_before_after",
+      "transport_receipt_sha256",
+      "result_archive_sha256",
+      "cleanup_absence_verified"
+    ],
+    "timed_primary_justification": "The optimization changes launch geometry while exact word_ops is invariant, so counts cannot measure scheduling or memory-latency effects. A clock is admitted only for successful fresh-process rows inside one same-pod alternating session that earn tierB by the frozen numeric PSI, throttle, memory-event, steal, temperature, identity, and no-foreign-process gates."
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": null,
+    "placement": {
+      "cloud": "SECURE",
+      "gpu_type": "NVIDIA GeForce RTX 5090",
+      "gpu_count": 1,
+      "min_vcpu": 16,
+      "min_ram_gb": 62,
+      "image": "runpod/base:1.0.2-ubuntu2404",
+      "disk_gb": 100,
+      "max_price_usd_per_hour": 1.19,
+      "ports": [
+        "8888/http"
+      ],
+      "transport": "authenticated Runpod HTTPS proxy",
+      "unique_pod_name_required": true,
+      "keep": false,
+      "max_hours": 3,
+      "maximum_cost_exposure_usd": 3.57,
+      "isolation_scope": "same-pod paired instance scope; physical-host exclusivity is not asserted"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 9000,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Attempt exactly one warmup and six measured fresh-process pairs for every registered cell, followed by exactly one primary Nsys capture per arm.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Stop and retain the session on any source, identity, correctness, isolation, process, profiler, archive, or cleanup gate failure; do not replace the pod or row.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "The provider controller may create at most one pod and maximum cost exposure is USD 3.57.",
+      "kind": "budget",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "Any source archive, overlay, scoped diff, tooling, binary, protocol, GPU identity, or arm identity mismatch invalidates the session.",
+    "Any missing, duplicate, retried, resumed, failed, non-CUDA, wrong-answer, wrong-work, or wrong-order execution invalidates the session.",
+    "Any measured row with CPU PSI some avg10 >10, CPU PSI full avg10 !=0, memory PSI some/full avg10 !=0, a cgroup throttle/memory-event delta, a steal delta, GPU temperature >=90 C, a foreign GPU process, or malformed telemetry is invalid.",
+    "Any Nsys trace without exactly 2,941 ordered update launches, exact four-versus-six grid formula, identical non-update geometry, or exact update resources invalidates the session.",
+    "Any profile duration entering the timing distribution invalidates the analysis.",
+    "A missing experiment.export/v1, rows.jsonl, analysis.json, transport receipt, archive manifest, or exact-ID cleanup absence check makes the session incomplete."
+  ],
+  "decision_rule": {
+    "text": "First require every source, execution, exact-answer, exact-work, numeric-isolation, telemetry, Nsys mechanism, export, transport, and cleanup gate. Enumerate all 6^6 paired resamples for each registered timing metric using exact Fractions and the median of paired baseline/candidate ratios. For a ten-test one-sided Bonferroni family at alpha .05, take the sorted bootstrap order statistic at floor(46656/200), zero based. geometry_supported requires the primary device median >=51/50 and lower >1, plus median and lower >=50/51 for complete_ms on all five cells and device_ms on all four non-primary cells. Any failed timing gate yields geometry_not_supported; an exact or isolation failure yields invalid_measurement; missing required completion artifacts yields incomplete_session.",
+    "comparison_ids": [
+      "C-correctness",
+      "C-geometry",
+      "C-mechanism"
+    ],
+    "threshold": "primary device median >=51/50 and simultaneous lower >1; nine non-regression medians and lower bounds >=50/51",
+    "statistic": "median of six paired baseline/candidate ratios; exact ordinary paired bootstrap of that median over all 6^6 resamples",
+    "interval": "ten simultaneous one-sided lower bounds using exact Bonferroni lower-tail quantile 1/200; no RNG or floating-point comparison",
+    "multiple_comparison_correction": "bonferroni",
+    "effect_size_measure": "paired baseline/candidate stage-time ratio",
+    "verdict_vocabulary": [
+      "geometry_supported",
+      "geometry_not_supported",
+      "invalid_measurement",
+      "incomplete_session"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "analyze_gpu_geometry_ab.py",
+      "sha256": "123a6571107b53ad89a726f184003c859ee923f21dcad8ebe65c752d265e48a4"
+    },
+    "inputs": [
+      "host.json",
+      "source-identities.json",
+      "binary-sha256.tsv",
+      "order.tsv",
+      "metadata/gpu.csv",
+      "raw/warmup",
+      "raw/measure",
+      "profiles/nsys",
+      "HTTP transport receipt and remote metadata",
+      "hash-bound result archive manifest"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "analysis.json",
+      "export.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired device and complete-stage ratios by cell",
+      "baseline-to-candidate update-grid transition counts"
+    ],
+    "report_dir": "reports"
+  },
+  "inadmissible": [
+    "Changing the cell set, warmup count, replicate count, arm order, family size, interval quantile, thresholds, stage boundaries, or verdict precedence after any v8 row exists.",
+    "Using v7 timing rows in the v8 distribution, treating a profile duration as a speedup, or choosing a favorable subset of launches or pairs.",
+    "Rebuilding one arm with a different archive, dependency lockfile, compiler invocation, environment, target directory policy, or source overlay.",
+    "Retrying a failed scientific row, resuming a process, creating a replacement pod, or relaxing an isolation or mechanism gate.",
+    "Calling a complete algorithm or end-to-end index-calculus speedup from this F4 upload/device/download stage comparison."
+  ],
+  "literature": [
+    {
+      "ref": "LITERATURE.md V8 prospective update-grid A/B",
+      "provenance": "internal",
+      "claim": "Records the retained v7 planning evidence, source audit, official CUDA occupancy guidance, Nsys SQLite mechanism fields, and canonical export/statistical contract.",
+      "verified_by": "source-linked table in the study directory"
+    },
+    {
+      "ref": "https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html",
+      "provenance": "retrieved",
+      "claim": "Occupancy and launch configuration are resource-dependent; a larger grid alone is not evidence of improvement.",
+      "verified_by": "LITERATURE.md"
+    },
+    {
+      "ref": "https://docs.nvidia.com/nsight-systems/AnalysisGuide/index.html#exported-data",
+      "provenance": "retrieved",
+      "claim": "The exported CUDA kernel activity table exposes ordered grid, block, register, shared-memory, and local-memory fields used by the frozen mechanism gate.",
+      "verified_by": "analyze_gpu_geometry_ab.py mechanism_gate"
+    },
+    {
+      "ref": "crypto-autoresearcher:docs/experiment-protocol.md",
+      "provenance": "internal",
+      "claim": "Protocol, analysis, multiplicity, outputs, and invalidation rules are frozen before data and every session emits experiment.export/v1.",
+      "verified_by": "crypto-autoresearcher tools/experiment_protocol.py"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  },
+  "extensions": {
+    "workloads": [
+      {
+        "role": "holdout",
+        "tag": "k0n13m2d5",
+        "cell": "0:13:2:1234",
+        "degree": 5,
+        "rows": 30225,
+        "cols": 53871,
+        "rank": 27250,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 10745652033
+      },
+      {
+        "role": "holdout",
+        "tag": "k0n9m3d5",
+        "cell": "0:9:3:77",
+        "degree": 5,
+        "rows": 33147,
+        "cols": 87118,
+        "rank": 31069,
+        "refuted": false,
+        "pinned": 1,
+        "word_ops": 1196809344
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d5",
+        "cell": "1:11:2:301",
+        "degree": 5,
+        "rows": 14861,
+        "cols": 21196,
+        "rank": 12091,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 986408355
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d6",
+        "cell": "1:11:2:301",
+        "degree": 6,
+        "rows": 68156,
+        "cols": 60040,
+        "rank": 46747,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 57968918179
+      },
+      {
+        "role": "primary",
+        "tag": "k0n13m2d6",
+        "cell": "0:13:2:1234",
+        "degree": 6,
+        "rows": 168363,
+        "cols": 188203,
+        "rank": 130583,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 1110114894889
+      }
+    ],
+    "production_identity": {
+      "construction": "extract the candidate commit build-closure archive (suite, bindings/rust, include, src) twice and overwrite only the baseline arm's suite/src/cryptanalysis/f4_gpu.rs with the exact retained v7 blob",
+      "archive_paths": [
+        "suite",
+        "bindings/rust",
+        "include",
+        "src"
+      ],
+      "candidate_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+      "candidate_tree": "af0ac7e239c0acaa063c1a1441d6fb374ebbf30b",
+      "candidate_archive_sha256": "c70ce5a0061f39a3d506c4196e9db7b422a6d4de80dc161b6ff18f165f674740",
+      "baseline_origin_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+      "production_path": "suite/src/cryptanalysis/f4_gpu.rs",
+      "baseline_f4_sha256": "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944",
+      "candidate_f4_sha256": "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953",
+      "production_diff_sha256": "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3",
+      "only_production_path_differs": true,
+      "unrelated_intervening_changes": "present identically in both extracted archives and therefore excluded from the independent variable"
+    },
+    "tooling_source": {
+      "public_origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+      "public_ref": "refs/heads/codex/runpod-http-gpu-geometry-v8-20261101",
+      "commit": "c22982541edb2f2744d7ef18eee3626b5245ae66",
+      "tree": "ededa595aa12c7eb6a17aa8b14be00b1b968355e",
+      "git_archive_sha256": "d1b4b3ede36b71670b7552b77e87fc0f1a70d12a9234f044feb25dbe123493cc",
+      "files": {
+        "experiments/performance-saturation-20261101/gpu/analyze_gpu_geometry_ab.py": "123a6571107b53ad89a726f184003c859ee923f21dcad8ebe65c752d265e48a4",
+        "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab.sh": "010bb8e922444ee61809e17cfabd13e53af727fd399cbfa10e432378421bb7e0",
+        "experiments/performance-saturation-20261101/gpu/test_gpu_geometry_ab.py": "93657aef486129f6344ea251565c99f1e5abfae69a679e8affc99a5fbfe8fcc0",
+        "experiments/performance-saturation-20261101/gpu/LITERATURE.md": "af6706000b4210ab97a87623d95934f4a58e4f783d19984ff62cb959253f960d",
+        "ecc2k130/runner/codegen/install_nsys_tools.sh": "50a0a564f4c370b9279a49a4e385fd1a6f06408a21e72e4bd1e4b0918c333aa9",
+        "cloud/runpod_http_batch.py": "dae217dc4941e7ca2bdadba22fb938b6f1380e6341170d300194bd569cd0612e",
+        "cloud/runpod_http_batch_server.py": "691841f873a8f2e89a2624161c50864a7e5ef579d893853dffb246bf30dd2b74b5"
+      },
+      "public_ref_state": "not pushed at freeze; publishing exactly this immutable tooling commit to exactly this new ref is the sole permitted pre-launch ref mutation"
+    },
+    "profiler_plan": {
+      "order": [
+        "unprofiled_ab",
+        "nsys"
+      ],
+      "cell": "k0n13m2d6",
+      "captures": 2,
+      "reports": [
+        "cuda_gpu_kern_sum",
+        "cuda_api_sum"
+      ],
+      "sqlite_table": "CUPTI_ACTIVITY_KIND_KERNEL",
+      "expected_kernel_launches_per_arm": 11765,
+      "expected_update_launches_per_arm": 2941,
+      "ncu_policy": "outside v8; must not be installed, resolved, invoked, or used as a gate"
+    },
+    "isolation_contract": {
+      "post_build_fixed_settle_seconds": 30,
+      "cpu_psi_some_avg10_max": 10,
+      "cpu_psi_full_avg10": 0,
+      "memory_psi_some_avg10": 0,
+      "memory_psi_full_avg10": 0,
+      "cgroup_nr_throttled_delta": 0,
+      "cgroup_throttled_usec_delta": 0,
+      "memory_event_deltas": 0,
+      "steal_jiffies_delta": 0,
+      "gpu_temperature_c_exclusive_max": 90,
+      "foreign_compute_processes": 0
+    },
+    "transport": {
+      "schema": "runpod.http-batch.receipt/v1",
+      "driver": "cloud/runpod_http_batch.py",
+      "server": "cloud/runpod_http_batch_server.py",
+      "authentication": "fresh ephemeral bearer with at least 256 random bits",
+      "result_chunk_bytes": 4194304,
+      "result_limit_mib": 4096,
+      "provider_create_attempts": 1,
+      "startup_wait_seconds": 900,
+      "command_timeout_seconds": 9000,
+      "maximum_lifetime_seconds": 10800,
+      "cleanup": "exact newly created pod ID in finally; absence verified by exact v2 GET returning 404",
+      "no_ssh": true,
+      "no_object_storage": true,
+      "no_user_long_lived_credentials_sent_to_pod": true,
+      "recovery": "only the committed exact-ID recovery tool may observe and clean up the already allocated registered pod after local controller loss; it may not allocate a replacement"
+    },
+    "launch": {
+      "controller_argv_template": [
+        "python3",
+        "cloud/runpod_http_batch.py",
+        "misagi-f4-geometry-v8",
+        "--source-ref",
+        "refs/heads/codex/runpod-http-gpu-geometry-v8-20261101",
+        "--source-commit",
+        "c22982541edb2f2744d7ef18eee3626b5245ae66",
+        "--cloud",
+        "SECURE",
+        "--gpu",
+        "NVIDIA GeForce RTX 5090",
+        "--gpu-count",
+        "1",
+        "--min-vcpu",
+        "16",
+        "--min-ram",
+        "62",
+        "--image",
+        "runpod/base:1.0.2-ubuntu2404",
+        "--disk",
+        "100",
+        "--max-price",
+        "1.19",
+        "--max-hours",
+        "3",
+        "--wait",
+        "900",
+        "--timeout",
+        "9000",
+        "--reconcile-seconds",
+        "60",
+        "--max-result-mib",
+        "4096",
+        "--receipt",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+        "--archive",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+        "--out",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+        "--",
+        "bash ecc2k130/runner/codegen/install_nsys_tools.sh && GPU_STUDY_SECURE=1 bash experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab.sh 'experiments/performance-saturation-20261101/gpu/runs-http' '<run_id>' '<frozen_protocol_sha256>'"
+      ],
+      "public_ref_publish_template": "git push origin c22982541edb2f2744d7ef18eee3626b5245ae66:refs/heads/codex/runpod-http-gpu-geometry-v8-20261101",
+      "preconditions": [
+        "the new public ref resolves without credentials to exactly the registered tooling commit",
+        "the local protocol is frozen and committed before data",
+        "the output, receipt, archive, and remote-metadata paths do not exist",
+        "the command substitutes the exact frozen protocol SHA-256 and changes no other token",
+        "RUNPOD_API_KEY remains only in the local controller/provider scope"
+      ]
+    },
+    "output_contract": {
+      "run_id": "gpu-geometry-http-rtx5090-v8-<UTC>-<nonce>",
+      "output_root": "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+      "transport_receipt": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+      "result_archive": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+      "remote_metadata": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.remote",
+      "required_session_files": [
+        "host.json",
+        "source-identities.json",
+        "binary-sha256.tsv",
+        "order.tsv",
+        "warmup-gate.json",
+        "measure-gate.json",
+        "nsys-gate.json",
+        "analysis-gate.json",
+        "analysis.json",
+        "rows.jsonl",
+        "export.json",
+        "completed-at.txt",
+        "runner-exit.status"
+      ],
+      "manifest": "every archive member is SHA-256 bound by the authenticated HTTP batch result manifest",
+      "cleanup": "normal receipt must show delete_requested=true and absence_verified=true for the exact created pod ID"
+    },
+    "lineage": {
+      "baseline_protocol": "protocol-http-rtx5090-v7.json",
+      "baseline_protocol_sha256": "4b71152b91077781544520da18b0bafa4a762cf634be4c278867452c11e20c08",
+      "baseline_evidence_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+      "baseline_verdict": "aa_calibration_admissible",
+      "reuse": "planning and workload selection only; zero v7 execution rows or trace durations enter v8"
+    }
+  }
+}
