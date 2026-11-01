@@ -201,3 +201,71 @@ within this repository; external novelty not established.
 - The torsion-lift zero control cannot be promoted into a formal-log attack:
   its formal observable is identically zero.
 
+## Executed experiment
+
+The paired draft gates were opened as
+[isogeny-labs/crypto#3111](https://github.com/isogeny-labs/crypto/pull/3111)
+and
+[isogeny-labs/cryptanalysis#1346](https://github.com/isogeny-labs/cryptanalysis/pull/1346)
+before implementation.  The frozen coefficient section, cohort, controls, and
+stopping rule were not changed.
+
+Every one of the 9,096 canonical target records passed:
+
+- the Hensel-lift curve equation modulo `p^2` and reduction back to `Q`;
+- two independently split computations of `[r]s_0(Q)`;
+- the projective curve equation, reduction-kernel check, unit-`Y` check, and
+  divisibility of the formal parameter by `p`;
+- nonzero first-layer section slope from `u=0` and `u=1`;
+- direct reevaluation of the solved torsion correction, with `tau_u(Q)=0`.
+
+The evaluator executed 36,384 lift constructions, mixed kernel additions, and
+formal extractions.  The canonical rows used 72,768 scalar multiplications,
+296,560 affine additions, 521,064 affine doublings, 6,456,536 counted modular
+additions, 7,820,632 modular multiplications, and 890,392 inversions.  The
+recorded canonical evaluation and interpolation portions took 2.4371 s and
+0.3836 s, respectively; these are diagnostic container timings, not isolated
+benchmarks or scaling evidence.
+
+The algorithmic prediction failed on every row.  For `r-1` sampled scalar
+positions the largest possible interpolation degree is `r-2`, and every one
+of the 28 candidate rows attained it:
+
+```text
+curve  r    observed degree (all four generators)  frozen gate
+E101   83   81                                      49
+E127   109  107                                     49
+E149   139  137                                     64
+E211   223  221                                     64
+E283   281  279                                     81
+E503   499  497                                     81
+E907   947  945                                     100
+```
+
+The candidate values had maximum collision buckets of four or five, so the
+failure is not merely a constant word.  The gate-limited Newton prefixes
+matched only 50--103 targets per row, close to their available coefficient
+counts and far from exactness.
+
+All eight random-section and all eight collision-preserving permutation
+controls on each of E101 and E127 also had maximum degree: 81 and 107,
+respectively.  Coordinate-isomorphic canonical words were byte-distinct from
+the originals but retained those same maximum degrees.  Thus no control
+separated from the candidate and zero root/EC decoders opened.
+
+A second complete run reproduced scientific-content SHA-256
+`3397823fe3f55fe008797bb87b31324b7ae33efb5699fe479e8e58f5832db4de`.
+An independently composed standard-library verifier recomputed all Hensel and
+group arithmetic, all 28 degrees, all 32 matched controls, and the two
+coordinate-isomorphic controls.  The committed result SHA-256 is
+`7d6c390d0156a4ed101bddd0969132a85505fa884282ef505dc4621b7852124e`.
+Lean 4.19 proves the abstract section-defect transport, torsion-correction,
+verified-candidate, uniqueness, and total-cost interfaces.  It does not prove
+the rejected low-degree hypothesis.
+
+Result: the first formal layer is executable and structurally well checked,
+but the coordinate-fixed section defect is maximally complex under the frozen
+scalar-polynomial representation.  This closes H110's proposed bridge.  It
+does not rule out other lift-derived invariants or establish a generic ECDLP
+lower bound.
+

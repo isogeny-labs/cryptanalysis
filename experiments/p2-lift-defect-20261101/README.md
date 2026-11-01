@@ -1,21 +1,28 @@
 # H110 paired reference harness — canonical p²-lift defect
 
-Status: **preregistered; independent implementation pending** (2026-11-01).
+Status: **independent replay complete; scoped null confirmed** (2026-11-01).
 
-This directory freezes the independent reference role for the canonical H110
-experiment in `isogeny-labs/crypto`. H110 tests whether the first formal-layer
-defect of a coordinate-fixed Hensel section has uniformly polylogarithmic
-scalar-polynomial degree.
+This directory independently checks
+[crypto#3111](https://github.com/isogeny-labs/crypto/pull/3111).
+The verifier is standard-library-only and does not import the canonical runner.
 
-Reference obligations:
+It independently recomputed:
 
-1. independently implement Hensel lifts and projective arithmetic modulo p²;
-2. check reduction, kernel membership, formal coordinates, and section
-   linearity for all 9,096 targets;
-3. independently calculate all 28 interpolation degrees;
-4. reproduce 32 randomized-section/permutation controls;
-5. verify coordinate-isomorphic and torsion-lift zero controls;
-6. reject any speed claim unless the exact decoder and total cost gate pass.
+- all Hensel, affine, mixed-projective, and formal-coordinate arithmetic for
+  9,096 canonical targets;
+- all 28 complete finite-difference degrees;
+- all 32 random-section/permutation controls;
+- both coordinate-isomorphic control words;
+- every torsion correction, each of which produced `tau=0`.
 
-No correctness, novelty, algorithm, or subexponential claim is made by this
-preregistration.
+Every candidate and control word had maximum possible degree. Zero rows passed
+the frozen degree gate.
+
+Run:
+
+```sh
+python verify.py results/p2-lift-defect-cocycle.json.gz
+```
+
+This confirms only the scoped null for the frozen coordinate-section
+scalar-polynomial bridge. It is not a generic lower bound.

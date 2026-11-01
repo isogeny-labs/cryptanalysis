@@ -22,19 +22,19 @@
   <text x="68" y="238" class="t">28 rows; 9,096 targets</text>
 
   <rect x="345" y="120" width="270" height="145" class="box lift"/>
-  <text x="368" y="150" class="tag orange">SET SECTION; NOT A HOMOMORPHISM</text>
+  <text x="368" y="150" class="tag orange">EXECUTED SET SECTION; NONHOMOMORPHIC</text>
   <text x="368" y="182" class="h">s₀(Q) in E(Z/p²Z)</text>
   <text x="368" y="212" class="t">X=x; Hensel-correct Y</text>
   <text x="368" y="238" class="t">red(s₀(Q))=Q</text>
 
   <rect x="670" y="120" width="255" height="145" class="box kernel"/>
-  <text x="693" y="150" class="tag green">GROUP MAP + KERNEL CHECK</text>
+  <text x="693" y="150" class="tag green">ALL 9,096 KERNEL CHECKS PASSED</text>
   <text x="693" y="182" class="h">[r]s₀(Q) in E₁</text>
   <text x="693" y="212" class="t">red([r]s₀(Q))=O</text>
   <text x="693" y="238" class="t">Jacobian arithmetic mod p²</text>
 
   <rect x="980" y="120" width="255" height="145" class="box candidate"/>
-  <text x="1003" y="150" class="tag purple">FIRST FORMAL LAYER</text>
+  <text x="1003" y="150" class="tag purple">FIRST FORMAL LAYER VERIFIED</text>
   <text x="1003" y="182" class="h">τ₀(Q)=−XZ/(pY)</text>
   <text x="1003" y="212" class="t">exact mod p coordinate</text>
   <text x="1003" y="238" class="t">embed output into Fᵣ</text>
@@ -44,14 +44,14 @@
   <path d="M925 192 H970" class="edge"/><text x="931" y="176" class="tag purple">t/p</text>
 
   <rect x="185" y="350" width="350" height="155" class="box control"/>
-  <text x="210" y="380" class="tag red">TRANSFER AND NULL CONTROLS</text>
-  <text x="210" y="412" class="h">Challenge the section dependence</text>
+  <text x="210" y="380" class="tag red">32/32 CONTROLS: MAXIMUM DEGREE</text>
+  <text x="210" y="412" class="h">No candidate/control separation</text>
   <text x="210" y="442" class="t">random u(Q); collision-preserving permutations</text>
   <text x="210" y="468" class="t">coordinate isomorphisms; torsion lift τ=0</text>
 
   <rect x="690" y="350" width="390" height="155" class="box gate"/>
-  <text x="715" y="380" class="tag amber">FROZEN ALGORITHMIC GATE</text>
-  <text x="715" y="412" class="h">deg F_G ≤ ceil(log₂ r)² on every row</text>
+  <text x="715" y="380" class="tag amber">OBSERVED RESULT: 0/28 GATE ROWS</text>
+  <text x="715" y="412" class="h">deg F_G = r−2 on every row</text>
   <text x="715" y="442" class="t">construct from public small multiples</text>
   <text x="715" y="468" class="t">factor F_G(z)−τ(Q); verify [z]G=Q</text>
 
@@ -59,8 +59,8 @@
   <path d="M990 265 C880 305 540 305 430 342" class="edge dash"/>
 
   <rect x="435" y="600" width="420" height="105" class="box candidate"/>
-  <text x="460" y="632" class="tag purple">SEPARATE PROMOTION OBLIGATION</text>
-  <text x="460" y="665" class="h">Uniform degree theorem + Lean + total cost</text>
+  <text x="460" y="632" class="tag purple">SCOPED BRIDGE REJECTED</text>
+  <text x="460" y="665" class="h">No decoder; no subexponential claim</text>
   <text x="460" y="691" class="t">full interpolation is measurement-only, never free setup</text>
   <path d="M885 505 C860 550 790 570 730 592" class="edge"/>
 </svg>
