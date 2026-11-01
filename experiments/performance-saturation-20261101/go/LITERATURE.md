@@ -71,6 +71,12 @@ a source-level lower bound, not a measured allocation result.
   profiles may explain cycles, cache misses, faults, and context switches after
   the unprofiled baseline is frozen.  They are diagnostic evidence, not a
   substitute for paired wall/CPU/allocation measurements.
+- The official Go download manifest, retrieved from
+  <https://go.dev/dl/?mode=json&include=all> on 2026-11-01, identifies
+  `go1.27.3.linux-amd64.tar.gz` as 70,588,678 bytes with SHA-256
+  `65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40`.
+  The remote runner pins all three fields and refuses to extract or build when
+  any differs.
 
 ## Consequences for the instrument
 
