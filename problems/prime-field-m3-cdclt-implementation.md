@@ -1,83 +1,88 @@
-# Prime-field arity-three CDCL(T) implementation
+# Prime-field arity-three CDCL(T) production implementation
 
-- **Status:** `open`
-- **Kind:** implementation gap and validation gap
+- **Status:** `open`, narrowed by a passing native development oracle
+- **Kind:** implementation, certificate and validation gap
 - **Affected work:** [`experiments/prime-field-m3-cdclt-20261031`](../experiments/prime-field-m3-cdclt-20261031/README.md), [`crypto#3096`](https://github.com/isogeny-labs/crypto/pull/3096)
 - **Next action owner:** prime-field IC execution lane
-- **Last updated:** 2026-10-31
+- **Last updated:** 2026-11-01
 
 ## Problem
 
-We cannot freeze or execute the corrected `m=3`, `s=6..14` prime-field
-exponent screen because this repository has no source-bound `F_p` theory
-propagator, explanation checker or canonical one-hot/window instance generator
-for the chained quadratic-lambda predicate.
+The corrected `m=3`, `s=6..14` screen still cannot freeze or execute because
+there is no source-bound production `F_p` external propagator, independent
+theory-explanation/UNSAT proof checker, canonical backend exporter, complete
+stage instrumentation or frozen analysis/power source.
 
-The acceptance criterion is not “a SAT process runs.” The candidate must be a
-hybrid CDCL(T) implementation whose Boolean and prime-field theory boundaries
-match the draft protocol, whose exceptional cases are represented, whose
-theory explanations replay independently, and whose complete counted interval
-can be compared against enumeration, F4, cvc5 `QF_FF`, A/A and curve-free
-null controls.
+The earlier generator/oracle gap is partially resolved: the experiment now
+contains a native deterministic development oracle that binds abscissae and
+signs, verifies the lift identity including `t=0`, compares exact full and
+two-window model sets, tests the selected exactly-one encoding and rejects
+four semantic mutations. It is not a production generator and cannot be used
+to generate held-out cells.
 
 ## Evidence and uncertainty
 
-- **Observed:** the repository contains a pinned CaDiCaL 3.0.1 external-
-  propagator precedent at
-  [`q1421_work_counted/theory_solver.cpp`](../experiments/compact-s3-m4-20261003/q1421_work_counted/theory_solver.cpp),
-  source SHA-256
-  `0a0d2c673e9484f4b217917ee306e7663140e4d4618d8bb0ed8dc91947d08bc6`.
-  It counts exact root and `F_{2^n}` field calls on a binary-field four-summand
-  predicate. It is not an `F_p` theory implementation.
-- **Derived or proved:** at scale `s=log2(p)/m`, relation collection with PDP
-  exponent `e` has exponent `(e+1)/m` in `p`; a rho crossover requires
-  `e<m/2-1`. Thus `m=2` cannot cross and `m=3` requires the strict gate
-  `e<0.5`.
-- **Suspected explanation:** none. This is a named missing implementation, not
-  evidence that CDCL(T) will or will not meet the slope gate.
-- **Missing capability:** canonical `F_p` IR/generator, the external theory
-  implementation, independently checkable explanations, cvc5 exporter,
-  complete work instrumentation and frozen analysis/power code.
-- **What this evidence does not establish:** the binary-field Q1421 results do
-  not predict prime-field scaling; the cost identity does not establish any
-  solver exponent; an implementation pass would not itself establish an
-  ECDLP speedup.
+- **Observed implementation evidence:**
+  [`development_oracle.cpp`](../experiments/prime-field-m3-cdclt-20261031/development_oracle.cpp)
+  passes on `E/F_7: y^2=x^3+3`, prime whole-group order 13. It checks 96
+  quadratic-extension candidate triples, obtains five exact projected models,
+  and agrees byte-for-byte at the projected-model-set level with the exact
+  two-window oracle.
+- **Observed source capability:** the Q1421 CaDiCaL 3.0.1 source remains an
+  `F_{2^n}` API precedent only. Current inspected cvc5 finite-field source head
+  `02f77af402b4be82f27e5cc00b86b265a90dea3d` returns no proof checker, so
+  QF_FF is not presently an UNSAT-certifying decision candidate.
+- **Derived accounting:** with setup `2^(a s)` and online query `2^(e s)`,
+  collection costs `2^(a s)+2^((e+1)s)` before polynomial factors. At `m=3`
+  the necessary gates are `a<1.5` and `e<0.5`.
+- **Resource fact:** selected Sinz one-hot at `s=27` has 805,306,365 Boolean
+  variables and 1,207,959,543 exactly-one clauses before theory auxiliaries.
+  This is a structural size, not a measured OOM or impossibility result.
+- **What remains unknown:** whether a faithful CDCL(T)/`F_p` implementation
+  completes the initial natural panel, what its two exponents are, and whether
+  a compact continuation representation preserves solver behavior.
 
-## What would unblock it
+## What would unblock the initial screen
 
-- [ ] A canonical generator emits the three disjoint one-hot windows, chained
-  `S3`/lambda constraints, explicit `t=0` branch and forbidden-word clauses,
-  and exact enumeration agrees on every development cell.
-- [ ] A pinned CaDiCaL external `F_p` propagator returns independently replayed
-  explanation clauses for every theory propagation/conflict and passes all
-  five mutation controls.
-- [ ] The identical IR exports to pinned cvc5 `QF_FF`, F4 and pure-CNF cost
-  controls, with model/proof replay and complete operation/instruction ledgers.
-- [ ] Analysis and power code validate, preflight fixes runtime/memory limits,
-  and a reviewed immutable protocol freezes before held-out generation.
+- [x] Native development semantics for disjoint abscissa windows, rational-lift
+  signs, signed replay, lambda discriminant, `t=0`, compact range predicates,
+  selected exactly-one encoding and exact two-window agreement.
+- [ ] Production typed IR/generator with protocol-hash seeds, canonical bytes,
+  all chart branches and exact agreement across a wider disclosed fixture census.
+- [ ] Pinned CaDiCaL external `F_p` propagator with independently replayed
+  explanations for every propagation/conflict and checked Boolean-plus-theory
+  proof logs for UNSAT.
+- [ ] Identical F4 and pure-CNF exporters; QF_FF remains diagnostic unless a
+  source-bound, independently checked finite-field UNSAT certificate appears.
+- [ ] Non-overlapping cold/setup/online/verification instruction and byte
+  ledgers whose stages reconcile to the cold total.
+- [ ] Frozen natural-only complete-panel analysis, power calculation, runtime/
+  memory preflight and immutable held-out manifest.
 
-These conditions are necessary to start the screen. Meeting them would make
-the experiment executable; it would not satisfy the `e<0.5` evidence gate.
+Satisfying these conditions makes the initial experiment executable; it does
+not predetermine either slope.
 
-## Next discriminating step
+## Continuation obstruction and next discriminating steps
 
-- **Action or proof obligation:** port only the Q1421 external-propagator API
-  shell to the prime-field lambda predicate, then validate it exhaustively on
-  development cells before any ladder data are generated.
-- **Inputs and controls:** small odd prime-order curves, disjoint and deliberately
-  overlapping windows, `t=0` cases, forbidden words, planted/natural/UNSAT
-  targets, exact enumeration, and corrupted explanations.
-- **Execution limits and stop condition:** development fixtures only; stop on
-  any model-set mismatch, unchecked explanation, unsupported exceptional case
-  or incomplete cost ledger. Scientific ladder budgets remain unset until
-  preflight.
-- **Outcomes and next actions:** exact agreement advances to cvc5/F4 exporter
-  and preflight work; a mismatch remains an implementation defect; resource
-  censoring informs preflight but is not a solver-exponent result; an
-  infrastructure failure is recorded separately.
-- **Recheck trigger:** source-bound `F_p` generator/propagator and explanation
-  checker land together.
+The initial one-hot bundle has no admitted `s=15..27` continuation. Pursue two
+implementation leads in order:
+
+1. **Production `F_p` trail theory.** Port only Q1421's lifecycle shell. Drive
+   the landed fixture plus additional small odd-prime-order fixtures through
+   actual trail assignments; compare every partial/full theory response with
+   exhaustive semantics; mutate every explanation and proof step.
+2. **Compact selector equivalence.** After the initial exporter exists, build a
+   binary or lazy multi-valued selector that projects to the identical signed
+   model set. Compare it with Sinz one-hot on every development cell, then
+   preflight setup exponent, serialized bytes and peak RSS before proposing a
+   continuation amendment.
+
+Stop either lead on a model-set mismatch, unchecked lemma, unsupported chart,
+non-reconciling cost ledger or failed mutation control. A resource stop informs
+the representation ceiling and remains distinct from a solver-exponent result.
 
 ## Resolution and history
 
-Unresolved. This record names the execution gap; it contains no run result.
+- 2026-10-31: problem opened; no prime-field generator or propagator existed.
+- 2026-11-01: native development oracle and exact representation sizing landed;
+  production solver, certificate, exporter, accounting and analysis gaps remain.
