@@ -41,14 +41,16 @@ static int fixture(const char *path)
     FILE *f = fopen(path, "r");
     if (!f) return 2;
     uint64_t p, a, b, r, k;
-    while (fscanf(f, "%" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &p, &a, &b, &r, &k) == 5) {
+    while (fscanf(f, "%" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &p, &a, &b, &r,
+                  &k) == 5) {
         ca_group g;
         ca_elem gen, t;
         if (!setup(&g, &gen, p, a, b, r) || k == 0 || k >= r) return 3;
         ca_group_mul(&g, &t, &gen, k, NULL);
         uint64_t w[4];
         ca_group_decode(&g, w, &t);
-        printf("%" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 "\n", p, a, b, r, w[0], w[1]);
+        printf("%" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 "\n", p, a, b,
+               r, w[0], w[1]);
     }
     fclose(f);
     return 0;
@@ -70,7 +72,8 @@ int main(int argc, char **argv)
     if (!f) return 2;
     size_t n = 0;
     uint64_t p, a, b, r, x, y;
-    while (fscanf(f, "%" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &p, &a, &b, &r, &x, &y) == 6) {
+    while (fscanf(f, "%" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64, &p, &a,
+                  &b, &r, &x, &y) == 6) {
         if (n == MAX_TARGETS || !setup(&G[n], &GEN[n], p, a, b, r)) return 3;
         uint64_t w[4] = {x, y, 0, 0};
         ca_elem check;
@@ -100,7 +103,8 @@ int main(int argc, char **argv)
             hash *= UINT64_C(0x100000001b3);
         }
     }
-    double online_ms = clock_ms(CLOCK_MONOTONIC) - wall0, cpu_ms = clock_ms(CLOCK_PROCESS_CPUTIME_ID) - cpu0;
+    double online_ms = clock_ms(CLOCK_MONOTONIC) - wall0,
+           cpu_ms = clock_ms(CLOCK_PROCESS_CPUTIME_ID) - cpu0;
     printf("targets=%zu first_x=%" PRIu64 " first_y=%" PRIu64 " seed=%" PRIu64 " ops=%" PRIu64
            " online_ms=%.6f cpu_ms=%.6f result=%016" PRIx64 " verified=%d\n",
            n, TX[0], TY[0], seed, ops, online_ms, cpu_ms, hash, verified);
