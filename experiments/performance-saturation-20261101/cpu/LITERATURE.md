@@ -285,15 +285,19 @@ wall clock, retained binary, registry command, profiler, provider, or GPU was
 run to resolve them.
 
 Version 5 therefore freezes a create-once runner and independent analyzer by
-SHA-256. The command plan fixes four wall sessions, then 88 lexicographic
-Callgrind attempts (A then B), then 88 lexicographic software perf-stat
-attempts (A then B), then the perf-record phase. The direct Callgrind child
-argv is exactly the `perfindex.instr_one` Valgrind invocation at the retained
-source, still pinned to CPU 0 under the same reserve gate; each child now has
-its own output, status, streams, result, and isolation receipt, so one failure
-cannot suppress the remaining prescribed diagnostics. Profiler failures are
-retained and the later profiler attempts continue, but they cannot change the
-wall A/A verdict.
+SHA-256. The command plan fixes four wall sessions, then 88 Callgrind attempts
+(the ten Rust IDs lexicographic, then the 34 C IDs lexicographic, A then B),
+then 88 globally lexicographic software perf-stat attempts (A then B), then
+the perf-record phase. The first Rust and first C Callgrind attempts reproduce
+the retained aggregate command's two exact registry-list preludes before the
+first `perfindex.instr_one` child. Every direct child then uses that exact
+Valgrind argv, pinned to CPU 0 under the same reserve gate. Separating the
+deterministic instruction-count children changes diagnostic process and
+reservation boundaries, which are recorded, but does not authorize a timing
+claim. Each child has its own output, status, streams, result, and isolation
+receipt, so one failure cannot suppress the remaining prescribed diagnostics.
+Profiler failures are retained and the later profiler attempts continue, but
+they cannot change the wall A/A verdict.
 
 The first three perf-record IDs and filenames are fixed. Slots 4–8 require
 all 34 baseline-A C Callgrind `Ir` integers, rank descending by `Ir`, and
@@ -314,3 +318,35 @@ directional null verdict is
 part of each harness invocation and is not an external export row, so the
 export plans zero warm-up rows and exactly 1,056 measured rows. Every clock
 remains `wall_valid=false` on this nonqualified local KVM host.
+
+The wall wrapper preserves the two registry-list calls and schedule of the
+retained `perfindex compare`, but publishes a durable start object before each
+child and a write-once terminal object immediately afterward. Per-object files
+are authoritative; append-only journals are reconciled as derivatives, with
+only an exact crash prefix accepted. A host/session manifest exists before the
+first timed child. This permits a stopped run to retain every completed,
+failed, or in-flight invocation without manufacturing the unstarted suffix.
+The analyzer reparses captured stdout, validates samples and medians, and
+independently replays all 88 paired ratio/bootstrap/verdict cells rather than
+trusting `compare.json` summaries.
+
+All child commands use absolute executables and inherited-nothing environments.
+Before the wall phase, after the wall phase, and after the diagnostic campaign,
+the runner persists required-file identities plus host, topology, cgroup,
+pressure, interrupt, steal, governor, and frequency observables. Stable-field
+changes and adverse monotone deltas are preregistered invalidation or
+incompleteness evidence; unavailable/dynamic frequency evidence remains an
+explicit nonqualification blocker. The descriptive export seed table is
+generated prospectively as 4 arms x 44 complete kernel IDs x replicates 1–6,
+all recording schedule seed 20260926. Its 1,056-row digest is bound in the
+command plan because the canonical schema's `harness_drawn` mode deliberately
+does not assume numeric instance IDs or zero-based harness replicates.
+
+Analysis is mechanically separate from acquisition. Derived files are
+atomically published and may be recomputed after a controller/host crash; raw
+receipts and acquired data are never resumed or overwritten. A `finalize`
+command first proves no frozen campaign process is live, writes an orphaned
+terminal receipt when needed, and launches only the analyzer. A successful
+schema/lint/`check-export --verify-files` pass creates a hash-bound finalization
+receipt. Analyzer failure never makes an invalid export look scientific and
+does not authorize another measurement attempt.

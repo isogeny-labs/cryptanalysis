@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
-"""Dry/unit validation for the CPU baseline A/A v5 orchestration.
-
-These tests synthesize receipts and compare rows.  They never execute a
-retained benchmark, profiler, registry command, isolation tool, or provider.
-"""
+"""Synthetic-only adversarial tests for CPU baseline A/A v5."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 from pathlib import Path
+import random
 import tempfile
 import unittest
+from unittest import mock
 
 import analyze_cpu_baseline_aa_v5 as analyzer
 import run_cpu_baseline_aa_v5 as runner
+
+T0 = "2026-11-01T00:00:00+00:00"
+T1 = "2026-11-01T00:00:01+00:00"
 
 
 def dump(path: Path, value: object) -> None:
@@ -22,12 +23,226 @@ def dump(path: Path, value: object) -> None:
     path.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def jsonl(path: Path, values: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(v, sort_keys=True) + "\n" for v in values), encoding="utf-8")
+
+
 def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def registries(language: str) -> list[dict]:
+    rows = analyzer.load_jsonl(runner.V4_ROOT / f"registry/{language}.jsonl")
+    return [r for r in rows if r.get("tier") == "Quick"] if language == "rust" else rows
+
+
+def system_snapshot(label: str, tick: int = 1) -> dict:
+    return {
+        "schema": "cpu-baseline-aa-v5-system-snapshot/v1", "label": label,
+        "captured_at": T0 if label == "before" else T1,
+        "platform": "synthetic", "uname": ["synthetic"],
+        "affinity": [0, 1, 2, 3, 4], "online_cpus": "0-4\n",
+        "smt_active": None, "smt_control": None, "numa_online": "0\n",
+        "microcode": [], "governors": {}, "frequencies": {},
+        "loadavg": "0 0 0 1/1 1\n", "proc_meminfo": "MemTotal: 1024 kB\n",
+        "proc_interrupts": "synthetic\n", "proc_softirqs": "synthetic\n",
+        "proc_stat": (
+            f"cpu {tick} 0 0 10 0 0 0 0\n"
+            f"intr {tick}\nctxt {tick}\nsoftirq {tick}\nprocesses {tick}\n"
+        ),
+        "pressure": {
+            "cpu": f"some avg10=0 avg60=0 avg300=0 total={tick}\n",
+            "io": f"some avg10=0 avg60=0 avg300=0 total={tick}\nfull avg10=0 avg60=0 avg300=0 total={tick}\n",
+            "memory": f"some avg10=0 avg60=0 avg300=0 total={tick}\nfull avg10=0 avg60=0 avg300=0 total={tick}\n",
+        },
+        "self_cgroup": "0::/synthetic\n", "cgroup_path": "/sys/fs/cgroup/synthetic",
+        "cgroup": {
+            "cpu.stat": f"usage_usec {tick}\nnr_throttled 0\nthrottled_usec 0\n",
+            "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\n",
+            "cpu.max": "max 100000\n", "cpuset.cpus.effective": "0-4\n",
+            "cpuset.mems.effective": "0\n", "memory.high": "max\n",
+            "memory.max": "max\n", "memory.swap.max": "max\n", "pids.max": "max\n",
+        },
+    }
+
+
+def boundaries(root: Path) -> None:
+    runtime = {
+        "event_sources": ["breakpoint", "msr", "software"],
+        "event_sources_error": None, "perf_event_paranoid": "2",
+        "online_cpus": "0-4", "v4_affected_paths_present": [],
+    }
+    dump(root / "orchestration/preflight.json", {
+        "schema": "cpu-baseline-aa-v5-preflight/v1", "checked_at": T0,
+        "status": "passed", "findings": [], "required_files": [],
+        "runtime_observations": runtime,
+    })
+    for label in ("before", "wall-after", "campaign-after"):
+        dump(root / f"orchestration/identity-{label}.json", {
+            "schema": "cpu-baseline-aa-v5-identity-snapshot/v1", "label": label,
+            "captured_at": T0 if label == "before" else T1, "required_files": [],
+        })
+        dump(root / f"orchestration/system-{label}.json", system_snapshot(label))
+
+
+def measured_row(kernel: str, round_index: int) -> dict:
+    return {
+        "id": kernel, "fingerprint": f"fingerprint:{kernel}",
+        "median_ns": 1000, "samples_ns": [900, 1000, 1100], "round": round_index,
+    }
+
+
+def inner_attempt(compare: Path, spec: dict, sequence: int, round_index: int,
+                  kernel: str, arm: str, finish: bool = True) -> tuple[dict, dict | None]:
+    binary = runner.RUST_BINARY if spec["language"] == "rust" else runner.C_BINARY
+    argv = [
+        str(runner.TASKSET), "-c", "0" if spec["panel"] == "1t" else "0-3",
+        str(binary), "run", "--filter", kernel, "--exact", "--samples", "5",
+        "--max-seconds", "2.0",
+    ]
+    stem = f"{sequence:04d}_{arm}_{runner.safe_id(kernel)}"
+    start = {
+        "schema": "cpu-baseline-aa-v5-wall-attempt-start/v1", "event": "started",
+        "sequence": sequence, "session": spec["id"], "round": round_index,
+        "kernel": kernel, "arm": arm, "argv": argv, "started_at": T0,
+    }
+    dump(compare / f"attempts/{stem}.started.json", start)
+    if not finish:
+        return start, None
+    row = measured_row(kernel, round_index)
+    stdout_row = dict(row)
+    stdout_row.pop("round")
+    receipt = {
+        "schema": "cpu-baseline-aa-v5-wall-attempt/v1", "event": "finished",
+        "sequence": sequence, "session": spec["id"], "round": round_index,
+        "kernel": kernel, "arm": arm, "argv": argv, "started_at": T0,
+        "finished_at": T1, "child_returncode": 0, "effective_returncode": 0,
+        "timed_out": False, "parse_error": None,
+        "stdout": json.dumps(stdout_row) + "\n", "stderr": "", "row": row,
+    }
+    dump(compare / f"attempts/{stem}.json", receipt)
+    return start, receipt
+
+
+def full_session(root: Path, index: int, spec: dict) -> None:
+    record = runner.build_plan()["wall"][index - 1]
+    outer = root / f"orchestration/attempts/wall-{index:02d}-{spec['id']}"
+    outer.mkdir(parents=True)
+    (outer / "stdout.txt").write_text("", encoding="utf-8")
+    lines = []
+    for item in analyzer.expected_schedule(spec["ids"]):
+        arms = " ".join(f"{arm}=0.001ms" for arm in item["arms"])
+        lines.append(f"round {item['round']}/6 {item['id']}: {arms}")
+    (outer / "stderr.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    dump(outer / "started.json", {
+        "schema": "cpu-baseline-aa-v5-attempt-start/v1", "record": record,
+        "started_at": T0,
+    })
+    dump(outer / "launched.json", {
+        "schema": "cpu-baseline-aa-v5-attempt-launch/v1", "record": record,
+        "started_at": T0, "pid": 1000 + index, "process_group": 1000 + index,
+    })
+    dump(outer / "receipt.json", {
+        "schema": "cpu-baseline-aa-v5-attempt/v1", "record": record,
+        "started_at": T0, "finished_at": T1, "returncode": 0,
+        "launch_error": None, "timeout_error": None,
+        "stdout_sha256": digest(outer / "stdout.txt"),
+        "stderr_sha256": digest(outer / "stderr.txt"),
+    })
+    jsonl(analyzer.isolation_path(record), [{
+        "schema": "isolated-bench/1", "mode": "reserve",
+        "label": record["argv"][record["argv"].index("--label") + 1],
+        "reserved_cpus": [0, 1, 2, 3], "left_on_reserved": {},
+        "command": analyzer.child_argv(record), "exit_status": 0,
+        "contended_samples": 0, "samples": [],
+    }])
+
+    compare = root / f"wall-{spec['panel']}/{spec['language']}/compare"
+    rows = registries(spec["language"])
+    binary = runner.RUST_BINARY if spec["language"] == "rust" else runner.C_BINARY
+    binary_hash = runner.RUST_BINARY_SHA256 if spec["language"] == "rust" else runner.C_BINARY_SHA256
+    registry_hash = runner.RUST_REGISTRY_SHA256 if spec["language"] == "rust" else runner.C_REGISTRY_SHA256
+    threads = 1 if spec["panel"] == "1t" else 4
+    environment = runner.wall_environment(threads)
+    dump(compare / "session-start.json", {
+        "schema": "cpu-baseline-aa-v5-wall-session-start/v1", "session": spec["id"],
+        "binary": str(binary), "binary_sha256": binary_hash,
+        "environment": environment, "environment_error": None,
+        "registry_sha256": registry_hash, "perfindex_sha256": runner.PERFINDEX_SHA256,
+        "started_at": T0,
+    })
+    list_argv = [str(binary), "list"] + (["--full"] if spec["language"] == "c" else [])
+    for ordinal, role in enumerate(("base", "cand"), 1):
+        dump(compare / f"prelude/{ordinal:02d}-{role}.started.json", {
+            "schema": "cpu-baseline-aa-v5-registry-prelude-start/v1",
+            "ordinal": ordinal, "role": role, "argv": list_argv, "started_at": T0,
+        })
+        dump(compare / f"prelude/{ordinal:02d}-{role}.json", {
+            "schema": "cpu-baseline-aa-v5-registry-prelude/v1",
+            "ordinal": ordinal, "role": role, "argv": list_argv,
+            "started_at": T0, "finished_at": T1,
+            "child_returncode": 0, "effective_returncode": 0,
+            "timed_out": False, "parse_error": None,
+            "stdout": "".join(json.dumps(row) + "\n" for row in rows),
+            "stderr": "", "rows": rows,
+        })
+    host = analyzer.load_json(
+        runner.V4_ROOT / (
+            "build/base-rust/build.json" if spec["language"] == "rust"
+            else "build/base-c/build.json"
+        )
+    )["host"]
+    dump(compare / "session.json", {
+        "schema": "cpu-baseline-aa-v5-wall-session/v1", "session": spec["id"],
+        "binary": str(binary), "binary_sha256": binary_hash,
+        "threads": threads, "taskset": "0" if threads == 1 else "0-3",
+        "rounds": 6, "samples": 5, "max_seconds": 2.0,
+        "invocation_timeout_seconds": 1800,
+        "schedule_sha256": runner.digest_value(runner.wall_schedule(spec["id"])),
+        "environment": environment, "host": host,
+        "registry_sha256": registry_hash, "perfindex_sha256": runner.PERFINDEX_SHA256,
+    })
+    raw = {kernel: {"A": [], "B": [], "A2": []} for kernel in spec["ids"]}
+    starts: list[dict] = []
+    finishes: list[dict] = []
+    events: list[dict] = []
+    sequence = 0
+    for item in runner.wall_schedule(spec["id"]):
+        for arm in item["arms"]:
+            sequence += 1
+            start, finish = inner_attempt(
+                compare, spec, sequence, item["round"], item["kernel"], arm,
+            )
+            starts.append(start)
+            finishes.append(finish)
+            events.extend((start, finish))
+            raw[item["kernel"]][arm].append(finish["row"])
+    jsonl(compare / "attempts.jsonl", finishes)
+    jsonl(compare / "events.jsonl", events)
+    registry = {row["id"]: row for row in rows}
+    kernels = [registry[kernel] for kernel in sorted(spec["ids"])]
+    rng = random.Random(20260926)
+    for _ in range(6):
+        order = kernels[:]
+        rng.shuffle(order)
+    weights = json.loads(analyzer.WEIGHTS_PATH.read_text(encoding="utf-8"))["areas"]
+    summary = analyzer.load_frozen_perfindex().summarize(kernels, raw, weights, rng)
+    summary.update({
+        "mode": "wall", "unit": "ms", "base": str(binary), "cand": str(binary),
+        "threads": threads, "samples_per_invocation": 5, "host": host, "raw": raw,
+    })
+    dump(compare / "compare.json", summary)
+    dump(compare / "session-end.json", {
+        "schema": "cpu-baseline-aa-v5-wall-session-end/v1", "session": spec["id"],
+        "finished_at": T1, "binary_sha256": binary_hash,
+        "registry_sha256": registry_hash, "perfindex_sha256": runner.PERFINDEX_SHA256,
+        "completed_invocations": sequence,
+    })
+
+
 class CpuBaselineAaV5Tests(unittest.TestCase):
-    def test_schedule_hashes_reproduce_v4(self) -> None:
+    def test_schedule_and_profile_order(self) -> None:
         self.assertEqual(
             analyzer.canonical_sha256(analyzer.expected_schedule(runner.RUST_IDS)),
             analyzer.RUST_SCHEDULE_SHA256,
@@ -36,205 +251,366 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             analyzer.canonical_sha256(analyzer.expected_schedule(runner.C_IDS)),
             analyzer.C_SCHEDULE_SHA256,
         )
-
-    def test_plan_expansion_order_paths_and_digests(self) -> None:
         plan = runner.build_plan()
+        callgrind_pairs = [(kernel, arm) for kernel in runner.PROFILE_IDS for arm in ("A", "B")]
+        perf_pairs = [(kernel, arm) for kernel in runner.ALL_IDS for arm in ("A", "B")]
+        self.assertEqual([(row["kernel"], row["arm"]) for row in plan["callgrind"]], callgrind_pairs)
+        self.assertEqual([(row["kernel"], row["arm"]) for row in plan["perf_stat"]], perf_pairs)
         self.assertEqual(plan["counts"], {
-            "wall_sessions": 4,
-            "callgrind_attempts": 88,
-            "perf_stat_attempts": 88,
-            "perf_record_attempts": 8,
+            "wall_sessions": 4, "callgrind_attempts": 88,
+            "perf_stat_attempts": 88, "perf_record_attempts": 8,
         })
-        self.assertEqual(len(plan["wall"]), 4)
-        self.assertEqual(len(plan["callgrind"]), 88)
-        self.assertEqual(len(plan["perf_stat"]), 88)
-        self.assertEqual(len(plan["perf_record"]["fixed"]), 3)
-        self.assertEqual(len(plan["perf_record"]["derived_candidates"]), 170)
-        expected_pairs = [
-            (kernel, arm)
-            for kernel in sorted((*runner.RUST_IDS, *runner.C_IDS))
-            for arm in ("A", "B")
-        ]
-        self.assertEqual(
-            [(record["kernel"], record["arm"]) for record in plan["callgrind"]],
-            expected_pairs,
-        )
-        self.assertEqual(
-            [(record["kernel"], record["arm"]) for record in plan["perf_stat"]],
-            expected_pairs,
-        )
-        self.assertEqual(
-            [record["ordinal"] for record in plan["callgrind"]], list(range(1, 89)),
-        )
-        self.assertEqual(
-            len({record["output"] for record in plan["callgrind"]}), 88,
-        )
-        self.assertEqual(
-            len({record["output"] for record in plan["perf_stat"]}), 88,
-        )
-        for record in plan["callgrind"]:
-            child = analyzer.child_argv(record)
-            self.assertEqual(child[:4], ["taskset", "-c", "0", "env"])
-            self.assertIn("callgrind-one", child)
-        self.assertEqual(plan["digests"], {
-            "wall": "6501193e1c029ec3ea251d7a2816bc177e45a729f877a613199d03daeda4a3b5",
-            "callgrind": "1e82cd86c79ea8b650afa182905c4a9ab9c30bb69fa5bba277d45c44a885e757",
-            "perf_stat": "6130c98dd5c23ac84788937186198491de52fe17678259c68c8d9ba7991be395",
-            "perf_record_fixed": "1089605b09cbde567fd05a6978e7fd0bf1e24ddc8f5c2534f59782cb92c76807",
-            "perf_record_derived_candidates": "c66ef3dac8e17c5425e678a5c204a395849d8eed290dcb47f773763213528094",
-            "plan_preimage": "598f62ef68a02777bdb2fb64367fcc6e83f3a0c0f01f9757bb96f84c495182f2",
-        })
+        self.assertEqual(len({row["output"] for row in plan["callgrind"]}), 88)
+        self.assertEqual(len({row["output"] for row in plan["perf_stat"]}), 88)
+        seed_table = runner.export_seed_table()
+        self.assertEqual(len(seed_table), 1056)
+        self.assertEqual({row["replicate"] for row in seed_table}, set(range(1, 7)))
+        self.assertEqual({row["instance_id"] for row in seed_table}, set(runner.ALL_IDS))
+        self.assertEqual(plan["export_seed_table"]["sha256"], runner.digest_value(seed_table))
+        self.assertEqual(plan["digests"], runner.build_plan()["digests"])
+        for row in plan["callgrind"]:
+            self.assertEqual(
+                analyzer.child_argv(row)[:4],
+                [str(runner.TASKSET), "-c", "0", str(runner.SYSTEM_ENV)],
+            )
 
-    def test_callgrind_inner_argv_matches_frozen_perfindex_semantics(self) -> None:
-        kernel = runner.RUST_IDS[0]
-        self.assertEqual(runner.callgrind_inner_argv(runner.RUST_BINARY, kernel), [
-            "valgrind", "--tool=callgrind", "--callgrind-out-file=/dev/null",
-            "--instr-atstart=no", str(runner.RUST_BINARY), "run", "--filter",
-            kernel, "--exact", "--instr",
-        ])
-
-    def test_perf_record_ties_are_resolved_by_kernel_id(self) -> None:
+    def test_callgrind_stream_binding_and_positive_selection(self) -> None:
+        with self.assertRaises(ValueError):
+            runner.select_perf_record_from_counts({kernel: 0 for kernel in runner.C_IDS})
         counts = {kernel: 7 for kernel in runner.C_IDS}
-        selected = runner.select_perf_record_from_counts(counts)
-        self.assertEqual(selected[:3], list(runner.FIXED_RECORD_IDS))
-        self.assertEqual(selected[3:], sorted(runner.C_IDS)[:5])
-
-    def test_callgrind_selection_requires_all_bound_receipts(self) -> None:
-        original_root = runner.RUN_ROOT
+        self.assertEqual(runner.select_perf_record_from_counts(counts)[3:], sorted(runner.C_IDS)[:5])
+        original = runner.RUN_ROOT
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory) / "baseline-aa-v5"
-            runner.RUN_ROOT = root
+            runner.RUN_ROOT = Path(directory) / "run"
             try:
-                record = runner.callgrind_commands()[0]
-                attempt = root / (
-                    f"orchestration/attempts/callgrind-{record['ordinal']:03d}-{record['arm']}"
+                record = next(
+                    row for row in runner.callgrind_commands()
+                    if not runner.callgrind_requires_registry_prelude(row)
                 )
+                outer = runner.RUN_ROOT / f"orchestration/attempts/callgrind-{record['ordinal']:03d}-{record['arm']}"
                 output = Path(record["output"])
-                dump(attempt / "receipt.json", {"record": record, "returncode": 0})
-                inner_argv = runner.callgrind_inner_argv(
-                    runner.binary_for(record["kernel"]), record["kernel"],
-                )
+                dump(outer / "receipt.json", {"record": record, "returncode": 0})
                 dump(output / "command.json", {
                     "schema": "cpu-baseline-aa-v5-callgrind-command/v1",
-                    "argv": inner_argv,
+                    "argv": runner.callgrind_inner_argv(runner.binary_for(record["kernel"]), record["kernel"]),
                 })
+                (output / "stdout.txt").write_text(
+                    json.dumps({"id": record["kernel"], "fingerprint": "fp"}) + "\n",
+                    encoding="utf-8",
+                )
+                (output / "stderr.txt").write_text("Collected : 42\n", encoding="utf-8")
                 dump(output / "receipt.json", {
                     "schema": "cpu-baseline-aa-v5-callgrind-receipt/v1",
-                    "child_returncode": 0, "effective_returncode": 0,
-                    "parse_error": None,
+                    "child_returncode": 0, "effective_returncode": 0, "parse_error": None,
+                    "stdout_sha256": digest(output / "stdout.txt"),
+                    "stderr_sha256": digest(output / "stderr.txt"),
                 })
                 (output / "status.txt").write_text("0\n", encoding="utf-8")
                 dump(output / "result.json", {
-                    "id": record["kernel"], "fingerprint": "exact-fingerprint", "ir": 42,
+                    "id": record["kernel"], "fingerprint": "fp", "ir": 42,
                 })
-                row, error = runner.validated_callgrind_result(
-                    root, record, "exact-fingerprint",
-                )
+                row, error = runner.validated_callgrind_result(runner.RUN_ROOT, record, "fp")
                 self.assertIsNone(error)
                 self.assertEqual(row["ir"], 42)
-                dump(output / "result-tampered.json", {})
-                (output / "result.json").write_text(json.dumps({
-                    "id": "wrong/cell", "fingerprint": "exact-fingerprint", "ir": 42,
-                }) + "\n", encoding="utf-8")
-                row, error = runner.validated_callgrind_result(
-                    root, record, "exact-fingerprint",
-                )
+                (output / "stderr.txt").write_text("Collected : 43\n", encoding="utf-8")
+                row, error = runner.validated_callgrind_result(runner.RUN_ROOT, record, "fp")
                 self.assertIsNone(row)
-                self.assertIn("cell", error)
+                self.assertIn("hash", error)
             finally:
-                runner.RUN_ROOT = original_root
+                runner.RUN_ROOT = original
 
-    def test_synthetic_complete_wall_gate_has_1056_rows(self) -> None:
-        original_root = runner.RUN_ROOT
+    def test_complete_wall_recomputes_every_cell(self) -> None:
+        original = runner.RUN_ROOT
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory) / "baseline-aa-v5"
+            root = Path(directory) / "run"
             runner.RUN_ROOT = root
             try:
-                plan = runner.build_plan()
+                boundaries(root)
                 for index, spec in enumerate(analyzer.session_specs(root), 1):
-                    record = plan["wall"][index - 1]
-                    attempt = root / "orchestration/attempts" / f"wall-{index:02d}-{spec['id']}"
-                    attempt.mkdir(parents=True)
-                    stdout = attempt / "stdout.txt"
-                    stderr = attempt / "stderr.txt"
-                    stdout.write_text("", encoding="utf-8")
-                    lines = []
-                    for row in analyzer.expected_schedule(spec["ids"]):
-                        values = " ".join(f"{arm}=0.001ms" for arm in row["arms"])
-                        lines.append(f"round {row['round']}/6 {row['id']}: {values}")
-                    stderr.write_text("\n".join(lines) + "\n", encoding="utf-8")
-                    dump(attempt / "receipt.json", {
-                        "schema": "cpu-baseline-aa-v5-attempt/v1",
-                        "record": record,
-                        "started_at": "2026-11-01T00:00:00+00:00",
-                        "finished_at": "2026-11-01T00:00:01+00:00",
-                        "returncode": 0,
-                        "launch_error": None,
-                        "stdout_sha256": digest(stdout),
-                        "stderr_sha256": digest(stderr),
-                    })
-                    iso = analyzer.isolation_path(record)
-                    dump(iso, {
-                        "schema": "isolated-bench/1", "mode": "reserve",
-                        "label": record["argv"][record["argv"].index("--label") + 1],
-                        "reserved_cpus": [0, 1, 2, 3], "left_on_reserved": {},
-                        "command": analyzer.child_argv(record), "exit_status": 0,
-                        "contended_samples": 0, "samples": [],
-                    })
-                    raw = {}
-                    kernels = []
-                    for kernel in spec["ids"]:
-                        fingerprint = f"fingerprint:{kernel}"
-                        one = {
-                            "id": kernel, "fingerprint": fingerprint,
-                            "median_ns": 1000, "samples_ns": [900, 1000, 1100],
-                        }
-                        raw[kernel] = {
-                            "A": [dict(one, round=round_index) for round_index in range(6)],
-                            "B": [dict(one, round=round_index) for round_index in range(6)],
-                            "A2": [],
-                        }
-                        kernels.append({"id": kernel, "verdict": "neutral"})
-                    language = spec["language"]
-                    binary = runner.RUST_BINARY if language == "rust" else runner.C_BINARY
-                    compare = {
-                        "valid": True, "rounds": 6, "mode": "wall", "unit": "ms",
-                        "base": str(binary), "cand": str(binary),
-                        "threads": 1 if spec["panel"] == "1t" else 4,
-                        "samples_per_invocation": 5, "raw": raw, "kernels": kernels,
-                        "host": {
-                            "cpu": "synthetic", "logical_cores": 5,
-                            "memory": "1024 kB", "os": "Synthetic",
-                        },
-                    }
-                    dump(
-                        root / f"wall-{spec['panel']}/{language}/compare/compare.json",
-                        compare,
-                    )
+                    full_session(root, index, spec)
                 gate, rows, _, fingerprints = analyzer.analyze_wall(root)
                 self.assertEqual(gate["verdict"], "baseline_aa_complete_nonqualified")
-                self.assertEqual(gate["observed_invocations"], 1056)
+                self.assertEqual(gate["retained_attempts"], 1056)
+                self.assertEqual(gate["completed_successes"], 1056)
                 self.assertEqual(gate["observed_cells"], 88)
+                self.assertEqual(len(gate["cell_analysis"]), 88)
                 self.assertEqual(len(rows), 1056)
                 self.assertEqual(len(fingerprints), 44)
                 self.assertFalse(gate["provenance_findings"])
                 self.assertFalse(gate["incomplete_findings"])
             finally:
-                runner.RUN_ROOT = original_root
+                runner.RUN_ROOT = original
 
-    def test_terminal_stop_expands_cancelled_export_rows(self) -> None:
-        original_root = runner.RUN_ROOT
+    def test_partial_crash_prefix_and_inflight_are_recovered(self) -> None:
+        original = runner.RUN_ROOT
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory) / "baseline-aa-v5"
+            root = Path(directory) / "run"
             runner.RUN_ROOT = root
             try:
-                rows = analyzer.complete_planned_rows(root, [])
+                spec = analyzer.session_specs(root)[0]
+                compare = root / "wall-1t/rust/compare"
+                flattened = [
+                    (item["round"], item["kernel"], arm)
+                    for item in runner.wall_schedule(spec["id"]) for arm in item["arms"]
+                ]
+                finishes, events = [], []
+                for sequence, (round_index, kernel, arm) in enumerate(flattened[:4], 1):
+                    start, finish = inner_attempt(
+                        compare, spec, sequence, round_index, kernel, arm, finish=sequence < 4,
+                    )
+                    events.append(start)
+                    if finish is not None:
+                        finishes.append(finish)
+                        events.append(finish)
+                jsonl(compare / "attempts.jsonl", finishes[:-1])
+                jsonl(compare / "events.jsonl", events[:-2])
+                rows, _, provenance, incomplete = analyzer.read_retained_wall_attempts(
+                    root, spec, analyzer.validate_registry_contract()[0],
+                )
+                self.assertEqual([row["status"] for row in rows], [
+                    "succeeded", "succeeded", "succeeded", "interrupted",
+                ])
+                self.assertFalse(provenance)
+                self.assertTrue(any("crash-consistent prefix" in item for item in incomplete))
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_split_brain_and_stdout_tamper_are_provenance(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                spec = analyzer.session_specs(root)[0]
+                compare = root / "wall-1t/rust/compare"
+                item = runner.wall_schedule(spec["id"])[0]
+                start, finish = inner_attempt(
+                    compare, spec, 1, item["round"], item["kernel"], item["arms"][0],
+                )
+                jsonl(compare / "attempts.jsonl", [dict(finish, kernel="wrong")])
+                jsonl(compare / "events.jsonl", [start, finish])
+                receipt_path = next(
+                    p for p in (compare / "attempts").glob("*.json")
+                    if not p.name.endswith(".started.json")
+                )
+                receipt = analyzer.load_json(receipt_path)
+                receipt["stdout"] = json.dumps({
+                    "id": item["kernel"], "fingerprint": "wrong",
+                    "median_ns": 1, "samples_ns": [1, 1, 1],
+                }) + "\n"
+                dump(receipt_path, receipt)
+                _, _, provenance, _ = analyzer.read_retained_wall_attempts(
+                    root, spec, analyzer.validate_registry_contract()[0],
+                )
+                self.assertTrue(any("contradicts" in item for item in provenance))
+                self.assertTrue(any("row/stream mismatch" in item for item in provenance))
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_perf_parsers_and_profile_stdout_are_semantic(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stat = root / "stat.csv"
+            stat.write_text(
+                "1,msec,task-clock\n1,msec,cpu-clock\n0,,context-switches\n0,,page-faults\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(analyzer.validate_perf_stat_csv(stat), [])
+            stat.write_text(
+                "0,msec,task-clock\n1,msec,cpu-clock\n0,,context-switches\n0,,page-faults\n",
+                encoding="utf-8",
+            )
+            self.assertIn("positive", analyzer.validate_perf_stat_csv(stat)[0])
+            data = root / "perf.data"
+            data.write_bytes(b"NOTPERF!" + b"\0" * 200)
+            self.assertIn("wrong magic", analyzer.validate_perf_data(data, False)[0])
+            data.write_bytes(b"PERFILE2" + b"\0" * 200)
+            self.assertEqual(analyzer.validate_perf_data(data, False), [])
+            self.assertTrue(analyzer.validate_benchmark_row({
+                "id": "x", "fingerprint": "fp", "median_ns": 1,
+                "samples_ns": [1, 1, 1],
+            }, "x", expected_samples=5))
+
+    def test_system_noise_stable_fields_and_failures(self) -> None:
+        before = system_snapshot("before", 1)
+        after = system_snapshot("wall-after", 2)
+        after["cgroup"]["cpu.stat"] = "usage_usec 2\nnr_throttled 1\nthrottled_usec 5\n"
+        after["cgroup"]["memory.events"] = "low 0\nhigh 0\nmax 0\noom 1\noom_kill 0\n"
+        after["online_cpus"] = "0-3\n"
+        detail, provenance, incomplete = analyzer.analyze_system_noise({
+            "before": before, "after": after,
+        })
+        self.assertTrue(any("online_cpus" in item for item in provenance))
+        self.assertTrue(any("CPU-throttled" in item for item in incomplete))
+        self.assertTrue(any("memory" in item for item in incomplete))
+        self.assertIn("deltas", detail)
+
+    def test_cancelled_suffix_is_not_fabricated_as_timed(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            runner.RUN_ROOT = Path(directory) / "run"
+            try:
+                rows = analyzer.complete_planned_rows(runner.RUN_ROOT, [], [])
                 self.assertEqual(len(rows), 1056)
                 self.assertEqual({row["status"] for row in rows}, {"cancelled"})
-                self.assertEqual({row["attempts"] for row in rows}, {1})
-                self.assertTrue(all(row["wall_seconds"] is None for row in rows))
+                self.assertTrue(all(row["started_at"] is None for row in rows))
+                self.assertTrue(all(isinstance(row["work_contract"], str) for row in rows))
             finally:
-                runner.RUN_ROOT = original_root
+                runner.RUN_ROOT = original
+
+    def test_finalization_receipt_and_cmdline_guard(self) -> None:
+        self.assertTrue(runner.is_campaign_cmdline(
+            f"/workspace/.tools/perf/usr/bin/perf record -o {runner.RUN_ROOT}/x.data".encode()
+        ))
+        self.assertTrue(runner.is_campaign_cmdline(
+            f"{runner.RUST_BINARY} run --filter x".encode()
+        ))
+        self.assertFalse(runner.is_campaign_cmdline(b"/usr/bin/sleep 10"))
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                terminal = root / "orchestration/terminal.json"
+                export = root / "export.json"
+                dump(terminal, {"status": "synthetic"})
+                dump(export, {
+                    "files": [{"path": "orchestration/terminal.json", "sha256": digest(terminal)}],
+                })
+                dump(root / "orchestration/finalization.json", {
+                    "schema": "cpu-baseline-aa-v5-finalization/v1", "status": "validated",
+                    "export_sha256": digest(export), "analyzer_sha256": digest(runner.ANALYZER),
+                    "scientific_returncode": 1, "completed_at": T1,
+                })
+                with mock.patch.object(runner.subprocess, "run") as execute:
+                    execute.return_value.returncode = 0
+                    execute.return_value.stderr = ""
+                    valid, reason = runner.validate_finalization(Path("protocol.json"), 1, True)
+                self.assertTrue(valid, reason)
+                receipt = analyzer.load_json(root / "orchestration/finalization.json")
+                receipt["export_sha256"] = "0" * 64
+                dump(root / "orchestration/finalization.json", receipt)
+                valid, _ = runner.validate_finalization(Path("protocol.json"), 1, True)
+                self.assertFalse(valid)
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_atomic_publish_leaves_no_partial_final_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "analysis.json"
+            with mock.patch.object(analyzer.os, "replace", side_effect=OSError("injected")):
+                with self.assertRaises(OSError):
+                    analyzer.atomic_publish(path, b"partial-never-published")
+            self.assertFalse(path.exists())
+            self.assertEqual(list(path.parent.glob(".analysis.json.tmp-*")), [])
+            analyzer.atomic_publish(path, b"{\"ok\":true}\n")
+            self.assertEqual(path.read_text(encoding="utf-8"), '{"ok":true}\n')
+            self.assertEqual(list(path.parent.glob(".analysis.json.tmp-*")), [])
+
+    def test_signaled_isolation_status_uses_frozen_normalization(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            runner.RUN_ROOT = Path(directory) / "run"
+            try:
+                record = runner.build_plan()["wall"][0]
+                jsonl(analyzer.isolation_path(record), [{
+                    "schema": "isolated-bench/1", "mode": "reserve",
+                    "label": record["argv"][record["argv"].index("--label") + 1],
+                    "reserved_cpus": [0, 1, 2, 3], "left_on_reserved": {},
+                    "command": analyzer.child_argv(record), "exit_status": -9,
+                    "contended_samples": 0,
+                }])
+                provenance, _ = analyzer.validate_isolation(record, 247, False)
+                self.assertFalse(provenance)
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_wall_failure_allows_only_an_unstarted_suffix(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                boundaries(root)
+                plan = runner.build_plan()["wall"]
+                record = plan[0]
+                outer = root / "orchestration/attempts/wall-01-rust-1t"
+                outer.mkdir(parents=True)
+                (outer / "stdout.txt").write_text("", encoding="utf-8")
+                (outer / "stderr.txt").write_text("failed\n", encoding="utf-8")
+                dump(outer / "started.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt-start/v1", "record": record,
+                    "started_at": T0,
+                })
+                dump(outer / "launched.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt-launch/v1", "record": record,
+                    "started_at": T0, "pid": 1, "process_group": 1,
+                })
+                dump(outer / "receipt.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt/v1", "record": record,
+                    "started_at": T0, "finished_at": T1, "returncode": 1,
+                    "launch_error": None, "timeout_error": None,
+                    "stdout_sha256": digest(outer / "stdout.txt"),
+                    "stderr_sha256": digest(outer / "stderr.txt"),
+                })
+                jsonl(analyzer.isolation_path(record), [{
+                    "schema": "isolated-bench/1", "mode": "reserve",
+                    "label": record["argv"][record["argv"].index("--label") + 1],
+                    "reserved_cpus": [0, 1, 2, 3], "left_on_reserved": {},
+                    "command": analyzer.child_argv(record), "exit_status": 1,
+                    "contended_samples": 0,
+                }])
+                gate, _, _, _ = analyzer.analyze_wall(root)
+                self.assertEqual(gate["verdict"], "inconclusive_contention_or_incomplete")
+                # A later start contradicts the prospective stop-on-wall-failure rule.
+                later = root / "orchestration/attempts/wall-02-c-1t"
+                dump(later / "started.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt-start/v1", "record": plan[1],
+                    "started_at": T1,
+                })
+                gate, _, _, _ = analyzer.analyze_wall(root)
+                self.assertEqual(gate["verdict"], "invalid_exactness_or_provenance")
+                self.assertTrue(any("after the frozen stop" in item for item in gate["provenance_findings"]))
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_inner_failure_forbids_extra_start_and_outer_start_is_mandatory(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                boundaries(root)
+                spec = analyzer.session_specs(root)[0]
+                compare = root / "wall-1t/rust/compare"
+                flattened = [
+                    (item["round"], item["kernel"], arm)
+                    for item in runner.wall_schedule(spec["id"]) for arm in item["arms"]
+                ]
+                start, failed = inner_attempt(compare, spec, 1, *flattened[0])
+                failed.update({
+                    "child_returncode": 1, "effective_returncode": 1,
+                    "stdout": "", "row": None,
+                })
+                terminal = next(
+                    p for p in (compare / "attempts").glob("*.json")
+                    if not p.name.endswith(".started.json")
+                )
+                dump(terminal, failed)
+                extra, _ = inner_attempt(compare, spec, 2, *flattened[1], finish=False)
+                jsonl(compare / "attempts.jsonl", [failed])
+                jsonl(compare / "events.jsonl", [start, failed, extra])
+                _, _, provenance, _ = analyzer.read_retained_wall_attempts(
+                    root, spec, analyzer.validate_registry_contract()[0],
+                )
+                self.assertTrue(any("started after a failed" in item for item in provenance))
+                gate, _, _, _ = analyzer.analyze_wall(root)
+                self.assertTrue(any(
+                    "evidence exists without an outer start" in item
+                    for item in gate["provenance_findings"]
+                ))
+            finally:
+                runner.RUN_ROOT = original
 
 
 if __name__ == "__main__":
