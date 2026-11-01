@@ -414,7 +414,15 @@
     "placement": {
       "cloud": "SECURE",
       "gpu_type": "first available from gpu_types, fixed for the whole session",
-      "gpu_types": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 5090", "NVIDIA H100 80GB HBM3", "NVIDIA H100 PCIe", "NVIDIA L40S", "NVIDIA RTX PRO 6000 Blackwell Server Edition", "NVIDIA GeForce RTX 3090"],
+      "gpu_types": [
+        "NVIDIA GeForce RTX 4090",
+        "NVIDIA GeForce RTX 5090",
+        "NVIDIA H100 80GB HBM3",
+        "NVIDIA H100 PCIe",
+        "NVIDIA L40S",
+        "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "NVIDIA GeForce RTX 3090"
+      ],
       "gpu_count": 1,
       "min_vcpu": 8,
       "min_ram_gb": 24,
@@ -560,11 +568,11 @@
   ],
   "amendments": [],
   "freeze": {
-    "status": "draft",
-    "protocol_sha256": null,
-    "commit": null,
-    "frozen_at": null,
-    "filed_before_affected_data": null
+    "status": "frozen",
+    "protocol_sha256": "1882d2a4b665cfa881a5420832d602a8f937db851e7751ef1c3d49f68df0adf4",
+    "commit": "c5a5d2a599c7263a01ea7cd8628b8bb9c44ccac1",
+    "frozen_at": "2026-11-01T19:40:18Z",
+    "filed_before_affected_data": true
   },
   "extensions": {
     "runner": {
