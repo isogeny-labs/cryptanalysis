@@ -1,0 +1,1248 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "PERF-SAT-CPU-BASELINE-AA-20261101",
+  "version": 2,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/cpu",
+  "authors": [
+    "Codex CPU optimization lane"
+  ],
+  "links": {
+    "amends": "experiments/performance-saturation-20261101/cpu/protocol.json",
+    "amended_protocol_sha256": "0e883304ca31da59ab2ece5e400a6c79b46d4b669a84f1ea05e2978c72dd541d",
+    "amended_protocol_freeze_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+    "amended_protocol_file_commit": "a8f4244ddb7b916ec67b7b2e6a9dcf97c53817b5",
+    "literature": "experiments/performance-saturation-20261101/cpu/LITERATURE.md",
+    "harness_contract": "docs/perf/PERFORMANCE_INDEX.md",
+    "isolation_contract": "docs/ISOLATED_BENCHMARKS.md",
+    "global_cpu_lock": "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+    "run_root": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2",
+    "status": "Baseline/A-A design only. The local placement is explicitly nonqualified and no candidate comparison is authorized. Execution remains blocked until a child artifact-binding amendment freezes actual Rust/C binary and build-receipt hashes.",
+    "baseline_source": [
+      "commit=c273e62140071fe4370fbe6946dcb898c95b4eb2",
+      "commit_tree=03b5376c742f80298e124997addec10801bd57bb",
+      "git_archive_sha256=c44204331a038f35596704cb2fdf72a6e6af510cc642466bc2287d60eedee52f",
+      "suite_tree=86301552da8d5162d3e1aefe380de98dc178b131",
+      "perfbench_tree=c4e6ca726a7d5fe5662e965021e1f6b50093e254",
+      "perfindex_git_blob=e41b86292501b65853d01d617c57a291453fced8",
+      "ca_perfbench_git_blob=14dca38c78955411be71387e42c5174fdd8fa6cd",
+      "suite_cargo_toml_git_blob=2e95fae9656c9b70f2fb40ce19f70f9308b6325f",
+      "suite_cargo_lock_git_blob=6a37346f74c832cacb9f331c1fd679d9bbafd7f7",
+      "cmake_lists_git_blob=13bbd9bae1ccc30c43381bdddc22ea14093f892e",
+      "c_include_tree=3e301c02eb593b158bd94453b7720e176b4f4361",
+      "c_src_tree=a9d50d2f95c1c039e66eba41610a3cbc2786049e"
+    ],
+    "build_identity": [
+      "build_recipe_sha256=6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+      "python=/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 version=3.12.14 sha256=fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+      "perfindex.py sha256=671a4696625ba0c8799e673db2ae6a31bb9a0bbcca5ec4cd65fecfb397cab401",
+      "isolated_bench sha256=b48781f50cb1b1fdbefd8dfe91c9ea239ce80785368df8a564fa3fb388e336",
+      "rustc 1.99.1 (58cf8f9c3 2026-10-13) sha256=b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853",
+      "cargo 1.99.1 (5f94df478 2026-08-27) sha256=a670e02cfa39ac2e53f77a2d911ca1fc9e2c479b0603ec956625be1daf24e3af",
+      "Rust stable toolchain canonical absolute-path sha256sum manifest SHA-256=b32916cb983ebf087e91e6f59f2d8250ff262385f54653e53d066f53e1205d7d",
+      "CMake wrapper 4.4.3 sha256=17a0f7bb56cd6bf6105223ac4aff4625c7b4d8dab57a26af9e687791fae21e2d",
+      "CMake executable 4.4.3 sha256=84962dbf5de6a863507ae89347aa9414d978c0c610055b16c7c8f4233d8a339c",
+      "CMake package canonical absolute-path sha256sum manifest SHA-256=b415a2a9d07a82c7d18f86796c346edc33e6280dbb0afd1136ae727ea7dcf9b9",
+      "cc Debian 14.2.0-19 sha256=a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "GNU ld 2.44 sha256=d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+      "GNU Make 4.4.1 sha256=8a229baf64671988cfb5af43ba3070c6ce7214cf32bcf96155115559d1466fa7",
+      "ar sha256=f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb",
+      "ranlib sha256=4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e",
+      "gcc-ar-14 sha256=0b529664758f646adfeeff83d5e6d2a25f9242e8c7508ec56083d90668160c84",
+      "gcc-ranlib-14 sha256=430f1c34e52f43130c8231ce7f14e4743514e62a15a04e195bcb5c0d37938374",
+      "no retained campaign Rust or C executable exists at registration; run only the frozen build recipe, then file/freeze a child artifact-binding amendment with both executable and build-receipt SHA-256 values before data"
+    ],
+    "source_file_sha256": [
+      "scripts/perf/perfindex.py=671a4696625ba0c8799e673db2ae6a31bb9a0bbcca5ec4cd65fecfb397cab401",
+      "suite/examples/perfbench/gf2_la.rs=f28d11925594574db0a858cba1b9bfa5e600b2bb7ef2477becf81c9f5dfad7bb",
+      "suite/examples/perfbench/bool_gb.rs=bcf70c25bcb73c3c374292eba7c440aa90bd50524a24aa9782d031b9f8e79e5f",
+      "suite/examples/perfbench/field_ec.rs=63f659bc947cd4e656c0dd21b9b4f8f67921641fd2371fcd4bc892d33e4a339b",
+      "suite/examples/perfbench/main.rs=27b3240afce35b6032874b7b793fea7b9f4cb7c56957494bd145d6f5567d2429",
+      "tools/ca_perfbench.c=90becdfad3f93e812b6ad465668d4f03c942b5237c19d4e2a5497eed06891edc",
+      "suite/src/cryptanalysis/gf2_elim.rs=3b93bb043405b62a0a59848be0998298bd74a8675bdbe3a3e7e004cf9672edd6",
+      "suite/src/cryptanalysis/matrix_f5_f2.rs=e10c2290b40750fbf65e9ba8e65193d1f253939d224b0e3a3a584fc0bd9fa381",
+      "suite/src/binary_ecc/f2m.rs=15d8f5f357e863e0f16d49f04e88bbbd3269a8ddbb930079f41dff8ef2c0f197",
+      "suite/Cargo.toml=79215eaaee65fc415a83ca20006ddf541a3a76dd2bdc84f774b2f749a1080cf1",
+      "suite/Cargo.lock=cffcbfacc10d859ca8269e8e5b7142f0eea39f178766b90f185f0ec314db6115",
+      "CMakeLists.txt=9e880cfcee47d18c26f793f4b4a15a1737b6f55b2250016b4e1c264e50f51fca"
+    ],
+    "profiler_identity": [
+      "valgrind=/workspace/.tools/valgrind/bin/valgrind version=3.28.0 sha256=5cb03a5f75829113ec2a3fd25f9e7da11dd433694ab23e45600ee9a8b6935d8f",
+      "callgrind-amd64-linux=/workspace/.tools/valgrind/libexec/valgrind/callgrind-amd64-linux sha256=c73312f6f5abedeaf4feaab95a7bbc60c66ebd7f92c2b1958871f682c0111ec6",
+      "vgpreload_core-amd64-linux.so sha256=d113c4c59dc33f8409d032e9c59b8133cb49deeabf658d2ebe11aad73918c782",
+      "valgrind-libexec-canonical-manifest-sha256=df7f3279dc22afd5063e974d30c34ff049ccc2fb02e91d44a9c03dbfed7462db",
+      "perf=/workspace/.tools/perf/usr/bin/perf version=6.12.113 sha256=40bba1aa615cb1903d137627c55cbf7b858c135e798b3cb458ff62c68dbe93ad",
+      "perf-library-canonical-manifest-sha256=a4021d0fe49ba8d9743feca79c6ad927e868c01c0a97d34b44f0521abfa23d1d",
+      "libbabeltrace-ctf-metadata.so.1.0.0 sha256=45c3d1717e7729f8cd237d385eac04e43569f2260eb0e33b750256f880af9e44",
+      "libbabeltrace-ctf-text.so.1.0.0 sha256=d6b75d353e1e7fa80b1436e51b217af2dd0e670e070443ee2111fd74c61053c1",
+      "libbabeltrace-ctf.so.1.0.0 sha256=1aff34825fba69ec469108e010affca571a5155f7d79868d383ec8d71ca4ecc5",
+      "libbabeltrace-dummy.so.1.0.0 sha256=c8971d99582df100a794b7a2e87d2d0074b14efd9f643351934ceadbd006777d",
+      "libbabeltrace-lttng-live.so.1.0.0 sha256=62ff04b5a9a84ba8882cb4769371f6ded4e6074b63269e754690b51457802094",
+      "libbabeltrace.so.1.0.0 sha256=66c61f8dbe27b775423e8870e1f9149e755a1c9b2f7c937bfb16f30a5707977a",
+      "libdebuginfod-0.192.so sha256=ebc7a30a482f6fc8eae26a03edef80fb9d48ab4d9d4ea410709a80c7d1777a72",
+      "libdw-0.192.so sha256=47b1ae7f0347f6a248e49bfbe2f6ede871a0e88cfb79710b68d2b4bad03e9413",
+      "libopencsd.so.1.5.5 sha256=f2296c12f40c92cfdfb474addcd8d5e1578a264bdcfd816bdbe5ecc55f7eccc7",
+      "libopencsd_c_api.so.1.5.5 sha256=63faa3c60bcd177d0a787c90419bdb0aad1789da2fe98dcee3f3aefbe5d496e6",
+      "libtraceevent.so.1.8.4 sha256=6dd4b16b486931d4900a2698a2757eb41bd93a233453f51417977d5765693de2",
+      "event_sources=breakpoint,msr,software; kernel.perf_event_paranoid=2; no core hardware PMU event source, so cycles/instructions/cache/branch hardware events are unavailable"
+    ]
+  },
+  "question": "Does the retained cryptanalysis baseline source and frozen build recipe produce an exact, fixed-N two-arm A/A null calibration across all 44 Rust/C performance-index cells at one and four threads, without a false faster/slower verdict, before any candidate exists?",
+  "claims": [
+    {
+      "id": "C-exact",
+      "text": "Every retained baseline/A-A invocation preserves the exact registered fingerprint and target-specific work contract across samples, arms, rounds, and thread panels.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-calibration-absolute"
+      ],
+      "if_supported": "The built baseline instrument is mechanically exact for these 44 cells and two thread settings only.",
+      "if_not_supported": "Report invalid_exactness_or_provenance and do not interpret clocks or time a candidate."
+    },
+    {
+      "id": "C-aa-local",
+      "text": "The byte-identical baseline labels produce zero false faster/slower verdicts across all 88 fixed cell-by-thread calibrations after six complete mirrored pairs.",
+      "class": "comparative",
+      "decided_by": [
+        "C-calibration-absolute"
+      ],
+      "if_supported": "Report baseline_aa_complete_nonqualified and retain the distribution only as local planning evidence.",
+      "if_not_supported": "Report the applicable frozen failure vocabulary; do not add rounds, replace rows, weaken gates, or infer a candidate result."
+    },
+    {
+      "id": "C-no-speedup",
+      "text": "This amendment cannot establish a candidate speedup, production improvement, C non-regression, cross-host transfer, cryptanalytic advance, GPU result, or qualified local wall-time claim.",
+      "class": "out_of_scope",
+      "decided_by": []
+    },
+    {
+      "id": "C-future-protocol",
+      "text": "A future candidate comparison requires a fresh prospectively frozen A/B protocol after the candidate commit and exact executable identities exist.",
+      "class": "out_of_scope",
+      "decided_by": []
+    }
+  ],
+  "arms": [
+    {
+      "id": "base-1t",
+      "role": "baseline",
+      "description": "Baseline source/build bundle at c273e621, invoked as arm A with one worker thread.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust"
+          ],
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cargo_profile": "release",
+          "c_native": "OFF",
+          "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+          "artifact_policy": "Binary SHA-256 is null because builds are forbidden now. A child pre-data artifact-binding amendment must freeze both binaries and build.json hashes before any affected invocation.",
+          "toolchain_policy": "Exact pinned offline Rust/CMake/GNU PATH and hashes from links.build_identity; no substitution."
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "perfindex_arm": "A",
+        "thread_panel": "1t",
+        "rust_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+        "c_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench"
+      }
+    },
+    {
+      "id": "base-aa-1t",
+      "role": "control_aa",
+      "description": "The identical baseline paths and bytes invoked as arm B with one worker thread.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust"
+          ],
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cargo_profile": "release",
+          "c_native": "OFF",
+          "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+          "artifact_policy": "Binary SHA-256 is null because builds are forbidden now. A child pre-data artifact-binding amendment must freeze both binaries and build.json hashes before any affected invocation.",
+          "toolchain_policy": "Exact pinned offline Rust/CMake/GNU PATH and hashes from links.build_identity; no substitution."
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "perfindex_arm": "B",
+        "thread_panel": "1t",
+        "rust_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+        "c_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench"
+      },
+      "same_instrument_as": "base-1t"
+    },
+    {
+      "id": "base-4t",
+      "role": "baseline",
+      "description": "The same baseline source/build bundle invoked as arm A with exactly four worker threads on CPUs 0-3.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust"
+          ],
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cargo_profile": "release",
+          "c_native": "OFF",
+          "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+          "artifact_policy": "Binary SHA-256 is null because builds are forbidden now. A child pre-data artifact-binding amendment must freeze both binaries and build.json hashes before any affected invocation.",
+          "toolchain_policy": "Exact pinned offline Rust/CMake/GNU PATH and hashes from links.build_identity; no substitution."
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "4",
+          "OMP_NUM_THREADS": "4",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 4,
+        "image_digest": null
+      },
+      "parameters": {
+        "perfindex_arm": "A",
+        "thread_panel": "4t",
+        "rust_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+        "c_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench",
+        "execution_cpus": "0-3"
+      }
+    },
+    {
+      "id": "base-aa-4t",
+      "role": "control_aa",
+      "description": "The identical baseline paths and bytes invoked as arm B with exactly four worker threads on CPUs 0-3.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust"
+          ],
+          [
+            "/workspace/crypto/target/release/isolated_bench",
+            "busy",
+            "--lock",
+            "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+            "--wait",
+            "--",
+            "env",
+            "PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin",
+            "CARGO_HOME=/workspace/.tools/cargo",
+            "RUSTUP_HOME=/workspace/.tools/rustup",
+            "CARGO_NET_OFFLINE=true",
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cargo_profile": "release",
+          "c_native": "OFF",
+          "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+          "artifact_policy": "Binary SHA-256 is null because builds are forbidden now. A child pre-data artifact-binding amendment must freeze both binaries and build.json hashes before any affected invocation.",
+          "toolchain_policy": "Exact pinned offline Rust/CMake/GNU PATH and hashes from links.build_identity; no substitution."
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "4",
+          "OMP_NUM_THREADS": "4",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 4,
+        "image_digest": null
+      },
+      "parameters": {
+        "perfindex_arm": "B",
+        "thread_panel": "4t",
+        "rust_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+        "c_binary": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench",
+        "execution_cpus": "0-3"
+      },
+      "same_instrument_as": "base-4t"
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa-1t",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "This phase calibrates a deterministic null and makes no positive-effect or detector-sensitivity claim."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "The byte-identical A/A arms over all 44 fixed cells are the complete registered null panel, not a sample from another population."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "arm_label",
+        "levels": [
+          "baseline A",
+          "byte-identical baseline A/A control B"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "baseline_source",
+        "treatment": "fixed",
+        "value": "c273e62140071fe4370fbe6946dcb898c95b4eb2; tree 03b5376c742f80298e124997addec10801bd57bb; git-archive SHA-256 c44204331a038f35596704cb2fdf72a6e6af510cc642466bc2287d60eedee52f",
+        "how": "The build command uses --ref with this exact commit; every source/harness hash in links must match."
+      },
+      {
+        "name": "build_recipe",
+        "treatment": "fixed",
+        "value": "SHA-256 6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe over the canonical JSON command array",
+        "how": "Both commands hold the global CPU lock and use the exact pinned offline toolchains/environment. A child artifact-binding amendment freezes outputs before data."
+      },
+      {
+        "name": "binary_bytes",
+        "treatment": "fixed",
+        "value": "one Rust perfbench and one C ca_perfbench artifact, each shared by A and B",
+        "how": "The same absolute path is passed as --base and --cand. A row whose hashes differ from the pre-data manifest is invalid."
+      },
+      {
+        "name": "benchmark_cell",
+        "treatment": "crossed",
+        "value": [
+          "gf2_la/rref_random_4940x8357",
+          "gf2_la/rref_macaulay_k5m3d5",
+          "gf2_la/echelon_macaulay_k5m3d5",
+          "bool_gb/matrix_f5_deg4_m2_n23",
+          "bool_gb/solve_matrixf5_m2_n17",
+          "field_ec/f2m_mul_sqr_m131_64k",
+          "field_ec/f2m_mul_sqr_m163_64k",
+          "field_ec/f2m_mul_sqr_m233_64k",
+          "field_ec/f2m_inv_m163_2k",
+          "field_ec/binary_scalar_mul_sect163k1_x8",
+          "field_ec/c_mont_mul_x8",
+          "field_ec/c_zp_op_chain",
+          "field_ec/c_powmod",
+          "field_ec/c_mont_pow",
+          "field_ec/c_invmod",
+          "field_ec/c_sqrtmod",
+          "field_ec/c_is_prime",
+          "field_ec/c_factorize",
+          "field_ec/c_ec_add_chain",
+          "field_ec/c_ec_batch_add",
+          "field_ec/c_ec_scalar_mul",
+          "field_ec/c_ec_count_points",
+          "dlp/c_rho_ec36",
+          "dlp/c_rho_ec44",
+          "dlp/c_rho_ec44_mt",
+          "dlp/c_rho_zp40",
+          "dlp/c_kangaroo_ec56_w34",
+          "dlp/c_kangaroo_zp61_w36",
+          "dlp/c_bsgs_ec32",
+          "dlp/c_bsgs_zp36",
+          "dlp/c_grumpy_ec32",
+          "dlp/c_pohlig_ec48s",
+          "dlp/c_pohlig_zp61s",
+          "dlp/c_precomp_build_ec32",
+          "dlp/c_precomp_online_ec32",
+          "dlp/c_glv_rho_j0_32",
+          "dlp/c_gpu_rho_emulate_ec32",
+          "dlp/c_cheon56",
+          "relation/c_ic_precompute_zp44",
+          "relation/c_ic_precompute_zp52",
+          "relation/c_ic_randexp_zp36",
+          "relation/c_ic_log_zp44",
+          "relation/c_linsolve_sparse",
+          "relation/c_dense_solve"
+        ],
+        "how": "All 44 listed cells execute at both thread counts; no registry or post-result selection is permitted."
+      },
+      {
+        "name": "thread_count",
+        "treatment": "crossed",
+        "value": [
+          1,
+          4
+        ],
+        "how": "Separate 1T and fixed 4T panels; ratios never cross thread settings."
+      },
+      {
+        "name": "harness_budget",
+        "treatment": "fixed",
+        "value": "exact filter; samples cap=5; min_samples default=3; max-seconds=2.0; timeout=1800; one warmup phase at default 0.2 seconds",
+        "how": "Each invocation performs one discarded time-based warmup phase (at least one call, then until 0.2 s) and emits three to five timed samples. Fixed N counts invocations, not internal samples."
+      },
+      {
+        "name": "arm_order",
+        "treatment": "fixed",
+        "value": "rounds 1,3,5 A then B; rounds 2,4,6 B then A",
+        "how": "perfindex compare --no-aa rotates the two arms. Cell order is deterministically shuffled with seed 20260926."
+      },
+      {
+        "name": "cpu_placement",
+        "treatment": "fixed",
+        "value": "run CPU 0 at 1T; run CPUs 0-3 at 4T; reserve CPUs 0-3 for both; CPU 4 remains for services; NUMA node 0",
+        "how": "Every CPU-intensive command holds /workspace/.benchmarks/performance-saturation/local/global-cpu.lock; wall sessions also retain isolated_bench reserve receipts."
+      },
+      {
+        "name": "host_state",
+        "treatment": "measured",
+        "value": "current local 5-vCPU KVM host; nonqualified for Tier 0/Tier 1 claims",
+        "how": "Record topology, microcode, kernel, governor/frequency, cgroup, IRQs, steal, PSI, throttling, memory failures, faults, context switches, affinity, and isolation blockers."
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-aa-1t",
+        "arms": [
+          "base-1t",
+          "base-aa-1t"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "The two labels resolve to the same retained paths and bytes."
+      },
+      {
+        "id": "C-aa-4t",
+        "arms": [
+          "base-4t",
+          "base-aa-4t"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "The two labels resolve to the same retained paths and bytes."
+      },
+      {
+        "id": "C-calibration-absolute",
+        "arms": [
+          "base-1t",
+          "base-aa-1t",
+          "base-4t",
+          "base-aa-4t"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "Reads the fixed null calibration against exact completeness, provenance, fingerprint, work, ordering, isolation, and zero-false-direction gates.",
+        "threshold": "1,056/1,056 measured invocations retained; 88/88 cell-by-thread calibrations have six complete mirrored pairs; exact fingerprints/work contracts match; zero faster/slower null verdicts; local wall evidence remains nonqualified."
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "The prospectively fixed mirror balances monotonic drift: odd rounds run A/B and even rounds B/A for every cell.",
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        20260926
+      ],
+      "nonce": null,
+      "note": "Python 3.12.14 random.Random(20260926) shuffles a fresh lexicographically sorted cell list per round. Canonical schedule rows are JSON objects with keys arms,id,round serialized by json.dumps(sort_keys=True,separators=(',',':')); Rust SHA-256 is 70e0ae24634d5e2bd5374d350502a52f18c560654202d8bfd8e04cedf145a86d and C SHA-256 is 4fcd6f17862034e515a7064f498388a5e01578f2b7cb84b8051de55636bf0864."
+    },
+    "instance_sampling": {
+      "rule": "Exhaustively execute the 10 listed Rust and 34 listed C IDs in the deterministic schedule at both thread settings; no cell is sampled, dropped, or selected after results.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "A/B labels remain visible because artifact identity and mirrored order are exact adherence gates; the zero-false-direction rule is frozen before data.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 44,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "exact",
+      "alpha": 0.05,
+      "tests_in_family": 88,
+      "correction": "other",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": 0.03125,
+      "passes": true,
+      "note": "No positive effect is inferred. Six fixed paired rounds give a two-sided exact sign resolution of 2/2^6=0.03125; family control is stricter than a favorable-cell test because every one of 88 cell-by-thread calibrations must be complete and neutral."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 3600,
+      "per_sample_seconds": 30,
+      "threads": 4,
+      "estimated_total_seconds": 43200,
+      "measured_on": "Conservative preregistered bound retained from version 1; no CPU benchmark, build, test, profiler, or timing call informed this amendment."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "output_fingerprint",
+        "name": "deterministic output fingerprint",
+        "unit": "64-bit hexadecimal digest",
+        "kind": "exact",
+        "definition": "The stable fingerprint of every semantically relevant fixed-cell output and embedded exact work field; every sample, A/B arm, round, and thread panel must be bit-for-bit equal.",
+        "source": "compare.json raw.<cell>.<arm>[].fingerprint and Callgrind instr.json when available",
+        "aggregation": "per_row",
+        "resolution": "one bit",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "work_contract",
+        "name": "exact target-specific work contract",
+        "unit": "integer/output vector",
+        "kind": "exact",
+        "definition": "Source-bound fingerprint-preimage contract: GF(2) rank/rows/word operations, Matrix-F5 criterion/build/reduction/results, fixed binary-field iteration structure/raw outputs, or C registry/result/counter preimages. Fields are not separately emitted; admissible observations are digest equality under frozen source hashes plus separately observed registry/schedule/sample counts.",
+        "source": "frozen source/harness hashes, retained registry list output, and raw row fingerprints",
+        "aggregation": "per_row",
+        "resolution": "one integer or one output bit",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "complete_invocations",
+        "name": "mechanically complete measured invocations",
+        "unit": "invocations",
+        "kind": "counted",
+        "definition": "Count of planned rows with zero exit, exact identity/affinity, expected cell/round/arm, one fingerprint, source-bound work preimage, and three to five timed samples after one discarded time-based warmup phase.",
+        "source": "four compare.json files, captured stderr order logs, isolation receipts, and build manifest",
+        "aggregation": "sum",
+        "resolution": "one invocation",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "false_direction_count",
+        "name": "false faster or slower A/A verdicts",
+        "unit": "cell-by-thread verdicts",
+        "kind": "counted",
+        "definition": "Number among the 88 fixed cell-by-thread calibrations whose pinned perfindex analysis reports faster or slower rather than neutral/invalid.",
+        "source": "four compare.json kernels[].verdict fields",
+        "aggregation": "sum",
+        "resolution": "one verdict",
+        "uncertainty": "none_exact"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "full_call_wall_ns",
+        "name": "complete production-call wall time",
+        "unit": "ns",
+        "kind": "timed",
+        "definition": "The complete Workload::run or C k->run interval after untimed setup/restoration, including construction, reduction, dispatch, readback, and result materialization performed by that call.",
+        "source": "compare.json raw.<cell>.<arm>[].median_ns and samples_ns",
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns clock read; median of three to five emitted samples",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "aa_log_ratio",
+        "name": "paired A/A log wall ratio",
+        "unit": "natural-log ratio",
+        "kind": "derived",
+        "definition": "Within-cell, within-thread log ratio of mirrored baseline A over byte-identical control B for each fixed round.",
+        "source": "paired median_ns values in compare.json",
+        "formula": "d(cell,thread,round)=ln(T_A/T_B); report exp(median_round d) and the pinned paired bootstrap interval",
+        "aggregation": "paired_ratio",
+        "resolution": "derived from nanosecond medians",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "callgrind_ir",
+        "name": "Callgrind instructions read diagnostic",
+        "unit": "Ir",
+        "kind": "counted",
+        "definition": "One fixed one-thread A/A instruction count per arm and cell over the complete harness-marked measured region after the unprofiled wall panel, using pinned Valgrind 3.28.0; failures retained once.",
+        "source": "profiles/callgrind-{rust,c}/instr.json and matching isolated_bench receipts",
+        "aggregation": "paired_ratio",
+        "resolution": "1 Ir",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "perf_software_events",
+        "name": "perf software-event diagnostics",
+        "unit": "events or nanoseconds",
+        "kind": "counted",
+        "definition": "Pinned perf 6.12.113 task-clock, cpu-clock, context-switches, and page-faults for one-thread A/A diagnostics, plus cpu-clock sampling for three fixed Rust representatives and five C cells selected by largest baseline Callgrind Ir.",
+        "source": "profiles/perf-stat/*.csv, profiles/perf-record/*.data, metadata, and isolation receipts",
+        "aggregation": "per_row",
+        "resolution": "one event or software-clock resolution",
+        "uncertainty": "range"
+      },
+      {
+        "id": "hardware_pmu_status",
+        "name": "hardware PMU availability status",
+        "unit": "enumerated status",
+        "kind": "exact",
+        "definition": "Only breakpoint, msr, and software event sources exist with perf_event_paranoid=2; core cycles, instructions, branch, and cache events are unavailable and forbidden.",
+        "source": "/sys/bus/event_source/devices and /proc/sys/kernel/perf_event_paranoid identity receipt",
+        "aggregation": "per_row",
+        "resolution": "exact device-name set",
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "fingerprint",
+      "source-bound fingerprint preimage contract",
+      "scheduled_invocations",
+      "emitted_sample_count",
+      "complete_pairs",
+      "false_faster_or_slower_verdicts",
+      "Callgrind.Ir",
+      "perf.task-clock",
+      "perf.cpu-clock",
+      "perf.context-switches",
+      "perf.page-faults",
+      "perf.cpu-clock.samples",
+      "hardware_pmu_status"
+    ],
+    "record": [
+      "protocol hash and freeze commit",
+      "baseline commit/tree/archive and every frozen source/harness SHA-256",
+      "globally locked build recipe, exact pinned toolchains, child artifact-binding amendment, build receipts, artifact paths/sizes/SHA-256 values, and manifest SHA-256",
+      "session, thread panel, round, cell order, arm order, exit status, sample count, fingerprint, work contract, and raw samples",
+      "Python version/binary hash and expected schedule hash",
+      "CPU model, microcode, feature flags, kernel, governor/frequency, SMT/NUMA topology, affinity, and run CPUs",
+      "global lock path and complete isolated_bench receipt",
+      "cgroup limits/throttling/memory failures, steal ticks, PSI, interrupts/softirqs, faults, and voluntary/involuntary context switches",
+      "all failures, timeouts, crashes, missing rows, unsupported profiler events, and isolation blockers",
+      "Valgrind/Callgrind and perf binary/library hashes, software event set, profile selection, output hashes, and hardware-PMU unavailability receipt"
+    ],
+    "timed_primary_justification": "No timed metric is primary. Wall observations characterize only this fixed A/A null session and remain explicitly nonqualified on the frozen local placement; exact fingerprints, counted work, completeness, and false-direction count decide the mechanical calibration."
+  },
+  "execution": {
+    "backend": "local",
+    "queue": "isolated_bench reserve under /workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+    "placement": {
+      "host_class": "current local 5-vCPU KVM guest on Intel Xeon Platinum 8573C",
+      "qualification": "nonqualified",
+      "qualification_reason": "No provider allocation, physical-host exclusivity, fixed-frequency/IRQ proof, or Tier-0/Tier-1 receipt exists. Pinned Callgrind and perf software events are diagnostic only; the core hardware PMU is absent.",
+      "numa_node": 0,
+      "thread_counts": [
+        1,
+        4
+      ],
+      "run_cpu_mask_1t": "0",
+      "reserve_cpu_mask_1t": "0-3",
+      "run_cpu_mask_4t": "0-3",
+      "reserve_cpu_mask_4t": "0-3",
+      "host_service_cpu": "4",
+      "global_lock": "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+      "isolated_bench": "/workspace/crypto/target/release/isolated_bench",
+      "isolated_bench_sha256": "b48781f50cb1b1f1fdbefd8dfe91c9ea239ce80785368df8a564fa3fb388e336",
+      "reserve_settle_seconds": 2,
+      "reserve_max_other_cpu": 0.1,
+      "reserve_max_psi": 5,
+      "reserve_period_seconds": 5,
+      "session_order": [
+        "rust-1t",
+        "c-1t",
+        "rust-4t",
+        "c-4t"
+      ]
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 86400,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Before any affected invocation, run only the globally locked frozen build recipe. Then file/freeze a child artifact-binding amendment naming source/recipe/toolchains, both build.json hashes, both executable paths/sizes/SHA-256 values, and manifest SHA-256. Until then return blocked_artifact_or_isolation and collect zero fingerprints, tests, benchmark rows, or profiles.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Fixed wall N is 44 cells x 2 thread panels x 6 measured rounds x 2 mirrored arms = 1,056 measured invocations. Each invocation has one discarded time-based warmup phase (at least one call and until 0.2 seconds), then emits 3..5 samples under samples=5,min_samples=3,max-seconds=2.0. Never replace an invocation; retain its actual sample count.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Execute four unprofiled wall sessions in order rust-1t,c-1t,rust-4t,c-4t. Rounds 1/3/5 run A then B and 2/4/6 run B then A per deterministically shuffled cell; expected Rust/C schedule hashes must match.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "After the unprofiled wall panel, attempt exactly 44 cells x 2 arms = 88 one-thread Callgrind complete-region diagnostics with pinned Valgrind 3.28.0. Retain a failure once; never replace it or alter a wall decision.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "After Callgrind, attempt exactly 44 cells x 2 arms = 88 one-thread perf-stat diagnostics in lexicographic cell order and A then B order, collecting only task-clock,cpu-clock,context-switches,page-faults with pinned perf 6.12.113/libraries. Retain failures once; request no hardware event.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "After perf stat, attempt exactly eight one-thread perf-record cpu-clock profiles: three fixed Rust representatives plus five C cells with largest baseline Callgrind Ir, ties lexicographic. Record baseline A once at 99 Hz with DWARF call graphs; profiles cannot change a gate.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Do not add rounds, replace failures, remove cells, change budgets, select a favorable CPU, or reinterpret the nonqualified host after clocks/profiles.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "No candidate build/arm/timing is authorized. After a candidate commit exists, register/freeze a fresh A/B protocol binding its exact commit and executable hashes before candidate data.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "Until a child artifact-binding amendment freezes both executable/build-receipt hashes, this version authorizes the frozen build only and zero correctness, fingerprint, benchmark, or profiler invocations.",
+    "Any baseline source hash, globally locked build recipe, pinned tool identity, child-amendment value, build.json hash, binary hash/path/size, or manifest mismatch yields invalid_exactness_or_provenance.",
+    "Any output fingerprint mismatch across A/B, samples, six rounds, or thread panels invalidates evidence before clocks.",
+    "GF(2), Matrix-F5, F2m, and C result/work fields are fingerprint preimages bound by frozen source hashes; the harness does not emit them separately. Exact digest equality gates the vector; only invocation/sample/pair/registry counts are separately observed.",
+    "Registry receipts must list exactly the 10 named Rust and 34 named C IDs with source-bound area/description fields. Missing, duplicate, additional, or selected-after-result IDs invalidate the session.",
+    "F2m fixes source-level workload structure at 65,536 multiply plus 65,536 square iterations per recurrence, 2,048 inverse calls, and eight scalar multiplications; this is not a separately emitted runtime counter.",
+    "Any session order, cell set, seed, schedule hash, arm mirror, thread count, CPU mask, sample cap/minimum/budget, timeout, environment, boundary, or registry change requires a new protocol.",
+    "Any nonzero exit, timeout, crash, wrong affinity, missing row/metric, sample count outside 3..5, or fewer than six complete pairs is retained and never replaced; it yields inconclusive_contention_or_incomplete unless exactness already failed.",
+    "Any row without global lock, exact reserve/run masks/settings, or an uncontended receipt is nonqualified. Exact fields may remain reportable; wall time supports no claim.",
+    "A Valgrind/perf hash mismatch, unsupported software event, or profiler failure invalidates that diagnostic only. Retain it once; never rerun, substitute hardware events, or alter the A/A verdict.",
+    "Callgrind, perf stat/record, disassembly, setup/build time, and stage timers are diagnostic only and cannot satisfy the complete Workload::run or C k->run gate.",
+    "Any candidate arm/build/output or production-speedup interpretation is outside this amendment and returns not_authorized_candidate_comparison."
+  ],
+  "decision_rule": {
+    "text": "Evaluate terminal outcomes in order. (1) If a candidate is built, introduced, or compared, return not_authorized_candidate_comparison. (2) If the frozen source/build identity, child artifact-binding amendment, or pre-data artifact manifest is absent before the first affected invocation, return blocked_artifact_or_isolation; if an observed identity, schedule, fingerprint, source-bound work contract, or registry contradicts its frozen value, return invalid_exactness_or_provenance. (3) If the global lock/isolation service cannot start, run nothing and return blocked_artifact_or_isolation. (4) If any of 1,056 planned invocations is missing/incomplete, any of 88 cells has fewer than six complete mirrored pairs, or any receipt is contended/wrong-affinity, return inconclusive_contention_or_incomplete; retain every attempted row and do not replace it. (5) If all exact/count/isolation gates pass but any cell receives a faster or slower null verdict, return baseline_aa_false_direction_nonqualified. (6) If all gates pass, all 1,056 rows are retained, all 88 cells have six pairs, and all verdicts are neutral, return baseline_aa_complete_nonqualified. The final suffix is mandatory because the frozen local KVM placement has no Tier 0/Tier 1 evidence receipt. No outcome establishes a speedup. After a candidate commit exists, a fresh protocol must be registered and frozen before affected data; it must bind exact baseline and candidate commits/binary SHA-256 values, its own A/B/A-prime schedule, correctness/work gates, qualified placement, profiler scope, complete-call thresholds, stopping rules, and promotion/rollback decisions.",
+    "comparison_ids": [
+      "C-calibration-absolute"
+    ],
+    "threshold": "1,056/1,056 complete invocations; 88/88 cells with six mirrored pairs; exact source/build/artifact/schedule/fingerprint/work/isolation gates; zero faster/slower null verdicts; mandatory nonqualified-local label.",
+    "statistic": "Exact complete-invocation count, complete-pair count, and false faster/slower verdict count, accompanied by each cell's six paired log ratios and pinned bootstrap interval.",
+    "interval": "No candidate-effect interval is licensed. Retain perfindex's paired bootstrap interval only as a nonqualified null diagnostic.",
+    "multiple_comparison_correction": "other",
+    "effect_size_measure": "No production effect size. Report per-cell exp(median ln(A/B)) only as a nonqualified A/A diagnostic.",
+    "verdict_vocabulary": [
+      "baseline_aa_complete_nonqualified",
+      "baseline_aa_false_direction_nonqualified",
+      "inconclusive_contention_or_incomplete",
+      "invalid_exactness_or_provenance",
+      "blocked_artifact_or_isolation",
+      "not_authorized_candidate_comparison"
+    ]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": [
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/manifest.json and child artifact-binding amendment",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/registry/rust.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/registry/c.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/rust/compare/compare.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/rust/isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/c/compare/compare.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/c/isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/rust/compare/compare.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/rust/isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/c/compare/compare.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/c/isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-rust/instr.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-rust-isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-c/instr.json",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-c-isolation.jsonl",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/perf-stat/*.csv",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/perf-record/*.data",
+      "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/perf-*.json"
+    ],
+    "outputs": [
+      "experiment.export/v1",
+      "exact source/build/artifact/schedule/fingerprint/work audit",
+      "88-cell table of six-pair completeness, A/A ratio/interval, canonical verdict, and qualification",
+      "exact counts for planned/retained/complete invocations and false directional verdicts",
+      "explicit nonqualified-local status and statement that no candidate or speedup was tested"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "Per-cell one- and four-thread A/A paired ratios and pinned bootstrap intervals, labeled nonqualified",
+      "Exact completeness/fingerprint/work gate matrix for all 88 cell-by-thread calibrations",
+      "Callgrind/perf diagnostic availability and counts, visually separated from full-call clocks"
+    ],
+    "report_dir": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/reports"
+  },
+  "inadmissible": [
+    "editing, replacing, or reinterpreting the frozen version-1 protocol instead of preserving it",
+    "starting any build-derived correctness, fingerprint, benchmark, or profiler invocation before this version is registered, frozen, and committed",
+    "starting affected data before a separately frozen child artifact-binding amendment binds build/manifest.json, exact source/recipe/toolchains, build receipts, executable paths/sizes/hashes, and manifest hash",
+    "silently reading version 1's candidate-dependent A/B/A-prime schedule as this two-arm A/A phase",
+    "changing the 44 cells, thread counts, six rounds, warmup/budget, arm mirror, seed, session order, build recipe, source, placement, gates, or decision after seeing data",
+    "replacing failures, extending N, selecting favorable cells/CPUs, or using within-invocation samples as independent external replicates",
+    "reporting any frozen-local clock as Tier 0/Tier 1 or a speedup, non-regression, promotion, or rollback decision",
+    "presenting Callgrind, perf, disassembly, setup/build time, or a stage timer as a full-call result",
+    "building or timing a candidate under this amendment; any candidate requires a fresh registered and frozen protocol"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/cpu/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "Source-by-source record of repository evidence, primary algorithm/instruction references, prior results, negative results, and their measurement consequences.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://arxiv.org/abs/1111.6549",
+      "provenance": "retrieved",
+      "claim": "M4RI uses precomputed pivot-row combinations, Gray-code table construction, and cache-aware blocking for dense GF(2) elimination.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/780506.780516",
+      "provenance": "retrieved",
+      "claim": "F5 signature criteria suppress reductions to zero; direct packing must leave criterion semantics and selected rows unchanged.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doc.rust-lang.org/std/macro.is_x86_feature_detected.html",
+      "provenance": "retrieved",
+      "claim": "Rust supports runtime x86 feature detection for AVX2 and PCLMULQDQ, permitting guarded dispatch with portable fallbacks.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.6028/NIST.SP.800-186",
+      "provenance": "retrieved",
+      "claim": "The binary-field curve parameters use fixed polynomial-basis irreducible polynomials; the standard supplies identities, not performance evidence.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/2807591.2807644",
+      "provenance": "retrieved",
+      "claim": "Scientific performance reports require reproducibility, appropriate statistics, full disclosure, and meaningful baselines.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/1508244.1508275",
+      "provenance": "retrieved",
+      "claim": "Seemingly irrelevant layout and environment changes can bias performance, motivating fresh-process alternation and exact build/environment receipts.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/cpu/protocol.json",
+      "provenance": "internal",
+      "claim": "The immutable version-1 predecessor freezes the three prospective Rust opportunities and 34-kernel C control but has no candidate commit or executable hashes; it cannot govern pre-candidate timing.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [
+    {
+      "id": "A1-baseline-aa-temporal-repair",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "Frozen version 1 has null candidate identities but presumes candidate-dependent A/B/A-prime stopping and decisions. This additive version preserves version 1 byte-for-byte and narrows authorization to a complete two-arm baseline/A-A calibration.",
+      "changes": [
+        "Reference immutable version 1 by protocol hash and both registration/freeze commits.",
+        "Remove every candidate arm and candidate-performance decision from the affected phase.",
+        "Bind the retained baseline commit/tree/archive, source/harness hashes, globally locked build recipe, Python, offline Rust/CMake/GNU toolchains, and isolation runner; require a separately frozen child artifact-binding amendment after the forbidden-in-this-task build and before data.",
+        "Fix all 44 cells, one- and four-thread placements, mirrored A/B then B/A order, one time-based discarded warmup phase per invocation and six measured rounds, exact 1,056-invocation N, exact fingerprints/source-bound work preimages, counted completeness gates, pinned Callgrind/perf software diagnostics, and explicit hardware-PMU unavailability.",
+        "Make the local KVM placement explicitly nonqualified and require a separately registered/frozen A/B protocol after a candidate commit and binary exist."
+      ],
+      "supersedes_fields": [
+        "version 1 candidate arms for pre-candidate execution authorization",
+        "version 1 A/B/A-prime process order for the baseline-only phase",
+        "version 1 candidate-dependent stopping and decision rules"
+      ]
+    }
+  ],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": true
+  },
+  "extensions": {
+    "cpu_baseline_aa": {
+      "status": "prospective_nonqualified_no_data_artifact_binding_pending",
+      "predecessor": {
+        "path": "experiments/performance-saturation-20261101/cpu/protocol.json",
+        "protocol_sha256": "0e883304ca31da59ab2ece5e400a6c79b46d4b669a84f1ea05e2978c72dd541d",
+        "registration_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "freeze_file_commit": "a8f4244ddb7b916ec67b7b2e6a9dcf97c53817b5"
+      },
+      "baseline": {
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "commit_tree": "03b5376c742f80298e124997addec10801bd57bb",
+        "git_archive_sha256": "c44204331a038f35596704cb2fdf72a6e6af510cc642466bc2287d60eedee52f",
+        "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+        "artifact_manifest": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/manifest.json",
+        "artifact_manifest_status_at_registration": "absent_by_design_no_build_authorized; child artifact-binding amendment required before data",
+        "artifact_manifest_required_fields": [
+          "all fields and constants in artifact_manifest_contract",
+          "exact tool identities from links.build_identity",
+          "Rust/C build.json and binary path/size/mode/SHA-256",
+          "same-path-and-hash assertions for A/B",
+          "manifest SHA-256 copied into the child amendment and later receipts"
+        ],
+        "artifact_manifest_contract": {
+          "schema": "cpu-baseline-build-manifest/v1",
+          "additional_top_level_fields": false,
+          "required_top_level_fields": [
+            "schema",
+            "parent_protocol_sha256",
+            "baseline_commit",
+            "baseline_tree",
+            "baseline_archive_sha256",
+            "build_recipe_sha256",
+            "toolchains",
+            "rust_build",
+            "c_build",
+            "same_instrument_assertions"
+          ],
+          "constants": {
+            "baseline_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "baseline_tree": "03b5376c742f80298e124997addec10801bd57bb",
+            "baseline_archive_sha256": "c44204331a038f35596704cb2fdf72a6e6af510cc642466bc2287d60eedee52f",
+            "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+            "rust_binary_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+            "c_binary_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench",
+            "rust_build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/build.json",
+            "c_build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/build.json"
+          },
+          "dynamic_fields": {
+            "parent_protocol_sha256": "64 lowercase hex equal to this file's freeze.protocol_sha256",
+            "toolchains": "exact links.build_identity strings/hashes",
+            "rust_build": "path, positive size, mode, build_json_sha256, binary_sha256",
+            "c_build": "path, positive size, mode, build_json_sha256, binary_sha256",
+            "same_instrument_assertions": "base-1t==base-aa-1t and base-4t==base-aa-4t for path and SHA-256"
+          },
+          "canonicalization": "UTF-8 JSON, sort_keys=true, separators=(',',':'); SHA-256 over those bytes"
+        },
+        "artifact_manifest_contract_sha256": "0c7eedc4f7aca5600bbf79fc56d085d93b86f93443772df9314cafd5d51ff110",
+        "child_artifact_binding_amendment": "After the frozen builds and before any list/fingerprint/test/benchmark/profile, register/freeze a new protocol version copying manifest, build.json, binary, size/mode, and toolchain receipts into its arms. This v2 cannot itself start data."
+      },
+      "local_host": {
+        "qualification": "nonqualified",
+        "timing_claim_authorized": false,
+        "observed_hardware": "5 logical x86_64 KVM CPUs; Intel Xeon Platinum 8573C; Linux 6.18.57; NUMA node 0",
+        "coordination_preflight": "/workspace/.benchmarks/performance-saturation/local/preflight.jsonl is not selected as a study receipt and reports remaining user threads on reserved CPUs",
+        "missing_evidence": [
+          "Tier 0 physical-host exclusivity/frequency/IRQ/SMT/NUMA audit",
+          "Tier 1 provider allocation/instance receipt",
+          "core hardware PMU source for cycles/instructions/branch/cache events"
+        ],
+        "bound_diagnostics": [
+          "Valgrind 3.28.0/callgrind with exact hashes",
+          "perf 6.12.113 plus exact library manifest; software events only",
+          "hardware event sources absent: breakpoint,msr,software only; perf_event_paranoid=2"
+        ]
+      },
+      "fixed_design": {
+        "cells": 44,
+        "cell_thread_calibrations": 88,
+        "external_rounds": 6,
+        "arms_per_round": 2,
+        "measured_invocations": 1056,
+        "requested_samples_per_invocation": 5,
+        "discarded_warmup": "one time-based phase per invocation: at least one run, then until 0.2 seconds; not an external mirrored round",
+        "order": "rounds 1/3/5 A,B; rounds 2/4/6 B,A; cell order reshuffled deterministically per round",
+        "session_order": [
+          "rust-1t",
+          "c-1t",
+          "rust-4t",
+          "c-4t"
+        ],
+        "schedule_serialization": "JSON array of {round,id,arms}; sort_keys=true; separators=(',',':')",
+        "rust_schedule_sha256": "70e0ae24634d5e2bd5374d350502a52f18c560654202d8bfd8e04cedf145a86d",
+        "c_schedule_sha256": "4fcd6f17862034e515a7064f498388a5e01578f2b7cb84b8051de55636bf0864",
+        "minimum_emitted_samples_per_invocation": 3,
+        "maximum_emitted_samples_per_invocation": 5
+      },
+      "workload_panels": {
+        "gf2": {
+          "ids": [
+            "gf2_la/rref_random_4940x8357",
+            "gf2_la/rref_macaulay_k5m3d5",
+            "gf2_la/echelon_macaulay_k5m3d5"
+          ],
+          "full_call_boundary": "gf2_elim::rref_counted or echelon_counted entry through returned rank and fully updated packed rows",
+          "exact_contract": "fingerprint includes rank, word_ops, row count, each row length, and every packed u64 word"
+        },
+        "matrix_f5": {
+          "ids": [
+            "bool_gb/matrix_f5_deg4_m2_n23",
+            "bool_gb/solve_matrixf5_m2_n17"
+          ],
+          "full_call_boundary": "complete Matrix-F5 build, criterion, reduction, readback, and for solve cell complete solver output",
+          "exact_contract": "degree, rows_f4, rows_pruned, rows_built, cols, rank, zero_reductions, reduce_word_ops, criterion_word_ops, criterion_rows, returned polynomials, roots, solver stats, and total word operations"
+        },
+        "f2m": {
+          "ids": [
+            "field_ec/f2m_mul_sqr_m131_64k",
+            "field_ec/f2m_mul_sqr_m163_64k",
+            "field_ec/f2m_mul_sqr_m233_64k",
+            "field_ec/f2m_inv_m163_2k",
+            "field_ec/binary_scalar_mul_sect163k1_x8"
+          ],
+          "full_call_boundary": "complete public field recurrence, inverse, or affine scalar-multiplication workload through materialized output",
+          "exact_contract": "all raw field words or final point coordinates are fingerprinted; fixed work is 65,536 mul plus 65,536 square for each recurrence, 2,048 inversions, and 8 scalar multiplications",
+          "negative_width_control": "m=233 must not use the new two-/three-limb path and must receive a neutral verdict"
+        },
+        "c_full": {
+          "ids": [
+            "field_ec/c_mont_mul_x8",
+            "field_ec/c_zp_op_chain",
+            "field_ec/c_powmod",
+            "field_ec/c_mont_pow",
+            "field_ec/c_invmod",
+            "field_ec/c_sqrtmod",
+            "field_ec/c_is_prime",
+            "field_ec/c_factorize",
+            "field_ec/c_ec_add_chain",
+            "field_ec/c_ec_batch_add",
+            "field_ec/c_ec_scalar_mul",
+            "field_ec/c_ec_count_points",
+            "dlp/c_rho_ec36",
+            "dlp/c_rho_ec44",
+            "dlp/c_rho_ec44_mt",
+            "dlp/c_rho_zp40",
+            "dlp/c_kangaroo_ec56_w34",
+            "dlp/c_kangaroo_zp61_w36",
+            "dlp/c_bsgs_ec32",
+            "dlp/c_bsgs_zp36",
+            "dlp/c_grumpy_ec32",
+            "dlp/c_pohlig_ec48s",
+            "dlp/c_pohlig_zp61s",
+            "dlp/c_precomp_build_ec32",
+            "dlp/c_precomp_online_ec32",
+            "dlp/c_glv_rho_j0_32",
+            "dlp/c_gpu_rho_emulate_ec32",
+            "dlp/c_cheon56",
+            "relation/c_ic_precompute_zp44",
+            "relation/c_ic_precompute_zp52",
+            "relation/c_ic_randexp_zp36",
+            "relation/c_ic_log_zp44",
+            "relation/c_linsolve_sparse",
+            "relation/c_dense_solve"
+          ],
+          "full_call_boundary": "each ca_perfbench k->run fixed-input call; setup and prepare remain outside",
+          "exact_contract": "exactly 34 identical id/area/description/tier rows and one identical stable result fingerprint for every sample, round, arm, and thread panel; fixed iteration/input descriptions are part of the frozen registry digest"
+        }
+      },
+      "commands": {
+        "working_directory": "/workspace/cryptanalysis",
+        "build_in_fixed_order": [
+          "/workspace/crypto/target/release/isolated_bench busy --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait -- env PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin CARGO_HOME=/workspace/.tools/cargo RUSTUP_HOME=/workspace/.tools/rustup CARGO_NET_OFFLINE=true /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py build --ref c273e62140071fe4370fbe6946dcb898c95b4eb2 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust",
+          "/workspace/crypto/target/release/isolated_bench busy --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait -- env PATH=/workspace/.tools/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:/workspace/.venv/bin:/usr/bin:/bin CARGO_HOME=/workspace/.tools/cargo RUSTUP_HOME=/workspace/.tools/rustup CARGO_NET_OFFLINE=true /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py build --c --ref c273e62140071fe4370fbe6946dcb898c95b4eb2 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c"
+        ],
+        "artifact_gate": "After both globally locked builds, create /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/manifest.json to artifact_manifest_contract, then register/freeze the child artifact-binding amendment. Run zero registry, fingerprint, test, wall, or profiler commands until it is frozen.",
+        "wall_sessions_in_fixed_order": [
+          "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/rust/isolation.jsonl --label cpu-baseline-aa-rust-1t -- env PYTHONHASHSEED=0 RAYON_NUM_THREADS=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py compare --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/rust/compare --filter gf2_la/rref_random_4940x8357 --filter gf2_la/rref_macaulay_k5m3d5 --filter gf2_la/echelon_macaulay_k5m3d5 --filter bool_gb/matrix_f5_deg4_m2_n23 --filter bool_gb/solve_matrixf5_m2_n17 --filter field_ec/f2m_mul_sqr_m131_64k --filter field_ec/f2m_mul_sqr_m163_64k --filter field_ec/f2m_mul_sqr_m233_64k --filter field_ec/f2m_inv_m163_2k --filter field_ec/binary_scalar_mul_sect163k1_x8 --rounds 6 --threads 1 --samples 5 --max-seconds 2.0 --timeout 1800 --taskset 0 --no-aa --seed 20260926",
+          "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/c/isolation.jsonl --label cpu-baseline-aa-c-1t -- env PYTHONHASHSEED=0 RAYON_NUM_THREADS=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py compare --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/c/compare --full --rounds 6 --threads 1 --samples 5 --max-seconds 2.0 --timeout 1800 --taskset 0 --no-aa --seed 20260926",
+          "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/rust/isolation.jsonl --label cpu-baseline-aa-rust-4t -- env PYTHONHASHSEED=0 RAYON_NUM_THREADS=4 OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py compare --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/rust/compare --filter gf2_la/rref_random_4940x8357 --filter gf2_la/rref_macaulay_k5m3d5 --filter gf2_la/echelon_macaulay_k5m3d5 --filter bool_gb/matrix_f5_deg4_m2_n23 --filter bool_gb/solve_matrixf5_m2_n17 --filter field_ec/f2m_mul_sqr_m131_64k --filter field_ec/f2m_mul_sqr_m163_64k --filter field_ec/f2m_mul_sqr_m233_64k --filter field_ec/f2m_inv_m163_2k --filter field_ec/binary_scalar_mul_sect163k1_x8 --rounds 6 --threads 4 --samples 5 --max-seconds 2.0 --timeout 1800 --taskset 0-3 --no-aa --seed 20260926",
+          "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/c/isolation.jsonl --label cpu-baseline-aa-c-4t -- env PYTHONHASHSEED=0 RAYON_NUM_THREADS=4 OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py compare --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-4t/c/compare --full --rounds 6 --threads 4 --samples 5 --max-seconds 2.0 --timeout 1800 --taskset 0-3 --no-aa --seed 20260926"
+        ],
+        "callgrind_status": "authorized after unprofiled wall panel with pinned Valgrind 3.28.0/callgrind/preload/libexec manifest",
+        "callgrind_rust_template": "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-rust-isolation.jsonl --label cpu-baseline-aa-callgrind-rust -- taskset -c 0 env PATH=/workspace/.tools/valgrind/bin:/usr/bin:/bin PYTHONHASHSEED=0 RAYON_NUM_THREADS=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py instr --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-rust --filter gf2_la/rref_random_4940x8357 --filter gf2_la/rref_macaulay_k5m3d5 --filter gf2_la/echelon_macaulay_k5m3d5 --filter bool_gb/matrix_f5_deg4_m2_n23 --filter bool_gb/solve_matrixf5_m2_n17 --filter field_ec/f2m_mul_sqr_m131_64k --filter field_ec/f2m_mul_sqr_m163_64k --filter field_ec/f2m_mul_sqr_m233_64k --filter field_ec/f2m_inv_m163_2k --filter field_ec/binary_scalar_mul_sect163k1_x8",
+        "callgrind_c_template": "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-c-isolation.jsonl --label cpu-baseline-aa-callgrind-c -- taskset -c 0 env PATH=/workspace/.tools/valgrind/bin:/usr/bin:/bin PYTHONHASHSEED=0 RAYON_NUM_THREADS=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 scripts/perf/perfindex.py instr --base /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --cand /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/callgrind-c --full",
+        "perf_status": "authorized after Callgrind for pinned software events only; hardware PMU absent (event sources breakpoint,msr,software; paranoid=2)",
+        "full_call_gate": "Only complete Workload::run and C k->run intervals decide mechanical A/A calibration; build, setup, restoration, phase/stage timers, Callgrind, perf, and disassembly never substitute.",
+        "registry_receipts_after_child_amendment": [
+          "/workspace/crypto/target/release/isolated_bench busy --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait -- /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench list --full",
+          "/workspace/crypto/target/release/isolated_bench busy --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait -- /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench list --full"
+        ],
+        "registry_output_rule": "Capture stdout/exit as /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/registry/rust.jsonl and c.jsonl; hash before wall data and require exactly the 10/34 IDs with no extras in the filtered plan.",
+        "callgrind_scope": "Exactly 88 1T A/A complete-region Ir diagnostics: 44 IDs x A/B; retain failures once; never speed evidence.",
+        "perf_software_event_set": "task-clock,cpu-clock,context-switches,page-faults",
+        "perf_hardware_event_status": "unavailable/forbidden: cycles,instructions,branches,branch-misses,L1/LLC events",
+        "perf_stat_scope": "Exactly 88 1T diagnostics after Callgrind: 44 IDs lexicographic, A then B. Output profiles/perf-stat/<001..088>_<A-or-B>_<ID-slashes-to-underscores>.csv.",
+        "perf_record_scope": "Exactly eight baseline-A 1T cpu-clock profiles: three fixed Rust IDs (gf2 random, Matrix-F5 deg4, F2m m163), then five C IDs with largest baseline Callgrind Ir; ties lexicographic.",
+        "perf_stat_template": "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/perf-stat-<ORDINAL>-<ARM>-isolation.jsonl --label cpu-baseline-aa-perf-stat-<ORDINAL>-<ARM> -- env LD_LIBRARY_PATH=/workspace/.tools/perf/usr/lib/x86_64-linux-gnu taskset -c 0 /workspace/.tools/perf/usr/bin/perf stat -x, --no-big-num -o <OUTPUT_RULE_PATH.csv> -e task-clock,cpu-clock,context-switches,page-faults -- <BASELINE_BINARY> run --filter <EXACT_ID> --exact --samples 5 --min-samples 5 --max-seconds 2.0",
+        "perf_record_template": "/workspace/crypto/target/release/isolated_bench reserve --lock /workspace/.benchmarks/performance-saturation/local/global-cpu.lock --wait --cpus 0-3 --settle 2 --max-other-cpu 0.10 --max-psi 5 --period 5 --out /workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/profiles/perf-record-<ORDINAL>-isolation.jsonl --label cpu-baseline-aa-perf-record-<ORDINAL> -- env LD_LIBRARY_PATH=/workspace/.tools/perf/usr/lib/x86_64-linux-gnu taskset -c 0 /workspace/.tools/perf/usr/bin/perf record -e cpu-clock -F 99 -g --call-graph dwarf -o <OUTPUT_RULE_PATH.data> -- <BASELINE_BINARY> run --filter <SELECTED_ID> --exact --samples 5 --min-samples 5 --max-seconds 2.0"
+      },
+      "future_candidate_protocol": {
+        "required": true,
+        "trigger": "one clean candidate commit and exact candidate executable bundle exist",
+        "must_bind_before_candidate_data": [
+          "baseline and candidate commits, trees, source manifests, toolchains, build receipts, paths, sizes, and SHA-256 values",
+          "fresh baseline/candidate/A-prime schedule and fixed sample size",
+          "qualified Tier 0 or Tier 1 placement and receipts for any wall-time claim",
+          "exact fingerprint/work gates for the three Rust opportunities and 34-kernel C control",
+          "independently pinned Callgrind/perf tools, available event classes, and fixed diagnostic scope",
+          "full-call thresholds, multiple-comparison handling, stopping, promotion, and rollback decisions"
+        ]
+      }
+    }
+  }
+}

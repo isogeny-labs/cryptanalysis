@@ -1,8 +1,12 @@
 # CPU performance-saturation literature and prior evidence
 
-**Status:** pre-measurement review, 2026-11-01. No benchmark, profiler, or
-correctness workload was run for this study. The adjacent `protocol.json` is
-an unfrozen draft and authorizes no data collection.
+**Status:** pre-measurement review, 2026-11-01. No CPU build, benchmark,
+profiler, or correctness workload was run by this lane. The adjacent
+`protocol.json` is preserved as the frozen version-1 three-arm design; its
+candidate commits and executable hashes are unresolved, so it cannot govern a
+pre-candidate run. `protocol-baseline-aa-v2.json` is the separate prospective
+baseline/A-A authority only when its own freeze block is frozen and committed.
+It binds no candidate and authorizes no speedup claim.
 
 ## Scope
 
@@ -24,18 +28,19 @@ timing ratio to this checkout, host, compiler, or measurement boundary.
 
 | Source checked | What it establishes | Consequence for this study |
 | --- | --- | --- |
-| [`AGENTS.md`](../../../AGENTS.md), especially “Experiment protocol, export and review” and “CPU performance evidence tiers” | A protocol must be frozen before the first data point; wall-time claims require qualified isolation, alternating pairs, exact results, and retained failures. | The draft remains explicitly unfrozen. The current local executor is nonqualified and may be used only for validation of the draft, never for timing. |
-| [`docs/perf/PERFORMANCE_INDEX.md`](../../../docs/perf/PERFORMANCE_INDEX.md) | `scripts/perf/perfindex.py` is the canonical Rust/C A/B/A′ harness; fixed-input kernels return fingerprints and are compared at identical production-call boundaries. | Use six fixed rotating A/B/A′ rounds, five samples per invocation, one- and four-thread panels, and exact fingerprint equality before reading time. |
+| [`AGENTS.md`](../../../AGENTS.md), especially “Experiment protocol, export and review” and “CPU performance evidence tiers” | A protocol must be frozen before the first data point; wall-time claims require qualified isolation, alternating pairs, exact results, and retained failures. | Preserve frozen version 1, file the baseline/A-A temporal repair separately, and keep the current local executor explicitly nonqualified. No local wall observation may be promoted to Tier 0 or Tier 1. |
+| [`docs/perf/PERFORMANCE_INDEX.md`](../../../docs/perf/PERFORMANCE_INDEX.md) | `scripts/perf/perfindex.py` is the canonical Rust/C comparison harness; fixed-input kernels return fingerprints and are compared at identical production-call boundaries. In `--no-aa` mode it deterministically mirrors two arms A/B then B/A by round. | The repair uses the same baseline path as both `--base` and `--cand`, six fixed mirrored rounds, one discarded time-based warmup phase per invocation, three to five emitted samples under the canonical budget, one- and four-thread panels, and exact fingerprint equality before reading clocks. |
 | [`suite/examples/perfbench/harness.rs`](../../../suite/examples/perfbench/harness.rs) | Setup and per-sample input restoration are untimed; `Workload::run` is the complete timed call; changed fingerprints invalidate a comparison. | The decisive metric is the full `run` interval, not an isolated loop or phase. Preparation remains reported but cannot support a speedup. |
 | [`tools/ca_perfbench.c`](../../../tools/ca_perfbench.c) | The C harness has 34 fixed-input kernels. It fingerprints answers, coordinates, residues, ranks, or recovered logs and refuses within-run fingerprint drift. | Require the same 34 IDs/descriptions and one exact fingerprint per ID across baseline, candidate, A/A, rounds, samples, and thread panels. |
-| [`docs/ISOLATED_BENCHMARKS.md`](../../../docs/ISOLATED_BENCHMARKS.md) | Tier-0 host evidence requires an exclusive physical-host CPU/NUMA partition, fixed frequency, IRQ control, full topology/affinity receipts, and no noise events. Tier-1 is instance-scoped and has a different claim. | The local container cannot be silently treated as Tier 0. Before freeze, choose and pin a qualifying host and receipt path or keep all clocks explicitly nonqualified. |
+| [`docs/ISOLATED_BENCHMARKS.md`](../../../docs/ISOLATED_BENCHMARKS.md) | Tier-0 host evidence requires an exclusive physical-host CPU/NUMA partition, fixed frequency, IRQ control, full topology/affinity receipts, and no noise events. Tier-1 is instance-scoped and has a different claim. | The repair pins CPUs 0/0-3, reserves 0-3 under the shared global lock, and retains the service receipt, but the local KVM placement still lacks Tier-0/Tier-1 proof. Its clocks remain nonqualified even if the internal isolation/noise gate is quiet. |
 | Hoefler and Belli, “Scientific Benchmarking of Parallel Computing Systems,” SC15, DOI [10.1145/2807591.2807644](https://doi.org/10.1145/2807591.2807644) (publisher record retrieved) | Performance reports need reproducible environments, statistical treatment, full disclosure, and meaningful baselines. | Retain raw alternating rounds, A/A spread, exact host/build identities, confidence intervals, neutral/regressing cells, and failures. |
 | Mytkowicz et al., “Producing Wrong Data Without Doing Anything Obviously Wrong!”, ASPLOS 2009, DOI [10.1145/1508244.1508275](https://doi.org/10.1145/1508244.1508275) (publisher record retrieved) | Link order, environment size, and layout can create performance effects without semantic changes. | Build arms separately but identically, alternate fresh processes, retain environment and binary hashes, and treat Callgrind/hardware-counter deltas as diagnostics rather than portable timings. |
 
 The canonical cross-repository machine contract was also checked in
 `crypto-autoresearcher:docs/experiment-protocol.md`, its
 `experiment.protocol/v1` schema, and `tools/experiment_protocol.py`. The
-draft is validated with that checker but is not frozen.
+repair is filed before affected data and is checked with that validator;
+execution remains prohibited unless its own freeze block says `frozen`.
 
 ## GF(2) elimination
 
@@ -169,17 +174,19 @@ candidate. The full C index is therefore a control for unintended build or
 performance effects of the Rust-only candidate. Its source set, registry,
 descriptions, fingerprints, and fixed work must remain unchanged.
 
-## Decisions fixed before implementation
+## Decisions fixed before candidate implementation
 
 - The source baseline is commit
-  `c273e62140071fe4370fbe6946dcb898c95b4eb2`; the candidate commit and all
-  executable hashes are unresolved until implementation and clean builds.
+  `c273e62140071fe4370fbe6946dcb898c95b4eb2`; version 1's candidate commit
+  and candidate executable hashes remain unresolved until implementation and
+  clean builds.
 - The many-thread panel is four threads. It is distinct from the one-thread
   panel and must use a qualified four-CPU placement that covers SMT siblings
   and NUMA policy; container affinity alone is insufficient.
-- Exactly six measured rotating A/B/A′ rounds and five internal samples per
-  invocation are planned. No result-dependent extension or early stop is
-  permitted.
+- Version 1 retains its six rotating A/B/A′ rounds for a future candidate.
+  The baseline-only repair instead fixes six two-arm mirrored rounds: A/B in
+  rounds 1, 3, and 5 and B/A in rounds 2, 4, and 6. No result-dependent
+  extension or early stop is permitted.
 - Fingerprints and embedded/fixed work counters must match exactly before
   any clock is read. A mismatch invalidates the affected opportunity.
 - Callgrind `Ir`, `perf stat`, disassembly, and `perf record` are diagnostic.
@@ -188,7 +195,67 @@ descriptions, fingerprints, and fixed work must remain unchanged.
 - No stage-only improvement licenses retention. Each Rust opportunity must
   pass its complete production-call panel at both thread settings, while the
   unchanged C panel must pass its preregistered non-regression gate.
-- Before freeze, the draft still needs a qualifying host/CPU set, candidate
-  commit, toolchain and binary hashes, preflight runtime, and a hashed analysis
-  script. Until then the local-host status is **nonqualified; no timing
-  authorized**.
+- A future A/B protocol still needs a qualifying host/CPU receipt, one clean
+  candidate commit, exact baseline/candidate toolchains and executable hashes,
+  and prospectively fixed promotion/rollback decisions. The baseline/A-A
+  amendment does not fill those candidate fields.
+
+## Baseline/A-A temporal repair filed before data
+
+Frozen version 1 is identified by protocol SHA-256
+`0e883304ca31da59ab2ece5e400a6c79b46d4b669a84f1ea05e2978c72dd541d`,
+registration commit `050af6a5edbaccee4028574492597049a06cfd83`, and
+freeze-file commit `a8f4244ddb7b916ec67b7b2e6a9dcf97c53817b5`. It is
+not edited by the repair.
+
+`protocol-baseline-aa-v2.json` narrows the next admissible phase to the
+retained baseline and a byte-identical A/A label. It fixes all 44 cells at one
+and four threads, six mirrored pairs per cell/thread, and therefore exactly
+1,056 measured invocations. Each invocation uses one discarded warmup phase
+that runs at least once and continues until 0.2 seconds, then emits three to
+five samples under `samples=5`, `min_samples=3`, and the two-second budget.
+The external fixed N counts invocations, not internal samples. The Rust and C
+cell schedules are pinned by seed and prospective schedule hashes.
+
+The source identity is the baseline commit/tree plus a SHA-256 of its complete
+Git archive and per-file hashes. The build identity is one exact, globally
+locked two-command recipe with pinned Python, Rust 1.99.1, CMake 4.4.3, GCC
+14.2.0, GNU make/binutils, offline Cargo, and tool/package manifest hashes.
+No campaign Rust or C executable exists at filing time because this task
+forbids a build. After that recipe runs, a child artifact-binding amendment
+must be registered and frozen before the first registry, fingerprint, test,
+benchmark, or profiler invocation. It must bind the canonical build manifest,
+both `build.json` receipts, both executable paths, sizes, modes, and SHA-256
+values; A and A/A must use those same paths and bytes. Absence or mismatch
+blocks data rather than inviting an unregistered rebuild.
+
+All CPU-intensive work must hold
+`/workspace/.benchmarks/performance-saturation/local/global-cpu.lock`.
+Wall sessions additionally use the retained `isolated_bench reserve` binary,
+run on CPU 0 or CPUs 0-3, reserve CPUs 0-3, leave CPU 4 for services, and keep
+the full receipt. These controls do not cure the missing physical-host or
+provider allocation proof: the frozen local status is **nonqualified** and no
+Tier-0/Tier-1 timing or speedup claim is authorized.
+
+Task-local Valgrind 3.28.0 and its Callgrind executable are available and
+bound by exact SHA-256 values. After the unprofiled A/A wall panel, the repair
+fixes 88 one-thread Callgrind A/A invocations over all 44 cells. Task-local
+`perf` 6.12.113 and every shipped library are likewise bound: 88 later
+`perf stat` diagnostics collect only `task-clock`, `cpu-clock`,
+`context-switches`, and `page-faults`; eight still-later `perf record`
+diagnostics sample `cpu-clock` for three fixed Rust representatives and the
+five C cells with largest baseline Callgrind `Ir` (lexicographic ties).
+
+The host exposes only `breakpoint`, `msr`, and `software` event sources with
+`perf_event_paranoid=2`. Core hardware-PMU cycles, instructions, branch, and
+cache events are therefore explicitly unavailable and forbidden rather than
+imputed. All profiler failures are retained once, never rerun, and affect only
+their diagnostic. Callgrind and `perf` can never replace the unprofiled
+complete-call gate or support a speedup claim.
+
+No candidate may be built or timed under this amendment. Once a clean
+candidate commit and binaries exist, a fresh protocol must be registered and
+frozen before candidate-affected data. It must bind both source and binary
+identities, a fresh A/B/A-prime schedule, qualified placement, exact
+fingerprint/work gates, profiler tools, full-call thresholds, stopping rules,
+and promotion/rollback decisions.
