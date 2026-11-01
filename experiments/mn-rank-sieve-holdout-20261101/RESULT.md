@@ -51,7 +51,7 @@ Reproduce: `python3 run.py && python3 plot.py`. Single CPU core, Intel Xeon
 - Positive control (t ≤ 10⁶): the test family's held-out mean is 0.217 ± 0.003;
   the rank ≥ 1 family's is 1.137 ± 0.003. The instrument resolves one unit of
   rank at about 350 SE.
-- Speed: naive 4,976 µs per curve, table gather (no tiling) 851 ns per curve.
+- Speed: naive 5,058 µs per curve, table gather (no tiling) 863 ns per curve.
   The report's tiled 103 ns was not reproduced; that layout was not built here.
 
 ## Interpretation
