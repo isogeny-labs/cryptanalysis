@@ -39,6 +39,12 @@ CANDIDATE_PARENT = "e0f200f7af1ffa2aeb59dd5d4d4c90c7f5ea4ef5"
 CANDIDATE_TREE = "568a9802a4db7da921862a4234e7b1b579df5534"
 CANDIDATE_COORD_BLOB = "0d3f53806361e7442bc1d108c16b8b847f029918"
 CANDIDATE_DIFF_SHA256 = "38b069f6f1fc2c728b872d79a3694f6552c9f4dba44c597b4b518c266a39f471"
+BENCHMARK_CPU_COUNT = 1
+AFFINITY_POLICY = (
+    "require exactly N distinct allowed CPU ids; order by "
+    "(package,die,numa,core,cpu), with missing topology sorting last; "
+    "pin the benchmark to the first ordered CPU"
+)
 
 
 def arguments() -> argparse.Namespace:
@@ -114,13 +120,63 @@ def cgroup_value(name: str) -> str | None:
     return None
 
 
+def integer_file(path: Path) -> int | None:
+    try:
+        return int(path.read_text().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def cpu_topology(affinity: list[int]) -> list[dict[str, Any]]:
+    topology = []
+    for cpu in affinity:
+        root = Path(f"/sys/devices/system/cpu/cpu{cpu}")
+        nodes = sorted(root.glob("node[0-9]*"))
+        numa = int(nodes[0].name[4:]) if nodes else None
+        topology.append({
+            "cpu": cpu,
+            "package": integer_file(root / "topology/physical_package_id"),
+            "die": integer_file(root / "topology/die_id"),
+            "numa": numa,
+            "core": integer_file(root / "topology/core_id"),
+            "thread_siblings": read_text(str(root / "topology/thread_siblings_list")),
+        })
+    return topology
+
+
+def ordered_cpus(affinity: list[int], topology: list[dict[str, Any]]) -> list[int]:
+    if len(affinity) != len(set(affinity)) or any(cpu < 0 for cpu in affinity):
+        raise RuntimeError(f"allowed CPU ids are not distinct nonnegative integers: {affinity}")
+    by_cpu = {row.get("cpu"): row for row in topology}
+    if set(by_cpu) != set(affinity) or len(by_cpu) != len(topology):
+        raise RuntimeError("CPU topology does not cover the allowed affinity exactly once")
+
+    def value(row: dict[str, Any], field: str) -> int:
+        item = row.get(field)
+        return item if isinstance(item, int) and item >= 0 else 1 << 62
+
+    return sorted(
+        affinity,
+        key=lambda cpu: (
+            value(by_cpu[cpu], "package"),
+            value(by_cpu[cpu], "die"),
+            value(by_cpu[cpu], "numa"),
+            value(by_cpu[cpu], "core"),
+            cpu,
+        ),
+    )
+
+
 def host_snapshot() -> dict[str, Any]:
     affinity = sorted(os.sched_getaffinity(0))
+    topology = cpu_topology(affinity)
     cpu_stat = (read_text("/proc/stat") or "").splitlines()
     cpu_fields = cpu_stat[0].split()[1:] if cpu_stat else []
     return {
         "uname": command(["uname", "-a"]),
         "affinity": affinity,
+        "cpu_topology": topology,
+        "topology_order": ordered_cpus(affinity, topology),
         "logical_cpus": os.cpu_count(),
         "cpuinfo_sha256": bytes_sha256(Path("/proc/cpuinfo").read_bytes()),
         "cpu_model": next(
@@ -142,19 +198,33 @@ def host_snapshot() -> dict[str, Any]:
     }
 
 
-def validate_host(snapshot: dict[str, Any], cpus: int, memory_gib: int) -> None:
+def validate_host(snapshot: dict[str, Any], cpus: int, memory_gib: int) -> dict[str, Any]:
     # os.cpu_count() can report the physical host rather than the container's
     # cpuset.  The schedulable affinity is the in-container execution contract.
-    if snapshot["affinity"] != list(range(cpus)):
-        raise RuntimeError(
-            f"CPU identity mismatch: affinity={snapshot['affinity']}, want 0..{cpus - 1}"
-        )
+    affinity = snapshot["affinity"]
+    if len(affinity) != cpus or len(set(affinity)) != cpus or any(cpu < 0 for cpu in affinity):
+        raise RuntimeError(f"CPU identity mismatch: affinity={affinity}, want {cpus} distinct CPUs")
+    order = ordered_cpus(affinity, snapshot["cpu_topology"])
+    if snapshot.get("topology_order") != order:
+        raise RuntimeError("recorded CPU topology order is inconsistent")
     expected_memory = memory_gib << 30
     memory_max = snapshot["memory_max"]
     if memory_max not in (None, "max") and int(memory_max) != expected_memory:
         raise RuntimeError(f"memory.max={memory_max}, want {expected_memory}")
     if snapshot["nvidia_devices"]:
         raise RuntimeError(f"CPU campaign found GPU devices: {snapshot['nvidia_devices']}")
+    return {
+        "policy": AFFINITY_POLICY,
+        "allowed_cpus": affinity,
+        "topology_order": order,
+        "benchmark_cpus": order[:BENCHMARK_CPU_COUNT],
+    }
+
+
+def assert_affinity(expected: list[int], observed: list[int] | None = None) -> None:
+    current = sorted(os.sched_getaffinity(0)) if observed is None else sorted(observed)
+    if current != expected:
+        raise RuntimeError(f"allowed CPU affinity changed: observed={current}, expected={expected}")
 
 
 def install_go(work: Path) -> tuple[Path, dict[str, Any]]:
@@ -358,25 +428,31 @@ def main() -> int:
     output = options.out.resolve()
     output.mkdir(parents=True)
     initial_host = host_snapshot()
-    validate_host(initial_host, options.expected_cpus, options.expected_memory_gib)
+    placement = validate_host(initial_host, options.expected_cpus, options.expected_memory_gib)
+    expected_affinity = placement["allowed_cpus"]
     tools = require_tools()
 
     with tempfile.TemporaryDirectory(prefix="go-coord-remote-ab-") as temporary:
         work = Path(temporary)
         go, toolchain = install_go(work)
+        assert_affinity(expected_affinity)
         baseline_source, candidate_source, sources = prepare_sources(repo, work)
+        assert_affinity(expected_affinity)
         build_dir = output / "build"
         build_dir.mkdir()
         baseline_binary = build_dir / "coord-baseline.test"
         candidate_binary = build_dir / "coord-candidate.test"
         baseline_build = build_arm(go, baseline_source, baseline_binary, work / "cache-baseline")
+        assert_affinity(expected_affinity)
         candidate_build = build_arm(go, candidate_source, candidate_binary, work / "cache-candidate")
+        assert_affinity(expected_affinity)
         build_receipt = {
             "schema": "go-coordinator-remote-build/v1",
             "runner_sha256": sha256(Path(__file__).resolve()),
             "mode": options.mode,
             "expected_cpu_flavor": options.expected_cpu_flavor,
             "host": initial_host,
+            "placement": placement,
             "tools": tools,
             "toolchain": toolchain,
             "sources": sources,
@@ -393,11 +469,15 @@ def main() -> int:
         tests = output / "tests"
         tests.mkdir()
         run_tests(go, baseline_source, work / "test-cache-baseline", tests / "baseline.txt")
+        assert_affinity(expected_affinity)
         run_tests(go, candidate_source, work / "test-cache-candidate", tests / "candidate.txt")
+        assert_affinity(expected_affinity)
 
         before = host_snapshot()
+        assert_affinity(expected_affinity, before["affinity"])
         campaign = output / "campaign"
-        runner = Path(__file__).with_name("run_campaign.py")
+        runner = Path(__file__).with_name("run_remote_campaign.py")
+        benchmark_cpu = placement["benchmark_cpus"][0]
         argv = [
             sys.executable, str(runner),
             "--out", str(campaign),
@@ -409,11 +489,13 @@ def main() -> int:
             "--right-arm", "go-candidate",
             "--right-binary", str(candidate_binary),
             "--right-sha256", options.candidate_binary_sha256,
-            "--warmups", "3", "--replicates", "20", "--cpu", "0",
+            "--warmups", "3", "--replicates", "20", "--cpu", str(benchmark_cpu),
+            "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
             "--timeout-seconds", "1800",
         ]
         command(argv, cwd=repo)
         after = host_snapshot()
+        assert_affinity(expected_affinity, after["affinity"])
         rows = [
             json.loads(line) for line in (campaign / "rows.jsonl").read_text().splitlines() if line
         ]
@@ -436,6 +518,7 @@ def main() -> int:
             "schema": "go-coordinator-remote-isolation/v1",
             "before": before,
             "after": after,
+            "placement": placement,
             "measured_rows_with_nonzero_steal_delta": steal_rows,
             "cgroup_nr_throttled_delta": (
                 throttled_after - throttled_before
