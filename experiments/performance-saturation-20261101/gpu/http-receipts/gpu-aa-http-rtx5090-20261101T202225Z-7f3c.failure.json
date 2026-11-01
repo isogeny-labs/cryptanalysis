@@ -1,0 +1,78 @@
+{
+  "schema": "gpu.http-batch.failure-summary/v1",
+  "run_id": "gpu-aa-http-rtx5090-20261101T202225Z-7f3c",
+  "protocol": {
+    "path": "experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-v4.json",
+    "version": 4,
+    "protocol_sha256": "189e9403413362e840318a6fa0ff7029d853b85db9eba018c7b9ca93b4ecc285",
+    "freeze_commit": "f3220ad54694dcbca688a8990f3d382eb0f1649f"
+  },
+  "source": {
+    "ref": "refs/heads/codex/runpod-http-instrument-20261101",
+    "commit": "ab90adc94d6b6528eba909df9b99499fd0ebe243",
+    "tree": "42b975bc5880ee5ba0f423a96dcbff9f582d03bf",
+    "git_archive_sha256": "7076c787c3f36cb988642050d79c2d3011e4a6e4af722b7ba28b8997244dc178"
+  },
+  "execution": {
+    "started_at": "2026-11-01T20:22:45.979944+00:00",
+    "finished_at": "2026-11-01T20:23:54.352820+00:00",
+    "command_sha256": "d17682c7cdd1cddf2cecb868e4c54d837c13f615de69b75cfb68e1f78c62a0be",
+    "remote_returncode": 1,
+    "timed_out": false,
+    "job_seconds": 18.053,
+    "declared_output_produced": false,
+    "scientific_warmups_started": 0,
+    "scientific_measured_rows_started": 0,
+    "profiler_diagnostics_started": 0
+  },
+  "pod": {
+    "id": "8zd2ji0w1l11jz",
+    "name": "misagi-f4-http-5090-a74a881dde86",
+    "cloud": "SECURE",
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "gpu_count": 1,
+    "provider_vcpu": 54,
+    "provider_memory_gb": 107,
+    "cuda_version": "13.2",
+    "driver_version": "595.91.07",
+    "hourly_price_usd": 1.19
+  },
+  "outcome": {
+    "class": "infrastructure_failure",
+    "verdict": "incomplete_session",
+    "scientific_measurement_admissible": false,
+    "retry_under_v4_permitted": false,
+    "diagnosis": "The runpod/base Ubuntu image did not configure NVIDIA's CUDA apt repository. The v4 installer queried only the existing apt indexes, found no Nsight package name, and exited before the frozen GPU runner, warmups, measurements, nsys, or ncu began.",
+    "prospective_successor_is_new_protocol_not_v4_retry": true
+  },
+  "cleanup": {
+    "exact_pod_id": "8zd2ji0w1l11jz",
+    "delete_requested": true,
+    "absence_verified_by_exact_get_404": true
+  },
+  "evidence": {
+    "receipt": {
+      "path": "gpu-aa-http-rtx5090-20261101T202225Z-7f3c.json",
+      "bytes": 4742,
+      "sha256": "05c26c16e5fd0891a2d61cb0682513903f6b6517dcd2448ec33e496ef4c2375e"
+    },
+    "result_archive": {
+      "path": "gpu-aa-http-rtx5090-20261101T202225Z-7f3c.result.tar.gz",
+      "bytes": 1355,
+      "sha256": "a37b978da3db271e97fb4492d3743269aa4e2ca9f5b13a2a68a120beb5f7c36a",
+      "manifest_sha256": "4379026b5b6499a1a15ed50465d08419878867f189752528a1dabe404458251f",
+      "members": {
+        ".runpod-batch/log.txt": "2526e415e64caf6ab29c089eccec9e050bee56504ede48885e0b02d2871a4c31",
+        ".runpod-batch/job-status.json": "1fe2256b2665aab81c6f929a9180dd3fd7cc38464fc08bbec4e0028c986b404e",
+        ".runpod-batch/source.json": "0f309a1d89e01d8589517c329a8677b6c791b12fe9fa22c4af484b526069df96"
+      }
+    }
+  },
+  "prospective_fix": {
+    "source_commit": "213ff29e8adf42bc7ebf2a253f0d30c2549c23b7",
+    "installer_sha256": "a32bfe9adb09bc8ac4959742e73a8ce6e82d15863fbbabea221dd944af36ec16",
+    "installer_test_sha256": "7f362aecfd9874b2cee7f7ae178c97987691135d38ac181686875681da15a363",
+    "runner_sha256": "2f005ec01bdb0b5f94a2533073b9bfc8924bcde3b2fc47bee12ee2b62dcc362b",
+    "status": "not_run"
+  }
+}

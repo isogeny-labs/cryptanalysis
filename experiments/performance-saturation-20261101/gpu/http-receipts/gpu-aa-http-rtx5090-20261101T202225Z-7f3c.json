@@ -1,0 +1,139 @@
+{
+  "cleanup": {
+    "absence_verified": true,
+    "delete_requested": true,
+    "id": "8zd2ji0w1l11jz"
+  },
+  "command": "bash ecc2k130/runner/codegen/install_profile_tools.sh && GPU_STUDY_SECURE=1 bash experiments/performance-saturation-20261101/gpu/run_gpu_aa_fallback.sh 'experiments/performance-saturation-20261101/gpu/runs-http' 'gpu-aa-http-rtx5090-20261101T202225Z-7f3c'",
+  "command_sha256": "d17682c7cdd1cddf2cecb868e4c54d837c13f615de69b75cfb68e1f78c62a0be",
+  "error": {
+    "detail": "declared output was not produced: experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-20261101T202225Z-7f3c",
+    "type": "BatchError"
+  },
+  "finished_at": "2026-11-01T20:23:54.352820+00:00",
+  "outputs": [
+    "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-20261101T202225Z-7f3c"
+  ],
+  "pod": {
+    "cloud": "SECURE",
+    "cost": 1.19,
+    "createdAt": "2026-11-01T20:22:48.423Z",
+    "creation_response_ambiguous": false,
+    "cudaVersion": "13.2",
+    "dataCenterId": "EUR-IS-1",
+    "gpu": {
+      "count": 1,
+      "id": "NVIDIA GeForce RTX 5090",
+      "memory": 107,
+      "vcpuCount": 54
+    },
+    "id": "8zd2ji0w1l11jz",
+    "image": "runpod/base:1.0.2-ubuntu2404",
+    "name": "misagi-f4-http-5090-a74a881dde86",
+    "startedAt": "2026-11-01T20:22:48.418Z",
+    "status": "RUNNING"
+  },
+  "provider_actions": true,
+  "remote_status": {
+    "archive": {
+      "bytes": 1355,
+      "files": 4,
+      "manifest_sha256": "4379026b5b6499a1a15ed50465d08419878867f189752528a1dabe404458251f",
+      "sha256": "a37b978da3db271e97fb4492d3743269aa4e2ca9f5b13a2a68a120beb5f7c36a",
+      "uncompressed_bytes": 1988
+    },
+    "archive_ready": true,
+    "chunks": [
+      {
+        "bytes": 1355,
+        "index": 0,
+        "offset": 0,
+        "path": "/v1/result/000000",
+        "sha256": "a37b978da3db271e97fb4492d3743269aa4e2ca9f5b13a2a68a120beb5f7c36a"
+      }
+    ],
+    "command_sha256": "d17682c7cdd1cddf2cecb868e4c54d837c13f615de69b75cfb68e1f78c62a0be",
+    "command_started_unix": 1793564612.5914595,
+    "done": true,
+    "finished_unix": 1793564630.762132,
+    "hardware": {
+      "gpus": [
+        {
+          "compute_capability": "12.0",
+          "driver": "595.91.07",
+          "memory_mib": "32607",
+          "name": "NVIDIA GeForce RTX 5090",
+          "uuid": "GPU-43d3a9db-621e-344b-38c9-27bdbc31d50c"
+        }
+      ],
+      "nvcc": "",
+      "pod_id": "8zd2ji0w1l11jz"
+    },
+    "job_id": "misagi-f4-http-5090-a74a881dde86",
+    "returncode": 1,
+    "schema": "runpod.http-batch.status/v1",
+    "source_archive_sha256": "7076c787c3f36cb988642050d79c2d3011e4a6e4af722b7ba28b8997244dc178",
+    "source_commit": "ab90adc94d6b6528eba909df9b99499fd0ebe243",
+    "source_tree": "42b975bc5880ee5ba0f423a96dcbff9f582d03bf",
+    "stage": "complete",
+    "started_unix": 1793564612.5578392,
+    "timed_out": false,
+    "worker_error_type": null
+  },
+  "request": {
+    "cloudType": "SECURE",
+    "computeType": "GPU",
+    "containerDiskInGb": 100,
+    "environment_keys": [
+      "POD_BOOT_B64",
+      "POD_MAX_SECONDS",
+      "RUNPOD_BATCH_BOOTSTRAP_B64",
+      "RUNPOD_BATCH_CHUNK_BYTES",
+      "RUNPOD_BATCH_COMMAND_B64",
+      "RUNPOD_BATCH_COMMAND_SHA256",
+      "RUNPOD_BATCH_JOB_ID",
+      "RUNPOD_BATCH_MAX_RESULT_BYTES",
+      "RUNPOD_BATCH_OUTPUTS_B64",
+      "RUNPOD_BATCH_OWNERSHIP_ID",
+      "RUNPOD_BATCH_PORT",
+      "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+      "RUNPOD_BATCH_SOURCE_COMMIT",
+      "RUNPOD_BATCH_SOURCE_REF",
+      "RUNPOD_BATCH_SOURCE_TREE",
+      "RUNPOD_BATCH_SOURCE_URL",
+      "RUNPOD_BATCH_TIMEOUT_SECONDS",
+      "RUNPOD_BATCH_TOKEN"
+    ],
+    "gpuCount": 1,
+    "gpuTypeIds": [
+      "NVIDIA GeForce RTX 5090"
+    ],
+    "imageName": "runpod/base:1.0.2-ubuntu2404",
+    "minRAMPerGPU": 62,
+    "minVCPUPerGPU": 16,
+    "name": "misagi-f4-http-5090-a74a881dde86",
+    "ports": [
+      "8888/http"
+    ],
+    "secrets_redacted": true,
+    "startup_sha256": "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b"
+  },
+  "result": null,
+  "schema": "runpod.http-batch.receipt/v1",
+  "source": {
+    "archive_sha256": "7076c787c3f36cb988642050d79c2d3011e4a6e4af722b7ba28b8997244dc178",
+    "commit": "ab90adc94d6b6528eba909df9b99499fd0ebe243",
+    "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+    "public_checked_at": "2026-11-01T20:22:45.938162+00:00",
+    "public_ref_checked": true,
+    "ref": "refs/heads/codex/runpod-http-instrument-20261101",
+    "tree": "42b975bc5880ee5ba0f423a96dcbff9f582d03bf"
+  },
+  "started_at": "2026-11-01T20:22:45.979944+00:00",
+  "transport": {
+    "authentication": "ephemeral bearer",
+    "chunk_bytes": 4194304,
+    "kind": "runpod-https-proxy",
+    "port": 8888
+  }
+}
