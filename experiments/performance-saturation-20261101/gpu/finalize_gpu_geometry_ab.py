@@ -106,15 +106,6 @@ def protocol_hash(value: dict[str, Any]) -> str:
 def parse_utc(value: object) -> datetime | None:
     if not isinstance(value, str):
         return None
-
-
-def fraction_value(value: object) -> Fraction | None:
-    if not isinstance(value, dict):
-        return None
-    numerator, denominator = value.get("numerator"), value.get("denominator")
-    if type(numerator) is not int or type(denominator) is not int or denominator <= 0:
-        return None
-    return Fraction(numerator, denominator)
     try:
         if value.endswith("Z"):
             parsed = datetime.fromisoformat(value[:-1] + "+00:00")
@@ -125,6 +116,15 @@ def fraction_value(value: object) -> Fraction | None:
         return parsed.astimezone(timezone.utc)
     except ValueError:
         return None
+
+
+def fraction_value(value: object) -> Fraction | None:
+    if not isinstance(value, dict):
+        return None
+    numerator, denominator = value.get("numerator"), value.get("denominator")
+    if type(numerator) is not int or type(denominator) is not int or denominator <= 0:
+        return None
+    return Fraction(numerator, denominator)
 
 
 def json_from_bytes(value: bytes) -> Any:
@@ -485,8 +485,26 @@ def check_receipt_core(
         and cleanup.get("absence_verified") is True
     )
     judge.check(cleanup_ok, "receipt.cleanup", "completion", "exact pod deleted and exact-ID absence verified")
-    judge.check(parse_utc(receipt.get("started_at")) is not None and parse_utc(receipt.get("finished_at")) is not None,
-                "receipt.timestamps", "validity", "controller timestamps parse")
+    started_at = parse_utc(receipt.get("started_at"))
+    finished_at = parse_utc(receipt.get("finished_at"))
+    timestamps_parse = started_at is not None and finished_at is not None
+    judge.check(timestamps_parse, "receipt.timestamps", "validity", "controller timestamps parse")
+    judge.check(timestamps_parse and started_at <= finished_at,
+                "receipt.timestamp_order", "validity", "controller start is not after finish")
+
+
+def check_scientific_completion_order(
+    receipt: dict[str, Any], completed_at: datetime, judge: Judge,
+) -> None:
+    """Bind the scientific completion marker inside the controller interval."""
+    started_at = parse_utc(receipt.get("started_at"))
+    finished_at = parse_utc(receipt.get("finished_at"))
+    judge.check(
+        started_at is not None and finished_at is not None
+        and started_at <= completed_at <= finished_at,
+        "session.controller_time_order", "validity",
+        "controller start <= scientific completion <= controller finish",
+    )
 
 
 def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, judge: Judge) -> str | None:
@@ -1050,10 +1068,7 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
             judge.check(completed_at is not None and UTC_RE.fullmatch(completed_text.strip()) is not None,
                         "session.completed_at", "completion", "single exact UTC completion marker")
             if completed_at is not None and receipt:
-                finished_at = parse_utc(receipt.get("finished_at"))
-                started_at = parse_utc(receipt.get("started_at"))
-                judge.check(started_at is not None and finished_at is not None and started_at <= completed_at <= finished_at,
-                            "session.controller_time_order", "validity", "controller start <= scientific completion <= controller finish")
+                check_scientific_completion_order(receipt, completed_at, judge)
         except (OSError, UnicodeError) as exc:
             judge.incomplete("session.completed_at", f"completion marker unreadable: {exc}")
     else:

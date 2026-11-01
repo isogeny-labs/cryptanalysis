@@ -50,6 +50,7 @@ def minimal_protocol() -> dict:
             },
             "launch": {"controller_argv_template": [command]},
             "finalization": {
+                "receipt_transport": {"kind": "authenticated-http"},
                 "request": {
                     "name_prefix": "misagi-f4-geometry-v10",
                     "cloudType": "SECURE",
@@ -79,6 +80,7 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
         "provider_actions": True,
         "error": None,
         "outputs": ["experiments/performance-saturation-20261101/gpu/runs-http/run-1"],
+        "transport": {"kind": "authenticated-http"},
         "source": source,
         "command": command,
         "command_sha256": MOD.sha256_bytes(command.encode()),
@@ -92,6 +94,7 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
         "pod": {
             "id": "pod_123",
             "name": name,
+            "status": "RUNNING",
             "creation_response_ambiguous": False,
             "cloud": "SECURE",
             "image": "runpod/base:1.0.2-ubuntu2404",
@@ -99,6 +102,11 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
             "gpu": {"id": MOD.EXPECTED_GPU, "count": 1, "memory": 62, "vcpuCount": 32},
         },
         "remote_status": {
+            "archive": {},
+            "chunks": [],
+            "command_started_unix": 1793491200,
+            "finished_unix": 1793491800,
+            "started_unix": 1793491200,
             "schema": MOD.EXPECTED_STATUS_SCHEMA,
             "stage": "complete",
             "done": True,
@@ -116,6 +124,7 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
                 "gpus": [{"name": MOD.EXPECTED_GPU}],
             },
         },
+        "result": {},
         "cleanup": {"id": "pod_123", "delete_requested": True, "absence_verified": True},
         "started_at": "2026-11-01T00:00:00+00:00",
         "finished_at": "2026-11-01T00:10:00+00:00",
@@ -188,6 +197,66 @@ def good_analysis(provisional: str = "geometry_supported") -> dict:
 
 
 class FinalizerAdversarialTests(unittest.TestCase):
+    def test_utc_parser_accepts_z_and_offsets_but_rejects_naive_or_malformed(self) -> None:
+        zulu = MOD.parse_utc("2026-11-01T01:02:03Z")
+        offset = MOD.parse_utc("2026-11-01T03:02:03+02:00")
+        self.assertIsNotNone(zulu)
+        self.assertEqual(offset, zulu)
+        self.assertEqual(zulu.isoformat(), "2026-11-01T01:02:03+00:00")
+        for value in ("2026-11-01T01:02:03", "not-a-time", "", None, {}, 7):
+            self.assertIsNone(MOD.parse_utc(value))
+
+    def test_receipt_and_scientific_completion_timestamp_order(self) -> None:
+        receipt = good_receipt()
+        judge = MOD.Judge()
+        MOD.check_receipt_core(
+            receipt, minimal_protocol(), "run-1", "a" * 64,
+            "experiments/performance-saturation-20261101/gpu/runs-http/run-1", judge,
+        )
+        started = MOD.parse_utc(receipt["started_at"])
+        completed = MOD.parse_utc("2026-11-01T00:05:00Z")
+        finished = MOD.parse_utc(receipt["finished_at"])
+        self.assertIsNotNone(started)
+        self.assertIsNotNone(completed)
+        self.assertIsNotNone(finished)
+        self.assertLessEqual(started, completed)
+        self.assertLessEqual(completed, finished)
+        self.assertFalse(failures(judge, "receipt.timestamps"))
+        self.assertFalse(failures(judge, "receipt.timestamp_order"))
+        MOD.check_scientific_completion_order(receipt, completed, judge)
+        self.assertFalse(failures(judge, "session.controller_time_order"))
+
+        judge = MOD.Judge()
+        too_late = MOD.parse_utc("2026-11-01T00:10:01Z")
+        self.assertIsNotNone(too_late)
+        MOD.check_scientific_completion_order(receipt, too_late, judge)
+        self.assertTrue(failures(judge, "session.controller_time_order"))
+
+        judge = MOD.Judge()
+        MOD.check_scientific_completion_order(
+            {"started_at": {}, "finished_at": ["malformed"]}, completed, judge,
+        )
+        self.assertTrue(failures(judge, "session.controller_time_order"))
+
+        receipt["finished_at"] = "2026-10-31T23:59:59Z"
+        judge = MOD.Judge()
+        MOD.check_receipt_core(
+            receipt, minimal_protocol(), "run-1", "a" * 64,
+            "experiments/performance-saturation-20261101/gpu/runs-http/run-1", judge,
+        )
+        self.assertTrue(failures(judge, "receipt.timestamp_order"))
+
+    def test_valid_receipt_core_golden_path_has_zero_failures(self) -> None:
+        judge = MOD.Judge()
+        MOD.check_receipt_core(
+            good_receipt(), minimal_protocol(), "run-1", "a" * 64,
+            "experiments/performance-saturation-20261101/gpu/runs-http/run-1", judge,
+        )
+        self.assertGreater(len(judge.checks), 40)
+        self.assertFalse(judge.completion_failed)
+        self.assertFalse(judge.validity_failed)
+        self.assertTrue(all(check.status == "passed" for check in judge.checks))
+
     def test_exact_order_and_header_only_or_truncated_order(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "order.tsv"
