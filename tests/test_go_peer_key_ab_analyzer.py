@@ -1,5 +1,6 @@
 import importlib.util
 from fractions import Fraction
+import hashlib
 from pathlib import Path
 import unittest
 
@@ -60,6 +61,96 @@ class IsolationPrimitiveTests(unittest.TestCase):
             ANALYZER.counter_deltas("low 2", "low 2\nhigh 0")
         with self.assertRaisesRegex(ValueError, "decreased"):
             ANALYZER.counter_deltas("low 2", "low 1")
+
+    def test_transport_verifier_binds_command_source_and_one_cpu_pod(self) -> None:
+        token = "V8_CANONICAL_SHA256_FROM_FREEZE"
+        digest = "a" * 64
+        command_template = f"runner --protocol-sha256 {token}"
+        command = command_template.replace(token, digest)
+        startup = "b" * 64
+        environment_keys = ["ONE", "TWO"]
+        protocol = {
+            "freeze": {"protocol_sha256": digest},
+            "extensions": {
+                "remote_execution": {
+                    "protocol_hash_token": token,
+                    "command_template": command_template,
+                    "output": "go-peer-key-ab-v8-run",
+                    "transport": {
+                        "authentication": "ephemeral bearer",
+                        "chunk_bytes": 4194304,
+                        "kind": "runpod-https-proxy",
+                        "port": 8888,
+                    },
+                    "source": {
+                        "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+                        "ref": "refs/heads/codex/go-peer-key-ab-v8-20261101",
+                        "commit": "c" * 40,
+                        "tree": "d" * 40,
+                    },
+                    "container_disk_gb": 60,
+                    "request_environment_keys": environment_keys,
+                    "image": "runpod/base:1.0.2-ubuntu2404",
+                    "pod_name_prefix": "go-peer-key-ab-v8-",
+                    "max_price_usd_per_hour": 1.0,
+                }
+            },
+        }
+        command_sha = hashlib.sha256(command.encode()).hexdigest()
+        receipt = {
+            "command": command,
+            "command_sha256": command_sha,
+            "outputs": ["go-peer-key-ab-v8-run"],
+            "provider_actions": True,
+            "transport": protocol["extensions"]["remote_execution"]["transport"],
+            "source": {
+                **protocol["extensions"]["remote_execution"]["source"],
+                "public_ref_checked": True,
+                "archive_sha256": "e" * 64,
+            },
+            "request": {
+                "cloudType": "SECURE",
+                "computeType": "CPU",
+                "containerDiskInGb": 60,
+                "cpuFlavorIds": ["cpu3c"],
+                "cpuFlavorPriority": "custom",
+                "environment_keys": environment_keys,
+                "gpuCount": None,
+                "gpuTypeIds": None,
+                "imageName": "runpod/base:1.0.2-ubuntu2404",
+                "minRAMPerGPU": None,
+                "minVCPUPerGPU": None,
+                "ports": ["8888/http"],
+                "secrets_redacted": True,
+                "startup_sha256": startup,
+                "vcpuCount": 32,
+                "name": "go-peer-key-ab-v8-1234",
+            },
+            "pod": {
+                "name": "go-peer-key-ab-v8-1234",
+                "cloud": "SECURE",
+                "cpu": {"id": "cpu3c", "memory": 64, "vcpuCount": 32},
+                "image": "runpod/base:1.0.2-ubuntu2404",
+                "gpu": None,
+                "cudaVersion": None,
+                "creation_response_ambiguous": False,
+                "cost": 0.96,
+                "id": "pod-id",
+            },
+            "remote_status": {
+                "command_sha256": command_sha,
+                "source_archive_sha256": "e" * 64,
+                "source_commit": "c" * 40,
+                "source_tree": "d" * 40,
+                "job_id": "go-peer-key-ab-v8-1234",
+                "hardware": {"pod_id": "pod-id", "gpus": []},
+            },
+        }
+        result = ANALYZER.verify_transport(receipt, protocol)
+        self.assertEqual(result["source_commit"], "c" * 40)
+        changed = {**receipt, "source": {**receipt["source"], "tree": "f" * 40}}
+        with self.assertRaisesRegex(ValueError, "source identity"):
+            ANALYZER.verify_transport(changed, protocol)
 
 
 class FormalDecisionTests(unittest.TestCase):

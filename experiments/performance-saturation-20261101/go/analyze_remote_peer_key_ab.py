@@ -535,9 +535,11 @@ def analyze(options: argparse.Namespace) -> dict[str, Any]:
     if protocol.get("freeze", {}).get("status") != "frozen":
         raise ValueError("protocol is not frozen")
     protocol_sha256 = protocol["freeze"]["protocol_sha256"]
-    if protocol["analysis_plan"]["script"] != Path(__file__).name:
-        raise ValueError("protocol analysis script path mismatch")
-    if protocol["analysis_plan"]["script_sha256"] != shared.sha256(Path(__file__).resolve()):
+    expected_analysis_script = {
+        "path": Path(__file__).name,
+        "sha256": shared.sha256(Path(__file__).resolve()),
+    }
+    if protocol["analysis_plan"]["script"] != expected_analysis_script:
         raise ValueError("protocol analysis script SHA-256 mismatch")
     if receipt.get("schema") != "runpod.http-batch.receipt/v1":
         raise ValueError("unexpected transport receipt schema")
@@ -601,8 +603,8 @@ def analyze(options: argparse.Namespace) -> dict[str, Any]:
         "schema": SCHEMA,
         "protocol_sha256": protocol_sha256,
         "analysis": {
-            "script": protocol["analysis_plan"]["script"],
-            "script_sha256": shared.sha256(Path(__file__).resolve()),
+            "script": expected_analysis_script["path"],
+            "script_sha256": expected_analysis_script["sha256"],
             "status": "preregistered_deterministic",
         },
         "inputs": {
