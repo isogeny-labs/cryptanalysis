@@ -72,7 +72,7 @@ dependencies = [
  "ecdlp-surfaces",
  "hex",
  "libc",
- "num-bigint",
+ "num-bigint 0.4.8",
  "num-integer",
  "rand",
  "serde",
@@ -218,6 +218,7 @@ name = "cryptanalysis"
 version = "0.1.0"
 dependencies = [
  "cryptanalysis-sys",
+ "hashed-ecdl-tensor 0.1.0",
 ]
 
 [[package]]
@@ -229,9 +230,10 @@ dependencies = [
  "cryptanalysis",
  "crypto-analysis-core",
  "fs2",
+ "hashed-ecdl-tensor 0.1.1",
  "hex",
  "libc",
- "num-bigint",
+ "num-bigint 0.4.8",
  "num-integer",
  "num-traits",
  "rand",
@@ -327,6 +329,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "hashed-ecdl-tensor"
+version = "0.1.0"
+dependencies = [
+ "getrandom",
+ "num-bigint 0.5.1",
+ "num-integer",
+ "num-rational",
+ "num-traits",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "hashed-ecdl-tensor"
+version = "0.1.1"
+dependencies = [
+ "getrandom",
+ "num-bigint 0.5.1",
+ "num-integer",
+ "num-rational",
+ "num-traits",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -383,11 +411,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-bigint"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93e7820bc0a80a0238e650327316f929ba18d5be054b647490a3a6a339f3e7c0"
+dependencies = [
+ "num-integer",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "num-integer"
 version = "0.1.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b"
 dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "num-rational"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f83d14da390562dca69fc84082e73e548e1ad308d24accdedd2720017cb37824"
+dependencies = [
+ "num-bigint 0.4.8",
+ "num-integer",
  "num-traits",
 ]
 
