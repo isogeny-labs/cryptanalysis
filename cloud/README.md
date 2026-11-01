@@ -190,6 +190,53 @@ fleet key a pod made in one session is reachable from the next. The image is
 `runpod/base` (`--image` names another). Every pod stops itself after
 `--max-hours` (6), in case nobody deletes it. Creating a pod prints its rate.
 
+### One command when outbound SSH is unavailable
+
+[`runpod_http_batch.py`](runpod_http_batch.py) is the non-SSH transport. It
+requires an exact commit advertised by a public branch on
+`https://github.com/isogeny-labs/cryptanalysis.git`; it never sends the local
+working tree. A new pod checks out and verifies that commit, its Git tree, and
+the SHA-256 of `git archive`. The command runs under a fixed timeout through
+[`job_runner.sh`](job_runner.sh). A small authenticated, GET-only service on
+port 8888 returns status and 4 MiB hash-bound result chunks through Runpod's
+HTTPS proxy. The local controller verifies the complete archive and every
+member before installing only the declared `--out` paths, writes a receipt,
+and deletes only the exact pod ID returned by its create request.
+
+Dry-run performs no network or provider call and never prints the ephemeral
+HTTP bearer:
+
+```sh
+python3 cloud/runpod_http_batch.py misagi-f4-http \
+  --dry-run --source-ref refs/heads/my-pushed-branch --source-commit COMMIT \
+  --gpu "NVIDIA GeForce RTX 4090" --cloud SECURE --min-vcpu 16 --min-ram 32 \
+  --max-price 1.50 --max-hours 2 --timeout 4500 \
+  --receipt experiments/my-run/transport-receipt.json \
+  --out experiments/my-run/results -- 'bash experiments/my-run/run.sh'
+```
+
+Remove `--dry-run` only after the named ref has been pushed and the exact
+commit is publicly reachable. A real run refuses an existing receipt/archive,
+adds a random suffix to the pod name, exposes no TCP/SSH port, passes no AWS or
+GitHub credential to the pod, strips the provider API key and service bearer
+from the scientific process, and fetches even a failed command's retained
+outputs before returning its nonzero status. The pod-side lifetime stop is a
+backstop; normal cleanup is an exact-ID `DELETE` in the controller's `finally`.
+
+This design follows the repository's hardened prior HTTP transport in
+[`experiments/ideas_gpu_20261018/run_gpu_final.py`](../experiments/ideas_gpu_20261018/run_gpu_final.py),
+[`remote_http.py`](../experiments/ideas_gpu_20261018/remote_http.py), and its
+synthetic controls. It also follows the shared
+[`docs/lab-contract.md`](../../crypto-autoresearcher/docs/lab-contract.md)
+object-storage rule: it writes neither the canonical artifact bucket nor any
+legacy bucket. Runpod's official [Expose ports](https://docs.runpod.io/pods/configuration/expose-ports)
+guide specifies the `https://POD_ID-PORT.proxy.runpod.net` route, public
+access/authentication requirement, `0.0.0.0` bind, HTTPS-only behavior, and
+100-second Cloudflare limit; fixed small chunks keep every response below that
+limit. The controller reuses [`runpod_pod.py`](runpod_pod.py) for the pod body,
+REST authentication, image, hardware constraints, and lifetime guard while
+removing its SSH port and key.
+
 ## A cairn job queue on Runpod GPU runners
 
 [`cairn_queue.py`](cairn_queue.py) queues commands on *runners*: Runpod GPU
