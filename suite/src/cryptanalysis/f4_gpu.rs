@@ -75,6 +75,20 @@ pub const KERNEL_MAX_DEGREE: u32 = 7;
 /// Most equations per system the kernel handles (`F4_MAX_POLYS`).
 pub const KERNEL_MAX_POLYS: usize = 256;
 
+/// Target resident update blocks per streaming multiprocessor.
+const ECHELON_UPDATE_BLOCKS_PER_SM: u32 = 6;
+
+/// Split the echelon update's word tiles into enough independent parts to
+/// target [`ECHELON_UPDATE_BLOCKS_PER_SM`] blocks per multiprocessor without
+/// multiplying a narrow tail beyond the existing 32-part bound.
+fn echelon_update_parts(sm_count: u32, tiles: u32) -> u32 {
+    assert!(tiles > 0, "an echelon update must have at least one tile");
+    ECHELON_UPDATE_BLOCKS_PER_SM
+        .saturating_mul(sm_count)
+        .div_ceil(tiles)
+        .clamp(1, 32)
+}
+
 /// The kernel as NVRTC compiles it: the device header, then the entry
 /// point.
 pub fn kernel_source() -> String {
@@ -496,8 +510,9 @@ pub use cuda::{compile_kernel_ptx, compile_kernel_sass, CudaDecider};
 mod cuda {
     //! The CUDA driver API and NVRTC, opened with `dlopen` on first use.
     use super::{
-        active_rows, cap32, charge_time, kernel_source, unpack, BatchDecider, Decision,
-        DecisionRequest, Echelon, F4Result, KernelCounters, MacaulayCaps, PackedBatch,
+        active_rows, cap32, charge_time, echelon_update_parts, kernel_source, unpack,
+        BatchDecider, Decision, DecisionRequest, Echelon, F4Result, KernelCounters, MacaulayCaps,
+        PackedBatch,
     };
     use rayon::prelude::*;
     use std::ffi::{c_char, c_int, c_uint, c_void, CStr, CString};
@@ -1177,10 +1192,11 @@ mod cuda {
                     let words = ((stride - w).div_ceil(128) as u32).max(1);
                     self.launch(fns[2], words, 128, &mut p, "f4e_materialise")?;
                     // A block per 32-word tile and part of the candidates,
-                    // about four blocks per multiprocessor, and never so many
-                    // parts that a narrow tail is reloaded by idle blocks.
+                    // targeting six resident blocks per multiprocessor and
+                    // never so many parts that a narrow tail is reloaded by
+                    // idle blocks.
                     let tiles = (stride - w).div_ceil(32) as u32;
-                    let mut parts = (4 * self.sm_count).div_ceil(tiles).clamp(1, 32);
+                    let mut parts = echelon_update_parts(self.sm_count, tiles);
                     let mut p = [
                         &mut mat as *mut u64 as *mut c_void,
                         &mut stride64 as *mut u64 as *mut c_void,
@@ -1631,6 +1647,24 @@ mod tests {
         max_rows: 20_000,
         max_cols: 40_000,
     };
+
+    #[test]
+    fn echelon_update_grid_targets_six_blocks_per_sm() {
+        let sm_count = 170;
+        for (tiles, want_parts, want_grid) in [
+            (92, 12, 1_104),
+            (32, 32, 1_024),
+            (31, 32, 992),
+            (21, 32, 672),
+            (1, 32, 32),
+        ] {
+            let parts = echelon_update_parts(sm_count, tiles);
+            assert_eq!(parts, want_parts, "{tiles} tiles");
+            assert_eq!(tiles * parts, want_grid, "{tiles} tiles");
+            assert!((1..=32).contains(&parts));
+        }
+        assert_eq!(echelon_update_parts(0, 17), 1);
+    }
 
     /// Real decomposition systems at their base and next degree, plus the
     /// substituted systems the search produces, plus random ones.
