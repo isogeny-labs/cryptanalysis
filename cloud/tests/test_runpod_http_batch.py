@@ -33,6 +33,7 @@ def args_for(root: Path, returncode=0):
     del returncode
     return SimpleNamespace(
         name="misagi-http-test", cpu=0, gpu=["NVIDIA GeForce RTX 5090"],
+        cpu_flavor=[], cpu_memory=0,
         gpu_count=1, min_vcpu=8, min_ram=24, cloud="SECURE", image=None,
         disk=80, max_hours=2.0, wait=10, timeout=30, max_result_mib=8,
         max_price=1.50, reconcile_seconds=0, dry_run=False,
@@ -40,6 +41,16 @@ def args_for(root: Path, returncode=0):
         out=["results/a.json"], receipt=root / "receipt.json",
         archive=root / "result.tar.gz", command=["echo fixture > results/a.json"],
     )
+
+
+def cpu_args_for(root: Path):
+    args = args_for(root)
+    args.cpu = 32
+    args.gpu = []
+    args.cpu_flavor = ["cpu3c"]
+    args.cpu_memory = 64
+    args.max_price = 1.00
+    return args
 
 
 def source_identity():
@@ -87,7 +98,8 @@ def terminal_status(data: bytes, returncode=0):
 
 
 class FakeClient:
-    def __init__(self, create_error=None, reconcile=False, wrong_name=False):
+    def __init__(self, create_error=None, reconcile=False, wrong_name=False,
+                 compute_type="GPU"):
         self.create_error = create_error
         self.reconcile = reconcile
         self.create_calls = 0
@@ -95,6 +107,7 @@ class FakeClient:
         self.deleted = []
         self.name = None
         self.wrong_name = wrong_name
+        self.compute_type = compute_type
 
     def named(self, name):
         self.named_calls += 1
@@ -113,6 +126,15 @@ class FakeClient:
     def get_v2(self, pod_id):
         if pod_id in self.deleted:
             raise batch.ProviderError("gone", 404)
+        if self.compute_type == "CPU":
+            return {
+                "id": pod_id, "name": self.name, "status": "RUNNING",
+                "cpu": {"id": "cpu3c", "vcpuCount": 32, "memory": 64},
+                "gpu": None, "cost": 0.96, "cloud": "SECURE",
+                "image": "runpod/base:1.0.2-ubuntu2404", "cudaVersion": None,
+                "ports": ["8888/http"], "dataCenterId": "EU-RO-1",
+                "createdAt": "synthetic", "startedAt": "synthetic",
+            }
         return {
             "id": pod_id, "name": self.name, "status": "RUNNING",
             "gpu": {"id": "NVIDIA GeForce RTX 5090", "count": 1,
@@ -145,6 +167,8 @@ class FakeTransport:
         status = terminal_status(self.data, self.returncode)
         status["job_id"] = expected["job_id"]
         status["command_sha256"] = expected["command_sha256"]
+        if expected["compute_type"] == "CPU":
+            status["hardware"]["gpus"] = []
         return batch.validate_status(status, expected)
 
     def download(self, base, token, status, destination):
@@ -170,9 +194,99 @@ class RunpodHttpBatchTest(unittest.TestCase):
         summary = json.dumps(batch.request_summary(body))
         self.assertNotIn(TOKEN, summary)
         self.assertNotIn("RUNPOD_SSH", summary)
+        self.assertNotIn("cpuFlavorIds", summary)
         bootstrap = base64.b64decode(body["env"]["RUNPOD_BATCH_BOOTSTRAP_B64"]).decode()
         self.assertIn('cd "$JOB_WORKDIR"', bootstrap)
         self.assertNotIn("cd /root/cryptanalysis", bootstrap)
+
+    def test_cpu_body_binds_one_exact_flavor_and_no_ssh(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = cpu_args_for(Path(directory))
+            body = batch.build_body(
+                args, "misagi-http-test-0123456789ab", TOKEN,
+                source_identity(), "echo fixture > results/a.json", ["results/a.json"])
+        self.assertEqual(body["computeType"], "CPU")
+        self.assertEqual(body["cpuFlavorIds"], ["cpu3c"])
+        self.assertEqual(body["cpuFlavorPriority"], "custom")
+        self.assertEqual(body["vcpuCount"], 32)
+        self.assertEqual(body["ports"], ["8888/http"])
+        self.assertNotIn("gpuTypeIds", body)
+        summary = batch.request_summary(body)
+        self.assertEqual(summary["cpuFlavorIds"], ["cpu3c"])
+        self.assertEqual(summary["vcpuCount"], 32)
+
+    def test_cpu_cli_parses_exact_memory_guard(self):
+        args = batch.parse([
+            "cpu-http", "--cpu", "32", "--cpu-flavor", "cpu3c",
+            "--cpu-memory", "64", "--source-ref", "refs/heads/test-http-batch",
+            "--source-commit", COMMIT, "--receipt", "receipt.json",
+            "--out", "results", "--max-price", "1.00", "--", "true",
+        ])
+        self.assertEqual(args.cpu, 32)
+        self.assertEqual(args.cpu_flavor, ["cpu3c"])
+        self.assertEqual(args.cpu_memory, 64)
+        self.assertEqual(args.command, ["true"])
+
+    def test_cpu_request_rejects_ambiguous_or_unbound_placement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = cpu_args_for(Path(directory))
+            bad = [
+                {"cpu_flavor": ["cpu3c", "cpu5c"]},
+                {"cpu_memory": 0},
+                {"cpu": 12},
+                {"cloud": "COMMUNITY"},
+                {"gpu": ["NVIDIA GeForce RTX 5090"]},
+            ]
+            for changes in bad:
+                args = SimpleNamespace(**vars(base))
+                for key, value in changes.items():
+                    setattr(args, key, value)
+                with self.subTest(changes=changes), self.assertRaises(batch.BatchError):
+                    batch.validate_compute_request(args)
+
+    def test_cpu_provider_guard_is_exact_and_rejects_gpu_or_ssh(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = cpu_args_for(Path(directory))
+            client = FakeClient(compute_type="CPU")
+            client.name = "misagi-http-test-0123456789ab"
+            good = client.get_v2(POD)
+            summary = batch.guard_provider(good, POD, client.name, args)
+            self.assertEqual(summary["cpu"]["id"], "cpu3c")
+            mutations = [
+                ("flavor", lambda pod: pod["cpu"].update(id="cpu5c")),
+                ("vcpu", lambda pod: pod["cpu"].update(vcpuCount=16)),
+                ("vcpu-bool", lambda pod: pod["cpu"].update(vcpuCount=True)),
+                ("memory", lambda pod: pod["cpu"].update(memory=63)),
+                ("memory-float", lambda pod: pod["cpu"].update(memory=64.0)),
+                ("gpu", lambda pod: pod.update(gpu={"id": "unexpected"})),
+                ("cuda", lambda pod: pod.update(cudaVersion="13.2")),
+                ("ssh", lambda pod: pod["ports"].append("22/tcp")),
+                ("cost", lambda pod: pod.update(cost=1.01)),
+            ]
+            for label, mutate in mutations:
+                pod = json.loads(json.dumps(good))
+                mutate(pod)
+                with self.subTest(label=label), self.assertRaises(batch.BatchError):
+                    batch.guard_provider(pod, POD, client.name, args)
+
+    def test_cpu_dry_run_has_exact_guard_and_no_provider_action(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = cpu_args_for(root)
+            args.dry_run = True
+            output = io.StringIO()
+            with (mock.patch.object(batch, "source_identity", return_value=source_identity()),
+                  mock.patch("sys.stdout", new=output)):
+                rc = batch.execute(args, repo=root)
+        self.assertEqual(rc, 0)
+        plan = json.loads(output.getvalue())
+        self.assertFalse(plan["provider_actions"])
+        self.assertEqual(plan["request"]["computeType"], "CPU")
+        self.assertEqual(plan["request"]["cpuFlavorIds"], ["cpu3c"])
+        self.assertEqual(plan["cpu_guard"], {
+            "flavor": "cpu3c", "memory_gib": 64,
+            "no_gpu": True, "vcpu_count": 32,
+        })
 
     def test_proxy_url_and_source_ref_validation(self):
         self.assertEqual(batch.proxy_base(POD), f"https://{POD}-8888.proxy.runpod.net")
@@ -207,6 +321,43 @@ class RunpodHttpBatchTest(unittest.TestCase):
             self.assertTrue(receipt["cleanup"]["absence_verified"])
             self.assertEqual(receipt["pod"]["cudaVersion"], "13.2")
             self.assertNotIn(TOKEN, args.receipt.read_text())
+
+    def test_cpu_success_fetches_and_receipt_binds_exact_provider_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = cpu_args_for(root)
+            client = FakeClient(compute_type="CPU")
+            transport = FakeTransport(result_archive())
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                rc = batch.execute(
+                    args, client=client, transport=transport, repo=root,
+                    token_factory=lambda: TOKEN, nonce_factory=lambda: "0123456789ab",
+                    sleep=lambda _seconds: None)
+            self.assertEqual(rc, 0)
+            self.assertEqual(client.deleted, [POD])
+            receipt = json.loads(args.receipt.read_text())
+            self.assertEqual(receipt["cpu_guard"], {
+                "flavor": "cpu3c", "memory_gib": 64,
+                "no_gpu": True, "vcpu_count": 32,
+            })
+            self.assertEqual(receipt["pod"]["cpu"], {
+                "id": "cpu3c", "memory": 64, "vcpuCount": 32,
+            })
+            self.assertIsNone(receipt["pod"]["gpu"])
+            self.assertEqual(receipt["remote_status"]["hardware"]["gpus"], [])
+
+    def test_cpu_remote_status_rejects_reported_gpu(self):
+        data = result_archive()
+        status = terminal_status(data)
+        expected = {
+            "job_id": status["job_id"], "commit": COMMIT, "tree": TREE,
+            "archive_sha256": SOURCE_ARCHIVE,
+            "command_sha256": status["command_sha256"], "pod_id": POD,
+            "compute_type": "CPU", "gpu_count": 0,
+            "max_result_bytes": 8 << 20,
+        }
+        with self.assertRaises(batch.BatchError):
+            batch.validate_status(status, expected)
 
     def test_command_failure_is_reported_after_results_and_cleanup(self):
         with tempfile.TemporaryDirectory() as directory:

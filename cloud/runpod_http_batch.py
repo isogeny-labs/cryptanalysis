@@ -7,6 +7,14 @@ authenticated status and hash-bound result chunks through Runpod's HTTPS
 proxy. The controller verifies and extracts declared outputs, then deletes the
 exact pod ID returned by its create request in ``finally``.
 
+The CPU request and response contracts follow Runpod's official Pod API
+documentation (https://docs.runpod.io/api-reference/pods/POST/pods and
+https://docs.runpod.io/api-reference/pods/GET/pods-pod-id) and the captured
+OpenAPI closure at
+``experiments/ideas_gpu_20261018/diagnostics/cpu-v2-api/official-create-schema.json``.
+CPU memory is derived from the flavor, so callers bind the exact expected v2
+response value with ``--cpu-memory`` instead of sending an unsupported field.
+
 ``--dry-run`` performs no provider or public-origin request. A real run refuses
 to allocate until ``--source-ref`` advertises ``--source-commit`` on the fixed
 public origin. No AWS or SSH credential is sent to the pod.
@@ -252,6 +260,7 @@ def proxy_base(pod_id: str, port=HTTP_PORT) -> str:
 
 def build_body(args, name: str, token: str, source: dict,
                command: str, outputs: list[str]) -> dict:
+    validate_compute_request(args)
     if len(token) < 43:
         raise BatchError("HTTP bearer must carry at least 256 random bits")
     command_sha = hashlib.sha256(command.encode()).hexdigest()
@@ -291,7 +300,7 @@ def build_body(args, name: str, token: str, source: dict,
 
 
 def request_summary(body: dict) -> dict:
-    return {
+    summary = {
         "name": body["name"], "cloudType": body["cloudType"],
         "computeType": body["computeType"], "imageName": body["imageName"],
         "containerDiskInGb": body["containerDiskInGb"], "ports": body["ports"],
@@ -302,6 +311,12 @@ def request_summary(body: dict) -> dict:
         "startup_sha256": hashlib.sha256(body["dockerStartCmd"][0].encode()).hexdigest(),
         "secrets_redacted": True,
     }
+    if body["computeType"] == "CPU":
+        summary.update(
+            cpuFlavorIds=body.get("cpuFlavorIds"),
+            cpuFlavorPriority=body.get("cpuFlavorPriority"),
+            vcpuCount=body.get("vcpuCount"))
+    return summary
 
 
 class RunpodClient:
@@ -400,31 +415,69 @@ def reconcile_ambiguous(client, name: str, ownership_id: str, seconds: int,
 
 
 def provider_summary(pod: dict) -> dict:
-    return {key: pod.get(key) for key in (
+    summary = {key: pod.get(key) for key in (
         "id", "name", "status", "gpu", "cost", "cloud", "image", "cudaVersion",
         "dataCenterId", "createdAt", "startedAt")}
+    if pod.get("cpu") is not None:
+        summary["cpu"] = pod["cpu"]
+    return summary
+
+
+def validate_compute_request(args) -> None:
+    """Reject ambiguous CPU/GPU placement before source or provider access."""
+    cpu = getattr(args, "cpu", 0)
+    gpus = getattr(args, "gpu", [])
+    flavors = getattr(args, "cpu_flavor", [])
+    memory = getattr(args, "cpu_memory", 0)
+    if cpu:
+        if (gpus or getattr(args, "cloud", None) != "SECURE"
+                or type(cpu) is not int or cpu < 2 or cpu & (cpu - 1)
+                or len(flavors) != 1 or not isinstance(flavors[0], str)
+                or not re.fullmatch(r"[A-Za-z0-9_-]{1,80}", flavors[0])
+                or type(memory) is not int or memory < 1):
+            raise BatchError(
+                "CPU batch requires Secure cloud, one exact --cpu-flavor, "
+                "power-of-two --cpu, positive --cpu-memory, and no --gpu")
+    elif flavors or memory:
+        raise BatchError("--cpu-flavor and --cpu-memory require --cpu")
 
 
 def guard_provider(pod: dict, expected_id: str, name: str, args) -> dict:
-    gpu = pod.get("gpu") or {}
-    allowed = args.gpu or runpod_pod.DEFAULT_GPUS
+    validate_compute_request(args)
     cost = pod.get("cost")
-    cuda = pod.get("cudaVersion")
     if (pod_identifier(pod) != expected_id or pod.get("name") != name
             or pod.get("status") != "RUNNING" or pod.get("cloud") != args.cloud
-            or pod.get("image") != (args.image or runpod_pod.GPU_IMAGE)
-            or gpu.get("id") not in allowed or gpu.get("count") != args.gpu_count
-            or not isinstance(gpu.get("vcpuCount"), (int, float))
-            or isinstance(gpu.get("vcpuCount"), bool)
-            or gpu["vcpuCount"] < args.min_vcpu
-            or not isinstance(gpu.get("memory"), (int, float))
-            or isinstance(gpu.get("memory"), bool)
-            or gpu["memory"] < args.min_ram
+            or pod.get("image") != (args.image or (
+                runpod_pod.CPU_IMAGE if args.cpu else runpod_pod.GPU_IMAGE))
             or not isinstance(cost, (int, float)) or isinstance(cost, bool)
             or not math.isfinite(cost) or not 0 < cost <= args.max_price
-            or not isinstance(cuda, str) or not re.fullmatch(r"[0-9]+\.[0-9]+", cuda)
             or f"{HTTP_PORT}/http" not in (pod.get("ports") or [])):
-        raise BatchError("allocated pod identity/GPU/CUDA/price/HTTP guard failed")
+        raise BatchError("allocated pod identity/compute/price/HTTP guard failed")
+    if args.cpu:
+        cpu = pod.get("cpu") or {}
+        if (pod.get("gpu") is not None or pod.get("cudaVersion") is not None
+                or pod.get("ports") != [f"{HTTP_PORT}/http"]
+                or cpu.get("id") != args.cpu_flavor[0]
+                or type(cpu.get("vcpuCount")) is not int
+                or cpu["vcpuCount"] != args.cpu
+                or type(cpu.get("memory")) is not int
+                or cpu["memory"] != args.cpu_memory):
+            raise BatchError(
+                "allocated pod identity/CPU/vCPU/RAM/no-GPU/HTTP guard failed")
+    else:
+        gpu = pod.get("gpu") or {}
+        allowed = args.gpu or runpod_pod.DEFAULT_GPUS
+        cuda = pod.get("cudaVersion")
+        if (gpu.get("id") not in allowed or gpu.get("count") != args.gpu_count
+                or not isinstance(gpu.get("vcpuCount"), (int, float))
+                or isinstance(gpu.get("vcpuCount"), bool)
+                or gpu["vcpuCount"] < args.min_vcpu
+                or not isinstance(gpu.get("memory"), (int, float))
+                or isinstance(gpu.get("memory"), bool)
+                or gpu["memory"] < args.min_ram
+                or not isinstance(cuda, str)
+                or not re.fullmatch(r"[0-9]+\.[0-9]+", cuda)):
+            raise BatchError("allocated pod identity/GPU/CUDA/price/HTTP guard failed")
     return provider_summary(pod)
 
 
@@ -463,6 +516,7 @@ def validate_status(status: dict, expected: dict) -> dict:
         raise BatchError("remote status identity binding failed")
     hardware = status.get("hardware") or {}
     remote_gpus = hardware.get("gpus")
+    compute_type = expected.get("compute_type", "GPU")
     if (status.get("schema") != STATUS_SCHEMA
             or status.get("job_id") != expected["job_id"]
             or status.get("source_commit") != expected["commit"]
@@ -470,11 +524,16 @@ def validate_status(status: dict, expected: dict) -> dict:
             or status.get("source_archive_sha256") != expected["archive_sha256"]
             or status.get("command_sha256") != expected["command_sha256"]
             or hardware.get("pod_id") != expected["pod_id"]
-            or not isinstance(remote_gpus, list)
+            or not isinstance(remote_gpus, list)):
+        raise BatchError("remote status identity binding failed")
+    if compute_type == "CPU":
+        if remote_gpus:
+            raise BatchError("remote CPU status unexpectedly reports a GPU")
+    elif (compute_type != "GPU"
             or len(remote_gpus) != expected["gpu_count"]
             or any(not isinstance(gpu, dict)
                    or gpu.get("name") != expected["gpu_id"] for gpu in remote_gpus)):
-        raise BatchError("remote status identity binding failed")
+        raise BatchError("remote GPU status identity binding failed")
     if status.get("done") is not True or status.get("archive_ready") is not True:
         raise BatchError("remote terminal status has no result archive")
     returncode = status.get("returncode")
@@ -719,8 +778,7 @@ def execute(args, *, client=None, transport=None, repo=REPO,
     command = " ".join(args.command).strip()
     if not command:
         raise BatchError("a command is required after --")
-    if args.cpu:
-        raise BatchError("HTTP batch currently requires one GPU pod")
+    validate_compute_request(args)
     outputs = validate_outputs(args.out)
     source = source_identity(Path(repo), args.source_commit, args.source_ref,
                              public_check=not args.dry_run)
@@ -736,6 +794,11 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         "transport": {"kind": "runpod-https-proxy", "port": HTTP_PORT,
                       "chunk_bytes": CHUNK_BYTES, "authentication": "ephemeral bearer"},
     }
+    if args.cpu:
+        plan["cpu_guard"] = {
+            "flavor": args.cpu_flavor[0], "vcpu_count": args.cpu,
+            "memory_gib": args.cpu_memory, "no_gpu": True,
+        }
     if args.dry_run:
         print(json.dumps(plan, indent=2, sort_keys=True))
         return 0
@@ -779,10 +842,14 @@ def execute(args, *, client=None, transport=None, repo=REPO,
             "job_id": name, "commit": source["commit"], "tree": source["tree"],
             "archive_sha256": source["archive_sha256"],
             "command_sha256": plan["command_sha256"], "pod_id": pod_id,
-            "gpu_id": summary["gpu"]["id"],
-            "gpu_count": summary["gpu"]["count"],
             "max_result_bytes": args.max_result_mib << 20,
         }
+        if args.cpu:
+            expected.update(compute_type="CPU", gpu_count=0)
+        else:
+            expected.update(
+                compute_type="GPU", gpu_id=summary["gpu"]["id"],
+                gpu_count=summary["gpu"]["count"])
         deadline = time.monotonic() + args.timeout + args.wait
         status = transport.wait_status(
             proxy_base(pod_id), token, expected, deadline, sleep=sleep,
@@ -833,6 +900,9 @@ def parse(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("name", help="pod-name prefix; a random suffix is always added")
     runpod_pod.add_pod_options(parser)
+    parser.add_argument(
+        "--cpu-memory", type=int, default=0, metavar="GIB",
+        help="exact v2 cpu.memory value required for a CPU allocation")
     parser.add_argument("--source-ref", required=True,
                         help="public exact branch ref, e.g. refs/heads/feature")
     parser.add_argument("--source-commit", required=True)
