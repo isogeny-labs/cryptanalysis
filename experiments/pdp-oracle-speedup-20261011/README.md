@@ -1,6 +1,6 @@
 # PDP oracle speedup: the cryptanalysis-side tasks
 
-**Status.** Plan; nothing here has run.  **Class.** Accounting (a plan moves no
+**Status.** Plan; PS-5's CPU-executable part has run ([`ps5/`](ps5/README.md)), its device run is blocked, PS-3b has not.  **Class.** Accounting (a plan moves no
 operation count).  The program, its boundary, its other seven tasks and their
 frozen protocols live in the `crypto` repository:
 [`research/pdp_oracle_speedup_20261011/PLAN.md`](https://github.com/aburan28/crypto/blob/main/research/pdp_oracle_speedup_20261011/PLAN.md).
@@ -91,7 +91,9 @@ Needs PS-3 and an owner-approved allocation.
 | item | status |
 |:--|:--|
 | Scope the cryptanalysis-side tasks with frozen protocols | **verified complete** by this PR |
-| PS-3b, PS-5 | **not attempted** |
+| PS-3b | **not attempted** |
+| PS-5: kernel source, CPU emulation, digest parity on the PS-0 corpus (`l = 8..12`), counted bit operations | **verified complete on the CPU**, in [`ps5/`](ps5/README.md) (CUDA source compile-checked only; never run on a device) |
+| PS-5: device run, pairs per second, A/A and ABAB, 50x gate, expected ratio | **blocked** (no GPU, no owner-approved allocation or cap); requirement open, nothing measured on a device |
 | Any speedup claim | **none made** |
 
 ## Graphs checked

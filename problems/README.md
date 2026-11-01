@@ -37,6 +37,7 @@ explain the gap and what would let the work move past it.
 | [KernelAgent bridge to the ECC2K-130 CUDA walk](ecc2k130-kernelagent-cuda-bridge.md) | Investigating | Direct KernelAgent optimization of the production compatible CUDA walk | Verified same-workload input, provider, and accessible GPU profiling |
 | [ECC2K-130 Frobenius GPU critical path](ecc2k130-frobenius-gpu-critical-path.md) | Investigating | A confirmed production-compatible useful-update speedup after source-correlated profiling and additional bounded screens | Proved and checked grouped-inverse synchronization change, then matched correctness and timing confirmation |
 | [Cryptanalysis Git remote rejects PR branch push](cryptanalysis-git-remote-rejects-push.md) | resolved for transport | publishing and reviewing the committed Lean evidence audit | Git read/write restored and branch pushed; hosted PR gate remains separate |
+| [PDP oracle PS-5: no GPU and no allocation, device gate and 50x claim unevaluated](pdp-ps5-gpu-device-run-blocked.md) | open | the device replay of the PS-0 corpus, pairs per second, A/A and ABAB against PS-3, the 50x/20x thresholds and the expected ratio; CPU emulation parity and counted operations are done | an owner-approved allocation and cap, a device `gpu` block, the corpus replayed on the device with equal digests, then an A/A and ABAB timing |
 
 ## Add or update a problem
 
