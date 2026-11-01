@@ -35,6 +35,7 @@ PYTHON = Path("/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin
 PROTOCOL_TOOL = Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py")
 PROTOCOL_SCHEMA = Path("/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json")
 EXPORT_SCHEMA = Path("/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json")
+RUNTIME_DEPENDENCY_MANIFEST = HERE / "runtime-dependencies-v5.json"
 ISOLATED = Path("/workspace/crypto/target/release/isolated_bench")
 PERFINDEX = REPO / "scripts/perf/perfindex.py"
 VALGRIND = Path("/workspace/.tools/valgrind/bin/valgrind")
@@ -115,6 +116,27 @@ def sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def observe_identity(path: Path, expected: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Observe one frozen path, including a symlink's routing when applicable."""
+    observed: dict[str, Any] = {
+        "path": str(path), "exists": path.is_file(), "bytes": None,
+        "sha256": None, "mode": None,
+    }
+    if expected is not None:
+        for field in ("scope", "group"):
+            if field in expected:
+                observed[field] = expected[field]
+        if "link_target" in expected:
+            observed["link_target"] = os.readlink(path) if path.is_symlink() else None
+    if path.is_file():
+        stat = path.stat()
+        observed.update({
+            "bytes": stat.st_size, "sha256": sha256(path),
+            "mode": f"{stat.st_mode & 0o777:04o}",
+        })
+    return observed
 
 
 def safe_id(kernel: str) -> str:
@@ -818,6 +840,65 @@ def run_attempt(record: dict[str, Any], directory: Path) -> int:
     return returncode
 
 
+def dependency_manifest_contract(data: dict[str, Any]) -> dict[str, Any]:
+    contract = data["extensions"]["cpu_baseline_aa_v5"].get(
+        "runtime_dependency_manifest"
+    )
+    if not isinstance(contract, dict):
+        raise RuntimeError("protocol lacks the runtime dependency manifest contract")
+    if contract.get("path") != str(RUNTIME_DEPENDENCY_MANIFEST):
+        raise RuntimeError("runtime dependency manifest path differs from the frozen path")
+    return contract
+
+
+def load_dependency_manifest(data: dict[str, Any]) -> dict[str, Any]:
+    """Load the exact manifest before trusting any of its transitive entries."""
+    contract = dependency_manifest_contract(data)
+    expected_file = {
+        item["path"]: item
+        for item in data["extensions"]["cpu_baseline_aa_v5"]["required_files"]
+    }.get(str(RUNTIME_DEPENDENCY_MANIFEST))
+    observed = observe_identity(RUNTIME_DEPENDENCY_MANIFEST)
+    if expected_file is None or any(
+        observed.get(field) != expected_file.get(field)
+        for field in ("bytes", "sha256", "mode")
+    ):
+        raise RuntimeError("runtime dependency manifest file identity mismatch")
+    try:
+        manifest = json.loads(RUNTIME_DEPENDENCY_MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"cannot parse runtime dependency manifest: {error}") from error
+    files = manifest.get("files") if isinstance(manifest, dict) else None
+    if (
+        manifest.get("schema") != "cpu-baseline-aa-v5-runtime-dependencies/v1"
+        or not isinstance(files, list)
+        or any(not isinstance(item, dict) for item in files)
+    ):
+        raise RuntimeError("runtime dependency manifest violates its frozen schema")
+    paths = [item.get("path") for item in files]
+    if (
+        len(paths) != len(set(paths))
+        or any(not isinstance(path, str) or not Path(path).is_absolute() for path in paths)
+    ):
+        raise RuntimeError("runtime dependency manifest paths are invalid or duplicated")
+    if len(files) != contract.get("file_count") or digest_value(files) != contract.get(
+        "entries_sha256"
+    ):
+        raise RuntimeError("runtime dependency manifest entries differ from the protocol")
+    return manifest
+
+
+def verify_expected_identity(expected: dict[str, Any]) -> None:
+    observed = observe_identity(Path(expected["path"]), expected)
+    fields = ["bytes", "sha256", "mode"]
+    if "link_target" in expected:
+        fields.append("link_target")
+    if not observed["exists"] or any(
+        observed.get(field) != expected.get(field) for field in fields
+    ):
+        raise RuntimeError(f"required identity mismatch: {expected['path']}")
+
+
 def verify_bootstrap_identity(data: dict[str, Any]) -> None:
     required = {
         item["path"]: item
@@ -825,8 +906,13 @@ def verify_bootstrap_identity(data: dict[str, Any]) -> None:
     }
     for path in (PYTHON, PROTOCOL_TOOL, PROTOCOL_SCHEMA, EXPORT_SCHEMA):
         item = required.get(str(path))
-        if item is None or not path.is_file() or path.stat().st_size != item["bytes"] or sha256(path) != item["sha256"]:
+        if item is None:
             raise RuntimeError(f"protocol validation bootstrap identity mismatch: {path}")
+        verify_expected_identity(item)
+    manifest = load_dependency_manifest(data)
+    for item in manifest["files"]:
+        if item.get("group") in {"python_stdlib", "python_schema_runtime"}:
+            verify_expected_identity(item)
 
 
 def validate_protocol(protocol: Path) -> dict[str, Any]:
@@ -856,20 +942,19 @@ def validate_protocol(protocol: Path) -> dict[str, Any]:
 
 def identity_inventory(protocol: dict[str, Any]) -> list[dict[str, Any]]:
     ext = protocol["extensions"]["cpu_baseline_aa_v5"]
-    inventory: list[dict[str, Any]] = []
-    for required in ext["required_files"]:
-        path = Path(required["path"])
-        observed: dict[str, Any] = {
-            "path": str(path), "exists": path.is_file(), "bytes": None,
-            "sha256": None, "mode": None,
-        }
-        if path.is_file():
-            stat = path.stat()
-            observed.update({
-                "bytes": stat.st_size, "sha256": sha256(path),
-                "mode": f"{stat.st_mode & 0o777:04o}",
-            })
-        inventory.append(observed)
+    inventory = [
+        observe_identity(Path(required["path"]), required)
+        for required in ext["required_files"]
+    ]
+    try:
+        manifest = load_dependency_manifest(protocol)
+    except RuntimeError:
+        manifest = None
+    if manifest is not None:
+        for expected in manifest["files"]:
+            item = dict(expected)
+            item["scope"] = "runtime_dependency"
+            inventory.append(observe_identity(Path(expected["path"]), item))
     return inventory
 
 
@@ -909,6 +994,25 @@ def identity_findings(
             continue
         if item.get("mode") and observed.get("mode") != item["mode"]:
             findings.append(f"required mode mismatch: {path}")
+    dependency_observations = [
+        item for item in inventory if item.get("scope") == "runtime_dependency"
+    ]
+    dependency_entries: list[dict[str, Any]] = []
+    for observed in dependency_observations:
+        entry = {
+            field: observed.get(field)
+            for field in ("group", "path", "bytes", "mode", "sha256")
+        }
+        if "link_target" in observed:
+            entry["link_target"] = observed.get("link_target")
+        dependency_entries.append(entry)
+    contract = ext.get("runtime_dependency_manifest", {})
+    if (
+        len(dependency_entries) != contract.get("file_count")
+        or digest_value(dependency_entries) != contract.get("entries_sha256")
+        or any(not item.get("exists") for item in dependency_observations)
+    ):
+        findings.append("runtime dependency inventory differs from the frozen manifest")
     if runtime.get("event_sources_error") is not None:
         findings.append(f"cannot read perf event-source inventory: {runtime['event_sources_error']}")
     elif runtime.get("event_sources") != ["breakpoint", "msr", "software"]:

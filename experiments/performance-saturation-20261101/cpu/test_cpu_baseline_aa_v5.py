@@ -7,6 +7,8 @@ import hashlib
 import json
 from pathlib import Path
 import random
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -16,6 +18,7 @@ import run_cpu_baseline_aa_v5 as runner
 
 T0 = "2026-11-01T00:00:00+00:00"
 T1 = "2026-11-01T00:00:01+00:00"
+PROTOCOL_DRAFT = Path(__file__).with_name("protocol-baseline-aa-orchestrated-v5.json")
 
 
 def dump(path: Path, value: object) -> None:
@@ -67,23 +70,117 @@ def system_snapshot(label: str, tick: int = 1) -> dict:
     }
 
 
-def boundaries(root: Path) -> None:
+def boundaries(
+    root: Path, protocol: dict | None = None, blocked_path: Path | None = None,
+) -> list[str]:
     runtime = {
         "event_sources": ["breakpoint", "msr", "software"],
         "event_sources_error": None, "perf_event_paranoid": "2",
         "online_cpus": "0-4", "v4_affected_paths_present": [],
     }
+    inventory = runner.identity_inventory(protocol) if protocol is not None else []
+    if blocked_path is not None:
+        for item in inventory:
+            if item.get("path") == str(blocked_path):
+                item.update({"exists": False, "bytes": None, "sha256": None, "mode": None})
+    findings = runner.identity_findings(protocol, inventory, runtime) if protocol is not None else []
     dump(root / "orchestration/preflight.json", {
         "schema": "cpu-baseline-aa-v5-preflight/v1", "checked_at": T0,
-        "status": "passed", "findings": [], "required_files": [],
+        "status": "passed" if not findings else "blocked_identity_mismatch",
+        "findings": findings, "required_files": inventory,
         "runtime_observations": runtime,
     })
     for label in ("before", "wall-after", "campaign-after"):
         dump(root / f"orchestration/identity-{label}.json", {
             "schema": "cpu-baseline-aa-v5-identity-snapshot/v1", "label": label,
-            "captured_at": T0 if label == "before" else T1, "required_files": [],
+            "captured_at": T0 if label == "before" else T1,
+            "required_files": inventory,
         })
         dump(root / f"orchestration/system-{label}.json", system_snapshot(label))
+    return findings
+
+
+def frozen_protocol(root: Path) -> tuple[Path, dict]:
+    protocol = json.loads(PROTOCOL_DRAFT.read_text(encoding="utf-8"))
+    plan = runner.build_plan()
+    protocol["extensions"]["cpu_baseline_aa_v5"]["runner_sha256"] = digest(runner.RUNNER)
+    protocol["extensions"]["cpu_baseline_aa_v5"]["command_plan_digests"] = plan["digests"]
+    protocol["analysis_plan"]["script"]["sha256"] = digest(Path(analyzer.__file__).resolve())
+    protocol["freeze"] = {
+        "status": "frozen", "protocol_sha256": None,
+        "commit": "0" * 40, "frozen_at": "2026-11-01T00:00:00Z",
+        "filed_before_affected_data": True,
+    }
+    protocol["freeze"]["protocol_sha256"] = analyzer.tool.protocol_hash(protocol)
+    path = root.parent / "protocol.json"
+    dump(path, protocol)
+    return path, protocol
+
+
+def campaign_start(root: Path, protocol: dict) -> dict:
+    plan = runner.build_plan()
+    plan_path = root / "orchestration/command-plan.json"
+    dump(plan_path, plan)
+    dump(root / "orchestration/start.json", {
+        "schema": "cpu-baseline-aa-v5-start/v1", "started_at": T0,
+        "protocol_path": str(root.parent / "protocol.json"),
+        "protocol_sha256": protocol["freeze"]["protocol_sha256"],
+        "plan_sha256": digest(plan_path),
+        "plan_preimage_sha256": plan["digests"]["plan_preimage"],
+        "other_cpu_work_paused_confirmed": True, "resume_policy": "forbidden",
+    })
+    return plan
+
+
+def failed_outer_attempt(root: Path, name: str, record: dict) -> None:
+    outer = root / "orchestration/attempts" / name
+    outer.mkdir(parents=True)
+    (outer / "stdout.txt").write_text("", encoding="utf-8")
+    (outer / "stderr.txt").write_text("synthetic diagnostic failure\n", encoding="utf-8")
+    dump(outer / "started.json", {
+        "schema": "cpu-baseline-aa-v5-attempt-start/v1", "record": record,
+        "started_at": T0,
+    })
+    dump(outer / "launched.json", {
+        "schema": "cpu-baseline-aa-v5-attempt-launch/v1", "record": record,
+        "started_at": T0, "pid": 2000 + int(record["ordinal"]),
+        "process_group": 2000 + int(record["ordinal"]),
+    })
+    dump(outer / "receipt.json", {
+        "schema": "cpu-baseline-aa-v5-attempt/v1", "record": record,
+        "started_at": T0, "finished_at": T1, "returncode": 1,
+        "launch_error": None, "timeout_error": None,
+        "stdout_sha256": digest(outer / "stdout.txt"),
+        "stderr_sha256": digest(outer / "stderr.txt"),
+    })
+    jsonl(analyzer.isolation_path(record), [{
+        "schema": "isolated-bench/1", "mode": "reserve",
+        "label": record["argv"][record["argv"].index("--label") + 1],
+        "reserved_cpus": [0, 1, 2, 3], "left_on_reserved": {},
+        "command": analyzer.child_argv(record), "exit_status": 1,
+        "contended_samples": 0, "samples": [],
+    }])
+
+
+def invoke_analyzer(protocol_path: Path, root: Path) -> int:
+    argv = [
+        str(Path(analyzer.__file__).resolve()), "--protocol", str(protocol_path),
+        "--run-root", str(root),
+    ]
+    with mock.patch.object(sys, "argv", argv):
+        return analyzer.main()
+
+
+def assert_canonical_export(test: unittest.TestCase, protocol_path: Path,
+                            protocol: dict, root: Path) -> None:
+    export = analyzer.load_json(root / "export.json")
+    test.assertEqual(analyzer.tool.schema_errors(export, "experiment.export/v1"), [])
+    test.assertEqual(analyzer.tool.lint_export(export, protocol, root, True), [])
+    checked = subprocess.run([
+        str(runner.PYTHON), str(runner.PROTOCOL_TOOL), "check-export", "--protocol",
+        str(protocol_path), "--verify-files", str(root / "export.json"),
+    ], cwd=root, capture_output=True, text=True, timeout=60)
+    test.assertEqual(checked.returncode, 0, checked.stderr)
 
 
 def measured_row(kernel: str, round_index: int) -> dict:
@@ -273,6 +370,26 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                 analyzer.child_argv(row)[:4],
                 [str(runner.TASKSET), "-c", "0", str(runner.SYSTEM_ENV)],
             )
+
+    def test_runtime_dependency_manifest_is_content_bound(self) -> None:
+        protocol = json.loads(PROTOCOL_DRAFT.read_text(encoding="utf-8"))
+        manifest = runner.load_dependency_manifest(protocol)
+        contract = protocol["extensions"]["cpu_baseline_aa_v5"][
+            "runtime_dependency_manifest"
+        ]
+        self.assertEqual(len(manifest["files"]), contract["file_count"])
+        self.assertEqual(runner.digest_value(manifest["files"]), contract["entries_sha256"])
+        inventory = runner.identity_inventory(protocol)
+        runtime_item = next(
+            item for item in inventory if item.get("scope") == "runtime_dependency"
+        )
+        runtime_item["sha256"] = "0" * 64
+        findings = runner.identity_findings(
+            protocol, inventory, runner.runtime_identity_observations(),
+        )
+        self.assertIn(
+            "runtime dependency inventory differs from the frozen manifest", findings,
+        )
 
     def test_callgrind_stream_binding_and_positive_selection(self) -> None:
         with self.assertRaises(ValueError):
@@ -611,6 +728,77 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                 ))
             finally:
                 runner.RUN_ROOT = original
+
+    def test_complete_root_emits_a_canonical_checked_export(self) -> None:
+        """Exercise all 1,056 descriptive cells without launching a workload."""
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                protocol_path, protocol = frozen_protocol(root)
+                plan = campaign_start(root, protocol)
+                self.assertEqual(boundaries(root, protocol), [])
+                for index, spec in enumerate(analyzer.session_specs(root), 1):
+                    full_session(root, index, spec)
+                for phase in ("callgrind", "perf_stat"):
+                    for record in plan[phase]:
+                        failed_outer_attempt(
+                            root, f"{phase}-{record['ordinal']:03d}-{record['arm']}", record,
+                        )
+                dump(root / "orchestration/perf-record-selection.json", {
+                    "status": "not_attempted_missing_c_callgrind_a",
+                    "missing": list(runner.C_IDS),
+                })
+                dump(root / "orchestration/complete.json", {
+                    "status": "orchestration_complete", "finished_at": T1,
+                })
+                self.assertEqual(invoke_analyzer(protocol_path, root), 0)
+                export = analyzer.load_json(root / "export.json")
+                self.assertEqual(len(export["runs"]), 1056)
+                self.assertEqual(
+                    {(row["arm"], row["instance_id"], row["replicate"], row["seed"])
+                     for row in export["runs"]},
+                    {(row["arm"], row["instance_id"], row["replicate"], row["seed"])
+                     for row in runner.export_seed_table()},
+                )
+                self.assertFalse((root / "orchestration/terminal.json").exists())
+                self.assertTrue((root / "orchestration/finalization.json").is_file())
+                assert_canonical_export(self, protocol_path, protocol, root)
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_blocked_root_checks_export_when_perfindex_is_unavailable(self) -> None:
+        """A failed measurement identity must not become an analysis dependency."""
+        original_root = runner.RUN_ROOT
+        original_perfindex = runner.PERFINDEX
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                protocol_path, protocol = frozen_protocol(root)
+                campaign_start(root, protocol)
+                findings = boundaries(root, protocol, blocked_path=original_perfindex)
+                self.assertTrue(any("required identity mismatch" in item for item in findings))
+                dump(root / "orchestration/terminal.json", {
+                    "schema": "cpu-baseline-aa-v5-terminal/v1",
+                    "status": "preflight_identity_blocked", "finished_at": T1,
+                    "continuation": "forbidden", "findings": findings,
+                })
+                runner.PERFINDEX = root / "deliberately-unavailable-perfindex.py"
+                self.assertEqual(invoke_analyzer(protocol_path, root), 1)
+                gate = analyzer.load_json(root / "analysis/wall-gate.json")
+                self.assertEqual(gate["verdict"], "blocked_artifact_or_isolation")
+                export = analyzer.load_json(root / "export.json")
+                self.assertEqual(len(export["runs"]), 1056)
+                self.assertTrue(any(
+                    item["path"] == "orchestration/terminal.json"
+                    for item in export["files"]
+                ))
+                assert_canonical_export(self, protocol_path, protocol, root)
+            finally:
+                runner.PERFINDEX = original_perfindex
+                runner.RUN_ROOT = original_root
 
 
 if __name__ == "__main__":

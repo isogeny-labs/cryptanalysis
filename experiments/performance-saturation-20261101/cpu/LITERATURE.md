@@ -342,6 +342,21 @@ all recording schedule seed 20260926. Its 1,056-row digest is bound in the
 command plan because the canonical schema's `harness_drawn` mode deliberately
 does not assume numeric instance IDs or zero-based harness replicates.
 
+The v5 identity gate also recomputes
+`runtime-dependencies-v5.json`, rather than treating inherited manifest digest
+strings as evidence. That manifest enumerates the pinned Python 3.12 standard
+library and the complete local `jsonschema`, `referencing`, `rpds`, `attrs`,
+schema-resource, and optional format-checker trees used by the canonical
+protocol/export tool. It also enumerates the toolchain-local libraries loaded
+by the exact `rustc --version` host prelude, every Valgrind libexec file, and
+perf's private libraries and runtime data. Each identity snapshot records the
+observed path, size, mode, SHA-256, and symlink route; the analyzer checks the
+retained canonical entry digest without depending on later live files. The ELF
+interpreter, system DSOs, kernel, and `/proc`/`/sys` interfaces remain an
+explicit host-class boundary. They are observed for stability but not
+individually content-pinned, which is another reason all clocks stay
+nonqualified and non-transferable.
+
 Analysis is mechanically separate from acquisition. Derived files are
 atomically published and may be recomputed after a controller/host crash; raw
 receipts and acquired data are never resumed or overwritten. A `finalize`
@@ -350,3 +365,11 @@ terminal receipt when needed, and launches only the analyzer. A successful
 schema/lint/`check-export --verify-files` pass creates a hash-bound finalization
 receipt. Analyzer failure never makes an invalid export look scientific and
 does not authorize another measurement attempt.
+
+The synthetic-only test suite constructs both a complete 1,056-row root and a
+clean zero-acquisition identity-blocked root, then requires the canonical
+export schema, linter, file verifier, and `check-export` command to accept each
+one. The blocked fixture makes `perfindex.py` unavailable during analysis to
+prove that a failed measurement dependency is not also an export bootstrap.
+These tests execute no retained benchmark, profiler, registry command, or
+provider call and contribute no timing evidence.
