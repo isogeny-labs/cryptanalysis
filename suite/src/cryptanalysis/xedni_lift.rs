@@ -488,7 +488,7 @@ mod tests {
             bi(&[9, -6, -3, 8, 4, 2, 1]),
         ];
         let q = 67i64;
-        let kernel = vec![
+        let kernel = [
             bi(&[3, 2, 5, 0, 0, 0, 0]),
             bi(&[-8, -22, 0, -15, 15, 0, 0]),
             bi(&[2, -2, 0, -5, 0, 5, 0]),
@@ -538,5 +538,24 @@ mod tests {
         };
         let error = optimize_weierstrass_lift(&problem, LiftSearchOptions::default()).unwrap_err();
         assert!(error.contains("exact constraint"));
+    }
+
+    #[test]
+    fn noncongruent_kernel_direction_is_rejected_before_search() {
+        let problem = AffineLiftProblem {
+            particular: bi(&[1, 0, 1, -1, 0, 1, 0]),
+            // This is a genuine kernel direction for the four-point toy
+            // incidence matrix, but it is not coefficientwise zero mod 67.
+            directions: vec![bi(&[3, 2, 5, 0, 0, 0, 0])],
+            exact_constraints: vec![
+                bi(&[0, 0, 0, 0, 0, 0, 1]),
+                bi(&[0, 0, 0, 1, 1, 1, 1]),
+                bi(&[1, 1, -1, -1, 1, -1, 1]),
+                bi(&[9, -6, -3, 8, 4, 2, 1]),
+            ],
+            congruence_modulus: Some(BigInt::from(67)),
+        };
+        let error = optimize_weierstrass_lift(&problem, LiftSearchOptions::default()).unwrap_err();
+        assert!(error.contains("residue class"));
     }
 }

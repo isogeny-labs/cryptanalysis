@@ -1,0 +1,24 @@
+digraph xedni_lift {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.52,
+         label="Certified prime-field xedni coefficient-lift optimizer (2026-11-01)",
+         labelloc=t, fontsize=18, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+        color="#334155", fillcolor="#f8fafc", margin="0.14,0.09"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+
+  input [label="Feasible affine coset\nu* + span_Z(D)\npoint rows B; modulus q", fillcolor="#dbeafe"];
+  certify [label="Exact input certificate\nB D_i = 0\nD_i = 0 (mod q)", fillcolor="#dcfce7"];
+  lll [label="LLL-HP (delta 0.99)\nreduce admissible directions", fillcolor="#ede9fe"];
+  babai [label="Babai nearest-plane\ncoefficient-height control", fillcolor="#fef3c7"];
+  search [label="Bounded neighborhood\nexact discriminant objective", fillcolor="#ffedd5"];
+  output [label="Selected nonsingular curve\nrecheck incidence + congruence", fillcolor="#dcfce7"];
+  claim [label="Claim boundary\nconstant-stage optimizer only\nno dependence / ECDLP result", fillcolor="#fee2e2", color="#b91c1c"];
+
+  input -> certify [label="all decimal BigInts"];
+  certify -> lll [label="valid directions"];
+  lll -> babai [label="reduced basis"];
+  babai -> search [label="CVP center"];
+  search -> output [label="best exact score"];
+  output -> claim [style=dashed, label="interpretation gate"];
+}
+

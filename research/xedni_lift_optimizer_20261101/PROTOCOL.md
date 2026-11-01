@@ -3,6 +3,10 @@
 Status: prospectively frozen for a deterministic algorithmic diagnostic; no
 timing or ECDLP-success claim.
 
+Execution is currently blocked by
+[`problems/xedni-affine-cvp-checkpoint-access.md`](../../problems/xedni-affine-cvp-checkpoint-access.md).
+No frozen p=67 row has been run.
+
 ## Requested question and exact scope
 
 The user asked whether the old xedni lift construction, including the often
