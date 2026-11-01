@@ -1,16 +1,23 @@
 # H111 independent replay: first-layer p² halving carry
 
-This draft freezes an independent replay before the canonical implementation runs.
+The independent implementation replayed every one of 9,096 canonical carries,
+32 matched controls, and both coordinate-isomorphic panels.  It reproduced
+scientific digest
+`383eb1faf53a4fe17088780cb71528df3f20913abdc022c4348f411c26ce4fd5`.
 
-For `Q=[k]G`, form `H=[(r+1)/2]Q`, lift `H,Q` by the coordinate-fixed
-Hensel section, and measure `C₂(Q)=[2]s₀(H)-s₀(Q)` in the reduction kernel.
-Exactly 24 public predicates of the formal coordinate are frozen as parity
-candidates.  No formula may be added after observation.
+All structural and torsion-section checks passed.  None of the 24 frozen
+predicates was exact on any of 28 rows, so the repeated-halving decoder did not
+run.  Canonical best-fit accuracy (0.526427–0.657658) overlapped the controls.
 
-The replay covers all 28 rows and 9,096 targets, independently recomputes the
-carry and predicate scores, checks random-section, matched-label,
-coordinate-isomorphism, torsion-section, and generic controls, and requires
-complete parity-guided reconstruction plus EC verification for any exact row.
+Reproduce the replay:
 
-Status: protocol frozen; measurement not run. External novelty and any
-subexponential claim are not established.
+```bash
+gunzip -c p2-halving-carry.json.gz > p2-halving-carry.json
+python3 h111_reference_verify.py p2-halving-carry.json
+```
+
+The verifier is self-contained and does not import the canonical H111 runner.
+It recomputes elliptic-curve arithmetic, Hensel lifts, kernel formal
+coordinates, random sections, matched labels, predicate scores, and the stable
+digest.  This is a scoped null for the frozen family, not a generic ECDLP or
+external-novelty claim.
