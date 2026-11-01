@@ -204,6 +204,8 @@ struct Engine {
     unsigned *denominators = nullptr; // sigma: the forward pass's d, per slot
     unsigned *twConsts = nullptr;
     size_t fieldWords = 0;
+    size_t fieldBlobBytes = 0;
+    size_t twConstsBytes = 0;
 
     size_t laneCount() const { return size_t(P.threads) * ECC_BATCH; }
 
@@ -246,6 +248,7 @@ struct Engine {
         fieldWords = eccPacked131::compactPhysicalFieldWords(size_t(P.threads));
         const size_t bytes = fieldWords * sizeof(unsigned);
         CUDA_CHECK(cudaMalloc(&fieldBlob, bytes * arrays));
+        fieldBlobBytes = bytes * arrays;
         CUDA_CHECK(cudaMemset(fieldBlob, 0, bytes * arrays));
         P.x = fieldBlob;
         P.y = fieldBlob + fieldWords;
@@ -265,6 +268,7 @@ struct Engine {
 #if ECC_WALK_TABLE
         const std::vector<uint32_t> consts = walk.deviceConsts();
         CUDA_CHECK(cudaMalloc(&twConsts, consts.size() * sizeof(uint32_t)));
+        twConstsBytes = consts.size() * sizeof(uint32_t);
         CUDA_CHECK(cudaMemcpy(twConsts, consts.data(), consts.size() * sizeof(uint32_t),
                               cudaMemcpyHostToDevice));
 #endif
@@ -352,16 +356,28 @@ struct Engine {
             CUDA_CHECK(cudaMemset(P.dpCount, 0, 3 * sizeof(unsigned)));
     }
 
+    // Freed device memory is not cleared by the driver, and the next tenant
+    // of a shared or rented GPU can be handed the same pages.  Lane state,
+    // seeds and distinguished points are what a solution is rebuilt from,
+    // so zero them first (cudaFree synchronises, so the memsets land before
+    // the release).  Errors are ignored: teardown still has to free.
+    static void scrubFree(void *d, size_t bytes)
+    {
+        if (!d) return;
+        if (bytes) (void)cudaMemset(d, 0, bytes);
+        cudaFree(d);
+    }
+
     ~Engine()
     {
-        cudaFree(fieldBlob);
-        cudaFree(twConsts);
-        cudaFree(P.dead);
-        cudaFree(P.seed);
-        cudaFree(P.startIter);
-        cudaFree(P.hist);
-        cudaFree(P.dp);
-        cudaFree(P.dpCount);
+        scrubFree(fieldBlob, fieldBlobBytes);
+        scrubFree(twConsts, twConstsBytes);
+        scrubFree(P.dead, laneCount() * sizeof(unsigned));
+        scrubFree(P.seed, laneCount() * sizeof(unsigned long long));
+        scrubFree(P.startIter, laneCount() * sizeof(unsigned long long));
+        scrubFree(P.hist, laneCount() * sizeof(unsigned long long));
+        scrubFree(P.dp, size_t(P.dpCap) * sizeof(DpRecord));
+        scrubFree(P.dpCount, 4 * sizeof(unsigned));
     }
 };
 

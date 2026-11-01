@@ -222,3 +222,44 @@ kernel is latency- rather than throughput-bound on small groups; the
 thread-count heuristic deliberately keeps walk start-up below
 `sqrt(n)/8`, which for small `n` leaves the device underused. Groups above
 about 2^48 are where a GPU is the right tool.
+
+## Side channels and leftover device memory
+
+This is attack code: the inputs are public group elements and the output
+is a logarithm that anyone running the walk could find. Constant-time
+kernels would protect nothing and would cost throughput, so the kernels
+branch and index on walk data freely. Keep it that way.
+
+What does matter on a shared or rented GPU is **leftover memory**. The
+driver does not clear device memory on free, and the next process on the
+device can be handed the same pages (compare LeftoverLocals,
+CVE-2023-4969, which leaked on-chip local memory between processes on
+Apple, AMD and Qualcomm GPUs). The walk coefficients, lane state and
+distinguished points are enough to rebuild a solution, so every backend
+zeroes them before release:
+
+- `cuda/gpu_cuda.c`: `cuda_scrub_free` for device buffers and
+  `host_scrub_free` for the host DP and restart copies.
+- `bindings/rust/cryptanalysis-cuda`: `Scrubbed<T>` wraps each
+  `CudaSlice` and zeroes it in `Drop`, so `?` early returns are covered.
+  The host DP buffer is a `ScrubbedVec`.
+- `ecc2k130/src/ec2k_gpu.cu`: `Engine::scrubFree` in the destructor.
+- `gpu/certicom/cuda.cu`: `CcCudaBuffer` zeroes itself in its destructor.
+
+What is still not covered:
+
+- `ecc2k130/runner/src/main.cu` (`CudaEngine`, `PackedCudaEngine`) never
+  frees its device buffers and relies on process exit, which does not clear
+  them either. It needs an explicit teardown before it can scrub.
+- The Metal backends (`ecc2k130/metal`, `ecc2k130/src/ec2k_metal.mm`,
+  `gpu/certicom/metal.mm`). macOS hands new processes zero-filled pages, but
+  threadgroup memory is what LeftoverLocals leaked on M1/M2-era Apple GPUs.
+  Keep macOS current, and don't run anything worth protecting next to
+  untrusted GPU code.
+- Benchmarks and experiments under `ecc2k130/runner/research`,
+  `experiments/` and `suite/cuda`.
+- A process killed with SIGKILL, or a driver reset, skips teardown, and checkpoints and logs on disk keep whatever they were
+given. For runs whose result is worth something, use a dedicated GPU (or a
+MIG slice on A100/H100) rather than time-sliced or MPS sharing, keep
+profiling counters admin-only (`NVreg_RestrictProfilingToAdminUsers=1`, the
+default), and wipe checkpoint directories when the run ends.

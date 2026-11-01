@@ -29,6 +29,7 @@ typedef struct cuda_ctx {
     uint8_t *d_restart, *h_restart;
     int restart_dirty;
     uint64_t *h_dp;
+    size_t mult_bytes, dp_bytes;
 } cuda_ctx;
 
 static void cuda_destroy(void *vctx);
@@ -56,6 +57,8 @@ static ca_status cuda_create(const ca_gpu_rho_args *a, uint32_t tpb, int device,
     c->nwalks = (size_t)a->nthreads * CA_GPU_W;
     size_t mult_bytes = (size_t)a->r * 4 * sizeof(uint64_t);
     size_t dp_bytes = (size_t)a->dp_cap * 4 * sizeof(uint64_t);
+    c->mult_bytes = mult_bytes;
+    c->dp_bytes = dp_bytes;
     c->h_restart = malloc(c->nwalks);
     c->h_dp = malloc(dp_bytes);
     if (!c->h_restart || !c->h_dp) {
@@ -127,19 +130,46 @@ static void cuda_restart(void *vctx, uint32_t wid)
     }
 }
 
+/*
+ * Device memory is not cleared by the driver when it is freed, and the next
+ * process on the GPU can get the same pages back (as with LeftoverLocals,
+ * CVE-2023-4969, for on-chip memory).  The walk state, coefficients and
+ * distinguished points together are enough to rebuild the logarithm, so on
+ * a shared or rented GPU they are overwritten before the memory goes back
+ * to the pool.  cudaMemset is queued on the default stream and cudaFree
+ * synchronises, so each buffer is zeroed before it is released.  A failed
+ * memset is ignored: teardown must still free.
+ */
+static void cuda_scrub_free(void *d, size_t bytes)
+{
+    if (!d) return;
+    if (bytes) (void)cudaMemset(d, 0, bytes);
+    cudaFree(d);
+}
+
+/* Host copies get the same treatment; the volatile store keeps the
+ * compiler from dropping a memset that precedes free(). */
+static void host_scrub_free(void *p, size_t bytes)
+{
+    if (!p) return;
+    volatile unsigned char *v = p;
+    for (size_t i = 0; i < bytes; i++) v[i] = 0;
+    free(p);
+}
+
 static void cuda_destroy(void *vctx)
 {
     cuda_ctx *c = vctx;
     if (!c) return;
-    if (c->d_mult) cudaFree(c->d_mult);
-    if (c->d_state) cudaFree(c->d_state);
-    if (c->d_aux) cudaFree(c->d_aux);
-    if (c->d_dp) cudaFree(c->d_dp);
-    if (c->d_count) cudaFree(c->d_count);
-    if (c->d_restart) cudaFree(c->d_restart);
-    free(c->h_restart);
-    free(c->h_dp);
-    free(c);
+    cuda_scrub_free(c->d_mult, c->mult_bytes);
+    cuda_scrub_free(c->d_state, c->nwalks * 4 * sizeof(uint64_t));
+    cuda_scrub_free(c->d_aux, c->nwalks * CA_GPU_AUX * sizeof(uint64_t));
+    cuda_scrub_free(c->d_dp, c->dp_bytes);
+    cuda_scrub_free(c->d_count, sizeof(uint32_t));
+    cuda_scrub_free(c->d_restart, c->nwalks);
+    host_scrub_free(c->h_restart, c->h_restart ? c->nwalks : 0);
+    host_scrub_free(c->h_dp, c->h_dp ? c->dp_bytes : 0);
+    host_scrub_free(c, sizeof(*c));
 }
 
 const ca_gpu_backend_ops ca_gpu_cuda_ops = {"cuda", cuda_create, cuda_launch, cuda_restart,
