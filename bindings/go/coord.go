@@ -20,6 +20,7 @@ package cryptanalysis
 import "C"
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"runtime"
@@ -303,6 +304,14 @@ type LogEntry struct {
 	Line string
 }
 
+// logScanBuffers is scratch storage for one log scan.  The C call only borrows
+// these pointer-free arrays for its duration; byte slices returned by
+// logAtIntoLocked are invalidated by the next call that reuses the buffers.
+type logScanBuffers struct {
+	line [LineMax]byte
+	peer [PeerMax]byte
+}
+
 // LogLen is the number of check-ins merged so far.
 func (s *State) LogLen() int {
 	s.mu.RLock()
@@ -320,32 +329,58 @@ func (s *State) LogAt(index int) (LogEntry, bool) {
 	if s.ptr == nil || index < 0 {
 		return LogEntry{}, false
 	}
-	line := make([]byte, LineMax)
-	peer := make([]byte, PeerMax)
-	var seq C.uint64_t
-	ok := C.ca_coord_log_get(s.ptr, C.size_t(index), (*C.char)(unsafe.Pointer(&line[0])),
-		C.size_t(len(line)), (*C.char)(unsafe.Pointer(&peer[0])), C.size_t(len(peer)), &seq)
-	if ok == 0 {
+	var buffers logScanBuffers
+	line, peer, seq, ok := s.logAtIntoLocked(index, &buffers)
+	if !ok {
 		return LogEntry{}, false
 	}
 	return LogEntry{
-		Peer: cstr(peer),
-		Seq:  uint64(seq),
-		Line: cstr(line),
+		Peer: string(peer),
+		Seq:  seq,
+		Line: string(line),
 	}, true
+}
+
+// logAtIntoLocked requires s.mu to be held for reading.  C still takes its
+// own log lock for this one copy and does not retain either Go pointer.
+func (s *State) logAtIntoLocked(index int, buffers *logScanBuffers) ([]byte, []byte, uint64, bool) {
+	if s.ptr == nil || index < 0 {
+		return nil, nil, 0, false
+	}
+	var seq C.uint64_t
+	ok := C.ca_coord_log_get(s.ptr, C.size_t(index),
+		(*C.char)(unsafe.Pointer(&buffers.line[0])), C.size_t(len(buffers.line)),
+		(*C.char)(unsafe.Pointer(&buffers.peer[0])), C.size_t(len(buffers.peer)), &seq)
+	if ok == 0 {
+		return nil, nil, 0, false
+	}
+	return nulPrefix(buffers.line[:]), nulPrefix(buffers.peer[:]), uint64(seq), true
 }
 
 // VersionVector maps each peer to the highest sequence number this state
 // holds for it.  It is what makes one round trip enough: the holder of a
 // vector is owed exactly the entries above it.
 func (s *State) VersionVector() VersionVector {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	vv := VersionVector{}
-	n := s.LogLen()
+	if s.ptr == nil {
+		return vv
+	}
+	peers := map[string]string{}
+	var buffers logScanBuffers
+	// The log is append-only.  Fixing n while the lifetime lock is held gives
+	// this call one immutable prefix; concurrent ApplyLine calls may append
+	// beyond it because the C object owns its mutation lock.
+	n := int(C.ca_coord_log_count(s.ptr))
 	for i := 0; i < n; i++ {
-		if e, ok := s.LogAt(i); ok {
-			if e.Seq > vv[e.Peer] {
-				vv[e.Peer] = e.Seq
-			}
+		_, peer, seq, ok := s.logAtIntoLocked(i, &buffers)
+		if !ok {
+			continue
+		}
+		name := internPeer(peers, peer)
+		if seq > vv[name] {
+			vv[name] = seq
 		}
 	}
 	return vv
@@ -358,23 +393,32 @@ func (s *State) VersionVector() VersionVector {
 // during the send, and crediting an agent with a record it was never sent
 // strands that record until its socket drops.
 func (s *State) DeltaSince(vv VersionVector) ([]string, VersionVector) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	var out []string
 	reached := VersionVector{}
+	peers := make(map[string]string, len(vv))
 	for peer, seq := range vv {
 		reached[peer] = seq
+		peers[peer] = peer
 	}
-	n := s.LogLen()
+	if s.ptr == nil {
+		return out, reached
+	}
+	var buffers logScanBuffers
+	n := int(C.ca_coord_log_count(s.ptr))
 	for i := 0; i < n; i++ {
-		e, ok := s.LogAt(i)
+		line, peer, seq, ok := s.logAtIntoLocked(i, &buffers)
 		if !ok {
 			continue
 		}
-		if e.Seq <= vv[e.Peer] {
+		name := internPeer(peers, peer)
+		if seq <= vv[name] {
 			continue
 		}
-		out = append(out, e.Line)
-		if e.Seq > reached[e.Peer] {
-			reached[e.Peer] = e.Seq
+		out = append(out, string(line))
+		if seq > reached[name] {
+			reached[name] = seq
 		}
 	}
 	return out, reached
@@ -383,17 +427,28 @@ func (s *State) DeltaSince(vv VersionVector) ([]string, VersionVector) {
 // DeltaFrom returns the check-in lines the holder of vv lacks, oldest
 // first.
 func (s *State) DeltaFrom(vv VersionVector) []string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	var out []string
-	n := s.LogLen()
+	if s.ptr == nil {
+		return out
+	}
+	peers := make(map[string]string, len(vv))
+	for peer := range vv {
+		peers[peer] = peer
+	}
+	var buffers logScanBuffers
+	n := int(C.ca_coord_log_count(s.ptr))
 	for i := 0; i < n; i++ {
-		e, ok := s.LogAt(i)
+		line, peer, seq, ok := s.logAtIntoLocked(i, &buffers)
 		if !ok {
 			continue
 		}
-		if e.Seq <= vv[e.Peer] {
+		name := internPeer(peers, peer)
+		if seq <= vv[name] {
 			continue
 		}
-		out = append(out, e.Line)
+		out = append(out, string(line))
 	}
 	return out
 }
@@ -442,11 +497,20 @@ func (vv VersionVector) String() string {
 	return b.String()
 }
 
-func cstr(b []byte) string {
-	if i := strings.IndexByte(string(b), 0); i >= 0 {
-		return string(b[:i])
+func nulPrefix(b []byte) []byte {
+	if i := bytes.IndexByte(b, 0); i >= 0 {
+		return b[:i]
 	}
-	return string(b)
+	return b
+}
+
+func internPeer(peers map[string]string, peer []byte) string {
+	if name, ok := peers[string(peer)]; ok {
+		return name
+	}
+	name := string(peer)
+	peers[name] = name
+	return name
 }
 
 func nowSecs() uint64 { return uint64(time.Now().Unix()) }

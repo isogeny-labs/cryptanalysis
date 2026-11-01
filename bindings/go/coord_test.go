@@ -1,7 +1,9 @@
 package cryptanalysis_test
 
 import (
+	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	ca "github.com/aburan28/cryptanalysis/bindings/go"
@@ -229,5 +231,211 @@ func TestDeltaAndLog(t *testing.T) {
 	}
 	if _, ok := a.LogAt(a.LogLen()); ok {
 		t.Error("reading past the end of the log succeeded")
+	}
+}
+
+func TestLogScansPreserveCopiesAcrossMultiplePeers(t *testing.T) {
+	_, ctx, _ := testJob(t, 9090)
+
+	var encoded []string
+	expected := ca.VersionVector{}
+	for _, peer := range []string{"a.0", "b.0"} {
+		source, err := ca.NewState(ctx)
+		if err != nil {
+			t.Fatalf("source state: %v", err)
+		}
+		if _, err := ca.RunLane(ctx, source, ca.LaneParams{
+			Peer: peer, MaxWalkers: 8, CheckinEvery: 2,
+		}); err != nil {
+			source.Close()
+			t.Fatalf("lane %s: %v", peer, err)
+		}
+		for i := 0; i < source.LogLen(); i++ {
+			entry, ok := source.LogAt(i)
+			if !ok {
+				source.Close()
+				t.Fatalf("source %s has no entry %d", peer, i)
+			}
+			encoded = append(encoded, entry.Line)
+			if entry.Seq > expected[entry.Peer] {
+				expected[entry.Peer] = entry.Seq
+			}
+		}
+		source.Close()
+	}
+	if len(expected) != 2 {
+		t.Fatalf("fixture version vector has %d peers, want 2", len(expected))
+	}
+
+	state, err := ca.NewState(ctx)
+	if err != nil {
+		t.Fatalf("state: %v", err)
+	}
+	for i := len(encoded) - 1; i >= 0; i-- {
+		if _, err := state.ApplyLine(encoded[i]); err != nil {
+			state.Close()
+			t.Fatalf("apply reversed entry %d: %v", i, err)
+		}
+	}
+	first, ok := state.LogAt(0)
+	if !ok {
+		state.Close()
+		t.Fatal("missing first merged entry")
+	}
+	firstCopy := first
+
+	if got := state.VersionVector(); !reflect.DeepEqual(got, expected) {
+		state.Close()
+		t.Fatalf("version vector = %v, want %v", got, expected)
+	}
+	all, reached := state.DeltaSince(ca.VersionVector{})
+	if len(all) != len(encoded) || !reflect.DeepEqual(reached, expected) {
+		state.Close()
+		t.Fatalf("full delta: lines=%d/%d reached=%v want=%v", len(all), len(encoded), reached, expected)
+	}
+	allCopy := append([]string(nil), all...)
+
+	known := ca.VersionVector{}
+	for peer, seq := range expected {
+		known[peer] = seq
+	}
+	known["a.0"]--
+	missing, reached := state.DeltaSince(known)
+	if len(missing) != 1 || !reflect.DeepEqual(reached, expected) {
+		state.Close()
+		t.Fatalf("one-behind delta: lines=%d reached=%v want=%v", len(missing), reached, expected)
+	}
+	if !reflect.DeepEqual(all, allCopy) || first != firstCopy {
+		state.Close()
+		t.Fatal("a later scan mutated strings returned by an earlier scan")
+	}
+
+	state.Close()
+	if _, ok := state.LogAt(0); ok {
+		t.Fatal("LogAt succeeded after Close")
+	}
+}
+
+func TestLogScansConcurrentApplyAndClose(t *testing.T) {
+	_, ctx, _ := testJob(t, 9191)
+
+	source, err := ca.NewState(ctx)
+	if err != nil {
+		t.Fatalf("source state: %v", err)
+	}
+	if _, err := ca.RunLane(ctx, source, ca.LaneParams{
+		Peer: "writer.0", MaxWalkers: 128, CheckinEvery: 1,
+	}); err != nil {
+		source.Close()
+		t.Fatalf("source lane: %v", err)
+	}
+	encoded := source.DeltaFrom(ca.VersionVector{})
+	expected := source.VersionVector()
+	source.Close()
+	if len(encoded) < 32 {
+		t.Fatalf("fixture produced only %d entries", len(encoded))
+	}
+	if len(expected) != 1 || expected["writer.0"] == 0 {
+		t.Fatalf("fixture version vector = %v, want one nonzero peer", expected)
+	}
+
+	state, err := ca.NewState(ctx)
+	if err != nil {
+		t.Fatalf("state: %v", err)
+	}
+
+	// ApplyLine and the scans all hold the lifetime lock for reading.  Their C
+	// calls serialize on the C lock, while each scan retains the immutable log
+	// prefix length it observed at its start.
+	scanStarted := make(chan struct{})
+	writeDone := make(chan struct{})
+	scanDone := make(chan struct{})
+	go func() {
+		defer close(scanDone)
+		_ = state.VersionVector()
+		close(scanStarted)
+		for {
+			select {
+			case <-writeDone:
+				return
+			default:
+				known := state.VersionVector()
+				state.DeltaSince(known)
+			}
+		}
+	}()
+	<-scanStarted
+	for i, line := range encoded {
+		if _, err := state.ApplyLine(line); err != nil {
+			close(writeDone)
+			<-scanDone
+			state.Close()
+			t.Fatalf("apply entry %d: %v", i, err)
+		}
+	}
+	close(writeDone)
+	<-scanDone
+
+	if got := state.VersionVector(); !reflect.DeepEqual(got, expected) {
+		state.Close()
+		t.Fatalf("version vector after concurrent writes = %v, want %v", got, expected)
+	}
+	if lines, reached := state.DeltaSince(ca.VersionVector{}); len(lines) != len(encoded) || !reflect.DeepEqual(reached, expected) {
+		state.Close()
+		t.Fatalf("delta after concurrent writes: lines=%d/%d reached=%v want=%v", len(lines), len(encoded), reached, expected)
+	}
+
+	// Keep readers and a duplicate writer active while Close takes the
+	// exclusive lifetime lock.  Close must wait for an in-flight scan/C call,
+	// and every later operation must observe the nil pointer rather than use
+	// freed C storage.  The race/checkptr runs exercise this path directly.
+	const readers = 4
+	stop := make(chan struct{})
+	ready := make(chan struct{}, readers+1)
+	var workers sync.WaitGroup
+	for i := 0; i < readers; i++ {
+		workers.Add(1)
+		go func() {
+			defer workers.Done()
+			_ = state.VersionVector()
+			ready <- struct{}{}
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					state.DeltaSince(expected)
+				}
+			}
+		}()
+	}
+	workers.Add(1)
+	go func() {
+		defer workers.Done()
+		_, _ = state.ApplyLine(encoded[0])
+		ready <- struct{}{}
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				if _, err := state.ApplyLine(encoded[0]); err != nil {
+					return
+				}
+			}
+		}
+	}()
+	for i := 0; i < readers+1; i++ {
+		<-ready
+	}
+
+	state.Close()
+	close(stop)
+	workers.Wait()
+	if got := state.VersionVector(); len(got) != 0 {
+		t.Fatalf("version vector after Close = %v, want empty", got)
+	}
+	if lines, reached := state.DeltaSince(expected); len(lines) != 0 || !reflect.DeepEqual(reached, expected) {
+		t.Fatalf("delta after Close: lines=%v reached=%v, want no lines and %v", lines, reached, expected)
 	}
 }
