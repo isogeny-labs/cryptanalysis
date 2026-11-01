@@ -26,10 +26,10 @@ m = [pc["test"]["mean"], pc["posctl_r1"]["mean"], r["holdout_top_by_screen"]["me
 e = [2*pc["test"]["se"], 2*pc["posctl_r1"]["se"], 2*r["holdout_top_by_screen"]["se"]]
 ax[2].bar(range(3), m, yerr=e, color=["#999999", "#0072b2", "#d55e00"], capsize=4)
 ax[2].set_xticks(range(3), names, fontsize=8); ax[2].set_ylabel("mean held-out MN score (±2 SE)")
-ax[2].set_title("The instrument sees rank; the top screen curves show none")
+ax[2].set_title("Instrument sees rank; top screen curves do not")
 fig.tight_layout(); fig.savefig("figure.svg"); fig.savefig("figure.png", dpi=130)
 with PdfPages("report.pdf") as pdf:
     pdf.savefig(fig)
     tf = plt.figure(figsize=(8.5, 11)); tf.text(0.06, 0.97, open("RESULT.md").read(), va="top",
-        family="monospace", fontsize=6.3, wrap=True); pdf.savefig(tf)
+        family="monospace", fontsize=6.0, wrap=True); pdf.savefig(tf)
 print("ok")

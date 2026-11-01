@@ -20,7 +20,7 @@ compute". Do (2) and (3) enrich anything beyond the score they filter on?
 
 ## Method
 
-- Screen score: Σ −a_ℓ(t) log ℓ / ℓ over the 76 primes 5–397, with bad
+- Screen score: Σ −a_l(t) log l / l over the 76 primes 5–397, with bad
   reduction contributing 0. "Top curves" are the top 10⁻⁵ of t = 1…10⁷
   (100 curves).
 - **Held-out control:** the same sum over the primes 401–1193, which are
@@ -57,7 +57,7 @@ Reproduce: `python3 run.py && python3 plot.py`. Single CPU core, Intel Xeon
 ## Interpretation
 
 - The pruning claim reproduces exactly on its own metric: 10.4× at keep 0.6.
-  That gain is circular, because each MN term depends only on t mod ℓ, so
+  That gain is circular, because each MN term depends only on t mod l, so
   keeping favourable residues raises the score by construction. It gives no
   enrichment on held-out primes, where the instrument provably detects rank.
 - Early abort is safe as a cost cut, but its recall only measures how well a
