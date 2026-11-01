@@ -36,6 +36,11 @@ PROTOCOL_TOOL = Path("/workspace/crypto-autoresearcher/tools/experiment_protocol
 PROTOCOL_SCHEMA = Path("/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json")
 EXPORT_SCHEMA = Path("/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json")
 RUNTIME_DEPENDENCY_MANIFEST = HERE / "runtime-dependencies-v5.json"
+PYTHON_PREFLIGHT = HERE / "python_preflight_v5.sh"
+PYTHON_BOOTSTRAP = HERE / "python_bootstrap_v5.py"
+PYTHON_CLOSURE = HERE / "python-bootstrap-closure-v5.sha256"
+DASH = Path("/bin/dash")
+SHA256SUM = Path("/usr/bin/sha256sum")
 ISOLATED = Path("/workspace/crypto/target/release/isolated_bench")
 PERFINDEX = REPO / "scripts/perf/perfindex.py"
 VALGRIND = Path("/workspace/.tools/valgrind/bin/valgrind")
@@ -183,6 +188,31 @@ def clean_env(*extra: str, path: str = BASE_PATH) -> list[str]:
     ]
 
 
+def closed_python_command(
+    target: Path, *arguments: str, profile: str = "base",
+) -> list[str]:
+    """Return an inherited-nothing, pre-import-verified Python invocation."""
+    if profile == "base":
+        path, extra = BASE_PATH, ()
+    elif profile == "wall-1":
+        path, extra = BASE_PATH, (
+            "RAYON_NUM_THREADS=1", "OMP_NUM_THREADS=1", "OPENBLAS_NUM_THREADS=1",
+        )
+    elif profile == "wall-4":
+        path, extra = BASE_PATH, (
+            "RAYON_NUM_THREADS=4", "OMP_NUM_THREADS=4", "OPENBLAS_NUM_THREADS=1",
+        )
+    elif profile == "callgrind-1":
+        path, extra = "/workspace/.tools/valgrind/bin:/usr/bin:/bin", (
+            "RAYON_NUM_THREADS=1", "OMP_NUM_THREADS=1", "OPENBLAS_NUM_THREADS=1",
+        )
+    else:
+        raise ValueError(f"unknown closed Python profile: {profile}")
+    return clean_env(*extra, path=path) + [
+        str(DASH), str(PYTHON_PREFLIGHT), profile, str(target), *arguments,
+    ]
+
+
 def wall_environment(threads: int) -> dict[str, str]:
     """The complete, inherited-nothing environment of a wall session."""
     return {
@@ -201,13 +231,10 @@ def wall_commands() -> list[dict[str, Any]]:
         output = RUN_ROOT / f"wall-{panel}/{language}/compare"
         isolation = RUN_ROOT / f"wall-{panel}/{language}/isolation.jsonl"
         argv = reserve_prefix(isolation, f"cpu-baseline-aa-v5-{session}")
-        argv += clean_env(
-            f"RAYON_NUM_THREADS={spec['threads']}", f"OMP_NUM_THREADS={spec['threads']}",
-            "OPENBLAS_NUM_THREADS=1",
-        ) + [
-            str(PYTHON), str(RUNNER), "wall-session", "--session", session,
-            "--out", str(output),
-        ]
+        argv += closed_python_command(
+            RUNNER, "wall-session", "--session", session, "--out", str(output),
+            profile=f"wall-{spec['threads']}",
+        )
         commands.append({"id": session, "argv": argv, "timeout_seconds": ATTEMPT_TIMEOUT_SECONDS})
     return commands
 
@@ -222,14 +249,10 @@ def callgrind_commands() -> list[dict[str, Any]]:
             isolation = RUN_ROOT / f"profiles/callgrind/{stem}.isolation.jsonl"
             output = RUN_ROOT / f"profiles/callgrind/{stem}"
             argv = reserve_prefix(isolation, f"cpu-baseline-aa-v5-callgrind-{ordinal:03d}-{arm}")
-            argv += [str(TASKSET), "-c", "0"] + clean_env(
-                "RAYON_NUM_THREADS=1", "OMP_NUM_THREADS=1", "OPENBLAS_NUM_THREADS=1",
-                path="/workspace/.tools/valgrind/bin:/usr/bin:/bin",
-            ) + [
-                str(PYTHON), str(RUNNER),
-                "callgrind-one", "--binary", str(binary_for(kernel)),
-                "--kernel", kernel, "--out", str(output),
-            ]
+            argv += [str(TASKSET), "-c", "0"] + closed_python_command(
+                RUNNER, "callgrind-one", "--binary", str(binary_for(kernel)),
+                "--kernel", kernel, "--out", str(output), profile="callgrind-1",
+            )
             commands.append({
                 "ordinal": ordinal, "arm": arm, "kernel": kernel,
                 "output": str(output), "argv": argv,
@@ -918,7 +941,10 @@ def verify_bootstrap_identity(data: dict[str, Any]) -> None:
         item["path"]: item
         for item in data["extensions"]["cpu_baseline_aa_v5"]["required_files"]
     }
-    for path in (PYTHON, PROTOCOL_TOOL, PROTOCOL_SCHEMA, EXPORT_SCHEMA):
+    for path in (
+        PYTHON, PROTOCOL_TOOL, PROTOCOL_SCHEMA, EXPORT_SCHEMA,
+        PYTHON_PREFLIGHT, PYTHON_BOOTSTRAP, PYTHON_CLOSURE, DASH, SHA256SUM,
+    ):
         item = required.get(str(path))
         if item is None:
             raise RuntimeError(f"protocol validation bootstrap identity mismatch: {path}")
@@ -933,15 +959,15 @@ def validate_protocol(protocol: Path) -> dict[str, Any]:
     data = json.loads(protocol.read_text(encoding="utf-8"))
     verify_bootstrap_identity(data)
     subprocess.run(
-        [str(PYTHON), str(PROTOCOL_TOOL), "validate", str(protocol)],
+        closed_python_command(PROTOCOL_TOOL, "validate", str(protocol)),
         check=True, timeout=60,
     )
     freeze = data.get("freeze", {})
     if freeze.get("status") != "frozen" or not re.fullmatch(r"[0-9a-f]{64}", str(freeze.get("protocol_sha256"))):
         raise RuntimeError("v5 protocol is not canonically frozen")
     observed = subprocess.check_output(
-        [str(PYTHON), str(PROTOCOL_TOOL), "hash", str(protocol)], text=True,
-        timeout=60,
+        closed_python_command(PROTOCOL_TOOL, "hash", str(protocol)),
+        text=True, timeout=60,
     ).strip()
     if observed != freeze["protocol_sha256"]:
         raise RuntimeError("v5 protocol canonical hash mismatch")
@@ -1244,10 +1270,13 @@ def validate_finalization(
             or terminal_entries[0].get("sha256") != sha256(terminal_path)
         ):
             return False, "terminal outcome is absent or stale in the canonical export inventory"
-    checked = subprocess.run([
-        str(PYTHON), str(PROTOCOL_TOOL), "check-export", "--protocol",
-        str(protocol_path), "--verify-files", str(export_path),
-    ], cwd=RUN_ROOT, capture_output=True, text=True, timeout=60)
+    checked = subprocess.run(
+        closed_python_command(
+            PROTOCOL_TOOL, "check-export", "--protocol", str(protocol_path),
+            "--verify-files", str(export_path),
+        ),
+        cwd=RUN_ROOT, capture_output=True, text=True, timeout=60,
+    )
     if checked.returncode != 0:
         return False, f"independent canonical check-export failed: {checked.stderr[-1000:]}"
     return True, "validated"
@@ -1261,10 +1290,13 @@ def emit_terminal_analysis(protocol_path: Path) -> bool:
         write_system_snapshot_once("wall-after")
         write_identity_snapshot_once("campaign-after", protocol)
         write_system_snapshot_once("campaign-after")
-        completed = subprocess.run([
-            str(PYTHON), str(ANALYZER), "--protocol", str(protocol_path),
-            "--run-root", str(RUN_ROOT),
-        ], cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS)
+        completed = subprocess.run(
+            closed_python_command(
+                ANALYZER, "--protocol", str(protocol_path),
+                "--run-root", str(RUN_ROOT),
+            ),
+            cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS,
+        )
         if completed.returncode not in (0, 1):
             raise RuntimeError(f"analyzer exited {completed.returncode}")
         valid, reason = validate_finalization(
@@ -1326,10 +1358,13 @@ def execute_campaign(protocol_path: Path, protocol: dict[str, Any]) -> int:
             return 1
     write_identity_snapshot_once("wall-after", protocol)
     write_system_snapshot_once("wall-after")
-    gate = subprocess.run([
-        str(PYTHON), str(ANALYZER), "--protocol", str(protocol_path),
-        "--run-root", str(RUN_ROOT), "--wall-gate-only",
-    ], cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS)
+    gate = subprocess.run(
+        closed_python_command(
+            ANALYZER, "--protocol", str(protocol_path),
+            "--run-root", str(RUN_ROOT), "--wall-gate-only",
+        ),
+        cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS,
+    )
     if gate.returncode != 0:
         write_terminal_once("wall_gate_failed", returncode=gate.returncode)
         emit_terminal_analysis(protocol_path)
@@ -1356,10 +1391,13 @@ def execute_campaign(protocol_path: Path, protocol: dict[str, Any]) -> int:
         "schema": "cpu-baseline-aa-v5-finalization-request/v1",
         "status": "analysis_started", "started_at": utc_now(),
     })
-    analysis = subprocess.run([
-        str(PYTHON), str(ANALYZER), "--protocol", str(protocol_path),
-        "--run-root", str(RUN_ROOT),
-    ], cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS)
+    analysis = subprocess.run(
+        closed_python_command(
+            ANALYZER, "--protocol", str(protocol_path),
+            "--run-root", str(RUN_ROOT),
+        ),
+        cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS,
+    )
     valid, reason = validate_finalization(
         protocol_path, analysis.returncode, require_terminal=False,
     )
@@ -1532,10 +1570,13 @@ def command_finalize(options: argparse.Namespace) -> int:
         )
     if terminal.is_file():
         return 1 if emit_terminal_analysis(protocol_path) else 2
-    completed = subprocess.run([
-        str(PYTHON), str(ANALYZER), "--protocol", str(protocol_path),
-        "--run-root", str(RUN_ROOT),
-    ], cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS)
+    completed = subprocess.run(
+        closed_python_command(
+            ANALYZER, "--protocol", str(protocol_path),
+            "--run-root", str(RUN_ROOT),
+        ),
+        cwd=REPO, timeout=ATTEMPT_TIMEOUT_SECONDS,
+    )
     valid, reason = validate_finalization(
         protocol_path, completed.returncode, require_terminal=False,
     )

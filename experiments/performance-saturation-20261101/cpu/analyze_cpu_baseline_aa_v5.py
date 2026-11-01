@@ -120,13 +120,13 @@ def verify_protocol(path: Path) -> dict[str, Any]:
     protocol = load_json(path)
     runner.verify_bootstrap_identity(protocol)
     subprocess.run(
-        [str(runner.PYTHON), str(TOOL_PATH), "validate", str(path)],
+        runner.closed_python_command(TOOL_PATH, "validate", str(path)),
         check=True, timeout=60,
     )
     freeze = protocol["freeze"]
     observed = subprocess.check_output(
-        [str(runner.PYTHON), str(TOOL_PATH), "hash", str(path)], text=True,
-        timeout=60,
+        runner.closed_python_command(TOOL_PATH, "hash", str(path)),
+        text=True, timeout=60,
     ).strip()
     if freeze["status"] != "frozen" or observed != freeze["protocol_sha256"]:
         raise ValueError("protocol freeze/hash mismatch")
@@ -941,6 +941,21 @@ def validate_terminal_state(
                 break
         if first_failed is None or terminal.get("record") != first_failed:
             findings.append("wall_command_failed terminal does not bind the first nonzero planned receipt")
+    if status == "preflight_identity_blocked":
+        preflight_path = run_root / "orchestration/preflight.json"
+        try:
+            preflight = load_json(preflight_path)
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            findings.append(f"preflight_identity_blocked terminal lacks a valid preflight receipt: {error}")
+        else:
+            preflight_findings = preflight.get("findings")
+            if (
+                not isinstance(preflight_findings, list) or not preflight_findings
+                or terminal.get("findings") != preflight_findings
+            ):
+                findings.append(
+                    "preflight_identity_blocked terminal findings differ from the preflight receipt"
+                )
     return status if isinstance(status, str) else None, findings
 
 
@@ -1453,9 +1468,30 @@ def analyze_wall(
         or isolation_path(wall_plan[index - 1]).exists()
         for index, spec in enumerate(session_specs(run_root), 1)
     )
+    acquisition_paths = [
+        run_root / "orchestration/attempts",
+        run_root / "wall-1t",
+        run_root / "wall-4t",
+        run_root / "profiles",
+        run_root / "orchestration/perf-record-selection.json",
+        run_root / "orchestration/perf-record-command-plan.json",
+    ]
+    unexpected_acquisition = [
+        str(path.relative_to(run_root)) for path in acquisition_paths if path.exists()
+    ]
+    if preflight_blocked and unexpected_acquisition:
+        provenance_findings.append(
+            "blocked preflight has forbidden wall/profile acquisition evidence: "
+            + ", ".join(unexpected_acquisition)
+        )
+    if terminal_status == "preflight_identity_blocked" and not preflight_blocked:
+        provenance_findings.append(
+            "preflight_identity_blocked terminal lacks a causally matching blocked preflight"
+        )
     clean_preflight_block = (
         preflight_blocked and terminal_status == "preflight_identity_blocked"
-        and not wall_acquisition_started and not terminal_findings
+        and not wall_acquisition_started and not unexpected_acquisition
+        and not terminal_findings
     )
     if preflight_blocked and not clean_preflight_block:
         provenance_findings.append("blocked preflight lacks its clean zero-acquisition terminal state")
@@ -2120,10 +2156,13 @@ def main() -> int:
     if findings:
         raise ValueError("export validation failed:\n  " + "\n  ".join(findings))
     write_json_once(export_path, export)
-    subprocess.run([
-        str(runner.PYTHON), str(TOOL_PATH), "check-export", "--protocol",
-        str(protocol_path), "--verify-files", str(export_path),
-    ], check=True, cwd=run_root, timeout=60)
+    subprocess.run(
+        runner.closed_python_command(
+            TOOL_PATH, "check-export", "--protocol", str(protocol_path),
+            "--verify-files", str(export_path),
+        ),
+        check=True, cwd=run_root, timeout=60,
+    )
     scientific_returncode = 0 if wall_complete and orchestration_complete else 1
     finalization_path = run_root / "orchestration/finalization.json"
     finalization = {

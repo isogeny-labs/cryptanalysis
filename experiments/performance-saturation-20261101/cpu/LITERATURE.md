@@ -357,6 +357,23 @@ explicit host-class boundary. They are observed for stability but not
 individually content-pinned, which is another reason all clocks stay
 nonqualified and non-transferable.
 
+Python import verification is deliberately outside the code it protects.
+Every campaign, analyzer, and canonical-tool Python process begins under an
+exact `/usr/bin/env -i` and the bound `/bin/dash` verifier
+`python_preflight_v5.sh`. Its only executable trust roots are the separately
+hashed Python, dash, `sha256sum`, and verifier bytes. Before Python starts, it
+checks `python-bootstrap-closure-v5.sha256` and all 880 listed interpreter,
+stdlib, schema-package, schema-resource, runner, analyzer, and canonical-tool
+files. Python then starts with `-S -B -P` and
+`-X pycache_prefix=/dev/null`; `python_bootstrap_v5.py` rejects any different
+environment, startup path, cache policy, or target before adding the exact
+site-packages path. Thus site `.pth` code and ordinary `__pycache__` files are
+not executable inputs, and the normally searched `python312.zip` path must be
+absent. The external verifier is the explicit trust boundary; it avoids the
+circular claim that runner/analyzer imports could verify themselves after
+execution. System ELF loaders and DSOs remain part of the already
+nonqualified host-class boundary.
+
 Analysis is mechanically separate from acquisition. Derived files are
 atomically published and may be recomputed after a controller/host crash; raw
 receipts and acquired data are never resumed or overwritten. A `finalize`
@@ -373,3 +390,8 @@ one. The blocked fixture makes `perfindex.py` unavailable during analysis to
 prove that a failed measurement dependency is not also an export bootstrap.
 These tests execute no retained benchmark, profiler, registry command, or
 provider call and contribute no timing evidence.
+It also corrupts a synthetic pre-import dependency and requires the external
+verifier to stop before the Python router can execute, and it proves that a
+preflight-blocked verdict becomes invalid provenance if terminal findings do
+not exactly match the retained preflight or if any wall/profile acquisition
+path exists.

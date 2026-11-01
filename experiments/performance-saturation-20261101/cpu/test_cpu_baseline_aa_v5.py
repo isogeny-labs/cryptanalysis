@@ -176,10 +176,13 @@ def assert_canonical_export(test: unittest.TestCase, protocol_path: Path,
     export = analyzer.load_json(root / "export.json")
     test.assertEqual(analyzer.tool.schema_errors(export, "experiment.export/v1"), [])
     test.assertEqual(analyzer.tool.lint_export(export, protocol, root, True), [])
-    checked = subprocess.run([
-        str(runner.PYTHON), str(runner.PROTOCOL_TOOL), "check-export", "--protocol",
-        str(protocol_path), "--verify-files", str(root / "export.json"),
-    ], cwd=root, capture_output=True, text=True, timeout=60)
+    checked = subprocess.run(
+        runner.closed_python_command(
+            runner.PROTOCOL_TOOL, "check-export", "--protocol", str(protocol_path),
+            "--verify-files", str(root / "export.json"),
+        ),
+        cwd=root, capture_output=True, text=True, timeout=60,
+    )
     test.assertEqual(checked.returncode, 0, checked.stderr)
 
 
@@ -365,6 +368,10 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
         self.assertEqual({row["instance_id"] for row in seed_table}, set(runner.ALL_IDS))
         self.assertEqual(plan["export_seed_table"]["sha256"], runner.digest_value(seed_table))
         self.assertEqual(plan["digests"], runner.build_plan()["digests"])
+        for row in [*plan["wall"], *plan["callgrind"]]:
+            self.assertIn(str(runner.DASH), row["argv"])
+            self.assertIn(str(runner.PYTHON_PREFLIGHT), row["argv"])
+            self.assertNotIn(str(runner.PYTHON), row["argv"])
         for row in plan["callgrind"]:
             self.assertEqual(
                 analyzer.child_argv(row)[:4],
@@ -390,6 +397,45 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
         self.assertIn(
             "runtime dependency inventory differs from the frozen manifest", findings,
         )
+
+    def test_closed_python_preflight_rejects_preimport_tamper(self) -> None:
+        checked = subprocess.run(
+            runner.closed_python_command(
+                runner.PROTOCOL_TOOL, "hash", str(PROTOCOL_DRAFT),
+            ),
+            cwd=runner.REPO, capture_output=True, text=True, timeout=60,
+        )
+        self.assertEqual(checked.returncode, 0, checked.stderr)
+        self.assertRegex(checked.stdout.strip(), r"^[0-9a-f]{64}$")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            dependency = root / "dependency.py"
+            dependency.write_text("trusted = True\n", encoding="utf-8")
+            closure = root / "closure.sha256"
+            closure.write_text(
+                f"{digest(dependency)}  {dependency}\n", encoding="ascii",
+            )
+            source = runner.PYTHON_PREFLIGHT.read_text(encoding="utf-8")
+            source = source.replace(
+                f"manifest={runner.PYTHON_CLOSURE}", f"manifest={closure}",
+            ).replace(
+                "expected_manifest_sha256="
+                + digest(runner.PYTHON_CLOSURE),
+                "expected_manifest_sha256=" + digest(closure),
+            )
+            preflight = root / "preflight.sh"
+            preflight.write_text(source, encoding="utf-8")
+            dependency.write_text("trusted = False\n", encoding="utf-8")
+            failed = subprocess.run(
+                runner.clean_env() + [
+                    str(runner.DASH), str(preflight), "base",
+                    str(runner.PROTOCOL_TOOL), "hash", str(PROTOCOL_DRAFT),
+                ],
+                cwd=runner.REPO, capture_output=True, text=True, timeout=60,
+            )
+            self.assertNotEqual(failed.returncode, 0)
+            self.assertIn("did NOT match", failed.stderr)
+            self.assertNotIn("not allow-listed", failed.stderr)
 
     def test_callgrind_stream_binding_and_positive_selection(self) -> None:
         with self.assertRaises(ValueError):
@@ -785,6 +831,20 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                     "status": "preflight_identity_blocked", "finished_at": T1,
                     "continuation": "forbidden", "findings": findings,
                 })
+                terminal_path = root / "orchestration/terminal.json"
+                terminal = analyzer.load_json(terminal_path)
+                dump(terminal_path, {**terminal, "findings": []})
+                bad_gate, _, _, _ = analyzer.analyze_wall(root, protocol)
+                self.assertEqual(bad_gate["verdict"], "invalid_exactness_or_provenance")
+                dump(terminal_path, terminal)
+                unexpected_profile = root / "profiles/perf-stat/unexpected.csv"
+                unexpected_profile.parent.mkdir(parents=True)
+                unexpected_profile.write_text("forbidden\n", encoding="utf-8")
+                bad_gate, _, _, _ = analyzer.analyze_wall(root, protocol)
+                self.assertEqual(bad_gate["verdict"], "invalid_exactness_or_provenance")
+                unexpected_profile.unlink()
+                unexpected_profile.parent.rmdir()
+                unexpected_profile.parent.parent.rmdir()
                 runner.PERFINDEX = root / "deliberately-unavailable-perfindex.py"
                 self.assertEqual(invoke_analyzer(protocol_path, root), 1)
                 gate = analyzer.load_json(root / "analysis/wall-gate.json")
