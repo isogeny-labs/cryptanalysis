@@ -245,21 +245,27 @@ zeroes them before release:
   The host DP buffer is a `ScrubbedVec`.
 - `ecc2k130/src/ec2k_gpu.cu`: `Engine::scrubFree` in the destructor.
 - `gpu/certicom/cuda.cu`: `CcCudaBuffer` zeroes itself in its destructor.
+- `ecc2k130/runner` (`CudaEngine`, `PackedCudaEngine`): every device
+  allocation goes through a `DeviceScrubList`, which zeroes and frees it when
+  the engine is destroyed. A SIGINT/SIGTERM stop returns normally, so it is
+  covered too.
 
 What is still not covered:
 
-- `ecc2k130/runner/src/main.cu` (`CudaEngine`, `PackedCudaEngine`) never
-  frees its device buffers and relies on process exit, which does not clear
-  them either. It needs an explicit teardown before it can scrub.
-- The Metal backends (`ecc2k130/metal`, `ecc2k130/src/ec2k_metal.mm`,
-  `gpu/certicom/metal.mm`). macOS hands new processes zero-filled pages, but
-  threadgroup memory is what LeftoverLocals leaked on M1/M2-era Apple GPUs.
-  Keep macOS current, and don't run anything worth protecting next to
-  untrusted GPU code.
+- Metal needs nothing extra. Buffers on Apple's unified memory come from
+  pages the OS zero-fills for each new process, and none of the production
+  kernels (`ecc2k130/metal`, `ecc2k130/src/ec2k_metal.mm`,
+  `gpu/certicom/kernels.metal`) use threadgroup memory, which is what
+  LeftoverLocals leaked. Only the profiling and test shaders in
+  `metalprof.mm` and `metaltest.mm` do. A new Metal kernel that keeps walk
+  state in threadgroup memory should zero it before it returns.
 - Benchmarks and experiments under `ecc2k130/runner/research`,
   `experiments/` and `suite/cuda`.
-- A process killed with SIGKILL, or a driver reset, skips teardown, and checkpoints and logs on disk keep whatever they were
-given. For runs whose result is worth something, use a dedicated GPU (or a
+- A process killed with SIGKILL, a driver reset, or a `CUDA_CHECK` failure
+  (which calls `exit`) skips teardown.
+- Checkpoints and logs on disk keep whatever they were given.
+
+For runs whose result is worth something, use a dedicated GPU (or a
 MIG slice on A100/H100) rather than time-sliced or MPS sharing, keep
 profiling counters admin-only (`NVreg_RestrictProfilingToAdminUsers=1`, the
 default), and wipe checkpoint directories when the run ends.
