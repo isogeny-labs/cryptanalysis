@@ -237,13 +237,23 @@ func TestDeltaAndLog(t *testing.T) {
 func TestLogScansPreserveCopiesAcrossMultiplePeers(t *testing.T) {
 	_, ctx, _ := testJob(t, 9090)
 
-	var encoded []string
+	maxPeer := strings.Repeat("m", ca.PeerMax-1)
+	sharedPrefix := strings.Repeat("s", ca.PeerMax-2)
+	peers := []string{
+		maxPeer,
+		"a",
+		sharedPrefix + "x",
+		"b",
+		sharedPrefix + "y",
+	}
+	streams := make([][]string, 0, len(peers))
 	expected := ca.VersionVector{}
-	for _, peer := range []string{"a.0", "b.0"} {
+	for _, peer := range peers {
 		source, err := ca.NewState(ctx)
 		if err != nil {
 			t.Fatalf("source state: %v", err)
 		}
+		var stream []string
 		if _, err := ca.RunLane(ctx, source, ca.LaneParams{
 			Peer: peer, MaxWalkers: 8, CheckinEvery: 2,
 		}); err != nil {
@@ -256,25 +266,42 @@ func TestLogScansPreserveCopiesAcrossMultiplePeers(t *testing.T) {
 				source.Close()
 				t.Fatalf("source %s has no entry %d", peer, i)
 			}
-			encoded = append(encoded, entry.Line)
+			stream = append(stream, entry.Line)
 			if entry.Seq > expected[entry.Peer] {
 				expected[entry.Peer] = entry.Seq
 			}
 		}
+		streams = append(streams, stream)
 		source.Close()
 	}
-	if len(expected) != 2 {
-		t.Fatalf("fixture version vector has %d peers, want 2", len(expected))
+	if len(expected) != len(peers) {
+		t.Fatalf("fixture version vector has %d peers, want %d", len(expected), len(peers))
 	}
 
 	state, err := ca.NewState(ctx)
 	if err != nil {
 		t.Fatalf("state: %v", err)
 	}
-	for i := len(encoded) - 1; i >= 0; i-- {
-		if _, err := state.ApplyLine(encoded[i]); err != nil {
-			state.Close()
-			t.Fatalf("apply reversed entry %d: %v", i, err)
+	// Round-robin insertion makes every scan reuse one scratch buffer across
+	// alternating maximum-length, short, and shared-prefix peer names.  A key
+	// made directly from stale scratch bytes would split the short peers.
+	var encoded []string
+	for index := 0; ; index++ {
+		added := false
+		for streamIndex, stream := range streams {
+			if index >= len(stream) {
+				continue
+			}
+			line := stream[index]
+			if _, err := state.ApplyLine(line); err != nil {
+				state.Close()
+				t.Fatalf("apply stream %d entry %d: %v", streamIndex, index, err)
+			}
+			encoded = append(encoded, line)
+			added = true
+		}
+		if !added {
+			break
 		}
 	}
 	first, ok := state.LogAt(0)
@@ -295,11 +322,26 @@ func TestLogScansPreserveCopiesAcrossMultiplePeers(t *testing.T) {
 	}
 	allCopy := append([]string(nil), all...)
 
+	// Caller-supplied vector keys are arbitrary Go strings, whereas log peers
+	// are validated C peer names.  In particular, an embedded-NUL key must not
+	// alias the valid short peer when the transient scan key is constructed.
+	foreign := ca.VersionVector{"a\x00": ^uint64(0)}
+	foreignLines, foreignReached := state.DeltaSince(foreign)
+	wantForeignReached := ca.VersionVector{"a\x00": ^uint64(0)}
+	for peer, seq := range expected {
+		wantForeignReached[peer] = seq
+	}
+	if len(foreignLines) != len(encoded) || !reflect.DeepEqual(foreignReached, wantForeignReached) {
+		state.Close()
+		t.Fatalf("foreign-key delta: lines=%d/%d reached=%v want=%v",
+			len(foreignLines), len(encoded), foreignReached, wantForeignReached)
+	}
+
 	known := ca.VersionVector{}
 	for peer, seq := range expected {
 		known[peer] = seq
 	}
-	known["a.0"]--
+	known["a"]--
 	missing, reached := state.DeltaSince(known)
 	if len(missing) != 1 || !reflect.DeepEqual(reached, expected) {
 		state.Close()

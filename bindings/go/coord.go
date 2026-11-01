@@ -312,6 +312,12 @@ type logScanBuffers struct {
 	peer [PeerMax]byte
 }
 
+// peerScanKey is an owned, comparable copy of a peer name used only while a
+// log scan is in progress.  Constructing a fresh zero value for every lookup
+// canonicalizes the unused tail after a short name; the C copy buffer itself
+// is reused and may still contain bytes from a longer preceding name.
+type peerScanKey [PeerMax]byte
+
 // LogLen is the number of check-ins merged so far.
 func (s *State) LogLen() int {
 	s.mu.RLock()
@@ -367,7 +373,7 @@ func (s *State) VersionVector() VersionVector {
 	if s.ptr == nil {
 		return vv
 	}
-	peers := map[string]string{}
+	peers := map[peerScanKey]string{}
 	var buffers logScanBuffers
 	// The log is append-only.  Fixing n while the lifetime lock is held gives
 	// this call one immutable prefix; concurrent ApplyLine calls may append
@@ -397,10 +403,9 @@ func (s *State) DeltaSince(vv VersionVector) ([]string, VersionVector) {
 	defer s.mu.RUnlock()
 	var out []string
 	reached := VersionVector{}
-	peers := make(map[string]string, len(vv))
+	peers := make(map[peerScanKey]string, len(vv))
 	for peer, seq := range vv {
 		reached[peer] = seq
-		peers[peer] = peer
 	}
 	if s.ptr == nil {
 		return out, reached
@@ -433,10 +438,7 @@ func (s *State) DeltaFrom(vv VersionVector) []string {
 	if s.ptr == nil {
 		return out
 	}
-	peers := make(map[string]string, len(vv))
-	for peer := range vv {
-		peers[peer] = peer
-	}
+	peers := make(map[peerScanKey]string, len(vv))
 	var buffers logScanBuffers
 	n := int(C.ca_coord_log_count(s.ptr))
 	for i := 0; i < n; i++ {
@@ -504,12 +506,14 @@ func nulPrefix(b []byte) []byte {
 	return b
 }
 
-func internPeer(peers map[string]string, peer []byte) string {
-	if name, ok := peers[string(peer)]; ok {
+func internPeer(peers map[peerScanKey]string, peer []byte) string {
+	var key peerScanKey
+	copy(key[:], peer)
+	if name, ok := peers[key]; ok {
 		return name
 	}
 	name := string(peer)
-	peers[name] = name
+	peers[key] = name
 	return name
 }
 
