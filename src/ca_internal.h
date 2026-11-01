@@ -88,6 +88,125 @@ static inline uint64_t ca_mix64(uint64_t x)
     return x;
 }
 
+/* ---- the EC walk step, shared by group_ec.c and rho.c ------------------ */
+struct ca_group;
+/* Points of a ca_group_ec_init group are w[0] = x, w[1] = y in Montgomery
+ * form and w[2] = 1 at infinity (group_ec.c).  The rho walk reads these
+ * through the group's vtable in general; for the native EC group it calls
+ * the two helpers below directly (ec_hash and ec_canonicalize are these
+ * same functions, so every value agrees) and its batched step adds the
+ * table entries where they lie instead of copying them first. */
+
+/* ec_hash: equal points hash equal; the walk's index and distinguished-
+ * point test read it. */
+static inline uint64_t ca_ec_hash_words(uint64_t x, uint64_t y, uint64_t inf)
+{
+    if (inf) return 0x9e3779b97f4a7c15ULL;
+    return ca_mix64(x * 0x9E3779B97F4A7C15ULL ^ ca_mix64(y));
+}
+
+/* ec_canonicalize: the representative of {P, -P} with the smaller Montgomery
+ * y; 1 when y was replaced by p - y.  The comparison is a coin flip on walk
+ * data, so the result is selected rather than branched on.  y == 0 gives
+ * p - y = p > y and no flip, so it needs no test of its own; the point at
+ * infinity is left as it is. */
+static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
+{
+    uint64_t yy = *y, ny = p - yy;
+    uint64_t flip = (uint64_t)(ny < yy) & (uint64_t)(inf == 0);
+    *y = flip ? ny : yy;
+    return (int)flip;
+}
+
+/* Whether g is the native E(F_p) group of ca_group_ec_init (not a user
+ * group of the same kind), so that the helpers here describe it. */
+int ca_ec_group_is_native(const struct ca_group *g);
+
+/* The field constants the affine group law reads, copied out of the group
+ * once per batch.  The stores of a batch (points, denominators, products)
+ * are all uint64_t lvalues, so through the group pointer the compiler would
+ * have to assume each may overwrite p or the Montgomery context and reload
+ * them, recomputing p^{-1}, at every multiplication. */
+typedef struct ca_ec_consts {
+    uint64_t p;      /* the modulus */
+    uint64_t npi;    /* p^{-1} mod 2^64, which is -ca_mont.pinv */
+    uint64_t a_mont; /* the curve coefficient a in Montgomery form */
+    uint64_t one;    /* 1 in Montgomery form */
+} ca_ec_consts;
+ca_ec_consts ca_ec_consts_of(const struct ca_group *g);
+
+/* Montgomery product with the modulus and p^{-1} in registers: the
+ * reduction of ca_mont_redc, so the same residue. */
+static inline uint64_t ca_ec_bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+{
+    ca_u128 t = (ca_u128)a * b;
+    uint64_t u = (uint64_t)t * pinv_pos;
+    uint64_t hi = (uint64_t)(t >> 64);
+    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
+    uint64_t rr = hi - mh;
+    if (hi < mh) rr += p;
+    return rr;
+}
+
+/* The denominator the affine law a + b inverts: x_b - x_a, or 2 y_a for a
+ * doubling, or 1 when no inversion is needed (a point at infinity, an
+ * inverse pair), so that Montgomery's trick can invert a batch of them with
+ * one field inversion.  No field multiplication is counted here. */
+static inline uint64_t ca_ec_add_den(const ca_ec_consts *c, const ca_elem *a, const ca_elem *b)
+{
+    if (a->w[2] || b->w[2]) return c->one;
+    if (a->w[0] == b->w[0]) {
+        if (a->w[1] == b->w[1] && a->w[1] != 0) return ca_addmod(a->w[1], a->w[1], c->p);
+        return c->one;
+    }
+    return ca_submod(b->w[0], a->w[0], c->p);
+}
+
+/* r = a + b given di, the inverse of ca_ec_add_den(c, a, b): the affine
+ * group law with its special cases (the same points ca_group_op gives), its
+ * multiplications and squarings counted as ec_batch_op counts them.  r may
+ * alias a or b. */
+static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                     const ca_elem *b, uint64_t di)
+{
+    if (a->w[2]) {
+        *r = *b;
+        return;
+    }
+    if (b->w[2]) {
+        *r = *a;
+        return;
+    }
+    const uint64_t P = c->p, NPI = c->npi;
+    const uint64_t ax = a->w[0], ay = a->w[1], bx = b->w[0], by = b->w[1];
+    uint64_t lam;
+    if (ax == bx) {
+        if (ay == by && ay != 0) {
+            CA_FC_ADD(CA_FC_SQR, 1);
+            uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+            uint64_t num = ca_addmod(ca_addmod(ca_addmod(x2, x2, P), x2, P), c->a_mont, P);
+            CA_FC_ADD(CA_FC_MUL, 1);
+            lam = ca_ec_bmul(num, di, P, NPI);
+        } else {
+            r->w[0] = r->w[1] = 0; /* the point at infinity */
+            r->w[2] = 1;
+            r->w[3] = 0;
+            return;
+        }
+    } else {
+        CA_FC_ADD(CA_FC_MUL, 1);
+        lam = ca_ec_bmul(ca_submod(by, ay, P), di, P, NPI);
+    }
+    CA_FC_ADD(CA_FC_SQR, 1);
+    uint64_t x3 = ca_submod(ca_submod(ca_ec_bmul(lam, lam, P, NPI), ax, P), bx, P);
+    CA_FC_ADD(CA_FC_MUL, 1);
+    uint64_t y3 = ca_submod(ca_ec_bmul(lam, ca_submod(ax, x3, P), P, NPI), ay, P);
+    r->w[0] = x3;
+    r->w[1] = y3;
+    r->w[2] = 0;
+    r->w[3] = 0;
+}
+
 /* ---- open addressing hash table: u64 key to two u64 values ------------- */
 typedef struct ca_htab_entry {
     uint64_t key; /* 0 = empty */
