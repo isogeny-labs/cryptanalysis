@@ -24,7 +24,7 @@ use clap::{Args, Parser, Subcommand};
 use serde_json::{json, Value};
 
 use crate::cryptanalysis::curve_catalog::{self, CatalogCurve, Family};
-use crate::cryptanalysis::{ic_engine, xedni};
+use crate::cryptanalysis::{ic_engine, xedni, xedni_lift};
 
 #[derive(Parser)]
 #[command(
@@ -61,6 +61,8 @@ enum Action {
     Estimate(EstimateArgs),
     /// Audit xedni lift applicability and evidence gates by curve family.
     Xedni(XedniArgs),
+    /// Optimize one certified prime-field xedni coefficient-lift coset.
+    XedniLift(XedniLiftArgs),
     /// Run the index-calculus pipeline on the curve (or a same-family analogue).
     Run(RunArgs),
     /// Solve a quadratic Boolean system with the FES kernel (CPU or GPU worker).
@@ -156,6 +158,20 @@ struct XedniArgs {
     /// Restrict a catalog-wide audit to prime | binary | koblitz | extension | char3.
     #[arg(long)]
     family: Option<String>,
+}
+
+#[derive(Args)]
+struct XedniLiftArgs {
+    /// JSON file containing decimal-string particular, directions,
+    /// exact_constraints, and congruence_modulus fields.
+    #[arg(long)]
+    input: std::path::PathBuf,
+    /// Exact-search distance around each Babai coefficient.
+    #[arg(long, default_value_t = 2)]
+    radius: i64,
+    /// Hard cap on exact discriminant evaluations.
+    #[arg(long, default_value_t = 50_000)]
+    max_candidates: usize,
 }
 
 fn provenance() -> Value {
@@ -320,6 +336,33 @@ fn xedni_cmd(args: &XedniArgs) -> Result<Value, String> {
         "scope": "structural applicability and literature gates; no attack execution or performance claim",
         "count": assessments.len(),
         "assessments": assessments,
+    }))
+}
+
+fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
+    let bytes =
+        std::fs::read(&args.input).map_err(|e| format!("read {}: {e}", args.input.display()))?;
+    let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
+        .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
+    let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
+    let result = xedni_lift::optimize_weierstrass_lift(
+        &problem,
+        xedni_lift::LiftSearchOptions {
+            neighborhood_radius: args.radius,
+            max_candidates: args.max_candidates,
+        },
+    )?;
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "xedni-lift",
+        "status": "complete",
+        "scope": "prime-field xedni Steps 7-9 coefficient-coset optimization; no dependence or ECDLP success claim",
+        "input": args.input,
+        "search": {
+            "radius": args.radius,
+            "max_candidates": args.max_candidates,
+        },
+        "result": result,
     }))
 }
 
@@ -583,6 +626,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::Inspect(a)) => inspect(&a.curve),
         Some(Action::Estimate(a)) => estimate(a),
         Some(Action::Xedni(a)) => xedni_cmd(a),
+        Some(Action::XedniLift(a)) => xedni_lift_cmd(a),
         Some(Action::Run(a)) => run_cmd(a, cli.json),
         Some(Action::Fes(a)) => fes_cmd(a),
         None => {

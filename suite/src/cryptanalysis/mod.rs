@@ -258,6 +258,7 @@ pub mod weak_curves;
 pub mod weil_charts;
 pub mod wide_groebner;
 pub mod xedni;
+pub mod xedni_lift;
 
 pub use aut_folded_rho::{
     apply_aut, aut_folded_rho_dlp, canonical_form, AutElt, FoldedRhoOptions, FoldedRhoSolution,
