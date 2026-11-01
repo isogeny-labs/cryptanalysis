@@ -1,0 +1,42 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-http-rtx5090-geometry-v10.json",
+  "protocol_sha256": "22f0c1801cfadaaa4b33e20d2edcb6850402af41468788efb03e7b8786155388",
+  "protocol_file_sha256": "976746dabd10710bbdaa33b8b4f02d1bab204ccdf24d1dba3930b8adad4a8869",
+  "registration_commit": "b42b654d15419db9073d43d591c1deb0e9d151b4",
+  "freeze_commit": "978eff3564bc41c7db9160cd71597bf240fc2975",
+  "classification": "incomplete_session/build_failure_before_data",
+  "identified": "2026-11-01",
+  "run_id": "gpu-geometry-http-rtx5090-v10-20261101T232919Z-48f5c7c8",
+  "reason": "The registered build-closure archive contained suite, bindings/rust, include, and src but omitted the top-level cuda directory. The archived src/gpu_internal.h includes ../cuda/ca_device.cuh, so the baseline cryptanalysis-sys C compilation failed before the candidate build, warmups, measurements, or profiling.",
+  "provider_actions": true,
+  "provider_create_attempts": 1,
+  "pods_created": 1,
+  "pod_id": "trzi1rh8idg3el",
+  "cleanup": {
+    "delete_requested": true,
+    "absence_verified": true
+  },
+  "runner_returncode": 101,
+  "terminal_verdict": "incomplete_session",
+  "export_written": false,
+  "scientific_rows": 0,
+  "timing_rows_reused": 0,
+  "claims_admitted": [],
+  "retained_diagnostics": {
+    "receipt_path": "http-receipts/gpu-geometry-http-rtx5090-v10-20261101T232919Z-48f5c7c8.json",
+    "receipt_sha256": "51e189a1c66f4fde148c75b88d5d5bd567eb8c44dd75a3394f328e8751ec4275",
+    "archive_path": "http-receipts/gpu-geometry-http-rtx5090-v10-20261101T232919Z-48f5c7c8.result.tar.gz",
+    "archive_sha256": "8984fa141ac3789ce60971900d55248f2960a024b5bc8f6124b1c3edde732118",
+    "terminal_verdict_path": "final-verdicts/gpu-geometry-http-rtx5090-v10-20261101T232919Z-48f5c7c8.json",
+    "terminal_verdict_sha256": "529cb9f1e2a465d76cdaf809d23eccff0fc41ec35f905edb16b334e80f18a9bc",
+    "build_log_path": "runs-http/gpu-geometry-http-rtx5090-v10-20261101T232919Z-48f5c7c8/build.log",
+    "build_log_sha256": "41547e43836901a2070c4a27f9d347428d46040ae7eb14538582327da6fe5bde",
+    "archive_members_including_manifest": 19,
+    "manifest_and_receipt_rows_excluding_manifest": 18,
+    "archive_uncompressed_bytes": 42481
+  },
+  "replacement": "protocol-http-rtx5090-geometry-v11.json",
+  "correction": "Prospectively register and freeze a new version whose exact candidate build closure includes the full transitive compile-time inputs, including top-level cuda and challenges, whose archive identity is rebound, and whose pre-allocation checks clean-build the extracted closure. V10 remains immutable and must not be replayed.",
+  "scientific_design_change": false
+}
