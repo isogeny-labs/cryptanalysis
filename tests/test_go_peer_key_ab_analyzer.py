@@ -7,6 +7,7 @@ import json
 import math
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -626,7 +627,33 @@ class BindingTests(unittest.TestCase):
     def test_failed_row_export_is_not_completed_and_wall_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            source_commit = "14a6278c9fb470e379c7bdd9d17cf179acde04d5"
+            protocol_path = root / "protocol.v9.json"
+            shutil.copy2(GO_DIR / "protocol.v9.json", protocol_path)
+            frozen = subprocess.run(
+                [
+                    "python3",
+                    "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+                    "freeze",
+                    str(protocol_path),
+                    "--commit",
+                    source_commit,
+                    "--filed-before-affected-data",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(frozen.returncode, 0, frozen.stdout)
+            protocol_sha = json.loads(protocol_path.read_text())["freeze"]["protocol_sha256"]
             run, rows, _ = schedule_fixture(root)
+            manifest_path = run / "campaign/manifest.json"
+            campaign_manifest = json.loads(manifest_path.read_text())
+            campaign_manifest["protocol_sha256"] = protocol_sha
+            write_json(manifest_path, campaign_manifest)
+            for row in rows:
+                row["protocol_sha256"] = protocol_sha
             failed = rows[0]
             failed.update(
                 {
@@ -639,7 +666,8 @@ class BindingTests(unittest.TestCase):
                     },
                 }
             )
-            write_json(run / "campaign" / failed["artifacts"]["metadata"], failed)
+            for row in rows:
+                write_json(run / "campaign" / row["artifacts"]["metadata"], row)
             rows_path = run / "campaign/rows.jsonl"
             rows_path.write_text(
                 "".join(json.dumps(item, sort_keys=True) + "\n" for item in rows),
@@ -647,10 +675,10 @@ class BindingTests(unittest.TestCase):
             )
             summary_path = run / "campaign/summary.json"
             summary = json.loads(summary_path.read_text())
+            summary["protocol_sha256"] = protocol_sha
             summary["failures"] = 1
             summary["rows_sha256"] = SHARED.sha256(rows_path)
             write_json(summary_path, summary)
-            source_commit = "c" * 40
             build_dir = run / "build"
             build_dir.mkdir()
             names = {
@@ -710,10 +738,27 @@ class BindingTests(unittest.TestCase):
             )
             write_json(run / "isolation.json", {"timing_valid": False})
             output = run / "campaign/export.json"
-            export = EXPORTER.produce(run, "f" * 64, source_commit, output)
+            export = EXPORTER.produce(run, protocol_sha, source_commit, output)
             EXPORTER.validate(export, output)
+            EXPORTER.write_once(output, export)
+            canonical = subprocess.run(
+                [
+                    "python3",
+                    "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+                    "check-export",
+                    str(output),
+                    "--protocol",
+                    str(protocol_path),
+                    "--verify-files",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(canonical.returncode, 0, canonical.stdout)
             exported = next(item for item in export["runs"] if item["run_id"] == failed["run_id"])
-            self.assertEqual(exported["status"], "failed")
+            self.assertEqual(exported["status"], "infra_error")
             self.assertEqual(exported["outcome_class"], "not_completed")
             self.assertEqual(exported["verification"]["status"], "not_run")
             self.assertFalse(exported["measurements"]["wall_valid"])

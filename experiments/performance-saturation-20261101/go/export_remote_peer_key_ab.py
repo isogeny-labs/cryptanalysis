@@ -107,6 +107,8 @@ def row_status(row: dict[str, Any]) -> str:
         return "timeout"
     if row.get("status") == "completed" and row.get("exit_status") == 0:
         return "succeeded"
+    if row.get("status") == "not_completed" or row.get("outcome_class") == "instrument_error":
+        return "infra_error"
     return "failed"
 
 
@@ -266,7 +268,7 @@ def make_run(
         "replicate": export_replicate,
         "warmup": bool(row["warmup"]),
         "status": status,
-        "outcome_class": "completed" if status == "succeeded" else "not_completed",
+        "outcome_class": "completed" if status in {"succeeded", "failed"} else "not_completed",
         "attempts": 1,
         "resumed": 0,
         "checkpoint": None,
@@ -333,6 +335,8 @@ def produce(
     ]
     build = load_json(run / "build" / "manifest.json")
     isolation = load_json(run / "isolation.json")
+    campaign_manifest = load_json(campaign / "manifest.json")
+    campaign_summary = load_json(campaign / "summary.json")
     if len(rows) != EXPECTED_ROWS:
         raise ValueError(f"expected {EXPECTED_ROWS} rows, got {len(rows)}")
     if [row.get("sequence") for row in rows] != list(range(1, EXPECTED_ROWS + 1)):
@@ -341,6 +345,15 @@ def produce(
         raise ValueError("measured row count mismatch")
     if sum(row["warmup"] for row in rows) != EXPECTED_WARMUPS:
         raise ValueError("warmup row count mismatch")
+    if (
+        campaign_manifest.get("protocol_sha256") != protocol_sha256
+        or campaign_summary.get("protocol_sha256") != protocol_sha256
+        or campaign_manifest.get("phase") != "fixed-peer-key-ab-aa-v9"
+        or campaign_summary.get("phase") != "fixed-peer-key-ab-aa-v9"
+        or campaign_manifest.get("cases") != CASES
+        or any(row.get("protocol_sha256") != protocol_sha256 for row in rows)
+    ):
+        raise ValueError("campaign protocol/phase/case binding mismatch")
     for row, planned in zip(rows, expected_schedule(), strict=True):
         if any(row.get(key) != value for key, value in planned.items()):
             raise ValueError(f"row schedule mismatch at sequence {planned['sequence']}")
