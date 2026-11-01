@@ -90,11 +90,15 @@ The implementation is in
 
 ## Validation
 
-Validated on 2026-11-01 with the stable Rust 1.99 toolchain:
+Validated on 2026-11-01 against the merged current-`main` head with the stable
+Rust 1.99 toolchain:
 
-- `cargo fmt --all -- --check`: passed.
+- `rustfmt --check` on the four touched Rust files: passed. The repository-wide
+  `cargo fmt --all -- --check` reaches a pre-existing ordering difference in
+  untouched `suite/src/cli/tools/ic/bench.rs`, which is identical to
+  `origin/main`.
 - `cargo clippy --all-targets -- -D warnings`: passed.
-- `cargo test --release --lib`: 3,164 passed, 0 failed, 92 ignored.
+- `cargo test --release --lib`: 3,046 passed, 0 failed, 90 ignored.
 - The three xedni unit controls passed in release mode.
 - Two `ca-icx` xedni integration controls passed in release mode.
 - Direct `ca-icx xedni --json` checks confirmed minimum global-field degrees
