@@ -6,8 +6,8 @@ use std::time::Instant;
 
 use cryptanalysis::{Elem, Group, Kind};
 use cudarc::driver::{
-    CudaContext, CudaFunction, CudaModule, CudaStream, DevicePtr, DevicePtrMut, LaunchConfig,
-    PushKernelArg,
+    CudaContext, CudaFunction, CudaModule, CudaSlice, CudaStream, DevicePtr, DevicePtrMut,
+    DeviceRepr, LaunchConfig, PushKernelArg, ValidAsZeroBits,
 };
 
 use crate::args::{GpuRhoArgs, KIND_EC, KIND_ZP};
@@ -16,6 +16,61 @@ use crate::error::{Error, Result};
 use crate::kernel::{self, PtxSource};
 use crate::plan::{Params, Plan};
 use crate::{probe, Stats, WALKS_PER_THREAD};
+
+/// A device buffer that is zeroed before cudarc frees it.
+///
+/// The driver does not clear freed device memory, and the next process on a
+/// shared or rented GPU can be handed the same pages.  Walk state,
+/// coefficients and distinguished points are what a logarithm is rebuilt
+/// from, so they are overwritten on every exit path, including `?` early
+/// returns.  The memset is queued on the stream the slice was allocated on,
+/// which is also the stream its `Drop` frees on, so it lands first.
+struct Scrubbed<T: DeviceRepr + ValidAsZeroBits> {
+    stream: Arc<CudaStream>,
+    buf: CudaSlice<T>,
+}
+
+impl<T: DeviceRepr + ValidAsZeroBits> Scrubbed<T> {
+    fn new(stream: &Arc<CudaStream>, buf: CudaSlice<T>) -> Self {
+        Scrubbed {
+            stream: Arc::clone(stream),
+            buf,
+        }
+    }
+}
+
+impl<T: DeviceRepr + ValidAsZeroBits> std::ops::Deref for Scrubbed<T> {
+    type Target = CudaSlice<T>;
+    fn deref(&self) -> &CudaSlice<T> {
+        &self.buf
+    }
+}
+
+impl<T: DeviceRepr + ValidAsZeroBits> std::ops::DerefMut for Scrubbed<T> {
+    fn deref_mut(&mut self) -> &mut CudaSlice<T> {
+        &mut self.buf
+    }
+}
+
+impl<T: DeviceRepr + ValidAsZeroBits> Drop for Scrubbed<T> {
+    fn drop(&mut self) {
+        // Teardown must not fail; a memset error leaves only the free.
+        let _ = self.stream.memset_zeros(&mut self.buf);
+    }
+}
+
+/// Host copy of the distinguished points, zeroed when it goes out of scope.
+struct ScrubbedVec(Vec<u64>);
+
+impl Drop for ScrubbedVec {
+    fn drop(&mut self) {
+        for w in self.0.iter_mut() {
+            // SAFETY: `w` is a valid, aligned &mut u64; the volatile write
+            // keeps the compiler from eliding stores to memory about to be freed.
+            unsafe { std::ptr::write_volatile(w, 0) };
+        }
+    }
+}
 
 /// The number of usable CUDA devices, or 0 when there is no driver.
 ///
@@ -217,17 +272,20 @@ impl CudaRho {
         // ---- device buffers ----------------------------------------------
         let nwalks = plan.nwalks as usize;
         let stream = &self.stream;
-        let d_mult = stream.memcpy_stod(&mult)?;
-        let mut d_state = stream.alloc_zeros::<u64>(nwalks * 4)?;
-        let mut d_aux = stream.alloc_zeros::<u64>(nwalks * crate::AUX_WORDS)?;
-        let mut d_dp = stream.alloc_zeros::<u64>(plan.dp_cap as usize * 4)?;
-        let mut d_count = stream.alloc_zeros::<u32>(1)?;
-        let mut d_restart = stream.alloc_zeros::<u8>(nwalks)?;
+        let d_mult = Scrubbed::new(stream, stream.clone_htod(&mult)?);
+        let mut d_state = Scrubbed::new(stream, stream.alloc_zeros::<u64>(nwalks * 4)?);
+        let mut d_aux = Scrubbed::new(
+            stream,
+            stream.alloc_zeros::<u64>(nwalks * crate::AUX_WORDS)?,
+        );
+        let mut d_dp = Scrubbed::new(stream, stream.alloc_zeros::<u64>(plan.dp_cap as usize * 4)?);
+        let mut d_count = Scrubbed::new(stream, stream.alloc_zeros::<u32>(1)?);
+        let mut d_restart = Scrubbed::new(stream, stream.alloc_zeros::<u8>(nwalks)?);
 
         // Every walk is seeded on the first launch.
         let mut h_restart = vec![1u8; nwalks];
         let mut restart_dirty = true;
-        let mut h_dp = vec![0u64; plan.dp_cap as usize * 4];
+        let mut h_dp = ScrubbedVec(vec![0u64; plan.dp_cap as usize * 4]);
 
         let cfg = LaunchConfig {
             grid_dim: (plan.blocks, 1, 1),
@@ -244,11 +302,11 @@ impl CudaRho {
 
         loop {
             if restart_dirty {
-                stream.memcpy_htod(&h_restart, &mut d_restart)?;
+                stream.memcpy_htod(&h_restart, &mut *d_restart)?;
                 h_restart.fill(0);
                 restart_dirty = false;
             }
-            stream.memset_zeros(&mut d_count)?;
+            stream.memset_zeros(&mut *d_count)?;
 
             {
                 // Device pointers are stable for the lifetime of the
@@ -282,7 +340,7 @@ impl CudaRho {
 
             // The copies below are enqueued on the stream, so synchronise
             // before touching the host buffers.
-            let counts = stream.memcpy_dtov(&d_count)?;
+            let counts = stream.clone_dtoh(&*d_count)?;
             stream.synchronize()?;
             let mut count = counts[0];
             if count > plan.dp_cap {
@@ -291,13 +349,13 @@ impl CudaRho {
             let words = count as usize * 4;
             if words > 0 {
                 let view = d_dp.slice(0..words);
-                stream.memcpy_dtoh(&view, &mut h_dp[..words])?;
+                stream.memcpy_dtoh(&view, &mut h_dp.0[..words])?;
                 stream.synchronize()?;
             }
             dps_total += u64::from(count);
 
             // Four words per distinguished point: hash, a, b, walk id.
-            for &[h, da, db, walk] in h_dp[..words].as_chunks::<4>().0 {
+            for &[h, da, db, walk] in h_dp.0[..words].as_chunks::<4>().0 {
                 let wid = walk as u32;
                 match table.entry(h) {
                     std::collections::hash_map::Entry::Vacant(slot) => {

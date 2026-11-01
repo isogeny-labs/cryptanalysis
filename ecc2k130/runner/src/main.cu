@@ -454,6 +454,32 @@ struct RefEngine {
 // ---------------------------------------------------------------------------
 // device backend
 // ---------------------------------------------------------------------------
+// Every device allocation an engine makes, so teardown can zero it before
+// release.  The driver does not clear freed device memory (and process exit
+// does not either), and the next tenant of a shared or rented GPU can be
+// handed the same pages; lane state, seeds, history and distinguished points
+// are what a solution is rebuilt from.  cudaFree synchronises, so each memset
+// lands before its release.  Errors are ignored: teardown must still free.
+struct DeviceScrubList {
+    std::vector<std::pair<void *, size_t>> live;
+    DeviceScrubList() = default;
+    DeviceScrubList(const DeviceScrubList &) = delete;
+    DeviceScrubList &operator=(const DeviceScrubList &) = delete;
+    template <class T> cudaError_t alloc(T **p, size_t bytes)
+    {
+        const cudaError_t e = cudaMalloc((void **)p, bytes);
+        if (e == cudaSuccess) live.push_back({(void *)*p, bytes});
+        return e;
+    }
+    ~DeviceScrubList()
+    {
+        for (auto &a : live) {
+            (void)cudaMemset(a.first, 0, a.second);
+            cudaFree(a.first);
+        }
+    }
+};
+
 template <class Cfg>
 struct CudaEngine {
     typedef DeviceWord W;
@@ -463,6 +489,7 @@ struct CudaEngine {
     WalkParams<W> P;
     std::vector<DpRecord> staging;
     bool restartPending = false;
+    DeviceScrubList devMem; // owns and scrubs every cudaMalloc below
 
     // Bytes of device memory one walk thread needs: x, y and pchain are a field
     // element per slot, plus the per-lane bookkeeping.
@@ -517,15 +544,15 @@ struct CudaEngine {
         const size_t T = (size_t)o.threads;
         const size_t fw = T * BATCH * M * sizeof(W);
         const size_t lw = T * BATCH * LANES * sizeof(u64);
-        CUDA_CHECK(cudaMalloc(&P.x, fw));
-        CUDA_CHECK(cudaMalloc(&P.y, fw));
-        CUDA_CHECK(cudaMalloc(&P.pchain, fw));
-        CUDA_CHECK(cudaMalloc(&P.dead, T * BATCH * sizeof(W)));
+        CUDA_CHECK(devMem.alloc(&P.x, fw));
+        CUDA_CHECK(devMem.alloc(&P.y, fw));
+        CUDA_CHECK(devMem.alloc(&P.pchain, fw));
+        CUDA_CHECK(devMem.alloc(&P.dead, T * BATCH * sizeof(W)));
         CUDA_CHECK(cudaMemset(P.dead, 0, T * BATCH * sizeof(W)));
-        CUDA_CHECK(cudaMalloc(&P.seed, lw));
-        CUDA_CHECK(cudaMalloc(&P.startIter, lw));
-        CUDA_CHECK(cudaMalloc(&P.dp, (size_t)o.dpCap * sizeof(DpRecord)));
-        CUDA_CHECK(cudaMalloc(&P.dpCount, 3 * sizeof(unsigned)));
+        CUDA_CHECK(devMem.alloc(&P.seed, lw));
+        CUDA_CHECK(devMem.alloc(&P.startIter, lw));
+        CUDA_CHECK(devMem.alloc(&P.dp, (size_t)o.dpCap * sizeof(DpRecord)));
+        CUDA_CHECK(devMem.alloc(&P.dpCount, 3 * sizeof(unsigned)));
         CUDA_CHECK(cudaMemset(P.dpCount, 0, 3 * sizeof(unsigned)));
         cudaFuncAttributes attrs;
         CUDA_CHECK(cudaFuncGetAttributes(&attrs, eccWalkKernel<Cfg, W>));
@@ -536,7 +563,7 @@ struct CudaEngine {
                prop.multiProcessorCount, attrs.numRegs, attrs.localSizeBytes,
                attrs.sharedSizeBytes, (int)ECC_STREAM_KARAT, (int)o.preferL1);
         unsigned long long *dk;
-        CUDA_CHECK(cudaMalloc(&dk, 12 * sizeof(u64)));
+        CUDA_CHECK(devMem.alloc(&dk, 12 * sizeof(u64)));
         u64 hk[12];
         memcpy(hk + 0, cpx, 3 * sizeof(u64));
         memcpy(hk + 3, cpy, 3 * sizeof(u64));

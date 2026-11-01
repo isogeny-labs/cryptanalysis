@@ -5,9 +5,14 @@ inline void cc_cuda_check(cudaError_t rc)
 {
     if (rc != cudaSuccess) throw std::runtime_error(cudaGetErrorString(rc));
 }
+// Freed device memory is not cleared by the driver, and the next tenant of a
+// shared or rented GPU can be handed the same pages, so the destructor zeroes
+// the buffer before releasing it (cudaFree synchronises, so the memset lands
+// first; an error there is ignored because teardown must still free).
 struct CcCudaBuffer {
     void *p = nullptr;
-    explicit CcCudaBuffer(std::size_t n, const void *data = nullptr)
+    std::size_t bytes = 0;
+    explicit CcCudaBuffer(std::size_t n, const void *data = nullptr) : bytes(n)
     {
         cc_cuda_check(cudaMalloc(&p, n));
         if (data) {
@@ -21,7 +26,9 @@ struct CcCudaBuffer {
     }
     ~CcCudaBuffer()
     {
-        if (p) cudaFree(p);
+        if (!p) return;
+        (void)cudaMemset(p, 0, bytes);
+        cudaFree(p);
     }
     CcCudaBuffer(const CcCudaBuffer &) = delete;
     CcCudaBuffer &operator=(const CcCudaBuffer &) = delete;

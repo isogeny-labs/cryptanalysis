@@ -222,3 +222,50 @@ kernel is latency- rather than throughput-bound on small groups; the
 thread-count heuristic deliberately keeps walk start-up below
 `sqrt(n)/8`, which for small `n` leaves the device underused. Groups above
 about 2^48 are where a GPU is the right tool.
+
+## Side channels and leftover device memory
+
+This is attack code: the inputs are public group elements and the output
+is a logarithm that anyone running the walk could find. Constant-time
+kernels would protect nothing and would cost throughput, so the kernels
+branch and index on walk data freely. Keep it that way.
+
+What does matter on a shared or rented GPU is **leftover memory**. The
+driver does not clear device memory on free, and the next process on the
+device can be handed the same pages (compare LeftoverLocals,
+CVE-2023-4969, which leaked on-chip local memory between processes on
+Apple, AMD and Qualcomm GPUs). The walk coefficients, lane state and
+distinguished points are enough to rebuild a solution, so every backend
+zeroes them before release:
+
+- `cuda/gpu_cuda.c`: `cuda_scrub_free` for device buffers and
+  `host_scrub_free` for the host DP and restart copies.
+- `bindings/rust/cryptanalysis-cuda`: `Scrubbed<T>` wraps each
+  `CudaSlice` and zeroes it in `Drop`, so `?` early returns are covered.
+  The host DP buffer is a `ScrubbedVec`.
+- `ecc2k130/src/ec2k_gpu.cu`: `Engine::scrubFree` in the destructor.
+- `gpu/certicom/cuda.cu`: `CcCudaBuffer` zeroes itself in its destructor.
+- `ecc2k130/runner` (`CudaEngine`, `PackedCudaEngine`): every device
+  allocation goes through a `DeviceScrubList`, which zeroes and frees it when
+  the engine is destroyed. A SIGINT/SIGTERM stop returns normally, so it is
+  covered too.
+
+What is still not covered:
+
+- Metal needs nothing extra. Buffers on Apple's unified memory come from
+  pages the OS zero-fills for each new process, and none of the production
+  kernels (`ecc2k130/metal`, `ecc2k130/src/ec2k_metal.mm`,
+  `gpu/certicom/kernels.metal`) use threadgroup memory, which is what
+  LeftoverLocals leaked. Only the profiling and test shaders in
+  `metalprof.mm` and `metaltest.mm` do. A new Metal kernel that keeps walk
+  state in threadgroup memory should zero it before it returns.
+- Benchmarks and experiments under `ecc2k130/runner/research`,
+  `experiments/` and `suite/cuda`.
+- A process killed with SIGKILL, a driver reset, or a `CUDA_CHECK` failure
+  (which calls `exit`) skips teardown.
+- Checkpoints and logs on disk keep whatever they were given.
+
+For runs whose result is worth something, use a dedicated GPU (or a
+MIG slice on A100/H100) rather than time-sliced or MPS sharing, keep
+profiling counters admin-only (`NVreg_RestrictProfilingToAdminUsers=1`, the
+default), and wipe checkpoint directories when the run ends.
