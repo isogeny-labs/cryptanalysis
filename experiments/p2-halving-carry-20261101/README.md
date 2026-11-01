@@ -17,5 +17,5 @@ stable digest. `REFERENCE_REPLAY.json` pins the raw and deterministic-gzip
 hashes used for the replay.
 
 This is a scoped null for the frozen family, not a generic ECDLP or
-external-novelty claim. Store-class gzip/PNG bytes live only in the canonical
-crypto artifact store; this replay repo retains the editable SVG and PDF.
+external-novelty claim. Store-class gzip/PNG/PDF bytes live only in the
+canonical crypto artifact store; this replay retains Markdown and editable SVG.
