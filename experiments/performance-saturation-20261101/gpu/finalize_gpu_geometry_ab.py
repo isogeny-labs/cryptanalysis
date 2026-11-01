@@ -183,12 +183,17 @@ def terminal_verdict(judge: Judge, provisional: str | None) -> str:
 
 def expected_order() -> list[tuple[str, ...]]:
     rows: list[tuple[str, ...]] = []
+    arm_orders = {
+        0: ("baseline", "baseline-aa", "candidate"),
+        1: ("baseline", "candidate", "baseline-aa"),
+        2: ("baseline-aa", "candidate", "baseline"),
+        3: ("candidate", "baseline", "baseline-aa"),
+        4: ("baseline-aa", "baseline", "candidate"),
+        5: ("baseline", "baseline-aa", "candidate"),
+        6: ("candidate", "baseline-aa", "baseline"),
+    }
     for phase, round_index in [("warmup", 0), *[("measure", index) for index in range(1, 7)]]:
-        arms = (
-            ("baseline", "candidate", "baseline-aa")
-            if round_index % 2
-            else ("baseline-aa", "candidate", "baseline")
-        )
+        arms = arm_orders[round_index]
         for role, tag, cell, degree in WORKLOADS:
             for arm in arms:
                 rows.append((phase, str(round_index), tag, role, arm, f"{cell}:{degree}"))

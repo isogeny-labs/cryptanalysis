@@ -17,7 +17,7 @@ CANDIDATE_F4_SHA256="77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa
 PRODUCTION_DIFF_SHA256="34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
 F4_PATH="suite/src/cryptanalysis/f4_gpu.rs"
 TOOLING_REF="refs/heads/codex/runpod-http-gpu-geometry-v10-20261101"
-HISTORY_DEEPEN_COMMITS=16
+HISTORY_DEEPEN_COMMITS=32
 
 OUT_ARG=${1:?usage: run_gpu_geometry_ab.sh REPOSITORY_RELATIVE_OUT_ROOT SESSION_ID PROTOCOL_SHA256}
 SESSION_ID=${2:?missing session id}
@@ -356,11 +356,16 @@ run_matrix() {
 run_round() {
   local phase=$1 round_index=$2 entry role tag cell degree
   local -a arms
-  if (( round_index % 2 == 1 )); then
-    arms=(baseline candidate baseline-aa)
-  else
-    arms=(baseline-aa candidate baseline)
-  fi
+  case "$round_index" in
+    0) arms=(baseline baseline-aa candidate) ;;
+    1) arms=(baseline candidate baseline-aa) ;;
+    2) arms=(baseline-aa candidate baseline) ;;
+    3) arms=(candidate baseline baseline-aa) ;;
+    4) arms=(baseline-aa baseline candidate) ;;
+    5) arms=(baseline baseline-aa candidate) ;;
+    6) arms=(candidate baseline-aa baseline) ;;
+    *) echo "unregistered round index: $round_index" >&2; return 2 ;;
+  esac
   for entry in "${PLAN[@]}"; do
     IFS=$'\t' read -r role tag cell degree <<<"$entry"
     for arm in "${arms[@]}"; do

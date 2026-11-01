@@ -57,9 +57,10 @@ materializing `invalid_measurement` or `incomplete_session`.
 V10 preserves the five cells, one warmup, six alternating rounds, production
 thresholds, Nsys sequence/resource gates, and depth-16 source delivery.  It
 adds a byte-identical `baseline-aa` label in every same-pod round because the
-canonical clock rule requires an A/A interval from the same session.  Odd
-rounds run baseline/candidate/baseline-aa and even rounds reverse that triple,
-for 105 exported rows.  Ten A/B and ten A/A clock cells use exact rational
+canonical clock rule requires an A/A interval from the same session.  The six
+measured rounds use all six label permutations, so every label occupies each
+launch position twice and every pair direction is 3/3; warmup is separate.
+This gives 105 exported rows.  Ten A/B and ten A/A clock cells use exact rational
 two-sided simultaneous intervals with Bonferroni tail `1/800`; every A/A
 interval must contain one, and the primary A/B lower endpoint must strictly
 exceed `max(A/A upper, 1/A/A lower)`.  The remote

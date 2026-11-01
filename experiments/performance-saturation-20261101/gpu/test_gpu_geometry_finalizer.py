@@ -215,6 +215,38 @@ class FinalizerAdversarialTests(unittest.TestCase):
                 judge = MOD.Judge(); MOD.validate_order(path, judge)
                 self.assertTrue(failures(judge, "order.schedule"))
 
+    def test_candidate_always_middle_schedule_is_rejected(self) -> None:
+        rows = []
+        rounds = [("warmup", 0), *[("measure", index) for index in range(1, 7)]]
+        for phase, round_index in rounds:
+            arms = (("baseline", "candidate", "baseline-aa") if round_index % 2
+                    else ("baseline-aa", "candidate", "baseline"))
+            for role, tag, cell, degree in MOD.WORKLOADS:
+                for arm in arms:
+                    rows.append((phase, str(round_index), tag, role, arm, f"{cell}:{degree}"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "order.tsv"
+            path.write_text("\t".join(MOD.ORDER_HEADER) + "\n" +
+                            "\n".join("\t".join(row) for row in rows) + "\n", encoding="utf-8")
+            judge = MOD.Judge(); MOD.validate_order(path, judge)
+            self.assertTrue(failures(judge, "order.schedule"))
+
+    def test_registered_six_permutations_are_position_and_direction_balanced(self) -> None:
+        first_tag = MOD.WORKLOADS[0][1]
+        rows = [row for row in MOD.expected_order()
+                if row[0] == "measure" and row[2] == first_tag]
+        orders = [[row[4] for row in rows[index:index + 3]] for index in range(0, 18, 3)]
+        self.assertEqual(len({tuple(order) for order in orders}), 6)
+        for arm in MOD.ARMS:
+            self.assertEqual([order[position] for order in orders for position in range(3)].count(arm), 6)
+            self.assertEqual([order.index(arm) for order in orders].count(0), 2)
+            self.assertEqual([order.index(arm) for order in orders].count(1), 2)
+            self.assertEqual([order.index(arm) for order in orders].count(2), 2)
+        for left in MOD.ARMS:
+            for right in MOD.ARMS:
+                if left < right:
+                    self.assertEqual(sum(order.index(left) < order.index(right) for order in orders), 3)
+
     def test_missing_cleanup_is_incomplete_and_precedes_wrong_source(self) -> None:
         receipt = good_receipt()
         receipt["cleanup"] = None
