@@ -240,6 +240,7 @@ name = "cryptanalysis"
 version = "0.1.0"
 dependencies = [
  "cryptanalysis-sys",
+ "hashed-ecdl-tensor 0.1.0",
 ]
 
 [[package]]
@@ -251,7 +252,7 @@ dependencies = [
  "cryptanalysis",
  "crypto-analysis-core",
  "fs2",
- "hashed-ecdl-tensor",
+ "hashed-ecdl-tensor 0.1.1",
  "hex",
  "libc",
  "num-bigint 0.4.8",
@@ -369,6 +370,19 @@ dependencies = [
 [[package]]
 name = "hashed-ecdl-tensor"
 version = "0.1.0"
+dependencies = [
+ "getrandom",
+ "num-bigint 0.5.1",
+ "num-integer",
+ "num-rational",
+ "num-traits",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "hashed-ecdl-tensor"
+version = "0.1.1"
 dependencies = [
  "getrandom",
  "num-bigint 0.5.1",

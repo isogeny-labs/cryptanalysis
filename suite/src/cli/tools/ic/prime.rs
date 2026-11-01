@@ -34,7 +34,7 @@ use crate::cryptanalysis::ec_index_calculus_curves::{
 };
 use crate::cryptanalysis::prime_orbit_index_calculus::{
     base_orbits, generate_instance, run_known_answer, BaseSizing, Coefficient, GeneratedInstance,
-    OrbitIcOptions, OrbitIcReport, ScaledShape, MIN_FIELD_BITS,
+    OrbitIcOptions, OrbitIcReport, RelationCoordinates, ScaledShape, MIN_FIELD_BITS,
 };
 use crate::ecc::{curve::CurveParams, point::Point};
 use clap::{Args, ValueEnum};
@@ -85,6 +85,24 @@ impl PrimeSolver {
         match self {
             PrimeSolver::Orbit => "orbit",
             PrimeSolver::Semaev => "semaev",
+        }
+    }
+}
+
+/// Coordinates used by the orbit solver's large-prime relation walk.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
+pub enum RelationCoordinatesArg {
+    /// Historical single affine walk.
+    Affine,
+    /// Jacobian lane group with one batch normalization per round.
+    Jacobian,
+}
+
+impl From<RelationCoordinatesArg> for RelationCoordinates {
+    fn from(value: RelationCoordinatesArg) -> Self {
+        match value {
+            RelationCoordinatesArg::Affine => Self::Affine,
+            RelationCoordinatesArg::Jacobian => Self::Jacobian,
         }
     }
 }
@@ -141,6 +159,11 @@ pub struct PrimeArgs {
     /// operations where large primes need `≈ √(m·r/|Aut|)`.
     #[arg(long)]
     pub no_large_primes: bool,
+    /// Coordinates for the single-large-prime relation walk (orbit).
+    /// Jacobian uses 32 independent lanes and batch-normalizes them once
+    /// per round; full-decomposition collection remains affine.
+    #[arg(long, value_enum, default_value_t = RelationCoordinatesArg::Affine)]
+    pub relation_coordinates: RelationCoordinatesArg,
     /// Descend every target against the precomputed database alone (orbit),
     /// instead of adding each verified descent's differences to it for the
     /// targets after.
@@ -313,6 +336,16 @@ fn orbit_json(rep: &OrbitIcReport, targets: &[(u64, FastPoint)], opts: &OrbitIcO
             "orbits_per_target": opts.orbits_per_target,
             "relations_per_orbit": opts.relations_per_orbit,
             "large_primes": opts.large_primes,
+            "relation_coordinates": if opts.large_primes {
+                opts.relation_coordinates.as_str()
+            } else {
+                RelationCoordinates::Affine.as_str()
+            },
+            "relation_lanes": if opts.large_primes {
+                opts.relation_coordinates.lanes()
+            } else {
+                1
+            },
             "learn": opts.learn,
             "max_ops": opts.max_ops,
             "max_descent_ops": opts.max_descent_ops,
@@ -375,7 +408,7 @@ fn orbit_json(rep: &OrbitIcReport, targets: &[(u64, FastPoint)], opts: &OrbitIcO
             "per_target": per_rho,
         }) } else { Value::Null },
         "vs_rho": if rho_run { json!({
-            "unit": "group operations: affine additions, each sharing a batched inversion; setup scalar multiplications charged 1.5·bits(r) on both sides, certification checks on neither",
+            "unit": "abstract group operations: one per oracle difference or walk step, independent of coordinates; setup scalar multiplications charged 1.5·bits(r) on both sides, certification checks on neither",
             "targets": targets.len(),
             "charged": {"ic_ops_per_target": des, "rho_ops_per_target": rho,
                         "ratio": ratio(rho, des),
@@ -500,6 +533,7 @@ pub fn run(args: PrimeArgs, quiet: bool) -> Result<Value, String> {
                 },
                 relations_per_orbit: args.relations_per_orbit,
                 large_primes: !args.no_large_primes,
+                relation_coordinates: args.relation_coordinates.into(),
                 learn: !args.no_learn,
                 max_ops: args.max_ops,
                 skip_rho: args.no_rho,

@@ -44,7 +44,7 @@ pub struct SolveArgs {
     /// Load the published unknown-log challenge point Q.
     #[arg(long)]
     pub challenge: bool,
-    /// Construct a known-answer target [k]G (decimal or 0x hex).
+    /// Construct a known-answer target `[k]G` (decimal or 0x hex).
     #[arg(long)]
     pub secret: Option<String>,
     /// Externally supplied target X,Y (decimal or 0x hex).

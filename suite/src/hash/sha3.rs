@@ -1,4 +1,4 @@
-//! SHA-3 (Keccak-p[1600,24]) implemented from scratch per NIST FIPS 202.
+//! SHA-3 (`Keccak-p[1600,24]`) implemented from scratch per NIST FIPS 202.
 //!
 //! # Keccak sponge construction
 //! The state is a 5×5 matrix of 64-bit lanes (1600 bits total).
@@ -48,7 +48,7 @@ const RHO_OFFSETS: [[u32; 5]; 5] = [
     [27, 20, 39, 8, 14],
 ];
 
-/// Apply Keccak-p[1600,24] permutation in-place on a 25-lane (200-byte) state.
+/// Apply `Keccak-p[1600,24]` permutation in-place on a 25-lane (200-byte) state.
 pub fn keccak_f(state: &mut [u64; 25]) {
     for rc in &RC {
         // θ: XOR with column parities
