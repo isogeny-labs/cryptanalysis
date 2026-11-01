@@ -885,6 +885,20 @@ def load_dependency_manifest(data: dict[str, Any]) -> dict[str, Any]:
         "entries_sha256"
     ):
         raise RuntimeError("runtime dependency manifest entries differ from the protocol")
+    group_values = {item.get("group") for item in files}
+    if any(not isinstance(group, str) or not group for group in group_values):
+        raise RuntimeError("runtime dependency manifest contains an invalid group")
+    groups = sorted(group_values)
+    counts = {group: sum(item.get("group") == group for item in files) for group in groups}
+    group_digests = {
+        group: digest_value([item for item in files if item.get("group") == group])
+        for group in groups
+    }
+    if (
+        counts != contract.get("groups")
+        or group_digests != contract.get("group_entries_sha256")
+    ):
+        raise RuntimeError("runtime dependency manifest groups differ from the protocol")
     return manifest
 
 
