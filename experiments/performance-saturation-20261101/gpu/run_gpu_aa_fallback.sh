@@ -101,7 +101,18 @@ NCU_BIN=$(resolve_profiler ncu "${NCU:-}") || {
 
 "$NSYS_BIN" --version >"$SESSION/metadata/nsys-version.txt" 2>&1
 "$NCU_BIN" --version >"$SESSION/metadata/ncu-version.txt" 2>&1
+# Nsight Systems 2026.3.2 returns one after successfully printing its built-in
+# report inventory.  Preserve that status and gate the inventory itself; no
+# other nonzero status is accepted.
+set +e
 "$NSYS_BIN" stats --help-reports >"$SESSION/metadata/nsys-reports.txt" 2>&1
+nsys_reports_rc=$?
+set -e
+printf '%s\n' "$nsys_reports_rc" >"$SESSION/metadata/nsys-reports.status"
+if (( nsys_reports_rc != 0 && nsys_reports_rc != 1 )); then
+  echo "nsys report inventory failed with status $nsys_reports_rc" >&2
+  exit 2
+fi
 "$NCU_BIN" --list-sections >"$SESSION/metadata/ncu-sections.txt" 2>&1
 for section in LaunchStats Occupancy SpeedOfLight MemoryWorkloadAnalysis SchedulerStats; do
   grep -q "$section" "$SESSION/metadata/ncu-sections.txt" || {
