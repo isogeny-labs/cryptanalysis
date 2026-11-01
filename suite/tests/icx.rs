@@ -112,6 +112,35 @@ fn xedni_koblitz_family_audit_preserves_each_extension_degree() {
 }
 
 #[test]
+fn xedni_lift_cli_preserves_the_certified_affine_coset() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_lift_toy.json"
+    );
+    let v = run_json(&[
+        "xedni-lift",
+        "--input",
+        fixture,
+        "--radius",
+        "1",
+        "--max-candidates",
+        "100",
+    ]);
+    assert_eq!(v["operation"], "xedni-lift");
+    assert_eq!(v["result"]["exact_constraints_preserved"], true);
+    assert_eq!(v["result"]["congruence_preserved"], true);
+    assert_eq!(v["result"]["optimized_score"]["nonsingular"], true);
+    assert!(
+        v["result"]["optimized_score"]["discriminant_bits"]
+            .as_u64()
+            .unwrap()
+            < v["result"]["baseline_score"]["discriminant_bits"]
+                .as_u64()
+                .unwrap()
+    );
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {
