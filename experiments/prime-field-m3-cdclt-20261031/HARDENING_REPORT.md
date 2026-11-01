@@ -5,7 +5,7 @@ geometry: margin=20mm
 fontsize: 10pt
 ---
 
-![Evidence and cost gates. Green is implemented only at development-fixture scope; amber remains open; red is ineligible or unadmitted.](hardening-flow.png){width=100%}
+![Evidence and cost gates. Green is implemented only at development-fixture scope; amber remains open; red is ineligible or unadmitted.](hardening-flow.pdf){width=100%}
 
 ## Outcome
 
