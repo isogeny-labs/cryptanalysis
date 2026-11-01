@@ -1,0 +1,116 @@
+{
+  "arm": "go-baseline-aa",
+  "artifacts": {
+    "metadata": "raw/run-metadata/0246_measured_case06_r05_p2_go-baseline-aa.json",
+    "stderr": "raw/benchmark-stderr/0246_measured_case06_r05_p2_go-baseline-aa.txt",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "raw/benchmark-output/0246_measured_case06_r05_p2_go-baseline-aa.txt",
+    "stdout_sha256": "4f9ecbb84b54158b79d461d17ef05458310ab437c91160858496ccec2977ea68"
+  },
+  "benchmark_source_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+  "binary": "/workspace/.benchmarks/performance-saturation/go/baseline/coord-aa.test",
+  "binary_sha256": "5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257",
+  "case": "BenchmarkStateDeltaSinceOneBehind/log_8192",
+  "case_index": 6,
+  "command": [
+    "taskset",
+    "-c",
+    "0",
+    "/workspace/.benchmarks/performance-saturation/go/baseline/coord-aa.test",
+    "-test.run=^$",
+    "-test.bench=^BenchmarkStateDeltaSinceOneBehind/log_8192$",
+    "-test.benchmem",
+    "-test.benchtime=100x",
+    "-test.count=1",
+    "-test.cpu=1",
+    "-test.v",
+    "-test.timeout=20m"
+  ],
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOMAXPROCS": "1"
+  },
+  "exit_status": 0,
+  "finished": "2026-11-01T20:09:12.613541Z",
+  "host_after": {
+    "cpu_mhz": "2299.998",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "frequency_khz_cpu0": null,
+    "governor_cpu0": null,
+    "kernel": "6.18.57",
+    "machine": "x86_64",
+    "microcode": "0x1",
+    "psi_cpu": null,
+    "psi_memory": null,
+    "self_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "steal_ticks": 247909,
+    "temperature_millicelsius": null,
+    "timestamp": "2026-11-01T20:09:12.612595Z"
+  },
+  "host_before": {
+    "cpu_mhz": "2299.998",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "frequency_khz_cpu0": null,
+    "governor_cpu0": null,
+    "kernel": "6.18.57",
+    "machine": "x86_64",
+    "microcode": "0x1",
+    "psi_cpu": null,
+    "psi_memory": null,
+    "self_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "steal_ticks": 247873,
+    "temperature_millicelsius": null,
+    "timestamp": "2026-11-01T20:09:09.724969Z"
+  },
+  "order_position": 2,
+  "outcome_class": "verified",
+  "outer_wall_ns": 2886845022,
+  "parsed": {
+    "benchmark_line": "BenchmarkStateDeltaSinceOneBehind/log_8192         \t     100\t  25821974 ns/op\t  25630320 cpu-ns/op\t         1.000 lines/op\t      8192 log_entries\t136573127 B/op\t   57347 allocs/op",
+    "benchmark_name": "BenchmarkStateDeltaSinceOneBehind/log_8192",
+    "fingerprints": {
+      "lines_sha256": "5a39b61c26804343ee34ae8d2c8e87c5a93a0ce63be813cff7541edb849f6657",
+      "reached_vector_sha256": "483a98a300e18be4ec61392b4f6f7ac25c04b78fc30df75cd7d4824b275e37b8"
+    },
+    "iterations": 100,
+    "metrics": {
+      "B/op": 136573127,
+      "allocs/op": 57347,
+      "cpu-ns/op": 25630320,
+      "lines/op": 1.0,
+      "log_entries": 8192,
+      "ns/op": 25821974
+    }
+  },
+  "phase": "baseline-aa-v2",
+  "protocol_sha256": "8120278e7c96fd2f6bc5a2ffa4a02f3e02f4668c492f3882a2b6a1d170adf696",
+  "replicate": 5,
+  "run_id": "0246_measured_case06_r05_p2_go-baseline-aa",
+  "rusage": {
+    "involuntary_context_switches": 2410,
+    "major_faults": 0,
+    "max_rss_kib": 21712,
+    "minor_faults": 11564,
+    "system_seconds": 0.05823400000000056,
+    "user_seconds": 2.806611999999973,
+    "voluntary_context_switches": 2344
+  },
+  "schema": "go-coordinator-row/1",
+  "sequence": 246,
+  "started": "2026-11-01T20:09:09.724751Z",
+  "status": "completed",
+  "timed_out": false,
+  "warmup": false
+}

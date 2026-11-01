@@ -1,0 +1,92 @@
+{
+  "schema": "go-coordinator-aa-analysis/1",
+  "protocol_sha256": "8120278e7c96fd2f6bc5a2ffa4a02f3e02f4668c492f3882a2b6a1d170adf696",
+  "inputs": {
+    "rows_sha256": "444f21f0e3fda009e20e8883837c622a3d398612edd08fc3fce6dbb3dac1d922",
+    "isolation_sha256": "3a91495ed58ded7ea229fa2ac87839108cb4c9d46fb5c96378f4d8eb9eecc9e7"
+  },
+  "flow": {
+    "planned": 276,
+    "attempted": 276,
+    "completed": 276,
+    "warmups": 36,
+    "measured": 240
+  },
+  "exact": {
+    "matching_fingerprint_pairs": 120,
+    "planned_fingerprint_pairs": 120,
+    "mismatches": 0
+  },
+  "isolation": {
+    "valid_for_clocks": false,
+    "reserved_cpus": [0, 1, 2, 3],
+    "samples": 420,
+    "contended_samples": 29,
+    "max_other_cpu_seconds_per_sample": 1.02,
+    "measured_rows_with_nonzero_steal_delta": 230,
+    "classification": "invalid_measurement"
+  },
+  "bootstrap": {
+    "draws": 20000,
+    "seed": 581530020192284626,
+    "statistic": "median of paired A/A-over-baseline ratios",
+    "interval": "percentile 95%"
+  },
+  "cases": [
+    {
+      "case": "BenchmarkStateVersionVector/log_1024",
+      "B/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 1.002237078, "ci95": [0.991285045, 1.029476147]},
+      "cpu-ns/op": {"median_ratio": 1.002205578, "ci95": [0.991346432, 1.029476689]}
+    },
+    {
+      "case": "BenchmarkStateVersionVector/log_8192",
+      "B/op": {"median_ratio": 1.0, "ci95": [1.0, 1.000000011]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 1.009975651, "ci95": [0.993340471, 1.028483478]},
+      "cpu-ns/op": {"median_ratio": 1.009522750, "ci95": [0.993339423, 1.028483230]}
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "B/op": {"median_ratio": 1.0, "ci95": [0.999998331, 1.0]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 0.992779705, "ci95": [0.963350886, 1.001961194]},
+      "cpu-ns/op": {"median_ratio": 0.992876720, "ci95": [0.963257106, 1.001943327]}
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "B/op": {"median_ratio": 1.0, "ci95": [0.999999996, 1.0]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 1.010912131, "ci95": [0.988140777, 1.025338921]},
+      "cpu-ns/op": {"median_ratio": 1.011545698, "ci95": [0.992084099, 1.025318491]}
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "B/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 1.007460051, "ci95": [0.990971526, 1.019920926]},
+      "cpu-ns/op": {"median_ratio": 1.001531189, "ci95": [0.991036779, 1.018412390]}
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceOneBehind/log_8192",
+      "B/op": {"median_ratio": 0.999999989, "ci95": [0.999999901, 1.000000007]},
+      "allocs/op": {"median_ratio": 1.0, "ci95": [1.0, 1.0]},
+      "ns/op": {"median_ratio": 0.976935309, "ci95": [0.934515853, 1.012776530]},
+      "cpu-ns/op": {"median_ratio": 0.976955013, "ci95": [0.931043468, 1.012784114]}
+    }
+  ],
+  "gates": {
+    "mechanical_completeness": true,
+    "exact_fingerprints": true,
+    "allocation_aa": true,
+    "clock_numeric_aa_if_isolated": true,
+    "clock_isolation": false,
+    "overall": "invalid_measurement"
+  },
+  "scope": {
+    "exact_and_allocation_counts": "admissible",
+    "wall_and_cpu_time": "invalid",
+    "candidate_timing_baseline": "not_admissible"
+  }
+}

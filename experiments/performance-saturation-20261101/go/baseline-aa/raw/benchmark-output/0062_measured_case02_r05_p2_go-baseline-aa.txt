@@ -1,0 +1,10 @@
+goos: linux
+goarch: amd64
+pkg: github.com/aburan28/cryptanalysis/bindings/go
+cpu: INTEL(R) XEON(R) PLATINUM 8573C
+BenchmarkStateVersionVector
+BenchmarkStateVersionVector/log_8192
+    coord_benchmark_test.go:52: correctness vector_sha256=483a98a300e18be4ec61392b4f6f7ac25c04b78fc30df75cd7d4824b275e37b8 vector=bench.0:8192
+    coord_benchmark_test.go:52: correctness vector_sha256=483a98a300e18be4ec61392b4f6f7ac25c04b78fc30df75cd7d4824b275e37b8 vector=bench.0:8192
+BenchmarkStateVersionVector/log_8192         	     100	  22989873 ns/op	  22990070 cpu-ns/op	      8192 log_entries	136573116 B/op	   57346 allocs/op
+PASS

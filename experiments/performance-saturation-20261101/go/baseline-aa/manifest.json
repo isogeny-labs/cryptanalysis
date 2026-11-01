@@ -1,0 +1,53 @@
+{
+  "arms": [
+    {
+      "binary": "/workspace/.benchmarks/performance-saturation/go/baseline/coord.test",
+      "id": "go-baseline",
+      "sha256": "5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257"
+    },
+    {
+      "binary": "/workspace/.benchmarks/performance-saturation/go/baseline/coord-aa.test",
+      "id": "go-baseline-aa",
+      "sha256": "5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257"
+    }
+  ],
+  "benchmark_source_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+  "benchtime": "100x",
+  "cases": [
+    "BenchmarkStateVersionVector/log_1024",
+    "BenchmarkStateVersionVector/log_8192",
+    "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+    "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+    "BenchmarkStateDeltaSinceOneBehind/log_1024",
+    "BenchmarkStateDeltaSinceOneBehind/log_8192"
+  ],
+  "cpu": 0,
+  "created": "2026-11-01T20:03:36.435437Z",
+  "host_start": {
+    "cpu_mhz": "2299.998",
+    "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "frequency_khz_cpu0": null,
+    "governor_cpu0": null,
+    "kernel": "6.18.57",
+    "machine": "x86_64",
+    "microcode": "0x1",
+    "psi_cpu": null,
+    "psi_memory": null,
+    "self_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "steal_ticks": 245715,
+    "temperature_millicelsius": null,
+    "timestamp": "2026-11-01T20:03:36.435821Z"
+  },
+  "phase": "baseline-aa-v2",
+  "protocol_sha256": "8120278e7c96fd2f6bc5a2ffa4a02f3e02f4668c492f3882a2b6a1d170adf696",
+  "replicates": 20,
+  "runner_sha256": "b03652a5b4167d0edee6797c979bf78ec93858a88c7620b209a3200354a18c56",
+  "schema": "go-coordinator-campaign/1",
+  "warmups": 3
+}
