@@ -5,7 +5,9 @@
   "created": "2026-11-01",
   "repository": "cryptanalysis",
   "study_dir": "experiments/performance-saturation-20261101/go",
-  "authors": ["Go coordinator optimization lane"],
+  "authors": [
+    "Go coordinator optimization lane"
+  ],
   "links": {
     "predecessor": "experiments/performance-saturation-20261101/go/protocol.v2.json",
     "predecessor_sha256": "8120278e7c96fd2f6bc5a2ffa4a02f3e02f4668c492f3882a2b6a1d170adf696",
@@ -41,7 +43,9 @@
       "id": "C-ab-allocation",
       "text": "The candidate reduces allocated bytes and allocation events per operation by at least 95 percent in every registered case.",
       "class": "comparative",
-      "decided_by": ["C-ab-alloc"],
+      "decided_by": [
+        "C-ab-alloc"
+      ],
       "if_supported": "the allocation reduction is supported for the six fixed workloads",
       "if_not_supported": "the allocation claim is unsupported"
     },
@@ -49,7 +53,9 @@
       "id": "C-ab-timing",
       "text": "On a valid isolated session, the candidate improves both wall and process CPU time by at least 5 percent in every registered case.",
       "class": "comparative",
-      "decided_by": ["C-ab-time"],
+      "decided_by": [
+        "C-ab-time"
+      ],
       "if_supported": "the end-to-end speedup is supported on this host class and workload",
       "if_not_supported": "the timing claim is unsupported, invalid, or inconclusive according to the terminal gate"
     }
@@ -62,15 +68,22 @@
       "instrument": {
         "repo": "cryptanalysis",
         "commit": "57ce118e3adf8c4772708586ad13327e3123a959",
-        "build": [[
-          "python3",
-          "experiments/performance-saturation-20261101/go/run_remote_ab.py",
-          "--mode", "build",
-          "--out", "go-ab-v3-build",
-          "--expected-cpus", "32",
-          "--expected-memory-gib", "64",
-          "--expected-cpu-flavor", "cpu3c"
-        ]],
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+            "--mode",
+            "build",
+            "--out",
+            "go-ab-v3-build",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-gib",
+            "64",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
         "binary_sha256": null,
         "flags": {
           "cwd": "bindings/go",
@@ -106,15 +119,22 @@
       "instrument": {
         "repo": "cryptanalysis",
         "commit": "57ce118e3adf8c4772708586ad13327e3123a959",
-        "build": [[
-          "python3",
-          "experiments/performance-saturation-20261101/go/run_remote_ab.py",
-          "--mode", "build",
-          "--out", "go-ab-v3-build",
-          "--expected-cpus", "32",
-          "--expected-memory-gib", "64",
-          "--expected-cpu-flavor", "cpu3c"
-        ]],
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+            "--mode",
+            "build",
+            "--out",
+            "go-ab-v3-build",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-gib",
+            "64",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
         "binary_sha256": null,
         "flags": {
           "cwd": "bindings/go",
@@ -168,7 +188,15 @@
     }
   },
   "variable_ledger": {
-    "independent": [{"name": "coordinator log-scan implementation", "levels": ["baseline", "candidate"]}],
+    "independent": [
+      {
+        "name": "coordinator log-scan implementation",
+        "levels": [
+          "baseline",
+          "candidate"
+        ]
+      }
+    ],
     "factors": [
       {
         "name": "production source",
@@ -215,16 +243,26 @@
     "comparisons": [
       {
         "id": "C-ab-alloc",
-        "arms": ["go-baseline", "go-candidate"],
-        "differs_in": ["coordinator log-scan implementation"],
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator log-scan implementation"
+        ],
         "design": "one_factor",
         "reason": "common synthetic source, benchmark, build, host, fixture, and schedule isolate the candidate log-scan implementation",
         "threshold": "candidate/baseline median B/op and allocs/op <= 0.05 in every case"
       },
       {
         "id": "C-ab-time",
-        "arms": ["go-baseline", "go-candidate"],
-        "differs_in": ["coordinator log-scan implementation"],
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator log-scan implementation"
+        ],
         "design": "one_factor",
         "reason": "paired mirrored rows measure end-to-end Go plus cgo plus C-lock scan cost",
         "threshold": "baseline/candidate median speedup >= 1.05 and Holm-adjusted paired lower bound > 1.0 for wall and CPU time in every case"
@@ -239,7 +277,9 @@
     "arm_order_reason": "The prospectively fixed odd/even mirrored order balances monotonic drift without post-data selection.",
     "seed_derivation": {
       "method": "explicit_list",
-      "seeds": [24301],
+      "seeds": [
+        24301
+      ],
       "nonce": null,
       "note": "0x5eed is fixed in the deterministic benchmark fixture for every row."
     },
@@ -346,7 +386,13 @@
     "warmups": 3,
     "order": "alternate",
     "clock": "monotonic",
-    "counters": ["B/op", "allocs/op", "RUSAGE_SELF CPU time", "cgroup cpu.stat", "steal ticks"],
+    "counters": [
+      "B/op",
+      "allocs/op",
+      "RUSAGE_SELF CPU time",
+      "cgroup cpu.stat",
+      "steal ticks"
+    ],
     "record": [
       "arm, case, round, warmup, order position, b.N, command, exit status",
       "protocol, runner, source tree/blob/diff, benchmark, Go archive, build receipt, and binary SHA-256",
@@ -386,9 +432,15 @@
       "interval_seconds": null,
       "grace_seconds": null,
       "restore_validation": "none",
-      "after_restore": {"wall_time": "invalid", "counted_units": "valid"}
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
     },
-    "retries": {"infrastructure_only": true, "max_attempts": 1}
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
   },
   "stopping_rules": [
     {
@@ -422,25 +474,46 @@
   ],
   "decision_rule": {
     "text": "First require complete rows and pairwise identical correctness fingerprints. Support the allocation claim only if candidate/baseline median B/op and allocs/op are at most 0.05 in every case. Support the timing claim only if the session earns L2 with zero steal/throttle/memory/affinity violations and, for every case and both clocks, baseline/candidate median speedup is at least 1.05 with a Holm-adjusted paired-bootstrap lower bound above 1.0. Any fingerprint mismatch is wrong_answer; a failed isolation gate is invalid_measurement for clocks; a missed effect gate is unsupported or inconclusive and never licenses extra rounds.",
-    "comparison_ids": ["C-ab-alloc", "C-ab-time"],
+    "comparison_ids": [
+      "C-ab-alloc",
+      "C-ab-time"
+    ],
     "threshold": "exact fingerprints equal; allocation ratios <=0.05 in all six cases; valid L2 timing; wall and CPU speedup >=1.05 with Holm-adjusted lower bounds >1.0 in all six cases",
     "statistic": "Within each case and round, pair arms and compute candidate/baseline ratios for allocations and baseline/candidate ratios for wall and CPU time; report the median of 20 pairs.",
     "interval": "Paired bootstrap over the 20 fixed pairs per case; simultaneous clock decisions use Holm family control across twelve case-by-clock tests.",
     "multiple_comparison_correction": "holm",
     "effect_size_measure": "paired median allocation ratio and paired median wall/CPU speedup per case",
-    "verdict_vocabulary": ["supported_within_scope", "allocation_only", "wrong_answer", "invalid_measurement", "unsupported", "inconclusive"]
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "allocation_only",
+      "wrong_answer",
+      "invalid_measurement",
+      "unsupported",
+      "inconclusive"
+    ]
   },
   "analysis_plan": {
     "script": null,
-    "inputs": ["remote build manifest", "campaign rows and per-run raw artifacts", "RunPod HTTP receipt", "remote isolation manifest"],
-    "outputs": ["experiment.export/v1", "paired allocation/timing ratios", "campaign report"],
+    "inputs": [
+      "remote build manifest",
+      "campaign rows and per-run raw artifacts",
+      "RunPod HTTP receipt",
+      "remote isolation manifest"
+    ],
+    "outputs": [
+      "experiment.export/v1",
+      "paired allocation/timing ratios",
+      "campaign report"
+    ],
     "blinded": false,
     "frozen_before_data": true
   },
   "reporting": {
     "export_schema": "experiment.export/v1",
     "review_schema": "experiment.review/v1",
-    "graphs": ["paired candidate/baseline allocation and timing ratios by case"],
+    "graphs": [
+      "paired candidate/baseline allocation and timing ratios by case"
+    ],
     "report_dir": "remote-ab/report"
   },
   "inadmissible": [
@@ -479,14 +552,22 @@
         "Require a build-only artifact receipt and a separately frozen artifact-binding child before any correctness test or benchmark row.",
         "Use six fixed cases, mirrored interleaving, three warmups, 20 measured pairs, exact correctness gates, and explicit allocation/timing terminal rules."
       ],
-      "supersedes_fields": ["question", "claims", "arms", "controls", "execution", "decision_rule", "analysis_plan"]
+      "supersedes_fields": [
+        "question",
+        "claims",
+        "arms",
+        "controls",
+        "execution",
+        "decision_rule",
+        "analysis_plan"
+      ]
     }
   ],
   "freeze": {
-    "status": "draft",
-    "protocol_sha256": null,
-    "commit": null,
-    "frozen_at": null,
+    "status": "frozen",
+    "protocol_sha256": "499c0480d6600d5c5fea483c5c554672615b6db87ae4c065109ecf41c662816b",
+    "commit": "981f1bf0cabbdb9dec89f09b5a6199c0a79ad160",
+    "frozen_at": "2026-11-01T20:32:29Z",
     "filed_before_affected_data": true
   }
 }
