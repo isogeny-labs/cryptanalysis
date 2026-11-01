@@ -1,0 +1,59 @@
+{
+  "schema": "cpu-baseline-build-manifest/v1",
+  "parent_protocol_sha256": "717892cbd3e6db3cb99bc94aa72b70e2abea7cd7b7bc8bedb3f756e9cd172750",
+  "baseline_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+  "baseline_tree": "03b5376c742f80298e124997addec10801bd57bb",
+  "baseline_archive_sha256": "c44204331a038f35596704cb2fdf72a6e6af510cc642466bc2287d60eedee52f",
+  "build_recipe_sha256": "6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+  "toolchains": [
+    "build_recipe_sha256=6c4f89de64a6371dc0dc826491f374240e45892647b4905255d0b88e076ec2fe",
+    "python=/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 version=3.12.14 sha256=fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "perfindex.py sha256=671a4696625ba0c8799e673db2ae6a31bb9a0bbcca5ec4cd65fecfb397cab401",
+    "isolated_bench sha256=b48781f50cb1b1fdbefd8dfe91c9ea239ce80785368df8a564fa3fb388e336",
+    "rustc 1.99.1 (58cf8f9c3 2026-10-13) sha256=b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853",
+    "cargo 1.99.1 (5f94df478 2026-08-27) sha256=a670e02cfa39ac2e53f77a2d911ca1fc9e2c479b0603ec956625be1daf24e3af",
+    "Rust stable toolchain canonical absolute-path sha256sum manifest SHA-256=b32916cb983ebf087e91e6f59f2d8250ff262385f54653e53d066f53e1205d7d",
+    "CMake wrapper 4.4.3 sha256=17a0f7bb56cd6bf6105223ac4aff4625c7b4d8dab57a26af9e687791fae21e2d",
+    "CMake executable 4.4.3 sha256=84962dbf5de6a863507ae89347aa9414d978c0c610055b16c7c8f4233d8a339c",
+    "CMake package canonical absolute-path sha256sum manifest SHA-256=b415a2a9d07a82c7d18f86796c346edc33e6280dbb0afd1136ae727ea7dcf9b9",
+    "cc Debian 14.2.0-19 sha256=a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+    "GNU ld 2.44 sha256=d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+    "GNU Make 4.4.1 sha256=8a229baf64671988cfb5af43ba3070c6ce7214cf32bcf96155115559d1466fa7",
+    "ar sha256=f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb",
+    "ranlib sha256=4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e",
+    "gcc-ar-14 sha256=0b529664758f646adfeeff83d5e6d2a25f9242e8c7508ec56083d90668160c84",
+    "gcc-ranlib-14 sha256=430f1c34e52f43130c8231ce7f14e4743514e62a15a04e195bcb5c0d37938374",
+    "no retained campaign Rust or C executable exists at registration; run only the frozen build recipe, then file/freeze a child artifact-binding amendment with both executable and build-receipt SHA-256 values before data"
+  ],
+  "rust_build": {
+    "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/perfbench",
+    "size": 10873280,
+    "mode": "0700",
+    "binary_sha256": "4e197800811af605278f8131760ffd60b91f81c180733820aa7ad467c27b29aa",
+    "build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-rust/build.json",
+    "build_json_size": 901,
+    "build_json_mode": "0600",
+    "build_json_sha256": "9b6ecf8e243deef042e540cf84cfd915b29860a6ed4b7cc9866fcf54548b802a"
+  },
+  "c_build": {
+    "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/ca_perfbench",
+    "size": 292112,
+    "mode": "0700",
+    "binary_sha256": "6d9f3ba6845b47c01d374346a1b87ce6147a09c39fba94d5c2d06a2a2bbcd97d",
+    "build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/build/base-c/build.json",
+    "build_json_size": 966,
+    "build_json_mode": "0600",
+    "build_json_sha256": "91fae349edee3dbace10f792bd9520a3c6bd19289b6945f28494dfe90d09bb32"
+  },
+  "same_instrument_assertions": {
+    "base-1t==base-aa-1t": {
+      "same_paths": true,
+      "same_sha256": true
+    },
+    "base-4t==base-aa-4t": {
+      "same_paths": true,
+      "same_sha256": true
+    },
+    "all_thread_panels_share_rust_and_c_artifacts": true
+  }
+}
