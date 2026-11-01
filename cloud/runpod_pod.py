@@ -172,7 +172,8 @@ def pod_body(args, keys, extra_env=None):
         body.update(computeType="GPU", imageName=args.image or GPU_IMAGE,
                     gpuTypeIds=args.gpu or DEFAULT_GPUS, gpuTypePriority="custom",
                     gpuCount=args.gpu_count, minVCPUPerGPU=args.min_vcpu,
-                    minRAMPerGPU=args.min_ram, allowedCudaVersions=["13.0", "12.9", "12.8"])
+                    minRAMPerGPU=args.min_ram,
+                    allowedCudaVersions=["13.2", "13.0", "12.9", "12.8"])
     return body
 
 
