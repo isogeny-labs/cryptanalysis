@@ -1,0 +1,67 @@
+{
+  "schema": "gpu-aa-v7-outcome/v1",
+  "classification": "aa_calibration_admissible",
+  "protocol": {
+    "path": "protocol-http-rtx5090-v7.json",
+    "canonical_sha256": "4b71152b91077781544520da18b0bafa4a762cf634be4c278867452c11e20c08",
+    "file_sha256": "3480f636c6f756401b6f8a519b6d86c441fab83b6680487d90b6fa73021b4807",
+    "registration_commit": "7eafaafe9af7b313b78d5325ac02d7d429a9d4e8",
+    "freeze_commit": "924f8e66ee993d6f62a739a978378028cb71bdfc"
+  },
+  "run": {
+    "id": "gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31",
+    "pod_id": "wqywy6u8ckeja4",
+    "pod_name": "misagi-f4-http-5090-v7-f3fc81f7b94f",
+    "cloud": "SECURE",
+    "provider_gpu": "NVIDIA GeForce RTX 5090",
+    "observed_gpu": "NVIDIA GeForce RTX 5090",
+    "compute_capability": "12.0",
+    "driver": "595.91.07",
+    "hourly_price_usd": 1.19,
+    "remote_returncode": 0,
+    "timed_out": false,
+    "cleanup_delete_requested": true,
+    "cleanup_absence_verified": true
+  },
+  "source": {
+    "commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+    "tree": "c4562cb6a2d72e549f5700feb870d9211b17fa56",
+    "git_archive_sha256": "ee0d64e8fa7bb6b7a8dcd9e5fb161bc79d702fd5933f1ea30c1376c237dad694",
+    "public_ref_checked": true
+  },
+  "evidence": {
+    "receipt_sha256": "053e6983c0c0fad8b72d35aaf22d3050763ede83e610e75da821677f3fc6dba7",
+    "archive_sha256": "c69fae2f4ded148451c3492174cae6fec1d033e009a4f4e37fd71fdc99c011aa",
+    "archive_bytes": 2178664,
+    "archive_members": 397,
+    "archive_manifest_entries": 396,
+    "archive_manifest_sha256": "04885fe46b048a152aa0cd2bcffa9de46c2386dcc8a6f8a532f68367ea39a6fd",
+    "rows_sha256": "91dd95bf0528154f5a9e0c7f28697f4c79ad415130c5ca95ba5b623764e1f7b8",
+    "analysis_sha256": "6b4085c5e2d247a8a08f848d544a1d64d19831b8ae62d25c0aec01a4ae1ed584"
+  },
+  "gates": {
+    "byte_identical_binary_sha256": "1d956f19107477589e376bad46e3eb226d8d33905397a58caee160bced278452",
+    "warmup_executions": 10,
+    "measured_executions": 60,
+    "measured_pairs": 30,
+    "nsys_captures": 2,
+    "exact_answer_rows": 70,
+    "correctness": "passed",
+    "profiler": "passed",
+    "ncu_invoked": false,
+    "all_archive_member_bindings_verified": true
+  },
+  "calibration": {
+    "primary": "k0n13m2d6",
+    "primary_current_over_control_median_pair_ratio": 1.0001400481765728,
+    "primary_exact_paired_bootstrap_ratio_ci95": [0.9999066415221165, 1.000317522576789],
+    "all_cells": "analysis.json",
+    "interpretation": "A/A session noise calibration only; no equivalence, optimality, candidate, or speedup claim"
+  },
+  "profiles": {
+    "nsys_version": "2026.3.2.476-263238834031v0",
+    "summary": "evidence/remote-aa-v7/nsys-summary.json",
+    "summary_sha256": "ae915fbe087552727740ad55cb30876803bd89509fef0ba6ab0f1d5875402fb1",
+    "hardware_counters": "not collected; NCU was outside v7"
+  }
+}

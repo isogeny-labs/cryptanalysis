@@ -1,0 +1,20 @@
+Generating SQLite file /root/runpod-http-source/repo/experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.sqlite from /root/runpod-http-source/repo/experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.nsys-rep
+Processing [/root/runpod-http-source/repo/experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.sqlite] with [/opt/nvidia/nsight-systems/2026.3.2/target-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+51.7,922649172,2941,313719.5,261858.0,704,949733,262376.4,f4e_update
+41.7,744555259,2941,253164.0,269666.0,800,956518,158355.6,f4e_panel_block
+5.3,95455968,2941,32457.0,35232.0,512,77184,23653.7,f4e_materialise
+1.3,23308106,2941,7925.2,8608.0,1760,15328,4366.1,f4e_gather
+0.0,6016,1,6016.0,6016.0,6016,6016,0.0,f4e_low
+
+Processing [/root/runpod-http-source/repo/experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.sqlite] with [/opt/nvidia/nsight-systems/2026.3.2/target-linux-x64/reports/cuda_api_sum.py]... 
+Time (%),Total Time (ns),Num Calls,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+66.3,1649599996,11765,140212.5,15523.0,2603,6905774,244595.1,cuLaunchKernel
+28.2,701673921,6,116945653.5,9484.5,2975,701602773,286422323.9,cuMemcpyHtoD_v2
+5.5,136269394,1,136269394.0,136269394.0,136269394,136269394,0.0,cuCtxSynchronize
+0.1,1591543,12,132628.6,62529.0,2944,743237,215261.0,cuMemAlloc_v2
+0.0,176657,4,44164.3,27116.0,6851,115574,51085.1,cuMemcpyDtoH_v2
+0.0,92028,1,92028.0,92028.0,92028,92028,0.0,cuModuleLoadData
+0.0,22474,2,11237.0,11237.0,6019,16455,7379.4,cuCtxSetCurrent
+0.0,5979,1,5979.0,5979.0,5979,5979,0.0,cuInit
+

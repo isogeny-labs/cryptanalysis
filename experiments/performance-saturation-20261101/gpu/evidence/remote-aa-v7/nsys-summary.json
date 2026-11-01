@@ -1,0 +1,61 @@
+{
+  "schema": "gpu-aa-nsys-diagnostic-summary/v1",
+  "run_id": "gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31",
+  "scope": "post-timing diagnostics from two byte-identical primary-cell arms; profiled values do not enter the A/A timing distribution",
+  "primary_cell": "k0n13m2d6",
+  "kernel_profiles": {
+    "control": {
+      "total_kernel_ns": 1785846625,
+      "kernels": {
+        "f4e_update": {"instances": 2941, "total_ns": 922553256, "share_percent": 51.659154},
+        "f4e_panel_block": {"instances": 2941, "total_ns": 744487984, "share_percent": 41.688238},
+        "f4e_materialise": {"instances": 2941, "total_ns": 95484586, "share_percent": 5.346741},
+        "f4e_gather": {"instances": 2941, "total_ns": 23314847, "share_percent": 1.305535},
+        "f4e_low": {"instances": 1, "total_ns": 5952, "share_percent": 0.000333}
+      }
+    },
+    "current": {
+      "total_kernel_ns": 1785974521,
+      "kernels": {
+        "f4e_update": {"instances": 2941, "total_ns": 922649172, "share_percent": 51.660825},
+        "f4e_panel_block": {"instances": 2941, "total_ns": 744555259, "share_percent": 41.689019},
+        "f4e_materialise": {"instances": 2941, "total_ns": 95455968, "share_percent": 5.344755},
+        "f4e_gather": {"instances": 2941, "total_ns": 23308106, "share_percent": 1.305064},
+        "f4e_low": {"instances": 1, "total_ns": 6016, "share_percent": 0.000337}
+      }
+    }
+  },
+  "profiled_transfers": {
+    "control": {
+      "memcopy_records": 10,
+      "total_bytes": 3962261824,
+      "total_duration_ns": 2098824698,
+      "largest_htod": {"bytes": 3961244664, "duration_ns": 2098801818, "source_kind": "Pageable", "destination_kind": "Device"}
+    },
+    "current": {
+      "memcopy_records": 10,
+      "total_bytes": 3962261824,
+      "total_duration_ns": 701279368,
+      "largest_htod": {"bytes": 3961244664, "duration_ns": 701256296, "source_kind": "Pageable", "destination_kind": "Device"}
+    }
+  },
+  "unprofiled_upload_ms": {
+    "k0n13m2d5": {"control_median": 11.75, "current_median": 11.95, "observed_range": [11.2, 15.6]},
+    "k0n9m3d5": {"control_median": 26.25, "current_median": 26.75, "observed_range": [25.6, 30.0]},
+    "k1n11m2d5": {"control_median": 2.4, "current_median": 2.4, "observed_range": [2.3, 2.5]},
+    "k1n11m2d6": {"control_median": 30.95, "current_median": 31.55, "observed_range": [28.9, 39.2]},
+    "k0n13m2d6": {
+      "control_median": 713.5,
+      "current_median": 671.65,
+      "combined_median": 711.8,
+      "observed_range": [654.1, 3204.5],
+      "control_complete_matrix_stage_median": 2497.95,
+      "current_complete_matrix_stage_median": 2457.0
+    }
+  },
+  "interpretation": [
+    "The two arms are byte-identical, so the profiled 2.099 s versus 0.701 s pageable-copy difference and the unprofiled 3.205 s outlier are transfer variability, not an arm effect.",
+    "Device execution is tightly calibrated, while the 3,961,244,664-byte pageable upload is both material and variable; a separately frozen pinned-transfer candidate must measure complete matrix-stage time.",
+    "The update and panel kernels account for about 51.66% and 41.69% of profiled kernel time."
+  ]
+}

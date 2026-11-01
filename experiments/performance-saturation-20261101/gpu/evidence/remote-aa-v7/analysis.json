@@ -1,0 +1,236 @@
+{
+  "binary_sha256": "1d956f19107477589e376bad46e3eb226d8d33905397a58caee160bced278452",
+  "byte_identical_arms": true,
+  "cells": {
+    "k0n13m2d5": {
+      "control_device_ms": [
+        77.5,
+        77.4,
+        77.4,
+        77.4,
+        77.4,
+        77.4
+      ],
+      "control_median_ms": 77.4,
+      "current_device_ms": [
+        77.4,
+        77.4,
+        77.4,
+        77.4,
+        77.4,
+        77.5
+      ],
+      "current_median_ms": 77.4,
+      "exact_paired_bootstrap_ratio_ci95": [
+        0.9993544222078761,
+        1.0006459948320414
+      ],
+      "median_pair_ratio": 1.0,
+      "paired_current_over_control": [
+        0.9987096774193549,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0012919896640826
+      ],
+      "ratio_of_sums": 1.0,
+      "role": "panel",
+      "rounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "k0n13m2d6": {
+      "control_device_ms": [
+        1784.4,
+        1784.2,
+        1785.4,
+        1785.4,
+        1785.1,
+        1785.1
+      ],
+      "control_median_ms": 1785.1,
+      "current_device_ms": [
+        1785.3,
+        1784.7,
+        1785.0,
+        1785.1,
+        1785.1,
+        1785.6
+      ],
+      "current_median_ms": 1785.1,
+      "exact_paired_bootstrap_ratio_ci95": [
+        0.9999066415221165,
+        1.000317522576789
+      ],
+      "median_pair_ratio": 1.0001400481765728,
+      "paired_current_over_control": [
+        1.0005043712172157,
+        1.00028023764152,
+        0.9997759605690602,
+        0.9998319704267951,
+        1.0,
+        1.0002800963531455
+      ],
+      "ratio_of_sums": 1.0001120490027637,
+      "role": "primary",
+      "rounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "k0n9m3d5": {
+      "control_device_ms": [
+        44.9,
+        44.9,
+        44.9,
+        44.9,
+        45.0,
+        44.9
+      ],
+      "control_median_ms": 44.9,
+      "current_device_ms": [
+        45.0,
+        44.9,
+        44.9,
+        44.9,
+        45.0,
+        44.9
+      ],
+      "current_median_ms": 44.9,
+      "exact_paired_bootstrap_ratio_ci95": [
+        1.0,
+        1.0011135857461024
+      ],
+      "median_pair_ratio": 1.0,
+      "paired_current_over_control": [
+        1.0022271714922049,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "ratio_of_sums": 1.0003710575139146,
+      "role": "panel",
+      "rounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "k1n11m2d5": {
+      "control_device_ms": [
+        25.6,
+        25.6,
+        25.6,
+        25.5,
+        25.6,
+        25.6
+      ],
+      "control_median_ms": 25.6,
+      "current_device_ms": [
+        25.6,
+        25.6,
+        25.6,
+        25.6,
+        25.5,
+        25.5
+      ],
+      "current_median_ms": 25.6,
+      "exact_paired_bootstrap_ratio_ci95": [
+        0.9973958333333333,
+        1.0013046314416176
+      ],
+      "median_pair_ratio": 1.0,
+      "paired_current_over_control": [
+        1.0,
+        1.0,
+        1.0,
+        1.003921568627451,
+        0.99609375,
+        0.99609375
+      ],
+      "ratio_of_sums": 0.9993485342019545,
+      "role": "panel",
+      "rounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "k1n11m2d6": {
+      "control_device_ms": [
+        240.9,
+        240.9,
+        240.9,
+        240.9,
+        241.0,
+        241.0
+      ],
+      "control_median_ms": 240.9,
+      "current_device_ms": [
+        240.9,
+        240.9,
+        240.9,
+        241.0,
+        241.0,
+        241.0
+      ],
+      "current_median_ms": 240.95,
+      "exact_paired_bootstrap_ratio_ci95": [
+        1.0,
+        1.000207540643376
+      ],
+      "median_pair_ratio": 1.0,
+      "paired_current_over_control": [
+        1.0,
+        1.0,
+        1.0,
+        1.0004151100041512,
+        1.0,
+        1.0
+      ],
+      "ratio_of_sums": 1.0000691754288877,
+      "role": "holdout",
+      "rounds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  "correctness_gate": "passed",
+  "hardware_counters": "not collected; NCU is outside this protocol",
+  "holdout": "k1n11m2d6",
+  "interpretation": "The intervals quantify this session's A/A timing floor only. They neither establish equivalence nor license a performance claim.",
+  "measured_executions": 60,
+  "measured_pairs": 30,
+  "primary": "k0n13m2d6",
+  "profiler_gate": "passed",
+  "profiler_order": [
+    "nsys"
+  ],
+  "schema": "gpu-aa-nsys-analysis/v1",
+  "scope": "byte-identical current/control A/A calibration with post-timing Nsight Systems diagnostics; no candidate and no speedup claim",
+  "session": "gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31",
+  "warmup_executions": 10
+}

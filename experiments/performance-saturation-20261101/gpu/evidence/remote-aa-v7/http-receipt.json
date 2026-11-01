@@ -1,0 +1,2123 @@
+{
+  "cleanup": {
+    "absence_verified": true,
+    "delete_requested": true,
+    "id": "wqywy6u8ckeja4"
+  },
+  "command": "bash ecc2k130/runner/codegen/install_nsys_tools.sh && GPU_STUDY_SECURE=1 bash experiments/performance-saturation-20261101/gpu/run_gpu_aa_nsys.sh 'experiments/performance-saturation-20261101/gpu/runs-http' 'gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31'",
+  "command_sha256": "d5d7183aaf441f21694b765689fe8e75defd5c849eed0505c9750c919baa0caf",
+  "error": null,
+  "finished_at": "2026-11-01T22:25:25.398549+00:00",
+  "outputs": [
+    "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31"
+  ],
+  "pod": {
+    "cloud": "SECURE",
+    "cost": 1.19,
+    "createdAt": "2026-11-01T22:20:51.017Z",
+    "creation_response_ambiguous": false,
+    "cudaVersion": "13.2",
+    "dataCenterId": "EU-CZ-1",
+    "gpu": {
+      "count": 1,
+      "id": "NVIDIA GeForce RTX 5090",
+      "memory": 62,
+      "vcpuCount": 32
+    },
+    "id": "wqywy6u8ckeja4",
+    "image": "runpod/base:1.0.2-ubuntu2404",
+    "name": "misagi-f4-http-5090-v7-f3fc81f7b94f",
+    "startedAt": "2026-11-01T22:20:51.012Z",
+    "status": "RUNNING"
+  },
+  "provider_actions": true,
+  "remote_status": {
+    "archive": {
+      "bytes": 2178664,
+      "files": 397,
+      "manifest_sha256": "04885fe46b048a152aa0cd2bcffa9de46c2386dcc8a6f8a532f68367ea39a6fd",
+      "sha256": "c69fae2f4ded148451c3492174cae6fec1d033e009a4f4e37fd71fdc99c011aa",
+      "uncompressed_bytes": 6836967
+    },
+    "archive_ready": true,
+    "chunks": [
+      {
+        "bytes": 2178664,
+        "index": 0,
+        "offset": 0,
+        "path": "/v1/result/000000",
+        "sha256": "c69fae2f4ded148451c3492174cae6fec1d033e009a4f4e37fd71fdc99c011aa"
+      }
+    ],
+    "command_sha256": "d5d7183aaf441f21694b765689fe8e75defd5c849eed0505c9750c919baa0caf",
+    "command_started_unix": 1793571692.6509447,
+    "done": true,
+    "finished_unix": 1793571919.6672716,
+    "hardware": {
+      "gpus": [
+        {
+          "compute_capability": "12.0",
+          "driver": "595.91.07",
+          "memory_mib": "32607",
+          "name": "NVIDIA GeForce RTX 5090",
+          "uuid": "GPU-2fe6673d-b8e6-ccfd-ebc4-32d4a330f25c"
+        }
+      ],
+      "nvcc": "",
+      "pod_id": "wqywy6u8ckeja4"
+    },
+    "job_id": "misagi-f4-http-5090-v7-f3fc81f7b94f",
+    "returncode": 0,
+    "schema": "runpod.http-batch.status/v1",
+    "source_archive_sha256": "ee0d64e8fa7bb6b7a8dcd9e5fb161bc79d702fd5933f1ea30c1376c237dad694",
+    "source_commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+    "source_tree": "c4562cb6a2d72e549f5700feb870d9211b17fa56",
+    "stage": "complete",
+    "started_unix": 1793571692.643432,
+    "timed_out": false,
+    "worker_error_type": null
+  },
+  "request": {
+    "cloudType": "SECURE",
+    "computeType": "GPU",
+    "containerDiskInGb": 100,
+    "environment_keys": [
+      "POD_BOOT_B64",
+      "POD_MAX_SECONDS",
+      "RUNPOD_BATCH_BOOTSTRAP_B64",
+      "RUNPOD_BATCH_CHUNK_BYTES",
+      "RUNPOD_BATCH_COMMAND_B64",
+      "RUNPOD_BATCH_COMMAND_SHA256",
+      "RUNPOD_BATCH_JOB_ID",
+      "RUNPOD_BATCH_MAX_RESULT_BYTES",
+      "RUNPOD_BATCH_OUTPUTS_B64",
+      "RUNPOD_BATCH_OWNERSHIP_ID",
+      "RUNPOD_BATCH_PORT",
+      "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+      "RUNPOD_BATCH_SOURCE_COMMIT",
+      "RUNPOD_BATCH_SOURCE_REF",
+      "RUNPOD_BATCH_SOURCE_TREE",
+      "RUNPOD_BATCH_SOURCE_URL",
+      "RUNPOD_BATCH_TIMEOUT_SECONDS",
+      "RUNPOD_BATCH_TOKEN"
+    ],
+    "gpuCount": 1,
+    "gpuTypeIds": [
+      "NVIDIA GeForce RTX 5090"
+    ],
+    "imageName": "runpod/base:1.0.2-ubuntu2404",
+    "minRAMPerGPU": 62,
+    "minVCPUPerGPU": 16,
+    "name": "misagi-f4-http-5090-v7-f3fc81f7b94f",
+    "ports": [
+      "8888/http"
+    ],
+    "secrets_redacted": true,
+    "startup_sha256": "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b"
+  },
+  "result": {
+    "archive": "/workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31.result.tar.gz",
+    "archive_bytes": 2178664,
+    "archive_sha256": "c69fae2f4ded148451c3492174cae6fec1d033e009a4f4e37fd71fdc99c011aa",
+    "files": [
+      {
+        "bytes": 344,
+        "path": ".runpod-batch/job-status.json",
+        "sha256": "f5d487ee1391a601f9bf3fbd3e2616df7f0e8a1d5bfc7597a68d35dae3694686"
+      },
+      {
+        "bytes": 13691,
+        "path": ".runpod-batch/log.txt",
+        "sha256": "b0d82ef07ef1895af19a82affa9a7c2b188bec81dd4b4686e8696b22defa096b"
+      },
+      {
+        "bytes": 445,
+        "path": ".runpod-batch/source.json",
+        "sha256": "8f768951ee4121affa7cbb2f7b6d78c066bebc421b80b2ad00ab8208e2f3b518"
+      },
+      {
+        "bytes": 180,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/analysis-gate.json",
+        "sha256": "6712be15e0fe2fd5ad3fb2eeac8f2a6ab90d4e996be450d5856351db775a9884"
+      },
+      {
+        "bytes": 4795,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/analysis.json",
+        "sha256": "6b4085c5e2d247a8a08f848d544a1d64d19831b8ae62d25c0aec01a4ae1ed584"
+      },
+      {
+        "bytes": 146,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/binary-sha256.tsv",
+        "sha256": "bb130fbbf09e4cb366bd2bae3879f37ee80d3d92a753fba546efc430558e330a"
+      },
+      {
+        "bytes": 3519,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/build.log",
+        "sha256": "1f39c55f2323d594a6be25756a6bf1f7959cea99860bf689a2c0de40d00794f6"
+      },
+      {
+        "bytes": 21,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/completed-at.txt",
+        "sha256": "632b9612dd99b998613e0249bc2f6e9f90ebc1b86520bf7635ec9b53a66930b9"
+      },
+      {
+        "bytes": 426,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/host.json",
+        "sha256": "5938a66459456573c9de2866b645857b511ab33ded1b4e041314eef01321720e"
+      },
+      {
+        "bytes": 57,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/measure-gate.json",
+        "sha256": "f7759cd5da89d43251d5295a8b7a9db930cfa433581f007384909320906c1a2b"
+      },
+      {
+        "bytes": 36,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/cargo.txt",
+        "sha256": "c35608815f43d0b8788a9b826fad2bb17384f49fb328dc4fe64da9db5f5ef4d6"
+      },
+      {
+        "bytes": 41,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/git-head.txt",
+        "sha256": "50eb0d6a02e2b4fb025153a47f36a13d72fb2e3bdbcdc3af13140670e590fb61"
+      },
+      {
+        "bytes": 62,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/git-status.txt",
+        "sha256": "6340c54e10ce8f0bba7be16ab4fd41a1c962cf24ecc4a37778988ae1e5f2f23a"
+      },
+      {
+        "bytes": 678,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/gpu-topology.txt",
+        "sha256": "ce7119f243f2e0c9416bdc92c33ba70e6a905e2e89df264968fb852b1ed3828f"
+      },
+      {
+        "bytes": 122,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/gpu.csv",
+        "sha256": "4f694332f4f4614644d503be6fd919b035d5b7236fc7ae75d311449db31d25f4"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/nsys-reports.status",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "bytes": 2320,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/nsys-reports.txt",
+        "sha256": "253894311013eb369fa98a45b17e8900534bf411ef869f1fbfe942b27cbfee51"
+      },
+      {
+        "bytes": 58,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/nsys-version.txt",
+        "sha256": "c17219a14f0b492bd375522c289a60333680ec1020d5ee81a8a5c5889955de72"
+      },
+      {
+        "bytes": 196,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/rustc.txt",
+        "sha256": "f22d5e4e9ced367e774ce5bc140d9e6b1235c1882fec80d011044851f3ae6369"
+      },
+      {
+        "bytes": 755,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/source-sha256.txt",
+        "sha256": "62c7b6c588abd2b042bd5e18c7d77002d28a341e47f9fa4006f8c42650f4207d"
+      },
+      {
+        "bytes": 133,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/metadata/uname.txt",
+        "sha256": "f5bf7b5122aedc4cd2950fa5e9d57870856056dfeb3c3090fc34d0431b07eafc"
+      },
+      {
+        "bytes": 53,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/nsys-gate.json",
+        "sha256": "59daff9b4fe158799f6a0ba4b71d03c925fe2034eead55233d5c7d975141c952"
+      },
+      {
+        "bytes": 3364,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/order.tsv",
+        "sha256": "bb72fbb176b7ae6addcd7dfa2ab3004ff55e2e8997d914dd327ecc09a54bfb07"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.json",
+        "sha256": "a64d67d4f6053149425b7477084e05f7c3a6cffc7068dbcc1c8eac869f88439c"
+      },
+      {
+        "bytes": 1408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.log",
+        "sha256": "85bf7225acd6b59f0cee009b8d894bb76b9ff830563b4fd32bb007e5e07a1517"
+      },
+      {
+        "bytes": 755050,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.nsys-rep",
+        "sha256": "c3e00ca35ebd8d0fc1a6eb79a0eca1c72b50131303b60675cb6e741f557414a8"
+      },
+      {
+        "bytes": 5587,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.smi.csv",
+        "sha256": "3c33a7f4a201da6ec07ae1bb1805c9f871b078b5402e42864e8b6f27818e3cbf"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2494464,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.sqlite",
+        "sha256": "6826b257e08d20862cf94e79628e993dce3bac989e8a4df0f621902efa871563"
+      },
+      {
+        "bytes": 1980,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.stats.csv",
+        "sha256": "024c564b08e142fc761b4d98df64baedb7a20132411c3b790a3d126fc4465568"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.stats.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.stats.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/control/k0n13m2d6.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.json",
+        "sha256": "5a5f63bd90d35cbbc9311b4972eeeb643bb1cf165ae92d664192692ed3494ceb"
+      },
+      {
+        "bytes": 1407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.log",
+        "sha256": "bf819f8d15c593751930b411124befb1624931500e9f32f0af06f688933dcde9"
+      },
+      {
+        "bytes": 755102,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.nsys-rep",
+        "sha256": "87ec97dd0afe66af50173ab214c1d2a2562f29b9f4a3574e6a9eb144f80ad11d"
+      },
+      {
+        "bytes": 4686,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.smi.csv",
+        "sha256": "de3727ae9252a2a6964e7ada25eb2f48718712686434781ef7688227b2eb997d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2473984,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.sqlite",
+        "sha256": "6bd9aa39ebed8d2d3555b98b3c00177d07fd87a217f6d0a87977ec9801468db6"
+      },
+      {
+        "bytes": 1975,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.stats.csv",
+        "sha256": "0f5081fb9b66be5ac473154f75175b9cb4edfcae58ab4acca74dd6b2a925e984"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.stats.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.stats.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/profiles/nsys/current/k0n13m2d6.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/control.json",
+        "sha256": "13017e3dd73c2f4503efffa76bab27e0f1739f2201812f9cf20ea5d942ad6618"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/control.log",
+        "sha256": "38434457da395732bb5016f1389d4035249dcc07e23ab1e752174001d77dc295"
+      },
+      {
+        "bytes": 582,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/control.smi.csv",
+        "sha256": "1cf72d76a16a81ac9c2a3f249c6633521b5cccb49ac6ec69facc73f766e47b23"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/current.json",
+        "sha256": "81e6e4c28e282f8c525b5cd2881a1ee0bd973e1d37830ed989b9a9b741528a35"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/current.log",
+        "sha256": "68176bd779aa533ce7393cb04098e25175c555a9c4e66354e26e80138282e32b"
+      },
+      {
+        "bytes": 471,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/current.smi.csv",
+        "sha256": "8da0576731f19f023d89be4cd981cd31d7cacbf4b70a98b08170aaf72ee37b74"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/control.json",
+        "sha256": "89bc058fff8b0db1b8c099a4456e1b9a09bfc42e01c52c08e1a329f15d1c569a"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/control.log",
+        "sha256": "e632757d8ba35f31fc7cc2dbb7cdf7e02a95dfb5d62b48f73d2af142fe857da8"
+      },
+      {
+        "bytes": 2791,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/control.smi.csv",
+        "sha256": "cd57aa05d55f28575db14324b2d9bd0325841e22a004a2d4e02a91c310468388"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/current.json",
+        "sha256": "e3a1034d5c79b56fa909f7f10d8bd262918772a7741a9060dfe18420abd1aa82"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/current.log",
+        "sha256": "17ce788e2652b4df2032785dda4ef1983d5c421fa6f7ffebc792b1fc8c09025e"
+      },
+      {
+        "bytes": 2791,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/current.smi.csv",
+        "sha256": "8b9d9a208a61f23574b27c8f034f531dd78716a2d74b51189962dd051c64f5cf"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 621,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/control.json",
+        "sha256": "0162d72b22366abbc2fd3d9ca0320a38f717693b2523dbefd1e5d39b4f671e47"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/control.log",
+        "sha256": "aead698a6bfaba943f7d95d0f72aa54bddf1046731737d1a654462ad92f57295"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/control.smi.csv",
+        "sha256": "5de6f25ecc32e390989969cf9cdaee59045294ab286d30386283b06043ac8723"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/current.json",
+        "sha256": "53c3588cdb4c67e004f14dd880ca4f9fa6a63c4aabe2cc7b252125e61a648d39"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/current.log",
+        "sha256": "51b334162b7ed9b93aa91b11d6b6de427b84d843e8a8b5a97fcf818b4649a432"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/current.smi.csv",
+        "sha256": "d112ea6b3891c430d8f562f99815702a9ad2b2fabcb37977801c1a1ea7bd694a"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/control.json",
+        "sha256": "4479910c4f52eaefa07c022370d4accc48d93fc018ef3eae0de90512c121c31d"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/control.log",
+        "sha256": "3e7526f359dad5f8cbfe3feaf64b27fe7b613afc358142fbc97954efd1735777"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/control.smi.csv",
+        "sha256": "57cc62a57dfc4a88ef78a196b6391356b79c8e7901719a4a87358484b8af70e1"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/current.json",
+        "sha256": "6316be396896187499fc6f4dbefa09d900de018389240f57802bf3c466e12ff5"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/current.log",
+        "sha256": "20350147cedcb7261515c75a919729c9c571b5e43c40506a7fdee54f6863e5bb"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/current.smi.csv",
+        "sha256": "53b8fb748bbbc7bebd1f83c056c50d6fe05ae9426e3fb367c425ca3ca1a33e9d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/control.json",
+        "sha256": "41bf7b828e2b47117fc0070faa9bfe3dd1e888a03d52e550ca25cde833f7fafe"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/control.log",
+        "sha256": "7a6d7da5e9749b4fac5ed32778945b9b2c460f266e17f45dab642e2239148f62"
+      },
+      {
+        "bytes": 688,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/control.smi.csv",
+        "sha256": "267ffedd9246a87c24a1e2f74c9fd77946a6671a7001fabfd52394de5ab1138c"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/current.json",
+        "sha256": "6ed2b0ee04e7ce0c09e246570c62ecb14779243525e91575fccca3671aac053a"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/current.log",
+        "sha256": "ad2b51713df7cad7572a56328da997cdb85153d0caea6b9d552fa466627909c8"
+      },
+      {
+        "bytes": 693,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/current.smi.csv",
+        "sha256": "40636aee55c6bee681f6432beffe214f992fcf744aeca3c3dc38c980c8a12f5b"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r01/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/control.json",
+        "sha256": "746ec510519ede88738e5ac68d041aace58ebde7b17ccb1c220040ab27d7ce46"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/control.log",
+        "sha256": "2bd1e338841ca862bf66c37995530ff27fb70b12dbf71307df0a37a78d2f677d"
+      },
+      {
+        "bytes": 472,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/control.smi.csv",
+        "sha256": "99d712251de7d3f54c4afd9d6759747d57b72beadeff7eb706e4a5c1e66504c9"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/current.json",
+        "sha256": "b41e423b923aaed42456c03ea50d3c898cec711b560ca491242ccbef06ec7b0e"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/current.log",
+        "sha256": "ac9d1e794119ae283e7e98326b27555e6293556b030f98d64aa78800970fdd18"
+      },
+      {
+        "bytes": 474,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/current.smi.csv",
+        "sha256": "45631f39ba7fec367e35002181451c737c3c0bc67640d9d9719723d3fc55ddbe"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/control.json",
+        "sha256": "9ec4161e8aad36538afc7fa6dfe8c818c502334deeb2d033765a529b9f6565b0"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/control.log",
+        "sha256": "e3ae46fb9abb81f0ed91ae79e5d2c7bf212b564f991283cc7f694b0a6cc0ac1b"
+      },
+      {
+        "bytes": 2788,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/control.smi.csv",
+        "sha256": "c95dbb913cb91a1de50c907c52805845413c7fca299833cfd845766bf4c66502"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/current.json",
+        "sha256": "ebaaeb104cec57e30d8468373b0e68014f20b63f883e957447ee56adeaf3658f"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/current.log",
+        "sha256": "d2db239bed036c45a394ae682c645fc994a7e3730908fa30a8bd05dfcd0e141a"
+      },
+      {
+        "bytes": 2793,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/current.smi.csv",
+        "sha256": "142f97c6a84e1bc62c69aaf715fea65c358e437269c08291016b77356c743c20"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/control.json",
+        "sha256": "d2d5559ca0c7b270b59bd9281860ecc9b4c3d53d8f65e163e43299d78cf61d7c"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/control.log",
+        "sha256": "04f54bc2ccce7737d2c18402eb70c4250ec22b038a719f78fa9711ccdf60b5cc"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/control.smi.csv",
+        "sha256": "9f3783cbd04c528dcf0592570b9b7eb80e7c4c15577471a93a0da933ece1341d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 621,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/current.json",
+        "sha256": "a08978119bec9c69c8009103f48035c23ee78444f4552c17b7e963ac7127a9d9"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/current.log",
+        "sha256": "79becffd4446cc62011a1536f6fb85782cb3104dbef4516d68b7969101923712"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/current.smi.csv",
+        "sha256": "b3ce5feeb36aabdeb7971df233859f68231800b8478faddf8210384b1e11a766"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/control.json",
+        "sha256": "b691b4ce8a15a1eb43e2e28da92c6667e0bc76a09e5870841eb81ab55abe9b30"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/control.log",
+        "sha256": "e8a39c6e5238d1fc628d729bd4b57685c94a4007be76bdc998feb2fb81d0d542"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/control.smi.csv",
+        "sha256": "b7d3fd58ea77957756a27cae7ac2f1b2ea13307e9f2603bbad4f49605df3364a"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/current.json",
+        "sha256": "4b9edb26f71784f7a819768417c107e7d82c0d8e633fa9e34813dc1b3a398c7d"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/current.log",
+        "sha256": "e689a3c02ff1c48024c7bd9e6891931de449d3deae132aa6265db2e11b2a2613"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/current.smi.csv",
+        "sha256": "8c49a94fde861ce2858dcc696aa3194472edf7fff39a70aac3d16dc7200457c9"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/control.json",
+        "sha256": "50aac61c8e4b85595b630049ebd3c5e0a445930c55610f390006cd3549f2fd76"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/control.log",
+        "sha256": "93761db95bab3db10a47615f483a0360036ec220d0b28d632485ab104687bc2f"
+      },
+      {
+        "bytes": 691,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/control.smi.csv",
+        "sha256": "7008daa1c3994096cc50534056afc4c68acf42a121c8b286277386172cc2969d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/current.json",
+        "sha256": "e3d4b8393e08efbf274cf33e3d8e867a824be09b643cb09ca08c61f48f09b4b8"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/current.log",
+        "sha256": "d1c398b108e7c8368eea338c02a2301db9a8c5f94fabb22a8051ebdd85ef4a75"
+      },
+      {
+        "bytes": 689,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/current.smi.csv",
+        "sha256": "2d6de1660624a143e85789995ae90204a54d25230475f35d5aae748f65080cd7"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r02/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/control.json",
+        "sha256": "718cc212d70deb9bf041cde564aebd7db5d95db6d02a4a0e79ccfcea8fadad5c"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/control.log",
+        "sha256": "1b8077735ff34ef076494b1b59587590f9c4e6d77258d9e236c69af81b8ab268"
+      },
+      {
+        "bytes": 473,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/control.smi.csv",
+        "sha256": "0e78f0b3a546425a2e3423e855300279bff597795e143b12fc934c3768d44a22"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/current.json",
+        "sha256": "7370b2dfe3e27ae6d84b6e2d4bbc92131972e444c8402965bb51fb1ddf365990"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/current.log",
+        "sha256": "a31fbdc9f77edbfc0a4fb096d2a67e8c618dcd379965734be39a551b59daea2a"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/current.smi.csv",
+        "sha256": "426a0c83f65f6bf542f90b3aa1bc75412b72af6cbd2a2b6354aff63d9257fa5a"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/control.json",
+        "sha256": "f27968bf8b62c7383bba1f4cf6a4d5d6cada2e6e9a80c345f4d8b63795f74d1b"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/control.log",
+        "sha256": "957fa8e2e96b0d6ea66eb4dad2f02072d36606be02358609f490d3066e9e585f"
+      },
+      {
+        "bytes": 2794,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/control.smi.csv",
+        "sha256": "87525b4c9f2799785212b39483a153be7a5782b60ec0abbbcc4b5d3a63ea2a39"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/current.json",
+        "sha256": "062b4e3cb0b3c8961f93f2221de0c0ace816c781ef6aa4ff665cddccf3d4043c"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/current.log",
+        "sha256": "af814df57b11a83433c4535be611a6a75a83526339fd347acbc4d4a20d06895e"
+      },
+      {
+        "bytes": 2793,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/current.smi.csv",
+        "sha256": "3fe6358c27fd1a91ef92d09d70f4fd166f3c9e54de047fa1709f6317d6e36552"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/control.json",
+        "sha256": "cc1c6354a344ecd7f9fce643f624211fcdae5837c5f4582ed19501a73f4b064d"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/control.log",
+        "sha256": "cdebbbc19c3b19464621308ff7473c7bfd03ce6d2eb0862f096a1b4946bd7ae6"
+      },
+      {
+        "bytes": 474,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/control.smi.csv",
+        "sha256": "b8c908e0292847d7db9414148abb347c2d1629e008f6f50b6b4fdab95f406431"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/current.json",
+        "sha256": "6f9d735f030bb6a65f85ff3f022ecdd5e7fe227d08fff5cf193b334f1c5cfaea"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/current.log",
+        "sha256": "6d3ce7539ce59eba3ea75d7d16398887f993fbd8ceca4d1c3bed5d01cdac0be9"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/current.smi.csv",
+        "sha256": "be81e4a9aaa3ca734fa592dac4d5a9f4a44766588b59c84b4a2f38ffe972732a"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/control.json",
+        "sha256": "0b4a9c120a58f65aabf983ab92064355e1fbde44cc8030b4611be8bb44d8d3c1"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/control.log",
+        "sha256": "28fc158137fce89ba3895560c4c1b73d6ecbe7d3f6ff2aae33909ba510026ac3"
+      },
+      {
+        "bytes": 364,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/control.smi.csv",
+        "sha256": "c5e755504215ba88043639c11c54d33d6a8a448b03fdc337117bd7a56390f929"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/current.json",
+        "sha256": "9f858d7a15490c99cf8eec2bbac5e5fdd73e2efe120d0ca1c0397c2bc520c819"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/current.log",
+        "sha256": "42a015eecb5b15d3aed4c0c2bd52c9e38cf775be5d363af0caf816ffe55bf87b"
+      },
+      {
+        "bytes": 364,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/current.smi.csv",
+        "sha256": "7cfb6896f4fb247c5352e6790fc70a05695dbe0da735be5675a3d47f75df971b"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/control.json",
+        "sha256": "131b94955837360bdec8267619c1f917b2d13c0b90d2b8cb6fa79c73636395fc"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/control.log",
+        "sha256": "f33c3250b33881da59347ca2ed7751202eef45828662eb6f2975c8d3139a851e"
+      },
+      {
+        "bytes": 690,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/control.smi.csv",
+        "sha256": "1b89473a44bb69f8d856d3d59189dde188a430b63b72b386f3e3e1e3f4dfe5c0"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/current.json",
+        "sha256": "8f13df99236f6ca8d25e0b6e06798f2956e11ceb512768f53960350882e2d7b6"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/current.log",
+        "sha256": "c42eec1f6eaf4dc3e3e3bb9a3df9418b0bf25cbd0240dc54fba5d43aece881c6"
+      },
+      {
+        "bytes": 698,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/current.smi.csv",
+        "sha256": "6ed84a4fabe81dd2cce765152540a18f93a9a05d37b7415459b455d844f826ba"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r03/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/control.json",
+        "sha256": "8c6c8fe920b41ab3f33b466baa3d29c56480b99502feef0c1f687485c28568b2"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/control.log",
+        "sha256": "da7f9ac50df8a4de21c89e0f71843d02d9ee6d11093837790b9ecb5f27c79789"
+      },
+      {
+        "bytes": 471,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/control.smi.csv",
+        "sha256": "c2cff9ec391a1b31a6b54adb3020ba0fa3999bb047cb3f801a190cc2f918c672"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/current.json",
+        "sha256": "d2e1b322e6a7490831b9a01008cfe2eef7c78edcf9a5e3fcc2d2af1b65815de4"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/current.log",
+        "sha256": "285c321090afb7dc92b6c2c8ccdcd90825f449742e5d826ed5cabb5522d7dacd"
+      },
+      {
+        "bytes": 473,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/current.smi.csv",
+        "sha256": "b2f462378d0809894f87c9e6872aeb4c23330484888334b3a95c29e0720cf566"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/control.json",
+        "sha256": "8c047b14f46870068074189ec96e1c796f142cfdd614a64209a75145832d0176"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/control.log",
+        "sha256": "badb373a86519aa96287111cc7bc35b2c9829fce8d83dea6ce309434ac3f2c3f"
+      },
+      {
+        "bytes": 2793,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/control.smi.csv",
+        "sha256": "a6d2e05bb627f6d42fb5efe31d27913157f4f303e08bf28d2a1a7cc326ccfc16"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/current.json",
+        "sha256": "d0fba25724b56b42bf83e99860f8a46e4fd898aa2449c6b64ef21a5a9c8df92f"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/current.log",
+        "sha256": "910c9b8f966abccc1c221fc713c9b94ecd3ce219beea6f3a43e776619b8fa672"
+      },
+      {
+        "bytes": 2796,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/current.smi.csv",
+        "sha256": "cc206e885234cad11dea7dffbbe15ecfce0f4f8726cd4e4540e168f47a4c4619"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/control.json",
+        "sha256": "f15783d2b787dbc115fec686713499a0d5f604eae3b189d912aa4d658a3d6aea"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/control.log",
+        "sha256": "8c5e0bbfa76ae223eb0f3163edb6df8881e9e6594ed6c0085ad6dd4916a8c4bf"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/control.smi.csv",
+        "sha256": "9ee4e887e39987c8b3078441614acc887c3c8fbd0fed0584dfedd32e4d57649c"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/current.json",
+        "sha256": "304a10f9a84dfbe1d8b0a9e5c52f383fb4aa3674fd496b896f19ed167555a838"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/current.log",
+        "sha256": "3e21a0222adc65160c970f1a85bdd6d10437c009268d8670a477edc31b98e1ee"
+      },
+      {
+        "bytes": 473,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/current.smi.csv",
+        "sha256": "a8dad3c77957fec57b285f3f410f93891cd381e26b2a99fe29a163d2a82379a9"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/control.json",
+        "sha256": "b0f0b042dc952e0dc1e64463d301c15e4fb8e99a9a6cbee6e4963727d799606f"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/control.log",
+        "sha256": "b71fe2480af9185f5a87cff8b3ef11032f4dcd99fd68757960973e0c842fa447"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/control.smi.csv",
+        "sha256": "0e811f3f31f1c55ea372932c8254b20df072e79b59c60511cc24b6254697188b"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/current.json",
+        "sha256": "de23cfc9024edf15ce1cc4882bf687e2482ec8956733c5d089472fea3b764cac"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/current.log",
+        "sha256": "55ebbc482e1666e92a6bec68cf5e5f76e95c48aa2df87582aee2d2b43257ab22"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/current.smi.csv",
+        "sha256": "fde9b23f6b21b54a48cbe76b6562d5975a644dfcfb7ff07c83d5897f298caa7e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/control.json",
+        "sha256": "3dc8df880d2aab54be6323cd39c041a4c6a50a5ed57c90a2dce3d791778a4320"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/control.log",
+        "sha256": "782454dd198f9ef7f4621df2974a38ec980f8c4cdba4f353d12270d656bec1fe"
+      },
+      {
+        "bytes": 695,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/control.smi.csv",
+        "sha256": "14633ad64e65134353d81183c310402ecae41ebfceffa15cf7859ba6cf71515d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/current.json",
+        "sha256": "cdf0b40cf22b98a4c0864d9a2b6b5747df906a3f3af7dded80c9d800263bd61d"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/current.log",
+        "sha256": "65df8a3c13e5c1a642e8334074c722ba21f4f6ee8729e256d10a6a66ebf1d281"
+      },
+      {
+        "bytes": 689,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/current.smi.csv",
+        "sha256": "9cbbb5ffea6ae1585e4e4cd2de9db53774d9c3cdc7d4d5c002cf1397211e5845"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r04/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/control.json",
+        "sha256": "b1cfef20610ec8f6731e085c49fdaef1f38af5414aa6f7600cc3ab04c4112a32"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/control.log",
+        "sha256": "da714fba18536452ba5860c732e013e50527af6ee89c49ac71282dead8f65aea"
+      },
+      {
+        "bytes": 473,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/control.smi.csv",
+        "sha256": "2ee5e7f4ac9ff7bf74c61bccc45901621c1abc3ef44d3dc9efab10040a21d5fc"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/current.json",
+        "sha256": "6bfffd9dbf78176d4350240309013f4c444563db7af1d26159806bafd0a3ad86"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/current.log",
+        "sha256": "a297bcc58fba23f7df622ab8b081acb179854894c7b4193d8d1c36ff7efeead3"
+      },
+      {
+        "bytes": 471,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/current.smi.csv",
+        "sha256": "298793b71abdac830b3143104b5bbb85b25c716afdf7504f12ae0b8a21946e12"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/control.json",
+        "sha256": "82f14af142ff6fa6c3cd0b9fe7f1f83135308e9a7f39fea70e80b01b9012bde7"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/control.log",
+        "sha256": "fefaf4048171b1869dde10d39978ca2a0b8e6e20f1ccb4214da26fd7910e34ad"
+      },
+      {
+        "bytes": 2796,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/control.smi.csv",
+        "sha256": "f57fe5619e2deb35be0f7fbf85fe5fc525e6b538960bfa230cdde603510b4a34"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 630,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/current.json",
+        "sha256": "8c5208323e92d28a269659f370d5c39399b5300a6e56bb14d958748b0a5954de"
+      },
+      {
+        "bytes": 418,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/current.log",
+        "sha256": "0c91a94c6f5b0d1be60db3eede1eedbc5a9faf2224e944927373f9845900b370"
+      },
+      {
+        "bytes": 4211,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/current.smi.csv",
+        "sha256": "dbdf796f1e4112581091d11b9d7beaa200aa396e5ed87b0027a7463d0ec6d886"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/control.json",
+        "sha256": "8a1a75b52b48dc661ba5bc0732d14d6f416bf0ab84e1df2f484ce978b9cacb7b"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/control.log",
+        "sha256": "70bd3881a4fe603da943d8f6323ef97e33e55a163915c43806ce78ab625d647c"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/control.smi.csv",
+        "sha256": "e851058e997ecdc709e05aad05f7ab759e098f10261f3fba732c7c620c0c8f10"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 621,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/current.json",
+        "sha256": "a59fb71125e7b9f34a96e17f64e547912edc5a2b0f40cb31aae29ee269f35ef4"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/current.log",
+        "sha256": "65f734f9a11ed575c989202f5dffbb78f7c38186e638f512f86faf5b317f1f33"
+      },
+      {
+        "bytes": 578,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/current.smi.csv",
+        "sha256": "cb83d7fcb7c6599f33b1305bd09de29b92b7a721d4aff29ee414493fb044d34e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/control.json",
+        "sha256": "03259ed63e9846a0e9d7fd30129a76985a051b01b3129c7cb58a2995a974aeaa"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/control.log",
+        "sha256": "04a1c8a34cdbba13358a46334a0043328ab0f7a5649c6aa6029e7e12d8052df8"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/control.smi.csv",
+        "sha256": "a8a4113a8784b42f8e29b2a0330f192efafda2e1a38295a7aaa0e7e91d361b4e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/current.json",
+        "sha256": "79f36d82f820d5efeb27aecc4e1d5b739d3c46ca7cc902ad2276155c4ee2d5da"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/current.log",
+        "sha256": "6f62ee1aac4a417f419a41e9309fc0d0088fa00c3bbaa73b72d0de5d312a3923"
+      },
+      {
+        "bytes": 364,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/current.smi.csv",
+        "sha256": "c6d75f17642e0f9737294458ce21cf77fec1b2d5e2f495b380b593fde91dd805"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/control.json",
+        "sha256": "708859562d8f827035813a74b745033ba02cd43f36ceac459d194b496b73be15"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/control.log",
+        "sha256": "96efd73dccd2a1cf1bbc21d1eee27cc88e4ff8a95e2ce2ffb20406758a8c87f9"
+      },
+      {
+        "bytes": 690,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/control.smi.csv",
+        "sha256": "36e6f985949f41bc42bb40fdee6fbf8e49726dd49d25f28fef0c67557953677e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/current.json",
+        "sha256": "1193f6d589168d12686d3cb1b12e275db941ba097248232673af55fecf2dc16d"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/current.log",
+        "sha256": "2ad7db6e37024761389520172221bd4c43f59808d86646f1be0ff6d09207697c"
+      },
+      {
+        "bytes": 695,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/current.smi.csv",
+        "sha256": "d9e2153d074b7e32f81925dfa1441aef143513521044f3b74e8aa55a5506b614"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r05/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/control.json",
+        "sha256": "2438407a949eb5bbd05b23e2e7bc470fbac3d12a2048cabdfb67133947eec2c6"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/control.log",
+        "sha256": "d19d692d1f50ca1dd1419f8c5018d8df6a71c18ae9363ba48ae9b6d6db1ee127"
+      },
+      {
+        "bytes": 471,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/control.smi.csv",
+        "sha256": "eae4d461030ec03869a9e85ee6886e9951de3aae6e404ccc1daee342697421e1"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/current.json",
+        "sha256": "03a5a291ae0e9a4f5d88c6d169a86a3b661a49c753b1747bae2512e7d5c6cd50"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/current.log",
+        "sha256": "800f1cba77b12cffc7b683d674e15fc1dfa61d44010cec31b681d872dc1f5f14"
+      },
+      {
+        "bytes": 473,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/current.smi.csv",
+        "sha256": "8349dc9985435a575eb31cca19eec4129b97411a018bf4478caf99c03c4c9e1d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/control.json",
+        "sha256": "ddac9b1ecd547693a079c05b71b87b178a1e289f64a37df9cc6c12768aef2fb9"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/control.log",
+        "sha256": "71091c41955651f3fa1bd0454d20564bd8c84f124166a5cafd0a1cfcdf5e3227"
+      },
+      {
+        "bytes": 3009,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/control.smi.csv",
+        "sha256": "9965a292eb5cc405c8f356750ffbb465b59083fb1bb91e709988c4c79558b34f"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/current.json",
+        "sha256": "6151b7b882289ac83f315c726faa7961c5d1dfacd1603641f850293d3331e2fa"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/current.log",
+        "sha256": "22227dd26ff7aebdc95d45073d13dff6bd3cf03a202eb97693bde0633da8a8df"
+      },
+      {
+        "bytes": 2687,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/current.smi.csv",
+        "sha256": "1a08f60994d766420f76be259453525da45975eb1fafa96a99bb1557c9780c4e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/control.json",
+        "sha256": "9218dbbb3f89cdc8e99c64e90d5d73c9229f417b7341e2b70c9b817d98bb263d"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/control.log",
+        "sha256": "a512435d9944456704f53162ceb51fbee33a2b8286488906e363cdcd8f947893"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/control.smi.csv",
+        "sha256": "93f53e891cbe71afaa60c6c80f010969cd1a1f77515de18a35b9e897d78601b3"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/current.json",
+        "sha256": "399290661874e8b07b13b91942d84f691887eec43f4aec447ee14aac2acb1472"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/current.log",
+        "sha256": "efe8f4aaa335a06b116e9a9c64f1f74c2fb41167febe278be7bdaf7e1e61b4a7"
+      },
+      {
+        "bytes": 472,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/current.smi.csv",
+        "sha256": "e17cd403e3311a32b2254543c0a6a66554007573e5d690159e5fcf8afee9b73e"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/control.json",
+        "sha256": "4da81486d9af006145b4a7d9f96e3c75d4d5a288ea7317e1f358752c9cca586d"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/control.log",
+        "sha256": "b1e412f8189c20cc38895022fc757d7ee036bb2ba5f790a15ced48f83cedfeae"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/control.smi.csv",
+        "sha256": "9c09707684b636cd2ecb205feebc1800d32de91b34584908f46b32c0de110485"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/current.json",
+        "sha256": "f63cfaec40564e14533c277bf61bb90ccc02eed516f8109d254c7b0f55f1951b"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/current.log",
+        "sha256": "f78adfd91d616a31d37b5e753cd54c7e56535c0d299e2f3e1eb5ea4ecd87f9ed"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/current.smi.csv",
+        "sha256": "e517797beaf10720b9068a77c0488712c4c7fbfaf5fa7b9629f9c4e51f98fbb1"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/control.json",
+        "sha256": "856f692e586be873a32054f123fe284f6f366a437b8a68a5d77bc72a257c812c"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/control.log",
+        "sha256": "2ce0125120b98654eea87377958f7050dbe56a8bdace69fe1843bd62f9dd3eda"
+      },
+      {
+        "bytes": 691,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/control.smi.csv",
+        "sha256": "02bb2892bdb8cead255b97948bf5d4350d08a71dddcc5d63b051320c3162390d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/current.json",
+        "sha256": "0af5c15d4f594c05438e093cc26e95db4c760801e1715894c93a0f83cf5471ef"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/current.log",
+        "sha256": "14b3a99fc80b4ec0fb6874bb029e620c25446869f6e8b5d5685e6dd5edc1dc39"
+      },
+      {
+        "bytes": 688,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/current.smi.csv",
+        "sha256": "be0f1d6fa3ca2e2cadafab2ddf0cedbd24bc8a06f371cfb8a5f0f0efa4273a58"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/measure/r06/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 624,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/control.json",
+        "sha256": "a818ea26db8f71a6382aa7351ca960f4512c7b6148687082a133795183ec142e"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/control.log",
+        "sha256": "9d59bbe4d2efc5f3d2f240ad37b2d27cfc69c6031a09c7c69f3fe31662584884"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/control.smi.csv",
+        "sha256": "9d5e3c7bcbe2456cfeab555c82345109870f0c1bf3f4dbd382cf97d7e4f64664"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/current.json",
+        "sha256": "1fd36af90278548d7109a211af15cd8e0de73ee7750d7c29ec96362f221835ee"
+      },
+      {
+        "bytes": 407,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/current.log",
+        "sha256": "d2aefc2a52a7a209a5484593e03e7e9f0eed594e3fd48073c0074e355f4cf80c"
+      },
+      {
+        "bytes": 999,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/current.smi.csv",
+        "sha256": "adcbd6cd5e773c84471505a18d9c6a0df4adcb027135f6bfa7e1fee7ab245a5b"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/control.json",
+        "sha256": "e1ea60d8f1cb46c36aa9a58b3cc47a4974d17b23653d9b010f601842ea91d556"
+      },
+      {
+        "bytes": 418,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/control.log",
+        "sha256": "3fc96e8ba35950d525003cc36e9f1a05edc3351f402a37b9d463803cf7ee8426"
+      },
+      {
+        "bytes": 3331,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/control.smi.csv",
+        "sha256": "2099b365f8d84a9da58958245ab7806c338188ba9f54e78793fe2ec126013291"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 631,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/current.json",
+        "sha256": "f752799fbbdb529395c07d55954410707911eb73a603070cbdc63afdd444bc88"
+      },
+      {
+        "bytes": 417,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/current.log",
+        "sha256": "7bdbe42a3f28522b52689102bd27f1c9131a18bf5805ffe4f534e709f15a39e2"
+      },
+      {
+        "bytes": 2793,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/current.smi.csv",
+        "sha256": "4ba0ba4793d44efebf723caf406f519a630f570788881fbc31b7ad1032ed9661"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n13m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 622,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/control.json",
+        "sha256": "a7cd1fa139c137418375a5898f8eabc8623a33ef024424eb287fc3367f4ad8b9"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/control.log",
+        "sha256": "453f3aaa02df5979e431fb9ac37f2e75cc71e71bc1d37d68f592600e366ba74e"
+      },
+      {
+        "bytes": 470,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/control.smi.csv",
+        "sha256": "021649f22a0e46bac10ad1c5f57ffd72bd1a8e3f190f93b4df1adbdb21f333d8"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 621,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/current.json",
+        "sha256": "2e66a553a07095057a203b284f87270aa476aa9c60aa9f560b3e3c82d6febcb6"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/current.log",
+        "sha256": "c29255ec6d2286c9a0c53ac4b78c5b623bccee884eb5b4ed980eddf564649c72"
+      },
+      {
+        "bytes": 579,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/current.smi.csv",
+        "sha256": "76f4d5195e5376b5cb1063ec79a1da9e9c391fcf9a536cd618ff09b453684ad0"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k0n9m3d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/control.json",
+        "sha256": "351562760c85f5ceb34ebf1c14a0981c9641e0bc9d0c2dee36e906d2d548233a"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/control.log",
+        "sha256": "2b757c9e2f50ec8a8037c91fcea0ceea4c6ccf9a724759c9a74e11e63713f226"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/control.smi.csv",
+        "sha256": "b461f87814e91a24ce671eb43d03f30d7af38b6776bc8a2652c5f46d31ad0095"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 621,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/current.json",
+        "sha256": "cf26a00867e0c47cfb9dbefc85e5753a940d28808d89d48830933f4113f80208"
+      },
+      {
+        "bytes": 404,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/current.log",
+        "sha256": "a6219c40244d12b507298bd5c2b82943020a7ce849b825bf911bcb322ee065d9"
+      },
+      {
+        "bytes": 362,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/current.smi.csv",
+        "sha256": "9f052f6d604b39500c27b760d4272726a3f5216f8a8e8e6e85596bb3600c740d"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d5/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 623,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/control.json",
+        "sha256": "f8a4ce4dd98d7e50406f30e8ad811167889c3ed225c97cad668fa65d4f65aadf"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/control.log",
+        "sha256": "196e5be1a4ebd257c66c0d0b863933c4ca7d38267bff2ffca361045e8ebab816"
+      },
+      {
+        "bytes": 691,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/control.smi.csv",
+        "sha256": "05649cbf5af77928f7a29ee488b8a09710b659372d0eff1444dd18d622cb1a77"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/control.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/control.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 625,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/current.json",
+        "sha256": "429678a6f5b02f990520fc370ebb31c8e920e29b2105a1abccf37162469691cb"
+      },
+      {
+        "bytes": 408,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/current.log",
+        "sha256": "12a6ee863470c970944f3fa4a6b01c0a4e7955ab6e56e080c18042b9b2d69873"
+      },
+      {
+        "bytes": 689,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/current.smi.csv",
+        "sha256": "0edffc467562763de6d8e3255966093890c6ea65d3a0d4f4a1ef07d28a1a38eb"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/current.smi.csv.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/raw/warmup/r00/k1n11m2d6/current.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 82010,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/rows.jsonl",
+        "sha256": "91dd95bf0528154f5a9e0c7f28697f4c79ad415130c5ca95ba5b623764e1f7b8"
+      },
+      {
+        "bytes": 2,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/runner-exit.status",
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+      },
+      {
+        "bytes": 56,
+        "path": "experiments/performance-saturation-20261101/gpu/runs-http/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31/warmup-gate.json",
+        "sha256": "721652e346a01de95c5ce9f11ac5cc676759fd11f1d62620c4e28d22199f4446"
+      }
+    ],
+    "metadata": "/workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-v7-20261101T222037Z-4d7f8a31.remote"
+  },
+  "schema": "runpod.http-batch.receipt/v1",
+  "source": {
+    "archive_sha256": "ee0d64e8fa7bb6b7a8dcd9e5fb161bc79d702fd5933f1ea30c1376c237dad694",
+    "commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+    "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+    "public_checked_at": "2026-11-01T22:20:49.004064+00:00",
+    "public_ref_checked": true,
+    "ref": "refs/heads/codex/runpod-http-nsys-v7-20261101",
+    "tree": "c4562cb6a2d72e549f5700feb870d9211b17fa56"
+  },
+  "started_at": "2026-11-01T22:20:49.019149+00:00",
+  "transport": {
+    "authentication": "ephemeral bearer",
+    "chunk_bytes": 4194304,
+    "kind": "runpod-https-proxy",
+    "port": 8888
+  }
+}
