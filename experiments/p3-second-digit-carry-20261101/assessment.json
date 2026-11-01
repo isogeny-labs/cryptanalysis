@@ -1,0 +1,27 @@
+{
+  "format": "correspondence-assessment-draft-v1",
+  "assessment_state": "preregistered",
+  "authority": "companion artifact; not a ledger record or certificate",
+  "source": {"object_uid": "generic-prime-field-prime-order-elliptic-subgroup", "representation_uid": "Q=[k]G", "equations": "E/F_p; #E(F_p)=r prime; r!=p", "field": "F_p", "dimension": 1, "subgroup_order": "r"},
+  "destination": {"object_uid": "second-layer-halving-section-cocycle", "representation_uid": "K=t([2]s_00(half(Q))-s_00(Q))/p mod p^2", "equations": "K=kappa_0+p*kappa_1", "field": "Z/p^3Z to Z/p^2Z", "dimension": 1, "ambient_group_order": "two formal digits"},
+  "transformation": {"kind": "two-layer nonhomomorphic section cocycle", "family": "p^3 binary Hensel-section carry", "degree": "144 constant predicates", "field_of_definition": "Z/p^3Z", "formulas": "H=[(r+1)/2]Q; C_3=[2]s_00(H)-s_00(Q); K=t(C_3)/p", "exceptional_cases": ["r=p", "y=0", "nonunit formal Y", "lift/kernel/digit failure"], "normalization": "least coordinates, u1=u2=0, least formal digits"},
+  "obligations": {
+    "existence": {"state": "unknown", "evidence": ["H111 supports the first layer only"], "scope": "p^3 cohort"},
+    "explicit_construction": {"state": "unknown", "evidence": [], "scope": "implementation pending"},
+    "map_correctness": {"state": "unknown", "evidence": ["reduction predicts a kernel carry"], "scope": "two formal digits"},
+    "subgroup_preservation": {"state": "unknown", "evidence": [], "scope": "two-layer torsion control pending"},
+    "computational_advantage": {"state": "unknown", "evidence": [], "scope": "144 predicates and decoder pending"},
+    "scaling_support": {"state": "unknown", "evidence": [], "scope": "uniform exact predicate proof pending"}
+  },
+  "preservation_certificate": {"identity": "red(C_3(Q))=O", "kernel_intersection": "not a replacement subgroup", "recovery_map": "conditional repeated halving plus EC verification", "scalar_multiplier": "binary reconstruction", "proof_artifact": "planned H112P3SecondDigitCarry.lean"},
+  "mechanism": {"proposed_benefit": "the second p-adic digit or its joint Witt-style relation with the first may retain the halving wrap", "prediction": "one of 144 predicates is exact on all 28 rows", "falsification_condition": "no exact formula or any transfer/control/proof failure", "assumptions": ["good reduction", "r odd prime distinct from p", "sound p^3 arithmetic", "uniform public predicate"]},
+  "cost_comparison": {"workload": "28 rows, 9096 targets, 32 matched controls, two coordinate isomorphisms, two-layer torsion controls", "baseline": "H111 low-digit null and generic square-root algorithms", "units": "EC, modular, p^3 lift/group/formal, predicate, decoder, memory, advice", "construction": "unmeasured", "transfer": "unmeasured", "destination": "144 formulas per row", "recovery": "conditional repeated halving", "verification": "all identities and [k]G=Q", "failed_attempts_and_duplicates": "H111 rejected 24 low-digit-only predicates; none are included", "memory_and_data": "unmeasured", "setup_reuse": "no curve-sized learned table", "uncertainty": "bounded toy evidence cannot establish novelty or asymptotics", "evidence_label": "unmeasured"},
+  "controls": ["eight randomized two-digit sections each on E101/E127", "eight symmetry-matched labels each on E101/E127", "coordinate-isomorphic primary words", "two-layer torsion-section zero carries", "generic square-root references"],
+  "protocol": {"parameter_scope": "seven curves; multipliers 1,2,3,5; 144 predicates", "sample_selection": "every nonzero target", "stopping_rules": "complete all rows, controls, and eligible decoders", "invalidation_rules": "any arithmetic, digit, torsion, predicate, reconstruction, or EC mismatch", "hardware_manifest": null, "execution_route": "p3_second_digit_carry_lab.py"},
+  "exploration_boundary": {"families": ["canonical p^3 halving carry", "72 depth-channel predicates", "72 cross-digit XOR predicates"], "parameters": "28 rows and 32 controls", "completed_scope": null, "completeness_claim": "complete only for frozen family"},
+  "composition": {"edge_ids": ["public-halving", "p3-hensel-section", "two-digit-cocycle", "witt-style-bit", "binary-decoder"], "junction_compatibility": "pending", "weakest_open_obligation": "uniform exact parity predicate"},
+  "sources": ["10.1007/S001459900052", "10.1007/10722028_22", "10.1007/978-3-642-04159-4_6", "10.1007/978-3-642-12827-1_9"],
+  "open_obligations": ["open paired drafts", "implement and independently replay p^3 arithmetic", "compile Lean interfaces", "establish or reject exact parity"],
+  "recommended_next_action": "open paired H112 draft PRs",
+  "official_status_change": "none"
+}
