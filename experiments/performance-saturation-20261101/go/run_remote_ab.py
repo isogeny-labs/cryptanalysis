@@ -56,7 +56,10 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--baseline-binary-sha256")
     parser.add_argument("--candidate-binary-sha256")
     parser.add_argument("--expected-cpus", type=int, default=32)
-    parser.add_argument("--expected-memory-gib", type=int, default=64)
+    parser.add_argument(
+        "--expected-memory-bytes", type=int, default=64_000_000_000,
+        help="exact cgroup v2 memory.max value required for this placement",
+    )
     parser.add_argument("--expected-cpu-flavor", default="cpu3c")
     return parser.parse_args()
 
@@ -227,7 +230,7 @@ def host_snapshot() -> dict[str, Any]:
     }
 
 
-def validate_host(snapshot: dict[str, Any], cpus: int, memory_gib: int) -> dict[str, Any]:
+def validate_host(snapshot: dict[str, Any], cpus: int, memory_bytes: int) -> dict[str, Any]:
     # os.cpu_count() can report the physical host rather than the container's
     # cpuset.  The schedulable affinity is the in-container execution contract.
     affinity = snapshot["affinity"]
@@ -236,10 +239,13 @@ def validate_host(snapshot: dict[str, Any], cpus: int, memory_gib: int) -> dict[
     order = ordered_cpus(affinity, snapshot["cpu_topology"])
     if snapshot.get("topology_order") != order:
         raise RuntimeError("recorded CPU topology order is inconsistent")
-    expected_memory = memory_gib << 30
+    if type(memory_bytes) is not int or memory_bytes <= 0:
+        raise RuntimeError(f"invalid expected memory byte limit: {memory_bytes!r}")
     memory_max = snapshot["memory_max"]
-    if memory_max not in (None, "max") and int(memory_max) != expected_memory:
-        raise RuntimeError(f"memory.max={memory_max}, want {expected_memory}")
+    if not isinstance(memory_max, str) or re.fullmatch(r"[1-9][0-9]*", memory_max) is None:
+        raise RuntimeError(f"memory.max={memory_max!r}, want exact {memory_bytes}")
+    if int(memory_max) != memory_bytes:
+        raise RuntimeError(f"memory.max={memory_max}, want exact {memory_bytes}")
     if snapshot["nvidia_devices"]:
         raise RuntimeError(f"CPU campaign found GPU devices: {snapshot['nvidia_devices']}")
     return {
@@ -247,6 +253,7 @@ def validate_host(snapshot: dict[str, Any], cpus: int, memory_gib: int) -> dict[
         "allowed_cpus": affinity,
         "topology_order": order,
         "benchmark_cpus": order[:BENCHMARK_CPU_COUNT],
+        "memory_limit_bytes": memory_bytes,
     }
 
 
@@ -478,7 +485,9 @@ def main() -> int:
     output = options.out.resolve()
     output.mkdir(parents=True)
     initial_host = host_snapshot()
-    placement = validate_host(initial_host, options.expected_cpus, options.expected_memory_gib)
+    placement = validate_host(
+        initial_host, options.expected_cpus, options.expected_memory_bytes
+    )
     expected_affinity = placement["allowed_cpus"]
     tools = require_tools()
 

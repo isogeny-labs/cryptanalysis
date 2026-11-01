@@ -50,16 +50,19 @@ def snapshot(cpus: list[int]) -> dict:
         "affinity": cpus,
         "cpu_topology": rows,
         "topology_order": remote.ordered_cpus(cpus, rows),
-        "memory_max": str(64 << 30),
+        "memory_max": "64000000000",
         "nvidia_devices": [],
     }
 
 
 class RemoteAffinityTests(unittest.TestCase):
     def test_accepts_exact_noncontiguous_runpod_affinity(self) -> None:
-        placement = remote.validate_host(snapshot(V3_OBSERVED_AFFINITY), 32, 64)
+        placement = remote.validate_host(
+            snapshot(V3_OBSERVED_AFFINITY), 32, 64_000_000_000
+        )
         self.assertEqual(placement["allowed_cpus"], V3_OBSERVED_AFFINITY)
         self.assertEqual(placement["benchmark_cpus"], [0])
+        self.assertEqual(placement["memory_limit_bytes"], 64_000_000_000)
 
     def test_selection_does_not_assume_cpu_zero_or_contiguity(self) -> None:
         cpus = [7, 41, 103]
@@ -71,19 +74,19 @@ class RemoteAffinityTests(unittest.TestCase):
         state = snapshot(cpus)
         state["cpu_topology"] = rows
         state["topology_order"] = [103, 41, 7]
-        placement = remote.validate_host(state, 3, 64)
+        placement = remote.validate_host(state, 3, 64_000_000_000)
         self.assertEqual(placement["topology_order"], [103, 41, 7])
         self.assertEqual(placement["benchmark_cpus"], [103])
 
     def test_rejects_count_duplicate_topology_and_affinity_changes(self) -> None:
         with self.assertRaises(RuntimeError):
-            remote.validate_host(snapshot([2, 4]), 3, 64)
+            remote.validate_host(snapshot([2, 4]), 3, 64_000_000_000)
         with self.assertRaises(RuntimeError):
             remote.ordered_cpus([2, 2], topology([2, 2]))
         bad = snapshot([2, 4, 6])
         bad["cpu_topology"] = bad["cpu_topology"][:-1]
         with self.assertRaises(RuntimeError):
-            remote.validate_host(bad, 3, 64)
+            remote.validate_host(bad, 3, 64_000_000_000)
         with self.assertRaises(RuntimeError):
             remote.assert_affinity([2, 4, 6], [2, 4, 8])
 
@@ -100,6 +103,17 @@ class RemoteAffinityTests(unittest.TestCase):
         for invalid in ("", "41,7", "7,7", "-1,7", "seven"):
             with self.assertRaises(ValueError):
                 campaign.parse_affinity(invalid)
+
+    def test_requires_exact_decimal_runpod_memory_limit(self) -> None:
+        state = snapshot(V3_OBSERVED_AFFINITY)
+        remote.validate_host(state, 32, 64_000_000_000)
+        for invalid in (str(64 << 30), "max", "", "64000000000\n", None):
+            changed = dict(state)
+            changed["memory_max"] = invalid
+            with self.assertRaises(RuntimeError):
+                remote.validate_host(changed, 32, 64_000_000_000)
+        with self.assertRaises(RuntimeError):
+            remote.validate_host(state, 32, 0)
 
 
 if __name__ == "__main__":
