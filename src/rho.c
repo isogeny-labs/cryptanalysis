@@ -403,11 +403,6 @@ static inline uint32_t rho_index(const rho_shared *sh, uint64_t h)
     return (uint32_t)(((ca_u128)low * sh->r) >> 64);
 }
 
-static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d)
-{
-    *a = ca_addmod(*a, d, n);
-}
-
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
@@ -437,12 +432,21 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
 /* Apply the exponent update for a step with multiplier i and sign flag. */
 static inline void walk_apply(const rho_shared *sh, rho_walk *w, uint32_t i, int negated)
 {
-    exp_add(sh->n, &w->a, sh->alpha[i]);
-    exp_add(sh->n, &w->b, sh->beta[i]);
-    if (negated) {
-        w->a = w->a ? sh->n - w->a : 0;
-        w->b = w->b ? sh->n - w->b : 0;
+    const uint64_t n = sh->n;
+    uint64_t a = ca_addmod(w->a, sh->alpha[i], n);
+    uint64_t b = ca_addmod(w->b, sh->beta[i], n);
+    if (sh->negmap) {
+        /* With the negation map, `negated` is a coin flip on walk data, so
+         * the negated coefficients are formed unconditionally and selected:
+         * the values the branch gave, without its mispredictions.  Without
+         * the map `negated` is always 0 and this is skipped. */
+        uint64_t na = a ? n - a : 0;
+        uint64_t nb = b ? n - b : 0;
+        a = negated ? na : a;
+        b = negated ? nb : b;
     }
+    w->a = a;
+    w->b = b;
 }
 
 /* One full (unbatched) step of the walk function.  Used only for cycle
@@ -553,6 +557,13 @@ static void *rho_thread_main(void *arg)
     ca_elem *Yn = calloc(W, sizeof(ca_elem));
     ca_elem *B = calloc(W, sizeof(ca_elem));
     uint64_t *scratch = calloc(2 * (size_t)W, sizeof(uint64_t));
+    /* The native E(F_p) group takes the step without the vtable: the
+     * batched addition is fused into the bookkeeping pass below, and the
+     * canonicalisation and hash are the inline functions behind the
+     * vtable's entries (ca_internal.h), so every value agrees with the
+     * generic path. */
+    const int ec = ca_ec_group_is_native(g);
+    const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
     if (!walks || !Yn || !B || !scratch) {
         free(walks); free(Yn); free(B); free(scratch);
         pthread_mutex_lock(&sh->lock);
@@ -580,13 +591,62 @@ static void *rho_thread_main(void *arg)
     const uint64_t abandon = (uint64_t)24 << sh->dp_bits;
 
     while (!atomic_load_explicit(&sh->done, memory_order_relaxed)) {
-        for (uint32_t w = 0; w < W; w++) {
-            rho_walk *wk = &walks[w];
-            if (!wk->retry) wk->idx = rho_index(sh, wk->h);
-            B[w] = sh->M[wk->idx];
+        /* The simultaneous inversion of the batch, by Montgomery's trick.
+         * Generic groups go through the vtable's batch_op: copy the
+         * multipliers and the points out, add, and read the results back.
+         * The native EC group reads each walk's point and its multiplier
+         * where they lie, and runs the trick over RHO_CHAINS interleaved
+         * chains (walk w belongs to chain w mod RHO_CHAINS): a Montgomery
+         * product takes about twelve cycles of latency and one chain of
+         * them is a serial dependency through the whole batch, twice (the
+         * products, then the inverses), so four chains let the core overlap
+         * them.  Suffix products in place of prefix products put the
+         * inverses out in walk order.  The chain totals are joined with the
+         * prefix/suffix trick again, so the batch still pays one field
+         * inversion; it pays 3 RHO_CHAINS - 2 extra multiplications for the
+         * join (10 of about 770 at 256 walks).  Same denominators, same
+         * points. */
+        uint64_t *const den = scratch, *const suf = scratch + W;
+        if (ec) {
+#define RHO_CHAINS 4u
+#define BM(x, y)   (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
+            const uint32_t k = W < RHO_CHAINS ? W : RHO_CHAINS;
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                den[w] = ca_ec_add_den(&ecc, &wk->Y, &sh->M[wk->idx]);
+            }
+            for (uint32_t w = W; w-- > 0;) suf[w] = w + k < W ? BM(den[w], suf[w + k]) : den[w];
+            /* total[j] = suf[j] is chain j's product; invert the product of
+             * the totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+            uint64_t before[RHO_CHAINS], after[RHO_CHAINS], inv[RHO_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[k - 1] = ecc.one;
+            for (uint32_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[k - 1], suf[k - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            /* The additions, in walk order: den[w]^{-1} from chain j's
+             * running inverse, then the step into Yn[w]. */
+            for (uint32_t w = 0, j = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                uint64_t di = w + k < W ? BM(inv[j], suf[w + k]) : inv[j];
+                inv[j] = BM(inv[j], den[w]);
+                ca_ec_add_with_di(&ecc, &Yn[w], &wk->Y, &sh->M[wk->idx], di);
+                j = j + 1 == k ? 0 : j + 1;
+            }
+#undef BM
+#undef RHO_CHAINS
+        } else {
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                B[w] = sh->M[wk->idx];
+            }
+            for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
+            ca_group_batch_op(g, Yn, Yn, B, W, scratch);
         }
-        for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
-        ca_group_batch_op(g, Yn, Yn, B, W, scratch);
         ops += W;
 #ifdef CA_RHO_TRACE
         sh->tr.step_ops += W;
@@ -597,8 +657,16 @@ static void *rho_thread_main(void *arg)
 #ifdef CA_RHO_TRACE
             tr_done = w + 1;
 #endif
-            int neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
-            uint64_t h = ca_group_hash(g, &Yn[w]);
+            int neg;
+            uint64_t h;
+            if (ec) {
+                ca_elem *y = &Yn[w];
+                neg = sh->negmap ? ca_ec_canon_words(ecc.p, &y->w[1], y->w[2]) : 0;
+                h = ca_ec_hash_words(y->w[0], y->w[1], y->w[2]);
+            } else {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_group_hash(g, &Yn[w]);
+            }
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
                 wk->idx = (wk->idx + 1) % sh->r;
                 wk->retry++; /* bounded as in walk_step_single */
