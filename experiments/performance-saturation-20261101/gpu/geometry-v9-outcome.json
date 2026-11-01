@@ -1,0 +1,18 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-http-rtx5090-geometry-v9.json",
+  "protocol_sha256": "8013dfc5d4708db903ae9b0ac10ceaa6e8141cfd4bdedf36397ae81dadf2f9e2",
+  "protocol_file_sha256": "e8f120bca2b77b7909ee0a80a3782351ed330a83cee342a75ad7e9611721c1c9",
+  "registration_commit": "153da07050fe7a0371b7314e44e2e734ef4a8d67",
+  "freeze_commit": "8b4a57c30ca65d92edcc4312919ae0d0fa2cd57c",
+  "classification": "prospectively_invalid/superseded_before_data",
+  "identified": "2026-11-01",
+  "reason": "V9's remote analyzer ran before controller cleanup, ignored order.tsv, and could emit geometry_supported or geometry_not_supported without validating the HTTP receipt, result archive/internal manifest, completed-at marker, runner exit, or exact-ID deletion/absence. Analyzer GateError also exited 2 without producing either frozen failure verdict.",
+  "provider_api_calls": 0,
+  "pods_created": 0,
+  "scientific_rows": 0,
+  "timing_rows_reused": 0,
+  "replacement": "protocol-http-rtx5090-geometry-v10.json",
+  "correction": "Keep remote timing/mechanism output explicitly provisional and add a hash-bound controller-side finalizer after receipt, archive extraction, runner completion, and cleanup. The finalizer validates the exact 70-row order ledger, canonical export and file bindings, source/request/pod/price, archive/internal manifest/inventory, completion markers, and cleanup before emitting exactly one terminal verdict with frozen precedence.",
+  "scientific_design_change": false
+}

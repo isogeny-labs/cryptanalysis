@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Gate and analyse the prospective RTX 5090 F4 update-grid A/B study.
+"""Mechanically gate and analyse the prospective RTX 5090 F4 geometry A/B.
 
 The analyzer is deliberately the executable registry for the five matrices,
 the exact answer oracle, the numeric isolation gate, the finite paired
 bootstrap, the Nsight Systems mechanism check, and the experiment.export/v1
-writer.  It uses only the Python standard library and never overwrites an
-artifact.
+writer.  Its timing classification is provisional: the controller-side
+finalizer is the only terminal adjudicator because cleanup and the complete
+transport archive do not exist while this process is running.  This program
+uses only the Python standard library and never overwrites an artifact.
 """
 
 from __future__ import annotations
@@ -31,9 +33,9 @@ from typing import Any, Iterable
 ARMS = ("baseline", "candidate")
 MEASURED_ROUNDS = tuple(range(1, 7))
 EXPECTED_GPU = "NVIDIA GeForce RTX 5090"
-PROTOCOL_ID = "gpu-f4-update-grid-ab-rtx5090-http-v9-20261101"
-PROTOCOL_VERSION = 9
-PROTOCOL_RELATIVE = "../../protocol-http-rtx5090-geometry-v9.json"
+PROTOCOL_ID = "gpu-f4-update-grid-ab-rtx5090-http-v10-20261101"
+PROTOCOL_VERSION = 10
+PROTOCOL_RELATIVE = "../../protocol-http-rtx5090-geometry-v10.json"
 ANALYZER_RELATIVE = "../../analyze_gpu_geometry_ab.py"
 BASELINE_ORIGIN_COMMIT = "7c712913b7e912494e87c35e854cfd0129bad89c"
 CANDIDATE_COMMIT = "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f"
@@ -43,7 +45,7 @@ BASELINE_F4_SHA256 = "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57
 CANDIDATE_F4_SHA256 = "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953"
 PRODUCTION_DIFF_SHA256 = "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
 F4_PATH = "suite/src/cryptanalysis/f4_gpu.rs"
-TOOLING_REF = "refs/heads/codex/runpod-http-gpu-geometry-v9-20261101"
+TOOLING_REF = "refs/heads/codex/runpod-http-gpu-geometry-v10-20261101"
 HISTORY_DEEPEN_COMMITS = 16
 FAMILY_TESTS = 10
 LOWER_TAIL = Fraction(1, 20 * FAMILY_TESTS)  # alpha=.05 / ten gates
@@ -579,7 +581,10 @@ def mechanism_gate(baseline_path: Path, candidate_path: Path, sm_count: int) -> 
     return {
         "status": "passed",
         "sm_count": sm_count,
+        "kernel_launches_per_arm": expected_total,
         "update_launches_per_arm": EXPECTED_UPDATE_LAUNCHES,
+        "update_sequence_verified": True,
+        "non_update_geometry_unchanged": True,
         "changed_update_launches": changed,
         "unchanged_update_launches": EXPECTED_UPDATE_LAUNCHES - changed,
         "transitions": dict(sorted(transitions.items())),
@@ -832,12 +837,21 @@ def analyze(session: Path, expected_gpu: str, protocol_sha256: str) -> dict[str,
         cells[workload.tag] = {"role": workload.role, "metrics": metrics}
     if len(gates) != FAMILY_TESTS:
         raise GateError(f"internal decision family has {len(gates)} gates, expected {FAMILY_TESTS}")
-    verdict = "geometry_supported" if all(gate["passed"] for gate in gates) else "geometry_not_supported"
+    provisional = (
+        "geometry_supported"
+        if all(gate["passed"] for gate in gates)
+        else "geometry_not_supported"
+    )
     analysis = {
-        "schema": "gpu-f4-update-grid-ab-analysis/v1",
+        "schema": "gpu-f4-update-grid-ab-analysis/v2",
+        "protocol_id": PROTOCOL_ID,
+        "protocol_version": PROTOCOL_VERSION,
         "protocol_sha256": protocol_sha256,
         "session": session.name,
-        "verdict": verdict,
+        "terminal": False,
+        "classification_status": "provisional_mechanical",
+        "timing_classification_provisional": provisional,
+        "terminal_adjudicator": "finalize_gpu_geometry_ab.py",
         "correctness_gate": "passed",
         "source_identity_gate": "passed",
         "numeric_isolation_gate": "passed",
@@ -897,7 +911,9 @@ def command_analyze(args: argparse.Namespace) -> int:
         "analysis": "written",
         "export": "written",
         "session": analysis["session"],
-        "verdict": analysis["verdict"],
+        "terminal": False,
+        "classification_status": analysis["classification_status"],
+        "timing_classification_provisional": analysis["timing_classification_provisional"],
     }, sort_keys=True))
     return 0
 

@@ -42,6 +42,32 @@ tooling ref by 16 commits, verifies `FETCH_HEAD` still equals the bootstrapped
 tooling commit, and only then resolves and hashes the two registered ancestors.
 The correction is source delivery, not a candidate or statistical change.
 
+### V9 terminal-adjudication correction
+
+Frozen v9 was also classified
+`prospectively_invalid/superseded_before_data`, before any provider API call,
+pod, or scientific row.  Its scientific analyzer necessarily ran inside the
+pod before the HTTP controller produced the final archive and exact-ID cleanup
+receipt.  It nevertheless labeled its two timing outcomes as terminal, did not
+read `order.tsv`, and could not validate the receipt, internal archive
+manifest, extracted inventory, completion marker, runner exit, or deletion and
+absence proof.  A remote gate failure exited with status 2 rather than
+materializing `invalid_measurement` or `incomplete_session`.
+
+V10 preserves the five cells, one warmup, six alternating fresh-process pairs,
+70 exported rows, exact rational ten-test analysis, thresholds, Nsys sequence
+and resource gates, and depth-16 source delivery unchanged.  The remote
+analyzer now emits only `provisional_mechanical` timing classification.  After
+the controller has returned and cleaned up the one pod, a separately
+hash-bound finalizer uses the pinned canonical protocol tool and validates the
+complete order/row/export/receipt/archive/manifest/completion/cleanup chain.
+Its frozen precedence is `incomplete_session`, then `invalid_measurement`, then
+`geometry_not_supported`, then `geometry_supported`; it is the sole terminal
+adjudicator.  The controller receipt records the exact remote command,
+request, source, pod, price, result, and cleanup.  It does not serialize its
+own full local argv, so the one-create-attempt claim additionally depends on
+the hash-bound controller implementation and its registered argv template.
+
 Historical status of the initial A/A draft: pre-measurement design, 2026-11-01. No pod has been created, no GPU
 measurement has been taken, and this study is not frozen. The two arms are
 byte-identical copies of the current binary; there is no optimization candidate
