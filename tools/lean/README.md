@@ -1,69 +1,121 @@
-# Lean proof gate
+# Current Lean corpus gate
 
-The gate implementation is copied from `tools/lean/` in [aburan28/crypto](https://github.com/aburan28/crypto/tree/main/tools/lean), which is the source of truth. Change the implementation there first and copy it here. The [2026-10-18 retrospective](../../research/lean_retrospective_20261018/README.md) adds this repository's first research Lake project; CI discovers and checks it in addition to the gate self-test.
+`current-corpus-gate.py` preserves a frozen 97-source bridge and separately
+checks admitted additions. It binds 91 byte-identical files and their effective Lean pins
+to the [October 21 native build archive](../../reports/lean-evidence-audit-20261021/report.md),
+then rebuilds and audits the two changed orbit files, the new GLV theorem,
+the fixed cubic-gluing certificate, the CM degree-partition arithmetic, and
+the PQC modular-arithmetic assay.
+The latter two are partial finite proofs, not formalizations of their full
+geometric interpretations.
+The gate's own fixture and audit sources under `tools/lean/` are checked by
+the separate self-test and excluded from the research-file count.
+It compares the result with the [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json).
+The [previous CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json)
+remains unchanged. Main's reviewed C analysis repairs have a new whole-file
+hash; the gate checks that source against its current live binding, while
+replaying the original selector assertions and both negative controls on
+the old pinned source and its byte-frozen receipt in
+`reports/ghs-pr-1104-main-integration-20261025/`. No Lean theorem, selector
+assertion or historical receipt is overwritten.
+The earlier [95-source receipt](../../reports/lean-current-corpus-20261025/receipt.json)
+remains preserved.
+The [October 24 receipt](../../reports/lean-current-corpus-20261024/receipt.json)
+remains unchanged as historical evidence.
+The [workflow](../../.github/workflows/lean-proof-gate.yml) runs on Lean changes.
+Any new or changed source outside the reviewed set fails until it receives new
+native evidence and a reviewed gate update.
 
-`proof-gate.sh` checks every Lean target in the repository. CI runs it through
-[`lean-proof-gate.yml`](../../.github/workflows/lean-proof-gate.yml): on any
-change to a `.lean` file, lakefile, toolchain or manifest, on pushes to `main`,
-and weekly.
+## Known-label proposed algebra source
 
-| target | how it is checked |
-|:--|:--|
-| Lake project (directory with `lakefile.toml` / `lakefile.lean`) | `lake exe cache get` if it uses Mathlib, then `lake build` plus each tracked proof source as an explicit Lake source target, then an audit of every module the project built |
-| standalone `.lean` file outside any Lake project | `lean -o` against the core library under its directory's `lean-toolchain`, then an audit of that module |
+At main `47865467f9cc28c316a12ddab017017047815f19`, the tracked research set
+contains 167 Lean files: the frozen 97, 68 Hecke additions, the Hasse-square
+module, and [Algebra.lean](../../docs/known-label-next-leads-20261028/Algebra.lean).
+That count is a source inventory, not a semantic proof-coverage measure.
+The [original checks](../../docs/known-label-next-leads-20261028/CHECKS.json)
+explicitly record that the last source was unbuilt. They remain unchanged.
 
-The audit, [`AuditAxioms.lean`](AuditAxioms.lean), imports the modules and
-collects each theorem's **transitive** axioms. Only `propext`,
-`Classical.choice` and `Quot.sound` are accepted. A grep cannot do this
-check, because a `sorry` or axiom can be several imports away.
+The gate now attempts this exact source SHA-256:
+`d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d`.
+It uses Lean `leanprover/lean4:v4.35.0-rc4` and Mathlib
+`021c46bdd042f67b538b9f9871d556a93713a9a9` through the existing
+`experiments/hecke-432-formal-ci-20261025` project. All three project input
+files are hash-bound independently of the historical producer report.
 
-| outcome | meaning |
-|:--|:--|
-| `ok` | kernel-checked on the standard foundations |
-| `TRUST` | closed by `native_decide` (the compiler is trusted, not only the kernel), and listed in [`trusted-native.txt`](trusted-native.txt) with the reason and where the study records that decision |
-| `FAIL` | `sorryAx`, an unlisted `native_decide`, or any other axiom |
+| Declaration in `KnownLabelLeads` | Statement scope |
+| --- | --- |
+| `triangle_identity` | `2*a = (a+b) - (b+c) + (c+a)` |
+| `signed_second_moment` | `(a+b-c)^2 - (a^2+b^2-c^2) = 2*(a-c)*(b-c)` |
+| `signed_third_moment` | `-(a+b-c)^3 + 3*(a+b-c)*(a^2+b^2-c^2) - 2*(a^3+b^3-c^3) = 6*c*(a-c)*(b-c)` |
+| `positive_pair_product` | `2*a*b = (a+b-c)^2 - (a^2+b^2-c^2) + 2*c*(a+b-c)` |
 
-A target also fails when it doesn't build, when its build log reports
-`declaration uses 'sorry'`, or when it contains no theorems. A gate that
-audits nothing must not pass. A failure to fetch the Mathlib cache exits 3. It
-is an infrastructure failure and never evidence about a proof.
+Every statement quantifies over arbitrary `a b c : K` with `[CommRing K]`.
+The gate compiles original bytes into an isolated temporary module, requires
+all four fully qualified native axiom printouts, and invokes
+`AuditHeckeAxioms.lean` on the module. The latter enumerates every non-internal
+theorem in that module and accepts only `propext`, `Classical.choice`, and
+`Quot.sound` as transitive axioms. It rejects an empty or failing audit and
+requires the four named theorems to occur in its output. Source hashes are
+checked before and after compilation/audit.
 
-```sh
-tools/lean/proof-gate.sh --list                  # what would be checked
-tools/lean/proof-gate.sh                         # check everything
-tools/lean/proof-gate.sh research/<study>/lean   # one target
-tools/lean/proof-gate.sh --out receipts          # keep build and audit logs
-```
+These ring identities do not formalize an elliptic-group interpretation,
+graph-label recovery (including invertibility assumptions), a probability
+theorem, or a performance result. The local Python refusal controls mock
+compiler output and establish gate behavior only. A passing native hosted
+run at the exact PR head is still required; see the
+[open admission record](../../problems/lean-corpus-known-label-admission.md).
 
-## Self-test
+The older `proof-gate.sh` is used only for explicit standalone positive and
+negative [fixtures](selftest/run.sh). Its automatic target discovery was removed:
+it cannot build repository files that import local modules before their
+prerequisites. The corpus gate uses the archived dependency-chain builds and
+current dedicated checks instead.
 
-[`selftest/run.sh`](selftest/run.sh) runs the gate on known fixtures:
-`selftest/pass/` must pass (`Good.lean` is plain kernel proofs,
-`Trusted.lean` is a listed `native_decide`), and `selftest/fail/` must fail
-(a transitive `sorry`, a user axiom, an unlisted `native_decide`, a file with
-no theorems, a build error). CI runs it on every trigger, so the gate stays
-exercised even in a repository with no Lean proofs yet. `LEAN_GATE_TRUSTED`
-points the gate at another trust manifest. The self-test uses its own one.
+Passing this gate establishes source-bound compilation and the recorded axiom
+checks at the stated versions. It does not show that every Lean declaration's
+transitive axioms were exhaustively audited, that every statement faithfully models
+its research claim, that a historical experiment ran as reported, or that all
+historical claims have proofs.
 
-## What passing does not mean
+### Integration reconciliation (2026-10-29)
 
-The gate shows that each theorem is proved from the standard foundations. It
-does **not** show that the Lean statement is the report's theorem. That
-fidelity check (quantifiers, hypotheses, the bridge to the real objects) is
-still a review of the proof against the report.
+The separate main-branch correction is documented in
+`docs/known-label-next-leads-20261028/CI_INTEGRATION.md`. Its requirement of
+exactly four audited theorems is retained alongside fully qualified theorem
+identity checks and before/after checks of all three pinned project inputs.
+All main-branch refusal cases remain tested through the final known-label route;
+neighboring documentation modules remain unreviewed and rejected. Historical
+producer reports and native receipts remain bound to their original revisions.
 
-## Adding to `trusted-native.txt`
+## Coordinate pair-index path/cycle lemmas
 
-Only add an entry when the study itself records the decision to trust the
-compiler, for example a registered replay. Never add one for a theorem a
-report or paper states as proved. Prefer `decide` or `decide +kernel` when
-they finish in reasonable time.
+`docs/known-label-pair-index-20261029/PairIndex.lean` is separately source-bound
+and must natively compile in the same pinned workspace. Its seven explicit
+theorems, including the folded affine path and label-recovery statements, must
+pass the existing exhaustive module audit with exactly seven audited theorems
+and zero failing/trusted exceptions. The previous four-theorem source binding
+and all historical receipts remain unchanged. Refusal-control mocks are not
+native proof evidence. See that note for the concrete elliptic instantiation,
+executable-algorithm and cost formalizations still missing.
 
-The gate checks tracked project sources omitted by default targets. Unregistered
-source targets compile directly with the project environment into private
-olean output and receive the same axiom audit; frozen Lakefiles need no edits. `sources.log` records the inventory. Nested projects are
-checked separately; Lake configuration and gate code/fixtures under
-`tools/lean` or `tools/selftest` are explicit exclusions. Untracked files
-are outside repository discovery. The self-test exercises unconfigured true/false and configured
-positive/negative project modules. A green default build alone
-is insufficient.
+## Exact CI engineering regression source
+
+All tracked Lean sources outside the separately tested `tools/lean/` fixtures
+are discovered, including `reports/ci-*`. That directory prefix is not an
+exemption. A new unregistered report source fails admission.
+
+The original `XedniCoreCompatibility` control file in
+`reports/ci-xedni-proof-elaboration-repair-20261030/` is registered at its exact
+SHA256 `19dd7b84d1d90d5e7eb81efdb84899f8b08370d5c7d87c87052934349b619947`.
+Its bytes remain unchanged. Its explicit build context is the bounded-witness
+formal project, with Lean4.35.0-rc4 and Mathlib021c46bdd042f67b538b9f9871d556a93713a9a9;
+its three declarations must actually compile and produce all three allowed
+foundation audits. Their indented declarations are recognized; a static census
+found no declaration-set changes for the existing admitted experiment modules.
+Changed source, build pins, missing/extra/duplicate outputs and nonstandard
+foundations are refused. The source count rises from173to174; the frozen97-file
+bridge remains unchanged. Software mocks test orchestration, not native proofs.
+See [the admission record](../../problems/lean-ci-evidence-source-admission.md)
+for actual source-f3aa native success:77 added modules, including all three original engineering controls.
+
+After complete declaration and foundation validation, the checker now prints the original native axiom output lines into the successful job log too; complete raw command evidence remains retained. This improves readable custody without changing proof admission.

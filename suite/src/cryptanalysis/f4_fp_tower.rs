@@ -912,6 +912,7 @@ unsafe fn lazy_axpy_avx512(acc: &mut [u64], a: u32, b: &[u32], m: u64) {
 
 /// The widest vector unit the lazy kernel can use on this CPU.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg_attr(not(target_arch = "x86_64"), allow(dead_code))]
 enum Lanes {
     Scalar,
     Avx2,
@@ -2057,7 +2058,10 @@ mod tests {
     fn the_kernels_agree_with_exact_arithmetic() {
         use rand::{Rng, SeedableRng};
         let mut rng = rand::rngs::StdRng::seed_from_u64(5);
+        #[cfg(target_arch = "x86_64")]
         let mut lanes = vec![Lanes::Scalar];
+        #[cfg(not(target_arch = "x86_64"))]
+        let lanes = vec![Lanes::Scalar];
         #[cfg(target_arch = "x86_64")]
         {
             if std::is_x86_feature_detected!("avx2") {

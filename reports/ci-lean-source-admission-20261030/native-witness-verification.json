@@ -1,0 +1,43 @@
+{
+  "schema": "xedni-bounded-witness-native-verification/v1",
+  "recorded_at": "2026-10-30T13:35:17.832287+00:00",
+  "source_head": "9ea15c18e59e3d25f1cf637724a4f1a2dab3cc54",
+  "merged_as": "3e963f65113710cf0f90a20ca33841427554efcf",
+  "run_id": 41058369134,
+  "job_id": 124071531124,
+  "job_conclusion": "success",
+  "native_source": "experiments/xedni-bounded-witness-20261030/formal/WitnessObstruction.lean",
+  "source_sha256": "6aa4475da5af80cc9db15407efb6f02ce792dbd6c18dac0d1e74f5c3fa208645",
+  "lean_toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "verified_declarations": [
+    "XedniBoundedWitness.relation_reduces",
+    "XedniBoundedWitness.no_dependent_lift",
+    "XedniBoundedWitness.all_compatible_lifts_blocked",
+    "XedniBoundedWitness.zero_tuple_has_bounded_witness",
+    "XedniBoundedWitness.zero_tuple_has_unbounded_relations"
+  ],
+  "native_check_contract": "The successful immutable gate compiled the actual source and required exactly one native axiom output for each of all5 declarations, allowing only propext, Classical.choice and Quot.sound. The code has no proof escape. Individual foundation sets are retained in the command evidence artifact; this receipt does not invent per-theorem sets.",
+  "native_console_evidence": "The full decoded successful job log records compiling this exact source and completion of76 added theorem modules.",
+  "complete_decoded_job_log": {
+    "file": "source9ea-native-corpus-success.log.gz",
+    "uncompressed_bytes": 403781,
+    "uncompressed_sha256": "8e37a12becb45b065bba8cdfdb643d7909f6059b13103209c0429ca8c229f798",
+    "gzip_bytes": 58536,
+    "gzip_sha256": "cee06871d0ace3633a29ef143ba0fa6b66bac891564a4e2717bca10263c0340c",
+    "roundtrip_verified": true,
+    "custody": "Exact original connector-decoded log text transferred as JSON chunks, without newline normalization, then UTF8 encoded and gzip-roundtrip checked."
+  },
+  "artifact": {
+    "id": 12978208514,
+    "zip_bytes": 273513,
+    "api_zip_sha256": "9544c636060247ce71b0a1cd64cdfd0480282f885c4c2c848dd0a91d8b012054",
+    "local_zip_verified": false
+  },
+  "limits": [
+    "No lean4checker --fresh qualification.",
+    "Height/Lang witness bridge and actual curve-selection law remain open.",
+    "The final source9ea gate excluded all reports/ci-* Lean files. This follow-up removes that broad exclusion and requires actual native checking of the original three engineering controls; fresh current-head native CI is pending.",
+    "This verifies the stated conditional formal lemmas, not a general impossibility, security or cost result."
+  ]
+}

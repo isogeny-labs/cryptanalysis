@@ -37,6 +37,16 @@ CA_API void ca_rho_params_default(ca_rho_params *p);
 CA_API ca_status ca_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                               const ca_rho_params *params, uint64_t *x, ca_stats *st);
 
+/* Preserve the distinguished-point table between runs.  A resumed run keeps
+ * the same walk multipliers and starts fresh lanes against the saved table.
+ * NULL checkpoint_path enables live progress without persistence.  Intervals
+ * are seconds; zero selects defaults (5 for progress, 60 for checkpoint). */
+CA_API ca_status ca_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                           const ca_elem *target, const ca_rho_params *params,
+                                           const char *checkpoint_path, uint32_t progress_interval,
+                                           uint32_t checkpoint_interval, int verbose,
+                                           uint64_t *x, ca_stats *st);
+
 #ifdef __cplusplus
 }
 #endif

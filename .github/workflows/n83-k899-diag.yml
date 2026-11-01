@@ -1,0 +1,105 @@
+name: N83 K899 go/no-go diagnostic (rank-probe producer at K899, not timing evidence)
+
+# Diagnostic only, before the K899 Tier 1 experiment is frozen: restores and
+# builds the rank-probe producer exactly as experiments/koblitz-n83-rankprobe-20261019
+# does (its restore.py, digest pins checked), then runs
+# experiments/koblitz-n83-k899-20261019/diag/run_diag.py on one pinned CPU:
+# index build and rank stage at K899 and K600 on Q0, the K899 factor-log
+# table written by the rank stage and re-verified in the pinned oracle.
+on:
+  push:
+    branches: [claude/n83-k899]
+    paths:
+      - experiments/koblitz-n83-k899-20261019/diag/run_diag.py
+      - .github/workflows/n83-k899-diag.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n83-k899-diag-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RP: experiments/koblitz-n83-rankprobe-20261019
+  DIAG: experiments/koblitz-n83-k899-20261019/diag
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+
+jobs:
+  diag:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-k899-20261019 experiments/koblitz-n83-rankprobe-20261019
+
+      - name: Runner identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/n83-k899-diag"
+          mkdir -p "$out"
+          {
+            echo "OUT=$out"
+            echo "CRYPTO=$RUNNER_TEMP/n83-k899-crypto"
+            echo "CARGO_TARGET_DIR=$RUNNER_TEMP/n83-k899-cargo"
+          } >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$out/host-probe.json"
+          grep -m1 'model name' /proc/cpuinfo | tee "$out/cpu.txt"
+          free -g | tee -a "$out/cpu.txt"
+          tee -a "$out/cpu.txt" < /sys/kernel/mm/transparent_hugepage/enabled
+          echo "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} ${GITHUB_SHA}" | tee "$out/run.txt"
+
+      - name: Restore the pinned crypto revision (rank-probe restore, pins checked)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/aburan28/crypto.git "$CRYPTO"
+          python3 "$RP/restore.py" --crypto-repo "$CRYPTO" | tee "$OUT/restore.json"
+
+      - name: Build the unchanged rank-probe producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$OUT/rustc.txt"
+          (cd "$RP/online" && cargo build --release --locked --bin ic_online_rankprobe_r770)
+          sha256sum "$CARGO_TARGET_DIR/release/ic_online_rankprobe_r770" | tee "$OUT/binary.sha256"
+
+      - name: Run the diagnostic on one pinned CPU
+        shell: bash
+        run: |
+          set -euo pipefail
+          cpu_id="$(python3 -c 'import os; print(min(os.sched_getaffinity(0)))')"
+          python3 "$DIAG/run_diag.py" --bin-dir "$CARGO_TARGET_DIR/release" --out "$OUT" --cpu "$cpu_id" \
+            | tee "$OUT/diag-stdout.txt"
+
+      - name: Preserve the diagnostic
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: n83-k899-diag-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n83-k899-diag/
+          if-no-files-found: error
+          retention-days: 30

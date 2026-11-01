@@ -4,6 +4,19 @@ Native Rust CLI and library in `aburan28/cryptanalysis`. This is an engineering
 port of the earlier prototype, with fixed census fixtures and no runtime Python,
 Sage, CUDA or native cryptanalysis-bindings dependency. SQLite is bundled.
 
+The separate [cubic 3-gluing criterion](THREE_GLUING.md)
+([proof PDF](THREE_GLUING.pdf)) explores a route through the Weil restriction's
+three-torsion. Its native Rust `three_gluing` example checks a mod-three
+Frobenius matrix or one binary source coefficient. Under the stated full-degree
+hypotheses, the proof gives genus-three Jacobian existence for one source
+twist. Target reconstruction, twist selection, explicit transfer and publication
+novelty remain open; it creates no weak-curve catalogue entry.
+
+```sh
+cargo run --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml \
+  --example three_gluing -- curve --base-degree 3 --a 0 --b 24
+```
+
 ```sh
 # From the repository root:
 cargo build --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml
@@ -129,6 +142,17 @@ the import needs a new output path. An interrupted import leaves only its
 committed completed jobs; remaining work can be run in Rust.
 
 ## Evidence and novelty triage
+
+The [Hess scope note](HESS_SCOPE.md) derives a published-construction inclusion
+baseline for full-relative-degree coefficients, with a
+[PDF proof and diagram](HESS_SCOPE.pdf) and a separate Rust witness example.
+It is an existence bound, not a minimum-genus or cost result. It changes no
+search checkpoint, prior snapshot, catalogue, or novelty verdict.
+
+```sh
+cargo test --release --locked \
+  --manifest-path experiments/ghs-sweeper/Cargo.toml --example hess_scope
+```
 
 `spectral_model_id` is a stable hash of the normalized model parameters in the
 declared deterministic binary power-basis convention. Field moduli and base

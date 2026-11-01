@@ -37,12 +37,13 @@ fn run(args: &[&str], success: bool) -> Value {
         }
     }
     let output = command.output().unwrap();
+    // Arguments and captured streams can contain scalar inputs or results.
+    // Keep failure diagnostics to the exit status.
     assert_eq!(
         output.status.success(),
         success,
-        "{args:?}: {}\n{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
+        "Certicom CLI returned an unexpected exit status: {}",
+        output.status
     );
     let report: Value = serde_json::from_slice(&output.stdout).unwrap();
     if let Some(backend) = injected_backend {
@@ -208,7 +209,10 @@ fn bsgs_keeps_large_scalar_bounds_for_both_challenges() {
         assert_eq!(report["method"], "bsgs");
         assert_eq!(report["exact_curve"], true);
         assert_eq!(report["parameters"]["field_bits"], 131);
-        assert_eq!(report["scalar"], secret);
+        assert!(
+            report["scalar"] == secret,
+            "recovered scalar differs from the constructed fixture"
+        );
         assert_eq!(report["planted_recovered"], true);
     }
 }
@@ -232,7 +236,10 @@ fn rho_recovers_the_special_full_width_minus_one_fixture() {
             true,
         );
         assert_eq!(report["method"], "rho");
-        assert_eq!(report["scalar"], secret);
+        assert!(
+            report["scalar"] == secret,
+            "recovered scalar differs from the constructed fixture"
+        );
         assert_eq!(report["planted_recovered"], true);
         assert!(report["iterations"].as_u64().unwrap() > 0);
         assert_eq!(report["table_entries"], 0);
@@ -284,7 +291,10 @@ fn index_calculus_executes_relation_collection_la_and_descent_on_both_exact_curv
         assert_eq!(report["method"], "index-calculus");
         assert_eq!(report["exact_curve"], true);
         assert_eq!(report["parameters"]["field_bits"], 131);
-        assert_eq!(report["scalar"], secret);
+        assert!(
+            report["scalar"] == secret,
+            "recovered scalar differs from the constructed fixture"
+        );
         assert_eq!(report["index_calculus"]["rank"], 3);
         assert_eq!(report["index_calculus"]["verified_relations"], 3);
         assert_eq!(report["index_calculus"]["factor_base_logs_verified"], true);

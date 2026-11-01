@@ -1,0 +1,14 @@
+{
+  "status": "FROZEN_BEFORE_RELATIVE_RESOLVENT_SCREEN",
+  "frozen_utc": "2026-10-26T01:19:08Z",
+  "goal": "find an exact degree-12 polynomial for x_E over Q(X0(27))",
+  "source": "experiments/hecke-432-full-e-lift-20261025/qseries_modp.json",
+  "basis": "x_C^a*y_C^b*x_E^c with b in {0,1}, c in [0,12], and pole weight 2a+3b+2c at most D",
+  "weighted_degrees": [24,40,56,72,80],
+  "auxiliary_fields": [997,1009],
+  "training_exponents": "from -D through 900 inclusive",
+  "holdout_exponents": [901,950],
+  "candidate_gate": "nonzero x_E degree-12 coefficient, same kernel dimension in both fields, independent holdout, rational reconstruction, global function-field identity, and independent p997 fiber evaluation",
+  "negative_gate": "a nonzero modular pivot minor gives a rational no-relation bound in the nested monomial space",
+  "interpretation": "a degree-12 relation is guaranteed in the function field, but this bounded pole-weight screen may return BOUNDED_NO_RELATION"
+}

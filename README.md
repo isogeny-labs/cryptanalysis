@@ -1,13 +1,19 @@
 # cryptanalysis
 
+The Rust API includes a [hashed-factor-base elliptic-curve tensor
+implementation](docs/hashed-ecdl.md) for the Bochum v0.2 paper: compact
+encodings, exact contraction and certificate replay. Correctness controls
+do not establish the conditional asymptotic bound or a practical speedup.
+
+A separate [scalar tensor companion](experiments/hashed-ecdl-tensor-reference/README.md)
+adds independently implemented binary and prime-field coordinate checks and the
+Certicom ECCp-131 target. Its development checks do not recover either published
+challenge scalar or establish a practical speedup.
+
 A fast, self-contained C11 library of discrete-logarithm algorithms with
 Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust
 attack suite (symmetric, hash, ECDLP, nonce, lattice and post-quantum
 cryptanalysis) that grew up alongside it.
-
-[Lean retrospective, 2026-10-18](research/lean_retrospective_20261018/README.md):
-checked rho collision-recovery formulas and a zero-denominator counterexample,
-with explicit assumptions and implementation gaps.
 
 > **Status note on ECC2K-130 and isogeny-volcano work (as of 2026-10-01).**
 > This repository contains no ECDLP speedup, and none is claimed. The
@@ -34,6 +40,15 @@ with explicit assumptions and implementation gaps.
 > We know of no public 2025-2026 result in classical index calculus for binary
 > elliptic curves that says otherwise. If you have a source for one, please open
 > an issue with the link.
+> **P-256 isogeny-class status (2026-10-05).** The complete,
+> certificate-checked factorization of the Frobenius discriminant is frozen in
+> [`experiments/p256-isogeny-search-20261005`](experiments/p256-isogeny-search-20261005/README.md).
+> It is fundamental, so `Z[pi]` is already the maximal order: this class has no
+> vertical volcano levels, no `j=0` or `j=1728` member, and no useful low-degree
+> non-scalar endomorphism. The remaining work is a horizontal explicit-path
+> search with separately charged discovery, mapping, and ECDLP costs. The
+> initial timing is an unisolated Python control; no P-256 ECDLP speedup is
+> claimed.
 
 | algorithm | header | problem | cost |
 |-----------|--------|---------|------|
@@ -65,24 +80,40 @@ constants, to serve as the reference implementation that research code is
 compared against, and to give higher-level languages a fast native core;
 it is not an attack tool for cryptographic sizes.
 
-For prime-field `j=0` curves, rho now uses a Jacobian `tau = 1-omega`
-scalar path when building its jump table and restarting walks.  Width 2 is
-the measured default; width 4 with cached base and target tables and
-tripling is selectable using
-`-DCA_J0_TAU_RHO_WIDTH=4`.  The
-[paper integration and paired measurements](experiments/prime-j0-tau-20260930/README.md)
-describe the scope and timing interval.  Configure `-DCA_J0_TAU_RHO=OFF`
-to build the affine setup reference.
-
-The j=0 rho walk now keeps each point in its current sixfold orientation and
-adds a matching precomputed jump.  It checks orbit collisions at distinguished
-points and showed an exploratory gain over the former per-step canonical walk
-on a frozen 36/38/46-bit one-target panel.  That contended-host timing needs
-replay through the [isolated benchmark service](docs/ISOLATED_BENCHMARKS.md).
-The
+On `j=0` curves, `ca_curve_solve` runs the same GLV walk as on `j=1728`
+curves, with generic double-and-add for its jump table and restarts.  Two
+earlier `j=0` variants were removed with their build options: the Jacobian
+`tau = 1-omega` setup (`CA_J0_TAU_RHO`, `CA_J0_TAU_RHO_WIDTH`) and the
+oriented ("covariant") walk (`CA_J0_RHO_COVARIANT_WALK`).  Since #437 the
+solver reached neither, and a paired measurement found the current walk
+cheaper below 36 bits (#1059, #1061).  The tau scalar functions
+(`ca_ec_mul_tau2`, `ca_ec_mul_tau4`, `ca_ec_mul_tau4_tripling`,
+`ca_ec_triple_j0`) remain.  The
+[tau setup measurements](experiments/prime-j0-tau-20260930/README.md) and the
 [oriented-walk experiment](experiments/prime-j0-rho-coordinate-canon-20261002/README.md)
-contains the derivation, raw results, and limits.  Set
-`-DCA_J0_RHO_COVARIANT_WALK=OFF` to build the former walk.
+record the earlier variants; commit `f962323` is the last that builds them.
+
+## Elliptic-curve surface tools
+
+[`tools/ecdlp-surfaces`](tools/ecdlp-surfaces/README.md) is a standalone Rust
+crate with four command-line tools: `surface_search` enumerates containing
+quadrics, `transfer_check` checks the transported group law and prime subgroup,
+and `frobenius_filter` applies necessary conditions to supplied abelian-surface
+polynomials. `binary_surface_check` checks the pinned a=0/a=1 Koblitz fixtures
+over GF(2^83), including exact pencil counts and subgroup transport. The
+odd-prime arithmetic uses primes up to 10,000. Equivalent embeddings preserve
+the ECDLP; no destination-solver speedup is established. The
+[report](docs/ecdlp-surfaces/REPORT.md) includes the diagram, PDF, fixtures,
+and native identity certificates. Run `tools/ecdlp-surfaces/check.sh` to
+validate the crate and replay its examples. The
+[n=83 report](research/ecdlp_surfaces_n83_20261012/reports/run-20261012T0331Z/REPORT.md)
+records the binary checks and includes an inspected PDF.
+
+For genus-2 and higher Jacobian transfers, use the
+[`ecdlp-surfaces` skill](.agents/skills/ecdlp-surfaces/SKILL.md) and its
+[higher-genus reference](.agents/skills/ecdlp-surfaces/references/higher-genus.md)
+for the existing cover/arithmetic tools, native pullback APIs, and construction
+and subgroup-validation requirements.
 
 ## Build
 
@@ -157,6 +188,53 @@ pipeline is separate and has no complete released DLP command yet.
 ./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 --threads 2
 ```
 
+For a long `ic` linear-sieve run, `--verbose` prints stage starts, relation
+counts, sieve-unit counts, and elapsed time to stderr while stdout remains one
+JSON result. `--progress-every` sets the reporting interval in seconds.
+`--state-dir` saves completed sieve units after each durable journal write,
+then saves verified factor-base logs and the final result. Resume with the
+same arguments plus `--resume`:
+
+```sh
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --progress-every 5 \
+  --state-dir ./ic-p41
+
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --progress-every 5 \
+  --state-dir ./ic-p41 --resume
+```
+
+The directory contains `manifest.json` (exact command identity),
+`relations.ckpt` (completed linear-sieve units),
+`relations.ckpt.precomp` (verified factor-base logs), `progress.json`
+(live counts and phase), and `result.json` (`running` until the command
+finishes). A partial last journal record is
+discarded and its sieve unit is recomputed. A mismatched manifest or corrupt
+precomputation is rejected. If an interruption occurs during linear algebra
+or the individual logarithm, the next run reuses the completed relation or
+precomputation artifact and repeats the interrupted stage.
+
+To copy the state to S3, supply a dedicated empty prefix and an AWS CLI with
+credentials for that bucket. The CLI syncs during the run and again before it
+returns; a failed final sync causes exit status 1 while retaining the local
+artifacts. Resume on another host by using an empty local state directory:
+
+```sh
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --state-dir ./ic-p41 \
+  --s3-uri s3://YOUR-BUCKET/ic-p41 --sync-every 60
+
+./build/cryptanalysis ic --p 1099511627791 --g 3 --h 123456789 \
+  --threads 2 --seed 7 --verbose --state-dir ./ic-p41-restored \
+  --s3-uri s3://YOUR-BUCKET/ic-p41 --resume
+```
+
+Use one writer per state directory and S3 prefix. When a matching local
+manifest exists, the local journal is the resume source; use an empty local
+directory to restore the S3 copy. `--method rexp` supports live verbose
+progress, while durable relation checkpointing is currently for `lsieve`.
+
 Each generic command prints one JSON object per invocation. The existing
 `solve --alg ...` form remains available:
 
@@ -206,42 +284,15 @@ $ ./build/ca ic --p 1099511627791 --g 3 --h 123456789 --threads 4
  "relations":1505,"verified_logs":143,"sieve_seconds":0.001,"linalg_seconds":0.049,...}
 ```
 
+The big-integer [curve audit](bindings/rust/curve-audit/README.md) embeds a
+versioned weak-curve criteria catalog and reports the evidence for each check.
+Build it with `cargo build --locked --manifest-path bindings/rust/Cargo.toml -p
+ca-curve-audit`, then run `bindings/rust/target/debug/ca-curve-audit audit
+--input bindings/rust/curve-audit/examples/nist-p192.json --max-k 6`.
+
 Other commands: `ca factor N`, `ca prime N`, `ca solve --alg bsgs|kangaroo|grumpy
 ... --lo L --hi U` for interval problems, `ca_bench generic|interval|ic|cheon|gpu|ops`
 for the benchmark tables.
-
-### ECDLP across an isogeny volcano
-
-```
-$ ./build/ca volcano --p 1000033 --a 5 --b 17 --trials 20 --diagram volcano.diagram.json
-volcano: 29 curves, 28 edges verified, depth 1; rho: 12 curves x 20 trials
-curve      level     min ops    mean ops     max ops    mean ms
-...
-L0            5c         277         391         552       0.05
-L1            4c         305         409         597       0.05
-{"status":"ok","p":1000033,...,"depth":1,"crater":"split","walk":{...,"per_level":[9,14]},...}
-```
-
-Point it at a curve `y² = x³ + Ax + B` over `F_P` (prime `3 < P < 2^62`).
-- **Setup:** it counts points (or checks `--order`), takes `n` the largest
-  prime factor, and draws `P` of order `n` and `Q = kP` from `--seed`.
-- **Walk:** it walks the 3-isogeny volcano (`--ell 2` for 2-isogenies)
-  with Vélu maps from `ca_volcano.h`. It carries `(P, Q)` along every edge
-  and checks that each image is on its codomain, the map is a
-  homomorphism, and the order is kept.
-- **Measure:** it runs `ca_rho_solve` `--trials` times on the root, on up
-  to `--per-level` curves of each level, and on `--controls` isomorphic
-  re-scalings of the root.
-
-Output:
-- **stdout:** JSON with min / mean / median / max / sd / 95% CI of group
-  operations and seconds per curve, per level (0 = crater … depth =
-  floor), and pooled.
-- **stderr:** the same as a table.
-- **`--trials-out FILE`:** one CSV row per solve.
-- **`--diagram FILE`:** writes the input of the standard volcano diagram
-  (`volcano-diagram/v1`, rendered by `tools/volcano-diagram` in
-  [aburan28/crypto](https://github.com/aburan28/crypto)).
 
 ### Every public header is reachable
 
@@ -393,6 +444,35 @@ vendor place-and-route this flow does not run.  See
 order, what each testbench establishes, and what the next improvement is
 (batched inversion, ~3x).
 
+## First use case: the live ECC2K-130 campaign
+
+[`usecases/ecc2k130/`](usecases/ecc2k130/README.md) connects the live
+ECC2K-130 run to its AWS corpus and status store:
+
+```text
+s3://ecc2k130-590183823895/dp/
+  ── object ref ─▶ durable Redis Stream ─▶ RDS rho-dp
+                                           └▶ s3://ecc2k130-status-590183823895/status.json
+```
+
+The integration removes the long-running importer that repeatedly listed the
+whole S3 prefix. S3 remains the authoritative immutable corpus; a persistent,
+`noeviction` Redis-compatible service carries object references through a
+consumer group; and one idempotent RDS transaction verifies and indexes each
+object before its stream entry is atomically acknowledged and deleted.
+
+Queue depth, bytes, oldest-entry age and Redis memory pressure drive explicit
+green/yellow/red backpressure. At red, producers retain their local spool and
+retry instead of dropping DPs or filling Redis. The queue is deliberately
+separate from the fail-open Redis cache used for disposable fleet hints.
+The coordinator ships as a Helm chart with publisher and consumer Deployments,
+guarded schema-migration init containers and an S3 reconciliation CronJob.
+
+```sh
+make ecc2k130-usecase ecc2k130-helm
+```
+
+
 ## GPU client for ECC2K-130
 
 `ecc2k130/` is a rho walker for the same challenge on a CUDA device, over the
@@ -435,6 +515,12 @@ the [checked-launcher rule](AGENTS.md#local-sage-runs). The
 [hardware compatibility suite](experiments/sage-binary-hardware/README.md#current-compatibility-gate)
 checks installed scalar, batch, CPU and selected GPU paths and records their
 actual runtime identities.
+
+The macOS arm64 archive exposes the separate Metal table walk through
+`bin/cryptanalysis rho --curve ecc2k130 --backend metal`. Run `--check` for its
+host arithmetic check, then use `--run-id R --dp-file table-dps.bin --verify N`
+to collect and re-walk table-walk reports. Those points cannot join the live
+CUDA sigma-walk campaign corpus. The Metal shader is compiled at start-up.
 
 The macOS arm64 archive exposes the separate Metal table walk through
 `bin/cryptanalysis rho --curve ecc2k130 --backend metal`. Run `--check` for its
@@ -565,20 +651,6 @@ warnings`, cargo-deny, the release test suite, the Python engine's lint and
 tests).  The suite links the C library through `bindings/rust` for
 `crax`'s generic solvers; the C library does not depend on the suite.
 
-### Binary cover-candidate sweeper
-
-[`experiments/ghs-sweeper`](experiments/ghs-sweeper/README.md) is a standalone
-Rust CLI for configurable binary hyperelliptic spectral searches, resumable
-SQLite checkpoints, independent point-count checks, source matching and
-reference-backed novelty triage. It can import the earlier prototype's
-journals without running Python. Spectral matches remain provisional; explicit
-maps, subgroup transport and publication novelty require separate evidence.
-
-```sh
-cargo build --release --locked --manifest-path experiments/ghs-sweeper/Cargo.toml
-experiments/ghs-sweeper/target/release/ghs-sweeper --help
-```
-
 ## C API in one screen
 
 ```c
@@ -694,11 +766,11 @@ cuda/                    the CUDA kernel (ca_device.cuh is shared C11/CUDA code)
 tests/                   C test programs (ctest)
 tools/                   ca (CLI) and ca_bench
 fpga/                    ECC2K-130 rho core: golden C model, Verilog, testbenches, host tool
+usecases/ecc2k130/        live ECC2K-130 S3/Redis Streams/RDS integration
 ecc2k130/                ECC2K-130 clients: packed GF(2^131) table walk (CUDA, CPU, Metal), host tests vs the model
 scripts/                 build_cuda_kernel.sh, cli_smoke.sh (every ca subcommand)
 bindings/{rust,go,python} plus bindings/rust/cryptanalysis-cuda (Rust GPU driver)
 suite/                   the attack suite: Rust crate cryptanalysis-suite, ca-suite / ca-ic / ca-curves CLIs, Python engine
-experiments/ghs-sweeper/ standalone Rust binary cover-candidate sweeper and census regression fixtures
 challenges/ecc/          elliptic-curve challenge corpus (Koblitz, CM, char 3, extensions, volcanoes)
 docs/                    ALGORITHMS.md, BENCHMARKS.md, FFI.md, GPU.md, COORDINATOR.md,
                          CLOUD_LAUNCH.md (Modal + RunPod + ingest MiG),
@@ -730,6 +802,7 @@ set locally, in the order that fails fastest.
 | `suite` | the attack suite: fmt, clippy `-D warnings` over every target, rustdoc `-D warnings`, the release test suite (2,395 unit and 31 integration tests), a checked answer from each tool, the declared MSRV rebuilt and tested, cargo-deny, and the Python engine's ruff and unit tests on three interpreters |
 | `fuzz` | seven libFuzzer harnesses: corpus replay and a one-minute run per harness on every change, a ten-minute soak per harness nightly |
 | `fpga` | the ECC2K-130 core: the golden model's own checks, then every testbench against the vectors it produces, at three multiplier widths; verilator `-Wall`; a yosys area report |
+| `ecc2k130-usecase` | packed-record/key/manifest compatibility, durable Redis consumer groups, pending recovery, dead-lettering, producer backpressure, transactional PostgreSQL indexing, and status publication |
 | `ecc2k130` | the GPU client: the packed arithmetic, the table walk's selection and the walk itself against `fpga/model` on gcc and clang; the kernel compiled for sm_120 with CUDA 13.3 from pip wheels, with its register and spill report |
 | `deploy` | the Helm chart and the container images: `helm lint`, a render with every optional piece enabled whose manifests are parsed and asserted (one coordinator replica, `Recreate`, and an agent NetworkPolicy that allows no ingress at all), the three configurations the chart must refuse, and a build of both image targets that then runs each one |
 | `gpu-health` | the health-check orchestrator's tests on Python 3.8 and 3.12; the Helm chart linted, and its MutatingAdmissionPolicy run on a real kube-apiserver; the image built on x86_64 and aarch64 (which compiles `ec2k-gpu` for sm_80 to sm_120 and runs the host test and `check --kat`) and smoke-run: without a GPU it must fail and say why, against scripted GPUs it must pass; then, on x86_64, the chart on kind, where the injected check gates a stand-in device plugin |
@@ -752,17 +825,6 @@ for sm_70 through sm_90 and by running the identical kernel body through the
 host emulator; **it has not yet been run on a physical GPU**, because this
 development container has neither a device nor a complete CUDA toolkit. See
 the end of [docs/GPU.md](docs/GPU.md) for exactly what that means.
-
-### `ca volcano --jobs` performance evidence
-
-The PR's original 0.205 s and 0.101 s observations remain unverified because
-their curve, command, host and paired raw data were not retained; see the
-[historical evidence audit](docs/perf/volcano-jobs-historical-observation.md).
-The new, independent
-[native campaign protocol v1](experiments/volcano-jobs-native-v1/protocol.md)
-pins fresh KAT workloads and both code revisions. It has not been timed: the
-current container fails the required host-isolation preflight. The new campaign
-must not be described as recovery of the old timings.
 
 Not implemented (documented in `docs/ALGORITHMS.md`): the number field
 sieve (the state of the art for `F_p` above ~100 bits), index calculus on

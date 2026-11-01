@@ -1,0 +1,87 @@
+name: N19 native S0 diagnostic (untimed)
+
+# Untimed diagnostic for run 39307409409's S0 failure and for protocol v2
+# (experiments/volcano-n19-native-tau6-v2-20261019/diagnosis/). Builds the v2
+# native library with the pinned toolchain and runs diagnosis/sage_diag.sage
+# in the baseline run's Sage image: per shift system, Sage's variety, the
+# native variety through the v2 and the v1 binding, and a direct S3 evaluation
+# in Sage's field. No interval is timed and nothing here is a measurement.
+# Dispatch only: no push or path triggers it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n19-native-s0-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  V2: experiments/volcano-n19-native-tau6-v2-20261019
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+  SAGE_IMAGE: sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565
+
+jobs:
+  diag:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/volcano-n19-native-tau6-v2-20261019
+
+      - name: Build and test the v2 native library
+        shell: bash
+        run: |
+          set -euo pipefail
+          rd="$RUNNER_TEMP/n19diag"
+          mkdir -p "$rd/lib"
+          echo "N19_DIAG=$rd" >> "$GITHUB_ENV"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/n19diag-cargo"
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$rd/rustc.txt"
+          (cd "$V2/native" && cargo test --release --locked 2>&1 | tee "$rd/cargo-test.txt")
+          (cd "$V2/native" && cargo build --release --locked)
+          cp "$CARGO_TARGET_DIR/release/libtau6native.so" "$rd/lib/"
+          sha256sum "$rd/lib/libtau6native.so" "$V2/diagnosis/sage_diag.sage" "$V2/diagnosis/multi_systems.json" \
+            "$V2/native_binding.py" "$V2/native/src/lib.rs" | tee "$rd/sha256.txt"
+          echo "$GITHUB_SHA" > "$rd/git_sha.txt"
+
+      - name: Run the Sage diagnostic (untimed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$SAGE_IMAGE"
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_DIAG:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "sage --version && sage $V2/diagnosis/sage_diag.sage --lib /rd/lib/libtau6native.so --out /rd/sage_diag.json" \
+            | tee "$N19_DIAG/stdout.txt"
+          { echo '```'; cat "$N19_DIAG/stdout.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve the diagnostic
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: n19-native-s0-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19diag
+          if-no-files-found: warn
+          retention-days: 90

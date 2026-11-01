@@ -35,7 +35,10 @@ static inline uint64_t ca_splitmix64(uint64_t *x)
 static inline void ca_rng_seed(ca_rng *r, uint64_t seed)
 {
     uint64_t x = seed;
-    for (int i = 0; i < 4; i++) r->s[i] = ca_splitmix64(&x);
+    r->s[0] = ca_splitmix64(&x);
+    r->s[1] = ca_splitmix64(&x);
+    r->s[2] = ca_splitmix64(&x);
+    r->s[3] = ca_splitmix64(&x);
     if ((r->s[0] | r->s[1] | r->s[2] | r->s[3]) == 0) r->s[0] = 1;
 }
 
@@ -83,6 +86,125 @@ static inline uint64_t ca_mix64(uint64_t x)
     x *= 0xc4ceb9fe1a85ec53ULL;
     x ^= x >> 33;
     return x;
+}
+
+/* ---- the EC walk step, shared by group_ec.c and rho.c ------------------ */
+struct ca_group;
+/* Points of a ca_group_ec_init group are w[0] = x, w[1] = y in Montgomery
+ * form and w[2] = 1 at infinity (group_ec.c).  The rho walk reads these
+ * through the group's vtable in general; for the native EC group it calls
+ * the two helpers below directly (ec_hash and ec_canonicalize are these
+ * same functions, so every value agrees) and its batched step adds the
+ * table entries where they lie instead of copying them first. */
+
+/* ec_hash: equal points hash equal; the walk's index and distinguished-
+ * point test read it. */
+static inline uint64_t ca_ec_hash_words(uint64_t x, uint64_t y, uint64_t inf)
+{
+    if (inf) return 0x9e3779b97f4a7c15ULL;
+    return ca_mix64(x * 0x9E3779B97F4A7C15ULL ^ ca_mix64(y));
+}
+
+/* ec_canonicalize: the representative of {P, -P} with the smaller Montgomery
+ * y; 1 when y was replaced by p - y.  The comparison is a coin flip on walk
+ * data, so the result is selected rather than branched on.  y == 0 gives
+ * p - y = p > y and no flip, so it needs no test of its own; the point at
+ * infinity is left as it is. */
+static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
+{
+    uint64_t yy = *y, ny = p - yy;
+    uint64_t flip = (uint64_t)(ny < yy) & (uint64_t)(inf == 0);
+    *y = flip ? ny : yy;
+    return (int)flip;
+}
+
+/* Whether g is the native E(F_p) group of ca_group_ec_init (not a user
+ * group of the same kind), so that the helpers here describe it. */
+int ca_ec_group_is_native(const struct ca_group *g);
+
+/* The field constants the affine group law reads, copied out of the group
+ * once per batch.  The stores of a batch (points, denominators, products)
+ * are all uint64_t lvalues, so through the group pointer the compiler would
+ * have to assume each may overwrite p or the Montgomery context and reload
+ * them, recomputing p^{-1}, at every multiplication. */
+typedef struct ca_ec_consts {
+    uint64_t p;      /* the modulus */
+    uint64_t npi;    /* p^{-1} mod 2^64, which is -ca_mont.pinv */
+    uint64_t a_mont; /* the curve coefficient a in Montgomery form */
+    uint64_t one;    /* 1 in Montgomery form */
+} ca_ec_consts;
+ca_ec_consts ca_ec_consts_of(const struct ca_group *g);
+
+/* Montgomery product with the modulus and p^{-1} in registers: the
+ * reduction of ca_mont_redc, so the same residue. */
+static inline uint64_t ca_ec_bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+{
+    ca_u128 t = (ca_u128)a * b;
+    uint64_t u = (uint64_t)t * pinv_pos;
+    uint64_t hi = (uint64_t)(t >> 64);
+    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
+    uint64_t rr = hi - mh;
+    if (hi < mh) rr += p;
+    return rr;
+}
+
+/* The denominator the affine law a + b inverts: x_b - x_a, or 2 y_a for a
+ * doubling, or 1 when no inversion is needed (a point at infinity, an
+ * inverse pair), so that Montgomery's trick can invert a batch of them with
+ * one field inversion.  No field multiplication is counted here. */
+static inline uint64_t ca_ec_add_den(const ca_ec_consts *c, const ca_elem *a, const ca_elem *b)
+{
+    if (a->w[2] || b->w[2]) return c->one;
+    if (a->w[0] == b->w[0]) {
+        if (a->w[1] == b->w[1] && a->w[1] != 0) return ca_addmod(a->w[1], a->w[1], c->p);
+        return c->one;
+    }
+    return ca_submod(b->w[0], a->w[0], c->p);
+}
+
+/* r = a + b given di, the inverse of ca_ec_add_den(c, a, b): the affine
+ * group law with its special cases (the same points ca_group_op gives), its
+ * multiplications and squarings counted as ec_batch_op counts them.  r may
+ * alias a or b. */
+static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                     const ca_elem *b, uint64_t di)
+{
+    if (a->w[2]) {
+        *r = *b;
+        return;
+    }
+    if (b->w[2]) {
+        *r = *a;
+        return;
+    }
+    const uint64_t P = c->p, NPI = c->npi;
+    const uint64_t ax = a->w[0], ay = a->w[1], bx = b->w[0], by = b->w[1];
+    uint64_t lam;
+    if (ax == bx) {
+        if (ay == by && ay != 0) {
+            CA_FC_ADD(CA_FC_SQR, 1);
+            uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+            uint64_t num = ca_addmod(ca_addmod(ca_addmod(x2, x2, P), x2, P), c->a_mont, P);
+            CA_FC_ADD(CA_FC_MUL, 1);
+            lam = ca_ec_bmul(num, di, P, NPI);
+        } else {
+            r->w[0] = r->w[1] = 0; /* the point at infinity */
+            r->w[2] = 1;
+            r->w[3] = 0;
+            return;
+        }
+    } else {
+        CA_FC_ADD(CA_FC_MUL, 1);
+        lam = ca_ec_bmul(ca_submod(by, ay, P), di, P, NPI);
+    }
+    CA_FC_ADD(CA_FC_SQR, 1);
+    uint64_t x3 = ca_submod(ca_submod(ca_ec_bmul(lam, lam, P, NPI), ax, P), bx, P);
+    CA_FC_ADD(CA_FC_MUL, 1);
+    uint64_t y3 = ca_submod(ca_ec_bmul(lam, ca_submod(ax, x3, P), P, NPI), ay, P);
+    r->w[0] = x3;
+    r->w[1] = y3;
+    r->w[2] = 0;
+    r->w[3] = 0;
 }
 
 /* ---- open addressing hash table: u64 key to two u64 values ------------- */
@@ -133,6 +255,15 @@ void ca_htab1_free(ca_htab1 *t);
 int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
 int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
 size_t ca_htab1_bytes(const ca_htab1 *t);
+/* Start loading the slot a key probes first.  A hint only: the table may
+ * be resized or modified before the access that follows, and nothing about
+ * the table's contents or the order of operations changes.  Lets a block of
+ * independent lookups overlap their cache misses. */
+static inline void ca_htab1_prefetch(const ca_htab1 *t, uint64_t key)
+{
+    if (key == 0) key = 1;
+    if (t->cap) __builtin_prefetch(&t->e[(size_t)key & (t->cap - 1)], 0, 1);
+}
 
 /* ---- misc -------------------------------------------------------------- */
 static inline uint64_t ca_max_u64(uint64_t a, uint64_t b) { return a > b ? a : b; }
@@ -151,43 +282,6 @@ struct ca_group;
  * (and does nothing) for any other vtable. */
 int ca_zp_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
 int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
-
-/* Fixed-base multiples for curves made by ca_group_ec_init (Montgomery
- * affine coordinates of 2^j P; bit j of inf_mask marks 2^j P = O).
- * ca_ec_pow2_init returns 0, leaving the table unset, for any other vtable.
- * ca_ec_pow2_mul2 sets r = k1 P1 + k2 P2 (t2 may be NULL), the same point
- * ca_group_mul and ca_group_op would give, with one field inversion. */
-typedef struct ca_ec_pow2 {
-    uint64_t x[64], y[64];
-    uint64_t inf_mask;
-} ca_ec_pow2;
-int ca_ec_pow2_init(const struct ca_group *g, ca_ec_pow2 *t, const ca_elem *P);
-void ca_ec_pow2_mul2(const struct ca_group *g, ca_elem *r, const ca_ec_pow2 *t1, uint64_t k1,
-                     const ca_ec_pow2 *t2, uint64_t k2);
-
-/* The bodies of the curve vtable's hash and canonicalize (group_ec.c calls
- * these), so a solver that knows it holds a plain curve can inline them in
- * its step loop instead of calling through the vtable.  Layout: w[0] = x,
- * w[1] = y (Montgomery form), w[2] != 0 for the point at infinity. */
-static inline uint64_t ca_ec_hash_inline(const ca_elem *a)
-{
-    if (a->w[2]) return 0x9e3779b97f4a7c15ULL;
-    return ca_mix64(a->w[0] * 0x9E3779B97F4A7C15ULL ^ ca_mix64(a->w[1]));
-}
-
-static inline int ca_ec_canonicalize_inline(uint64_t p, ca_elem *a)
-{
-    if (a->w[2] || a->w[1] == 0) return 0;
-    uint64_t ny = p - a->w[1];
-    if (ny < a->w[1]) { a->w[1] = ny; return 1; }
-    return 0;
-}
-
-/* What ca_group_mul adds to its ops counter for scalar k. */
-static inline uint64_t ca_mul_ops(uint64_t k)
-{
-    return k ? (uint64_t)__builtin_popcountll(k) + (uint64_t)(63 - __builtin_clzll(k)) : 0;
-}
 
 int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
                      uint64_t n, const char *solver);

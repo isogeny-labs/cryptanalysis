@@ -1,0 +1,83 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "binaries_unchanged": true,
+  "host_cpu_identity_unchanged": true,
+  "one_index_and_layout_digest_set_per_base_equal_frozen": true,
+  "one_probe_count_per_point_and_base": true,
+  "one_relation_per_point_and_base": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "placement_pinned_every_process": true,
+  "pre_timing_tables_and_closure_bases_verified": true,
+  "primary_probe_law_inside_frozen_band": false,
+  "q0_matches_archived_and_frozen_identities": true,
+  "rank_relations_probes_root_calls_and_counters_identical_per_seed": true,
+  "rank_tables_equal_frozen_verified_tables": true,
+  "receipt_matches_schedule": true,
+  "rows_in_schedule_order": true,
+  "runner_identity_matches_frozen_files": true
+ },
+ "detail": {
+  "index_digest_sets_per_base": {
+   "K600": 1,
+   "M38": 1
+  },
+  "invalid_rows": [],
+  "probe_failures": [],
+  "probe_law_gate": {
+   "attempts": 16,
+   "blocks": 1,
+   "ci95": [
+    0.7709337047389163,
+    2.0082909251296037
+   ],
+   "estimate": 1.3133512160603562,
+   "law_probes_per_relation": 1700068.523328942,
+   "mean_probes_per_relation": 2232787.0625
+  },
+  "processes_per_m38_seed": {
+   "1213": 2,
+   "1215": 1
+  },
+  "rank_frame_counters": {
+   "00095/kPI": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "00097/kM38I": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   },
+   "00108/kM38IX": {
+    "builds": 16,
+    "plant_checked_inputs": 12670780
+   },
+   "00112/kM38Iaa": {
+    "builds": 16,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_seed_failures": [],
+  "relation_failures": [],
+  "rows_without_gain": {
+   "00095/kPI": 0,
+   "00097/kM38I": 0,
+   "00108/kM38IX": 0,
+   "00112/kM38Iaa": 0
+  },
+  "runner": {
+   "host_class": "Intel(R) Xeon(R) Processor @ 2.10GHz | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+   "microcode": "0x1",
+   "placement_failures": [],
+   "runner_identity": {
+    "files_equal": true,
+    "no_smoke_subset": false
+   }
+  },
+  "scalar_failures": [],
+  "units_seen": 2
+ },
+ "problems": [],
+ "rows": 10
+}

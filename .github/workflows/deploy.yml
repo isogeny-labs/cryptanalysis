@@ -17,7 +17,7 @@ name: deploy
 
 on:
   push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
+    branches: [main]
     paths:
       - "deploy/**"
       - "bindings/go/cmd/ca-coordinator/**"
@@ -26,6 +26,7 @@ on:
       - "include/cryptanalysis/ca_coord.h"
       - ".github/workflows/deploy.yml"
   pull_request:
+    branches: [main]
     paths:
       - "deploy/**"
       - "bindings/go/cmd/ca-coordinator/**"
@@ -39,7 +40,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 defaults:
@@ -53,7 +54,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-      - uses: azure/setup-helm@v5
+      - uses: azure/setup-helm@v4
         with:
           version: v3.16.3
 
@@ -184,7 +185,7 @@ jobs:
   images:
     name: images (coordinator, agent)
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 30 }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:

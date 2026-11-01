@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 /* Build a table to `gen` and solve `reps` random targets; check every answer
  * and report the precomputation and online cost in the natural units
@@ -174,6 +175,58 @@ int main(void)
         }
         ca_precomp_table_free(eatab);
     }
+
+    /* The reusable table and online answer survive a fresh process-style
+     * reconstruction.  Reject a changed seed, target, and damaged artifact. */
+    char state[] = "/tmp/ca-precomp-XXXXXX";
+    CHECK(mkdtemp(state) != NULL);
+    char table_path[256], online_path[256], progress_path[288];
+    snprintf(table_path, sizeof(table_path), "%s/table.ckpt", state);
+    snprintf(online_path, sizeof(online_path), "%s/online.ckpt", state);
+    ca_precomp_table *saved = NULL, *restored = NULL;
+    ca_stats saved_stats = {0}, restored_stats = {0};
+    CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &ea, table_path, 1, 1, 0,
+                                             &saved, &saved_stats) == CA_OK);
+    CHECK(saved != NULL);
+    ca_group_mul(&g, &h, &gen, 91873, NULL);
+    if (saved) {
+        CHECK(ca_precomp_table_solve_checkpointed(saved, &h, online_path, 1, 1, 0,
+                                                   &got, NULL) == CA_OK);
+        CHECK_EQ_U64(got, 91873);
+        ca_precomp_table_free(saved);
+    }
+    CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &ea, table_path, 1, 1, 0,
+                                             &restored, &restored_stats) == CA_OK);
+    CHECK(restored != NULL);
+    CHECK_EQ_U64(saved_stats.group_ops, restored_stats.group_ops);
+    if (restored) {
+        got = 0;
+        CHECK(ca_precomp_table_solve_checkpointed(restored, &h, online_path, 1, 1, 0,
+                                                   &got, NULL) == CA_OK);
+        CHECK_EQ_U64(got, 91873);
+        ca_group_mul(&g, &h, &gen, 91874, NULL);
+        CHECK(ca_precomp_table_solve_checkpointed(restored, &h, online_path, 1, 1, 0,
+                                                   &got, NULL) == CA_ERR_INVALID);
+        ca_precomp_table_free(restored);
+    }
+    ca_precomp_params changed = ea;
+    changed.seed++;
+    CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &changed, table_path, 1, 1, 0,
+                                             &restored, NULL) == CA_ERR_INVALID);
+    FILE *damage = fopen(table_path, "r+b");
+    CHECK(damage != NULL);
+    if (damage) {
+        CHECK(fseek(damage, -1, SEEK_END) == 0);
+        CHECK(fputc(0x5a, damage) != EOF);
+        CHECK(fclose(damage) == 0);
+    }
+    CHECK(ca_precomp_table_new_checkpointed(&g, &gen, &ea, table_path, 1, 1, 0,
+                                             &restored, NULL) == CA_ERR_INVALID);
+    snprintf(progress_path, sizeof(progress_path), "%s.progress.json", table_path);
+    unlink(progress_path);
+    snprintf(progress_path, sizeof(progress_path), "%s.progress.json", online_path);
+    unlink(progress_path);
+    unlink(table_path); unlink(online_path); rmdir(state);
 
     /* A known order is required. */
     ca_group g0 = g;

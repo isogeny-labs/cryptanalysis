@@ -1,0 +1,88 @@
+{
+  "arms": {
+    "S": {
+      "family": "ic",
+      "units": {
+        "s000": {
+          "canonicalizations": 1032063104,
+          "descent_mulmods": 4,
+          "ec_add": 40075,
+          "ec_add_trivial": 1201,
+          "ec_double": 61009,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1201,
+          "field_half_trace": 516031954,
+          "field_inv": 18061453,
+          "field_mul": 5631739471,
+          "field_sqr": 1032229291,
+          "fold_rotations": 2986022,
+          "frobenius_x": 495103808,
+          "la_inversions": 600,
+          "la_mulmods": 15692741,
+          "la_row_eliminations": 60197,
+          "relation_lifts": 601,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 29880600,
+          "root_index_probes": 1002081520,
+          "s3_root_solves": 516033599,
+          "s3_root_solves_library": 2647
+        },
+        "s001": {
+          "canonicalizations": 1031221816,
+          "descent_mulmods": 4,
+          "ec_add": 40077,
+          "ec_add_trivial": 1201,
+          "ec_double": 61006,
+          "ec_frobenius": 0,
+          "ec_lift_x": 0,
+          "ec_scalar_mul": 1201,
+          "field_half_trace": 515611310,
+          "field_inv": 18058918,
+          "field_mul": 5627112385,
+          "field_sqr": 1031387999,
+          "fold_rotations": 2983442,
+          "frobenius_x": 494688232,
+          "la_inversions": 600,
+          "la_mulmods": 15692741,
+          "la_row_eliminations": 60197,
+          "relation_lifts": 601,
+          "root_filter_inserts": 0,
+          "root_filter_queries": 0,
+          "root_index_inserts": 29880600,
+          "root_index_probes": 1001240430,
+          "s3_root_solves": 515612955,
+          "s3_root_solves_library": 2647
+        }
+      }
+    },
+    "rT": {
+      "family": "rho",
+      "units": {
+        "s000": {
+          "canonicalizations": 4368178,
+          "failed_collisions": 0,
+          "group_additions": 4368179,
+          "partition_hashes": 4299239,
+          "scalar_multiplications": 35,
+          "table_inserts": 68057,
+          "table_queries": 68058
+        },
+        "s001": {
+          "canonicalizations": 14191238,
+          "failed_collisions": 0,
+          "group_additions": 14191239,
+          "partition_hashes": 13966410,
+          "scalar_multiplications": 35,
+          "table_inserts": 222071,
+          "table_queries": 222072
+        }
+      }
+    }
+  },
+  "r_bits": 53,
+  "reference": "rT",
+  "schema": "ic-band-input/v1",
+  "unit": "one solved target: IC = rank stage of the K1 rank process (rank seed 101) + the cold process's setup, linear algebra (cached-table load and verification) and online interval at that point, the stacked end-to-end cold E2E(k, c); rho = setup and solve"
+}

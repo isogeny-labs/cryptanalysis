@@ -1,53 +1,16 @@
 name: Algebraic Boolean certificates
 on:
-  merge_group:
+  # Retired 2026-10-11: this gate guards a study that has been quiet for 7+ days, and its
+  # push/pull_request triggers were fanning out across the account's shared runners. Run it
+  # on demand, or restore its push/pull_request triggers from git history to bring it back.
   workflow_dispatch:
-  pull_request:
-    paths:
-      - ".github/ci/**"
-      - ".github/actions/ci-scope/**"
-      - "scripts/ci_scope.py"
-      - 'experiments/groebner-perf-20260924/**'
-      - 'experiments/pdp-scaling/boolean_basis.py'
-      - '.github/workflows/algebraic-certificate.yml'
-  push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
-    paths:
-      - ".github/ci/**"
-      - ".github/actions/ci-scope/**"
-      - "scripts/ci_scope.py"
-      - 'experiments/groebner-perf-20260924/**'
-      - 'experiments/pdp-scaling/boolean_basis.py'
-      - '.github/workflows/algebraic-certificate.yml'
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: algebraic-certificates-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  changes:
-    name: Select affected jobs
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      selected: ${{ steps.scope.outputs.selected }}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 2
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /.github/actions/ci-scope/
-            /.github/ci/
-            /scripts/ci_scope.py
-      - id: scope
-        uses: ./.github/actions/ci-scope
-        with:
-          workflow: algebraic-certificate.yml
-
   algebraic:
-    needs: changes
-    if: ${{ !cancelled() }}
     name: Algebraic proof checks (${{ matrix.os }})
     strategy:
       fail-fast: false
@@ -61,17 +24,32 @@ jobs:
       CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@v7
-        if: (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').algebraic) != 'false'))
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924
       - uses: actions/setup-python@v7
-        if: (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').algebraic) != 'false'))
         with:
           python-version: '3.12'
       - name: Build sparse F4 with proofs and UBSan
-        if: (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').algebraic) != 'false'))
         run: python experiments/groebner-perf-20260924/round5/build.py
       - name: Independent, adversarial, wide-variable and native checks
-        if: (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').algebraic) != 'false'))
         run: python -m unittest discover -s experiments/groebner-perf-20260924/round5 -p 'test_*.py' -v
       - name: Source/evidence audit and retained certificate replay
-        if: (needs.changes.result != 'success' || (toJSON(fromJSON(needs.changes.outputs.selected || '{}').algebraic) != 'false'))
         run: python experiments/groebner-perf-20260924/round5/audit.py

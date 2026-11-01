@@ -1,0 +1,160 @@
+name: N19 native tau6 solve, end-to-end cold Tier 1
+
+# One fresh GitHub-hosted ubuntu-24.04 runner. The frozen protocol is
+# experiments/volcano-n19-native-tau6-20261019/protocol.json and the frozen run
+# order is schedule.json next to it: S0 (Sage variety == native variety),
+# O1 (the candidate reproduces the archived tau6 run 38520305068), then 16
+# new held-out points, each with one fresh pinned Sage process per arm
+# (baseline B, candidate N, A/A Naa, planted NX, matched rho). The native
+# library is built and tested on the host with the pinned toolchain; Sage runs
+# in the baseline run's image, pinned by digest. verify_receipt.py audits the
+# receipt and applies the decision rule. README, figures, smoke and receipts
+# do not trigger a run.
+on:
+  push:
+    branches: [claude/n19-native-solve]
+    paths:
+      - experiments/volcano-n19-native-tau6-20261019/**
+      - .github/workflows/n19-native-tau6.yml
+      - '!experiments/volcano-n19-native-tau6-20261019/run_github_*/**'
+      - '!experiments/volcano-n19-native-tau6-20261019/README.md'
+      - '!experiments/volcano-n19-native-tau6-20261019/README.pdf'
+      - '!experiments/volcano-n19-native-tau6-20261019/figures/**'
+      - '!experiments/volcano-n19-native-tau6-20261019/make_figures.py'
+      - '!experiments/volcano-n19-native-tau6-20261019/report_header.tex'
+      - '!experiments/volcano-n19-native-tau6-20261019/smoke/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n19-native-tau6-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPERIMENT: experiments/volcano-n19-native-tau6-20261019
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+  SAGE_IMAGE: sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565
+
+jobs:
+  n19native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/volcano-ic experiments/volcano-n19-native-tau6-20261019
+
+      - name: Freeze runner and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          rd="$RUNNER_TEMP/n19native"
+          mkdir -p "$rd/lib"
+          {
+            echo "N19_JOB_START=$(date +%s)"
+            echo "N19_RECEIPT_DIR=$rd"
+            echo "CARGO_TARGET_DIR=$RUNNER_TEMP/n19native-cargo"
+          } >> "$GITHUB_ENV"
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          cpu = next((l.split(':', 1)[1].strip() for l in Path('/proc/cpuinfo').read_text().splitlines()
+                      if l.startswith('model name')), None)
+          rec = {'provider': 'github_actions',
+                 'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'],
+                                                     os.environ['GITHUB_JOB']),
+                 'runner_name': os.environ.get('RUNNER_NAME'), 'image_os': os.environ.get('ImageOS'),
+                 'image_version': os.environ.get('ImageVersion'),
+                 'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+                 'observed_cpu_affinity': sorted(os.sched_getaffinity(0)), 'observed_cpu_model': cpu,
+                 'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines()
+                                                 if l.startswith('MemTotal:')), None),
+                 'sage_image': os.environ['SAGE_IMAGE'],
+                 'git_sha': os.environ['GITHUB_SHA'], 'git_ref': os.environ['GITHUB_REF'],
+                 'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'],
+                                                           os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+                 'recorded_at_utc': datetime.now(timezone.utc).isoformat()}
+          Path(os.environ['RUNNER_TEMP'], 'n19native', 'allocation.json').write_text(json.dumps(rec, indent=2, sort_keys=True) + '\n')
+          PY
+
+      - name: Check the frozen protocol, panel, schedule and sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/make_panel.py" --check
+          python3 "$EXPERIMENT/make_schedule.py" --check
+          python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["status"] == "frozen" and p["frozen_before_any_timing"], p["status"]' "$EXPERIMENT/protocol.json"
+          sha256sum "$EXPERIMENT"/{protocol.json,schedule.json,inputs/panel.json,arm.sage,run_schedule.py,verify_receipt.py,stats.py,native/src/lib.rs,native/Cargo.toml,native/Cargo.lock} \
+            experiments/volcano-ic/{tau.sage,run.sage,ic.sage} experiments/volcano-ic/rho-arm-20261014/{rho_frob.py,protocol.json,results/arms.jsonl,results/runtime-info.json} \
+            | tee "$N19_RECEIPT_DIR/frozen.sha256"
+
+      - name: Install the pinned toolchain, test and build the native solve
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$N19_RECEIPT_DIR/rustc.txt"
+          (cd "$EXPERIMENT/native" && cargo test --release --locked 2>&1 | tee "$N19_RECEIPT_DIR/cargo-test.txt")
+          (cd "$EXPERIMENT/native" && cargo build --release --locked)
+          cp "$CARGO_TARGET_DIR/release/libtau6native.so" "$N19_RECEIPT_DIR/lib/"
+          sha256sum "$N19_RECEIPT_DIR/lib/libtau6native.so" | tee "$N19_RECEIPT_DIR/binaries.sha256"
+
+      - name: Pull the pinned Sage image and record its runtime (outside every timed interval)
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$SAGE_IMAGE"
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            'sage --version; sage -python -c "import sys, platform, time; print(sys.version); print(platform.platform()); print(time.get_clock_info(\"process_time\"))"; grep -m1 "model name" /proc/cpuinfo; nproc' \
+            | tee "$N19_RECEIPT_DIR/sage-runtime.txt"
+
+      - name: Run the frozen schedule on one pinned CPU
+        shell: bash
+        run: |
+          set +e
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RECEIPT_DIR:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "cpu=\$(sage -python -c 'import os; print(min(os.sched_getaffinity(0)))'); \
+             sage -python $EXPERIMENT/run_schedule.py --lib /rd/lib/libtau6native.so --receipt-dir /rd/panel \
+               --cpu \$cpu --job-start-epoch $N19_JOB_START --deadline-min 300" > "$N19_RECEIPT_DIR/runner-stdout.jsonl"
+          echo "schedule_exit=$?" | tee "$N19_RECEIPT_DIR/schedule-exit.txt"
+
+      - name: Audit the receipt and apply the frozen decision rule
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --user root -v "$GITHUB_WORKSPACE:/w" -v "$N19_RECEIPT_DIR:/rd" -w /w --entrypoint /bin/bash "$SAGE_IMAGE" -c \
+            "sage -python $EXPERIMENT/verify_receipt.py /rd/panel && sage -python $EXPERIMENT/make_figures.py result /rd/panel" \
+            | tee "$N19_RECEIPT_DIR/verify-stdout.json"
+          cat "$N19_RECEIPT_DIR/panel/result_table.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve allocation, build, raw rows and the result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: n19-native-tau6-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n19native
+          if-no-files-found: warn
+          retention-days: 90

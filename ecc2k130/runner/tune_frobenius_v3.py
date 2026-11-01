@@ -35,6 +35,28 @@ BASE = dict(BATCH=16, THREADS=640, MINBLOCKS=1, PACKED_SINGLE_PRODUCT=1,
 CASES = {
     "inline_sigma_untagged": ({}, "inline_sigma_untagged"),
     "production": ({"PACKED_INLINE_SIGMA": 1}, ""),
+    "production_top_clmad": ({"PACKED_TOP_CLMAD": 1}, ""),
+    "production_top_half_clmad": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_PACKED_TOP_HALF_CLMAD=1"}, ""),
+    "production_zip_square": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_PACKED_ZIP_SQR=1"}, ""),
+    "production_clmad_hi_first": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_PACKED_CLMAD_HI_FIRST=1"}, ""),
+    "production_clmul_hi_batch": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_PACKED_CLMUL_HI_BATCH=1"}, ""),
+    "production_inverse_double_buffer": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_INVERSE_DOUBLE_BUFFER=1"}, ""),
+    "production_w4_256": ({"THREADS": 256}, ""),
+    "production_top_hoist": ({"PACKED_TOP_HOIST": 1}, ""),
+    "production_single_noinline": ({"PACKED_INLINE_POLY": 2}, ""),
+    "production_pair_noinline": ({"PACKED_INLINE_POLY": 1}, ""),
+    "production_static_barriers": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_STATIC_GROUP_BARRIERS=1"}, ""),
+    "production_static_128": ({
+        "THREADS": 128, "MINBLOCKS": 5,
+        "GPUFLAGS": "-Xptxas -v -DECC_STATIC_GROUP_BARRIERS=1"}, ""),
+    "production_skip_root_barriers": ({
+        "GPUFLAGS": "-Xptxas -v -DECC_INVERSE_SKIP_ROOT_BARRIERS=1"}, ""),
     "inline_sigma": ({}, "inline_sigma"),
     "forward_chain_first": ({}, "forward_chain_first"),
     "pair_ilp": ({"PACKED_PAIR_ILP": 1}, ""),
@@ -58,7 +80,8 @@ CASES = {
 
 @app.function(image=bench_image, gpu="RTX-PRO-6000", cpu=4, memory=8192,
               timeout=2700, max_containers=1)
-def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sources: dict):
+def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sources: dict,
+               baseline_commit: str, base_settings: dict):
     import datetime
     import hashlib
     import re
@@ -68,7 +91,8 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
     import tempfile
     import time
 
-    names = selected.split(",") if selected else list(CASES)
+    names = selected.split(",") if selected else [
+        name for name in CASES if not name.startswith("production_")]
     if mode not in ("screen", "confirm") or any(name not in CASES for name in names):
         raise ValueError("choose screen or confirm with known candidates")
     if mode == "confirm" and len(names) != 1:
@@ -81,8 +105,8 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
     saved_sources = {name: (root / name).read_text() if (root / name).exists() else None
                      for name in candidate_sources}
     result = {"started_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              "mode": mode, "population": 120320, "base_settings": BASE,
-              "baseline_commit": BASELINE_COMMIT, "variants": []}
+              "mode": mode, "population": 120320, "base_settings": base_settings,
+              "baseline_commit": baseline_commit, "variants": []}
 
     def run(command, timeout=600):
         process = subprocess.run(command, cwd=root, capture_output=True, text=True, timeout=timeout)
@@ -95,9 +119,9 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
     def build(name, destination):
         print(json.dumps({"building": name}), flush=True)
         overrides, policy = ({}, "") if name == "baseline" else CASES[name]
-        # Prototype screens always start from v2. Only production measures
-        # the current working tree, without rewriting its candidate sources.
-        sources = candidate_sources if name == "production" else baseline_sources
+        # Prototype screens start from the pinned baseline. Production cases
+        # use the current tree without rewriting candidate sources.
+        sources = candidate_sources if name == "production" or name.startswith("production_") else baseline_sources
         for relative, content in sources.items():
             (root / relative).write_text(content)
         source = header.read_text()
@@ -214,7 +238,7 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
                 "window.missProp = cudaAccessPropertyNormal;")
         header.write_text(source)
         kernels.write_text(kernel_source)
-        settings = {**BASE, **overrides}
+        settings = {**base_settings, **overrides}
         command = ["make", "-B", "ecc2k130", "ARCH=-gencode arch=compute_120,code=sm_120",
                    *[f"{key}={value}" for key, value in settings.items()]]
         started = time.monotonic()
@@ -307,7 +331,7 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
                     from testwalkcompat import compare
                     result["compatibility"] = compare(baseline, candidate, workers=(640, 641, 256))
                     print(json.dumps({"standard_compatibility": "passed"}), flush=True)
-                    if BASE["FROBENIUS_FUSED"]:
+                    if base_settings["FROBENIUS_FUSED"]:
                         result["odd_launch_compatibility"] = [
                             compare(baseline, candidate, workers=(640, 641, 256),
                                     steps=steps, weights=(0,)) for steps in (1, 3, 17)]
@@ -332,10 +356,21 @@ def experiment(mode: str, selected: str, candidate_sources: dict, baseline_sourc
 
 
 @app.local_entrypoint()
-def main(mode: str = "screen", selected: str = "", output: str = ""):
+def main(mode: str = "screen", selected: str = "", output: str = "",
+         baseline_commit: str = BASELINE_COMMIT, production_baseline: bool = False):
+    if any(name.startswith("production_") for name in selected.split(",")) and not production_baseline:
+        raise ValueError("production variants require --production-baseline")
+    if production_baseline and not output:
+        raise ValueError("production baseline requires an explicit new --output path")
+    if production_baseline and not selected:
+        raise ValueError("production baseline requires explicit --selected cases")
+    base_settings = ({**BASE, "PACKED_INLINE_SIGMA": 1, "PACKED_TOP_CLMAD": 0}
+                     if production_baseline else BASE)
     path = LOCAL / (output or f"research/production/2026-09-21-frobenius-v3-{mode}.json")
     path.parent.mkdir(parents=True, exist_ok=True)
-    tree = f"{BASELINE_COMMIT}:ecc2k130/runner"
+    if path.exists():
+        raise FileExistsError(f"refusing to overwrite receipt: {path}")
+    tree = f"{baseline_commit}:ecc2k130/runner"
     names = subprocess.check_output(
         ["git", "ls-tree", "-r", "--full-tree", "--name-only", tree, "--",
          "Makefile", "include", "src", "generated", "codegen"], cwd=LOCAL, text=True).splitlines()
@@ -344,8 +379,24 @@ def main(mode: str = "screen", selected: str = "", output: str = ""):
     baseline_sources = {name: subprocess.check_output(
         ["git", "show", f"{tree}/{name}"], cwd=LOCAL, text=True) for name in names}
     sources = {name: (LOCAL / name).read_text() for name in names}
+    if production_baseline and sources != baseline_sources:
+        changed = sorted(name for name in names if sources[name] != baseline_sources[name])
+        # Both source candidates are default-off.  Keep the complete source
+        # diff explicit; the control still builds the pinned source from git.
+        selected_names = selected.split(",")
+        allowed = ({"include/collective_inverse.cuh"}
+                   if "production_skip_root_barriers" in selected_names else set())
+        if {"production_top_half_clmad", "production_zip_square",
+            "production_clmad_hi_first", "production_clmul_hi_batch",
+            "production_w4_256", "production_inverse_double_buffer"} & set(selected_names):
+            allowed.update(("include/collective_inverse.cuh", "include/packed131.h"))
+        if "production_inverse_double_buffer" in selected_names:
+            allowed.update(("include/packedkernels.cuh", "include/packedfrobeniusfused.cuh"))
+        if set(changed) != allowed:
+            raise ValueError(f"production source differs from pinned baseline: {changed}")
     driver_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    result = experiment.remote(mode, selected, sources, baseline_sources)
+    result = experiment.remote(mode, selected, sources, baseline_sources,
+                               baseline_commit, base_settings)
     result["driver_sha256"] = driver_sha256
     path.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({"receipt": str(path), "winner": result["winner"], "ok": result["ok"]}))

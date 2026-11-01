@@ -1,0 +1,45 @@
+{
+  "task_id": "TASK-20261029-9058ad",
+  "joint": "J3",
+  "producer": "5b20d2a705601327877f708655f37b92bc762da8",
+  "archival_task": "TASK-20261028-871ca0",
+  "allowed_read_paths": [
+    "reports/known-label-formal-review-20261028/review-plan-v3.json",
+    "reports/known-label-formal-review-20261028/inputs-v3.json",
+    "reports/known-label-formal-review-20261028/integration-source-diff.patch",
+    "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-68d1a5/report.md",
+    "tools/lean/current-corpus-gate.py",
+    "tools/lean/test_current_corpus_gate.py",
+    "tools/lean/AuditHeckeAxioms.lean",
+    "tools/lean/hecke-audit-selftest.py",
+    ".github/workflows/lean-proof-gate.yml",
+    "tools/ci/quartic_certificates.json",
+    "docs/known-label-next-leads-20261028/Algebra.lean",
+    "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+    "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+    "experiments/hecke-432-formal-ci-20261025/lake-manifest.json"
+  ],
+  "forbidden_reads": [
+    "Sibling J1/J2 reports",
+    "blind briefs",
+    "coordinator report.md",
+    "native CI logs/results",
+    "memory",
+    "Git history except explicitly archived diff",
+    "unlisted repository paths"
+  ],
+  "write_scope": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad",
+  "required_outputs": [
+    "report.md",
+    "attestation.json",
+    "source-ledger.json",
+    "controls-output.txt"
+  ],
+  "requirements": [
+    "Read only listed inputs and this handoff; no further agents.",
+    "Attestation sources_read must be complete path strings; record hashes separately.",
+    "Run only bounded Python software controls, record mocked outputs as not native evidence.",
+    "No edits outside own scratch directory; no cloud jobs or PR actions.",
+    "Return exact verdict/scope and paths. Preserve prior reports unchanged."
+  ]
+}

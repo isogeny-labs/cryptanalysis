@@ -356,7 +356,7 @@ pub fn solve_scaled_instance(
             "j0-orbit-reduced" => j0_index_calculus_dlp(curve, g, q, fb, extra, trials),
             _ => ec_index_calculus_dlp(curve, g, q, fb, extra, trials),
         };
-        if let Some(d) = got.filter(|d| verify(d)) {
+        if let Some(d) = got.filter(verify) {
             ic.recovered = Some(d);
             ic.verified = true;
             break;
@@ -395,7 +395,7 @@ pub fn solve_scaled_instance(
             .add(&inst.generator.scalar_mul(&s, &a_fe), &a_fe);
         let got = pollard_rho_ecdlp(curve, &inst.generator, &shifted, rho_steps)
             .map(|d| (&d + &n - &s % &n) % &n);
-        if let Some(d) = got.filter(|d| verify(d)) {
+        if let Some(d) = got.filter(verify) {
             rho.recovered = Some(d);
             rho.verified = true;
             break;

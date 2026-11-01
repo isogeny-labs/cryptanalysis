@@ -1,0 +1,1 @@
+The new source-order consistency guard rejected the initial F8 a=0,b=2 fixture declaring r=3. Independent affine x,y enumeration gives (0,6),(4,2),(4,6),(5,1),(5,4),(7,0),(7,7), hence order 8 including infinity. The fixture now declares r=2; a regression test retains rejection of the old impossible r=3.

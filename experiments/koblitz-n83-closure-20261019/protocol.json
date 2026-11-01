@@ -1,0 +1,627 @@
+{
+ "arms": {
+  "cM10": {
+   "base": "M10",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "pre-registered SECONDARY candidate cold: the M10 closure header (60 columns, 600 orbits) with its verified 60-log table; never decides",
+   "table": "compact"
+  },
+  "cM38": {
+   "base": "M38",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "PRIMARY candidate cold: the same code on the M38 closure header (16 columns, 608 orbits in the root index) with its verified 16-log table",
+   "table": "compact"
+  },
+  "cM38aa": {
+   "base": "M38",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "A/A control: a second cold process of cM38",
+   "table": "compact"
+  },
+  "cP": {
+   "base": "K600",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "baseline cold: the rank-probe producer's cold path on B's K600 header with B's verified table (koblitz-n83-rankprobe-20261019 arm cP, the n=83 baseline)",
+   "table": "compact"
+  },
+  "kM10": {
+   "base": "M10",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "pre-registered SECONDARY candidate rank stage (60 attempts); never decides",
+   "table": "compact"
+  },
+  "kM38": {
+   "base": "M38",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "PRIMARY candidate rank stage: the same loop on the M38 closure header: 16 guided attempts [a]G - R_c to full rank 16",
+   "table": "compact"
+  },
+  "kM38X": {
+   "base": "M38",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame_plant",
+   "role": "planted positive control: kM38 with the rank-probe producer's frame_plant (the rank-cut loop's key derivation redone and compared on every candidate), a known per-attempt cost of about 2x that the timing must detect",
+   "table": "compact"
+  },
+  "kM38aa": {
+   "base": "M38",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "A/A control: a second rank process of kM38",
+   "table": "compact"
+  },
+  "kP": {
+   "base": "K600",
+   "binary": "ic_online_closure_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "baseline rank stage: the rank-probe producer's (frame loop, lift_scan, Feistel, 16-byte compact table over the folded index), 600 guided attempts on B's K600 header",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "concurrent_lanes": "claude/n83-indexlift (run 39290913632, lift_scan in the index build; verdict pending at freeze) changes the cold path and stacks with this change; claude/n83-k899, claude/n83-rotkey and claude/n83-onlineframe are local or diagnostic. This protocol is frozen against the rank-probe row; its arms do not contain any of those changes",
+ "controls_pass_rule": {
+  "aa": "E2E(kM38, cM38) / E2E(kM38aa, cM38aa) (blocks paired) and cold cM38 / cM38aa point estimates both inside [0.97, 1.03]",
+  "otherwise": "verdict invalid",
+  "planted": "rank stage kM38X / kM38 (per-attempt cost, attempts paired within blocks), 95% bootstrap lower bound above 1",
+  "planted_exactness": "the three planted corruptions rejected by verify_closure.py for both closure bases (workflow step before timing)"
+ },
+ "current_baseline": "the rank-probe producer (koblitz-n83-rankprobe-20261019, run 39214027289, PR #980): end-to-end cold 166.0 s (rank stage 143.7 s + cold 22.3 s), S 6.390, gap to rT770 64.0 [53.7, 78.0]; its rank stage is 86.6% of end-to-end cold (600 attempts, 1.69 M probes each)",
+ "decision_rule": {
+  "improvement": "R lower bound > 1 (the M38 closure producer becomes the new n=83 end-to-end cold baseline)",
+  "invalid": "any gate or control fails, or any scheduled row is missing (including time-guard skips)",
+  "not_separated": "otherwise",
+  "regression": "R upper bound < 1"
+ },
+ "design": {
+  "blocks_note": "kP and kM38X run in blocks K1, K5, K9, K13 (4 blocks of 600 and 16 attempts); kM38 and kM38aa in all 16 blocks (256 attempts each); kM10 in the 8 odd blocks (480 attempts). The baseline's and the candidates' attempts are different targets (different columns and bases), so the primary bootstrap resamples each rank arm on its own",
+  "cold_arms": [
+   "cP",
+   "cM38",
+   "cM38aa",
+   "cM10",
+   "rT"
+  ],
+  "cold_points": 20,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cP",
+   "cM38",
+   "cM10"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_arms": [
+   "kP",
+   "kM38",
+   "kM38aa",
+   "kM38X",
+   "kM10"
+  ],
+  "rank_blocks": [
+   {
+    "arms": [
+     "kP",
+     "kM38",
+     "kM38aa",
+     "kM38X",
+     "kM10"
+    ],
+    "id": "K1",
+    "rank_seed": 801,
+    "unit": "s000"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K2",
+    "rank_seed": 802,
+    "unit": "s001"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa",
+     "kM10"
+    ],
+    "id": "K3",
+    "rank_seed": 803,
+    "unit": "s002"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K4",
+    "rank_seed": 804,
+    "unit": "s003"
+   },
+   {
+    "arms": [
+     "kP",
+     "kM38",
+     "kM38aa",
+     "kM38X",
+     "kM10"
+    ],
+    "id": "K5",
+    "rank_seed": 805,
+    "unit": "s004"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K6",
+    "rank_seed": 806,
+    "unit": "s005"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa",
+     "kM10"
+    ],
+    "id": "K7",
+    "rank_seed": 807,
+    "unit": "s006"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K8",
+    "rank_seed": 808,
+    "unit": "s007"
+   },
+   {
+    "arms": [
+     "kP",
+     "kM38",
+     "kM38aa",
+     "kM38X",
+     "kM10"
+    ],
+    "id": "K9",
+    "rank_seed": 809,
+    "unit": "s008"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K10",
+    "rank_seed": 810,
+    "unit": "s009"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa",
+     "kM10"
+    ],
+    "id": "K11",
+    "rank_seed": 811,
+    "unit": "s010"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K12",
+    "rank_seed": 812,
+    "unit": "s011"
+   },
+   {
+    "arms": [
+     "kP",
+     "kM38",
+     "kM38aa",
+     "kM38X",
+     "kM10"
+    ],
+    "id": "K13",
+    "rank_seed": 813,
+    "unit": "s012"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K14",
+    "rank_seed": 814,
+    "unit": "s013"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa",
+     "kM10"
+    ],
+    "id": "K15",
+    "rank_seed": 815,
+    "unit": "s014"
+   },
+   {
+    "arms": [
+     "kM38",
+     "kM38aa"
+    ],
+    "id": "K16",
+    "rank_seed": 816,
+    "unit": "s015"
+   }
+  ],
+  "rank_seeds_note": "801-816 are new (stacked 101-102, rank cut 201-204, rank probe 301-304, the K899 and index-lift lanes 401-404, rotkey 501-504, onlineframe 701; the local decisive test used 301-309 on the closure bases only); each seed fixes K' new rank targets [a]G - R_c on each base",
+  "rho_seed_base": 910000,
+  "runtime_estimate": "from run 39214027289: build and tests about 15 min, closure headers and their verification about 3 min; cold segment about 95 s (cP, cM38, cM38aa, cM10 about 23 s each, rT 3 s); rank block with kP about 250 s, without about 70 s; total about 1.3 h, up to about 2 h on a slower runner",
+  "segment_order": [
+   "O1",
+   "C1",
+   "K1",
+   "C2",
+   "K2",
+   "C3",
+   "K3",
+   "C4",
+   "K4",
+   "C5",
+   "K5",
+   "C6",
+   "K6",
+   "C7",
+   "K7",
+   "C8",
+   "K8",
+   "C9",
+   "K9",
+   "C10",
+   "K10",
+   "C11",
+   "K11",
+   "C12",
+   "K12",
+   "C13",
+   "K13",
+   "C14",
+   "K14",
+   "C15",
+   "K15",
+   "C16",
+   "K16",
+   "C17",
+   "C18",
+   "C19",
+   "C20"
+  ],
+  "segment_upper_estimate_s": {
+   "C": 360,
+   "K": 900,
+   "O": 300
+  },
+  "time_guard": "skip a segment (rows skipped_time_guard) if elapsed + its estimate exceeds 300 min",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 1800,
+   "rho_tuned": 600
+  },
+  "within_segment_order": "random.Random(2026101950 + i).shuffle (C), random.Random(2026101970 + b) (K), random.Random(2026101990) (O)"
+ },
+ "exactness_argument": "Frobenius phi acts on the prime-order subgroup as multiplication by lambda (lambda^2 - lambda + 2 = 0 mod r), so for alpha = a + b tau, alpha(R) = [a]R + [b]phi(R) = [(a + b lambda) mod r]R, and every member +-phi^k(alpha(R_c)) of orbit (c, alpha) has discrete log +-(a + b lambda) lambda^k log R_c. The header carries exactly these labels; verify_closure.py re-derives every member and label from the orbit representative and checks each representative against [w]R_c and, with the table, against [w L_c]G, in the pinned oracle. A relation found by the unchanged S3 search is checked in the group by the unchanged lift (four base points summing to the attempt's point), so its row sum_i coeff_i L_{c_i} = a (+ L_c for the guided column) holds exactly; full rank gives the unique logs, checked [L_c]G = R_c in process and equal to B's archived logs of the same R_c. A target's scalar is checked [d]G = Q in process and replayed in the oracle, and must equal the baseline's and the tuned rho's. The root index, probe loop and scan are the rank-probe producer's code, built from the closure's orbit representatives.",
+ "frozen_at_utc": "2026-10-19T18:44:25+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row valid (exit 0, verified, schedule match, no memory event)",
+  "before any timing: B's table re-verified in the pinned oracle (check_log_table.py); each closure header regenerated from B's header with its frozen SHA-256 and checked by verify_closure.py in the pinned oracle: identity, multipliers (a odd > 0, norm <= cap), every orbit representative in the prime-order subgroup and equal to [(a + b lambda) mod r]R_c, all orbits distinct up to sign and Frobenius, every member and label (+-phi^k(alpha(R_c)), (c, +-(a + b lambda) lambda^k)), base hash; its table: [L_c]G = R_c for every column and [w L_c]G = alpha(R_c) for every orbit; three planted corruptions (a label, a duplicated orbit, a log) each rejected; and the closure logs equal B's archived logs of the same R_c (logs are unique, so this is a cross-check across independent rank stages)",
+  "every IC process: lift_scan, Feistel, prefetch; the 16-byte compact table with 2^26 slots over the folded index; its base's frozen base hash, columns, orbits in the root index, logical and stored states, root entries, logical-state blake3 and table-map digests (online.bases; B's for K600, the local decisive test's for M38 and M10); no root bloom",
+  "per point: one scalar across every IC process (all three bases, cold and rank) and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point and base: one relation (point indices) and one probe count across the IC processes on that base",
+  "Q0 (O1): cP gives B's archived Feistel relation, scalar and 1,987,852 probes; cM38 and cM10 give the scalar 3141592653589793 and their base's frozen Q0 relation and probe count",
+  "rank arms: full rank K', 0 failed attempts, the arm's KIC_RANK_SOLVE recorded, one frame per attempt, the producer's own [L_c]G = R_c check of every log, and the written factor-log table equal to its base's frozen verified table, log for log",
+  "per rank block: rank_relations_blake3, the per-attempt probe vector, rank_root_calls_total and the point-addition counters identical across kM38, kM38aa and kM38X",
+  "probe law (replaces B's index-digest gate as the check that the closure keeps the root index's law): the primary rank arm kM38's pooled mean probes per relation over its distinct attempts (one process per block, 256 attempts), divided by law = r / (166 E) with E its base's frozen root entries, inside [0.80, 1.20] (about 3.3 standard errors at the baseline's attempt CV 0.97). The secondary kM10's ratio and its band [0.85, 1.15] (480 attempts) are reported in detail.probe_law_gate and decide only how the secondary is read, never the primary's validity",
+  "frame counters: kM38X has rank_frame_plant_checked_inputs > 0, every other rank arm 0; rank_padd_plant_checked_inputs 0 everywhere"
+ ],
+ "kind": "n83-closure-e2e-cold-tier1",
+ "multiplicity": "one primary statistic; every secondary (M10 included) is descriptive and never changes the verdict",
+ "online": {
+  "base_construction": "not charged to any arm (the convention of both n=83 rows: B's header is loaded, and so is each closure header; each closure header holds B's first K' orbits plus (M - 1) K' images alpha(R_c), two small scalar multiplications each, |a| <= 7, |b| <= 6)",
+  "bases": {
+   "K600": {
+    "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+    "factor_base_points": 99600,
+    "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+    "factor_log_table_check": "check_log_table.py (B's table in the pinned oracle, as the rank-probe run)",
+    "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+    "header_sha256": "0d290b14a350db6271c9a49f0cd6ba246edd8c9bc6754387ad1ceebf08ec0c09",
+    "index_digest": {
+     "logical_states": 29880000,
+     "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+     "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+     "table_entries": 29878182,
+     "table_map_sum64": "be14a80705232396",
+     "table_map_xor64": "8132bdcfd619010f"
+    },
+    "index_orbits": 600,
+    "norm_cap": null,
+    "orbit_columns": 600,
+    "path": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+    "q0_identity": {
+     "probes_folded": 1987852,
+     "probes_unfolded": 1988184,
+     "relation": [
+      77273,
+      22971,
+      54962,
+      62539
+     ],
+     "scalar": "3141592653589793",
+     "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+    },
+    "regular_states": 29880000,
+    "role": "B's K600 header: 600 columns, one signed Frobenius orbit each (the baseline)",
+    "root_table_entries": 29878182,
+    "root_table_slots": 67108864,
+    "stored_states_folded": 14940300
+   },
+   "M10": {
+    "base_hash": "446de514c6b87d6f3e9a84f25ca8ab1901c8404114ee3c12021d7072d63c2d33",
+    "builder": "make_closure_base.py --columns 60 --norm 16 (from B's K600 header, in restore.py)",
+    "factor_base_points": 99600,
+    "factor_log_table": "inputs/factor_logs_n83_closure_M10.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): the base's every orbit, member and label, [L_c]G = R_c for every column, [w L_c]G = alpha(R_c) for every orbit; and the logs equal B's archived logs of R_0..R_{K'-1}",
+    "factor_log_table_sha256": "353e124a86189fb5e593ed9ddbf995c7e7d4e01db12696798b5a4f3bc5c66a5e",
+    "header_sha256": "ba99464a8f85e41aa188ff698c987cc093a3c9fa98e1fee74640b8554df2b598",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 29880000,
+     "logical_states_blake3": "ebf4f41e7ce806b47303e25fc566ce0059f999af3f5b7a338ab586e3ebf79c27",
+     "source": "the local decisive test (inputs/local_decisive_test.json): identical over 5 local rank processes (seeds 301-305); a function of the orbit representatives only",
+     "table_entries": 29821794,
+     "table_map_sum64": "5c80db078213e8a5",
+     "table_map_xor64": "76c9935ff0965caf"
+    },
+    "index_orbits": 600,
+    "law_band": [
+     0.85,
+     1.15
+    ],
+    "law_probes_per_relation": 1731123.805535073,
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 16,
+    "orbit_columns": 60,
+    "orbits_per_column": 10,
+    "path": "snapshots/closure/base_n83_closure_M10.jsonl",
+    "q0_identity": {
+     "probes_folded": 2130165,
+     "relation": [
+      48498,
+      93721,
+      54127,
+      78333
+     ],
+     "scalar": "3141592653589793",
+     "source": "the local decisive test (rank process, seeds 301-305, identical)"
+    },
+    "regular_states": 29880000,
+    "role": "Z[tau]-multiplier closure: 60 columns x 10 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 16); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 29821794,
+    "root_table_slots": 67108864,
+    "stored_states_folded": 14940300
+   },
+   "M38": {
+    "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+    "builder": "make_closure_base.py --columns 16 --norm 64 (from B's K600 header, in restore.py)",
+    "factor_base_points": 100928,
+    "factor_log_table": "inputs/factor_logs_n83_closure_M38.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): the base's every orbit, member and label, [L_c]G = R_c for every column, [w L_c]G = alpha(R_c) for every orbit; and the logs equal B's archived logs of R_0..R_{K'-1}",
+    "factor_log_table_sha256": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+    "header_sha256": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 30682112,
+     "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+     "source": "the local decisive test (inputs/local_decisive_test.json): identical over 9 local rank processes (seeds 301-309); a function of the orbit representatives only",
+     "table_entries": 30366551,
+     "table_map_sum64": "83d519abd1686b4d",
+     "table_map_xor64": "d98ecf6236b9d814"
+    },
+    "index_orbits": 608,
+    "law_band": [
+     0.8,
+     1.2
+    ],
+    "law_probes_per_relation": 1700068.523328942,
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 64,
+    "orbit_columns": 16,
+    "orbits_per_column": 38,
+    "path": "snapshots/closure/base_n83_closure_M38.jsonl",
+    "q0_identity": {
+     "probes_folded": 1612533,
+     "relation": [
+      81344,
+      53967,
+      13071,
+      42373
+     ],
+     "scalar": "3141592653589793",
+     "source": "the local decisive test (rank process, seeds 301-309, identical)"
+    },
+    "regular_states": 30682112,
+    "role": "Z[tau]-multiplier closure: 16 columns x 38 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 64); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 30366551,
+    "root_table_slots": 67108864,
+    "stored_states_folded": 15341360
+   }
+  },
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role closure-cold-v1; disjoint from Q0, B's panel, every earlier n=83 panel of the law, rankprobe-cold-v1 and the concurrent lanes' indexlift-cold-v1, k899-cold-v1, rotkey-cold-v1 and onlineframe-v1)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "lambda": "2998004823950457",
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target",
+  "sqrt_r": 92573139.235,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "file": "analysis/power.json",
+  "law_gate": {
+   "M10": {
+    "archived_ratio_cv": 0.972945826485458,
+    "archived_ratio_mean": 0.9784638225547311,
+    "attempts": 480,
+    "band": [
+     0.85,
+     1.15
+    ],
+    "pass_rate_true_law": 0.9985,
+    "reject_rate_law_1.5x_worse": 1.0
+   },
+   "M38": {
+    "archived_ratio_cv": 0.972945826485458,
+    "archived_ratio_mean": 0.9784638225547311,
+    "attempts": 256,
+    "band": [
+     0.8,
+     1.2
+    ],
+    "pass_rate_true_law": 0.9985,
+    "reject_rate_law_1.5x_worse": 0.9985
+   }
+  },
+  "min_delta": 1.5,
+  "modelled": {
+   "M10": {
+    "attempt_cost_factor": 1.0,
+    "mc_se": 7.071067811865476e-08,
+    "median_estimate": 4.520349927337007,
+    "power": 1.0
+   },
+   "M38": {
+    "attempt_cost_factor": 1.0,
+    "mc_se": 7.071067811865476e-08,
+    "median_estimate": 6.334348159692945,
+    "power": 1.0
+   }
+  },
+  "power_at_min_delta": {
+   "M10": 1.0,
+   "M38": 1.0
+  },
+  "rejection_rate_at_no_effect": {
+   "M10": 0.0,
+   "M38": 0.02
+  }
+ },
+ "primary_choice": {
+  "primary": "M38",
+  "rule": "chosen from the local decisive test before freezing: both closures passed (full rank, 0 failures, 0 rows without gain, every column log verified and equal to B's, Q0 solved); the pooled probe law was 0.927 +- 0.082 (M38, 144 attempts) and 0.971 +- 0.061 (M10, 300 attempts); M38 is primary because it needs 16 relations instead of 60 at the same law (modelled end to end about 26 s against 37 s), the larger expected improvement",
+  "secondary": "M10"
+ },
+ "question": "Does grouping the ~600 Frobenius orbits of the n=83 a=1 root index into K' = 600 / M linear-algebra columns by the Z[tau]-multiplier closure (orbit (c, alpha) = alpha(R_c), log (a + b lambda) log R_c; M = 38 at norm <= 64, primary; M = 10 at norm <= 16, secondary) lower the END-TO-END cold cost (setup + index build + rank stage + linear algebra + one-target online) of the rank-probe producer on new targets and new rank seeds, with every relation checked in the group, every column log verified, every scalar verified, and the probe law kept?",
+ "schema": 1,
+ "sources": {
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "local_sha256": {
+   "archived_identities": "7ed7e056e8d883378e4d4033ad9bf93acc84cb5441e6410fee70ac67cae258db",
+   "arm_wrapper": "8591fdf9d59412eb22a053a9009a03351de022a2bdc2d1621c95c7344a84b710",
+   "closure_base_builder": "92a5e5720b5eb9e38020c3bf5b9358c6ffc074fa784a5cd1939de83643787dfe",
+   "closure_log_table_M10": "353e124a86189fb5e593ed9ddbf995c7e7d4e01db12696798b5a4f3bc5c66a5e",
+   "closure_log_table_M38": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+   "closure_verifier": "b8406366cba6bd5d0e832d63a3381c64a941834ecc98633e8f90398afac97ff4",
+   "cold_targets": "8362988c2fee402cf27b1925b11d99c2909c98698d3ea39bb9f5a7164bb1e93d",
+   "combined_derivation": "1a62eabf4a86417c5777fdc69ab2812eaea872b92031eb9ed60af2364ce15356",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "lift2_manifest": "77b04fcaa11a3f9f015619612b3e36c1f31a1b20d76116c929e5429e46dc271c",
+   "lift2_tests": "69561fbf09e2137ad1490d5795df54f6f9a5646aeebf3ecf12f1af55a495c566",
+   "local_decisive_test": "f5304230d06075127339fabe67e064ab5dea2127e667d18a37390153b5e68c97",
+   "log_table_check": "c09617820ad6699f317b57ddd23dcbdc85c8c50f7912a8102b047cfaec326646",
+   "online_derivation": "ebc9be93f67b0b53d8d94edce489770151c765d2c3a3d77665cdebf65545055b",
+   "online_lock": "7a60b3d5966237d6c205927ca46bbc97979204c1a78d3feee168ecdde365fa96",
+   "online_manifest": "e0cd4f83d394fa399d5f17d1e7fac99d0097310db03a4b44063f0497997d7827",
+   "power_check": "90b135855ab8e07f123701f95b23661367783b7f7b39d6d09fd752db9f433aba",
+   "power_prior": "787d69ec24369f2f38a1e202840c4b430403c0c9bd427fbb6e7c81d29d2ae8d7",
+   "power_prior_builder": "d5a3862e491e7bcacafcd7a9f37a82860d06cbecbeb021a7b669e930417e510d",
+   "power_result": "f4f19ed8a9739c39a1d3a4f231512af500455775dc1a0f6cea58108cf87e450b",
+   "probepipe_derivation": "ce72f3e906d85c58ccc02b0e5d455e97c69c370e357162fbda166423ab8ce7f2",
+   "protocol_builder": "566f6dbfb02e858bc13662e5aa3c422a8a46fd5e158a7b392c9d6066abbf2c86",
+   "rankcut_derivation": "7e81a642ebccf9570dd2d882360e99925d5754357c83bb1aff5a8635ac1cf011",
+   "rankprobe_derivation": "804cc965882c44f85502afb927cc4f04c79d3ccff85d9aa73226dfc2c5ec2b0d",
+   "receipt_verifier": "d11476e7cb6b12d1a9c950470f3a9475b16b8bceb2a38573f328960b197ed491",
+   "schedule_builder": "72c3398c9506ace52cfcab8c20ebc824e0089a3bc1ec9a65793ce47f611fd8f3",
+   "schedule_runner": "c04f6dc74c6044543f72d4b3ebbf892ea2d21d9e8381e0afe0cca6313812d7ac",
+   "stacked_derivation": "a2011ef804becc5b01f3027cf47ec6f7cb154f510e468e2a261c66e09f830aab",
+   "tablefilter_derivation": "3b2aa83df4d1bf70a107464a0b7fdd1f8ac133683b23cf19dd22bfecf12095ab",
+   "targets_builder": "c52803f09f4272263657a3dcd2ad6a92d3407779299939ba45a0dff7a6e14f1f"
+  },
+  "online_source_sha256": "8916e034b4e24a027079019e4988f1dc6fbf74ec1c2349befa9aa8eea7ce330a",
+  "rankprobe_producer": "koblitz-n83-rankprobe-20261019 make_online_source.py (make_rankprobe_source.py here, verbatim with its five parents), output sha256 d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5"
+ },
+ "statistics": {
+  "end_to_end_cold": "E2E(k, c) = mean over k's rank blocks of timing_ms.rank_stage of rank arm k + mean over the cold points of cold_in_process_ms of cold arm c; the cold processes hold setup + online, the rank processes the rank stage, so E2E = setup + index build + rank stage + linear algebra + one-target online",
+  "primary": "R = E2E(kP, cP) / E2E(kM38, cM38). Bootstrap, 10,000 draws, seed 20261019: the baseline's blocks resampled with replacement and its attempts resampled within each drawn block; the candidate's blocks and attempts likewise, independently (different targets); each process's non-attempt time kept; the cold points resampled, paired across cP and cM38",
+  "primary_is": "the END-TO-END cold ratio; the rank-stage and cold ratios are co-reported and never decide",
+  "secondary": [
+   "R10 = E2E(kP, cP) / E2E(kM10, cM10) (pre-registered secondary candidate; never decides)",
+   "E2E(kM10, cM10) / E2E(kM38, cM38)",
+   "rank stage kP / kM38 and kP / kM10 (whole stage, means over blocks); attempts and ns per probe per arm",
+   "probe law per rank arm: pooled mean probes per relation / law with a bootstrap interval (kP, kM38, kM10)",
+   "cold without rank, setup, online and peak RSS: cP / cM38, cP / cM10 (expected near 1: same index size)",
+   "rows without gain and the point-addition counters per rank process",
+   "rho ms/step from rT; S per arm; delta S cP to cM38; E2E cold gap IC / rT and online gaps"
+  ]
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'"
+}

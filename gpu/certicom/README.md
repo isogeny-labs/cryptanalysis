@@ -117,11 +117,25 @@ The macOS build job also probes its runner: if Metal is exposed it runs the
 same qualification; an unavailable device is recorded without claiming a
 hardware pass. Other probe or execution errors fail the job.
 
+Hosted Metal qualification runs the library and release CLI in separate jobs,
+each capped at 45 minutes to include checkout, dependencies and release builds.
+The [25-minute observation](https://github.com/aburan28/crypto/actions/runs/39602617111/job/119230671269)
+expired during library compilation, before any tests completed.
+Both jobs must pass; a failure or cancellation in
+either fails the combined `metal-build` check. Each phase builds and probes its
+own native worker and retains device, revision and binary hashes. These receipts
+identify the exposed Metal device; a paravirtual device name alone does not
+establish the physical GPU behind it.
+
 On an existing GPU host, `CERTICOM_TEST_BACKEND=cuda bash gpu/certicom/qualify.sh`
 (or `metal`) builds/probes the native worker, runs library and release CLI
 tests, and saves `certicom-device-*.log` with revision, device/toolchain identity
 and binary hashes. CUDA builds for the host's detected architecture by default;
 `CERTICOM_CUDA_ARCH=sm_80` can explicitly select another supported target.
+The default runs both library and CLI checks. `CERTICOM_TEST_PHASE=library` or
+`cli` selects one partial phase for CI; both receipts at the same source revision
+and backend are required. A partial phase is explicitly labelled and cannot
+establish complete qualification on its own.
 
 One monotonic deadline covers worker setup, device requests, host phases and
 result acceptance. The watchdog kills blocked worker I/O; host computation checks

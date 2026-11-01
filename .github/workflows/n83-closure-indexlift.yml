@@ -1,0 +1,182 @@
+name: N83 Z[tau] closure + index lift over the index-lift row, end-to-end cold Tier 1
+
+# One fresh GitHub-hosted ubuntu-24.04 runner is the Tier 1 instance. The
+# frozen protocol is experiments/koblitz-n83-closure-indexlift-20261019/protocol.json
+# and the frozen run order is schedule.json next to it: Q0 (cold on all three
+# bases, exactness against the archived and frozen identities), 20 new
+# held-out cold points, each with one fresh pinned process per cold arm (the
+# index-lift baseline cPI on B's K600 header, the primary closure + index
+# lift cM38I and its A/A cM38Iaa, the secondary cM10I, tuned rho rT), and 16
+# rank blocks (kPI and the planted kM38IX in four of them, kM38I and kM38Iaa
+# in all, kM10I in eight), one pinned process at a time. Every IC process
+# builds its index with lift_scan and must reproduce its base's frozen layout
+# digests. Before any timing, B's table and both closure headers and tables
+# are verified in the pinned oracle, with planted corruptions, and the
+# receipt verifier's unit tests run. verify_receipt.py audits the receipt
+# (fail closed) and applies the decision rule on the end-to-end cold cost.
+# Dispatch is the convention (the index-lift workflow, PR #983), but
+# workflow_dispatch was refused for this integration (403), so the run is
+# also triggered by a push to this branch, restricted by path filters:
+# receipts, README, figures, figure scripts and smoke diagnostics do not
+# trigger a run.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/n83-closure-indexlift]
+    paths:
+      - experiments/koblitz-n83-closure-indexlift-20261019/**
+      - .github/workflows/n83-closure-indexlift.yml
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/run_github_*/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/README.md'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/README.pdf'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/figures/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/make_figures.py'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/report_header.tex'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/report_filter.lua'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/smoke/**'
+      - '!experiments/koblitz-n83-closure-indexlift-20261019/receipts/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n83-closure-indexlift-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPERIMENT: experiments/koblitz-n83-closure-indexlift-20261019
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+
+jobs:
+  closure-indexlift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-closure-indexlift-20261019
+
+      - name: Freeze runner and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt_dir="$RUNNER_TEMP/n83-closure-indexlift"
+          mkdir -p "$receipt_dir"
+          {
+            echo "N83_JOB_START=$(date +%s)"
+            echo "N83_RECEIPT_DIR=$receipt_dir"
+            echo "N83_CRYPTO_REPO=$RUNNER_TEMP/n83-closure-indexlift-crypto"
+            echo "CARGO_TARGET_DIR=$RUNNER_TEMP/n83-closure-indexlift-cargo"
+          } >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$receipt_dir/host-probe.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          receipt = {
+              'provider': 'github_actions',
+              'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'],
+                                                  os.environ['GITHUB_RUN_ATTEMPT'],
+                                                  os.environ['GITHUB_JOB']),
+              'runner_name': os.environ.get('RUNNER_NAME'),
+              'image_os': os.environ.get('ImageOS'),
+              'image_version': os.environ.get('ImageVersion'),
+              'advertised_runner': 'ubuntu-24.04 standard (4 vCPU, 16 GB)',
+              'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
+              'observed_cpu_model': next((line.split(':', 1)[1].strip() for line in
+                  Path('/proc/cpuinfo').read_text().splitlines()
+                  if line.startswith('model name')), None),
+              'observed_mem_total_kib': next((line.split()[1] for line in
+                  Path('/proc/meminfo').read_text().splitlines()
+                  if line.startswith('MemTotal:')), None),
+              'transparent_hugepage': {name: (Path('/sys/kernel/mm/transparent_hugepage') / name).read_text().strip()
+                                       for name in ('enabled', 'defrag')
+                                       if (Path('/sys/kernel/mm/transparent_hugepage') / name).exists()},
+              'git_sha': os.environ['GITHUB_SHA'],
+              'git_ref': os.environ['GITHUB_REF'],
+              'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'],
+                  os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+              'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
+          }
+          path = Path(os.environ['RUNNER_TEMP']) / 'n83-closure-indexlift' / 'allocation.json'
+          path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          PY
+
+      - name: Restore the pinned crypto revision and check the frozen sources, inputs and schedule
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/aburan28/crypto.git "$N83_CRYPTO_REPO"
+          git -C "$N83_CRYPTO_REPO" cat-file -e "770f6a6925a0d29b768bd79074f54a173e967fe7^{commit}"
+          python3 "$EXPERIMENT/restore.py" --crypto-repo "$N83_CRYPTO_REPO" | tee "$N83_RECEIPT_DIR/restore.json"
+          python3 "$EXPERIMENT/make_schedule.py" --check
+          python3 "$EXPERIMENT/make_targets.py" --check
+          python3 "$EXPERIMENT/make_online_source.py" --check
+          sha256sum "$EXPERIMENT/protocol.json" "$EXPERIMENT/schedule.json" | tee "$N83_RECEIPT_DIR/frozen.sha256"
+
+      - name: Install the pinned toolchain, build and test the online crate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$N83_RECEIPT_DIR/rustc.txt"
+          (cd "$EXPERIMENT/lift2" && cargo test --release --locked 2>&1 | tee "$N83_RECEIPT_DIR/cargo-test-lift2.txt")
+          (cd "$EXPERIMENT/online" && cargo test --release --locked --bins 2>&1 | tee "$N83_RECEIPT_DIR/cargo-test-online.txt")
+          (cd "$EXPERIMENT/online" && cargo build --release --locked)
+          sha256sum "$CARGO_TARGET_DIR"/release/{ic_online_closure_indexlift_r770,rho_tuned_r770} \
+            | tee "$N83_RECEIPT_DIR/binaries.sha256"
+
+      - name: Verify B's table, both closure headers and their tables in the pinned oracle (with planted corruptions)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/check_log_table.py" --out "$N83_RECEIPT_DIR/log-table-check.json"
+          (cd "$EXPERIMENT" && python3 -m unittest -v test_verify_receipt 2>&1 | tee "$N83_RECEIPT_DIR/verifier-tests.txt")
+
+      - name: Run the frozen schedule on one pinned CPU
+        shell: bash
+        run: |
+          set +e
+          cpu_id="$(python3 -c 'import os; print(min(os.sched_getaffinity(0)))')"
+          python3 "$EXPERIMENT/run_schedule.py" --bin-dir "$CARGO_TARGET_DIR/release" \
+            --receipt-dir "$N83_RECEIPT_DIR/panel" --cpu "$cpu_id" \
+            --job-start-epoch "$N83_JOB_START" --deadline-min 300 > "$N83_RECEIPT_DIR/runner-stdout.jsonl"
+          echo "schedule_exit=$?" | tee "$N83_RECEIPT_DIR/schedule-exit.txt"
+
+      - name: Audit the receipt and apply the frozen decision rule
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/verify_receipt.py" "$N83_RECEIPT_DIR/panel" | tee "$N83_RECEIPT_DIR/verify-stdout.json"
+          cat "$N83_RECEIPT_DIR/panel/result_table.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve allocation, builds, raw runs and the result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: n83-closure-indexlift-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n83-closure-indexlift/
+          if-no-files-found: error
+          retention-days: 30

@@ -5,6 +5,11 @@ case "${CERTICOM_TEST_BACKEND:-}" in
     cuda|metal) ;;
     *) echo 'Set CERTICOM_TEST_BACKEND=cuda or metal for hardware qualification' >&2; exit 2 ;;
 esac
+certicom_phase=${CERTICOM_TEST_PHASE:-all}
+case "$certicom_phase" in
+    all|library|cli) ;;
+    *) echo 'CERTICOM_TEST_PHASE must be all, library or cli' >&2; exit 2 ;;
+esac
 certicom_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 cd "$certicom_root"
 if [[ "$CERTICOM_TEST_BACKEND" == cuda ]]; then
@@ -17,6 +22,7 @@ export CERTICOM_TEST_WORKER="$certicom_root/gpu/certicom/certicom_$CERTICOM_TEST
 "$CERTICOM_TEST_WORKER" --probe 2>&1 | tee certicom-device-probe.log
 {
     git rev-parse HEAD
+    printf 'qualification_phase=%s\n' "$certicom_phase"
     uname -srm
     rustc -Vv
     cargo --version
@@ -34,7 +40,14 @@ export CERTICOM_TEST_WORKER="$certicom_root/gpu/certicom/certicom_$CERTICOM_TEST
 } 2>&1 | tee certicom-device-identity.log
 certicom_manifest=Cargo.toml
 if [[ -f suite/Cargo.toml ]]; then certicom_manifest=suite/Cargo.toml; fi
-cargo test --manifest-path "$certicom_manifest" --release --lib \
-    certicom_dlp::device_tests -- --test-threads=1 --nocapture \
-    2>&1 | tee certicom-device-tests.log
-bash gpu/certicom/test-cli.sh 2>&1 | tee certicom-device-cli-tests.log
+if [[ "$certicom_phase" != cli ]]; then
+    cargo test --manifest-path "$certicom_manifest" --release --lib \
+        certicom_dlp::device_tests -- --test-threads=1 --nocapture \
+        2>&1 | tee certicom-device-tests.log
+fi
+if [[ "$certicom_phase" != library ]]; then
+    bash gpu/certicom/test-cli.sh 2>&1 | tee certicom-device-cli-tests.log
+fi
+if [[ "$certicom_phase" != all ]]; then
+    echo "Only the $certicom_phase phase passed; both library and CLI receipts are required for qualification."
+fi

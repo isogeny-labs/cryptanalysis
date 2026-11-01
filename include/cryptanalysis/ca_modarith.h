@@ -17,6 +17,34 @@ extern "C" {
 typedef unsigned __int128 ca_u128;
 typedef __int128 ca_i128;
 
+#ifdef CA_GLV_FIELD_COUNT
+/* Diagnostic builds only (-DCA_GLV_FIELD_COUNT): deterministic counts of the
+ * field multiplications, squarings and inversions (and the division steps of
+ * the inversions' extended Euclid), booked by the phase glv_rho_solve is in.
+ * Single-threaded use; the arithmetic itself is unchanged. */
+#    define CA_FC_PHASES 6
+enum { CA_FC_OUTSIDE, CA_FC_SETUP, CA_FC_BATCH, CA_FC_POST, CA_FC_ESCAPE, CA_FC_RESTART };
+enum { CA_FC_MUL, CA_FC_SQR, CA_FC_INV, CA_FC_EUCLID, CA_FC_KINDS };
+enum {
+    CA_FC_EV_BATCHES,
+    CA_FC_EV_BATCH_WALKS,
+    CA_FC_EV_ESC2,
+    CA_FC_EV_ESC4,
+    CA_FC_EV_RESTARTS,
+    CA_FC_EV_RETRIES,
+    CA_FC_EV_N
+};
+extern uint64_t ca_fc_cnt[CA_FC_PHASES][CA_FC_KINDS];
+extern uint64_t ca_fc_ev[CA_FC_EV_N];
+extern uint32_t ca_fc_phase;
+CA_API void ca_fc_reset(void);
+/* out: CA_FC_PHASES * CA_FC_KINDS counts, then CA_FC_EV_N event counts. */
+CA_API void ca_fc_read(uint64_t *out);
+#    define CA_FC_ADD(kind, n) (ca_fc_cnt[ca_fc_phase][(kind)] += (n))
+#else
+#    define CA_FC_ADD(kind, n) ((void)0)
+#endif
+
 /* ---- plain modular arithmetic ------------------------------------------ */
 
 static inline uint64_t ca_addmod(uint64_t a, uint64_t b, uint64_t m)
@@ -84,11 +112,13 @@ static inline uint64_t ca_mont_redc(const ca_mont *m, ca_u128 t)
 
 static inline uint64_t ca_mont_mul(const ca_mont *m, uint64_t a, uint64_t b)
 {
+    CA_FC_ADD(CA_FC_MUL, 1);
     return ca_mont_redc(m, (ca_u128)a * b);
 }
 
 static inline uint64_t ca_mont_sqr(const ca_mont *m, uint64_t a)
 {
+    CA_FC_ADD(CA_FC_SQR, 1);
     return ca_mont_redc(m, (ca_u128)a * a);
 }
 

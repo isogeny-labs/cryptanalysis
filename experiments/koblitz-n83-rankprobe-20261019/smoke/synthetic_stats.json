@@ -1,0 +1,49 @@
+{
+ "label": "LOCAL CHECK of the verifier's statistics path on renamed archived rows of run 38891404048 (no timing of this experiment)",
+ "runs": [
+  {
+   "aa_cold": 1.0018075572834717,
+   "aa_e2e": 1.0002932486791167,
+   "controls": {
+    "aa_cold_inside_0.97_1.03": true,
+    "aa_e2e_inside_0.97_1.03": true,
+    "planted_lower_bound_above_1": true
+   },
+   "decision": "improvement",
+   "planted": 2.024723619773732,
+   "planted_rank_effect": 1.08,
+   "primary": {
+    "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+    "ci95": [
+     1.0677256731143387,
+     1.0718450021931785
+    ],
+    "estimate": 1.0697714314689417,
+    "n_points": 20,
+    "rank_blocks": 4
+   }
+  },
+  {
+   "aa_cold": 1.0018075572834717,
+   "aa_e2e": 1.0002793328290909,
+   "controls": {
+    "aa_cold_inside_0.97_1.03": true,
+    "aa_e2e_inside_0.97_1.03": true,
+    "planted_lower_bound_above_1": true
+   },
+   "decision": "not_separated",
+   "planted": 1.8747440923830851,
+   "planted_rank_effect": 1.0,
+   "primary": {
+    "bootstrap": "blocks resampled; attempts resampled within each drawn block, paired across the two rank arms; points resampled, paired; 10000 draws",
+    "ci95": [
+     0.9977107816683572,
+     1.0018020128332603
+    ],
+    "estimate": 0.9997207451759491,
+    "n_points": 20,
+    "rank_blocks": 4
+   }
+  }
+ ]
+}

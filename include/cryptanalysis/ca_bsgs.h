@@ -27,6 +27,14 @@ CA_API ca_status ca_bsgs_solve(const ca_group *g, const ca_elem *base, const ca_
                                uint64_t lo, uint64_t hi, const ca_bsgs_params *params,
                                uint64_t *x, ca_stats *st);
 
+/* Persist the baby-step table while it is built and the giant-step position
+ * during search.  NULL checkpoint_path enables live progress only. */
+CA_API ca_status ca_bsgs_solve_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_bsgs_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
+
 /*
  * Precomputed baby-step table for solving many logarithms to the same base
  * (amortised BSGS).  Each subsequent solve costs width / table_size ops.

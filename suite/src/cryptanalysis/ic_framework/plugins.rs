@@ -44,10 +44,7 @@ use crate::cryptanalysis::ic_boundary::{
 };
 use crate::cryptanalysis::koblitz_fast::FastPoint;
 use crate::cryptanalysis::koblitz_index_calculus::build_frobenius_factor_base_from_divisor;
-use crate::cryptanalysis::pq_descent_symbolic::SymbolicDescent;
-use crate::cryptanalysis::pq_descent_symbolic_wide::{
-    descend_narrow as descend, max_n_prime_narrow as max_n_prime, MAX_SUMMANDS,
-};
+use crate::cryptanalysis::pq_descent_symbolic::{descend, max_n_prime, SymbolicDescent};
 
 // ── Factor bases ───────────────────────────────────────────────────
 
@@ -469,12 +466,8 @@ impl SolverHarness {
 /// The descent is symbolic — the summation polynomial expanded in
 /// `F_{2^n}[v]/(v² − v)` term by term — so it builds no table and is
 /// capped only by the monomial mask: `m·n' ≤ 64` boolean variables,
-/// `n' ≤ 32` at two summands and `n' ≤ 21` at three.  From four summands
-/// on (up to `MAX_SUMMANDS`), `S_{m+1}` is built by
-/// [`pq_descent_symbolic_wide`](crate::cryptanalysis::pq_descent_symbolic_wide),
-/// which also caps the monomials it may expand (`n' ≤ 6` at four
-/// summands).  What limits a row inside the caps is the engine, which
-/// says so through `accepts`.
+/// `n' ≤ 32` at two summands and `n' ≤ 21` at three.  What limits a
+/// row above that is the engine, which says so through `accepts`.
 pub struct DescentAlgebraicOracle<'i> {
     summands: u32,
     instance: &'i BinaryInstance,
@@ -557,10 +550,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
     }
 
     fn parameters(&self) -> &[(&str, &str)] {
-        &[(
-            "m",
-            "summands, 2 (descends S3), 3 (S4), 4 (S5) up to 6 (S7)",
-        )]
+        &[("m", "summands, 2 (descends S3) or 3 (descends S4)")]
     }
 
     fn prepare(
@@ -570,9 +560,9 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         _params: &Params,
         _ops: &mut GroupOps,
     ) -> Result<(), String> {
-        if !(2..=MAX_SUMMANDS).contains(&self.summands) {
+        if !(2..=3).contains(&self.summands) {
             return Err(format!(
-                "descent-algebraic takes m = 2 to {MAX_SUMMANDS}, got {}",
+                "descent-algebraic takes m = 2 or 3, got {}",
                 self.summands
             ));
         }

@@ -1,6 +1,7 @@
 name: Certicom CPU and GPU correctness
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'gpu/certicom/**'
       - 'src/cryptanalysis/certicom_dlp/**'
@@ -30,10 +31,19 @@ concurrency:
 jobs:
   cpu-cross-check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install stable Rust
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - id: crate
         shell: bash
         run: |
@@ -44,9 +54,14 @@ jobs:
             echo 'manifest=Cargo.toml' >> "$GITHUB_OUTPUT"
             echo 'workspace=.' >> "$GITHUB_OUTPUT"
           fi
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/cache@v4
         with:
-          workspaces: ${{ steps.crate.outputs.workspace }} -> target
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            ${{ steps.crate.outputs.workspace }}/target
+          key: certicom-${{ runner.os }}-${{ runner.arch }}-${{ steps.crate.outputs.workspace }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Cross-check the shared device source against independent Rust arithmetic
         env:
           CARGO_BUILD_JOBS: '2'
@@ -63,9 +78,13 @@ jobs:
           for arch in sm_70 sm_80 sm_90; do
             nvcc -O2 -std=c++17 -arch="$arch" gpu/certicom/cuda.cu -o "/tmp/certicom_cuda_$arch"
           done
-  metal-build:
+  metal-qualification:
     runs-on: macos-14
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [library, cli]
     steps:
       - uses: actions/checkout@v4
       - name: Compile native Metal shader and worker
@@ -87,20 +106,40 @@ jobs:
           else
             exit "$status"
           fi
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install stable Rust
         if: steps.probe.outputs.available == 'true'
-      - name: Qualify Metal arithmetic and all three solvers through the library and CLI
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
+      - name: Qualify Metal arithmetic and all three solvers (${{ matrix.phase }})
         if: steps.probe.outputs.available == 'true'
         env:
           CERTICOM_TEST_BACKEND: metal
+          CERTICOM_TEST_PHASE: ${{ matrix.phase }}
           CARGO_BUILD_JOBS: '2'
         run: bash gpu/certicom/qualify.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: certicom-metal-hosted-device-observation
+          name: certicom-metal-hosted-device-observation-${{ matrix.phase }}
           path: certicom-device-*.log
           if-no-files-found: error
+  metal-build:
+    needs: metal-qualification
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Require both Metal qualification phases
+        env:
+          QUALIFICATION_RESULT: ${{ needs.metal-qualification.result }}
+        run: test "$QUALIFICATION_RESULT" = success
   hardware:
     if: github.event_name == 'workflow_dispatch' && inputs.hardware_runner != ''
     runs-on: ${{ inputs.hardware_runner || 'ubuntu-24.04' }}
@@ -110,11 +149,20 @@ jobs:
       CARGO_BUILD_JOBS: '2'
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install stable Rust
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Qualify the requested device through the library and release CLI
         shell: bash
         run: bash gpu/certicom/qualify.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: certicom-${{ inputs.hardware_backend }}-device-correctness

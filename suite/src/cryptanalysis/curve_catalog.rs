@@ -355,7 +355,7 @@ fn prime_curves(v: &mut Vec<CatalogCurve>) {
     let (curve, _) = crate::ecc::certicom::prime_challenge("eccp-131").unwrap();
     v.push(CatalogCurve {
         name: "eccp-131",
-        aliases: &["eccp-130"],
+        aliases: &["eccp-130", "eccp131"],
         family: Family::Prime,
         standard: "Certicom ECC Challenge",
         object: CurveObject::Prime(curve),

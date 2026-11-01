@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run(const ca_group *g, const ca_elem *gen, uint64_t width, int reps, double alpha,
                 double *ratio)
@@ -31,10 +32,70 @@ int main(void)
     ca_elem gen;
     double ratio;
     fx_zp_safe(&g, &gen, 2000000579ULL);
+    {
+        char dir[] = "/tmp/ca-grumpy-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/walk.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 424242, &target);
+        ca_grumpy_params cp;
+        ca_grumpy_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        ca_stats first = {0}, second = {0};
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &first) == CA_ERR_LIMIT);
+        CHECK(first.table_entries > 0);
+        CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+        cp.m = 17;
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        cp.m = 0;
+        cp.max_ops = 100000;
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &second) == CA_OK);
+        CHECK_EQ_U64(answer, 424242);
+        CHECK(second.group_ops > first.group_ops);
+        FILE *f = fopen(path, "rb+");
+        CHECK(f != NULL);
+        if (f) {
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            int last = fgetc(f);
+            CHECK(last != EOF);
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 1, f) != EOF);
+            CHECK(fclose(f) == 0);
+        }
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run(&g, &gen, 1ULL << 24, 40, 0.5, &ratio);
     printf("zp  width 2^24 ops/sqrt(w) = %.3f\n", ratio);
     CHECK(ratio < 2.5);
     fx_ec(&g, &gen, 1000000007ULL, 3, 11);
+    {
+        char dir[] = "/tmp/ca-grumpy-ec-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/walk.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 424242, &target);
+        ca_grumpy_params cp;
+        ca_grumpy_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_LIMIT);
+        cp.max_ops = 100000;
+        CHECK(ca_grumpy_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 424242);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run(&g, &gen, 1ULL << 22, 40, 0.5, &ratio);
     printf("ec  width 2^22 ops/sqrt(w) = %.3f\n", ratio);
     CHECK(ratio < 2.5);

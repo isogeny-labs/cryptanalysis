@@ -36,6 +36,11 @@ python3 scripts/perf/perfindex.py instr --base /tmp/ci-base/ca_perfbench \
     --cand /tmp/ci-cand/ca_perfbench --out /tmp/ci-ir
 ```
 
+Scoped engineering measurements that do not meet the full performance-index
+gate are kept separately. The [2026-10-15 bounded EC scan report](POHLIG_EC_SCAN_2026-10-15.md)
+contains fixed-input correctness checks, raw paired wall and process CPU
+receipts, and the limits of its C Pohlig-Hellman result.
+
 Its kernels (`ca_perfbench list --full`) cover `field_ec` (Montgomery
 arithmetic, `ca_powmod`/`ca_invmod`/`ca_sqrtmod_prime`, primality and
 factoring, affine and batched EC addition, scalar multiplication, point
@@ -172,6 +177,12 @@ fingerprints, the single- and many-thread indices, the instruction-count
 index, and the changes that were tried and rejected with their numbers
 (§10).  It is classified **engineering** (§3).
 
+## Recent engineering receipts
+
+| date | change | evidence and status |
+|:--|:--|:--|
+| 2026-10-15 | Rust BSGS Montgomery reduction and preprocessing-rho low-byte checks | [report](rust-hotpaths-2026-10-15.md) and [raw comparison](rust-hotpaths-2026-10-15.json); focused tests passed, both paired BSGS wall-time verdicts neutral under heavy host load, preprocessing-rho wall time unmeasured |
+
 ## Build settings tried
 
 | setting | result | decision |
@@ -185,8 +196,46 @@ index, and the changes that were tried and rejected with their numbers
 | `f4_gf2::xor_then_lead` as two non-aliasing slices (vectorisable XOR, `position` for the lead) instead of raw-pointer loops (2026-09-26) | suite f4gf2/f4batch kernels 0.81–0.99× vs the previous commit, 5 paired rounds, all inside the A/A spread and none faster: the rows are a few words long | not landed |
 | `bsgs_fast::FastField::inv` by extended Euclid instead of Fermat (considered) | not built: a 63-bit Euclid is ~40 dependent 64-bit divisions against ~94 pipelined Montgomery multiplications | not landed |
 | `prime_orbit_index_calculus::add_r`/`sub_r` with a conditional subtraction for reduced operands (2026-09-26) | orbit rho 1.01×, orbit IC 0.93×, both inside the A/A spread | not landed |
-| `linalg` Lanczos: Moller-Granlund reciprocal reduction in place of the 128-bit `%` (2026-10-14, Xeon @ 2.1 GHz with avx512ifma) | standalone `ca_linsolve_mod_prime`, 700 columns, 61-bit q: 24 -> 30 ms (fewer instructions, longer dependent chains; this core's divider is fast) | not landed |
-| `linalg` Lanczos: `A^T w` as a gather over a transposed CSR copy instead of the scatter (2026-10-14) | with the landed 64-bit accumulation, 19.0 vs 20.0 ms (61-bit q) and 81 vs 81 ms (27-bit q): even | not landed: the scatter needs no second copy of the matrix |
-| `ca_invmod`: quotients 1-3 by subtraction instead of a divide (2026-10-14) | 242 -> 381 ns per inverse, 2^18 random 41-64-bit inputs (branch mispredictions) | not landed |
-| `ec_batch_op`: 6 or 8 interleaved prefix chains instead of 4 (2026-10-14) | `ca_bench ops` batched add 14.3 ns (4), 15.7-17.9 (6, a real `%`), 14.3-14.9 (8) | 4 landed |
-| rho/kangaroo: inline Z_p hash and curve hash in kangaroo through a vtable-kind switch (2026-10-14) | callgrind: rho_zp40 -3%, kangaroo +-1%, rho_ec36 +2% instructions | not landed (the curve-only rho inlining did land: -6%) |
+
+## C rho index fast path: exploratory measurement (2026-10-14)
+
+The C rho walk normally chooses a power-of-two multiplier count.  The
+`src/rho.c` change on `codex/cryptanalysis-rho-index-fastpath` uses a mask for
+that case and retains fast remainder for explicit non-power-of-two counts.
+This is an engineering change to index calculation; it does not change the
+walk or its operation count.  The baseline is `c25dd9f940e92c9740eab79905b3a475d9f25cff`
+(the parent branch of this stacked change).  Both arms used AppleClang 17,
+Release CMake builds, the same `tools/ca_perfbench.c`, one thread, five paired
+rounds, one sample per arm, and `--max-seconds 1`.  The exact comparison was:
+
+```sh
+python3 scripts/perf/perfindex.py compare \
+  --base build-speed-baseline/ca_perfbench \
+  --cand build-speed-candidate/ca_perfbench \
+  --filter dlp/c_rho_ec36 --filter dlp/c_rho_zp40 \
+  --rounds 5 --samples 1 --max-seconds 1 --threads 1 \
+  --out build-speed-candidate/rho-compare
+```
+
+Raw invocation times in milliseconds are retained below by round;
+`A` is baseline, `B` is candidate, and `A2` is the repeat baseline.  All
+rounds had identical fingerprints across arms and repeats:
+`f4277749c86fe1c9` for EC36 and `8e58f9123c615d90` for Zp40.
+
+| round | EC36 A | EC36 B | EC36 A2 | Zp40 A | Zp40 B | Zp40 A2 |
+|--:|--:|--:|--:|--:|--:|--:|
+| 1 | 170.471 | 32.576 | 54.369 | 22.501 | 16.865 | 34.783 |
+| 2 | 249.327 | 43.036 | 47.220 | 11.312 | 20.652 | 13.211 |
+| 3 | 51.207 | 29.681 | 32.428 | 18.694 | 23.647 | 14.748 |
+| 4 | 37.174 | 142.014 | 48.408 | 20.045 | 32.659 | 40.849 |
+| 5 | 62.172 | 23.209 | 44.354 | 28.041 | 17.285 | 28.704 |
+
+The harness classified both kernels **neutral**: EC36's paired median ratio
+was 2.679× (95% bootstrap interval 0.262–5.793×, A/A noise 96.9%), and
+Zp40's was 0.791× (0.548–1.622×, A/A noise 42.1%).  Host load average was
+80.5–87.7 on 14 logical cores during the run.  This result confirms output
+identity on those fixtures, but cannot establish a wall-time gain or rule out
+a regression.  No instruction-count measurement was available on this macOS
+host.  A quiet, isolated rerun of the same frozen comparison is needed for a
+performance claim.  The focused `group`, `bsgs`, and `rho` C tests passed in
+both builds; the candidate rho test additionally exercises `r=15`.

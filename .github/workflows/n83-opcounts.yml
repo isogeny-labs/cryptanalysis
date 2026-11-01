@@ -1,0 +1,229 @@
+name: N83 K1 block and cold panel with native work counted (section 5a band)
+
+# Runs experiments/koblitz-n83-opcounts-20261023/PROTOCOL.md, frozen in the
+# commit before this workflow. The analysis regression gate runs on every
+# main-targeted PR because branch protection requires its check name. The
+# experiment job remains excluded from PRs and runs on main pushes or by hand.
+# The restore, toolchain, frozen-crate
+# build and log-table steps are copied from n83-replay.yml (the stacked
+# producer's); the counted producer is derived from the frozen stacked
+# source by make_counted_source.py and built with --features op-counts. The
+# driver calls the stacked experiment's run_schedule.one() and arm.py
+# unchanged.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      runs_on:
+        description: "Runner label"
+        required: false
+        default: ubuntu-24.04
+
+permissions:
+  contents: read
+
+concurrency:
+  group: n83-opcounts-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPERIMENT: experiments/koblitz-n83-stacked-20261016
+  OPCOUNTS: experiments/koblitz-n83-opcounts-20261023
+  RUSTUP_TOOLCHAIN: 1.99.0
+  CARGO_TERM_COLOR: never
+
+jobs:
+  analysis-gate-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/koblitz-n83-opcounts-20261023/
+            /experiments/koblitz-n83-stacked-20261016/*.py
+            /experiments/koblitz-n83-stacked-20261016/*.json
+            /scripts/isolated_bench.py
+            /tools/artifacts/
+            /.artifacts/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Verify and test complete-panel analysis gate
+        run: |
+          sha256sum -c "$OPCOUNTS/ANALYSIS_V2.sha256"
+          python3 -m unittest discover -s "$OPCOUNTS" -p test_analyze_v2.py -v
+  opcounts:
+    if: github.event_name != 'pull_request'
+    needs: analysis-gate-tests
+    runs-on: ${{ inputs.runs_on || 'ubuntu-24.04' }}
+    # Build about 15 min (two crates), kS about 5 min, kP about 16 min,
+    # 20 x (cS 27 s + cP 51 s + rT 3 s) about 27 min on the stacked runner.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-opcounts-20261023 experiments/koblitz-n83-stacked-20261016
+
+      - name: Check the frozen protocol pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          want="$(grep -o "PINS.sha256\` (this commit) | \`[0-9a-f]\\{64\\}" "$OPCOUNTS/PROTOCOL.md" | grep -o '[0-9a-f]\{64\}')"
+          echo "$want  $OPCOUNTS/PINS.sha256" | sha256sum -c -
+          grep -v 'derived/' "$OPCOUNTS/PINS.sha256" | sha256sum -c -
+
+      - name: Record the host class
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt_dir="$RUNNER_TEMP/n83-opcounts"
+          mkdir -p "$receipt_dir"
+          {
+            echo "N83_RECEIPT_DIR=$receipt_dir"
+            echo "N83_CRYPTO_REPO=$RUNNER_TEMP/n83-opcounts-crypto"
+            echo "CARGO_TARGET_DIR=$RUNNER_TEMP/n83-opcounts-cargo"
+          } >> "$GITHUB_ENV"
+          lscpu | tee "$receipt_dir/lscpu.txt"
+          python3 scripts/isolated_bench.py probe-host > "$receipt_dir/host-probe.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          cpuinfo = Path('/proc/cpuinfo').read_text().splitlines()
+          receipt = {
+              'provider': 'github_actions',
+              'requested_runs_on': os.environ.get('REQUESTED_RUNS_ON') or 'ubuntu-24.04',
+              'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'],
+                                                  os.environ['GITHUB_RUN_ATTEMPT'],
+                                                  os.environ['GITHUB_JOB']),
+              'runner_name': os.environ.get('RUNNER_NAME'),
+              'runner_arch': os.environ.get('RUNNER_ARCH'),
+              'image_os': os.environ.get('ImageOS'),
+              'image_version': os.environ.get('ImageVersion'),
+              'cpu_model': next((line.split(':', 1)[1].strip() for line in cpuinfo
+                                 if line.startswith('model name')), None),
+              'nproc': os.cpu_count(),
+              'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
+              'git_sha': os.environ['GITHUB_SHA'],
+              'git_ref': os.environ['GITHUB_REF'],
+              'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'],
+                  os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+              'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
+          }
+          path = Path(os.environ['RUNNER_TEMP']) / 'n83-opcounts' / 'host-class.json'
+          path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          print(json.dumps({k: receipt[k] for k in ('cpu_model', 'runner_arch')}))
+          PY
+        env:
+          REQUESTED_RUNS_ON: ${{ inputs.runs_on }}
+
+      - name: Restore the pinned crypto revision, check the frozen stacked sources, derive the counted producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/aburan28/crypto.git "$N83_CRYPTO_REPO"
+          git -C "$N83_CRYPTO_REPO" cat-file -e "770f6a6925a0d29b768bd79074f54a173e967fe7^{commit}"
+          python3 "$EXPERIMENT/restore.py" --crypto-repo "$N83_CRYPTO_REPO" | tee "$N83_RECEIPT_DIR/restore.json"
+          python3 "$EXPERIMENT/make_schedule.py" --check
+          python3 "$EXPERIMENT/make_targets.py" --check
+          python3 "$EXPERIMENT/make_online_source.py" --check
+          python3 "$OPCOUNTS/make_counted_source.py" | tee "$N83_RECEIPT_DIR/derive.txt"
+          sha256sum -c "$OPCOUNTS/PINS.sha256" | tee "$N83_RECEIPT_DIR/pins-check.txt"
+          sha256sum "$EXPERIMENT/protocol.json" "$EXPERIMENT/schedule.json" | tee "$N83_RECEIPT_DIR/frozen.sha256"
+
+      - name: Install the pinned toolchain, test and build the frozen and counted crates
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version | tee "$N83_RECEIPT_DIR/rustc.txt"
+          (cd "$EXPERIMENT/lift2" && cargo test --release --locked 2>&1 | tee "$N83_RECEIPT_DIR/cargo-test-lift2.txt")
+          (cd "$EXPERIMENT/online" && cargo build --release --locked)
+          (cd "$OPCOUNTS/online" && cargo test --release --locked --bins 2>&1 | tee "$N83_RECEIPT_DIR/cargo-test-counted-off.txt")
+          (cd "$OPCOUNTS/online" && cargo test --release --locked --bins --features op-counts 2>&1 | tee "$N83_RECEIPT_DIR/cargo-test-counted-on.txt")
+          (cd "$OPCOUNTS/online" && cargo build --release --locked --features op-counts)
+          sha256sum "$CARGO_TARGET_DIR"/release/{ic_online_stacked_r770,ic_online_stacked_counted_r770,rho_tuned_r770} \
+            | tee "$N83_RECEIPT_DIR/binaries.sha256"
+
+      - name: Re-verify B's archived factor-log table in the pinned oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$EXPERIMENT/check_log_table.py" --out "$N83_RECEIPT_DIR/log-table-check.json"
+          table="$(python3 -c 'import json,sys,os; p=json.load(open(sys.argv[1])); print(os.path.realpath(os.path.join(sys.argv[2], p["online"]["factor_log_table"])))' "$EXPERIMENT/protocol.json" "$EXPERIMENT")"
+          echo "N83_LOG_TABLE=$table" >> "$GITHUB_ENV"
+
+      - name: Run K1 (kS, kP) and the cold panel (cS, cP, rT on 20 points) on one pinned CPU
+        shell: bash
+        run: |
+          set +e
+          cpu_id="$(python3 -c 'import os; print(min(os.sched_getaffinity(0)))')"
+          python3 "$OPCOUNTS/opcounts.py" run --bin-dir "$CARGO_TARGET_DIR/release" \
+            --log-table "$N83_LOG_TABLE" --receipt-dir "$N83_RECEIPT_DIR/panel" --cpu "$cpu_id" \
+            > "$N83_RECEIPT_DIR/runner-stdout.jsonl"
+          echo "run_exit=$?" | tee "$N83_RECEIPT_DIR/run-exit.txt"
+
+      - name: Gate against the archived run and compute the section 5a band
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum -c "$OPCOUNTS/ANALYSIS_V2.sha256"
+          python3 "$OPCOUNTS/analyze_v2.py" --receipt-dir "$N83_RECEIPT_DIR/panel" \
+            | tee "$N83_RECEIPT_DIR/analyze-stdout.txt"
+          if [ -f "$N83_RECEIPT_DIR/panel/band-v2.md" ]; then cat "$N83_RECEIPT_DIR/panel/band-v2.md" >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Preserve host class, builds, raw runs, counts and the band
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: n83-opcounts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/n83-opcounts/
+          if-no-files-found: error
+          retention-days: 30

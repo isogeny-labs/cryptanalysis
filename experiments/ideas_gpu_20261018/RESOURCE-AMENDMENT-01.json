@@ -1,9 +1,0 @@
-{
-  "schema":"ideas-gpu-resource-amendment/v1",
-  "base":"RESOURCE-PROTOCOL.json",
-  "observed_failure":"RunPod REST HTTP400 refuses allowedCudaVersions13.3: highest supported provider enum is13.0. No pod was allocated.",
-  "change":"Use provider allocation family13.0; actual native CUDA13.3 runtime/device compatibility remains an independent mandatory gate.",
-  "unchanged":"One dedicated GPU,96GiB minimum host RAM,16vCPU,2-hour lifetime,priceguard,cleanup,scientific correctness gates and exact workloads.",
-  "controller":"controller_v2.py",
-  "interpretation":"A supported allocation label is not evidence of runtime compatibility or successful GPU execution."
-}

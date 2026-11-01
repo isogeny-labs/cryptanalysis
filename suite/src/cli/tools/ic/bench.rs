@@ -19,10 +19,12 @@ use serde_json::{json, Value};
 
 use crate::cryptanalysis::ic_boundary::{
     calibrate_binary_instance, calibrate_group, calibrate_row_ops, calibrate_word_xor,
-    generic_floor_ops, koblitz_instance, random_binary_instance, rho_reference,
-    rho_reference_negation, roster_prime_instance, signed_frobenius_rho, BinaryGroup,
-    BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeInstance, RhoResult,
+    find_prime_order_curve, generic_floor_ops, koblitz_instance, random_binary_instance,
+    rho_reference, rho_reference_negation, roster_prime_instance, signed_frobenius_rho,
+    BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeInstance,
+    PrimeCurve, RhoResult,
 };
+use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
     BinarySubspaceBase, DescentAlgebraicOracle, FrobeniusMitmOracle, KoblitzOrbitBase, MitmOracle,
@@ -131,6 +133,13 @@ fn listing() -> Value {
                 "plugins": [
                     {"name": "prime-abscissa", "regimes": ["prime"],
                      "parameters": [{"name": "size", "means": "abscissae in the base; the family optimum is about #E^(1/3)"}]},
+                    {"name": "hashed-affine", "regimes": ["prime"],
+                     "parameters": [
+                        {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match the oracle"},
+                        {"name": "seed", "means": "SplitMix64 seed for the affine hash seeds; default 1"},
+                        {"name": "tau", "means": "shared threshold; default the Lemma 13 integer ceiling"},
+                        {"name": "s", "means": "shared hash prime in [2p,4p]; default the first prime there"},
+                        {"name": "steps", "means": "enumeration and per-target contraction budget in charged primitive steps"}]},
                     {"name": "binary-subspace", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "dimension", "means": "F_2-dimension of the abscissa subspace"}]},
                     {"name": "koblitz-orbit", "regimes": ["koblitz"],
@@ -158,10 +167,18 @@ fn listing() -> Value {
                     {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
                      "parameters": [{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
+                     "parameters": [
+                        {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match hashed-affine"},
+                        {"name": "seed", "means": "SplitMix64 seed for the affine hash seeds; default 1"},
+                        {"name": "tau", "means": "shared threshold; must match hashed-affine"},
+                        {"name": "s", "means": "shared hash prime; must match hashed-affine"},
+                        {"name": "steps", "means": "per-target contraction budget in charged primitive steps"}],
+                     "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
-                    {"name": "descent-algebraic", "summands": "2 to 6", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (S4), 4 (S5) up to 6 (S7)"}],
+                    {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3) or 3 (descends S4)"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
                 ],
             },
@@ -400,12 +417,17 @@ fn run_prime(
 ) -> Result<Vec<RunReport>, String> {
     let fb_name = spec.factor_base.as_str();
     let or_name = spec.oracle.as_str();
-    if fb_name != "prime-abscissa" {
-        return Err(format!(
-            "factor base `{fb_name}` is not available on a prime-field curve; try prime-abscissa"
-        ));
-    }
-    let base = PrimeAbscissaBase { instance: inst };
+    let abscissa = PrimeAbscissaBase { instance: inst };
+    let hashed = HashedAffineBase { instance: inst };
+    let base: &dyn FactorBaseBuilder<PrimeCurve> = match fb_name {
+        "prime-abscissa" => &abscissa,
+        "hashed-affine" => &hashed,
+        other => {
+            return Err(format!(
+                "factor base `{other}` is not available on a prime-field curve; try prime-abscissa or hashed-affine"
+            ))
+        }
+    };
     let mut out = Vec::new();
     for rep in 0..args.repeats.max(1) {
         let mut ops = GroupOps::default();
@@ -427,17 +449,19 @@ fn run_prime(
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
+        let mut hashed = HashedTensorOracle::new();
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
+            "hashed-tensor" => &mut hashed,
             other => {
                 return Err(format!(
-                    "oracle `{other}` is not available on a prime-field curve; try subtract or mitm"
+                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm or hashed-tensor"
                 ))
             }
         };
         out.push(run_pipeline(
-            &ctx, &spec, &base, oracle, planted, calib, rho_s,
+            &ctx, &spec, base, oracle, planted, calib, rho_s,
         )?);
     }
     Ok(out)
@@ -715,6 +739,11 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     let instance = match regime.as_str() {
         "prime" => Instance::Prime(
             roster_prime_instance(degree)
+                .or_else(|| {
+                    (8..=32)
+                        .contains(&degree)
+                        .then(|| find_prime_order_curve(degree, args.seed))
+                })
                 .ok_or_else(|| format!("no prime instance at {degree} bits"))?,
         ),
         "char2" => Instance::Binary(Box::new(

@@ -1207,23 +1207,44 @@ static test_server *server_start(server_script script)
     CHECK(s != NULL);
     if (!s) return NULL;
     s->script = script;
-    pthread_mutex_init(&s->lock, NULL);
+    int ok = pthread_mutex_init(&s->lock, NULL) == 0;
+    CHECK(ok);
+    if (!ok) {
+        free(s);
+        return NULL;
+    }
     s->fd = socket(AF_INET, SOCK_STREAM, 0);
     CHECK(s->fd >= 0);
+    if (s->fd < 0) goto fail;
     int one = 1;
-    setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    ok = setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     sin.sin_port = 0;
-    CHECK(bind(s->fd, (struct sockaddr *)&sin, sizeof(sin)) == 0);
-    CHECK(listen(s->fd, 8) == 0);
+    ok = bind(s->fd, (struct sockaddr *)&sin, sizeof(sin)) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
+    ok = listen(s->fd, 8) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     socklen_t slen = sizeof(sin);
-    CHECK(getsockname(s->fd, (struct sockaddr *)&sin, &slen) == 0);
+    ok = getsockname(s->fd, (struct sockaddr *)&sin, &slen) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     s->port = ntohs(sin.sin_port);
-    CHECK(pthread_create(&s->thread, NULL, server_main, s) == 0);
+    ok = pthread_create(&s->thread, NULL, server_main, s) == 0;
+    CHECK(ok);
+    if (!ok) goto fail;
     return s;
+fail:
+    if (s->fd >= 0) close(s->fd);
+    pthread_mutex_destroy(&s->lock);
+    free(s);
+    return NULL;
 }
 
 static void server_stop(test_server *s)
@@ -1675,14 +1696,40 @@ static double ingest_n(size_t n)
     return (double)(t1.tv_sec - t0.tv_sec) + (double)(t1.tv_nsec - t0.tv_nsec) / 1e9;
 }
 
+static double median3(double a, double b, double c)
+{
+    double lo = a < b ? a : b, hi = a < b ? b : a;
+    return c < lo ? lo : (c > hi ? hi : c);
+}
+
 static void test_ingest_is_subquadratic(void)
 {
-    double t10 = ingest_n(10000);
-    double t40 = ingest_n(40000);
-    /* 4x the input.  Linear ingest is ~4x the time, quadratic ~16x.  Assert
-     * comfortably below quadratic (8x) with a floor so a fast machine's
-     * near-zero t10 does not make the ratio meaningless. */
-    if (t10 > 0.005) CHECK(t40 < t10 * 8.0);
+    const size_t small_n = 20000;
+    const size_t large_n = 80000;
+    double ratios[3];
+
+    /* Warm up allocation and caches before collecting the paired timings. */
+    (void)ingest_n(large_n);
+
+    /* Alternate order to reduce systematic drift, then compare medians so a
+     * single scheduler pause does not dominate this complexity check. */
+    for (size_t i = 0; i < 3; i++) {
+        double small, large;
+        if (i & 1) {
+            large = ingest_n(large_n);
+            small = ingest_n(small_n);
+        } else {
+            small = ingest_n(small_n);
+            large = ingest_n(large_n);
+        }
+        ratios[i] = large / small;
+    }
+    double ratio = median3(ratios[0], ratios[1], ratios[2]);
+
+    /* 4x the input. Linear ingest is about 4x the time, quadratic about 16x.
+     * Keep the 8x gate while using a larger workload and repeated medians so
+     * ordinary CI scheduling noise cannot turn a linear pass into a failure. */
+    CHECK(ratio < 8.0);
 }
 
 int main(void)

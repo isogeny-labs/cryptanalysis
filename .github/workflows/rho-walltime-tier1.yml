@@ -1,0 +1,127 @@
+name: Plain rho (#1327) Tier 1 wall time
+
+# A fresh standard Linux runner times #1327's base (3321bbf) against its head (921b595) and
+# against its head with the old DP spacing (d32.patch), on the frozen panels of
+# experiments/rho-walltime-20261031. The in-repository Tier 1 preflight and noise gates
+# decide whether each receipt supports an instance-scoped wall-time result (PROTOCOL.md).
+on:
+  push:
+    branches: [rho-walltime-20261031]
+    paths:
+      - .github/workflows/rho-walltime-tier1.yml
+      - experiments/rho-walltime-20261031/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rho-walltime-tier1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  paired-walltime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      EXP: experiments/rho-walltime-20261031
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the full tree does not fit beside three build trees; only these paths are used
+          sparse-checkout: |
+            scripts
+            experiments/rho-walltime-20261031
+            .github
+
+      - name: Freeze runner identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/rho-walltime"
+          mkdir -p "$dir/bin"
+          echo "RHO_DIR=$dir" >> "$GITHUB_ENV"
+          echo "RHO_INSTANCE=gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}" >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$dir/host-probe.json"
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt = {
+              'provider': 'github_actions',
+              'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'], os.environ['GITHUB_JOB']),
+              'runner_name': os.environ.get('RUNNER_NAME'), 'runner_os': os.environ.get('RUNNER_OS'),
+              'runner_arch': os.environ.get('RUNNER_ARCH'), 'image_os': os.environ.get('ImageOS'),
+              'image_version': os.environ.get('ImageVersion'), 'advertised_runner': 'ubuntu-24.04 standard',
+              'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
+              'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines() if l.startswith('MemTotal:')), None),
+              'git_sha': os.environ['GITHUB_SHA'], 'git_ref': os.environ['GITHUB_REF'],
+              'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'], os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+              'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
+          }
+          Path(os.environ['RUNNER_TEMP'], 'rho-walltime', 'allocation.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          PY
+          (cd "$EXP" && sha256sum -c PROTOCOL.sha256)
+
+      - name: Build the three arms from the pinned commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          # ref = #1327's base, cand = #1327's head, var = cand with the old DP spacing (d32.patch).
+          # Fetch the two commits without blobs, then check out only the directories the build reads.
+          git config remote.origin.promisor true
+          git config remote.origin.partialclonefilter blob:none
+          git fetch --no-tags --depth=1 --filter=blob:none origin \
+            3321bbfb129b6101a6279bb40edb1b51ff61f7e6 921b595559fdf8a91cff627cb60bc962ba56b50b
+          git cat-file -e '3321bbfb129b6101a6279bb40edb1b51ff61f7e6^{commit}'
+          git cat-file -e '921b595559fdf8a91cff627cb60bc962ba56b50b^{commit}'
+          for arm in ref:3321bbfb129b6101a6279bb40edb1b51ff61f7e6 cand:921b595559fdf8a91cff627cb60bc962ba56b50b var:921b595559fdf8a91cff627cb60bc962ba56b50b; do
+            name=${arm%%:*}; commit=${arm#*:}
+            src="$RUNNER_TEMP/src-$name"
+            git worktree add --no-checkout --detach "$src" "$commit"
+            git -C "$src" sparse-checkout set --cone src include cmake bindings cuda tools tests usecases
+            git -C "$src" checkout --detach "$commit"
+            if [ "$name" = var ]; then git -C "$src" apply -p1 "$GITHUB_WORKSPACE/$EXP/d32.patch"; fi
+            df -h "$RUNNER_TEMP" | tail -1
+            cmake -S "$src" -B "$RUNNER_TEMP/build-$name" -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF
+            cmake --build "$RUNNER_TEMP/build-$name" --target cryptanalysis_static -j4
+            cc -O3 -std=c11 -static -I"$src/include" "$EXP/bench_rho_panel.c" \
+              "$RUNNER_TEMP/build-$name/libcryptanalysis.a" -lm -lpthread -o "$RHO_DIR/bin/rho-panel-$name"
+            rm -rf "$src" "$RUNNER_TEMP/build-$name"
+          done
+          cc --version | head -1 | tee "$RHO_DIR/compiler.txt"
+          sha256sum "$RHO_DIR"/bin/* | tee "$RHO_DIR/binaries.sha256"
+          printf 'authoring-VM builds (same compiler version, for comparison, not a gate):\n  ref  e0ac43dfd5eac83c351a7a4fff4902f1940df3b523652ee76b2d7e46bccd14ac\n  cand 45ac6774c509320fd25dcaa67f8deeae60a1e48bf815dcd625f8650bbfc62253\n  var  9d4add68003096c89b0a7cfe597dcd9c23c046ae1288d2b1126639c52d0a1ce6\n'
+
+      - name: Tier 1 preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          cpu="$(python3 -c 'import os; print(min(os.sched_getaffinity(0)))')"
+          for m in 28 32 36 40 28_var 32_var 36_var 40_var; do
+            python3 "$EXP/gh_manifest.py" "$EXP/manifest_$m.json" "$RHO_DIR/manifest_$m.json" \
+              --workdir "$GITHUB_WORKSPACE" --bindir "$RHO_DIR/bin" --cpu "$cpu" \
+              --instance-id "$RHO_INSTANCE" --receipt "$RHO_DIR/allocation.json"
+            python3 scripts/isolated_bench.py probe "$RHO_DIR/manifest_$m.json" > "$RHO_DIR/preflight_$m.json" || true
+            python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(sys.argv[1], d.get('ok'), d.get('problems'))" "$RHO_DIR/preflight_$m.json"
+          done
+
+      - name: Run 15 alternating pairs per size and comparison
+        shell: bash
+        run: |
+          set -uo pipefail
+          for m in 28 32 36 40 28_var 32_var 36_var 40_var; do
+            python3 scripts/isolated_bench.py --queue-root "$RHO_DIR/queue" run "$RHO_DIR/manifest_$m.json" \
+              > "$RHO_DIR/run-summary_$m.json"
+            echo "run $m exit $?"
+            cat "$RHO_DIR/run-summary_$m.json"
+          done
+
+      - name: Preserve receipts, raw pairs and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rho-walltime-tier1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rho-walltime/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">D equals minus 39 Hecke rank audit evidence map</title>
+<desc id="desc">A schematic audit flow showing the frozen X0(11) over F367 class walk, verified rank checks, conductor counts, and signed-incidence certificate. This is not a literal graph of points or edges.</desc>
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#547087"/></marker>
+  <style>
+    .bg { fill:#f7f9fc }
+    .card { fill:#fff; stroke:#b9c8d8; stroke-width:2 }
+    .head { font:700 24px sans-serif; fill:#17324d }
+    .sub { font:400 17px sans-serif; fill:#425b72 }
+    .small { font:400 15px sans-serif; fill:#425b72 }
+    .label { font:700 17px sans-serif; fill:#17324d }
+    .num { font:700 26px sans-serif; fill:#0a6670 }
+    .accent { fill:#d9eef0; stroke:#7eb8bc; stroke-width:2 }
+    .neutral { fill:#edf2f7; stroke:#c6d2de; stroke-width:2 }
+    .warn { fill:#fff3df; stroke:#e6bd73; stroke-width:2 }
+    .flow { stroke:#547087; stroke-width:3; fill:none; marker-end:url(#arrow) }
+    .rule { stroke:#d5dee8; stroke-width:1.5 }
+  </style>
+</defs>
+<rect class="bg" x="0" y="0" width="1200" height="760" rx="20"/>
+<text class="head" x="40" y="44">D<tspan baseline-shift="sub" font-size="16">K</tspan> = −39, conductor 6: evidence map</text>
+<text class="sub" x="40" y="72">Exploratory finite audit on X₀(11)/F₃₆₇ • schematic flow, not a point or isogeny graph</text>
+
+<rect class="card" x="40" y="105" width="300" height="190" rx="14"/>
+<text class="label" x="64" y="141">Frozen inputs &amp; walk</text>
+<text class="small" x="64" y="174">Dₖ = −39 • f = 6 • p = 367</text>
+<text class="small" x="64" y="200">Hecke degrees 2 and 3</text>
+<text class="num" x="64" y="243">64</text><text class="small" x="126" y="241">distinct rational points</text>
+<text class="small" x="64" y="270">Source: raw class-walk JSON</text>
+
+<path class="flow" d="M350 200 L410 200"/>
+<rect class="card" x="430" y="105" width="350" height="190" rx="14"/>
+<text class="label" x="454" y="141">Relation matrix audits</text>
+<text class="num" x="454" y="185">48</text><text class="small" x="520" y="183">verified Hecke rows (32 + 16)</text>
+<text class="small" x="454" y="216">Rank 40 over F₁₁, F₁₀₀₉, F₁₀₀₀₀₀₀₀₀₇</text>
+<line class="rule" x1="454" y1="235" x2="750" y2="235"/>
+<text class="num" x="454" y="275">52</text><text class="small" x="520" y="273">rank after 64 Atkin–Lehner rows</text>
+
+<path class="flow" d="M790 200 L850 200"/>
+<rect class="card" x="870" y="105" width="290" height="190" rx="14"/>
+<text class="label" x="894" y="141">Conductor audit</text>
+<text class="small" x="894" y="177">Conductor</text><text class="small" x="1010" y="177">1   2   3   6</text>
+<text class="small" x="894" y="209">Class number</text><text class="small" x="1010" y="209">4   4  12  12</text>
+<text class="small" x="894" y="241">Points</text><text class="small" x="1010" y="241">8   8  24  24</text>
+<text class="small" x="894" y="271">64 points checked</text>
+
+<path class="flow" d="M600 300 L600 360"/>
+<rect class="card" x="180" y="380" width="840" height="300" rx="14"/>
+<text class="label" x="210" y="422">Degree-2 signed-incidence certificate</text>
+<text class="small" x="210" y="453">32 degree-2 rows → 4 incidence components → two components pass the signed-cancellation test</text>
+
+<rect class="accent" x="220" y="485" width="310" height="112" rx="12"/>
+<text class="label" x="245" y="520">Accepted component A</text>
+<text class="num" x="245" y="559">12 rows</text><text class="small" x="362" y="557">12 floor columns</text>
+<text class="small" x="245" y="583">signed coefficients +1 / −1</text>
+
+<rect class="accent" x="670" y="485" width="310" height="112" rx="12"/>
+<text class="label" x="695" y="520">Accepted component B</text>
+<text class="num" x="695" y="559">12 rows</text><text class="small" x="812" y="557">12 floor columns</text>
+<text class="small" x="695" y="583">signed coefficients +1 / −1</text>
+
+<rect class="warn" x="355" y="615" width="490" height="42" rx="10"/>
+<text class="small" x="377" y="642">24 / 24 floor columns covered; two other components rejected</text>
+<text class="small" x="40" y="724">Source: matrix_audit.json, conductor_audit.json, graph_audit.json. Component blocks summarize certificates; no exact point edges are drawn.</text>
+</svg>

@@ -134,6 +134,48 @@ pub struct SquareAttackReport {
     pub master_key: [u8; 16],
 }
 
+/// Recover from complete captured Λ-sets without querying an encryption oracle.
+/// The caller validates the plaintext sets and replays the resulting key.
+pub fn key_recovery_four_round_from_captured(
+    sets: &[Vec<[u8; 16]>],
+) -> Result<SquareAttackReport, String> {
+    if !(1..=6).contains(&sets.len()) || sets.iter().any(|set| set.len() != 256) {
+        return Err("Square recovery requires 1..=6 complete 256-ciphertext lambda sets".into());
+    }
+    let mut candidates: [Vec<u8>; 16] = std::array::from_fn(|_| (0..=255u8).collect());
+    let mut sbox_lookups = 0usize;
+    for set in sets {
+        for flat in 0..16 {
+            if candidates[flat].len() == 1 {
+                continue;
+            }
+            let before = candidates[flat].len();
+            candidates[flat].retain(|&key_byte| {
+                set.iter().fold(0u8, |sum, ct| {
+                    sum ^ INV_SBOX[(ct[flat] ^ key_byte) as usize]
+                }) == 0
+            });
+            sbox_lookups += before * set.len();
+            if candidates[flat].is_empty() {
+                return Err(format!(
+                    "Square corpus has no last-round key candidate at byte {flat}"
+                ));
+            }
+        }
+    }
+    if candidates.iter().any(|values| values.len() != 1) {
+        return Err("Square corpus leaves ambiguous last-round key bytes; supply another complete lambda set".into());
+    }
+    let last_round_key =
+        std::array::from_fn(|column| std::array::from_fn(|row| candidates[4 * column + row][0]));
+    Ok(SquareAttackReport {
+        lambda_sets_used: sets.len(),
+        sbox_lookups,
+        last_round_key,
+        master_key: ReducedAes128::invert_schedule(4, &last_round_key),
+    })
+}
+
 /// Recover the master key from a 4-round AES-128 with `final_mix_columns
 /// = false` (the FIPS form). `oracle` is a closure that returns
 /// `(plaintext, ciphertext)` pairs — in practice a chosen-plaintext

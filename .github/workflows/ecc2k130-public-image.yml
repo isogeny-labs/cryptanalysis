@@ -1,0 +1,64 @@
+name: ecc2k130-public-images
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "ecc2k130/runner/public/**"
+      - "ecc2k130/runner/aws/rds_gpu.py"
+      - "ecc2k130/src/**"
+      - "ecc2k130/include/**"
+      - "ecc2k130/generated/**"
+      - "ecc2k130/Makefile"
+      - "ecc2k130/tests/campaign-kat.hex"
+      - "fpga/model/ecc2k130.*"
+      - ".github/workflows/ecc2k130-public-image.yml"
+  push:
+    branches: [main]
+    tags: ["ecc2k130-public-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: build and check (${{ matrix.kind }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [gateway, worker]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130
+      - name: Check gateway protocol
+        if: matrix.kind == 'gateway'
+        run: python3 -m unittest ecc2k130/runner/public/test_public.py -v
+      - name: Build source-bound image
+        env:
+          KIND: ${{ matrix.kind }}
+        run: |
+          python3 ecc2k130/runner/public/build_images.py "$KIND" \
+            --tag "ecc2k130-$KIND:ci" --platform linux/amd64
+      - name: Publish tagged image
+        if: startsWith(github.ref, 'refs/tags/ecc2k130-public-v')
+        env:
+          KIND: ${{ matrix.kind }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          version="${GITHUB_REF_NAME#ecc2k130-public-v}"
+          image="ghcr.io/$owner/ecc2k130-$KIND:$version"
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker tag "ecc2k130-$KIND:ci" "$image"
+          docker push "$image"
+          docker image inspect "$image" --format '{{json .RepoDigests}}' \
+            | tee -a "$GITHUB_STEP_SUMMARY"

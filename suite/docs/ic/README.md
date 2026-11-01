@@ -10,6 +10,35 @@ The `prime` command runs the pipeline on prime-field curves by type — generic
 (NIST P-192 … P-521), `j = 0` Koblitz-style (secp256k1) and `j = 1728` — see
 [Prime-field curves](#prime-field-curves-ic-prime).
 
+## Certicom 130-bit challenge workflows
+
+`ECCp-131` is the Certicom prime-field challenge. Its exact field, curve,
+generator, subgroup order, and published target are imported from the
+[Certicom curve list](https://www.certicom.com/en/curves-list). The inspector
+checks both points against the curve equation and subgroup relation:
+
+    ca-ic inspect --curve eccp-131 --json
+    ca-icx inspect eccp-131 --json
+    ca-icx estimate eccp-131 --json
+
+`ca-ic prime --curve eccp-131` reports the exact curve's structure, then runs
+index calculus on a generated smaller curve of the same type. Its result is a
+scaled experiment. A full-parameter ECCp-131 relation and target-descent path
+remains open in the [problem record](https://github.com/aburan28/crypto/blob/main/problems/eccp131-full-parameter-index-calculus.md).
+
+`ECC2K-130` is the separate binary Koblitz challenge. The fixed-parameter
+index-calculus workflow accepts its published point through the pinned
+polynomial-basis file and keeps its intermediate state in the requested run
+directory:
+
+    ca-ic fixed --params docs/ic/params/ecc2k130-fixed.json \
+      --dir runs/ecc2k130-fixed --stage status --json
+
+The `crypto` repository's `ecdlp-nist` command offers verified interval BSGS
+on both exact curves. Give a justified interval for the published target or
+use a known-answer point. Its in-memory table is capped at 1,048,576 baby
+steps; a whole-subgroup request is refused before allocation.
+
 **Research provenance:** the per-stage scoreboard
 ([`BOUNDARY_TARGETS.md`](https://github.com/aburan28/crypto/blob/main/docs/ic/BOUNDARY_TARGETS.md)),
 the frozen run records and the autolab control plane that produced them stay
@@ -769,6 +798,7 @@ charged ρ/IC ratio is below 1 at every one. Read its
     ./target/release/ca-ic prime --curve secp256k1 --bits 28
     ./target/release/ca-ic prime --curve p224 --bits 36 --targets 256
     ./target/release/ca-ic prime --type j1728 --bits 24 --json
+    ./target/release/ca-ic prime --curve secp256k1 --bits 28 --relation-coordinates jacobian
     ./target/release/ca-ic prime --curve secp256k1 --bits 28 --no-large-primes --no-learn   # the control
     ./target/release/ca-ic prime --curve secp256k1 --bits 16 --solver semaev
 
@@ -845,6 +875,13 @@ Then the pipeline runs on a **scaled-down curve of the same shape**:
    `--no-large-primes`, keeps a probe only when it decomposes wholly over
    the base: the oracle sweeps `α⁻¹(R) − P_o` over every automorphism and
    representative, stops at the first hit, and re-adds it in the group.
+   The default `--relation-coordinates affine` preserves the historical
+   single walk. `--relation-coordinates jacobian` interleaves 32 independent
+   walks: one simultaneous inversion exposes their affine abscissae for the
+   partition function, then every lane advances with an inversion-free mixed
+   Jacobian addition. This changes the deterministic probe stream, not the
+   relation identities or the abstract group-operation charges. The JSON
+   configuration records both the representation and lane count.
 6. **Logarithms.** Each relation has at most two unknowns, so the system is a
    gain graph and is solved exactly, component by component: a spanning tree
    expresses every column affinely in the root, and a cycle of gain `≠ 1`, or
@@ -881,9 +918,10 @@ operation count (`runs_are_reproducible`).
 
 ### What it costs, and how to read `vs_rho`
 
-Counts are group operations — affine additions, each sharing a batched
-inversion on both sides — so they compare across implementations. A setup
-scalar multiplication is charged `1.5·bits(r)` operations on either side;
+Counts are abstract group operations — one per oracle difference or walk step,
+independent of the coordinate backend — so they compare algorithms rather than
+field formulas. A setup scalar multiplication is charged `1.5·bits(r)`
+operations on either side;
 the jump tables (rho's, and the one the collection and the descents walk),
 like the database, are shared by the targets and charged once; the
 `[d]G == Q` and `[x]G == P` certification checks are charged to neither.
@@ -1018,6 +1056,9 @@ deployed curve: at 256 bits every term is `≈ 2^128/√w`, as for rho.
   later targets are cheaper, so quote the mean over the batch.
 - `--no-large-primes` (collect full 2-decompositions, the control) and
   `--no-learn` (descend every target against the precomputed database alone).
+- `--relation-coordinates affine|jacobian` selects the large-prime adding
+  walk representation. `affine` remains the default baseline; `jacobian`
+  uses 32 lanes and has no effect with `--no-large-primes`.
 - Base size: `--orbits N`, or `--width W` (`W·√r/|Aut|` orbits; 2 without
   large primes), or `--orbits-per-target K` (with `--no-learn`: `⌈K·T⌉`, at
   least 16; default 0.5). `--width` and `--orbits-per-target` conflict.

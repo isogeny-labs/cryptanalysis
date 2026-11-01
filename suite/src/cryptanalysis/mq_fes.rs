@@ -455,6 +455,7 @@ pub fn wide_lanes() -> Option<usize> {
 /// unrolled chunk and `n − k ≤ 32`.  Returns `None` when the host has
 /// neither AVX-512 nor AVX2 or the system does not fit, and otherwise the
 /// solutions (bit `i` = `x_i`, in no particular order) and the lane count.
+#[cfg_attr(not(target_arch = "x86_64"), allow(unused_variables, unused_mut))]
 pub fn gray_find_all_wide(
     forms: &[QuadraticForm],
     max_solutions: usize,
@@ -804,10 +805,7 @@ pub fn gray_find_all(forms: &[QuadraticForm], max_solutions: usize) -> Vec<u64> 
 ///
 /// Returns the same shape as
 /// [`crate::cryptanalysis::koblitz_index_calculus::sat_decompose`].
-/// Cubic chained systems (`m ≥ 3`) dispatch to the specialised Gray-code
-/// chain search [`crate::cryptanalysis::fes_chain::fes_chain_decompose`]
-/// (sorted summands, first liftable root in its documented order); where
-/// that path does not apply they are reported as exhausted, as before.
+/// Cubic chained systems (`m ≥ 3`) are reported as exhausted.
 pub fn mq_fes_decompose(
     kc: &crate::cryptanalysis::koblitz_index_calculus::KoblitzCurve,
     fb: &crate::cryptanalysis::koblitz_index_calculus::FrobeniusFactorBase,
@@ -823,13 +821,6 @@ pub fn mq_fes_decompose(
     use crate::cryptanalysis::koblitz_index_calculus::{lift_candidate, SatDecompositionStats};
 
     let mut stats = SatDecompositionStats::default();
-    if m >= 3 {
-        if let Some(out) =
-            crate::cryptanalysis::fes_chain::fes_chain_decompose(kc, fb, index_of, st, target, m)
-        {
-            return out;
-        }
-    }
     if m != 2 {
         stats.exhausted = true;
         return (None, stats);

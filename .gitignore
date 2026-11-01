@@ -20,6 +20,9 @@ compile_commands.json
 # Rust (bindings)
 bindings/rust/target/
 
+# Rust (experiments): Cargo build output is rebuilt, never committed
+experiments/*/target/
+
 # Go
 bindings/go/*.test
 
@@ -45,6 +48,7 @@ experiments/pdp-scaling/sumpoly_cache.pkl
 
 # Rust (attack suite)
 suite/target/
+/deps/crypto
 
 # Isolated Sage build temporary files and caches.
 /.sage-build-tmp/
@@ -54,5 +58,8 @@ suite/target/
 # record needs into its experiment directory.
 /.cairn-jobs/
 
-# Lean build output
+# Resume note and push state for scripts/checkpoint.sh (the copy lives in S3)
+.resume/
+
+# Lake build caches for self-contained Lean experiments
 .lake/

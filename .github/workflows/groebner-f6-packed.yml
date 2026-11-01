@@ -1,0 +1,54 @@
+name: Groebner F6 packed separator exactness
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/groebner-f6-packed.yml'
+      - 'experiments/groebner-f6-packed-20261009/**'
+      - 'experiments/groebner-f6-20261008/**'
+      - 'experiments/pdp-scaling/gf2n.py'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/groebner-f6-packed.yml'
+      - 'experiments/groebner-f6-packed-20261009/**'
+      - 'experiments/groebner-f6-20261008/**'
+      - 'experiments/pdp-scaling/gf2n.py'
+permissions:
+  contents: read
+jobs:
+  exact:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Build optimized and UBSan packed factors
+        run: python experiments/groebner-f6-packed-20261009/build.py
+      - name: Exhaustive and S3-chain exactness
+        run: |
+          mkdir -p f6-packed-evidence
+          python experiments/groebner-f6-packed-20261009/test_packed.py | tee f6-packed-evidence/tests.log
+          python experiments/groebner-f6-packed-20261009/panel.py --output f6-packed-evidence/panel
+          python experiments/groebner-f6-packed-20261009/semantic_screen.py --output f6-packed-evidence/semantic.json
+      - name: Retain all target statuses and failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: groebner-f6-packed-${{ matrix.os }}
+          path: f6-packed-evidence
+          if-no-files-found: error

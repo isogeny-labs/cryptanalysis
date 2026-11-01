@@ -2,6 +2,7 @@ name: strict-homogeneous
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'experiments/homogeneous-fraction/**'
       - '.github/workflows/strict-homogeneous.yml'
@@ -18,7 +19,13 @@ jobs:
       run:
         working-directory: experiments/homogeneous-fraction
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
       - name: Install Macaulay2 1.22
         run: |
           sudo apt-get update -qq
@@ -52,7 +59,7 @@ jobs:
         run: python3 run_strict_multigraded.py --extended-only --repeats 1 --timeout 60 --out strict_runs/extended
       - name: Preserve raw inputs, logs and receipts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: strict-homogeneous-graded-f4
           path: experiments/homogeneous-fraction/strict_runs/

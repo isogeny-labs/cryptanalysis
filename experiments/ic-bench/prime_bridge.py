@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """Bridge ca-ic prime/orbit JSON into the common IC receipt contract."""
 from __future__ import annotations
-import argparse, hashlib, json, platform, subprocess, sys
+import argparse, hashlib, json, math, platform, subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-sys.path.insert(0, str(ROOT / "tools"))
-import rho_reference  # noqa: E402
 BINARY = ROOT / "suite" / "target" / "release" / "ca-ic"
 PHASES = ("setup","isogeny","factor_base","precompute","queries","pdp",
           "relation_check","matrix_build","relation_la","target_descent","recovery_check")
@@ -30,12 +28,12 @@ def frozen(x):
     if isinstance(x,dict): return {k:frozen(v) for k,v in x.items()}
     return x
 
-# The prime receipts' batch-rho columns use the `with_setup` variant of tools/rho_reference.py
-# (ca-ic's batch_rho_expected_ops: seeding and a 32-entry jump table charged, smul = ceil(3 bits(r)/2)).
-RHO_VARIANT="with_setup"
-
 def batch_rho(r,w,t,folded):
-    return round(rho_reference.batch_group_operations(r,t,w if folded else 1,RHO_VARIANT))
+    n=r/w if folded else r; term=1.; series=0.
+    for k in range(t):
+        series+=term; term*= (2*k+1)/(2*k+2)
+    scalar=(3*r.bit_length()+1)//2
+    return round(math.sqrt(math.pi*n/2)*series+t*(2*scalar+1)+32*scalar)
 
 def prefixes(k):
     out=[]; n=1
@@ -76,6 +74,7 @@ def candidate(r,curve):
     q,f,l=r["configuration"],r["factor_base"],r["logs"]
     tag={"generic":"gen","j0":"j0","j1728":"j1728"}[r["curve_type"]]
     rc="lp" if q["large_primes"] else "full"; td="learn" if q["learn"] else "descent"
+    coords=q.get("relation_coordinates","affine"); lanes=int(q.get("relation_lanes",1))
     m={"schema":"ic-candidate/1","field":curve["field"],
        "curve":{**curve["curve"],"curve_id":curve["curve_id"]},"isogeny":"none",
        "endomorphism":{"automorphism_order":f["automorphism_order"],"record":frozen(r["instance"]["endomorphism"]),
@@ -91,6 +90,7 @@ def candidate(r,curve):
           "solver":"automorphism-orbit abscissa lookup/peel oracle; no Semaev polynomial system",
           "large_prime_variant":q["large_primes"],"max_oracle_operations":q["max_ops"]},
        "relation_collection":{"stage_code":f"RC{rc}","collector":l["collection"],
+          "coordinates":coords,"lanes":lanes,
           "relations_per_orbit":dec(q["relations_per_orbit"]),
           "verification":"accepted relations are re-added in the curve group"},
        "relation_linear_algebra":{"stage_code":"LAgraph",
@@ -102,10 +102,10 @@ def candidate(r,curve):
           "binary_blake3":r["software"].get("binary_blake3"),
           "git_commit":r["software"].get("git_commit"),"version":r["software"].get("version")},
        "operation_accounting":{"unit":"prime_group_operation",
-          "definition":"ca-ic counted affine group operations; certification checks intentionally uncharged",
+          "definition":"ca-ic abstract group operations, one per oracle difference or walk step independent of coordinates; certification checks intentionally uncharged",
           "phase_mapping":{"precompute":"logs oracle+probe","target_descent":"descent oracle+probe",
                            "other_common_phases":"zero in native prime ledger"}}}
-    cid=(f"IC1P{r['instance']['field_bits']}C{tag}fb{f['points']}PDP2orbitRC{rc}"
+    cid=(f"IC1P{r['instance']['field_bits']}C{tag}fb{f['points']}PDP2orbitRC{rc}{coords}{lanes}"
          f"LAgraphTD{td}ISO0h{sha(m)[:12]}")
     return cid,m
 
@@ -160,9 +160,7 @@ def normalize(r,host=None,run_number=1):
       "rho_batch":{"independent_operations":len(ds)*rho,
         "shared_dp_expected_operations":batch_rho(order,w,len(ds),False),
         "folded_shared_dp_expected_operations":batch_rho(order,w,len(ds),True),
-        "model":"Kuhn-Struik shared-DP expectation with ca-ic seeding and jump-table charges",
-        "variant":RHO_VARIANT},
-      "rho_reference":rho_reference.references(order,len(ds),w,1),
+        "model":"Kuhn-Struik shared-DP expectation with ca-ic seeding and jump-table charges"},
       "ratio_to_rho":total/rho if total else None,"ratio_to_floor":total/floor if total else None,
       "ratio_to_independent_rho_batch":total/(len(ds)*rho) if total else None,
       "ratio_to_batch_rho":total/batch_rho(order,w,len(ds),False) if total else None,
@@ -176,7 +174,7 @@ def normalize(r,host=None,run_number=1):
         "ic_over_independent_rho":total/(len(ds)*rho) if total else None,
         "ic_over_batch_rho":total/batch_rho(order,w,len(ds),False) if total else None,
         "ic_over_folded_batch_rho":total/batch_rho(order,w,len(ds),True) if total else None,
-        "prefixes":ps,"shared":"prime logarithm database precomputation","batch_rho_variant":RHO_VARIANT},
+        "prefixes":ps,"shared":"prime logarithm database precomputation"},
       "verified_scalar":status=="complete","scalar_certificate_ref":f"{run_id}#prime-descents" if status=="complete" else None,
       "descents":[{"expected":d["expected"],"recovered":d["recovered"],"verified":d["verified"],
                    "target":d["target"],"attempts":d["trials"]} for d in ds],
@@ -203,9 +201,10 @@ def write(out_dir,items):
         r=x["receipt"]; p=native/f"{r['run_id']}.json"
         p.write_text(json.dumps(r["native_prime_report"],indent=1,sort_keys=True)+"\n")
 
-def run_cell(binary,cell):
+def run_cell(binary,cell,relation_coordinates):
     cmd=[str(binary),"prime","--type",cell["curve_type"],"--bits",str(cell["bits"]),
-         "--targets",str(cell["targets"]),"--seed",str(cell["seed"]),"--json"]
+         "--targets",str(cell["targets"]),"--seed",str(cell["seed"]),
+         "--relation-coordinates",relation_coordinates,"--json"]
     p=subprocess.run(cmd,cwd=ROOT,text=True,capture_output=True)
     if p.returncode: raise RuntimeError(f"{' '.join(cmd)}\n{p.stderr}\n{p.stdout}")
     return json.loads(p.stdout)
@@ -213,7 +212,7 @@ def run_cell(binary,cell):
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     a=sub.add_parser("adapt"); a.add_argument("raw",type=Path); a.add_argument("--out-dir",type=Path,required=True)
-    x=sub.add_parser("run"); x.add_argument("--suite",choices=SUITES,default="ci"); x.add_argument("--binary",type=Path,default=BINARY); x.add_argument("--out-dir",type=Path,required=True); x.add_argument("--jobs",type=int,default=1)
+    x=sub.add_parser("run"); x.add_argument("--suite",choices=SUITES,default="ci"); x.add_argument("--binary",type=Path,default=BINARY); x.add_argument("--out-dir",type=Path,required=True); x.add_argument("--jobs",type=int,default=1); x.add_argument("--relation-coordinates",choices=("affine","jacobian"),default="affine")
     args=ap.parse_args()
     if args.cmd=="adapt":
         raw=json.loads(args.raw.read_text()); items=[normalize(raw)]
@@ -221,7 +220,7 @@ def main():
         if args.jobs < 1: raise ValueError("--jobs must be positive")
         cells=SUITES[args.suite]
         with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-            raws=list(pool.map(lambda cell: run_cell(args.binary,cell),cells))
+            raws=list(pool.map(lambda cell: run_cell(args.binary,cell,args.relation_coordinates),cells))
         items=[normalize(raw) for raw in raws]
         for item in items:
             rr=item["receipt"]; print(f"{rr['profile_id']}: {rr['status']} total={rr['total_operations']} IC/folded-batch-rho={rr['ratio_to_batch_floor']:.4g}")

@@ -1,0 +1,41 @@
+name: Lean source evidence audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.lean'
+      - '**/lean-toolchain'
+      - '**/*lean-receipt.json'
+      - 'tools/audit_lean_evidence.py'
+      - '.github/workflows/lean-evidence-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.lean'
+      - '**/lean-toolchain'
+      - '**/*lean-receipt.json'
+      - 'tools/audit_lean_evidence.py'
+      - '.github/workflows/lean-evidence-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  source-receipts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /lean-toolchain
+            /**/lean-toolchain
+            /**/*.lean
+            /**/*lean-receipt.json
+            /tools/audit_lean_evidence.py
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python3 tools/audit_lean_evidence.py

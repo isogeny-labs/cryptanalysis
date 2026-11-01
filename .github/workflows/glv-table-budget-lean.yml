@@ -1,0 +1,131 @@
+name: GLV table budget Lean proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/glv-table-budget-lean.yml'
+      - 'lean-toolchain'
+      - 'src/curve.c'
+      - 'experiments/glv-table-rule-confirm-20261022/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/glv-table-budget-lean.yml'
+      - 'lean-toolchain'
+      - 'src/curve.c'
+      - 'experiments/glv-table-rule-confirm-20261022/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /lean-toolchain
+            /src/curve.c
+            /experiments/glv-table-rule-confirm-20261022/**
+            /tools/artifacts/
+            /.artifacts/
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/glv-table-rule-confirm-20261022
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install elan for pinned Lean
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Install pinned Lean toolchain
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          elan toolchain install "$ELAN_TOOLCHAIN"
+      - name: Check pinned C selector and changed-selector controls
+        run: |
+          set -euo pipefail
+          python3 experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py \
+            > "$RUNNER_TEMP/glv-source-binding.json"
+          cmp "$RUNNER_TEMP/glv-source-binding.json" \
+            experiments/glv-table-rule-confirm-20261022/lean-source-binding.json
+          python3 experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py --live \
+            > "$RUNNER_TEMP/glv-live-source-binding.json"
+          cmp "$RUNNER_TEMP/glv-live-source-binding.json" \
+            experiments/glv-table-rule-confirm-20261022/live-source-binding.json
+      - name: Build theorem and compare axiom sets with receipt
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          def printed_axioms(output):
+              # Lean may wrap the printed list at a different terminal width.
+              pattern = re.compile(r"'([^']+)' depends on axioms:\s*\[([^]]*)\]")
+              matches = list(pattern.finditer(output))
+              remainder = pattern.sub('', output)
+              assert not remainder.strip(), f'unexpected Lean output: {remainder!r}'
+              result = {}
+              for match in matches:
+                  name = match.group(1)
+                  assert name not in result, f'duplicate axiom output for {name}'
+                  result[name] = frozenset(
+                      axiom.strip() for axiom in match.group(2).split(',')
+                      if axiom.strip())
+              return result
+
+          directory = Path('experiments/glv-table-rule-confirm-20261022')
+          receipt = json.loads((directory / 'lean-receipt.json').read_text())
+          assert (Path('lean-toolchain').read_text().strip()
+                  == receipt['lean_toolchain'] == os.environ['ELAN_TOOLCHAIN'])
+          assert hashlib.sha256((directory / 'TableBudget.lean').read_bytes()).hexdigest() == receipt['source_sha256']
+          assert hashlib.sha256((directory / 'lean-source-binding.json').read_bytes()).hexdigest() == receipt['source_binding_sha256']
+          run = subprocess.run(['lean', 'TableBudget.lean'], cwd=directory,
+                               capture_output=True, text=True, check=False)
+          assert run.returncode == receipt['exit_code'] == 0, (run.returncode, run.stderr)
+          assert run.stderr == receipt['stderr'] == '', repr(run.stderr)
+          expected = printed_axioms(receipt['stdout'])
+          actual = printed_axioms(run.stdout)
+          declared = {'GlvTableBudget.' + name for name in
+                      re.findall(r'^theorem\s+(\w+)',
+                                 (directory / 'TableBudget.lean').read_text(), re.MULTILINE)}
+          assert len(declared) == 8 and set(actual) == declared and actual == expected, (actual, expected, declared)
+          assert all(axioms <= {'propext', 'Quot.sound'} for axioms in actual.values())
+          print(run.stdout, end='')
+          PY

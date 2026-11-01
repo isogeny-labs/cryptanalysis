@@ -29,7 +29,7 @@ name: gpu-health
 
 on:
   push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
+    branches: [main]
     tags: ["gpu-health-v*"]
     paths:
       - "deploy/gpu-health/**"
@@ -42,6 +42,7 @@ on:
       - "fpga/model/**"
       - ".github/workflows/gpu-health.yml"
   pull_request:
+    branches: [main]
     paths:
       - "deploy/gpu-health/**"
       - "deploy/helm/gpu-health/**"
@@ -58,7 +59,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -76,6 +77,12 @@ jobs:
             runner: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
@@ -88,7 +95,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-      - uses: azure/setup-helm@v5
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130
+      - uses: azure/setup-helm@v4
         with:
           version: v3.16.3
       - name: helm lint, both modes
@@ -129,7 +142,7 @@ jobs:
     name: image (linux/${{ matrix.arch }})
     needs: tests
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: ${{ (github.event_name == 'pull_request' || github.event_name == 'merge_group') && 25 || 60 }}
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
@@ -143,6 +156,12 @@ jobs:
             runner: ubuntu-22.04-arm
     steps:
       - uses: actions/checkout@v7
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130
       # Plain `docker build`, not buildx, for the reason deploy.yml gives:
       # setting buildx up pulls moby/buildkit from Docker Hub first, and a
       # reset there fails a job that has nothing to do with this repository.
@@ -182,7 +201,7 @@ jobs:
             --binary /fakes/ec2k-gpu --nvidia-smi /fakes/nvidia-smi --seconds 2 \
             --json-out /state/report.json
           python3 -c "import json,sys; r=json.load(open(sys.argv[1])); assert r['verdict'] == 'pass', r" "$state/report.json"
-      - uses: azure/setup-helm@v5
+      - uses: azure/setup-helm@v4
         if: matrix.arch == 'amd64'
         with:
           version: v3.16.3
@@ -214,7 +233,6 @@ jobs:
           docker push "$image"
 
   publish:
-    timeout-minutes: 20
     name: publish ghcr.io/${{ github.repository_owner }}/gpu-health
     needs: image
     if: startsWith(github.ref, 'refs/tags/gpu-health-v')

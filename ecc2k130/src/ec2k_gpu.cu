@@ -12,7 +12,7 @@
  * One process drives one device.  The kernel (include/packedkernels.cuh) is
  * the packed GF(2^131) walk imported from github.com/aburan28/crypto: one walk
  * per thread-slot, five 32-bit words per coordinate, products on the
- * carry-less multiplier (clmad, sm_80+, CUDA 13.3+), one batched inversion
+ * carry-less multiplier (clmad on sm_80+, software on sm_75; CUDA 13.3+), one batched inversion
  * per 16 slots.  ecc2k130/README.md gives the measured rates; this file is
  * only the host that feeds it.
  *
@@ -110,7 +110,8 @@ struct Options {
 // is in a trail whose report the host checks; 4096-step launches keep the
 // reseed kernel, whose lanes diverge, to a few percent of the device's time.
 // Run id 65535 is one the campaign never hands out (its fleets use 1.. and
-// 8000-9999, contributors 10000-65534), and a health run keeps no points.
+// 8000-9999, contributors 10000-49999, ecc-challenges.com 50000-65534), and a
+// health run keeps no points.
 const int HEALTH_DP_WEIGHT = 42;
 const int HEALTH_STEPS = 4096;
 const unsigned HEALTH_RUN_ID = 0xFFFFu;

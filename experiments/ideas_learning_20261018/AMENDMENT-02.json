@@ -1,7 +1,0 @@
-{
-  "frozen_before_third_prefilter_execution": true,
-  "reason": "After exact subgroup admission, the frozen training cell n7,b1,ell3 has zero usable points and no positive targets. A one-class model is a legitimate degenerate outcome; the original probability extraction incorrectly assumed class1 was present and failed. Preserve it and report it explicitly.",
-  "retained_failure": "attempt-02/prefilter.stderr",
-  "change": "Return probability0 when a fitted model has no positive class; record the actual training labels and subgroup/base admission failures. Do not add positive training examples after inspecting the holdouts.",
-  "consequence": "This run can diagnose unsafe transfer and an unusable training base. It cannot establish a learned prefilter improvement or a new invariant. The original restricted search may also choose an empty base; report that degeneracy and leave a useful search gate open."
-}

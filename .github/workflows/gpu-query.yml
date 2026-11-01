@@ -1,24 +1,13 @@
 name: Complete GPU query experiment
 on:
-  pull_request:
-    paths:
-      - 'experiments/groebner-perf-20260924/round10/**'
-      - 'experiments/groebner-perf-20260924/round4/**'
-      - 'experiments/groebner-perf-20260924/round7/**'
-      - 'experiments/pdp-scaling/**'
-      - '.github/workflows/gpu-query.yml'
-  push:
-    branches: ["claude/cryptanalysis-repo-setup-p59kek"]
-    paths:
-      - 'experiments/groebner-perf-20260924/round10/**'
-      - 'experiments/groebner-perf-20260924/round4/**'
-      - 'experiments/groebner-perf-20260924/round7/**'
-      - 'experiments/pdp-scaling/**'
-      - '.github/workflows/gpu-query.yml'
+  # Retired 2026-10-11: this gate guards a study that has been quiet for 7+ days, and its
+  # push/pull_request triggers were fanning out across the account's shared runners. Run it
+  # on demand, or restore its push/pull_request triggers from git history to bring it back.
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: gpu-query-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   query:
@@ -33,6 +22,26 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Pull store data this workflow reads (tools/artifacts)
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: |
+          if ! command -v aws >/dev/null; then
+            python3 -m venv "$RUNNER_TEMP/artifacts-awscli"
+            artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/bin/python"
+            artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/bin/aws"
+            if [ -d "$RUNNER_TEMP/artifacts-awscli/Scripts" ]; then
+              artifacts_cli_python="$RUNNER_TEMP/artifacts-awscli/Scripts/python.exe"
+              artifacts_cli_aws="$RUNNER_TEMP/artifacts-awscli/Scripts/aws.exe"
+            fi
+            "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
+            export ARTIFACTS_AWS="$artifacts_cli_aws"
+          fi
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/groebner-perf-20260924/round10
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'

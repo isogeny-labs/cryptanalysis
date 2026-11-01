@@ -1,0 +1,22 @@
+{
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "cgroups": {
+    "/sys/fs/cgroup/cpu.max": "400000 100000",
+    "/sys/fs/cgroup/memory.max": "17179869184",
+    "/sys/fs/cgroup/cpuset.cpus.effective": "0-4",
+    "/sys/fs/cgroup/cpuset.mems.effective": "0"
+  },
+  "gpu": {
+    "devices": [],
+    "status": "CPU-only correctness/relation diagnostic"
+  },
+  "physical_memory_technology": "unknown",
+  "isolation_tier": "unqualified; no timing ratio claimed"
+}

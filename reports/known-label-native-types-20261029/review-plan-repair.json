@@ -1,0 +1,49 @@
+{
+  "conductor_task": "T-790",
+  "claim": "Collect actual elaborated types for four fixed known-label identities without modifying producer proof bytes; no semantic or execution promotion from output-header checks.",
+  "coordinator_prior": "The pinned native object should import under its original qualified path; explicit check commands should print all four types. I authored the collector and cannot independently certify its import/isolation/failure behavior.",
+  "joint": "Native type-collection orchestration, isolation, completeness and failure propagation",
+  "reviewer_task": "TASK-20261029-b339cc",
+  "policy": "review-adversarial",
+  "reasoning_effort": "xhigh",
+  "permitted_inputs": [
+    "tools/lean/current-corpus-gate.py",
+    "tools/lean/test_current_corpus_gate.py",
+    "tools/lean/AuditHeckeAxioms.lean",
+    "docs/known-label-next-leads-20261028/Algebra.lean",
+    "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+    "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+    "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+    ".github/workflows/lean-proof-gate.yml",
+    "reports/known-label-native-types-20261029/README.md",
+    "reports/known-label-native-types-20261029/bindings.json",
+    "reports/known-label-native-types-20261029/unit-tests.txt",
+    "reports/known-label-native-types-20261029/review-plan.json",
+    "AGENTS.md and directly referenced policy sections",
+    "reports/known-label-native-types-20261029/review-response.md",
+    "reports/known-label-native-types-20261029/unit-tests-f2.txt",
+    "reports/known-label-native-types-20261029/repair-bindings.json",
+    "reports/known-label-native-types-20261029/review-plan-repair.json"
+  ],
+  "attack_plan": "Trace original source compile to isolated olean import and exact requested names. Challenge stale/cross-module imports, missing or duplicate output, namespace replacement, native failure, wrapper/source/workspace mutations and unbound output. Independently run bounded Python refusal tests if useful; synthetic output never establishes native success. Identify exact native evidence still required.",
+  "forbidden": [
+    "other reviewer reports or messages",
+    "producer edits",
+    "memory or session histories",
+    "native builds or experiments",
+    "network and installation"
+  ],
+  "output_directory": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/repair-review",
+  "outputs": [
+    "report.md",
+    "attestation.json",
+    "independent controls if useful"
+  ],
+  "remaining_review_requirements": [
+    "Actual fresh hosted type output for exact source/gate",
+    "Independent source-to-elaborated-type review for all four identities; dispatch separately when native output exists",
+    "Historical mathematical reviews apply only to unchanged ring statements; no new graph/group/probability bridge",
+    "All final-head CI and reviewer findings resolved before guarded merge"
+  ],
+  "revision_note": "Repair re-review: prior reviewer may read their own original report and the producer response; sibling reviews remain forbidden."
+}

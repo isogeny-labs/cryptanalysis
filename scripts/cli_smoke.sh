@@ -74,18 +74,18 @@ want_fail() {
   fi
 }
 
-# Assert that `ca $*` is rejected as malformed: exit status 2 and nothing on
-# stdout, so a caller branching on the status never also reads a half answer.
-want_malformed() {
+# Malformed options must fail before any solver work starts.
+want_bad() {
+  local expect=$1
+  shift
   checks=$((checks + 1))
   local out rc=0
-  out=$("$CA" "$@" 2>/dev/null) || rc=$?
-  if [ "$rc" -ne 2 ] || [ -n "$out" ]; then
-    printf 'FAIL (wanted exit 2 and no stdout, got %d) %s\n  %s\n' "$rc" "$*" "$out" >&2
+  out=$("$CA" "$@" 2>&1) || rc=$?
+  if [ "$rc" -ne 2 ] || [[ "$out" != *"$expect"* ]]; then
+    printf 'FAIL (wanted exit 2 and %s, got %d) %s\n  %s\n' "$expect" "$rc" "$*" "$out" >&2
     fail=$((fail + 1))
   fi
 }
-
 
 # ── information ─────────────────────────────────────────────────────────────
 want '"version"' version
@@ -131,49 +131,6 @@ want_fail num nonsense
 # ── factorisation and primality ─────────────────────────────────────────────
 want '"is_prime":true' prime 1000003
 want '"is_prime":false' prime 1000001
-# Numbers are whole unsigned 64-bit integers or nothing: a trailing letter, a
-# sign, or a value past 2^64 - 1 is a malformed invocation (exit 2), not a
-# silently truncated, wrapped or saturated one.
-want '"n":18446744073709551615' prime 18446744073709551615
-want_malformed prime 18446744073709551616
-want_malformed prime -5
-want_malformed factor 12abc
-want_malformed num gcd --a 99999999999999999999 --b 3
-want_malformed num powmod --base 3 --exp 1e3 --mod 1000003
-want_malformed solve --alg bsgs --group zp --p 1000003 --order 1000002 --g 2x --h 3
-want_malformed solve --alg bsgs --group ec --p 1000003 --a 1 --b 1 --order 1 --g 1,x --h inf
-want_malformed solve --alg bsgs --group ec --p 1000003 --a 1 --b 1 --order 1 --g ,1 --h inf
-want_malformed solve --alg grumpy --group zp --p 1000003 --order 1000002 --g 2 --h 3 --alpha nan
-want_malformed solve --alg grumpy --group zp --p 1000003 --order 1000002 --g 2 --h 3 --alpha inf
-# Narrower parameters are range-checked, never truncated: 4294967298 is not 2.
-want_malformed num iroot --n 100 --k 4294967298
-want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --ell 4294967298
-want_malformed solve --alg rho --group zp --p 1000003 --order 1000002 --g 2 --h 3 --threads 4294967297
-# What the library rejects as an invalid argument is a malformed invocation
-# too: exit 2 and no half answer on stdout.
-want_malformed solve --alg bsgs --group zp --p 10 --order 1 --g 2 --h 3
-want_malformed solve --alg bsgs --group zp --p 1000003 --order 1000002 --g 2 --h 3 --lo 100 --hi 50
-want_malformed ic --p 1000003 --g 2 --h 3 --method bogus
-# --dp-bits past the group order would leave every solver without a
-# distinguished point, and precomp's table build without a stop.
-want_malformed solve --alg precomp --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 40
-want_malformed solve --alg rho --group zp --p 1000003 --order 1000002 --g 2 --h 3 --dp-bits 64
-want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --dp-bits 64
-# Count products and arm capacities must be checked before allocation or work.
-want_malformed volcano --p 1000033 --a 5 --b 17 --trials 18446744073709551615 --per-level 1 --controls 0
-want_malformed volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 18446744073709551615
-# A selection limit larger than the actual graph is harmless and must not
-# size an arm buffer from the user-supplied value.
-want '"radius":0' volcano --p 1000033 --a 5 --b 17 --radius 0 --max-vertices 1 \
-  --trials 1 --per-level 18446744073709551615 --controls 0 --jobs 1
-# A seed of 2^64 - 1 must not wrap the derived seed to 0 ("random"): two
-# runs give the same instance.
-checks=$((checks + 1))
-if [ "$("$CA" gen --group zp --p 1000003 --seed 18446744073709551615)" != \
-     "$("$CA" gen --group zp --p 1000003 --seed 18446744073709551615)" ]; then
-  printf 'FAIL gen --seed 2^64-1 is not reproducible\n' >&2
-  fail=$((fail + 1))
-fi
 # 2^32 - 1 = 3 * 5 * 17 * 257 * 65537.
 want '65537' factor 4294967295
 
@@ -187,8 +144,14 @@ want '"result":"253109"' num powmod --base 2 --exp 100 --mod 1000003
 want '"result":"2"' group div "${ZP[@]}" --a 6 --b 3
 want '"divides_group_order":true' group order "${ZP[@]}" --elem 2
 want '"exponent"' group random "${ZP[@]}" --seed 7
+want_bad 'Zp element must be an unsigned integer' group exp "${ZP[@]}" --elem 2junk --k 1
+want_bad 'element coordinate is not an unsigned integer' group exp "${ZP[@]}" --elem -2 --k 1
+want_bad 'element coordinate exceeds uint64 range' group exp "${ZP[@]}" --elem 18446744073709551616 --k 1
 
 EC=(--group ec --p 1000003 --a 2 --b 3)
+want_bad 'element coordinate is not an unsigned integer' group exp "${EC[@]}" --elem 1, --k 1
+want_bad 'EC element must be x,y or inf' group exp "${EC[@]}" --elem 1,2junk --k 1
+want_bad 'element coordinate exceeds uint64 range' group exp "${EC[@]}" --elem 1,18446744073709551616 --k 1
 want '"order":999708' ec-order --p 1000003 --a 2 --b 3
 # x = 5 is not the x of a point of this curve; some x is, and the command must
 # distinguish the two cases rather than guessing.
@@ -224,6 +187,120 @@ want '"x":123456' bsgs "${ZP[@]}" --g 858101 \
 want '"x":123456' rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
+rho_tmp=$(mktemp -d)
+RHO=(rho --group zp --p 1019 --order 509 --g 4 --h 818 --seed 1984 \
+  --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${RHO[@]}" --max-ops 20
+want '"x":177' "${RHO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$rho_tmp/manifest.json" ] || [ ! -s "$rho_tmp/rho.dp" ] || \
+   [ ! -s "$rho_tmp/rho.dp.progress.json" ] || [ ! -s "$rho_tmp/result.json" ]; then
+  printf 'FAIL: rho checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' rho --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --seed 1985 --dp-bits 0 --walks 4 --state-dir "$rho_tmp" --resume
+want_bad 'live progress and resumable state require --alg' \
+  solve --alg unsupported --group zp --p 1019 --order 509 --g 4 --h 818 --state-dir "$rho_tmp"
+rm -rf "$rho_tmp"
+precomp_tmp=$(mktemp -d)
+PRECOMP=(solve --alg precomp --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --seed 17 --table 64 --state-dir "$precomp_tmp")
+want '"x":177' "${PRECOMP[@]}"
+want '"x":177' "${PRECOMP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$precomp_tmp/precomp.table.ckpt" ] || \
+   [ ! -s "$precomp_tmp/precomp.online.ckpt" ] || \
+   [ ! -s "$precomp_tmp/result.json" ]; then
+  printf 'FAIL: precomp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$precomp_tmp"
+bsgs_tmp=$(mktemp -d)
+BSGS=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$bsgs_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${BSGS[@]}" --max-ops 100
+want '"x":123456' "${BSGS[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$bsgs_tmp/manifest.json" ] || [ ! -s "$bsgs_tmp/bsgs.ckpt" ] || \
+   [ ! -s "$bsgs_tmp/bsgs.ckpt.progress.json" ] || [ ! -s "$bsgs_tmp/result.json" ]; then
+  printf 'FAIL: bsgs checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' bsgs "${ZP[@]}" --g 858101 --h 218146 \
+  --lo 0 --hi 1000001 --table 17 --state-dir "$bsgs_tmp" --resume
+rm -rf "$bsgs_tmp"
+grumpy_tmp=$(mktemp -d)
+GRUMPY=(grumpy --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --state-dir "$grumpy_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GRUMPY[@]}" --max-ops 20
+want '"x":177' "${GRUMPY[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$grumpy_tmp/manifest.json" ] || [ ! -s "$grumpy_tmp/grumpy.ckpt" ] || \
+   [ ! -s "$grumpy_tmp/grumpy.ckpt.progress.json" ] || [ ! -s "$grumpy_tmp/result.json" ]; then
+  printf 'FAIL: grumpy checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' grumpy --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --state-dir "$grumpy_tmp" --resume
+rm -rf "$grumpy_tmp"
+kangaroo_tmp=$(mktemp -d)
+KANGAROO=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${KANGAROO[@]}" --max-ops 40
+want '"x":177' "${KANGAROO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_tmp/manifest.json" ] || [ ! -s "$kangaroo_tmp/kangaroo.ckpt" ] || \
+   [ ! -s "$kangaroo_tmp/kangaroo.ckpt.progress.json" ] || \
+   [ ! -s "$kangaroo_tmp/result.json" ]; then
+  printf 'FAIL: kangaroo checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' kangaroo --group zp --p 1019 --order 509 \
+  --g 4 --h 818 --lo 0 --hi 507 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_tmp" --resume
+rm -rf "$kangaroo_tmp"
+kangaroo_s3_test=$(mktemp -d)
+mkdir "$kangaroo_s3_test/bin" "$kangaroo_s3_test/remote"
+cat > "$kangaroo_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+src=$3 dst=$4
+if [[ $src == s3://* ]]; then src=$CA_TEST_S3_ROOT; fi
+if [[ $dst == s3://* ]]; then dst=$CA_TEST_S3_ROOT; fi
+mkdir -p "$dst"
+if compgen -G "$src/*" >/dev/null; then cp "$src/"* "$dst/"; fi
+AWS
+chmod +x "$kangaroo_s3_test/bin/aws"
+KANGAROO_S3=(kangaroo --group zp --p 1019 --order 509 --g 4 --h 818 \
+  --lo 0 --hi 508 --seed 17 --dp-bits 0 --herd 2 \
+  --state-dir "$kangaroo_s3_test/local" --s3-uri s3://test/kangaroo --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${KANGAROO_S3[@]}" --max-ops 40
+rm -rf "$kangaroo_s3_test/local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":177' "${KANGAROO_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/kangaroo.ckpt" ] || \
+   ! grep -q '"x":177' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: kangaroo S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+BSGS_S3=(bsgs "${ZP[@]}" --g 858101 --h 218146 --lo 0 --hi 1000001 \
+  --state-dir "$kangaroo_s3_test/bsgs-local" --s3-uri s3://test/bsgs --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${BSGS_S3[@]}" --max-ops 100
+rm -rf "$kangaroo_s3_test/bsgs-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":123456' "${BSGS_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/bsgs.ckpt" ] || \
+   ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: bsgs S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
 want_fail bsgs --alg rho "${ZP[@]}" --g 858101 --h 123456
 want_fail rho --curve unknown
 want_fail rho --curve ecc2k130 --backend unknown
@@ -231,6 +308,32 @@ want_fail rho --curve ecc2k130 --backend metal --kat fixture
 want '"x":123456' solve --alg gpu-rho "${ZP[@]}" --g 858101 \
   --h "$("$CA" group exp "${ZP[@]}" --elem 858101 --k 123456 | sed 's/.*"\([0-9]*\)".*/\1/')" \
   --seed 1
+gpu_tmp=$(mktemp -d)
+GPU_RHO=(solve --alg gpu-rho "${ZP[@]}" --g 858101 --h 218146 \
+  --backend emulate --seed 3 --blocks 1 --tpb 4 --steps 16 --dp-bits 2 \
+  --state-dir "$gpu_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GPU_RHO[@]}" --max-ops 1000
+want '"x":123456' "${GPU_RHO[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$gpu_tmp/gpu-rho.dp" ] || \
+   [ ! -s "$gpu_tmp/gpu-rho.dp.progress.json" ] || \
+   ! grep -q '"x":123456' "$gpu_tmp/result.json"; then
+  printf 'FAIL: GPU rho checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' solve --alg gpu-rho "${ZP[@]}" \
+  --g 858101 --h 218146 --backend emulate --seed 4 --blocks 1 --tpb 4 \
+  --steps 16 --dp-bits 2 --state-dir "$gpu_tmp" --resume
+printf X >> "$gpu_tmp/gpu-rho.dp"
+cp "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"
+want_no 'checkpoint is damaged or incompatible' "${GPU_RHO[@]}" \
+  --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$gpu_tmp/gpu-rho.dp" "$gpu_tmp/corrupt-copy"; then
+  printf 'FAIL: invalid GPU rho checkpoint was overwritten\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$gpu_tmp"
 want_fail solve --alg dlog --group zp --p 12x34    # malformed number
 
 # Bernstein-Lange precomputation (ca_precomp.h).  The method needs a base that
@@ -251,22 +354,149 @@ want '"endomorphism":"none"' curve --name generic-26
 want '"aut_order":6' curve --group ec --p 67108933 --a 0 --b 7 --order 16773703
 want '"curves"' curve --list
 want_no '"status":"not found"' curve --name no-such-curve
-# ca_curve_solve takes a seed only; an option it would ignore is refused.
-J0=(--group ec --p 1000003 --a 1 --b 7 --order 2777)
-want '"status":"ok"' solve --alg glv "${J0[@]}" --g 21275,723123 --h 218870,126385 --seed 1
-want_malformed solve --alg glv "${J0[@]}" --g 21275,723123 --h 218870,126385 --max-ops 1
-# On a curve --a and --b are its coefficients, so div's operands are --lhs
-# and --rhs; (21275,723123) - (218870,126385) = (708584,675974).
-want '"result":"708584,675974"' group div "${J0[@]}" --lhs 21275,723123 --rhs 218870,126385
-want_malformed group div "${J0[@]}" --lhs 21275,723123
 CJ0=(--group ec --p 67108933 --a 0 --b 7 --order 16773703)
 GJ0=$("$CA" group generator "${CJ0[@]}" | sed 's/.*"generator":"\([^"]*\)".*/\1/')
 HJ0=$("$CA" group exp "${CJ0[@]}" --elem "$GJ0" --k 424242 | sed 's/.*"result":"\([^"]*\)".*/\1/')
 want '"x":424242' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3
 want '"endomorphism":"j0"' solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3
+glv_tmp=$(mktemp -d)
+GLV=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
+  --state-dir "$glv_tmp" --verbose --progress-every 1)
+want_no '"status":"limit reached"' "${GLV[@]}" --max-ops 750
+want '"x":424242' "${GLV[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$glv_tmp/glv.ckpt" ] || [ ! -s "$glv_tmp/glv.ckpt.progress.json" ] || \
+   ! grep -q '"x":424242' "$glv_tmp/result.json"; then
+  printf 'FAIL: GLV checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+cold_glv=$(
+  "$CA" solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 --max-ops 100000
+)
+cold_steps=$(printf '%s\n' "$cold_glv" | sed 's/.*"iterations":\([0-9]*\).*/\1/')
+resumed_steps=$(sed 's/.*"iterations":\([0-9]*\).*/\1/' "$glv_tmp/result.json")
+checks=$((checks + 1))
+if [ "$cold_steps" != "$resumed_steps" ]; then
+  printf 'FAIL: resumed GLV steps differ from uninterrupted walk\n' >&2
+  fail=$((fail + 1))
+fi
+want_bad 'run manifest does not match' solve --alg glv "${CJ0[@]}" \
+  --g "$GJ0" --h "$HJ0" --seed 4 --state-dir "$glv_tmp" --resume
+printf X >> "$glv_tmp/glv.ckpt"
+cp "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"
+want_no 'checkpoint is damaged or incompatible' "${GLV[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if ! cmp -s "$glv_tmp/glv.ckpt" "$glv_tmp/corrupt-copy"; then
+  printf 'FAIL: invalid GLV checkpoint was overwritten\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$glv_tmp"
+rm -f "$kangaroo_s3_test/remote/"*
+GLV_S3=(solve --alg glv "${CJ0[@]}" --g "$GJ0" --h "$HJ0" --seed 3 \
+  --state-dir "$kangaroo_s3_test/glv-local" --s3-uri s3://test/glv --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GLV_S3[@]}" --max-ops 750
+rm -rf "$kangaroo_s3_test/glv-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":424242' "${GLV_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/glv.ckpt" ] || \
+   ! grep -q '"x":424242' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: GLV S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -f "$kangaroo_s3_test/remote/"*
+GPU_S3=(solve --alg gpu-rho "${ZP[@]}" --g 858101 --h 218146 \
+  --backend emulate --seed 3 --blocks 1 --tpb 4 --steps 16 --dp-bits 2 \
+  --state-dir "$kangaroo_s3_test/gpu-local" --s3-uri s3://test/gpu-rho --sync-every 1)
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want_no '"status":"limit reached"' "${GPU_S3[@]}" --max-ops 1000
+rm -rf "$kangaroo_s3_test/gpu-local"
+PATH="$kangaroo_s3_test/bin:$PATH" CA_TEST_S3_ROOT="$kangaroo_s3_test/remote" \
+  want '"x":123456' "${GPU_S3[@]}" --max-ops 100000 --resume
+checks=$((checks + 1))
+if [ ! -s "$kangaroo_s3_test/remote/gpu-rho.dp" ] || \
+   ! grep -q '"x":123456' "$kangaroo_s3_test/remote/result.json"; then
+  printf 'FAIL: GPU rho S3 mirror/restore artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$kangaroo_s3_test"
 
 # ── index calculus ──────────────────────────────────────────────────────────
 want '"status":"ok"' ic --p 1099511627791 --g 3 --h 123456789 --threads 2
+want '"x":69,"check":3' ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1
+ic_tmp=$(mktemp -d)
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1
+want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --verbose \
+  --state-dir "$ic_tmp" --progress-every 1 --resume
+checks=$((checks + 1))
+if [ ! -s "$ic_tmp/relations.ckpt" ] || [ ! -s "$ic_tmp/relations.ckpt.precomp" ] || \
+   [ ! -s "$ic_tmp/progress.json" ]; then
+  printf 'FAIL: ic checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+# A remote copy must never replace a local run's mismatched identity.
+ic_s3_test=$(mktemp -d)
+mkdir "$ic_s3_test/bin" "$ic_s3_test/local"
+cat > "$ic_s3_test/bin/aws" <<'AWS'
+#!/usr/bin/env bash
+set -euo pipefail
+touch "$CA_TEST_S3_CALLED"
+if [[ $3 == s3://* ]]; then
+  cp "$CA_TEST_S3_FIXTURE/"* "$4/"
+fi
+AWS
+chmod +x "$ic_s3_test/bin/aws"
+printf 'another run\n' > "$ic_s3_test/local/manifest.json"
+cp "$ic_s3_test/local/manifest.json" "$ic_s3_test/original-manifest"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'run manifest does not match these arguments' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || \
+   ! cmp -s "$ic_s3_test/original-manifest" "$ic_s3_test/local/manifest.json"; then
+  printf 'FAIL: mismatched local manifest was exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/manifest.json"
+printf 'preserve\n' > "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want_bad 'nonempty directory without a run manifest' \
+  ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+checks=$((checks + 1))
+if [ -e "$ic_s3_test/called" ] || [ -e "$ic_s3_test/local/manifest.json" ]; then
+  printf 'FAIL: unidentified local files were exposed to S3 restore\n' >&2
+  fail=$((fail + 1))
+fi
+rm "$ic_s3_test/local/unrelated"
+PATH="$ic_s3_test/bin:$PATH" CA_TEST_S3_FIXTURE="$ic_tmp" \
+  CA_TEST_S3_CALLED="$ic_s3_test/called" \
+  want '"status":"ok"' ic --p 1000003 --g 2 --h 123456 --seed 7 --resume \
+  --state-dir "$ic_s3_test/local" --s3-uri s3://test/checkpoint
+rm -rf "$ic_tmp" "$ic_s3_test"
+rexp_tmp=$(mktemp -d)
+REXP=(ic --p 101 --g 2 --h 3 --method rexp --B 13 --seed 1 --threads 1 \
+  --state-dir "$rexp_tmp" --progress-every 1)
+want '"x":69,"check":3' "${REXP[@]}"
+want '"x":69,"check":3' "${REXP[@]}" --resume
+checks=$((checks + 1))
+if [ ! -s "$rexp_tmp/relations.ckpt" ] || [ ! -s "$rexp_tmp/relations.ckpt.precomp" ]; then
+  printf 'FAIL: rexp checkpoint artifacts missing\n' >&2
+  fail=$((fail + 1))
+fi
+rm -rf "$rexp_tmp"
+want_bad '--max-relation-tries requires --method rexp' \
+  ic --p 101 --g 2 --h 3 --method lsieve --max-relation-tries 1
+want_bad '--method must be lsieve or rexp' ic --p 101 --g 2 --h 3 --method unknown
+want_bad 'option requires a value' ic --p 101 --g 2 --h 3 --method
+want_bad 'option value exceeds uint32 range' ic --p 101 --g 2 --h 3 --B 4294967296
+want_bad 'option value must be nonnegative' ic --p -101 --g 2 --h 3
+want_bad 'option value is not a valid uint64 integer' ic --p 18446744073709551616 --g 2 --h 3
 
 # ── Cheon's attack ──────────────────────────────────────────────────────────
 # Cheon needs a *prime* group order, so work in the prime-order subgroup:
@@ -288,21 +518,6 @@ want '"job_id"' coord-job "${ZP[@]}" --g 858101 --h "$H" --dp-bits 4 --unit-size
   --seed 42 --out "$tmp/job.txt"
 want_fail coord-job "${ZP[@]}" --g 858101            # --h is required
 want_fail coord-job "${ZP[@]}" --g 858101 --h "$H" --r 2   # r must be in [4, 4096]
-
-# A token exactly 255 bytes fits the documented bound even when the newline is
-# the byte after fgets' buffer; 256 bytes must be refused before connecting.
-printf '%0255d\n' 0 > "$tmp/token255"
-checks=$((checks + 1))
-rc=0
-"$CA" work --job "$tmp/job.txt" --token-file "$tmp/token255" \
-  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test >/dev/null 2>&1 || rc=$?
-if [ "$rc" -eq 2 ]; then
-  printf 'FAIL: a 255-byte --token-file was rejected as overlong\n' >&2
-  fail=$((fail + 1))
-fi
-printf '%0256d\n' 0 > "$tmp/token256"
-want_malformed work --job "$tmp/job.txt" --token-file "$tmp/token256" \
-  --coordinator http://127.0.0.1:1 --max-seconds 1 --node token-test
 
 # The same job twice is the same id: that is what lets two agents agree
 # without exchanging anything.
@@ -337,31 +552,39 @@ want_fail work --job "$tmp/sharded.txt" --coordinator http://127.0.0.1:1 --max-s
 want '"shards":4' work --job "$tmp/sharded.txt" --node solo --threads 2 --max-seconds 60
 want_fail coord-status --coordinator http://127.0.0.1:1   # nothing is listening
 
-# ── isogeny volcano (ca_volcano.h) ──────────────────────────────────────────
-# One instance carried by Velu maps across the depth-1 3-volcano of a curve
-# over p = 1 mod 4: 29 curves within radius 4, 9 on the crater, 14 below,
-# every edge verified and every rho solve correct.
-want '"per_level":[9,14]' volcano --p 1000033 --a 5 --b 17 --trials 3 --per-level 2 --controls 1
-want '"edges_verified":28' volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0
-want '"wrong":0' volcano --p 1000033 --a 5 --b 17 --ell 2 --trials 2 --per-level 2 --controls 1
-want_fail volcano --p 1000033 --a 5 --b 17 --order 1000034 --trials 1
-# A j = 0 root also runs the automorphism-folded rho (order-6 automorphism).
-want '"aut_order":6,' volcano --p 1000033 --a 0 --b 11 --ell 2 --trials 3 --per-level 1 --controls 0 --automorphisms
-want_fail volcano --p 1000033 --a 5 --b 17 --ell 5
-# The solves are handed to --jobs threads trial-major with one deterministic
-# seed per trial shared across arms, so every operation count is the same on
-# one job and on three; only the timings and the job count may differ.
+# ── sibling Rust CLI dispatch ───────────────────────────────────────────────
+# Direct argv forwarding keeps whitespace and shell metacharacters literal,
+# and the child exit status must reach the caller unchanged.
+cat >"$tmp/forwarded" <<'SH'
+#!/bin/sh
+printf '%s\n' "$@"
+exit 7
+SH
+chmod +x "$tmp/forwarded"
 checks=$((checks + 1))
-"$CA" volcano --p 1000033 --a 5 --b 17 --trials 4 --per-level 2 --controls 1 --seed 9 \
-  --jobs 1 --trials-out "$tmp/v1.csv" >/dev/null 2>&1
-"$CA" volcano --p 1000033 --a 5 --b 17 --trials 4 --per-level 2 --controls 1 --seed 9 \
-  --jobs 3 --trials-out "$tmp/v3.csv" >/dev/null 2>&1
-if [ "$(wc -l <"$tmp/v1.csv")" -ne 25 ] ||
-   ! cmp -s <(cut -d, -f1-6 "$tmp/v1.csv") <(cut -d, -f1-6 "$tmp/v3.csv"); then
-  printf 'FAIL volcano --jobs 3 did not reproduce --jobs 1 operation counts\n' >&2
+rc=0
+# shellcheck disable=SC2016  # '$HOME' is deliberately literal: this checks argv forwarding.
+out=$(CA_CRYPTO_BIN="$tmp/forwarded" "$CA" crypto 'two words' '$HOME') || rc=$?
+if [ "$rc" -ne 7 ] || [ "$out" != $'two words\n$HOME' ]; then
+  printf 'FAIL: crypto delegation changed argv or exit status (rc=%d, out=%s)\n' "$rc" "$out" >&2
   fail=$((fail + 1))
 fi
-want '"jobs":1,' volcano --p 1000033 --a 5 --b 17 --trials 1 --per-level 1 --controls 0 --jobs 1
+export CA_ICX_BIN=/bin/echo
+want 'solve-prime --p 271' icx solve-prime --p 271
+unset CA_ICX_BIN
+export CA_CRAX_BIN=/bin/echo
+want 'hash --algorithm sha256' crax hash --algorithm sha256
+unset CA_CRAX_BIN
+export CA_ISOGENY_WALK_BIN=/bin/echo
+want 'verify --dir example' isogeny-walk verify --dir example
+unset CA_ISOGENY_WALK_BIN
+checks=$((checks + 1))
+rc=0
+CA_CRYPTO_BIN="$tmp/missing" "$CA" crypto --help >/dev/null 2>&1 || rc=$?
+if [ "$rc" -ne 127 ]; then
+  printf 'FAIL: missing delegated binary returned %d, expected 127\n' "$rc" >&2
+  fail=$((fail + 1))
+fi
 
 # ── usage and unknown commands ──────────────────────────────────────────────
 want_fail

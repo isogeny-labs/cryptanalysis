@@ -70,10 +70,14 @@ gpu-emulator = []
 rho_debug = []
 
 [dependencies]
+# Pinned, hash-checked source snapshot from the crypto repository.
+crypto_analysis_core = { package = "crypto-analysis-core", path = "vendor/crypto-analysis-core" }
 redis = { version = "0.32", optional = true, default-features = false, features = ["tls-rustls"] }
 # Portable CPU-time and peak-RSS measurements for the ic reports.
 libc = "0.2"
+fs2 = "0.4"
 num-bigint = { version = "0.4", features = ["rand"] }
+hashed-ecdl-tensor = { path = "../crates/hashed-ecdl-tensor" }
 num-traits = "0.2"
 num-integer = "0.1"
 # Also the source of OS randomness (`rand::rngs::OsRng`).
@@ -89,6 +93,10 @@ rayon = "1.10"
 # BLAKE3 is a dependency rather than a reimplementation: its Merkle-tree
 # construction is not what any attack here studies.
 blake3 = "1.5"
+sha1 = "0.10"
+sha2 = "0.10"
+sha3 = "0.10"
+streebog = "0.10.2"
 # The C library (64-bit groups, Montgomery arithmetic) behind `crax`'s generic
 # discrete-log solvers, compiled from ../src by its own build script.
 libca = { package = "cryptanalysis", path = "../bindings/rust/cryptanalysis" }

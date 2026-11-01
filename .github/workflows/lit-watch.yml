@@ -1,0 +1,43 @@
+name: lit-watch
+
+# Literature radar: arXiv + IACR ePrint + GitHub digest. Manual-only by design
+# (no schedule): run from the Actions tab and download the digest artifact.
+# See experiments/lit-watch/README.md. Uses the default GITHUB_TOKEN for
+# GitHub search quota; no secrets required.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    name: fetch and digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: experiments/lit-watch
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull store data this workflow reads (tools/artifacts)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
+        run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: unit tests (offline)
+        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: fetch sources
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m litwatch fetch
+      - name: render digest
+        run: python -m litwatch digest --days 7 --out digest.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: lit-watch-digest
+          path: experiments/lit-watch/digest.md

@@ -1,8 +1,0 @@
-{
-  "schema": "ideas-gpu-resource-amendment/v1",
-  "base": "RESOURCE-AMENDMENT-03.json",
-  "observed_failure": "The explicit-SSH v4 request was refused with HTTP500 no instances currently available; no third pod was allocated.",
-  "change": "Select available community capacity for the same GPU and resource minima. Explicitly avoid the previous wrapper's older lifetime rewrite; the final request uses 6000 seconds.",
-  "controller": "controller_v5.py",
-  "unchanged": "At most three actual new pods total, one simultaneous, same GPU/96GiB RAM/16vCPU, $3/hour guard, frozen native protocols and explicit own-pod deletion. No science ran on prior attempts."
-}

@@ -1,0 +1,5 @@
+ghs-sweeper.yml: needs `Pull store data this workflow reads (tools/artifacts)` for experiments
+suite.yml: needs `Pull store data this workflow reads (tools/artifacts)` for ecc2k130
+sage-compatibility.yml: checkout into a `path:` left unwired
+
+2 workflow(s) read store data without pulling it; run python3 tools/artifacts/wire_workflows.py

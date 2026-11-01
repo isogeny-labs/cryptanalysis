@@ -15,12 +15,16 @@ Markdown reports.  The suite links the C library (through
 depend on the suite.
 
 ```sh
+../tools/bootstrap_crypto_analysis_core.sh  # verify pinned shared-source hashes
 cargo build --release                 # crax, ca-suite, ca-ic, ca-icx, ca-curves, ca-koblitz-pdp-prepare
 cargo test --release                  # 2867 unit + 65 integration tests, ~10 min on 4 cores
 ./target/release/crax --help         # the unified command line: docs/CRAX.md
 ```
 
 Requirements: Rust 1.87 or newer (declared in `Cargo.toml`, checked in CI).
+The shared analysis crate is vendored under `vendor/crypto-analysis-core/`
+from a pinned crypto revision. The bootstrap verifies the upstream source
+hashes; run it after cloning and whenever the pinned revision changes.
 AVX-512 target features are stable only from Rust 1.89, so `build.rs` compiles
 the AVX-512 kernels (Koblitz scan, `F_p` tower F4, `GF(2)` elimination, the
 wide FES walk) only on such a toolchain; older ones take the AVX2 and scalar
@@ -190,7 +194,8 @@ the targets and the arithmetic they stand on.
 
 | module | attack |
 |---|---|
-| `hnp_ecdsa`, `multi_key_hnp`, `bleichenbacher`, `cga_hnc`, `b_seed_profile`, `orbit_homology` | hidden-number-problem key recovery from biased nonces (LLL / BKZ), multi-key HNP, Bleichenbacher's bias attack and its relatives |
+| `hnp_ecdsa`, `multi_key_hnp`, `bleichenbacher`, `cga_hnc`, `orbit_homology` | hidden-number-problem key recovery from biased nonces (LLL / BKZ), multi-key HNP, Bleichenbacher's bias attack and its relatives |
+| `b_seed_profile` | statistical profile of P-256's `b` (Kolmogorov–Smirnov test of `b mod q` residues), a probe for a maliciously chosen seed; not a nonce attack. The seed was explained on 2026-10-16 |
 | `ecdsa_audit`, `signature_corpus` | transcript audits: nonce reuse, weak RNGs, bias scores, corpus-level findings |
 | `p256_attacks`, `p256_structural`, `p256_isogeny_cover`, `p256_speculation`, `solinas_correlations` | P-256-specific structure and the speculation that was tested and did not survive |
 | `mlwe::{params, cost, primal, dual, hybrid, sieve, report}`, `ml_kem_pco`, `ml_dsa_leakage`, `ml_dsa_fault` | ML-KEM / ML-DSA: primal / dual / hybrid estimators under five SVP cost models, working sieves and BKZ, and the decapsulation-oracle, mask-leakage and fault attacks against the crate's real FIPS 203 / 204 implementations ([write-up](docs/mlwe-cryptanalysis.md)) |

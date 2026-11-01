@@ -1,0 +1,177 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "pairs": 24
+ },
+ "candidate_model": {
+  "index_build_factor": 0.49872560453814835,
+  "scan_selftest_factor": 0.6813920176430046,
+  "source": "inputs/local_profile.json modelled (LOCAL DIAGNOSTIC)"
+ },
+ "cells": {
+  "1.00": {
+   "index_and_selftest_factor": [
+    1.0,
+    1.0
+   ],
+   "mc_se": 0.0035266839949164713,
+   "median_ci_hi_over_lo": 1.009643967813843,
+   "median_estimate": 0.9998803886359637,
+   "power": 0.005
+  },
+  "1.02": {
+   "index_and_selftest_factor": [
+    0.9754070590611233,
+    0.9754070590611233
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0095541202728873,
+   "median_estimate": 1.019945579273841,
+   "power": 1.0
+  },
+  "1.05": {
+   "index_and_selftest_factor": [
+    0.9402742862912998,
+    0.9402742862912998
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0100161297619819,
+   "median_estimate": 1.049663403262398,
+   "power": 1.0
+  },
+  "1.10": {
+   "index_and_selftest_factor": [
+    0.8859781829197542,
+    0.8859781829197542
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.010472982118975,
+   "median_estimate": 1.1000412579341403,
+   "power": 1.0
+  },
+  "1.25": {
+   "index_and_selftest_factor": [
+    0.7491520024234595,
+    0.7491520024234595
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0141909370243158,
+   "median_estimate": 1.2499084597206203,
+   "power": 1.0
+  },
+  "1.50": {
+   "index_and_selftest_factor": [
+    0.5819200040390992,
+    0.5819200040390992
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0228344948234254,
+   "median_estimate": 1.4992739326572218,
+   "power": 1.0
+  },
+  "modelled": {
+   "index_and_selftest_factor": [
+    0.49872560453814835,
+    0.6813920176430046
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0281724137665755,
+   "median_estimate": 1.6265632354142558,
+   "power": 1.0
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "attempts_per_rank_block": 16,
+  "distinct_rank_seeds": 36,
+  "planted_pairs_per_point": 1,
+  "points": 12,
+  "primary_pairs": 36,
+  "primary_pairs_per_point": 3
+ },
+ "expected_cold_ratio_at_prior_means": 1.8710745671616518,
+ "expected_index_build_ratio": 2.005110607717973,
+ "expected_ratio_at_prior_means": 1.626958552629694,
+ "law_gate": {
+  "archived_attempts": 480,
+  "archived_pooled_ratio": 0.9883465074747998,
+  "attempts": 576,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 1.0,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.1,
+ "planted_control": {
+  "lower_bound_above_1_rate": 1.0,
+  "modelled_index_build_factor": 1.5,
+  "pairs": 12
+ },
+ "power_at_min_delta": 1.0,
+ "prior": "inputs/power_prior.json (run 39359922687, the Tier 1 template's archived run, side A's producer)",
+ "prior_means_ms": {
+  "E2E_A": 21740.070469433333,
+  "E2E_B_modelled": 13362.399696227241,
+  "cold_ms": 17995.298343833332,
+  "index_ms": 15630.432839,
+  "rank_stage_ms": 3744.7721256,
+  "scan_selftest_ms": 1702.8292794666668
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 16.0,
+  "job_limit_min": 180,
+  "job_total_min": 89.48575384779141,
+  "job_total_min_on_a_1.5x_slower_host": 133.22863077168714,
+  "mean_process_wall_s": {
+   "cM10I": 19.74557661656863,
+   "cM10IB": 11.36790584336254,
+   "cM38I": 19.74557661656863,
+   "cM38IB": 11.36790584336254,
+   "cM38IBX": 20.36790584336254,
+   "cM38IBaa": 11.36790584336254,
+   "cM38Iaa": 19.8059918763,
+   "cPI": 19.323281425258063,
+   "cPIB": 10.945610652051972,
+   "kM38I": 23.51946504933333,
+   "kM38IB": 15.14179427612724,
+   "kM38IBaa": 15.14179427612724,
+   "kM38IX": 27.4739180552,
+   "kM38Iaa": 23.4977853743,
+   "kPI": 162.89921127896665,
+   "rT": 2.621943635
+  },
+  "point_segment_s": 349.7207811558594,
+  "processes_per_point": {
+   "cM38I": 3,
+   "cM38IB": 6,
+   "cM38IBX": 1,
+   "cM38IBaa": 2,
+   "kM38I": 3,
+   "kM38IB": 5,
+   "kM38IBaa": 2,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM10I": 1,
+   "cM10IB": 1,
+   "cM38I": 1,
+   "cM38IB": 1,
+   "cPI": 1,
+   "cPIB": 1
+  },
+  "schedule_min": 71.48575384779141,
+  "time_guard_deadline_min": 165
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.005
+}

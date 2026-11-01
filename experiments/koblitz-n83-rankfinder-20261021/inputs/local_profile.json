@@ -1,0 +1,181 @@
+{
+ "label": "LOCAL DIAGNOSTIC: shared cloud-agent VM, one pinned CPU, rustc 1.97; ranks and sizes only",
+ "modelled": {
+  "rank_stage_factor": 0.8308057559118927,
+  "source": "exactness_M38.json: 4 alternating seed pairs (1501, 301, 7001, 7002), KIC_RANK_SOLVE=frame"
+ },
+ "profile_M38_seed1501": {
+  "derived": {
+   "frame_setup_ms": 672.976514,
+   "key_derivation_ms": 2370.639009,
+   "keys": 30197392,
+   "lift_scan_alone_ms": 1327.2589075,
+   "linear_lanes8_alone_ms": 826.7097175,
+   "ns_per_key": {
+    "key_derivation_ms": 78.50475991436612,
+    "lift_scan_alone_ms": 43.95276610311248,
+    "linear_lanes8_alone_ms": 27.376858157154764
+   },
+   "probe_loop_and_rest_ms": 1078.6210585000003,
+   "probes": 30194350,
+   "rank_stage_ms": 4122.2365815,
+   "states": 90956
+  },
+  "parent": {
+   "frame_setup_ms": 665.4680345,
+   "key_derivation_ms": 3305.678014,
+   "keys": 30197392,
+   "lift_scan_alone_ms": 1342.45035,
+   "linear_lanes8_alone_ms": 854.3341125,
+   "ns_per_key": {
+    "key_derivation_ms": 109.46899036843976,
+    "lift_scan_alone_ms": 44.45583744450514,
+    "linear_lanes8_alone_ms": 28.291652222814474
+   },
+   "probe_loop_and_rest_ms": 1068.6344765000003,
+   "probes": 30194350,
+   "rank_stage_ms": 5039.780525,
+   "states": 90956
+  }
+ },
+ "profile_rounds": {
+  "derived": {
+   "canon": [
+    {
+     "keys": 30197392,
+     "keys_ns": 2311973372,
+     "lift_alone_ns": 1332108727,
+     "linear_alone_ns": 830228962,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 6209.554742,
+     "setup_ns": 660263477,
+     "states": 90956
+    },
+    {
+     "keys": 30197392,
+     "keys_ns": 2320633232,
+     "lift_alone_ns": 1322409088,
+     "linear_alone_ns": 823190473,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 6201.004456,
+     "setup_ns": 655931901,
+     "states": 90956
+    }
+   ],
+   "off": [
+    {
+     "keys": 30197392,
+     "keys_ns": 2328082779,
+     "lift_alone_ns": 0,
+     "linear_alone_ns": 0,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 4057.33035,
+     "setup_ns": 660931111,
+     "states": 90956
+    },
+    {
+     "keys": 30197392,
+     "keys_ns": 2413195239,
+     "lift_alone_ns": 0,
+     "linear_alone_ns": 0,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 4187.142813,
+     "setup_ns": 685021917,
+     "states": 90956
+    }
+   ]
+  },
+  "parent": {
+   "canon": [
+    {
+     "keys": 30197392,
+     "keys_ns": 3452600569,
+     "lift_alone_ns": 1359799537,
+     "linear_alone_ns": 878091399,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 7500.597951,
+     "setup_ns": 705335886,
+     "states": 90956
+    },
+    {
+     "keys": 30197392,
+     "keys_ns": 3354650322,
+     "lift_alone_ns": 1325101163,
+     "linear_alone_ns": 830576826,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 7273.845457,
+     "setup_ns": 667989024,
+     "states": 90956
+    }
+   ],
+   "off": [
+    {
+     "keys": 30197392,
+     "keys_ns": 3338590292,
+     "lift_alone_ns": 0,
+     "linear_alone_ns": 0,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 5091.347635,
+     "setup_ns": 675536577,
+     "states": 90956
+    },
+    {
+     "keys": 30197392,
+     "keys_ns": 3272765736,
+     "lift_alone_ns": 0,
+     "linear_alone_ns": 0,
+     "rank_probes_total": 30194350,
+     "rank_stage_ms": 4988.213414999999,
+     "setup_ns": 655399492,
+     "states": 90956
+    }
+   ]
+  }
+ },
+ "rank_stage_per_base": {
+  "K600": {
+   "derived_ms": 355859.999717,
+   "derived_over_parent_rank_stage": 0.7897252041205265,
+   "identical": true,
+   "parent_ms": 450612.438175,
+   "seeds": [
+    1501,
+    7006
+   ]
+  },
+  "M10": {
+   "derived_ms": 46346.067933,
+   "derived_over_parent_rank_stage": 0.8044668583244231,
+   "identical": true,
+   "parent_ms": 57610.910199000005,
+   "seeds": [
+    1501,
+    301,
+    7003
+   ]
+  },
+  "M38": {
+   "derived_ms": 13675.277209,
+   "derived_over_parent_rank_stage": 0.8308057559118927,
+   "identical": true,
+   "parent_ms": 16460.258143,
+   "seeds": [
+    1501,
+    301,
+    7001,
+    7002
+   ]
+  },
+  "M38_frame_plant": {
+   "derived_ms": 18259.2158,
+   "derived_over_parent_rank_stage": 0.7683849694216001,
+   "identical": true,
+   "parent_ms": 23763.109022999997,
+   "seeds": [
+    7004,
+    7005
+   ]
+  }
+ },
+ "schema": 1
+}
