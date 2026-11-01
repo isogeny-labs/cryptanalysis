@@ -1,6 +1,36 @@
 # GPU A/A study: literature and prior-art check
 
-Status: pre-measurement design, 2026-11-01. No pod has been created, no GPU
+## V8 prospective update-grid A/B, 2026-11-01
+
+The separately retained v7 run is now the planning baseline for one engineering
+variable: the `f4e_update` launch target changes from four to six resident
+blocks per SM.  No v7 timing row is reused in the v8 distribution, and this is
+not an algorithmic or novelty claim.  The v8 runner constructs both arm trees
+from one candidate archive and overlays only the registered baseline
+`suite/src/cryptanalysis/f4_gpu.rs` file in the baseline arm.  It hashes the
+scoped production diff and refuses any second file difference.
+
+The following sources were checked before the v8 tooling was written:
+
+| source | provenance | consequence for v8 |
+|---|---|---|
+| [`V7_REPORT.md`](V7_REPORT.md), [`v7-outcome.json`](v7-outcome.json), and retained v7 Nsys SQLite reports | immutable internal measurement, read 2026-11-01 | Keep the exact five matrices and answers.  The primary trace has 2,941 `f4e_update` launches; update is about 51.7% of kernel time.  These observations choose the candidate and mechanism check only; v8 takes fresh warmups, rows, and traces. |
+| [`suite/src/cryptanalysis/f4_gpu.rs`](../../../suite/src/cryptanalysis/f4_gpu.rs) and [`suite/cuda/f4_gf2_echelon.cuh`](../../../suite/cuda/f4_gf2_echelon.cuh) | production source, read 2026-11-01 | Change only the host-side update partition count.  Keep 256 threads, 32-word tiles, the 32-part cap, kernel code, and every other launch unchanged. |
+| [CUDA C++ Best Practices Guide](https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html) and [CUDA Programming Guide, occupancy](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#occupancy-calculator) | official NVIDIA documentation, checked 2026-11-01 | Occupancy is resource-constrained and must be verified rather than inferred from a larger grid.  At the observed 31 registers/thread, 256 threads/block, and 16 KiB shared/block, six blocks use 48 warps, 47,616 registers, and 98,304 bytes shared per SM, the intended RTX 5090 target. |
+| [Nsight Systems User Guide, SQLite export](https://docs.nvidia.com/nsight-systems/AnalysisGuide/index.html#exported-data) | official NVIDIA documentation, checked 2026-11-01 | Read `CUPTI_ACTIVITY_KIND_KERNEL` directly after the post-timing trace.  Gate all 2,941 ordered update launches, block/grid dimensions, registers, static/dynamic shared memory, and local memory; profiled durations never enter the speedup distribution. |
+| `crypto-autoresearcher:docs/experiment-protocol.md`, `schemas/experiment-export.v1.json`, and `tools/experiment_protocol.py` | sibling canonical contract, read 2026-11-01 | Freeze the analyzer and all thresholds before data, use a ten-test Bonferroni family, enumerate all `6^6` paired-bootstrap resamples with exact rational arithmetic, and emit a real `experiment.export/v1` beside `rows.jsonl`. |
+
+The prospective decisive family has ten one-sided lower bounds: primary device
+improvement; complete-stage non-regression on all five cells; and device-stage
+non-regression on the four non-primary cells.  The primary median paired
+baseline/candidate ratio must be at least 1.02 and its simultaneous lower bound
+must exceed one.  Every non-regression median and lower bound must be at least
+`1/1.02 = 50/51`.  With family alpha 0.05, each exact lower-tail quantile is
+`1/200`.  The run is one attempt on one Secure RTX 5090 pod, with one excluded
+warmup and six alternating fresh-process pairs per cell, followed by one Nsys
+capture per arm.  NCU remains outside the protocol.
+
+Historical status of the initial A/A draft: pre-measurement design, 2026-11-01. No pod has been created, no GPU
 measurement has been taken, and this study is not frozen. The two arms are
 byte-identical copies of the current binary; there is no optimization candidate
 and no speedup claim.
