@@ -1,0 +1,698 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "GO-COORD-DELTA-20261101-REMOTE-AB-V5",
+  "version": 5,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/go",
+  "authors": [
+    "Go coordinator optimization lane"
+  ],
+  "links": {
+    "predecessor": "experiments/performance-saturation-20261101/go/protocol.v4.json",
+    "predecessor_sha256": "eaec0e88170b58f1c3bc2499a01209b74264292eacbf84b72a5a8a1a45bf67a3",
+    "predecessor_freeze_commit": "621572540c6dbba434a04a376705bc0a0789e9a5",
+    "v3_failure_receipt": "/workspace/.benchmarks/performance-saturation/go/remote-build-v3/http-receipt.json",
+    "v3_failure_receipt_sha256": "b3642d987aa9a2b34ff263a100568bea4a1bc8e17abad892f3801e91bba2dfb5",
+    "v3_failure_archive": "/workspace/.benchmarks/performance-saturation/go/remote-build-v3/result.tar.gz",
+    "v3_failure_archive_sha256": "4d74adbf09834eb7f6f4ad6531d5460b284f9529ae59d4726eb0abbd5946fedf",
+    "v3_failure_pod": "12qpeygj0synuk",
+    "v3_failure_classification": "infrastructure_only_no_build_outputs_no_scientific_data_cleanup_404_verified",
+    "literature": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+    "benchmark": "bindings/go/coord_benchmark_test.go",
+    "remote_runner": "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+    "remote_runner_commit": "559fc154bc7a609152190f2844865023e0d771bc",
+    "remote_runner_sha256": "08d314121ced2e43ec008b63815833c13c6217129642094eaedfbe81eef4a750",
+    "campaign_runner": "experiments/performance-saturation-20261101/go/run_remote_campaign.py",
+    "campaign_runner_sha256": "6fd310b6f15d71a126d8cd1c7b4d52aebb6bd8085b5b80c2c87c6afd65c83b59",
+    "affinity_tests": "experiments/performance-saturation-20261101/go/test_remote_affinity.py",
+    "affinity_tests_sha256": "fe007a557c5a2f746c9cb5d450f0d1d5f4b6b9179c6e078935024a7d7eb77c31",
+    "transport_commit": "3390f56ece67eef7acc88a96f40c14774230158c",
+    "transport_driver_sha256": "f0636612bad3b98451a5e75e0b1a9f828393d1263564a8d019201abafbbea51c",
+    "transport_server_sha256": "691841f873a8f2e89a2624161c50864a7e5ef579d893853dffb246bf30dd2b74",
+    "benchmark_cases": [
+      "BenchmarkStateVersionVector/log_1024",
+      "BenchmarkStateVersionVector/log_8192",
+      "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "BenchmarkStateDeltaSinceOneBehind/log_8192"
+    ],
+    "v4_failure_receipt": "/workspace/.benchmarks/performance-saturation/go/remote-build-v4/http-receipt.json",
+    "v4_failure_receipt_sha256": "c91ed9dfdaef89ce97543c276ad9307a7d4f8f15b31be14390d8aad205cdea65",
+    "v4_failure_archive": "/workspace/.benchmarks/performance-saturation/go/remote-build-v4/result.tar.gz",
+    "v4_failure_archive_sha256": "75608ff4668bfa1a5db4bfd8efa956528becdb01838a8f7777d05ef3de2d0ac0",
+    "v4_failure_pod": "0pbdktc657sz3t",
+    "v4_failure_command_sha256": "45930fd14c49646c5a2d31bdaf0ab1b2dbca5b5405e6f34132050c0767255760",
+    "v4_failure_source_commit": "621572540c6dbba434a04a376705bc0a0789e9a5",
+    "v4_failure_source_tree": "536564dfbbc41da75bced2f2346134e4ebea7741",
+    "v4_failure_source_archive_sha256": "3178d1d8029d53edc9b54cfaf9664a6575e0f6784b23f840865a9dcb466103be",
+    "v4_failure_classification": "infrastructure_only_no_build_outputs_no_scientific_data_cleanup_404_verified",
+    "source_identity_tests": "experiments/performance-saturation-20261101/go/test_remote_sources.py",
+    "source_identity_tests_sha256": "4d3659b9717d82bd9c38ad37e6d5178543b3be44c261e211febd10e691a404ff"
+  },
+  "question": "Does the one-buffer, one-Go-lock-per-scan coordinator candidate reduce allocations and end-to-end scan time while preserving exact VersionVector and DeltaSince results on a prospectively bound Secure RunPod CPU host?",
+  "claims": [
+    {
+      "id": "C-ab-correct",
+      "text": "Baseline and candidate return identical deterministic line and version-vector fingerprints in every paired measured cell.",
+      "class": "exact_computation",
+      "decided_by": [],
+      "if_supported": "comparative allocation and timing evidence may be considered",
+      "if_not_supported": "the candidate is a wrong answer and all performance claims are rejected"
+    },
+    {
+      "id": "C-ab-allocation",
+      "text": "The candidate reduces allocated bytes and allocation events per operation by at least 95 percent in every registered case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-ab-alloc"
+      ],
+      "if_supported": "the allocation reduction is supported for the six fixed workloads",
+      "if_not_supported": "the allocation claim is unsupported"
+    },
+    {
+      "id": "C-ab-timing",
+      "text": "On a valid isolated session, the candidate improves both wall and process CPU time by at least 5 percent in every registered case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-ab-time"
+      ],
+      "if_supported": "the end-to-end speedup is supported on this host class and workload",
+      "if_not_supported": "the timing claim is unsupported, invalid, or inconclusive according to the terminal gate"
+    }
+  ],
+  "arms": [
+    {
+      "id": "go-baseline",
+      "role": "baseline",
+      "description": "Synthetic source tree rooted at the production baseline with the exact common benchmark instrument added.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "559fc154bc7a609152190f2844865023e0d771bc",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+            "--mode",
+            "build",
+            "--out",
+            "go-ab-v5-build",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-gib",
+            "64",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "production_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "production_tree": "03b5376c742f80298e124997addec10801bd57bb",
+        "coord_blob": "c49b9af5cf6a2b2c8e2415e17864f9eba7a22420",
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by package,die,numa,core,cpu; pin the benchmark to the first ordered CPU; reject any affinity change",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "implementation": "LogLen plus per-entry public LogAt allocation and Go lifetime-lock acquisition"
+      }
+    },
+    {
+      "id": "go-candidate",
+      "role": "candidate",
+      "description": "The exact baseline synthetic source tree with only bindings/go/coord.go replaced by the candidate production blob.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "559fc154bc7a609152190f2844865023e0d771bc",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+            "--mode",
+            "build",
+            "--out",
+            "go-ab-v5-build",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-gib",
+            "64",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "production_commit": "f481cdf8561b0cb18b197d56425af6f9f11b4d9f",
+        "production_parent": "e0f200f7af1ffa2aeb59dd5d4d4c90c7f5ea4ef5",
+        "production_tree": "568a9802a4db7da921862a4234e7b1b579df5534",
+        "merge_base": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "coord_blob": "0d3f53806361e7442bc1d108c16b8b847f029918",
+        "production_diff_sha256": "38b069f6f1fc2c728b872d79a3694f6552c9f4dba44c597b4b518c266a39f471",
+        "only_changed_build_path": "bindings/go/coord.go",
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by package,die,numa,core,cpu; pin the benchmark to the first ordered CPU; reject any affinity change",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "implementation": "one reusable 8192-byte/64-byte scan buffer and one Go lifetime RLock per scan; O(n) cgo crossings and C mutex acquisitions remain"
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": false,
+      "comparison": null,
+      "not_applicable_reason": "The frozen local v2 A/A session remains valid only for exact fingerprints and allocation counts; its clock isolation failed and is not transferred. This remote phase uses fixed within-round pairing and treats any failed remote isolation gate as invalid rather than importing a local noise floor."
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Each benchmark fails on a deterministic post-timing correctness hash mismatch; there is no probabilistic detector to calibrate."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "The comparative effect is read from paired baseline/candidate rows; no unrelated null population licenses the claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "coordinator log-scan implementation",
+        "levels": [
+          "baseline",
+          "candidate"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "production source",
+        "treatment": "crossed",
+        "value": "only bindings/go/coord.go differs between synthetic build trees",
+        "how": "run_remote_ab.py fetches and verifies every pinned build commit and blob, parses the candidate parent id from the raw commit-object header without dereferencing the shallow parent, verifies commit/tree/blob/diff hashes, and compares complete source manifests before building"
+      },
+      {
+        "name": "benchmark case",
+        "treatment": "crossed",
+        "value": "three states at exact 1024- and 8192-entry logs",
+        "how": "all six cases execute in both arms"
+      },
+      {
+        "name": "benchmark operations",
+        "treatment": "fixed",
+        "value": 100,
+        "how": "every row uses -test.benchtime=100x and rows with another b.N are invalid"
+      },
+      {
+        "name": "toolchain and build",
+        "treatment": "fixed",
+        "value": "Go 1.27.3 official linux-amd64 archive plus the same recorded GCC/libc and build flags",
+        "how": "archive size/SHA and observed tool versions are checked and retained"
+      },
+      {
+        "name": "arm order",
+        "treatment": "fixed",
+        "value": "odd baseline/candidate; even candidate/baseline",
+        "how": "mirrored within every case for three warmups and 20 measured rounds"
+      },
+      {
+        "name": "placement",
+        "treatment": "fixed",
+        "value": "Secure RunPod cpu3c, 32 distinct allowed vCPU ids, 64 GiB; benchmark pinned to the first topology-ordered allowed CPU",
+        "how": "the controller verifies the shape; the runner records the noncontiguous allowed set and package/die/NUMA/core topology, applies the frozen ordering policy, and rejects affinity changes"
+      },
+      {
+        "name": "host state",
+        "treatment": "measured",
+        "how": "record ordered affinity, per-CPU topology, selected benchmark CPU, CPU model, kernel, cpuset, cgroup CPU/memory counters, steal ticks, PSI, rusage, faults, context switches, and per-row fingerprints"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-ab-alloc",
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator log-scan implementation"
+        ],
+        "design": "one_factor",
+        "reason": "common synthetic source, benchmark, build, host, fixture, and schedule isolate the candidate log-scan implementation",
+        "threshold": "candidate/baseline median B/op and allocs/op <= 0.05 in every case"
+      },
+      {
+        "id": "C-ab-time",
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator log-scan implementation"
+        ],
+        "design": "one_factor",
+        "reason": "paired mirrored rows measure end-to-end Go plus cgo plus C-lock scan cost",
+        "threshold": "baseline/candidate median speedup >= 1.05 and Holm-adjusted paired lower bound > 1.0 for wall and CPU time in every case"
+      }
+    ],
+    "aa_not_applicable": "The predecessor A/A clock evidence failed isolation and is explicitly not transferred to this host.",
+    "crosses_map": false,
+    "transfer_obligations": []
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "The prospectively fixed odd/even mirrored order balances monotonic drift without post-data selection.",
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        24301
+      ],
+      "nonce": null,
+      "note": "0x5eed is fixed in the deterministic benchmark fixture for every row."
+    },
+    "instance_sampling": {
+      "rule": "Exhaustively run the six listed benchmark cases in listed order for both arms and every fixed round.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Labels remain visible because source and artifact identity are mechanical adherence gates; all cases and rounds are retained.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 6,
+    "replicates": 20,
+    "warmups": 3,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 12,
+      "correction": "holm",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "Twenty fixed pairs per case resolve the expected order-of-magnitude allocation effect and provide paired clock intervals; Holm controls the twelve wall/CPU case tests. No pilot timing selected N."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1800,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 10080,
+      "measured_on": "conservative pre-data bound; no remote candidate benchmark informed it"
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "bytes_per_op",
+        "name": "allocated bytes per operation",
+        "unit": "B/op",
+        "kind": "counted",
+        "definition": "Go heap bytes allocated inside the registered b.N scan loop divided by b.N; fixture construction and correctness hashes are excluded.",
+        "source": "Go benchmark B/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 B/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "allocs_per_op",
+        "name": "allocation events per operation",
+        "unit": "allocs/op",
+        "kind": "counted",
+        "definition": "Go heap allocation events inside the registered b.N scan loop divided by b.N.",
+        "source": "Go benchmark allocs/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.01 allocs/op at b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "wall_ns_per_op",
+        "name": "wall nanoseconds per operation",
+        "unit": "ns/op",
+        "kind": "timed",
+        "definition": "Go monotonic benchmark time around only the b.N operation loop divided by b.N.",
+        "source": "Go benchmark ns/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "cpu_ns_per_op",
+        "name": "process CPU nanoseconds per operation",
+        "unit": "cpu-ns/op",
+        "kind": "timed",
+        "definition": "RUSAGE_SELF user plus system CPU delta around only the b.N loop divided by b.N.",
+        "source": "benchmark custom cpu-ns/op field",
+        "formula": "(user_ns_after + system_ns_after - user_ns_before - system_ns_before) / b.N",
+        "aggregation": "paired_ratio",
+        "resolution": "10 ns/op at b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "correctness_fingerprints",
+        "name": "ordered-line and canonical-vector fingerprints",
+        "unit": "lowercase SHA-256 hex",
+        "kind": "exact",
+        "definition": "Post-timing SHA-256 of returned ordered lines and canonical sorted version vectors.",
+        "source": "benchmark correctness log fields",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "L2",
+    "warmups": 3,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "B/op",
+      "allocs/op",
+      "RUSAGE_SELF CPU time",
+      "cgroup cpu.stat",
+      "steal ticks"
+    ],
+    "record": [
+      "arm, case, round, warmup, order position, b.N, command, exit status",
+      "protocol, runner, source tree/blob/diff, benchmark, Go archive, build receipt, and binary SHA-256",
+      "RunPod pod id, Secure cloud, cpu3c flavor, 32 vCPU, 64 GiB, image, quoted and actual price",
+      "CPU model, kernel, exact ordered affinity, package/die/NUMA/core topology, selected benchmark CPU, cpuset, cgroup quota/throttling, steal, PSI, memory events, rusage, faults, and context switches",
+      "stdout/stderr/metadata hashes and exact correctness fingerprints"
+    ],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": "authenticated no-SSH HTTP batch",
+    "placement": {
+      "cloud": "SECURE",
+      "cpu_flavor": "cpu3c",
+      "vcpu": 32,
+      "memory_gib": 64,
+      "image": "runpod/base:1.0.2-ubuntu2404",
+      "official_catalog_availability": "HIGH",
+      "official_catalog_price_usd_per_hour": 0.96,
+      "max_price_usd_per_hour": 1.0,
+      "catalog_checked": "2026-11-01",
+      "benchmark_cpu_affinity": "first CPU in the prospectively fixed (package,die,numa,core,cpu) ordering of the exact observed 32-CPU allowed set; no contiguous numbering assumption",
+      "v3_observed_affinity": [
+        0,
+        2,
+        31,
+        35,
+        39,
+        45,
+        53,
+        60,
+        61,
+        70,
+        78,
+        79,
+        86,
+        87,
+        89,
+        90,
+        96,
+        98,
+        127,
+        131,
+        135,
+        141,
+        149,
+        156,
+        157,
+        166,
+        174,
+        175,
+        182,
+        183,
+        185,
+        186
+      ],
+      "affinity_change_policy": "reject before/after toolchain install, source preparation, each build, each correctness test, every benchmark invocation, and campaign completion",
+      "gpu_count": 0,
+      "ssh_ports": 0,
+      "http_transport": "one authenticated private batch endpoint with exact-ID cleanup",
+      "transport_commit": "3390f56ece67eef7acc88a96f40c14774230158c",
+      "driver_sha256": "f0636612bad3b98451a5e75e0b1a9f828393d1263564a8d019201abafbbea51c",
+      "server_sha256": "691841f873a8f2e89a2624161c50864a7e5ef579d893853dffb246bf30dd2b74",
+      "build_command": "python3 experiments/performance-saturation-20261101/go/run_remote_ab.py --mode build --out go-ab-v5-build --expected-cpus 32 --expected-memory-gib 64 --expected-cpu-flavor cpu3c",
+      "measurement_command": "python3 experiments/performance-saturation-20261101/go/run_remote_ab.py --mode run --phase candidate-ab-v5 --out go-ab-v5-run --protocol-sha256 FROZEN_V5_ARTIFACT_SHA --baseline-binary-sha256 FROZEN_BASE_SHA --candidate-binary-sha256 FROZEN_CAND_SHA --expected-cpus 32 --expected-memory-gib 64 --expected-cpu-flavor cpu3c",
+      "source_identity_policy": "fetch and verify the exact baseline, benchmark, and candidate commit objects plus all three build blobs; require the candidate's raw commit header to contain exactly the pinned parent id without requiring that parent object in the depth-one checkout"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 14400,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "The immutable v3 build attempt ended before toolchain download, source preparation, compilation, tests, fingerprints, or benchmark rows; retain its receipt/archive as an infrastructure failure and do not reinterpret it as scientific data.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "The immutable v4 build attempt passed the cpu3c host/toolchain gates and stopped during source identity verification because pretty-format %P hid the candidate parent at the shallow boundary; retain its exact receipt/archive and do not reinterpret it as build or scientific data.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Artifact phase: execute one build-only invocation, retain its tool/source/build/binary receipts, then stop without tests or benchmark rows.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Before measurement, file and freeze an artifact-binding v5 amendment that replaces both null binary hashes and the command placeholders with the retained build receipt values.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Measurement phase after artifact freeze: 2 arms x 6 cases x (3 warmups + 20 measured rounds) = 276 invocations, each exactly 100 operations, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Attempt each fixed cell once; retain failures and never replace, extend, or select rounds using observed values.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "The v3 receipt SHA-256 b3642d987aa9a2b34ff263a100568bea4a1bc8e17abad892f3801e91bba2dfb5 and archive SHA-256 4d74adbf09834eb7f6f4ad6531d5460b284f9529ae59d4726eb0abbd5946fedf are immutable failure evidence; v4 neither deletes nor overwrites them.",
+    "The v3 failure collected no build artifact, correctness result, fingerprint, allocation count, or timing row and cannot enter any v4 distribution.",
+    "The v4 receipt SHA-256 c91ed9dfdaef89ce97543c276ad9307a7d4f8f15b31be14390d8aad205cdea65 and archive SHA-256 75608ff4668bfa1a5db4bfd8efa956528becdb01838a8f7777d05ef3de2d0ac0 are immutable failure evidence; v5 neither deletes nor overwrites them.",
+    "The v4 failure produced no build artifact, correctness result, fingerprint, allocation count, or timing row and cannot enter any v5 distribution.",
+    "This draft authorizes no build, test, benchmark, or resource launch until it is registered, frozen, and committed.",
+    "The frozen parent may authorize build-only, but no test or benchmark row starts until a child artifact-binding amendment freezes both binary and build-manifest SHA-256 values.",
+    "Any source, runner, transport, toolchain, placement, image, flavor, CPU, RAM, price, cloud, port, or binary identity mismatch invalidates the affected phase.",
+    "A nonzero exit, timeout, b.N other than 100, missing metric, or fingerprint mismatch is retained and invalidates the affected evidence.",
+    "Any nonzero measured-row steal delta, cgroup throttling delta, memory failure, changed affinity, material PSI contention, or transport isolation failure invalidates wall and CPU time; exact fields and valid allocation counts remain reportable.",
+    "Profiled, race-instrumented, or nonregistered invocations are excluded from the measured distribution.",
+    "Any missing, duplicate, malformed, or non-pinned candidate parent header, or any missing/type-mismatched pinned build commit or blob, invalidates source preparation before build."
+  ],
+  "decision_rule": {
+    "text": "First require complete rows and pairwise identical correctness fingerprints. Support the allocation claim only if candidate/baseline median B/op and allocs/op are at most 0.05 in every case. Support the timing claim only if the session earns L2 with zero steal/throttle/memory/affinity violations and, for every case and both clocks, baseline/candidate median speedup is at least 1.05 with a Holm-adjusted paired-bootstrap lower bound above 1.0. Any fingerprint mismatch is wrong_answer; a failed isolation gate is invalid_measurement for clocks; a missed effect gate is unsupported or inconclusive and never licenses extra rounds.",
+    "comparison_ids": [
+      "C-ab-alloc",
+      "C-ab-time"
+    ],
+    "threshold": "exact fingerprints equal; allocation ratios <=0.05 in all six cases; valid L2 timing; wall and CPU speedup >=1.05 with Holm-adjusted lower bounds >1.0 in all six cases",
+    "statistic": "Within each case and round, pair arms and compute candidate/baseline ratios for allocations and baseline/candidate ratios for wall and CPU time; report the median of 20 pairs.",
+    "interval": "Paired bootstrap over the 20 fixed pairs per case; simultaneous clock decisions use Holm family control across twelve case-by-clock tests.",
+    "multiple_comparison_correction": "holm",
+    "effect_size_measure": "paired median allocation ratio and paired median wall/CPU speedup per case",
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "allocation_only",
+      "wrong_answer",
+      "invalid_measurement",
+      "unsupported",
+      "inconclusive"
+    ]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": [
+      "remote build manifest",
+      "campaign rows and per-run raw artifacts",
+      "RunPod HTTP receipt",
+      "remote isolation manifest"
+    ],
+    "outputs": [
+      "experiment.export/v1",
+      "paired allocation/timing ratios",
+      "campaign report"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired candidate/baseline allocation and timing ratios by case"
+    ],
+    "report_dir": "remote-ab/report"
+  },
+  "inadmissible": [
+    "freezing or measuring while either arm binary SHA-256 is null",
+    "using the invalid local v2 wall/CPU rows as the candidate timing baseline",
+    "starting a RunPod resource before this version and its artifact-binding child are prospectively frozen as applicable",
+    "substituting cpu5c, another vCPU/RAM shape, GPU pod, Community cloud, SSH, another image, or a price above $1.00/hour",
+    "building from the full candidate tree when doing so changes files other than the pinned coord.go production blob",
+    "changing cases, b.N, repetitions, order, gates, runner, toolchain, or placement after observing affected data",
+    "claiming removal of O(n) cgo transitions or C mutex acquisitions; the candidate retains both",
+    "using pretty-format parent traversal at a shallow boundary, skipping the pinned parent check, or fetching a different parent/tree/blob to make source identity pass"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "repository source audit and official Go benchmarking, cgo, race, CPU accounting, perf, and toolchain-download guidance",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://go.dev/dl/?mode=json&include=all",
+      "provenance": "retrieved",
+      "claim": "official Go 1.27.3 linux-amd64 archive size and SHA-256",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [
+    {
+      "id": "AMD-GO-REMOTE-AB-20261101-v3",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The predecessor completed its exact/allocation A/A phase but failed clock isolation. A fresh candidate comparison requires a prospectively bound clean backend, exact candidate source, and a separate artifact gate.",
+      "changes": [
+        "Preserve v2 byte-for-byte and add this remote baseline/candidate protocol.",
+        "Bind the production baseline, candidate commit/parent/merge-base/tree/blob/diff, common benchmark, runner commit/hashes, Go archive, and HTTP transport commit/hashes.",
+        "Bind Secure RunPod cpu3c at 32 vCPU/64 GiB, the official $0.96/hour catalog observation, and a hard $1.00/hour cap.",
+        "Require a build-only artifact receipt and a separately frozen artifact-binding child before any correctness test or benchmark row.",
+        "Use six fixed cases, mirrored interleaving, three warmups, 20 measured pairs, exact correctness gates, and explicit allocation/timing terminal rules."
+      ],
+      "supersedes_fields": [
+        "question",
+        "claims",
+        "arms",
+        "controls",
+        "execution",
+        "decision_rule",
+        "analysis_plan"
+      ]
+    },
+    {
+      "id": "AMD-GO-REMOTE-AB-20261101-v4",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The exact v3 cpu3c pod exposed the requested 32 CPUs as a valid noncontiguous Linux affinity set. V3 incorrectly required ids 0 through 31 and stopped before producing any scientific or build data.",
+      "changes": [
+        "Preserve the frozen v3 protocol and its exact HTTP receipt, result archive, pod identity, cleanup proof, source identity, and no-data classification.",
+        "Bind the corrected runner commit and hashes plus hermetic regression tests covering the observed noncontiguous affinity and a set without CPU 0.",
+        "Require exactly 32 distinct allowed CPU ids, record their package/die/NUMA/core topology, order them by the frozen tuple, and pin the single benchmark process to the first ordered CPU.",
+        "Reject any affinity change across toolchain setup, source preparation, builds, tests, individual benchmark invocations, and campaign completion.",
+        "Retain all v3 source, candidate, toolchain, shape, price, schedule, correctness, allocation, timing, and artifact-binding gates unchanged."
+      ],
+      "supersedes_fields": [
+        "links.remote_runner_commit",
+        "links.remote_runner_sha256",
+        "links.campaign_runner_sha256",
+        "arms.instrument.commit",
+        "arms.instrument.build",
+        "variable_ledger.factors.placement",
+        "measurement.record",
+        "execution.placement.benchmark_cpu_affinity",
+        "execution.placement.build_command",
+        "execution.placement.measurement_command"
+      ]
+    },
+    {
+      "id": "AMD-GO-REMOTE-AB-20261101-v5",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The exact v4 source checkout was intentionally depth one. Git pretty format %P treated the candidate as a shallow root and returned an empty parent list even though the immutable commit object's parent header contained the pinned id. V4 stopped before any build artifact or scientific data was produced.",
+      "changes": [
+        "Preserve the frozen v3 and v4 protocols and both exact HTTP receipts, result archives, pod identities, cleanup proofs, source identities, and no-data classifications.",
+        "Bind the corrected runner commit and SHA plus a hermetic depth-one clone regression proving that raw cat-file commit headers retain the parent id while pretty-format %P is empty.",
+        "Fetch and verify every exact baseline, benchmark, and candidate build commit and all pinned build blobs; require exactly the pinned single parent from the candidate commit object's raw header without dereferencing the absent parent object.",
+        "Retain all v4 affinity, topology, toolchain, production-source, shape, price, schedule, correctness, allocation, timing, and artifact-binding gates unchanged."
+      ],
+      "supersedes_fields": [
+        "links.predecessor",
+        "links.remote_runner_commit",
+        "links.remote_runner_sha256",
+        "links.source_identity_tests",
+        "arms.instrument.commit",
+        "arms.instrument.build",
+        "variable_ledger.factors.production_source",
+        "execution.placement.source_identity_policy",
+        "execution.placement.build_command",
+        "execution.placement.measurement_command"
+      ]
+    }
+  ],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": true
+  }
+}
