@@ -169,11 +169,15 @@ def pod_body(args, keys, extra_env=None):
                     cpuFlavorIds=args.cpu_flavor or ["cpu5c", "cpu3c"],
                     cpuFlavorPriority="custom", vcpuCount=args.cpu)
     else:
+        # Do not send the legacy REST API's exact-version filter. Its schema
+        # currently stops at 13.0 while the live catalog can offer only 13.2,
+        # making every otherwise compatible host look unavailable. The pod's
+        # NVIDIA driver is backward-compatible with the CUDA 12 NVRTC wheel
+        # installed by pod_env.sh; the job records and probes both versions.
         body.update(computeType="GPU", imageName=args.image or GPU_IMAGE,
                     gpuTypeIds=args.gpu or DEFAULT_GPUS, gpuTypePriority="custom",
                     gpuCount=args.gpu_count, minVCPUPerGPU=args.min_vcpu,
-                    minRAMPerGPU=args.min_ram,
-                    allowedCudaVersions=["13.2", "13.0", "12.9", "12.8"])
+                    minRAMPerGPU=args.min_ram)
     return body
 
 

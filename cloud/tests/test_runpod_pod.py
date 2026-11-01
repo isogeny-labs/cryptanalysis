@@ -17,7 +17,7 @@ class PodBodyTest(unittest.TestCase):
         self.assertEqual(body["gpuTypeIds"], runpod_pod.DEFAULT_GPUS)
         self.assertEqual(body["gpuTypePriority"], "custom")
         self.assertEqual(body["minVCPUPerGPU"], 16)
-        self.assertEqual(body["allowedCudaVersions"], ["13.2", "13.0", "12.9", "12.8"])
+        self.assertNotIn("allowedCudaVersions", body)
         self.assertNotIn("vcpuCount", body)
         self.assertEqual(body["ports"], ["22/tcp"])
         self.assertEqual(body["env"]["PUBLIC_KEY"], KEY)
