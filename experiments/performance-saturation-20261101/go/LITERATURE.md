@@ -77,6 +77,16 @@ a source-level lower bound, not a measured allocation result.
   `65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40`.
   The remote runner pins all three fields and refuses to extract or build when
   any differs.
+- RunPod's Pod API describes CPU placement memory as a provider `memory`
+  quantity, not an IEC GiB byte conversion:
+  <https://docs.runpod.io/api-reference/pods/GET/pods-id>.  The exact v5
+  `cpu3c` allocation returned provider memory `64` while its cgroup v2
+  `memory.max` was exactly `64000000000`.  The runner must therefore bind the
+  provider's raw value and the observed decimal-byte enforcement limit as two
+  separate fields.  The controller records the former as
+  `cpu_guard.provider_memory_value`; the runner accepts the latter through
+  `--expected-memory-bytes`.  Treating `64` as `64 << 30` is the retained v5
+  infrastructure failure, not benchmark evidence.
 
 ## Consequences for the instrument
 

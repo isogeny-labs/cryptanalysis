@@ -1,0 +1,140 @@
+{
+  "cleanup": {
+    "absence_verified": true,
+    "delete_requested": true,
+    "id": "12qpeygj0synuk"
+  },
+  "command": "python3 experiments/performance-saturation-20261101/go/run_remote_ab.py --mode build --out go-ab-v3-build --expected-cpus 32 --expected-memory-gib 64 --expected-cpu-flavor cpu3c",
+  "command_sha256": "84bd3f15d540cf1c190435b028eb1229b5f4281a16ae0cd5ff15e542fea50eef",
+  "cpu_guard": {
+    "flavor": "cpu3c",
+    "memory_gib": 64,
+    "no_gpu": true,
+    "vcpu_count": 32
+  },
+  "error": {
+    "detail": "declared output was not produced: go-ab-v3-build",
+    "type": "BatchError"
+  },
+  "finished_at": "2026-11-01T20:34:48.439742+00:00",
+  "outputs": [
+    "go-ab-v3-build"
+  ],
+  "pod": {
+    "cloud": "SECURE",
+    "cost": 0.96,
+    "cpu": {
+      "id": "cpu3c",
+      "memory": 64,
+      "vcpuCount": 32
+    },
+    "createdAt": "2026-11-01T20:34:12.419Z",
+    "creation_response_ambiguous": false,
+    "cudaVersion": null,
+    "dataCenterId": "EU-RO-1",
+    "gpu": null,
+    "id": "12qpeygj0synuk",
+    "image": "runpod/base:1.0.2-ubuntu2404",
+    "name": "go-coord-ab-build-v3-8d4ab5d962c2",
+    "startedAt": "2026-11-01T20:34:12.415Z",
+    "status": "RUNNING"
+  },
+  "provider_actions": true,
+  "remote_status": {
+    "archive": {
+      "bytes": 1525,
+      "files": 4,
+      "manifest_sha256": "85c154db6f4b1af89e492d4bc2aec7331fca5474c7a7c1c286993a1ad32f4ff2",
+      "sha256": "4d74adbf09834eb7f6f4ad6531d5460b284f9529ae59d4726eb0abbd5946fedf",
+      "uncompressed_bytes": 2428
+    },
+    "archive_ready": true,
+    "chunks": [
+      {
+        "bytes": 1525,
+        "index": 0,
+        "offset": 0,
+        "path": "/v1/result/000000",
+        "sha256": "4d74adbf09834eb7f6f4ad6531d5460b284f9529ae59d4726eb0abbd5946fedf"
+      }
+    ],
+    "command_sha256": "84bd3f15d540cf1c190435b028eb1229b5f4281a16ae0cd5ff15e542fea50eef",
+    "command_started_unix": 1793565277.2428286,
+    "done": true,
+    "finished_unix": 1793565286.1557753,
+    "hardware": {
+      "gpus": [],
+      "nvcc": "",
+      "pod_id": "12qpeygj0synuk"
+    },
+    "job_id": "go-coord-ab-build-v3-8d4ab5d962c2",
+    "returncode": 1,
+    "schema": "runpod.http-batch.status/v1",
+    "source_archive_sha256": "0fcf57aa980cb89d24b73cc8ef55053b84a1ce90d8e3bdbee170ae337d5191c0",
+    "source_commit": "09073e647d153505790c8009d3f589c9b0d7da76",
+    "source_tree": "295fc82a7b1ce15b4d1c4555e0d49b16f2756a03",
+    "stage": "complete",
+    "started_unix": 1793565277.2405932,
+    "timed_out": false,
+    "worker_error_type": null
+  },
+  "request": {
+    "cloudType": "SECURE",
+    "computeType": "CPU",
+    "containerDiskInGb": 60,
+    "cpuFlavorIds": [
+      "cpu3c"
+    ],
+    "cpuFlavorPriority": "custom",
+    "environment_keys": [
+      "POD_BOOT_B64",
+      "POD_MAX_SECONDS",
+      "RUNPOD_BATCH_BOOTSTRAP_B64",
+      "RUNPOD_BATCH_CHUNK_BYTES",
+      "RUNPOD_BATCH_COMMAND_B64",
+      "RUNPOD_BATCH_COMMAND_SHA256",
+      "RUNPOD_BATCH_JOB_ID",
+      "RUNPOD_BATCH_MAX_RESULT_BYTES",
+      "RUNPOD_BATCH_OUTPUTS_B64",
+      "RUNPOD_BATCH_OWNERSHIP_ID",
+      "RUNPOD_BATCH_PORT",
+      "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+      "RUNPOD_BATCH_SOURCE_COMMIT",
+      "RUNPOD_BATCH_SOURCE_REF",
+      "RUNPOD_BATCH_SOURCE_TREE",
+      "RUNPOD_BATCH_SOURCE_URL",
+      "RUNPOD_BATCH_TIMEOUT_SECONDS",
+      "RUNPOD_BATCH_TOKEN"
+    ],
+    "gpuCount": null,
+    "gpuTypeIds": null,
+    "imageName": "runpod/base:1.0.2-ubuntu2404",
+    "minRAMPerGPU": null,
+    "minVCPUPerGPU": null,
+    "name": "go-coord-ab-build-v3-8d4ab5d962c2",
+    "ports": [
+      "8888/http"
+    ],
+    "secrets_redacted": true,
+    "startup_sha256": "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b",
+    "vcpuCount": 32
+  },
+  "result": null,
+  "schema": "runpod.http-batch.receipt/v1",
+  "source": {
+    "archive_sha256": "0fcf57aa980cb89d24b73cc8ef55053b84a1ce90d8e3bdbee170ae337d5191c0",
+    "commit": "09073e647d153505790c8009d3f589c9b0d7da76",
+    "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+    "public_checked_at": "2026-11-01T20:34:10.420448+00:00",
+    "public_ref_checked": true,
+    "ref": "refs/heads/codex/performance-saturation-20261101",
+    "tree": "295fc82a7b1ce15b4d1c4555e0d49b16f2756a03"
+  },
+  "started_at": "2026-11-01T20:34:10.451594+00:00",
+  "transport": {
+    "authentication": "ephemeral bearer",
+    "chunk_bytes": 4194304,
+    "kind": "runpod-https-proxy",
+    "port": 8888
+  }
+}
