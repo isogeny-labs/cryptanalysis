@@ -627,9 +627,9 @@ class BindingTests(unittest.TestCase):
     def test_failed_row_export_is_not_completed_and_wall_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            source_commit = "14a6278c9fb470e379c7bdd9d17cf179acde04d5"
             protocol_path = root / "protocol.v9.json"
             shutil.copy2(GO_DIR / "protocol.v9.json", protocol_path)
+            source_commit = json.loads(protocol_path.read_text())["arms"][0]["instrument"]["commit"]
             frozen = subprocess.run(
                 [
                     "python3",
