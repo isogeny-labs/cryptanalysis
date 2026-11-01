@@ -80,6 +80,38 @@ fn estimate_labels_koblitz_as_ic_relevant() {
 }
 
 #[test]
+fn xedni_audit_distinguishes_prime_and_binary_lift_domains() {
+    let prime = run_json(&["xedni", "p256"]);
+    assert_eq!(prime["operation"], "xedni");
+    assert_eq!(prime["count"], 1);
+    assert_eq!(prime["assessments"][0]["original_rational_lift"], true);
+    assert_eq!(prime["assessments"][0]["minimum_global_field_degree"], 1);
+
+    for (curve, family) in [("sect163r1", "binary"), ("sect163k1", "koblitz")] {
+        let binary = run_json(&["xedni", curve]);
+        assert_eq!(binary["assessments"][0]["family"], family);
+        assert_eq!(binary["assessments"][0]["residue_degree"], 163);
+        assert_eq!(binary["assessments"][0]["minimum_global_field_degree"], 163);
+        assert_eq!(
+            binary["assessments"][0]["evidence_status"],
+            "primary-source-gated"
+        );
+    }
+}
+
+#[test]
+fn xedni_koblitz_family_audit_preserves_each_extension_degree() {
+    let report = run_json(&["xedni", "--family", "koblitz"]);
+    let rows = report["assessments"].as_array().expect("assessments");
+    assert!(!rows.is_empty());
+    for row in rows {
+        assert_eq!(row["family"], "koblitz");
+        assert_eq!(row["minimum_global_field_degree"], row["residue_degree"]);
+        assert_eq!(row["original_rational_lift"], false);
+    }
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {
