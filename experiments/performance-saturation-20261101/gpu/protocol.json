@@ -5,7 +5,9 @@
   "created": "2026-11-01",
   "repository": "cryptanalysis",
   "study_dir": "experiments/performance-saturation-20261101/gpu",
-  "authors": ["Codex performance-saturation study lane"],
+  "authors": [
+    "Codex performance-saturation study lane"
+  ],
   "links": {
     "literature": "LITERATURE.md",
     "runner": "run_gpu_aa.sh",
@@ -18,7 +20,9 @@
       "id": "C1",
       "text": "Every current and control execution reproduces the preregistered rank, refuted, pinned, and word-operation values.",
       "class": "exact_computation",
-      "decided_by": ["C-correctness"],
+      "decided_by": [
+        "C-correctness"
+      ],
       "if_supported": "the A/A session is correctness-admissible for the five fixed matrices",
       "if_not_supported": "the session is invalid and no timing comparison is admitted"
     },
@@ -26,7 +30,9 @@
       "id": "C2",
       "text": "The current and control executables are byte-identical copies from one build.",
       "class": "exact_computation",
-      "decided_by": ["C-binary"],
+      "decided_by": [
+        "C-binary"
+      ],
       "if_supported": "the arms differ only in label, path, and order",
       "if_not_supported": "the session is not an A/A control"
     },
@@ -44,15 +50,34 @@
       "description": "One copy of the current checkout's release f4_matrix_bench binary.",
       "instrument": {
         "repo": "cryptanalysis",
-        "commit": null,
-        "build": [["cargo", "build", "--release", "--locked", "--example", "f4_matrix_bench"]],
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
         "binary_sha256": null,
-        "flags": {"CARGO_INCREMENTAL": "0", "F4_F2_ECHELON": "cuda", "F4_F2_ECHELON_VERBOSE": "1"},
-        "env": {"CUDA_VISIBLE_DEVICES": "0"},
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
         "threads": 1,
         "image_digest": null
       },
-      "parameters": {"panel_threads": 1024, "update_threads": 256, "update_tile_words": 32}
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      }
     },
     {
       "id": "control",
@@ -60,20 +85,43 @@
       "description": "A second filesystem copy of the exact current-arm executable.",
       "instrument": {
         "repo": "cryptanalysis",
-        "commit": null,
-        "build": [["cargo", "build", "--release", "--locked", "--example", "f4_matrix_bench"]],
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
         "binary_sha256": null,
-        "flags": {"CARGO_INCREMENTAL": "0", "F4_F2_ECHELON": "cuda", "F4_F2_ECHELON_VERBOSE": "1"},
-        "env": {"CUDA_VISIBLE_DEVICES": "0"},
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
         "threads": 1,
         "image_digest": null
       },
-      "parameters": {"panel_threads": 1024, "update_threads": 256, "update_tile_words": 32},
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      },
       "same_instrument_as": "current"
     }
   ],
   "controls": {
-    "aa": {"present": true, "comparison": "C-aa", "not_applicable_reason": null},
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
     "positive": {
       "present": false,
       "arm": null,
@@ -88,24 +136,90 @@
     }
   },
   "variable_ledger": {
-    "independent": [{"name": "arm_label_and_binary_path", "levels": ["current", "control"]}],
+    "independent": [
+      {
+        "name": "arm_label_and_binary_path",
+        "levels": [
+          "current",
+          "control"
+        ]
+      }
+    ],
     "factors": [
-      {"name": "binary_bytes", "treatment": "fixed", "value": "one build copied twice", "how": "cmp and SHA-256 equality are required"},
-      {"name": "source", "treatment": "fixed", "value": "current shipped checkout", "how": "revision, dirty status, and relevant source hashes are recorded"},
-      {"name": "workloads", "treatment": "fixed", "value": "extensions.workloads", "how": "the analysis helper is the executable workload registry and oracle"},
-      {"name": "arm_order", "treatment": "crossed", "value": "alternate by round", "how": "each arm runs first in three measured rounds"},
-      {"name": "process_layout_and_cache", "treatment": "randomized", "value": "fresh process", "how": "one complete warmup per arm and cell is excluded"},
-      {"name": "gpu", "treatment": "fixed", "value": "one NVIDIA GeForce RTX 4090", "how": "the runner refuses any other model or count"},
-      {"name": "foreign_gpu_processes", "treatment": "measured", "value": "none", "how": "nvidia-smi compute-process query is a precondition"},
-      {"name": "gpu_state", "treatment": "measured", "value": "200 ms telemetry", "how": "pstate, temperature, utilization, memory, power, and clocks are retained per execution"},
-      {"name": "profiling_overhead", "treatment": "fixed", "value": "diagnostic only", "how": "unprofiled A/A completes first, followed by nsys and then ncu"},
-      {"name": "provider_placement", "treatment": "measured", "value": "Secure Cloud request", "how": "pod, machine, GPU, and host facts are retained; physical-host exclusivity is not assumed"},
-      {"name": "analyst", "treatment": "fixed", "value": "prewritten helper", "how": "the analysis SHA-256 is recorded before data"}
+      {
+        "name": "binary_bytes",
+        "treatment": "fixed",
+        "value": "one build copied twice",
+        "how": "cmp and SHA-256 equality are required"
+      },
+      {
+        "name": "source",
+        "treatment": "fixed",
+        "value": "current shipped checkout",
+        "how": "revision, dirty status, and relevant source hashes are recorded"
+      },
+      {
+        "name": "workloads",
+        "treatment": "fixed",
+        "value": "extensions.workloads",
+        "how": "the analysis helper is the executable workload registry and oracle"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "crossed",
+        "value": "alternate by round",
+        "how": "each arm runs first in three measured rounds"
+      },
+      {
+        "name": "process_layout_and_cache",
+        "treatment": "randomized",
+        "value": "fresh process",
+        "how": "one complete warmup per arm and cell is excluded"
+      },
+      {
+        "name": "gpu",
+        "treatment": "fixed",
+        "value": "one NVIDIA GeForce RTX 4090",
+        "how": "the runner refuses any other model or count"
+      },
+      {
+        "name": "foreign_gpu_processes",
+        "treatment": "measured",
+        "value": "none",
+        "how": "nvidia-smi compute-process query is a precondition"
+      },
+      {
+        "name": "gpu_state",
+        "treatment": "measured",
+        "value": "200 ms telemetry",
+        "how": "pstate, temperature, utilization, memory, power, and clocks are retained per execution"
+      },
+      {
+        "name": "profiling_overhead",
+        "treatment": "fixed",
+        "value": "diagnostic only",
+        "how": "unprofiled A/A completes first, followed by nsys and then ncu"
+      },
+      {
+        "name": "provider_placement",
+        "treatment": "measured",
+        "value": "Secure Cloud request",
+        "how": "pod, machine, GPU, and host facts are retained; physical-host exclusivity is not assumed"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "value": "prewritten helper",
+        "how": "the analysis SHA-256 is recorded before data"
+      }
     ],
     "comparisons": [
       {
         "id": "C-correctness",
-        "arms": ["current", "control"],
+        "arms": [
+          "current",
+          "control"
+        ],
         "differs_in": [],
         "design": "absolute",
         "reason": "known-answer gate",
@@ -113,16 +227,26 @@
       },
       {
         "id": "C-binary",
-        "arms": ["current", "control"],
-        "differs_in": ["arm_label_and_binary_path"],
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
         "design": "absolute",
         "reason": "establish a byte-identical instrument",
         "threshold": "one identical SHA-256 digest"
       },
       {
         "id": "C-aa",
-        "arms": ["current", "control"],
-        "differs_in": ["arm_label_and_binary_path"],
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
         "design": "aa",
         "reason": "measure the same-session timing floor; carries no optimization criterion",
         "threshold": null
@@ -136,7 +260,9 @@
     "arm_order_reason": null,
     "seed_derivation": {
       "method": "explicit_list",
-      "seeds": [0],
+      "seeds": [
+        0
+      ],
       "nonce": null,
       "note": "The matrices are deterministic and consume no algorithm seed; zero is retained as an explicit unused seed."
     },
@@ -243,8 +369,43 @@
     "warmups": 1,
     "order": "alternate",
     "clock": "monotonic",
-    "counters": ["word_ops", "rank", "refuted", "pinned", "rows", "cols", "nvidia_smi.pstate", "nvidia_smi.temperature", "nvidia_smi.utilization", "nvidia_smi.power", "nvidia_smi.clocks"],
-    "record": ["provider", "requested_cloud", "pod_id", "machine_id", "gpu_uuid", "gpu_name", "gpu_compute_capability", "gpu_memory", "driver_version", "kernel_release", "cpu_model", "cpu_count", "rustc_version", "nsys_version", "ncu_version", "git_commit", "git_status", "source_sha256", "binary_sha256", "foreign_compute_processes", "nvidia_smi_telemetry", "arm_order"],
+    "counters": [
+      "word_ops",
+      "rank",
+      "refuted",
+      "pinned",
+      "rows",
+      "cols",
+      "nvidia_smi.pstate",
+      "nvidia_smi.temperature",
+      "nvidia_smi.utilization",
+      "nvidia_smi.power",
+      "nvidia_smi.clocks"
+    ],
+    "record": [
+      "provider",
+      "requested_cloud",
+      "pod_id",
+      "machine_id",
+      "gpu_uuid",
+      "gpu_name",
+      "gpu_compute_capability",
+      "gpu_memory",
+      "driver_version",
+      "kernel_release",
+      "cpu_model",
+      "cpu_count",
+      "rustc_version",
+      "nsys_version",
+      "ncu_version",
+      "git_commit",
+      "git_status",
+      "source_sha256",
+      "binary_sha256",
+      "foreign_compute_processes",
+      "nvidia_smi_telemetry",
+      "arm_order"
+    ],
     "timed_primary_justification": "Elapsed CUDA elimination is the optimization target; identical word_ops cannot measure scheduling, occupancy, memory, or launch overhead. Timing is admitted only inside one requested Secure RTX 4090 session with byte-identical A/A arms, alternating order, no observed foreign GPU process, telemetry, and an observed tierB receipt; otherwise wall_valid is false."
   },
   "execution": {
@@ -268,9 +429,15 @@
       "interval_seconds": null,
       "grace_seconds": null,
       "restore_validation": "none",
-      "after_restore": {"wall_time": "invalid", "counted_units": "valid"}
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
     },
-    "retries": {"infrastructure_only": true, "max_attempts": 1}
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
   },
   "stopping_rules": [
     {
@@ -295,28 +462,50 @@
   ],
   "decision_rule": {
     "text": "The session is admissible only when the binary and correctness absolute gates pass, every row is present once, placement/isolation gates pass, and profiler order is nsys then ncu. Timing intervals are calibration only and have no performance acceptance threshold.",
-    "comparison_ids": ["C-binary", "C-correctness"],
+    "comparison_ids": [
+      "C-binary",
+      "C-correctness"
+    ],
     "threshold": "all exact gates pass; timing has no acceptance threshold",
     "statistic": "per-cell ratio of summed current/control device_ms and median pair ratio",
     "interval": "exact ordinary paired-bootstrap 95% interval over all 6^6 paired resamples per cell",
     "multiple_comparison_correction": "none",
     "effect_size_measure": "current/control device_ms ratio; calibration only",
-    "verdict_vocabulary": ["aa_calibration_admissible", "invalid_measurement", "incomplete_session"]
+    "verdict_vocabulary": [
+      "aa_calibration_admissible",
+      "invalid_measurement",
+      "incomplete_session"
+    ]
   },
   "analysis_plan": {
     "script": {
       "path": "analyze_gpu_aa.py",
       "sha256": "c30038cb95539333779828cba61da05d511b5d7ac5c59a0d5a74f9d7f3b1bee6"
     },
-    "inputs": ["host.json", "binary-sha256.tsv", "order.tsv", "raw/warmup", "raw/measure", "profiles/nsys", "profiles/ncu"],
-    "outputs": ["rows.jsonl", "analysis.json"],
+    "inputs": [
+      "host.json",
+      "binary-sha256.tsv",
+      "order.tsv",
+      "raw/warmup",
+      "raw/measure",
+      "profiles/nsys",
+      "profiles/ncu"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "analysis.json"
+    ],
     "blinded": false,
     "frozen_before_data": true
   },
   "reporting": {
     "export_schema": "experiment.export/v1",
     "review_schema": "experiment.review/v1",
-    "graphs": ["paired A/A device_ms ratios per cell", "primary nsys kernel share", "primary ncu hotspot diagnostics"],
+    "graphs": [
+      "paired A/A device_ms ratios per cell",
+      "primary nsys kernel share",
+      "primary ncu hotspot diagnostics"
+    ],
     "report_dir": "reports"
   },
   "inadmissible": [
@@ -370,11 +559,11 @@
   ],
   "amendments": [],
   "freeze": {
-    "status": "draft",
-    "protocol_sha256": null,
-    "commit": null,
-    "frozen_at": null,
-    "filed_before_affected_data": null
+    "status": "frozen",
+    "protocol_sha256": "30230f183e170a00c3b123c1a9a58805e436721149b279b02211e455526189c3",
+    "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+    "frozen_at": "2026-11-01T19:36:16Z",
+    "filed_before_affected_data": true
   },
   "extensions": {
     "runner": {
@@ -382,21 +571,92 @@
       "sha256": "05d4b287472d31ef883f27ad5066feb9459285ac93575bf9ab757cc17860ff2b"
     },
     "workloads": [
-      {"role": "panel", "tag": "k0n13m2d5", "cell": "0:13:2:1234", "degree": 5, "rows": 30225, "cols": 53871, "rank": 27250, "refuted": true, "pinned": 0, "word_ops": 10745652033},
-      {"role": "panel", "tag": "k0n9m3d5", "cell": "0:9:3:77", "degree": 5, "rows": 33147, "cols": 87118, "rank": 31069, "refuted": false, "pinned": 1, "word_ops": 1196809344},
-      {"role": "panel", "tag": "k1n11m2d5", "cell": "1:11:2:301", "degree": 5, "rows": 14861, "cols": 21196, "rank": 12091, "refuted": false, "pinned": 0, "word_ops": 986408355},
-      {"role": "holdout", "tag": "k1n11m2d6", "cell": "1:11:2:301", "degree": 6, "rows": 68156, "cols": 60040, "rank": 46747, "refuted": false, "pinned": 0, "word_ops": 57968918179},
-      {"role": "primary", "tag": "k0n13m2d6", "cell": "0:13:2:1234", "degree": 6, "rows": 168363, "cols": 188203, "rank": 130583, "refuted": true, "pinned": 0, "word_ops": 1110114894889}
+      {
+        "role": "panel",
+        "tag": "k0n13m2d5",
+        "cell": "0:13:2:1234",
+        "degree": 5,
+        "rows": 30225,
+        "cols": 53871,
+        "rank": 27250,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 10745652033
+      },
+      {
+        "role": "panel",
+        "tag": "k0n9m3d5",
+        "cell": "0:9:3:77",
+        "degree": 5,
+        "rows": 33147,
+        "cols": 87118,
+        "rank": 31069,
+        "refuted": false,
+        "pinned": 1,
+        "word_ops": 1196809344
+      },
+      {
+        "role": "panel",
+        "tag": "k1n11m2d5",
+        "cell": "1:11:2:301",
+        "degree": 5,
+        "rows": 14861,
+        "cols": 21196,
+        "rank": 12091,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 986408355
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d6",
+        "cell": "1:11:2:301",
+        "degree": 6,
+        "rows": 68156,
+        "cols": 60040,
+        "rank": 46747,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 57968918179
+      },
+      {
+        "role": "primary",
+        "tag": "k0n13m2d6",
+        "cell": "0:13:2:1234",
+        "degree": 6,
+        "rows": 168363,
+        "cols": 188203,
+        "rank": 130583,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 1110114894889
+      }
     ],
     "profiler_plan": {
-      "order": ["unprofiled_aa", "nsys", "ncu"],
+      "order": [
+        "unprofiled_aa",
+        "nsys",
+        "ncu"
+      ],
       "cell": "k0n13m2d6",
-      "nsys_reports": ["cuda_gpu_kern_sum", "cuda_api_sum"],
-      "ncu_kernels": ["f4e_update", "f4e_panel_block"],
+      "nsys_reports": [
+        "cuda_gpu_kern_sum",
+        "cuda_api_sum"
+      ],
+      "ncu_kernels": [
+        "f4e_update",
+        "f4e_panel_block"
+      ],
       "ncu_launch_skip": 0,
       "ncu_launch_count": 1,
       "ncu_replay": "kernel",
-      "ncu_sections": ["LaunchStats", "Occupancy", "SpeedOfLight", "MemoryWorkloadAnalysis", "SchedulerStats"]
+      "ncu_sections": [
+        "LaunchStats",
+        "Occupancy",
+        "SpeedOfLight",
+        "MemoryWorkloadAnalysis",
+        "SchedulerStats"
+      ]
     }
   }
 }
