@@ -1,0 +1,584 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "GO-COORD-DELTA-20261101",
+  "version": 1,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/go",
+  "authors": [
+    "Go coordinator optimization lane"
+  ],
+  "links": {
+    "literature": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+    "benchmark": "bindings/go/coord_benchmark_test.go",
+    "production_baseline": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+    "benchmark_cases": [
+      "BenchmarkStateVersionVector/log_1024",
+      "BenchmarkStateVersionVector/log_8192",
+      "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "BenchmarkStateDeltaSinceOneBehind/log_8192"
+    ],
+    "measured_arm_schedule": "For each benchmark case and replicate r=1..20: odd r runs go-baseline, go-baseline-aa, go-candidate; even r runs go-candidate, go-baseline-aa, go-baseline. The six cases are run in the listed order."
+  },
+  "question": "Can a Go coordinator implementation that avoids per-entry LogAt allocation and cgo crossings preserve exact version-vector and delta semantics while materially reducing allocations, wall time, and CPU time on fixed 1,024- and 8,192-entry logs?",
+  "claims": [
+    {
+      "id": "C-correct",
+      "text": "The candidate returns the same ordered delta lines and reached version vectors as the baseline and passes the existing coordinator correctness and race gates.",
+      "class": "exact_computation",
+      "decided_by": [],
+      "if_supported": "the candidate is semantically admissible for the measured performance comparison",
+      "if_not_supported": "the candidate is rejected regardless of performance"
+    },
+    {
+      "id": "C-allocation",
+      "text": "On the caught-up 8,192-entry workload, the candidate materially reduces bytes and allocations per operation without regressing any registered benchmark case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-opt"
+      ],
+      "if_supported": "an engineering allocation improvement limited to the registered Go coordinator workloads",
+      "if_not_supported": "no allocation improvement is claimed"
+    },
+    {
+      "id": "C-time",
+      "text": "On the caught-up 8,192-entry workload, the candidate materially reduces both wall and process CPU nanoseconds per operation beyond the A/A spread, without regressing any registered benchmark case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-opt"
+      ],
+      "if_supported": "an engineering speedup limited to the registered Go coordinator workloads and pinned host class",
+      "if_not_supported": "no wall-time or CPU-time speedup is claimed"
+    }
+  ],
+  "arms": [
+    {
+      "id": "go-baseline",
+      "role": "baseline",
+      "description": "Unmodified Go coordinator production implementation at c273e62140071fe4370fbe6946dcb898c95b4eb2 with the common benchmark instrument.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": null,
+        "build": [
+          [
+            "go",
+            "test",
+            "-c",
+            "-trimpath",
+            "-o",
+            "coord-bench-baseline.test",
+            "."
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "production_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "implementation": "Go LogLen plus per-entry LogAt scan"
+      }
+    },
+    {
+      "id": "go-baseline-aa",
+      "role": "control_aa",
+      "description": "A second invocation of the exact baseline binary under a distinct arm label.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": null,
+        "build": [
+          [
+            "go",
+            "test",
+            "-c",
+            "-trimpath",
+            "-o",
+            "coord-bench-baseline.test",
+            "."
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "production_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "implementation": "Go LogLen plus per-entry LogAt scan"
+      },
+      "same_instrument_as": "go-baseline"
+    },
+    {
+      "id": "go-candidate",
+      "role": "candidate",
+      "description": "Future optimized coordinator implementation; its commit and binary digest must be pinned before this draft is frozen.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": null,
+        "build": [
+          [
+            "go",
+            "test",
+            "-c",
+            "-trimpath",
+            "-o",
+            "coord-bench-candidate.test",
+            "."
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "production_commit": null,
+        "implementation": "candidate that removes avoidable per-record allocation and cgo crossings while preserving the public API"
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every benchmark invocation contains exact pre/post digest, vector, line-count, and log-length assertions; a separate positive arm would duplicate the embedded correctness oracle."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "This is a paired implementation comparison on fixed deterministic logs, not an inference about a target-versus-null population."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "coordinator implementation",
+        "levels": [
+          "baseline per-record Go scan",
+          "candidate optimized scan"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "benchmark case",
+        "treatment": "crossed",
+        "value": [
+          "VersionVector",
+          "DeltaSince caught up",
+          "DeltaSince one behind"
+        ],
+        "how": "all three public operations/states are measured for every arm"
+      },
+      {
+        "name": "log entries",
+        "treatment": "crossed",
+        "value": [
+          1024,
+          8192
+        ],
+        "how": "the benchmark constructs exact-length deterministic logs before timing"
+      },
+      {
+        "name": "benchmark iterations",
+        "treatment": "fixed",
+        "value": 100,
+        "how": "-test.benchtime=100x for every invocation and arm"
+      },
+      {
+        "name": "Go scheduler parallelism",
+        "treatment": "fixed",
+        "value": 1,
+        "how": "GOMAXPROCS=1 and -test.cpu=1"
+      },
+      {
+        "name": "fixture",
+        "treatment": "fixed",
+        "value": "Zp p=4503599627372423 order=2251799813686211 peer=bench.0 seed=0x5eed normalized check-in time=1700000000",
+        "how": "compiled benchmark constants, common to every arm"
+      },
+      {
+        "name": "arm order",
+        "treatment": "fixed",
+        "value": "odd baseline/aa/candidate; even candidate/aa/baseline",
+        "how": "interleaves arms within every benchmark case and reverses the endpoints each measured replicate"
+      },
+      {
+        "name": "host state",
+        "treatment": "measured",
+        "how": "record isolation receipt, CPU frequency/governor, temperature when available, steal, PSI, and context switches for every row"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-opt",
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator implementation"
+        ],
+        "design": "one_factor",
+        "reason": "benchmark source, fixture, build mode, flags, host class, operation count, and thread count remain matched",
+        "threshold": null
+      },
+      {
+        "id": "C-aa",
+        "arms": [
+          "go-baseline",
+          "go-baseline-aa"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "quantifies invocation and host noise using the same binary",
+        "threshold": null
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false,
+    "transfer_obligations": []
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "A fixed mirrored sequence is used because there are exactly three arms: odd replicates run baseline/AA/candidate and even replicates reverse the endpoints; this balances monotonic drift while keeping the schedule auditable before data.",
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        24301
+      ],
+      "nonce": null,
+      "note": "0x5eed is the only coordinator job seed; fixture generation is deterministic and identical for all arms and repetitions."
+    },
+    "instance_sampling": {
+      "rule": "Exhaustively run the six benchmark cases listed in links.benchmark_cases; there is no post-freeze sampling or case selection.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Not masked: build provenance and binary identity must be checked before accepting each row.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 6,
+    "replicates": 20,
+    "warmups": 3,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 12,
+      "correction": "holm",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "Twenty paired repetitions target the preregistered large effects (at least 25% time reduction and 90% byte reduction), not small effects. Holm correction covers wall and CPU comparisons across six cases; allocation gates are counted and also reported with paired intervals."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1200,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 14400,
+      "measured_on": "Conservative preregistered planning bound from six cases, 20 fixed repetitions, and a 20-minute process timeout; no timed benchmark was run."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "bytes_per_op",
+        "name": "allocated bytes per operation",
+        "unit": "B/op",
+        "kind": "counted",
+        "definition": "Total Go heap bytes allocated during the b.N operation loop divided by b.N; deterministic fixture construction and correctness hashing are excluded.",
+        "source": "Go benchmark -test.benchmem B/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 B/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "allocs_per_op",
+        "name": "allocations per operation",
+        "unit": "allocs/op",
+        "kind": "counted",
+        "definition": "Go heap allocation events during the b.N operation loop divided by b.N; setup and post-timing correctness work are excluded.",
+        "source": "Go benchmark -test.benchmem allocs/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.01 allocs/op at fixed b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "wall_ns_per_op",
+        "name": "wall nanoseconds per operation",
+        "unit": "ns/op",
+        "kind": "timed",
+        "definition": "Go testing benchmark elapsed monotonic wall time around only the b.N operation loop, divided by b.N.",
+        "source": "Go benchmark ns/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "cpu_ns_per_op",
+        "name": "process CPU nanoseconds per operation",
+        "unit": "cpu-ns/op",
+        "kind": "timed",
+        "definition": "Difference in process user plus system CPU time from getrusage around the b.N operation loop, divided by b.N; fixture and correctness hashing are excluded.",
+        "source": "benchmark custom cpu-ns/op field",
+        "formula": "(RUSAGE_SELF user_ns_after + system_ns_after - user_ns_before - system_ns_before) / b.N",
+        "aggregation": "paired_ratio",
+        "resolution": "10 ns/op at fixed b.N=100 from a 1 us getrusage counter",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "lines_sha256",
+        "name": "ordered delta-line digest",
+        "unit": "lowercase SHA-256 hex",
+        "kind": "exact",
+        "definition": "SHA-256 over each returned line prefixed by its little-endian uint64 byte length, in returned order, computed after timing.",
+        "source": "benchmark correctness lines_sha256 log field",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "vector_sha256",
+        "name": "canonical version-vector digest",
+        "unit": "lowercase SHA-256 hex",
+        "kind": "exact",
+        "definition": "SHA-256 over peer:sequence newline records sorted by peer, computed after timing for the returned or reached vector.",
+        "source": "benchmark correctness vector_sha256 or reached_vector_sha256 log field",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "L2",
+    "warmups": 3,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "runtime.MemStats-derived B/op",
+      "runtime.MemStats-derived allocs/op",
+      "getrusage RUSAGE_SELF user plus system CPU time",
+      "perf stat cycles,instructions,branches,branch-misses,cache-references,cache-misses,page-faults,context-switches on one diagnostic baseline and candidate replicate only"
+    ],
+    "record": [
+      "arm",
+      "benchmark_case",
+      "replicate",
+      "arm_order_position",
+      "production_commit",
+      "benchmark_source_sha256",
+      "binary_sha256",
+      "go_version",
+      "CGO_ENABLED",
+      "C compiler identity and version",
+      "cpu_model",
+      "microcode",
+      "kernel_release",
+      "governor and observed frequency",
+      "NUMA node and CPU affinity",
+      "isolation.level and blockers",
+      "steal ticks",
+      "PSI",
+      "temperature when available",
+      "GOMAXPROCS",
+      "b.N"
+    ],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "local",
+    "queue": "isolated_bench reserve",
+    "placement": {
+      "architecture": "x86_64",
+      "cpus": 5,
+      "benchmark_cpu_affinity": "run CPU 0, reserve CPUs 0-3, leave CPU 4 for host services",
+      "numa_policy": "CPU and memory on one NUMA node",
+      "spot": false,
+      "run_command_template": "taskset -c ${ISOLATED_CPU} ./coord-bench-ARM.test -test.run=^$ -test.bench=^BENCHMARK_CASE$ -test.benchmem -test.benchtime=100x -test.count=1 -test.cpu=1 -test.v -test.timeout=20m"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 1800,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Fixed design: 3 arms x 6 benchmark cases x (3 warmups + 20 measured repetitions) = 414 invocations, each at exactly 100 benchmark operations, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "No result-dependent early stopping, extension, case removal, or additional repetition is permitted; infrastructure failures are retained and are not retried under this protocol.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Any digest, vector, line-count, log-length, unit-test, or race-test mismatch rejects the candidate and stops performance interpretation, while already collected rows remain archived.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "Reject the candidate if any benchmark assertion fails or candidate correctness digest differs from its paired baseline digest.",
+    "Reject the candidate if go test ./... or the named coordinator tests fail; reject for release if go test -race ./... fails. Race-instrumented timing is never used as performance evidence.",
+    "A timing row below L2 isolation, with changed affinity, thermal throttling, nonzero steal, material PSI contention, binary/hash mismatch, Go/C compiler mismatch, or b.N other than 100 is invalid for wall and CPU comparisons; its exact correctness fields remain reportable.",
+    "A row with missing -benchmem fields is invalid for allocation comparisons.",
+    "Profiled or perf-instrumented diagnostic rows are excluded from the decisive unprofiled distributions.",
+    "No invalid row is replaced except by a separately frozen amendment filed before seeing affected candidate results."
+  ],
+  "decision_rule": {
+    "text": "First require C-correct and a valid A/A control: all paired exact digests must match, all correctness gates must pass, baseline/AA allocation medians must be within 2%, baseline/AA wall and CPU median ratios must each lie in [0.95,1.05], and their 95% paired intervals must include 1. C-allocation is supported only if, for DeltaSinceCaughtUp/log_8192, the candidate/baseline median B/op ratio is at most 0.10 and allocs/op ratio is at most 0.25, while no registered case exceeds 1.05 for either allocation metric. C-time is supported only if, for that same decisive case, candidate/baseline median wall and CPU ratios are each at most 0.75 and each Holm-corrected 95% paired interval lies wholly below 1, while no registered case has a wall or CPU median ratio above 1.05. Each claim is decided separately; failure of any gate yields no claim for that metric.",
+    "comparison_ids": [
+      "C-opt"
+    ],
+    "threshold": "Correctness exact; A/A allocation within 2% and time within 5%; decisive caught-up-8192 B/op <=0.10x, allocs/op <=0.25x, wall <=0.75x, CPU <=0.75x; all-case regression ceiling 1.05x.",
+    "statistic": "Within each benchmark case, pair arms by replicate and report candidate/baseline and baseline-AA/baseline median ratios for B/op, allocs/op, wall ns/op, and CPU ns/op.",
+    "interval": "95% paired bootstrap interval over the 20 fixed replicate pairs for each metric and benchmark case; exact digest and test gates have no interval.",
+    "multiple_comparison_correction": "holm",
+    "effect_size_measure": "candidate/baseline median ratio and percent change, with the baseline/AA ratio as the empirical noise floor",
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "within_control_distribution",
+      "regression_gate_failed",
+      "invalid_measurement",
+      "wrong_answer",
+      "inconclusive"
+    ]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": [
+      "raw/benchmark-output/*.txt",
+      "raw/run-metadata/*.json",
+      "raw/perf-diagnostics/*.txt"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "export.json",
+      "analysis/paired-ratios.json",
+      "analysis/paired-ratios.md"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired candidate/baseline and baseline-AA/baseline ratios by benchmark case for B/op and allocs/op",
+      "paired candidate/baseline and baseline-AA/baseline ratios by benchmark case for wall and CPU ns/op"
+    ],
+    "report_dir": "report"
+  },
+  "inadmissible": [
+    "running a timed baseline, control, or candidate before this draft is completed, reviewed, pinned, and frozen",
+    "changing benchmark source, fixtures, compiler, flags, b.N, thread count, host class, schedule, repetitions, metrics, or gates after seeing affected data",
+    "selecting only favorable benchmark cases, repetitions, wall-time trials, or perf counters",
+    "using setup time, profiled trials, race-instrumented trials, or rows below L2 as decisive performance evidence",
+    "claiming a general coordinator, network, fleet, Rust, GPU, or cryptanalytic algorithm speedup from this Go microbenchmark",
+    "accepting a faster candidate with any correctness digest, unit-test, convergence, or race failure"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "source review, official Go benchmarking/profiling guidance, cgo considerations, and the measurement implications used by this protocol",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "docs/COORDINATOR.md",
+      "provenance": "internal",
+      "claim": "delta order, version-vector credit, and reverse-channel semantics that every candidate must preserve",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://pkg.go.dev/testing@go1.21.13",
+      "provenance": "retrieved",
+      "claim": "Go 1.21 b.N benchmark loop, allocation reporting, and timer controls",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://go.dev/doc/diagnostics",
+      "provenance": "retrieved",
+      "claim": "Go profiling and tracing tools are diagnostic instruments whose overhead must remain separate from decisive trials",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://man7.org/linux/man-pages/man2/getrusage.2.html",
+      "provenance": "retrieved",
+      "claim": "RUSAGE_SELF supplies process user and system CPU time for the custom CPU-per-operation metric",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  }
+}

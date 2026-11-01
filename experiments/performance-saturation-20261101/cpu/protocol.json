@@ -1,0 +1,1065 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "PERF-SAT-CPU-20261101",
+  "version": 1,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/cpu",
+  "authors": [
+    "Codex CPU optimization lane"
+  ],
+  "links": {
+    "status": "DRAFT; unfrozen; no data collected; local host nonqualified and no timing authorized",
+    "baseline_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+    "literature": "experiments/performance-saturation-20261101/cpu/LITERATURE.md",
+    "harness_contract": "docs/perf/PERFORMANCE_INDEX.md",
+    "isolation_contract": "docs/ISOLATED_BENCHMARKS.md",
+    "prior_c_campaign": "experiments/c-kernel-cpu-v1/PROTOCOL.md"
+  },
+  "question": "Do three representation-level Rust changes improve their complete fixed-input production calls at one and four threads without changing exact outputs or work, while the unchanged 34-kernel C performance index remains non-regressing?",
+  "claims": [
+    {
+      "id": "C-exact",
+      "text": "For every measured cell, baseline, candidate, and A/A executions have identical deterministic fingerprints and exact work contracts at both thread settings.",
+      "class": "exact_computation",
+      "decided_by": []
+    },
+    {
+      "id": "C-gf2",
+      "text": "The AVX2 table-XOR plus branchless-clear candidate reduces complete gf2_elim call time on the fixed GF(2) panel at one and four threads.",
+      "class": "comparative",
+      "decided_by": [
+        "CMP-gf2-1t",
+        "CMP-gf2-4t"
+      ],
+      "if_supported": "Report a host-qualified full-call engineering speedup for the exact GF(2) cells and thread panels only.",
+      "if_not_supported": "Keep the current dispatch/default; report diagnostic stage and counter results without a speedup claim."
+    },
+    {
+      "id": "C-f5",
+      "text": "Direct packed Matrix-F5 construction reduces complete Matrix-F5 call time on the fixed build-plus-reduce-plus-readback panel at one and four threads.",
+      "class": "comparative",
+      "decided_by": [
+        "CMP-f5-1t",
+        "CMP-f5-4t"
+      ],
+      "if_supported": "Report a host-qualified full-call engineering speedup for these Matrix-F5 cells only.",
+      "if_not_supported": "Do not retain the default change; any build-only ratio remains a stage diagnostic."
+    },
+    {
+      "id": "C-f2m",
+      "text": "Three-product two-limb and six-product three-limb carry-less Karatsuba reduce complete binary-field calls on the fixed m=131/m=163 panel at one and four threads without regressing the m=233 width control.",
+      "class": "comparative",
+      "decided_by": [
+        "CMP-f2m-1t",
+        "CMP-f2m-4t"
+      ],
+      "if_supported": "Report a host- and feature-qualified full-call engineering speedup for the exact public binary-field workloads only.",
+      "if_not_supported": "Keep schoolbook hardware multiplication at the losing widths; instruction counts alone do not license the change."
+    },
+    {
+      "id": "C-c-control",
+      "text": "The Rust-only candidate does not regress the complete 34-kernel C performance index at one or four threads.",
+      "class": "comparative",
+      "decided_by": [
+        "CMP-c-1t",
+        "CMP-c-4t"
+      ],
+      "if_supported": "Record the C panel as a passed non-regression control, not as a C optimization.",
+      "if_not_supported": "Stop promotion and investigate source/build drift or a reproducible cross-component regression."
+    },
+    {
+      "id": "C-no-local-claim",
+      "text": "No wall-time, speedup, or non-regression claim may be made from the current unprobed local executor or from Callgrind/perf diagnostic runs.",
+      "class": "out_of_scope",
+      "decided_by": []
+    }
+  ],
+  "arms": [
+    {
+      "id": "base-1t",
+      "role": "baseline",
+      "description": "Baseline source bundle at c273e621, one thread, containing separately built Rust perfbench and C ca_perfbench executables.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "variant": "baseline",
+        "thread_panel": "1t",
+        "instrument_bundle": "Rust perfbench plus C ca_perfbench; freeze a manifest SHA-256 and both executable SHA-256 values before data"
+      }
+    },
+    {
+      "id": "base-aa-1t",
+      "role": "control_aa",
+      "description": "The exact base-1t instrument repeated as A-prime to measure the one-thread nuisance/noise distribution.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "variant": "baseline-aa",
+        "thread_panel": "1t"
+      },
+      "same_instrument_as": "base-1t"
+    },
+    {
+      "id": "candidate-1t",
+      "role": "candidate",
+      "description": "Unresolved clean candidate commit containing only the three scoped Rust changes, one thread; its C source is required to match the baseline C source set.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": null,
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--current",
+            "--out",
+            "<RUN_ROOT>/candidate-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--current",
+            "--out",
+            "<RUN_ROOT>/candidate-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "variant": "candidate",
+        "thread_panel": "1t",
+        "freeze_requirement": "replace --current and null commit with one clean 40-hex candidate commit; freeze a manifest and both executable hashes"
+      }
+    },
+    {
+      "id": "base-4t",
+      "role": "baseline",
+      "description": "The baseline source bundle on the fixed many-thread panel of four worker threads.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "4",
+          "OMP_NUM_THREADS": "4",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 4
+      },
+      "parameters": {
+        "variant": "baseline",
+        "thread_panel": "4t",
+        "placement_requirement": "four fixed execution CPUs on one qualified NUMA placement, with complete SMT-sibling accounting"
+      }
+    },
+    {
+      "id": "base-aa-4t",
+      "role": "control_aa",
+      "description": "The exact base-4t instrument repeated as A-prime to measure the four-thread nuisance/noise distribution.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--ref",
+            "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+            "--out",
+            "<RUN_ROOT>/base-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "4",
+          "OMP_NUM_THREADS": "4",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 4
+      },
+      "parameters": {
+        "variant": "baseline-aa",
+        "thread_panel": "4t"
+      },
+      "same_instrument_as": "base-4t"
+    },
+    {
+      "id": "candidate-4t",
+      "role": "candidate",
+      "description": "The same unresolved clean candidate source bundle on the fixed four-thread panel.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": null,
+        "build": [
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--current",
+            "--out",
+            "<RUN_ROOT>/candidate-rust"
+          ],
+          [
+            "python3",
+            "scripts/perf/perfindex.py",
+            "build",
+            "--c",
+            "--current",
+            "--out",
+            "<RUN_ROOT>/candidate-c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "profile": "release",
+          "c_native": "OFF"
+        },
+        "env": {
+          "RAYON_NUM_THREADS": "4",
+          "OMP_NUM_THREADS": "4",
+          "OPENBLAS_NUM_THREADS": "1"
+        },
+        "threads": 4
+      },
+      "parameters": {
+        "variant": "candidate",
+        "thread_panel": "4t",
+        "freeze_requirement": "same clean candidate commit and executable bundle as candidate-1t; only the fixed thread environment differs"
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "CMP-aa-1t",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "This is not a detector or null-search experiment. Every invocation exercises its correctness path and the existing unit tests; any wrong rank, row, field word, point, residue, or recovered log changes the exact fingerprint and invalidates the row."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "The unchanged m=233 width and 34-kernel C panels are engineering non-regression controls, not samples from a statistical null population."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "source_variant",
+        "levels": [
+          "baseline",
+          "candidate"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "thread_count",
+        "treatment": "crossed",
+        "value": [
+          1,
+          4
+        ],
+        "how": "Separate one-thread and fixed four-thread panels; ratios never cross thread settings."
+      },
+      {
+        "name": "benchmark_cell",
+        "treatment": "crossed",
+        "value": "44 fixed cells: 3 GF(2), 2 Matrix-F5, 5 binary-field/curve, and all 34 C kernels",
+        "how": "Every arm executes the identical registry IDs and source-fixed inputs."
+      },
+      {
+        "name": "compiler_toolchain",
+        "treatment": "fixed",
+        "value": null,
+        "how": "Freeze exact rustc/cargo, C compiler, linker, CMake, target, flags, and library versions before data."
+      },
+      {
+        "name": "harness_source",
+        "treatment": "fixed",
+        "value": "perfindex.py plus Rust perfbench and C ca_perfbench overlaid identically on both source revisions",
+        "how": "Record source-tree and per-file SHA-256 values; no arm-specific harness code."
+      },
+      {
+        "name": "host_and_frequency",
+        "treatment": "measured",
+        "value": null,
+        "how": "Record topology, microcode, kernel, governor/frequencies, NUMA, cgroup, IRQs, quota, steal, pressure, throttling, memory failures, context switches, and per-row run CPUs."
+      },
+      {
+        "name": "process_layout",
+        "treatment": "randomized",
+        "value": "fresh processes in rotating A/B/A-prime order",
+        "how": "perfindex seed 20260926 shuffles cell order and rotates A/B/A-prime by round."
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "CMP-gf2-1t",
+        "arms": [
+          "base-1t",
+          "candidate-1t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-f5-1t",
+        "arms": [
+          "base-1t",
+          "candidate-1t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-f2m-1t",
+        "arms": [
+          "base-1t",
+          "candidate-1t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-c-1t",
+        "arms": [
+          "base-1t",
+          "candidate-1t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-gf2-4t",
+        "arms": [
+          "base-4t",
+          "candidate-4t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-f5-4t",
+        "arms": [
+          "base-4t",
+          "candidate-4t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-f2m-4t",
+        "arms": [
+          "base-4t",
+          "candidate-4t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-c-4t",
+        "arms": [
+          "base-4t",
+          "candidate-4t"
+        ],
+        "differs_in": [
+          "source_variant"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "CMP-aa-1t",
+        "arms": [
+          "base-1t",
+          "base-aa-1t"
+        ],
+        "differs_in": [],
+        "design": "aa"
+      },
+      {
+        "id": "CMP-aa-4t",
+        "arms": [
+          "base-4t",
+          "base-aa-4t"
+        ],
+        "differs_in": [],
+        "design": "aa"
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": null,
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        20260926
+      ],
+      "nonce": null,
+      "note": "The source fixes every workload input seed. This seed only drives perfindex's per-round cell shuffle; arm order is the deterministic rotating A/B/A-prime schedule."
+    },
+    "instance_sampling": {
+      "rule": "All 44 preregistered fixed-input registry cells are included; no cell is sampled or selected after observing data.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Not masked: executable paths and profiler output reveal source arm. The analysis script and all thresholds must instead be hashed before data.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 44,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 8,
+      "correction": "holm",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": false,
+      "note": "Six fixed paired rounds were requested and are not claimed to establish generic statistical power. Before freeze, the analysis script must implement paired bootstrap intervals and Holm control for the eight target-by-thread comparisons; inability to resolve the fixed minimum effect yields inconclusive, never extra rounds."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 3600,
+      "per_sample_seconds": 30,
+      "threads": 4,
+      "estimated_total_seconds": 43200,
+      "measured_on": "Conservative preregistered planning bound from the fixed 44-cell schedule and harness time limits; no study timing was collected."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "output_fingerprint",
+        "name": "deterministic output fingerprint",
+        "unit": "64-bit hexadecimal digest",
+        "kind": "exact",
+        "definition": "The stable harness fingerprint of every semantically relevant output and embedded exact work field for one fixed cell; all A, B, and A-prime values must be bit-for-bit equal before timing is admissible.",
+        "source": "compare.json raw.<cell>.<arm>[].fingerprint and instr.json per-cell fingerprints",
+        "aggregation": "per_row",
+        "resolution": "one bit",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "work_contract",
+        "name": "exact work and registry contract",
+        "unit": "target-specific integer vector",
+        "kind": "exact",
+        "definition": "GF(2) rank/word-ops/rows; Matrix-F5 degree, row/column/rank/criterion/reduction counters and output polynomials; fixed binary-field operation counts plus raw words/points; or C registry ID/description and result fingerprint.",
+        "source": "fingerprint preimages defined in gf2_la.rs, bool_gb.rs, field_ec.rs, and ca_perfbench.c plus the frozen registry manifest",
+        "aggregation": "per_row",
+        "resolution": "one integer or one bit of output",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "full_call_wall_ns",
+        "name": "complete production-call wall time",
+        "unit": "ns",
+        "kind": "timed",
+        "definition": "For each cell, time only the harness Workload::run or C k->run interval, after untimed setup/preparation, including all construction, reduction, readback, dispatch, and result materialization performed by that production call.",
+        "source": "compare.json raw.<cell>.<arm>[].median_ns from five internal samples",
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns clock read; five-sample median per invocation",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "full_call_cpu_ns",
+        "name": "complete-call process CPU time",
+        "unit": "ns",
+        "kind": "timed",
+        "definition": "Process CPU consumed over the same complete-call invocation; context only and not a replacement for the qualified wall boundary.",
+        "source": "raw invocation cpu_ns and median_cpu_ns when emitted",
+        "aggregation": "paired_ratio",
+        "resolution": "host clock resolution",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "callgrind_ir",
+        "name": "Callgrind instructions read",
+        "unit": "Ir",
+        "kind": "counted",
+        "definition": "One deterministic one-thread Callgrind count over the harness-marked complete measured region, collected after correctness and outside the wall-time panel.",
+        "source": "instr.json per-cell base_median_ns and cand_median_ns in mode callgrind_ir",
+        "aggregation": "paired_ratio",
+        "resolution": "1 Ir",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "perf_cycles",
+        "name": "hardware cycles diagnostic",
+        "unit": "cycles",
+        "kind": "counted",
+        "definition": "Generic perf-stat cycles over a diagnostic invocation on the pinned one-thread CPU; multiplexed or unsupported counters are marked invalid and never imputed.",
+        "source": "perf stat CSV",
+        "aggregation": "per_row",
+        "resolution": "1 event subject to kernel counter scaling",
+        "uncertainty": "range"
+      },
+      {
+        "id": "perf_instructions",
+        "name": "retired instructions diagnostic",
+        "unit": "instructions",
+        "kind": "counted",
+        "definition": "Generic perf-stat instructions over the same diagnostic invocation.",
+        "source": "perf stat CSV",
+        "aggregation": "per_row",
+        "resolution": "1 event subject to kernel counter scaling",
+        "uncertainty": "range"
+      },
+      {
+        "id": "perf_branch_misses",
+        "name": "branch misses diagnostic",
+        "unit": "events",
+        "kind": "counted",
+        "definition": "Generic branch-misses event over the same diagnostic invocation; used to test the branchless mechanism, not as a retention gate.",
+        "source": "perf stat CSV",
+        "aggregation": "per_row",
+        "resolution": "1 event subject to kernel counter scaling",
+        "uncertainty": "range"
+      },
+      {
+        "id": "perf_cache_misses",
+        "name": "cache-miss diagnostics",
+        "unit": "events",
+        "kind": "counted",
+        "definition": "L1-dcache-load-misses and LLC-load-misses, when supported without multiplexing, over the same diagnostic invocation.",
+        "source": "perf stat CSV",
+        "aggregation": "per_row",
+        "resolution": "1 event subject to kernel counter scaling",
+        "uncertainty": "range"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "fingerprint",
+      "rank",
+      "word_ops",
+      "rows_f4",
+      "rows_pruned",
+      "rows_built",
+      "cols",
+      "zero_reductions",
+      "reduce_word_ops",
+      "criterion_word_ops",
+      "criterion_rows",
+      "fixed_field_operation_count",
+      "Callgrind.Ir",
+      "perf.cycles",
+      "perf.instructions",
+      "perf.branches",
+      "perf.branch-misses",
+      "perf.L1-dcache-loads",
+      "perf.L1-dcache-load-misses",
+      "perf.LLC-loads",
+      "perf.LLC-load-misses"
+    ],
+    "record": [
+      "source_commit",
+      "source_tree_sha256",
+      "harness_sha256",
+      "binary_bundle_sha256",
+      "rust_binary_sha256",
+      "c_binary_sha256",
+      "compiler_and_linker_versions",
+      "cpu_model",
+      "cpu_microcode",
+      "cpu_features",
+      "kernel_release",
+      "governor_and_frequency",
+      "smt_topology",
+      "numa_node_and_memory_policy",
+      "affinity_and_run_cpu",
+      "cgroup_cpu_and_memory_limits",
+      "cpu_throttling",
+      "memory_failures",
+      "steal_ticks",
+      "psi",
+      "interrupts_and_softirqs",
+      "voluntary_and_involuntary_context_switches",
+      "isolation_tier_and_blockers",
+      "thread_count",
+      "arm_order",
+      "exit_status"
+    ],
+    "timed_primary_justification": "The candidate intentionally preserves algorithmic work and exact outputs, so counts establish equivalence but cannot answer whether SIMD, branching, allocation, or instruction scheduling improved elapsed complete-call performance. Wall time is primary only on a qualifying isolated host and is interpreted against the same-session A/A distribution."
+  },
+  "execution": {
+    "backend": "local",
+    "queue": null,
+    "placement": {
+      "status": "local_calibration_pending_per-run_isolation_receipts",
+      "one_thread_cpus": "run 0, reserve 0-3",
+      "four_thread_cpus": "run and reserve 0-3",
+      "numa_node": 0,
+      "required_service": "crypto target/release/isolated_bench reserve",
+      "note": "Five distinct KVM vCPUs are available; CPU 4 is left for host services. Wall time is admissible only for rows whose retained isolation receipt reaches the declared tier; hardware PMU events are unavailable."
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 1800,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "For wall comparison, execute exactly 44 cells x 6 measured rounds x 3 rotating A/B/A-prime invocations x 2 thread panels = 1,584 invocations, each with five internal timed samples after the harness warmup, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Collect exactly one one-thread Callgrind A/B instruction count per cell after the wall panel; Callgrind has no A/A timing interpretation and cannot change the fixed wall sample size.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "A fingerprint, work-contract, unit-test, source-hash, registry, or binary-identity failure invalidates the affected comparison and is retained; it never triggers a repaired rerun under this protocol version.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Do not add rounds, remove cells, change samples, or select a favorable CPU after reading any timing or profiler output.",
+      "kind": "fixed_n",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "No timed command starts unless this protocol is frozen, every null/placeholder freeze blocker is resolved, and the declared host preflight passes.",
+    "Any output fingerprint or exact work-contract mismatch across A, B, A-prime, samples, rounds, or thread settings invalidates that opportunity before clocks are interpreted.",
+    "Any change to the 44 IDs, fixed inputs, C ID/area/description/tier registry digest, six rounds, five samples, thread counts, compiler, flags, environment, source commits, or timed boundary requires a new protocol version.",
+    "A row with nonzero exit, timeout, panic, sanitizer error, failed unit test, missing output, unsupported feature dispatch, or wrong CPU affinity is retained and excluded by rule; it is not retried as an algorithm outcome.",
+    "A failed isolation/noise receipt, throttling, memory failure, steal, IRQ/softirq change, or involuntary scheduling event is retained and makes wall time nonqualified according to the benchmark service contract.",
+    "Callgrind, perf stat, perf record, disassembly, build time, setup time, and stage timers are diagnostic only and cannot satisfy a complete-call gate.",
+    "The m=233 cell is a negative-width control: a candidate path activating there or a slower verdict invalidates the F2m opportunity.",
+    "A local run without the frozen qualified receipt is descriptive instrumentation only and supports none of the comparative claims."
+  ],
+  "decision_rule": {
+    "text": "First require every exactness and host gate. For each Rust opportunity at each thread count, retain the change only when the Holm-adjusted paired-bootstrap lower bound of the full-call candidate speedup exceeds 1, the paired median log gain exceeds max(2 times the same-cell A/A robust spread, ln(1.02)), and no preregistered target or holdout cell receives a slower verdict. Both thread panels must pass. For the C control, require all 34 exact contracts, an aggregate candidate/base lower confidence bound of at least 0.98, and no cell whose slowdown exceeds max(2 times its A/A spread, 5 percent). The F2m m=233 width control must be neutral and must not dispatch to the new 2/3-limb path. Otherwise the relevant verdict is control failure, within noise, regression, invalid, or inconclusive; diagnostic counters never override it.",
+    "comparison_ids": [
+      "CMP-gf2-1t",
+      "CMP-gf2-4t",
+      "CMP-f5-1t",
+      "CMP-f5-4t",
+      "CMP-f2m-1t",
+      "CMP-f2m-4t",
+      "CMP-c-1t",
+      "CMP-c-4t"
+    ],
+    "threshold": "Rust: Holm-adjusted CI95 lower > 1 and median log gain > max(2*A/A robust spread, ln(1.02)), with zero slower target/holdout cells at both 1t and 4t. C: PI CI95 lower >= 0.98 and zero per-cell slowdown > max(2*A/A spread, 5%).",
+    "statistic": "Per cell, median over six paired log(base full-call median_ns / candidate full-call median_ns); per panel, the preregistered equal-cell log index; A/A uses median absolute paired base/A-prime log differences scaled by 1.4826.",
+    "interval": "Paired bootstrap over the six fixed external rounds; simultaneous decisions use Holm correction across eight panel-by-thread tests. No interval is computed from the five within-invocation samples as if they were independent rounds.",
+    "multiple_comparison_correction": "holm",
+    "effect_size_measure": "candidate speedup ratio base_ns/candidate_ns for complete calls, with absolute ns and the A/A robust log spread",
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "passed_nonregression_control",
+      "within_control_distribution",
+      "regression",
+      "invalid_measurement",
+      "inconclusive"
+    ]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": [
+      "wall-1t/*/compare.json",
+      "wall-4t/*/compare.json",
+      "callgrind/*/instr.json",
+      "perf-stat/*.csv",
+      "perf-record/*.data",
+      "host/preflight.json",
+      "build/*.json",
+      "correctness/*.log"
+    ],
+    "outputs": [
+      "experiment.export/v1",
+      "reports/cpu-summary.json",
+      "reports/cpu-summary.md",
+      "reports/full-call-ratios.svg",
+      "reports/diagnostic-counters.svg"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "Complete-call paired speedup and simultaneous confidence interval per preregistered Rust cell and thread panel",
+      "C 34-kernel non-regression panel with A/A envelope",
+      "Callgrind and perf diagnostic deltas, visually separated from qualified wall-time evidence"
+    ],
+    "report_dir": "reports"
+  },
+  "inadmissible": [
+    "freezing or running while candidate commit, executable hashes, host placement, toolchain, runtime estimate, or analysis-script hash is unresolved",
+    "timing on the current local executor without a passing frozen host receipt and reporting the result as Tier 0 or Tier 1",
+    "changing the candidate, workload IDs, fixed inputs, thread count, six rounds, five samples, compiler, flags, CPU placement, timed boundary, thresholds, or correction after seeing data",
+    "dropping failures, outliers, neutral cells, regressions, m=233, or any of the 34 C kernels",
+    "multiplying historical sibling speedups, transferring their ratios to this checkout, or treating them as baseline measurements",
+    "presenting a build-stage, elimination-stage, Callgrind, perf-counter, disassembly, setup, or profiler result as a full-call speedup",
+    "using within-invocation samples as independent external replicates or adding rounds because an interval misses the threshold",
+    "claiming a C optimization, cryptanalytic complexity improvement, ECDLP speedup, secret-scalar constant-time property, or cross-host portability from this engineering panel"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/cpu/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "Source-by-source record of repository evidence, primary algorithm/instruction references, prior results, negative results, and their measurement consequences.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://arxiv.org/abs/1111.6549",
+      "provenance": "retrieved",
+      "claim": "M4RI uses precomputed pivot-row combinations, Gray-code table construction, and cache-aware blocking for dense GF(2) elimination.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/780506.780516",
+      "provenance": "retrieved",
+      "claim": "F5 signature criteria suppress reductions to zero; direct packing must leave criterion semantics and selected rows unchanged.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doc.rust-lang.org/std/macro.is_x86_feature_detected.html",
+      "provenance": "retrieved",
+      "claim": "Rust supports runtime x86 feature detection for AVX2 and PCLMULQDQ, permitting guarded dispatch with portable fallbacks.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.6028/NIST.SP.800-186",
+      "provenance": "retrieved",
+      "claim": "The binary-field curve parameters use fixed polynomial-basis irreducible polynomials; the standard supplies identities, not performance evidence.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/2807591.2807644",
+      "provenance": "retrieved",
+      "claim": "Scientific performance reports require reproducibility, appropriate statistics, full disclosure, and meaningful baselines.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://doi.org/10.1145/1508244.1508275",
+      "provenance": "retrieved",
+      "claim": "Seemingly irrelevant layout and environment changes can bias performance, motivating fresh-process alternation and exact build/environment receipts.",
+      "verified_by": "Codex CPU optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  },
+  "extensions": {
+    "cpu_performance_saturation": {
+      "status": "draft_nonqualified_no_data",
+      "baseline": {
+        "commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "gf2_elim_sha256": "3b93bb043405b62a0a59848be0998298bd74a8675bdbe3a3e7e004cf9672edd6",
+        "matrix_f5_f2_sha256": "e10c2290b40750fbf65e9ba8e65193d1f253939d224b0e3a3a584fc0bd9fa381",
+        "f2m_sha256": "15d8f5f357e863e0f16d49f04e88bbbd3269a8ddbb930079f41dff8ef2c0f197"
+      },
+      "candidate": {
+        "commit": null,
+        "allowed_production_paths": [
+          "suite/src/cryptanalysis/gf2_elim.rs",
+          "suite/src/cryptanalysis/matrix_f5_f2.rs",
+          "suite/src/binary_ecc/f2m.rs"
+        ],
+        "excluded_adjacent_changes": [
+          "direct Matrix-F5 unpack default",
+          "GF(2) table-reuse default",
+          "C/C++/CUDA production source changes"
+        ]
+      },
+      "local_host": {
+        "qualification": "nonqualified",
+        "probe_performed_for_this_study": false,
+        "timing_authorized": false,
+        "reason": "No current Tier-0/Tier-1 preflight or allocation receipt has been selected. Historical c-kernel-cpu-v1 failures do not substitute for a current probe.",
+        "required_before_freeze": "Pin exact CPU sets and NUMA node, pass the chosen tier preflight, and record a receipt path/hash."
+      },
+      "fixed_design": {
+        "external_rounds": 6,
+        "samples_per_invocation": 5,
+        "internal_warmup": "at least one run and at least 0.2 seconds under the canonical harness",
+        "order": "A/B/A-prime rotated by round; cell order shuffled with seed 20260926",
+        "thread_panels": {
+          "one_thread": {
+            "threads": 1,
+            "cpu_set": null
+          },
+          "fixed_many_thread": {
+            "threads": 4,
+            "cpu_set": null,
+            "requirement": "four qualified execution CPUs with complete SMT sibling, NUMA, affinity, and worker-placement evidence"
+          }
+        }
+      },
+      "workload_panels": {
+        "gf2": {
+          "ids": [
+            "gf2_la/rref_random_4940x8357",
+            "gf2_la/rref_macaulay_k5m3d5",
+            "gf2_la/echelon_macaulay_k5m3d5"
+          ],
+          "full_call_boundary": "gf2_elim::rref_counted or echelon_counted entry through returned rank and fully updated packed rows",
+          "exact_contract": "fingerprint includes rank, word_ops, row count, each row length, and every packed u64 word"
+        },
+        "matrix_f5": {
+          "ids": [
+            "bool_gb/matrix_f5_deg4_m2_n23",
+            "bool_gb/solve_matrixf5_m2_n17"
+          ],
+          "full_call_boundary": "complete Matrix-F5 build, criterion, reduction, readback, and for solve cell complete solver output",
+          "exact_contract": "degree, rows_f4, rows_pruned, rows_built, cols, rank, zero_reductions, reduce_word_ops, criterion_word_ops, criterion_rows, returned polynomials, roots, solver stats, and total word operations"
+        },
+        "f2m": {
+          "ids": [
+            "field_ec/f2m_mul_sqr_m131_64k",
+            "field_ec/f2m_mul_sqr_m163_64k",
+            "field_ec/f2m_mul_sqr_m233_64k",
+            "field_ec/f2m_inv_m163_2k",
+            "field_ec/binary_scalar_mul_sect163k1_x8"
+          ],
+          "full_call_boundary": "complete public field recurrence, inverse, or affine scalar-multiplication workload through materialized output",
+          "exact_contract": "all raw field words or final point coordinates are fingerprinted; fixed work is 65,536 mul plus 65,536 square for each recurrence, 2,048 inversions, and 8 scalar multiplications",
+          "negative_width_control": "m=233 must not use the new two-/three-limb path and must receive a neutral verdict"
+        },
+        "c_full": {
+          "ids": [
+            "field_ec/c_mont_mul_x8",
+            "field_ec/c_zp_op_chain",
+            "field_ec/c_powmod",
+            "field_ec/c_mont_pow",
+            "field_ec/c_invmod",
+            "field_ec/c_sqrtmod",
+            "field_ec/c_is_prime",
+            "field_ec/c_factorize",
+            "field_ec/c_ec_add_chain",
+            "field_ec/c_ec_batch_add",
+            "field_ec/c_ec_scalar_mul",
+            "field_ec/c_ec_count_points",
+            "dlp/c_rho_ec36",
+            "dlp/c_rho_ec44",
+            "dlp/c_rho_ec44_mt",
+            "dlp/c_rho_zp40",
+            "dlp/c_kangaroo_ec56_w34",
+            "dlp/c_kangaroo_zp61_w36",
+            "dlp/c_bsgs_ec32",
+            "dlp/c_bsgs_zp36",
+            "dlp/c_grumpy_ec32",
+            "dlp/c_pohlig_ec48s",
+            "dlp/c_pohlig_zp61s",
+            "dlp/c_precomp_build_ec32",
+            "dlp/c_precomp_online_ec32",
+            "dlp/c_glv_rho_j0_32",
+            "dlp/c_gpu_rho_emulate_ec32",
+            "dlp/c_cheon56",
+            "relation/c_ic_precompute_zp44",
+            "relation/c_ic_precompute_zp52",
+            "relation/c_ic_randexp_zp36",
+            "relation/c_ic_log_zp44",
+            "relation/c_linsolve_sparse",
+            "relation/c_dense_solve"
+          ],
+          "full_call_boundary": "each ca_perfbench k->run fixed-input call; setup and prepare remain outside",
+          "exact_contract": "exactly 34 identical id/area/description/tier rows and one identical stable result fingerprint for every sample, round, arm, and thread panel; fixed iteration/input descriptions are part of the frozen registry digest"
+        }
+      },
+      "commands": {
+        "correctness": [
+          "cargo test --release --manifest-path suite/Cargo.toml gf2_elim",
+          "cargo test --release --manifest-path suite/Cargo.toml matrix_f5_f2",
+          "cargo test --release --manifest-path suite/Cargo.toml binary_ecc::f2m",
+          "cmake --build <CANDIDATE_C_BUILD> --target test",
+          "ctest --test-dir <CANDIDATE_C_BUILD> --output-on-failure"
+        ],
+        "rust_compare_template": "python3 scripts/perf/perfindex.py compare --base <RUN_ROOT>/base-rust/perfbench --cand <RUN_ROOT>/candidate-rust/perfbench --filter gf2_la/rref_random_4940x8357 --filter gf2_la/rref_macaulay_k5m3d5 --filter gf2_la/echelon_macaulay_k5m3d5 --filter bool_gb/matrix_f5_deg4_m2_n23 --filter bool_gb/solve_matrixf5_m2_n17 --filter field_ec/f2m_mul_sqr_m131_64k --filter field_ec/f2m_mul_sqr_m163_64k --filter field_ec/f2m_mul_sqr_m233_64k --filter field_ec/f2m_inv_m163_2k --filter field_ec/binary_scalar_mul_sect163k1_x8 --rounds 6 --threads <1_OR_4> --samples 5 --max-seconds 2.0 --taskset <FROZEN_CPUSET> --seed 20260926 --out <RUN_ROOT>/wall-<1t_OR_4t>/rust",
+        "c_compare_template": "python3 scripts/perf/perfindex.py compare --base <RUN_ROOT>/base-c/ca_perfbench --cand <RUN_ROOT>/candidate-c/ca_perfbench --full --rounds 6 --threads <1_OR_4> --samples 5 --max-seconds 2.0 --taskset <FROZEN_CPUSET> --seed 20260926 --out <RUN_ROOT>/wall-<1t_OR_4t>/c",
+        "rust_callgrind": "python3 scripts/perf/perfindex.py instr --base <RUN_ROOT>/base-rust/perfbench --cand <RUN_ROOT>/candidate-rust/perfbench --filter <EACH_OF_10_FIXED_RUST_IDS> --out <RUN_ROOT>/callgrind/rust",
+        "c_callgrind": "python3 scripts/perf/perfindex.py instr --base <RUN_ROOT>/base-c/ca_perfbench --cand <RUN_ROOT>/candidate-c/ca_perfbench --full --out <RUN_ROOT>/callgrind/c",
+        "perf_stat_template": "taskset -c <FROZEN_1T_CPU> perf stat -x, -o <OUTPUT.csv> -e cycles,instructions,branches,branch-misses,L1-dcache-loads,L1-dcache-load-misses,LLC-loads,LLC-load-misses -- <BINARY> run --filter <EXACT_ID> --exact --samples 5 --max-seconds 2.0",
+        "perf_record_template": "taskset -c <FROZEN_1T_CPU> perf record -o <OUTPUT.data> -g --call-graph dwarf -- <BINARY> run --filter <EXACT_ID> --exact --samples 5 --max-seconds 2.0",
+        "perf_diagnostic_scope": "perf stat each base/candidate cell at 1t. perf record the three fixed Rust representatives gf2_la/rref_random_4940x8357, bool_gb/matrix_f5_deg4_m2_n23, field_ec/f2m_mul_sqr_m163_64k, plus the five C cells with largest baseline Callgrind Ir (ties lexicographic). Selection is diagnostic and cannot affect any gate.",
+        "disassembly": "objdump -drwC <BASE_OR_CANDIDATE_RUST_PERFBENCH> > <OUTPUT.disasm>; retain tool version and verify AVX2/PCLMUL path instruction counts without treating them as performance evidence"
+      },
+      "freeze_blockers": [
+        "implement and commit one clean candidate containing only the three allowed Rust production changes",
+        "replace every --current and null candidate commit with the exact 40-hex candidate revision",
+        "select one qualified host/tier, exact 1t and 4t CPU sets, NUMA node, affinity/service configuration, and preflight receipt path",
+        "record exact Rust/C toolchains, flags, environment, source/harness/registry hashes, both executable hashes, and a bundle-manifest hash for every arm",
+        "measure only an untimed planning estimate through an approved preflight mechanism and fill preflight_runtime without collecting benchmark data",
+        "write and hash the analysis/export script implementing the declared paired bootstrap, Holm correction, exact gates, and fixed verdicts",
+        "replace analysis_plan.frozen_before_data=false with true only when the analysis script is pinned",
+        "review all command placeholders and output paths, then run the canonical freeze command; do not hand-edit a protocol hash"
+      ]
+    }
+  }
+}
