@@ -1,0 +1,34 @@
+{"id":"field_ec/c_mont_mul_x8","area":"field_ec","tier":"Quick","desc":"2^24 Montgomery multiplications (header ca_mont_mul), 8 independent chains, 61-bit prime"}
+{"id":"field_ec/c_zp_op_chain","area":"field_ec","tier":"Quick","desc":"4M dependent Z_p^* group ops + 1M squarings through the vtable, 61-bit safe prime"}
+{"id":"field_ec/c_powmod","area":"field_ec","tier":"Quick","desc":"4 x 8192 ca_powmod (64-bit exponents) over 61/62/41/64-bit moduli"}
+{"id":"field_ec/c_mont_pow","area":"field_ec","tier":"Quick","desc":"4 x 8192 ca_mont_pow (64-bit exponents) over 61/62/41/64-bit moduli"}
+{"id":"field_ec/c_invmod","area":"field_ec","tier":"Quick","desc":"4 x 32768 ca_invmod + 4 x 8192 ca_mont_inv over 61/62/41/64-bit moduli"}
+{"id":"field_ec/c_sqrtmod","area":"field_ec","tier":"Quick","desc":"3 x 4096 ca_sqrtmod_prime: p = 3 mod 4 (60-bit), p = 1 mod 2^20 (61-bit), 61-bit safe prime"}
+{"id":"field_ec/c_is_prime","area":"field_ec","tier":"Quick","desc":"ca_is_prime over 30000 integers near 2^62 and 2^40, then 200 ca_next_prime near 2^50"}
+{"id":"field_ec/c_factorize","area":"field_ec","tier":"Quick","desc":"ca_factorize of 64 semiprimes (26x30-bit) and 128 random 62-bit integers; 16 primitive roots"}
+{"id":"field_ec/c_ec_add_chain","area":"field_ec","tier":"Quick","desc":"60000 affine EC adds + 30000 doublings (one inversion each), 60-bit prime-order curve"}
+{"id":"field_ec/c_ec_batch_add","area":"field_ec","tier":"Quick","desc":"6000 x ca_group_batch_op of 256 affine adds (simultaneous inversion), 60-bit curve"}
+{"id":"field_ec/c_ec_scalar_mul","area":"field_ec","tier":"Quick","desc":"1024 ca_group_mul with 60-bit scalars (affine double-and-add), 60-bit curve"}
+{"id":"field_ec/c_ec_count_points","area":"field_ec","tier":"Quick","desc":"ca_ec_count_points (Mestre BSGS) on four 56-bit curves"}
+{"id":"dlp/c_rho_ec36","area":"dlp","tier":"Quick","desc":"Pollard rho, negation map, 4 targets on a 36-bit prime-order curve, 1 thread"}
+{"id":"dlp/c_rho_ec44","area":"dlp","tier":"Full","desc":"Pollard rho, negation map, 2 targets on a 44-bit prime-order curve, 1 thread"}
+{"id":"dlp/c_rho_ec44_mt","area":"dlp","tier":"Full","desc":"Pollard rho on a 44-bit curve, RAYON_NUM_THREADS threads, 4 targets (fingerprint: logs only)"}
+{"id":"dlp/c_rho_zp40","area":"dlp","tier":"Quick","desc":"Pollard rho in Z_p^*, 3 targets, safe prime p (40-bit), 1 thread"}
+{"id":"dlp/c_kangaroo_ec56_w34","area":"dlp","tier":"Quick","desc":"kangaroo, 4 interval targets of width 2^34 on a 56-bit prime-order curve"}
+{"id":"dlp/c_kangaroo_zp61_w36","area":"dlp","tier":"Quick","desc":"kangaroo, 4 interval targets of width 2^36 in Z_p^* (61-bit safe prime)"}
+{"id":"dlp/c_bsgs_ec32","area":"dlp","tier":"Quick","desc":"BSGS over the whole group, 2 targets, 32-bit prime-order curve"}
+{"id":"dlp/c_bsgs_zp36","area":"dlp","tier":"Quick","desc":"BSGS over the whole group, 3 targets, Z_p^* safe prime (36-bit)"}
+{"id":"dlp/c_grumpy_ec32","area":"dlp","tier":"Quick","desc":"two grumpy giants and a baby, 2 targets, 32-bit curve"}
+{"id":"dlp/c_pohlig_ec48s","area":"dlp","tier":"Quick","desc":"Pohlig-Hellman + BSGS, 16 targets, 48-bit curve of order 2^2*31*100493*11294117"}
+{"id":"dlp/c_pohlig_zp61s","area":"dlp","tier":"Quick","desc":"Pohlig-Hellman + BSGS, 16 targets, Z_p^* with p-1 = 2^2*5*268436507*268536517"}
+{"id":"dlp/c_precomp_build_ec32","area":"dlp","tier":"Quick","desc":"Bernstein-Lange table build (1 thread) on a 32-bit curve + 2 online solves"}
+{"id":"dlp/c_precomp_online_ec32","area":"dlp","tier":"Quick","desc":"48 online solves against a prebuilt Bernstein-Lange table, 32-bit curve"}
+{"id":"dlp/c_glv_rho_j0_32","area":"dlp","tier":"Quick","desc":"ca_curve_solve (GLV order-6 folded rho) on glv-j0-32, 32 targets"}
+{"id":"dlp/c_gpu_rho_emulate_ec32","area":"dlp","tier":"Quick","desc":"GPU rho kernel through the host emulator backend, 2 targets, 32-bit curve"}
+{"id":"dlp/c_cheon56","area":"dlp","tier":"Quick","desc":"Cheon's attack (d | p-1), 56-bit prime-order subgroup of Z_r^*"}
+{"id":"relation/c_ic_precompute_zp44","area":"relation","tier":"Quick","desc":"index calculus precompute in Z_p^* (44-bit safe prime): linear sieve + Lanczos, 1 thread"}
+{"id":"relation/c_ic_precompute_zp52","area":"relation","tier":"Full","desc":"index calculus precompute in Z_p^* (52-bit safe prime): linear sieve + Lanczos, 1 thread"}
+{"id":"relation/c_ic_randexp_zp36","area":"relation","tier":"Quick","desc":"index calculus precompute, random-exponent collector, 36-bit safe prime, 1 thread"}
+{"id":"relation/c_ic_log_zp44","area":"relation","tier":"Quick","desc":"48 individual logs against a fresh index-calculus context (44-bit safe prime)"}
+{"id":"relation/c_linsolve_sparse","area":"relation","tier":"Quick","desc":"ca_linsolve_mod_prime: 784x700 IC-shaped sparse system mod a 61-bit prime (SGE + Lanczos)"}
+{"id":"relation/c_dense_solve","area":"relation","tier":"Quick","desc":"ca_dense_solve_mod_prime: 150x150 dense Gauss-Jordan mod a 61-bit prime"}

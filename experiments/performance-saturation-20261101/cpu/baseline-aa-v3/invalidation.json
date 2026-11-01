@@ -1,0 +1,51 @@
+{
+  "schema": "cpu-baseline-aa-invalidation/v1",
+  "recorded_at": "2026-11-01T20:38:33Z",
+  "protocol_path": "experiments/performance-saturation-20261101/cpu/protocol-baseline-aa-artifacts-v3.json",
+  "protocol_sha256": "38e165778da0e3799f89a5513af107aa577e160687eec9a7b509c8d382803e0d",
+  "protocol_registration_commit": "24ce34273f780c6d24e03a0ce7d34c2ccc8ef0b1",
+  "protocol_freeze_commit": "b944b42c85c77dfac71f07d52ce6ecfeea45fb15",
+  "terminal_outcome": "invalid_exactness_or_provenance",
+  "timing_claim_authorized": false,
+  "partial_timing_reusable": false,
+  "completed_phases": {
+    "build_identity": "pass",
+    "registry": "pass",
+    "rust_1t_wall": "invalid_interrupted_round_1",
+    "c_1t_wall": "not_started",
+    "rust_4t_wall": "not_started",
+    "c_4t_wall": "not_started",
+    "callgrind": "not_started",
+    "perf_stat": "not_started",
+    "perf_record": "not_started"
+  },
+  "failure": {
+    "expected_rust_ids": 10,
+    "expanded_rust_ids": 11,
+    "unexpected_id": "gf2_la/rref_random_4940x8357_w17",
+    "ambiguous_filter": "gf2_la/rref_random_4940x8357",
+    "cause": "perfindex list_kernels applies each --filter as a substring of the registry id, so the frozen filter selected both the exact ID and its _w17 suffix variant",
+    "source_evidence": [
+      "scripts/perf/perfindex.py:132-140 sha256=671a4696625ba0c8799e673db2ae6a31bb9a0bbcca5ec4cd65fecfb397cab401",
+      "suite/examples/perfbench/gf2_la.rs:571-580 sha256=f28d11925594574db0a858cba1b9bfa5e600b2bb7ef2477becf81c9f5dfad7bb"
+    ],
+    "planned_pairs_completed_before_stop": 9,
+    "unplanned_pairs_completed_before_stop": 1,
+    "numeric_exit_status": null,
+    "exit_status_note": "The executor surfaced KeyboardInterrupt but did not surface a numeric exit status.",
+    "expected_isolation_receipt": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v2/wall-1t/rust/isolation.jsonl",
+    "isolation_receipt_present_after_interrupt": false,
+    "compare_directory_present": true,
+    "compare_files_present": false,
+    "raw_progress_stream_capture": "The executor stream was not redirected by the frozen command. wall-rust-1t-executor-transcript.txt preserves the exact progress and traceback text returned by the executor transport."
+  },
+  "registry_receipts": {
+    "rust_rows": 262,
+    "rust_selected_exact_ids": 10,
+    "rust_sha256": "b225091d89a02e7400b01bb7704c1f358192049753d4bc279d70dcb352f194a0",
+    "c_rows": 34,
+    "c_sha256": "eafa8c3f389a88115f05ba1c5b602fc3b199cc0a6c80ed71432917c59cc97d44",
+    "validation_sha256": "bdf4130121d8a4d7e392f3cf5cef5e8c6b3b0aa5242cf24f22ca1e5580b3abf7"
+  },
+  "stop_reason": "Frozen invalidation rules forbid any cell-set change and the parent requested preserving and stopping on the first failed invocation. No retry or downstream diagnostic is authorized under v3."
+}
