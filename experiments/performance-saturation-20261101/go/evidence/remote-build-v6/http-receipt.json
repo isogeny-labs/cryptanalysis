@@ -1,0 +1,145 @@
+{
+  "binding": {
+    "authentication": "provider-recovered ephemeral bearer; value redacted",
+    "chunk_bytes": 4194304,
+    "command": "python3 experiments/performance-saturation-20261101/go/run_remote_ab.py --mode build --out go-ab-v6-build --expected-cpus 32 --expected-memory-bytes 64000000000 --expected-cpu-flavor cpu3c",
+    "command_sha256": "7d89eaa3af3a034f7aebe6f144f2e387e668e770eb3a566f8557e2d85cdabc1f",
+    "command_timeout_seconds": 3600,
+    "job_id": "go-coord-ab-build-v6-39ebecd7abe4",
+    "max_result_bytes": 67108864,
+    "outputs": [
+      "go-ab-v6-build"
+    ],
+    "ownership_id": "03730590b1c018a6cf73c0513c6b16eeae1eda18484a1ed639d7d3dc4797cd7a",
+    "pod_max_seconds": 7200,
+    "port": 8888,
+    "source": {
+      "archive_sha256": "3d42888763cc49be8a099cdeda92103e7530f614a9b3551c3b6b786011812159",
+      "commit": "65a67d53577fa307a6a0c397b6890fd3793d7e38",
+      "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+      "ref": "refs/heads/codex/performance-saturation-20261101",
+      "tree": "ebe38bdb56a8e749d1cc787d7d21105e7e1da823"
+    }
+  },
+  "cleanup": {
+    "absence_verified": true,
+    "delete_requested": true,
+    "id": "6xr0x0fwky4yyd"
+  },
+  "error": null,
+  "finished_at": "2026-11-01T22:05:54.181913+00:00",
+  "pod": {
+    "cloud": "SECURE",
+    "cost": 0.96,
+    "cpu": {
+      "id": "cpu3c",
+      "memory": 64,
+      "vcpuCount": 32
+    },
+    "createdAt": "2026-11-01T21:55:50.584Z",
+    "cudaVersion": null,
+    "dataCenterId": "US-CA-2",
+    "gpu": null,
+    "id": "6xr0x0fwky4yyd",
+    "image": "runpod/base:1.0.2-ubuntu2404",
+    "name": "go-coord-ab-build-v6-39ebecd7abe4",
+    "startedAt": "2026-11-01T21:55:50.578Z",
+    "status": "RUNNING"
+  },
+  "provider_actions": true,
+  "recovery": {
+    "new_allocation_attempted": false,
+    "original_controller_receipt_available": false,
+    "reason": "workspace_transport_disconnected_controller",
+    "tool": {
+      "commit": "f11bacf36eb36418189d2636913319cba806cac1",
+      "path": "cloud/runpod_http_recover.py",
+      "sha256": "a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0"
+    }
+  },
+  "remote_status": {
+    "archive": {
+      "bytes": 6793270,
+      "files": 7,
+      "manifest_sha256": "6e0362ba13179f12e5ac61459aad1101bc79cd1746735484e5623d1ec78e6b05",
+      "sha256": "4bb8cff1e41a09119cfcded20ac4c671a0cb470afd809f7341e755971506f99e",
+      "uncompressed_bytes": 11293496
+    },
+    "archive_ready": true,
+    "chunks": [
+      {
+        "bytes": 4194304,
+        "index": 0,
+        "offset": 0,
+        "path": "/v1/result/000000",
+        "sha256": "adc7aaa67edca8cd5098f02dab0edaf9926b85b2162a57d56f17d8c1e9df2627"
+      },
+      {
+        "bytes": 2598966,
+        "index": 1,
+        "offset": 4194304,
+        "path": "/v1/result/000001",
+        "sha256": "79c799bc803b257d616c92b2ccce67cf9106ff84a059493426bbe0eee58bd985"
+      }
+    ],
+    "command_sha256": "7d89eaa3af3a034f7aebe6f144f2e387e668e770eb3a566f8557e2d85cdabc1f",
+    "command_started_unix": 1793570179.3393204,
+    "done": true,
+    "finished_unix": 1793570297.4560742,
+    "hardware": {
+      "gpus": [],
+      "nvcc": "",
+      "pod_id": "6xr0x0fwky4yyd"
+    },
+    "job_id": "go-coord-ab-build-v6-39ebecd7abe4",
+    "returncode": 0,
+    "schema": "runpod.http-batch.status/v1",
+    "source_archive_sha256": "3d42888763cc49be8a099cdeda92103e7530f614a9b3551c3b6b786011812159",
+    "source_commit": "65a67d53577fa307a6a0c397b6890fd3793d7e38",
+    "source_tree": "ebe38bdb56a8e749d1cc787d7d21105e7e1da823",
+    "stage": "complete",
+    "started_unix": 1793570179.3346267,
+    "timed_out": false,
+    "worker_error_type": null
+  },
+  "result": {
+    "archive": "/workspace/.benchmarks/performance-saturation/go/remote-build-v6/http-receipt.result.tar.gz",
+    "archive_bytes": 6793270,
+    "archive_sha256": "4bb8cff1e41a09119cfcded20ac4c671a0cb470afd809f7341e755971506f99e",
+    "files": [
+      {
+        "bytes": 310,
+        "path": ".runpod-batch/job-status.json",
+        "sha256": "9eb31dfab4acbfa5d712ccd80bb4328a7d3b54f4f3fb620526832da4a053630e"
+      },
+      {
+        "bytes": 675,
+        "path": ".runpod-batch/log.txt",
+        "sha256": "537b799418263bd5013c0892903c28cfd9088dd27b8f7a153577f5477fd2e473"
+      },
+      {
+        "bytes": 443,
+        "path": ".runpod-batch/source.json",
+        "sha256": "f28b8e638daf874c80214e9d738687736778a52cac2fc977f38b9419aa2cdfd1"
+      },
+      {
+        "bytes": 5637440,
+        "path": "go-ab-v6-build/build/coord-baseline.test",
+        "sha256": "a6519b5c68f41690ae1e689457122c6787cea1de0cc8be272eafcb34e5269720"
+      },
+      {
+        "bytes": 5639952,
+        "path": "go-ab-v6-build/build/coord-candidate.test",
+        "sha256": "b688b1a7694acda87bb31398611f158619a71dd529090abb9793ce8ac6e1293f"
+      },
+      {
+        "bytes": 14084,
+        "path": "go-ab-v6-build/build/manifest.json",
+        "sha256": "540f67c53a271d36862a906fb29f43ed88728703b5ad27abeeb004727089fcbd"
+      }
+    ],
+    "metadata": "/workspace/.benchmarks/performance-saturation/go/remote-build-v6/http-receipt.remote"
+  },
+  "schema": "runpod.http-batch.recovery-receipt/v1",
+  "started_at": "2026-11-01T22:05:47.724748+00:00"
+}
