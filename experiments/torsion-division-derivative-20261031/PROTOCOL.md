@@ -2,7 +2,7 @@
 
 Date frozen: 2026-10-31
 
-![H109 evidence flow](figures/h109-torsion-derivative-flow.svg)
+![H109 evidence flow](figures/h109-torsion-derivative-flow.png)
 
 Editable vector source: [`h109-torsion-derivative-flow.svg`](figures/h109-torsion-derivative-flow.svg).
 
@@ -158,4 +158,72 @@ Implementation may start only after this freeze is present in a draft H109 PR.
 The canonical experiment PR belongs in `isogeny-labs/crypto`; the paired
 reference-harness PR belongs in `isogeny-labs/cryptanalysis`.  Neither PR is a
 result until the frozen matrix has run and its artifacts are committed.
+
+## Executed experiment
+
+The draft gates were opened as
+[`isogeny-labs/crypto#3102`](https://github.com/isogeny-labs/crypto/pull/3102)
+and
+[`isogeny-labs/cryptanalysis#1342`](https://github.com/isogeny-labs/cryptanalysis/pull/1342).
+Implementation commit `eb6cc02` then executed the protocol without changing
+the coefficient family, curve cohort, target set, controls, or stopping rule.
+
+All 9,096 target rows passed every algebraic control:
+
+- `psi_r(Q)=0` and all four candidate inputs were nonzero;
+- all squared local identities had residue zero;
+- the memoized values agreed with the independent sequential recurrence;
+- derivatives `D psi_2` through `D psi_8` agreed with independently
+  differentiated symbolic polynomials at every target.
+
+The evaluator materialized 412,328 non-base recurrence nodes (26--54 per
+target as `r` grew from 83 to 947), used 10,674,040 counted field
+multiplications and 211,712 inversions, and retained at most a small
+logarithmic-size cache per target.  This validates the fast evaluator on the
+frozen cohort; it does not supply a DLP oracle.
+
+The complete formula searches examined 8,832 coefficient tuples across the
+28 rows.  **No exact formula occurred on any row.**  Best agreement ranged
+from 0.500000 to 0.611111, with median 0.530826.  The 32 symmetry-matched
+controls ranged from 0.500000 to 0.629630, with median 0.509259, and likewise
+had no exact formula.  On the two frozen primary comparisons:
+
+```text
+E101: candidate 0.500000; control mean 0.500000; empirical tail p=1.000000.
+E127: candidate 0.574074; control mean 0.560185; empirical tail p=0.411765.
+```
+
+The empirical tail values use the conservative plus-one rank among 16 frozen
+controls.  They are descriptive finite-panel statistics, not asymptotic
+probabilities.  Because no row was exact, the preregistered parity/halving
+decoder gate correctly did not open.
+
+Diagnostic wall totals in the committed artifact were 6.3530 s for candidate
+evaluation, 0.7493 s for formula enumeration, and 15.1463 s for the deliberately
+expensive independent symbolic/value controls; the complete Python process
+took 25.7005 s in the
+recorded container.  These are unisolated diagnostic times, not performance
+benchmarks.  The generic square-root references and H107/H108 artifact hashes
+remain in the raw result for accounting.
+
+A second complete run changed only diagnostic timing fields.  After removing
+clock and environment fields, both runs had scientific-content SHA-256
+`3991b25d2a2ddac0ebb1d25370c8b110051a40acca64a6bda3dd3baba4191b69`.
+
+Lean 4.19.0 checked the tangent-derivation lemma, multiplicative-character
+transport, exact phase-to-parity interface, binary reconstruction, and
+conditional cost composition.  `#print axioms` reports only the named standard
+Lean foundations for the applicable theorems.  The actual division-polynomial
+local identity remains a written derivation plus exhaustive frozen check, not a
+fully formalized division-polynomial theorem.
+
+Result: the local identity and polylogarithmic-node evaluator are supported on
+the frozen instances, but the constant-size phase-to-parity bridge is rejected
+for the complete preregistered family.  This closes H109 only; it neither rules
+out other functions of torsion-local data nor establishes a generic ECDLP
+lower bound.  The next experiment must use a mechanism other than widening
+this five-input multiplicative character formula.
+
+Committed result SHA-256:
+`940123c44c6194b247fab3596a9ed2e331ee7e01b2fb8830fc7e8465e354993a`.
 

@@ -16,19 +16,19 @@
   <text x="50" y="78" class="sub">Each arrow is separately derived, measured, or still proposed; no identity by itself establishes a DLP speedup.</text>
 
   <rect x="55" y="120" width="300" height="150" class="box derived"/>
-  <text x="80" y="150" class="tag blue">DERIVED; EXACT CHECK PENDING</text>
+  <text x="80" y="150" class="tag blue">DERIVED; 9,096 CHECKS PASSED</text>
   <text x="80" y="182" class="h">Invariant torsion derivative</text>
   <text x="80" y="212" class="t">D(x)=2y, D(y)=3x²+a</text>
   <text x="80" y="237" class="t">δᵣ(Q)² = −r² ψᵣ₋₁(Q) ψᵣ₊₁(Q)</text>
 
   <rect x="450" y="120" width="310" height="150" class="box proposed"/>
-  <text x="475" y="150" class="tag amber">PROPOSED ORACLE</text>
+  <text x="475" y="150" class="tag amber">TESTED: NO EXACT FORMULA</text>
   <text x="475" y="182" class="h">Constant-size phase formula</text>
   <text x="475" y="212" class="t">5 coefficients in Z/MZ</text>
   <text x="475" y="237" class="t">≤ 4⁵ = 1,024 complete candidates</text>
 
   <rect x="855" y="120" width="290" height="150" class="box measured"/>
-  <text x="880" y="150" class="tag green">FROZEN MEASUREMENT</text>
+  <text x="880" y="150" class="tag green">EXECUTED MEASUREMENT</text>
   <text x="880" y="182" class="h">28 rows; 9,096 targets</text>
   <text x="880" y="212" class="t">4 generator relabelings per curve</text>
   <text x="880" y="237" class="t">32 symmetry-matched null labels</text>
@@ -37,7 +37,7 @@
   <path d="M760 195 H845" class="edge"/><text x="786" y="180" class="tag amber">TEST</text>
 
   <rect x="215" y="355" width="330" height="145" class="box null"/>
-  <text x="240" y="385" class="tag red">FAILURE / NULL BRANCH</text>
+  <text x="240" y="385" class="tag red">OBSERVED RESULT / NULL BRANCH</text>
   <text x="240" y="417" class="h">Reject the scoped parity oracle</text>
   <text x="240" y="447" class="t">No exact formula, generator instability,</text>
   <text x="240" y="472" class="t">or performance matched by null labels</text>
