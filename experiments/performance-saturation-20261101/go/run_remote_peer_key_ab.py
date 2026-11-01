@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bind the v8 fixed-peer-key candidate to the generic remote A/B runner."""
+"""Bind the v9 fixed-peer-key A/B+A/A design to the generic remote runner."""
 
 from __future__ import annotations
 
@@ -24,6 +24,28 @@ runner.COMMON_TEST_SHA256 = (
     "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8"
 )
 runner.RUNNER_BINDING_PATH = str(Path(__file__).resolve())
+runner.EXPORTER_PATH = str(Path(__file__).with_name("export_remote_peer_key_ab.py").resolve())
+runner.ANALYZER_PATH = str(Path(__file__).with_name("analyze_remote_peer_key_ab.py").resolve())
+runner.SUPPORT_PATHS = tuple(
+    str(Path(__file__).with_name(name).resolve())
+    for name in (
+        "run_campaign.py",
+        "analyze_remote_ab.py",
+    )
+)
+runner.CAMPAIGN_RUNNER_PATH = str(
+    Path(__file__).with_name("run_remote_peer_key_campaign.py").resolve()
+)
+runner.L2_MEASURE_PATH = str(Path(__file__).with_name("l2_measure.py").resolve())
+runner.ENABLE_AA_CONTROLS = True
+runner.EXCLUDE_CPU_ZERO = True
+runner.OUTPUT_BUDGET_BYTES = 96_000_000
+runner.AFFINITY_POLICY = (
+    "require exactly 32 distinct allowed CPU ids; order by "
+    "(package,die,numa,core,cpu), with missing topology sorting last; choose the first "
+    "ordered CPU whose complete thread_siblings set is allowed, excludes CPU0, and "
+    "leaves at least one housekeeping CPU; reserve that complete SMT sibling set"
+)
 
 
 if __name__ == "__main__":

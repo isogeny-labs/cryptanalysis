@@ -57,6 +57,15 @@ AFFINITY_POLICY = (
 # calling ``main``.  Direct historical build/run invocations intentionally
 # leave it unset.
 RUNNER_BINDING_PATH: str | None = None
+EXPORTER_PATH: str | None = None
+ANALYZER_PATH: str | None = None
+SUPPORT_PATHS: tuple[str, ...] = ()
+OUTPUT_BUDGET_BYTES: int | None = None
+REMOTE_SUMMARY_RESERVE_BYTES = 65_536
+CAMPAIGN_RUNNER_PATH: str | None = None
+L2_MEASURE_PATH: str | None = None
+ENABLE_AA_CONTROLS = False
+EXCLUDE_CPU_ZERO = False
 
 
 def arguments(argv: list[str] | None = None) -> argparse.Namespace:
@@ -211,6 +220,22 @@ def ordered_cpus(affinity: list[int], topology: list[dict[str, Any]]) -> list[in
     )
 
 
+def parse_cpu_set(text: str | None) -> set[int]:
+    result: set[int] = set()
+    if not text:
+        return result
+    try:
+        for field in text.split(","):
+            if "-" in field:
+                left, right = field.split("-", 1)
+                result.update(range(int(left), int(right) + 1))
+            elif field:
+                result.add(int(field))
+    except ValueError:
+        return set()
+    return result
+
+
 def host_snapshot() -> dict[str, Any]:
     affinity = sorted(os.sched_getaffinity(0))
     topology = cpu_topology(affinity)
@@ -251,6 +276,27 @@ def validate_host(snapshot: dict[str, Any], cpus: int, memory_bytes: int) -> dic
     order = ordered_cpus(affinity, snapshot["cpu_topology"])
     if snapshot.get("topology_order") != order:
         raise RuntimeError("recorded CPU topology order is inconsistent")
+    if EXCLUDE_CPU_ZERO:
+        by_cpu = {row["cpu"]: row for row in snapshot["cpu_topology"]}
+        eligible = []
+        allowed = set(affinity)
+        for cpu in order:
+            siblings = parse_cpu_set(by_cpu[cpu].get("thread_siblings"))
+            if (
+                siblings
+                and cpu in siblings
+                and siblings <= allowed
+                and 0 not in siblings
+                and allowed - siblings
+            ):
+                eligible.append((cpu, sorted(siblings)))
+        if len(eligible) < BENCHMARK_CPU_COUNT:
+            raise RuntimeError("no eligible complete non-housekeeping SMT core")
+        benchmark_cpus = [item[0] for item in eligible[:BENCHMARK_CPU_COUNT]]
+        reservation_cpus = eligible[0][1]
+    else:
+        benchmark_cpus = order[:BENCHMARK_CPU_COUNT]
+        reservation_cpus = benchmark_cpus
     if type(memory_bytes) is not int or memory_bytes <= 0:
         raise RuntimeError(f"invalid expected memory byte limit: {memory_bytes!r}")
     memory_max = snapshot["memory_max"]
@@ -264,7 +310,8 @@ def validate_host(snapshot: dict[str, Any], cpus: int, memory_bytes: int) -> dic
         "policy": AFFINITY_POLICY,
         "allowed_cpus": affinity,
         "topology_order": order,
-        "benchmark_cpus": order[:BENCHMARK_CPU_COUNT],
+        "benchmark_cpus": benchmark_cpus,
+        "reservation_cpus": reservation_cpus,
         "memory_limit_bytes": memory_bytes,
     }
 
@@ -303,6 +350,32 @@ def install_go(work: Path) -> tuple[Path, dict[str, Any]]:
     }
     archive.unlink()
     return go, receipt
+
+
+def git_archive_receipt(repo: Path, commit: str) -> dict[str, Any]:
+    """Stream-hash the exact registered source archive without retaining 878 MB."""
+
+    process = subprocess.Popen(
+        ["git", "-C", str(repo), "archive", "--format=tar", commit],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    assert process.stdout is not None
+    digest = hashlib.sha256()
+    size = 0
+    for block in iter(lambda: process.stdout.read(1024 * 1024), b""):
+        size += len(block)
+        digest.update(block)
+    _, stderr = process.communicate()
+    if process.returncode != 0:
+        raise RuntimeError(f"failed to hash exact Git source archive: {stderr[-500:]!r}")
+    return {
+        "commit": commit,
+        "tree": git(repo, "rev-parse", f"{commit}^{{tree}}"),
+        "bytes": size,
+        "sha256": digest.hexdigest(),
+        "retained": False,
+    }
 
 
 def ensure_commit(repo: Path, commit: str) -> None:
@@ -539,6 +612,22 @@ def counter_deltas(before: str | None, after: str | None) -> dict[str, int] | No
     return {key: right[key] - left[key] for key in sorted(left)}
 
 
+def tree_inventory(root: Path, *, exclude: set[str] | None = None) -> dict[str, int]:
+    excluded = exclude or set()
+    files = 0
+    total = 0
+    for path in root.rglob("*"):
+        relative = path.relative_to(root).as_posix()
+        if relative in excluded:
+            continue
+        if path.is_symlink() or (path.exists() and not path.is_file() and not path.is_dir()):
+            raise RuntimeError(f"output tree contains a non-regular entry: {relative}")
+        if path.is_file():
+            files += 1
+            total += path.stat().st_size
+    return {"files": files, "bytes": total}
+
+
 def pressure_avg10(text: str | None) -> dict[str, str] | None:
     if text is None:
         return None
@@ -593,8 +682,36 @@ def main() -> int:
         raise SystemExit("combined mode derives both binary hashes in the same invocation")
     repo = Path(__file__).resolve().parents[3]
     binding = Path(RUNNER_BINDING_PATH).resolve() if RUNNER_BINDING_PATH else None
-    if binding is not None and not binding.is_file():
-        raise SystemExit(f"runner binding is not a regular file: {binding}")
+    exporter = Path(EXPORTER_PATH).resolve() if EXPORTER_PATH else None
+    analyzer = Path(ANALYZER_PATH).resolve() if ANALYZER_PATH else None
+    support = tuple(Path(path).resolve() for path in SUPPORT_PATHS)
+    campaign_binding = (
+        Path(CAMPAIGN_RUNNER_PATH).resolve() if CAMPAIGN_RUNNER_PATH else None
+    )
+    l2_binding = Path(L2_MEASURE_PATH).resolve() if L2_MEASURE_PATH else None
+    for label, path in (("runner binding", binding), ("exporter", exporter), ("analyzer", analyzer)):
+        if path is not None and not path.is_file():
+            raise SystemExit(f"{label} is not a regular file: {path}")
+    if (exporter is None) != (analyzer is None):
+        raise SystemExit("exporter and analyzer bindings must be configured together")
+    if any(not path.is_file() for path in support):
+        raise SystemExit("every support binding must be a regular file")
+    if any(path is not None and not path.is_file() for path in (campaign_binding, l2_binding)):
+        raise SystemExit("campaign and L2 bindings must be regular files")
+    if (campaign_binding is None) != (l2_binding is None):
+        raise SystemExit("campaign and L2 bindings must be configured together")
+    if support and (exporter is None or analyzer is None or binding is None):
+        raise SystemExit("support bindings require the complete wrapper/export/analyzer binding")
+    bound_paths = tuple(
+        path
+        for path in (
+            Path(__file__).resolve(), binding, exporter, analyzer,
+            campaign_binding, l2_binding, *support,
+        )
+        if path is not None
+    )
+    if len({path.name for path in bound_paths}) != len(bound_paths):
+        raise SystemExit("bound tooling basenames must be unique for retained evidence")
     output = options.out.resolve()
     output.mkdir(parents=True)
     initial_host = host_snapshot()
@@ -612,12 +729,60 @@ def main() -> int:
         assert_affinity(expected_affinity)
         build_dir = output / "build"
         build_dir.mkdir()
+        source_commit = git(repo, "rev-parse", "HEAD")
+        if exporter is not None:
+            source_archive = git_archive_receipt(repo, source_commit)
+        else:
+            source_archive = None
+        retained_tooling: dict[str, dict[str, Any]] = {}
+        if bound_paths:
+            tooling_dir = output / "tooling"
+            tooling_dir.mkdir()
+            for source_path in bound_paths:
+                retained = tooling_dir / source_path.name
+                shutil.copy2(source_path, retained)
+                if sha256(retained) != sha256(source_path):
+                    raise RuntimeError(f"retained tooling SHA-256 mismatch: {source_path}")
+                retained_tooling[str(source_path.relative_to(repo))] = {
+                    "path": str(retained.relative_to(output)),
+                    "bytes": retained.stat().st_size,
+                    "sha256": sha256(retained),
+                }
         baseline_binary = build_dir / "coord-baseline.test"
         candidate_binary = build_dir / "coord-candidate.test"
         baseline_build = build_arm(go, baseline_source, baseline_binary, work / "cache-baseline")
         assert_affinity(expected_affinity)
         candidate_build = build_arm(go, candidate_source, candidate_binary, work / "cache-candidate")
         assert_affinity(expected_affinity)
+        build_arms = {"go-baseline": baseline_build, "go-candidate": candidate_build}
+        aa_left_binary = aa_right_binary = None
+        if ENABLE_AA_CONTROLS:
+            aa_left_binary = build_dir / "coord-baseline-aa-left.test"
+            aa_right_binary = build_dir / "coord-baseline-aa-right.test"
+            for aa_binary in (aa_left_binary, aa_right_binary):
+                shutil.copy2(baseline_binary, aa_binary)
+                if sha256(aa_binary) != baseline_build["binary_sha256"]:
+                    raise RuntimeError("A/A control is not byte-identical to the baseline")
+            build_arms.update(
+                {
+                    "go-baseline-aa-left": {
+                        **baseline_build,
+                        "command": ["byte-identical copy", baseline_binary.name],
+                        "binary": aa_left_binary.name,
+                        "binary_bytes": aa_left_binary.stat().st_size,
+                        "binary_sha256": sha256(aa_left_binary),
+                        "derived_from": baseline_binary.name,
+                    },
+                    "go-baseline-aa-right": {
+                        **baseline_build,
+                        "command": ["byte-identical copy", baseline_binary.name],
+                        "binary": aa_right_binary.name,
+                        "binary_bytes": aa_right_binary.stat().st_size,
+                        "binary_sha256": sha256(aa_right_binary),
+                        "derived_from": baseline_binary.name,
+                    },
+                }
+            )
         build_receipt = {
             "schema": "go-coordinator-remote-build/v1",
             "runner_sha256": sha256(Path(__file__).resolve()),
@@ -626,6 +791,29 @@ def main() -> int:
                 "engine_sha256": sha256(Path(__file__).resolve()),
                 "binding": str(binding.relative_to(repo)) if binding is not None else None,
                 "binding_sha256": sha256(binding) if binding is not None else None,
+                "exporter": str(exporter.relative_to(repo)) if exporter is not None else None,
+                "exporter_sha256": sha256(exporter) if exporter is not None else None,
+                "analyzer": str(analyzer.relative_to(repo)) if analyzer is not None else None,
+                "analyzer_sha256": sha256(analyzer) if analyzer is not None else None,
+                "campaign": (
+                    str(campaign_binding.relative_to(repo))
+                    if campaign_binding is not None else None
+                ),
+                "campaign_sha256": (
+                    sha256(campaign_binding) if campaign_binding is not None else None
+                ),
+                "l2_measure": (
+                    str(l2_binding.relative_to(repo)) if l2_binding is not None else None
+                ),
+                "l2_measure_sha256": sha256(l2_binding) if l2_binding is not None else None,
+                "support": [
+                    {
+                        "path": str(path.relative_to(repo)),
+                        "sha256": sha256(path),
+                    }
+                    for path in support
+                ],
+                "retained": retained_tooling,
             },
             "mode": options.mode,
             "expected_cpu_flavor": options.expected_cpu_flavor,
@@ -633,8 +821,9 @@ def main() -> int:
             "placement": placement,
             "tools": tools,
             "toolchain": toolchain,
+            "source_archive": source_archive,
             "sources": sources,
-            "arms": {"go-baseline": baseline_build, "go-candidate": candidate_build},
+            "arms": build_arms,
         }
         write_json(build_dir / "manifest.json", build_receipt)
 
@@ -672,57 +861,97 @@ def main() -> int:
         before = host_snapshot()
         assert_affinity(expected_affinity, before["affinity"])
         campaign = output / "campaign"
-        runner = Path(__file__).with_name("run_remote_campaign.py")
+        runner = (
+            campaign_binding
+            if campaign_binding is not None
+            else Path(__file__).with_name("run_remote_campaign.py")
+        )
         benchmark_cpu = placement["benchmark_cpus"][0]
-        argv = [
-            sys.executable, str(runner),
-            "--out", str(campaign),
-            "--phase", options.phase,
-            "--protocol-sha256", options.protocol_sha256,
-            "--left-arm", "go-baseline",
-            "--left-binary", str(baseline_binary),
-            "--left-sha256", baseline_campaign_sha,
-            "--right-arm", "go-candidate",
-            "--right-binary", str(candidate_binary),
-            "--right-sha256", candidate_campaign_sha,
-            "--warmups", "3", "--replicates", "20", "--cpu", str(benchmark_cpu),
-            "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
-            "--timeout-seconds", "1800",
-        ]
-        command(argv, cwd=repo)
+        if ENABLE_AA_CONTROLS:
+            assert aa_left_binary is not None and aa_right_binary is not None
+            argv = [
+                sys.executable, str(runner),
+                "--out", str(campaign),
+                "--phase", options.phase,
+                "--protocol-sha256", options.protocol_sha256,
+                "--baseline-binary", str(baseline_binary),
+                "--baseline-sha256", baseline_campaign_sha,
+                "--candidate-binary", str(candidate_binary),
+                "--candidate-sha256", candidate_campaign_sha,
+                "--aa-left-binary", str(aa_left_binary),
+                "--aa-left-sha256", baseline_campaign_sha,
+                "--aa-right-binary", str(aa_right_binary),
+                "--aa-right-sha256", baseline_campaign_sha,
+                "--warmups", "3", "--replicates", "20", "--cpu", str(benchmark_cpu),
+                "--reserved-cpus", ",".join(
+                    str(cpu) for cpu in placement["reservation_cpus"]
+                ),
+                "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
+                "--timeout-seconds", "1800",
+            ]
+        else:
+            argv = [
+                sys.executable, str(runner),
+                "--out", str(campaign),
+                "--phase", options.phase,
+                "--protocol-sha256", options.protocol_sha256,
+                "--left-arm", "go-baseline",
+                "--left-binary", str(baseline_binary),
+                "--left-sha256", baseline_campaign_sha,
+                "--right-arm", "go-candidate",
+                "--right-binary", str(candidate_binary),
+                "--right-sha256", candidate_campaign_sha,
+                "--warmups", "3", "--replicates", "20", "--cpu", str(benchmark_cpu),
+                "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
+                "--timeout-seconds", "1800",
+            ]
+        campaign_process = subprocess.run(
+            argv,
+            cwd=repo,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+        if campaign_process.stdout:
+            print(campaign_process.stdout, end="")
+        campaign_returncode = campaign_process.returncode
         after = host_snapshot()
         assert_affinity(expected_affinity, after["affinity"])
         rows = [
             json.loads(line) for line in (campaign / "rows.jsonl").read_text().splitlines() if line
         ]
-        mismatches = 0
-        for case in {row["case"] for row in rows if not row["warmup"]}:
-            for replicate in range(1, 21):
-                pair = {
-                    row["arm"]: row["parsed"]["fingerprints"]
-                    for row in rows
-                    if not row["warmup"] and row["case"] == case and row["replicate"] == replicate
-                }
-                mismatches += int(pair.get("go-baseline") != pair.get("go-candidate"))
-        measured_steal_rows = sum(
-            row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
-            for row in rows if not row["warmup"]
-        )
-        steal_rows = sum(
-            row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
-            for row in rows
-        )
-        affinity_rows = sum(
-            row.get("expected_affinity") != expected_affinity
-            or row["host_before"].get("self_affinity") != expected_affinity
-            or row["host_after"].get("self_affinity") != expected_affinity
-            for row in rows
-        )
-        pressure_rows = sum(
-            not row_pressure_valid(row[side])
-            for row in rows
-            for side in ("host_before", "host_after")
-        )
+        mismatch_counts = {"all_four_or_case_invariant": 0}
+        for case in sorted({row["case"] for row in rows}):
+            case_reference = None
+            for warmup, replicates in ((True, range(1, 4)), (False, range(1, 21))):
+                for replicate in replicates:
+                    pair_rows = {
+                        row["arm"]: row
+                        for row in rows
+                        if row["warmup"] is warmup
+                        and row["case"] == case
+                        and row["replicate"] == replicate
+                    }
+                    arms = (
+                        "go-baseline", "go-candidate",
+                        "go-baseline-aa-left", "go-baseline-aa-right",
+                    )
+                    if set(pair_rows) != set(arms) or not all(
+                        item.get("status") == "completed"
+                        and item.get("exit_status") == 0
+                        and item.get("timed_out") is False
+                        for item in (pair_rows[arm] for arm in arms)
+                    ):
+                        continue
+                    fingerprints = [pair_rows[arm]["parsed"]["fingerprints"] for arm in arms]
+                    if case_reference is None:
+                        case_reference = fingerprints[0]
+                    mismatch_counts["all_four_or_case_invariant"] += int(
+                        any(value != fingerprints[0] for value in fingerprints[1:])
+                        or any(value != case_reference for value in fingerprints)
+                    )
+        mismatches = mismatch_counts["all_four_or_case_invariant"]
         throttled_before = cgroup_counter(before["cpu_stat"], "nr_throttled")
         throttled_after = cgroup_counter(after["cpu_stat"], "nr_throttled")
         throttled_delta = (
@@ -741,56 +970,156 @@ def main() -> int:
             and before["memory_max"] == after["memory_max"] == str(options.expected_memory_bytes)
             and before["nvidia_devices"] == after["nvidia_devices"] == []
         )
-        timing_valid = (
-            steal_rows == 0
-            and before["steal_ticks"] == after["steal_ticks"]
-            and affinity_rows == 0
-            and pressure_rows == 0
-            and throttled_delta == 0
-            and memory_event_deltas is not None
-            and all(delta == 0 for delta in memory_event_deltas.values())
-            and placement_unchanged
-            and mismatches == 0
-        )
-        isolation = {
-            "schema": "go-coordinator-remote-isolation/v1",
-            "before": before,
-            "after": after,
-            "placement": placement,
-            "rows": len(rows),
-            "row_pressure_observations": len(rows) * 2,
-            "rows_with_nonzero_steal_delta": steal_rows,
-            "measured_rows_with_nonzero_steal_delta": measured_steal_rows,
-            "rows_with_affinity_change": affinity_rows,
-            "pressure_observations_failing_numeric_gate": pressure_rows,
-            "pressure_gate": {
-                "cpu_some_avg10_max": "10.0",
-                "cpu_full_avg10": "0.0",
-                "memory_some_avg10": "0.0",
-                "memory_full_avg10": "0.0",
-            },
-            "cgroup_nr_throttled_delta": throttled_delta,
-            "memory_event_deltas": memory_event_deltas,
-            "placement_unchanged": placement_unchanged,
-            "fingerprint_pair_mismatches": mismatches,
-            "timing_valid": timing_valid,
-        }
-        write_json(output / "isolation.json", isolation)
-        write_json(
-            output / "remote-summary.json",
-            {
-                "schema": "go-coordinator-remote-summary/v1",
-                "protocol_sha256": options.protocol_sha256,
-                "build_manifest_sha256": sha256(build_dir / "manifest.json"),
-                "tests_manifest_sha256": sha256(tests / "manifest.json"),
-                "campaign_rows_sha256": sha256(campaign / "rows.jsonl"),
-                "isolation_sha256": sha256(output / "isolation.json"),
+        if ENABLE_AA_CONTROLS:
+            l2_failures = sum(not row.get("isolation", {}).get("passes", False) for row in rows)
+            blocking: dict[str, int] = {}
+            for row in rows:
+                for name in row.get("isolation", {}).get("blocking", []):
+                    blocking[name] = blocking.get(name, 0) + 1
+            campaign_manifest = json.loads((campaign / "manifest.json").read_text())
+            campaign_summary = json.loads((campaign / "summary.json").read_text())
+            restoration = campaign_summary.get("restoration", {})
+            timing_valid = (
+                campaign_returncode == 0
+                and len(rows) == 552
+                and l2_failures == 0
+                and restoration.get("passes") is True
+                and before["steal_ticks"] == after["steal_ticks"]
+                and throttled_delta == 0
+                and memory_event_deltas is not None
+                and all(delta == 0 for delta in memory_event_deltas.values())
+                and placement_unchanged
+                and mismatches == 0
+            )
+            isolation = {
+                "schema": "go-coordinator-remote-isolation/v2",
+                "required_level": "L2",
+                "before": before,
+                "after": after,
+                "placement": placement,
+                "preflight": campaign_manifest["preflight"],
+                "l2_thresholds": campaign_manifest["l2_thresholds"],
+                "session_lock": campaign_manifest["session_lock"],
+                "restoration": restoration,
+                "rows": len(rows),
+                "rows_passing_l2": len(rows) - l2_failures,
+                "rows_failing_l2": l2_failures,
+                "l2_blocking_counts": dict(sorted(blocking.items())),
+                "cgroup_nr_throttled_delta": throttled_delta,
+                "memory_event_deltas": memory_event_deltas,
+                "placement_unchanged": placement_unchanged,
+                "fingerprint_pair_mismatches": mismatches,
+                "fingerprint_mismatches_by_comparison": mismatch_counts,
+                "timing_valid": timing_valid,
+            }
+        else:
+            measured_steal_rows = sum(
+                row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
+                for row in rows if not row["warmup"]
+            )
+            steal_rows = sum(
+                row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
+                for row in rows
+            )
+            affinity_rows = sum(
+                row.get("expected_affinity") != expected_affinity
+                or row["host_before"].get("self_affinity") != expected_affinity
+                or row["host_after"].get("self_affinity") != expected_affinity
+                for row in rows
+            )
+            pressure_rows = sum(
+                not row_pressure_valid(row[side])
+                for row in rows
+                for side in ("host_before", "host_after")
+            )
+            timing_valid = (
+                campaign_returncode == 0 and steal_rows == 0
+                and before["steal_ticks"] == after["steal_ticks"]
+                and affinity_rows == 0 and pressure_rows == 0
+                and throttled_delta == 0 and memory_event_deltas is not None
+                and all(delta == 0 for delta in memory_event_deltas.values())
+                and placement_unchanged and mismatches == 0
+            )
+            isolation = {
+                "schema": "go-coordinator-remote-isolation/v1",
+                "before": before, "after": after, "placement": placement,
+                "rows": len(rows), "row_pressure_observations": len(rows) * 2,
+                "rows_with_nonzero_steal_delta": steal_rows,
+                "measured_rows_with_nonzero_steal_delta": measured_steal_rows,
+                "rows_with_affinity_change": affinity_rows,
+                "pressure_observations_failing_numeric_gate": pressure_rows,
+                "pressure_gate": {"cpu_some_avg10_max": "10.0", "cpu_full_avg10": "0.0",
+                                  "memory_some_avg10": "0.0", "memory_full_avg10": "0.0"},
+                "cgroup_nr_throttled_delta": throttled_delta,
+                "memory_event_deltas": memory_event_deltas,
+                "placement_unchanged": placement_unchanged,
                 "fingerprint_pair_mismatches": mismatches,
                 "timing_valid": timing_valid,
-            },
+            }
+        write_json(output / "isolation.json", isolation)
+        export_sha256 = None
+        export_relative = None
+        if exporter is not None and analyzer is not None:
+            export_path = campaign / "export.json"
+            command(
+                [
+                    sys.executable,
+                    str(exporter),
+                    "--run",
+                    str(output),
+                    "--protocol-sha256",
+                    options.protocol_sha256,
+                    "--source-commit",
+                    git(repo, "rev-parse", "HEAD"),
+                    "--output",
+                    str(export_path),
+                ],
+                cwd=repo,
+            )
+            export_sha256 = sha256(export_path)
+            export_relative = str(export_path.relative_to(output))
+        remote_summary = {
+            "schema": "go-coordinator-remote-summary/v1",
+            "protocol_sha256": options.protocol_sha256,
+            "build_manifest_sha256": sha256(build_dir / "manifest.json"),
+            "tests_manifest_sha256": sha256(tests / "manifest.json"),
+            "campaign_rows_sha256": sha256(campaign / "rows.jsonl"),
+            "isolation_sha256": sha256(output / "isolation.json"),
+            "fingerprint_pair_mismatches": mismatches,
+            "fingerprint_mismatches_by_comparison": mismatch_counts,
+            "campaign_returncode": campaign_returncode,
+            "timing_valid": timing_valid,
+        }
+        if OUTPUT_BUDGET_BYTES is not None:
+            if type(OUTPUT_BUDGET_BYTES) is not int or OUTPUT_BUDGET_BYTES <= 0:
+                raise RuntimeError("output budget must be a positive integer")
+            pre_summary = tree_inventory(output, exclude={"remote-summary.json"})
+            if pre_summary["bytes"] + REMOTE_SUMMARY_RESERVE_BYTES > OUTPUT_BUDGET_BYTES:
+                raise RuntimeError("scientific output exceeds the frozen byte budget")
+            remote_summary.update(
+                {
+                    "output_budget_bytes": OUTPUT_BUDGET_BYTES,
+                    "output_bytes_before_summary": pre_summary["bytes"],
+                    "output_files_before_summary": pre_summary["files"],
+                    "remote_summary_reserve_bytes": REMOTE_SUMMARY_RESERVE_BYTES,
+                }
+            )
+        if export_sha256 is not None:
+            remote_summary.update(
+                {
+                    "export_path": export_relative,
+                    "export_sha256": export_sha256,
+                }
+            )
+        write_json(
+            output / "remote-summary.json",
+            remote_summary,
         )
-        if mismatches:
-            raise RuntimeError(f"{mismatches} measured correctness fingerprint pairs differ")
+        if OUTPUT_BUDGET_BYTES is not None and tree_inventory(output)["bytes"] > OUTPUT_BUDGET_BYTES:
+            raise RuntimeError("sealed scientific output exceeds the frozen byte budget")
+        if mismatches and campaign_returncode == 0:
+            return 1
+        return campaign_returncode
     return 0
 
 
