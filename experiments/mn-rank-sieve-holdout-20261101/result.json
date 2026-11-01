@@ -1,0 +1,90 @@
+{
+  "schema": "mn-rank-sieve-holdout/v1",
+  "status": "exploratory (retrospective)",
+  "params": {
+    "N": 10000000,
+    "top_fraction": 1e-05,
+    "screen_primes": [
+      5,
+      397,
+      76
+    ],
+    "holdout_primes": [
+      401,
+      1193,
+      118
+    ],
+    "prune_primes": [
+      5,
+      7,
+      11,
+      13,
+      17,
+      19,
+      23
+    ]
+  },
+  "host": {
+    "python": "3.13.18",
+    "numpy": "2.5.3",
+    "machine": "x86_64",
+    "processor": "x86_64"
+  },
+  "source_sha256": "74a560a0aaea83cb7525bd3d76c1effae2b0429c89dc02f842773b4d388f0521",
+  "table_build_s": 1.8869652700000046,
+  "max_abs_naive_minus_fast": 3.6559836651406385e-06,
+  "naive_us_per_curve": 4976.38964666668,
+  "fast_ns_per_curve_untiled_gather": 851.446362499999,
+  "top_k": 100,
+  "holdout_all": {
+    "mean": 0.21664515137672424,
+    "sd": 2.6399178504943848
+  },
+  "holdout_top_by_screen": {
+    "mean": 0.11150966584682465,
+    "se": 0.28759080171585083
+  },
+  "corr_screen_holdout": 2.5550298323504666e-06,
+  "early_abort": {
+    "first_primes": 25,
+    "keep": 0.01,
+    "recall_vs_screen": 0.98,
+    "holdout_top0.1pct_enrichment": 0.909990900090999
+  },
+  "pruning": [
+    {
+      "keep_fraction": 0.4,
+      "space_fraction": 0.0016248,
+      "recall_vs_screen": 0.06,
+      "yield_per_compute_vs_screen": 36.92762186115214,
+      "holdout_top0.1pct_enrichment": 1.0462826193993107,
+      "holdout_mean_kept": 0.23666806519031525
+    },
+    {
+      "keep_fraction": 0.6,
+      "space_fraction": 0.0278348,
+      "recall_vs_screen": 0.29,
+      "yield_per_compute_vs_screen": 10.418612671907109,
+      "holdout_top0.1pct_enrichment": 0.9268972652938049,
+      "holdout_mean_kept": 0.21753519773483276
+    },
+    {
+      "keep_fraction": 0.8,
+      "space_fraction": 0.2195906,
+      "recall_vs_screen": 0.76,
+      "yield_per_compute_vs_screen": 3.460986034921349,
+      "holdout_top0.1pct_enrichment": 0.9772731619659494,
+      "holdout_mean_kept": 0.2166513353586197
+    }
+  ],
+  "positive_control_holdout_mean_t_le_1e6": {
+    "test": {
+      "mean": 0.21659180521965027,
+      "se": 0.0026402559597045183
+    },
+    "posctl_r1": {
+      "mean": 1.1373456716537476,
+      "se": 0.002645417582243681
+    }
+  }
+}
