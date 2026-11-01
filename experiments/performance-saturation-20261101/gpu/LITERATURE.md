@@ -62,7 +62,8 @@ measured rounds use all six label permutations, so every label occupies each
 launch position twice and every pair direction is 3/3; warmup is separate.
 This gives 105 exported rows.  Ten A/B and ten A/A clock cells use exact rational
 two-sided simultaneous intervals with Bonferroni tail `1/800`; every A/A
-interval must contain one, and the primary A/B lower endpoint must strictly
+interval must contain one and lie within `[50/51, 51/50]` (symmetric noise
+floor at most two percent), and the primary A/B lower endpoint must strictly
 exceed `max(A/A upper, 1/A/A lower)`.  The remote
 analyzer now emits only `provisional_mechanical` timing classification.  After
 the controller has returned and cleaned up the one pod, a separately

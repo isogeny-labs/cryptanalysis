@@ -26,6 +26,7 @@ import sys
 import tarfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from fractions import Fraction
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
@@ -105,6 +106,15 @@ def protocol_hash(value: dict[str, Any]) -> str:
 def parse_utc(value: object) -> datetime | None:
     if not isinstance(value, str):
         return None
+
+
+def fraction_value(value: object) -> Fraction | None:
+    if not isinstance(value, dict):
+        return None
+    numerator, denominator = value.get("numerator"), value.get("denominator")
+    if type(numerator) is not int or type(denominator) is not int or denominator <= 0:
+        return None
+    return Fraction(numerator, denominator)
     try:
         if value.endswith("Z"):
             parsed = datetime.fromisoformat(value[:-1] + "+00:00")
@@ -519,7 +529,7 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
     if aa_ok:
         aa_identities = [(item.get("workload"), item.get("metric"), item.get("kind"))
                          for item in aa_gates if isinstance(item, dict)]
-        expected_aa = [(tag, metric, "same_session_aa_interval_contains_one")
+        expected_aa = [(tag, metric, "same_session_aa_interval_admissible")
                        for _role, tag, _cell, _degree in WORKLOADS
                        for metric in ("device_ms", "complete_ms")]
         judge.check(sorted(aa_identities) == sorted(expected_aa), "analysis.aa_gates.identity", "validity", "each frozen A/A interval appears once")
@@ -527,6 +537,27 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
         judge.check(len(raw_aa) == 10 and all(type(value) is bool for value in raw_aa),
                     "analysis.aa_gates.booleans", "validity", "all A/A decisions are Boolean")
         aa_booleans = [bool(value) for value in raw_aa]
+        semantic_aa = True
+        for item in aa_gates:
+            if not isinstance(item, dict):
+                semantic_aa = False
+                continue
+            lower = fraction_value(item.get("lower"))
+            upper = fraction_value(item.get("upper"))
+            floor = fraction_value(item.get("noise_floor"))
+            ceiling = fraction_value(item.get("resolution_ceiling"))
+            if None in (lower, upper, floor, ceiling) or lower <= 0:
+                semantic_aa = False
+                continue
+            expected_pass = (
+                lower <= 1 <= upper and ceiling == Fraction(51, 50)
+                and floor == max(upper, Fraction(1, 1) / lower)
+                and floor <= ceiling
+            )
+            if item.get("passed") is not expected_pass:
+                semantic_aa = False
+        judge.check(semantic_aa, "analysis.aa_gates.resolution", "validity",
+                    "A/A decisions exactly enforce identity containment and symmetric floor <=51/50")
     aa_admissible = len(aa_booleans) == 10 and all(aa_booleans)
     judge.check(analysis.get("same_session_aa_gate") == ("passed" if aa_admissible else "failed"),
                 "analysis.aa_status", "validity", "A/A status equals conjunction of same-session intervals")

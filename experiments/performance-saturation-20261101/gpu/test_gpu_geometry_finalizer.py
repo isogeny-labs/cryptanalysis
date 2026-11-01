@@ -136,7 +136,11 @@ def good_analysis(provisional: str = "geometry_supported") -> dict:
             aa_gates.append({
                 "workload": tag,
                 "metric": metric,
-                "kind": "same_session_aa_interval_contains_one",
+                "kind": "same_session_aa_interval_admissible",
+                "lower": {"numerator": 99, "denominator": 100},
+                "upper": {"numerator": 101, "denominator": 100},
+                "noise_floor": {"numerator": 100, "denominator": 99},
+                "resolution_ceiling": {"numerator": 51, "denominator": 50},
                 "passed": True,
             })
         gates.append({
@@ -320,12 +324,29 @@ class FinalizerAdversarialTests(unittest.TestCase):
 
     def test_failed_same_session_aa_is_provisional_invalid_measurement(self) -> None:
         value = good_analysis("geometry_supported")
-        value["aa_control_gates"][0]["passed"] = False
+        value["aa_control_gates"][0].update(
+            lower={"numerator": 9, "denominator": 10},
+            upper={"numerator": 11, "denominator": 10},
+            noise_floor={"numerator": 10, "denominator": 9},
+            passed=False,
+        )
         value["same_session_aa_gate"] = "failed"
         value["timing_classification_provisional"] = "invalid_measurement"
         judge = MOD.Judge(); observed = MOD.check_analysis(value, "a" * 64, "run-1", judge)
         self.assertFalse(judge.validity_failed)
         self.assertEqual(MOD.terminal_verdict(judge, observed), "invalid_measurement")
+
+    def test_wide_aa_interval_containing_one_is_rejected(self) -> None:
+        value = good_analysis("geometry_supported")
+        gate = value["aa_control_gates"][0]
+        gate.update(
+            lower={"numerator": 9, "denominator": 10},
+            upper={"numerator": 11, "denominator": 10},
+            noise_floor={"numerator": 10, "denominator": 9},
+            passed=True,
+        )
+        judge = MOD.Judge(); MOD.check_analysis(value, "a" * 64, "run-1", judge)
+        self.assertTrue(failures(judge, "analysis.aa_gates.resolution"))
 
     def test_parseable_malformed_provisional_is_invalid_not_incomplete(self) -> None:
         bad = good_analysis()

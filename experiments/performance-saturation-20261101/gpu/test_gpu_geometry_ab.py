@@ -99,6 +99,10 @@ class GeometryAnalyzerTests(unittest.TestCase):
         self.assertTrue(MOD.aa_interval_admissible(Fraction(99, 100), Fraction(101, 100)))
         self.assertFalse(MOD.aa_interval_admissible(Fraction(1001, 1000), Fraction(101, 100)))
 
+    def test_wide_aa_interval_containing_identity_is_inadmissible(self) -> None:
+        self.assertFalse(MOD.aa_interval_admissible(Fraction(9, 10), Fraction(11, 10)))
+        self.assertFalse(MOD.aa_interval_admissible(Fraction(49, 50), Fraction(51, 50)))
+
     def test_mechanism_gate_accepts_only_registered_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

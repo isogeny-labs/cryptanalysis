@@ -56,6 +56,7 @@ FAMILY_INTERVALS = AB_INTERVALS + AA_INTERVALS
 INTERVAL_TAIL = Fraction(1, 2 * 20 * FAMILY_INTERVALS)
 PRIMARY_EFFECT = Fraction(51, 50)  # at least 1.02x baseline/candidate
 NONREGRESSION = Fraction(50, 51)  # candidate no more than 2% slower
+AA_RESOLUTION = Fraction(51, 50)  # same-session symmetric clock noise <=2%
 EXPECTED_UPDATE_LAUNCHES = 2941
 
 VERBOSE_RE = re.compile(
@@ -467,7 +468,11 @@ def fraction_record(value: Fraction) -> dict[str, Any]:
 
 
 def aa_interval_admissible(lower: Fraction, upper: Fraction) -> bool:
-    return lower <= 1 <= upper
+    return (
+        lower <= 1 <= upper
+        and lower >= Fraction(1, 1) / AA_RESOLUTION
+        and upper <= AA_RESOLUTION
+    )
 
 
 def primary_geometry_pass(observed: Fraction, lower: Fraction,
@@ -872,7 +877,8 @@ def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[d
             aa_gates.append({
                 "workload": workload.tag,
                 "metric": metric,
-                "kind": "same_session_aa_interval_contains_one",
+                "kind": "same_session_aa_interval_admissible",
+                "resolution_ceiling": fraction_record(AA_RESOLUTION),
                 "median": fraction_record(aa_observed),
                 "lower": fraction_record(aa_lower),
                 "upper": fraction_record(aa_upper),
