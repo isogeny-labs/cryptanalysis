@@ -16,6 +16,7 @@ import hashlib
 import itertools
 import json
 import math
+import os
 import re
 import sqlite3
 import statistics
@@ -36,6 +37,8 @@ PROTOCOL_RELATIVE = "../../protocol-http-rtx5090-geometry-v8.json"
 ANALYZER_RELATIVE = "../../analyze_gpu_geometry_ab.py"
 BASELINE_ORIGIN_COMMIT = "7c712913b7e912494e87c35e854cfd0129bad89c"
 CANDIDATE_COMMIT = "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f"
+CANDIDATE_TREE = "af0ac7e239c0acaa063c1a1441d6fb374ebbf30b"
+CANDIDATE_BUILD_ARCHIVE_SHA256 = "c70ce5a0061f39a3d506c4196e9db7b422a6d4de80dc161b6ff18f165f674740"
 BASELINE_F4_SHA256 = "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944"
 CANDIDATE_F4_SHA256 = "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953"
 PRODUCTION_DIFF_SHA256 = "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
@@ -106,7 +109,7 @@ def sha256_file(path: Path) -> str:
 
 def file_record(path: Path, base: Path, kind: str | None = None) -> dict[str, Any]:
     record: dict[str, Any] = {
-        "path": str(path.relative_to(base)),
+        "path": os.path.relpath(path, base),
         "sha256": sha256_file(path),
         "bytes": path.stat().st_size,
     }
@@ -180,6 +183,8 @@ def validate_source_identities(session: Path) -> dict[str, Any]:
     expected = {
         "baseline_origin_commit": BASELINE_ORIGIN_COMMIT,
         "candidate_commit": CANDIDATE_COMMIT,
+        "candidate_tree": CANDIDATE_TREE,
+        "candidate_archive_sha256": CANDIDATE_BUILD_ARCHIVE_SHA256,
         "baseline_f4_sha256": BASELINE_F4_SHA256,
         "candidate_f4_sha256": CANDIDATE_F4_SHA256,
         "production_diff_sha256": PRODUCTION_DIFF_SHA256,
@@ -189,9 +194,6 @@ def validate_source_identities(session: Path) -> dict[str, Any]:
     for key, wanted in expected.items():
         if value.get(key) != wanted:
             raise GateError(f"source identity {key}={value.get(key)!r}, expected {wanted!r}")
-    archive_sha = value.get("candidate_archive_sha256")
-    if not isinstance(archive_sha, str) or SHA256_RE.fullmatch(archive_sha) is None:
-        raise GateError("source identity has no candidate archive SHA-256")
     return value
 
 
@@ -695,12 +697,19 @@ def write_export(
     gpu = validate_gpu_inventory(session, EXPECTED_GPU)
     analysis_script = (session / ANALYZER_RELATIVE).resolve()
     require_nonempty(analysis_script)
+    # Hash every artifact that is immutable at export time.  Four files are
+    # written by the surrounding shell after/while this command returns and
+    # are instead bound by the authenticated transport archive manifest.
+    mutable_after_export = {
+        "analysis-gate.json",
+        "completed-at.txt",
+        "export.json",
+        "runner-exit.status",
+    }
     files = [
-        file_record(session / "rows.jsonl", session, "raw"),
-        file_record(session / "order.tsv", session, "raw"),
-        file_record(session / "binary-sha256.tsv", session, "summary"),
-        file_record(session / "source-identities.json", session, "summary"),
-        file_record(session / "metadata" / "gpu.csv", session, "host"),
+        file_record(path, session, "other")
+        for path in sorted(session.rglob("*"))
+        if path.is_file() and str(path.relative_to(session)) not in mutable_after_export
     ]
     return {
         "schema": "experiment.export/v1",

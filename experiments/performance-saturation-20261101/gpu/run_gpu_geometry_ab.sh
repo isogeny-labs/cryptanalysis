@@ -10,6 +10,8 @@ ANALYZER="$SCRIPT_DIR/analyze_gpu_geometry_ab.py"
 EXPECTED_GPU="NVIDIA GeForce RTX 5090"
 BASELINE_ORIGIN_COMMIT="7c712913b7e912494e87c35e854cfd0129bad89c"
 CANDIDATE_COMMIT="59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f"
+CANDIDATE_TREE="af0ac7e239c0acaa063c1a1441d6fb374ebbf30b"
+CANDIDATE_BUILD_ARCHIVE_SHA256="c70ce5a0061f39a3d506c4196e9db7b422a6d4de80dc161b6ff18f165f674740"
 BASELINE_F4_SHA256="da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944"
 CANDIDATE_F4_SHA256="77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953"
 PRODUCTION_DIFF_SHA256="34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
@@ -198,6 +200,10 @@ PY
 
 git cat-file -e "$BASELINE_ORIGIN_COMMIT^{commit}"
 git cat-file -e "$CANDIDATE_COMMIT^{commit}"
+[[ $(git rev-parse "$CANDIDATE_COMMIT^{tree}") = "$CANDIDATE_TREE" ]] || {
+  echo "candidate tree mismatch" >&2
+  exit 2
+}
 baseline_f4=$(git show "$BASELINE_ORIGIN_COMMIT:$F4_PATH" | sha256sum | awk '{print $1}')
 candidate_f4=$(git show "$CANDIDATE_COMMIT:$F4_PATH" | sha256sum | awk '{print $1}')
 [[ $baseline_f4 = "$BASELINE_F4_SHA256" ]] || { echo "baseline F4 blob hash mismatch" >&2; exit 2; }
@@ -210,6 +216,10 @@ production_diff=$(git diff "$BASELINE_ORIGIN_COMMIT" "$CANDIDATE_COMMIT" -- "$F4
 git archive --format=tar --output="$TEMP_ROOT/candidate.tar" "$CANDIDATE_COMMIT" -- \
   suite bindings/rust include src
 candidate_archive_sha=$(sha256sum "$TEMP_ROOT/candidate.tar" | awk '{print $1}')
+[[ $candidate_archive_sha = "$CANDIDATE_BUILD_ARCHIVE_SHA256" ]] || {
+  echo "candidate build-closure archive hash mismatch" >&2
+  exit 2
+}
 tar -xf "$TEMP_ROOT/candidate.tar" -C "$SOURCE_DIR/baseline"
 tar -xf "$TEMP_ROOT/candidate.tar" -C "$SOURCE_DIR/candidate"
 git show "$BASELINE_ORIGIN_COMMIT:$F4_PATH" >"$SOURCE_DIR/baseline/$F4_PATH"
@@ -222,6 +232,7 @@ fi
 
 BASELINE_ORIGIN_COMMIT_SAFE=$BASELINE_ORIGIN_COMMIT \
 CANDIDATE_COMMIT_SAFE=$CANDIDATE_COMMIT \
+CANDIDATE_TREE_SAFE=$CANDIDATE_TREE \
 BASELINE_F4_SHA256_SAFE=$BASELINE_F4_SHA256 \
 CANDIDATE_F4_SHA256_SAFE=$CANDIDATE_F4_SHA256 \
 PRODUCTION_DIFF_SHA256_SAFE=$PRODUCTION_DIFF_SHA256 \
@@ -234,6 +245,7 @@ value = {
     "schema": "gpu-geometry-source-identities/v1",
     "baseline_origin_commit": os.environ["BASELINE_ORIGIN_COMMIT_SAFE"],
     "candidate_commit": os.environ["CANDIDATE_COMMIT_SAFE"],
+    "candidate_tree": os.environ["CANDIDATE_TREE_SAFE"],
     "candidate_archive_sha256": os.environ["CANDIDATE_ARCHIVE_SHA256_SAFE"],
     "production_path": os.environ["F4_PATH_SAFE"],
     "baseline_f4_sha256": os.environ["BASELINE_F4_SHA256_SAFE"],
