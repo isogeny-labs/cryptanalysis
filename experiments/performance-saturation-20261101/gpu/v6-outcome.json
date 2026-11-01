@@ -1,0 +1,62 @@
+{
+  "schema": "gpu-aa-outcome/v1",
+  "protocol": {
+    "id": "gpu-f4-aa-http-rtx5090-v6-20261101",
+    "canonical_sha256": "518105554954f7e50741841e1aef6c81ca8bade95cdccfad4d375d75b35e6726",
+    "file_sha256": "f859fa1288b089b584e779c2aa826d8206b658d5ef57fb5546d295a880da22b7",
+    "registration_commit": "e451c6fde8a6882e41d97109cca4ceba2f95a285",
+    "freeze_commit": "2ba237571e711a7b83c53a171dbfe56b00cd83a1"
+  },
+  "classification": "invalid_measurement",
+  "reason": "The required Nsight Compute phase returned ERR_NVGPUCTRPERM after the fixed warmup, unprofiled measurement, and Nsight Systems phases. Frozen v6 invalidates a nonzero profiler execution and explicitly forbids reclassifying an NCU diagnostic failure as infrastructure.",
+  "completed_before_failure": {
+    "warmup_executions": 10,
+    "unprofiled_measure_executions": 60,
+    "nsys_executions": 2
+  },
+  "missing_required_completion": [
+    "four successful NCU captures",
+    "ncu-gate.json",
+    "analysis.json",
+    "rows.jsonl",
+    "completed-at.txt",
+    "zero runner and remote return status"
+  ],
+  "returncode": 1,
+  "failure": {
+    "tool": "Nsight Compute 2026.3.1",
+    "code": "ERR_NVGPUCTRPERM",
+    "message": "The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0.",
+    "phase": "ncu/f4e_update/control"
+  },
+  "reuse_policy": {
+    "v6_claim_admissible": false,
+    "formal_timing_reuse": false,
+    "planning_only": true,
+    "explanation": "Earlier rows and Nsys traces are retained only as disclosed pilot evidence for a separately frozen experiment; they never enter the v7 timing distribution."
+  },
+  "evidence": {
+    "commit": "0005179e36bf566b0cccc553c808675e084b663f",
+    "receipt": {
+      "path": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-v6-20261101T215405Z-4c9e.json",
+      "schema": "runpod.http-batch.recovery-receipt/v1",
+      "sha256": "b5dc3ae90e5fba90aded9646831f184a23e1ab2237f92894e5400f757ebaa334"
+    },
+    "archive": {
+      "path": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-v6-20261101T215405Z-4c9e.result.tar.gz",
+      "sha256": "6116925466c34f2daab53c1bcbb0525b417b36d382724c5321d28bb37652540c"
+    },
+    "remote_log": {
+      "path": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-v6-20261101T215405Z-4c9e.remote/log.txt",
+      "sha256": "231c9f1bbe63184c726fdaa712aa4088cef019d2c803e371ad8ae9e8c903e210"
+    },
+    "pod_id": "0wutr9z6rsp0yh",
+    "cleanup_absence_verified": true
+  },
+  "controller_recovery": {
+    "schema": "runpod.http-batch.recovery-receipt/v1",
+    "tool_commit": "f11bacf36eb36418189d2636913319cba806cac1",
+    "tool_sha256": "a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0",
+    "new_allocation_attempted": false
+  }
+}

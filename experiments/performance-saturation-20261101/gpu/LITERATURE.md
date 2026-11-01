@@ -5,6 +5,29 @@ measurement has been taken, and this study is not frozen. The two arms are
 byte-identical copies of the current binary; there is no optimization candidate
 and no speedup claim.
 
+## V7 Nsys-only correction, 2026-11-01
+
+V6 is now retained as `invalid_measurement`, not as an infrastructure retry.
+Its exact recovered receipt and archive are committed at `0005179e`; the
+required NCU phase stopped on NVIDIA's `ERR_NVGPUCTRPERM` after all 10 warmups,
+60 unprofiled executions, and two Nsys captures.  The evidence binding and the
+rule that the earlier rows are planning-only are in [`v6-outcome.json`](v6-outcome.json).
+
+The v7 design checked these additional primary sources before implementation:
+
+| source | provenance | consequence for v7 |
+|---|---|---|
+| [NVIDIA GPU performance-counter security guidance](https://developer.nvidia.com/ERR_NVGPUCTRPERM) | official NVIDIA guidance, checked 2026-11-01 | Counter access requires a host-driver policy change or an administration capability. Installing another NCU package, changing sections, or running as container UID 0 cannot grant it. NCU is therefore outside v7 rather than an optional retry gate. |
+| [Nsight Systems User Guide](https://docs.nvidia.com/nsight-systems/UserGuide/index.html) | official NVIDIA documentation, checked 2026-11-01 | Keep the post-timing CUDA/NVTX/OS-runtime trace and the `cuda_gpu_kern_sum` and `cuda_api_sum` reports. Profiled durations remain diagnostics and never enter the A/A distribution. |
+| [Runpod Pod REST API](https://docs.runpod.io/api-reference/pods/POST/pods) and [Pod lookup](https://docs.runpod.io/api-reference/pods/GET/pods-pod-id) | official provider API, checked 2026-11-01 | The registered request can bind image, placement, lifetime, environment, disk, and ports, but exposes no privileged-container or performance-counter entitlement. Host re-rolling for counter access would be unregistered selection. |
+| [`cloud/runpod_http_batch.py`](../../../cloud/runpod_http_batch.py) and [`cloud/runpod_http_recover.py`](../../../cloud/runpod_http_recover.py) | repository transport implementation and tests | V7 permits one allocation only. A normal receipt is required unless the controller disappears; only then may the exact committed recovery tool reconstruct the authenticated, hash-bound result and exact-ID cleanup receipt without a new allocation. |
+| [`protocol-http-rtx5090-v6.json`](protocol-http-rtx5090-v6.json), [`v6-outcome.json`](v6-outcome.json), and the recovered v6 archive | immutable internal protocol and observed failure | Preserve the same five cells, exact answers, RTX 5090 placement, byte-identical A/A arms, order, 10 warmups, 60 measured executions, and two Nsys captures. Remove the four NCU captures and every NCU completion gate prospectively; no v6 row enters v7. |
+
+This is a correction to the measurement design, not a performance candidate.
+V7 asks only for an admissible A/A noise and Nsys baseline on the exact Secure
+RTX 5090 scope.  A hardware-counter campaign requires a separately registered,
+explicitly counter-enabled host.
+
 ## Sources checked
 
 | source | provenance | consequence for this study |
