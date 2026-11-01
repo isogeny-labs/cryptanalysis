@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Byte-identical CUDA A/A calibration for the current F4 large-matrix kernel.
-# Run only through a new, uniquely named Secure Runpod pod whose single GPU
-# is in the preregistered fallback set.  This
+# Run only through a new, uniquely named Secure Runpod RTX 5090 pod.  This
 # script creates a unique session below OUT_ROOT and never overwrites a row.
 set -Eeuo pipefail
 umask 077
@@ -9,6 +8,7 @@ umask 077
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 REPO=$(cd "$SCRIPT_DIR/../../.." && pwd)
 ANALYZER="$SCRIPT_DIR/analyze_gpu_aa.py"
+EXPECTED_GPU="NVIDIA GeForce RTX 5090"
 OUT_ARG=${1:?usage: run_gpu_aa.sh REPOSITORY_RELATIVE_OUT_ROOT [SESSION_ID]}
 SESSION_ID=${2:-gpu-aa-$(date -u +%Y%m%dT%H%M%SZ)-$$-$RANDOM}
 
@@ -128,14 +128,11 @@ for report in cuda_gpu_kern_sum cuda_api_sum; do
 done
 
 mapfile -t GPU_NAMES < <(nvidia-smi --query-gpu=name --format=csv,noheader | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-if (( ${#GPU_NAMES[@]} != 1 )); then
-  printf 'refusing: expected exactly one visible GPU, observed: %s\n' "${GPU_NAMES[*]:-none}" >&2
+if (( ${#GPU_NAMES[@]} != 1 )) || [[ ${GPU_NAMES[0]} != "$EXPECTED_GPU" ]]; then
+  printf 'refusing: expected exactly one %s, observed: %s\n' \
+    "$EXPECTED_GPU" "${GPU_NAMES[*]:-none}" >&2
   exit 2
 fi
-case ${GPU_NAMES[0]} in
-  "NVIDIA GeForce RTX 4090"|"NVIDIA GeForce RTX 5090"|"NVIDIA H100 80GB HBM3"|"NVIDIA H100 PCIe"|"NVIDIA L40S"|"NVIDIA RTX PRO 6000 Blackwell Server Edition"|"NVIDIA GeForce RTX 3090") ;;
-  *) printf 'refusing: GPU is outside the preregistered fallback set: %s\n' "${GPU_NAMES[0]}" >&2; exit 2 ;;
-esac
 
 assert_gpu_idle() {
   local pids
@@ -264,13 +261,15 @@ run_round() {
 # One complete warmup per arm and cell.  It is correctness-gated before any
 # measured row is admitted.
 run_round warmup 0
-python3 "$ANALYZER" gate --session "$SESSION" --phase warmup | tee "$SESSION/warmup-gate.json"
+python3 "$ANALYZER" gate --session "$SESSION" --phase warmup \
+  --expected-gpu "$EXPECTED_GPU" | tee "$SESSION/warmup-gate.json"
 
 # Six fresh-process rounds; each arm runs first in exactly three rounds.
 for round_index in 1 2 3 4 5 6; do
   run_round measure "$round_index"
 done
-python3 "$ANALYZER" gate --session "$SESSION" --phase measure | tee "$SESSION/measure-gate.json"
+python3 "$ANALYZER" gate --session "$SESSION" --phase measure \
+  --expected-gpu "$EXPECTED_GPU" | tee "$SESSION/measure-gate.json"
 
 PRIMARY_TAG=k0n13m2d6
 PRIMARY_CELL=0:13:2:1234
@@ -298,7 +297,8 @@ run_nsys() {
 for arm in control current; do
   run_nsys "$arm"
 done
-python3 "$ANALYZER" gate --session "$SESSION" --phase nsys | tee "$SESSION/nsys-gate.json"
+python3 "$ANALYZER" gate --session "$SESSION" --phase nsys \
+  --expected-gpu "$EXPECTED_GPU" | tee "$SESSION/nsys-gate.json"
 
 run_ncu() {
   local kernel=$1 arm=$2 dir="$SESSION/profiles/ncu/$kernel/$arm" prefix
@@ -326,8 +326,10 @@ for kernel in f4e_update f4e_panel_block; do
     run_ncu "$kernel" "$arm"
   done
 done
-python3 "$ANALYZER" gate --session "$SESSION" --phase ncu | tee "$SESSION/ncu-gate.json"
-python3 "$ANALYZER" analyze --session "$SESSION" | tee "$SESSION/analysis-gate.json"
+python3 "$ANALYZER" gate --session "$SESSION" --phase ncu \
+  --expected-gpu "$EXPECTED_GPU" | tee "$SESSION/ncu-gate.json"
+python3 "$ANALYZER" analyze --session "$SESSION" \
+  --expected-gpu "$EXPECTED_GPU" | tee "$SESSION/analysis-gate.json"
 
 date -u +%Y-%m-%dT%H:%M:%SZ >"$SESSION/completed-at.txt"
 echo "GPU A/A calibration complete: $SESSION"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and summarize the preregistered RTX 4090 GPU A/A study.
+"""Validate and summarize a preregistered single-GPU CUDA A/A study.
 
 This helper deliberately knows the complete workload and correctness oracle.
 The shell runner asks it for the plan, uses it as a gate after each phase, and
@@ -10,6 +10,7 @@ an analysis artifact.
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import itertools
 import json
@@ -30,7 +31,10 @@ VERBOSE_RE = re.compile(
     r" ([0-9.eE+-]+) word XORs$",
     re.MULTILINE,
 )
-RTX_4090 = "NVIDIA GeForce RTX 4090"
+CUDA_BACKEND_RE = re.compile(
+    r"^cuda:(?P<gpu>[^\r\n]+?) sm_[0-9]+ x[1-9][0-9]* "
+    r"code=(?:sm_[0-9]+|compute_[0-9]+|CA_F4_PTX)$"
+)
 
 
 @dataclass(frozen=True)
@@ -91,6 +95,42 @@ def require_nonempty(path: Path) -> None:
         raise GateError(f"missing or empty artifact: {path}")
 
 
+def validate_gpu_inventory(session: Path, expected_gpu: str) -> None:
+    """Require one well-formed recorded GPU whose name exactly matches the contract."""
+    path = session / "metadata" / "gpu.csv"
+    require_nonempty(path)
+    try:
+        with path.open(newline="", encoding="utf-8") as stream:
+            rows = [row for row in csv.reader(stream) if any(field.strip() for field in row)]
+    except (OSError, csv.Error) as exc:
+        raise GateError(f"invalid GPU inventory {path}: {exc}") from exc
+    if len(rows) != 1:
+        raise GateError(f"{path}: expected exactly one GPU row, found {len(rows)}")
+    row = rows[0]
+    if len(row) != 11 or any(not field.strip() for field in row):
+        raise GateError(f"{path}: malformed GPU inventory row")
+    observed_gpu = row[2].strip()
+    if observed_gpu != expected_gpu:
+        raise GateError(
+            f"{path}: GPU={observed_gpu!r}, expected exactly {expected_gpu!r}"
+        )
+
+
+def validate_cuda_backend(backend: object, expected_gpu: str) -> str:
+    """Parse the production backend receipt and bind it to one exact GPU name."""
+    if not isinstance(backend, str):
+        raise GateError(f"malformed CUDA backend {backend!r}")
+    match = CUDA_BACKEND_RE.fullmatch(backend)
+    if match is None:
+        raise GateError(f"malformed CUDA backend {backend!r}")
+    observed_gpu = match.group("gpu")
+    if observed_gpu != expected_gpu:
+        raise GateError(
+            f"unexpected CUDA GPU {observed_gpu!r}, expected exactly {expected_gpu!r}"
+        )
+    return backend
+
+
 def expected_fields(workload: Workload) -> dict[str, Any]:
     return {
         "harness": "f4_matrix_bench",
@@ -107,7 +147,9 @@ def expected_fields(workload: Workload) -> dict[str, Any]:
     }
 
 
-def validate_execution(prefix: Path, workload: Workload) -> dict[str, Any]:
+def validate_execution(
+    prefix: Path, workload: Workload, expected_gpu: str
+) -> dict[str, Any]:
     report_path = prefix.with_suffix(".json")
     log_path = prefix.with_suffix(".log")
     smi_path = prefix.with_suffix(".smi.csv")
@@ -130,9 +172,7 @@ def validate_execution(prefix: Path, workload: Workload) -> dict[str, Any]:
             )
     if report.get("echelon_mode") != "cuda":
         raise GateError(f"{report_path}: not forced through CUDA")
-    backend = str(report.get("echelon_backend", ""))
-    if RTX_4090 not in backend:
-        raise GateError(f"{report_path}: unexpected backend {backend!r}")
+    validate_cuda_backend(report.get("echelon_backend"), expected_gpu)
 
     log = log_path.read_text(encoding="utf-8", errors="replace")
     matches = list(VERBOSE_RE.finditer(log))
@@ -157,7 +197,7 @@ def raw_prefix(session: Path, phase: str, round_index: int, tag: str, arm: str) 
     return session / "raw" / phase / f"r{round_index:02d}" / tag / arm
 
 
-def gate_raw(session: Path, phase: str) -> list[dict[str, Any]]:
+def gate_raw(session: Path, phase: str, expected_gpu: str) -> list[dict[str, Any]]:
     if phase == "warmup":
         rounds = (0,)
     elif phase == "measure":
@@ -169,7 +209,9 @@ def gate_raw(session: Path, phase: str) -> list[dict[str, Any]]:
         for workload in WORKLOADS:
             for arm in ARMS:
                 observed = validate_execution(
-                    raw_prefix(session, phase, round_index, workload.tag, arm), workload
+                    raw_prefix(session, phase, round_index, workload.tag, arm),
+                    workload,
+                    expected_gpu,
                 )
                 rows.append({
                     "phase": phase,
@@ -181,11 +223,11 @@ def gate_raw(session: Path, phase: str) -> list[dict[str, Any]]:
     return rows
 
 
-def gate_nsys(session: Path) -> None:
+def gate_nsys(session: Path, expected_gpu: str) -> None:
     workload = BY_TAG["k0n13m2d6"]
     for arm in ARMS:
         prefix = session / "profiles" / "nsys" / arm / workload.tag
-        validate_execution(prefix, workload)
+        validate_execution(prefix, workload, expected_gpu)
         require_nonempty(prefix.with_suffix(".nsys-rep"))
         require_nonempty(prefix.with_suffix(".stats.csv"))
         status_path = prefix.with_suffix(".stats.status")
@@ -194,12 +236,12 @@ def gate_nsys(session: Path) -> None:
             raise GateError(f"nsys stats failed: {prefix}")
 
 
-def gate_ncu(session: Path) -> None:
+def gate_ncu(session: Path, expected_gpu: str) -> None:
     workload = BY_TAG["k0n13m2d6"]
     for kernel in ("f4e_update", "f4e_panel_block"):
         for arm in ARMS:
             prefix = session / "profiles" / "ncu" / kernel / arm / workload.tag
-            validate_execution(prefix, workload)
+            validate_execution(prefix, workload, expected_gpu)
             require_nonempty(prefix.with_suffix(".ncu-rep"))
             require_nonempty(prefix.with_suffix(".metrics.csv"))
             status_path = prefix.with_suffix(".import.status")
@@ -325,12 +367,13 @@ def row_record(row: dict[str, Any], session: Path) -> dict[str, Any]:
     }
 
 
-def analyze(session: Path) -> dict[str, Any]:
+def analyze(session: Path, expected_gpu: str) -> dict[str, Any]:
+    validate_gpu_inventory(session, expected_gpu)
     hashes = parse_binary_hashes(session)
-    warmups = gate_raw(session, "warmup")
-    measured = gate_raw(session, "measure")
-    gate_nsys(session)
-    gate_ncu(session)
+    warmups = gate_raw(session, "warmup", expected_gpu)
+    measured = gate_raw(session, "measure", expected_gpu)
+    gate_nsys(session, expected_gpu)
+    gate_ncu(session, expected_gpu)
     keyed = rows_by_key(measured)
 
     cells: dict[str, Any] = {}
@@ -389,14 +432,15 @@ def command_plan(args: argparse.Namespace) -> int:
 
 def command_gate(args: argparse.Namespace) -> int:
     session = args.session.resolve()
+    validate_gpu_inventory(session, args.expected_gpu)
     parse_binary_hashes(session)
     if args.phase in ("warmup", "measure"):
-        count = len(gate_raw(session, args.phase))
+        count = len(gate_raw(session, args.phase, args.expected_gpu))
     elif args.phase == "nsys":
-        gate_nsys(session)
+        gate_nsys(session, args.expected_gpu)
         count = 2
     elif args.phase == "ncu":
-        gate_ncu(session)
+        gate_ncu(session, args.expected_gpu)
         count = 4
     else:
         raise AssertionError(args.phase)
@@ -405,7 +449,7 @@ def command_gate(args: argparse.Namespace) -> int:
 
 
 def command_analyze(args: argparse.Namespace) -> int:
-    result = analyze(args.session.resolve())
+    result = analyze(args.session.resolve(), args.expected_gpu)
     print(json.dumps({
         "analysis": "written",
         "session": result["session"],
@@ -424,9 +468,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     gate = sub.add_parser("gate", help="check one completed runner phase")
     gate.add_argument("--session", type=Path, required=True)
     gate.add_argument("--phase", choices=("warmup", "measure", "nsys", "ncu"), required=True)
+    gate.add_argument("--expected-gpu", required=True)
     gate.set_defaults(func=command_gate)
     summary = sub.add_parser("analyze", help="gate everything and write final A/A artifacts")
     summary.add_argument("--session", type=Path, required=True)
+    summary.add_argument("--expected-gpu", required=True)
     summary.set_defaults(func=command_analyze)
     return parser.parse_args(argv)
 
