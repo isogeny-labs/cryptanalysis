@@ -1,0 +1,27 @@
+digraph n83_gate {
+  graph [rankdir=TB, bgcolor="white", pad=0.2, nodesep=0.35, ranksep=0.55, fontname="Helvetica"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=10, color="#374151"];
+
+  base [label="Exact N83 base\nB = 423,964; K = 2,554\nr prime; 5-sum mean = 47.211/r", fillcolor="#e0f2fe", color="#0369a1"];
+  separator [label="Exact quotient separator\nWagner subgroup-chain gate", fillcolor="#fef3c7", color="#b45309"];
+  pair [label="Pair certificate + triple join\n2 GiB; 3e11 concrete triples", fillcolor="#fef3c7", color="#b45309"];
+  algebra [label="Non-generic algebraic index\nnew low-degree exact index required", fillcolor="#f3e8ff", color="#7e22ce"];
+  sepstop [label="REJECT\nprime group: quotient is\ntrivial or injective", fillcolor="#fee2e2", color="#b91c1c"];
+  pairstop [label="REJECT\nordinary success upper bound\n< 0.002765", fillcolor="#fee2e2", color="#b91c1c"];
+  open [label="OPEN IMPLEMENTATION GAP\nNo qualifying construction found;\nprior S3 SAT gate remains negative", fillcolor="#ede9fe", color="#6d28d9"];
+  norun [label="NO EXPERIMENT ADMITTED\nNo protocol/export/run IDs", fillcolor="#f3f4f6", color="#111827", penwidth=2];
+
+  {rank=same; separator; pair; algebra;}
+  {rank=same; sepstop; pairstop; open;}
+
+  base -> separator [label="homomorphic filtering"];
+  base -> pair [label="explicit exact join"];
+  base -> algebra [label="escape generic bound"];
+  separator -> sepstop;
+  pair -> pairstop;
+  algebra -> open;
+  sepstop -> norun;
+  pairstop -> norun;
+  open -> norun [label="until revisit condition"];
+}

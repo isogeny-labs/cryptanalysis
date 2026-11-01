@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "n83_w34_five_sum_predata_resource_gate_result",
+  "status": "NO_GO_CERTIFIED_FOR_FROZEN_FAMILIES",
+  "experiment_admitted": false,
+  "curve_id": "EC1N83Ckb1h2bcb59d56ad6",
+  "subgroup_order": "2417851639230796216685689",
+  "subgroup_order_prime_pocklington": true,
+  "quotient_separator": {
+    "proper_nontrivial_subgroup_exists": false,
+    "reason": "prime-order cyclic subgroup: a quotient homomorphism is injective or trivial"
+  },
+  "geometry": {
+    "usable_projected_points_B": 423964,
+    "folded_columns_K": 2554,
+    "signed_frobenius_orbit_ceiling": 166,
+    "pair_multisets": "89872948630",
+    "five_multisets": "114149470796697230602971808",
+    "pair_state_loops_83K2": "541402028"
+  },
+  "resource_gate": {
+    "memory_bytes": "2147483648",
+    "optimistic_pair_certificate_bytes": "16",
+    "resident_pair_orbit_entry_cap": "134217728",
+    "represented_concrete_pair_cap": "22280142848",
+    "concrete_triple_test_cap": "300000000000",
+    "bounded_join_success_upper_numerator": "6684042854400000000000",
+    "bounded_join_success_upper_denominator": "2417851639230796216685689",
+    "bounded_join_below_one_half": true,
+    "all_pairs_join_success_upper_numerator": "26961884589000000000000",
+    "all_pairs_join_success_upper_denominator": "2417851639230796216685689",
+    "all_pairs_join_below_one_half": true,
+    "triple_tests_needed_for_half_with_memory_cap": "54260236474378",
+    "triple_tests_needed_for_half_with_all_pairs": "13451498343428",
+    "concrete_pairs_needed_for_half_at_test_cap": "4029752732052",
+    "pair_orbit_entries_needed_for_half_at_test_cap": "24275618868"
+  },
+  "positive_control_sanity": {
+    "constructible": true,
+    "scheduled_pair_triple_comparisons": "1",
+    "uniform_target_success_upper_numerator_for_same_single_comparison": "166",
+    "uniform_target_success_upper_denominator_for_same_single_comparison": "2417851639230796216685689",
+    "interpretation": "a deterministic planted pass would validate arithmetic and replay only, not ordinary-query coverage"
+  },
+  "claim_boundary": "Certified for exact quotient separators and explicit target-independent pair-certificate/concrete-triple joins under the frozen envelope. It is not a proof that no structured non-generic algebraic PDP exists."
+}

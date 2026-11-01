@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "kind": "n83_w34_five_sum_predata_resource_gate",
+  "date_utc": "2026-11-01",
+  "curve_id": "EC1N83Ckb1h2bcb59d56ad6",
+  "candidate_id": null,
+  "factor_base": {
+    "construction": "weight-three normal-basis mask orbits plus the first 4000 distinct weight-four cyclic-mask orbits from the frozen geometry",
+    "usable_projected_points_B": 423964,
+    "folded_columns_K": 2554,
+    "signed_frobenius_orbit_ceiling": 166,
+    "subgroup_order": "2417851639230796216685689",
+    "summands": 5
+  },
+  "input_sha256": {
+    "geometry.json": "972d8dac97ab6b2aa3df1c71f557d8df9b836d562456e728a15bd031dfce9a9e",
+    "representatives.json": "0febd329543ed944e663387dab3468d66368d6630cd6cdcd1ef274fe28584530",
+    "N83_NEXT_CALCULUS.md": "12e97e564651a07d6c1647cf1485d69dd8645dc78443796235e2fc2acb3cfa68",
+    "N83_W34_SAT_GATE.md": "02533bd76dfb72c1e0cc6386287ccd521148a08835c118056180a9db9e5b70cd",
+    "n83_next_offset_cost_v1.json": "ea43c3b2848e38714d325b3837164c118c9cfb7c40ea718acde97867c7860fe7"
+  },
+  "resource_envelope": {
+    "memory_bytes": 2147483648,
+    "wall_seconds": 300,
+    "optimistic_pair_certificate_bytes": 16,
+    "optimistic_concrete_triple_tests_per_second": 1000000000,
+    "concrete_triple_test_cap": "300000000000",
+    "primary_units": [
+      "resident pair-certificate entries",
+      "distinct concrete triple certificates tested"
+    ],
+    "timing_role": "The one-billion-tests/second rate is a deliberately favorable admission assumption, not a measurement or performance claim."
+  },
+  "admission_rule": {
+    "ordinary_population": "uniform points in the prime-order N83 subgroup",
+    "minimum_ordinary_success_probability": "1/2",
+    "pair_certificate_model": "Store target-independent exact pair-sum certificates, each representing at most one signed-Frobenius orbit, and test concrete triples against them. Every pair/triple comparison determines at most one target.",
+    "separator_model": "An exact Wagner-style separator must be an efficiently computable quotient homomorphism on the working subgroup.",
+    "positive_control": "A planted target made from one stored pair certificate and one scheduled triple must be found and replayed, but this sanity check does not satisfy the ordinary-population rule."
+  },
+  "inadmissible": [
+    "counting a planted target as evidence of ordinary-query coverage",
+    "treating a non-homomorphic coordinate prefix as an additive separator",
+    "crediting one folded certificate with more than 166 concrete pair sums without an exact multiplicity proof",
+    "rerunning the negative SAT or fixed-offset paths",
+    "raising memory, counted-test, or success caps after seeing a result",
+    "calling an asymptotic generic-group lower bound an impossibility proof for this structured fixed base"
+  ],
+  "decision": "Run no experiment unless the native verifier proves that a proposed separator or pair-certificate pilot can meet the ordinary-population admission rule inside the frozen envelope."
+}

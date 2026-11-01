@@ -1,0 +1,14 @@
+digraph resource_gap {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.7, fontname="Helvetica", label="Exact union-bound work comparison (uniform N83 subgroup target)", labelloc=t, fontsize=13];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.10"];
+  edge [fontname="Helvetica", fontsize=9, penwidth=2];
+
+  cap [label="2 GiB bounded certificate\nC <= 22,280,142,848 concrete pairs\nQ <= 300,000,000,000 triples\nC Q / r < 0.002765", fillcolor="#fee2e2", color="#b91c1c"];
+  all [label="Even every base pair\nC = 89,872,948,630\nC Q / r < 0.011151", fillcolor="#ffedd5", color="#c2410c"];
+  half [label="50% admission threshold\nC Q >= r/2\n= 1,208,925,819,615,398,108,342,844.5", fillcolor="#dcfce7", color="#15803d"];
+  planted [label="Planted sanity control\n1 scheduled pair + 1 triple\npasses by construction; ordinary <= 166/r", fillcolor="#e0e7ff", color="#4338ca"];
+
+  cap -> half [label="180.87x short", color="#b91c1c"];
+  all -> half [label="44.84x short", color="#c2410c"];
+  planted -> cap [label="validates replay, not coverage", style=dashed, color="#4338ca"];
+}
