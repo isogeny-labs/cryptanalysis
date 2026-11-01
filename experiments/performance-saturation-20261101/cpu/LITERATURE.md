@@ -259,3 +259,58 @@ frozen before candidate-affected data. It must bind both source and binary
 identities, a fresh A/B/A-prime schedule, qualified placement, exact
 fingerprint/work gates, profiler tools, full-call thresholds, stopping rules,
 and promotion/rollback decisions.
+
+## Version 5 orchestration amendment filed before v4 data
+
+The frozen exact-selection v4 protocol is identified by canonical SHA-256
+`8e2ead9cb02390c2b21e5db5d9e35f008c65720dc170f522b2be359b3b54f13a`,
+full-file SHA-256
+`4656a48ec4f9fccdcf0caec11e1a1444f538522064911ad56d224924179d1156`,
+registration commit `87d9390a679f83f90fbd27d98471d8afb3a64801`, and
+freeze-file commit `7ca83a39a59e88036c58596038bec8b2968a74a5`. At the
+v5 filing review, its retained root contained only artifact, registry, and
+preflight identities: no v4 wall or profiler output existed. Version 5 keeps
+those exact source, build, executable, registry, and selection identities and
+uses a new create-once result root.
+
+The follow-up review re-read the repository experiment rules, the canonical
+`experiment.protocol/v1` and `experiment.export/v1` contract and checker,
+`docs/ISOLATED_BENCHMARKS.md`, `docs/perf/PERFORMANCE_INDEX.md`, and the
+frozen v4 record before changing orchestration. It found four prospective
+ambiguities, not performance evidence: v4 had no hashed analysis script; it
+did not say whether an operational wall failure could continue; its two
+aggregate Callgrind processes stopped at the first inner failure despite the
+88-attempt prose; and its eight perf-record basenames were not frozen. No
+wall clock, retained binary, registry command, profiler, provider, or GPU was
+run to resolve them.
+
+Version 5 therefore freezes a create-once runner and independent analyzer by
+SHA-256. The command plan fixes four wall sessions, then 88 lexicographic
+Callgrind attempts (A then B), then 88 lexicographic software perf-stat
+attempts (A then B), then the perf-record phase. The direct Callgrind child
+argv is exactly the `perfindex.instr_one` Valgrind invocation at the retained
+source, still pinned to CPU 0 under the same reserve gate; each child now has
+its own output, status, streams, result, and isolation receipt, so one failure
+cannot suppress the remaining prescribed diagnostics. Profiler failures are
+retained and the later profiler attempts continue, but they cannot change the
+wall A/A verdict.
+
+The first three perf-record IDs and filenames are fixed. Slots 4–8 require
+all 34 baseline-A C Callgrind `Ir` integers, rank descending by `Ir`, and
+break ties by ascending complete kernel ID. Every C ID/slot command template
+is frozen prospectively; the selected eight-command manifest and its digest
+must be persisted before the first perf-record call. If any selection input
+is absent, the entire perf-record phase is recorded not attempted and no
+substitute cell is chosen.
+
+Any wall command failure, missing row, incomplete mirrored pair, contended or
+wrong reservation, or other operational shortfall stops the campaign before
+profiling, preserves the new root, and forbids retry or resume. Contradictory
+source/build/command/schedule/fingerprint evidence is separately classified
+`invalid_exactness_or_provenance`. A complete exact wall panel with any
+directional null verdict is
+`baseline_aa_false_direction_nonqualified`; otherwise it is
+`baseline_aa_complete_nonqualified`. Internal 0.2-second warm-up work remains
+part of each harness invocation and is not an external export row, so the
+export plans zero warm-up rows and exactly 1,056 measured rows. Every clock
+remains `wall_valid=false` on this nonqualified local KVM host.
