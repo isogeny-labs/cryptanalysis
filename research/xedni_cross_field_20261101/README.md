@@ -1,6 +1,7 @@
 # Xedni applicability across prime, binary, and Koblitz curves
 
 Date: 2026-11-01
+
 Status: structural audit implemented; characteristic-two primary source gated
 
 ## Question and scope
@@ -22,9 +23,10 @@ owned by `suite/src/cryptanalysis/curve_catalog.rs`.
 2. Read the full 24-page primary analysis by Jacobson, Koblitz, Silverman,
    Stein, and Teske (JKSST), including the algorithm in section 3, conditional
    Theorem 4.1, experiments in section 5, assumptions, and conclusion.
-3. Checked OpenAlex, CiNii Research, and the National Diet Library catalog for
-   characteristic-two work. This found Kogure's directly relevant 2002 report,
-   but not accessible full text.
+3. Checked OpenAlex, CiNii Research, the National Diet Library catalog, legacy
+   NAID PDF routes, Crossref, and Internet Archive for characteristic-two work.
+   This found Kogure's directly relevant 2002 report and the earlier 2000
+   implementation report it cites, but not accessible full text for either.
 4. Added a pure structural assessment to `ca-icx` and unit controls for the
    three families. The assessment does not execute or simulate xedni.
 
@@ -73,8 +75,15 @@ CiNii tags it with `xedni calculus` and `Koblitz curve`. The full four-page
 text was not available from OpenAlex, CiNii, NDL, or the indexed repository
 links checked here.
 
+The 2002 report directly cites Kogure's seven-page “Implementation of the
+Xedni Calculus algorithm,” IEICE Technical Report 100(77), pages 17–23,
+26 May 2000, NDL bibliographic ID 5409112. Its complete metadata is verified,
+but its legacy CiNii PDF route also ends at a 404 and NDL offers copy/library
+access rather than an online text.
+
 The binary and Koblitz rows are therefore `primary-source-gated`. No algorithm,
-success probability, or conclusion is inferred from title and metadata.
+field scope, success probability, or conclusion is inferred from titles,
+citation links, and metadata.
 
 ## Implementation
 
@@ -135,15 +144,21 @@ There is no uncertainty interval.
   Cryptography 20(1), 41–64 (2000),
   <https://doi.org/10.1023/A:1008312401197>. Full primary paper read from
   <https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf>.
+- Jun Kogure, *Implementation of the Xedni Calculus algorithm*, IEICE Technical
+  Report 100(77), 17–23 (2000),
+  <https://cir.nii.ac.jp/crid/1520572360230590720>; NDL record
+  <https://ndlsearch.ndl.go.jp/books/R000000004-I5409112>. Metadata only; full
+  text not obtained. NAID 110003297769.
 - Jun Kogure, *xedni calculus法について(標数2の場合)*, IEICE Technical
   Report ISEC2002-10, 102(71), 57–60 (2002),
   <https://cir.nii.ac.jp/crid/1520853833621034368>. Metadata only; full text
-  not obtained.
+  not obtained. NAID 110003296001.
 
 ## Uncertainty and open checks
 
-- Obtain Kogure ISEC2002-10 through IEICE, NDL document delivery, or an author
-  copy and read it before implementing a characteristic-two lift.
+- Obtain both Kogure reports through IEICE, NDL/library document delivery, or
+  an author copy. Read the 2000 implementation before the 2002
+  characteristic-two report and before implementing a characteristic-two lift.
 - Determine whether Kogure's construction is a number-field lift, a
   characteristic-two analogue using a different global object, or only a
   feasibility analysis. The title and tags do not answer this.
@@ -153,7 +168,7 @@ There is no uncertainty interval.
 
 ## Canonical graph check
 
-Checked the challenge curve catalog and existing xedni/automorphism research
-report. This audit adds no curve, isogeny, endomorphism, scalar rule, or route,
-so no canonical curve or isogeny graph changes. The new diagrams describe the
+Checked the challenge curve catalog and current xedni research state. This
+audit adds no curve, isogeny, endomorphism, scalar rule, or route, so no
+canonical curve or isogeny graph changes. The diagrams describe the
 research-domain boundary only.
