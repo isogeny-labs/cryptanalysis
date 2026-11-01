@@ -51,6 +51,7 @@ def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("build", "run"), required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--phase")
     parser.add_argument("--protocol-sha256")
     parser.add_argument("--baseline-binary-sha256")
     parser.add_argument("--candidate-binary-sha256")
@@ -424,6 +425,8 @@ def main() -> int:
         )
         if any(value is None or not re.fullmatch(r"[0-9a-f]{64}", value) for value in required):
             raise SystemExit("run mode requires a protocol and two binary SHA-256 values")
+        if options.phase is None or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,120}", options.phase):
+            raise SystemExit("run mode requires a safe explicit --phase")
     repo = Path(__file__).resolve().parents[3]
     output = options.out.resolve()
     output.mkdir(parents=True)
@@ -481,7 +484,7 @@ def main() -> int:
         argv = [
             sys.executable, str(runner),
             "--out", str(campaign),
-            "--phase", "candidate-ab-v3",
+            "--phase", options.phase,
             "--protocol-sha256", options.protocol_sha256,
             "--left-arm", "go-baseline",
             "--left-binary", str(baseline_binary),
