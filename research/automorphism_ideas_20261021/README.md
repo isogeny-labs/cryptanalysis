@@ -170,10 +170,21 @@ DLP route until its map and subgroup transport are verified.
 ## DGM-05: separate lifting from auxiliary-input attacks
 
 **Status: literature-gated proposal.** DGM discusses characteristic-zero lifting
-and Xedni. The primary Xedni proposal [S5] and subsequent analysis [S6] were
-consulted at abstract level only in this review. The analysis describes severe
-lifting/dependence obstacles and asymptotic failure of the original method.
-Those abstracts do not justify closing every possible lifting variant.
+and Xedni. The subsequent analysis [S6] has now been read in full: its Theorem
+4.1 proves a `C_0/p` success-probability bound under Lang's canonical-height
+conjecture and an explicit discriminant/height assumption, and its experiments
+find prohibitively rare useful lifts with tiny relation coefficients. This is a
+conditional negative analysis of the original prime-field method, not a proof
+closing every possible lifting variant.
+
+A directly relevant characteristic-two source is now identified: Kogure's 2002
+IEICE report on xedni in characteristic two [S9], indexed with Koblitz curves.
+Its full text has not been obtained, so no binary/Koblitz construction or
+conclusion is inferred from metadata. The cross-family audit derives a separate
+structural floor: lifting general `F_{2^m}` point coordinates through a number
+field requires residue degree `m`, hence global degree at least `m`; a Koblitz
+equation descending to `F_2` does not remove that point-coordinate requirement.
+See `research/xedni_cross_field_20261101/README.md` and its inspected PDF.
 
 Read the full papers before designing a run. State precisely which obstruction
 a variant changes, how dependent lifts are produced, the height/rank costs, and
@@ -219,8 +230,9 @@ certificates exist for the proposals in this report.
   Full implementation details remain a pre-experiment reading gate.
 - **S5 (abstract only):** Silverman,
   [The Xedni Calculus and the Elliptic Curve Discrete Logarithm Problem](https://uwaterloo.ca/combinatorics-and-optimization/sites/default/files/uploads/documents/1999_05.pdf).
-- **S6 (abstract only):**
-  [Analysis of the Xedni Calculus Attack](https://uwaterloo.ca/combinatorics-and-optimization/sites/default/files/uploads/documents/1999_06.pdf).
+- **S6 (full paper):** Jacobson, Koblitz, Silverman, Stein, Teske,
+  [Analysis of the Xedni Calculus Attack](https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf),
+  especially sections 3--6, Theorem 4.1 and its assumptions.
 - **S7 (parameter sections):** NIST,
   [FIPS 186-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf),
   historical P-192 parameters. This withdrawn edition is cited for the
@@ -228,6 +240,11 @@ certificates exist for the proposals in this report.
 - **S8 (parameter sections):** NIST,
   [SP 800-186](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=935198),
   P-224 parameters.
+- **S9 (metadata only):** Jun Kogure,
+  [xedni calculus法について(標数2の場合)](https://cir.nii.ac.jp/crid/1520853833621034368),
+  IEICE Technical Report ISEC2002-10, 102(71), 57--60 (2002). The indexed
+  subjects include characteristic-two xedni and Koblitz curves; full text was
+  not obtained.
 
 ## Activation and graph record
 

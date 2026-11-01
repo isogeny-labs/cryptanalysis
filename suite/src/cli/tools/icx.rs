@@ -7,6 +7,7 @@
 //! - `icx inspect <curve>` — verify the curve's parameters;
 //! - `icx estimate <curve>` — the generic-attack cost and the honest IC
 //!   picture for this size, with heuristics named;
+//! - `icx xedni [curve]` — audit xedni's lift domain and evidence gates;
 //! - `icx <curve>` — shorthand for `inspect`.
 //!
 //! `icx run` (execute the pipeline on an in-envelope curve or a same-family
@@ -23,14 +24,15 @@ use clap::{Args, Parser, Subcommand};
 use serde_json::{json, Value};
 
 use crate::cryptanalysis::curve_catalog::{self, CatalogCurve, Family};
-use crate::cryptanalysis::ic_engine;
+use crate::cryptanalysis::{ic_engine, xedni};
 
 #[derive(Parser)]
 #[command(
     name = "icx",
     version,
     about = "Index calculus across every standardized elliptic curve",
-    long_about = "Inspect, estimate and (where feasible) run index calculus on \
+    long_about = "Inspect, estimate, audit xedni applicability and (where feasible) \
+                  run index calculus on \
                   any standardized curve — prime, binary, Koblitz, extension \
                   field, or characteristic three — selected by name. See \
                   `icx list` for the catalog and \
@@ -57,6 +59,8 @@ enum Action {
     Inspect(CurveArg),
     /// Report the generic-attack cost and the IC picture for this curve.
     Estimate(EstimateArgs),
+    /// Audit xedni lift applicability and evidence gates by curve family.
+    Xedni(XedniArgs),
     /// Run the index-calculus pipeline on the curve (or a same-family analogue).
     Run(RunArgs),
     /// Solve a quadratic Boolean system with the FES kernel (CPU or GPU worker).
@@ -143,6 +147,15 @@ struct EstimateArgs {
     /// End-to-end envelope in subgroup-order bits (default: demonstrated max).
     #[arg(long, default_value_t = ic_engine::ATTACK_ENVELOPE_BITS)]
     envelope: u64,
+}
+
+#[derive(Args)]
+struct XedniArgs {
+    /// Assess one curve or alias; omit to assess the whole catalog.
+    curve: Option<String>,
+    /// Restrict a catalog-wide audit to prime | binary | koblitz | extension | char3.
+    #[arg(long)]
+    family: Option<String>,
 }
 
 fn provenance() -> Value {
@@ -281,6 +294,35 @@ fn estimate(args: &EstimateArgs) -> Result<Value, String> {
     }))
 }
 
+fn xedni_cmd(args: &XedniArgs) -> Result<Value, String> {
+    if args.curve.is_some() && args.family.is_some() {
+        return Err("supply either a curve or --family, not both".into());
+    }
+    let filter = match &args.family {
+        Some(f) => Some(Family::parse(f).ok_or_else(|| {
+            format!("unknown family '{f}'; use prime|binary|koblitz|extension|char3")
+        })?),
+        None => None,
+    };
+    let curves = match &args.curve {
+        Some(name) => vec![curve_catalog::by_name(name)
+            .ok_or_else(|| format!("unknown curve '{name}'; try `icx list`"))?],
+        None => curve_catalog::all()
+            .into_iter()
+            .filter(|curve| filter.is_none_or(|family| curve.family == family))
+            .collect(),
+    };
+    let assessments: Vec<_> = curves.iter().map(xedni::assess).collect();
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "xedni",
+        "status": "complete",
+        "scope": "structural applicability and literature gates; no attack execution or performance claim",
+        "count": assessments.len(),
+        "assessments": assessments,
+    }))
+}
+
 fn round1(x: f64) -> f64 {
     (x * 10.0).round() / 10.0
 }
@@ -364,6 +406,23 @@ fn display(report: &Value) {
             for n in report["notes"].as_array().into_iter().flatten() {
                 println!("  - {}", n.as_str().unwrap_or(""));
             }
+        }
+        Some("xedni") => {
+            println!(
+                "{:<22} {:<10} {:<12} {:>10}  status",
+                "curve", "family", "field", "min [K:Q]"
+            );
+            for row in report["assessments"].as_array().into_iter().flatten() {
+                println!(
+                    "{:<22} {:<10} {:<12} {:>10}  {}",
+                    row["curve"].as_str().unwrap_or("?"),
+                    row["family"].as_str().unwrap_or("?"),
+                    row["field"].as_str().unwrap_or("?"),
+                    row["minimum_global_field_degree"].as_u64().unwrap_or(0),
+                    row["applicability"].as_str().unwrap_or("?"),
+                );
+            }
+            println!("\nScope: {}", report["scope"].as_str().unwrap_or("?"));
         }
         Some("run") => {
             let r = &report["result"];
@@ -523,6 +582,7 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::List(a)) => list(a),
         Some(Action::Inspect(a)) => inspect(&a.curve),
         Some(Action::Estimate(a)) => estimate(a),
+        Some(Action::Xedni(a)) => xedni_cmd(a),
         Some(Action::Run(a)) => run_cmd(a, cli.json),
         Some(Action::Fes(a)) => fes_cmd(a),
         None => {
