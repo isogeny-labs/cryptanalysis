@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">H110 canonical p squared lift defect evidence flow</title>
+  <desc id="desc">A target point is lifted by a nonhomomorphic Hensel section, multiplied by the subgroup order into the formal kernel, mapped to its first formal coordinate, and tested for a low-degree scalar polynomial. Random sections, isomorphic coordinates, and the torsion lift are controls.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker>
+    <style>
+      .title{font:700 27px sans-serif;fill:#0f172a}.sub{font:15px sans-serif;fill:#334155}
+      .box{stroke-width:2;rx:14}.h{font:700 17px sans-serif;fill:#0f172a}.t{font:14px sans-serif;fill:#1e293b}
+      .source{fill:#dbeafe;stroke:#2563eb}.lift{fill:#ffedd5;stroke:#ea580c}.kernel{fill:#dcfce7;stroke:#16a34a}.candidate{fill:#f3e8ff;stroke:#9333ea}.control{fill:#fee2e2;stroke:#dc2626}.gate{fill:#fef3c7;stroke:#d97706}
+      .edge{stroke:#334155;stroke-width:2.2;fill:none;marker-end:url(#arrow)}.dash{stroke-dasharray:7 6}
+      .tag{font:700 12px sans-serif;letter-spacing:.5px}.blue{fill:#1d4ed8}.orange{fill:#c2410c}.green{fill:#15803d}.purple{fill:#7e22ce}.red{fill:#b91c1c}.amber{fill:#b45309}
+    </style>
+  </defs>
+  <rect width="1280" height="760" fill="#f8fafc"/>
+  <text x="50" y="48" class="title">H110: nonhomomorphic p² section → formal defect → low-degree test</text>
+  <text x="50" y="76" class="sub">The lift is not assumed to preserve Q=[k]P; H110 measures the exact algebraic complexity of that failure.</text>
+
+  <rect x="45" y="120" width="245" height="145" class="box source"/>
+  <text x="68" y="150" class="tag blue">SOURCE GROUP</text>
+  <text x="68" y="182" class="h">Q=[k]P in E(Fₚ)</text>
+  <text x="68" y="212" class="t">#E(Fₚ)=r prime, r≠p</text>
+  <text x="68" y="238" class="t">28 rows; 9,096 targets</text>
+
+  <rect x="345" y="120" width="270" height="145" class="box lift"/>
+  <text x="368" y="150" class="tag orange">EXECUTED SET SECTION; NONHOMOMORPHIC</text>
+  <text x="368" y="182" class="h">s₀(Q) in E(Z/p²Z)</text>
+  <text x="368" y="212" class="t">X=x; Hensel-correct Y</text>
+  <text x="368" y="238" class="t">red(s₀(Q))=Q</text>
+
+  <rect x="670" y="120" width="255" height="145" class="box kernel"/>
+  <text x="693" y="150" class="tag green">ALL 9,096 KERNEL CHECKS PASSED</text>
+  <text x="693" y="182" class="h">[r]s₀(Q) in E₁</text>
+  <text x="693" y="212" class="t">red([r]s₀(Q))=O</text>
+  <text x="693" y="238" class="t">Jacobian arithmetic mod p²</text>
+
+  <rect x="980" y="120" width="255" height="145" class="box candidate"/>
+  <text x="1003" y="150" class="tag purple">FIRST FORMAL LAYER VERIFIED</text>
+  <text x="1003" y="182" class="h">τ₀(Q)=−XZ/(pY)</text>
+  <text x="1003" y="212" class="t">exact mod p coordinate</text>
+  <text x="1003" y="238" class="t">embed output into Fᵣ</text>
+
+  <path d="M290 192 H335" class="edge"/><text x="296" y="176" class="tag orange">HENSEL</text>
+  <path d="M615 192 H660" class="edge"/><text x="626" y="176" class="tag green">[r]</text>
+  <path d="M925 192 H970" class="edge"/><text x="931" y="176" class="tag purple">t/p</text>
+
+  <rect x="185" y="350" width="350" height="155" class="box control"/>
+  <text x="210" y="380" class="tag red">32/32 CONTROLS: MAXIMUM DEGREE</text>
+  <text x="210" y="412" class="h">No candidate/control separation</text>
+  <text x="210" y="442" class="t">random u(Q); collision-preserving permutations</text>
+  <text x="210" y="468" class="t">coordinate isomorphisms; torsion lift τ=0</text>
+
+  <rect x="690" y="350" width="390" height="155" class="box gate"/>
+  <text x="715" y="380" class="tag amber">OBSERVED RESULT: 0/28 GATE ROWS</text>
+  <text x="715" y="412" class="h">deg F_G = r−2 on every row</text>
+  <text x="715" y="442" class="t">construct from public small multiples</text>
+  <text x="715" y="468" class="t">factor F_G(z)−τ(Q); verify [z]G=Q</text>
+
+  <path d="M1100 265 C1080 310 980 320 930 342" class="edge"/>
+  <path d="M990 265 C880 305 540 305 430 342" class="edge dash"/>
+
+  <rect x="435" y="600" width="420" height="105" class="box candidate"/>
+  <text x="460" y="632" class="tag purple">SCOPED BRIDGE REJECTED</text>
+  <text x="460" y="665" class="h">No decoder; no subexponential claim</text>
+  <text x="460" y="691" class="t">full interpolation is measurement-only, never free setup</text>
+  <path d="M885 505 C860 550 790 570 730 592" class="edge"/>
+</svg>
