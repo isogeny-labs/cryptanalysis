@@ -1,0 +1,662 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "gpu-f4-aa-rtx5090-20261101",
+  "version": 2,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/gpu",
+  "authors": [
+    "Codex performance-saturation study lane"
+  ],
+  "links": {
+    "literature": "LITERATURE.md",
+    "runner": "run_gpu_aa_5090.sh",
+    "analysis": "analyze_gpu_aa.py",
+    "incumbent": "experiments/f4-gpu-panel-20261007"
+  },
+  "question": "What timing noise floor and kernel-counter baseline does the landed CUDA F4 large-matrix eliminator exhibit for byte-identical current and control binaries on one Secure Runpod RTX 5090 session?",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Every current and control execution reproduces the preregistered rank, refuted, pinned, and word-operation values.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-correctness"
+      ],
+      "if_supported": "the A/A session is correctness-admissible for the five fixed matrices",
+      "if_not_supported": "the session is invalid and no timing comparison is admitted"
+    },
+    {
+      "id": "C2",
+      "text": "The current and control executables are byte-identical copies from one build.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-binary"
+      ],
+      "if_supported": "the arms differ only in label, path, and order",
+      "if_not_supported": "the session is not an A/A control"
+    },
+    {
+      "id": "C3",
+      "text": "This calibration contains no optimization candidate and cannot establish a speedup.",
+      "class": "out_of_scope",
+      "decided_by": []
+    }
+  ],
+  "arms": [
+    {
+      "id": "current",
+      "role": "baseline",
+      "description": "One copy of the current checkout's release f4_matrix_bench binary.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      }
+    },
+    {
+      "id": "control",
+      "role": "control_aa",
+      "description": "A second filesystem copy of the exact current-arm executable.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      },
+      "same_instrument_as": "current"
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every execution is a known-answer control; the helper rejects any matrix-shape, rank, refuted, pinned, or word_ops mismatch before timing is admitted."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "This deterministic A/A calibration makes no yield, discovery, or population claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "arm_label_and_binary_path",
+        "levels": [
+          "current",
+          "control"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "binary_bytes",
+        "treatment": "fixed",
+        "value": "one build copied twice",
+        "how": "cmp and SHA-256 equality are required"
+      },
+      {
+        "name": "source",
+        "treatment": "fixed",
+        "value": "current shipped checkout",
+        "how": "revision, dirty status, and relevant source hashes are recorded"
+      },
+      {
+        "name": "workloads",
+        "treatment": "fixed",
+        "value": "extensions.workloads",
+        "how": "the analysis helper is the executable workload registry and oracle"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "crossed",
+        "value": "alternate by round",
+        "how": "each arm runs first in three measured rounds"
+      },
+      {
+        "name": "process_layout_and_cache",
+        "treatment": "randomized",
+        "value": "fresh process",
+        "how": "one complete warmup per arm and cell is excluded"
+      },
+      {
+        "name": "gpu",
+        "treatment": "fixed",
+        "value": "one NVIDIA GeForce RTX 5090",
+        "how": "the runner refuses any other model or count"
+      },
+      {
+        "name": "foreign_gpu_processes",
+        "treatment": "measured",
+        "value": "none",
+        "how": "nvidia-smi compute-process query is a precondition"
+      },
+      {
+        "name": "gpu_state",
+        "treatment": "measured",
+        "value": "200 ms telemetry",
+        "how": "pstate, temperature, utilization, memory, power, and clocks are retained per execution"
+      },
+      {
+        "name": "profiling_overhead",
+        "treatment": "fixed",
+        "value": "diagnostic only",
+        "how": "unprofiled A/A completes first, followed by nsys and then ncu"
+      },
+      {
+        "name": "provider_placement",
+        "treatment": "measured",
+        "value": "Secure Cloud request",
+        "how": "pod, machine, GPU, and host facts are retained; physical-host exclusivity is not assumed"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "value": "prewritten helper",
+        "how": "the analysis SHA-256 is recorded before data"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-correctness",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "known-answer gate",
+        "threshold": "exact equality to every expected answer in extensions.workloads"
+      },
+      {
+        "id": "C-binary",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
+        "design": "absolute",
+        "reason": "establish a byte-identical instrument",
+        "threshold": "one identical SHA-256 digest"
+      },
+      {
+        "id": "C-aa",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
+        "design": "aa",
+        "reason": "measure the same-session timing floor; carries no optimization criterion",
+        "threshold": null
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": null,
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        0
+      ],
+      "nonce": null,
+      "note": "The matrices are deterministic and consume no algorithm seed; zero is retained as an explicit unused seed."
+    },
+    "instance_sampling": {
+      "rule": "The five cells, primary, and holdout were fixed from the retained 2026-10-07 incumbent study before this session.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Both executables are byte-identical and the fixed analysis has no candidate or performance threshold.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 5,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 1,
+      "correction": "none",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "Six pairs per cell are a requested coarse A/A calibration, not an equivalence test or candidate-effect power calculation; all 6^6 ordinary paired-bootstrap resamples are reported."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1800,
+      "per_sample_seconds": 60,
+      "threads": 1,
+      "estimated_total_seconds": 7200,
+      "measured_on": "Conservative preregistered bound from 70 unprofiled matrix processes, one build, two Nsight Systems traces, and four Nsight Compute captures; no campaign pod was launched."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "device_ms",
+        "name": "CUDA elimination device interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "The verbose device interval from queued panel work through final CUDA synchronization; upload, download, matrix build, startup, profilers, and analysis are excluded.",
+        "source": "raw/*/*/*/*.log F4_F2_ECHELON device field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.1 ms",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "word_ops",
+        "name": "word XOR operations",
+        "unit": "64-bit word XORs",
+        "kind": "counted",
+        "definition": "The exact pivot-history and trailing-update word count for the matrix elimination.",
+        "source": "raw/*/*/*/*.json word_ops",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "1",
+        "uncertainty": "none_exact"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "answer_gate",
+        "name": "exact answer gate",
+        "unit": "pass/fail",
+        "kind": "exact",
+        "definition": "Exact equality of shape, rank, refuted, pinned, and word_ops.",
+        "source": "analyze_gpu_aa.py validate_execution",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "exact",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "nsys_timeline",
+        "name": "CUDA timeline diagnostics",
+        "unit": "report",
+        "kind": "exact",
+        "definition": "One post-A/A CUDA/NVTX/OS-runtime trace per arm on the primary matrix.",
+        "source": "profiles/nsys/*/*.nsys-rep",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "ncu_counters",
+        "name": "hot-kernel hardware diagnostics",
+        "unit": "report",
+        "kind": "exact",
+        "definition": "One matching update and panel launch per arm with the five named ncu sections, collected after nsys.",
+        "source": "profiles/ncu/*/*/*.ncu-rep",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "word_ops",
+      "rank",
+      "refuted",
+      "pinned",
+      "rows",
+      "cols",
+      "nvidia_smi.pstate",
+      "nvidia_smi.temperature",
+      "nvidia_smi.utilization",
+      "nvidia_smi.power",
+      "nvidia_smi.clocks"
+    ],
+    "record": [
+      "provider",
+      "requested_cloud",
+      "pod_id",
+      "machine_id",
+      "gpu_uuid",
+      "gpu_name",
+      "gpu_compute_capability",
+      "gpu_memory",
+      "driver_version",
+      "kernel_release",
+      "cpu_model",
+      "cpu_count",
+      "rustc_version",
+      "nsys_version",
+      "ncu_version",
+      "git_commit",
+      "git_status",
+      "source_sha256",
+      "binary_sha256",
+      "foreign_compute_processes",
+      "nvidia_smi_telemetry",
+      "arm_order"
+    ],
+    "timed_primary_justification": "Elapsed CUDA elimination is the optimization target; identical word_ops cannot measure scheduling, occupancy, memory, or launch overhead. Timing is admitted only inside one requested Secure RTX 5090 session with byte-identical A/A arms, alternating order, no observed foreign GPU process, telemetry, and an observed tierB receipt; otherwise wall_valid is false."
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": null,
+    "placement": {
+      "cloud": "SECURE",
+      "gpu_type": "NVIDIA GeForce RTX 5090",
+      "gpu_count": 1,
+      "min_vcpu": 16,
+      "min_ram_gb": 32,
+      "unique_pod_name_required": true,
+      "keep": false,
+      "max_hours": 2,
+      "isolation_scope": "instance-scoped; physical-host exclusivity not asserted"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 7200,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Fixed design: 2 arms x 5 cells x (1 excluded warmup + 6 measured rounds) = 70 unprofiled executions, then 2 nsys primary diagnostics and 4 ncu primary kernel diagnostics, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "A binary, placement, tool-capability, warmup, measured-row, or profiler gate failure stops subsequent phases and preserves the incomplete session.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "any mismatch in rows, cols, rank, refuted, pinned, or word_ops",
+    "different arm binary hashes",
+    "non-CUDA or non-RTX-5090 backend, wrong visible GPU count, or foreign compute PID",
+    "not exactly six measured pairs per cell",
+    "profiler diagnostics before the unprofiled gate, or ncu before nsys",
+    "a resumed, interrupted, contended, or below-tierB row marked wall_valid",
+    "a nonzero status, missing telemetry/report, or overwritten artifact"
+  ],
+  "decision_rule": {
+    "text": "The session is admissible only when the binary and correctness absolute gates pass, every row is present once, placement/isolation gates pass, and profiler order is nsys then ncu. Timing intervals are calibration only and have no performance acceptance threshold.",
+    "comparison_ids": [
+      "C-binary",
+      "C-correctness"
+    ],
+    "threshold": "all exact gates pass; timing has no acceptance threshold",
+    "statistic": "per-cell ratio of summed current/control device_ms and median pair ratio",
+    "interval": "exact ordinary paired-bootstrap 95% interval over all 6^6 paired resamples per cell",
+    "multiple_comparison_correction": "none",
+    "effect_size_measure": "current/control device_ms ratio; calibration only",
+    "verdict_vocabulary": [
+      "aa_calibration_admissible",
+      "invalid_measurement",
+      "incomplete_session"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "analyze_gpu_aa.py",
+      "sha256": "c30038cb95539333779828cba61da05d511b5d7ac5c59a0d5a74f9d7f3b1bee6"
+    },
+    "inputs": [
+      "host.json",
+      "binary-sha256.tsv",
+      "order.tsv",
+      "raw/warmup",
+      "raw/measure",
+      "profiles/nsys",
+      "profiles/ncu"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "analysis.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired A/A device_ms ratios per cell",
+      "primary nsys kernel share",
+      "primary ncu hotspot diagnostics"
+    ],
+    "report_dir": "reports"
+  },
+  "inadmissible": [
+    "freezing or launching before a real runtime/tool preflight is recorded",
+    "changing workload, oracle, warmup, repeats, or order after data",
+    "using profiled durations in the unprofiled A/A distribution",
+    "treating ncu replay as timing or A/A as proof of equivalence",
+    "calling this calibration a speedup",
+    "pooling wall times across pods or GPU models",
+    "retrying wrong answers, application failures, timeouts, or profiler failures as infrastructure",
+    "using, stopping, deleting, or attaching to an unrelated pod",
+    "omitting invalid or incomplete rows"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "source-linked prior art, workload, profiler order, isolation limits, and pod lifecycle",
+      "verified_by": "Codex, 2026-11-01"
+    },
+    {
+      "ref": "experiments/f4-gpu-panel-20261007/README.md",
+      "provenance": "internal",
+      "claim": "landed design, exact five-cell answers, rejected variants, and incumbent kernel shares",
+      "verified_by": "Codex, 2026-11-01"
+    },
+    {
+      "ref": "https://docs.nvidia.com/nsight-systems/UserGuide/index.html",
+      "provenance": "retrieved",
+      "claim": "Nsight Systems CLI CUDA timeline and summary workflow",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html",
+      "provenance": "retrieved",
+      "claim": "ncu filtering, launch count, sections, replay, export, and import",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "https://docs.runpod.io/pods/overview",
+      "provenance": "retrieved",
+      "claim": "Runpod Pod cloud classes and ephemeral compute scope",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "cloud/runpod_pod.py",
+      "provenance": "internal",
+      "claim": "unique creation, shipping, fetch, deletion, and lifetime-stop behavior",
+      "verified_by": "Codex, 2026-11-01"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  },
+  "extensions": {
+    "runner": {
+      "path": "run_gpu_aa_5090.sh",
+      "sha256": "1eeac7424f5a406acad725396c9653c99f7970845181d4e71b01a92d2443865d"
+    },
+    "workloads": [
+      {
+        "role": "panel",
+        "tag": "k0n13m2d5",
+        "cell": "0:13:2:1234",
+        "degree": 5,
+        "rows": 30225,
+        "cols": 53871,
+        "rank": 27250,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 10745652033
+      },
+      {
+        "role": "panel",
+        "tag": "k0n9m3d5",
+        "cell": "0:9:3:77",
+        "degree": 5,
+        "rows": 33147,
+        "cols": 87118,
+        "rank": 31069,
+        "refuted": false,
+        "pinned": 1,
+        "word_ops": 1196809344
+      },
+      {
+        "role": "panel",
+        "tag": "k1n11m2d5",
+        "cell": "1:11:2:301",
+        "degree": 5,
+        "rows": 14861,
+        "cols": 21196,
+        "rank": 12091,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 986408355
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d6",
+        "cell": "1:11:2:301",
+        "degree": 6,
+        "rows": 68156,
+        "cols": 60040,
+        "rank": 46747,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 57968918179
+      },
+      {
+        "role": "primary",
+        "tag": "k0n13m2d6",
+        "cell": "0:13:2:1234",
+        "degree": 6,
+        "rows": 168363,
+        "cols": 188203,
+        "rank": 130583,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 1110114894889
+      }
+    ],
+    "profiler_plan": {
+      "order": [
+        "unprofiled_aa",
+        "nsys",
+        "ncu"
+      ],
+      "cell": "k0n13m2d6",
+      "nsys_reports": [
+        "cuda_gpu_kern_sum",
+        "cuda_api_sum"
+      ],
+      "ncu_kernels": [
+        "f4e_update",
+        "f4e_panel_block"
+      ],
+      "ncu_launch_skip": 0,
+      "ncu_launch_count": 1,
+      "ncu_replay": "kernel",
+      "ncu_sections": [
+        "LaunchStats",
+        "Occupancy",
+        "SpeedOfLight",
+        "MemoryWorkloadAnalysis",
+        "SchedulerStats"
+      ]
+    }
+  }
+}
