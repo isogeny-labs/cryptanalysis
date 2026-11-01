@@ -1,0 +1,775 @@
+{
+  "schema": "go-coordinator-ab-analysis/1",
+  "protocol_sha256": "108902ea5e91147ab9632218c2dc29a09fffce54b739484b4cdb9ba657c02721",
+  "analysis": {
+    "script": "experiments/performance-saturation-20261101/go/analyze_remote_ab.py",
+    "script_sha256": "bc5f2b25d7512cc58f09ca3654cc124948bcc3e277cab10e46263530d91734a8",
+    "status": "post_hoc_deterministic_sensitivity"
+  },
+  "inputs": {
+    "protocol_file_sha256": "2aa628fecc101b611dd51198c27b0a2fc9ce3f916aa8cda4ae7a4f5315278b5f",
+    "receipt_sha256": "182f5726b43750cc484b4117ff0efad1b81a9f92236998e7e9a3129beec70507",
+    "archive_sha256": "79619fbd84d58fa583de0d23d1a479a2b883e0e83956585a602c9837c428f23e",
+    "archive_manifest_sha256": "2bfb91ca563f6b17202b06669c0018f750ec569e7b960b3df3cf17b14d5598b4",
+    "rows_sha256": "bfa8c7542b2ca56d5cc8dc834f3ed7fc5ae94ffa62df9565af6b8144af40af23",
+    "isolation_sha256": "138cd1170361f5bf89687aa8afadf921e492e1c8ff31e3668dc8ee791fdf6134",
+    "build_manifest_sha256": "8163b4130d4afd850bbc0dfa04ae75d619f2b6881ebdbf9595025ff417de2f9e",
+    "campaign_manifest_sha256": "7a04eaa34ddbc391c31000056665f1c2f2d20b3a60b03056333370fad4e69f03",
+    "campaign_summary_sha256": "ff0b5ab1b68b57bb4da028865c6545cb2a99ba8e6d8612668a66af162b7b3b28",
+    "remote_summary_sha256": "fe20d52c60f27493b7d968b6c1c9da8791dbb787ad9d90f2f4314094e2651934"
+  },
+  "transport": {
+    "pod_id": "ol7fl01jrbvtyc",
+    "pod_name": "go-coord-ab-run-v7-80a166474ada",
+    "remote_returncode": 0,
+    "archive_members_verified": 842,
+    "archive_manifest_entries_verified": 841,
+    "exact_id_delete_requested": true,
+    "exact_id_absence_verified": true
+  },
+  "flow": {
+    "planned": 276,
+    "completed": 276,
+    "warmups": 36,
+    "measured": 240,
+    "pairs": 120
+  },
+  "exact": {
+    "matching_fingerprint_pairs": 120,
+    "mismatches": 0
+  },
+  "isolation": {
+    "runner_timing_valid": true,
+    "measured_rows_with_nonzero_steal_delta": 0,
+    "cgroup_nr_throttled_delta": 0,
+    "affinity_unchanged": true,
+    "memory_event_deltas": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "memory_limit_bytes": 64000000000,
+    "mechanical_timing_gates_pass": true,
+    "l2_attestation_explicit": false,
+    "psi_materiality_threshold_preregistered": false
+  },
+  "bootstrap_sensitivity": {
+    "canonical_preregistered_analysis": false,
+    "method": "exact_empirical_paired_percentile_bootstrap",
+    "pairs_per_case": 20,
+    "statistic": "average_of_bootstrap_order_statistics_10_and_11",
+    "distribution": "exhaustive_joint_order_statistic_distribution",
+    "probability_arithmetic": "exact_rational",
+    "rng": null,
+    "draws": null,
+    "family_alpha": "1/20",
+    "tests_in_family": 12,
+    "correction": "two_sided_bonferroni_conservative_for_holm",
+    "lower_quantile": "1/480",
+    "quantile_definition": "inf{x: CDF(x) >= 1/480}"
+  },
+  "cases": [
+    {
+      "case": "BenchmarkStateVersionVector/log_1024",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.001050153376",
+            "numerator": "2241",
+            "denominator": "2133974"
+          },
+          "minimum_ratio": {
+            "decimal": "0.001050149870",
+            "numerator": "17928",
+            "denominator": "17071849"
+          },
+          "maximum_ratio": {
+            "decimal": "0.001053375065",
+            "numerator": "17983",
+            "denominator": "17071792"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.143375174338",
+            "numerator": "514",
+            "denominator": "3585"
+          },
+          "minimum_ratio": {
+            "decimal": "0.143375174338",
+            "numerator": "514",
+            "denominator": "3585"
+          },
+          "maximum_ratio": {
+            "decimal": "0.143375174338",
+            "numerator": "514",
+            "denominator": "3585"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "14.792324098704",
+            "numerator": "92154440741",
+            "denominator": "6229882480"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "14.252891573717",
+            "numerator": "691308",
+            "denominator": "48503"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "15.402432053214",
+            "numerator": "296389",
+            "denominator": "19243"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "14.581290139978577",
+            "numerator": "16022082",
+            "denominator": "1098811"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "14.800999041283",
+            "numerator": "1376590109",
+            "denominator": "93006567"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "14.268627450980",
+            "numerator": "7277",
+            "denominator": "510"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "15.300447497138",
+            "numerator": "147022",
+            "denominator": "9609"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "14.601911507519659",
+            "numerator": "2713274279",
+            "denominator": "185816376"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    },
+    {
+      "case": "BenchmarkStateVersionVector/log_8192",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.000551148044",
+            "numerator": "5140065398598",
+            "denominator": "9326106572957065"
+          },
+          "minimum_ratio": {
+            "decimal": "0.000551147792",
+            "numerator": "9409",
+            "denominator": "17071646"
+          },
+          "maximum_ratio": {
+            "decimal": "0.000551558087",
+            "numerator": "4708",
+            "denominator": "8535819"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.142921912601",
+            "numerator": "4098",
+            "denominator": "28673"
+          },
+          "minimum_ratio": {
+            "decimal": "0.142921912601",
+            "numerator": "4098",
+            "denominator": "28673"
+          },
+          "maximum_ratio": {
+            "decimal": "0.142921912601",
+            "numerator": "4098",
+            "denominator": "28673"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "15.556604106188",
+            "numerator": "1820941923025",
+            "denominator": "117052662046"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "14.699250223423",
+            "numerator": "10510155",
+            "denominator": "715013"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.110027602630",
+            "numerator": "12645337",
+            "denominator": "739060"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.216288112247922",
+            "numerator": "2816759938429",
+            "denominator": "185114787368"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "15.551711685042",
+            "numerator": "562539501",
+            "denominator": "36172192"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "14.696336176758",
+            "numerator": "210187",
+            "denominator": "14302"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.105649809238",
+            "numerator": "421449",
+            "denominator": "24638"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.215208605140758",
+            "numerator": "31145263375",
+            "denominator": "2046982344"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.001049684767",
+            "numerator": "1120",
+            "denominator": "1066987"
+          },
+          "minimum_ratio": {
+            "decimal": "0.001049681323",
+            "numerator": "2240",
+            "denominator": "2133981"
+          },
+          "maximum_ratio": {
+            "decimal": "0.001052906455",
+            "numerator": "17975",
+            "denominator": "17071792"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.143235704324",
+            "numerator": "1027",
+            "denominator": "7170"
+          },
+          "minimum_ratio": {
+            "decimal": "0.143235704324",
+            "numerator": "1027",
+            "denominator": "7170"
+          },
+          "maximum_ratio": {
+            "decimal": "0.143235704324",
+            "numerator": "1027",
+            "denominator": "7170"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.005900888670",
+            "numerator": "242959070113",
+            "denominator": "15179343656"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "15.525672591543",
+            "numerator": "1380962",
+            "denominator": "88947"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "16.441096267101",
+            "numerator": "717473",
+            "denominator": "43639"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.850018963119606",
+            "numerator": "1379126",
+            "denominator": "87011"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.062300908899",
+            "numerator": "134167757",
+            "denominator": "8352960"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "15.589749379092",
+            "numerator": "69047",
+            "denominator": "4429"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "16.441919191919",
+            "numerator": "6511",
+            "denominator": "396"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.883680755499251",
+            "numerator": "137918",
+            "denominator": "8683"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.000551089474",
+            "numerator": "1568",
+            "denominator": "2845273"
+          },
+          "minimum_ratio": {
+            "decimal": "0.000551089248",
+            "numerator": "9408",
+            "denominator": "17071645"
+          },
+          "maximum_ratio": {
+            "decimal": "0.000551499510",
+            "numerator": "9415",
+            "denominator": "17071638"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.142904474593",
+            "numerator": "8195",
+            "denominator": "57346"
+          },
+          "minimum_ratio": {
+            "decimal": "0.142904474593",
+            "numerator": "8195",
+            "denominator": "57346"
+          },
+          "maximum_ratio": {
+            "decimal": "0.142904474593",
+            "numerator": "8195",
+            "denominator": "57346"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.573566577407",
+            "numerator": "7511956207193",
+            "denominator": "453249225030"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "16.178392736985",
+            "numerator": "11035945",
+            "denominator": "682141"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.057066595205",
+            "numerator": "11202382",
+            "denominator": "656759"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "16.435902010327403",
+            "numerator": "14953943053073",
+            "denominator": "909834035496"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.570992766529",
+            "numerator": "150234296047",
+            "denominator": "9066101118"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "16.188338175309",
+            "numerator": "551650",
+            "denominator": "34077"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.043985323001",
+            "numerator": "1119466",
+            "denominator": "65681"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "16.432594672082189",
+            "numerator": "550229",
+            "denominator": "33484"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.001059055959",
+            "numerator": "565",
+            "denominator": "533494"
+          },
+          "minimum_ratio": {
+            "decimal": "0.001059052547",
+            "numerator": "18080",
+            "denominator": "17071863"
+          },
+          "maximum_ratio": {
+            "decimal": "0.001062277645",
+            "numerator": "1395",
+            "denominator": "1313216"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.143494631153",
+            "numerator": "1029",
+            "denominator": "7171"
+          },
+          "minimum_ratio": {
+            "decimal": "0.143494631153",
+            "numerator": "1029",
+            "denominator": "7171"
+          },
+          "maximum_ratio": {
+            "decimal": "0.143494631153",
+            "numerator": "1029",
+            "denominator": "7171"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.055980884614",
+            "numerator": "39637116397",
+            "denominator": "2468682336"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "15.123648559199",
+            "numerator": "342717",
+            "denominator": "22661"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "16.575882220457",
+            "numerator": "1398358",
+            "denominator": "84361"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.872837059443922",
+            "numerator": "1369556",
+            "denominator": "86283"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.073516261142",
+            "numerator": "395887314",
+            "denominator": "24629789"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "15.218583481350",
+            "numerator": "137089",
+            "denominator": "9008"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "16.588137603796",
+            "numerator": "69919",
+            "denominator": "4215"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "15.910290685894875",
+            "numerator": "1183015153",
+            "denominator": "74355345"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    },
+    {
+      "case": "BenchmarkStateDeltaSinceOneBehind/log_8192",
+      "pairs": 20,
+      "metrics": {
+        "B/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.000552260943",
+            "numerator": "2357",
+            "denominator": "4267910"
+          },
+          "minimum_ratio": {
+            "decimal": "0.000552260700",
+            "numerator": "18856",
+            "denominator": "34143295"
+          },
+          "maximum_ratio": {
+            "decimal": "0.000552670971",
+            "numerator": "12580",
+            "denominator": "22762187"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": true
+        },
+        "allocs/op": {
+          "direction": "candidate_over_baseline",
+          "median_ratio": {
+            "decimal": "0.142936858075",
+            "numerator": "8197",
+            "denominator": "57347"
+          },
+          "minimum_ratio": {
+            "decimal": "0.142936858075",
+            "numerator": "8197",
+            "denominator": "57347"
+          },
+          "maximum_ratio": {
+            "decimal": "0.142936858075",
+            "numerator": "8197",
+            "denominator": "57347"
+          },
+          "threshold": {
+            "decimal": "0.050000000000",
+            "numerator": "1",
+            "denominator": "20"
+          },
+          "passes": false
+        },
+        "ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.626775695925",
+            "numerator": "3496079895043",
+            "denominator": "210268061528"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "12.752509109394",
+            "numerator": "10887952",
+            "denominator": "853789"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.403804728063",
+            "numerator": "3781081",
+            "denominator": "217256"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "16.349834369258971",
+            "numerator": "3712861046785",
+            "denominator": "227088603036"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        },
+        "cpu-ns/op": {
+          "direction": "baseline_over_candidate",
+          "median_ratio": {
+            "decimal": "16.631657445555",
+            "numerator": "140964922047",
+            "denominator": "8475698980"
+          },
+          "minimum_pair_ratio": {
+            "decimal": "12.753631507427",
+            "numerator": "1088701",
+            "denominator": "85364"
+          },
+          "maximum_pair_ratio": {
+            "decimal": "17.400012273139",
+            "numerator": "1134185",
+            "denominator": "65183"
+          },
+          "median_threshold": {
+            "decimal": "1.050000000000",
+            "numerator": "21",
+            "denominator": "20"
+          },
+          "bonferroni_lower": {
+            "decimal": "16.346379973543421",
+            "numerator": "74258387383",
+            "denominator": "4542803208"
+          },
+          "bootstrap_support_points": 210,
+          "passes_conservative_numeric_gate": true
+        }
+      }
+    }
+  ],
+  "claims": {
+    "C-ab-correct": "supported",
+    "C-ab-allocation": "unsupported",
+    "C-ab-timing_numeric": "passes_conservative_sensitivity",
+    "C-ab-timing_formal": "conditional_on_isolation_interpretation"
+  },
+  "verdict": {
+    "overall": "unsupported",
+    "reason": "allocs/op exceeds the frozen 0.05 threshold in all six cases"
+  },
+  "limitations": [
+    "analysis_plan.script was null in the frozen v7 protocol",
+    "bootstrap construction and the exact Holm interval procedure were not preregistered",
+    "L2 attestation and a numeric material-PSI threshold were not explicit"
+  ]
+}
