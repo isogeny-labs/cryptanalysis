@@ -1,0 +1,119 @@
+{
+  "schema": "cpu-baseline-aa-artifact-binding/v4",
+  "recorded_at": "2026-11-01T21:53:26Z",
+  "lineage": {
+    "invalid_protocol_path": "experiments/performance-saturation-20261101/cpu/protocol-baseline-aa-artifacts-v3.json",
+    "invalid_protocol_canonical_sha256": "38e165778da0e3799f89a5513af107aa577e160687eec9a7b509c8d382803e0d",
+    "invalid_protocol_file_sha256": "d04c5e5fcbbee0a1553d04e4f5934b9653795a89ac13c0b4d746be57965f8dee",
+    "invalid_protocol_registration_commit": "24ce34273f780c6d24e03a0ce7d34c2ccc8ef0b1",
+    "invalid_protocol_freeze_commit": "b944b42c85c77dfac71f07d52ce6ecfeea45fb15",
+    "invalidation_path": "experiments/performance-saturation-20261101/cpu/baseline-aa-v3/invalidation.json",
+    "invalidation_sha256": "f340114ee4b6c0633244dc49caa9ce18ca28667128c162bb6bdc8cfdebbd64c4",
+    "report_path": "experiments/performance-saturation-20261101/cpu/BASELINE_AA_V3_REPORT.md",
+    "report_sha256": "4bfc28f468e406a65de72c5150a04618c9ba06c29b08125e243b6f05e7098f30",
+    "v3_terminal_outcome": "invalid_exactness_or_provenance",
+    "v3_partial_timing_reusable": false
+  },
+  "source": {
+    "commit": "781722ef89e74b62079d2bc0cb82217061ac188c",
+    "tree": "99c6de3f3c617d1f16917bd81590279b167758da",
+    "git_archive_sha256": "a2031be1f2c1d3f00413b141757de370811c5c916321dcb72ad5513198bbbfb4",
+    "suite_tree": "86301552da8d5162d3e1aefe380de98dc178b131",
+    "perfbench_tree": "c4e6ca726a7d5fe5662e965021e1f6b50093e254",
+    "c_include_tree": "3e301c02eb593b158bd94453b7720e176b4f4361",
+    "c_src_tree": "a9d50d2f95c1c039e66eba41610a3cbc2786049e",
+    "files": {
+      "scripts/perf/perfindex.py": "28084cd77fe28d3b031f4dc1474241ee051b2072c7b62dc7a17e0049c3e3674f",
+      "tests/test_perfindex.py": "0eef1cf9b3e036da6890791eb5fe293c731e2048f7e57df754ed9e0e35e52390",
+      "suite/examples/perfbench/gf2_la.rs": "f28d11925594574db0a858cba1b9bfa5e600b2bb7ef2477becf81c9f5dfad7bb",
+      "suite/examples/perfbench/bool_gb.rs": "bcf70c25bcb73c3c374292eba7c440aa90bd50524a24aa9782d031b9f8e79e5f",
+      "suite/examples/perfbench/field_ec.rs": "63f659bc947cd4e656c0dd21b9b4f8f67921641fd2371fcd4bc892d33e4a339b",
+      "suite/examples/perfbench/main.rs": "27b3240afce35b6032874b7b793fea7b9f4cb7c56957494bd145d6f5567d2429",
+      "tools/ca_perfbench.c": "90becdfad3f93e812b6ad465668d4f03c942b5237c19d4e2a5497eed06891edc",
+      "suite/src/cryptanalysis/gf2_elim.rs": "3b93bb043405b62a0a59848be0998298bd74a8675bdbe3a3e7e004cf9672edd6",
+      "suite/src/cryptanalysis/matrix_f5_f2.rs": "e10c2290b40750fbf65e9ba8e65193d1f253939d224b0e3a3a584fc0bd9fa381",
+      "suite/src/binary_ecc/f2m.rs": "15d8f5f357e863e0f16d49f04e88bbbd3269a8ddbb930079f41dff8ef2c0f197",
+      "suite/Cargo.toml": "79215eaaee65fc415a83ca20006ddf541a3a76dd2bdc84f774b2f749a1080cf1",
+      "suite/Cargo.lock": "cffcbfacc10d859ca8269e8e5b7142f0eea39f178766b90f185f0ec314db6115",
+      "CMakeLists.txt": "9e880cfcee47d18c26f793f4b4a15a1737b6f55b2250016b4e1c264e50f51fca"
+    }
+  },
+  "build_recipe": {
+    "canonical_sha256": "467eea18f2eb16cd7bda4f57f5eb3309a766a0882e8d6557ee8735c017adb121",
+    "canonical_input": "UTF-8 canonical JSON (sorted keys, compact separators) of protocol arms[0].instrument.build",
+    "lock": "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+    "source_commit": "781722ef89e74b62079d2bc0cb82217061ac188c",
+    "rust_out": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust",
+    "c_out": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c",
+    "offline": true
+  },
+  "toolchain": {
+    "python_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "isolated_bench_sha256": "b48781f50cb1b1f1fdbefd8dfe91c9ea239ce80785368df8a564fa3fb388e336",
+    "rustc_sha256": "b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853",
+    "cargo_sha256": "a670e02cfa39ac2e53f77a2d911ca1fc9e2c479b0603ec956625be1daf24e3af",
+    "cc_sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+    "ld_sha256": "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+    "make_sha256": "8a229baf64671988cfb5af43ba3070c6ce7214cf32bcf96155115559d1466fa7",
+    "ar_sha256": "f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb",
+    "ranlib_sha256": "4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e"
+  },
+  "artifacts": {
+    "rust": {
+      "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/perfbench",
+      "size": 10866944,
+      "mode": "0700",
+      "sha256": "b066d0d8fefac4dd3b3891ab4804e77046302ceb2b86362095a65b632c7c8c37",
+      "build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-rust/build.json",
+      "build_json_size": 900,
+      "build_json_mode": "0600",
+      "build_json_sha256": "162db03afcd825a554e9d772deaee1cd5d957feba54f1ac60b491643747f3534"
+    },
+    "c": {
+      "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/ca_perfbench",
+      "size": 292112,
+      "mode": "0700",
+      "sha256": "6d9f3ba6845b47c01d374346a1b87ce6147a09c39fba94d5c2d06a2a2bbcd97d",
+      "build_json_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/build/base-c/build.json",
+      "build_json_size": 974,
+      "build_json_mode": "0600",
+      "build_json_sha256": "0f0037faa14b6c2671a79815b6feb5cf92b04340f4f6f29b581aa7d05402f4d8"
+    },
+    "same_instrument_all_arms": true
+  },
+  "registries": {
+    "rust": {
+      "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/rust.jsonl",
+      "rows": 262,
+      "sha256": "b225091d89a02e7400b01bb7704c1f358192049753d4bc279d70dcb352f194a0",
+      "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "duplicate_ids": []
+    },
+    "c": {
+      "path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/registry/c.jsonl",
+      "rows": 34,
+      "sha256": "eafa8c3f389a88115f05ba1c5b602fc3b199cc0a6c80ed71432917c59cc97d44",
+      "exit_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "duplicate_ids": []
+    }
+  },
+  "exact_selection": {
+    "receipt_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4/preflight/exact-selection.json",
+    "receipt_sha256": "deb755224c3e20e6b924255d2100029f45d1d292ec97efaba2ac2ea563e7ed3b",
+    "rust_expected": 10,
+    "rust_selected": 10,
+    "c_expected": 34,
+    "c_selected": 34,
+    "suffix_variant_selected": false,
+    "stale_preserved_receipt_path": "/workspace/.benchmarks/performance-saturation/cpu/baseline-aa-v4-preflight/exact-selection.json",
+    "stale_preserved_receipt_sha256": "93622dcc240440563b06af54d27a04eec9e6d1db3d117658d9105e3644ad78c9",
+    "stale_receipt_admissible": false
+  },
+  "protocol_gate": {
+    "data_invocations_before_v4_freeze": 0,
+    "timing_launched": false,
+    "status": "closed until a v4 protocol binding this document is registered, frozen, committed, revalidated, and the parent confirms all other local CPU work is paused"
+  }
+}
