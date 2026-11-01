@@ -1,0 +1,514 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "GO-COORD-DELTA-20261101-AA-V2",
+  "version": 2,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/go",
+  "authors": [
+    "Go coordinator optimization lane"
+  ],
+  "links": {
+    "supersedes_for_aa_phase": "experiments/performance-saturation-20261101/go/protocol.json",
+    "predecessor_protocol_sha256": "1587fdd995b3c1fec068835b9167bcbfd1f2de8821999c6736cb5905b7216ee1",
+    "literature": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+    "benchmark": "bindings/go/coord_benchmark_test.go",
+    "retained_baseline_binary": "/workspace/.benchmarks/performance-saturation/go/baseline/coord.test",
+    "retained_aa_binary": "/workspace/.benchmarks/performance-saturation/go/baseline/coord-aa.test",
+    "global_cpu_lock": "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+    "benchmark_cases": [
+      "BenchmarkStateVersionVector/log_1024",
+      "BenchmarkStateVersionVector/log_8192",
+      "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "BenchmarkStateDeltaSinceOneBehind/log_8192"
+    ],
+    "measured_arm_schedule": "For each benchmark case and round r=1..20: odd r runs go-baseline then go-baseline-aa; even r runs go-baseline-aa then go-baseline. Three warmup rounds use the same mirrored order before measured round 1."
+  },
+  "question": "Do byte-identical retained Go coordinator baseline binaries produce exact matching outputs and an admissible A/A noise floor across all six fixed benchmark cases under the local CPU-isolation contract?",
+  "claims": [
+    {
+      "id": "C-aa-correct",
+      "text": "Every baseline and A/A invocation returns the registered iteration count, allocation and timing fields, and exact deterministic correctness fingerprints.",
+      "class": "exact_computation",
+      "decided_by": [],
+      "if_supported": "the retained baseline instrument is mechanically admissible",
+      "if_not_supported": "the campaign is invalid and no candidate timing may rely on it"
+    },
+    {
+      "id": "C-aa-valid",
+      "text": "The byte-identical baseline and A/A arms satisfy the preregistered allocation, wall-time, and CPU-time noise gates in every registered benchmark case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-aa-accept"
+      ],
+      "if_supported": "the measured A/A spread may be used as the noise floor for a separately frozen candidate comparison",
+      "if_not_supported": "timing claims are invalid on this host/session; exact and allocation counts remain reportable where valid"
+    }
+  ],
+  "arms": [
+    {
+      "id": "go-baseline",
+      "role": "baseline",
+      "description": "Retained unmodified Go coordinator baseline test binary.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "go",
+            "test",
+            "-c",
+            "-trimpath",
+            "-o",
+            "coord.test",
+            "."
+          ]
+        ],
+        "binary_sha256": "5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257",
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "production_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "go_version_observed_in_binary": "go1.27.3",
+        "implementation": "Go LogLen plus per-entry LogAt scan"
+      }
+    },
+    {
+      "id": "go-baseline-aa",
+      "role": "control_aa",
+      "description": "A byte-identical retained copy of the baseline binary under the A/A arm label.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "build": [
+          [
+            "go",
+            "test",
+            "-c",
+            "-trimpath",
+            "-o",
+            "coord.test",
+            "."
+          ]
+        ],
+        "binary_sha256": "5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257",
+        "flags": {
+          "cwd": "bindings/go",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "count": "1",
+          "cpu": "1"
+        },
+        "env": {
+          "CGO_ENABLED": "1",
+          "GOMAXPROCS": "1"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "production_commit": "c273e62140071fe4370fbe6946dcb898c95b4eb2",
+        "go_version_observed_in_binary": "go1.27.3",
+        "implementation": "Go LogLen plus per-entry LogAt scan"
+      },
+      "same_instrument_as": "go-baseline"
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every invocation embeds deterministic line/vector fingerprints and fails on a mismatch; this phase estimates A/A noise rather than detector sensitivity."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "The byte-identical A/A comparison is itself the registered null comparison."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "arm label",
+        "levels": [
+          "go-baseline",
+          "go-baseline-aa"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "binary bytes",
+        "treatment": "fixed",
+        "value": "sha256:5dd11a5911decbcfd2c8503ee00964c6cd473e99d48b0714176b19936e44f257",
+        "how": "both retained files are checked before the first invocation"
+      },
+      {
+        "name": "benchmark case",
+        "treatment": "crossed",
+        "value": "three operations/states at exact 1024- and 8192-entry logs",
+        "how": "all six listed cases run for both arms"
+      },
+      {
+        "name": "benchmark iterations",
+        "treatment": "fixed",
+        "value": 100,
+        "how": "-test.benchtime=100x; rows with another b.N are invalid"
+      },
+      {
+        "name": "thread count",
+        "treatment": "fixed",
+        "value": 1,
+        "how": "GOMAXPROCS=1 and -test.cpu=1"
+      },
+      {
+        "name": "arm order",
+        "treatment": "fixed",
+        "value": "odd baseline/AA; even AA/baseline",
+        "how": "mirrored within each benchmark case for warmup and measured rounds"
+      },
+      {
+        "name": "placement",
+        "treatment": "fixed",
+        "value": "taskset CPU 0; isolated_bench reserve CPUs 0-3; CPU 4 for host services",
+        "how": "one outer reserve command holds the global CPU flock for the full campaign"
+      },
+      {
+        "name": "host state",
+        "treatment": "measured",
+        "how": "isolation receipt plus per-row CPU, kernel, steal, PSI, frequency, rusage, faults, and context switches"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-aa",
+        "arms": [
+          "go-baseline",
+          "go-baseline-aa"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "the files are byte-identical and differ only in their arm labels",
+        "threshold": null
+      },
+      {
+        "id": "C-aa-accept",
+        "arms": [
+          "go-baseline",
+          "go-baseline-aa"
+        ],
+        "differs_in": [
+          "arm label"
+        ],
+        "design": "absolute",
+        "reason": "reads the null comparison against prospectively fixed admissibility thresholds",
+        "threshold": "exact fingerprints equal; allocation median ratios in [0.98,1.02]; wall and CPU median ratios in [0.95,1.05] with paired 95% intervals containing 1"
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false,
+    "transfer_obligations": []
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "The prospectively fixed mirrored sequence balances monotonic drift without choosing order after observing data.",
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        24301
+      ],
+      "nonce": null,
+      "note": "0x5eed is the benchmark fixture seed and is identical for all rows."
+    },
+    "instance_sampling": {
+      "rule": "Exhaustively execute the six listed cases in listed order for each arm and round.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Not masked because binary identity and A/A label order are mechanical adherence checks.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 6,
+    "replicates": 20,
+    "warmups": 3,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 12,
+      "correction": "holm",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "Twenty paired null repetitions estimate whether the session stays within the fixed 2% allocation and 5% clock gates; the phase does not claim power for a candidate effect."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1200,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 9000,
+      "measured_on": "Conservative pre-data bound for 2 arms x 6 cases x 23 rounds; no timed Go benchmark informed it."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "bytes_per_op",
+        "name": "allocated bytes per operation",
+        "unit": "B/op",
+        "kind": "counted",
+        "definition": "Go heap bytes allocated during the registered b.N operation loop divided by b.N; fixture construction and post-timing hashes excluded.",
+        "source": "Go benchmark B/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 B/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "allocs_per_op",
+        "name": "allocations per operation",
+        "unit": "allocs/op",
+        "kind": "counted",
+        "definition": "Go allocation events during the registered b.N operation loop divided by b.N.",
+        "source": "Go benchmark allocs/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.01 allocs/op at b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "wall_ns_per_op",
+        "name": "wall nanoseconds per operation",
+        "unit": "ns/op",
+        "kind": "timed",
+        "definition": "Go benchmark monotonic elapsed time around only the b.N loop divided by b.N.",
+        "source": "Go benchmark ns/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "cpu_ns_per_op",
+        "name": "process CPU nanoseconds per operation",
+        "unit": "cpu-ns/op",
+        "kind": "timed",
+        "definition": "RUSAGE_SELF user plus system CPU delta around only the b.N loop divided by b.N.",
+        "source": "benchmark custom cpu-ns/op field",
+        "formula": "(user_ns_after + system_ns_after - user_ns_before - system_ns_before) / b.N",
+        "aggregation": "paired_ratio",
+        "resolution": "10 ns/op at b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "correctness_fingerprints",
+        "name": "ordered-line and canonical-vector SHA-256 fingerprints",
+        "unit": "lowercase SHA-256 hex",
+        "kind": "exact",
+        "definition": "The benchmark's post-timing line/vector fingerprints, compared pairwise by case and round.",
+        "source": "benchmark correctness log fields",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "L2",
+    "warmups": 3,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "B/op",
+      "allocs/op",
+      "getrusage RUSAGE_SELF user plus system CPU time",
+      "outer per-process rusage, faults, and context switches"
+    ],
+    "record": [
+      "arm and arm-order position",
+      "benchmark case, round, warmup flag, and b.N",
+      "protocol, benchmark-source, binary, stdout, stderr, and metadata SHA-256",
+      "Go version and CGO environment",
+      "CPU model, microcode, kernel, frequency/governor, affinity, NUMA placement",
+      "isolation receipt, steal ticks, PSI, temperature when available",
+      "process rusage, page faults, voluntary and involuntary context switches"
+    ],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "local",
+    "queue": "isolated_bench reserve under global-cpu.lock",
+    "placement": {
+      "architecture": "x86_64",
+      "cpus": 5,
+      "benchmark_cpu_affinity": "taskset CPU 0",
+      "reserved_cpus": "0-3",
+      "host_service_cpu": 4,
+      "numa_policy": "CPU and memory on NUMA node 0",
+      "spot": false,
+      "lock": "/workspace/.benchmarks/performance-saturation/local/global-cpu.lock",
+      "run_command_template": "GOMAXPROCS=1 CGO_ENABLED=1 taskset -c 0 BINARY -test.run=^$ -test.bench=^CASE$ -test.benchmem -test.benchtime=100x -test.count=1 -test.cpu=1 -test.v -test.timeout=20m"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 1800,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Fixed design: 2 arms x 6 cases x (3 warmups + 20 measured rounds) = 276 invocations, each exactly 100 benchmark operations, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Attempt every fixed cell once; retain failures and never replace or extend based on observed values.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "A nonzero exit, timeout, missing metric, b.N other than 100, fingerprint mismatch, binary mismatch, or failed isolation receipt makes the affected evidence invalid under the stated rule; already attempted rows remain archived.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "A row is mechanically complete only when exit status is zero, b.N is 100, all four numeric metrics are present, and the case-specific correctness fingerprints are present.",
+    "Any baseline/A-A fingerprint mismatch invalidates the campaign and blocks candidate timing.",
+    "A row with a binary hash other than the pinned digest is invalid.",
+    "A row below L2 isolation, with changed affinity, throttling, nonzero steal delta, material PSI contention, or wrapper contention is invalid for wall and CPU analysis; exact fields and valid allocation counts remain reportable.",
+    "Profiled, race-instrumented, or nonregistered invocations are excluded from the measured distribution.",
+    "No failed or invalid row is replaced without a new prospective amendment."
+  ],
+  "decision_rule": {
+    "text": "Accept the A/A session only when all 240 measured rows and 36 warmups are attempted once, every measured row is mechanically complete, pairwise correctness fingerprints match in all 120 measured pairs, baseline/A-A median B/op and allocs/op ratios lie in [0.98,1.02] for every case, wall and CPU median ratios lie in [0.95,1.05] for every case, and each wall/CPU 95% paired bootstrap interval contains 1. Allocation and exact fields may remain reportable if only the isolation clock gate fails, but no timing claim or candidate timing proceeds from a rejected A/A session.",
+    "comparison_ids": [
+      "C-aa-accept"
+    ],
+    "threshold": "240/240 measured rows complete; exact fingerprints pairwise equal; allocation ratios 0.98..1.02; wall and CPU ratios 0.95..1.05 with paired 95% intervals containing 1; isolation receipt valid.",
+    "statistic": "For each case, pair baseline and A/A by round and compute A/A-over-baseline median ratios for B/op, allocs/op, wall ns/op, and CPU ns/op.",
+    "interval": "95% paired bootstrap over the 20 fixed measured pairs per case; exact completeness and fingerprint gates have no interval.",
+    "multiple_comparison_correction": "holm",
+    "effect_size_measure": "A/A-over-baseline median ratio and percent difference per metric and case",
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "within_control_distribution",
+      "invalid_measurement",
+      "wrong_answer",
+      "inconclusive"
+    ]
+  },
+  "analysis_plan": {
+    "script": null,
+    "inputs": [
+      "baseline-aa/raw/benchmark-output/*.txt",
+      "baseline-aa/raw/run-metadata/*.json",
+      "baseline-aa/isolation.jsonl"
+    ],
+    "outputs": [
+      "baseline-aa/rows.jsonl",
+      "baseline-aa/analysis/paired-ratios.json",
+      "baseline-aa/analysis/paired-ratios.md"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired A/A-over-baseline allocation, wall, and CPU ratios by case"
+    ],
+    "report_dir": "baseline-aa/report"
+  },
+  "inadmissible": [
+    "starting any baseline or A/A benchmark before this version is registered, frozen, and committed",
+    "silently reading the predecessor three-arm schedule as a two-arm execution",
+    "changing binaries, cases, order, b.N, repetitions, placement, metrics, or gates after seeing data",
+    "replacing failures, selecting favorable rounds, or using warmups as measured rows",
+    "treating a failed A/A timing gate as evidence for a candidate speedup",
+    "claiming network, fleet, Rust, GPU, or cryptanalytic-algorithm performance from this Go A/A phase"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "repository source audit and official Go benchmarking, profiling, cgo, CPU-accounting, and perf guidance",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://pkg.go.dev/testing@go1.21.13",
+      "provenance": "retrieved",
+      "claim": "fixed b.N benchmark loops and allocation reporting semantics",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [
+    {
+      "id": "AMD-GO-AA-20261101-v2",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The frozen predecessor describes a three-arm temporal schedule and leaves candidate identity unbound; it cannot literally govern a prospective baseline/A-A-only phase.",
+      "changes": [
+        "Preserve the predecessor byte-for-byte and add this complete two-arm A/A protocol version.",
+        "Bind both retained byte-identical binary paths and SHA-256 digests.",
+        "Replace the affected phase's three-arm order with an explicit odd/even mirrored two-arm order.",
+        "Fix 276 invocations, exact mechanical completeness gates, A/A acceptance thresholds, global lock, CPU reservation, and artifact locations before the first row.",
+        "Make no candidate-performance decision; a separately registered and frozen v3 must bind a candidate commit and binary before candidate timing."
+      ],
+      "supersedes_fields": [
+        "arms",
+        "randomization.arm_order_reason",
+        "sample_size",
+        "execution",
+        "stopping_rules",
+        "decision_rule",
+        "analysis_plan"
+      ]
+    }
+  ],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  }
+}
