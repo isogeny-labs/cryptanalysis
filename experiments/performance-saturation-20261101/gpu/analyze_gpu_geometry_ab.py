@@ -31,9 +31,9 @@ from typing import Any, Iterable
 ARMS = ("baseline", "candidate")
 MEASURED_ROUNDS = tuple(range(1, 7))
 EXPECTED_GPU = "NVIDIA GeForce RTX 5090"
-PROTOCOL_ID = "gpu-f4-update-grid-ab-rtx5090-http-20261101"
-PROTOCOL_VERSION = 8
-PROTOCOL_RELATIVE = "../../protocol-http-rtx5090-geometry-v8.json"
+PROTOCOL_ID = "gpu-f4-update-grid-ab-rtx5090-http-v9-20261101"
+PROTOCOL_VERSION = 9
+PROTOCOL_RELATIVE = "../../protocol-http-rtx5090-geometry-v9.json"
 ANALYZER_RELATIVE = "../../analyze_gpu_geometry_ab.py"
 BASELINE_ORIGIN_COMMIT = "7c712913b7e912494e87c35e854cfd0129bad89c"
 CANDIDATE_COMMIT = "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f"
@@ -43,6 +43,8 @@ BASELINE_F4_SHA256 = "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57
 CANDIDATE_F4_SHA256 = "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953"
 PRODUCTION_DIFF_SHA256 = "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
 F4_PATH = "suite/src/cryptanalysis/f4_gpu.rs"
+TOOLING_REF = "refs/heads/codex/runpod-http-gpu-geometry-v9-20261101"
+HISTORY_DEEPEN_COMMITS = 16
 FAMILY_TESTS = 10
 LOWER_TAIL = Fraction(1, 20 * FAMILY_TESTS)  # alpha=.05 / ten gates
 PRIMARY_EFFECT = Fraction(51, 50)  # at least 1.02x baseline/candidate
@@ -190,6 +192,8 @@ def validate_source_identities(session: Path) -> dict[str, Any]:
         "production_diff_sha256": PRODUCTION_DIFF_SHA256,
         "production_path": F4_PATH,
         "only_production_path_differs": True,
+        "tooling_ref": TOOLING_REF,
+        "history_deepen_commits": HISTORY_DEEPEN_COMMITS,
     }
     for key, wanted in expected.items():
         if value.get(key) != wanted:

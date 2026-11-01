@@ -1,0 +1,18 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-http-rtx5090-geometry-v8.json",
+  "protocol_sha256": "b6b827b53242a1abe9219f53fad3b3b975d5b9be63e0c56b9ee1289d74970e85",
+  "protocol_file_sha256": "52bca7d35c2de62349c3f19d05d6d27ef6e9ce68a88f8ac541609ff8b688e820",
+  "registration_commit": "9d4b57917f9ad3f5513139111104deb3e5a445ff",
+  "freeze_commit": "8a1716aa71e9906e1cdf81b2fa50bd49891f2cbb",
+  "classification": "prospectively_invalid/superseded_before_data",
+  "identified": "2026-11-01",
+  "reason": "The authenticated HTTP bootstrap fetches the tooling ref at depth one, so v8's runner could not resolve the registered candidate and baseline ancestor objects before constructing its arms.",
+  "provider_api_calls": 0,
+  "pods_created": 0,
+  "scientific_rows": 0,
+  "timing_rows_reused": 0,
+  "replacement": "protocol-http-rtx5090-geometry-v9.json",
+  "correction": "Deepen the same exact tooling ref by 16 commits, require FETCH_HEAD to remain the bootstrapped tooling commit, then verify the registered ancestor commit/tree/file/diff/archive identities.",
+  "scientific_design_change": false
+}

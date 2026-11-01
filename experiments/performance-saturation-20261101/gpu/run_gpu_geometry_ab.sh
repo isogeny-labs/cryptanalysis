@@ -16,6 +16,8 @@ BASELINE_F4_SHA256="da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d5778
 CANDIDATE_F4_SHA256="77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953"
 PRODUCTION_DIFF_SHA256="34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
 F4_PATH="suite/src/cryptanalysis/f4_gpu.rs"
+TOOLING_REF="refs/heads/codex/runpod-http-gpu-geometry-v9-20261101"
+HISTORY_DEEPEN_COMMITS=16
 
 OUT_ARG=${1:?usage: run_gpu_geometry_ab.sh REPOSITORY_RELATIVE_OUT_ROOT SESSION_ID PROTOCOL_SHA256}
 SESSION_ID=${2:?missing session id}
@@ -198,6 +200,12 @@ with (session / "host.json").open("x", encoding="utf-8") as stream:
     stream.write("\n")
 PY
 
+tooling_commit=$(git rev-parse HEAD)
+git fetch -q --deepen="$HISTORY_DEEPEN_COMMITS" origin "$TOOLING_REF"
+[[ $(git rev-parse FETCH_HEAD) = "$tooling_commit" ]] || {
+  echo "tooling public ref moved between authenticated bootstrap and history deepening" >&2
+  exit 2
+}
 git cat-file -e "$BASELINE_ORIGIN_COMMIT^{commit}"
 git cat-file -e "$CANDIDATE_COMMIT^{commit}"
 [[ $(git rev-parse "$CANDIDATE_COMMIT^{tree}") = "$CANDIDATE_TREE" ]] || {
@@ -238,6 +246,8 @@ CANDIDATE_F4_SHA256_SAFE=$CANDIDATE_F4_SHA256 \
 PRODUCTION_DIFF_SHA256_SAFE=$PRODUCTION_DIFF_SHA256 \
 CANDIDATE_ARCHIVE_SHA256_SAFE=$candidate_archive_sha \
 F4_PATH_SAFE=$F4_PATH \
+TOOLING_REF_SAFE=$TOOLING_REF \
+HISTORY_DEEPEN_COMMITS_SAFE=$HISTORY_DEEPEN_COMMITS \
 SESSION_PATH_SAFE=$SESSION \
 python3 - <<'PY'
 import json, os, pathlib
@@ -252,6 +262,8 @@ value = {
     "candidate_f4_sha256": os.environ["CANDIDATE_F4_SHA256_SAFE"],
     "production_diff_sha256": os.environ["PRODUCTION_DIFF_SHA256_SAFE"],
     "only_production_path_differs": True,
+    "tooling_ref": os.environ["TOOLING_REF_SAFE"],
+    "history_deepen_commits": int(os.environ["HISTORY_DEEPEN_COMMITS_SAFE"]),
     "construction": "two copies of the candidate commit build-closure archive (suite, bindings/rust, include, src); baseline overlays only the registered baseline F4 file",
 }
 path = pathlib.Path(os.environ["SESSION_PATH_SAFE"]) / "source-identities.json"

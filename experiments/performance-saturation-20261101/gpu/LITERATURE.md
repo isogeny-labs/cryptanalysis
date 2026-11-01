@@ -30,6 +30,18 @@ must exceed one.  Every non-regression median and lower bound must be at least
 warmup and six alternating fresh-process pairs per cell, followed by one Nsys
 capture per arm.  NCU remains outside the protocol.
 
+### V8 source-delivery correction
+
+Frozen v8 was classified `prospectively_invalid/superseded_before_data` after
+registration: the HTTP bootstrap intentionally fetches the tooling ref with
+`--depth=1`, while the v8 arm constructor expected the candidate and retained
+baseline ancestor objects to be present.  No provider API was called, no pod
+was created, and no v8 row exists.  V9 keeps every scientific threshold and
+workload unchanged, but prospectively deepens that same immutable public
+tooling ref by 16 commits, verifies `FETCH_HEAD` still equals the bootstrapped
+tooling commit, and only then resolves and hashes the two registered ancestors.
+The correction is source delivery, not a candidate or statistical change.
+
 Historical status of the initial A/A draft: pre-measurement design, 2026-11-01. No pod has been created, no GPU
 measurement has been taken, and this study is not frozen. The two arms are
 byte-identical copies of the current binary; there is no optimization candidate
