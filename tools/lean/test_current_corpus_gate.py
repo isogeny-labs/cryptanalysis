@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import sys
 import subprocess
 from contextlib import redirect_stdout
@@ -658,6 +659,104 @@ class EngineeringSourceAdmissionControls(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "recorded build dependencies changed"):
                 gate.check_new_hecke({gate.CORE_COMPATIBILITY_SOURCE})
             self.assertEqual(native.call_count, 1)
+
+
+class GlvSizedCapControls(unittest.TestCase):
+    """Source-only controls for the size-dependent GLV table-cap selector."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.binding = gate.load_glv_binding()
+        cls.live = (gate.ROOT / "src/curve.c").read_bytes()
+        cls.prior = subprocess.run(
+            ["git", "show", f"{gate.PRIOR_LIVE_GLV_COMMIT}:src/curve.c"],
+            cwd=gate.ROOT, check=True, capture_output=True).stdout
+
+    def refused(self, data, expected, sized_cap):
+        with self.assertRaises(ValueError):
+            self.binding.require_selector(data, expected, 12, sized_cap)
+
+    def test_pins_are_added_and_the_fixed_cap_pin_is_kept_as_history(self):
+        self.assertEqual(gate.LIVE_GLV_COMMIT, "e71ebecaf3a076590ddd3affa4878b4c80d85095")
+        self.assertEqual(gate.PRIOR_LIVE_GLV_COMMIT, "8bf648dcbefe7b8131e5fb26909c77e68778332a")
+        self.assertEqual(gate.PRIOR_LIVE_GLV_SHA256,
+                         "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20")
+        self.assertNotEqual(gate.LIVE_GLV_SHA256, gate.PRIOR_LIVE_GLV_SHA256)
+        self.assertEqual(hashlib.sha256(self.prior).hexdigest(), gate.PRIOR_LIVE_GLV_SHA256)
+        self.assertEqual(gate.HISTORICAL_TABLEBUDGET_SHA256,
+                         "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4")
+        self.assertEqual(gate.DELTA[gate.TABLEBUDGET_SOURCE], gate.TABLEBUDGET_SHA256)
+        self.assertNotEqual(gate.TABLEBUDGET_SHA256, gate.HISTORICAL_TABLEBUDGET_SHA256)
+
+    def test_live_source_and_theorem_source_match_their_pins(self):
+        self.assertEqual(hashlib.sha256(self.live).hexdigest(), gate.LIVE_GLV_SHA256)
+        source = (gate.GLV / "TableBudget.lean").read_text()
+        self.assertEqual(gate.digest(gate.GLV / "TableBudget.lean"), gate.TABLEBUDGET_SHA256)
+        self.assertEqual(gate.TABLEBUDGET_THEOREMS, 27)
+        self.assertEqual(len(re.findall(r"^theorem\s+\w+", source, re.MULTILINE)), 27)
+        self.assertEqual(len(re.findall(r"^#print axioms\s+", source, re.MULTILINE)), 27)
+
+    def test_live_source_admitted_with_every_control_refused(self):
+        count = gate.glv_selector_negatives(
+            self.binding, self.live, gate.LIVE_GLV_SHA256, sized_cap=True)
+        self.assertEqual(count, len(gate.SIZED_CAP_CONTROLS) + 1)
+
+    def test_each_cap_and_threshold_edit_is_refused_on_its_own(self):
+        edits = {old + b" -> " + new: (old, new) for old, new in gate.SIZED_CAP_CONTROLS}
+        for name in (b"lg >= 40 ? -> lg >= 41 ?", b"lg >= 40 ? -> lg >= 39 ?",
+                     b"? 128 : 32 -> ? 64 : 32", b"? 128 : 32 -> ? 256 : 32",
+                     b"? 128 : 32 -> ? 128 : 64", b"? 128 : 32 -> ? 128 : 16",
+                     b"rr * 2 <= rcap -> rr * 2 <= 32"):
+            with self.subTest(edit=name):
+                old, new = edits[name]
+                changed = self.live.replace(old, new)
+                self.assertNotEqual(changed, self.live)
+                self.refused(changed, hashlib.sha256(changed).hexdigest(), True)
+
+    def test_other_threshold_forms_and_a_dropped_cap_variable_are_refused(self):
+        for old, new in ((b"lg >= 40 ?", b"lg > 40 ?"), (b"lg >= 40 ?", b"lg >= 40u ?"),
+                         (b"    uint32_t rcap = lg >= 40 ? 128 : 32;\n", b"")):
+            with self.subTest(new=new):
+                changed = self.live.replace(old, new)
+                self.assertNotEqual(changed, self.live)
+                self.refused(changed, hashlib.sha256(changed).hexdigest(), True)
+
+    def test_unchanged_bytes_under_a_forged_pin_hash_are_refused(self):
+        self.refused(self.live, gate.PRIOR_LIVE_GLV_SHA256, True)
+
+    def test_the_two_cap_rules_are_not_interchangeable(self):
+        self.refused(self.live, gate.LIVE_GLV_SHA256, False)
+        self.refused(self.prior, gate.PRIOR_LIVE_GLV_SHA256, True)
+
+    def test_fixed_cap_controls_still_guard_the_historical_pin(self):
+        count = gate.glv_selector_negatives(
+            self.binding, self.prior, gate.PRIOR_LIVE_GLV_SHA256, sized_cap=False)
+        self.assertEqual(count, len(gate.FIXED_CAP_CONTROLS) + 1)
+
+    def test_a_control_that_changes_nothing_is_an_error(self):
+        with patch.object(gate, "SIZED_CAP_CONTROLS", ((b"absent text", b"x"),)):
+            with self.assertRaisesRegex(ValueError, "did not change the source"):
+                gate.glv_selector_negatives(
+                    self.binding, self.live, gate.LIVE_GLV_SHA256, sized_cap=True)
+
+    def test_a_control_outside_the_selector_is_reported_as_admitted(self):
+        # Editing only a comment leaves the selector intact, so it is admitted;
+        # the gate must treat an admitted control as a failure.
+        comment = (b"glv-cap-selection-20261105", b"glv-cap-selection-20261106")
+        self.assertIn(comment[0], self.live)
+        with patch.object(gate, "SIZED_CAP_CONTROLS", (comment,)):
+            with self.assertRaisesRegex(ValueError, "negative control admitted"):
+                gate.glv_selector_negatives(
+                    self.binding, self.live, gate.LIVE_GLV_SHA256, sized_cap=True)
+
+    def test_old_eight_theorem_source_is_bound_and_distinct(self):
+        old = subprocess.run(
+            ["git", "show", f"{gate.HISTORICAL_TABLEBUDGET_COMMIT}:"
+             "experiments/glv-table-rule-confirm-20261022/TableBudget.lean"],
+            cwd=gate.ROOT, check=True, capture_output=True).stdout
+        self.assertEqual(hashlib.sha256(old).hexdigest(), gate.HISTORICAL_TABLEBUDGET_SHA256)
+        self.assertEqual(len(re.findall(rb"^theorem\s+\w+", old, re.MULTILINE)),
+                         gate.HISTORICAL_TABLEBUDGET_THEOREMS)
 
 
 if __name__ == "__main__":

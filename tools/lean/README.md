@@ -10,7 +10,10 @@ The latter two are partial finite proofs, not formalizations of their full
 geometric interpretations.
 The gate's own fixture and audit sources under `tools/lean/` are checked by
 the separate self-test and excluded from the research-file count.
-It compares the result with the [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json).
+It compares the result with the [November 1 size-dependent GLV cap receipt](../../reports/lean-current-corpus-20261101-glv-cap/receipt.json).
+The [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json)
+remains unchanged as the record of the fixed-cap (32) binding, which the gate still replays with its own
+negative controls; it is no longer the receipt the gate compares against.
 The [previous CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json)
 remains unchanged. Main's reviewed C analysis repairs have a new whole-file
 hash; the gate checks that source against its current live binding, while

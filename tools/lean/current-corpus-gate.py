@@ -6,8 +6,11 @@ byte-for-byte source-bound to the committed receipt; six explicitly rebuilt
 files and the PQC assay are separately pinned. New Hecke modules use the
 pinned Mathlib workspace, including modules whose recorded build dependencies
 override the repository's inherited root pin. The reviewed Hasse-square module
-uses its own pinned toolchain. Other source or pin changes still fail until
-native evidence is added here.
+uses its own pinned toolchain. The GLV table budget is bound twice: the
+fixed-cap-32 sources, their receipts and the eight-theorem proof stay pinned as
+history, and the size-dependent cap selector (`rcap = lg >= 40 ? 128 : 32`) has
+its own source pin, 27-theorem proof and negative controls. Other source or pin
+changes still fail until native evidence is added here.
 """
 from __future__ import annotations
 
@@ -85,15 +88,30 @@ HISTORICAL_GLV_COMMIT = "d488af97a0cae6d7e96686da17aeff2f0db5f29f"
 HISTORICAL_GLV_SHA256 = "4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20"
 HISTORICAL_GLV_RECEIPT = ROOT / "reports/ghs-pr-1104-main-integration-20261025/prior-live-source-binding.json"
 HISTORICAL_GLV_RECEIPT_SHA256 = "bb0abf96c3f9d0d655b88cafafe0c5f50d90a86c9948278381e727ed193ab534"
-LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
-LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
+# The previous live pin (fixed cap 32) stays bound as history; it is replayed,
+# with its own negative controls, in addition to the size-dependent live pin.
+PRIOR_LIVE_GLV_COMMIT = "8bf648dcbefe7b8131e5fb26909c77e68778332a"
+PRIOR_LIVE_GLV_SHA256 = "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
+# Size-dependent cap selector: `rcap = lg >= 40 ? 128 : 32` (PR 1341).
+LIVE_GLV_COMMIT = "e71ebecaf3a076590ddd3affa4878b4c80d85095"
+LIVE_GLV_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63"
+# The eight-theorem fixed-cap TableBudget.lean and its native receipt, and the
+# live binding receipt of the previous pin, as they were at LIVE_GLV_COMMIT.
+HISTORICAL_TABLEBUDGET_COMMIT = LIVE_GLV_COMMIT
+HISTORICAL_TABLEBUDGET_SHA256 = "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4"
+HISTORICAL_TABLEBUDGET_RECEIPT_SHA256 = "90c7c692c62acaadc0e38f837b34224a61d8f480ae376bd1cdc1f716eeed7ab0"
+HISTORICAL_TABLEBUDGET_THEOREMS = 8
+PRIOR_LIVE_RECEIPT_SHA256 = "8439b5e825d0b845ad1d47d2326990f599176f4fecda13efdd9015365e96f1e1"
+TABLEBUDGET_SOURCE = "experiments/glv-table-rule-confirm-20261022/TableBudget.lean"
+TABLEBUDGET_SHA256 = "ff60c81349e98cbae472f16873ab63672005b74098721a678fc514425b55448e"
+TABLEBUDGET_THEOREMS = 27
 DELTA = {
     HASSE_UNIQUE_SOURCE: HASSE_UNIQUE_SHA256,
     "experiments/ghs-sweeper/cm-formal/CubicCM53.lean": "472ed227d624bdeaf14504da82751843dc941e71e74aa4b6fffdddf17562387f",
     "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
     "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
     "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean": "32807cd33bdbed15ac178d40eb18b9d268b11d7db514b196ae515d4caba7acd7",
-    "experiments/glv-table-rule-confirm-20261022/TableBudget.lean": "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4",
+    TABLEBUDGET_SOURCE: TABLEBUDGET_SHA256,
     PQC_SOURCE: "83c8a9ec8cd48f0c49d686ad551977d170130b06b726cf0bd002227a89036170",
 }
 DIRECT_LOGS = {
@@ -258,6 +276,142 @@ def check_pqc() -> dict:
             "pqc_toolchain_sha256": digest(pin)}
 
 
+FIXED_CAP_CONTROLS = (
+    (b"(12u * (uint64_t)lg)", b"(48u * (uint64_t)lg)"),
+    (b"rr * 2 <= 32", b"rr * 2 <= 64"),
+)
+# One edit each to the divisor, the threshold (both directions), the large and
+# the small cap (both directions), and the loop bound that must use `rcap`.
+SIZED_CAP_CONTROLS = (
+    (b"(12u * (uint64_t)lg)", b"(48u * (uint64_t)lg)"),
+    (b"lg >= 40 ?", b"lg >= 41 ?"),
+    (b"lg >= 40 ?", b"lg >= 39 ?"),
+    (b"? 128 : 32", b"? 64 : 32"),
+    (b"? 128 : 32", b"? 256 : 32"),
+    (b"? 128 : 32", b"? 128 : 64"),
+    (b"? 128 : 32", b"? 128 : 16"),
+    (b"rr * 2 <= rcap", b"rr * 2 <= 32"),
+    (b"rr * 2 <= rcap", b"rr * 2 <= 128"),
+)
+
+
+def load_glv_binding():
+    spec = importlib.util.spec_from_file_location("glv_binding", GLV / "check_lean_source_binding.py")
+    require(spec is not None and spec.loader is not None, "GLV validator unavailable")
+    binding = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(binding)
+    return binding
+
+
+def glv_selector_negatives(binding, data: bytes, expected_hash: str, *, sized_cap: bool) -> int:
+    """Admit the pinned source, refuse every one-edit control and the other rule."""
+    binding.require_selector(data, expected_hash, 12, sized_cap)
+    controls = SIZED_CAP_CONTROLS if sized_cap else FIXED_CAP_CONTROLS
+    for old, new in controls:
+        changed = data.replace(old, new)
+        require(changed != data, "GLV selector negative control did not change the source")
+        try:
+            binding.require_selector(changed, hashlib.sha256(changed).hexdigest(), 12, sized_cap)
+        except ValueError:
+            continue
+        raise ValueError("GLV selector negative control admitted")
+    try:
+        binding.require_selector(data, expected_hash, 12, not sized_cap)
+    except ValueError:
+        return len(controls) + 1
+    raise ValueError("GLV selector admitted under the other cap rule")
+
+
+def check_glv_historical(binding) -> None:
+    """Replay the fixed-cap pin, the eight-theorem source and its native receipt."""
+    check = run(["python3", "check_lean_source_binding.py"], cwd=GLV)
+    require(check.stdout.encode() == (GLV / "lean-source-binding.json").read_bytes(),
+            "GLV historical source binding changed")
+    require(digest(HISTORICAL_GLV_RECEIPT) == HISTORICAL_GLV_RECEIPT_SHA256,
+            "archived GLV live receipt bytes changed")
+    expected_historical = {
+        "schema": "glv-table-live-source-binding-v1",
+        "source_commit": HISTORICAL_GLV_COMMIT,
+        "source_sha256": HISTORICAL_GLV_SHA256,
+        "historical_source_commit": binding.CURRENT_SOURCE_COMMIT,
+        "historical_source_sha256": binding.CURRENT_SHA256,
+        "divisor": 12, "loop_start": 8, "loop_cap": 32,
+        "negative_controls_rejected": 2, "result": "pass",
+    }
+    require(json.loads(HISTORICAL_GLV_RECEIPT.read_text()) == expected_historical,
+            "historical GLV live receipt changed")
+    glv_selector_negatives(
+        binding, run(["git", "show", f"{HISTORICAL_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
+        HISTORICAL_GLV_SHA256, sized_cap=False)
+    # The previous live pin (fixed cap 32), with its receipt and negative controls.
+    glv_selector_negatives(
+        binding, run(["git", "show", f"{PRIOR_LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode(),
+        PRIOR_LIVE_GLV_SHA256, sized_cap=False)
+    prior = f"{HISTORICAL_TABLEBUDGET_COMMIT}:experiments/glv-table-rule-confirm-20261022/"
+    prior_receipt = run(["git", "show", prior + "live-source-binding.json"]).stdout.encode()
+    require(hashlib.sha256(prior_receipt).hexdigest() == PRIOR_LIVE_RECEIPT_SHA256,
+            "previous GLV live receipt bytes changed")
+    require(json.loads(prior_receipt) == {
+        "schema": "glv-table-live-source-binding-v1",
+        "source_commit": PRIOR_LIVE_GLV_COMMIT, "source_sha256": PRIOR_LIVE_GLV_SHA256,
+        "historical_source_commit": binding.CURRENT_SOURCE_COMMIT,
+        "historical_source_sha256": binding.CURRENT_SHA256,
+        "divisor": 12, "loop_start": 8, "loop_cap": 32,
+        "negative_controls_rejected": 2, "result": "pass"},
+        "previous GLV live receipt changed")
+    old_source = run(["git", "show", prior + "TableBudget.lean"]).stdout.encode()
+    old_receipt_bytes = run(["git", "show", prior + "lean-receipt.json"]).stdout.encode()
+    require(hashlib.sha256(old_source).hexdigest() == HISTORICAL_TABLEBUDGET_SHA256 and
+            hashlib.sha256(old_receipt_bytes).hexdigest() == HISTORICAL_TABLEBUDGET_RECEIPT_SHA256,
+            "historical eight-theorem GLV source or receipt changed")
+    old_receipt = json.loads(old_receipt_bytes)
+    require(old_receipt["source_sha256"] == HISTORICAL_TABLEBUDGET_SHA256 and
+            old_receipt["exit_code"] == 0 and old_receipt["stderr"] == "",
+            "historical GLV native receipt is not a clean pass of the pinned source")
+    with tempfile.TemporaryDirectory(prefix="glv-historical-") as scratch:
+        (Path(scratch) / "TableBudget.lean").write_bytes(old_source)
+        env = dict(os.environ, ELAN_TOOLCHAIN="leanprover/lean4:v4.34.1")
+        native = run(["lean", "TableBudget.lean"], cwd=Path(scratch), env=env, timeout=900)
+    printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                         native.stdout, re.MULTILINE)
+    require(native.stdout == old_receipt["stdout"] and not native.stderr and
+            len(printed) == len(re.findall(rb"^theorem\s+\w+", old_source, re.MULTILINE))
+            == HISTORICAL_TABLEBUDGET_THEOREMS,
+            "historical eight-theorem GLV native replay differs from its receipt")
+
+
+def check_glv() -> dict:
+    binding = load_glv_binding()
+    check_glv_historical(binding)
+    # Today's live file: the size-dependent cap selector at its pinned commit.
+    # The previous (fixed-cap) live pin was replayed above, never overwritten.
+    current_live = run(["python3", "check_lean_source_binding.py", "--live"], cwd=GLV)
+    require(current_live.stdout.encode() == (GLV / "live-source-binding.json").read_bytes(),
+            "current main GLV live receipt changed")
+    live_bytes = (ROOT / "src/curve.c").read_bytes()
+    pinned_live = run(["git", "show", f"{LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode()
+    require(live_bytes == pinned_live, "live GLV source differs from the new pin")
+    controls = glv_selector_negatives(binding, live_bytes, LIVE_GLV_SHA256, sized_cap=True)
+    lean_receipt = json.loads((GLV / "lean-receipt.json").read_text())
+    require(digest(GLV / "TableBudget.lean") == lean_receipt["source_sha256"] == TABLEBUDGET_SHA256,
+            "GLV theorem source differs from native receipt")
+    env = dict(os.environ, ELAN_TOOLCHAIN="leanprover/lean4:v4.34.1")
+    native = run(["lean", "TableBudget.lean"], cwd=GLV, env=env, timeout=900)
+    require(native.stdout == lean_receipt["stdout"] and
+            native.stderr == lean_receipt["stderr"] and lean_receipt["exit_code"] == 0,
+            "GLV native output differs from receipt")
+    printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                         native.stdout, re.MULTILINE)
+    declared = {"GlvTableBudget." + name for name in
+                re.findall(r"^theorem\s+(\w+)", (GLV / "TableBudget.lean").read_text(), re.MULTILINE)}
+    require(len(printed) == len(declared) == TABLEBUDGET_THEOREMS and
+            {name for name, _ in printed} == declared and
+            all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                <= {"propext", "Quot.sound"} for _, names in printed),
+            "GLV theorem coverage or axiom set changed")
+    return {"stdout": native.stdout, "negative_controls": controls}
+
+
 def check_delta() -> dict:
     require((ROOT / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
             "root Lean toolchain changed")
@@ -308,69 +462,7 @@ def check_delta() -> dict:
     # cached local build and a fresh CI runner. The three checked axiom lines
     # are the source-bound proof evidence; bind only those stable lines.
     orbit_axioms = "\n".join(expected_orbit) + "\n"
-    check = run(["python3", "check_lean_source_binding.py"], cwd=GLV)
-    require(check.stdout.encode() == (GLV / "lean-source-binding.json").read_bytes(),
-            "GLV historical source binding changed")
-    # Main changed unrelated C code after the old live receipt. Preserve that
-    # receipt, replay its exact selector/guards and both negative controls on
-    # its pinned source, then bind today's live file separately. No historical
-    # source, receipt, or mathematical selector assertion is overwritten.
-    spec = importlib.util.spec_from_file_location("glv_binding", GLV / "check_lean_source_binding.py")
-    require(spec is not None and spec.loader is not None, "GLV validator unavailable")
-    binding = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(binding)
-
-    def selector_negatives(data: bytes, expected_hash: str) -> None:
-        binding.require_selector(data, expected_hash, 12)
-        for changed in (
-            data.replace(b"(12u * (uint64_t)lg)", b"(48u * (uint64_t)lg)"),
-            data.replace(b"rr * 2 <= 32", b"rr * 2 <= 64"),
-        ):
-            try:
-                binding.require_selector(changed, hashlib.sha256(changed).hexdigest(), 12)
-            except ValueError:
-                continue
-            raise ValueError("GLV selector negative control admitted")
-
-    require(digest(HISTORICAL_GLV_RECEIPT) == HISTORICAL_GLV_RECEIPT_SHA256,
-            "archived GLV live receipt bytes changed")
-    historical_live = json.loads(HISTORICAL_GLV_RECEIPT.read_text())
-    expected_historical = {
-        "schema": "glv-table-live-source-binding-v1",
-        "source_commit": HISTORICAL_GLV_COMMIT,
-        "source_sha256": HISTORICAL_GLV_SHA256,
-        "historical_source_commit": binding.CURRENT_SOURCE_COMMIT,
-        "historical_source_sha256": binding.CURRENT_SHA256,
-        "divisor": 12, "loop_start": 8, "loop_cap": 32,
-        "negative_controls_rejected": 2, "result": "pass",
-    }
-    require(historical_live == expected_historical, "historical GLV live receipt changed")
-    historical_bytes = run(["git", "show", f"{HISTORICAL_GLV_COMMIT}:src/curve.c"]).stdout.encode()
-    selector_negatives(historical_bytes, HISTORICAL_GLV_SHA256)
-    current_live = run(["python3", "check_lean_source_binding.py", "--live"], cwd=GLV)
-    require(current_live.stdout.encode() == (GLV / "live-source-binding.json").read_bytes(),
-            "current main GLV live receipt changed")
-    live_bytes = (ROOT / "src/curve.c").read_bytes()
-    pinned_live = run(["git", "show", f"{LIVE_GLV_COMMIT}:src/curve.c"]).stdout.encode()
-    require(live_bytes == pinned_live, "live GLV source differs from the new pin")
-    selector_negatives(live_bytes, LIVE_GLV_SHA256)
-    lean_receipt = json.loads((GLV / "lean-receipt.json").read_text())
-    require(digest(GLV / "TableBudget.lean") == lean_receipt["source_sha256"],
-            "GLV theorem source differs from native receipt")
-    env = dict(os.environ, ELAN_TOOLCHAIN="leanprover/lean4:v4.34.1")
-    glv = run(["lean", "TableBudget.lean"], cwd=GLV, env=env, timeout=900)
-    require(glv.stdout == lean_receipt["stdout"] and
-            glv.stderr == lean_receipt["stderr"] and lean_receipt["exit_code"] == 0,
-            "GLV native output differs from receipt")
-    printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
-                         glv.stdout, re.MULTILINE)
-    declared = {"GlvTableBudget." + name for name in
-                re.findall(r"^theorem\s+(\w+)", (GLV / "TableBudget.lean").read_text(), re.MULTILINE)}
-    require(len(printed) == len(declared) == 8 and
-            {name for name, _ in printed} == declared and
-            all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
-                <= {"propext", "Quot.sound"} for _, names in printed),
-            "GLV theorem coverage or axiom set changed")
+    glv = check_glv()
     require((CUBIC / "lean-toolchain").read_text().strip() == "leanprover/lean4:v4.34.1",
             "Cubic gluing Lean toolchain changed")
     require(json.loads((CUBIC / "lake-manifest.json").read_text())["packages"] == [],
@@ -420,13 +512,21 @@ def check_delta() -> dict:
     pqc = check_pqc()
     return {"hasse_unique_audit_sha256": hashlib.sha256(("\n".join(unique_audited) + "\n").encode()).hexdigest(),
             "orbit_axiom_stdout_sha256": hashlib.sha256(orbit_axioms.encode()).hexdigest(),
-            "glv_axiom_stdout_sha256": hashlib.sha256(glv.stdout.encode()).hexdigest(),
+            "glv_axiom_stdout_sha256": hashlib.sha256(glv["stdout"].encode()).hexdigest(),
             "glv_receipt_sha256": digest(GLV / "lean-receipt.json"),
             "glv_historical_live_source_sha256": HISTORICAL_GLV_SHA256,
             "glv_historical_live_receipt_sha256": digest(HISTORICAL_GLV_RECEIPT),
             "glv_live_binding_receipt_sha256": digest(GLV / "live-source-binding.json"),
             "glv_live_source_commit": LIVE_GLV_COMMIT,
             "glv_live_source_sha256": LIVE_GLV_SHA256,
+            "glv_prior_live_source_commit": PRIOR_LIVE_GLV_COMMIT,
+            "glv_prior_live_source_sha256": PRIOR_LIVE_GLV_SHA256,
+            "glv_prior_live_receipt_sha256": PRIOR_LIVE_RECEIPT_SHA256,
+            "glv_selector_negative_controls": glv["negative_controls"],
+            "glv_theorems": TABLEBUDGET_THEOREMS,
+            "glv_historical_tablebudget_sha256": HISTORICAL_TABLEBUDGET_SHA256,
+            "glv_historical_tablebudget_receipt_sha256": HISTORICAL_TABLEBUDGET_RECEIPT_SHA256,
+            "glv_historical_tablebudget_theorems": HISTORICAL_TABLEBUDGET_THEOREMS,
             "cubic_axiom_stdout_sha256": hashlib.sha256(cubic.stdout.encode()).hexdigest(),
             "cubic_transitive_audit_sha256": hashlib.sha256(("\n".join(audited)+"\n").encode()).hexdigest(),
             "cm_axiom_stdout_sha256": hashlib.sha256(cm.stdout.encode()).hexdigest(),
