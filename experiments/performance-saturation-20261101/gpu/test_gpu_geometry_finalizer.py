@@ -124,6 +124,7 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
 
 def good_analysis(provisional: str = "geometry_supported") -> dict:
     gates = []
+    aa_gates = []
     for role, tag, _cell, _degree in MOD.WORKLOADS:
         gates.append({
             "workload": tag,
@@ -131,6 +132,13 @@ def good_analysis(provisional: str = "geometry_supported") -> dict:
             "kind": "primary_improvement" if role == "primary" else "nonregression",
             "passed": provisional == "geometry_supported",
         })
+        for metric in ("device_ms", "complete_ms"):
+            aa_gates.append({
+                "workload": tag,
+                "metric": metric,
+                "kind": "same_session_aa_interval_contains_one",
+                "passed": True,
+            })
         gates.append({
             "workload": tag,
             "metric": "complete_ms",
@@ -150,13 +158,18 @@ def good_analysis(provisional: str = "geometry_supported") -> dict:
         "correctness_gate": "passed",
         "source_identity_gate": "passed",
         "numeric_isolation_gate": "passed",
+        "same_session_aa_gate": "passed",
         "profiled_timings_in_decision": False,
         "hardware_counters": "not collected; NCU is outside this protocol",
         "decision_gates": gates,
+        "aa_control_gates": aa_gates,
         "multiplicity": {
-            "family_tests": 10,
+            "family_intervals": 20,
+            "ab_intervals": 10,
+            "aa_intervals": 10,
+            "sides": 2,
             "correction": "Bonferroni",
-            "one_sided_lower_tail": {"numerator": 1, "denominator": 200},
+            "per_tail_probability": {"numerator": 1, "denominator": 800},
         },
         "mechanism_gate": {
             "status": "passed",
@@ -272,6 +285,15 @@ class FinalizerAdversarialTests(unittest.TestCase):
             gate["passed"] = True
         judge = MOD.Judge(); MOD.check_analysis(bad, "a" * 64, "run-1", judge)
         self.assertTrue(failures(judge, "analysis.provisional_consistency"))
+
+    def test_failed_same_session_aa_is_provisional_invalid_measurement(self) -> None:
+        value = good_analysis("geometry_supported")
+        value["aa_control_gates"][0]["passed"] = False
+        value["same_session_aa_gate"] = "failed"
+        value["timing_classification_provisional"] = "invalid_measurement"
+        judge = MOD.Judge(); observed = MOD.check_analysis(value, "a" * 64, "run-1", judge)
+        self.assertFalse(judge.validity_failed)
+        self.assertEqual(MOD.terminal_verdict(judge, observed), "invalid_measurement")
 
     def test_parseable_malformed_provisional_is_invalid_not_incomplete(self) -> None:
         bad = good_analysis()

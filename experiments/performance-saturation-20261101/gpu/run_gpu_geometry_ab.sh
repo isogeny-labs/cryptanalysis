@@ -291,7 +291,12 @@ done
 baseline_bin_sha=$(sha256sum "$BIN_DIR/baseline" | awk '{print $1}')
 candidate_bin_sha=$(sha256sum "$BIN_DIR/candidate" | awk '{print $1}')
 [[ $baseline_bin_sha != "$candidate_bin_sha" ]] || { echo "one-factor binaries are unexpectedly identical" >&2; exit 2; }
-printf 'baseline\t%s\ncandidate\t%s\n' "$baseline_bin_sha" "$candidate_bin_sha" >"$SESSION/binary-sha256.tsv"
+install -m 0755 "$BIN_DIR/baseline" "$BIN_DIR/baseline-aa"
+baseline_aa_bin_sha=$(sha256sum "$BIN_DIR/baseline-aa" | awk '{print $1}')
+[[ $baseline_aa_bin_sha = "$baseline_bin_sha" ]] || { echo "A/A binary differs from baseline" >&2; exit 2; }
+printf 'baseline\t%s\nbaseline-aa\t%s\ncandidate\t%s\n' \
+  "$baseline_bin_sha" "$baseline_aa_bin_sha" "$candidate_bin_sha" \
+  >"$SESSION/binary-sha256.tsv"
 
 # Keep compilation pressure out of the first registered warmup snapshot.
 date -u +%Y-%m-%dT%H:%M:%SZ >"$SESSION/metadata/post-build-settle-started-at.txt"
@@ -352,9 +357,9 @@ run_round() {
   local phase=$1 round_index=$2 entry role tag cell degree
   local -a arms
   if (( round_index % 2 == 1 )); then
-    arms=(baseline candidate)
+    arms=(baseline candidate baseline-aa)
   else
-    arms=(candidate baseline)
+    arms=(baseline-aa candidate baseline)
   fi
   for entry in "${PLAN[@]}"; do
     IFS=$'\t' read -r role tag cell degree <<<"$entry"

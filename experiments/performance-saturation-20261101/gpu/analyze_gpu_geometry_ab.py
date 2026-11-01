@@ -30,7 +30,9 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-ARMS = ("baseline", "candidate")
+ARMS = ("baseline", "baseline-aa", "candidate")
+PROFILE_ARMS = ("baseline", "candidate")
+ARM_ROLES = {"baseline": "baseline", "baseline-aa": "control_aa", "candidate": "candidate"}
 MEASURED_ROUNDS = tuple(range(1, 7))
 EXPECTED_GPU = "NVIDIA GeForce RTX 5090"
 PROTOCOL_ID = "gpu-f4-update-grid-ab-rtx5090-http-v10-20261101"
@@ -47,8 +49,11 @@ PRODUCTION_DIFF_SHA256 = "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c
 F4_PATH = "suite/src/cryptanalysis/f4_gpu.rs"
 TOOLING_REF = "refs/heads/codex/runpod-http-gpu-geometry-v10-20261101"
 HISTORY_DEEPEN_COMMITS = 16
-FAMILY_TESTS = 10
-LOWER_TAIL = Fraction(1, 20 * FAMILY_TESTS)  # alpha=.05 / ten gates
+AB_INTERVALS = 10
+AA_INTERVALS = 10
+FAMILY_INTERVALS = AB_INTERVALS + AA_INTERVALS
+# Twenty two-sided simultaneous intervals: alpha / (2 * 20) = 1/800.
+INTERVAL_TAIL = Fraction(1, 2 * 20 * FAMILY_INTERVALS)
 PRIMARY_EFFECT = Fraction(51, 50)  # at least 1.02x baseline/candidate
 NONREGRESSION = Fraction(50, 51)  # candidate no more than 2% slower
 EXPECTED_UPDATE_LAUNCHES = 2941
@@ -214,8 +219,10 @@ def parse_binary_hashes(session: Path) -> dict[str, str]:
         hashes[fields[0]] = fields[1]
     if set(hashes) != set(ARMS):
         raise GateError(f"missing binary hashes: {hashes}")
+    if hashes["baseline"] != hashes["baseline-aa"]:
+        raise GateError("same-session A/A instruments are not byte-identical")
     if hashes["baseline"] == hashes["candidate"]:
-        raise GateError("the two one-factor instruments unexpectedly have identical bytes")
+        raise GateError("the one-factor candidate unexpectedly matches baseline bytes")
     return hashes
 
 
@@ -426,19 +433,29 @@ def median_fraction(values: Iterable[Fraction]) -> Fraction:
     return (ordered[middle - 1] + ordered[middle]) / 2
 
 
-def simultaneous_lower(baseline: list[Fraction], candidate: list[Fraction]) -> Fraction:
-    if len(baseline) != 6 or len(candidate) != 6:
+def bootstrap_interval(baseline: list[Fraction], comparison: list[Fraction]) -> tuple[Fraction, Fraction]:
+    if len(baseline) != 6 or len(comparison) != 6:
         raise ValueError("the frozen design requires exactly six pairs")
-    if min(candidate) <= 0:
-        raise ValueError("candidate timing is non-positive")
-    ratios = [base / cand for base, cand in zip(baseline, candidate)]
+    if min(baseline) <= 0 or min(comparison) <= 0:
+        raise ValueError("paired timing is non-positive")
+    ratios = [base / other for base, other in zip(baseline, comparison)]
     distribution = [
         median_fraction(ratios[index] for index in indices)
         for indices in itertools.product(range(6), repeat=6)
     ]
     distribution.sort()
-    index = (len(distribution) * LOWER_TAIL.numerator) // LOWER_TAIL.denominator
-    return distribution[index]
+    lower_index = max(
+        0,
+        (len(distribution) * INTERVAL_TAIL.numerator + INTERVAL_TAIL.denominator - 1)
+        // INTERVAL_TAIL.denominator - 1,
+    )
+    upper_probability = 1 - INTERVAL_TAIL
+    upper_index = max(
+        0,
+        (len(distribution) * upper_probability.numerator + upper_probability.denominator - 1)
+        // upper_probability.denominator - 1,
+    )
+    return distribution[lower_index], distribution[min(upper_index, len(distribution) - 1)]
 
 
 def fraction_record(value: Fraction) -> dict[str, Any]:
@@ -447,6 +464,15 @@ def fraction_record(value: Fraction) -> dict[str, Any]:
         "denominator": value.denominator,
         "decimal": format(float(value), ".17g"),
     }
+
+
+def aa_interval_admissible(lower: Fraction, upper: Fraction) -> bool:
+    return lower <= 1 <= upper
+
+
+def primary_geometry_pass(observed: Fraction, lower: Fraction,
+                          aa_noise_floor: Fraction) -> bool:
+    return observed >= PRIMARY_EFFECT and lower > aa_noise_floor
 
 
 def kernel_rows(path: Path) -> list[dict[str, Any]]:
@@ -602,7 +628,7 @@ def gate_nsys(session: Path, expected_gpu: str) -> dict[str, Any]:
     gpu = validate_gpu_inventory(session, expected_gpu)
     observations: dict[str, dict[str, Any]] = {}
     sm_counts: set[int] = set()
-    for arm in ARMS:
+    for arm in PROFILE_ARMS:
         prefix = session / "profiles" / "nsys" / arm / "k0n13m2d6"
         observed = validate_execution(prefix, BY_TAG["k0n13m2d6"], gpu)
         observations[arm] = observed
@@ -637,7 +663,7 @@ def row_artifacts(row: dict[str, Any], session: Path) -> list[dict[str, Any]]:
     )
 
 
-def row_record(row: dict[str, Any], session: Path) -> dict[str, Any]:
+def row_record(row: dict[str, Any], session: Path, timing_admissible: bool) -> dict[str, Any]:
     workload: Workload = row["workload"]
     warmup = row["phase"] == "warmup"
     replicate = 0 if warmup else row["round"] - 1
@@ -667,7 +693,7 @@ def row_record(row: dict[str, Any], session: Path) -> dict[str, Any]:
                 "cols": report["cols"],
             },
             "wall_seconds": float(row["complete_ms"] / 1000),
-            "wall_valid": not warmup,
+            "wall_valid": not warmup and timing_admissible,
             "cpu_user_seconds": None,
             "cpu_sys_seconds": None,
             "max_rss_bytes": None,
@@ -755,7 +781,7 @@ def write_export(
             },
         },
         "arms": [
-            {"id": arm, "role": arm, "binary_sha256": hashes[arm], "commit": CANDIDATE_COMMIT}
+            {"id": arm, "role": ARM_ROLES[arm], "binary_sha256": hashes[arm], "commit": CANDIDATE_COMMIT}
             for arm in ARMS
         ],
         "runs": rows,
@@ -805,29 +831,58 @@ def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[d
 
     cells: dict[str, Any] = {}
     gates: list[dict[str, Any]] = []
+    aa_gates: list[dict[str, Any]] = []
     for workload in WORKLOADS:
         metrics: dict[str, Any] = {}
         for metric in ("device_ms", "complete_ms"):
             baseline = [keyed[(workload.tag, round_index, "baseline")][metric]
                         for round_index in MEASURED_ROUNDS]
+            baseline_aa = [keyed[(workload.tag, round_index, "baseline-aa")][metric]
+                           for round_index in MEASURED_ROUNDS]
             candidate = [keyed[(workload.tag, round_index, "candidate")][metric]
                          for round_index in MEASURED_ROUNDS]
             pair_ratios = [base / cand for base, cand in zip(baseline, candidate)]
             observed = median_fraction(pair_ratios)
-            lower = simultaneous_lower(baseline, candidate)
+            lower, upper = bootstrap_interval(baseline, candidate)
+            aa_ratios = [base / aa for base, aa in zip(baseline, baseline_aa)]
+            aa_observed = median_fraction(aa_ratios)
+            aa_lower, aa_upper = bootstrap_interval(baseline, baseline_aa)
+            aa_passed = aa_interval_admissible(aa_lower, aa_upper)
+            noise_floor = max(aa_upper, Fraction(1, 1) / aa_lower)
             metrics[metric] = {
                 "baseline_ms": [format(float(value), ".17g") for value in baseline],
+                "baseline_aa_ms": [format(float(value), ".17g") for value in baseline_aa],
                 "candidate_ms": [format(float(value), ".17g") for value in candidate],
                 "paired_baseline_over_candidate": [fraction_record(value) for value in pair_ratios],
                 "median_pair_speedup": fraction_record(observed),
-                "simultaneous_one_sided_lower": fraction_record(lower),
+                "simultaneous_two_sided_interval": {
+                    "lower": fraction_record(lower),
+                    "upper": fraction_record(upper),
+                },
+                "paired_baseline_over_baseline_aa": [fraction_record(value) for value in aa_ratios],
+                "aa_median_ratio": fraction_record(aa_observed),
+                "aa_simultaneous_two_sided_interval": {
+                    "lower": fraction_record(aa_lower),
+                    "upper": fraction_record(aa_upper),
+                },
+                "aa_symmetric_noise_floor": fraction_record(noise_floor),
                 "bootstrap_resamples": 6 ** 6,
-                "lower_tail_probability": fraction_record(LOWER_TAIL),
+                "two_sided_tail_probability": fraction_record(INTERVAL_TAIL),
             }
+            aa_gates.append({
+                "workload": workload.tag,
+                "metric": metric,
+                "kind": "same_session_aa_interval_contains_one",
+                "median": fraction_record(aa_observed),
+                "lower": fraction_record(aa_lower),
+                "upper": fraction_record(aa_upper),
+                "noise_floor": fraction_record(noise_floor),
+                "passed": aa_passed,
+            })
             decisive = (workload.role == "primary" and metric == "device_ms") or metric == "complete_ms" or workload.role == "holdout"
             if decisive:
                 threshold = PRIMARY_EFFECT if workload.role == "primary" and metric == "device_ms" else NONREGRESSION
-                passed = (observed >= threshold and lower > 1) if threshold == PRIMARY_EFFECT else (
+                passed = primary_geometry_pass(observed, lower, noise_floor) if threshold == PRIMARY_EFFECT else (
                     observed >= threshold and lower >= threshold
                 )
                 gates.append({
@@ -837,15 +892,21 @@ def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[d
                     "threshold": fraction_record(threshold),
                     "median": fraction_record(observed),
                     "lower": fraction_record(lower),
+                    "upper": fraction_record(upper),
+                    "aa_noise_floor": fraction_record(noise_floor),
                     "passed": passed,
                 })
         cells[workload.tag] = {"role": workload.role, "metrics": metrics}
-    if len(gates) != FAMILY_TESTS:
-        raise GateError(f"internal decision family has {len(gates)} gates, expected {FAMILY_TESTS}")
+    if len(gates) != AB_INTERVALS or len(aa_gates) != AA_INTERVALS:
+        raise GateError(
+            f"internal interval family has {len(gates)} A/B and {len(aa_gates)} A/A cells, "
+            f"expected {AB_INTERVALS} and {AA_INTERVALS}"
+        )
+    aa_admissible = all(gate["passed"] for gate in aa_gates)
     provisional = (
-        "geometry_supported"
-        if all(gate["passed"] for gate in gates)
-        else "geometry_not_supported"
+        "invalid_measurement" if not aa_admissible else
+        "geometry_supported" if all(gate["passed"] for gate in gates) else
+        "geometry_not_supported"
     )
     analysis = {
         "schema": "gpu-f4-update-grid-ab-analysis/v2",
@@ -860,19 +921,24 @@ def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[d
         "correctness_gate": "passed",
         "source_identity_gate": "passed",
         "numeric_isolation_gate": "passed",
+        "same_session_aa_gate": "passed" if aa_admissible else "failed",
         "mechanism_gate": mechanism,
         "multiplicity": {
-            "family_tests": FAMILY_TESTS,
+            "family_intervals": FAMILY_INTERVALS,
+            "ab_intervals": AB_INTERVALS,
+            "aa_intervals": AA_INTERVALS,
             "family_alpha": "0.05",
             "correction": "Bonferroni",
-            "one_sided_lower_tail": fraction_record(LOWER_TAIL),
+            "sides": 2,
+            "per_tail_probability": fraction_record(INTERVAL_TAIL),
         },
         "decision_gates": gates,
+        "aa_control_gates": aa_gates,
         "cells": cells,
         "profiled_timings_in_decision": False,
         "hardware_counters": "not collected; NCU is outside this protocol",
     }
-    rows = [row_record(row, session) for row in [*warmups, *measured]]
+    rows = [row_record(row, session, aa_admissible) for row in [*warmups, *measured]]
     return analysis, rows, hashes
 
 

@@ -84,7 +84,20 @@ class GeometryAnalyzerTests(unittest.TestCase):
 
     def test_exact_bootstrap_identity(self) -> None:
         values = [Fraction(index, 10) for index in range(10, 16)]
-        self.assertEqual(MOD.simultaneous_lower(values, values), Fraction(1, 1))
+        self.assertEqual(
+            MOD.bootstrap_interval(values, values),
+            (Fraction(1, 1), Fraction(1, 1)),
+        )
+
+    def test_primary_must_strictly_clear_same_session_aa_floor(self) -> None:
+        effect = Fraction(103, 100)
+        noise = Fraction(101, 100)
+        self.assertFalse(MOD.primary_geometry_pass(effect, noise, noise))
+        self.assertTrue(MOD.primary_geometry_pass(effect, Fraction(102, 100), noise))
+
+    def test_aa_interval_must_contain_identity(self) -> None:
+        self.assertTrue(MOD.aa_interval_admissible(Fraction(99, 100), Fraction(101, 100)))
+        self.assertFalse(MOD.aa_interval_admissible(Fraction(1001, 1000), Fraction(101, 100)))
 
     def test_mechanism_gate_accepts_only_registered_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -13,6 +13,6 @@
   "scientific_rows": 0,
   "timing_rows_reused": 0,
   "replacement": "protocol-http-rtx5090-geometry-v10.json",
-  "correction": "Keep remote timing/mechanism output explicitly provisional and add a hash-bound controller-side finalizer after receipt, archive extraction, runner completion, and cleanup. The finalizer validates the exact 70-row order ledger, canonical export and file bindings, source/request/pod/price, archive/internal manifest/inventory, completion markers, and cleanup before emitting exactly one terminal verdict with frozen precedence.",
-  "scientific_design_change": false
+  "correction": "Keep remote timing/mechanism output explicitly provisional and add a hash-bound controller-side finalizer after receipt, archive extraction, runner completion, and cleanup. The canonical clock rule also requires byte-identical A/A evidence from the same session, so v10 adds a baseline-aa label and expands the frozen ledger to 105 rows. Its primary A/B interval must strictly clear the matching symmetric A/A noise floor.",
+  "scientific_design_change": true
 }

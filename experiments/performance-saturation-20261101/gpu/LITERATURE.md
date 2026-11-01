@@ -54,9 +54,15 @@ manifest, extracted inventory, completion marker, runner exit, or deletion and
 absence proof.  A remote gate failure exited with status 2 rather than
 materializing `invalid_measurement` or `incomplete_session`.
 
-V10 preserves the five cells, one warmup, six alternating fresh-process pairs,
-70 exported rows, exact rational ten-test analysis, thresholds, Nsys sequence
-and resource gates, and depth-16 source delivery unchanged.  The remote
+V10 preserves the five cells, one warmup, six alternating rounds, production
+thresholds, Nsys sequence/resource gates, and depth-16 source delivery.  It
+adds a byte-identical `baseline-aa` label in every same-pod round because the
+canonical clock rule requires an A/A interval from the same session.  Odd
+rounds run baseline/candidate/baseline-aa and even rounds reverse that triple,
+for 105 exported rows.  Ten A/B and ten A/A clock cells use exact rational
+two-sided simultaneous intervals with Bonferroni tail `1/800`; every A/A
+interval must contain one, and the primary A/B lower endpoint must strictly
+exceed `max(A/A upper, 1/A/A lower)`.  The remote
 analyzer now emits only `provisional_mechanical` timing classification.  After
 the controller has returned and cleaned up the one pod, a separately
 hash-bound finalizer uses the pinned canonical protocol tool and validates the

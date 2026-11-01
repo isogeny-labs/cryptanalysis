@@ -49,7 +49,7 @@ EXPECTED_RESOURCES = {
     "dynamic_shared_bytes": 0,
     "local_bytes_per_thread": 0,
 }
-ARMS = ("baseline", "candidate")
+ARMS = ("baseline", "baseline-aa", "candidate")
 WORKLOADS = (
     ("holdout", "k0n13m2d5", "0:13:2:1234", 5),
     ("holdout", "k0n9m3d5", "0:9:3:77", 5),
@@ -170,6 +170,8 @@ def terminal_verdict(judge: Judge, provisional: str | None) -> str:
         return "incomplete_session"
     if judge.validity_failed:
         return "invalid_measurement"
+    if provisional == "invalid_measurement":
+        return "invalid_measurement"
     if provisional == "geometry_not_supported":
         return "geometry_not_supported"
     if provisional == "geometry_supported":
@@ -182,7 +184,11 @@ def terminal_verdict(judge: Judge, provisional: str | None) -> str:
 def expected_order() -> list[tuple[str, ...]]:
     rows: list[tuple[str, ...]] = []
     for phase, round_index in [("warmup", 0), *[("measure", index) for index in range(1, 7)]]:
-        arms = ("baseline", "candidate") if round_index % 2 else ("candidate", "baseline")
+        arms = (
+            ("baseline", "candidate", "baseline-aa")
+            if round_index % 2
+            else ("baseline-aa", "candidate", "baseline")
+        )
         for role, tag, cell, degree in WORKLOADS:
             for arm in arms:
                 rows.append((phase, str(round_index), tag, role, arm, f"{cell}:{degree}"))
@@ -205,7 +211,7 @@ def validate_order(path: Path, judge: Judge) -> None:
         rows[1:] == expected,
         "order.schedule",
         "validity",
-        f"exact registered 70-row schedule (observed {len(rows) - 1})",
+        f"exact registered 105-row same-session A/A+A/B schedule (observed {len(rows) - 1})",
     )
 
 
@@ -487,7 +493,8 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
     for key, wanted in expected.items():
         judge.check(analysis.get(key) == wanted, f"analysis.{key}", "validity", f"expected {wanted!r}")
     provisional = analysis.get("timing_classification_provisional")
-    judge.check(provisional in {"geometry_supported", "geometry_not_supported"}, "analysis.provisional", "validity", "registered provisional vocabulary")
+    judge.check(provisional in {"geometry_supported", "geometry_not_supported", "invalid_measurement"},
+                "analysis.provisional", "validity", "registered provisional vocabulary")
     gates = analysis.get("decision_gates")
     gate_ok = isinstance(gates, list) and len(gates) == 10
     judge.check(gate_ok, "analysis.gates.count", "validity", "exact ten-test family")
@@ -500,14 +507,40 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
         judge.check(sorted(identities) == sorted(expected_ids), "analysis.gates.identity", "validity", "each frozen gate appears exactly once")
         booleans = [item.get("passed") for item in gates if isinstance(item, dict)]
         judge.check(len(booleans) == 10 and all(type(value) is bool for value in booleans), "analysis.gates.booleans", "validity", "all gate decisions are Boolean")
-        derived = "geometry_supported" if len(booleans) == 10 and all(booleans) else "geometry_not_supported"
-        judge.check(provisional == derived, "analysis.provisional_consistency", "validity", "classification equals conjunction of ten gates")
+    aa_gates = analysis.get("aa_control_gates")
+    aa_ok = isinstance(aa_gates, list) and len(aa_gates) == 10
+    judge.check(aa_ok, "analysis.aa_gates.count", "validity", "exact ten same-session A/A interval controls")
+    aa_booleans: list[bool] = []
+    if aa_ok:
+        aa_identities = [(item.get("workload"), item.get("metric"), item.get("kind"))
+                         for item in aa_gates if isinstance(item, dict)]
+        expected_aa = [(tag, metric, "same_session_aa_interval_contains_one")
+                       for _role, tag, _cell, _degree in WORKLOADS
+                       for metric in ("device_ms", "complete_ms")]
+        judge.check(sorted(aa_identities) == sorted(expected_aa), "analysis.aa_gates.identity", "validity", "each frozen A/A interval appears once")
+        raw_aa = [item.get("passed") for item in aa_gates if isinstance(item, dict)]
+        judge.check(len(raw_aa) == 10 and all(type(value) is bool for value in raw_aa),
+                    "analysis.aa_gates.booleans", "validity", "all A/A decisions are Boolean")
+        aa_booleans = [bool(value) for value in raw_aa]
+    aa_admissible = len(aa_booleans) == 10 and all(aa_booleans)
+    judge.check(analysis.get("same_session_aa_gate") == ("passed" if aa_admissible else "failed"),
+                "analysis.aa_status", "validity", "A/A status equals conjunction of same-session intervals")
+    if gate_ok:
+        booleans = [item.get("passed") for item in gates if isinstance(item, dict)]
+        derived = (
+            "invalid_measurement" if not aa_admissible else
+            "geometry_supported" if len(booleans) == 10 and all(booleans) else
+            "geometry_not_supported"
+        )
+        judge.check(provisional == derived, "analysis.provisional_consistency", "validity", "classification is strict intersection of A/A admissibility and ten A/B gates")
     multiplicity = analysis.get("multiplicity") if isinstance(analysis.get("multiplicity"), dict) else {}
-    lower_tail = multiplicity.get("one_sided_lower_tail")
+    lower_tail = multiplicity.get("per_tail_probability")
     lower_tail = lower_tail if isinstance(lower_tail, dict) else {}
-    judge.check(multiplicity.get("family_tests") == 10 and multiplicity.get("correction") == "Bonferroni" and
-                lower_tail.get("numerator") == 1 and lower_tail.get("denominator") == 200,
-                "analysis.multiplicity", "validity", "exact rational 1/200 ten-test family")
+    judge.check(multiplicity.get("family_intervals") == 20 and
+                multiplicity.get("ab_intervals") == 10 and multiplicity.get("aa_intervals") == 10 and
+                multiplicity.get("sides") == 2 and multiplicity.get("correction") == "Bonferroni" and
+                lower_tail.get("numerator") == 1 and lower_tail.get("denominator") == 800,
+                "analysis.multiplicity", "validity", "twenty two-sided intervals with exact rational 1/800 tails")
     mechanism = analysis.get("mechanism_gate") if isinstance(analysis.get("mechanism_gate"), dict) else {}
     mechanism_ok = (
         mechanism.get("status") == "passed"
@@ -523,8 +556,8 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
 
 
 def check_rows_export(rows: list[dict[str, Any]], export: dict[str, Any], run_id: str,
-                      protocol_sha: str, judge: Judge) -> None:
-    judge.check(len(rows) == 70, "rows.count", "validity", f"expected 70, observed {len(rows)}")
+                      protocol_sha: str, timing_admissible: bool, judge: Judge) -> None:
+    judge.check(len(rows) == 105, "rows.count", "validity", f"expected 105, observed {len(rows)}")
     judge.check(export.get("schema") == EXPECTED_EXPORT_SCHEMA, "export.schema", "validity", "exact experiment.export/v1")
     proto = export.get("protocol") if isinstance(export.get("protocol"), dict) else {}
     judge.check(proto.get("sha256") == protocol_sha and proto.get("protocol_id") == PROTOCOL_ID and
@@ -544,9 +577,9 @@ def check_rows_export(rows: list[dict[str, Any]], export: dict[str, Any], run_id
     export_runs = export.get("runs")
     judge.check(export_runs == rows, "export.rows", "validity", "export runs are byte-semantic rows.jsonl sequence")
     flow = export.get("flow") if isinstance(export.get("flow"), dict) else {}
-    expected_flow = {"planned": 70, "attempted": 70, "completed": 70, "not_completed": 0,
+    expected_flow = {"planned": 105, "attempted": 105, "completed": 105, "not_completed": 0,
                      "interrupted": 0, "resumed": 0, "excluded": []}
-    judge.check(flow == expected_flow, "export.flow", "validity", "all 70 rows completed once")
+    judge.check(flow == expected_flow, "export.flow", "validity", "all 105 A/A+A/B rows completed once")
     seen: set[tuple[Any, ...]] = set()
     expected_cells = {
         (arm, tag, 0 if phase == "warmup" else round_index - 1, phase == "warmup"):
@@ -572,10 +605,10 @@ def check_rows_export(rows: list[dict[str, Any]], export: dict[str, Any], run_id
             and row.get("attempts") == 1 and row.get("resumed") == 0
             and isolation == {"tier": "tierB", "contended": False, "blockers": []}
             and exclusion == {"excluded": False, "rule": None}
-            and measurements.get("wall_valid") is (not row.get("warmup"))
+            and measurements.get("wall_valid") is (not row.get("warmup") and timing_admissible)
         ):
             row_ok = False
-    judge.check(row_ok and seen == set(expected_cells), "rows.semantic", "validity", "exact 70 run identities; unique successful one-attempt tierB rows with correct warmup charging")
+    judge.check(row_ok and seen == set(expected_cells), "rows.semantic", "validity", "exact 105 run identities; unique successful one-attempt tierB rows with A/A-controlled wall validity")
 
 
 def inventory_from_directory(root: Path, prefix: str = "") -> dict[str, dict[str, Any]]:
@@ -941,9 +974,6 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     export = export_value if isinstance(export_value, dict) else {}
     if export_value is not None and not isinstance(export_value, dict):
         judge.invalid("export.object", "export JSON is not an object")
-    if rows is not None and export:
-        check_rows_export(rows, export, run_id, supplied_sha, judge)
-
     analysis_value = load_required_json(session / "analysis.json", "analysis", judge)
     analysis = analysis_value if isinstance(analysis_value, dict) else {}
     if analysis_value is not None and not isinstance(analysis_value, dict):
@@ -951,6 +981,11 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     elif isinstance(analysis_value, dict) and not analysis_value:
         judge.invalid("analysis.content", "analysis object is present but empty")
     provisional = check_analysis(analysis, supplied_sha, run_id, judge) if analysis else None
+    if rows is not None and export:
+        check_rows_export(
+            rows, export, run_id, supplied_sha,
+            analysis.get("same_session_aa_gate") == "passed", judge,
+        )
     if analysis:
         check_read_only_recomputation(session, supplied_sha, protocol, judge)
     gate_value = load_required_json(session / "analysis-gate.json", "analysis_gate", judge)
