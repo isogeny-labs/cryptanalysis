@@ -61,6 +61,14 @@ analyzer now emits only `provisional_mechanical` timing classification.  After
 the controller has returned and cleaned up the one pod, a separately
 hash-bound finalizer uses the pinned canonical protocol tool and validates the
 complete order/row/export/receipt/archive/manifest/completion/cleanup chain.
+The sole launch entry point invokes the controller exactly once and invokes
+the finalizer in an unconditional unwind path, including controller failure or
+operator interruption; it has no allocation retry.  Before spending, it
+authenticates the draft-registration/freeze Git chain, exact frozen argv, and
+all transitive tool hashes.  The finalizer also reruns the pinned analyzer in
+read-only verification mode so timing gates and the Nsys mechanism summary are
+derived again from the archived raw logs, isolation snapshots, telemetry, and
+SQLite traces rather than trusted as self-reported booleans.
 Its frozen precedence is `incomplete_session`, then `invalid_measurement`, then
 `geometry_not_supported`, then `geometry_supported`; it is the sole terminal
 adjudicator.  The controller receipt records the exact remote command,

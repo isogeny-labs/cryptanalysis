@@ -160,7 +160,12 @@ rustc -Vv >"$SESSION/metadata/rustc.txt"
 cargo -V >"$SESSION/metadata/cargo.txt"
 git rev-parse HEAD >"$SESSION/metadata/tooling-git-head.txt"
 git status --short >"$SESSION/metadata/tooling-git-status.txt"
-sha256sum "$ANALYZER" "$0" ecc2k130/runner/codegen/install_nsys_tools.sh \
+sha256sum experiments/performance-saturation-20261101/gpu/analyze_gpu_geometry_ab.py \
+  experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab.py \
+  experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v10.py \
+  experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab.sh \
+  ecc2k130/runner/codegen/install_nsys_tools.sh \
+  cloud/runpod_http_batch.py cloud/runpod_http_batch_server.py \
   >"$SESSION/metadata/tooling-sha256.txt"
 
 RUNPOD_POD_ID_SAFE=$RUNPOD_POD_ID \

@@ -84,6 +84,13 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def maybe_sha256_file(path: Path) -> str | None:
+    try:
+        return sha256_file(path) if path.is_file() else None
+    except OSError:
+        return None
+
+
 def canonical(value: Any) -> bytes:
     return json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
@@ -359,6 +366,13 @@ def check_receipt_core(
     placement = protocol.get("execution", {}).get("placement", {})
     finalization = extensions.get("finalization", {})
 
+    expected_receipt_keys = {
+        "schema", "provider_actions", "source", "command", "command_sha256",
+        "outputs", "request", "transport", "started_at", "pod", "remote_status",
+        "result", "cleanup", "error", "finished_at",
+    }
+    judge.check(set(receipt) == expected_receipt_keys, "receipt.keys", "validity", "exact controller receipt key set")
+
     judge.check(receipt.get("schema") == EXPECTED_RECEIPT_SCHEMA, "receipt.schema", "validity", "exact HTTP receipt schema")
     judge.check(receipt.get("provider_actions") is True, "receipt.provider_actions", "validity", "real controller receipt")
     judge.check(receipt.get("error") is None, "receipt.no_error", "completion", f"controller error={receipt.get('error')!r}")
@@ -395,11 +409,16 @@ def check_receipt_core(
     name = request.get("name")
     name_ok = isinstance(prefix, str) and isinstance(name, str) and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{12}", name) is not None
     judge.check(name_ok, "receipt.request.name", "validity", "fresh registered prefix plus 48-bit nonce")
+    exact_request_keys = (set(request_expected) - {"name_prefix"}) | {"name"}
+    judge.check(set(request) == exact_request_keys, "receipt.request.keys", "validity", "request receipt has exactly the frozen key set")
+    judge.check(receipt.get("transport") == finalization.get("receipt_transport"),
+                "receipt.transport", "validity", "exact authenticated HTTP transport receipt")
 
     pod = receipt.get("pod") if isinstance(receipt.get("pod"), dict) else {}
     pod_id = pod.get("id")
     judge.check(isinstance(pod_id, str) and POD_ID_RE.fullmatch(pod_id) is not None, "receipt.pod.id", "validity", "one concrete pod ID")
     judge.check(pod.get("name") == name, "receipt.pod.name", "validity", "request/pod name agreement")
+    judge.check(pod.get("status") == "RUNNING", "receipt.pod.status", "validity", "controller observed allocated pod running")
     judge.check(pod.get("creation_response_ambiguous") is False, "receipt.pod.unambiguous", "validity", "one unambiguous create result")
     judge.check(pod.get("cloud") == "SECURE", "receipt.pod.cloud", "validity", "Secure placement")
     judge.check(pod.get("image") == placement.get("image"), "receipt.pod.image", "validity", "exact image")
@@ -416,6 +435,13 @@ def check_receipt_core(
     judge.check(price_ok, "receipt.pod.price", "validity", f"finite positive hourly price <= {max_price}")
 
     status = receipt.get("remote_status") if isinstance(receipt.get("remote_status"), dict) else {}
+    expected_status_keys = {
+        "archive", "archive_ready", "chunks", "command_sha256", "command_started_unix",
+        "done", "finished_unix", "hardware", "job_id", "returncode", "schema",
+        "source_archive_sha256", "source_commit", "source_tree", "stage", "started_unix",
+        "timed_out", "worker_error_type",
+    }
+    judge.check(set(status) == expected_status_keys, "remote_status.keys", "validity", "exact authenticated status key set")
     for key, expected in (("schema", EXPECTED_STATUS_SCHEMA), ("stage", "complete"), ("done", True),
                           ("archive_ready", True), ("returncode", 0), ("timed_out", False),
                           ("worker_error_type", None)):
@@ -477,9 +503,10 @@ def check_analysis(analysis: dict[str, Any], protocol_sha: str, run_id: str, jud
         derived = "geometry_supported" if len(booleans) == 10 and all(booleans) else "geometry_not_supported"
         judge.check(provisional == derived, "analysis.provisional_consistency", "validity", "classification equals conjunction of ten gates")
     multiplicity = analysis.get("multiplicity") if isinstance(analysis.get("multiplicity"), dict) else {}
+    lower_tail = multiplicity.get("one_sided_lower_tail")
+    lower_tail = lower_tail if isinstance(lower_tail, dict) else {}
     judge.check(multiplicity.get("family_tests") == 10 and multiplicity.get("correction") == "Bonferroni" and
-                multiplicity.get("one_sided_lower_tail", {}).get("numerator") == 1 and
-                multiplicity.get("one_sided_lower_tail", {}).get("denominator") == 200,
+                lower_tail.get("numerator") == 1 and lower_tail.get("denominator") == 200,
                 "analysis.multiplicity", "validity", "exact rational 1/200 ten-test family")
     mechanism = analysis.get("mechanism_gate") if isinstance(analysis.get("mechanism_gate"), dict) else {}
     mechanism_ok = (
@@ -507,6 +534,13 @@ def check_rows_export(rows: list[dict[str, Any]], export: dict[str, Any], run_id
     producer = export.get("producer") if isinstance(export.get("producer"), dict) else {}
     judge.check(producer.get("session") == run_id and producer.get("runtime") == "runpod-http-batch",
                 "export.session", "validity", "session/runtime binding")
+    source = export.get("source") if isinstance(export.get("source"), dict) else {}
+    judge.check(source == {"repo": "cryptanalysis", "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f", "dirty": False},
+                "export.source", "validity", "exact candidate source identity")
+    notes = export.get("notes") if isinstance(export.get("notes"), list) else []
+    tier_note = "tierB denotes the frozen per-process numeric PSI/cgroup/steal/temperature/no-foreign-process gates; it is not a claim about exclusive physical-host or L2-cache topology."
+    judge.check(any(isinstance(note, dict) and note.get("text") == tier_note for note in notes),
+                "export.tierb_scope", "validity", "tierB is explicitly numeric and not an L2/exclusive-host claim")
     export_runs = export.get("runs")
     judge.check(export_runs == rows, "export.rows", "validity", "export runs are byte-semantic rows.jsonl sequence")
     flow = export.get("flow") if isinstance(export.get("flow"), dict) else {}
@@ -567,13 +601,23 @@ def check_archive_bindings(
     result = receipt.get("result") if isinstance(receipt.get("result"), dict) else {}
     status = receipt.get("remote_status") if isinstance(receipt.get("remote_status"), dict) else {}
     status_archive = status.get("archive") if isinstance(status.get("archive"), dict) else {}
+    judge.check(set(result) == {"archive", "archive_sha256", "archive_bytes", "metadata", "files"},
+                "archive.result_keys", "validity", "exact receipt result key set")
     judge.check(result.get("archive_sha256") == archive_sha and status_archive.get("sha256") == archive_sha,
                 "archive.outer_sha256", "validity", "receipt/status/local archive SHA agreement")
     judge.check(result.get("archive_bytes") == archive_bytes and status_archive.get("bytes") == archive_bytes,
                 "archive.outer_bytes", "validity", "receipt/status/local archive size agreement")
+    result_archive_path = result.get("archive")
+    result_metadata_path = result.get("metadata")
+    judge.check(isinstance(result_archive_path, str) and Path(result_archive_path).resolve() == archive_path.resolve(),
+                "archive.receipt_path", "validity", "receipt names this exact archive")
+    judge.check(isinstance(result_metadata_path, str) and Path(result_metadata_path).resolve() == remote.resolve(),
+                "archive.metadata_path", "validity", "receipt names this exact remote metadata directory")
     judge.check(status_archive.get("manifest_sha256") == sha256_bytes(evidence.manifest_bytes),
                 "archive.manifest_sha256", "validity", "remote/internal manifest SHA agreement")
     judge.check(status_archive.get("files") == len(evidence.records), "archive.file_count", "validity", "remote/archive member count agreement")
+    judge.check(status_archive.get("uncompressed_bytes") == sum(item["bytes"] for item in evidence.records.values()),
+                "archive.uncompressed_bytes", "validity", "remote/archive uncompressed size agreement")
 
     chunks = status.get("chunks")
     chunks_ok = isinstance(chunks, list) and bool(chunks)
@@ -603,11 +647,16 @@ def check_archive_bindings(
         if name != ".runpod-batch/files.sha256"
     }
     listed: dict[str, dict[str, Any]] = {}
+    listed_duplicates = False
     if isinstance(receipt_files, list):
         for item in receipt_files:
             if isinstance(item, dict) and isinstance(item.get("path"), str):
+                if item["path"] in listed:
+                    listed_duplicates = True
+                if set(item) != {"path", "sha256", "bytes"}:
+                    listed_duplicates = True
                 listed[item["path"]] = {key: item.get(key) for key in ("path", "sha256", "bytes")}
-    judge.check(listed == actual_without_manifest, "archive.receipt_inventory", "validity", "receipt inventory exactly covers every non-manifest member")
+    judge.check(not listed_duplicates and listed == actual_without_manifest, "archive.receipt_inventory", "validity", "receipt inventory exactly and uniquely covers every non-manifest member")
 
     session_inventory = inventory_from_directory(session, session_rel) if session.is_dir() else {}
     archived_session = {name: record for name, record in evidence.records.items() if name == session_rel or name.startswith(session_rel + "/")}
@@ -647,6 +696,152 @@ def resolve_template_path(repo: Path, template: str, run_id: str) -> Path:
     return (repo / template.replace("<run_id>", run_id)).resolve()
 
 
+def git_text(repo: Path, *arguments: str) -> str:
+    result = subprocess.run(
+        ["git", *arguments], cwd=repo, capture_output=True, text=True,
+        timeout=120, check=False,
+    )
+    if result.returncode:
+        raise ValueError(f"git {' '.join(arguments[:2])} failed")
+    return result.stdout.strip()
+
+
+def check_freeze_chain(protocol_path: Path, protocol: dict[str, Any], repo: Path,
+                       judge: Judge) -> dict[str, str | None]:
+    """Authenticate draft registration -> immediate freeze in local Git history."""
+    result: dict[str, str | None] = {"registration_commit": None, "freeze_commit": None}
+    try:
+        relative = protocol_path.relative_to(repo).as_posix()
+        freeze = protocol.get("freeze") if isinstance(protocol.get("freeze"), dict) else {}
+        registration = freeze.get("commit")
+        if not isinstance(registration, str) or re.fullmatch(r"[0-9a-f]{40}", registration) is None:
+            raise ValueError("freeze.commit is not a full registration commit")
+        result["registration_commit"] = registration
+        draft = json_from_bytes(subprocess.run(
+            ["git", "show", f"{registration}:{relative}"], cwd=repo,
+            capture_output=True, timeout=120, check=True,
+        ).stdout)
+        if not isinstance(draft, dict):
+            raise ValueError("registered draft is not an object")
+        draft_freeze = draft.get("freeze") if isinstance(draft.get("freeze"), dict) else {}
+        if draft_freeze.get("status") != "draft" or protocol_hash(draft) != protocol_hash(protocol):
+            raise ValueError("registration is not the canonical matching draft")
+        registration_paths = git_text(repo, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", registration).splitlines()
+        if registration_paths != [relative]:
+            raise ValueError("registration commit is not scoped to the v10 protocol")
+        later = git_text(repo, "log", "--format=%H", "--reverse", f"{registration}..HEAD", "--", relative).splitlines()
+        if len(later) != 1:
+            raise ValueError("protocol must have exactly one post-registration freeze commit")
+        frozen_commit = later[0]
+        result["freeze_commit"] = frozen_commit
+        if git_text(repo, "rev-parse", f"{frozen_commit}^") != registration:
+            raise ValueError("freeze commit is not the immediate child of registration")
+        freeze_paths = git_text(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", frozen_commit).splitlines()
+        if freeze_paths != [relative]:
+            raise ValueError("freeze commit is not scoped to the v10 protocol")
+        frozen_bytes = subprocess.run(
+            ["git", "show", f"{frozen_commit}:{relative}"], cwd=repo,
+            capture_output=True, timeout=120, check=True,
+        ).stdout
+        if frozen_bytes != protocol_path.read_bytes():
+            raise ValueError("working protocol bytes differ from the authenticated freeze commit")
+        judge.check(True, "protocol.git_chain", "validity", f"registration {registration}; freeze {frozen_commit}")
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as exc:
+        judge.invalid("protocol.git_chain", f"registration/freeze chain is not authentic: {exc}")
+    return result
+
+
+def check_tooling(repo: Path, session: Path, protocol: dict[str, Any], judge: Judge) -> None:
+    extensions = protocol.get("extensions") if isinstance(protocol.get("extensions"), dict) else {}
+    tooling = extensions.get("tooling_source") if isinstance(extensions.get("tooling_source"), dict) else {}
+    files = tooling.get("files") if isinstance(tooling.get("files"), dict) else {}
+    local_ok = bool(files)
+    for relative, expected in files.items():
+        path = repo / relative
+        if not isinstance(relative, str) or not isinstance(expected, str) or not path.is_file() or sha256_file(path) != expected:
+            local_ok = False
+    judge.check(local_ok, "tooling.local_files", "validity", "every frozen transitive tooling file hash matches")
+    try:
+        commit = tooling.get("commit")
+        tree = git_text(repo, "rev-parse", f"{commit}^{{tree}}")
+        judge.check(tree == tooling.get("tree"), "tooling.git_tree", "validity", "tooling commit/tree binding")
+        process = subprocess.Popen(
+            ["git", "archive", "--format=tar", str(commit)], cwd=repo,
+            stdout=subprocess.PIPE,
+        )
+        digest = hashlib.sha256()
+        assert process.stdout is not None
+        for block in iter(lambda: process.stdout.read(1 << 20), b""):
+            digest.update(block)
+        archive_ok = process.wait(timeout=120) == 0 and digest.hexdigest() == tooling.get("git_archive_sha256")
+        judge.check(archive_ok, "tooling.git_archive", "validity", "tooling commit archive binding")
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        judge.invalid("tooling.git_identity", f"cannot authenticate tooling Git identity: {exc}")
+
+    head_path = session / "metadata" / "tooling-git-head.txt"
+    hashes_path = session / "metadata" / "tooling-sha256.txt"
+    try:
+        judge.check(head_path.read_text(encoding="ascii") == str(tooling.get("commit")) + "\n",
+                    "tooling.remote_head", "validity", "remote checkout is exact tooling commit")
+        observed: dict[str, str] = {}
+        for line in hashes_path.read_text(encoding="utf-8").splitlines():
+            digest, separator, raw_path = line.partition("  ")
+            if not separator or SHA256_RE.fullmatch(digest) is None:
+                raise ValueError("malformed remote tooling hash line")
+            matches = [relative for relative in files
+                       if raw_path == relative or raw_path.endswith("/" + relative)]
+            if len(matches) != 1:
+                raise ValueError(f"remote tooling path is not uniquely registered: {raw_path!r}")
+            relative = matches[0]
+            if relative in observed:
+                raise ValueError("duplicate remote tooling hash path")
+            observed[relative] = digest
+        required = extensions.get("finalization", {}).get("remote_transitive_files", [])
+        expected = {relative: files.get(relative) for relative in required}
+        judge.check(observed == expected, "tooling.remote_files", "validity", "remote recorded exact complete transitive tooling hash set")
+    except (OSError, UnicodeError, ValueError, TypeError) as exc:
+        judge.invalid("tooling.remote_files", f"remote tooling binding invalid: {exc}")
+
+
+def check_host(session: Path, receipt: dict[str, Any], run_id: str, judge: Judge) -> None:
+    host = load_required_json(session / "host.json", "host", judge)
+    if not isinstance(host, dict):
+        if host is not None:
+            judge.invalid("host.object", "host.json is not an object")
+        return
+    pod = receipt.get("pod") if isinstance(receipt.get("pod"), dict) else {}
+    expected = {
+        "schema": "gpu-geometry-host/v1",
+        "session_id": run_id,
+        "provider": "runpod",
+        "requested_cloud": "SECURE",
+        "pod_id": pod.get("id"),
+    }
+    judge.check(all(host.get(key) == value for key, value in expected.items()),
+                "host.receipt_binding", "validity", "scientific host is the exact receipt pod/session/cloud")
+
+
+def check_read_only_recomputation(session: Path, protocol_sha: str,
+                                  protocol: dict[str, Any], judge: Judge) -> None:
+    analysis_plan = protocol.get("analysis_plan") if isinstance(protocol.get("analysis_plan"), dict) else {}
+    script = analysis_plan.get("script") if isinstance(analysis_plan.get("script"), dict) else {}
+    path = Path(__file__).resolve().parent / str(script.get("path", ""))
+    if not path.is_file() or sha256_file(path) != script.get("sha256"):
+        judge.invalid("analysis.recompute_tool", "frozen remote analyzer hash/path mismatch")
+        return
+    command = [
+        sys.executable, str(path), "verify", "--session", str(session),
+        "--expected-gpu", EXPECTED_GPU, "--protocol-sha256", protocol_sha,
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=900, check=False)
+        judge.check(result.returncode == 0 and '"read_only_recomputation": "passed"' in result.stdout,
+                    "analysis.raw_nsys_recomputation", "validity",
+                    (result.stdout + result.stderr).strip()[:2000] or "no recomputation output")
+    except (OSError, subprocess.SubprocessError) as exc:
+        judge.invalid("analysis.raw_nsys_recomputation", f"read-only recomputation failed: {exc}")
+
+
 def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     judge = Judge()
     repo = Path(__file__).resolve().parents[3]
@@ -668,6 +863,7 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     judge.check(freeze.get("status") == "frozen" and freeze.get("protocol_sha256") == calculated_protocol_sha and supplied_sha == calculated_protocol_sha,
                 "protocol.freeze", "validity", "frozen canonical hash equals supplied hash")
     judge.check(freeze.get("filed_before_affected_data") is True, "protocol.prospective", "validity", "filed before affected data")
+    chain = check_freeze_chain(protocol_path, protocol, repo, judge)
 
     extensions = protocol.get("extensions") if isinstance(protocol.get("extensions"), dict) else {}
     output_contract = extensions.get("output_contract") if isinstance(extensions.get("output_contract"), dict) else {}
@@ -675,9 +871,11 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     expected_receipt = resolve_template_path(repo, output_contract.get("transport_receipt", "__missing__/<run_id>.json"), run_id)
     expected_archive = resolve_template_path(repo, output_contract.get("result_archive", "__missing__/<run_id>.tar.gz"), run_id)
     expected_remote = resolve_template_path(repo, output_contract.get("remote_metadata", "__missing__/<run_id>.remote"), run_id)
+    expected_out = resolve_template_path(repo, output_contract.get("terminal_verdict", "__missing__/<run_id>.json"), run_id)
     for label, observed, expected in (
         ("session", session, expected_session), ("receipt", args.receipt.resolve(), expected_receipt),
         ("archive", args.archive.resolve(), expected_archive), ("remote", args.remote_metadata.resolve(), expected_remote),
+        ("terminal_verdict", args.out.resolve(), expected_out),
     ):
         judge.check(observed == expected, f"paths.{label}", "validity", f"expected {expected}")
     session_rel = os.path.relpath(session, repo)
@@ -687,6 +885,11 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     self_sha = sha256_file(Path(__file__).resolve())
     judge.check(finalizer_spec.get("path") == "finalize_gpu_geometry_ab.py" and finalizer_spec.get("sha256") == self_sha,
                 "finalizer.sha256", "validity", f"running finalizer SHA-256 {self_sha}")
+    orchestrator_spec = finalization.get("orchestrator") if isinstance(finalization.get("orchestrator"), dict) else {}
+    orchestrator_path = Path(__file__).resolve().with_name("orchestrate_gpu_geometry_v10.py")
+    orchestrator_sha = maybe_sha256_file(orchestrator_path)
+    judge.check(orchestrator_spec.get("path") == orchestrator_path.name and orchestrator_spec.get("sha256") == orchestrator_sha,
+                "orchestrator.sha256", "validity", f"registered mandatory launcher SHA-256 {orchestrator_sha}")
     tool_spec = finalization.get("canonical_protocol_tool") if isinstance(finalization.get("canonical_protocol_tool"), dict) else {}
     judge.check(tool_spec.get("sha256") == EXPECTED_PROTOCOL_TOOL_SHA256,
                 "protocol.canonical_tool_binding", "validity", "protocol pins the expected canonical tool")
@@ -704,12 +907,24 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
         judge.missing("session.directory", f"session directory missing: {session}")
     if not args.remote_metadata.is_dir():
         judge.missing("remote.directory", f"remote metadata directory missing: {args.remote_metadata}")
+    check_tooling(repo, session, protocol, judge)
 
     receipt_value = load_required_json(args.receipt, "receipt", judge)
     receipt = receipt_value if isinstance(receipt_value, dict) else {}
     if receipt_value is not None and not isinstance(receipt_value, dict):
         judge.invalid("receipt.object", "receipt JSON is not an object")
     check_receipt_core(receipt, protocol, run_id, supplied_sha, session_rel, judge)
+    check_host(session, receipt, run_id, judge)
+    frozen_at = parse_utc(freeze.get("frozen_at"))
+    receipt_started = parse_utc(receipt.get("started_at"))
+    judge.check(frozen_at is not None and receipt_started is not None and frozen_at <= receipt_started,
+                "protocol.frozen_before_controller", "validity", "authenticated freeze timestamp precedes controller start")
+    try:
+        freeze_commit_time = parse_utc(git_text(repo, "show", "-s", "--format=%cI", str(chain.get("freeze_commit"))))
+    except (OSError, ValueError, subprocess.SubprocessError):
+        freeze_commit_time = None
+    judge.check(freeze_commit_time is not None and receipt_started is not None and freeze_commit_time <= receipt_started,
+                "protocol.freeze_commit_before_controller", "validity", "Git freeze commit predates controller start")
 
     archive_evidence = inspect_archive(args.archive, judge)
     if archive_evidence is not None:
@@ -733,16 +948,19 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
     analysis = analysis_value if isinstance(analysis_value, dict) else {}
     if analysis_value is not None and not isinstance(analysis_value, dict):
         judge.invalid("analysis.object", "analysis JSON is not an object")
+    elif isinstance(analysis_value, dict) and not analysis_value:
+        judge.invalid("analysis.content", "analysis object is present but empty")
     provisional = check_analysis(analysis, supplied_sha, run_id, judge) if analysis else None
-    if provisional not in {"geometry_supported", "geometry_not_supported"}:
-        judge.incomplete("analysis.classification_available", "no usable provisional timing classification")
-
+    if analysis:
+        check_read_only_recomputation(session, supplied_sha, protocol, judge)
     gate_value = load_required_json(session / "analysis-gate.json", "analysis_gate", judge)
     if isinstance(gate_value, dict):
         judge.check(gate_value.get("terminal") is False and
                     gate_value.get("classification_status") == "provisional_mechanical" and
                     gate_value.get("timing_classification_provisional") == provisional,
                     "analysis_gate.provisional", "validity", "remote command output is explicitly provisional")
+    elif gate_value is not None:
+        judge.invalid("analysis_gate.object", "analysis-gate.json is not an object")
 
     runner = session / "runner-exit.status"
     if runner.is_file():
@@ -762,8 +980,9 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
                         "session.completed_at", "completion", "single exact UTC completion marker")
             if completed_at is not None and receipt:
                 finished_at = parse_utc(receipt.get("finished_at"))
-                judge.check(finished_at is not None and completed_at <= finished_at,
-                            "session.completed_before_receipt", "validity", "scientific completion precedes controller finish")
+                started_at = parse_utc(receipt.get("started_at"))
+                judge.check(started_at is not None and finished_at is not None and started_at <= completed_at <= finished_at,
+                            "session.controller_time_order", "validity", "controller start <= scientific completion <= controller finish")
         except (OSError, UnicodeError) as exc:
             judge.incomplete("session.completed_at", f"completion marker unreadable: {exc}")
     else:
@@ -780,6 +999,8 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
             "version": PROTOCOL_VERSION,
             "sha256": supplied_sha,
             "file_sha256": sha256_file(protocol_path) if protocol_path.is_file() else None,
+            "registration_commit": chain.get("registration_commit"),
+            "freeze_commit": chain.get("freeze_commit"),
         },
         "run_id": run_id,
         "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -832,15 +1053,58 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
+def defensive_incomplete_record(args: argparse.Namespace, exc: Exception) -> dict[str, Any]:
+    """Total fallback for arbitrarily malformed but CLI-addressable evidence."""
+    return {
+        "schema": "gpu-f4-update-grid-ab-final-verdict/v1",
+        "protocol": {
+            "path": str(args.protocol),
+            "protocol_id": PROTOCOL_ID,
+            "version": PROTOCOL_VERSION,
+            "sha256": args.protocol_sha256,
+            "file_sha256": maybe_sha256_file(args.protocol),
+        },
+        "run_id": args.session.name,
+        "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "terminal": True,
+        "verdict": "incomplete_session",
+        "precedence": ["incomplete_session", "invalid_measurement", "geometry_not_supported", "geometry_supported"],
+        "provisional_remote_classification": None,
+        "evidence": {
+            "receipt": {"path": str(args.receipt), "sha256": None},
+            "archive": {"path": str(args.archive), "sha256": None},
+            "session": str(args.session),
+            "remote_metadata": str(args.remote_metadata),
+            "finalizer_sha256": maybe_sha256_file(Path(__file__).resolve()),
+            "canonical_protocol_tool_sha256": None,
+        },
+        "checks": [{
+            "code": "finalizer.defensive_totality",
+            "category": "completion",
+            "status": "failed",
+            "detail": f"malformed/partial evidence raised {type(exc).__name__}: {str(exc)[:1000]}",
+        }],
+        "summary": {"completion_failures": 1, "validity_failures": 0, "checks": 1},
+    }
+
+
+def official_output_path(args: argparse.Namespace) -> Path:
+    return Path(__file__).resolve().parent / "final-verdicts" / f"{args.session.name}.json"
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
         record = adjudicate(args)
-        write_once(args.out, record)
-    except (OSError, ValueError, TypeError, KeyError) as exc:
-        print(f"GPU geometry finalizer could not create a terminal record: {exc}", file=sys.stderr)
+    except Exception as exc:  # the terminal mapping is total over partial evidence
+        record = defensive_incomplete_record(args, exc)
+    official_out = official_output_path(args)
+    try:
+        write_once(official_out, record)
+    except (OSError, ValueError, TypeError) as exc:
+        print(f"GPU geometry finalizer could not create its write-once terminal record: {exc}", file=sys.stderr)
         return 2
-    print(json.dumps({"out": str(args.out), "terminal": True, "verdict": record["verdict"]}, sort_keys=True))
+    print(json.dumps({"out": str(official_out), "terminal": True, "verdict": record["verdict"]}, sort_keys=True))
     return 0
 
 

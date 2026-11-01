@@ -8,6 +8,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -272,6 +273,15 @@ class FinalizerAdversarialTests(unittest.TestCase):
         judge = MOD.Judge(); MOD.check_analysis(bad, "a" * 64, "run-1", judge)
         self.assertTrue(failures(judge, "analysis.provisional_consistency"))
 
+    def test_parseable_malformed_provisional_is_invalid_not_incomplete(self) -> None:
+        bad = good_analysis()
+        bad["timing_classification_provisional"] = "surprise"
+        judge = MOD.Judge(); observed = MOD.check_analysis(bad, "a" * 64, "run-1", judge)
+        self.assertEqual(observed, "surprise")
+        self.assertFalse(judge.completion_failed)
+        self.assertTrue(judge.validity_failed)
+        self.assertEqual(MOD.terminal_verdict(judge, observed), "invalid_measurement")
+
     def test_terminal_precedence_and_both_scientific_outcomes(self) -> None:
         judge = MOD.Judge()
         self.assertEqual(MOD.terminal_verdict(judge, "geometry_supported"), "geometry_supported")
@@ -288,6 +298,27 @@ class FinalizerAdversarialTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 MOD.write_once(path, {"verdict": "geometry_not_supported"})
             self.assertEqual(json.loads(path.read_text())["verdict"], "geometry_supported")
+
+    def test_unexpected_partial_structure_still_writes_incomplete(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            out = root / "verdict.json"
+            argv = [
+                "--protocol", str(root / "protocol.json"),
+                "--protocol-sha256", "a" * 64,
+                "--protocol-tool", str(root / "tool.py"),
+                "--receipt", str(root / "receipt.json"),
+                "--archive", str(root / "archive.tar.gz"),
+                "--remote-metadata", str(root / "remote"),
+                "--session", str(root / "run-1"),
+                "--out", str(out),
+            ]
+            with mock.patch.object(MOD, "adjudicate", side_effect=AttributeError("bad nested value")), \
+                    mock.patch.object(MOD, "official_output_path", return_value=out):
+                self.assertEqual(MOD.main(argv), 0)
+            record = json.loads(out.read_text(encoding="utf-8"))
+            self.assertEqual(record["verdict"], "incomplete_session")
+            self.assertTrue(record["terminal"])
 
 
 if __name__ == "__main__":

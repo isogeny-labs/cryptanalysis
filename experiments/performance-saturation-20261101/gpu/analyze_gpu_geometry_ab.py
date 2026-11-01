@@ -781,13 +781,18 @@ def write_export(
                 "kind": "observation",
                 "text": "wall_seconds is the charged upload+device+download F4 stage, not process lifetime; profiled durations are excluded.",
                 "by": "frozen analyzer",
+            },
+            {
+                "kind": "observation",
+                "text": "tierB denotes the frozen per-process numeric PSI/cgroup/steal/temperature/no-foreign-process gates; it is not a claim about exclusive physical-host or L2-cache topology.",
+                "by": "frozen analyzer",
             }
         ],
         "reviews_dir": "reviews",
     }
 
 
-def analyze(session: Path, expected_gpu: str, protocol_sha256: str) -> dict[str, Any]:
+def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, str]]:
     if SHA256_RE.fullmatch(protocol_sha256) is None:
         raise GateError("protocol SHA-256 is malformed")
     validate_gpu_inventory(session, expected_gpu)
@@ -868,6 +873,11 @@ def analyze(session: Path, expected_gpu: str, protocol_sha256: str) -> dict[str,
         "hardware_counters": "not collected; NCU is outside this protocol",
     }
     rows = [row_record(row, session) for row in [*warmups, *measured]]
+    return analysis, rows, hashes
+
+
+def analyze(session: Path, expected_gpu: str, protocol_sha256: str) -> dict[str, Any]:
+    analysis, rows, hashes = calculate(session, expected_gpu, protocol_sha256)
     rows_path = session / "rows.jsonl"
     analysis_path = session / "analysis.json"
     exclusive_jsonl(rows_path, rows)
@@ -918,6 +928,32 @@ def command_analyze(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_verify(args: argparse.Namespace) -> int:
+    """Re-derive timing, correctness, isolation, and Nsys results read-only."""
+    session = args.session.resolve()
+    expected_analysis, expected_rows, _hashes = calculate(
+        session, args.expected_gpu, args.protocol_sha256
+    )
+    observed_analysis = load_json(session / "analysis.json")
+    rows_path = session / "rows.jsonl"
+    require_nonempty(rows_path)
+    try:
+        observed_rows = [json.loads(line) for line in rows_path.read_text(encoding="utf-8").splitlines()]
+    except (OSError, json.JSONDecodeError) as exc:
+        raise GateError(f"invalid rows.jsonl: {exc}") from exc
+    if observed_analysis != expected_analysis:
+        raise GateError("analysis.json differs from read-only recomputation over raw/Nsys evidence")
+    if observed_rows != expected_rows:
+        raise GateError("rows.jsonl differs from read-only recomputation over raw evidence")
+    print(json.dumps({
+        "classification_status": "provisional_mechanical",
+        "read_only_recomputation": "passed",
+        "session": session.name,
+        "timing_classification_provisional": expected_analysis["timing_classification_provisional"],
+    }, sort_keys=True))
+    return 0
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -937,6 +973,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     summary.add_argument("--expected-gpu", default=EXPECTED_GPU)
     summary.add_argument("--protocol-sha256", required=True)
     summary.set_defaults(func=command_analyze)
+    verify = sub.add_parser("verify", help="read-only recomputation of rows and provisional analysis")
+    verify.add_argument("--session", type=Path, required=True)
+    verify.add_argument("--expected-gpu", default=EXPECTED_GPU)
+    verify.add_argument("--protocol-sha256", required=True)
+    verify.set_defaults(func=command_verify)
     return parser.parse_args(argv)
 
 
