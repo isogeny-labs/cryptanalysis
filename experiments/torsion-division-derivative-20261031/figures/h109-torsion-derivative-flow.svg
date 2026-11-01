@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">H109 torsion-local derivative evidence flow</title>
+  <desc id="desc">The verified local derivative identity leads to a proposed constant-size character formula, then to measured controls, scalar reconstruction, and a separate complexity proof gate. A null or control-matched result rejects the scoped oracle.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker>
+    <style>
+      .title{font:700 28px sans-serif;fill:#0f172a}.sub{font:15px sans-serif;fill:#334155}
+      .box{stroke-width:2;rx:14}.h{font:700 17px sans-serif;fill:#0f172a}.t{font:14px sans-serif;fill:#1e293b}
+      .derived{fill:#dbeafe;stroke:#2563eb}.proposed{fill:#fef3c7;stroke:#d97706}.measured{fill:#dcfce7;stroke:#16a34a}.gate{fill:#f3e8ff;stroke:#9333ea}.null{fill:#fee2e2;stroke:#dc2626}
+      .edge{stroke:#334155;stroke-width:2.2;fill:none;marker-end:url(#arrow)}.dash{stroke-dasharray:7 6}
+      .tag{font:700 12px sans-serif;letter-spacing:.6px}.blue{fill:#1d4ed8}.amber{fill:#b45309}.green{fill:#15803d}.purple{fill:#7e22ce}.red{fill:#b91c1c}
+    </style>
+  </defs>
+  <rect width="1200" height="690" fill="#f8fafc"/>
+  <text x="50" y="50" class="title">H109: identity → oracle test → reconstruction → cost theorem</text>
+  <text x="50" y="78" class="sub">Each arrow is separately derived, measured, or still proposed; no identity by itself establishes a DLP speedup.</text>
+
+  <rect x="55" y="120" width="300" height="150" class="box derived"/>
+  <text x="80" y="150" class="tag blue">DERIVED; 9,096 CHECKS PASSED</text>
+  <text x="80" y="182" class="h">Invariant torsion derivative</text>
+  <text x="80" y="212" class="t">D(x)=2y, D(y)=3x²+a</text>
+  <text x="80" y="237" class="t">δᵣ(Q)² = −r² ψᵣ₋₁(Q) ψᵣ₊₁(Q)</text>
+
+  <rect x="450" y="120" width="310" height="150" class="box proposed"/>
+  <text x="475" y="150" class="tag amber">TESTED: NO EXACT FORMULA</text>
+  <text x="475" y="182" class="h">Constant-size phase formula</text>
+  <text x="475" y="212" class="t">5 coefficients in Z/MZ</text>
+  <text x="475" y="237" class="t">≤ 4⁵ = 1,024 complete candidates</text>
+
+  <rect x="855" y="120" width="290" height="150" class="box measured"/>
+  <text x="880" y="150" class="tag green">EXECUTED MEASUREMENT</text>
+  <text x="880" y="182" class="h">28 rows; 9,096 targets</text>
+  <text x="880" y="212" class="t">4 generator relabelings per curve</text>
+  <text x="880" y="237" class="t">32 symmetry-matched null labels</text>
+
+  <path d="M355 195 H440" class="edge"/><text x="380" y="180" class="tag blue">DERIVE</text>
+  <path d="M760 195 H845" class="edge"/><text x="786" y="180" class="tag amber">TEST</text>
+
+  <rect x="215" y="355" width="330" height="145" class="box null"/>
+  <text x="240" y="385" class="tag red">OBSERVED RESULT / NULL BRANCH</text>
+  <text x="240" y="417" class="h">Reject the scoped parity oracle</text>
+  <text x="240" y="447" class="t">No exact formula, generator instability,</text>
+  <text x="240" y="472" class="t">or performance matched by null labels</text>
+
+  <rect x="655" y="355" width="330" height="145" class="box gate"/>
+  <text x="680" y="385" class="tag purple">POSITIVE BRANCH; NOT YET A SPEEDUP</text>
+  <text x="680" y="417" class="h">Parity/halving reconstruction</text>
+  <text x="680" y="447" class="t">Recover every scalar and verify [k]P=Q</text>
+  <text x="680" y="472" class="t">with independently recomposed products</text>
+
+  <path d="M930 270 C930 305 915 320 880 345" class="edge"/>
+  <path d="M890 270 C830 305 620 305 480 345" class="edge dash"/>
+
+  <rect x="435" y="570" width="330" height="90" class="box gate"/>
+  <text x="460" y="600" class="tag purple">SEPARATE PROMOTION GATE</text>
+  <text x="460" y="630" class="h">Uniform rule + Lean + total subexp cost</text>
+  <path d="M820 500 C820 540 750 560 710 570" class="edge"/>
+  <text x="810" y="540" class="tag purple">PROVE + PRICE</text>
+</svg>
