@@ -1,0 +1,132 @@
+name: GLV size-dependent table cap Tier 1 wall time
+
+# A fresh standard Linux runner times main (1ee4f47) against the size-dependent table cap of #1341
+# (e71ebec: cap 128 from 40 bits, 32 below) on the frozen panels of
+# experiments/glv-cap-by-size-walltime-20261107 (j = 1728 and j = 0, 38/40/41/42/44/46/48 bits).
+# The in-repository Tier 1 preflight and noise gates decide whether each receipt supports an
+# instance-scoped wall-time result (PROTOCOL.md).
+on:
+  push:
+    branches: [glv-cap-by-size-walltime-20261107]
+    paths:
+      - .github/workflows/glv-cap-by-size-tier1.yml
+      - experiments/glv-cap-by-size-walltime-20261107/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: glv-cap-by-size-tier1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  paired-walltime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      EXP: experiments/glv-cap-by-size-walltime-20261107
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the full tree does not fit beside two build trees; only these paths are used
+          sparse-checkout: |
+            scripts
+            experiments/glv-cap-by-size-walltime-20261107
+            .github
+
+      - name: Freeze runner identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/glv-walltime"
+          mkdir -p "$dir/bin"
+          echo "GLV_DIR=$dir" >> "$GITHUB_ENV"
+          date +%s > "$dir/start_epoch"
+          echo "GLV_INSTANCE=gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}" >> "$GITHUB_ENV"
+          python3 scripts/isolated_bench.py probe-host > "$dir/host-probe.json"
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt = {
+              'provider': 'github_actions',
+              'instance_id': 'gh-{}-{}-{}'.format(os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT'], os.environ['GITHUB_JOB']),
+              'runner_name': os.environ.get('RUNNER_NAME'), 'runner_os': os.environ.get('RUNNER_OS'),
+              'runner_arch': os.environ.get('RUNNER_ARCH'), 'image_os': os.environ.get('ImageOS'),
+              'image_version': os.environ.get('ImageVersion'), 'advertised_runner': 'ubuntu-24.04 standard',
+              'observed_cpu_affinity': sorted(os.sched_getaffinity(0)),
+              'observed_mem_total_kib': next((l.split()[1] for l in Path('/proc/meminfo').read_text().splitlines() if l.startswith('MemTotal:')), None),
+              'git_sha': os.environ['GITHUB_SHA'], 'git_ref': os.environ['GITHUB_REF'],
+              'run_url': '{}/{}/actions/runs/{}'.format(os.environ['GITHUB_SERVER_URL'], os.environ['GITHUB_REPOSITORY'], os.environ['GITHUB_RUN_ID']),
+              'recorded_at_utc': datetime.now(timezone.utc).isoformat(),
+          }
+          Path(os.environ['RUNNER_TEMP'], 'glv-walltime', 'allocation.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          PY
+          (cd "$EXP" && sha256sum -c PROTOCOL.sha256)
+
+      - name: Build the two arms from the pinned commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          # ref = main at 1ee4f47, cand = #1341 head e71ebec (parent 1ee4f47; src/curve.c only: cap 32 -> 128 from 40 bits).
+          # Fetch the two commits without blobs, then check out only the directories the build reads.
+          git config remote.origin.promisor true
+          git config remote.origin.partialclonefilter blob:none
+          git fetch --no-tags --depth=1 --filter=blob:none origin \
+            1ee4f47e962aac7f0f09781e34fccfaec1c6456e e71ebecaf3a076590ddd3affa4878b4c80d85095
+          git cat-file -e '1ee4f47e962aac7f0f09781e34fccfaec1c6456e^{commit}'
+          git cat-file -e 'e71ebecaf3a076590ddd3affa4878b4c80d85095^{commit}'
+          for arm in ref:1ee4f47e962aac7f0f09781e34fccfaec1c6456e cand:e71ebecaf3a076590ddd3affa4878b4c80d85095; do
+            name=${arm%%:*}; commit=${arm#*:}
+            src="$RUNNER_TEMP/src-$name"
+            git worktree add --no-checkout --detach "$src" "$commit"
+            git -C "$src" sparse-checkout set --cone src include cmake bindings cuda tools tests usecases
+            git -C "$src" checkout --detach "$commit"
+            df -h "$RUNNER_TEMP" | tail -1
+            cmake -S "$src" -B "$RUNNER_TEMP/build-$name" -DCMAKE_BUILD_TYPE=Release -DCA_CUPQC=OFF
+            cmake --build "$RUNNER_TEMP/build-$name" --target cryptanalysis_static -j4
+            cc -O3 -std=c11 -static -I"$src/include" "$EXP/bench_glv_panel.c" \
+              "$RUNNER_TEMP/build-$name/libcryptanalysis.a" -lm -lpthread -o "$GLV_DIR/bin/glv-panel-$name"
+            rm -rf "$src" "$RUNNER_TEMP/build-$name"
+          done
+          cc --version | head -1 | tee "$GLV_DIR/compiler.txt"
+          sha256sum "$GLV_DIR"/bin/* | tee "$GLV_DIR/binaries.sha256"
+          printf 'authoring-VM builds (for comparison, not a gate):\n  ref  4b5036eced160edf01f98219468c4b73e43764c72ad518acdb44aefe2b4eefb4\n  cand 46ec24390d6abbed115b4fe729ab1f9410a97ddb939b314a4550787475c0f73c\n'
+
+      - name: Tier 1 preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          cpu="$(python3 -c 'import os; print(min(os.sched_getaffinity(0)))')"
+          for m in j1728_38 j0_38 j1728_40 j0_40 j1728_41 j0_41 j1728_42 j0_42 j1728_44 j0_44 j1728_46 j0_46 j1728_48 j0_48; do
+            python3 "$EXP/gh_manifest.py" "$EXP/manifest_$m.json" "$GLV_DIR/manifest_$m.json" \
+              --workdir "$GITHUB_WORKSPACE" --bindir "$GLV_DIR/bin" --cpu "$cpu" \
+              --instance-id "$GLV_INSTANCE" --receipt "$GLV_DIR/allocation.json"
+            python3 scripts/isolated_bench.py probe "$GLV_DIR/manifest_$m.json" > "$GLV_DIR/preflight_$m.json" || true
+            python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(sys.argv[1], d.get('ok'), d.get('problems'))" "$GLV_DIR/preflight_$m.json"
+          done
+
+      - name: Run 15 alternating pairs per family and size
+        shell: bash
+        run: |
+          set -uo pipefail
+          start=$(cat "$GLV_DIR/start_epoch")
+          for m in j1728_38 j0_38 j1728_40 j0_40 j1728_41 j0_41 j1728_42 j0_42 j1728_44 j0_44 j1728_46 j0_46 j1728_48 j0_48; do
+            # time guard (PROTOCOL.md): a cell that would start after 65 minutes of job time is skipped and
+            # reported as not run, so the receipts of the finished cells are uploaded before the 90-minute limit
+            if [ $(( $(date +%s) - start )) -gt 3900 ]; then echo "SKIPPED $m (time guard)" | tee "$GLV_DIR/skipped_$m.txt"; continue; fi
+            python3 scripts/isolated_bench.py --queue-root "$GLV_DIR/queue" run "$GLV_DIR/manifest_$m.json" \
+              > "$GLV_DIR/run-summary_$m.json"
+            echo "run $m exit $?"
+            cat "$GLV_DIR/run-summary_$m.json"
+          done
+
+      - name: Preserve receipts, raw pairs and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glv-walltime-tier1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/glv-walltime/
+          if-no-files-found: error
+          retention-days: 30
