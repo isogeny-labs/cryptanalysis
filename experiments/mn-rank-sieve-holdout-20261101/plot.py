@@ -8,7 +8,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 r = json.load(open("result.json"))
 sc = np.load("/tmp/_mn_scatter.npy")
 fig, ax = plt.subplots(1, 3, figsize=(14, 4.2))
-ax[0].hexbin(sc[0], sc[1], gridsize=60, bins="log", cmap="Greys")
+ax[0].hexbin(sc[0], sc[1], gridsize=60, bins="log", cmap="Greys", rasterized=True)
 ax[0].set(xlabel="screen MN score (primes 5-397)", ylabel="held-out MN score (primes 401-1193)",
           title=f"Screen vs held-out, corr = {r['corr_screen_holdout']:.1e}")
 labs = [f"prune {p['keep_fraction']}" for p in r["pruning"]] + ["early abort"]
@@ -27,9 +27,11 @@ e = [2*pc["test"]["se"], 2*pc["posctl_r1"]["se"], 2*r["holdout_top_by_screen"]["
 ax[2].bar(range(3), m, yerr=e, color=["#999999", "#0072b2", "#d55e00"], capsize=4)
 ax[2].set_xticks(range(3), names, fontsize=8); ax[2].set_ylabel("mean held-out MN score (±2 SE)")
 ax[2].set_title("Instrument sees rank; top screen curves do not")
-fig.tight_layout(); fig.savefig("figure.svg"); fig.savefig("figure.png", dpi=130)
+fig.tight_layout(); fig.savefig("figure.svg"); fig.savefig("figure.png", dpi=80)
+from PIL import Image; Image.open("figure.png").convert("RGB").quantize(64).save("figure.png", optimize=True)
+matplotlib.rcParams["savefig.dpi"] = 60; matplotlib.rcParams["pdf.fonttype"] = 42; matplotlib.rcParams["font.family"] = "DejaVu Sans"; matplotlib.rcParams["pdf.compression"] = 9
 with PdfPages("report.pdf") as pdf:
-    pdf.savefig(fig)
+    pf = plt.figure(figsize=(14, 4.2)); pf.figimage(plt.imread("figure.png"), resize=True); pdf.savefig(pf)
     tf = plt.figure(figsize=(8.5, 11)); tf.text(0.06, 0.97, open("RESULT.md").read(), va="top",
-        family="monospace", fontsize=6.0, wrap=True); pdf.savefig(tf)
+        fontsize=6.0, wrap=True); pdf.savefig(tf)
 print("ok")
