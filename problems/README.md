@@ -9,6 +9,7 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
 | [Xedni successor native proof qualification](xedni-successor-native-proof-qualification.md) | investigating | Qualifying the five bounded-witness declarations and resolving the original circular-hypothesis review | Exact-source native compilation and five foundation audits, with complete retained diagnostics and all applicable CI passing |
 | [Transfer audit completeness and geometric proof bridges](transfer-audit-completeness.md) | investigating | classification of all efficient transfers and cryptographic-size isogeny paths | explicit transfer universe, verified path provider, geometric Lean bridges and restored checkpoint transport |
 | [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | resolved for this session | Checkpoint access for finite audit | Successful uploads, six-arm audit and independent controls retained |

@@ -74,6 +74,7 @@ def candidate(r,curve):
     q,f,l=r["configuration"],r["factor_base"],r["logs"]
     tag={"generic":"gen","j0":"j0","j1728":"j1728"}[r["curve_type"]]
     rc="lp" if q["large_primes"] else "full"; td="learn" if q["learn"] else "descent"
+    coords=q.get("relation_coordinates","affine"); lanes=int(q.get("relation_lanes",1))
     m={"schema":"ic-candidate/1","field":curve["field"],
        "curve":{**curve["curve"],"curve_id":curve["curve_id"]},"isogeny":"none",
        "endomorphism":{"automorphism_order":f["automorphism_order"],"record":frozen(r["instance"]["endomorphism"]),
@@ -89,6 +90,7 @@ def candidate(r,curve):
           "solver":"automorphism-orbit abscissa lookup/peel oracle; no Semaev polynomial system",
           "large_prime_variant":q["large_primes"],"max_oracle_operations":q["max_ops"]},
        "relation_collection":{"stage_code":f"RC{rc}","collector":l["collection"],
+          "coordinates":coords,"lanes":lanes,
           "relations_per_orbit":dec(q["relations_per_orbit"]),
           "verification":"accepted relations are re-added in the curve group"},
        "relation_linear_algebra":{"stage_code":"LAgraph",
@@ -100,10 +102,10 @@ def candidate(r,curve):
           "binary_blake3":r["software"].get("binary_blake3"),
           "git_commit":r["software"].get("git_commit"),"version":r["software"].get("version")},
        "operation_accounting":{"unit":"prime_group_operation",
-          "definition":"ca-ic counted affine group operations; certification checks intentionally uncharged",
+          "definition":"ca-ic abstract group operations, one per oracle difference or walk step independent of coordinates; certification checks intentionally uncharged",
           "phase_mapping":{"precompute":"logs oracle+probe","target_descent":"descent oracle+probe",
                            "other_common_phases":"zero in native prime ledger"}}}
-    cid=(f"IC1P{r['instance']['field_bits']}C{tag}fb{f['points']}PDP2orbitRC{rc}"
+    cid=(f"IC1P{r['instance']['field_bits']}C{tag}fb{f['points']}PDP2orbitRC{rc}{coords}{lanes}"
          f"LAgraphTD{td}ISO0h{sha(m)[:12]}")
     return cid,m
 
@@ -199,9 +201,10 @@ def write(out_dir,items):
         r=x["receipt"]; p=native/f"{r['run_id']}.json"
         p.write_text(json.dumps(r["native_prime_report"],indent=1,sort_keys=True)+"\n")
 
-def run_cell(binary,cell):
+def run_cell(binary,cell,relation_coordinates):
     cmd=[str(binary),"prime","--type",cell["curve_type"],"--bits",str(cell["bits"]),
-         "--targets",str(cell["targets"]),"--seed",str(cell["seed"]),"--json"]
+         "--targets",str(cell["targets"]),"--seed",str(cell["seed"]),
+         "--relation-coordinates",relation_coordinates,"--json"]
     p=subprocess.run(cmd,cwd=ROOT,text=True,capture_output=True)
     if p.returncode: raise RuntimeError(f"{' '.join(cmd)}\n{p.stderr}\n{p.stdout}")
     return json.loads(p.stdout)
@@ -209,7 +212,7 @@ def run_cell(binary,cell):
 def main():
     ap=argparse.ArgumentParser(description=__doc__); sub=ap.add_subparsers(dest="cmd",required=True)
     a=sub.add_parser("adapt"); a.add_argument("raw",type=Path); a.add_argument("--out-dir",type=Path,required=True)
-    x=sub.add_parser("run"); x.add_argument("--suite",choices=SUITES,default="ci"); x.add_argument("--binary",type=Path,default=BINARY); x.add_argument("--out-dir",type=Path,required=True); x.add_argument("--jobs",type=int,default=1)
+    x=sub.add_parser("run"); x.add_argument("--suite",choices=SUITES,default="ci"); x.add_argument("--binary",type=Path,default=BINARY); x.add_argument("--out-dir",type=Path,required=True); x.add_argument("--jobs",type=int,default=1); x.add_argument("--relation-coordinates",choices=("affine","jacobian"),default="affine")
     args=ap.parse_args()
     if args.cmd=="adapt":
         raw=json.loads(args.raw.read_text()); items=[normalize(raw)]
@@ -217,7 +220,7 @@ def main():
         if args.jobs < 1: raise ValueError("--jobs must be positive")
         cells=SUITES[args.suite]
         with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-            raws=list(pool.map(lambda cell: run_cell(args.binary,cell),cells))
+            raws=list(pool.map(lambda cell: run_cell(args.binary,cell,args.relation_coordinates),cells))
         items=[normalize(raw) for raw in raws]
         for item in items:
             rr=item["receipt"]; print(f"{rr['profile_id']}: {rr['status']} total={rr['total_operations']} IC/folded-batch-rho={rr['ratio_to_batch_floor']:.4g}")
