@@ -1,0 +1,1240 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "gpu-f4-aa-rtx5090-http-20261101",
+  "version": 7,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/gpu",
+  "authors": [
+    "Codex performance-saturation study lane"
+  ],
+  "links": {
+    "literature": "LITERATURE.md",
+    "runner": "run_gpu_aa_nsys.sh",
+    "analysis": "analyze_gpu_aa_nsys.py",
+    "incumbent": "experiments/f4-gpu-panel-20261007"
+  },
+  "question": "What timing noise floor and Nsys timeline baseline does the landed CUDA F4 large-matrix eliminator exhibit for byte-identical current and control binaries on one Secure Runpod RTX 5090 session delivered through the authenticated no-SSH HTTP batch transport at one exact public source commit?",
+  "claims": [
+    {
+      "id": "C1",
+      "text": "Every current and control execution reproduces the preregistered rank, refuted, pinned, and word-operation values.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-correctness"
+      ],
+      "if_supported": "the A/A session is correctness-admissible for the five fixed matrices",
+      "if_not_supported": "the session is invalid and no timing comparison is admitted"
+    },
+    {
+      "id": "C2",
+      "text": "The current and control executables are byte-identical copies from one build.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-binary"
+      ],
+      "if_supported": "the arms differ only in label, path, and order",
+      "if_not_supported": "the session is not an A/A control"
+    },
+    {
+      "id": "C3",
+      "text": "This calibration contains no optimization candidate and cannot establish a speedup.",
+      "class": "out_of_scope",
+      "decided_by": []
+    }
+  ],
+  "arms": [
+    {
+      "id": "current",
+      "role": "baseline",
+      "description": "One copy of the exact public source commit's release f4_matrix_bench binary.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      }
+    },
+    {
+      "id": "control",
+      "role": "control_aa",
+      "description": "A second filesystem copy of the exact current-arm executable built at the same exact public source commit.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": null
+      },
+      "parameters": {
+        "panel_threads": 1024,
+        "update_threads": 256,
+        "update_tile_words": 32
+      },
+      "same_instrument_as": "current"
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every execution is a known-answer control; the helper rejects any matrix-shape, rank, refuted, pinned, or word_ops mismatch before timing is admitted."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "This deterministic A/A calibration makes no yield, discovery, or population claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "arm_label_and_binary_path",
+        "levels": [
+          "current",
+          "control"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "binary_bytes",
+        "treatment": "fixed",
+        "value": "one build copied twice",
+        "how": "cmp and SHA-256 equality are required"
+      },
+      {
+        "name": "source",
+        "treatment": "fixed",
+        "value": "c6f7a0208e10823b7248c9138b7a46273990abe5 at refs/heads/codex/runpod-http-nsys-v7-20261101",
+        "how": "the new dedicated public ref must advertise exactly the registered v7 source commit; the pod verifies commit, tree, and git-archive SHA-256 before starting the authenticated result service"
+      },
+      {
+        "name": "workloads",
+        "treatment": "fixed",
+        "value": "extensions.workloads",
+        "how": "the analysis helper is the executable workload registry and oracle"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "crossed",
+        "value": "alternate by round",
+        "how": "each arm runs first in three measured rounds"
+      },
+      {
+        "name": "process_layout_and_cache",
+        "treatment": "randomized",
+        "value": "fresh process",
+        "how": "one complete warmup per arm and cell is excluded"
+      },
+      {
+        "name": "gpu",
+        "treatment": "fixed",
+        "value": "one NVIDIA GeForce RTX 5090",
+        "how": "the controller allocation guard and final HTTP hardware gate refuse any other model or count; the exact bound fallback runner requires one NVIDIA GeForce RTX 5090 and passes that exact name into every analyzer gate, while observed CUDA and driver versions are recorded but not placement-filtered"
+      },
+      {
+        "name": "foreign_gpu_processes",
+        "treatment": "measured",
+        "value": "none",
+        "how": "nvidia-smi compute-process query is a precondition"
+      },
+      {
+        "name": "gpu_state",
+        "treatment": "measured",
+        "value": "200 ms telemetry",
+        "how": "pstate, temperature, utilization, memory, power, and clocks are retained per execution"
+      },
+      {
+        "name": "profiling_overhead",
+        "treatment": "fixed",
+        "value": "diagnostic only",
+        "how": "all unprofiled A/A rows complete and pass before two post-timing Nsys captures; NCU is outside this protocol and must not be invoked"
+      },
+      {
+        "name": "provider_placement",
+        "treatment": "measured",
+        "value": "Secure Cloud, observed 16-vCPU/62-GB-or-greater class",
+        "how": "the controller guards exact pod ID, model/count, minimum vCPU/RAM, image, cloud, hourly price, CUDA syntax, and HTTP port; physical-host exclusivity is not assumed"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "value": "prewritten helper",
+        "how": "the analysis SHA-256 is recorded before data"
+      },
+      {
+        "name": "source_delivery",
+        "treatment": "fixed",
+        "value": "public exact-ref clone with no repository credential",
+        "how": "local unauthenticated ls-remote and remote commit/tree/archive verification bind refs/heads/codex/runpod-http-nsys-v7-20261101 to c6f7a0208e10823b7248c9138b7a46273990abe5"
+      },
+      {
+        "name": "result_transport",
+        "treatment": "fixed",
+        "value": "authenticated Runpod HTTPS proxy with hash-bound 4 MiB chunks",
+        "how": "one ephemeral bearer gates GET-only status/results; the controller verifies archive/member hashes, refuses undeclared or pre-existing targets, and deletes only its exact pod ID in finally"
+      },
+      {
+        "name": "profiler_tool_installation",
+        "treatment": "fixed",
+        "value": "ecc2k130/runner/codegen/install_nsys_tools.sh at source commit c6f7a0208e10823b7248c9138b7a46273990abe5",
+        "how": "the exact hash-bound installer configures NVIDIA's content-pinned Ubuntu 24.04 CUDA keyring, checks the exact pinned Nsight Systems package version, and runs once before the frozen GPU runner; its stdout/stderr stays in the HTTP job log and the runner records the Nsys version and reports before any warmup"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-correctness",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "known-answer gate",
+        "threshold": "exact equality to every expected answer in extensions.workloads"
+      },
+      {
+        "id": "C-binary",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
+        "design": "absolute",
+        "reason": "establish a byte-identical instrument",
+        "threshold": "one identical SHA-256 digest"
+      },
+      {
+        "id": "C-aa",
+        "arms": [
+          "current",
+          "control"
+        ],
+        "differs_in": [
+          "arm_label_and_binary_path"
+        ],
+        "design": "aa",
+        "reason": "measure the same-session timing floor; carries no optimization criterion",
+        "threshold": null
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": null,
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        0
+      ],
+      "nonce": null,
+      "note": "The matrices are deterministic and consume no algorithm seed; zero is retained as an explicit unused seed."
+    },
+    "instance_sampling": {
+      "rule": "The five cells, primary, and holdout were fixed from the retained 2026-10-07 incumbent study before this session.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Both executables are byte-identical and the fixed analysis has no candidate or performance threshold.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 5,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 1,
+      "correction": "none",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "Six pairs per cell are a requested coarse A/A calibration, not an equivalence test or candidate-effect power calculation; all 6^6 ordinary paired-bootstrap resamples are reported."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1800,
+      "per_sample_seconds": 60,
+      "threads": 1,
+      "estimated_total_seconds": 7200,
+      "measured_on": "The conservative scientific estimate remains 7200 seconds for one build, exactly 70 unprofiled matrix processes, and two Nsight Systems traces; v7 adds no NCU execution. The unchanged three-hour cap adds 3600 seconds total: up to 900 seconds for allocation/public fetch, 1800 seconds inside the 9000-second command budget for the pinned repository/tool installation and preflight variance, and at least 900 seconds for authenticated result transfer and exact-ID cleanup. The Nsys-only installer and analyzer passed their hermetic tests, runner syntax, five-cell plan, and recovered-artifact read-only gates before this v7 draft. Recovered v6 rows are planning-only and do not enter v7. No v7 provider call or scientific row existed at registration."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "device_ms",
+        "name": "CUDA elimination device interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "The verbose device interval from queued panel work through final CUDA synchronization; upload, download, matrix build, startup, profilers, and analysis are excluded.",
+        "source": "raw/*/*/*/*.log F4_F2_ECHELON device field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.1 ms",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "word_ops",
+        "name": "word XOR operations",
+        "unit": "64-bit word XORs",
+        "kind": "counted",
+        "definition": "The exact pivot-history and trailing-update word count for the matrix elimination.",
+        "source": "raw/*/*/*/*.json word_ops",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "1",
+        "uncertainty": "none_exact"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "answer_gate",
+        "name": "exact answer gate",
+        "unit": "pass/fail",
+        "kind": "exact",
+        "definition": "Exact equality of shape, rank, refuted, pinned, and word_ops.",
+        "source": "analyze_gpu_aa_nsys.py validate_execution",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "exact",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "nsys_timeline",
+        "name": "CUDA timeline diagnostics",
+        "unit": "report",
+        "kind": "exact",
+        "definition": "One post-A/A CUDA/NVTX/OS-runtime trace per arm on the primary matrix.",
+        "source": "profiles/nsys/*/*.nsys-rep",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "nsys_api_timeline",
+        "name": "CUDA API and transfer diagnostics",
+        "unit": "report",
+        "kind": "exact",
+        "definition": "The two post-A/A traces retain CUDA API, kernel, and transfer summaries; profiled durations remain diagnostic and are excluded from the timing distribution.",
+        "source": "profiles/nsys/*/*.stats.csv",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "word_ops",
+      "rank",
+      "refuted",
+      "pinned",
+      "rows",
+      "cols",
+      "nvidia_smi.pstate",
+      "nvidia_smi.temperature",
+      "nvidia_smi.utilization",
+      "nvidia_smi.power",
+      "nvidia_smi.clocks"
+    ],
+    "record": [
+      "provider",
+      "requested_cloud",
+      "pod_id",
+      "machine_id",
+      "gpu_uuid",
+      "gpu_name",
+      "expected_gpu_name",
+      "gpu_inventory_row_count",
+      "echelon_backend",
+      "gpu_compute_capability",
+      "gpu_memory",
+      "driver_version",
+      "kernel_release",
+      "cpu_model",
+      "cpu_count",
+      "rustc_version",
+      "nsys_version",
+      "git_commit",
+      "git_status",
+      "source_sha256",
+      "binary_sha256",
+      "foreign_compute_processes",
+      "nvidia_smi_telemetry",
+      "arm_order",
+      "public_source_ref",
+      "source_commit",
+      "source_tree",
+      "source_archive_sha256",
+      "provider_hourly_price",
+      "transport_receipt_sha256",
+      "result_archive_sha256",
+      "cleanup_absence_verified",
+      "profile_tool_installer_sha256",
+      "profile_tool_installer_log",
+      "selected_profiler_packages",
+      "installed_nsys_version",
+      "nsys_report_inventory_status"
+    ],
+    "timed_primary_justification": "Elapsed CUDA elimination is the optimization target; identical word_ops cannot measure scheduling, occupancy, memory, or launch overhead. Timing is admitted only inside one requested Secure RTX 5090 HTTP-batch session with byte-identical A/A arms, alternating order, no observed foreign GPU process, telemetry, a hash-bound exact public source, and an observed tierB receipt; observed CUDA/driver versions scope the result but are not exact placement filters. Otherwise wall_valid is false."
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": null,
+    "placement": {
+      "cloud": "SECURE",
+      "gpu_type": "NVIDIA GeForce RTX 5090",
+      "gpu_count": 1,
+      "min_vcpu": 16,
+      "min_ram_gb": 62,
+      "image": "runpod/base:1.0.2-ubuntu2404",
+      "max_price_usd_per_hour": 1.19,
+      "cuda_version_filter": null,
+      "driver_version_filter": null,
+      "observed_cuda_and_driver_required": true,
+      "ports": [
+        "8888/http"
+      ],
+      "transport": "authenticated Runpod HTTPS proxy",
+      "unique_pod_name_required": true,
+      "keep": false,
+      "max_hours": 3,
+      "maximum_cost_exposure_usd": 3.57,
+      "cleanup": "exact-ID DELETE in controller finally with exact-ID absence verification",
+      "stop_backstop": "pod-scoped Runpod lifetime stop at 10800 seconds",
+      "isolation_scope": "instance-scoped; physical-host exclusivity not asserted"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 9000,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Fixed design: 2 arms x 5 cells x (1 excluded warmup + 6 measured rounds) = exactly 70 unprofiled executions, then exactly 2 Nsys primary diagnostics, then stop. NCU is outside v7 and must not be invoked.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "A binary, placement, tool-capability, warmup, measured-row, or profiler gate failure stops subsequent phases and preserves the incomplete session.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Exactly one v7 allocation attempt is permitted. After success, failure, timeout, invalidation, controller loss, or incomplete transfer, preserve available evidence, perform the exact-ID cleanup attempt, and do not allocate a replacement under v7.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "If the exact Nsys installer exits nonzero, the scientific runner is not entered, the HTTP job log/result archive and receipt are retained when available, the outcome is infrastructure/incomplete_session, exact-ID cleanup still runs, and no retry or replacement allocation is permitted under v7.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "any mismatch in rows, cols, rank, refuted, pinned, or word_ops",
+    "different arm binary hashes",
+    "non-CUDA or non-RTX-5090 backend, anything other than one nonempty 11-field metadata/gpu.csv row whose name is exactly NVIDIA GeForce RTX 5090, or a foreign compute PID",
+    "a production echelon receipt that does not exactly match the anchored cuda:<exact-name> sm_<digits> x<positive> code={sm_<digits>|compute_<digits>|CA_F4_PTX} grammar and the same expected GPU name",
+    "not exactly six measured pairs per cell",
+    "either Nsys diagnostic before the unprofiled measurement gate, any profiler other than Nsys, or any NCU invocation",
+    "a resumed, interrupted, contended, or below-tierB row marked wall_valid",
+    "a nonzero scientific or profiler-execution status other than the explicitly allowed nsys report-inventory status 1, a missing telemetry/report, or an overwritten artifact",
+    "public source ref does not advertise exactly the registered commit, or remote commit/tree/git-archive verification differs",
+    "provider price exceeds 1.19 USD/hour, allocated resources are below 16 vCPU or 62 GB RAM, or observed GPU evidence does not match the guarded RTX 5090 allocation",
+    "transport status/result identity, chunk, archive, member, declared-output, or cleanup binding fails",
+    "any exact CUDA-version placement filter is applied",
+    "the bound Nsys installer, keyring URL/SHA-256, or exact package/version pin differs; the installer runs after the GPU runner; or it exits nonzero",
+    "installer log is absent, or a successful install is followed by missing Nsys version and report-capability records",
+    "the retained Nsys report inventory status is not 0 or 1, or either required Nsys report name is absent",
+    "neither an authenticated normal receipt nor the prospectively permitted recovery receipt satisfies extensions.transport_receipt_policy"
+  ],
+  "decision_rule": {
+    "text": "The v7 session is admissible only when the exact hash-bound Nsys installer configures the pinned NVIDIA repository, installs the exact Nsight Systems version before the runner, and retains its log, version, and required report inventory. The exact bound runner must observe exactly one NVIDIA GeForce RTX 5090, pass that exact expected name to every warmup, measure, Nsys, and final analysis gate, and the analyzer must independently accept one complete matching inventory row plus anchored matching CUDA receipts. Public source commit/tree/archive, one permitted authenticated receipt path, exact pod/GPU/price guards, byte-identical binary and unchanged shape/rank/refuted/pinned/word_ops gates, exactly 10 warmups, 60 unprofiled measurements, 2 post-timing Nsys captures, telemetry, result hashes, and exact-ID cleanup must pass. NCU must not be invoked and does not gate admissibility. Installer failure is infrastructure/incomplete_session without retry; timing intervals are calibration only and have no performance acceptance threshold.",
+    "comparison_ids": [
+      "C-binary",
+      "C-correctness"
+    ],
+    "threshold": "all exact gates pass; timing has no acceptance threshold",
+    "statistic": "per-cell ratio of summed current/control device_ms and median pair ratio",
+    "interval": "exact ordinary paired-bootstrap 95% interval over all 6^6 paired resamples per cell",
+    "multiple_comparison_correction": "none",
+    "effect_size_measure": "current/control device_ms ratio; calibration only",
+    "verdict_vocabulary": [
+      "aa_calibration_admissible",
+      "invalid_measurement",
+      "incomplete_session"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "analyze_gpu_aa_nsys.py",
+      "sha256": "5d377e44a3092a0d44cc948877380ccf1a313e6fd562020d438ae8e3e81e3a8b"
+    },
+    "inputs": [
+      "host.json",
+      "binary-sha256.tsv",
+      "order.tsv",
+      "metadata/gpu.csv",
+      "raw/warmup",
+      "raw/measure",
+      "profiles/nsys",
+      "HTTP transport receipt",
+      "HTTP remote metadata",
+      "hash-bound result archive manifest",
+      ".runpod-batch/log.txt profiler-installer log",
+      "metadata/nsys-version.txt",
+      "metadata/nsys-reports.txt",
+      "metadata/nsys-reports.status"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "analysis.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired A/A device_ms ratios per cell",
+      "primary Nsys kernel share",
+      "primary Nsys CUDA API and transfer share"
+    ],
+    "report_dir": "reports"
+  },
+  "inadmissible": [
+    "launching any warmup or measured row before the runner's placement and profiler-capability preflight passes",
+    "changing workload, oracle, warmup, repeats, or order after data",
+    "using profiled durations in the unprofiled A/A distribution",
+    "treating profiled Nsys durations as timing or A/A as proof of equivalence",
+    "calling this calibration a speedup",
+    "pooling wall times across pods or GPU models",
+    "reclassifying wrong answers, scientific-runner application failures, scientific timeouts, or Nsys diagnostic failures as infrastructure; the separately preregistered pre-run installer-bootstrap failure is infrastructure/incomplete_session but is never retried",
+    "using, stopping, deleting, or attaching to an unrelated pod",
+    "omitting invalid or incomplete rows",
+    "launching before the dedicated public ref advertises exactly the registered source commit",
+    "using a private Git credential, local dirty tree, or a different commit as scientific source",
+    "applying an exact CUDA or driver placement filter instead of recording the observed versions",
+    "accepting an hourly rate above 1.19 USD or resources below the registered 16-vCPU/62-GB class",
+    "treating the three-hour infrastructure headroom as permission to add samples or profiler launches",
+    "accepting a result without the authenticated transport receipt, result archive hash, or exact-ID cleanup outcome",
+    "running the GPU runner without first completing the exact hash-bound profiler installer",
+    "retrying or replacing the pod after profiler-installer failure",
+    "including profiler installation time in any scientific device_ms distribution",
+    "accepting profiler output when installer/package/tool-version evidence is missing",
+    "rejecting an otherwise complete runner preflight solely because Nsight Systems 2026.3.2 returned its observed report-inventory status 1 after printing both required report names",
+    "treating v7 as a retry under frozen v6; v6 is exactly invalid_measurement and its rows are planning-only",
+    "launching v7 from any historical source/ref or any source other than the exact c6f7a020 source/ref",
+    "invoking any historical runner variant or invoking analyze_gpu_aa_nsys.py gate/analyze without the exact --expected-gpu value NVIDIA GeForce RTX 5090",
+    "changing the content-pinned NVIDIA keyring URL/SHA-256 or exact Nsight Systems package version after freeze",
+    "invoking NCU, collecting hardware counters, or making NCU availability a v7 gate",
+    "using the recovery receipt without documented controller loss, with a new allocation, or without every binding in extensions.transport_receipt_policy",
+    "pooling or formally reusing any recovered v6 row or trace in the v7 distribution"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "source-linked prior art, workload, profiler order, isolation limits, and pod lifecycle",
+      "verified_by": "Codex, 2026-11-01"
+    },
+    {
+      "ref": "experiments/f4-gpu-panel-20261007/README.md",
+      "provenance": "internal",
+      "claim": "landed design, exact five-cell answers, rejected variants, and incumbent kernel shares",
+      "verified_by": "Codex, 2026-11-01"
+    },
+    {
+      "ref": "https://docs.nvidia.com/nsight-systems/UserGuide/index.html",
+      "provenance": "retrieved",
+      "claim": "Nsight Systems CLI CUDA timeline and summary workflow",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "https://developer.nvidia.com/ERR_NVGPUCTRPERM",
+      "provenance": "retrieved",
+      "claim": "GPU performance counters require an authorized host-driver policy or administration capability; container UID 0 and package changes cannot grant access",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "https://docs.runpod.io/pods/overview",
+      "provenance": "retrieved",
+      "claim": "Runpod Pod cloud classes and ephemeral compute scope",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "cloud/runpod_pod.py",
+      "provenance": "internal",
+      "claim": "unique creation, shipping, fetch, deletion, and lifetime-stop behavior",
+      "verified_by": "Codex, 2026-11-01"
+    },
+    {
+      "ref": "cloud/runpod_http_batch.py",
+      "provenance": "internal",
+      "claim": "exact public source proof, guarded allocation, authenticated proxy fetch, strict result verification, receipt, and exact-ID cleanup",
+      "verified_by": "offline unit tests at c6f7a0208e10823b7248c9138b7a46273990abe5, 2026-11-01"
+    },
+    {
+      "ref": "https://docs.runpod.io/pods/configuration/expose-ports",
+      "provenance": "retrieved",
+      "claim": "Runpod HTTPS proxy URL, public-port authentication requirement, 0.0.0.0 bind, and response-duration constraint",
+      "verified_by": "retrieved 2026-11-01"
+    },
+    {
+      "ref": "ecc2k130/runner/codegen/install_nsys_tools.sh",
+      "provenance": "internal",
+      "claim": "configures NVIDIA's signed Ubuntu 24.04 CUDA repository from a content-pinned keyring artifact, requires the exact Nsight Systems package version, and records the selected and installed version",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 50a0a564f4c370b9279a49a4e385fd1a6f06408a21e72e4bd1e4b0918c333aa9"
+    },
+    {
+      "ref": "cloud/tests/test_nsys_installer.py",
+      "provenance": "internal",
+      "claim": "hermetic command-level control for signed repository bootstrap, keyring digest, exact Nsys package availability, exact apt specification, and absence of Nsight Compute",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 0702823edb1a960672d2253090d1e209f27b06cf71c546ca6f293530d334fd19"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/run_gpu_aa_nsys.sh",
+      "provenance": "internal",
+      "claim": "requires exactly one NVIDIA GeForce RTX 5090, passes that exact expected name to every gate, retains Nsys report-inventory status, runs exactly 10 warmups, 60 unprofiled measurements and 2 Nsys captures, and contains no NCU invocation",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 9db0813f1b2a5a127ca491d7cbc868e7787b3cf1fced7454a5abf5775c82bed1"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/analyze_gpu_aa_nsys.py",
+      "provenance": "internal",
+      "claim": "requires one complete matching GPU inventory row, anchored production CUDA receipts, exact matrix answer gates, 10/60/2 phase counts, and Nsys-only final analysis",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 5d377e44a3092a0d44cc948877380ccf1a313e6fd562020d438ae8e3e81e3a8b"
+    },
+    {
+      "ref": "tests/test_gpu_aa_nsys_analyzer.py",
+      "provenance": "internal",
+      "claim": "six focused controls cover exact RTX 5090 acceptance, rejected inventory/backend cases, exact answers, absence of an NCU phase, and Nsys-only final analysis",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 3ff5129086621b74f4596dece8eae02760677623d1d3cd30c1fd390f82fd7c96"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/v6-outcome.json",
+      "provenance": "internal",
+      "claim": "immutable v6 invalid_measurement classification, recovered receipt/archive bindings, ERR_NVGPUCTRPERM failure, planning-only reuse policy, and controller-recovery provenance",
+      "verified_by": "source commit c6f7a0208e10823b7248c9138b7a46273990abe5, SHA-256 464da8ef1178ef4ada812ff7b7d7aa9c4c2e04e05e04523cc1547bdb84431416"
+    },
+    {
+      "ref": "cloud/runpod_http_recover.py",
+      "provenance": "internal",
+      "claim": "reconstructs an authenticated hash-bound receipt only for the exact existing pod after local controller-state loss, without allocating a replacement",
+      "verified_by": "tool commit f11bacf36eb36418189d2636913319cba806cac1, SHA-256 a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-v5.json",
+      "provenance": "internal",
+      "claim": "immutable frozen v5 protocol whose analyzer hard-coded RTX 4090 and therefore could not admit its required RTX 5090 placement; no v5 pod or data existed when superseded",
+      "verified_by": "canonical protocol SHA-256 7c9367912eb706973d5ac738670859676275b3585743e6e32e6091662adc4bbc; file SHA-256 7f0775063b445d581c00d404321f2f5b4d891622e7c364fc3858eb3ed52c73d1"
+    },
+    {
+      "ref": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-aa-http-rtx5090-20261101T202225Z-7f3c.failure.json",
+      "provenance": "internal",
+      "claim": "immutable v4 infrastructure failure classification, raw evidence hashes, zero scientific rows, and exact-ID cleanup",
+      "verified_by": "SHA-256 8c29703e6c815db457cd497714546fd5ae0ae70d0e719ed8eb52f573deb9cdfe"
+    }
+  ],
+  "amendments": [
+    {
+      "id": "profiler-installer-v4",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The frozen v3 launch command invoked a runner that requires nsys and ncu but did not bind or run the already planned profiler-tool installer.",
+      "changes": [
+        "bind ecc2k130/runner/codegen/install_profile_tools.sh and its SHA-256 at the unchanged scientific source commit",
+        "prepend the exact command 'bash ecc2k130/runner/codegen/install_profile_tools.sh &&' before the unchanged GPU runner",
+        "retain the HTTP job log, selected profiler package names, and runner-recorded nsys/ncu versions and capability listings",
+        "classify installer failure as infrastructure/incomplete_session, preserve evidence, clean up the exact pod ID, and prohibit retry"
+      ],
+      "supersedes_fields": [
+        "extensions.launch.controller_argv_template",
+        "extensions.source.files",
+        "measurement.record",
+        "stopping_rules",
+        "invalidation_rules",
+        "decision_rule",
+        "analysis_plan.inputs",
+        "inadmissible"
+      ]
+    },
+    {
+      "id": "nvidia-repository-v5",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The sole v4 allocation ended before the runner because runpod/base lacked NVIDIA's apt repository; v4 retained zero scientific rows and prohibited retry, so this is one new prospectively frozen v5 attempt.",
+      "changes": [
+        "preserve and hash the immutable v4 receipt, result archive, and concise failure summary",
+        "bind new scientific/transport source commit 213ff29e8adf42bc7ebf2a253f0d30c2549c23b7 and a new dedicated public ref",
+        "bind the corrected installer, content-pinned NVIDIA CUDA keyring, exact Nsight package/version pins, hermetic installer test, and corrected frozen runner",
+        "bind the clean-Ubuntu profiler checks: nsys 2026.3.2 required reports present with expected status 1, and ncu 2026.3.1 required sections present with status 0",
+        "retain the unchanged five-cell, warmup-one, six-round A/A design, profiler order, price, resource, timeout, lifetime, decision, and exact-answer gates",
+        "permit exactly one v5 allocation attempt; installer or infrastructure failure remains incomplete_session without retry"
+      ],
+      "supersedes_fields": [
+        "arms[].instrument.commit",
+        "variable_ledger.factors[source]",
+        "variable_ledger.factors[source_delivery]",
+        "variable_ledger.factors[profiler_tool_installation]",
+        "sample_size.preflight_runtime.measured_on",
+        "stopping_rules",
+        "invalidation_rules",
+        "decision_rule",
+        "inadmissible",
+        "literature",
+        "extensions.source",
+        "extensions.launch",
+        "extensions.profiler_installation",
+        "extensions.lineage"
+      ]
+    },
+    {
+      "id": "rtx5090-analyzer-contract-v6",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "Independent pre-launch review found that frozen v5 required an RTX 5090 but its hash-bound analyzer hard-coded an RTX 4090 substring and would reject every required RTX 5090 production receipt. No v5 pod, warmup, measurement, profiler launch, or provider data existed, so v5 remains immutable and is prospectively superseded by one new v6 attempt.",
+      "changes": [
+        "preserve frozen v5 byte-for-byte and bind its protocol/file hashes, freeze commit, zero-provider-call status, and analyzer flaw",
+        "bind new scientific/transport source commit 6e96cffe3a159080216c33805eb68a0c629d97ae and new dedicated public ref refs/heads/codex/runpod-http-instrument-v6-20261101",
+        "bind the exact fallback runner to NVIDIA GeForce RTX 5090 and require it to pass that exact expected name into every warmup, measure, nsys, ncu, and final analysis invocation",
+        "bind the analyzer to exactly one complete matching metadata/gpu.csv row and an anchored matching production CUDA receipt while retaining all exact shape/rank/refuted/pinned/word_ops gates",
+        "bind four focused analyzer controls and the runner syntax, plan, and diff checks",
+        "retain the unchanged five-cell, warmup-one, six-round A/A design, profiler order, price, resource, timeout, lifetime, installer contract, exact-answer gates, and one-allocation-attempt limit"
+      ],
+      "supersedes_fields": [
+        "arms[].instrument.commit",
+        "variable_ledger.factors[source]",
+        "variable_ledger.factors[gpu]",
+        "variable_ledger.factors[source_delivery]",
+        "variable_ledger.factors[profiler_tool_installation]",
+        "sample_size.preflight_runtime.measured_on",
+        "measurement.record",
+        "stopping_rules",
+        "invalidation_rules",
+        "decision_rule",
+        "analysis_plan",
+        "inadmissible",
+        "literature",
+        "extensions.runner",
+        "extensions.source",
+        "extensions.launch",
+        "extensions.output_contract",
+        "extensions.lineage",
+        "extensions.profiler_installation",
+        "extensions.expected_gpu_contract",
+        "extensions.prior_protocol_flaw"
+      ]
+    },
+    {
+      "id": "nsys-only-counter-permission-v7",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "The sole frozen v6 attempt completed its 10 warmups, 60 unprofiled executions, and 2 Nsys captures, then failed the mandatory NCU phase with ERR_NVGPUCTRPERM. V6 is therefore exactly invalid_measurement and immutable. The current Runpod request surface exposes no host performance-counter entitlement, so v7 prospectively removes NCU rather than retrying or selecting hosts after observation.",
+      "changes": [
+        "bind the immutable recovered v6 receipt SHA-256 b5dc3ae90e5fba90aded9646831f184a23e1ab2237f92894e5400f757ebaa334, archive SHA-256 6116925466c34f2daab53c1bcbb0525b417b36d382724c5321d28bb37652540c, evidence commit 0005179e36bf566b0cccc553c808675e084b663f, and exact invalid_measurement classification",
+        "bind recovery tool commit f11bacf36eb36418189d2636913319cba806cac1 and SHA-256 a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0",
+        "bind new source commit c6f7a0208e10823b7248c9138b7a46273990abe5 and new public ref refs/heads/codex/runpod-http-nsys-v7-20261101",
+        "retain byte-identical A/A, five exact cells, 10 warmups, 60 unprofiled measurements, RTX 5090 Secure placement, correctness, telemetry, and one allocation; require exactly 2 post-timing Nsys captures and stop",
+        "remove NCU installation, invocation, output, and admissibility gates; hardware-counter work requires a separately registered authorized backend",
+        "permit the normal HTTP receipt, or only after documented controller loss the exact bound recovery receipt with no new allocation and all source, command, pod, provider, archive, extraction, and cleanup bindings"
+      ],
+      "supersedes_fields": [
+        "arms[].instrument.commit",
+        "variable_ledger.factors[source]",
+        "variable_ledger.factors[profiling_overhead]",
+        "variable_ledger.factors[source_delivery]",
+        "variable_ledger.factors[profiler_tool_installation]",
+        "sample_size.preflight_runtime.measured_on",
+        "metrics.secondary",
+        "measurement.record",
+        "stopping_rules",
+        "invalidation_rules",
+        "decision_rule",
+        "analysis_plan",
+        "reporting.graphs",
+        "inadmissible",
+        "literature",
+        "extensions.runner",
+        "extensions.profiler_plan",
+        "extensions.source",
+        "extensions.transport",
+        "extensions.launch",
+        "extensions.output_contract",
+        "extensions.lineage",
+        "extensions.profiler_installation",
+        "extensions.expected_gpu_contract"
+      ]
+    }
+  ],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": null
+  },
+  "extensions": {
+    "runner": {
+      "path": "run_gpu_aa_nsys.sh",
+      "sha256": "9db0813f1b2a5a127ca491d7cbc868e7787b3cf1fced7454a5abf5775c82bed1"
+    },
+    "workloads": [
+      {
+        "role": "panel",
+        "tag": "k0n13m2d5",
+        "cell": "0:13:2:1234",
+        "degree": 5,
+        "rows": 30225,
+        "cols": 53871,
+        "rank": 27250,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 10745652033
+      },
+      {
+        "role": "panel",
+        "tag": "k0n9m3d5",
+        "cell": "0:9:3:77",
+        "degree": 5,
+        "rows": 33147,
+        "cols": 87118,
+        "rank": 31069,
+        "refuted": false,
+        "pinned": 1,
+        "word_ops": 1196809344
+      },
+      {
+        "role": "panel",
+        "tag": "k1n11m2d5",
+        "cell": "1:11:2:301",
+        "degree": 5,
+        "rows": 14861,
+        "cols": 21196,
+        "rank": 12091,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 986408355
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d6",
+        "cell": "1:11:2:301",
+        "degree": 6,
+        "rows": 68156,
+        "cols": 60040,
+        "rank": 46747,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 57968918179
+      },
+      {
+        "role": "primary",
+        "tag": "k0n13m2d6",
+        "cell": "0:13:2:1234",
+        "degree": 6,
+        "rows": 168363,
+        "cols": 188203,
+        "rank": 130583,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 1110114894889
+      }
+    ],
+    "profiler_plan": {
+      "order": [
+        "unprofiled_aa",
+        "nsys"
+      ],
+      "cell": "k0n13m2d6",
+      "nsys_reports": [
+        "cuda_gpu_kern_sum",
+        "cuda_api_sum"
+      ],
+      "nsys_report_inventory_allowed_statuses": [
+        0,
+        1
+      ],
+      "nsys_observed_preflight_status": 1,
+      "captures": 2,
+      "ncu_policy": "outside v7; must not be resolved, installed, invoked, or used as an admissibility gate"
+    },
+    "source": {
+      "public_origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+      "public_ref": "refs/heads/codex/runpod-http-nsys-v7-20261101",
+      "commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+      "tree": "c4562cb6a2d72e549f5700feb870d9211b17fa56",
+      "git_archive_sha256": "ee0d64e8fa7bb6b7a8dcd9e5fb161bc79d702fd5933f1ea30c1376c237dad694",
+      "files": {
+        "suite/cuda/f4_gf2_echelon.cuh": "6cac588effcf6361fab732942f7f85dc2d39af200f60abc8850b0cea77a31f1b",
+        "suite/cuda/f4_gf2_kernel.cu": "6c796f02fe9269804194a0b35cb8c3484d0f43c2300a67c7a817404261f8377c",
+        "suite/src/cryptanalysis/f4_gpu.rs": "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944",
+        "suite/Cargo.lock": "cffcbfacc10d859ca8269e8e5b7142f0eea39f178766b90f185f0ec314db6115",
+        "experiments/performance-saturation-20261101/gpu/run_gpu_aa_nsys.sh": "9db0813f1b2a5a127ca491d7cbc868e7787b3cf1fced7454a5abf5775c82bed1",
+        "experiments/performance-saturation-20261101/gpu/analyze_gpu_aa_nsys.py": "5d377e44a3092a0d44cc948877380ccf1a313e6fd562020d438ae8e3e81e3a8b",
+        "experiments/performance-saturation-20261101/gpu/v6-outcome.json": "464da8ef1178ef4ada812ff7b7d7aa9c4c2e04e05e04523cc1547bdb84431416",
+        "experiments/performance-saturation-20261101/gpu/LITERATURE.md": "c1756deb70227c247ecc5d618b5003c80db6d941525c364da7050a46098c75cc",
+        "tests/test_gpu_aa_nsys_analyzer.py": "3ff5129086621b74f4596dece8eae02760677623d1d3cd30c1fd390f82fd7c96",
+        "cloud/runpod_http_batch.py": "dae217dc4941e7ca2bdadba22fb938b6f1380e6341170d300194bd569cd0612e",
+        "cloud/runpod_http_batch_server.py": "691841f873a8f2e89a2624161c50864a7e5ef579d893853dffb246bf30dd2b74",
+        "cloud/runpod_http_recover.py": "a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0",
+        "ecc2k130/runner/codegen/install_nsys_tools.sh": "50a0a564f4c370b9279a49a4e385fd1a6f06408a21e72e4bd1e4b0918c333aa9",
+        "cloud/tests/test_nsys_installer.py": "0702823edb1a960672d2253090d1e209f27b06cf71c546ca6f293530d334fd19",
+        "cloud/tests/test_runpod_http_batch.py": "5f203deb81e3fdcddc83f35a43bb5f52015b69edb1572852e948edd4b47373e4",
+        "cloud/tests/test_runpod_http_recover.py": "bfd111df0a4c50b10580ae733eb4fa2084f78ec382e642c391eb3d0a6d1c74b5"
+      }
+    },
+    "transport": {
+      "schema": "runpod.http-batch.receipt/v1",
+      "driver": "cloud/runpod_http_batch.py",
+      "server": "cloud/runpod_http_batch_server.py",
+      "http_port": 8888,
+      "authentication": "fresh ephemeral bearer with at least 256 random bits",
+      "result_chunk_bytes": 4194304,
+      "result_limit_mib": 4096,
+      "provider_create_attempts": 1,
+      "startup_wait_seconds": 900,
+      "command_timeout_seconds": 9000,
+      "maximum_lifetime_seconds": 10800,
+      "cleanup": "exact newly created pod ID in finally; absence verified by exact v2 GET returning 404",
+      "stop_backstop": "pod-scoped Runpod stop at maximum_lifetime_seconds",
+      "no_ssh": true,
+      "no_object_storage": true,
+      "no_user_long_lived_credentials_sent_to_pod": true
+    },
+    "launch": {
+      "controller_argv_template": [
+        "python3",
+        "cloud/runpod_http_batch.py",
+        "misagi-f4-http-5090-v7",
+        "--source-ref",
+        "refs/heads/codex/runpod-http-nsys-v7-20261101",
+        "--source-commit",
+        "c6f7a0208e10823b7248c9138b7a46273990abe5",
+        "--cloud",
+        "SECURE",
+        "--gpu",
+        "NVIDIA GeForce RTX 5090",
+        "--gpu-count",
+        "1",
+        "--min-vcpu",
+        "16",
+        "--min-ram",
+        "62",
+        "--image",
+        "runpod/base:1.0.2-ubuntu2404",
+        "--disk",
+        "100",
+        "--max-price",
+        "1.19",
+        "--max-hours",
+        "3",
+        "--wait",
+        "900",
+        "--timeout",
+        "9000",
+        "--reconcile-seconds",
+        "60",
+        "--max-result-mib",
+        "4096",
+        "--receipt",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+        "--archive",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+        "--out",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+        "--",
+        "bash ecc2k130/runner/codegen/install_nsys_tools.sh && GPU_STUDY_SECURE=1 bash experiments/performance-saturation-20261101/gpu/run_gpu_aa_nsys.sh 'experiments/performance-saturation-20261101/gpu/runs-http' '<run_id>'"
+      ],
+      "public_ref_publish_template": "git push origin c6f7a0208e10823b7248c9138b7a46273990abe5:refs/heads/codex/runpod-http-nsys-v7-20261101",
+      "preconditions": [
+        "the new dedicated public ref has been pushed once and resolves to exactly the registered v7 source commit without credentials",
+        "the local protocol is frozen and committed before affected data",
+        "the output, receipt, archive, and remote-metadata paths do not exist",
+        "RUNPOD_API_KEY is available only to the local controller and provider-injected pod scope"
+      ],
+      "public_ref_state": "not pushed at v7 freeze; publishing exactly this commit to exactly this new ref is a mandatory pre-launch action and no other ref mutation is authorized"
+    },
+    "output_contract": {
+      "run_id": "gpu-aa-http-rtx5090-v7-<UTC>-<nonce>",
+      "output_root": "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+      "transport_receipt": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+      "result_archive": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+      "remote_metadata": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.remote",
+      "required_session_files": [
+        "host.json",
+        "metadata/gpu.csv",
+        "binary-sha256.tsv",
+        "order.tsv",
+        "warmup-gate.json",
+        "measure-gate.json",
+        "nsys-gate.json",
+        "analysis.json",
+        "rows.jsonl",
+        "completed-at.txt",
+        "runner-exit.status"
+      ],
+      "remote_job_log_on_success": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.remote/log.txt",
+      "remote_job_log_on_installer_failure": "the retained <run_id>.result.tar.gz member .runpod-batch/log.txt; strict declared-output extraction can refuse the .remote directory because the runner never created its session",
+      "profiler_version_files": [
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>/metadata/nsys-version.txt",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>/metadata/nsys-reports.txt",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>/metadata/nsys-reports.status"
+      ]
+    },
+    "lineage": {
+      "additive_to": "protocol-http-rtx5090-v6.json",
+      "preserved_protocol_sha256": "518105554954f7e50741841e1aef6c81ca8bade95cdccfad4d375d75b35e6726",
+      "preserved_file_sha256": "f859fa1288b089b584e779c2aa826d8206b658d5ef57fb5546d295a880da22b7",
+      "preserved_registration_commit": "e451c6fde8a6882e41d97109cca4ceba2f95a285",
+      "preserved_freeze_commit": "2ba237571e711a7b83c53a171dbfe56b00cd83a1",
+      "relationship": "prospective v7 Nsys-only baseline after the sole frozen v6 attempt became invalid_measurement on its mandatory NCU phase; v6 remains immutable and planning-only, and no v6 timing row is formally reused"
+    },
+    "prospective_correction": {
+      "filed_before_data": true,
+      "reason": "The initial two-hour lifetime instruction could not cover the already frozen 7200-second scientific estimate plus boot/fetch/cleanup.",
+      "change": "Use a three-hour stop cap and 9000-second command timeout; the 3600-second total headroom is partitioned prospectively into up to 900 seconds before the command, 1800 seconds inside the command budget beyond the 7200-second scientific estimate, and at least 900 seconds for result transfer and cleanup.",
+      "maximum_cost_exposure_usd": 3.57
+    },
+    "profiler_installation": {
+      "path": "ecc2k130/runner/codegen/install_nsys_tools.sh",
+      "sha256": "50a0a564f4c370b9279a49a4e385fd1a6f06408a21e72e4bd1e4b0918c333aa9",
+      "test_path": "cloud/tests/test_nsys_installer.py",
+      "test_sha256": "0702823edb1a960672d2253090d1e209f27b06cf71c546ca6f293530d334fd19",
+      "source_commit": "c6f7a0208e10823b7248c9138b7a46273990abe5",
+      "exact_command_prefix": "bash ecc2k130/runner/codegen/install_nsys_tools.sh &&",
+      "keyring": {
+        "url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb",
+        "sha256": "d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba"
+      },
+      "packages": {
+        "nsight-systems-2026.3.2": "2026.3.2.476-263238834031v0"
+      },
+      "ordering": "after exact source verification and job bootstrap; before GPU runner placement/tool preflight, warmups, measured rows, or Nsys",
+      "log": {
+        "archive_member": ".runpod-batch/log.txt",
+        "success_extraction": "<run_id>.remote/log.txt",
+        "installer_failure": "retained in the hash-bound result archive even when strict extraction rejects the missing declared scientific output"
+      },
+      "tool_versions": [
+        "metadata/nsys-version.txt",
+        "metadata/nsys-reports.txt",
+        "metadata/nsys-reports.status"
+      ],
+      "preflight": {
+        "hermetic_test": "passed before v7 draft",
+        "clean_ubuntu_2404_install": "inherited exact Nsys package/version pin from successful v5/v6 bootstrap; v7 hermetic command test passed before draft",
+        "nsys_version": "2026.3.2",
+        "nsys_required_reports": [
+          "cuda_gpu_kern_sum",
+          "cuda_api_sum"
+        ],
+        "nsys_report_inventory_observed_status": 1,
+        "nsys_report_inventory_allowed_statuses": [
+          0,
+          1
+        ],
+        "package_sha256_checks": "passed before v7 draft",
+        "runner_bash_syntax_and_diff_check": "passed for the exact Nsys-only RTX 5090 runner before v7 draft",
+        "ncu": "not installed or invoked; outside v7",
+        "scope": "installer mechanics, exact Nsys package installation/version selection, and Nsys inventory semantics only; not a GPU measurement"
+      },
+      "failure_outcome": "infra_error/incomplete_session",
+      "retry": "none; retain receipt/archive/log and clean up exact pod ID"
+    },
+    "expected_gpu_contract": {
+      "expected_gpu": "NVIDIA GeForce RTX 5090",
+      "visible_gpu_count": 1,
+      "runner": {
+        "path": "experiments/performance-saturation-20261101/gpu/run_gpu_aa_nsys.sh",
+        "sha256": "9db0813f1b2a5a127ca491d7cbc868e7787b3cf1fced7454a5abf5775c82bed1",
+        "binding": "hard-coded EXPECTED_GPU passed as --expected-gpu to every warmup, measure, Nsys, and final analyze gate"
+      },
+      "analyzer": {
+        "path": "experiments/performance-saturation-20261101/gpu/analyze_gpu_aa_nsys.py",
+        "sha256": "5d377e44a3092a0d44cc948877380ccf1a313e6fd562020d438ae8e3e81e3a8b",
+        "inventory": "exactly one nonempty metadata/gpu.csv record with exactly 11 fields and a name exactly equal to expected_gpu",
+        "backend_receipt": "full-string cuda:<expected_gpu> sm_<digits> x<positive integer> code=<sm_<digits>|compute_<digits>|CA_F4_PTX>",
+        "answer_gates": [
+          "rows",
+          "cols",
+          "rank",
+          "refuted",
+          "pinned",
+          "word_ops"
+        ]
+      },
+      "focused_test": {
+        "path": "tests/test_gpu_aa_nsys_analyzer.py",
+        "sha256": "3ff5129086621b74f4596dece8eae02760677623d1d3cd30c1fd390f82fd7c96",
+        "tests": 6,
+        "status": "passed before v7 draft"
+      },
+      "scope": "only the exact bound Nsys-only runner; historical runner variants are outside v7 and must not be substituted"
+    },
+    "transport_receipt_policy": {
+      "normal": {
+        "schema": "runpod.http-batch.receipt/v1",
+        "driver": "cloud/runpod_http_batch.py",
+        "required_unless_controller_loss": true
+      },
+      "recovery": {
+        "schema": "runpod.http-batch.recovery-receipt/v1",
+        "allowed_only_if": "the original local controller disappears or its receipt is unavailable after the single registered pod was already allocated; the controller-loss reason and original-receipt unavailability must be recorded",
+        "tool": {
+          "path": "cloud/runpod_http_recover.py",
+          "commit": "f11bacf36eb36418189d2636913319cba806cac1",
+          "sha256": "a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0",
+          "test_sha256": "bfd111df0a4c50b10580ae733eb4fa2084f78ec382e642c391eb3d0a6d1c74b5"
+        },
+        "required_bindings": [
+          "new_allocation_attempted is false",
+          "exact registered pod ID, unique pod name, ownership ID, provider response, Secure cloud, RTX 5090 count one, image, price, resources, and port",
+          "exact v7 public origin, ref, commit, tree, git-archive SHA-256, command string and command SHA-256",
+          "authenticated status identity, job ID, source identity, fixed output, timeout, result limit, and chunk manifest",
+          "downloaded archive SHA-256 equals remote archive and chunk bindings",
+          "strict extraction contains only the declared v7 output plus authenticated batch metadata",
+          "exact pod ID delete and absence verification"
+        ],
+        "retry": "none; recovery may observe and clean up only the already-created registered pod"
+      },
+      "exclusive_choice": "exactly one admissible receipt form: normal, or recovery solely under the documented controller-loss condition"
+    },
+    "v6_outcome": {
+      "classification": "invalid_measurement",
+      "protocol_sha256": "518105554954f7e50741841e1aef6c81ca8bade95cdccfad4d375d75b35e6726",
+      "protocol_file_sha256": "f859fa1288b089b584e779c2aa826d8206b658d5ef57fb5546d295a880da22b7",
+      "evidence_commit": "0005179e36bf566b0cccc553c808675e084b663f",
+      "recovered_receipt_sha256": "b5dc3ae90e5fba90aded9646831f184a23e1ab2237f92894e5400f757ebaa334",
+      "recovered_archive_sha256": "6116925466c34f2daab53c1bcbb0525b417b36d382724c5321d28bb37652540c",
+      "failure": "NCU ERR_NVGPUCTRPERM after exactly 10 warmups, 60 unprofiled executions, and 2 successful Nsys captures",
+      "reuse": "planning-only; no v6 row or trace enters the v7 formal distribution",
+      "outcome_record": {
+        "path": "experiments/performance-saturation-20261101/gpu/v6-outcome.json",
+        "sha256": "464da8ef1178ef4ada812ff7b7d7aa9c4c2e04e05e04523cc1547bdb84431416"
+      }
+    },
+    "end_to_end_followup": {
+      "status": "prospective separate lane; not executed or decided by v7",
+      "planning_evidence_only": "Recovered v6 Nsys reports show a 3961244664-byte pageable HtoD transfer taking about 906 ms for control and 780 ms for current (about 4.4-5.1 GB/s) beside about 1.819 s of kernels; raw primary medians are about 0.90 s upload and 1.8145 s device.",
+      "consequence": "After the separately registered geometry sequence, register a one-variable pinned-host-staging or host-registration A/B lane and measure upload, device, and end-to-end time. Device-only geometry tuning must not hide this larger transfer opportunity.",
+      "v7_boundary": "These recovered values justify future design only. They are not v7 observations, thresholds, priors, or reusable timing rows, and v7 remains byte-identical A/A."
+    },
+    "prior_protocol_flaw": {
+      "protocol": "protocol-http-rtx5090-v5.json",
+      "version": 5,
+      "protocol_sha256": "7c9367912eb706973d5ac738670859676275b3585743e6e32e6091662adc4bbc",
+      "file_sha256": "7f0775063b445d581c00d404321f2f5b4d891622e7c364fc3858eb3ed52c73d1",
+      "freeze_commit": "808739133b0e6c1be5d408adb9c03c9f127858ba",
+      "source_commit": "213ff29e8adf42bc7ebf2a253f0d30c2549c23b7",
+      "analyzer_sha256": "c30038cb95539333779828cba61da05d511b5d7ac5c59a0d5a74f9d7f3b1bee6",
+      "required_gpu": "NVIDIA GeForce RTX 5090",
+      "flaw": "the analyzer accepted only backend receipts containing the hard-coded NVIDIA GeForce RTX 4090 string, so the required RTX 5090 could not pass a warmup gate",
+      "classification": "prospectively_invalid/superseded_before_data",
+      "provider_calls": 0,
+      "pods_created": 0,
+      "scientific_rows": 0,
+      "v5_launch_permitted": false
+    },
+    "prior_failure": {
+      "run_id": "gpu-aa-http-rtx5090-20261101T202225Z-7f3c",
+      "summary": {
+        "path": "http-receipts/gpu-aa-http-rtx5090-20261101T202225Z-7f3c.failure.json",
+        "sha256": "8c29703e6c815db457cd497714546fd5ae0ae70d0e719ed8eb52f573deb9cdfe"
+      },
+      "receipt": {
+        "path": "http-receipts/gpu-aa-http-rtx5090-20261101T202225Z-7f3c.json",
+        "sha256": "05c26c16e5fd0891a2d61cb0682513903f6b6517dcd2448ec33e496ef4c2375e"
+      },
+      "result_archive": {
+        "path": "http-receipts/gpu-aa-http-rtx5090-20261101T202225Z-7f3c.result.tar.gz",
+        "sha256": "a37b978da3db271e97fb4492d3743269aa4e2ca9f5b13a2a68a120beb5f7c36a"
+      },
+      "pod_id": "8zd2ji0w1l11jz",
+      "returncode": 1,
+      "timed_out": false,
+      "declared_outputs": 0,
+      "scientific_rows": 0,
+      "classification": "infrastructure_failure/incomplete_session",
+      "root_cause": "runpod/base lacked NVIDIA's CUDA apt repository; the v4 installer exited before the GPU runner",
+      "exact_cleanup_absence_verified_404": true,
+      "v4_retry_permitted": false
+    }
+  }
+}
