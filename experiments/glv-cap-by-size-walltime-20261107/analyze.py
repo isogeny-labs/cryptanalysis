@@ -14,8 +14,7 @@ import sys
 from pathlib import Path
 
 art, out = Path(sys.argv[1]), sys.argv[2]
-EXPECTED = {"j1728_42": "add90c0620e05454", "j1728_44": "3cdad2dad2b47a28", "j1728_46": "b4d2498d85594f80",
-            "j0_42": "2238fdc8de800392", "j0_44": "c0fd377da42fe994", "j0_46": "38e3bf6fa208938d"}
+EXPECTED = {"j1728_38": "df0e321174cab70d", "j1728_40": "e17910cf4d6d0a22", "j1728_41": "08c446f53a24a1d1", "j1728_42": "71f73a5e27536b25", "j1728_44": "6f7d867cfd4fe4f8", "j1728_46": "85052ca772d3c208", "j1728_48": "6f24ba6e350b1abd", "j0_38": "9aedb9a35af40064", "j0_40": "bc1c64b3522430a2", "j0_41": "10c8b94b6652f498", "j0_42": "292a1304c2716d4a", "j0_44": "5ba26e797b37f1b2", "j0_46": "02f564dd7c4be57b", "j0_48": "c867c507fbe9bdda"}
 res = {}
 for cell, want in EXPECTED.items():
     s = json.load(open(art / f"run-summary_{cell}.json"))
