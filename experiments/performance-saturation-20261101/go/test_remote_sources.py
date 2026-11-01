@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -31,6 +32,46 @@ def git(repo: Path, *args: str) -> str:
 
 
 class RemoteSourceIdentityTests(unittest.TestCase):
+    def test_combined_mode_is_available_without_prefrozen_binary_hashes(self) -> None:
+        options = remote.arguments([
+            "--mode", "combined",
+            "--out", "unused",
+            "--phase", "fixed-peer-key-ab-v8",
+            "--protocol-sha256", "0" * 64,
+        ])
+        self.assertEqual(options.mode, "combined")
+        self.assertIsNone(options.baseline_binary_sha256)
+        self.assertIsNone(options.candidate_binary_sha256)
+
+    def test_fixed_peer_key_wrapper_binds_exact_source_objects(self) -> None:
+        sys.path.insert(0, str(HERE))
+        try:
+            wrapper = load("go_remote_peer_key_binding", "run_remote_peer_key_ab.py")
+        finally:
+            sys.path.remove(str(HERE))
+        bound = wrapper.runner
+        self.assertEqual(
+            bound.BASELINE_COMMIT,
+            "7c712913b7e912494e87c35e854cfd0129bad89c",
+        )
+        self.assertEqual(
+            bound.CANDIDATE_COMMIT,
+            "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        )
+        self.assertEqual(bound.CANDIDATE_PARENT, bound.BASELINE_COMMIT)
+        self.assertEqual(
+            bound.CANDIDATE_DIFF_SHA256,
+            "e29818ed168eaa886dfdc4be3c90777b1026b89246b760fd76d31614f33e8417",
+        )
+        self.assertEqual(
+            bound.COMMON_TEST_BLOB,
+            "b487d974638f5fe81a2921fa002b8ce481b956ad",
+        )
+        self.assertEqual(
+            bound.COMMON_TEST_SHA256,
+            "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+        )
+
     def test_reads_recorded_parent_without_parent_object_in_shallow_clone(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

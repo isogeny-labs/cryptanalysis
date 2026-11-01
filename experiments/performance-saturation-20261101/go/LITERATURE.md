@@ -102,3 +102,42 @@ found in the repository notes or official Go material above.  That absence is
 an evidence gap, not a novelty claim.  No timed Go measurement had been run when
 this draft and benchmark instrument were written; the local image also lacked
 the Go compiler/toolchain, so compilation remains a preflight obligation.
+
+## V8 fixed-peer-key follow-up
+
+Reviewed 2026-11-01 before writing the v8 runner, formal analyzer, or protocol.
+The repository sources above remain the semantic and measurement basis.  The
+additional source review covered production commits
+`7c712913b7e912494e87c35e854cfd0129bad89c` and
+`37b96362a53a7364dd4cc2a18f450a3627ec08d3`, their exact `coord.go` diff,
+the retained v7 analysis/report, and the canonical experiment-protocol guide
+at `crypto-autoresearcher:docs/experiment-protocol.md`.
+
+The candidate replaces transient string lookup keys with owned fixed-size peer
+keys during `VersionVector`, `DeltaSince`, and `DeltaFrom` scans.  Its production
+commit also adds tests; the synthetic A/B build trees deliberately differ only
+at `bindings/go/coord.go` and add the same pinned benchmark blob plus the same
+candidate `coord_test.go` blob.  The shared tests exercise maximum-length,
+short, shared-prefix, and embedded-NUL peer keys against both arms.  This is an
+engineering optimization, not a cryptographic or novelty claim.  V7's retained
+rows motivate the candidate but cannot decide v8: v7 did not prospectively bind
+its exact bootstrap procedure, an L2 attestation, or a numeric PSI gate.
+
+The Linux kernel PSI documentation, retrieved from
+<https://docs.kernel.org/accounting/psi.html> on 2026-11-01, defines `some` as
+the share of time with at least one task stalled, `full` as the share with all
+non-idle tasks stalled, and `avg10` as a ten-second percentage trend.  V8
+therefore parses both CPU and memory records rather than treating the strings as
+opaque metadata.  Its prospective timing gate requires every before/after
+snapshot for all 276 rows to have CPU `some avg10 <= 10`, CPU `full avg10 = 0`,
+and memory `some/full avg10 = 0`, alongside zero steal, cgroup throttling,
+memory-event, and affinity changes.  PSI is a host-contention screen, not a
+substitute for the paired design or those other isolation checks.
+
+The exact empirical paired-bootstrap median distribution is fixed before data:
+enumerate the joint tenth/eleventh order-statistic mass for 20 draws with
+replacement from the 20 observed pair ratios, use exact rational arithmetic,
+and take `inf{x: CDF(x) >= 1/480}`.  The `1/480` lower quantile is the
+two-sided Bonferroni allocation of family alpha `1/20` over twelve timing
+comparisons.  No RNG, Monte Carlo draw count, interpolation, or post-result
+choice is involved.

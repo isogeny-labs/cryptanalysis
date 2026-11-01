@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Build and run the frozen Go coordinator A/B campaign on a clean CPU pod.
+"""Build and run a frozen Go coordinator A/B campaign on a clean CPU pod.
 
 Build mode creates prospective artifact receipts only. Run mode refuses to
 start without a frozen protocol hash and the two build-mode binary hashes.
+Combined mode builds both exact arms, records their hashes, runs correctness
+tests, and then executes the fixed campaign in the same pod.
 """
 
 from __future__ import annotations
@@ -39,17 +41,27 @@ CANDIDATE_PARENT = "e0f200f7af1ffa2aeb59dd5d4d4c90c7f5ea4ef5"
 CANDIDATE_TREE = "568a9802a4db7da921862a4234e7b1b579df5534"
 CANDIDATE_COORD_BLOB = "0d3f53806361e7442bc1d108c16b8b847f029918"
 CANDIDATE_DIFF_SHA256 = "38b069f6f1fc2c728b872d79a3694f6552c9f4dba44c597b4b518c266a39f471"
+# A prospective binding can overlay one exact correctness-test blob onto both
+# synthetic arms.  Historical direct build/run invocations retain their old
+# source construction when these remain unset.
+COMMON_TEST_COMMIT: str | None = None
+COMMON_TEST_BLOB: str | None = None
+COMMON_TEST_SHA256: str | None = None
 BENCHMARK_CPU_COUNT = 1
 AFFINITY_POLICY = (
     "require exactly N distinct allowed CPU ids; order by "
     "(package,die,numa,core,cpu), with missing topology sorting last; "
     "pin the benchmark to the first ordered CPU"
 )
+# A constant-binding wrapper may set this to its own absolute file path before
+# calling ``main``.  Direct historical build/run invocations intentionally
+# leave it unset.
+RUNNER_BINDING_PATH: str | None = None
 
 
-def arguments() -> argparse.Namespace:
+def arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("build", "run"), required=True)
+    parser.add_argument("--mode", choices=("build", "run", "combined"), required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--phase")
     parser.add_argument("--protocol-sha256")
@@ -61,7 +73,7 @@ def arguments() -> argparse.Namespace:
         help="exact cgroup v2 memory.max value required for this placement",
     )
     parser.add_argument("--expected-cpu-flavor", default="cpu3c")
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def sha256(path: Path) -> str:
@@ -340,7 +352,13 @@ def tree_manifest(root: Path) -> dict[str, str]:
 
 
 def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]:
-    for commit in (BASELINE_COMMIT, BENCHMARK_COMMIT, CANDIDATE_COMMIT):
+    commits = [BASELINE_COMMIT, BENCHMARK_COMMIT, CANDIDATE_COMMIT]
+    if COMMON_TEST_COMMIT is not None:
+        commits.append(COMMON_TEST_COMMIT)
+    if any(value is None for value in (COMMON_TEST_COMMIT, COMMON_TEST_BLOB, COMMON_TEST_SHA256)) \
+            and any(value is not None for value in (COMMON_TEST_COMMIT, COMMON_TEST_BLOB, COMMON_TEST_SHA256)):
+        raise RuntimeError("common correctness-test binding must set commit, blob, and SHA-256")
+    for commit in commits:
         ensure_commit(repo, commit)
     candidate_parents = commit_parents(repo, CANDIDATE_COMMIT)
     if len(candidate_parents) != 1:
@@ -378,7 +396,15 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
     }
     if identities != expected:
         raise RuntimeError(f"source identity mismatch: {identities}")
-    for blob in (BASELINE_COORD_BLOB, BENCHMARK_BLOB, CANDIDATE_COORD_BLOB):
+    blobs = [BASELINE_COORD_BLOB, BENCHMARK_BLOB, CANDIDATE_COORD_BLOB]
+    if COMMON_TEST_BLOB is not None:
+        observed_test_blob = git(
+            repo, "rev-parse", f"{COMMON_TEST_COMMIT}:bindings/go/coord_test.go"
+        )
+        if observed_test_blob != COMMON_TEST_BLOB:
+            raise RuntimeError("common correctness-test blob mismatch")
+        blobs.append(COMMON_TEST_BLOB)
+    for blob in blobs:
         require_object_type(repo, blob, "blob")
 
     baseline = work / "baseline-source"
@@ -390,6 +416,14 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
     if bytes_sha256(benchmark) != BENCHMARK_SHA256:
         raise RuntimeError("benchmark source hash mismatch")
     (baseline / "bindings/go/coord_benchmark_test.go").write_bytes(benchmark)
+    common_test = None
+    if COMMON_TEST_COMMIT is not None:
+        common_test = subprocess.check_output(
+            ["git", "-C", str(repo), "show", f"{COMMON_TEST_COMMIT}:bindings/go/coord_test.go"]
+        )
+        if bytes_sha256(common_test) != COMMON_TEST_SHA256:
+            raise RuntimeError("common correctness-test source hash mismatch")
+        (baseline / "bindings/go/coord_test.go").write_bytes(common_test)
     shutil.copytree(baseline, candidate, symlinks=True)
     candidate_coord = subprocess.check_output(
         ["git", "-C", str(repo), "show", f"{CANDIDATE_COMMIT}:bindings/go/coord.go"]
@@ -421,6 +455,13 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
         ),
         "only_changed_path": changed[0],
     }
+    if common_test is not None:
+        receipt.update({
+            "common_test_commit": COMMON_TEST_COMMIT,
+            "common_test_blob": COMMON_TEST_BLOB,
+            "common_test_sha256": bytes_sha256(common_test),
+            "common_test_path": "bindings/go/coord_test.go",
+        })
     return baseline, candidate, receipt
 
 
@@ -445,7 +486,7 @@ def build_arm(go: Path, source: Path, output: Path, cache: Path) -> dict[str, An
     }
 
 
-def run_tests(go: Path, source: Path, cache: Path, log: Path) -> None:
+def run_tests(go: Path, source: Path, cache: Path, log: Path) -> dict[str, Any]:
     env = os.environ.copy()
     env.update({"CGO_ENABLED": "1", "GOCACHE": str(cache), "GOFLAGS": "-buildvcs=false"})
     result = subprocess.run(
@@ -455,6 +496,14 @@ def run_tests(go: Path, source: Path, cache: Path, log: Path) -> None:
     log.write_text(result.stdout, encoding="utf-8")
     if result.returncode != 0:
         raise RuntimeError(f"tests failed for {source.name}")
+    return {
+        "command": [str(go), "test", "./..."],
+        "cwd": "bindings/go",
+        "exit_status": result.returncode,
+        "log": log.name,
+        "log_bytes": log.stat().st_size,
+        "log_sha256": sha256(log),
+    }
 
 
 def cgroup_counter(text: str | None, name: str) -> int | None:
@@ -467,21 +516,85 @@ def cgroup_counter(text: str | None, name: str) -> int | None:
     return None
 
 
+def cgroup_counters(text: str | None) -> dict[str, int] | None:
+    if text is None:
+        return None
+    counters: dict[str, int] = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) != 2 or re.fullmatch(r"[A-Za-z0-9_.-]+", fields[0]) is None:
+            return None
+        try:
+            counters[fields[0]] = int(fields[1])
+        except ValueError:
+            return None
+    return counters
+
+
+def counter_deltas(before: str | None, after: str | None) -> dict[str, int] | None:
+    left = cgroup_counters(before)
+    right = cgroup_counters(after)
+    if left is None or right is None or set(left) != set(right):
+        return None
+    return {key: right[key] - left[key] for key in sorted(left)}
+
+
+def pressure_avg10(text: str | None) -> dict[str, str] | None:
+    if text is None:
+        return None
+    result: dict[str, str] = {}
+    for line in text.splitlines():
+        fields = line.split()
+        if not fields or fields[0] not in {"some", "full"}:
+            return None
+        values = dict(field.split("=", 1) for field in fields[1:] if "=" in field)
+        value = values.get("avg10")
+        if value is None or re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", value) is None:
+            return None
+        result[fields[0]] = value
+    return result if set(result) == {"some", "full"} else None
+
+
+def row_pressure_valid(snapshot: dict[str, Any]) -> bool:
+    cpu = pressure_avg10(snapshot.get("psi_cpu"))
+    memory = pressure_avg10(snapshot.get("psi_memory"))
+    if cpu is None or memory is None:
+        return False
+    return (
+        float(cpu["some"]) <= 10.0
+        and float(cpu["full"]) == 0.0
+        and float(memory["some"]) == 0.0
+        and float(memory["full"]) == 0.0
+    )
+
+
 def main() -> int:
     options = arguments()
     if options.out.exists():
         raise SystemExit(f"refusing to overwrite {options.out}")
+    if options.mode in {"run", "combined"}:
+        if options.protocol_sha256 is None or re.fullmatch(
+            r"[0-9a-f]{64}", options.protocol_sha256
+        ) is None:
+            raise SystemExit(f"{options.mode} mode requires a frozen protocol SHA-256")
+        if options.phase is None or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,120}", options.phase):
+            raise SystemExit(f"{options.mode} mode requires a safe explicit --phase")
     if options.mode == "run":
-        required = (
-            options.protocol_sha256,
+        binary_hashes = (
             options.baseline_binary_sha256,
             options.candidate_binary_sha256,
         )
-        if any(value is None or not re.fullmatch(r"[0-9a-f]{64}", value) for value in required):
-            raise SystemExit("run mode requires a protocol and two binary SHA-256 values")
-        if options.phase is None or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,120}", options.phase):
-            raise SystemExit("run mode requires a safe explicit --phase")
+        if any(value is None or not re.fullmatch(r"[0-9a-f]{64}", value) for value in binary_hashes):
+            raise SystemExit("run mode requires two binary SHA-256 values")
+    if options.mode == "combined" and (
+        options.baseline_binary_sha256 is not None
+        or options.candidate_binary_sha256 is not None
+    ):
+        raise SystemExit("combined mode derives both binary hashes in the same invocation")
     repo = Path(__file__).resolve().parents[3]
+    binding = Path(RUNNER_BINDING_PATH).resolve() if RUNNER_BINDING_PATH else None
+    if binding is not None and not binding.is_file():
+        raise SystemExit(f"runner binding is not a regular file: {binding}")
     output = options.out.resolve()
     output.mkdir(parents=True)
     initial_host = host_snapshot()
@@ -508,6 +621,12 @@ def main() -> int:
         build_receipt = {
             "schema": "go-coordinator-remote-build/v1",
             "runner_sha256": sha256(Path(__file__).resolve()),
+            "runner": {
+                "engine": str(Path(__file__).resolve().relative_to(repo)),
+                "engine_sha256": sha256(Path(__file__).resolve()),
+                "binding": str(binding.relative_to(repo)) if binding is not None else None,
+                "binding_sha256": sha256(binding) if binding is not None else None,
+            },
             "mode": options.mode,
             "expected_cpu_flavor": options.expected_cpu_flavor,
             "host": initial_host,
@@ -521,16 +640,34 @@ def main() -> int:
 
         if options.mode == "build":
             return 0
-        if baseline_build["binary_sha256"] != options.baseline_binary_sha256:
-            raise RuntimeError("baseline binary differs from frozen artifact hash")
-        if candidate_build["binary_sha256"] != options.candidate_binary_sha256:
-            raise RuntimeError("candidate binary differs from frozen artifact hash")
+        if options.mode == "run":
+            if baseline_build["binary_sha256"] != options.baseline_binary_sha256:
+                raise RuntimeError("baseline binary differs from frozen artifact hash")
+            if candidate_build["binary_sha256"] != options.candidate_binary_sha256:
+                raise RuntimeError("candidate binary differs from frozen artifact hash")
+        baseline_campaign_sha = baseline_build["binary_sha256"]
+        candidate_campaign_sha = candidate_build["binary_sha256"]
         tests = output / "tests"
         tests.mkdir()
-        run_tests(go, baseline_source, work / "test-cache-baseline", tests / "baseline.txt")
+        baseline_tests = run_tests(
+            go, baseline_source, work / "test-cache-baseline", tests / "baseline.txt"
+        )
         assert_affinity(expected_affinity)
-        run_tests(go, candidate_source, work / "test-cache-candidate", tests / "candidate.txt")
+        candidate_tests = run_tests(
+            go, candidate_source, work / "test-cache-candidate", tests / "candidate.txt"
+        )
         assert_affinity(expected_affinity)
+        write_json(
+            tests / "manifest.json",
+            {
+                "schema": "go-coordinator-remote-tests/v1",
+                "protocol_sha256": options.protocol_sha256,
+                "arms": {
+                    "go-baseline": baseline_tests,
+                    "go-candidate": candidate_tests,
+                },
+            },
+        )
 
         before = host_snapshot()
         assert_affinity(expected_affinity, before["affinity"])
@@ -544,10 +681,10 @@ def main() -> int:
             "--protocol-sha256", options.protocol_sha256,
             "--left-arm", "go-baseline",
             "--left-binary", str(baseline_binary),
-            "--left-sha256", options.baseline_binary_sha256,
+            "--left-sha256", baseline_campaign_sha,
             "--right-arm", "go-candidate",
             "--right-binary", str(candidate_binary),
-            "--right-sha256", options.candidate_binary_sha256,
+            "--right-sha256", candidate_campaign_sha,
             "--warmups", "3", "--replicates", "20", "--cpu", str(benchmark_cpu),
             "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
             "--timeout-seconds", "1800",
@@ -567,27 +704,76 @@ def main() -> int:
                     if not row["warmup"] and row["case"] == case and row["replicate"] == replicate
                 }
                 mismatches += int(pair.get("go-baseline") != pair.get("go-candidate"))
-        steal_rows = sum(
+        measured_steal_rows = sum(
             row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
             for row in rows if not row["warmup"]
         )
+        steal_rows = sum(
+            row["host_after"]["steal_ticks"] != row["host_before"]["steal_ticks"]
+            for row in rows
+        )
+        affinity_rows = sum(
+            row.get("expected_affinity") != expected_affinity
+            or row["host_before"].get("self_affinity") != expected_affinity
+            or row["host_after"].get("self_affinity") != expected_affinity
+            for row in rows
+        )
+        pressure_rows = sum(
+            not row_pressure_valid(row[side])
+            for row in rows
+            for side in ("host_before", "host_after")
+        )
         throttled_before = cgroup_counter(before["cpu_stat"], "nr_throttled")
         throttled_after = cgroup_counter(after["cpu_stat"], "nr_throttled")
+        throttled_delta = (
+            throttled_after - throttled_before
+            if throttled_before is not None and throttled_after is not None else None
+        )
+        memory_event_deltas = counter_deltas(
+            before["memory_events"], after["memory_events"]
+        )
+        placement_unchanged = (
+            before["affinity"] == after["affinity"] == expected_affinity
+            and before["topology_order"] == after["topology_order"] == placement["topology_order"]
+            and before["cpuinfo_sha256"] == after["cpuinfo_sha256"] == initial_host["cpuinfo_sha256"]
+            and before["cpu_model"] == after["cpu_model"] == initial_host["cpu_model"]
+            and before["cpuset_cpus"] == after["cpuset_cpus"] == initial_host["cpuset_cpus"]
+            and before["memory_max"] == after["memory_max"] == str(options.expected_memory_bytes)
+            and before["nvidia_devices"] == after["nvidia_devices"] == []
+        )
+        timing_valid = (
+            steal_rows == 0
+            and before["steal_ticks"] == after["steal_ticks"]
+            and affinity_rows == 0
+            and pressure_rows == 0
+            and throttled_delta == 0
+            and memory_event_deltas is not None
+            and all(delta == 0 for delta in memory_event_deltas.values())
+            and placement_unchanged
+            and mismatches == 0
+        )
         isolation = {
             "schema": "go-coordinator-remote-isolation/v1",
             "before": before,
             "after": after,
             "placement": placement,
-            "measured_rows_with_nonzero_steal_delta": steal_rows,
-            "cgroup_nr_throttled_delta": (
-                throttled_after - throttled_before
-                if throttled_before is not None and throttled_after is not None else None
-            ),
+            "rows": len(rows),
+            "row_pressure_observations": len(rows) * 2,
+            "rows_with_nonzero_steal_delta": steal_rows,
+            "measured_rows_with_nonzero_steal_delta": measured_steal_rows,
+            "rows_with_affinity_change": affinity_rows,
+            "pressure_observations_failing_numeric_gate": pressure_rows,
+            "pressure_gate": {
+                "cpu_some_avg10_max": "10.0",
+                "cpu_full_avg10": "0.0",
+                "memory_some_avg10": "0.0",
+                "memory_full_avg10": "0.0",
+            },
+            "cgroup_nr_throttled_delta": throttled_delta,
+            "memory_event_deltas": memory_event_deltas,
+            "placement_unchanged": placement_unchanged,
             "fingerprint_pair_mismatches": mismatches,
-            "timing_valid": (
-                steal_rows == 0 and mismatches == 0
-                and throttled_before is not None and throttled_after == throttled_before
-            ),
+            "timing_valid": timing_valid,
         }
         write_json(output / "isolation.json", isolation)
         write_json(
@@ -596,10 +782,11 @@ def main() -> int:
                 "schema": "go-coordinator-remote-summary/v1",
                 "protocol_sha256": options.protocol_sha256,
                 "build_manifest_sha256": sha256(build_dir / "manifest.json"),
+                "tests_manifest_sha256": sha256(tests / "manifest.json"),
                 "campaign_rows_sha256": sha256(campaign / "rows.jsonl"),
                 "isolation_sha256": sha256(output / "isolation.json"),
                 "fingerprint_pair_mismatches": mismatches,
-                "timing_valid": isolation["timing_valid"],
+                "timing_valid": timing_valid,
             },
         )
         if mismatches:
