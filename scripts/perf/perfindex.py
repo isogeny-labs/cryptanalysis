@@ -129,14 +129,42 @@ def run_json(cmd: list[str], env: dict, timeout: float | None = None) -> list[di
     return [json.loads(l) for l in proc.stdout.splitlines() if l.startswith("{")]
 
 
-def list_kernels(binary: str, full: bool, filters: list[str]) -> list[dict]:
+def list_kernels(
+    binary: str,
+    full: bool,
+    filters: list[str],
+    exact_filters: list[str] | None = None,
+) -> list[dict]:
     cmd = [binary, "list"]
     if full:
         cmd.append("--full")
     ks = run_json(cmd, dict(os.environ))
     filters = [f for spec in filters for f in spec.split(",") if f]
+    exact_filters = [
+        f for spec in (exact_filters or []) for f in spec.split(",") if f
+    ]
     if filters:
         ks = [k for k in ks if any(f in k["id"] for f in filters)]
+    if exact_filters:
+        if len(set(exact_filters)) != len(exact_filters):
+            raise SystemExit("--exact-filter contains duplicate kernel IDs")
+        registry_ids = [k["id"] for k in ks]
+        duplicate_registry_ids = sorted(
+            kid for kid in set(registry_ids) if registry_ids.count(kid) > 1
+        )
+        if duplicate_registry_ids:
+            raise SystemExit(
+                "registry contains duplicate kernel IDs: "
+                + ", ".join(duplicate_registry_ids)
+            )
+        missing = sorted(set(exact_filters) - set(registry_ids))
+        if missing:
+            raise SystemExit(
+                "--exact-filter kernel IDs not present in registry: "
+                + ", ".join(missing)
+            )
+        selected = set(exact_filters)
+        ks = [k for k in ks if k["id"] in selected]
     return ks
 
 
@@ -450,8 +478,14 @@ def cmd_compare(a: argparse.Namespace) -> None:
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
     rng = random.Random(a.seed)
-    kb = {k["id"]: k for k in list_kernels(a.base, a.full, a.filter)}
-    kc = {k["id"]: k for k in list_kernels(a.cand, a.full, a.filter)}
+    kb = {
+        k["id"]: k
+        for k in list_kernels(a.base, a.full, a.filter, a.exact_filter)
+    }
+    kc = {
+        k["id"]: k
+        for k in list_kernels(a.cand, a.full, a.filter, a.exact_filter)
+    }
     only = sorted(set(kb) ^ set(kc))
     if only:
         print(f"kernels present on one side only (skipped): {only}", file=sys.stderr)
@@ -528,8 +562,14 @@ def instr_one(binary: str, kid: str) -> dict:
 def cmd_instr(a: argparse.Namespace) -> None:
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
-    kb = {k["id"]: k for k in list_kernels(a.base, a.full, a.filter)}
-    kc = {k["id"]: k for k in list_kernels(a.cand, a.full, a.filter)}
+    kb = {
+        k["id"]: k
+        for k in list_kernels(a.base, a.full, a.filter, a.exact_filter)
+    }
+    kc = {
+        k["id"]: k
+        for k in list_kernels(a.cand, a.full, a.filter, a.exact_filter)
+    }
     kernels = [kc[i] for i in sorted(set(kb) & set(kc))]
     per = {}
     for k in kernels:
@@ -580,7 +620,19 @@ def main() -> None:
         c.add_argument("--base", required=True)
         c.add_argument("--cand", required=True)
         c.add_argument("--out", required=True)
-        c.add_argument("--filter", action="append", default=[])
+        filters = c.add_mutually_exclusive_group()
+        filters.add_argument(
+            "--filter",
+            action="append",
+            default=[],
+            help="select kernels whose IDs contain this substring (repeatable)",
+        )
+        filters.add_argument(
+            "--exact-filter",
+            action="append",
+            default=[],
+            help="select this complete kernel ID and fail if it is absent (repeatable)",
+        )
         c.add_argument("--full", action="store_true")
         c.add_argument("--weights")
         if name == "compare":
