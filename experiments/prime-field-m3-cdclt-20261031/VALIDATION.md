@@ -78,14 +78,18 @@ rg -q '805,306,365' experiments/prime-field-m3-cdclt-20261031/PROTOCOL.md
 rg -q 'no finite-field proof checker' experiments/prime-field-m3-cdclt-20261031/PROTOCOL.md
 dot -Tsvg experiments/prime-field-m3-cdclt-20261031/hardening-flow.dot \
   -o experiments/prime-field-m3-cdclt-20261031/hardening-flow.svg
+dot -Tpdf experiments/prime-field-m3-cdclt-20261031/hardening-flow.dot \
+  -o experiments/prime-field-m3-cdclt-20261031/hardening-flow.pdf
 pandoc experiments/prime-field-m3-cdclt-20261031/HARDENING_REPORT.md \
   --pdf-engine=xelatex \
   -o experiments/prime-field-m3-cdclt-20261031/HARDENING_REPORT.pdf
 pdftotext experiments/prime-field-m3-cdclt-20261031/HARDENING_REPORT.pdf -
 ```
 
-The report is a two-page, text-extractable PDF. Its diagram was also visually
-inspected after rendering.
+The report is a two-page, text-extractable PDF. Its PDF/SVG diagram was also
+visually inspected after rendering. The generated PNG used during the first
+render was removed after the artifact-policy check; the reproducible report
+source now embeds the policy-kept PDF rendering from the same DOT source.
 
 The broad repository command `make test JOBS=2` was attempted and stopped
 before configuration with exit 2 because `cmake` is not installed in this
