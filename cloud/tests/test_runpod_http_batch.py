@@ -257,6 +257,8 @@ class RunpodHttpBatchTest(unittest.TestCase):
                 ("vcpu", lambda pod: pod["cpu"].update(vcpuCount=16)),
                 ("vcpu-bool", lambda pod: pod["cpu"].update(vcpuCount=True)),
                 ("memory", lambda pod: pod["cpu"].update(memory=63)),
+                ("memory-gib-reinterpretation",
+                 lambda pod: pod["cpu"].update(memory=64 << 30)),
                 ("memory-float", lambda pod: pod["cpu"].update(memory=64.0)),
                 ("gpu", lambda pod: pod.update(gpu={"id": "unexpected"})),
                 ("cuda", lambda pod: pod.update(cudaVersion="13.2")),
@@ -284,7 +286,7 @@ class RunpodHttpBatchTest(unittest.TestCase):
         self.assertEqual(plan["request"]["computeType"], "CPU")
         self.assertEqual(plan["request"]["cpuFlavorIds"], ["cpu3c"])
         self.assertEqual(plan["cpu_guard"], {
-            "flavor": "cpu3c", "memory_gib": 64,
+            "flavor": "cpu3c", "provider_memory_value": 64,
             "no_gpu": True, "vcpu_count": 32,
         })
 
@@ -337,7 +339,7 @@ class RunpodHttpBatchTest(unittest.TestCase):
             self.assertEqual(client.deleted, [POD])
             receipt = json.loads(args.receipt.read_text())
             self.assertEqual(receipt["cpu_guard"], {
-                "flavor": "cpu3c", "memory_gib": 64,
+                "flavor": "cpu3c", "provider_memory_value": 64,
                 "no_gpu": True, "vcpu_count": 32,
             })
             self.assertEqual(receipt["pod"]["cpu"], {

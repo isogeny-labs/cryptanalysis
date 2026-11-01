@@ -797,7 +797,7 @@ def execute(args, *, client=None, transport=None, repo=REPO,
     if args.cpu:
         plan["cpu_guard"] = {
             "flavor": args.cpu_flavor[0], "vcpu_count": args.cpu,
-            "memory_gib": args.cpu_memory, "no_gpu": True,
+            "provider_memory_value": args.cpu_memory, "no_gpu": True,
         }
     if args.dry_run:
         print(json.dumps(plan, indent=2, sort_keys=True))
@@ -901,8 +901,8 @@ def parse(argv=None):
     parser.add_argument("name", help="pod-name prefix; a random suffix is always added")
     runpod_pod.add_pod_options(parser)
     parser.add_argument(
-        "--cpu-memory", type=int, default=0, metavar="GIB",
-        help="exact v2 cpu.memory value required for a CPU allocation")
+        "--cpu-memory", type=int, default=0, metavar="PROVIDER_VALUE",
+        help="exact raw v2 cpu.memory response value required for a CPU allocation")
     parser.add_argument("--source-ref", required=True,
                         help="public exact branch ref, e.g. refs/heads/feature")
     parser.add_argument("--source-commit", required=True)
