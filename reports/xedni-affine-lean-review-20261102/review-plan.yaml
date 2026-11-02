@@ -1,0 +1,72 @@
+review_plan:
+  id: XEDNI-AFFINE-LEAN-20261102
+  opened_utc: 2026-11-02T19:04:59Z
+  producer_commit: d243c3ce88e077a593c3be2c2ba502d976564534
+  producer_claim: >-
+    For each finite incidence row, arbitrary integer affine candidates preserve
+    the input dot product and coefficient residues modulo positive q whenever
+    every direction is in the row kernel and has zero residue. Integer
+    combinations of feasible directions remain feasible.
+  source_binding:
+    rust_path: suite/src/cryptanalysis/xedni_lift.rs
+    rust_sha256: b08c94845e9b4ed9660bd01aff01b2e59d274d0f7806a4ddf48ef3d35541ac96
+    lean_path: research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean
+    lean_sha256: c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757
+    toolchain: leanprover/lean4:v4.34.1
+  coordinator_prior: >-
+    The finite-sum algebra is likely correct, but the producer's theorem only
+    applies to direction lists satisfying the stated hypotheses. The source
+    bridge must check what LLL actually changes and must not treat a passing
+    Lean build as proof of Rust control flow or the frozen p=67 comparison.
+  joints:
+    - id: algebra-and-exceptions
+      joint: >-
+        Derive, without reading the producer proof, whether arbitrary integer
+        combinations of kernel-and-residue directions and affine candidates
+        preserve all finite incidence rows and residues for q positive; test
+        the necessity of each hypothesis and state any exception.
+      assigned_to: TASK-20261102-1a2b3c
+      worked_attack: >-
+        Use dimension one with u=0, row=1, q=2, direction=1 and coefficient=1.
+        Dropping either the kernel or residue premise must make the respective
+        conclusion false.
+    - id: source-gate-fidelity
+      joint: >-
+        Compare all Lean declarations and their axioms with the exact Rust
+        affine_candidate, validate, LLL basis mutations, certifier, pinned
+        receipt and hosted workflow. Identify any unproved implementation
+        bridge or claim larger than the statements.
+      assigned_to: TASK-20261102-4d5e6f
+      worked_attack: >-
+        Check whether post-LLL basis vectors are guaranteed to remain integral
+        combinations of validated input directions, including error paths and
+        row swaps; try a stale Rust source hash and an altered theorem axiom
+        list against the checker.
+  proves_too_much:
+    objects:
+      - >-
+        n=1, u=0, row=1, q=2, direction=1, coefficient=1: neither kernel nor
+        residue hypothesis holds, so neither conclusion should be derivable.
+      - >-
+        n=1, u=0, row=0, q=2, direction=1, coefficient=1: the exact row holds
+        but residue preservation is false.
+    failure_signature: >-
+      The derivation must refuse the missing premise or compute the nonzero
+      dot product or remainder; an unconditional preservation claim breaks.
+  blindness:
+    mutual: true
+    lifted_for: []
+  blind_rederivation:
+    required: true
+    assigned_to: TASK-20261102-1a2b3c
+    quantity: >-
+      From the mathematical statement and two known-false controls alone,
+      derive the finite-sum invariant and its exact hypotheses. Do not inspect
+      the producer's Lean source, Rust implementation, receipt or report.
+    blind_from:
+      - research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean
+      - research/xedni_lift_optimizer_20261101/lean/README.md
+      - research/xedni_lift_optimizer_20261101/lean/check.py
+      - research/xedni_lift_optimizer_20261101/lean/receipt.json
+      - suite/src/cryptanalysis/xedni_lift.rs
+      - suite/src/cryptanalysis/lattice.rs
