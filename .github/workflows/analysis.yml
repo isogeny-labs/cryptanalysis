@@ -259,7 +259,7 @@ jobs:
           shellcheck scripts/*.sh deploy/*/*.sh usecases/ecc2k130/deploy/helm/check.sh
           python3 -m unittest discover -s tests -p test_checkpoint_quoting.py -v
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.23'
 
