@@ -1,0 +1,1001 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "GO-COORD-PEER-KEY-20261101-REMOTE-AB-AA-V9",
+  "version": 9,
+  "created": "2026-11-01",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/go",
+  "authors": [
+    "Go fixed-peer-key optimization lane"
+  ],
+  "links": {
+    "predecessor": "experiments/performance-saturation-20261101/go/protocol.v8.json",
+    "predecessor_sha256": "c6d0a27e56f35ad7dee1faacc9359e65e312203612e642d13f304053fbfa6091",
+    "predecessor_file_sha256": "9f62cb2fc29b5546b594017c79d22b01dcd85aacfa58f9c8d83982892acaa81a",
+    "predecessor_registration_commit": "a75f84d185874ae10390f5065c84edcaf498783e",
+    "predecessor_freeze_commit": null,
+    "predecessor_evidence_commit": null,
+    "predecessor_outcome": "abandoned zero-data draft: v8 registered before data but was never frozen, published, launched, or allocated; v9 prospectively supersedes its incomplete export/schedule/isolation contract",
+    "predecessor_analysis": "experiments/performance-saturation-20261101/go/remote-ab-v7/analysis/paired-ratios.json",
+    "predecessor_analysis_sha256": "3ce8db3c155b1fb5058075d5b358ee147b5195c83bfffdb7fff18948a2a2dbd4",
+    "predecessor_report": "experiments/performance-saturation-20261101/go/remote-ab-v7/report/REPORT.md",
+    "predecessor_report_sha256": "7ebe7e11703cdbc909bfa2a0f025d0895627b7e13d192ed2874543b941983169",
+    "status": "Prospective v9 draft. Zero v9 benchmark rows, fingerprints, allocation/timing observations, or provider allocations exist before registration and canonical freeze. Local source-construction, build, and correctness-test smoke checks are mechanical tooling validation only and are inadmissible as v9 evidence.",
+    "literature": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+    "literature_sha256": "c2498147cdb5945c0646fa3f16458963686de2a3b9e63a34dd3cc6a4697d025f",
+    "benchmark": "bindings/go/coord_benchmark_test.go",
+    "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+    "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+    "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+    "common_correctness_test": "bindings/go/coord_test.go",
+    "common_correctness_test_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+    "common_correctness_test_blob": "b487d974638f5fe81a2921fa002b8ce481b956ad",
+    "common_correctness_test_sha256": "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+    "tooling_commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+    "tooling_tree": "2e438a2868c88373035b87f9c4b060e33c3a9b43",
+    "remote_runner": "experiments/performance-saturation-20261101/go/run_remote_ab.py",
+    "remote_runner_sha256": "c1ed9aa1bb2c9680c17b32452386514f1a015055012b904e979b64ddf39e1683",
+    "remote_binding": "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+    "remote_binding_sha256": "0e040ef70acf5e0fdf1c027c87d34964807bd66fc36844868015bb7b7e2d715c",
+    "campaign_runner": "experiments/performance-saturation-20261101/go/run_remote_peer_key_campaign.py",
+    "campaign_runner_sha256": "e5b6bf9f444967ad103436831ef9d83217a62495dcbf198ac5277b325d092370",
+    "formal_analyzer": "experiments/performance-saturation-20261101/go/analyze_remote_peer_key_ab.py",
+    "formal_analyzer_sha256": "9985ee0862b44ec37304ceabd0099434ac4aeda7fa38cc9aec087aaea02d70a6",
+    "source_identity_tests": "experiments/performance-saturation-20261101/go/test_remote_sources.py",
+    "source_identity_tests_sha256": "b2417802d20563a0f47d589a912ad6848eb37bb2ac089e70927022f5236fc6c6",
+    "affinity_tests": "experiments/performance-saturation-20261101/go/test_remote_affinity.py",
+    "affinity_tests_sha256": "d6e0bf4e1cda4d724112b3cafce6fd55093bfc4250e5d1826aeb587f58aaff46",
+    "analyzer_tests": "tests/test_go_peer_key_ab_analyzer.py",
+    "analyzer_tests_sha256": "a4c7181725acaa03d02ea03255f8057cc649d4d08fb408e4f2b840609df934b3",
+    "transport_commit": "3ed05a64a73595d3fef4689083b202a4d0c68987",
+    "transport_driver": "cloud/runpod_http_batch.py",
+    "transport_driver_sha256": "dae217dc4941e7ca2bdadba22fb938b6f1380e6341170d300194bd569cd0612e",
+    "transport_server": "cloud/runpod_http_batch_server.py",
+    "transport_server_sha256": "691841f873a8f2e89a2624161c50864a7e5ef579d893853dffb246bf30dd2b74",
+    "transport_pod": "cloud/runpod_pod.py",
+    "transport_pod_sha256": "5f3b6df538408f2da0048f2fab1d0de609b75306ab5c82edb3a25eade6e0a91c",
+    "transport_ship": "cloud/ship.py",
+    "transport_ship_sha256": "872f80bcee75d75abb8d873becd4dc79861c3d5b5685bc7cf5f3dfba66b5120f",
+    "transport_tests": "cloud/tests/test_runpod_http_batch.py",
+    "transport_tests_sha256": "5f203deb81e3fdcddc83f35a43bb5f52015b69edb1572852e948edd4b47373e4",
+    "benchmark_cases": [
+      "BenchmarkStateVersionVector/log_1024",
+      "BenchmarkStateVersionVector/log_8192",
+      "BenchmarkStateDeltaSinceCaughtUp/log_1024",
+      "BenchmarkStateDeltaSinceCaughtUp/log_8192",
+      "BenchmarkStateDeltaSinceOneBehind/log_1024",
+      "BenchmarkStateDeltaSinceOneBehind/log_8192"
+    ],
+    "l2_measure": "experiments/performance-saturation-20261101/go/l2_measure.py",
+    "exporter": "experiments/performance-saturation-20261101/go/export_remote_peer_key_ab.py",
+    "campaign_core": "experiments/performance-saturation-20261101/go/run_campaign.py",
+    "analysis_primitives": "experiments/performance-saturation-20261101/go/analyze_remote_ab.py",
+    "benchmark_environment_sha256": "a8e8d1d212f9e801c476e860e4fd25020b37c3a6850eb549c5dd204adb2e0fd3",
+    "protocol_validator": "crypto-autoresearcher/tools/experiment_protocol.py",
+    "protocol_validator_sha256": "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4",
+    "protocol_schema": "crypto-autoresearcher/schemas/experiment-protocol.v1.json",
+    "protocol_schema_sha256": "a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443",
+    "export_validator": "crypto-autoresearcher/tools/experiment_protocol.py",
+    "export_validator_sha256": "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4",
+    "export_schema": "crypto-autoresearcher/schemas/experiment-export.v1.json",
+    "export_schema_sha256": "108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757",
+    "v9_data_invocations_before_registration": "0",
+    "v9_provider_allocations_before_registration": "0",
+    "l2_measure_sha256": "662e084da2d59b48f5f3a2b93af5fe04da34c77debe95b125d7b84ef53e8673c",
+    "exporter_sha256": "f966a177b4a250933d1b7861c816c4cd0151649702564885b11da8eb42684687",
+    "campaign_core_sha256": "b03652a5b4167d0edee6797c979bf78ec93858a88c7620b209a3200354a18c56",
+    "analysis_primitives_sha256": "bc5f2b25d7512cc58f09ca3654cc124948bcc3e277cab10e46263530d91734a8"
+  },
+  "question": "Does the fixed-peer-key candidate reduce both counted allocation metrics by at least 95 percent and improve both registered clocks by at least 5 percent beyond a simultaneously bounded same-session byte-identical A/A noise floor in every fixed coordinator scan case, while preserving every deterministic output, on one cumulative-L2 Secure cpu3c session?",
+  "claims": [
+    {
+      "id": "C-ab-correct",
+      "text": "All four byte-bound arms return one identical deterministic fingerprint in every warmup and measured cell, invariant across all 23 rounds in each case.",
+      "class": "exact_computation",
+      "decided_by": [],
+      "if_supported": "counted allocation may be interpreted and timing proceeds to controls",
+      "if_not_supported": "terminal wrong_answer; reject every performance claim"
+    },
+    {
+      "id": "C-ab-allocation",
+      "text": "The candidate/baseline paired median is at most 1/20 for both B/op and allocs/op in every registered case.",
+      "class": "comparative",
+      "decided_by": [
+        "C-ab-alloc"
+      ],
+      "if_supported": "allocation reduction is supported for the six registered workloads",
+      "if_not_supported": "allocation claim is unsupported"
+    },
+    {
+      "id": "C-ab-timing",
+      "text": "After cumulative L2 and fixed-label same-session A/A calibration pass, every wall and CPU cell has baseline/candidate paired median at least 21/20 and simultaneous lower bound above both one and the registered A/A noise factor.",
+      "class": "comparative",
+      "decided_by": [
+        "C-ab-time"
+      ],
+      "if_supported": "timing improvement is supported only for this instance-scoped L2 session and workloads",
+      "if_not_supported": "timing is unsupported when A/B misses, or invalid_measurement when L2/A/A calibration fails"
+    }
+  ],
+  "arms": [
+    {
+      "id": "go-baseline",
+      "role": "baseline",
+      "description": "Exact 7c712913 production tree with the common pinned benchmark and candidate correctness-test blobs overlaid.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+            "--mode",
+            "combined",
+            "--phase",
+            "fixed-peer-key-ab-aa-v9",
+            "--out",
+            "go-peer-key-ab-aa-v9-run",
+            "--protocol-sha256",
+            "V9_CANONICAL_SHA256_FROM_FREEZE",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-bytes",
+            "64000000000",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1",
+          "artifact_policy": "Combined mode records four retained binary hashes; baseline, A/A-left, and A/A-right must be byte-identical; manifests and raw artifacts are archive-bound."
+        },
+        "env": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC",
+          "GOMAXPROCS": "1",
+          "CGO_ENABLED": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "common_test_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        "common_test_blob": "b487d974638f5fe81a2921fa002b8ce481b956ad",
+        "common_test_sha256": "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by (package,die,numa,core,cpu), with missing topology sorting last; choose the first ordered CPU whose complete thread_siblings set is allowed, excludes CPU0, and leaves at least one housekeeping CPU; reserve that complete SMT sibling set",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "binary_archive_member": "go-peer-key-ab-aa-v9-run/build/coord-baseline.test",
+        "production_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "production_tree": "735e671e9492fb890a4e87825644c46bace88e4a",
+        "coord_blob": "0d3f53806361e7442bc1d108c16b8b847f029918",
+        "implementation": "one reusable scan buffer and one Go lifetime RLock per scan; map[string]string lookup converts scratch peer bytes to a transient string for each entry"
+      }
+    },
+    {
+      "id": "go-candidate",
+      "role": "candidate",
+      "description": "The same synthetic baseline tree with only bindings/go/coord.go replaced by the exact fixed-peer-key candidate blob.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+            "--mode",
+            "combined",
+            "--phase",
+            "fixed-peer-key-ab-aa-v9",
+            "--out",
+            "go-peer-key-ab-aa-v9-run",
+            "--protocol-sha256",
+            "V9_CANONICAL_SHA256_FROM_FREEZE",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-bytes",
+            "64000000000",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1",
+          "artifact_policy": "Combined mode records four retained binary hashes; baseline, A/A-left, and A/A-right must be byte-identical; manifests and raw artifacts are archive-bound."
+        },
+        "env": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC",
+          "GOMAXPROCS": "1",
+          "CGO_ENABLED": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "common_test_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        "common_test_blob": "b487d974638f5fe81a2921fa002b8ce481b956ad",
+        "common_test_sha256": "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by (package,die,numa,core,cpu), with missing topology sorting last; choose the first ordered CPU whose complete thread_siblings set is allowed, excludes CPU0, and leaves at least one housekeeping CPU; reserve that complete SMT sibling set",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "binary_archive_member": "go-peer-key-ab-aa-v9-run/build/coord-candidate.test",
+        "production_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        "production_parent": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "production_tree": "5a2653198b943e93c9f7ae7906ad39d74baf7a79",
+        "merge_base": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "coord_blob": "edba225c5a1ff613d71a21aa8d2c528096831b6f",
+        "production_diff_sha256": "e29818ed168eaa886dfdc4be3c90777b1026b89246b760fd76d31614f33e8417",
+        "synthetic_only_changed_build_path": "bindings/go/coord.go",
+        "production_commit_changed_paths": [
+          "bindings/go/coord.go",
+          "bindings/go/coord_test.go"
+        ],
+        "implementation": "one reusable scan buffer and one Go lifetime RLock per scan; an owned zero-initialized [PeerMax]byte peerScanKey performs transient map lookup without a per-entry string allocation"
+      }
+    },
+    {
+      "id": "go-baseline-aa-left",
+      "role": "control_aa",
+      "description": "Prospectively fixed A/A-left label resolving to a byte-identical retained copy of the A/B baseline binary.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+            "--mode",
+            "combined",
+            "--phase",
+            "fixed-peer-key-ab-aa-v9",
+            "--out",
+            "go-peer-key-ab-aa-v9-run",
+            "--protocol-sha256",
+            "V9_CANONICAL_SHA256_FROM_FREEZE",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-bytes",
+            "64000000000",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1",
+          "artifact_policy": "Combined mode records four retained binary hashes; baseline, A/A-left, and A/A-right must be byte-identical; manifests and raw artifacts are archive-bound."
+        },
+        "env": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC",
+          "GOMAXPROCS": "1",
+          "CGO_ENABLED": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "common_test_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        "common_test_blob": "b487d974638f5fe81a2921fa002b8ce481b956ad",
+        "common_test_sha256": "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by (package,die,numa,core,cpu), with missing topology sorting last; choose the first ordered CPU whose complete thread_siblings set is allowed, excludes CPU0, and leaves at least one housekeeping CPU; reserve that complete SMT sibling set",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "binary_archive_member": "go-peer-key-ab-aa-v9-run/build/coord-baseline-aa-left.test",
+        "production_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "production_tree": "735e671e9492fb890a4e87825644c46bace88e4a",
+        "coord_blob": "0d3f53806361e7442bc1d108c16b8b847f029918",
+        "implementation": "one reusable scan buffer and one Go lifetime RLock per scan; map[string]string lookup converts scratch peer bytes to a transient string for each entry",
+        "derived_from": "coord-baseline.test byte-identical SHA-256"
+      }
+    },
+    {
+      "id": "go-baseline-aa-right",
+      "role": "control_aa",
+      "description": "Prospectively fixed A/A-right label resolving to a second byte-identical retained copy of the A/B baseline binary.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "build": [
+          [
+            "python3",
+            "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+            "--mode",
+            "combined",
+            "--phase",
+            "fixed-peer-key-ab-aa-v9",
+            "--out",
+            "go-peer-key-ab-aa-v9-run",
+            "--protocol-sha256",
+            "V9_CANONICAL_SHA256_FROM_FREEZE",
+            "--expected-cpus",
+            "32",
+            "--expected-memory-bytes",
+            "64000000000",
+            "--expected-cpu-flavor",
+            "cpu3c"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "cwd": "bindings/go",
+          "go_build": "test -c -trimpath -buildvcs=false",
+          "benchtime": "100x",
+          "benchmem": "true",
+          "cpu": "1",
+          "artifact_policy": "Combined mode records four retained binary hashes; baseline, A/A-left, and A/A-right must be byte-identical; manifests and raw artifacts are archive-bound."
+        },
+        "env": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC",
+          "GOMAXPROCS": "1",
+          "CGO_ENABLED": "1"
+        },
+        "threads": 1,
+        "image_digest": "runpod/base:1.0.2-ubuntu2404"
+      },
+      "parameters": {
+        "benchmark_commit": "050af6a5edbaccee4028574492597049a06cfd83",
+        "benchmark_blob": "650f6a4a953d5adef537ce87aa3e114b432f32d7",
+        "benchmark_sha256": "b13eafcc112ada81b104c3fde3ad51a75cb80e9a051f9644a66fc27d30218dbd",
+        "common_test_commit": "37b96362a53a7364dd4cc2a18f450a3627ec08d3",
+        "common_test_blob": "b487d974638f5fe81a2921fa002b8ce481b956ad",
+        "common_test_sha256": "4bf65f9fa27f46e04d287e8fc49ce33d00e9fb74e176a25677b04d9f883e35b8",
+        "affinity_policy": "require exactly 32 distinct allowed CPU ids; order by (package,die,numa,core,cpu), with missing topology sorting last; choose the first ordered CPU whose complete thread_siblings set is allowed, excludes CPU0, and leaves at least one housekeeping CPU; reserve that complete SMT sibling set",
+        "go_archive": "go1.27.3.linux-amd64.tar.gz",
+        "go_archive_bytes": 70588678,
+        "go_archive_sha256": "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40",
+        "binary_archive_member": "go-peer-key-ab-aa-v9-run/build/coord-baseline-aa-right.test",
+        "production_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "production_tree": "735e671e9492fb890a4e87825644c46bace88e4a",
+        "coord_blob": "0d3f53806361e7442bc1d108c16b8b847f029918",
+        "implementation": "one reusable scan buffer and one Go lifetime RLock per scan; map[string]string lookup converts scratch peer bytes to a transient string for each entry",
+        "derived_from": "coord-baseline.test byte-identical SHA-256"
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa-time",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Correctness is an exact pairwise fingerprint equality gate, not a probabilistic detector requiring calibration."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "The six exact baseline/candidate paired workloads are exhaustive for the registered question; no unrelated null population licenses a claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "coordinator peer interning key during log scans",
+        "levels": [
+          "transient string key",
+          "owned fixed-size peer key"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "production source",
+        "treatment": "crossed",
+        "value": "candidate differs from baseline only at bindings/go/coord.go; three baseline labels resolve to byte-identical binaries",
+        "how": "wrapper verifies commits, trees, blobs, diff, common overlays, retained binaries, and manifests"
+      },
+      {
+        "name": "benchmark case",
+        "treatment": "crossed",
+        "value": "three states at exact 1024- and 8192-entry logs",
+        "how": "all six cases execute in every arm"
+      },
+      {
+        "name": "benchmark operations",
+        "treatment": "fixed",
+        "value": 100,
+        "how": "every row uses -test.benchtime=100x"
+      },
+      {
+        "name": "toolchain and build",
+        "treatment": "fixed",
+        "value": "official Go 1.27.3 linux-amd64, same GCC/libc, flags, one pod",
+        "how": "download size/SHA, tools, source manifests, tests, and binaries retained"
+      },
+      {
+        "name": "four-period order",
+        "treatment": "fixed",
+        "value": [
+          "B C L R",
+          "C B R L",
+          "L R B C",
+          "R L C B"
+        ],
+        "how": "cycle resets after three warmups and repeats five times for 20 measured rounds per case"
+      },
+      {
+        "name": "placement",
+        "treatment": "fixed",
+        "value": "Secure RunPod cpu3c, 32 vCPU, provider memory 64, cgroup memory.max 64000000000, no GPU",
+        "how": "receipt, placement, full-SMT reservation, lock, affinity, restoration verified"
+      },
+      {
+        "name": "host state",
+        "treatment": "measured",
+        "value": "all 552 rows plus session snapshots",
+        "how": "formal analyzer recomputes cumulative L2 from schedstat, foreign runnable, PSI, ivcsw, affinity, steal, cgroup, quiet preflight, reservation"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-ab-alloc",
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator peer interning key during log scans"
+        ],
+        "design": "one_factor",
+        "reason": "common synthetic source/build/pod/fixture/schedule isolate coord.go",
+        "threshold": "both candidate/baseline paired medians <=1/20 in all cases"
+      },
+      {
+        "id": "C-ab-time",
+        "arms": [
+          "go-baseline",
+          "go-candidate"
+        ],
+        "differs_in": [
+          "coordinator peer interning key during log scans"
+        ],
+        "design": "one_factor",
+        "reason": "same-session four-period schedule balances position and direction",
+        "threshold": "all A/B medians >=21/20 and q=1/960 lower bounds >max(1, fixed-label A/A noise factor)"
+      },
+      {
+        "id": "C-aa-time",
+        "arms": [
+          "go-baseline-aa-left",
+          "go-baseline-aa-right"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "labels resolve to byte-identical baseline binaries in the same session",
+        "threshold": "each q=1/960..959/960 interval contains 1 and lies within [20/21,21/20]"
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false,
+    "transfer_obligations": []
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "Fixed balanced four-period Latin cycle BCLR, CBRL, LRBC, RLCB balances each label in each position and both A/B and A/A directions; it does not claim first-order carryover balance. Reset after warmups and repeat five times.",
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        24301
+      ],
+      "nonce": null,
+      "note": "0x5eed is fixed in the deterministic fixture for every row."
+    },
+    "instance_sampling": {
+      "rule": "Run six cases in order; each has three warmup and twenty measured four-arm rounds in the frozen cycle.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "Source/binary labels remain visible because they are exact adherence gates; the analyzer and terminal table are hash-frozen before data.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 6,
+    "replicates": 20,
+    "warmups": 3,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 24,
+      "correction": "bonferroni",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "N=20 predates v9 data. Joint 6 cases x 2 clocks x (A/B plus A/A) gives 24 two-sided cells; uniform Bonferroni tails q=1/960 and 959/960. Exact rational bootstrap-median distributions use no RNG, pilot, approximation, or optional stopping."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 2400,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 21600,
+      "measured_on": "conservative prospective doubled-row/build/test/export bound; no v9 timing observation"
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "bytes_per_op",
+        "name": "allocated bytes per operation",
+        "unit": "B/op",
+        "kind": "counted",
+        "definition": "Go heap bytes allocated inside the registered b.N scan loop divided by b.N; fixture and correctness hashes excluded.",
+        "source": "Go benchmark B/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 B/op",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "allocs_per_op",
+        "name": "allocation events per operation",
+        "unit": "allocs/op",
+        "kind": "counted",
+        "definition": "Go heap allocation events inside the registered b.N scan loop divided by b.N.",
+        "source": "Go benchmark allocs/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "0.01 allocs/op at b.N=100",
+        "uncertainty": "none_exact"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "wall_ns_per_op",
+        "name": "wall nanoseconds per operation",
+        "unit": "ns/op",
+        "kind": "timed",
+        "definition": "Go monotonic benchmark time around only the b.N operation loop divided by b.N.",
+        "source": "Go benchmark ns/op field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "1 ns/op",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "cpu_ns_per_op",
+        "name": "process CPU nanoseconds per operation",
+        "unit": "cpu-ns/op",
+        "kind": "timed",
+        "definition": "RUSAGE_SELF user plus system CPU delta around only the b.N loop divided by b.N.",
+        "source": "benchmark custom cpu-ns/op field",
+        "formula": "(user_ns_after + system_ns_after - user_ns_before - system_ns_before) / b.N",
+        "aggregation": "paired_ratio",
+        "resolution": "10 ns/op at b.N=100",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "correctness_fingerprints",
+        "name": "ordered-line and canonical-vector fingerprints",
+        "unit": "lowercase SHA-256 hex",
+        "kind": "exact",
+        "definition": "Post-timing SHA-256 of returned ordered lines and canonical sorted vectors.",
+        "source": "benchmark correctness log fields",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": null,
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "L2",
+    "warmups": 3,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "B/op",
+      "allocs/op",
+      "Go ns/op and cpu-ns/op",
+      "per-task schedstat run/wait/coverage",
+      "reserved-core jiffies and foreign-runnable samples",
+      "memory PSI full-stall delta",
+      "RUSAGE_CHILDREN involuntary switches",
+      "cgroup cpu.stat and memory.events"
+    ],
+    "record": [
+      "all 552 commands, exact minimal environment/hash, raw stdout/stderr/metadata and parsed fields",
+      "four binary paths/hashes with baseline/A/A byte identity and candidate difference",
+      "exclusive /tmp/crypto-bench.lock, SMT topology, eviction/unmovable receipt, runner/child/tree affinity, restoration readback",
+      "quiet preflight settle 2s, other CPU <=0.10 of interval, CPU/memory PSI some avg10 <=5",
+      "each row schedstat coverage >=0.90, run delay <=0.005, zero steal/foreign samples, memory PSI full delta=0, ivcsw <=50/s, parallelism <=1.05, no descendants",
+      "session exact placement, zero steal/throttle/memory-event deltas, stable topology/cpuset/memory.max/no GPU",
+      "all four fingerprints in every cell and case invariance"
+    ],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": "one authenticated no-SSH HTTP batch allocation",
+    "placement": {
+      "cloud": "SECURE",
+      "cpu_flavor": "cpu3c",
+      "vcpu": 32,
+      "provider_memory_value": 64,
+      "cgroup_memory_max_bytes": 64000000000,
+      "memory_unit_interpretation": "provider value 64 is raw placement metadata; cgroup v2 enforcement must equal exactly 64000000000 decimal bytes",
+      "image": "runpod/base:1.0.2-ubuntu2404",
+      "official_catalog_availability": "HIGH",
+      "official_catalog_price_usd_per_hour": 0.96,
+      "max_price_usd_per_hour": 1.0,
+      "catalog_checked": "2026-11-01 retained v7 official observation; not re-queried for this draft",
+      "benchmark_cpu_affinity": "first topology-ordered CPU whose complete SMT siblings are allowed, exclude CPU0, and leave housekeeping; child on one CPU, full core reserved",
+      "gpu_count": 0,
+      "ssh_ports": 0,
+      "transport": "authenticated HTTPS proxy on 8888/http with exact-ID cleanup",
+      "combined_command": "python3 experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py --mode combined --phase fixed-peer-key-ab-aa-v9 --out go-peer-key-ab-aa-v9-run --protocol-sha256 V9_CANONICAL_SHA256_FROM_FREEZE --expected-cpus 32 --expected-memory-bytes 64000000000 --expected-cpu-flavor cpu3c",
+      "combined_order": "build/hash/test exact arms from one allowlisted environment; campaign acquires the exclusive lock; quiet preflight; reserve full SMT core; run 552 interleaved rows; restore with readback; export/seal",
+      "source_ref": "refs/heads/codex/go-peer-key-ab-aa-v9-20261101",
+      "source_commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+      "source_tree": "2e438a2868c88373035b87f9c4b060e33c3a9b43"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 25200,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Before provider action commit tooling, register/freeze v9, commit freeze, publish exact ref, and substitute frozen hash for token.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Authorize one RunPod allocation and one combined command only; no pilot, resume, replacement row, or second allocation.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "After exact build/test gates attempt 4 arms x 6 cases x (3 warmups + 20 measured) = 552 invocations at 100 operations, then stop.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Attempt each cell once, fsync every attempted row including instrument failures, retain failures, never extend/select/replace/reorder.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Any complete fingerprint disagreement in any warmup/measured four-arm cell or across rounds within a case is terminal wrong_answer.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "Cumulative L2 failure retains exact/count metrics but makes row clocks invalid. A/A calibration failure leaves raw L2-valid row clocks unchanged but invalidates the aggregate timing claim. Neither authorizes retry.",
+      "kind": "invalidation",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "No v9 benchmark invocation, fingerprint, allocation/timing observation, provider action, or row may predate v9 registration and freeze. Pre-registration local source/build/correctness tooling smoke checks are mechanical validation only and never v9 evidence.",
+    "Any mismatch in protocol/freeze/registration, ref/source archive, tooling, production source, blobs, Go archive, build/test/binaries, command/environment/schedule, receipt/archive/extraction, cleanup, export, or raw artifact is mechanical failure/inconclusive.",
+    "Synthetic arms overlay coord_test.go identically and differ only at coord.go; baseline and both A/A binaries must have identical SHA-256.",
+    "Another placement, price, memory, cgroup limit, GPU, CPU count/flavor, image, or transport invalidates allocation.",
+    "Missing/duplicate/malformed, wrong b.N, nonzero/timeout, parse failure, absent fingerprint/metric, or failed go test is mechanically inconclusive; no partial claim/retry.",
+    "Any complete four-arm or case-invariance fingerprint disagreement, including warmup, is wrong_answer before ratios.",
+    "Failed lock, preflight, SMT reservation, eviction, whole-tree affinity/parallelism, cleanup, schedstat, steal, foreign sampling, PSI full delta, ivcsw, restoration, throttle/events, or placement withholds L2 and invalidates clocks while counts/correctness survive.",
+    "A/A interval failure to contain one or remain within [20/21,21/20] invalidates the aggregate timing claim without relabeling L2-valid raw clocks; fixed L/R labels are used with no reciprocal-orientation claim.",
+    "Profile/perf/race/resume/restore/nonregistered diagnostics are excluded.",
+    "V7 and abandoned zero-data v8 are not v9 evidence."
+  ],
+  "decision_rule": {
+    "text": "Require mechanical completeness then all 138 four-arm correctness cells and case invariance. Allocation passes iff both candidate/baseline medians <=1/20 in all cases. Timing requires cumulative L2 and valid fixed-label A/A: exact [1/960,959/960] interval contains 1 and lies within [20/21,21/20], N=max(upper,1/lower); then each A/B median >=21/20 and 1/960 lower >max(1,N). Exact rational bootstrap has no RNG. Incomplete is inconclusive; mismatch wrong_answer; failed L2 or A/A makes the aggregate timing claim invalid_measurement while allocation survives (only L2 failure invalidates raw row clocks); otherwise combined/allocation_only/timing_only/unsupported.",
+    "comparison_ids": [
+      "C-ab-alloc",
+      "C-ab-time"
+    ],
+    "threshold": "all 552 fingerprints/case invariants exact; allocation medians <=1/20; cumulative L2; A/A contains 1 within [20/21,21/20]; A/B medians >=21/20 and lower >max(1,N)",
+    "statistic": "Per case/replicate candidate/baseline allocation, baseline/candidate A/B clocks, fixed A/A-left/A/A-right clocks; exact even-N median averages sorted positions 10 and 11.",
+    "interval": "For 24 clock cells enumerate exact empirical paired-bootstrap median distribution via joint order-statistic masses; quantiles 1/960 and 959/960 use inf{x:CDF(x)>=q}; no RNG/interpolation/Monte Carlo/asymptotics/label reversal.",
+    "multiple_comparison_correction": "bonferroni",
+    "effect_size_measure": "paired median allocation, A/B speedup, fixed-label A/A ratio per case",
+    "verdict_vocabulary": [
+      "supported_within_scope",
+      "allocation_only",
+      "timing_only",
+      "wrong_answer",
+      "invalid_measurement",
+      "unsupported",
+      "inconclusive"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "analyze_remote_peer_key_ab.py",
+      "sha256": "9985ee0862b44ec37304ceabd0099434ac4aeda7fa38cc9aec087aaea02d70a6"
+    },
+    "inputs": [
+      "frozen v9 protocol/registration and hash-bound dependencies",
+      "authenticated RunPod receipt/archive and identical extracted run",
+      "source/toolchain/build/test/four-binary manifests",
+      "campaign manifest/summary, 552 rows, raw logs/metadata/L2/reservation/restoration",
+      "write-once canonical experiment.export/v1, including an exact 552-cell failure-total export when the workflow is incomplete"
+    ],
+    "outputs": [
+      "remote-peer-key-ab-aa-v9/analysis/analysis.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired allocation, A/B clocks, fixed-label A/A intervals after valid analysis"
+    ],
+    "report_dir": "remote-peer-key-ab-aa-v9/report"
+  },
+  "inadmissible": [
+    "launch before registration/freeze/freeze commit/ref publication",
+    "launch symbolic V9_CANONICAL_SHA256_FROM_FREEZE instead of frozen hash",
+    "pilot/build pod, prefrozen binary, retry/resume/replacement/second allocation/extra round",
+    "substitute source/tool/blob/case/b.N/order/environment/placement/image/budget/L2 threshold",
+    "return bulk source or Go archives rather than authenticated receipts",
+    "report timing after L2 or A/A failure",
+    "change q, labels, band, noise formula, thresholds, precedence, verdict post-data",
+    "use v7 or v8 as v9 evidence",
+    "use perf/profile/build time/binary size/outer duration as registered clock"
+  ],
+  "literature": [
+    {
+      "ref": "experiments/performance-saturation-20261101/go/LITERATURE.md",
+      "provenance": "internal",
+      "claim": "repository semantic/source audit, prior v7 outcome, and official Go, Linux accounting/perf, RunPod, and PSI guidance",
+      "verified_by": "Go fixed-peer-key optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://go.dev/dl/?mode=json&include=all",
+      "provenance": "retrieved",
+      "claim": "official Go 1.27.3 linux-amd64 archive size and SHA-256",
+      "verified_by": "Go coordinator optimization lane, 2026-11-01"
+    },
+    {
+      "ref": "https://docs.kernel.org/accounting/psi.html",
+      "provenance": "retrieved",
+      "claim": "PSI some/full semantics, avg10 percentage window, and /proc/pressure format",
+      "verified_by": "Go fixed-peer-key optimization lane, 2026-11-01"
+    }
+  ],
+  "amendments": [
+    {
+      "id": "AMD-GO-PEER-KEY-REMOTE-AB-AA-20261101-v9",
+      "filed": "2026-11-01",
+      "filed_before_affected_data": true,
+      "reason": "Registered a75f84d1 v8 had zero data/provider actions but lacked valid export, exact schedule/dependencies, same-session A/A, and cumulative L2. V9 prospectively supersedes it.",
+      "changes": [
+        "Retain a75f84d185874ae10390f5065c84edcaf498783e as abandoned zero-data draft.",
+        "Add two byte-identical baseline A/A labels and balanced 552-row schedule.",
+        "Add lock, quiet preflight, full-SMT reservation/eviction/restoration and formal L2 recomputation.",
+        "Joint 24-cell exact Bonferroni q=1/960 with A/A equivalence/noise gate.",
+        "Canonical export plus archive/tool/binary/run identities and 128-MiB budget."
+      ],
+      "supersedes_fields": [
+        "protocol.v8.json in full; no v8 data/provider action transfers"
+      ]
+    }
+  ],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": true
+  },
+  "extensions": {
+    "remote_execution": {
+      "source": {
+        "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+        "ref": "refs/heads/codex/go-peer-key-ab-aa-v9-20261101",
+        "commit": "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "tree": "2e438a2868c88373035b87f9c4b060e33c3a9b43",
+        "archive_sha256": "65022cb907e43081532f1c76cbefb9704d03749425b4e0e2dbf5fb11d788c086",
+        "archive_bytes": 879923200
+      },
+      "protocol_hash_token": "V9_CANONICAL_SHA256_FROM_FREEZE",
+      "command_template": "python3 experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py --mode combined --phase fixed-peer-key-ab-aa-v9 --out go-peer-key-ab-aa-v9-run --protocol-sha256 V9_CANONICAL_SHA256_FROM_FREEZE --expected-cpus 32 --expected-memory-bytes 64000000000 --expected-cpu-flavor cpu3c",
+      "output": "go-peer-key-ab-aa-v9-run",
+      "pod_name_prefix": "go-peer-key-ab-aa-v9-",
+      "image": "runpod/base:1.0.2-ubuntu2404",
+      "container_disk_gb": 60,
+      "max_price_usd_per_hour": 1.0,
+      "request_startup_sha256": "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b",
+      "request_environment_keys": [
+        "POD_BOOT_B64",
+        "POD_MAX_SECONDS",
+        "RUNPOD_BATCH_BOOTSTRAP_B64",
+        "RUNPOD_BATCH_CHUNK_BYTES",
+        "RUNPOD_BATCH_COMMAND_B64",
+        "RUNPOD_BATCH_COMMAND_SHA256",
+        "RUNPOD_BATCH_JOB_ID",
+        "RUNPOD_BATCH_MAX_RESULT_BYTES",
+        "RUNPOD_BATCH_OUTPUTS_B64",
+        "RUNPOD_BATCH_OWNERSHIP_ID",
+        "RUNPOD_BATCH_PORT",
+        "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+        "RUNPOD_BATCH_SOURCE_COMMIT",
+        "RUNPOD_BATCH_SOURCE_REF",
+        "RUNPOD_BATCH_SOURCE_TREE",
+        "RUNPOD_BATCH_SOURCE_URL",
+        "RUNPOD_BATCH_TIMEOUT_SECONDS",
+        "RUNPOD_BATCH_TOKEN"
+      ],
+      "transport": {
+        "authentication": "ephemeral bearer",
+        "chunk_bytes": 4194304,
+        "kind": "runpod-https-proxy",
+        "port": 8888
+      },
+      "controller_launch_argv": [
+        "python3",
+        "cloud/runpod_http_batch.py",
+        "go-peer-key-ab-aa-v9",
+        "--cpu",
+        "32",
+        "--cpu-flavor",
+        "cpu3c",
+        "--cpu-memory",
+        "64",
+        "--cloud",
+        "SECURE",
+        "--image",
+        "runpod/base:1.0.2-ubuntu2404",
+        "--disk",
+        "60",
+        "--max-hours",
+        "8",
+        "--wait",
+        "900",
+        "--source-ref",
+        "refs/heads/codex/go-peer-key-ab-aa-v9-20261101",
+        "--source-commit",
+        "a465a494b102a7378ffd482094d225dc742bdb0d",
+        "--out",
+        "go-peer-key-ab-aa-v9-run",
+        "--receipt",
+        "/workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/http-receipt.json",
+        "--archive",
+        "/workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/result.tar.gz",
+        "--timeout",
+        "25200",
+        "--max-result-mib",
+        "128",
+        "--max-price",
+        "1.0",
+        "--",
+        "python3",
+        "experiments/performance-saturation-20261101/go/run_remote_peer_key_ab.py",
+        "--mode",
+        "combined",
+        "--phase",
+        "fixed-peer-key-ab-aa-v9",
+        "--out",
+        "go-peer-key-ab-aa-v9-run",
+        "--protocol-sha256",
+        "V9_CANONICAL_SHA256_FROM_FREEZE",
+        "--expected-cpus",
+        "32",
+        "--expected-memory-bytes",
+        "64000000000",
+        "--expected-cpu-flavor",
+        "cpu3c"
+      ],
+      "controller_receipt_path": "/workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/http-receipt.json",
+      "controller_archive_path": "/workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/result.tar.gz",
+      "allocation_attempts": 1,
+      "provider_calls_before_freeze": 0,
+      "receipt_checks": "analyzer verifies substituted command/source/archive/request/pod/cleanup/result inventory; runner verifies Go/build/test/binaries/campaign/L2/export",
+      "failure_total_export": "Any owned combined invocation that reaches its output root seals failure.json, an exact 552-cell canonical export (usable attempted prefix plus explicit infra_error suffix), remote-summary.json, and exits 2. Formal analysis authenticates it and returns inconclusive with every scientific claim not_evaluated.",
+      "build_test_environment": {
+        "inherit_provider_environment": false,
+        "fixed": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TZ": "UTC",
+          "CGO_ENABLED": "1",
+          "CGO_CFLAGS": "-O2 -g",
+          "CGO_CPPFLAGS": "",
+          "CGO_CXXFLAGS": "-O2 -g",
+          "CGO_FFLAGS": "-O2 -g",
+          "CGO_LDFLAGS": "-O2 -g",
+          "GO111MODULE": "on",
+          "GOENV": "off",
+          "GOEXPERIMENT": "",
+          "GOWORK": "off",
+          "GOTOOLCHAIN": "local",
+          "GOFLAGS": "-buildvcs=false -mod=readonly",
+          "GOMAXPROCS": "1",
+          "GOOS": "linux",
+          "GOARCH": "amd64",
+          "GOAMD64": "v1",
+          "GOPROXY": "https://proxy.golang.org",
+          "GOSUMDB": "sum.golang.org",
+          "GONOSUMDB": "",
+          "GONOPROXY": "",
+          "GOPRIVATE": "",
+          "GOVCS": "*:off",
+          "CC": "/usr/bin/gcc",
+          "CXX": "/usr/bin/g++",
+          "AR": "/usr/bin/ar"
+        },
+        "dynamic_paths": {
+          "HOME": "go-home",
+          "TMPDIR": "tmp",
+          "GOROOT": "toolchain/go",
+          "GOPATH": "gopath",
+          "GOCACHE": "gocache",
+          "GOMODCACHE": "gomodcache"
+        },
+        "shared_by": [
+          "baseline build",
+          "candidate build",
+          "baseline tests",
+          "candidate tests"
+        ]
+      },
+      "result_size_budget": {
+        "scientific_output_bytes": 96000000,
+        "transport_overhead_bytes": 8000000,
+        "controller_max_result_mib": 128,
+        "bulk_archives_retained": false
+      }
+    },
+    "analysis_execution": {
+      "command_template": "python3 experiments/performance-saturation-20261101/go/analyze_remote_peer_key_ab.py --run go-peer-key-ab-aa-v9-run --protocol experiments/performance-saturation-20261101/go/protocol.v9.json --receipt /workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/http-receipt.json --archive /workspace/.benchmarks/performance-saturation/go/peer-key-ab-aa-v9/result.tar.gz --output experiments/performance-saturation-20261101/go/remote-peer-key-ab-aa-v9/analysis/analysis.json",
+      "mechanical_failure_policy": "Malformed/incomplete/identity-invalid seals exit 2 and yields structured inconclusive. Complete fingerprint disagreement emits wrong_answer after exit 1. L2 failure invalidates raw clocks; A/A failure invalidates only the aggregate timing claim; allocation/correctness survive both."
+    }
+  }
+}
