@@ -21,7 +21,9 @@
 //! needed over `F_{2^m}`.
 
 use num_bigint::BigInt;
-use num_traits::{ToPrimitive, Zero};
+use num_integer::Integer;
+use num_rational::BigRational;
+use num_traits::{Signed, Zero};
 use serde::{Deserialize, Serialize};
 
 use crate::cryptanalysis::lattice::lll_reduce_hp;
@@ -29,6 +31,10 @@ use crate::cryptanalysis::lattice::lll_reduce_hp;
 /// The signed coefficient order used by the xedni paper's `B` matrix:
 /// `(a0, a1, a3, -a00, -a2, -a4, -a6)`.
 pub const WEIERSTRASS_COEFFICIENTS: usize = 7;
+
+/// Coefficient count for a homogeneous plane cubic in the JKSST order
+/// `(X^3, X^2Y, XY^2, Y^3, X^2Z, XYZ, Y^2Z, XZ^2, YZ^2, Z^3)`.
+pub const PLANE_CUBIC_COEFFICIENTS: usize = 10;
 
 /// One affine lattice of admissible curve coefficients.
 #[derive(Clone, Debug)]
@@ -53,6 +59,11 @@ pub struct AffineLiftInput {
     pub directions: Vec<Vec<String>>,
     #[serde(default)]
     pub exact_constraints: Vec<Vec<String>>,
+    /// Optional projective points `(X,Y,Z)` for the ten-coefficient model.
+    /// These are converted to exact JKSST incidence rows.  Supply this or
+    /// `exact_constraints`, not both.
+    #[serde(default)]
+    pub projective_points: Vec<[String; 3]>,
     pub congruence_modulus: Option<String>,
 }
 
@@ -76,15 +87,34 @@ impl TryFrom<AffineLiftInput> for AffineLiftProblem {
             .iter()
             .map(|row| row.iter().map(|x| parse_decimal(x, "directions")).collect())
             .collect::<Result<_, _>>()?;
-        let exact_constraints = value
-            .exact_constraints
-            .iter()
-            .map(|row| {
-                row.iter()
-                    .map(|x| parse_decimal(x, "exact_constraints"))
-                    .collect()
-            })
-            .collect::<Result<_, _>>()?;
+        if !value.exact_constraints.is_empty() && !value.projective_points.is_empty() {
+            return Err("supply exact_constraints or projective_points, not both".into());
+        }
+        let exact_constraints = if value.projective_points.is_empty() {
+            value
+                .exact_constraints
+                .iter()
+                .map(|row| {
+                    row.iter()
+                        .map(|x| parse_decimal(x, "exact_constraints"))
+                        .collect()
+                })
+                .collect::<Result<_, _>>()?
+        } else {
+            value
+                .projective_points
+                .iter()
+                .map(|point| {
+                    let x = parse_decimal(&point[0], "projective_points")?;
+                    let y = parse_decimal(&point[1], "projective_points")?;
+                    let z = parse_decimal(&point[2], "projective_points")?;
+                    if x.is_zero() && y.is_zero() && z.is_zero() {
+                        return Err("projective point (0,0,0) is invalid".into());
+                    }
+                    Ok(plane_cubic_incidence_row(&x, &y, &z))
+                })
+                .collect::<Result<_, String>>()?
+        };
         let congruence_modulus = value
             .congruence_modulus
             .as_deref()
@@ -140,6 +170,54 @@ pub struct LiftOptimization {
     pub candidates_evaluated: usize,
     pub exact_constraints_preserved: bool,
     pub congruence_preserved: bool,
+}
+
+/// Exact linear objective for Step 7 in general ten-coefficient cubic mode.
+///
+/// JKSST Step 8 converts the selected cubic to Weierstrass form before a
+/// discriminant is available.  This score therefore makes no singularity or
+/// discriminant claim: it orders the certified affine coset by coefficient
+/// height and then exact squared Euclidean norm.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct PlaneCubicLiftScore {
+    pub coefficient_height_bits: u64,
+    pub squared_l2_norm: String,
+}
+
+/// Certified output for the general-cubic Step-7 optimizer.
+#[derive(Clone, Debug, Serialize)]
+pub struct PlaneCubicLiftOptimization {
+    pub method: &'static str,
+    pub coefficient_order: &'static str,
+    pub baseline_coefficients: Vec<String>,
+    pub babai_coefficients: Vec<String>,
+    pub optimized_coefficients: Vec<String>,
+    pub baseline_score: PlaneCubicLiftScore,
+    pub babai_score: PlaneCubicLiftScore,
+    pub optimized_score: PlaneCubicLiftScore,
+    pub candidates_evaluated: usize,
+    pub exact_constraints_preserved: bool,
+    pub congruence_preserved: bool,
+    pub discriminant_evaluated: bool,
+}
+
+/// Build one row of the full ten-coefficient plane-cubic incidence matrix.
+pub fn plane_cubic_incidence_row(x: &BigInt, y: &BigInt, z: &BigInt) -> Vec<BigInt> {
+    let x2 = x * x;
+    let y2 = y * y;
+    let z2 = z * z;
+    vec![
+        &x2 * x,
+        &x2 * y,
+        x * &y2,
+        &y2 * y,
+        &x2 * z,
+        x * y * z,
+        &y2 * z,
+        x * &z2,
+        y * &z2,
+        &z2 * z,
+    ]
 }
 
 fn dot(a: &[BigInt], b: &[BigInt]) -> BigInt {
@@ -217,11 +295,11 @@ fn better(a: &LiftScore, b: &LiftScore) -> bool {
     )
 }
 
-fn validate(problem: &AffineLiftProblem) -> Result<(), String> {
+fn validate(problem: &AffineLiftProblem, expected_dimension: usize) -> Result<(), String> {
     let n = problem.particular.len();
-    if n != WEIERSTRASS_COEFFICIENTS {
+    if n != expected_dimension {
         return Err(format!(
-            "this optimizer currently requires {WEIERSTRASS_COEFFICIENTS} signed Weierstrass coefficients"
+            "this optimizer requires {expected_dimension} coefficients, got {n}"
         ));
     }
     if problem.directions.is_empty() {
@@ -257,70 +335,68 @@ fn validate(problem: &AffineLiftProblem) -> Result<(), String> {
     Ok(())
 }
 
-fn approximate_vector(v: &[BigInt], shift: usize) -> Result<Vec<f64>, String> {
-    v.iter()
-        .map(|x| {
-            let scaled = if shift == 0 { x.clone() } else { x >> shift };
-            scaled
-                .to_f64()
-                .ok_or_else(|| "coefficient does not fit the scaled floating-point CVP view".into())
-        })
-        .collect()
+fn round_rational(value: &BigRational) -> BigInt {
+    let (floor, remainder) = value.numer().div_mod_floor(value.denom());
+    let twice_remainder = remainder << 1;
+    if twice_remainder < *value.denom() {
+        floor
+    } else if twice_remainder > *value.denom() || value.is_positive() {
+        floor + 1
+    } else {
+        // Exact negative half: match integer rounding away from zero.
+        floor
+    }
 }
 
-fn babai_coefficients(basis: &[Vec<BigInt>], target: &[BigInt]) -> Result<Vec<i64>, String> {
-    let max_bits = basis
+fn babai_coefficients(basis: &[Vec<BigInt>], target: &[BigInt]) -> Result<Vec<BigInt>, String> {
+    let b: Vec<Vec<BigRational>> = basis
         .iter()
-        .flatten()
-        .chain(target)
-        .map(abs_bits)
-        .max()
-        .unwrap_or(0);
-    let shift = max_bits.saturating_sub(500) as usize;
-    let b: Vec<Vec<f64>> = basis
+        .map(|row| row.iter().cloned().map(BigRational::from_integer).collect())
+        .collect();
+    let mut residual: Vec<BigRational> = target
         .iter()
-        .map(|v| approximate_vector(v, shift))
-        .collect::<Result<_, _>>()?;
-    let mut residual = approximate_vector(target, shift)?;
+        .cloned()
+        .map(BigRational::from_integer)
+        .collect();
     let rank = b.len();
     let dim = target.len();
-    let mut star = vec![vec![0.0; dim]; rank];
-    let mut norms = vec![0.0; rank];
+    let mut star = vec![vec![BigRational::zero(); dim]; rank];
+    let mut norms = vec![BigRational::zero(); rank];
     for i in 0..rank {
         star[i].clone_from(&b[i]);
         for j in 0..i {
-            if norms[j] == 0.0 {
+            if norms[j].is_zero() {
                 return Err("linearly dependent lattice directions".into());
             }
-            let mu = b[i].iter().zip(&star[j]).map(|(x, y)| x * y).sum::<f64>() / norms[j];
+            let mu: BigRational = b[i]
+                .iter()
+                .zip(&star[j])
+                .map(|(x, y)| x * y)
+                .sum::<BigRational>()
+                / &norms[j];
             for k in 0..dim {
-                star[i][k] -= mu * star[j][k];
+                let correction = &mu * &star[j][k];
+                star[i][k] -= correction;
             }
         }
         norms[i] = star[i].iter().map(|x| x * x).sum();
-        if !norms[i].is_finite() || norms[i] <= f64::EPSILON {
-            return Err("unstable or dependent lattice directions in Babai reduction".into());
+        if norms[i].is_zero() {
+            return Err("linearly dependent lattice directions".into());
         }
     }
 
-    let mut coefficients = vec![0i64; rank];
+    let mut coefficients = vec![BigInt::zero(); rank];
     for i in (0..rank).rev() {
-        let projection = residual
+        let projection: BigRational = residual
             .iter()
             .zip(&star[i])
             .map(|(x, y)| x * y)
-            .sum::<f64>()
-            / norms[i];
-        let rounded = projection.round();
-        if !rounded.is_finite() || rounded < i64::MIN as f64 || rounded > i64::MAX as f64 {
-            return Err(
-                "Babai coefficient exceeds the supported deterministic search range".into(),
-            );
-        }
-        let coefficient = rounded as i64;
-        coefficients[i] = coefficient;
+            .sum::<BigRational>()
+            / &norms[i];
+        let coefficient = round_rational(&projection);
+        coefficients[i] = coefficient.clone();
         for k in 0..dim {
-            residual[k] -= rounded * b[i][k];
+            residual[k] -= BigRational::from_integer(coefficient.clone()) * &b[i][k];
         }
     }
     Ok(coefficients)
@@ -329,13 +405,12 @@ fn babai_coefficients(basis: &[Vec<BigInt>], target: &[BigInt]) -> Result<Vec<i6
 fn affine_candidate(
     particular: &[BigInt],
     basis: &[Vec<BigInt>],
-    coefficients: &[i64],
+    coefficients: &[BigInt],
 ) -> Vec<BigInt> {
     let mut out = particular.to_vec();
     for (basis_vector, coefficient) in basis.iter().zip(coefficients) {
-        let coefficient = BigInt::from(*coefficient);
         for (x, delta) in out.iter_mut().zip(basis_vector) {
-            *x += &coefficient * delta;
+            *x += coefficient * delta;
         }
     }
     out
@@ -355,39 +430,43 @@ fn certify(problem: &AffineLiftProblem, candidate: &[BigInt]) -> (bool, bool) {
     (exact, congruent)
 }
 
-struct SearchState {
+struct SearchState<S> {
     best: Vec<BigInt>,
-    score: LiftScore,
+    score: S,
     evaluated: usize,
     limit: usize,
 }
 
-fn enumerate_neighborhood(
+fn enumerate_neighborhood<S, Score, Better>(
     depth: usize,
     radius: i64,
-    center: &[i64],
-    coefficients: &mut [i64],
+    center: &[BigInt],
+    coefficients: &mut [BigInt],
     particular: &[BigInt],
     basis: &[Vec<BigInt>],
-    state: &mut SearchState,
-) -> Result<(), String> {
+    state: &mut SearchState<S>,
+    score_candidate: &Score,
+    better_score: &Better,
+) -> Result<(), String>
+where
+    Score: Fn(&[BigInt]) -> Result<S, String>,
+    Better: Fn(&S, &S) -> bool,
+{
     if state.evaluated >= state.limit {
         return Ok(());
     }
     if depth == coefficients.len() {
         let candidate = affine_candidate(particular, basis, coefficients);
-        let score = score_weierstrass_lift(&candidate)?;
+        let score = score_candidate(&candidate)?;
         state.evaluated += 1;
-        if better(&score, &state.score) {
+        if better_score(&score, &state.score) {
             state.best = candidate;
             state.score = score;
         }
         return Ok(());
     }
     for delta in -radius..=radius {
-        coefficients[depth] = center[depth]
-            .checked_add(delta)
-            .ok_or("neighborhood coefficient overflow")?;
+        coefficients[depth] = &center[depth] + delta;
         enumerate_neighborhood(
             depth + 1,
             radius,
@@ -396,6 +475,8 @@ fn enumerate_neighborhood(
             particular,
             basis,
             state,
+            score_candidate,
+            better_score,
         )?;
         if state.evaluated >= state.limit {
             break;
@@ -404,23 +485,42 @@ fn enumerate_neighborhood(
     Ok(())
 }
 
-/// Optimize one certified xedni coefficient coset.
-pub fn optimize_weierstrass_lift(
+struct CoreOptimization<S> {
+    baseline: Vec<BigInt>,
+    babai: Vec<BigInt>,
+    optimized: Vec<BigInt>,
+    baseline_score: S,
+    babai_score: S,
+    optimized_score: S,
+    candidates_evaluated: usize,
+    exact_constraints_preserved: bool,
+    congruence_preserved: bool,
+}
+
+fn optimize_affine_lift<S, Score, Better>(
     problem: &AffineLiftProblem,
     options: LiftSearchOptions,
-) -> Result<LiftOptimization, String> {
-    validate(problem)?;
+    expected_dimension: usize,
+    score_candidate: Score,
+    better_score: Better,
+) -> Result<CoreOptimization<S>, String>
+where
+    S: Clone,
+    Score: Fn(&[BigInt]) -> Result<S, String>,
+    Better: Fn(&S, &S) -> bool,
+{
+    validate(problem, expected_dimension)?;
     if options.neighborhood_radius < 0 || options.max_candidates == 0 {
         return Err("search radius must be nonnegative and candidate cap positive".into());
     }
 
-    let baseline_score = score_weierstrass_lift(&problem.particular)?;
+    let baseline_score = score_candidate(&problem.particular)?;
     let mut basis = problem.directions.clone();
     lll_reduce_hp(&mut basis, 0.99).map_err(str::to_string)?;
     let target: Vec<BigInt> = problem.particular.iter().map(|x| -x).collect();
     let center = babai_coefficients(&basis, &target)?;
     let babai = affine_candidate(&problem.particular, &basis, &center);
-    let babai_score = score_weierstrass_lift(&babai)?;
+    let babai_score = score_candidate(&babai)?;
 
     // Starting from the feasible input makes the result monotonically no
     // worse even when the bounded neighborhood misses the global optimum.
@@ -439,17 +539,18 @@ pub fn optimize_weierstrass_lift(
         &problem.particular,
         &basis,
         &mut state,
+        &score_candidate,
+        &better_score,
     )?;
     let (exact_constraints_preserved, congruence_preserved) = certify(problem, &state.best);
     if !exact_constraints_preserved || !congruence_preserved {
         return Err("internal error: optimized lift left its certified affine coset".into());
     }
 
-    Ok(LiftOptimization {
-        method: "LLL-HP + Babai CVP + exact discriminant neighborhood",
-        baseline_coefficients: problem.particular.iter().map(ToString::to_string).collect(),
-        babai_coefficients: babai.iter().map(ToString::to_string).collect(),
-        optimized_coefficients: state.best.iter().map(ToString::to_string).collect(),
+    Ok(CoreOptimization {
+        baseline: problem.particular.clone(),
+        babai,
+        optimized: state.best,
         baseline_score,
         babai_score,
         optimized_score: state.score,
@@ -459,12 +560,139 @@ pub fn optimize_weierstrass_lift(
     })
 }
 
+/// Optimize one certified seven-coefficient Weierstrass xedni coset.
+pub fn optimize_weierstrass_lift(
+    problem: &AffineLiftProblem,
+    options: LiftSearchOptions,
+) -> Result<LiftOptimization, String> {
+    let result = optimize_affine_lift(
+        problem,
+        options,
+        WEIERSTRASS_COEFFICIENTS,
+        score_weierstrass_lift,
+        better,
+    )?;
+    Ok(LiftOptimization {
+        method: "LLL-HP + exact-rational Babai CVP + exact discriminant neighborhood",
+        baseline_coefficients: result.baseline.iter().map(ToString::to_string).collect(),
+        babai_coefficients: result.babai.iter().map(ToString::to_string).collect(),
+        optimized_coefficients: result.optimized.iter().map(ToString::to_string).collect(),
+        baseline_score: result.baseline_score,
+        babai_score: result.babai_score,
+        optimized_score: result.optimized_score,
+        candidates_evaluated: result.candidates_evaluated,
+        exact_constraints_preserved: result.exact_constraints_preserved,
+        congruence_preserved: result.congruence_preserved,
+    })
+}
+
+fn score_plane_cubic_lift(c: &[BigInt]) -> Result<PlaneCubicLiftScore, String> {
+    if c.len() != PLANE_CUBIC_COEFFICIENTS {
+        return Err(format!(
+            "expected {PLANE_CUBIC_COEFFICIENTS} plane-cubic coefficients, got {}",
+            c.len()
+        ));
+    }
+    let squared_l2: BigInt = c.iter().map(|x| x * x).sum();
+    Ok(PlaneCubicLiftScore {
+        coefficient_height_bits: c.iter().map(abs_bits).max().unwrap_or(0),
+        squared_l2_norm: squared_l2.to_string(),
+    })
+}
+
+fn better_plane_cubic(a: &PlaneCubicLiftScore, b: &PlaneCubicLiftScore) -> bool {
+    if a.coefficient_height_bits != b.coefficient_height_bits {
+        return a.coefficient_height_bits < b.coefficient_height_bits;
+    }
+    let a_norm = a
+        .squared_l2_norm
+        .parse::<BigInt>()
+        .expect("internally generated integer score");
+    let b_norm = b
+        .squared_l2_norm
+        .parse::<BigInt>()
+        .expect("internally generated integer score");
+    a_norm < b_norm
+}
+
+/// Optimize the exact linear Step-7 coset for a full plane cubic.
+///
+/// This supports all `2 <= r <= 9` incidence rows from JKSST.  It does not
+/// perform Step 8 or evaluate the discriminant of the resulting cubic.
+pub fn optimize_plane_cubic_lift(
+    problem: &AffineLiftProblem,
+    options: LiftSearchOptions,
+) -> Result<PlaneCubicLiftOptimization, String> {
+    if !(2..=9).contains(&problem.exact_constraints.len()) {
+        return Err("JKSST plane-cubic mode requires 2 through 9 point-incidence rows".into());
+    }
+    let result = optimize_affine_lift(
+        problem,
+        options,
+        PLANE_CUBIC_COEFFICIENTS,
+        score_plane_cubic_lift,
+        better_plane_cubic,
+    )?;
+    Ok(PlaneCubicLiftOptimization {
+        method: "LLL-HP + exact-rational Babai CVP + exact coefficient-height neighborhood",
+        coefficient_order: "X^3,X^2Y,XY^2,Y^3,X^2Z,XYZ,Y^2Z,XZ^2,YZ^2,Z^3",
+        baseline_coefficients: result.baseline.iter().map(ToString::to_string).collect(),
+        babai_coefficients: result.babai.iter().map(ToString::to_string).collect(),
+        optimized_coefficients: result.optimized.iter().map(ToString::to_string).collect(),
+        baseline_score: result.baseline_score,
+        babai_score: result.babai_score,
+        optimized_score: result.optimized_score,
+        candidates_evaluated: result.candidates_evaluated,
+        exact_constraints_preserved: result.exact_constraints_preserved,
+        congruence_preserved: result.congruence_preserved,
+        discriminant_evaluated: false,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn bi(values: &[i64]) -> Vec<BigInt> {
         values.iter().copied().map(BigInt::from).collect()
+    }
+
+    fn big(value: &str) -> BigInt {
+        value.parse().expect("decimal test integer")
+    }
+
+    fn rational_rank(rows: &[Vec<BigInt>]) -> usize {
+        let mut matrix: Vec<Vec<BigRational>> = rows
+            .iter()
+            .map(|row| row.iter().cloned().map(BigRational::from_integer).collect())
+            .collect();
+        let mut rank = 0;
+        for column in 0..matrix.first().map_or(0, Vec::len) {
+            let Some(pivot) = (rank..matrix.len()).find(|&row| !matrix[row][column].is_zero())
+            else {
+                continue;
+            };
+            matrix.swap(rank, pivot);
+            let pivot_value = matrix[rank][column].clone();
+            for entry in &mut matrix[rank][column..] {
+                *entry /= &pivot_value;
+            }
+            let pivot_row = matrix[rank].clone();
+            for (row_index, row) in matrix.iter_mut().enumerate() {
+                if row_index == rank || row[column].is_zero() {
+                    continue;
+                }
+                let factor = row[column].clone();
+                for (entry, pivot_entry) in row[column..].iter_mut().zip(&pivot_row[column..]) {
+                    *entry -= &factor * pivot_entry;
+                }
+            }
+            rank += 1;
+            if rank == matrix.len() {
+                break;
+            }
+        }
+        rank
     }
 
     #[test]
@@ -526,6 +754,93 @@ mod tests {
             result.optimized_coefficients,
             short.iter().map(ToString::to_string).collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn exact_babai_supports_coefficients_beyond_i64() {
+        let short = bi(&[1, 0, 1, -1, 0, 1, 0]);
+        let direction = bi(&[67, 0, 0, 0, 0, 0, 0]);
+        let multiplier = big("10000000000000000000000000000000000000000");
+        let mut particular = short.clone();
+        particular[0] += &direction[0] * multiplier;
+        let problem = AffineLiftProblem {
+            particular,
+            directions: vec![direction],
+            exact_constraints: Vec::new(),
+            congruence_modulus: Some(BigInt::from(67)),
+        };
+        let result = optimize_weierstrass_lift(
+            &problem,
+            LiftSearchOptions {
+                neighborhood_radius: 0,
+                max_candidates: 1,
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            result.optimized_coefficients,
+            short.iter().map(ToString::to_string).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn full_plane_cubic_path_supports_nine_independent_point_rows() {
+        // Nine multiples of (0,1) on y^2 = x^3 - x + 1, represented by
+        // primitive-enough integral projective coordinates.  Their ten-term
+        // incidence matrix has rank nine and its kernel is the curve vector.
+        let points = [
+            ("0", "1", "1"),
+            ("2", "-7", "8"),
+            ("56", "419", "1"),
+            ("-6244", "24655", "21952"),
+            ("5232472", "-8824453", "11089567"),
+            ("8246188998", "30795303833", "588480472"),
+            ("-51055373209680", "101098481076377", "85923747076383"),
+            (
+                "1796402375990961480",
+                "-2098030206970736191",
+                "2631958890650432000",
+            ),
+            (
+                "160221897655974195623120",
+                "396235626125845757178647",
+                "25634128246348207648607",
+            ),
+        ];
+        let constraints: Vec<Vec<BigInt>> = points
+            .iter()
+            .map(|(x, y, z)| plane_cubic_incidence_row(&big(x), &big(y), &big(z)))
+            .collect();
+        assert_eq!(rational_rank(&constraints), 9);
+        let short = bi(&[1, 0, 0, 0, 0, 0, -1, -1, 0, 1]);
+        assert!(constraints.iter().all(|row| dot(row, &short).is_zero()));
+
+        let direction: Vec<BigInt> = short.iter().map(|x| x * 67).collect();
+        let mut particular = short.clone();
+        for (coefficient, delta) in particular.iter_mut().zip(&direction) {
+            *coefficient += delta * 123;
+        }
+        let problem = AffineLiftProblem {
+            particular,
+            directions: vec![direction],
+            exact_constraints: constraints,
+            congruence_modulus: Some(BigInt::from(67)),
+        };
+        let result = optimize_plane_cubic_lift(
+            &problem,
+            LiftSearchOptions {
+                neighborhood_radius: 0,
+                max_candidates: 1,
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            result.optimized_coefficients,
+            short.iter().map(ToString::to_string).collect::<Vec<_>>()
+        );
+        assert!(result.exact_constraints_preserved);
+        assert!(result.congruence_preserved);
+        assert!(!result.discriminant_evaluated);
     }
 
     #[test]

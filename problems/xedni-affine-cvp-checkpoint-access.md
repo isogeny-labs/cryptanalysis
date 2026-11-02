@@ -4,7 +4,7 @@
 - **Kind:** access/tool limit
 - **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md)
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
-- **Last updated:** 2026-11-01
+- **Last updated:** 2026-11-02
 
 ## Problem
 
@@ -28,6 +28,14 @@ would not discharge the user's requested algorithm investigation.
   checkpoint upload did not complete.  `presign-upload --days 1 --install`
   produced a token, but using it to upload the checkpoint archive returned
   HTTP 403.  No evaluation command was run and no p=67 result exists.
+- **Observed on 2026-11-02:** The managed runtime reported current, ready AWS
+  variables and enforced unrestricted HTTP policy.  The installed token again
+  returned HTTP 403.  With AWS CLI 2.39.3 installed outside the repository and
+  the token file deliberately left untouched but not selected, the supported
+  ambient-key transport reached S3 and `PutObject` returned `AccessDenied` for
+  `checkpoints/cryptanalysis/codex__xedni-affine-cvp-eval-20261102/20261102T171849Z-318b27bf3427/checkpoint.tar.gz`.
+  `scripts/checkpoint.sh status` then reported `last push: stale or none` and
+  the gate exited nonzero.  The evaluator was not launched.
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -79,4 +87,8 @@ force.
 
 2026-11-01: opened after both ambient and presigned-token checkpoint uploads
 failed before the frozen evaluation.  Unresolved.
+
+2026-11-02: reproduced token HTTP 403 and directly isolated ambient AWS
+`PutObject AccessDenied` despite runtime credential readiness.  The exact
+authorization blocker remains unresolved; no frozen row was run.
 

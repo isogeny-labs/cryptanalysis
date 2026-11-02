@@ -7,6 +7,11 @@ Execution is currently blocked by
 [`problems/xedni-affine-cvp-checkpoint-access.md`](../../problems/xedni-affine-cvp-checkpoint-access.md).
 No frozen p=67 row has been run.
 
+The block was rechecked on 2026-11-02: the installed upload token returned
+HTTP 403 and the managed ambient AWS identity returned `PutObject
+AccessDenied`.  The evaluator was not launched and the frozen parameters below
+remain unchanged.
+
 ## Requested question and exact scope
 
 The user asked whether the old xedni lift construction, including the often
