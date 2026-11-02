@@ -1,0 +1,286 @@
+{
+  "archive": {
+    "bytes": 19435520,
+    "files": 1253,
+    "required_members": [
+      "suite/src/cryptanalysis/f4_gpu.rs",
+      "cuda/ca_device.cuh",
+      "challenges/elliptic/corpus.json",
+      "suite/Cargo.lock",
+      "bindings/rust/cryptanalysis-sys/build.rs"
+    ],
+    "roots": [
+      "suite",
+      "bindings/rust",
+      "include",
+      "src",
+      "cuda",
+      "challenges"
+    ],
+    "sha256": "554dcaacb7ff1fcfb27f4b49bb60b2d03ac9201978091c5e516fff356d1f9b8d"
+  },
+  "binary_contract": {
+    "baseline_aa_equals_baseline": true,
+    "baseline_aa_sha256": "9cb6036bcce1b9c1c4f37d71359eefdd5ae730b0ed6d73014306ed868444d422",
+    "baseline_sha256": "9cb6036bcce1b9c1c4f37d71359eefdd5ae730b0ed6d73014306ed868444d422",
+    "candidate_differs": true,
+    "candidate_sha256": "aae37565bd58c0725c80bc264183012f9c0390b77a5907caf4e484dcf6ef42fe"
+  },
+  "build_contract": {
+    "cargo_incremental": "0",
+    "clean_extracted_closure": true,
+    "exact_environment_key_set": true,
+    "isolated_source_trees": true,
+    "isolated_target_dirs": true,
+    "network_only_during_bootstrap_and_fetch": true,
+    "offline_builds": true
+  },
+  "builds": [
+    {
+      "arm": "baseline",
+      "binary_bytes": 1382120,
+      "binary_sha256": "9cb6036bcce1b9c1c4f37d71359eefdd5ae730b0ed6d73014306ed868444d422",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--example",
+        "f4_matrix_bench"
+      ],
+      "elapsed_seconds": 166.126031,
+      "log_bytes": 2097,
+      "log_sha256": "eea5adca90d43ee65f5df3a90c502a997d0c11d1d2988531d478d9781871f8f1",
+      "returncode": 0
+    },
+    {
+      "arm": "candidate",
+      "binary_bytes": 1387840,
+      "binary_sha256": "aae37565bd58c0725c80bc264183012f9c0390b77a5907caf4e484dcf6ef42fe",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--example",
+        "f4_matrix_bench"
+      ],
+      "elapsed_seconds": 162.208683,
+      "log_bytes": 2100,
+      "log_sha256": "2bb600322f711703f5034656349d6e137f6932cbbd2ea405ec8ac6c44dd694df",
+      "returncode": 0
+    }
+  ],
+  "dependency_fetch": {
+    "cargo_config_all_absent": true,
+    "cargo_config_candidates_checked": 22,
+    "command": [
+      "cargo",
+      "fetch",
+      "--locked",
+      "--manifest-path",
+      "suite/Cargo.toml"
+    ],
+    "log_bytes": 3814,
+    "log_sha256": "8d1fa3af40dd8af8d950499110cc2a9e618184353756a3dec8985b6e00c8b822",
+    "returncode": 0
+  },
+  "elapsed_seconds": 347.4236,
+  "environment_policy": {
+    "bootstrap_fixed": {
+      "CARGO_HOME": "<fresh-task-root>/cargo-home",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PATH": "/usr/bin:/bin",
+      "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+      "TMPDIR": "<fresh-task-root>/tmp",
+      "TZ": "UTC"
+    },
+    "build_fixed": {
+      "AR": "/usr/bin/x86_64-linux-gnu-ar",
+      "CARGO_HOME": "<fresh-task-root>/cargo-home",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_NET_OFFLINE": "true",
+      "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+      "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "CARGO_TERM_COLOR": "never",
+      "CC": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+      "RANLIB": "/usr/bin/x86_64-linux-gnu-ranlib",
+      "RUSTC": "<fresh-task-root>/rustup-home/toolchains/1.91.1-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+      "SOURCE_DATE_EPOCH": "0",
+      "TMPDIR": "<fresh-task-root>/tmp/<arm>",
+      "TZ": "UTC"
+    },
+    "build_inherited_keys": [],
+    "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+    "fetch_fixed": {
+      "CARGO_HOME": "<fresh-task-root>/cargo-home",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+      "RUSTC": "<fresh-task-root>/rustup-home/toolchains/1.91.1-x86_64-unknown-linux-gnu/bin/rustc",
+      "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+      "TMPDIR": "<fresh-task-root>/tmp",
+      "TZ": "UTC"
+    },
+    "forbidden_inherited_patterns": [
+      "RUSTFLAGS",
+      "CARGO_ENCODED_RUSTFLAGS",
+      "CARGO_PROFILE_*",
+      "CARGO_TARGET_DIR",
+      "RUSTC_WRAPPER",
+      "RUSTC_WORKSPACE_WRAPPER",
+      "CFLAGS",
+      "CXXFLAGS",
+      "CPPFLAGS",
+      "LDFLAGS",
+      "LD_PRELOAD",
+      "AR",
+      "CC",
+      "RANLIB",
+      "RAYON_NUM_THREADS",
+      "F4_*"
+    ],
+    "launcher": {
+      "exact_keys": [
+        "HOME",
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "LANG",
+        "LC_ALL",
+        "NO_PROXY",
+        "PATH",
+        "SSL_CERT_FILE",
+        "TMPDIR",
+        "TZ"
+      ],
+      "fixed": {
+        "HOME": "<caller-owned-fresh-home>",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "PATH": "/usr/bin:/bin",
+        "TMPDIR": "<caller-owned-fresh-tmp>",
+        "TZ": "UTC"
+      },
+      "network_forward_allowlist": [
+        "ALL_PROXY",
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "NO_PROXY",
+        "SSL_CERT_FILE",
+        "CURL_CA_BUNDLE"
+      ],
+      "network_forwarded_value_sha256": {
+        "HTTPS_PROXY": "e4d7783ba0b1d7118985e3de887cc689c23041057222c3ad01cb6c9885cc4b09",
+        "HTTP_PROXY": "e4d7783ba0b1d7118985e3de887cc689c23041057222c3ad01cb6c9885cc4b09",
+        "NO_PROXY": "3ec16a3ac582efe2c150d78cec7b4fef85d422df5c7a147bf59c55b7f66ba93f",
+        "SSL_CERT_FILE": "b583d63728636e5fa4b2ec89e062e655992406c08430f1b44b12e33fc357b80e"
+      },
+      "python": {
+        "dont_write_bytecode": true,
+        "executable": "/usr/bin/python3",
+        "flags": [
+          "-I",
+          "-S",
+          "-B"
+        ],
+        "isolated": true,
+        "no_site": true,
+        "safe_path": true
+      }
+    },
+    "location_policy": "local_controller",
+    "network_forward_allowlist": [
+      "ALL_PROXY",
+      "HTTPS_PROXY",
+      "HTTP_PROXY",
+      "NO_PROXY",
+      "SSL_CERT_FILE",
+      "CURL_CA_BUNDLE"
+    ],
+    "network_forwarded_value_sha256": {
+      "HTTPS_PROXY": "e4d7783ba0b1d7118985e3de887cc689c23041057222c3ad01cb6c9885cc4b09",
+      "HTTP_PROXY": "e4d7783ba0b1d7118985e3de887cc689c23041057222c3ad01cb6c9885cc4b09",
+      "NO_PROXY": "3ec16a3ac582efe2c150d78cec7b4fef85d422df5c7a147bf59c55b7f66ba93f",
+      "SSL_CERT_FILE": "b583d63728636e5fa4b2ec89e062e655992406c08430f1b44b12e33fc357b80e"
+    }
+  },
+  "error": null,
+  "files_per_arm": 1253,
+  "finished_at": "2026-11-02T18:09:03Z",
+  "location": "local_controller",
+  "protocol_id": "gpu-f4-update-grid-ab-rtx5090-http-v11-20261101",
+  "protocol_sha256": "827b0c94c27ea85cd6d97876484cd7562cb8bf84e545c6c6b31ccb2836d87eef",
+  "provider_actions": false,
+  "run_id": "gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94",
+  "schema": "gpu-geometry-build-preflight/v1",
+  "source": {
+    "baseline_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+    "baseline_f4_sha256": "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944",
+    "candidate_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+    "candidate_f4_sha256": "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953",
+    "candidate_tree": "af0ac7e239c0acaa063c1a1441d6fb374ebbf30b"
+  },
+  "source_delta": [
+    "suite/src/cryptanalysis/f4_gpu.rs"
+  ],
+  "started_at": "2026-11-02T18:03:15Z",
+  "status": "passed",
+  "tool_sha256": "e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572",
+  "toolchain": {
+    "ar": {
+      "realpath": "/usr/bin/x86_64-linux-gnu-ar",
+      "sha256": "f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb",
+      "version": "GNU ar (GNU Binutils for Debian) 2.44"
+    },
+    "bootstrap": {
+      "log_bytes": 1751,
+      "log_sha256": "248792890033a01ad981bdcd340adc85a5f1b9a193cde86ad2d2087e30d99f6b",
+      "sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+      "url": "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-unknown-linux-gnu/rustup-init"
+    },
+    "cargo": {
+      "sha256": "e60b4010303c19a131c058e3f054b4b3311433c4b2ee94ba8e09e165ff2a3b3b",
+      "toolchain": "1.91.1-x86_64-unknown-linux-gnu",
+      "version": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+    },
+    "cc": {
+      "capabilities": {
+        "archive": true,
+        "compile": true,
+        "execute": true,
+        "link": true,
+        "ranlib": true
+      },
+      "realpath": "/usr/bin/x86_64-linux-gnu-gcc-14",
+      "sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "target": "x86_64-linux-gnu",
+      "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+    },
+    "collect2": {
+      "realpath": "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2",
+      "sha256": "ea31a4cebd9df1b6428c463428d461ccecfe66c897936409d5b2cde0b3af9e27"
+    },
+    "linker": {
+      "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+      "sha256": "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+      "version": "GNU ld (GNU Binutils for Debian) 2.44"
+    },
+    "ranlib": {
+      "realpath": "/usr/bin/x86_64-linux-gnu-ranlib",
+      "sha256": "4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e",
+      "version": "GNU ranlib (GNU Binutils for Debian) 2.44"
+    },
+    "rustc": {
+      "sha256": "5eadaaf4fe086d76547b17dc3c1ba880d0082b93f7d8bc65612770da8e79fe8e",
+      "toolchain": "1.91.1-x86_64-unknown-linux-gnu",
+      "version": "rustc 1.91.1 (ed61e7d7e 2025-11-07)\nbinary: rustc\ncommit-hash: ed61e7d7e242494fb7057f2657300d9e77bb4fcb\ncommit-date: 2025-11-07\nhost: x86_64-unknown-linux-gnu\nrelease: 1.91.1\nLLVM version: 21.1.2"
+    },
+    "system_policy": "controller_exact_hashes",
+    "system_tools_unchanged_after_builds": true
+  }
+}

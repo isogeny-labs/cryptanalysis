@@ -1,0 +1,88 @@
+{
+  "cleanup": null,
+  "command": "GPU_STUDY_SECURE=1 /usr/bin/bash --noprofile --norc experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh 'experiments/performance-saturation-20261101/gpu/runs-http' 'gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94' '827b0c94c27ea85cd6d97876484cd7562cb8bf84e545c6c6b31ccb2836d87eef' 'ebf6dbed464fc21d0453dfce39814210941e7986fd12cd9c0e845d860e92faae'",
+  "command_sha256": "6df7f1e2da3064804625120cb22f6a250379b29c3c693a5e731c628a19cacadb",
+  "error": {
+    "detail": "pod creation response was refused or ambiguous; no retry",
+    "type": "BatchError"
+  },
+  "finished_at": "2026-11-02T18:10:15.930071+00:00",
+  "outputs": [
+    "experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94"
+  ],
+  "pod": null,
+  "provider_actions": true,
+  "remote_status": null,
+  "request": {
+    "bootstrap_sha256": "fddc38a9c8be17ec4fc35d218c5643f37f1a279d30f43519f63776f7a2bbc79f",
+    "cloudType": "SECURE",
+    "computeType": "GPU",
+    "containerDiskInGb": 100,
+    "entrypoint": [
+      "/usr/bin/bash",
+      "--noprofile",
+      "--norc",
+      "-c"
+    ],
+    "environment_keys": [
+      "BASH_ENV",
+      "ENV",
+      "LD_PRELOAD",
+      "PATH",
+      "POD_BOOT_B64",
+      "POD_MAX_SECONDS",
+      "PYTHONHOME",
+      "PYTHONPATH",
+      "PYTHONSTARTUP",
+      "RUNPOD_BATCH_BOOTSTRAP_B64",
+      "RUNPOD_BATCH_CHUNK_BYTES",
+      "RUNPOD_BATCH_COMMAND_B64",
+      "RUNPOD_BATCH_COMMAND_SHA256",
+      "RUNPOD_BATCH_ENVIRONMENT_CLOSED",
+      "RUNPOD_BATCH_JOB_ID",
+      "RUNPOD_BATCH_MAX_RESULT_BYTES",
+      "RUNPOD_BATCH_OUTPUTS_B64",
+      "RUNPOD_BATCH_OWNERSHIP_ID",
+      "RUNPOD_BATCH_PORT",
+      "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+      "RUNPOD_BATCH_SOURCE_COMMIT",
+      "RUNPOD_BATCH_SOURCE_REF",
+      "RUNPOD_BATCH_SOURCE_TREE",
+      "RUNPOD_BATCH_SOURCE_URL",
+      "RUNPOD_BATCH_TIMEOUT_SECONDS",
+      "RUNPOD_BATCH_TOKEN"
+    ],
+    "gpuCount": 1,
+    "gpuTypeIds": [
+      "NVIDIA GeForce RTX 5090"
+    ],
+    "imageName": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+    "minRAMPerGPU": 62,
+    "minVCPUPerGPU": 16,
+    "name": "misagi-f4-geometry-v11-889599548299",
+    "ports": [
+      "8888/http"
+    ],
+    "remote_boot_sha256": "62248060bf92a9f2b29dc311aeeac4630811e2dccc5fa9754ea3d75fbada7d13",
+    "secrets_redacted": true,
+    "startup_sha256": "fbfe43cbc2a9638b4a6116dead27b2419ab577d6609cff55709d72012fe50e6d"
+  },
+  "result": null,
+  "schema": "runpod.http-batch.receipt/v1",
+  "source": {
+    "archive_sha256": "15014a648f500dcf2bbf4c2860ef91443f8ca42cdb2ef265a2ede063df761b7f",
+    "commit": "2049cec0101cfb0a313b7a6289556c3bb7bc0688",
+    "origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+    "public_checked_at": "2026-11-02T18:09:09.657415+00:00",
+    "public_ref_checked": true,
+    "ref": "refs/heads/codex/runpod-http-gpu-geometry-v11-20261101",
+    "tree": "90aa0499d0dcfdc6967116ce1722cc3e43fa5260"
+  },
+  "started_at": "2026-11-02T18:09:09.680984+00:00",
+  "transport": {
+    "authentication": "ephemeral bearer",
+    "chunk_bytes": 4194304,
+    "kind": "runpod-https-proxy",
+    "port": 8888
+  }
+}

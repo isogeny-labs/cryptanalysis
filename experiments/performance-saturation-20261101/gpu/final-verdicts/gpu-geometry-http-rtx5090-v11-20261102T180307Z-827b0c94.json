@@ -1,0 +1,990 @@
+{
+  "checks": [
+    {
+      "category": "validity",
+      "code": "run_id.syntax",
+      "detail": "run_id='gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94'",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "protocol.readable",
+      "detail": "protocol is readable JSON",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.schema",
+      "detail": "canonical protocol schema",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.identity",
+      "detail": "exact v11 identity",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.freeze",
+      "detail": "frozen canonical hash equals supplied hash",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.prospective",
+      "detail": "filed before affected data",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.git_chain",
+      "detail": "registration 0d24f761bfb05ec9179ca8bf6324c40186f30960; freeze ce7671f9a29941a47f996f7dd53a9c734bcafb4b",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.session",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.preflight_receipt",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/preflight-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.receipt",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.archive",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.result.tar.gz",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.remote",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.remote",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.terminal_verdict",
+      "detail": "expected /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/final-verdicts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "finalizer.sha256",
+      "detail": "running finalizer SHA-256 a0f329cb7f7852e1ef083d84240e36bbe4109b918f52f1d32a2aff3dcacccfef",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "orchestrator.sha256",
+      "detail": "registered mandatory launcher SHA-256 e79424092c6492b3aa36104579264cbbab4ba9e530f60efaf83dece5f3ba83f8",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.tool_sha256",
+      "detail": "registered clean-build tool SHA-256 e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.canonical_tool_binding",
+      "detail": "protocol pins the expected canonical tool",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "paths.protocol_tool",
+      "detail": "exact registered canonical tool path",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.canonical_schema_binding",
+      "detail": "protocol pins the two canonical schemas used by validation",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.host.json",
+      "detail": "missing/empty host.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.source-identities.json",
+      "detail": "missing/empty source-identities.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.binary-sha256.tsv",
+      "detail": "missing/empty binary-sha256.tsv",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.order.tsv",
+      "detail": "missing/empty order.tsv",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.warmup-gate.json",
+      "detail": "missing/empty warmup-gate.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.measure-gate.json",
+      "detail": "missing/empty measure-gate.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.nsys-gate.json",
+      "detail": "missing/empty nsys-gate.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.analysis-gate.json",
+      "detail": "missing/empty analysis-gate.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.analysis.json",
+      "detail": "missing/empty analysis.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.rows.jsonl",
+      "detail": "missing/empty rows.jsonl",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.export.json",
+      "detail": "missing/empty export.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.completed-at.txt",
+      "detail": "missing/empty completed-at.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.runner-exit.status",
+      "detail": "missing/empty runner-exit.status",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/tooling-git-head.txt",
+      "detail": "missing/empty metadata/tooling-git-head.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/tooling-git-status.txt",
+      "detail": "missing/empty metadata/tooling-git-status.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/tooling-sha256.txt",
+      "detail": "missing/empty metadata/tooling-sha256.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/remote-build-preflight.json",
+      "detail": "missing/empty metadata/remote-build-preflight.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/measurement-environment.json",
+      "detail": "missing/empty metadata/measurement-environment.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nvrtc-install.json",
+      "detail": "missing/empty metadata/nvrtc-install.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nvrtc-after.sha256",
+      "detail": "missing/empty metadata/nvrtc-after.sha256",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nsys-install.json",
+      "detail": "missing/empty metadata/nsys-install.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nsys-version.txt",
+      "detail": "missing/empty metadata/nsys-version.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nsys-after.sha256",
+      "detail": "missing/empty metadata/nsys-after.sha256",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nsys-reports.txt",
+      "detail": "missing/empty metadata/nsys-reports.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/nsys-reports.status",
+      "detail": "missing/empty metadata/nsys-reports.status",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/gpu.csv",
+      "detail": "missing/empty metadata/gpu.csv",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.required.metadata/gpu-topology.txt",
+      "detail": "missing/empty metadata/gpu-topology.txt",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.directory",
+      "detail": "session directory missing: /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "remote.directory",
+      "detail": "remote metadata directory missing: experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.remote",
+      "status": "missing"
+    },
+    {
+      "category": "validity",
+      "code": "tooling.local_files",
+      "detail": "every frozen transitive tooling file hash matches",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "tooling.git_tree",
+      "detail": "tooling commit/tree binding",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "tooling.git_archive",
+      "detail": "tooling commit archive binding",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "tooling.remote_files",
+      "detail": "remote tooling binding invalid: [Errno 2] No such file or directory: '/workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/metadata/tooling-git-head.txt'",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "preflight.readable",
+      "detail": "preflight is readable JSON",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.keys",
+      "detail": "exact status-dependent preflight receipt key set",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.schema",
+      "detail": "expected 'gpu-geometry-build-preflight/v1'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.protocol_id",
+      "detail": "expected 'gpu-f4-update-grid-ab-rtx5090-http-v11-20261101'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.protocol_sha256",
+      "detail": "expected '827b0c94c27ea85cd6d97876484cd7562cb8bf84e545c6c6b31ccb2836d87eef'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.run_id",
+      "detail": "expected 'gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.provider_actions",
+      "detail": "expected False",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.location",
+      "detail": "expected 'local_controller'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.tool_sha256",
+      "detail": "expected 'e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.source",
+      "detail": "expected {'baseline_commit': '7c712913b7e912494e87c35e854cfd0129bad89c', 'candidate_commit': '59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f', 'candidate_tree': 'af0ac7e239c0acaa063c1a1441d6fb374ebbf30b', 'baseline_f4_sha256': 'da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944', 'candidate_f4_sha256': '77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953'}",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.build_contract",
+      "detail": "expected {'clean_extracted_closure': True, 'isolated_source_trees': True, 'isolated_target_dirs': True, 'cargo_incremental': '0', 'network_only_during_bootstrap_and_fetch': True, 'offline_builds': True, 'exact_environment_key_set': True}",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "preflight.status",
+      "detail": "both isolated clean builds passed",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "preflight.error",
+      "detail": "no clean-build error",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.elapsed",
+      "detail": "finite nonnegative duration",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.timestamps",
+      "detail": "preflight timestamps parse and are ordered",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.archive",
+      "detail": "exact fresh candidate archive and complete closure roots",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.source_delta",
+      "detail": "exact geometry source-only arm delta",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.files_per_arm",
+      "detail": "complete extracted arm inventories",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.builds.count",
+      "detail": "exact baseline/candidate build records",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.builds.arms",
+      "detail": "ordered isolated baseline then candidate builds",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.builds.baseline",
+      "detail": "exact successful baseline build evidence",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.builds.candidate",
+      "detail": "exact successful candidate build evidence",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.binary_contract",
+      "detail": "baseline-aa is byte-identical and candidate binary differs",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.dependency_fetch",
+      "detail": "locked fetch under allowlisted network env and absent Cargo configs",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.environment_policy",
+      "detail": "no inherited build variables and exact offline build environment",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.toolchain",
+      "detail": "hash-pinned Rust 1.91.1 bootstrap and controller C compiler",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "receipt.readable",
+      "detail": "receipt is readable JSON",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.keys",
+      "detail": "exact controller receipt key set",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.schema",
+      "detail": "exact HTTP receipt schema",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.provider_actions",
+      "detail": "real controller receipt",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "receipt.no_error",
+      "detail": "controller error={'detail': 'pod creation response was refused or ambiguous; no retry', 'type': 'BatchError'}",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.outputs",
+      "detail": "exact single declared output root",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.origin",
+      "detail": "expected 'https://github.com/isogeny-labs/cryptanalysis.git'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.ref",
+      "detail": "expected 'refs/heads/codex/runpod-http-gpu-geometry-v11-20261101'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.commit",
+      "detail": "expected '2049cec0101cfb0a313b7a6289556c3bb7bc0688'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.tree",
+      "detail": "expected '90aa0499d0dcfdc6967116ce1722cc3e43fa5260'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.archive_sha256",
+      "detail": "expected '15014a648f500dcf2bbf4c2860ef91443f8ca42cdb2ef265a2ede063df761b7f'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.public_ref",
+      "detail": "public ref was checked without credentials",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.source.checked_at",
+      "detail": "public check has a timestamp",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.command",
+      "detail": "exact registered remote command",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.command_sha256",
+      "detail": "command bytes are hash-bound",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.cloudType",
+      "detail": "expected 'SECURE'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.computeType",
+      "detail": "expected 'GPU'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.imageName",
+      "detail": "expected 'runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.containerDiskInGb",
+      "detail": "expected 100",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.ports",
+      "detail": "expected ['8888/http']",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.gpuTypeIds",
+      "detail": "expected ['NVIDIA GeForce RTX 5090']",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.gpuCount",
+      "detail": "expected 1",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.minVCPUPerGPU",
+      "detail": "expected 16",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.minRAMPerGPU",
+      "detail": "expected 62",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.environment_keys",
+      "detail": "expected ['BASH_ENV', 'ENV', 'LD_PRELOAD', 'PATH', 'POD_BOOT_B64', 'POD_MAX_SECONDS', 'PYTHONHOME', 'PYTHONPATH', 'PYTHONSTARTUP', 'RUNPOD_BATCH_BOOTSTRAP_B64', 'RUNPOD_BATCH_CHUNK_BYTES', 'RUNPOD_BATCH_COMMAND_B64', 'RUNPOD_BATCH_COMMAND_SHA256', 'RUNPOD_BATCH_ENVIRONMENT_CLOSED', 'RUNPOD_BATCH_JOB_ID', 'RUNPOD_BATCH_MAX_RESULT_BYTES', 'RUNPOD_BATCH_OUTPUTS_B64', 'RUNPOD_BATCH_OWNERSHIP_ID', 'RUNPOD_BATCH_PORT', 'RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256', 'RUNPOD_BATCH_SOURCE_COMMIT', 'RUNPOD_BATCH_SOURCE_REF', 'RUNPOD_BATCH_SOURCE_TREE', 'RUNPOD_BATCH_SOURCE_URL', 'RUNPOD_BATCH_TIMEOUT_SECONDS', 'RUNPOD_BATCH_TOKEN']",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.startup_sha256",
+      "detail": "expected 'fbfe43cbc2a9638b4a6116dead27b2419ab577d6609cff55709d72012fe50e6d'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.secrets_redacted",
+      "detail": "expected True",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.bootstrap_sha256",
+      "detail": "expected 'fddc38a9c8be17ec4fc35d218c5643f37f1a279d30f43519f63776f7a2bbc79f'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.remote_boot_sha256",
+      "detail": "expected '62248060bf92a9f2b29dc311aeeac4630811e2dccc5fa9754ea3d75fbada7d13'",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.entrypoint",
+      "detail": "expected ['/usr/bin/bash', '--noprofile', '--norc', '-c']",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.name",
+      "detail": "fresh registered prefix plus 48-bit nonce",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.request.keys",
+      "detail": "request receipt has exactly the frozen key set",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.transport",
+      "detail": "exact authenticated HTTP transport receipt",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.id",
+      "detail": "one concrete pod ID",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.name",
+      "detail": "request/pod name agreement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.status",
+      "detail": "controller observed allocated pod running",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.unambiguous",
+      "detail": "one unambiguous create result",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.cloud",
+      "detail": "Secure placement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.image",
+      "detail": "exact image",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.gpu",
+      "detail": "one exact RTX 5090",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.ram",
+      "detail": "minimum RAM",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.vcpu",
+      "detail": "minimum vCPU",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.pod.price",
+      "detail": "finite positive hourly price <= 1.19",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.keys",
+      "detail": "exact authenticated status key set",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.schema",
+      "detail": "expected 'runpod.http-batch.status/v1'",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.stage",
+      "detail": "expected 'complete'",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.done",
+      "detail": "expected True",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.archive_ready",
+      "detail": "expected True",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.returncode",
+      "detail": "expected 0",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.timed_out",
+      "detail": "expected False",
+      "status": "failed"
+    },
+    {
+      "category": "completion",
+      "code": "remote_status.worker_error_type",
+      "detail": "expected None",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.job_id",
+      "detail": "pod/job identity agreement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.source_commit",
+      "detail": "remote/source identity agreement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.source_tree",
+      "detail": "remote/source identity agreement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.source_archive_sha256",
+      "detail": "remote/source identity agreement",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.command",
+      "detail": "remote command binding",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.hardware",
+      "detail": "remote status observes exactly one RTX 5090",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "remote_status.pod_id",
+      "detail": "remote/pod ID agreement",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "receipt.cleanup",
+      "detail": "exact pod deleted and exact-ID absence verified",
+      "status": "failed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.timestamps",
+      "detail": "controller timestamps parse",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "receipt.timestamp_order",
+      "detail": "controller start is not after finish",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "host.present",
+      "detail": "missing or empty /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/host.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "source_identities.present",
+      "detail": "missing or empty /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/source-identities.json",
+      "status": "missing"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.frozen_before_controller",
+      "detail": "authenticated freeze timestamp precedes controller start",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "protocol.freeze_commit_before_controller",
+      "detail": "Git freeze commit predates controller start",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "preflight.before_controller",
+      "detail": "clean-build receipt finished before provider controller start",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "archive.present",
+      "detail": "result archive is missing or empty",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "order.present",
+      "detail": "order.tsv is absent",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "rows.present",
+      "detail": "rows.jsonl is missing or empty",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "export.present",
+      "detail": "missing or empty /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/export.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "analysis.present",
+      "detail": "missing or empty /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/analysis.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "analysis_gate.present",
+      "detail": "missing or empty /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94/analysis-gate.json",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.runner_exit",
+      "detail": "runner-exit.status is absent",
+      "status": "missing"
+    },
+    {
+      "category": "completion",
+      "code": "session.completed_at",
+      "detail": "completed-at.txt is absent",
+      "status": "missing"
+    },
+    {
+      "category": "validity",
+      "code": "canonical_tool.sha256",
+      "detail": "canonical tool SHA-256 0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "canonical_schema.experiment-protocol.v1.json",
+      "detail": "canonical schema SHA-256 a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443",
+      "status": "passed"
+    },
+    {
+      "category": "validity",
+      "code": "canonical_schema.experiment-export.v1.json",
+      "detail": "canonical schema SHA-256 108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757",
+      "status": "passed"
+    },
+    {
+      "category": "completion",
+      "code": "canonical.export_input",
+      "detail": "export is unavailable to canonical validator",
+      "status": "missing"
+    },
+    {
+      "category": "validity",
+      "code": "canonical.protocol",
+      "detail": "OK: experiment.protocol/v1 /workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-geometry-v11.json (0 finding(s))",
+      "status": "passed"
+    }
+  ],
+  "created": "2026-11-02T18:10:20Z",
+  "evidence": {
+    "archive": {
+      "path": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.result.tar.gz",
+      "sha256": null
+    },
+    "canonical_protocol_tool_sha256": "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4",
+    "finalizer_sha256": "a0f329cb7f7852e1ef083d84240e36bbe4109b918f52f1d32a2aff3dcacccfef",
+    "preflight_receipt": {
+      "path": "experiments/performance-saturation-20261101/gpu/preflight-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+      "sha256": "ebf6dbed464fc21d0453dfce39814210941e7986fd12cd9c0e845d860e92faae"
+    },
+    "receipt": {
+      "path": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+      "sha256": "78aa483ed9a5ba365d54fe060d5a3df147b5ba186223392fc4596abd565eeabb"
+    },
+    "remote_metadata": "experiments/performance-saturation-20261101/gpu/http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.remote",
+    "session": "/workspace/cryptanalysis/experiments/performance-saturation-20261101/gpu/runs-http/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94"
+  },
+  "precedence": [
+    "incomplete_session",
+    "invalid_measurement",
+    "geometry_not_supported",
+    "geometry_supported"
+  ],
+  "protocol": {
+    "file_sha256": "de7fbfc47f4afbd3d51a1dc2d62cbf8bff6c200d701a7c66c4eb46abfe75bdf1",
+    "freeze_commit": "ce7671f9a29941a47f996f7dd53a9c734bcafb4b",
+    "path": "../protocol-http-rtx5090-geometry-v11.json",
+    "protocol_id": "gpu-f4-update-grid-ab-rtx5090-http-v11-20261101",
+    "registration_commit": "0d24f761bfb05ec9179ca8bf6324c40186f30960",
+    "sha256": "827b0c94c27ea85cd6d97876484cd7562cb8bf84e545c6c6b31ccb2836d87eef",
+    "version": 11
+  },
+  "provisional_remote_classification": null,
+  "run_id": "gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94",
+  "schema": "gpu-f4-update-grid-ab-final-verdict/v1",
+  "summary": {
+    "checks": 157,
+    "completion_failures": 47,
+    "validity_failures": 19
+  },
+  "terminal": true,
+  "verdict": "incomplete_session"
+}
