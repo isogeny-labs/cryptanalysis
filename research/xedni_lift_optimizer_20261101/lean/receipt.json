@@ -1,0 +1,22 @@
+{
+  "schema": "cryptanalysis.xedni-affine-lean-receipt/v1",
+  "source_commit": "545de2e1c91a301b342b45317f402be4497647ba",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "toolchain_sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+  "rust_sha256": "b08c94845e9b4ed9660bd01aff01b2e59d274d0f7806a4ddf48ef3d35541ac96",
+  "lean_sha256": "c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757",
+  "axioms": {
+    "XedniAffineCoset.candidate_preserves_divisibility": [
+      "Quot.sound",
+      "propext"
+    ],
+    "XedniAffineCoset.candidate_preserves": [
+      "Quot.sound",
+      "propext"
+    ],
+    "XedniAffineCoset.direction_span_closed": [
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

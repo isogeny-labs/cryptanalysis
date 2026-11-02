@@ -1,0 +1,46 @@
+name: Xedni affine-coset Lean proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/xedni-affine-coset-lean.yml'
+      - 'lean-toolchain'
+      - 'suite/src/cryptanalysis/xedni_lift.rs'
+      - 'research/xedni_lift_optimizer_20261101/lean/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/xedni-affine-coset-lean.yml'
+      - 'lean-toolchain'
+      - 'suite/src/cryptanalysis/xedni_lift.rs'
+      - 'research/xedni_lift_optimizer_20261101/lean/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof-and-source-binding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /lean-toolchain
+            /suite/src/cryptanalysis/xedni_lift.rs
+            /research/xedni_lift_optimizer_20261101/lean/**
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Check theorem, axioms, and Rust source binding
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          python3 research/xedni_lift_optimizer_20261101/lean/check.py
