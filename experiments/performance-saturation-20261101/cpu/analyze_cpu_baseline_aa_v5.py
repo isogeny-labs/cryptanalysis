@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import fcntl
 import hashlib
 import importlib.util
 import json
@@ -17,6 +18,7 @@ import secrets
 import statistics
 import subprocess
 import sys
+from contextlib import contextmanager
 from typing import Any
 
 
@@ -124,6 +126,41 @@ def atomic_publish(path: Path, data: bytes) -> None:
         os.close(parent)
 
 
+def write_json_exclusive(path: Path, value: Any) -> None:
+    """Durably create the immutable final seal without replacement."""
+    data = (
+        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+                   allow_nan=False) + "\n"
+    ).encode("utf-8")
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        offset = 0
+        while offset < len(data):
+            offset += os.write(descriptor, data[offset:])
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(parent)
+    finally:
+        os.close(parent)
+
+
+@contextmanager
+def exclusive_finalization_lock(run_root: Path):
+    """Serialize analyzers with a kernel-released, process-crash-safe lock."""
+    descriptor = os.open(
+        run_root / "orchestration", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC,
+    )
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(descriptor, fcntl.LOCK_UN)
+        os.close(descriptor)
+
+
 def verify_protocol(path: Path) -> dict[str, Any]:
     protocol = load_json(path)
     runner.verify_bootstrap_identity(protocol)
@@ -138,12 +175,30 @@ def verify_protocol(path: Path) -> dict[str, Any]:
     ).strip()
     if freeze["status"] != "frozen" or observed != freeze["protocol_sha256"]:
         raise ValueError("protocol freeze/hash mismatch")
-    script = protocol["analysis_plan"]["script"]
-    if script["sha256"] != sha256(Path(__file__).resolve()):
-        raise ValueError("analysis script differs from frozen SHA-256")
     ext = protocol["extensions"]["cpu_baseline_aa_v5"]
-    if ext["runner_sha256"] != sha256(runner.RUNNER):
-        raise ValueError("runner differs from frozen SHA-256")
+    required_runner = [
+        item.get("sha256") for item in ext["required_files"]
+        if item.get("path") == str(runner.RUNNER)
+    ]
+    required_analyzer = [
+        item.get("sha256") for item in ext["required_files"]
+        if item.get("path") == str(Path(__file__).resolve())
+    ]
+    observed_runner = sha256(runner.RUNNER)
+    observed_analyzer = sha256(Path(__file__).resolve())
+    if len(required_runner) != 1 or len({
+        ext.get("runner_sha256"), *required_runner, observed_runner,
+    }) != 1:
+        raise ValueError("runner identities differ across extension/required file/observed SHA-256")
+    if len(required_analyzer) != 1 or len({
+        ext.get("analyzer_sha256"),
+        protocol["analysis_plan"]["script"].get("sha256"),
+        *required_analyzer,
+        observed_analyzer,
+    }) != 1:
+        raise ValueError(
+            "analyzer identities differ across extension/analysis plan/required file/observed SHA-256"
+        )
     return protocol
 
 
@@ -2185,6 +2240,12 @@ def main() -> int:
     run_root = options.run_root.resolve()
     if run_root != runner.RUN_ROOT.resolve():
         raise ValueError(f"run root is not the frozen one-shot path: {run_root}")
+    with exclusive_finalization_lock(run_root):
+        return analyze_locked(protocol_path, run_root, options.wall_gate_only)
+
+
+def analyze_locked(protocol_path: Path, run_root: Path, wall_gate_only: bool) -> int:
+    """Recheck the seal and publish derived artifacts while holding the run lock."""
     protocol = verify_protocol(protocol_path)
     sealed_finalization = run_root / "orchestration/finalization.json"
     if sealed_finalization.is_file():
@@ -2207,7 +2268,7 @@ def main() -> int:
     wall_complete = gate["verdict"] in {
         "baseline_aa_complete_nonqualified", "baseline_aa_false_direction_nonqualified",
     }
-    if options.wall_gate_only:
+    if wall_gate_only:
         return 0 if wall_complete else 1
     gate_path = run_root / "analysis/wall-gate.json"
     write_json_once(gate_path, gate)
@@ -2335,19 +2396,7 @@ def main() -> int:
         "scientific_returncode": scientific_returncode,
         "completed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
     }
-    if finalization_path.exists():
-        try:
-            observed_finalization = load_json(finalization_path)
-        except (OSError, ValueError, json.JSONDecodeError):
-            write_json_once(finalization_path, finalization)
-            observed_finalization = finalization
-        for field in ("schema", "status", "export_sha256", "analyzer_sha256", "scientific_returncode"):
-            if observed_finalization.get(field) != finalization[field]:
-                raise ValueError(f"existing finalization receipt differs at {field}")
-        if parse_utc(observed_finalization.get("completed_at")) is None:
-            raise ValueError("existing finalization receipt has an invalid timestamp")
-    else:
-        write_json_once(finalization_path, finalization)
+    write_json_exclusive(finalization_path, finalization)
     return scientific_returncode
 
 

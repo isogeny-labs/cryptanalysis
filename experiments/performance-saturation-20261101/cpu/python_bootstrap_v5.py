@@ -79,20 +79,42 @@ def import_inventory(
     allowed_packages: tuple[str, ...] = SITE_PACKAGES_ALLOWED,
     allowed_files: tuple[str, ...] = SITE_FILES_ALLOWED,
 ) -> list[str]:
-    """Inventory every file that the effective PathFinder roots can execute."""
-    result: list[str] = []
+    """Inventory every executable file and directory-routing node PathFinder can use."""
+    result: set[str] = set()
+
+    def record_link(path: str) -> None:
+        result.add(
+            "L\t" + path + "\t" + os.readlink(path) + "\t" + os.path.realpath(path)
+        )
 
     def scan(root: str) -> None:
-        for directory, names, files in os.walk(root):
-            names[:] = sorted(
-                name for name in names
-                if name != "__pycache__"
-                and os.path.realpath(os.path.join(directory, name))
-                != os.path.realpath(site_packages)
-            )
+        if os.path.islink(root):
+            record_link(root)
+            return
+        if not os.path.isdir(root):
+            result.add("X\t" + root)
+            return
+        result.add("D\t" + root)
+        for directory, names, files in os.walk(root, followlinks=False):
+            retained_names: list[str] = []
+            for name in sorted(names):
+                path = os.path.join(directory, name)
+                if name == "__pycache__" or os.path.abspath(path) == os.path.abspath(site_packages):
+                    continue
+                if os.path.islink(path):
+                    record_link(path)
+                elif os.path.isdir(path):
+                    result.add("D\t" + path)
+                    retained_names.append(name)
+                else:
+                    result.add("X\t" + path)
+            names[:] = retained_names
             for name in sorted(files):
-                if name.endswith((".py", ".pyc", ".so")):
-                    result.append("P\t" + os.path.join(directory, name))
+                path = os.path.join(directory, name)
+                if os.path.islink(path):
+                    record_link(path)
+                elif name.endswith((".py", ".pyc", ".so")):
+                    result.add("P\t" + path)
 
     scan(stdlib_root)
     for package in allowed_packages:
@@ -106,12 +128,12 @@ def import_inventory(
             continue
         if entry.name in allowed_packages:
             kind = "D" if entry.is_dir(follow_symlinks=False) else "X"
-            result.append(f"{kind}\t{entry.path}")
+            result.add(f"{kind}\t{entry.path}")
         elif entry.name in allowed_files:
             kind = "F" if entry.is_file(follow_symlinks=False) else "X"
-            result.append(f"{kind}\t{entry.path}")
+            result.add(f"{kind}\t{entry.path}")
         elif entry.name.endswith((".py", ".pyc", ".so")):
-            result.append(f"A\t{entry.path}")
+            result.add(f"A\t{entry.path}")
     return sorted(result)
 
 

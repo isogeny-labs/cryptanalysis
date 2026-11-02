@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import multiprocessing
 import os
 from pathlib import Path
 import random
@@ -107,8 +108,17 @@ def frozen_protocol(root: Path) -> tuple[Path, dict]:
     protocol = json.loads(PROTOCOL_DRAFT.read_text(encoding="utf-8"))
     plan = runner.build_plan()
     protocol["extensions"]["cpu_baseline_aa_v5"]["runner_sha256"] = digest(runner.RUNNER)
+    protocol["extensions"]["cpu_baseline_aa_v5"]["analyzer_sha256"] = digest(runner.ANALYZER)
     protocol["extensions"]["cpu_baseline_aa_v5"]["command_plan_digests"] = plan["digests"]
     protocol["analysis_plan"]["script"]["sha256"] = digest(Path(analyzer.__file__).resolve())
+    for item in protocol["extensions"]["cpu_baseline_aa_v5"]["required_files"]:
+        path = Path(item["path"])
+        if path in {runner.RUNNER, runner.ANALYZER}:
+            item.update({
+                "bytes": path.stat().st_size,
+                "mode": f"{path.stat().st_mode & 0o7777:04o}",
+                "sha256": digest(path),
+            })
     protocol["freeze"] = {
         "status": "frozen", "protocol_sha256": None,
         "commit": "0" * 40, "frozen_at": "2026-11-01T00:00:00Z",
@@ -181,6 +191,35 @@ def invoke_analyzer(protocol_path: Path, root: Path) -> int:
         runner, "require_closed_bootstrap",
     ):
         return analyzer.main()
+
+
+def concurrent_analyzer_worker(
+    protocol_path: Path, root: Path, barrier: object, results: object,
+    publication_log: Path,
+) -> None:
+    """Run one real analyzer contender and record every derived publication."""
+    runner.RUN_ROOT = root
+    original_publish = analyzer.atomic_publish
+
+    def traced_publish(path: Path, data: bytes) -> None:
+        descriptor = os.open(
+            publication_log, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600,
+        )
+        try:
+            os.write(descriptor, f"{os.getpid()}\t{path}\n".encode("utf-8"))
+        finally:
+            os.close(descriptor)
+        original_publish(path, data)
+
+    analyzer.atomic_publish = traced_publish
+    try:
+        barrier.wait(timeout=60)
+        results.put(("ok", os.getpid(), invoke_analyzer(protocol_path, root)))
+    except BaseException as error:
+        results.put(("error", os.getpid(), f"{type(error).__name__}: {error}"))
+        raise
+    finally:
+        analyzer.atomic_publish = original_publish
 
 
 def assert_canonical_export(test: unittest.TestCase, protocol_path: Path,
@@ -419,6 +458,42 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             "runtime dependency inventory differs from the frozen manifest", findings,
         )
 
+    def test_analyzer_identity_bindings_must_all_equal_observed_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            protocol_path, baseline = frozen_protocol(root)
+            mutations = {
+                "extension": lambda value: value["extensions"]["cpu_baseline_aa_v5"].__setitem__(
+                    "analyzer_sha256", "1" * 64,
+                ),
+                "analysis-plan": lambda value: value["analysis_plan"]["script"].__setitem__(
+                    "sha256", "2" * 64,
+                ),
+                "required-file": lambda value: next(
+                    item for item in value["extensions"]["cpu_baseline_aa_v5"]["required_files"]
+                    if item["path"] == str(runner.ANALYZER)
+                ).__setitem__("sha256", "3" * 64),
+                "duplicate-required-file": lambda value: value["extensions"]
+                ["cpu_baseline_aa_v5"]["required_files"].append({
+                    **next(
+                        item for item in value["extensions"]["cpu_baseline_aa_v5"]
+                        ["required_files"] if item["path"] == str(runner.ANALYZER)
+                    ),
+                    "sha256": "4" * 64,
+                }),
+            }
+            for label, mutate in mutations.items():
+                with self.subTest(binding=label):
+                    protocol = json.loads(json.dumps(baseline))
+                    mutate(protocol)
+                    protocol["freeze"]["protocol_sha256"] = None
+                    protocol["freeze"]["protocol_sha256"] = analyzer.tool.protocol_hash(protocol)
+                    dump(protocol_path, protocol)
+                    with self.assertRaisesRegex(RuntimeError, "analyzer identities differ"):
+                        runner.validate_protocol(protocol_path)
+                    with self.assertRaisesRegex(ValueError, "analyzer identities differ"):
+                        analyzer.verify_protocol(protocol_path)
+
     def test_closed_python_preflight_rejects_preimport_tamper(self) -> None:
         checked = subprocess.run(
             runner.closed_python_command(
@@ -481,7 +556,7 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             if row.startswith(("P\t", "F\t"))
         }
         self.assertTrue(executable_inventory.issubset(closure_paths))
-        self.assertFalse(any(row.startswith(("A\t", "X\t")) for row in expected))
+        self.assertFalse(any(row.startswith(("A\t", "L\t", "X\t")) for row in expected))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             stdlib = root / "stdlib"
@@ -495,6 +570,55 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             baseline = bootstrap.import_inventory(
                 str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
             )
+            self.assertTrue(any(row.startswith("D\t") for row in baseline))
+            empty = package / "empty-routing-node"
+            empty.mkdir()
+            with_empty_directory = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertNotEqual(with_empty_directory, baseline)
+            empty.rmdir()
+
+            target_a = root / "optional-a"
+            target_b = root / "optional-b"
+            for target in (target_a, target_b):
+                target.mkdir()
+                (target / "__init__.py").write_text("value = 7\n", encoding="utf-8")
+            stdlib_link = stdlib / "cpu_v5_optional"
+            package_link = package / "optional"
+            stdlib_link.symlink_to(target_a, target_is_directory=True)
+            package_link.symlink_to(target_a, target_is_directory=True)
+            from importlib.machinery import PathFinder
+            self.assertIsNotNone(PathFinder.find_spec("cpu_v5_optional", [str(stdlib)]))
+            self.assertIsNotNone(PathFinder.find_spec("jsonschema.optional", [str(package)]))
+            linked = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertNotEqual(linked, baseline)
+            self.assertTrue(any(
+                row.startswith("L\t") and str(stdlib_link) in row for row in linked
+            ))
+            self.assertTrue(any(
+                row.startswith("L\t") and str(package_link) in row for row in linked
+            ))
+            stdlib_link.unlink()
+            stdlib_link.symlink_to(target_b, target_is_directory=True)
+            retargeted = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertNotEqual(retargeted, linked)
+            self.assertTrue(any(
+                row.startswith("L\t") and str(target_b) in row for row in retargeted
+            ))
+            package_link.unlink()
+            package_link.symlink_to(target_b, target_is_directory=True)
+            package_retargeted = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertNotEqual(package_retargeted, retargeted)
+            stdlib_link.unlink()
+            package_link.unlink()
+
             (package / "rogue.py").write_text("value = 2\n", encoding="utf-8")
             nested_extra = bootstrap.import_inventory(
                 str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
@@ -1149,7 +1273,31 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                     "analysis_only_retry": "allowed_until_validated_finalization_exists",
                     "error_type": "TimeoutExpired", "error": "synthetic timeout",
                 })
-                self.assertEqual(invoke_analyzer(protocol_path, root), 0)
+                context = multiprocessing.get_context("fork")
+                barrier = context.Barrier(2)
+                results = context.Queue()
+                publication_log = Path(directory) / "analyzer-publications.log"
+                contenders = [
+                    context.Process(
+                        target=concurrent_analyzer_worker,
+                        args=(protocol_path, root, barrier, results, publication_log),
+                    )
+                    for _ in range(2)
+                ]
+                for contender in contenders:
+                    contender.start()
+                for contender in contenders:
+                    contender.join(timeout=180)
+                    self.assertFalse(contender.is_alive(), "concurrent analyzer did not finish")
+                    self.assertEqual(contender.exitcode, 0)
+                outcomes = [results.get(timeout=5) for _ in contenders]
+                self.assertEqual({row[0] for row in outcomes}, {"ok"})
+                self.assertEqual([row[2] for row in outcomes], [0, 0])
+                publishing_processes = {
+                    line.split("\t", 1)[0]
+                    for line in publication_log.read_text(encoding="utf-8").splitlines()
+                }
+                self.assertEqual(len(publishing_processes), 1)
                 export = analyzer.load_json(root / "export.json")
                 self.assertEqual(len(export["runs"]), 1056)
                 self.assertEqual(
@@ -1172,6 +1320,8 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                     root / "orchestration/finalization.json",
                 ]
                 before = {path: path.read_bytes() for path in sealed}
+                self.assertEqual(invoke_analyzer(protocol_path, root), 0)
+                self.assertEqual({path: path.read_bytes() for path in sealed}, before)
                 raw = root / "wall-1t/rust/compare/attempts/0001_A_gf2_la_rref_macaulay_k5m3d5.json"
                 if not raw.is_file():
                     raw = next(

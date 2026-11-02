@@ -1083,8 +1083,31 @@ def validate_protocol(protocol: Path) -> dict[str, Any]:
     if observed != freeze["protocol_sha256"]:
         raise RuntimeError("v5 protocol canonical hash mismatch")
     ext = data["extensions"]["cpu_baseline_aa_v5"]
-    if sha256(RUNNER) != ext["runner_sha256"] or sha256(ANALYZER) != data["analysis_plan"]["script"]["sha256"]:
-        raise RuntimeError("runner/analyzer hash differs from the frozen protocol")
+    required_runner = [
+        item.get("sha256") for item in ext["required_files"]
+        if item.get("path") == str(RUNNER)
+    ]
+    required_analyzer = [
+        item.get("sha256") for item in ext["required_files"]
+        if item.get("path") == str(ANALYZER)
+    ]
+    observed_runner = sha256(RUNNER)
+    observed_analyzer = sha256(ANALYZER)
+    if len(required_runner) != 1 or len({
+        ext.get("runner_sha256"), *required_runner, observed_runner,
+    }) != 1:
+        raise RuntimeError(
+            "runner identities differ across extension/required file/observed SHA-256"
+        )
+    if len(required_analyzer) != 1 or len({
+        ext.get("analyzer_sha256"),
+        data["analysis_plan"]["script"].get("sha256"),
+        *required_analyzer,
+        observed_analyzer,
+    }) != 1:
+        raise RuntimeError(
+            "analyzer identities differ across extension/analysis plan/required file/observed SHA-256"
+        )
     plan = build_plan()
     if plan["digests"] != ext["command_plan_digests"]:
         raise RuntimeError("generated command-plan digest differs from the frozen protocol")
