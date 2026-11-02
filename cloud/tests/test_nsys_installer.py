@@ -5,6 +5,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 INSTALLER = REPO / "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh"
+INSTALLER_V12 = REPO / "ecc2k130/runner/codegen/extract_nsys_tools_v12.sh"
 LEGACY_INSTALLER = REPO / "ecc2k130/runner/codegen/install_nsys_tools.sh"
 
 
@@ -53,6 +54,22 @@ class ProfileExtractorTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 2)
         self.assertIn("outside the fresh v11 task root", completed.stderr)
+
+    def test_v12_extractor_is_equivalent_but_namespace_closed(self):
+        v11 = INSTALLER.read_text(encoding="utf-8")
+        v12 = INSTALLER_V12.read_text(encoding="utf-8")
+        self.assertEqual(v12, v11.replace("v11", "v12"))
+        syntax = subprocess.run(
+            ["/usr/bin/bash", "-n", str(INSTALLER_V12)], cwd=REPO,
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(syntax.returncode, 0, syntax.stderr)
+        completed = subprocess.run(
+            ["/usr/bin/bash", str(INSTALLER_V12), "/tmp/not-a-v12-task/nsys-package"],
+            cwd=REPO, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("outside the fresh v12 task root", completed.stderr)
 
 
 if __name__ == "__main__":

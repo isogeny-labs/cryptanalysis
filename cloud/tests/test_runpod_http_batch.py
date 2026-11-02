@@ -52,6 +52,8 @@ def args_for(root: Path, returncode=0):
         gpu_count=1, min_vcpu=8, min_ram=24, cloud="SECURE", image=None,
         disk=80, max_hours=2.0, wait=10, timeout=30, max_result_mib=8,
         max_price=1.50, reconcile_seconds=0, dry_run=False,
+        catalog_wait_seconds=0, catalog_poll_seconds=30,
+        record_reconciliation_binding=False,
         minimal_bootstrap=False,
         source_commit=COMMIT, source_ref="refs/heads/test-http-batch",
         out=["results/a.json"], receipt=root / "receipt.json",
@@ -113,9 +115,19 @@ def terminal_status(data: bytes, returncode=0):
     }
 
 
+def catalog_row(availability="LOW"):
+    return {
+        "id": "NVIDIA GeForce RTX 5090", "availability": availability,
+        "secure": True, "community": True,
+        "maxCount": {"secure": 8, "community": 8},
+        "price": {"secure": 1.19, "community": 0.69},
+    }
+
+
 class FakeClient:
     def __init__(self, create_error=None, reconcile=False, wrong_name=False,
-                 compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404"):
+                 compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404",
+                 catalog_rows=None):
         self.create_error = create_error
         self.reconcile = reconcile
         self.create_calls = 0
@@ -125,6 +137,8 @@ class FakeClient:
         self.wrong_name = wrong_name
         self.compute_type = compute_type
         self.image = image
+        self.catalog_rows = catalog_rows or [[catalog_row()]]
+        self.catalog_calls = 0
 
     def named(self, name):
         self.named_calls += 1
@@ -166,6 +180,12 @@ class FakeClient:
 
     def list_pods(self):
         return []
+
+    def gpu_catalog(self, cloud, count):
+        self.assert_catalog_request = (cloud, count)
+        index = min(self.catalog_calls, len(self.catalog_rows) - 1)
+        self.catalog_calls += 1
+        return self.catalog_rows[index]
 
 
 class FakeTransport:
@@ -556,6 +576,75 @@ class RunpodHttpBatchTest(unittest.TestCase):
                         sleep=lambda _seconds: None)
             self.assertEqual(client.create_calls, 1)
             self.assertEqual(client.deleted, [POD])
+
+    def test_create_refusal_retains_redacted_provider_cause_and_binding(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = args_for(root)
+            args.record_reconciliation_binding = True
+            client = FakeClient(batch.ProviderError(
+                f"capacity refused {TOKEN}", 500))
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                with self.assertRaises(batch.BatchError):
+                    batch.execute(
+                        args, client=client, transport=FakeTransport(result_archive()), repo=root,
+                        token_factory=lambda: TOKEN, nonce_factory=lambda: "0123456789ab",
+                        sleep=lambda _seconds: None)
+            receipt = json.loads(args.receipt.read_text())
+            self.assertEqual(client.create_calls, 1)
+            self.assertEqual(client.deleted, [])
+            self.assertEqual(receipt["error"]["cause"]["type"], "ProviderError")
+            self.assertEqual(receipt["error"]["cause"]["provider_status"], 500)
+            self.assertIn("<redacted>", receipt["error"]["cause"]["detail"])
+            self.assertNotIn(TOKEN, args.receipt.read_text())
+            self.assertEqual(
+                receipt["reconciliation"]["ownership_id"],
+                hashlib.sha256(TOKEN.encode()).hexdigest())
+            self.assertTrue(receipt["reconciliation"]["attempted"])
+            self.assertEqual(receipt["reconciliation"]["last_match_count"], 0)
+
+    def test_catalog_gate_waits_for_capacity_before_the_only_create(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = args_for(root)
+            args.catalog_wait_seconds = 30
+            args.catalog_poll_seconds = 30
+            client = FakeClient(catalog_rows=[
+                [catalog_row("NONE")], [catalog_row("LOW")],
+            ])
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                rc = batch.execute(
+                    args, client=client, transport=FakeTransport(result_archive()), repo=root,
+                    token_factory=lambda: TOKEN, nonce_factory=lambda: "0123456789ab",
+                    sleep=lambda _seconds: None)
+            receipt = json.loads(args.receipt.read_text())
+            self.assertEqual(rc, 0)
+            self.assertEqual(client.catalog_calls, 2)
+            self.assertEqual(client.create_calls, 1)
+            self.assertEqual(receipt["capacity_gate"]["first"]["availability"], "NONE")
+            self.assertEqual(receipt["capacity_gate"]["last"]["availability"], "LOW")
+            self.assertTrue(receipt["capacity_gate"]["passed"])
+            self.assertTrue(receipt["capacity_gate"]["create_attempted"])
+
+    def test_catalog_timeout_does_not_spend_create_attempt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = args_for(root)
+            args.catalog_wait_seconds = 30
+            args.catalog_poll_seconds = 30
+            client = FakeClient(catalog_rows=[[catalog_row("NONE")]])
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                with self.assertRaises(batch.BatchError):
+                    batch.execute(
+                        args, client=client, transport=FakeTransport(result_archive()), repo=root,
+                        token_factory=lambda: TOKEN, nonce_factory=lambda: "0123456789ab",
+                        sleep=lambda _seconds: None)
+            receipt = json.loads(args.receipt.read_text())
+            self.assertEqual(client.catalog_calls, 2)
+            self.assertEqual(client.create_calls, 0)
+            self.assertFalse(receipt["capacity_gate"]["passed"])
+            self.assertFalse(receipt["capacity_gate"]["create_attempted"])
+            self.assertIn("sole create attempt was not spent", receipt["error"]["detail"])
 
     def test_wrong_name_create_response_never_deletes_unowned_id(self):
         with tempfile.TemporaryDirectory() as directory:

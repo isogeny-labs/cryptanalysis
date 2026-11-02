@@ -1,0 +1,58 @@
+{
+  "schema": "performance-protocol-outcome/v1",
+  "protocol": "protocol-http-rtx5090-geometry-v11.json",
+  "protocol_sha256": "827b0c94c27ea85cd6d97876484cd7562cb8bf84e545c6c6b31ccb2836d87eef",
+  "protocol_file_sha256": "de7fbfc47f4afbd3d51a1dc2d62cbf8bff6c200d701a7c66c4eb46abfe75bdf1",
+  "registration_commit": "0d24f761bfb05ec9179ca8bf6324c40186f30960",
+  "freeze_commit": "ce7671f9a29941a47f996f7dd53a9c734bcafb4b",
+  "classification": "incomplete_session/provider_create_failure_before_data",
+  "identified": "2026-11-02",
+  "run_id": "gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94",
+  "reason": "The registered local preflight passed both independent clean builds, but the sole RunPod create call was refused or returned ambiguously. Exact-name and ownership-marker reconciliation observed no pod, so no remote command, warmup, measurement, or profile ran. The controller discarded the already-sanitized provider cause; contemporaneous read-only Secure RTX 5090 catalog observations moved between LOW and NONE, making transient capacity the leading but not provable cause.",
+  "provider_actions": true,
+  "provider_create_attempts": 1,
+  "pods_created": 0,
+  "requested_pod_name": "misagi-f4-geometry-v11-889599548299",
+  "cleanup": {
+    "delete_requested": false,
+    "absence_verified_by_exact_name": true,
+    "reason": "No exact-name ownership-bound pod was observed during reconciliation or subsequent read-only inventory checks."
+  },
+  "preflight_status": "passed",
+  "controller_returncode": 125,
+  "terminal_verdict": "incomplete_session",
+  "export_written": false,
+  "scientific_rows": 0,
+  "timing_rows_reused": 0,
+  "claims_admitted": [],
+  "retained_diagnostics": {
+    "preflight_receipt_path": "preflight-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+    "preflight_receipt_sha256": "ebf6dbed464fc21d0453dfce39814210941e7986fd12cd9c0e845d860e92faae",
+    "receipt_path": "http-receipts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+    "receipt_sha256": "78aa483ed9a5ba365d54fe060d5a3df147b5ba186223392fc4596abd565eeabb",
+    "terminal_verdict_path": "final-verdicts/gpu-geometry-http-rtx5090-v11-20261102T180307Z-827b0c94.json",
+    "terminal_verdict_sha256": "6790b27621e985c6b4363d3c2f2199a387a43fe8705f2326d03f45739e13b86d",
+    "result_archive": null,
+    "remote_metadata": null
+  },
+  "capacity_observation": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "cloud": "SECURE",
+    "availability_observed": [
+      "LOW",
+      "NONE"
+    ],
+    "secure_price_usd_per_hour": 1.19,
+    "max_count_secure": 8,
+    "interpretation": "The catalog is advisory and maxCount is capability rather than free stock; it cannot retroactively prove the POST refusal cause."
+  },
+  "image_reference": {
+    "requested": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+    "v1_schema": "unrestricted string described as an image tag",
+    "v2_schema": "unrestricted Docker image reference",
+    "conclusion": "Digest syntax was not disproved and remains required; v12 does not weaken the image identity."
+  },
+  "replacement": "protocol-http-rtx5090-geometry-v12.json",
+  "correction": "Prospectively register and freeze a new zero-data continuation with the scientific schedule unchanged, a read-only exact-GPU capacity admission gate before its sole create call, retained non-secret reconciliation ownership binding, and a redacted structured provider cause/status in failure receipts. V11 remains immutable and must not be replayed.",
+  "scientific_design_change": false
+}

@@ -209,6 +209,27 @@ def safe_error(error: BaseException, hidden=()) -> str:
     return text[:1600]
 
 
+def error_record(error: BaseException, hidden=()) -> dict:
+    """Return one redacted error record while retaining a safe direct cause."""
+    record = {
+        "type": type(error).__name__,
+        "detail": safe_error(error, hidden),
+    }
+    if isinstance(error, ProviderError) and type(error.status) is int:
+        record["provider_status"] = error.status
+    cause = error.__cause__
+    if cause is not None:
+        cause_record = {
+            "type": type(cause).__name__,
+            "detail": safe_error(cause, hidden),
+            "provider_status": None,
+        }
+        if isinstance(cause, ProviderError) and type(cause.status) is int:
+            cause_record["provider_status"] = cause.status
+        record["cause"] = cause_record
+    return record
+
+
 def write_once(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
@@ -468,6 +489,16 @@ class RunpodClient:
         value = self.call("GET", f"{runpod_pod.REST}/pods")
         return value if isinstance(value, list) else value.get("pods", [])
 
+    def gpu_catalog(self, cloud: str, count: int):
+        query = urllib.parse.urlencode({
+            "include": "AVAILABILITY", "product": "POD",
+            "count": count, "cloud": cloud,
+        })
+        value = self.call("GET", f"{V2}/catalog/gpus?{query}")
+        if not isinstance(value, dict) or not isinstance(value.get("gpus"), list):
+            raise ProviderError("provider returned an invalid GPU catalog")
+        return value["gpus"]
+
     def named(self, name):
         return [pod for pod in self.list_pods()
                 if pod.get("name") == name and pod.get("desiredStatus") != "TERMINATED"]
@@ -497,16 +528,81 @@ def marker_matches(pod: dict, name: str, ownership_id: str) -> bool:
 def reconcile_ambiguous(client, name: str, ownership_id: str, seconds: int,
                         sleep=time.sleep):
     deadline = time.monotonic() + seconds
+    attempts = 0
     while True:
+        attempts += 1
         matches = [pod for pod in client.named(name)
                    if marker_matches(pod, name, ownership_id)]
         if len(matches) > 1:
             raise BatchError("multiple exact-name marker-bound pods after ambiguous create")
         if matches:
-            return matches[0]
+            return matches[0], attempts, 1
         if time.monotonic() >= deadline:
-            return None
+            return None, attempts, 0
         sleep(min(5, max(0, deadline - time.monotonic())))
+
+
+def gpu_capacity_snapshot(rows: object, args) -> dict:
+    """Reduce the provider catalog to the one requested, non-secret GPU row."""
+    if not isinstance(rows, list) or len(args.gpu) != 1:
+        raise BatchError("GPU capacity gate requires one exact GPU type")
+    matches = [row for row in rows
+               if isinstance(row, dict) and row.get("id") == args.gpu[0]]
+    if len(matches) > 1:
+        raise BatchError("provider catalog duplicated the requested GPU type")
+    cloud_key = args.cloud.lower()
+    if not matches:
+        return {
+            "id": args.gpu[0], "availability": "MISSING", "cloud": cloud_key,
+            "max_count": None, "price": None, "passes": False,
+        }
+    row = matches[0]
+    maximum = row.get("maxCount") if isinstance(row.get("maxCount"), dict) else {}
+    prices = row.get("price") if isinstance(row.get("price"), dict) else {}
+    availability = row.get("availability")
+    count = maximum.get(cloud_key)
+    price = prices.get(cloud_key)
+    passes = (
+        availability in {"LOW", "MEDIUM", "HIGH"}
+        and row.get(cloud_key) is True
+        and type(count) is int and count >= args.gpu_count
+        and type(price) in (int, float) and not isinstance(price, bool)
+        and math.isfinite(price) and 0 < price <= args.max_price
+    )
+    return {
+        "id": args.gpu[0], "availability": availability,
+        "cloud": cloud_key, "max_count": count, "price": price,
+        "passes": passes,
+    }
+
+
+def wait_gpu_capacity(client, args, sleep=time.sleep) -> dict:
+    """Poll only the read-only catalog before the sole registered create."""
+    wait_seconds = args.catalog_wait_seconds
+    poll_seconds = args.catalog_poll_seconds
+    attempts_limit = 1 + math.ceil(wait_seconds / poll_seconds)
+    first = None
+    last = None
+    for attempt in range(1, attempts_limit + 1):
+        last = gpu_capacity_snapshot(
+            client.gpu_catalog(args.cloud, args.gpu_count), args)
+        if first is None:
+            first = last
+        if last["passes"]:
+            return {
+                "enabled": True, "wait_seconds": wait_seconds,
+                "poll_seconds": poll_seconds, "attempts": attempt,
+                "first": first, "last": last, "passed": True,
+                "create_attempted": False,
+            }
+        if attempt < attempts_limit:
+            sleep(min(poll_seconds, max(0, wait_seconds - (attempt - 1) * poll_seconds)))
+    return {
+        "enabled": True, "wait_seconds": wait_seconds,
+        "poll_seconds": poll_seconds, "attempts": attempts_limit,
+        "first": first, "last": last, "passed": False,
+        "create_attempted": False,
+    }
 
 
 def provider_summary(pod: dict) -> dict:
@@ -889,6 +985,23 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         "transport": {"kind": "runpod-https-proxy", "port": HTTP_PORT,
                       "chunk_bytes": CHUNK_BYTES, "authentication": "ephemeral bearer"},
     }
+    capacity_enabled = getattr(args, "catalog_wait_seconds", 0) > 0
+    if capacity_enabled:
+        plan["capacity_gate"] = {
+            "enabled": True,
+            "wait_seconds": args.catalog_wait_seconds,
+            "poll_seconds": args.catalog_poll_seconds,
+            "attempts": 0, "first": None, "last": None,
+            "passed": False, "create_attempted": False,
+        }
+    reconciliation_enabled = getattr(args, "record_reconciliation_binding", False)
+    if reconciliation_enabled:
+        plan["reconciliation"] = {
+            "name": name, "ownership_id": ownership_id,
+            "configured_seconds": args.reconcile_seconds,
+            "attempted": False, "attempts": 0,
+            "last_match_count": None, "owned_pod_id": None,
+        }
     if args.cpu:
         plan["cpu_guard"] = {
             "flavor": args.cpu_flavor[0], "vcpu_count": args.cpu,
@@ -914,17 +1027,32 @@ def execute(args, *, client=None, transport=None, repo=REPO,
     pending: BaseException | None = None
     returncode = 125
     try:
+        if capacity_enabled:
+            receipt["capacity_gate"] = wait_gpu_capacity(client, args, sleep=sleep)
+            if not receipt["capacity_gate"]["passed"]:
+                raise BatchError(
+                    "GPU catalog capacity gate expired without availability; "
+                    "the sole create attempt was not spent")
         if client.named(name):
             raise BatchError("fresh randomized pod name already exists")
         try:
+            if capacity_enabled:
+                receipt["capacity_gate"]["create_attempted"] = True
             created = client.create(body)
             candidate_id = pod_identifier(created)
             if created.get("name") != name:
                 raise BatchError("create response name mismatch")
             pod_id = candidate_id
         except BaseException as error:
-            recovered = reconcile_ambiguous(
+            recovered, attempts, match_count = reconcile_ambiguous(
                 client, name, ownership_id, args.reconcile_seconds, sleep=sleep)
+            if reconciliation_enabled:
+                receipt["reconciliation"].update({
+                    "attempted": True, "attempts": attempts,
+                    "last_match_count": match_count,
+                    "owned_pod_id": (
+                        pod_identifier(recovered) if recovered is not None else None),
+                })
             if recovered is not None:
                 pod_id = pod_identifier(recovered)
                 receipt["pod"] = {"id": pod_id, "name": name,
@@ -961,8 +1089,7 @@ def execute(args, *, client=None, transport=None, repo=REPO,
         returncode = status["returncode"]
     except BaseException as error:
         pending = error
-        receipt["error"] = {"type": type(error).__name__,
-                            "detail": safe_error(error, (token,))}
+        receipt["error"] = error_record(error, (token,))
     finally:
         if pod_id is not None:
             try:
@@ -1011,6 +1138,15 @@ def parse(argv=None):
                         help="refuse an allocated pod above this USD/hour")
     parser.add_argument("--reconcile-seconds", type=int, default=60,
                         help="read-only name reconciliation after ambiguous POST")
+    parser.add_argument(
+        "--catalog-wait-seconds", type=int, default=0,
+        help="for one exact GPU, wait this long on the read-only v2 capacity catalog")
+    parser.add_argument(
+        "--catalog-poll-seconds", type=int, default=30,
+        help="read-only GPU catalog polling interval")
+    parser.add_argument(
+        "--record-reconciliation-binding", action="store_true",
+        help="retain non-secret randomized-name/ownership bindings for exact cleanup")
     parser.add_argument("--dry-run", action="store_true",
                         help="validate locally and print a redacted plan; no network/provider calls")
     parser.add_argument(
@@ -1023,6 +1159,10 @@ def parse(argv=None):
         parser.error("price, timeout, and result limit must be positive")
     if args.reconcile_seconds < 0:
         parser.error("--reconcile-seconds must be nonnegative")
+    if args.catalog_wait_seconds < 0 or args.catalog_poll_seconds < 1:
+        parser.error("catalog wait must be nonnegative and polling must be positive")
+    if args.catalog_wait_seconds and (args.cpu or len(args.gpu) != 1):
+        parser.error("catalog waiting requires exactly one GPU and no CPU request")
     return args
 
 
