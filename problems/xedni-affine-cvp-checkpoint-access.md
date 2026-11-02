@@ -36,6 +36,13 @@ would not discharge the user's requested algorithm investigation.
   `checkpoints/cryptanalysis/codex__xedni-affine-cvp-eval-20261102/20261102T171849Z-318b27bf3427/checkpoint.tar.gz`.
   `scripts/checkpoint.sh status` then reported `last push: stale or none` and
   the gate exited nonzero.  The evaluator was not launched.
+- **Observed after the direct-discriminant change on 2026-11-02:** A gate for
+  branch `codex/xedni-step8-20261102` attempted the supported AWS upload at
+  key `20261102T181246Z-e264f71189ff/checkpoint.tar.gz` and failed with
+  `AWS_IO_TLS_ERROR_NEGOTIATION_FAILURE`.  The gate exited nonzero and the
+  frozen evaluator again was not launched.  This transient transport error
+  does not supersede the independently observed HTTP 403 and `AccessDenied`
+  authorization failures.
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -91,4 +98,7 @@ failed before the frozen evaluation.  Unresolved.
 2026-11-02: reproduced token HTTP 403 and directly isolated ambient AWS
 `PutObject AccessDenied` despite runtime credential readiness.  The exact
 authorization blocker remains unresolved; no frozen row was run.
+
+2026-11-02: the post-direct-discriminant gate also failed, this time during
+TLS negotiation.  No frozen row was run and the gate remains mandatory.
 

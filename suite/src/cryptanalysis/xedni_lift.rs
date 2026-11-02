@@ -9,8 +9,9 @@
 //! * LLL reduces a supplied basis of admissible coefficient changes;
 //! * Babai nearest-plane finds a short representative of the affine coset;
 //! * a bounded, deterministic neighborhood search minimizes the *exact*
-//!   generalized-Weierstrass discriminant, with coefficient height as a
-//!   tie-breaker;
+//!   discriminant, with coefficient height as a tie-breaker.  For a full
+//!   plane cubic this is computed directly from the cubic and its Hessian,
+//!   avoiding a potentially unavailable rational-flex conversion;
 //! * exact linear constraints and coefficient congruences are checked before
 //!   the search and again on the result.
 //!
@@ -172,16 +173,20 @@ pub struct LiftOptimization {
     pub congruence_preserved: bool,
 }
 
-/// Exact linear objective for Step 7 in general ten-coefficient cubic mode.
+/// Exact objective for a general ten-coefficient cubic.
 ///
-/// JKSST Step 8 converts the selected cubic to Weierstrass form before a
-/// discriminant is available.  This score therefore makes no singularity or
-/// discriminant claim: it orders the certified affine coset by coefficient
-/// height and then exact squared Euclidean norm.
+/// The determinant is the direct ternary-cubic discriminant construction in
+/// Fisher, *The invariants of a genus one curve*, Section 7.2: form the cubic
+/// Hessian, put the coefficients of the three partial derivatives of each in
+/// a 6-by-6 matrix, and take its determinant.  It is `+/- 1728 Delta`, hence
+/// vanishes exactly on singular plane cubics over characteristic zero.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct PlaneCubicLiftScore {
+    pub nonsingular: bool,
+    pub discriminant_bits: u64,
     pub coefficient_height_bits: u64,
     pub squared_l2_norm: String,
+    pub discriminant: String,
 }
 
 /// Certified output for the general-cubic Step-7 optimizer.
@@ -586,6 +591,177 @@ pub fn optimize_weierstrass_lift(
     })
 }
 
+// Quadratic coefficient order used only by the direct discriminant:
+// (X^2, Y^2, Z^2, XY, XZ, YZ).
+fn multiply_linear_forms(a: &[BigInt], b: &[BigInt]) -> Vec<BigInt> {
+    vec![
+        &a[0] * &b[0],
+        &a[1] * &b[1],
+        &a[2] * &b[2],
+        &a[0] * &b[1] + &a[1] * &b[0],
+        &a[0] * &b[2] + &a[2] * &b[0],
+        &a[1] * &b[2] + &a[2] * &b[1],
+    ]
+}
+
+fn multiply_quadratic_linear(q: &[BigInt], linear: &[BigInt]) -> Vec<BigInt> {
+    vec![
+        &q[0] * &linear[0],
+        &q[0] * &linear[1] + &q[3] * &linear[0],
+        &q[1] * &linear[0] + &q[3] * &linear[1],
+        &q[1] * &linear[1],
+        &q[0] * &linear[2] + &q[4] * &linear[0],
+        &q[3] * &linear[2] + &q[4] * &linear[1] + &q[5] * &linear[0],
+        &q[1] * &linear[2] + &q[5] * &linear[1],
+        &q[2] * &linear[0] + &q[4] * &linear[2],
+        &q[2] * &linear[1] + &q[5] * &linear[2],
+        &q[2] * &linear[2],
+    ]
+}
+
+fn add_scaled_cubic(target: &mut [BigInt], source: &[BigInt], scale: i64) {
+    let scale = BigInt::from(scale);
+    for (coefficient, term) in target.iter_mut().zip(source) {
+        *coefficient += &scale * term;
+    }
+}
+
+/// Return Fisher's integral cubic Hessian `-det(second derivatives) / 2`.
+fn plane_cubic_hessian(c: &[BigInt]) -> Result<Vec<BigInt>, String> {
+    let linear = |x: i64, i: usize, y: i64, j: usize, z: i64, k: usize| {
+        vec![x * &c[i], y * &c[j], z * &c[k]]
+    };
+    let f_xx = linear(6, 0, 2, 1, 2, 4);
+    let f_xy = linear(2, 1, 2, 2, 1, 5);
+    let f_xz = linear(2, 4, 1, 5, 2, 7);
+    let f_yy = linear(2, 2, 6, 3, 2, 6);
+    let f_yz = linear(1, 5, 2, 6, 2, 8);
+    let f_zz = linear(2, 7, 2, 8, 6, 9);
+
+    // det [[a,b,c],[b,d,e],[c,e,f]]
+    //   = adf + 2bce - ae^2 - dc^2 - fb^2.
+    let mut determinant = vec![BigInt::zero(); PLANE_CUBIC_COEFFICIENTS];
+    add_scaled_cubic(
+        &mut determinant,
+        &multiply_quadratic_linear(&multiply_linear_forms(&f_xx, &f_yy), &f_zz),
+        1,
+    );
+    add_scaled_cubic(
+        &mut determinant,
+        &multiply_quadratic_linear(&multiply_linear_forms(&f_xy, &f_xz), &f_yz),
+        2,
+    );
+    add_scaled_cubic(
+        &mut determinant,
+        &multiply_quadratic_linear(&multiply_linear_forms(&f_yz, &f_yz), &f_xx),
+        -1,
+    );
+    add_scaled_cubic(
+        &mut determinant,
+        &multiply_quadratic_linear(&multiply_linear_forms(&f_xz, &f_xz), &f_yy),
+        -1,
+    );
+    add_scaled_cubic(
+        &mut determinant,
+        &multiply_quadratic_linear(&multiply_linear_forms(&f_xy, &f_xy), &f_zz),
+        -1,
+    );
+    let two = BigInt::from(2);
+    if determinant
+        .iter()
+        .any(|coefficient| !coefficient.is_multiple_of(&two))
+    {
+        return Err("internal error: nonintegral ternary-cubic Hessian".into());
+    }
+    Ok(determinant
+        .into_iter()
+        .map(|coefficient| -coefficient / &two)
+        .collect())
+}
+
+fn plane_cubic_partials(c: &[BigInt]) -> [Vec<BigInt>; 3] {
+    let two = BigInt::from(2);
+    let three = BigInt::from(3);
+    [
+        vec![
+            &three * &c[0],
+            c[2].clone(),
+            c[7].clone(),
+            &two * &c[1],
+            &two * &c[4],
+            c[5].clone(),
+        ],
+        vec![
+            c[1].clone(),
+            &three * &c[3],
+            c[8].clone(),
+            &two * &c[2],
+            c[5].clone(),
+            &two * &c[6],
+        ],
+        vec![
+            c[4].clone(),
+            c[6].clone(),
+            &three * &c[9],
+            c[5].clone(),
+            &two * &c[7],
+            &two * &c[8],
+        ],
+    ]
+}
+
+/// Fraction-free determinant with exact divisions (Bareiss elimination).
+fn determinant_bareiss(mut matrix: Vec<Vec<BigInt>>) -> Result<BigInt, String> {
+    let n = matrix.len();
+    if n == 0 || matrix.iter().any(|row| row.len() != n) {
+        return Err("determinant requires a nonempty square matrix".into());
+    }
+    if n == 1 {
+        return Ok(matrix[0][0].clone());
+    }
+    let mut sign = BigInt::from(1);
+    let mut previous_pivot = BigInt::from(1);
+    for pivot_column in 0..n - 1 {
+        let Some(pivot_row) = (pivot_column..n).find(|&row| !matrix[row][pivot_column].is_zero())
+        else {
+            return Ok(BigInt::zero());
+        };
+        if pivot_row != pivot_column {
+            matrix.swap(pivot_row, pivot_column);
+            sign = -sign;
+        }
+        let pivot = matrix[pivot_column][pivot_column].clone();
+        for row in pivot_column + 1..n {
+            for column in pivot_column + 1..n {
+                let numerator = &matrix[row][column] * &pivot
+                    - &matrix[row][pivot_column] * &matrix[pivot_column][column];
+                let (quotient, remainder) = numerator.div_rem(&previous_pivot);
+                if !remainder.is_zero() {
+                    return Err("internal error: inexact Bareiss division".into());
+                }
+                matrix[row][column] = quotient;
+            }
+            matrix[row][pivot_column] = BigInt::zero();
+        }
+        previous_pivot = pivot;
+    }
+    Ok(sign * &matrix[n - 1][n - 1])
+}
+
+/// Compute `+/- 1728 Delta` for an integral ternary cubic exactly.
+pub fn plane_cubic_discriminant(c: &[BigInt]) -> Result<BigInt, String> {
+    if c.len() != PLANE_CUBIC_COEFFICIENTS {
+        return Err(format!(
+            "expected {PLANE_CUBIC_COEFFICIENTS} plane-cubic coefficients, got {}",
+            c.len()
+        ));
+    }
+    let hessian = plane_cubic_hessian(c)?;
+    let mut matrix = plane_cubic_partials(c).to_vec();
+    matrix.extend(plane_cubic_partials(&hessian));
+    determinant_bareiss(matrix)
+}
+
 fn score_plane_cubic_lift(c: &[BigInt]) -> Result<PlaneCubicLiftScore, String> {
     if c.len() != PLANE_CUBIC_COEFFICIENTS {
         return Err(format!(
@@ -593,16 +769,22 @@ fn score_plane_cubic_lift(c: &[BigInt]) -> Result<PlaneCubicLiftScore, String> {
             c.len()
         ));
     }
+    let discriminant = plane_cubic_discriminant(c)?;
     let squared_l2: BigInt = c.iter().map(|x| x * x).sum();
     Ok(PlaneCubicLiftScore {
+        nonsingular: !discriminant.is_zero(),
+        discriminant_bits: abs_bits(&discriminant),
         coefficient_height_bits: c.iter().map(abs_bits).max().unwrap_or(0),
         squared_l2_norm: squared_l2.to_string(),
+        discriminant: discriminant.to_string(),
     })
 }
 
 fn better_plane_cubic(a: &PlaneCubicLiftScore, b: &PlaneCubicLiftScore) -> bool {
-    if a.coefficient_height_bits != b.coefficient_height_bits {
-        return a.coefficient_height_bits < b.coefficient_height_bits;
+    match (a.nonsingular, b.nonsingular) {
+        (true, false) => return true,
+        (false, true) => return false,
+        _ => {}
     }
     let a_norm = a
         .squared_l2_norm
@@ -612,13 +794,15 @@ fn better_plane_cubic(a: &PlaneCubicLiftScore, b: &PlaneCubicLiftScore) -> bool 
         .squared_l2_norm
         .parse::<BigInt>()
         .expect("internally generated integer score");
-    a_norm < b_norm
+    (a.discriminant_bits, a.coefficient_height_bits, a_norm)
+        < (b.discriminant_bits, b.coefficient_height_bits, b_norm)
 }
 
 /// Optimize the exact linear Step-7 coset for a full plane cubic.
 ///
 /// This supports all `2 <= r <= 9` incidence rows from JKSST.  It does not
-/// perform Step 8 or evaluate the discriminant of the resulting cubic.
+/// perform the Step-8 coordinate conversion: the Step-9 discriminant is
+/// evaluated directly on the ternary cubic by the Hessian construction.
 pub fn optimize_plane_cubic_lift(
     problem: &AffineLiftProblem,
     options: LiftSearchOptions,
@@ -634,7 +818,7 @@ pub fn optimize_plane_cubic_lift(
         better_plane_cubic,
     )?;
     Ok(PlaneCubicLiftOptimization {
-        method: "LLL-HP + exact-rational Babai CVP + exact coefficient-height neighborhood",
+        method: "LLL-HP + exact-rational Babai CVP + exact ternary-discriminant neighborhood",
         coefficient_order: "X^3,X^2Y,XY^2,Y^3,X^2Z,XYZ,Y^2Z,XZ^2,YZ^2,Z^3",
         baseline_coefficients: result.baseline.iter().map(ToString::to_string).collect(),
         babai_coefficients: result.babai.iter().map(ToString::to_string).collect(),
@@ -645,7 +829,7 @@ pub fn optimize_plane_cubic_lift(
         candidates_evaluated: result.candidates_evaluated,
         exact_constraints_preserved: result.exact_constraints_preserved,
         congruence_preserved: result.congruence_preserved,
-        discriminant_evaluated: false,
+        discriminant_evaluated: true,
     })
 }
 
@@ -703,6 +887,28 @@ mod tests {
         let score = score_weierstrass_lift(&coefficients).unwrap();
         assert_eq!(score.discriminant, "1024");
         assert!(score.nonsingular);
+    }
+
+    #[test]
+    fn direct_plane_cubic_discriminant_matches_reference_models() {
+        // Fisher Section 7.2 gives det(partials(U), partials(H(U))) =
+        // +/- 1728 Delta.  These values independently pin the normalization.
+        let fermat = bi(&[1, 0, 0, 1, 0, 0, 0, 0, 0, 1]);
+        assert_eq!(
+            plane_cubic_discriminant(&fermat).unwrap(),
+            34_012_224.into()
+        );
+
+        // x^3+y^3+z^3-3xyz is the singular Hesse member k^3=1.
+        let singular_hesse = bi(&[1, 0, 0, 1, 0, -3, 0, 0, 0, 1]);
+        assert!(plane_cubic_discriminant(&singular_hesse).unwrap().is_zero());
+
+        // y^2 z = x^3 - x z^2 has elliptic Delta=64.
+        let weierstrass = bi(&[-1, 0, 0, 0, 0, 0, 1, 1, 0, 0]);
+        assert_eq!(
+            plane_cubic_discriminant(&weierstrass).unwrap(),
+            (-110_592).into()
+        );
     }
 
     #[test]
@@ -840,7 +1046,10 @@ mod tests {
         );
         assert!(result.exact_constraints_preserved);
         assert!(result.congruence_preserved);
-        assert!(!result.discriminant_evaluated);
+        assert!(result.discriminant_evaluated);
+        assert!(result.optimized_score.nonsingular);
+        // The planted model is y^2 = x^3 - x + 1, with Delta=-368.
+        assert_eq!(result.optimized_score.discriminant, "635904");
     }
 
     #[test]

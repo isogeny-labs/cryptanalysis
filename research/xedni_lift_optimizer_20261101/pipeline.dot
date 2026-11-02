@@ -8,14 +8,14 @@ digraph xedni_lift {
 
   input [label="Feasible affine coset\nu* + span_Z(D)\npoint rows B; modulus q", fillcolor="#dbeafe"];
   wmodel [label="7-term Weierstrass\nSteps 7-9", fillcolor="#e0f2fe"];
-  cmodel [label="10-term plane cubic\nStep 7; 2 <= r <= 9", fillcolor="#e0f2fe"];
+  cmodel [label="10-term plane cubic\nSteps 7 + 9; 2 <= r <= 9", fillcolor="#e0f2fe"];
   certify [label="Exact input certificate\nB D_i = 0\nD_i = 0 (mod q)", fillcolor="#dcfce7"];
   lll [label="LLL-HP (delta 0.99)\nreduce admissible directions", fillcolor="#ede9fe"];
   babai [label="Exact-rational Babai\narbitrary-size center coefficients", fillcolor="#fef3c7"];
   wsearch [label="Weierstrass neighborhood\ndiscriminant + height", fillcolor="#ffedd5"];
-  csearch [label="Plane-cubic neighborhood\nheight + exact L2", fillcolor="#ffedd5"];
+  csearch [label="Plane-cubic neighborhood\nexact Hessian determinant\n+ height", fillcolor="#ffedd5"];
   output [label="Selected coefficient vector\nrecheck incidence + congruence", fillcolor="#dcfce7"];
-  gap [label="OPEN for plane cubic\nStep 8 + discriminant", style="rounded,filled,dashed", fillcolor="#fff7ed", color="#c2410c"];
+  gap [label="OPEN downstream only\nStep-8 birational map\nor direct group law", style="rounded,filled,dashed", fillcolor="#fff7ed", color="#c2410c"];
   claim [label="Claim boundary\ncoefficient-stage optimizer only\nno dependence / ECDLP result", fillcolor="#fee2e2", color="#b91c1c"];
 
   input -> wmodel;
@@ -28,7 +28,7 @@ digraph xedni_lift {
   babai -> csearch [label="model = plane cubic"];
   wsearch -> output [label="best exact score"];
   csearch -> output [label="best exact score"];
-  csearch -> gap [style=dashed, label="not inferred"];
+  csearch -> gap [style=dashed, label="conversion not inferred"];
   output -> claim [style=dashed, label="interpretation gate"];
 }
 
