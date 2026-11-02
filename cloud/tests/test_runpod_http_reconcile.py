@@ -28,7 +28,14 @@ def controller_receipt() -> dict:
         "schema": batch.SCHEMA,
         "provider_actions": True,
         "request": {"name": NAME},
-        "reconciliation": {"name": NAME, "ownership_id": OWNERSHIP},
+        "reconciliation": {
+            "name": NAME,
+            "ownership_id": OWNERSHIP,
+            "attempted": True,
+            "attempts": 1,
+            "last_match_count": 0,
+            "owned_pod_id": None,
+        },
         "pod": None,
         "cleanup": None,
         "error": {"type": "BatchError", "detail": "ambiguous create"},
@@ -116,6 +123,21 @@ class AmbiguousCreateReconciliationTests(unittest.TestCase):
         )
         with self.assertRaises(batch.BatchError):
             reconcile.execute(args, client=client, sleep=lambda _s: None)
+        self.assertEqual(client.deleted, [])
+
+    def test_capacity_timeout_without_create_attempt_is_refused(self):
+        def mark_unspent(value):
+            value["capacity_gate"] = {"create_attempted": False}
+            value["reconciliation"].update({
+                "attempted": False,
+                "attempts": 0,
+                "last_match_count": None,
+            })
+
+        args, out, client = self.run_case(FakeClient([]), mark_unspent)
+        with self.assertRaises(batch.BatchError):
+            reconcile.execute(args, client=client, sleep=lambda _s: None)
+        self.assertFalse(out.exists())
         self.assertEqual(client.deleted, [])
 
 

@@ -47,6 +47,17 @@ def load_binding(path: Path) -> tuple[dict, str, str]:
         raise batch.BatchError("controller already recorded a pod or cleanup result")
     if value.get("error") is None or value.get("provider_actions") is not True:
         raise batch.BatchError("controller receipt is not an ambiguous real-provider failure")
+    if (
+        reconciliation.get("attempted") is not True
+        or type(reconciliation.get("attempts")) is not int
+        or reconciliation["attempts"] < 1
+        or reconciliation.get("last_match_count") != 0
+        or reconciliation.get("owned_pod_id") is not None
+    ):
+        raise batch.BatchError("controller did not record an unresolved create reconciliation")
+    capacity = value.get("capacity_gate")
+    if isinstance(capacity, dict) and capacity.get("create_attempted") is not True:
+        raise batch.BatchError("controller capacity gate did not spend the create attempt")
     return value, name, ownership_id
 
 
