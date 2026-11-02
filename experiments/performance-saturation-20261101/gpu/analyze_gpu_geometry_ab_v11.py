@@ -48,7 +48,7 @@ CANDIDATE_F4_SHA256 = "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30
 PRODUCTION_DIFF_SHA256 = "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3"
 F4_PATH = "suite/src/cryptanalysis/f4_gpu.rs"
 TOOLING_REF = "refs/heads/codex/runpod-http-gpu-geometry-v11-20261101"
-HISTORY_DEEPEN_COMMITS = 32
+HISTORY_DEEPEN_COMMITS = 64
 AB_INTERVALS = 10
 AA_INTERVALS = 10
 FAMILY_INTERVALS = AB_INTERVALS + AA_INTERVALS
@@ -58,6 +58,48 @@ PRIMARY_EFFECT = Fraction(51, 50)  # at least 1.02x baseline/candidate
 NONREGRESSION = Fraction(50, 51)  # candidate no more than 2% slower
 AA_RESOLUTION = Fraction(51, 50)  # same-session symmetric clock noise <=2%
 EXPECTED_UPDATE_LAUNCHES = 2941
+EXPECTED_ARCHIVE_FILES = 1253
+EXPECTED_ARCHIVE_BYTES = 19_435_520
+EXPECTED_PREFLIGHT_TOOL_SHA256 = "e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572"
+EXPECTED_RUSTUP_URL = (
+    "https://static.rust-lang.org/rustup/archive/1.29.2/"
+    "x86_64-unknown-linux-gnu/rustup-init"
+)
+EXPECTED_RUSTUP_SHA256 = "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4"
+EXPECTED_RUSTC_SHA256 = "5eadaaf4fe086d76547b17dc3c1ba880d0082b93f7d8bc65612770da8e79fe8e"
+EXPECTED_CARGO_SHA256 = "e60b4010303c19a131c058e3f054b4b3311433c4b2ee94ba8e09e165ff2a3b3b"
+RUST_TOOLCHAIN = "1.91.1-x86_64-unknown-linux-gnu"
+NVRTC_WHEEL_URL = "https://files.pythonhosted.org/packages/b8/85/e4af82cc9202023862090bfca4ea827d533329e925c758f0cde964cb54b7/nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl"
+NVRTC_WHEEL_SHA256 = "210cf05005a447e29214e9ce50851e83fc5f4358df8b453155d5e1918094dcb4"
+NVRTC_WHEEL_BYTES = 89_568_129
+NVRTC_LIBRARY_MEMBER = "nvidia/cuda_nvrtc/lib/libnvrtc.so.12"
+NVRTC_LIBRARY_SHA256 = "7c67c6b51ea0e0279634cebd676ff7efda1674806444520c84430ad5c35fe625"
+NVRTC_LIBRARY_BYTES = 106_244_480
+NVRTC_BUILTINS_MEMBER = "nvidia/cuda_nvrtc/lib/libnvrtc-builtins.so.12.9"
+NVRTC_BUILTINS_SHA256 = "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8"
+NVRTC_BUILTINS_BYTES = 7_202_760
+NSYS_PACKAGE = "nsight-systems-2026.3.2"
+NSYS_PACKAGE_VERSION = "2026.3.2.476-263238834031v0"
+NSYS_DEB_URL = (
+    "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/"
+    "nsight-systems-2026.3.2_2026.3.2.476-1_amd64.deb"
+)
+NSYS_DEB_SHA256 = "e9bf0ff9c613ff5545095a4177676a9579cb666e78c8621c3792f3559e2c1690"
+NSYS_DEB_BYTES = 448_261_416
+NSYS_BINARY_RELATIVE = "opt/nvidia/nsight-systems/2026.3.2/target-linux-x64/nsys"
+NSYS_BINARY_CONTRACT = f"<remote-task-root>/nsys-package/{NSYS_BINARY_RELATIVE}"
+NSYS_BINARY_SHA256 = "68a5fb843322bda1b090900a0297b9d5bee43daf8b870a809a6f8aa93059ae16"
+NSYS_BINARY_BYTES = 87_282_816
+NSYS_VERSION_OUTPUT = "NVIDIA Nsight Systems version 2026.3.2.476-263238834031v0"
+NSYS_EXTRACTOR_SHA256 = "de9c0aa2024e0f5570a4f7138467d95ed7124b56453726d846b3be8c2b9e2900"
+NETWORK_ENV_ALLOWLIST = (
+    "ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "CURL_CA_BUNDLE",
+)
+FORBIDDEN_BUILD_ENV_PATTERNS = (
+    "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_PROFILE_*", "CARGO_TARGET_DIR",
+    "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER", "CFLAGS", "CXXFLAGS", "CPPFLAGS",
+    "LDFLAGS", "LD_PRELOAD", "AR", "CC", "RANLIB", "RAYON_NUM_THREADS", "F4_*",
+)
 
 VERBOSE_RE = re.compile(
     r"^F4_F2_ECHELON: .*? upload ([0-9]+(?:\.[0-9]+)?) ms, "
@@ -141,6 +183,25 @@ def load_json(path: Path) -> Any:
         raise GateError(f"invalid JSON {path}: {exc}") from exc
 
 
+def finite_nonnegative(value: object) -> bool:
+    return (
+        isinstance(value, (int, float)) and not isinstance(value, bool)
+        and math.isfinite(value) and value >= 0
+    )
+
+
+def parse_utc(value: object) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(
+            value[:-1] + "+00:00" if value.endswith("Z") else value
+        )
+    except ValueError:
+        return None
+    return parsed.astimezone(timezone.utc) if parsed.tzinfo is not None else None
+
+
 def read_status(path: Path) -> int:
     require_nonempty(path)
     try:
@@ -204,7 +265,8 @@ def validate_source_identities(session: Path) -> dict[str, Any]:
         "history_deepen_commits": HISTORY_DEEPEN_COMMITS,
     }
     exact_keys = set(expected) | {
-        "schema", "archive_paths", "preflight_receipt_sha256", "construction",
+        "schema", "archive_paths", "preflight_receipt_sha256",
+        "remote_build_preflight_sha256", "construction",
     }
     if set(value) != exact_keys or value.get("schema") != "gpu-geometry-source-identities/v1":
         raise GateError("source identity key set/schema is not exact")
@@ -215,7 +277,412 @@ def validate_source_identities(session: Path) -> dict[str, Any]:
         raise GateError("source identity archive_paths is not the complete frozen v11 closure")
     if SHA256_RE.fullmatch(str(value.get("preflight_receipt_sha256", ""))) is None:
         raise GateError("source identity preflight receipt SHA-256 is malformed")
+    if SHA256_RE.fullmatch(str(value.get("remote_build_preflight_sha256", ""))) is None:
+        raise GateError("source identity remote build preflight SHA-256 is malformed")
     return value
+
+
+def safe_system_tool_record(value: object, *, cc: bool = False) -> bool:
+    if not isinstance(value, dict):
+        return False
+    keys = {"realpath", "sha256", "version"} | ({"target", "capabilities"} if cc else set())
+    path = value.get("realpath")
+    okay = (
+        set(value) == keys and isinstance(path, str)
+        and path.startswith(("/usr/bin/", "/usr/lib/", "/usr/libexec/"))
+        and SHA256_RE.fullmatch(str(value.get("sha256", ""))) is not None
+        and isinstance(value.get("version"), str) and bool(value["version"])
+    )
+    if not cc:
+        return okay
+    return (
+        okay and re.fullmatch(r"x86_64(?:-[A-Za-z0-9_.]+)+", str(value.get("target"))) is not None
+        and re.search(r"gcc|GCC|clang|Ubuntu|Debian", value["version"]) is not None
+        and value.get("capabilities") == {
+            "compile": True, "archive": True, "ranlib": True, "link": True, "execute": True,
+        }
+    )
+
+
+def validate_remote_environment_policy(value: object) -> None:
+    if not isinstance(value, dict):
+        raise GateError("remote build environment policy is not an object")
+    hashes = value.get("network_forwarded_value_sha256")
+    if (not isinstance(hashes, dict) or set(hashes) - set(NETWORK_ENV_ALLOWLIST)
+            or any(SHA256_RE.fullmatch(str(item)) is None for item in hashes.values())):
+        raise GateError("remote build network environment hash policy is invalid")
+    expected = {
+        "bootstrap_fixed": {
+            "PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+        },
+        "fetch_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+        },
+        "network_forward_allowlist": list(NETWORK_ENV_ALLOWLIST),
+        "build_inherited_keys": [],
+        "build_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp/<arm>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+            "CC": "<resolved-remote-cc>", "AR": "<resolved-remote-ar>",
+            "RANLIB": "<resolved-remote-ranlib>",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "<resolved-remote-cc>",
+            "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+            "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+            "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+        },
+        "forbidden_inherited_patterns": list(FORBIDDEN_BUILD_ENV_PATTERNS),
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": "remote_pod",
+    }
+    if set(value) != set(expected) | {"network_forwarded_value_sha256", "launcher"}:
+        raise GateError("remote build environment policy key set is not exact")
+    for key, wanted in expected.items():
+        if value.get(key) != wanted:
+            raise GateError(f"remote build environment policy {key} differs from frozen value")
+    launcher = value.get("launcher") if isinstance(value.get("launcher"), dict) else {}
+    launcher_hashes = launcher.get("network_forwarded_value_sha256")
+    expected_launcher_fixed = {
+        "PATH": "/usr/bin:/bin", "HOME": "<caller-owned-fresh-home>",
+        "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+    }
+    expected_python = {
+        "executable": "/usr/bin/python3", "flags": ["-I", "-S", "-B"],
+        "isolated": True, "no_site": True, "dont_write_bytecode": True, "safe_path": True,
+    }
+    if (set(launcher) != {"fixed", "exact_keys", "network_forward_allowlist",
+                          "network_forwarded_value_sha256", "python"}
+            or launcher.get("fixed") != expected_launcher_fixed
+            or launcher.get("network_forward_allowlist") != list(NETWORK_ENV_ALLOWLIST)
+            or launcher_hashes != hashes
+            or launcher.get("exact_keys") != sorted([*expected_launcher_fixed, *hashes])
+            or launcher.get("python") != expected_python):
+        raise GateError("remote preflight launcher environment is not exact and isolated")
+
+
+def trusted_loader_entries(value: object, present: object) -> bool:
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        return False
+    if (present is True) != bool(value):
+        return False
+    prefixes = ("/usr/local/nvidia/", "/usr/local/cuda/", "/usr/lib/", "/lib/")
+    for item in value:
+        pure = Path(item)
+        normalized = pure.as_posix()
+        if (not item.startswith("/") or ".." in pure.parts or "//" in item
+                or item.endswith("/") or normalized != item
+                or not any((item + "/").startswith(prefix) for prefix in prefixes)):
+            return False
+    return True
+
+
+def validate_nvrtc_install(session: Path) -> None:
+    value = load_json(session / "metadata/nvrtc-install.json")
+    expected = {
+        "schema": "gpu-geometry-nvrtc-install/v1",
+        "package": "nvidia-cuda-nvrtc-cu12",
+        "version": "12.9.86",
+        "wheel_url": NVRTC_WHEEL_URL,
+        "wheel_sha256": NVRTC_WHEEL_SHA256,
+        "wheel_bytes": NVRTC_WHEEL_BYTES,
+        "libraries": [
+            {
+                "wheel_member": NVRTC_LIBRARY_MEMBER,
+                "path": "<remote-task-root>/nvrtc-wheel/libnvrtc.so.12",
+                "sha256": NVRTC_LIBRARY_SHA256,
+                "bytes": NVRTC_LIBRARY_BYTES,
+            },
+            {
+                "wheel_member": NVRTC_BUILTINS_MEMBER,
+                "path": "<remote-task-root>/nvrtc-wheel/libnvrtc-builtins.so.12.9",
+                "sha256": NVRTC_BUILTINS_SHA256,
+                "bytes": NVRTC_BUILTINS_BYTES,
+            },
+        ],
+        "compile_probe": {"architecture": "compute_120", "returncode": 0},
+        "python_package_code_executed": False,
+        "native_compile_probe_executed": True,
+    }
+    if value != expected:
+        raise GateError("NVRTC wheel/library installation provenance is not exact")
+
+
+def validate_nsys_install(session: Path, require_final_runtime: bool) -> None:
+    value = load_json(session / "metadata/nsys-install.json")
+    expected_static = {
+        "schema": "gpu-geometry-nsys-install/v1",
+        "package": NSYS_PACKAGE,
+        "package_version": NSYS_PACKAGE_VERSION,
+        "package_deb_url": NSYS_DEB_URL,
+        "package_deb_sha256": NSYS_DEB_SHA256,
+        "package_deb_bytes": NSYS_DEB_BYTES,
+        "package_control": {
+            "Package": NSYS_PACKAGE,
+            "Version": NSYS_PACKAGE_VERSION,
+            "Architecture": "amd64",
+        },
+        "extraction_root": "<remote-task-root>/nsys-package",
+        "binary_path": NSYS_BINARY_CONTRACT,
+        "binary_sha256": NSYS_BINARY_SHA256,
+        "binary_bytes": NSYS_BINARY_BYTES,
+        "version_output": NSYS_VERSION_OUTPUT,
+        "installed": False,
+        "maintainer_scripts_executed": False,
+        "system_package_manager_mutation": False,
+        "dependency_source": "digest-pinned image plus exact extracted deb; missing dependencies fail closed",
+        "extractor_path": "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh",
+        "extractor_sha256": NSYS_EXTRACTOR_SHA256,
+    }
+    if (not isinstance(value, dict)
+            or set(value) != set(expected_static) | {"extraction_root_realpath", "binary_realpath"}
+            or any(value.get(key) != wanted for key, wanted in expected_static.items())
+            or not isinstance(value.get("extraction_root_realpath"), str)
+            or re.fullmatch(
+                r"/tmp/cryptanalysis-gpu-geometry-v11\.[A-Za-z0-9_]+/nsys-package",
+                value["extraction_root_realpath"],
+            ) is None
+            or value.get("binary_realpath")
+            != f"{value['extraction_root_realpath']}/{NSYS_BINARY_RELATIVE}"):
+        raise GateError("Nsight Systems package extraction provenance is not exact")
+    version_path = session / "metadata/nsys-version.txt"
+    require_nonempty(version_path)
+    if version_path.read_text(encoding="utf-8").rstrip("\r\n") != NSYS_VERSION_OUTPUT:
+        raise GateError("Nsight Systems runtime version output is not exact")
+    final_path = session / "metadata/nsys-after.sha256"
+    expected_final = f"{NSYS_BINARY_SHA256}  {NSYS_BINARY_CONTRACT}\n"
+    if require_final_runtime:
+        require_nonempty(final_path)
+        if final_path.read_text(encoding="ascii") != expected_final:
+            raise GateError("Nsight Systems binary drifted during registered profiles")
+    elif final_path.exists() and final_path.read_text(encoding="ascii") != expected_final:
+        raise GateError("present Nsight Systems final identity disagrees with install receipt")
+
+
+def validate_measurement_environment(session: Path, require_final_runtime: bool) -> None:
+    value = load_json(session / "metadata/measurement-environment.json")
+    fixed = {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "<remote-task-root>/measurement-home",
+        "TMPDIR": "<remote-task-root>/measurement-tmp",
+        "LANG": "C", "LC_ALL": "C", "TZ": "UTC", "CUDA_VISIBLE_DEVICES": "0",
+        "F4_F2_ECHELON": "cuda", "F4_F2_ECHELON_VERBOSE": "1",
+        "CA_NVRTC_LIB": "<remote-task-root>/nvrtc-wheel/libnvrtc.so.12",
+    }
+    loader = value.get("inherited_loader_path_present")
+    expected_measurement_keys = sorted([*fixed, "LD_LIBRARY_PATH"])
+    expected_system_keys = sorted([
+        "PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ",
+        *(["LD_LIBRARY_PATH"] if loader is True else []),
+    ])
+    valid = (
+        set(value) == {"schema", "construction", "measurement_fixed", "measurement_exact_keys",
+                       "system_exact_keys", "inherited_loader_path_present",
+                       "inherited_loader_path_value_sha256", "inherited_loader_path_entries",
+                       "measurement_loader_first", "measurement_loader_value_sha256",
+                       "nvrtc_root_realpath",
+                       "nvrtc_library_realpath", "nvrtc_library_sha256",
+                       "nvrtc_builtins_realpath", "nvrtc_builtins_sha256",
+                       "forbidden_absent", "forbidden_prefixes_absent"}
+        and value.get("schema") == "gpu-geometry-measurement-environment/v1"
+        and value.get("construction") == "env -i exact allowlist for every timed binary; env -i system subset for analyzer and Nsys"
+        and value.get("measurement_fixed") == fixed
+        and value.get("measurement_exact_keys") == expected_measurement_keys
+        and value.get("system_exact_keys") == expected_system_keys
+        and type(loader) is bool
+        and ((loader and SHA256_RE.fullmatch(str(value.get("inherited_loader_path_value_sha256", ""))) is not None)
+             or (not loader and value.get("inherited_loader_path_value_sha256") is None))
+        and trusted_loader_entries(value.get("inherited_loader_path_entries"), loader)
+        and (
+            value.get("inherited_loader_path_value_sha256")
+            == (hashlib.sha256(":".join(value.get("inherited_loader_path_entries", [])).encode()).hexdigest()
+                if loader else None)
+        )
+        and value.get("measurement_loader_first") == "<remote-task-root>/nvrtc-wheel"
+        and SHA256_RE.fullmatch(str(value.get("measurement_loader_value_sha256", ""))) is not None
+        and isinstance(value.get("nvrtc_root_realpath"), str)
+        and re.fullmatch(
+            r"/tmp/cryptanalysis-gpu-geometry-v11\.[A-Za-z0-9_]+/nvrtc-wheel",
+            value["nvrtc_root_realpath"],
+        ) is not None
+        and value.get("measurement_loader_value_sha256") == hashlib.sha256(
+            ":".join([
+                value.get("nvrtc_root_realpath", ""),
+                *value.get("inherited_loader_path_entries", []),
+            ]).encode()
+        ).hexdigest()
+        and isinstance(value.get("nvrtc_library_realpath"), str)
+        and re.fullmatch(
+            r"/tmp/cryptanalysis-gpu-geometry-v11\.[A-Za-z0-9_]+/"
+            r"nvrtc-wheel/libnvrtc\.so\.12",
+            value["nvrtc_library_realpath"],
+        ) is not None
+        and value.get("nvrtc_library_sha256") == NVRTC_LIBRARY_SHA256
+        and str(Path(value.get("nvrtc_library_realpath", "")).parent)
+        == value.get("nvrtc_root_realpath")
+        and isinstance(value.get("nvrtc_builtins_realpath"), str)
+        and re.fullmatch(
+            r"/tmp/cryptanalysis-gpu-geometry-v11\.[A-Za-z0-9_]+/"
+            r"nvrtc-wheel/libnvrtc-builtins\.so\.12\.9",
+            value["nvrtc_builtins_realpath"],
+        ) is not None
+        and value.get("nvrtc_builtins_sha256") == NVRTC_BUILTINS_SHA256
+        and str(Path(value.get("nvrtc_builtins_realpath", "")).parent)
+        == value.get("nvrtc_root_realpath")
+        and value.get("forbidden_absent") == [
+            "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CFLAGS", "CXXFLAGS", "CPPFLAGS",
+            "LDFLAGS", "LD_PRELOAD", "RUSTC_WRAPPER", "RAYON_NUM_THREADS",
+        ]
+        and value.get("forbidden_prefixes_absent") == [
+            "CARGO_PROFILE_", "F4_ except the two exact fixed keys",
+        ]
+    )
+    if not valid:
+        raise GateError("measurement/analyzer/Nsys environment closure is invalid")
+    validate_nvrtc_install(session)
+    validate_nsys_install(session, require_final_runtime)
+    final_path = session / "metadata/nvrtc-after.sha256"
+    expected_final = (
+        f"{NVRTC_LIBRARY_SHA256}  libnvrtc.so.12\n"
+        f"{NVRTC_BUILTINS_SHA256}  libnvrtc-builtins.so.12.9\n"
+    )
+    if require_final_runtime:
+        require_nonempty(final_path)
+        if final_path.read_text(encoding="ascii") != expected_final:
+            raise GateError("NVRTC identity drifted between environment capture and final profile")
+    elif final_path.exists() and final_path.read_text(encoding="ascii") != expected_final:
+        raise GateError("present NVRTC final identity disagrees with environment capture")
+
+
+def validate_remote_build_preflight(session: Path, identities: dict[str, Any],
+                                    protocol_sha256: str | None = None,
+                                    require_final_runtime: bool = False) -> None:
+    path = session / "metadata/remote-build-preflight.json"
+    value = load_json(path)
+    required = {
+        "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "location",
+        "tool_sha256", "source", "build_contract", "started_at", "status", "error",
+        "finished_at", "elapsed_seconds", "archive", "source_delta", "files_per_arm",
+        "builds", "binary_contract", "toolchain", "dependency_fetch", "environment_policy",
+    }
+    if set(value) != required:
+        raise GateError("remote build preflight key set is not exact")
+    if (value.get("schema") != "gpu-geometry-build-preflight/v1"
+            or value.get("protocol_id") != PROTOCOL_ID or value.get("run_id") != session.name
+            or value.get("provider_actions") is not False or value.get("location") != "remote_pod"
+            or value.get("status") != "passed" or value.get("error") is not None
+            or SHA256_RE.fullmatch(str(value.get("protocol_sha256", ""))) is None
+            or (protocol_sha256 is not None and value.get("protocol_sha256") != protocol_sha256)
+            or value.get("tool_sha256") != EXPECTED_PREFLIGHT_TOOL_SHA256):
+        raise GateError("remote build preflight identity/status is invalid")
+    if sha256_file(path) != identities.get("remote_build_preflight_sha256"):
+        raise GateError("remote build preflight receipt hash disagrees with source identity")
+    started, finished = parse_utc(value.get("started_at")), parse_utc(value.get("finished_at"))
+    if (started is None or finished is None or started > finished
+            or not finite_nonnegative(value.get("elapsed_seconds"))):
+        raise GateError("remote build preflight timestamps/duration are invalid")
+    expected_source = {
+        "baseline_commit": BASELINE_ORIGIN_COMMIT, "candidate_commit": CANDIDATE_COMMIT,
+        "candidate_tree": CANDIDATE_TREE, "baseline_f4_sha256": BASELINE_F4_SHA256,
+        "candidate_f4_sha256": CANDIDATE_F4_SHA256,
+    }
+    expected_contract = {
+        "clean_extracted_closure": True, "isolated_source_trees": True,
+        "isolated_target_dirs": True, "cargo_incremental": "0",
+        "network_only_during_bootstrap_and_fetch": True, "offline_builds": True,
+        "exact_environment_key_set": True,
+    }
+    if value.get("source") != expected_source or value.get("build_contract") != expected_contract:
+        raise GateError("remote build source/contract differs from frozen values")
+    expected_archive = {
+        "roots": ["suite", "bindings/rust", "include", "src", "cuda", "challenges"],
+        "sha256": CANDIDATE_BUILD_ARCHIVE_SHA256, "bytes": EXPECTED_ARCHIVE_BYTES,
+        "files": EXPECTED_ARCHIVE_FILES,
+        "required_members": [F4_PATH, "cuda/ca_device.cuh", "challenges/elliptic/corpus.json",
+                             "suite/Cargo.lock", "bindings/rust/cryptanalysis-sys/build.rs"],
+    }
+    if (value.get("archive") != expected_archive or value.get("source_delta") != [F4_PATH]
+            or value.get("files_per_arm") != EXPECTED_ARCHIVE_FILES):
+        raise GateError("remote build closure archive/source delta is invalid")
+    builds = value.get("builds")
+    if not isinstance(builds, list) or len(builds) != 2:
+        raise GateError("remote build receipt does not have two arm builds")
+    for arm, item in zip(("baseline", "candidate"), builds):
+        if (not isinstance(item, dict)
+                or set(item) != {"arm", "command", "returncode", "elapsed_seconds",
+                                 "log_sha256", "log_bytes", "binary_sha256", "binary_bytes"}
+                or item.get("arm") != arm
+                or item.get("command") != ["cargo", "build", "--release", "--locked", "--example", "f4_matrix_bench"]
+                or item.get("returncode") != 0
+                or not finite_nonnegative(item.get("elapsed_seconds"))
+                or SHA256_RE.fullmatch(str(item.get("log_sha256", ""))) is None
+                or type(item.get("log_bytes")) is not int or item["log_bytes"] < 0
+                or SHA256_RE.fullmatch(str(item.get("binary_sha256", ""))) is None
+                or type(item.get("binary_bytes")) is not int or item["binary_bytes"] <= 0):
+            raise GateError(f"remote {arm} build record is invalid")
+    hashes = parse_binary_hashes(session)
+    contract = value.get("binary_contract") if isinstance(value.get("binary_contract"), dict) else {}
+    if (set(contract) != {"baseline_sha256", "baseline_aa_sha256", "candidate_sha256",
+                          "baseline_aa_equals_baseline", "candidate_differs"}
+            or contract.get("baseline_sha256") != hashes["baseline"]
+            or contract.get("baseline_aa_sha256") != hashes["baseline-aa"]
+            or contract.get("candidate_sha256") != hashes["candidate"]
+            or builds[0]["binary_sha256"] != hashes["baseline"]
+            or builds[1]["binary_sha256"] != hashes["candidate"]
+            or contract.get("baseline_aa_equals_baseline") is not True
+            or contract.get("candidate_differs") is not True
+            or hashes["baseline"] == hashes["candidate"]):
+        raise GateError("remote build receipt/binary instrument hashes disagree")
+    toolchain = value.get("toolchain") if isinstance(value.get("toolchain"), dict) else {}
+    bootstrap = toolchain.get("bootstrap") if isinstance(toolchain.get("bootstrap"), dict) else {}
+    rustc = toolchain.get("rustc") if isinstance(toolchain.get("rustc"), dict) else {}
+    cargo = toolchain.get("cargo") if isinstance(toolchain.get("cargo"), dict) else {}
+    if (set(toolchain) != {"system_policy", "bootstrap", "rustc", "cargo", "cc", "ar", "ranlib",
+                           "linker", "collect2", "system_tools_unchanged_after_builds"}
+            or toolchain.get("system_policy") != "remote_resolved_once_capability_checked_same_for_both_arms"
+            or toolchain.get("system_tools_unchanged_after_builds") is not True
+            or set(bootstrap) != {"url", "sha256", "log_sha256", "log_bytes"}
+            or bootstrap.get("url") != EXPECTED_RUSTUP_URL
+            or bootstrap.get("sha256") != EXPECTED_RUSTUP_SHA256
+            or SHA256_RE.fullmatch(str(bootstrap.get("log_sha256", ""))) is None
+            or type(bootstrap.get("log_bytes")) is not int or bootstrap["log_bytes"] < 0
+            or set(rustc) != {"toolchain", "sha256", "version"}
+            or rustc.get("toolchain") != RUST_TOOLCHAIN
+            or rustc.get("sha256") != EXPECTED_RUSTC_SHA256
+            or not isinstance(rustc.get("version"), str) or "rustc 1.91.1" not in rustc["version"]
+            or set(cargo) != {"toolchain", "sha256", "version"}
+            or cargo.get("toolchain") != RUST_TOOLCHAIN
+            or cargo.get("sha256") != EXPECTED_CARGO_SHA256
+            or not isinstance(cargo.get("version"), str) or not cargo["version"].startswith("cargo 1.91.1")
+            or not safe_system_tool_record(toolchain.get("cc"), cc=True)
+            or any(not safe_system_tool_record(toolchain.get(name))
+                   for name in ("ar", "ranlib", "linker"))):
+        raise GateError("remote resolved toolchain identity/capability record is invalid")
+    collect2 = toolchain.get("collect2") if isinstance(toolchain.get("collect2"), dict) else {}
+    if (set(collect2) != {"realpath", "sha256"}
+            or not str(collect2.get("realpath", "")).startswith(("/usr/lib/", "/usr/libexec/"))
+            or SHA256_RE.fullmatch(str(collect2.get("sha256", ""))) is None):
+        raise GateError("remote collect2 identity is invalid")
+    dependency = value.get("dependency_fetch") if isinstance(value.get("dependency_fetch"), dict) else {}
+    if (set(dependency) != {"command", "returncode", "log_sha256", "log_bytes",
+                            "cargo_config_candidates_checked", "cargo_config_all_absent"}
+            or dependency.get("command") != ["cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml"]
+            or dependency.get("returncode") != 0
+            or SHA256_RE.fullmatch(str(dependency.get("log_sha256", ""))) is None
+            or type(dependency.get("log_bytes")) is not int or dependency["log_bytes"] < 0
+            or type(dependency.get("cargo_config_candidates_checked")) is not int
+            or dependency["cargo_config_candidates_checked"] < 8
+            or dependency.get("cargo_config_all_absent") is not True):
+        raise GateError("remote locked dependency fetch/config gate is invalid")
+    validate_remote_environment_policy(value.get("environment_policy"))
+    validate_measurement_environment(session, require_final_runtime)
 
 
 def parse_binary_hashes(session: Path) -> dict[str, str]:
@@ -836,7 +1303,10 @@ def calculate(session: Path, expected_gpu: str, protocol_sha256: str) -> tuple[d
     if SHA256_RE.fullmatch(protocol_sha256) is None:
         raise GateError("protocol SHA-256 is malformed")
     validate_gpu_inventory(session, expected_gpu)
-    validate_source_identities(session)
+    identities = validate_source_identities(session)
+    validate_remote_build_preflight(
+        session, identities, protocol_sha256, require_final_runtime=True,
+    )
     hashes = parse_binary_hashes(session)
     warmups = gate_raw(session, "warmup", expected_gpu)
     measured = gate_raw(session, "measure", expected_gpu)
@@ -984,7 +1454,10 @@ def command_snapshot(args: argparse.Namespace) -> int:
 
 def command_gate(args: argparse.Namespace) -> int:
     session = args.session.resolve()
-    validate_source_identities(session)
+    identities = validate_source_identities(session)
+    validate_remote_build_preflight(
+        session, identities, require_final_runtime=args.phase == "nsys",
+    )
     parse_binary_hashes(session)
     if args.phase in ("warmup", "measure"):
         count = len(gate_raw(session, args.phase, args.expected_gpu))

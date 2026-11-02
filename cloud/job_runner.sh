@@ -13,6 +13,7 @@
 #   JOB_CHANGED  1 to also return every file the command created or modified,
 #                outside build trees and below 200 MB
 #   JOB_ID, SHARD_INDEX, SHARD_COUNT   passed through to the command
+#   JOB_ENVIRONMENT_CLOSED=1           select absolute isolated Bash/Python
 #
 # The exit status is the command's; 125 means the job could not be set up.
 set -uo pipefail
@@ -45,7 +46,14 @@ note "$cpus CPUs ($cpu_model), $mem_gb GiB${gpus:+, GPU: $gpus}"
 note "\$ $JOB_CMD"
 
 started=$(date +%s.%N)
-bash -c "$JOB_CMD" 2>&1 | tee -a "$LOG"
+job_shell=(bash -c)
+status_python=(python3 -)
+if [[ ${JOB_ENVIRONMENT_CLOSED:-0} == 1 ]]; then
+  job_shell=(/usr/bin/bash --noprofile --norc -c)
+  status_python=(/usr/bin/python3 -I -S -B -)
+fi
+unset JOB_ENVIRONMENT_CLOSED
+"${job_shell[@]}" "$JOB_CMD" 2>&1 | tee -a "$LOG"
 rc=${PIPESTATUS[0]}
 finished=$(date +%s.%N)
 note "exit $rc after $(awk -v a="$started" -v b="$finished" 'BEGIN {printf "%.1f", b - a}') s"
@@ -77,7 +85,7 @@ if ((count > 0)); then
   fi
 fi
 
-python3 - "$JOB_DIR/status.json" "$rc" "$started" "$finished" "$count" \
+"${status_python[@]}" "$JOB_DIR/status.json" "$rc" "$started" "$finished" "$count" \
   "$(hostname)" "$cpus" "$mem_gb" "$cpu_model" "${gpus:-}" <<'EOF' || true
 import json, os, sys
 path, rc, started, finished, count, host, cpus, mem_gb, cpu_model, gpus = sys.argv[1:]

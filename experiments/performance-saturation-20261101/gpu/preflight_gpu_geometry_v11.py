@@ -56,7 +56,29 @@ RUSTC_SHA256 = "5eadaaf4fe086d76547b17dc3c1ba880d0082b93f7d8bc65612770da8e79fe8e
 CARGO_SHA256 = "e60b4010303c19a131c058e3f054b4b3311433c4b2ee94ba8e09e165ff2a3b3b"
 CC_REALPATH = "/usr/bin/x86_64-linux-gnu-gcc-14"
 CC_SHA256 = "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f"
-CC_VERSION = "cc (Debian 14.2.0-19) 14.2.0"
+CC_VERSION = "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+AR_REALPATH = "/usr/bin/x86_64-linux-gnu-ar"
+AR_SHA256 = "f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb"
+AR_VERSION = "GNU ar (GNU Binutils for Debian) 2.44"
+RANLIB_REALPATH = "/usr/bin/x86_64-linux-gnu-ranlib"
+RANLIB_SHA256 = "4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e"
+RANLIB_VERSION = "GNU ranlib (GNU Binutils for Debian) 2.44"
+LINKER_REALPATH = "/usr/bin/x86_64-linux-gnu-ld.bfd"
+LINKER_SHA256 = "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b"
+LINKER_VERSION = "GNU ld (GNU Binutils for Debian) 2.44"
+COLLECT2_REALPATH = "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2"
+COLLECT2_SHA256 = "ea31a4cebd9df1b6428c463428d461ccecfe66c897936409d5b2cde0b3af9e27"
+SYSTEM_PATH = "/usr/bin:/bin"
+NETWORK_ENV_ALLOWLIST = (
+    "ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
+    "SSL_CERT_FILE", "CURL_CA_BUNDLE",
+)
+FORBIDDEN_BUILD_ENV_PATTERNS = (
+    "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_PROFILE_*", "CARGO_TARGET_DIR",
+    "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER", "CFLAGS", "CXXFLAGS", "CPPFLAGS",
+    "LDFLAGS", "LD_PRELOAD", "AR", "CC", "RANLIB", "RAYON_NUM_THREADS", "F4_*",
+)
+FETCH_COMMAND = ("cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 RUN_ID_RE = re.compile(r"^gpu-geometry-http-rtx5090-v11-[A-Za-z0-9._-]{1,80}$")
 
@@ -193,7 +215,131 @@ def version(command: list[str], environment: dict[str, str] | None = None) -> st
     return (result.stdout or result.stderr).strip()
 
 
-def bootstrap_toolchain(workspace: Path) -> tuple[dict[str, Any], dict[str, str], Path]:
+def network_environment() -> tuple[dict[str, str], dict[str, str]]:
+    forwarded = {
+        key: os.environ[key] for key in NETWORK_ENV_ALLOWLIST if key in os.environ
+    }
+    hashes = {
+        key: hashlib.sha256(value.encode("utf-8")).hexdigest()
+        for key, value in sorted(forwarded.items())
+    }
+    return forwarded, hashes
+
+
+def exact_base_environment(workspace: Path, rustup_home: Path, cargo_home: Path,
+                           *, network: bool) -> tuple[dict[str, str], dict[str, str]]:
+    temporary = workspace / "tmp"
+    temporary.mkdir(parents=True, exist_ok=True)
+    environment = {
+        "PATH": SYSTEM_PATH,
+        "RUSTUP_HOME": str(rustup_home),
+        "CARGO_HOME": str(cargo_home),
+        "TMPDIR": str(temporary),
+        "LANG": "C",
+        "LC_ALL": "C",
+        "TZ": "UTC",
+    }
+    hashes: dict[str, str] = {}
+    if network:
+        forwarded, hashes = network_environment()
+        environment.update(forwarded)
+    return environment, hashes
+
+
+def validate_launcher_environment() -> dict[str, Any]:
+    """Refuse ambient process state before any source or network operation."""
+    fixed = {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ"}
+    allowed = fixed | set(NETWORK_ENV_ALLOWLIST)
+    if set(os.environ) - allowed or not fixed.issubset(os.environ):
+        raise PreflightError("preflight launcher environment key set is not exact")
+    expected = {"PATH": SYSTEM_PATH, "LANG": "C", "LC_ALL": "C", "TZ": "UTC"}
+    if any(os.environ.get(key) != value for key, value in expected.items()):
+        raise PreflightError("preflight launcher fixed environment differs from policy")
+    for key in ("HOME", "TMPDIR"):
+        path = Path(os.environ[key])
+        if not path.is_absolute() or not path.is_dir():
+            raise PreflightError(f"preflight launcher {key} is not an absolute existing directory")
+    flags = sys.flags
+    if (Path(sys.executable).resolve() != Path("/usr/bin/python3").resolve()
+            or flags.isolated != 1 or flags.no_site != 1
+            or flags.dont_write_bytecode != 1 or getattr(flags, "safe_path", 0) != 1):
+        raise PreflightError("preflight Python interpreter is not the isolated registered executable")
+    network_hashes = {
+        key: hashlib.sha256(os.environ[key].encode()).hexdigest()
+        for key in NETWORK_ENV_ALLOWLIST if key in os.environ
+    }
+    return {
+        "fixed": {
+            "PATH": SYSTEM_PATH, "HOME": "<caller-owned-fresh-home>",
+            "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+        },
+        "exact_keys": sorted(os.environ),
+        "network_forward_allowlist": list(NETWORK_ENV_ALLOWLIST),
+        "network_forwarded_value_sha256": network_hashes,
+        "python": {
+            "executable": "/usr/bin/python3", "flags": ["-I", "-S", "-B"],
+            "isolated": True, "no_site": True, "dont_write_bytecode": True,
+            "safe_path": True,
+        },
+    }
+
+
+def require_exact_tool(path: str, digest: str, label: str) -> Path:
+    resolved = Path(path)
+    if not resolved.is_file() or sha256_file(resolved) != digest:
+        raise PreflightError(f"{label} binary identity mismatch")
+    return resolved
+
+
+def resolve_remote_tool(name: str, label: str) -> Path:
+    raw = shutil.which(name, path=SYSTEM_PATH)
+    if raw is None:
+        raise PreflightError(f"remote {label} is unavailable in the exact system PATH")
+    resolved = Path(raw).resolve()
+    if not resolved.is_file() or not str(resolved).startswith(("/usr/bin/", "/usr/lib/", "/usr/libexec/")):
+        raise PreflightError(f"remote {label} resolves outside frozen system roots")
+    return resolved
+
+
+def command_output(command: list[str], environment: dict[str, str]) -> str:
+    result = subprocess.run(
+        command, env=environment, capture_output=True, text=True, timeout=30, check=False,
+    )
+    if result.returncode:
+        raise PreflightError(f"tool identity command failed: {command[0]}")
+    return (result.stdout or result.stderr).strip()
+
+
+def probe_c_toolchain(workspace: Path, environment: dict[str, str], cc: Path,
+                      ar: Path, ranlib: Path) -> dict[str, Any]:
+    probe = workspace / "c-toolchain-probe"
+    probe.mkdir(exist_ok=False)
+    source = probe / "probe.c"
+    source.write_text("int gpu_v11_probe(void){return 0;}\nint main(void){return gpu_v11_probe();}\n",
+                      encoding="ascii")
+    obj, archive, executable = probe / "probe.o", probe / "libprobe.a", probe / "probe"
+    commands = (
+        [str(cc), "-c", str(source), "-o", str(obj)],
+        [str(ar), "rcs", str(archive), str(obj)],
+        [str(ranlib), str(archive)],
+        [str(cc), str(source), "-o", str(executable)],
+        [str(executable)],
+    )
+    for command in commands:
+        result = subprocess.run(
+            command, env=environment, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            timeout=60, check=False,
+        )
+        if result.returncode:
+            raise PreflightError(f"C toolchain capability probe failed: {command[0]}")
+    return {"compile": True, "archive": True, "ranlib": True, "link": True, "execute": True}
+
+
+def bootstrap_toolchain(
+    workspace: Path, location: str = "local_controller",
+) -> tuple[dict[str, Any], dict[str, str], dict[str, str], Path, dict[str, Any]]:
+    if location not in {"local_controller", "remote_pod"}:
+        raise PreflightError("unknown build location policy")
     installer = workspace / "rustup-init"
     with urllib.request.urlopen(RUSTUP_INIT_URL, timeout=300) as response:
         data = response.read(64 * 1024 * 1024 + 1)
@@ -203,15 +349,13 @@ def bootstrap_toolchain(workspace: Path) -> tuple[dict[str, Any], dict[str, str]
     installer.chmod(0o700)
     rustup_home = workspace / "rustup-home"
     cargo_home = workspace / "cargo-home"
-    environment = os.environ.copy()
-    environment.update({
-        "RUSTUP_HOME": str(rustup_home),
-        "CARGO_HOME": str(cargo_home),
-    })
+    network_env, network_hashes = exact_base_environment(
+        workspace, rustup_home, cargo_home, network=True,
+    )
     install = subprocess.run(
         [str(installer), "-y", "--profile", "minimal", "--default-toolchain", "1.91.1",
          "--no-modify-path"],
-        env=environment, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        env=network_env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         timeout=1_800, check=False,
     )
     if install.returncode:
@@ -223,16 +367,56 @@ def bootstrap_toolchain(workspace: Path) -> tuple[dict[str, Any], dict[str, str]
         raise PreflightError("pinned rustc binary identity mismatch")
     if not cargo.is_file() or sha256_file(cargo) != CARGO_SHA256:
         raise PreflightError("pinned cargo binary identity mismatch")
-    cc = Path("/usr/bin/cc").resolve()
-    if str(cc) != CC_REALPATH or not cc.is_file() or sha256_file(cc) != CC_SHA256:
-        raise PreflightError("controller C compiler identity mismatch")
-    environment.update({
-        "PATH": f"{cargo_home / 'bin'}:{os.environ.get('PATH', '')}",
+    if location == "local_controller":
+        cc = require_exact_tool(CC_REALPATH, CC_SHA256, "controller C compiler")
+        ar = require_exact_tool(AR_REALPATH, AR_SHA256, "controller archiver")
+        ranlib = require_exact_tool(RANLIB_REALPATH, RANLIB_SHA256, "controller ranlib")
+        linker = require_exact_tool(LINKER_REALPATH, LINKER_SHA256, "controller linker")
+        collect2 = require_exact_tool(COLLECT2_REALPATH, COLLECT2_SHA256, "controller collect2")
+    else:
+        cc = resolve_remote_tool("cc", "C compiler")
+        ar = resolve_remote_tool("ar", "archiver")
+        ranlib = resolve_remote_tool("ranlib", "ranlib")
+        raw_linker = command_output([str(cc), "-print-prog-name=ld"], network_env)
+        linker = (Path(raw_linker).resolve() if Path(raw_linker).is_absolute()
+                  else resolve_remote_tool(raw_linker, "linker"))
+        raw_collect2 = command_output([str(cc), "-print-prog-name=collect2"], network_env)
+        collect2 = (Path(raw_collect2).resolve() if Path(raw_collect2).is_absolute()
+                    else resolve_remote_tool(raw_collect2, "collect2"))
+        for tool, label in ((linker, "linker"), (collect2, "collect2")):
+            if not tool.is_file() or not str(tool).startswith(("/usr/bin/", "/usr/lib/", "/usr/libexec/")):
+                raise PreflightError(f"remote {label} resolves outside frozen system roots")
+    build_env, _unused = exact_base_environment(
+        workspace, rustup_home, cargo_home, network=False,
+    )
+    build_env.update({
+        "PATH": f"{cargo_home / 'bin'}:{SYSTEM_PATH}",
         "RUSTC": str(rustc),
         "CC": str(cc),
+        "AR": str(ar),
+        "RANLIB": str(ranlib),
+        "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": str(cc),
         "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_TERM_COLOR": "never",
+        "SOURCE_DATE_EPOCH": "0",
     })
+    network_env.update({
+        "PATH": f"{cargo_home / 'bin'}:{SYSTEM_PATH}",
+        "RUSTC": str(rustc),
+    })
+    cc_version = version([str(cc), "--version"], build_env).splitlines()[0]
+    cc_target = command_output([str(cc), "-dumpmachine"], build_env)
+    if not re.fullmatch(r"x86_64(?:-[A-Za-z0-9_.]+)+", cc_target):
+        raise PreflightError(f"remote/controller C compiler target is inadmissible: {cc_target!r}")
+    if location == "remote_pod" and re.search(r"gcc|GCC|clang|Ubuntu|Debian", cc_version) is None:
+        raise PreflightError(f"remote C compiler version family is inadmissible: {cc_version!r}")
+    capabilities = probe_c_toolchain(workspace, build_env, cc, ar, ranlib)
     record = {
+        "system_policy": (
+            "controller_exact_hashes" if location == "local_controller"
+            else "remote_resolved_once_capability_checked_same_for_both_arms"
+        ),
         "bootstrap": {
             "url": RUSTUP_INIT_URL,
             "sha256": RUSTUP_INIT_SHA256,
@@ -242,28 +426,122 @@ def bootstrap_toolchain(workspace: Path) -> tuple[dict[str, Any], dict[str, str]
         "rustc": {
             "toolchain": RUST_TOOLCHAIN,
             "sha256": RUSTC_SHA256,
-            "version": version([str(rustc), "-Vv"], environment),
+            "version": version([str(rustc), "-Vv"], build_env),
         },
         "cargo": {
             "toolchain": RUST_TOOLCHAIN,
             "sha256": CARGO_SHA256,
-            "version": version([str(cargo), "-V"], environment),
+            "version": version([str(cargo), "-V"], build_env),
         },
         "cc": {
-            "realpath": CC_REALPATH,
-            "sha256": CC_SHA256,
-            "version": version([str(cc), "--version"], environment).splitlines()[0],
+            "realpath": str(cc),
+            "sha256": sha256_file(cc),
+            "version": cc_version,
+            "target": cc_target,
+            "capabilities": capabilities,
         },
+        "ar": {"realpath": str(ar), "sha256": sha256_file(ar),
+               "version": version([str(ar), "--version"], build_env).splitlines()[0]},
+        "ranlib": {"realpath": str(ranlib), "sha256": sha256_file(ranlib),
+                   "version": version([str(ranlib), "--version"], build_env).splitlines()[0]},
+        "linker": {"realpath": str(linker), "sha256": sha256_file(linker),
+                   "version": version([str(linker), "--version"], build_env).splitlines()[0]},
+        "collect2": {"realpath": str(collect2), "sha256": sha256_file(collect2)},
     }
-    if record["cc"]["version"] != CC_VERSION:
+    if location == "local_controller" and record["cc"]["version"] != CC_VERSION:
         raise PreflightError("controller C compiler version mismatch")
-    return record, environment, cargo
+    if (location == "local_controller"
+            and (record["ar"]["version"] != AR_VERSION or record["ranlib"]["version"] != RANLIB_VERSION)):
+        raise PreflightError("controller binutils archive tool version mismatch")
+    if location == "local_controller" and record["linker"]["version"] != LINKER_VERSION:
+        raise PreflightError("controller linker version mismatch")
+    policy = {
+        "bootstrap_fixed": {
+            "PATH": SYSTEM_PATH, "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp",
+        },
+        "fetch_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+        },
+        "network_forwarded_value_sha256": network_hashes,
+        "network_forward_allowlist": list(NETWORK_ENV_ALLOWLIST),
+        "build_inherited_keys": [],
+        "build_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp/<arm>",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+            "CC": str(cc) if location == "local_controller" else "<resolved-remote-cc>",
+            "AR": str(ar) if location == "local_controller" else "<resolved-remote-ar>",
+            "RANLIB": str(ranlib) if location == "local_controller" else "<resolved-remote-ranlib>",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": (
+                str(cc) if location == "local_controller" else "<resolved-remote-cc>"
+            ),
+            "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+            "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+            "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+        },
+        "forbidden_inherited_patterns": list(FORBIDDEN_BUILD_ENV_PATTERNS),
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": location,
+    }
+    return record, network_env, build_env, cargo, policy
+
+
+def cargo_config_candidates(cargo_home: Path, source: Path) -> list[Path]:
+    candidates = [cargo_home / "config", cargo_home / "config.toml"]
+    for ancestor in (source, *source.parents):
+        candidates.extend((ancestor / ".cargo" / "config", ancestor / ".cargo" / "config.toml"))
+    return candidates
+
+
+def fetch_dependencies(cargo: Path, source: Path, network_env: dict[str, str],
+                       cargo_home: Path) -> dict[str, Any]:
+    candidates = cargo_config_candidates(cargo_home, source / "suite")
+    if any(path.exists() for path in candidates):
+        raise PreflightError("Cargo configuration exists outside the frozen source/environment policy")
+    command = [str(cargo), "fetch", "--locked", "--manifest-path", str(source / "suite/Cargo.toml")]
+    result = subprocess.run(
+        command, env=network_env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        timeout=1_800, check=False,
+    )
+    if result.returncode:
+        tail = result.stdout[-4_096:].decode("utf-8", errors="replace")
+        raise PreflightError(f"locked dependency fetch exited {result.returncode}: {tail}")
+    return {
+        "command": list(FETCH_COMMAND),
+        "returncode": 0,
+        "log_sha256": hashlib.sha256(result.stdout).hexdigest(),
+        "log_bytes": len(result.stdout),
+        "cargo_config_candidates_checked": len(candidates),
+        "cargo_config_all_absent": True,
+    }
 
 
 def build_arm(arm: str, source: Path, target: Path, environment_base: dict[str, str],
               cargo: Path) -> dict[str, Any]:
     environment = environment_base.copy()
     environment["CARGO_TARGET_DIR"] = str(target)
+    arm_tmp = target.parent.parent / "tmp" / arm
+    arm_tmp.mkdir(parents=True, exist_ok=False)
+    environment["TMPDIR"] = str(arm_tmp)
+    expected_keys = {
+        "PATH", "RUSTUP_HOME", "CARGO_HOME", "TMPDIR", "LANG", "LC_ALL", "TZ",
+        "RUSTC", "CC", "AR", "RANLIB", "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER",
+        "CARGO_INCREMENTAL", "CARGO_NET_OFFLINE", "CARGO_TERM_COLOR", "SOURCE_DATE_EPOCH",
+        "CARGO_TARGET_DIR",
+    }
+    if set(environment) != expected_keys:
+        raise PreflightError(f"{arm} build environment key set is not exact")
     started = time.monotonic()
     result = subprocess.run(
         [str(cargo), *BUILD_COMMAND[1:]], cwd=source / "suite", env=environment,
@@ -289,19 +567,40 @@ def build_arm(arm: str, source: Path, target: Path, environment_base: dict[str, 
     }
 
 
-def perform(repo: Path, workspace: Path) -> dict[str, Any]:
+def verify_system_tools_unchanged(toolchain: dict[str, Any]) -> None:
+    for name in ("cc", "ar", "ranlib", "linker", "collect2"):
+        item = toolchain.get(name) if isinstance(toolchain.get(name), dict) else {}
+        path, expected = item.get("realpath"), item.get("sha256")
+        if (not isinstance(path, str) or not isinstance(expected, str)
+                or not Path(path).is_file() or sha256_file(Path(path)) != expected):
+            raise PreflightError(f"system tool drifted between isolated arm builds: {name}")
+
+
+def perform(repo: Path, workspace: Path, location: str = "local_controller") -> dict[str, Any]:
+    launcher_policy = validate_launcher_environment()
     if git(repo, "rev-parse", f"{CANDIDATE_COMMIT}^{{tree}}") != CANDIDATE_TREE:
         raise PreflightError("candidate commit/tree mismatch")
     archive = workspace / "candidate.tar"
     create_archive(repo, archive)
     archive_record = inspect_archive(archive)
     arms = construct_arms(repo, archive, workspace / "source")
-    toolchain, environment, cargo = bootstrap_toolchain(workspace)
+    toolchain, network_env, build_env, cargo, environment_policy = bootstrap_toolchain(
+        workspace, location,
+    )
+    environment_policy["launcher"] = launcher_policy
+    if (launcher_policy["network_forwarded_value_sha256"]
+            != environment_policy["network_forwarded_value_sha256"]):
+        raise PreflightError("launcher/bootstrap network environment identity differs")
+    dependency_fetch = fetch_dependencies(
+        cargo, arms["candidate"], network_env, Path(build_env["CARGO_HOME"]),
+    )
     builds = []
     for arm in ("baseline", "candidate"):
         builds.append(build_arm(
-            arm, arms[arm], workspace / "target" / arm, environment, cargo,
+            arm, arms[arm], workspace / "target" / arm, build_env, cargo,
         ))
+    verify_system_tools_unchanged(toolchain)
+    toolchain["system_tools_unchanged_after_builds"] = True
     hashes = {item["arm"]: item["binary_sha256"] for item in builds}
     if hashes["baseline"] == hashes["candidate"]:
         raise PreflightError("baseline and candidate clean-build binaries are identical")
@@ -325,17 +624,35 @@ def perform(repo: Path, workspace: Path) -> dict[str, Any]:
             "candidate_differs": True,
         },
         "toolchain": toolchain,
+        "dependency_fetch": dependency_fetch,
+        "environment_policy": environment_policy,
     }
 
 
 def write_once(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    data = json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n"
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "w", encoding="utf-8") as stream:
-        stream.write(data)
-        stream.flush()
-        os.fsync(stream.fileno())
+    data = (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
+    fd, temporary = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent,
+    )
+    temporary_path = Path(temporary)
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary_path, path)
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+        directory_fd = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -348,8 +665,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     run.add_argument("--run-id", required=True)
     run.add_argument("--protocol-sha256", required=True)
     run.add_argument("--out", type=Path, required=True)
+    remote = sub.add_parser(
+        "prepare-remote", help="build both remote arms into a caller-owned fresh workspace",
+    )
+    remote.add_argument("--repo", type=Path, default=Path("."))
+    remote.add_argument("--workspace", type=Path, required=True)
+    remote.add_argument("--run-id", required=True)
+    remote.add_argument("--protocol-sha256", required=True)
+    remote.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
-    if args.command == "run":
+    if args.command in {"run", "prepare-remote"}:
         if RUN_ID_RE.fullmatch(args.run_id) is None:
             parser.error("run ID is outside the frozen v11 namespace")
         if SHA256_RE.fullmatch(args.protocol_sha256) is None:
@@ -375,6 +700,7 @@ def main(argv: list[str] | None = None) -> int:
         "protocol_sha256": args.protocol_sha256,
         "run_id": args.run_id,
         "provider_actions": False,
+        "location": "local_controller" if args.command == "run" else "remote_pod",
         "tool_sha256": sha256_file(Path(__file__).resolve()),
         "source": {
             "baseline_commit": BASELINE_COMMIT,
@@ -388,6 +714,9 @@ def main(argv: list[str] | None = None) -> int:
             "isolated_source_trees": True,
             "isolated_target_dirs": True,
             "cargo_incremental": "0",
+            "network_only_during_bootstrap_and_fetch": True,
+            "offline_builds": True,
+            "exact_environment_key_set": True,
         },
         "started_at": started_at,
         "status": "failed",
@@ -395,8 +724,13 @@ def main(argv: list[str] | None = None) -> int:
     }
     returncode = 2
     try:
-        with tempfile.TemporaryDirectory(prefix="gpu-v11-clean-build-") as directory:
-            record.update(perform(repo, Path(directory)))
+        if args.command == "run":
+            with tempfile.TemporaryDirectory(prefix="gpu-v11-clean-build-") as directory:
+                record.update(perform(repo, Path(directory), "local_controller"))
+        else:
+            workspace = args.workspace.resolve()
+            workspace.mkdir(parents=True, exist_ok=False)
+            record.update(perform(repo, workspace, "remote_pod"))
         record["status"] = "passed"
         returncode = 0
     except (OSError, ValueError, PreflightError, subprocess.SubprocessError) as exc:

@@ -37,6 +37,27 @@ SECRET_ENV_NAMES = {
     "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN", "ARTIFACTS_AWS_ACCESS_KEY_ID",
     "ARTIFACTS_AWS_SECRET_ACCESS_KEY",
 }
+SCIENTIFIC_ENV_ALLOWLIST = {
+    # Provider placement identity used by registered runners.
+    "RUNPOD_POD_ID", "RUNPOD_MACHINE_ID",
+    # NVIDIA container-runtime bindings; the scientific runner validates any
+    # loader path before carrying it into measurement children.
+    "LD_LIBRARY_PATH", "CUDA_VISIBLE_DEVICES", "CUDA_VERSION", "CUDA_HOME",
+    "NVIDIA_VISIBLE_DEVICES", "NVIDIA_DRIVER_CAPABILITIES", "NVIDIA_REQUIRE_CUDA",
+    # Exact uppercase network/CA closure used by registered download gates.
+    "ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
+    "SSL_CERT_FILE", "CURL_CA_BUNDLE",
+}
+SCIENTIFIC_FIXED_ENV = {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/root", "TMPDIR": "/tmp", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+}
+STARTUP_HOOK_ENV_NAMES = {
+    "BASH_ENV", "ENV", "PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "LD_PRELOAD",
+    "RUBYOPT", "PERL5OPT", "NODE_OPTIONS", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM",
+    "GIT_DIR", "GIT_WORK_TREE", "CDPATH", "GLOBIGNORE",
+}
+GIT_ENV = {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC"}
 MAX_ARCHIVE_MEMBERS = 100_000
 MAX_MANIFEST_BYTES = 16 << 20
 MAX_METADATA_BYTES = 64 << 20
@@ -108,14 +129,21 @@ def read_config(repo: Path) -> dict:
     timeout = int(os.environ.pop("RUNPOD_BATCH_TIMEOUT_SECONDS", "0"))
     chunk_bytes = int(os.environ.pop("RUNPOD_BATCH_CHUNK_BYTES", "0"))
     max_result = int(os.environ.pop("RUNPOD_BATCH_MAX_RESULT_BYTES", "0"))
+    environment_closed_raw = os.environ.pop("RUNPOD_BATCH_ENVIRONMENT_CLOSED", "0")
+    if environment_closed_raw not in {"0", "1"}:
+        raise ValueError("invalid environment-closure mode")
+    environment_closed = environment_closed_raw == "1"
     if timeout < 1 or not 1 << 20 <= chunk_bytes <= 16 << 20 or max_result < 1:
         raise ValueError("invalid timeout/result limits")
+    git = "/usr/bin/git" if environment_closed else "git"
+    git_kwargs = {"env": GIT_ENV} if environment_closed else {}
     actual_commit = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=repo, capture_output=True, text=True, check=True
+        [git, "rev-parse", "HEAD"], cwd=repo,
+        capture_output=True, text=True, check=True, **git_kwargs,
     ).stdout.strip()
     actual_tree = subprocess.run(
-        ["git", "rev-parse", "HEAD^{tree}"], cwd=repo,
-        capture_output=True, text=True, check=True
+        [git, "rev-parse", "HEAD^{tree}"], cwd=repo,
+        capture_output=True, text=True, check=True, **git_kwargs,
     ).stdout.strip()
     if (actual_commit, actual_tree) != (commit, tree):
         raise ValueError("checked-out source identity mismatch")
@@ -124,12 +152,21 @@ def read_config(repo: Path) -> dict:
         "source_archive_sha256": source_archive,
         "command": command, "command_sha256": command_sha, "bootstrap": bootstrap,
         "outputs": outputs, "timeout": timeout, "chunk_bytes": chunk_bytes,
-        "max_result_bytes": max_result,
+        "max_result_bytes": max_result, "environment_closed": environment_closed,
     }
 
 
-def scrubbed_environment() -> dict[str, str]:
-    """Environment for scientific code; provider and transport secrets never cross."""
+def scrubbed_environment(environment_closed: bool = False) -> dict[str, str]:
+    """Preserve legacy behavior unless the request selects exact closure."""
+    if environment_closed:
+        return {
+            **SCIENTIFIC_FIXED_ENV,
+            **{
+                key: os.environ[key]
+                for key in sorted(SCIENTIFIC_ENV_ALLOWLIST)
+                if key in os.environ
+            },
+        }
     return {
         key: value for key, value in os.environ.items()
         if key not in SECRET_ENV_NAMES and not key.startswith("RUNPOD_BATCH_")
@@ -137,12 +174,14 @@ def scrubbed_environment() -> dict[str, str]:
     }
 
 
-def hardware() -> dict:
+def hardware(environment_closed: bool = False) -> dict:
     try:
+        smi = "/usr/bin/nvidia-smi" if environment_closed else "nvidia-smi"
+        smi_kwargs = {"env": SCIENTIFIC_FIXED_ENV} if environment_closed else {}
         query = subprocess.run(
-            ["nvidia-smi", "--query-gpu=name,uuid,driver_version,compute_cap,memory.total",
+            [smi, "--query-gpu=name,uuid,driver_version,compute_cap,memory.total",
              "--format=csv,noheader,nounits"], capture_output=True, text=True,
-            check=False, timeout=15)
+            check=False, timeout=15, **smi_kwargs)
     except (OSError, subprocess.TimeoutExpired):
         query = None
     gpus = []
@@ -153,9 +192,14 @@ def hardware() -> dict:
                 gpus.append(dict(zip(
                     ("name", "uuid", "driver", "compute_capability", "memory_mib"), fields)))
     try:
+        shell = (["/usr/bin/bash", "--noprofile", "--norc", "-c"]
+                 if environment_closed else ["bash", "-lc"])
+        shell_kwargs = {"env": SCIENTIFIC_FIXED_ENV} if environment_closed else {}
         nvcc = subprocess.run(
-            ["bash", "-lc", "command -v nvcc >/dev/null && nvcc --version || true"],
-            capture_output=True, text=True, check=False, timeout=15).stdout[-2000:]
+            [*shell, "command -v nvcc >/dev/null && nvcc --version || true"],
+            capture_output=True, text=True,
+            check=False, timeout=15, **shell_kwargs,
+        ).stdout[-2000:]
     except (OSError, subprocess.TimeoutExpired):
         nvcc = ""
     return {"pod_id": os.environ.get("RUNPOD_POD_ID"), "gpus": gpus, "nvcc": nvcc}
@@ -293,11 +337,17 @@ class State:
 
 def run_job(repo: Path, job_dir: Path, result: Path, config: dict,
             state: State, child_holder: dict) -> None:
-    environment = scrubbed_environment()
+    environment = scrubbed_environment(config.get("environment_closed") is True)
     payload = config["bootstrap"] + "\n" + config["command"]
-    timed_command = " ".join(shlex.quote(part) for part in (
-        "timeout", "--signal=TERM", "--kill-after=30", str(config["timeout"]),
-        "bash", "-c", payload))
+    closed = config.get("environment_closed") is True
+    timed_parts = (
+        ("/usr/bin/timeout", "--signal=TERM", "--kill-after=30", str(config["timeout"]),
+         "/usr/bin/bash", "--noprofile", "--norc", "-c", payload)
+        if closed else
+        ("timeout", "--signal=TERM", "--kill-after=30", str(config["timeout"]),
+         "bash", "-c", payload)
+    )
+    timed_command = " ".join(shlex.quote(part) for part in timed_parts)
     environment.update({
         "JOB_ID": config["job_id"], "JOB_DIR": str(job_dir),
         "JOB_WORKDIR": str(repo),
@@ -305,7 +355,9 @@ def run_job(repo: Path, job_dir: Path, result: Path, config: dict,
         "JOB_OUTS": "\n".join(config["outputs"]), "JOB_CHANGED": "0",
         "SHARD_INDEX": "0", "SHARD_COUNT": "1",
     })
-    command = ["bash", str(repo / "cloud" / "job_runner.sh")]
+    if closed:
+        environment["JOB_ENVIRONMENT_CLOSED"] = "1"
+    command = ["/usr/bin/bash" if closed else "bash", str(repo / "cloud" / "job_runner.sh")]
     started = time.time()
     state.update(stage="running", command_started_unix=started)
     returncode = 125
@@ -425,7 +477,8 @@ def main(argv=None) -> int:
         "done": False, "archive_ready": False, "source_commit": config["commit"],
         "source_tree": config["tree"], "command_sha256": config["command_sha256"],
         "source_archive_sha256": config["source_archive_sha256"],
-        "hardware": hardware(), "started_unix": time.time(),
+        "hardware": hardware(config.get("environment_closed") is True),
+        "started_unix": time.time(),
     }
     state = State(job_dir / "adapter-status.json", initial)
     child_holder: dict = {}

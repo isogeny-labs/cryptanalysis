@@ -22,6 +22,57 @@ sys.modules[SPEC.name] = MOD
 SPEC.loader.exec_module(MOD)
 
 
+def phase_environments() -> dict[str, dict[str, str]]:
+    return {
+        phase: {"PATH": f"/{phase}"}
+        for phase in ("preflight", "controller", "finalizer")
+    }
+
+
+def ignore_terminal(_preflight: int, _controller: int | None,
+                    _finalizer: int, _detail: str) -> None:
+    pass
+
+
+def good_environment_policy() -> dict:
+    return {
+        "bootstrap_fixed": {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+                            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+                            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp"},
+        "fetch_fixed": {"PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+                        "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+                        "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+                        "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+                        "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{MOD.RUST_TOOLCHAIN}/bin/rustc"},
+        "network_forwarded_value_sha256": {"HTTPS_PROXY": "f" * 64},
+        "launcher": {
+            "fixed": {"PATH": "/usr/bin:/bin", "HOME": "<caller-owned-fresh-home>",
+                      "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC"},
+            "exact_keys": sorted(["PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", "HTTPS_PROXY"]),
+            "network_forward_allowlist": list(MOD.NETWORK_ALLOWLIST),
+            "network_forwarded_value_sha256": {"HTTPS_PROXY": "f" * 64},
+            "python": {"executable": MOD.PYTHON, "flags": ["-I", "-S", "-B"],
+                       "isolated": True, "no_site": True, "dont_write_bytecode": True,
+                       "safe_path": True},
+        },
+        "network_forward_allowlist": list(MOD.NETWORK_ALLOWLIST), "build_inherited_keys": [],
+        "build_fixed": {"PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+                        "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+                        "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp/<arm>",
+                        "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+                        "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{MOD.RUST_TOOLCHAIN}/bin/rustc",
+                        "CC": "/usr/bin/x86_64-linux-gnu-gcc-14", "AR": "/usr/bin/x86_64-linux-gnu-ar",
+                        "RANLIB": "/usr/bin/x86_64-linux-gnu-ranlib",
+                        "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/usr/bin/x86_64-linux-gnu-gcc-14",
+                        "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+                        "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+                        "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>"},
+        "forbidden_inherited_patterns": list(MOD.FORBIDDEN_BUILD_PATTERNS),
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": "local_controller",
+    }
+
+
 def good_preflight(run_id: str = "gpu-geometry-http-rtx5090-v11-test",
                    protocol_sha: str = "a" * 64) -> dict:
     baseline, candidate = "b" * 64, "c" * 64
@@ -36,6 +87,7 @@ def good_preflight(run_id: str = "gpu-geometry-http-rtx5090-v11-test",
     return {
         "schema": MOD.PREFLIGHT_SCHEMA, "protocol_id": MOD.PROTOCOL_ID,
         "protocol_sha256": protocol_sha, "run_id": run_id, "provider_actions": False,
+        "location": "local_controller",
         "tool_sha256": MOD.sha256_file(HERE / "preflight_gpu_geometry_v11.py"),
         "source": dict(MOD.PREFLIGHT_SOURCE), "build_contract": dict(MOD.BUILD_CONTRACT),
         "started_at": "2026-11-02T00:00:00Z", "status": "passed", "error": None,
@@ -55,7 +107,13 @@ def good_preflight(run_id: str = "gpu-geometry-http-rtx5090-v11-test",
             "candidate_sha256": candidate, "baseline_aa_equals_baseline": True,
             "candidate_differs": True,
         },
+        "dependency_fetch": {"command": ["cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml"],
+                             "returncode": 0, "log_sha256": "a" * 64, "log_bytes": 1,
+                             "cargo_config_candidates_checked": 12, "cargo_config_all_absent": True},
+        "environment_policy": good_environment_policy(),
         "toolchain": {
+            "system_policy": "controller_exact_hashes",
+            "system_tools_unchanged_after_builds": True,
             "bootstrap": {
                 "url": MOD.RUSTUP_URL, "sha256": MOD.RUSTUP_SHA256,
                 "log_sha256": "e" * 64, "log_bytes": 789,
@@ -70,8 +128,19 @@ def good_preflight(run_id: str = "gpu-geometry-http-rtx5090-v11-test",
             },
             "cc": {
                 "realpath": "/usr/bin/x86_64-linux-gnu-gcc-14", "sha256": MOD.CC_SHA256,
-                "version": "cc (Debian 14.2.0-19) 14.2.0",
+                "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0",
+                "target": "x86_64-linux-gnu",
+                "capabilities": {"compile": True, "archive": True, "ranlib": True,
+                                 "link": True, "execute": True},
             },
+            "ar": {"realpath": "/usr/bin/x86_64-linux-gnu-ar", "sha256": MOD.AR_SHA256,
+                   "version": "GNU ar (GNU Binutils for Debian) 2.44"},
+            "ranlib": {"realpath": "/usr/bin/x86_64-linux-gnu-ranlib", "sha256": MOD.RANLIB_SHA256,
+                       "version": "GNU ranlib (GNU Binutils for Debian) 2.44"},
+            "linker": {"realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd", "sha256": MOD.LINKER_SHA256,
+                       "version": "GNU ld (GNU Binutils for Debian) 2.44"},
+            "collect2": {"realpath": "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2",
+                         "sha256": MOD.COLLECT2_SHA256},
         },
     }
 
@@ -85,24 +154,81 @@ class GeometryOrchestratorTests(unittest.TestCase):
             "public_ref": MOD.SOURCE_REF, "commit": "c" * 40,
         }}}
         command = MOD.controller_command(protocol_sha, run_id, value, preflight_sha)
-        self.assertEqual(command[:3], ["python3", "cloud/runpod_http_batch.py", "misagi-f4-geometry-v11"])
+        self.assertEqual(command[:6], [
+            "/usr/bin/python3", "-I", "-S", "-B",
+            "cloud/runpod_http_batch.py", "misagi-f4-geometry-v11",
+        ])
         self.assertEqual(command.count("--source-commit"), 1)
+        self.assertEqual(command.count("--minimal-bootstrap"), 1)
+        image_at = command.index("--image")
+        self.assertEqual(
+            command[image_at + 1],
+            "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+        )
         self.assertEqual(command.count("--"), 1)
         remote = command[-1]
         self.assertIn(protocol_sha, remote)
         self.assertIn(preflight_sha, remote)
         self.assertIn("run_gpu_geometry_ab_v11.sh", remote)
-        self.assertNotIn("install_nsys_tools.sh", remote)
+        self.assertIn("/usr/bin/bash --noprofile --norc", remote)
+        self.assertNotIn("extract_nsys_tools_v11.sh", remote)
 
     def test_remote_runner_builds_full_closure_before_nsys_install(self) -> None:
         text = (HERE / "run_gpu_geometry_ab_v11.sh").read_text(encoding="utf-8")
-        archive = "suite bindings/rust include src cuda challenges"
-        self.assertIn(archive, text)
-        build_at = text.index("for arm in baseline candidate; do")
-        install_at = text.index('bash "$REPO/ecc2k130/runner/codegen/install_nsys_tools.sh"')
+        preflight = (HERE / "preflight_gpu_geometry_v11.py").read_text(encoding="utf-8")
+        self.assertIn('(\"suite\", \"bindings/rust\", \"include\", \"src\", \"cuda\", \"challenges\")', preflight)
+        build_at = text.index("prepare-remote --repo")
+        install_at = text.index('bash "$REPO/ecc2k130/runner/codegen/extract_nsys_tools_v11.sh"')
         measure_at = text.index("run_matrix()")
         self.assertLess(build_at, install_at)
         self.assertLess(install_at, measure_at)
+
+    def test_registered_history_deepen_reaches_both_source_commits(self) -> None:
+        runner = (HERE / "run_gpu_geometry_ab_v11.sh").read_text(encoding="utf-8")
+        self.assertIn("HISTORY_DEEPEN_COMMITS=64", runner)
+        repo = HERE.parents[2]
+        for target in (
+            MOD.PREFLIGHT_SOURCE["baseline_commit"],
+            MOD.PREFLIGHT_SOURCE["candidate_commit"],
+        ):
+            distance = int(subprocess.run(
+                ["git", "rev-list", "--count", f"{target}..HEAD"],
+                cwd=repo, capture_output=True, text=True, check=True,
+            ).stdout)
+            self.assertLess(distance, 64, (target, distance))
+
+    def test_strict_runtime_env_excludes_injected_flags_and_includes_nvrtc(self) -> None:
+        text = (HERE / "run_gpu_geometry_ab_v11.sh").read_text(encoding="utf-8")
+        measure = text[text.index("MEASURE_ENV=("):text.index("LD_LIBRARY_PATH_SAFE=")]
+        self.assertIn("/usr/bin/env -i", measure)
+        self.assertIn('"CA_NVRTC_LIB=$CA_NVRTC_LIB"', measure)
+        for forbidden in ("RUSTFLAGS", "CFLAGS", "LD_PRELOAD", "RAYON_NUM_THREADS"):
+            self.assertNotIn(forbidden, measure)
+
+    def test_source_identity_assignments_survive_env_i(self) -> None:
+        runner = (HERE / "run_gpu_geometry_ab_v11.sh").read_text(encoding="utf-8")
+        block = runner[runner.index('"${SYSTEM_ENV[@]}" \\\nBASELINE_ORIGIN_COMMIT_SAFE='):
+                       runner.index("/usr/bin/python3 -I -S -B - <<'PY'",
+                                    runner.index('"${SYSTEM_ENV[@]}" \\\nBASELINE_ORIGIN_COMMIT_SAFE='))]
+        for name in (
+            "BASELINE_ORIGIN_COMMIT_SAFE", "CANDIDATE_COMMIT_SAFE", "CANDIDATE_TREE_SAFE",
+            "BASELINE_F4_SHA256_SAFE", "CANDIDATE_F4_SHA256_SAFE", "PRODUCTION_DIFF_SHA256_SAFE",
+            "CANDIDATE_ARCHIVE_SHA256_SAFE", "F4_PATH_SAFE", "TOOLING_REF_SAFE",
+            "HISTORY_DEEPEN_COMMITS_SAFE", "PREFLIGHT_RECEIPT_SHA256_SAFE",
+            "REMOTE_BUILD_PREFLIGHT_SHA256_SAFE", "SESSION_PATH_SAFE",
+        ):
+            self.assertIn(name + "=", block)
+        script = r'''
+set -euo pipefail
+SYSTEM_ENV=(/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C TZ=UTC)
+"${SYSTEM_ENV[@]}" A_SAFE=one B_SAFE=two python3 - <<'PY'
+import json, os
+print(json.dumps({"a": os.environ["A_SAFE"], "b": os.environ["B_SAFE"],
+                  "keys": sorted(k for k in os.environ if k.endswith("_SAFE"))}, sort_keys=True))
+PY
+'''
+        result = subprocess.run(["bash", "-c", script], capture_output=True, text=True, check=True)
+        self.assertEqual(json.loads(result.stdout), {"a": "one", "b": "two", "keys": ["A_SAFE", "B_SAFE"]})
 
     def test_frozen_all_argv_templates_and_preflight_hash(self) -> None:
         run_id, protocol_sha, preflight_sha = (
@@ -130,6 +256,58 @@ class GeometryOrchestratorTests(unittest.TestCase):
                 MOD.verify_argv_templates(
                     value, *tampered, run_id, protocol_sha, preflight_sha,
                 )
+
+    def test_local_phase_environments_drop_hostile_ambient_state(self) -> None:
+        inherited = {
+            "HTTPS_PROXY": "http://allowed-proxy",
+            "SSL_CERT_FILE": "/allowed/ca.pem",
+            "RUNPOD_API_KEY": "controller-secret",
+            "PYTHONPATH": "/hostile/python", "PYTHONHOME": "/hostile/home",
+            "GIT_DIR": "/hostile/git", "RUSTFLAGS": "-Ctarget-cpu=native",
+            "https_proxy": "http://lowercase-not-allowed",
+            "LD_PRELOAD": "/hostile/preload.so",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            environments = MOD.exact_phase_environments(
+                Path(directory) / "exact", inherited,
+            )
+            fixed_keys = {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ"}
+            self.assertEqual(set(environments["orchestrator"]), fixed_keys)
+            self.assertEqual(set(environments["canonical"]), fixed_keys)
+            self.assertEqual(set(environments["finalizer"]), fixed_keys)
+            self.assertEqual(
+                set(environments["preflight"]),
+                fixed_keys | {"HTTPS_PROXY", "SSL_CERT_FILE"},
+            )
+            self.assertEqual(
+                set(environments["controller"]),
+                fixed_keys | {"HTTPS_PROXY", "SSL_CERT_FILE", "RUNPOD_API_KEY"},
+            )
+            for environment in environments.values():
+                self.assertEqual(environment["PATH"], "/usr/bin:/bin")
+                self.assertEqual(environment["LANG"], "C")
+                self.assertEqual(environment["LC_ALL"], "C")
+                self.assertEqual(environment["TZ"], "UTC")
+                self.assertTrue(Path(environment["HOME"]).is_dir())
+                self.assertTrue(Path(environment["TMPDIR"]).is_dir())
+                for hostile in (
+                    "PYTHONPATH", "PYTHONHOME", "GIT_DIR", "RUSTFLAGS",
+                    "https_proxy", "LD_PRELOAD",
+                ):
+                    self.assertNotIn(hostile, environment)
+
+    def test_registered_commands_use_isolated_absolute_python(self) -> None:
+        run_id, digest = "gpu-geometry-http-rtx5090-v11-test", "a" * 64
+        value = {"extensions": {"tooling_source": {
+            "public_ref": MOD.SOURCE_REF, "commit": "c" * 40,
+        }}}
+        commands = (
+            MOD.preflight_command(Path("/repo"), digest, run_id),
+            MOD.controller_command(digest, run_id, value, "b" * 64),
+            MOD.finalizer_command(Path("protocol.json"), digest, Path("tool.py"), run_id),
+        )
+        for command in commands:
+            self.assertEqual(command[:4], ["/usr/bin/python3", "-I", "-S", "-B"])
 
     def test_valid_preflight_receipt_and_each_build_closure_mutation(self) -> None:
         run_id, protocol_sha = "gpu-geometry-http-rtx5090-v11-test", "a" * 64
@@ -174,6 +352,7 @@ class GeometryOrchestratorTests(unittest.TestCase):
                     "finalization": {
                         "preflight_files": relative_paths,
                         "canonical_protocol_tool": {"path": str(tool), "sha256": MOD.sha256_file(tool)},
+                        "canonical_protocol_schemas": dict(MOD.CANONICAL_SCHEMAS),
                         "script": {"path": names[1], "sha256": MOD.sha256_file(paths[1])},
                         "orchestrator": {"path": names[2], "sha256": MOD.sha256_file(paths[2])},
                         "build_preflight": {"path": names[3], "sha256": MOD.sha256_file(paths[3])},
@@ -198,7 +377,10 @@ class GeometryOrchestratorTests(unittest.TestCase):
             calls.append(command)
             return subprocess.CompletedProcess(command, 2 if command == ["preflight"] else 0)
 
-        result = MOD.invoke_campaign(["preflight"], factory, ["finalizer"], cwd=Path("/"), run=run)
+        result = MOD.invoke_campaign(
+            ["preflight"], factory, ["finalizer"], cwd=Path("/"),
+            environments=phase_environments(), ensure_terminal=ignore_terminal, run=run,
+        )
         self.assertEqual(result, (2, None, 0))
         self.assertEqual(factory_calls, 0)
         self.assertEqual(calls, [["preflight"], ["finalizer"]])
@@ -215,7 +397,8 @@ class GeometryOrchestratorTests(unittest.TestCase):
                 return subprocess.CompletedProcess(command, code)
 
             result = MOD.invoke_campaign(
-                ["preflight"], lambda: ["controller"], ["finalizer"], cwd=Path("/"), run=run,
+                ["preflight"], lambda: ["controller"], ["finalizer"], cwd=Path("/"),
+                environments=phase_environments(), ensure_terminal=ignore_terminal, run=run,
             )
             self.assertEqual(result, (0, 2 if mode == "nonzero" else 125, 0))
             self.assertEqual(calls, [["preflight"], ["controller"], ["finalizer"]])
@@ -233,7 +416,8 @@ class GeometryOrchestratorTests(unittest.TestCase):
             with self.assertRaises(KeyboardInterrupt):
                 MOD.invoke_campaign(
                     ["preflight"], lambda: ["controller"], ["finalizer"],
-                    cwd=Path("/"), run=run,
+                    cwd=Path("/"), environments=phase_environments(),
+                    ensure_terminal=ignore_terminal, run=run,
                 )
             expected = [["preflight"], ["finalizer"]] if interrupt_on == "preflight" else [
                 ["preflight"], ["controller"], ["finalizer"],
@@ -251,8 +435,94 @@ class GeometryOrchestratorTests(unittest.TestCase):
             return subprocess.CompletedProcess(command, 0)
 
         with self.assertRaises(ValueError):
-            MOD.invoke_campaign(["preflight"], factory, ["finalizer"], cwd=Path("/"), run=run)
+            MOD.invoke_campaign(
+                ["preflight"], factory, ["finalizer"], cwd=Path("/"),
+                environments=phase_environments(), ensure_terminal=ignore_terminal, run=run,
+            )
         self.assertEqual(calls, [["preflight"], ["finalizer"]])
+
+    def test_finalizer_exec_failure_writes_one_incomplete_terminal_record(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            verdict = root / "verdict.json"
+            protocol = root / "protocol.json"
+            protocol.write_text("{}\n", encoding="utf-8")
+
+            def run(command, **_kwargs):
+                if command == ["finalizer"]:
+                    raise OSError("executable unavailable")
+                return subprocess.CompletedProcess(command, 0)
+
+            def ensure(preflight_rc: int, controller_rc: int | None,
+                       finalizer_rc: int, detail: str) -> None:
+                MOD.ensure_terminal_fallback(
+                    verdict, protocol=protocol, protocol_sha="a" * 64,
+                    run_id="gpu-geometry-http-rtx5090-v11-test",
+                    preflight_rc=preflight_rc, controller_rc=controller_rc,
+                    finalizer_rc=finalizer_rc, detail=detail,
+                )
+
+            result = MOD.invoke_campaign(
+                ["preflight"], lambda: ["controller"], ["finalizer"],
+                cwd=root, environments=phase_environments(),
+                ensure_terminal=ensure, run=run,
+            )
+            self.assertEqual(result, (0, 0, 125))
+            record = json.loads(verdict.read_text(encoding="utf-8"))
+            self.assertTrue(record["terminal"])
+            self.assertEqual(record["verdict"], "incomplete_session")
+            self.assertEqual(record["checks"][0]["code"], "orchestrator.finalizer_totality")
+            with self.assertRaises(FileExistsError):
+                MOD.write_once(verdict, record)
+
+    def test_zero_exit_without_verdict_also_gets_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            verdict, protocol = root / "verdict.json", root / "protocol.json"
+            protocol.write_text("{}\n", encoding="utf-8")
+
+            def run(command, **_kwargs):
+                return subprocess.CompletedProcess(command, 0)
+
+            def ensure(preflight_rc: int, controller_rc: int | None,
+                       finalizer_rc: int, detail: str) -> None:
+                MOD.ensure_terminal_fallback(
+                    verdict, protocol=protocol, protocol_sha="a" * 64,
+                    run_id="gpu-geometry-http-rtx5090-v11-test",
+                    preflight_rc=preflight_rc, controller_rc=controller_rc,
+                    finalizer_rc=finalizer_rc, detail=detail,
+                )
+
+            self.assertEqual(MOD.invoke_campaign(
+                ["preflight"], lambda: ["controller"], ["finalizer"],
+                cwd=root, environments=phase_environments(),
+                ensure_terminal=ensure, run=run,
+            ), (0, 0, 0))
+            self.assertEqual(
+                json.loads(verdict.read_text(encoding="utf-8"))["verdict"],
+                "incomplete_session",
+            )
+
+    def test_fallback_refuses_partial_or_wrong_run_terminal_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            protocol = root / "protocol.json"
+            protocol.write_text("{}\n", encoding="utf-8")
+            for payload in ("{", json.dumps({
+                "schema": "gpu-f4-update-grid-ab-final-verdict/v1",
+                "run_id": "gpu-geometry-http-rtx5090-v11-other",
+                "terminal": True, "verdict": "incomplete_session",
+                "checks": [], "summary": {},
+            })):
+                verdict = root / f"verdict-{len(payload)}.json"
+                verdict.write_text(payload, encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    MOD.ensure_terminal_fallback(
+                        verdict, protocol=protocol, protocol_sha="a" * 64,
+                        run_id="gpu-geometry-http-rtx5090-v11-test",
+                        preflight_rc=0, controller_rc=0, finalizer_rc=125,
+                        detail="failed",
+                    )
 
 
 if __name__ == "__main__":

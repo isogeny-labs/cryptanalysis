@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
+import json
 import sqlite3
 import sys
 import tempfile
@@ -77,6 +79,143 @@ def make_trace(path: Path, blocks_per_sm: int) -> None:
 
 
 class GeometryAnalyzerTests(unittest.TestCase):
+    def test_remote_system_tool_policy_is_not_controller_hash_pinned(self) -> None:
+        record = {
+            "realpath": "/usr/bin/x86_64-linux-gnu-gcc-13",
+            "sha256": "a" * 64,
+            "version": "cc (Ubuntu 13.3.0) 13.3.0",
+            "target": "x86_64-linux-gnu",
+            "capabilities": {"compile": True, "archive": True, "ranlib": True,
+                             "link": True, "execute": True},
+        }
+        self.assertTrue(MOD.safe_system_tool_record(record, cc=True))
+        record["realpath"] = "/tmp/injected-cc"
+        self.assertFalse(MOD.safe_system_tool_record(record, cc=True))
+
+    def test_measurement_environment_requires_trusted_loader_and_nvrtc(self) -> None:
+        loader_entries = ["/usr/local/nvidia/lib", "/usr/lib/x86_64-linux-gnu"]
+        fixed = {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "<remote-task-root>/measurement-home",
+            "TMPDIR": "<remote-task-root>/measurement-tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC", "CUDA_VISIBLE_DEVICES": "0",
+            "F4_F2_ECHELON": "cuda", "F4_F2_ECHELON_VERBOSE": "1",
+            "CA_NVRTC_LIB": "<remote-task-root>/nvrtc-wheel/libnvrtc.so.12",
+        }
+        with tempfile.TemporaryDirectory(
+            prefix="cryptanalysis-gpu-geometry-v11.", dir="/tmp",
+        ) as directory:
+            root = Path(directory)
+            nvrtc_root = root / "nvrtc-wheel"
+            value = {
+                "schema": "gpu-geometry-measurement-environment/v1",
+                "construction": "env -i exact allowlist for every timed binary; env -i system subset for analyzer and Nsys",
+                "measurement_fixed": fixed,
+                "measurement_exact_keys": sorted([*fixed, "LD_LIBRARY_PATH"]),
+                "system_exact_keys": sorted(["PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", "LD_LIBRARY_PATH"]),
+                "inherited_loader_path_present": True,
+                "inherited_loader_path_entries": loader_entries,
+                "inherited_loader_path_value_sha256": hashlib.sha256(":".join(loader_entries).encode()).hexdigest(),
+                "measurement_loader_first": "<remote-task-root>/nvrtc-wheel",
+                "measurement_loader_value_sha256": hashlib.sha256(
+                    ":".join([str(nvrtc_root), *loader_entries]).encode()
+                ).hexdigest(),
+                "nvrtc_root_realpath": str(nvrtc_root),
+                "nvrtc_library_realpath": str(nvrtc_root / "libnvrtc.so.12"),
+                "nvrtc_library_sha256": MOD.NVRTC_LIBRARY_SHA256,
+                "nvrtc_builtins_realpath": str(nvrtc_root / "libnvrtc-builtins.so.12.9"),
+                "nvrtc_builtins_sha256": MOD.NVRTC_BUILTINS_SHA256,
+                "forbidden_absent": ["RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CFLAGS", "CXXFLAGS",
+                                     "CPPFLAGS", "LDFLAGS", "LD_PRELOAD", "RUSTC_WRAPPER", "RAYON_NUM_THREADS"],
+                "forbidden_prefixes_absent": ["CARGO_PROFILE_", "F4_ except the two exact fixed keys"],
+            }
+            metadata = root / "metadata"
+            metadata.mkdir()
+            path = metadata / "measurement-environment.json"
+            path.write_text(json.dumps(value), encoding="utf-8")
+            (metadata / "nvrtc-install.json").write_text(json.dumps({
+                "schema": "gpu-geometry-nvrtc-install/v1",
+                "package": "nvidia-cuda-nvrtc-cu12", "version": "12.9.86",
+                "wheel_url": MOD.NVRTC_WHEEL_URL,
+                "wheel_sha256": MOD.NVRTC_WHEEL_SHA256,
+                "wheel_bytes": MOD.NVRTC_WHEEL_BYTES,
+                "libraries": [
+                    {"wheel_member": MOD.NVRTC_LIBRARY_MEMBER,
+                     "path": "<remote-task-root>/nvrtc-wheel/libnvrtc.so.12",
+                     "sha256": MOD.NVRTC_LIBRARY_SHA256, "bytes": MOD.NVRTC_LIBRARY_BYTES},
+                    {"wheel_member": MOD.NVRTC_BUILTINS_MEMBER,
+                     "path": "<remote-task-root>/nvrtc-wheel/libnvrtc-builtins.so.12.9",
+                     "sha256": MOD.NVRTC_BUILTINS_SHA256, "bytes": MOD.NVRTC_BUILTINS_BYTES},
+                ],
+                "compile_probe": {"architecture": "compute_120", "returncode": 0},
+                "python_package_code_executed": False,
+                "native_compile_probe_executed": True,
+            }), encoding="utf-8")
+            (metadata / "nsys-install.json").write_text(json.dumps({
+                "schema": "gpu-geometry-nsys-install/v1", "package": MOD.NSYS_PACKAGE,
+                "package_version": MOD.NSYS_PACKAGE_VERSION,
+                "package_deb_url": MOD.NSYS_DEB_URL,
+                "package_deb_sha256": MOD.NSYS_DEB_SHA256,
+                "package_deb_bytes": MOD.NSYS_DEB_BYTES,
+                "package_control": {
+                    "Package": MOD.NSYS_PACKAGE, "Version": MOD.NSYS_PACKAGE_VERSION,
+                    "Architecture": "amd64",
+                },
+                "extraction_root": "<remote-task-root>/nsys-package",
+                "extraction_root_realpath": str(root / "nsys-package"),
+                "binary_path": MOD.NSYS_BINARY_CONTRACT,
+                "binary_realpath": str(root / "nsys-package" / MOD.NSYS_BINARY_RELATIVE),
+                "binary_sha256": MOD.NSYS_BINARY_SHA256,
+                "binary_bytes": MOD.NSYS_BINARY_BYTES,
+                "version_output": MOD.NSYS_VERSION_OUTPUT,
+                "installed": False, "maintainer_scripts_executed": False,
+                "system_package_manager_mutation": False,
+                "dependency_source": "digest-pinned image plus exact extracted deb; missing dependencies fail closed",
+                "extractor_path": "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh",
+                "extractor_sha256": MOD.NSYS_EXTRACTOR_SHA256,
+            }), encoding="utf-8")
+            (metadata / "nsys-version.txt").write_text(MOD.NSYS_VERSION_OUTPUT + "\n", encoding="utf-8")
+            MOD.validate_measurement_environment(root, False)
+            nsys_path = metadata / "nsys-install.json"
+            nsys_receipt = json.loads(nsys_path.read_text(encoding="utf-8"))
+            for key, bad in (
+                ("package_deb_sha256", "0" * 64),
+                ("package_deb_bytes", MOD.NSYS_DEB_BYTES - 1),
+                ("extraction_root_realpath", "/tmp/injected/nsys-package"),
+                ("binary_realpath", "/tmp/injected/nsys"),
+                ("binary_sha256", "0" * 64),
+                ("binary_bytes", MOD.NSYS_BINARY_BYTES - 1),
+            ):
+                changed = dict(nsys_receipt)
+                changed[key] = bad
+                nsys_path.write_text(json.dumps(changed), encoding="utf-8")
+                with self.assertRaises(MOD.GateError):
+                    MOD.validate_nsys_install(root, False)
+            nsys_path.write_text(json.dumps(nsys_receipt), encoding="utf-8")
+            for key, bad in (
+                ("inherited_loader_path_entries", ["relative/injected"]),
+                ("inherited_loader_path_entries", ["/tmp/injected"]),
+                ("measurement_loader_value_sha256", "0" * 64),
+                ("nvrtc_library_realpath", "/tmp/libnvrtc.so.12"),
+                ("nvrtc_library_sha256", "0" * 63),
+                ("nvrtc_builtins_realpath", "/tmp/libnvrtc-builtins.so.12.9"),
+                ("nvrtc_builtins_sha256", "0" * 64),
+            ):
+                changed = dict(value)
+                changed[key] = bad
+                path.write_text(json.dumps(changed), encoding="utf-8")
+                with self.assertRaises(MOD.GateError):
+                    MOD.validate_measurement_environment(root, False)
+
+            # The required sibling is a separately bound wheel member.
+            receipt_path = metadata / "nvrtc-install.json"
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            receipt["libraries"] = receipt["libraries"][:1]
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            path.write_text(json.dumps(value), encoding="utf-8")
+            with self.assertRaises(MOD.GateError):
+                MOD.validate_measurement_environment(root, False)
+
     def test_registered_grid_math(self) -> None:
         self.assertEqual(MOD.parts_for(170, 92, 4), 8)
         self.assertEqual(MOD.parts_for(170, 92, 6), 12)

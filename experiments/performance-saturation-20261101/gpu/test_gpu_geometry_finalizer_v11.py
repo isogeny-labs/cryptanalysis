@@ -34,7 +34,7 @@ def minimal_protocol() -> dict:
     return {
         "execution": {
             "placement": {
-                "image": "runpod/base:1.0.2-ubuntu2404",
+                "image": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
                 "min_ram_gb": 62,
                 "min_vcpu": 16,
                 "max_price_usd_per_hour": 1.19,
@@ -55,8 +55,13 @@ def minimal_protocol() -> dict:
                     "name_prefix": "misagi-f4-geometry-v11",
                     "cloudType": "SECURE",
                     "computeType": "GPU",
+                    "imageName": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
                     "gpuTypeIds": [MOD.EXPECTED_GPU],
                     "gpuCount": 1,
+                    "startup_sha256": "4" * 64,
+                    "bootstrap_sha256": "5" * 64,
+                    "remote_boot_sha256": "6" * 64,
+                    "entrypoint": ["/usr/bin/bash", "--noprofile", "--norc", "-c"],
                 }
             },
         },
@@ -88,8 +93,13 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
             "name": name,
             "cloudType": "SECURE",
             "computeType": "GPU",
+            "imageName": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
             "gpuTypeIds": [MOD.EXPECTED_GPU],
             "gpuCount": 1,
+            "startup_sha256": "4" * 64,
+            "bootstrap_sha256": "5" * 64,
+            "remote_boot_sha256": "6" * 64,
+            "entrypoint": ["/usr/bin/bash", "--noprofile", "--norc", "-c"],
         },
         "pod": {
             "id": "pod_123",
@@ -97,7 +107,7 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
             "status": "RUNNING",
             "creation_response_ambiguous": False,
             "cloud": "SECURE",
-            "image": "runpod/base:1.0.2-ubuntu2404",
+            "image": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
             "cost": 1.19,
             "gpu": {"id": MOD.EXPECTED_GPU, "count": 1, "memory": 62, "vcpuCount": 32},
         },
@@ -131,6 +141,53 @@ def good_receipt(protocol_sha: str = "a" * 64) -> dict:
     }
 
 
+def good_environment_policy() -> dict:
+    toolchain = MOD.EXPECTED_TOOLCHAIN
+    return {
+        "bootstrap_fixed": {
+            "PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+        },
+        "fetch_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{toolchain}/bin/rustc",
+        },
+        "network_forwarded_value_sha256": {"HTTPS_PROXY": "9" * 64},
+        "launcher": {
+            "fixed": {"PATH": "/usr/bin:/bin", "HOME": "<caller-owned-fresh-home>",
+                      "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC"},
+            "exact_keys": sorted(["PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ", "HTTPS_PROXY"]),
+            "network_forward_allowlist": list(MOD.EXPECTED_NETWORK_ALLOWLIST),
+            "network_forwarded_value_sha256": {"HTTPS_PROXY": "9" * 64},
+            "python": {"executable": "/usr/bin/python3", "flags": ["-I", "-S", "-B"],
+                       "isolated": True, "no_site": True, "dont_write_bytecode": True,
+                       "safe_path": True},
+        },
+        "network_forward_allowlist": list(MOD.EXPECTED_NETWORK_ALLOWLIST),
+        "build_inherited_keys": [],
+        "build_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp/<arm>",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{toolchain}/bin/rustc",
+            "CC": "/usr/bin/x86_64-linux-gnu-gcc-14", "AR": "/usr/bin/x86_64-linux-gnu-ar",
+            "RANLIB": "/usr/bin/x86_64-linux-gnu-ranlib",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/usr/bin/x86_64-linux-gnu-gcc-14",
+            "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+            "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+            "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+        },
+        "forbidden_inherited_patterns": list(MOD.EXPECTED_FORBIDDEN_BUILD_PATTERNS),
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": "local_controller",
+    }
+
+
 def good_preflight(protocol_sha: str = "a" * 64) -> dict:
     baseline, candidate = "c" * 64, "d" * 64
     build = lambda arm, binary: {
@@ -149,6 +206,7 @@ def good_preflight(protocol_sha: str = "a" * 64) -> dict:
         "protocol_sha256": protocol_sha,
         "run_id": "run-1",
         "provider_actions": False,
+        "location": "local_controller",
         "tool_sha256": MOD.sha256_file(HERE / "preflight_gpu_geometry_v11.py"),
         "source": dict(MOD.EXPECTED_PREFLIGHT_SOURCE),
         "build_contract": dict(MOD.EXPECTED_BUILD_CONTRACT),
@@ -174,7 +232,15 @@ def good_preflight(protocol_sha: str = "a" * 64) -> dict:
             "baseline_aa_equals_baseline": True,
             "candidate_differs": True,
         },
+        "dependency_fetch": {
+            "command": ["cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml"],
+            "returncode": 0, "log_sha256": "8" * 64, "log_bytes": 321,
+            "cargo_config_candidates_checked": 12, "cargo_config_all_absent": True,
+        },
+        "environment_policy": good_environment_policy(),
         "toolchain": {
+            "system_policy": "controller_exact_hashes",
+            "system_tools_unchanged_after_builds": True,
             "bootstrap": {
                 "url": MOD.EXPECTED_RUSTUP_URL,
                 "sha256": MOD.EXPECTED_RUSTUP_SHA256,
@@ -194,8 +260,22 @@ def good_preflight(protocol_sha: str = "a" * 64) -> dict:
             "cc": {
                 "realpath": "/usr/bin/x86_64-linux-gnu-gcc-14",
                 "sha256": MOD.EXPECTED_CC_SHA256,
-                "version": "cc (Debian 14.2.0-19) 14.2.0",
+                "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0",
+                "target": "x86_64-linux-gnu",
+                "capabilities": {"compile": True, "archive": True, "ranlib": True,
+                                 "link": True, "execute": True},
             },
+            "ar": {"realpath": "/usr/bin/x86_64-linux-gnu-ar",
+                   "sha256": MOD.EXPECTED_AR_SHA256,
+                   "version": "GNU ar (GNU Binutils for Debian) 2.44"},
+            "ranlib": {"realpath": "/usr/bin/x86_64-linux-gnu-ranlib",
+                       "sha256": MOD.EXPECTED_RANLIB_SHA256,
+                       "version": "GNU ranlib (GNU Binutils for Debian) 2.44"},
+            "linker": {"realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+                       "sha256": MOD.EXPECTED_LINKER_SHA256,
+                       "version": "GNU ld (GNU Binutils for Debian) 2.44"},
+            "collect2": {"realpath": "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2",
+                         "sha256": MOD.EXPECTED_COLLECT2_SHA256},
         },
     }
 
@@ -290,6 +370,8 @@ class FinalizerAdversarialTests(unittest.TestCase):
              "preflight.archive"),
             (lambda value: value["toolchain"]["rustc"].update(sha256="0" * 64),
              "preflight.toolchain"),
+            (lambda value: value["environment_policy"]["build_inherited_keys"].append("RUSTFLAGS"),
+             "preflight.environment_policy"),
             (lambda value: value["binary_contract"].update(candidate_differs=False),
              "preflight.binary_contract"),
         ):
@@ -303,7 +385,7 @@ class FinalizerAdversarialTests(unittest.TestCase):
         failed = {
             key: value for key, value in good_preflight().items()
             if key in {
-                "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "tool_sha256",
+                "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "location", "tool_sha256",
                 "source", "build_contract", "started_at", "status", "error", "finished_at",
                 "elapsed_seconds",
             }
@@ -384,6 +466,15 @@ class FinalizerAdversarialTests(unittest.TestCase):
         self.assertFalse(judge.completion_failed)
         self.assertFalse(judge.validity_failed)
         self.assertTrue(all(check.status == "passed" for check in judge.checks))
+
+        receipt = good_receipt()
+        receipt["request"]["remote_boot_sha256"] = "0" * 64
+        judge = MOD.Judge()
+        MOD.check_receipt_core(
+            receipt, minimal_protocol(), "run-1", "a" * 64, "b" * 64,
+            "experiments/performance-saturation-20261101/gpu/runs-http/run-1", judge,
+        )
+        self.assertTrue(failures(judge, "receipt.request.remote_boot_sha256"))
 
     def test_exact_order_and_header_only_or_truncated_order(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

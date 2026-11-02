@@ -13,9 +13,11 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import math
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Callable
 
@@ -44,6 +46,9 @@ BUILD_CONTRACT = {
     "isolated_source_trees": True,
     "isolated_target_dirs": True,
     "cargo_incremental": "0",
+    "network_only_during_bootstrap_and_fetch": True,
+    "offline_builds": True,
+    "exact_environment_key_set": True,
 }
 RUSTUP_URL = (
     "https://static.rust-lang.org/rustup/archive/1.29.2/"
@@ -54,6 +59,55 @@ RUSTC_SHA256 = "5eadaaf4fe086d76547b17dc3c1ba880d0082b93f7d8bc65612770da8e79fe8e
 CARGO_SHA256 = "e60b4010303c19a131c058e3f054b4b3311433c4b2ee94ba8e09e165ff2a3b3b"
 CC_SHA256 = "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f"
 RUST_TOOLCHAIN = "1.91.1-x86_64-unknown-linux-gnu"
+AR_SHA256 = "f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb"
+RANLIB_SHA256 = "4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e"
+LINKER_SHA256 = "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b"
+COLLECT2_SHA256 = "ea31a4cebd9df1b6428c463428d461ccecfe66c897936409d5b2cde0b3af9e27"
+NETWORK_ALLOWLIST = [
+    "ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "CURL_CA_BUNDLE",
+]
+FORBIDDEN_BUILD_PATTERNS = [
+    "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_PROFILE_*", "CARGO_TARGET_DIR",
+    "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER", "CFLAGS", "CXXFLAGS", "CPPFLAGS",
+    "LDFLAGS", "LD_PRELOAD", "AR", "CC", "RANLIB", "RAYON_NUM_THREADS", "F4_*",
+]
+PYTHON = "/usr/bin/python3"
+ISOLATED_PYTHON = [PYTHON, "-I", "-S", "-B"]
+CANONICAL_PYTHON = [PYTHON, "-I", "-B"]
+LOCAL_FIXED_ENV = {
+    "PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+}
+CONTROLLER_SECRET_ALLOWLIST = ("RUNPOD_API_KEY",)
+CANONICAL_SCHEMAS = {
+    "/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json":
+        "a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443",
+    "/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json":
+        "108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757",
+}
+
+
+def exact_phase_environments(root: Path, inherited: dict[str, str]) -> dict[str, dict[str, str]]:
+    """Construct caller-owned, exact environments for every local subprocess phase."""
+    root.mkdir(mode=0o700, parents=True, exist_ok=False)
+    result: dict[str, dict[str, str]] = {}
+    for phase in ("orchestrator", "canonical", "preflight", "controller", "finalizer"):
+        phase_root = root / phase
+        home, temporary = phase_root / "home", phase_root / "tmp"
+        home.mkdir(mode=0o700, parents=True)
+        temporary.mkdir(mode=0o700)
+        environment = {
+            **LOCAL_FIXED_ENV, "HOME": str(home), "TMPDIR": str(temporary),
+        }
+        if phase in {"preflight", "controller"}:
+            environment.update({
+                key: inherited[key] for key in NETWORK_ALLOWLIST if key in inherited
+            })
+        if phase == "controller":
+            environment.update({
+                key: inherited[key] for key in CONTROLLER_SECRET_ALLOWLIST if key in inherited
+            })
+        result[phase] = environment
+    return result
 
 
 def canonical(value: Any) -> bytes:
@@ -119,7 +173,7 @@ def campaign_paths(run_id: str) -> dict[str, Path]:
 def preflight_command(repo: Path, protocol_sha: str, run_id: str) -> list[str]:
     paths = campaign_paths(run_id)
     return [
-        "python3", str(STUDY / "preflight_gpu_geometry_v11.py"), "run",
+        *ISOLATED_PYTHON, str(STUDY / "preflight_gpu_geometry_v11.py"), "run",
         "--repo", str(repo), "--run-id", run_id,
         "--protocol-sha256", protocol_sha, "--out", str(paths["preflight"]),
     ]
@@ -129,7 +183,7 @@ def finalizer_command(protocol: Path, protocol_sha: str, protocol_tool: Path,
                       run_id: str) -> list[str]:
     paths = campaign_paths(run_id)
     return [
-        "python3", str(STUDY / "finalize_gpu_geometry_ab_v11.py"),
+        *ISOLATED_PYTHON, str(STUDY / "finalize_gpu_geometry_ab_v11.py"),
         "--protocol", str(protocol), "--protocol-sha256", protocol_sha,
         "--protocol-tool", str(protocol_tool),
         "--preflight-receipt", str(paths["preflight"]),
@@ -151,18 +205,20 @@ def controller_command(protocol_sha: str, run_id: str, value: dict[str, Any],
         raise ValueError("preflight receipt SHA-256 is malformed")
     paths = campaign_paths(run_id)
     command = (
-        "GPU_STUDY_SECURE=1 bash "
+        "GPU_STUDY_SECURE=1 /usr/bin/bash --noprofile --norc "
         "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh "
         f"'experiments/performance-saturation-20261101/gpu/runs-http' '{run_id}' "
         f"'{protocol_sha}' '{preflight_sha}'"
     )
     return [
-        "python3", "cloud/runpod_http_batch.py", "misagi-f4-geometry-v11",
+        *ISOLATED_PYTHON, "cloud/runpod_http_batch.py", "misagi-f4-geometry-v11",
         "--source-ref", SOURCE_REF, "--source-commit", source_commit,
         "--cloud", "SECURE", "--gpu", "NVIDIA GeForce RTX 5090", "--gpu-count", "1",
-        "--min-vcpu", "16", "--min-ram", "62", "--image", "runpod/base:1.0.2-ubuntu2404",
+        "--min-vcpu", "16", "--min-ram", "62", "--image",
+        "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
         "--disk", "100", "--max-price", "1.19", "--max-hours", "3", "--wait", "900",
         "--timeout", "9000", "--reconcile-seconds", "60", "--max-result-mib", "4096",
+        "--minimal-bootstrap",
         "--receipt", str(paths["receipt"]), "--archive", str(paths["archive"]),
         "--out", str(paths["session"]), "--", command,
     ]
@@ -228,6 +284,12 @@ def verify_tool_hashes(repo: Path, value: dict[str, Any], protocol_tool: Path) -
             or not protocol_tool.is_file()
             or sha256_file(protocol_tool) != canonical_tool.get("sha256")):
         raise ValueError("canonical protocol tool path/hash mismatch")
+    if finalization.get("canonical_protocol_schemas") != CANONICAL_SCHEMAS:
+        raise ValueError("canonical protocol schema registry differs from the frozen identities")
+    for raw_path, expected in CANONICAL_SCHEMAS.items():
+        path = Path(raw_path)
+        if not path.is_file() or sha256_file(path) != expected:
+            raise ValueError(f"canonical protocol schema path/hash mismatch: {raw_path}")
     analysis = value.get("analysis_plan", {}).get("script", {})
     analyzer_path = repo / STUDY / str(analysis.get("path", ""))
     if not analyzer_path.is_file() or sha256_file(analyzer_path) != analysis.get("sha256"):
@@ -243,43 +305,51 @@ def verify_tool_hashes(repo: Path, value: dict[str, Any], protocol_tool: Path) -
             raise ValueError(f"frozen {name} path/hash mismatch")
 
 
-def git_text(repo: Path, *arguments: str) -> str:
+def git_text(repo: Path, *arguments: str, environment: dict[str, str]) -> str:
     result = subprocess.run(["git", *arguments], cwd=repo, capture_output=True,
-                            text=True, timeout=120, check=False)
+                            text=True, timeout=120, check=False, env=environment)
     if result.returncode:
         raise ValueError(f"git {' '.join(arguments[:2])} failed")
     return result.stdout.strip()
 
 
-def verify_freeze_chain(repo: Path, protocol: Path, value: dict[str, Any]) -> None:
+def verify_freeze_chain(repo: Path, protocol: Path, value: dict[str, Any],
+                        environment: dict[str, str]) -> None:
     relative = protocol.resolve().relative_to(repo).as_posix()
     freeze = value.get("freeze") if isinstance(value.get("freeze"), dict) else {}
     registration = freeze.get("commit")
     if not isinstance(registration, str) or re.fullmatch(r"[0-9a-f]{40}", registration) is None:
         raise ValueError("freeze.commit is not a full registration commit")
     draft_result = subprocess.run(["git", "show", f"{registration}:{relative}"], cwd=repo,
-                                  capture_output=True, timeout=120, check=False)
+                                  capture_output=True, timeout=120, check=False,
+                                  env=environment)
     if draft_result.returncode:
         raise ValueError("registered draft is unavailable")
     draft = strict_json(draft_result.stdout)
     if not isinstance(draft, dict) or draft.get("freeze", {}).get("status") != "draft" or protocol_hash(draft) != protocol_hash(value):
         raise ValueError("registration commit does not contain the matching draft")
-    if git_text(repo, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", registration).splitlines() != [relative]:
+    if git_text(repo, "diff-tree", "--root", "--no-commit-id", "--name-only", "-r",
+                registration, environment=environment).splitlines() != [relative]:
         raise ValueError("registration commit scope is not exact")
-    later = git_text(repo, "log", "--format=%H", "--reverse", f"{registration}..HEAD", "--", relative).splitlines()
-    if len(later) != 1 or git_text(repo, "rev-parse", f"{later[0]}^") != registration:
+    later = git_text(repo, "log", "--format=%H", "--reverse", f"{registration}..HEAD",
+                     "--", relative, environment=environment).splitlines()
+    if (len(later) != 1
+            or git_text(repo, "rev-parse", f"{later[0]}^", environment=environment) != registration):
         raise ValueError("freeze is not the one immediate post-registration protocol commit")
-    if git_text(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", later[0]).splitlines() != [relative]:
+    if git_text(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", later[0],
+                environment=environment).splitlines() != [relative]:
         raise ValueError("freeze commit scope is not exact")
     frozen = subprocess.run(["git", "show", f"{later[0]}:{relative}"], cwd=repo,
-                            capture_output=True, timeout=120, check=True).stdout
+                            capture_output=True, timeout=120, check=True,
+                            env=environment).stdout
     if frozen != protocol.read_bytes():
         raise ValueError("working protocol bytes differ from authenticated freeze commit")
 
 
 def static_preflight(repo: Path, protocol_path: Path, protocol_sha: str,
                      protocol_tool: Path, run_id: str, value: dict[str, Any],
-                     preflight: list[str], finalizer: list[str]) -> None:
+                     preflight: list[str], finalizer: list[str],
+                     environment: dict[str, str], canonical_environment: dict[str, str]) -> None:
     launch = value.get("extensions", {}).get("launch", {})
     finalization = value.get("extensions", {}).get("finalization", {})
     if preflight != substitute_argv(launch.get("preflight_argv_template", []), run_id, protocol_sha):
@@ -287,13 +357,76 @@ def static_preflight(repo: Path, protocol_path: Path, protocol_sha: str,
     if finalizer != substitute_argv(finalization.get("finalizer_argv_template", []), run_id, protocol_sha):
         raise ValueError("constructed finalizer argv differs from frozen template")
     verify_tool_hashes(repo, value, protocol_tool)
-    verify_freeze_chain(repo, protocol_path, value)
+    verify_freeze_chain(repo, protocol_path, value, environment)
     result = subprocess.run(
-        ["python3", str(protocol_tool), "validate", str(protocol_path)],
+        [*CANONICAL_PYTHON, str(protocol_tool), "validate", str(protocol_path)],
         cwd=repo, capture_output=True, text=True, timeout=120, check=False,
+        env=canonical_environment,
     )
     if result.returncode or "0 finding(s)" not in result.stdout:
         raise ValueError("canonical protocol validation did not return zero findings")
+
+
+def environment_policy_valid(value: object) -> bool:
+    if not isinstance(value, dict):
+        return False
+    hashes = value.get("network_forwarded_value_sha256")
+    if (not isinstance(hashes, dict) or set(hashes) - set(NETWORK_ALLOWLIST)
+            or any(SHA256_RE.fullmatch(str(item)) is None for item in hashes.values())):
+        return False
+    expected = {
+        "bootstrap_fixed": {
+            "PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+        },
+        "fetch_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home", "TMPDIR": "<fresh-task-root>/tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+        },
+        "network_forward_allowlist": NETWORK_ALLOWLIST,
+        "build_inherited_keys": [],
+        "build_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp/<arm>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{RUST_TOOLCHAIN}/bin/rustc",
+            "CC": "/usr/bin/x86_64-linux-gnu-gcc-14", "AR": "/usr/bin/x86_64-linux-gnu-ar",
+            "RANLIB": "/usr/bin/x86_64-linux-gnu-ranlib",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/usr/bin/x86_64-linux-gnu-gcc-14",
+            "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+            "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+            "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+        },
+        "forbidden_inherited_patterns": FORBIDDEN_BUILD_PATTERNS,
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": "local_controller",
+    }
+    launcher = value.get("launcher") if isinstance(value.get("launcher"), dict) else {}
+    launcher_hashes = launcher.get("network_forwarded_value_sha256")
+    launcher_fixed = {
+        "PATH": "/usr/bin:/bin", "HOME": "<caller-owned-fresh-home>",
+        "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+    }
+    launcher_python = {
+        "executable": PYTHON, "flags": ["-I", "-S", "-B"], "isolated": True,
+        "no_site": True, "dont_write_bytecode": True, "safe_path": True,
+    }
+    return (
+        set(value) == set(expected) | {"network_forwarded_value_sha256", "launcher"}
+        and all(value.get(key) == item for key, item in expected.items())
+        and set(launcher) == {"fixed", "exact_keys", "network_forward_allowlist",
+                              "network_forwarded_value_sha256", "python"}
+        and launcher.get("fixed") == launcher_fixed
+        and launcher.get("exact_keys") == sorted([*launcher_fixed, *hashes])
+        and launcher.get("network_forward_allowlist") == NETWORK_ALLOWLIST
+        and launcher_hashes == hashes
+        and launcher.get("python") == launcher_python
+    )
 
 
 def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> dict[str, Any]:
@@ -301,10 +434,10 @@ def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> di
     if not isinstance(value, dict):
         raise ValueError("build preflight receipt is not an object")
     expected_keys = {
-        "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "tool_sha256",
+        "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "location", "tool_sha256",
         "source", "build_contract", "started_at", "status", "error", "finished_at",
         "elapsed_seconds", "archive", "source_delta", "files_per_arm", "builds",
-        "binary_contract", "toolchain",
+        "binary_contract", "toolchain", "dependency_fetch", "environment_policy",
     }
     if set(value) != expected_keys:
         raise ValueError("build preflight receipt key set is not exact")
@@ -314,6 +447,7 @@ def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> di
         "provider_actions": False, "status": "passed", "error": None,
         "source_delta": [F4_PATH], "files_per_arm": ARCHIVE_FILES,
         "source": PREFLIGHT_SOURCE, "build_contract": BUILD_CONTRACT,
+        "location": "local_controller",
         "tool_sha256": sha256_file(Path(__file__).resolve().with_name("preflight_gpu_geometry_v11.py")),
     }
     if any(value.get(key) != wanted for key, wanted in expected.items()):
@@ -351,13 +485,33 @@ def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> di
             or contract.get("candidate_differs") is not True
             or builds[0]["binary_sha256"] == builds[1]["binary_sha256"]):
         raise ValueError("build preflight binary identity contract is invalid")
+    dependency = value.get("dependency_fetch") if isinstance(value.get("dependency_fetch"), dict) else {}
+    if not (
+        set(dependency) == {"command", "returncode", "log_sha256", "log_bytes",
+                            "cargo_config_candidates_checked", "cargo_config_all_absent"}
+        and dependency.get("command") == [
+            "cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml",
+        ]
+        and dependency.get("returncode") == 0
+        and SHA256_RE.fullmatch(str(dependency.get("log_sha256", ""))) is not None
+        and type(dependency.get("log_bytes")) is int and dependency["log_bytes"] >= 0
+        and type(dependency.get("cargo_config_candidates_checked")) is int
+        and dependency["cargo_config_candidates_checked"] >= 8
+        and dependency.get("cargo_config_all_absent") is True
+    ):
+        raise ValueError("build preflight dependency fetch is invalid")
+    if not environment_policy_valid(value.get("environment_policy")):
+        raise ValueError("build preflight environment closure is invalid")
     toolchain = value.get("toolchain") if isinstance(value.get("toolchain"), dict) else {}
     bootstrap = toolchain.get("bootstrap") if isinstance(toolchain.get("bootstrap"), dict) else {}
     rustc = toolchain.get("rustc") if isinstance(toolchain.get("rustc"), dict) else {}
     cargo = toolchain.get("cargo") if isinstance(toolchain.get("cargo"), dict) else {}
     cc = toolchain.get("cc") if isinstance(toolchain.get("cc"), dict) else {}
     if not (
-        set(toolchain) == {"bootstrap", "rustc", "cargo", "cc"}
+        set(toolchain) == {"system_policy", "bootstrap", "rustc", "cargo", "cc", "ar",
+                           "ranlib", "linker", "collect2", "system_tools_unchanged_after_builds"}
+        and toolchain.get("system_policy") == "controller_exact_hashes"
+        and toolchain.get("system_tools_unchanged_after_builds") is True
         and set(bootstrap) == {"url", "sha256", "log_sha256", "log_bytes"}
         and bootstrap.get("url") == RUSTUP_URL and bootstrap.get("sha256") == RUSTUP_SHA256
         and SHA256_RE.fullmatch(str(bootstrap.get("log_sha256", ""))) is not None
@@ -368,9 +522,26 @@ def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> di
         and set(cargo) == {"toolchain", "sha256", "version"}
         and cargo.get("toolchain") == RUST_TOOLCHAIN and cargo.get("sha256") == CARGO_SHA256
         and isinstance(cargo.get("version"), str) and cargo["version"].startswith("cargo 1.91.1")
-        and set(cc) == {"realpath", "sha256", "version"}
+        and set(cc) == {"realpath", "sha256", "version", "target", "capabilities"}
         and cc.get("realpath") == "/usr/bin/x86_64-linux-gnu-gcc-14"
-        and cc.get("sha256") == CC_SHA256 and cc.get("version") == "cc (Debian 14.2.0-19) 14.2.0"
+        and cc.get("sha256") == CC_SHA256
+        and cc.get("version") == "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+        and cc.get("target") == "x86_64-linux-gnu"
+        and cc.get("capabilities") == {"compile": True, "archive": True, "ranlib": True,
+                                       "link": True, "execute": True}
+        and toolchain.get("ar") == {"realpath": "/usr/bin/x86_64-linux-gnu-ar",
+                                    "sha256": AR_SHA256,
+                                    "version": "GNU ar (GNU Binutils for Debian) 2.44"}
+        and toolchain.get("ranlib") == {"realpath": "/usr/bin/x86_64-linux-gnu-ranlib",
+                                        "sha256": RANLIB_SHA256,
+                                        "version": "GNU ranlib (GNU Binutils for Debian) 2.44"}
+        and toolchain.get("linker") == {"realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+                                        "sha256": LINKER_SHA256,
+                                        "version": "GNU ld (GNU Binutils for Debian) 2.44"}
+        and toolchain.get("collect2") == {
+            "realpath": "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2",
+            "sha256": COLLECT2_SHA256,
+        }
     ):
         raise ValueError("build preflight toolchain is invalid")
     started, finished = parse_utc(value.get("started_at")), parse_utc(value.get("finished_at"))
@@ -382,9 +553,113 @@ def validate_preflight_receipt(path: Path, run_id: str, protocol_sha: str) -> di
     return value
 
 
+def write_once(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = (json.dumps(
+        value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False,
+    ) + "\n").encode("utf-8")
+    fd, temporary = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent,
+    )
+    temporary_path = Path(temporary)
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary_path, path)
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+        directory_fd = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+
+
+def valid_existing_terminal(path: Path, run_id: str) -> bool:
+    try:
+        value = strict_json(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError):
+        return False
+    return (
+        isinstance(value, dict)
+        and value.get("schema") == "gpu-f4-update-grid-ab-final-verdict/v1"
+        and value.get("run_id") == run_id
+        and value.get("terminal") is True
+        and value.get("verdict") in {
+            "incomplete_session", "invalid_measurement",
+            "geometry_not_supported", "geometry_supported",
+        }
+        and isinstance(value.get("checks"), list)
+        and isinstance(value.get("summary"), dict)
+    )
+
+
+def maybe_sha256(path: Path) -> str | None:
+    try:
+        return sha256_file(path) if path.is_file() else None
+    except OSError:
+        return None
+
+
+def ensure_terminal_fallback(
+    path: Path, *, protocol: Path, protocol_sha: str, run_id: str,
+    preflight_rc: int, controller_rc: int | None, finalizer_rc: int, detail: str,
+) -> bool:
+    """Write one minimal terminal incomplete record iff the finalizer wrote none."""
+    if path.exists():
+        if valid_existing_terminal(path, run_id):
+            return False
+        raise ValueError("existing terminal verdict is malformed or belongs to another run")
+    record = {
+        "schema": "gpu-f4-update-grid-ab-final-verdict/v1",
+        "protocol": {
+            "path": str(protocol), "protocol_id": PROTOCOL_ID, "version": 11,
+            "sha256": protocol_sha, "file_sha256": maybe_sha256(protocol),
+        },
+        "run_id": run_id,
+        "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "terminal": True,
+        "verdict": "incomplete_session",
+        "precedence": [
+            "incomplete_session", "invalid_measurement",
+            "geometry_not_supported", "geometry_supported",
+        ],
+        "provisional_remote_classification": None,
+        "evidence": {
+            "preflight_returncode": preflight_rc,
+            "controller_returncode": controller_rc,
+            "finalizer_returncode": finalizer_rc,
+            "orchestrator_sha256": maybe_sha256(Path(__file__).resolve()),
+        },
+        "checks": [{
+            "code": "orchestrator.finalizer_totality",
+            "category": "completion",
+            "status": "failed",
+            "detail": detail[:1000] or "finalizer returned without creating its terminal record",
+        }],
+        "summary": {"completion_failures": 1, "validity_failures": 0, "checks": 1},
+    }
+    try:
+        write_once(path, record)
+    except FileExistsError:
+        # An independently successful finalizer may have won the publication race.
+        if valid_existing_terminal(path, run_id):
+            return False
+        raise ValueError("racing terminal verdict is malformed or belongs to another run")
+    return True
+
+
 def invoke_campaign(
     preflight: list[str], controller_factory: Callable[[], list[str]], finalizer: list[str],
-    *, cwd: Path, run: Callable[..., subprocess.CompletedProcess[Any]] = subprocess.run,
+    *, cwd: Path, environments: dict[str, dict[str, str]],
+    ensure_terminal: Callable[[int, int | None, int, str], None],
+    run: Callable[..., subprocess.CompletedProcess[Any]] = subprocess.run,
 ) -> tuple[int, int | None, int]:
     """Run once each; controller is conditional, finalizer is unconditional."""
     preflight_rc = 125
@@ -393,11 +668,15 @@ def invoke_campaign(
     phase = "preflight"
     try:
         try:
-            preflight_rc = run(preflight, cwd=cwd, check=False).returncode
+            preflight_rc = run(
+                preflight, cwd=cwd, check=False, env=environments["preflight"],
+            ).returncode
             if preflight_rc == 0:
                 phase = "controller"
                 controller = controller_factory()
-                controller_rc = run(controller, cwd=cwd, check=False).returncode
+                controller_rc = run(
+                    controller, cwd=cwd, check=False, env=environments["controller"],
+                ).returncode
         except (OSError, subprocess.SubprocessError):
             if phase == "preflight":
                 preflight_rc = 125
@@ -410,7 +689,26 @@ def invoke_campaign(
             else:
                 preflight_rc = 130 if isinstance(exc, KeyboardInterrupt) else 125
     finally:
-        finalizer_rc = run(finalizer, cwd=cwd, check=False).returncode
+        finalizer_rc = 125
+        finalizer_detail = ""
+        try:
+            finalizer_rc = run(
+                finalizer, cwd=cwd, check=False, env=environments["finalizer"],
+            ).returncode
+            if finalizer_rc != 0:
+                finalizer_detail = f"finalizer returned {finalizer_rc}"
+        except (OSError, subprocess.SubprocessError) as exc:
+            finalizer_detail = f"finalizer could not execute: {type(exc).__name__}: {exc}"
+        except BaseException as exc:
+            finalizer_rc = 130 if isinstance(exc, KeyboardInterrupt) else 125
+            finalizer_detail = f"finalizer interrupted: {type(exc).__name__}: {exc}"
+            if pending is None:
+                pending = exc
+        try:
+            ensure_terminal(preflight_rc, controller_rc, finalizer_rc, finalizer_detail)
+        except BaseException as exc:
+            if pending is None:
+                pending = exc
     if pending is not None:
         raise pending
     return preflight_rc, controller_rc, finalizer_rc
@@ -430,47 +728,89 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
+def validate_own_interpreter() -> None:
+    flags = sys.flags
+    if (Path(sys.executable).resolve() != Path(PYTHON).resolve()
+            or flags.isolated != 1 or flags.no_site != 1
+            or flags.dont_write_bytecode != 1 or getattr(flags, "safe_path", 0) != 1):
+        raise ValueError("orchestrator must run under /usr/bin/python3 -I -S -B")
+
+
 def main(argv: list[str] | None = None) -> int:
+    try:
+        validate_own_interpreter()
+    except ValueError as exc:
+        print(f"GPU geometry v11 orchestration refused before allocation: {exc}", file=sys.stderr)
+        return 2
     args = parse_args(argv)
     repo = Path(__file__).resolve().parents[3]
+    fallback_written = False
     try:
-        expected_protocol = (repo / STUDY / "protocol-http-rtx5090-geometry-v11.json").resolve()
-        if args.protocol.resolve() != expected_protocol:
-            raise ValueError("--protocol is not the exact registered v11 path")
-        value = load_frozen_protocol(args.protocol, args.protocol_sha256)
-        preflight = preflight_command(repo, args.protocol_sha256, args.run_id)
-        finalizer = finalizer_command(args.protocol, args.protocol_sha256, args.protocol_tool, args.run_id)
-        static_preflight(
-            repo, args.protocol, args.protocol_sha256, args.protocol_tool,
-            args.run_id, value, preflight, finalizer,
-        )
-        paths = campaign_paths(args.run_id)
-        if any((repo / path).exists() for path in paths.values()):
-            raise FileExistsError("a registered preflight/receipt/archive/session/metadata/verdict path already exists")
-
-        def make_controller() -> list[str]:
-            preflight_path = repo / paths["preflight"]
-            validate_preflight_receipt(preflight_path, args.run_id, args.protocol_sha256)
-            preflight_sha = sha256_file(preflight_path)
-            built_preflight, controller, built_finalizer = commands(
+        with tempfile.TemporaryDirectory(
+            prefix="gpu-v11-orchestrator-", dir="/tmp",
+        ) as directory:
+            environments = exact_phase_environments(
+                Path(directory) / "phases", dict(os.environ),
+            )
+            expected_protocol = (
+                repo / STUDY / "protocol-http-rtx5090-geometry-v11.json"
+            ).resolve()
+            if args.protocol.resolve() != expected_protocol:
+                raise ValueError("--protocol is not the exact registered v11 path")
+            value = load_frozen_protocol(args.protocol, args.protocol_sha256)
+            preflight = preflight_command(repo, args.protocol_sha256, args.run_id)
+            finalizer = finalizer_command(
+                args.protocol, args.protocol_sha256, args.protocol_tool, args.run_id,
+            )
+            static_preflight(
                 repo, args.protocol, args.protocol_sha256, args.protocol_tool,
-                args.run_id, value, preflight_sha,
+                args.run_id, value, preflight, finalizer,
+                environments["orchestrator"], environments["canonical"],
             )
-            verify_argv_templates(
-                value, built_preflight, controller, built_finalizer,
-                args.run_id, args.protocol_sha256, preflight_sha,
-            )
-            return controller
+            paths = campaign_paths(args.run_id)
+            if any((repo / path).exists() for path in paths.values()):
+                raise FileExistsError(
+                    "a registered preflight/receipt/archive/session/metadata/verdict path already exists"
+                )
 
-        preflight_rc, controller_rc, finalizer_rc = invoke_campaign(
-            preflight, make_controller, finalizer, cwd=repo,
-        )
+            def make_controller() -> list[str]:
+                preflight_path = repo / paths["preflight"]
+                validate_preflight_receipt(preflight_path, args.run_id, args.protocol_sha256)
+                preflight_sha = sha256_file(preflight_path)
+                built_preflight, controller, built_finalizer = commands(
+                    repo, args.protocol, args.protocol_sha256, args.protocol_tool,
+                    args.run_id, value, preflight_sha,
+                )
+                verify_argv_templates(
+                    value, built_preflight, controller, built_finalizer,
+                    args.run_id, args.protocol_sha256, preflight_sha,
+                )
+                return controller
+
+            def ensure_terminal(
+                preflight_returncode: int, controller_returncode: int | None,
+                finalizer_returncode: int, detail: str,
+            ) -> None:
+                nonlocal fallback_written
+                fallback_written = ensure_terminal_fallback(
+                    repo / paths["verdict"], protocol=args.protocol,
+                    protocol_sha=args.protocol_sha256, run_id=args.run_id,
+                    preflight_rc=preflight_returncode,
+                    controller_rc=controller_returncode,
+                    finalizer_rc=finalizer_returncode, detail=detail,
+                )
+
+            preflight_rc, controller_rc, finalizer_rc = invoke_campaign(
+                preflight, make_controller, finalizer, cwd=repo,
+                environments=environments, ensure_terminal=ensure_terminal,
+            )
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
         print(f"GPU geometry v11 orchestration refused before allocation: {exc}", file=sys.stderr)
         return 2
-    if finalizer_rc != 0:
+    if finalizer_rc != 0 or fallback_written:
         print(
-            f"terminal finalizer failed after preflight rc={preflight_rc}, controller rc={controller_rc}",
+            f"terminal finalizer failed after preflight rc={preflight_rc}, "
+            f"controller rc={controller_rc}; fallback_written={fallback_written}",
             file=sys.stderr,
         )
         return 2

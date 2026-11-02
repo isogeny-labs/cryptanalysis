@@ -24,6 +24,7 @@ import re
 import subprocess
 import sys
 import tarfile
+import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from fractions import Fraction
@@ -37,6 +38,12 @@ EXPECTED_GPU = "NVIDIA GeForce RTX 5090"
 EXPECTED_PROTOCOL_TOOL_SHA256 = (
     "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4"
 )
+EXPECTED_CANONICAL_SCHEMAS = {
+    "/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json":
+        "a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443",
+    "/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json":
+        "108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757",
+}
 EXPECTED_ANALYSIS_SCHEMA = "gpu-f4-update-grid-ab-analysis/v2"
 EXPECTED_EXPORT_SCHEMA = "experiment.export/v1"
 EXPECTED_RECEIPT_SCHEMA = "runpod.http-batch.receipt/v1"
@@ -69,6 +76,9 @@ EXPECTED_BUILD_CONTRACT = {
     "isolated_source_trees": True,
     "isolated_target_dirs": True,
     "cargo_incremental": "0",
+    "network_only_during_bootstrap_and_fetch": True,
+    "offline_builds": True,
+    "exact_environment_key_set": True,
 }
 EXPECTED_RUSTUP_URL = (
     "https://static.rust-lang.org/rustup/archive/1.29.2/"
@@ -79,6 +89,18 @@ EXPECTED_RUSTC_SHA256 = "5eadaaf4fe086d76547b17dc3c1ba880d0082b93f7d8bc65612770d
 EXPECTED_CARGO_SHA256 = "e60b4010303c19a131c058e3f054b4b3311433c4b2ee94ba8e09e165ff2a3b3b"
 EXPECTED_CC_SHA256 = "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f"
 EXPECTED_TOOLCHAIN = "1.91.1-x86_64-unknown-linux-gnu"
+EXPECTED_AR_SHA256 = "f8fe09d485b40b1d47c534c96f5cbaaa9148e247aa0494c087104421f48ac5eb"
+EXPECTED_RANLIB_SHA256 = "4610e832470b987c8c9d82d78c1c16e5e2bc9b8c64db455fad0cf63d420ec86e"
+EXPECTED_LINKER_SHA256 = "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b"
+EXPECTED_COLLECT2_SHA256 = "ea31a4cebd9df1b6428c463428d461ccecfe66c897936409d5b2cde0b3af9e27"
+EXPECTED_NETWORK_ALLOWLIST = [
+    "ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "CURL_CA_BUNDLE",
+]
+EXPECTED_FORBIDDEN_BUILD_PATTERNS = [
+    "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_PROFILE_*", "CARGO_TARGET_DIR",
+    "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER", "CFLAGS", "CXXFLAGS", "CPPFLAGS",
+    "LDFLAGS", "LD_PRELOAD", "AR", "CC", "RANLIB", "RAYON_NUM_THREADS", "F4_*",
+]
 EXPECTED_UPDATE_LAUNCHES = 2941
 EXPECTED_KERNEL_LAUNCHES = 11765
 EXPECTED_RESOURCES = {
@@ -388,10 +410,18 @@ def check_canonical(
         "validity",
         f"canonical tool SHA-256 {actual}",
     )
-    commands = [[sys.executable, str(protocol_tool), "validate", str(protocol_path)]]
+    for raw_path, expected in EXPECTED_CANONICAL_SCHEMAS.items():
+        path = Path(raw_path)
+        actual_schema = sha256_file(path) if path.is_file() else None
+        judge.check(
+            actual_schema == expected,
+            f"canonical_schema.{path.name}", "validity",
+            f"canonical schema SHA-256 {actual_schema}",
+        )
+    commands = [["/usr/bin/python3", "-I", "-B", str(protocol_tool), "validate", str(protocol_path)]]
     if export_path is not None and export_path.is_file():
         commands.append([
-            sys.executable, str(protocol_tool), "check-export", str(export_path),
+            "/usr/bin/python3", "-I", "-B", str(protocol_tool), "check-export", str(export_path),
             "--protocol", str(protocol_path), "--verify-files",
         ])
     else:
@@ -414,6 +444,73 @@ def finite_nonnegative(value: object) -> bool:
     )
 
 
+def environment_policy_valid(value: object) -> bool:
+    if not isinstance(value, dict):
+        return False
+    network_hashes = value.get("network_forwarded_value_sha256")
+    if not isinstance(network_hashes, dict) or set(network_hashes) - set(EXPECTED_NETWORK_ALLOWLIST):
+        return False
+    if any(not isinstance(key, str) or SHA256_RE.fullmatch(str(digest)) is None
+           for key, digest in network_hashes.items()):
+        return False
+    expected = {
+        "bootstrap_fixed": {
+            "PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp",
+        },
+        "fetch_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{EXPECTED_TOOLCHAIN}/bin/rustc",
+        },
+        "network_forward_allowlist": EXPECTED_NETWORK_ALLOWLIST,
+        "build_inherited_keys": [],
+        "build_fixed": {
+            "PATH": "<fresh-task-root>/cargo-home/bin:/usr/bin:/bin",
+            "RUSTUP_HOME": "<fresh-task-root>/rustup-home",
+            "CARGO_HOME": "<fresh-task-root>/cargo-home",
+            "TMPDIR": "<fresh-task-root>/tmp/<arm>",
+            "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+            "RUSTC": f"<fresh-task-root>/rustup-home/toolchains/{EXPECTED_TOOLCHAIN}/bin/rustc",
+            "CC": "/usr/bin/x86_64-linux-gnu-gcc-14",
+            "AR": "/usr/bin/x86_64-linux-gnu-ar",
+            "RANLIB": "/usr/bin/x86_64-linux-gnu-ranlib",
+            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "/usr/bin/x86_64-linux-gnu-gcc-14",
+            "CARGO_INCREMENTAL": "0", "CARGO_NET_OFFLINE": "true",
+            "CARGO_TERM_COLOR": "never", "SOURCE_DATE_EPOCH": "0",
+            "CARGO_TARGET_DIR": "<fresh-task-root>/target/<arm>",
+        },
+        "forbidden_inherited_patterns": EXPECTED_FORBIDDEN_BUILD_PATTERNS,
+        "cargo_config_policy": "fresh CARGO_HOME and no config/config.toml in source ancestors",
+        "location_policy": "local_controller",
+    }
+    launcher = value.get("launcher") if isinstance(value.get("launcher"), dict) else {}
+    launcher_fixed = {
+        "PATH": "/usr/bin:/bin", "HOME": "<caller-owned-fresh-home>",
+        "TMPDIR": "<caller-owned-fresh-tmp>", "LANG": "C", "LC_ALL": "C", "TZ": "UTC",
+    }
+    launcher_python = {
+        "executable": "/usr/bin/python3", "flags": ["-I", "-S", "-B"],
+        "isolated": True, "no_site": True, "dont_write_bytecode": True, "safe_path": True,
+    }
+    return (
+        set(value) == set(expected) | {"network_forwarded_value_sha256", "launcher"}
+        and all(value.get(key) == item for key, item in expected.items())
+        and set(launcher) == {"fixed", "exact_keys", "network_forward_allowlist",
+                              "network_forwarded_value_sha256", "python"}
+        and launcher.get("fixed") == launcher_fixed
+        and launcher.get("exact_keys") == sorted([*launcher_fixed, *network_hashes])
+        and launcher.get("network_forward_allowlist") == EXPECTED_NETWORK_ALLOWLIST
+        and launcher.get("network_forwarded_value_sha256") == network_hashes
+        and launcher.get("python") == launcher_python
+    )
+
+
 def check_preflight_receipt(
     value: object, run_id: str, protocol_sha: str, judge: Judge,
 ) -> datetime | None:
@@ -422,13 +519,13 @@ def check_preflight_receipt(
         judge.incomplete("preflight.object", "build preflight receipt is absent or not an object")
         return None
     common_keys = {
-        "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "tool_sha256",
+        "schema", "protocol_id", "protocol_sha256", "run_id", "provider_actions", "location", "tool_sha256",
         "source", "build_contract", "started_at", "status", "error", "finished_at",
         "elapsed_seconds",
     }
     success_keys = common_keys | {
         "archive", "source_delta", "files_per_arm", "builds", "binary_contract",
-        "toolchain",
+        "toolchain", "dependency_fetch", "environment_policy",
     }
     status = value.get("status")
     expected_keys = success_keys if status == "passed" else common_keys
@@ -440,6 +537,7 @@ def check_preflight_receipt(
         "protocol_sha256": protocol_sha,
         "run_id": run_id,
         "provider_actions": False,
+        "location": "local_controller",
         "tool_sha256": maybe_sha256_file(
             Path(__file__).resolve().with_name("preflight_gpu_geometry_v11.py")
         ),
@@ -518,13 +616,40 @@ def check_preflight_receipt(
     judge.check(binary_ok, "preflight.binary_contract", "validity",
                 "baseline-aa is byte-identical and candidate binary differs")
 
+    dependency = value.get("dependency_fetch") if isinstance(value.get("dependency_fetch"), dict) else {}
+    dependency_ok = (
+        set(dependency) == {
+            "command", "returncode", "log_sha256", "log_bytes",
+            "cargo_config_candidates_checked", "cargo_config_all_absent",
+        }
+        and dependency.get("command") == [
+            "cargo", "fetch", "--locked", "--manifest-path", "suite/Cargo.toml",
+        ]
+        and dependency.get("returncode") == 0
+        and SHA256_RE.fullmatch(str(dependency.get("log_sha256", ""))) is not None
+        and type(dependency.get("log_bytes")) is int and dependency.get("log_bytes", -1) >= 0
+        and type(dependency.get("cargo_config_candidates_checked")) is int
+        and dependency.get("cargo_config_candidates_checked", 0) >= 8
+        and dependency.get("cargo_config_all_absent") is True
+    )
+    judge.check(dependency_ok, "preflight.dependency_fetch", "validity",
+                "locked fetch under allowlisted network env and absent Cargo configs")
+    judge.check(environment_policy_valid(value.get("environment_policy")),
+                "preflight.environment_policy", "validity",
+                "no inherited build variables and exact offline build environment")
+
     toolchain = value.get("toolchain") if isinstance(value.get("toolchain"), dict) else {}
     bootstrap = toolchain.get("bootstrap") if isinstance(toolchain.get("bootstrap"), dict) else {}
     rustc = toolchain.get("rustc") if isinstance(toolchain.get("rustc"), dict) else {}
     cargo = toolchain.get("cargo") if isinstance(toolchain.get("cargo"), dict) else {}
     cc = toolchain.get("cc") if isinstance(toolchain.get("cc"), dict) else {}
     toolchain_ok = (
-        set(toolchain) == {"bootstrap", "rustc", "cargo", "cc"}
+        set(toolchain) == {
+            "system_policy", "bootstrap", "rustc", "cargo", "cc", "ar", "ranlib",
+            "linker", "collect2", "system_tools_unchanged_after_builds",
+        }
+        and toolchain.get("system_policy") == "controller_exact_hashes"
+        and toolchain.get("system_tools_unchanged_after_builds") is True
         and set(bootstrap) == {"url", "sha256", "log_sha256", "log_bytes"}
         and bootstrap.get("url") == EXPECTED_RUSTUP_URL
         and bootstrap.get("sha256") == EXPECTED_RUSTUP_SHA256
@@ -538,10 +663,30 @@ def check_preflight_receipt(
         and cargo.get("toolchain") == EXPECTED_TOOLCHAIN
         and cargo.get("sha256") == EXPECTED_CARGO_SHA256
         and isinstance(cargo.get("version"), str) and cargo["version"].startswith("cargo 1.91.1")
-        and set(cc) == {"realpath", "sha256", "version"}
+        and set(cc) == {"realpath", "sha256", "version", "target", "capabilities"}
         and cc.get("realpath") == "/usr/bin/x86_64-linux-gnu-gcc-14"
         and cc.get("sha256") == EXPECTED_CC_SHA256
-        and cc.get("version") == "cc (Debian 14.2.0-19) 14.2.0"
+        and cc.get("version") == "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+        and cc.get("target") == "x86_64-linux-gnu"
+        and cc.get("capabilities") == {
+            "compile": True, "archive": True, "ranlib": True, "link": True, "execute": True,
+        }
+        and toolchain.get("ar") == {
+            "realpath": "/usr/bin/x86_64-linux-gnu-ar", "sha256": EXPECTED_AR_SHA256,
+            "version": "GNU ar (GNU Binutils for Debian) 2.44",
+        }
+        and toolchain.get("ranlib") == {
+            "realpath": "/usr/bin/x86_64-linux-gnu-ranlib", "sha256": EXPECTED_RANLIB_SHA256,
+            "version": "GNU ranlib (GNU Binutils for Debian) 2.44",
+        }
+        and toolchain.get("linker") == {
+            "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd", "sha256": EXPECTED_LINKER_SHA256,
+            "version": "GNU ld (GNU Binutils for Debian) 2.44",
+        }
+        and toolchain.get("collect2") == {
+            "realpath": "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2",
+            "sha256": EXPECTED_COLLECT2_SHA256,
+        }
     )
     judge.check(toolchain_ok, "preflight.toolchain", "validity",
                 "hash-pinned Rust 1.91.1 bootstrap and controller C compiler")
@@ -1125,7 +1270,7 @@ def check_read_only_recomputation(session: Path, protocol_sha: str,
         judge.invalid("analysis.recompute_tool", "frozen remote analyzer hash/path mismatch")
         return
     command = [
-        sys.executable, str(path), "verify", "--session", str(session),
+        "/usr/bin/python3", "-I", "-S", "-B", str(path), "verify", "--session", str(session),
         "--expected-gpu", EXPECTED_GPU, "--protocol-sha256", protocol_sha,
     ]
     try:
@@ -1198,6 +1343,9 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
                 "protocol.canonical_tool_binding", "validity", "protocol pins the expected canonical tool")
     judge.check(Path(tool_spec.get("path", "")).resolve() == args.protocol_tool.resolve(),
                 "paths.protocol_tool", "validity", "exact registered canonical tool path")
+    judge.check(finalization.get("canonical_protocol_schemas") == EXPECTED_CANONICAL_SCHEMAS,
+                "protocol.canonical_schema_binding", "validity",
+                "protocol pins the two canonical schemas used by validation")
 
     required = output_contract.get("required_session_files", [])
     for relative in required if isinstance(required, list) else []:
@@ -1341,13 +1489,34 @@ def adjudicate(args: argparse.Namespace) -> dict[str, Any]:
 
 def write_once(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    data = json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    fd = os.open(path, flags, 0o600)
-    with os.fdopen(fd, "w", encoding="utf-8") as stream:
-        stream.write(data)
-        stream.flush()
-        os.fsync(stream.fileno())
+    data = (json.dumps(
+        value, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False,
+    ) + "\n").encode("utf-8")
+    fd, temporary = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent,
+    )
+    temporary_path = Path(temporary)
+    published = False
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary_path, path)
+        published = True
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+        directory_fd = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    if not published:
+        raise OSError("terminal record was not atomically published")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

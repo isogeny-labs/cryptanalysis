@@ -95,6 +95,72 @@ actual_archive=$(git -C "$checkout" archive --format=tar HEAD | sha256sum | cut 
 exec python3 "$checkout/cloud/runpod_http_batch_server.py" --repo "$checkout" --port "$RUNPOD_BATCH_PORT"
 """
 
+# Environment-closed campaigns use an immutable image and must not mutate it
+# before their registered command. Every pre-server program is an absolute
+# path in that image; absence is terminal.
+MINIMAL_REMOTE_BOOT = r"""set -Eeuo pipefail
+umask 077
+unset BASH_ENV ENV PYTHONPATH PYTHONHOME PYTHONSTARTUP LD_PRELOAD
+export PATH=/usr/bin:/bin
+export DEBIAN_FRONTEND=noninteractive
+for tool in /usr/bin/cut /usr/bin/git /usr/bin/mkdir /usr/bin/mktemp /usr/bin/python3 /usr/bin/sha256sum /usr/bin/tar /usr/bin/timeout; do
+  [[ -x "$tool" ]] || {
+    echo "immutable image is missing required transport tool: $tool" >&2
+    exit 125
+  }
+done
+[[ -e /etc/ssl/certs/ca-certificates.crt ]] || {
+  echo 'immutable image is missing the CA certificate bundle' >&2
+  exit 125
+}
+root=/root/runpod-http-source
+checkout=$root/repo
+/usr/bin/mkdir "$root"
+/usr/bin/git init -q "$checkout"
+/usr/bin/git -C "$checkout" remote add origin "$RUNPOD_BATCH_SOURCE_URL"
+/usr/bin/git -C "$checkout" fetch -q --depth=1 origin "$RUNPOD_BATCH_SOURCE_REF"
+actual=$(/usr/bin/git -C "$checkout" rev-parse FETCH_HEAD)
+[[ $actual = "$RUNPOD_BATCH_SOURCE_COMMIT" ]]
+/usr/bin/git -C "$checkout" checkout -q --detach "$actual"
+actual_tree=$(/usr/bin/git -C "$checkout" rev-parse 'HEAD^{tree}')
+[[ $actual_tree = "$RUNPOD_BATCH_SOURCE_TREE" ]]
+actual_archive=$(/usr/bin/git -C "$checkout" archive --format=tar HEAD | /usr/bin/sha256sum | /usr/bin/cut -d' ' -f1)
+[[ $actual_archive = "$RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256" ]]
+exec /usr/bin/python3 -I -S -B "$checkout/cloud/runpod_http_batch_server.py" --repo "$checkout" --port "$RUNPOD_BATCH_PORT"
+"""
+
+# The closed campaign needs neither generic source prefetch nor /start.sh.
+# Its startup performs only the lifetime cap and hash-bound POD_BOOT launch.
+MINIMAL_STAGE0 = r"""set -Eeuo pipefail
+umask 077
+export PATH=/usr/bin:/bin
+for tool in /usr/bin/base64 /usr/bin/bash /usr/bin/curl /usr/bin/setsid /usr/bin/sleep; do
+  [[ -x "$tool" ]] || {
+    echo "immutable image is missing required startup tool: $tool" >&2
+    exit 125
+  }
+done
+( /usr/bin/sleep "$POD_MAX_SECONDS"
+  /usr/bin/curl --silent https://api.runpod.io/graphql -H 'Content-Type: application/json' \
+    -H "Authorization: Bearer $RUNPOD_API_KEY" \
+    -d "{\"query\":\"mutation { podStop(input: {podId: \\\"$RUNPOD_POD_ID\\\"}) { id } }\"}"
+) >/tmp/pod-lifetime.log 2>&1 &
+[[ -n ${POD_BOOT_B64:-} ]] || {
+  echo 'environment-closed startup is missing POD_BOOT_B64' >&2
+  exit 125
+}
+/usr/bin/base64 --decode <<<"$POD_BOOT_B64" >/root/pod-boot.sh
+/usr/bin/setsid /usr/bin/bash --noprofile --norc /root/pod-boot.sh \
+  >>/root/pod-boot.log 2>&1 </dev/null &
+exec /usr/bin/sleep infinity"""
+
+# An environment-closed scientific command installs and binds its own tools.
+# This bootstrap deliberately performs no package, Rust, Python, or NVRTC
+# mutation before that command's preflight gate.
+MINIMAL_BOOTSTRAP = r"""set -Eeuo pipefail
+cd "$JOB_WORKDIR"
+""".strip()
+
 
 class BatchError(RuntimeError):
     pass
@@ -264,13 +330,17 @@ def build_body(args, name: str, token: str, source: dict,
     if len(token) < 43:
         raise BatchError("HTTP bearer must carry at least 256 random bits")
     command_sha = hashlib.sha256(command.encode()).hexdigest()
-    bootstrap = runpod_pod.BOOTSTRAP.replace(
-        "cd /root/cryptanalysis", 'cd "$JOB_WORKDIR"')
-    if bootstrap == runpod_pod.BOOTSTRAP:
-        raise BatchError("runpod bootstrap no longer has its expected checkout path")
+    if getattr(args, "minimal_bootstrap", False):
+        bootstrap = MINIMAL_BOOTSTRAP
+    else:
+        bootstrap = runpod_pod.BOOTSTRAP.replace(
+            "cd /root/cryptanalysis", 'cd "$JOB_WORKDIR"')
+        if bootstrap == runpod_pod.BOOTSTRAP:
+            raise BatchError("runpod bootstrap no longer has its expected checkout path")
     job_id = name
+    minimal = getattr(args, "minimal_bootstrap", False)
     environment = {
-        "POD_BOOT_B64": b64(REMOTE_BOOT),
+        "POD_BOOT_B64": b64(MINIMAL_REMOTE_BOOT if minimal else REMOTE_BOOT),
         "RUNPOD_BATCH_TOKEN": token,
         "RUNPOD_BATCH_OWNERSHIP_ID": hashlib.sha256(token.encode()).hexdigest(),
         "RUNPOD_BATCH_JOB_ID": job_id,
@@ -288,7 +358,22 @@ def build_body(args, name: str, token: str, source: dict,
         "RUNPOD_BATCH_MAX_RESULT_BYTES": str(args.max_result_mib << 20),
         "RUNPOD_BATCH_PORT": str(HTTP_PORT),
     }
+    if minimal:
+        environment.update({
+            "RUNPOD_BATCH_ENVIRONMENT_CLOSED": "1",
+            # Fixed before the image entrypoint's non-interactive shell starts,
+            # so provider ambient hooks cannot run ahead of REMOTE_BOOT.
+            "BASH_ENV": "/dev/null", "ENV": "/dev/null",
+            "PYTHONPATH": "", "PYTHONHOME": "", "PYTHONSTARTUP": "/dev/null",
+            "LD_PRELOAD": "",
+            "PATH": "/usr/bin:/bin",
+        })
     body = runpod_pod.pod_body(args, "", environment)
+    if minimal:
+        body["dockerEntrypoint"] = [
+            "/usr/bin/bash", "--noprofile", "--norc", "-c",
+        ]
+        body["dockerStartCmd"] = [MINIMAL_STAGE0]
     body["name"] = name
     body["ports"] = [f"{HTTP_PORT}/http"]
     body["env"].pop("PUBLIC_KEY", None)
@@ -311,6 +396,16 @@ def request_summary(body: dict) -> dict:
         "startup_sha256": hashlib.sha256(body["dockerStartCmd"][0].encode()).hexdigest(),
         "secrets_redacted": True,
     }
+    if body["env"].get("RUNPOD_BATCH_ENVIRONMENT_CLOSED") == "1":
+        bootstrap = base64.b64decode(
+            body["env"]["RUNPOD_BATCH_BOOTSTRAP_B64"], validate=True,
+        )
+        remote_boot = base64.b64decode(
+            body["env"]["POD_BOOT_B64"], validate=True,
+        )
+        summary["bootstrap_sha256"] = hashlib.sha256(bootstrap).hexdigest()
+        summary["remote_boot_sha256"] = hashlib.sha256(remote_boot).hexdigest()
+        summary["entrypoint"] = list(body["dockerEntrypoint"])
     if body["computeType"] == "CPU":
         summary.update(
             cpuFlavorIds=body.get("cpuFlavorIds"),
@@ -918,6 +1013,10 @@ def parse(argv=None):
                         help="read-only name reconciliation after ambiguous POST")
     parser.add_argument("--dry-run", action="store_true",
                         help="validate locally and print a redacted plan; no network/provider calls")
+    parser.add_argument(
+        "--minimal-bootstrap", action="store_true",
+        help="skip generic pod_env setup; the command owns all tool installation and binding",
+    )
     args = parser.parse_args(argv)
     args.command = command
     if args.max_price <= 0 or args.timeout < 1 or args.max_result_mib < 1:

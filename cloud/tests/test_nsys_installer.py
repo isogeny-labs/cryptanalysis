@@ -1,102 +1,58 @@
-import os
 import subprocess
-import tempfile
 import unittest
 from pathlib import Path
 
 
 REPO = Path(__file__).resolve().parents[2]
-INSTALLER = REPO / "ecc2k130/runner/codegen/install_nsys_tools.sh"
+INSTALLER = REPO / "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh"
+LEGACY_INSTALLER = REPO / "ecc2k130/runner/codegen/install_nsys_tools.sh"
 
 
-class ProfileInstallerTests(unittest.TestCase):
-    def test_configures_signed_repository_and_installs_pinned_versions(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            fake_bin = root / "bin"
-            fake_bin.mkdir()
-            log = root / "commands.log"
-            dispatcher = fake_bin / "dispatcher"
-            dispatcher.write_text(
-                """#!/bin/bash
-set -euo pipefail
-name=${0##*/}
-printf '%s' "$name" >>"$FAKE_LOG"
-printf ' <%s>' "$@" >>"$FAKE_LOG"
-printf '\n' >>"$FAKE_LOG"
-case "$name" in
-  id)
-    printf '0\n'
-    ;;
-  dpkg)
-    if [[ ${1:-} == --print-architecture ]]; then printf 'amd64\n'; fi
-    ;;
-  mktemp)
-    mkdir "$FAKE_TMP_ROOT/work"
-    printf '%s\n' "$FAKE_TMP_ROOT/work"
-    ;;
-  curl)
-    while (($#)); do
-      if [[ $1 == --output ]]; then printf 'fixture' >"$2"; break; fi
-      shift
-    done
-    ;;
-  sha256sum)
-    input=$(cat)
-    printf 'sha256-input <%s>\n' "$input" >>"$FAKE_LOG"
-    ;;
-  apt-cache)
-    exit 0
-    ;;
-esac
-"""
-            )
-            dispatcher.chmod(0o755)
-            for name in (
-                "id", "dpkg", "mktemp", "curl", "sha256sum", "apt-get",
-                "apt-cache", "dpkg-query",
-            ):
-                (fake_bin / name).symlink_to(dispatcher)
+class ProfileExtractorTests(unittest.TestCase):
+    def test_legacy_installer_remains_byte_identical_for_existing_callers(self):
+        import hashlib
+        self.assertEqual(
+            hashlib.sha256(LEGACY_INSTALLER.read_bytes()).hexdigest(),
+            "50a0a564f4c370b9279a49a4e385fd1a6f06408a21e72e4bd1e4b0918c333aa9",
+        )
 
-            environment = os.environ.copy()
-            environment.update(
-                PATH=f"{fake_bin}:{environment['PATH']}",
-                FAKE_LOG=str(log),
-                FAKE_TMP_ROOT=str(root),
-            )
-            completed = subprocess.run(
-                ["bash", str(INSTALLER)],
-                cwd=REPO,
-                env=environment,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
+    def test_exact_deb_is_extracted_without_package_manager_mutation(self):
+        text = INSTALLER.read_text(encoding="utf-8")
+        self.assertIn(
+            "nsight-systems-2026.3.2_2026.3.2.476-1_amd64.deb", text,
+        )
+        self.assertIn(
+            "e9bf0ff9c613ff5545095a4177676a9579cb666e78c8621c3792f3559e2c1690",
+            text,
+        )
+        self.assertIn("systems_deb_bytes='448261416'", text)
+        self.assertIn("systems_version='2026.3.2.476-263238834031v0'", text)
+        self.assertIn(
+            "systems_binary_sha256='68a5fb843322bda1b090900a0297b9d5bee43daf8b870a809a6f8aa93059ae16'",
+            text,
+        )
+        self.assertIn("systems_binary_bytes='87282816'", text)
+        self.assertIn("/usr/bin/dpkg-deb --extract", text)
+        self.assertIn("/usr/bin/dpkg-deb --field", text)
+        for forbidden in (
+            "apt-get", "apt-cache", "dpkg --install", "dpkg -i", "cuda-keyring",
+            "DEBIAN_FRONTEND", "build-essential", "pip install",
+        ):
+            self.assertNotIn(forbidden, text)
 
-            self.assertEqual(completed.returncode, 0, completed.stderr)
-            commands = log.read_text()
-            self.assertIn(
-                "curl <--proto> <=https> <--tlsv1.2> <--fail> <--location> <--silent> "
-                "<--show-error>",
-                commands,
-            )
-            self.assertIn("cuda-keyring_1.1-1_all.deb", commands)
-            self.assertIn(
-                "d2a6b11c096396d868758b86dab1823b25e14d70333f1dfa74da5ddaf6a06dba",
-                commands,
-            )
-            self.assertIn(
-                "apt-cache <show> "
-                "<nsight-systems-2026.3.2=2026.3.2.476-263238834031v0>",
-                commands,
-            )
-            self.assertIn(
-                "apt-get <install> <-y> <--no-install-recommends> "
-                "<build-essential> <python3> "
-                "<nsight-systems-2026.3.2=2026.3.2.476-263238834031v0>",
-                commands,
-            )
-            self.assertNotIn("nsight-compute", commands)
+        syntax = subprocess.run(
+            ["/usr/bin/bash", "-n", str(INSTALLER)], cwd=REPO,
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(syntax.returncode, 0, syntax.stderr)
+
+    def test_refuses_destination_outside_fresh_task_root_before_download(self):
+        completed = subprocess.run(
+            ["/usr/bin/bash", str(INSTALLER), "/tmp/not-a-v11-task/nsys-package"],
+            cwd=REPO, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("outside the fresh v11 task root", completed.stderr)
 
 
 if __name__ == "__main__":

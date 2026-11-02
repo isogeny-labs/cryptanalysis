@@ -27,6 +27,21 @@ COMMIT = "a" * 40
 TREE = "b" * 40
 SOURCE_ARCHIVE = "c" * 64
 POD = "podtest123"
+LEGACY_BODY_ENV_KEYS = {
+    "POD_BOOT_B64", "POD_MAX_SECONDS", "RUNPOD_BATCH_BOOTSTRAP_B64",
+    "RUNPOD_BATCH_CHUNK_BYTES", "RUNPOD_BATCH_COMMAND_B64",
+    "RUNPOD_BATCH_COMMAND_SHA256", "RUNPOD_BATCH_JOB_ID",
+    "RUNPOD_BATCH_MAX_RESULT_BYTES", "RUNPOD_BATCH_OUTPUTS_B64",
+    "RUNPOD_BATCH_OWNERSHIP_ID", "RUNPOD_BATCH_PORT",
+    "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256", "RUNPOD_BATCH_SOURCE_COMMIT",
+    "RUNPOD_BATCH_SOURCE_REF", "RUNPOD_BATCH_SOURCE_TREE",
+    "RUNPOD_BATCH_SOURCE_URL", "RUNPOD_BATCH_TIMEOUT_SECONDS", "RUNPOD_BATCH_TOKEN",
+}
+LEGACY_GPU_SUMMARY_KEYS = {
+    "name", "cloudType", "computeType", "imageName", "containerDiskInGb", "ports",
+    "gpuTypeIds", "gpuCount", "minVCPUPerGPU", "minRAMPerGPU", "environment_keys",
+    "startup_sha256", "secrets_redacted",
+}
 
 
 def args_for(root: Path, returncode=0):
@@ -37,6 +52,7 @@ def args_for(root: Path, returncode=0):
         gpu_count=1, min_vcpu=8, min_ram=24, cloud="SECURE", image=None,
         disk=80, max_hours=2.0, wait=10, timeout=30, max_result_mib=8,
         max_price=1.50, reconcile_seconds=0, dry_run=False,
+        minimal_bootstrap=False,
         source_commit=COMMIT, source_ref="refs/heads/test-http-batch",
         out=["results/a.json"], receipt=root / "receipt.json",
         archive=root / "result.tar.gz", command=["echo fixture > results/a.json"],
@@ -99,7 +115,7 @@ def terminal_status(data: bytes, returncode=0):
 
 class FakeClient:
     def __init__(self, create_error=None, reconcile=False, wrong_name=False,
-                 compute_type="GPU"):
+                 compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404"):
         self.create_error = create_error
         self.reconcile = reconcile
         self.create_calls = 0
@@ -108,6 +124,7 @@ class FakeClient:
         self.name = None
         self.wrong_name = wrong_name
         self.compute_type = compute_type
+        self.image = image
 
     def named(self, name):
         self.named_calls += 1
@@ -139,7 +156,7 @@ class FakeClient:
             "id": pod_id, "name": self.name, "status": "RUNNING",
             "gpu": {"id": "NVIDIA GeForce RTX 5090", "count": 1,
                     "vcpuCount": 16, "memory": 62},
-            "cost": 1.19, "cloud": "SECURE", "image": "runpod/base:1.0.2-ubuntu2404",
+            "cost": 1.19, "cloud": "SECURE", "image": self.image,
             "cudaVersion": "13.2", "ports": ["8888/http"], "dataCenterId": "EU-RO-1",
             "createdAt": "synthetic", "startedAt": "synthetic",
         }
@@ -195,9 +212,114 @@ class RunpodHttpBatchTest(unittest.TestCase):
         self.assertNotIn(TOKEN, summary)
         self.assertNotIn("RUNPOD_SSH", summary)
         self.assertNotIn("cpuFlavorIds", summary)
+        self.assertEqual(set(body["env"]), LEGACY_BODY_ENV_KEYS)
+        self.assertEqual(set(batch.request_summary(body)), LEGACY_GPU_SUMMARY_KEYS)
+        self.assertEqual(body["dockerEntrypoint"], ["bash", "-c"])
+        self.assertEqual(
+            hashlib.sha256(body["dockerStartCmd"][0].encode()).hexdigest(),
+            "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b",
+        )
+        self.assertEqual(
+            hashlib.sha256(base64.b64decode(body["env"]["POD_BOOT_B64"])).hexdigest(),
+            "2074fb363f6972943a7d6ac004f510449bb2e57f0362ae0e28dc4a9d3fa7b297",
+        )
         bootstrap = base64.b64decode(body["env"]["RUNPOD_BATCH_BOOTSTRAP_B64"]).decode()
         self.assertIn('cd "$JOB_WORKDIR"', bootstrap)
         self.assertNotIn("cd /root/cryptanalysis", bootstrap)
+
+    def test_minimal_bootstrap_has_no_generic_environment_install(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = args_for(Path(directory))
+            args.minimal_bootstrap = True
+            body = batch.build_body(
+                args, "misagi-http-test-0123456789ab", TOKEN,
+                source_identity(), "echo fixture > results/a.json", ["results/a.json"],
+            )
+        bootstrap = base64.b64decode(
+            body["env"]["RUNPOD_BATCH_BOOTSTRAP_B64"], validate=True,
+        ).decode()
+        self.assertEqual(bootstrap, batch.MINIMAL_BOOTSTRAP)
+        self.assertIn('cd "$JOB_WORKDIR"', bootstrap)
+        for forbidden in ("pod_env", "rustup", "pip install", "nvrtc", "apt-get"):
+            self.assertNotIn(forbidden, bootstrap.lower())
+        self.assertEqual(
+            batch.request_summary(body)["bootstrap_sha256"],
+            hashlib.sha256(bootstrap.encode()).hexdigest(),
+        )
+        self.assertEqual(
+            batch.request_summary(body)["remote_boot_sha256"],
+            hashlib.sha256(base64.b64decode(
+                body["env"]["POD_BOOT_B64"], validate=True,
+            )).hexdigest(),
+        )
+        self.assertEqual(
+            batch.request_summary(body)["entrypoint"],
+            ["/usr/bin/bash", "--noprofile", "--norc", "-c"],
+        )
+        self.assertEqual(body["env"]["BASH_ENV"], "/dev/null")
+        self.assertEqual(body["env"]["PYTHONPATH"], "")
+        self.assertEqual(
+            body["env"]["PATH"],
+            "/usr/bin:/bin",
+        )
+        self.assertEqual(
+            body["dockerEntrypoint"],
+            ["/usr/bin/bash", "--noprofile", "--norc", "-c"],
+        )
+        remote_boot = base64.b64decode(body["env"]["POD_BOOT_B64"], validate=True).decode()
+        self.assertEqual(remote_boot, batch.MINIMAL_REMOTE_BOOT)
+        self.assertIn("export PATH=/usr/bin:/bin", remote_boot)
+        self.assertIn("/usr/bin/git", remote_boot)
+        self.assertNotIn("apt-get", remote_boot)
+        self.assertNotIn("pod_env", remote_boot)
+        stage0 = body["dockerStartCmd"][0]
+        self.assertEqual(stage0, batch.MINIMAL_STAGE0)
+        self.assertIn("/usr/bin/base64 --decode", stage0)
+        self.assertIn("/usr/bin/setsid /usr/bin/bash --noprofile --norc", stage0)
+        self.assertIn("exec /usr/bin/sleep infinity", stage0)
+        self.assertNotIn("SHIP_PREFETCH", stage0)
+        self.assertNotIn("/start.sh", stage0)
+        self.assertEqual(
+            batch.request_summary(body)["startup_sha256"],
+            hashlib.sha256(stage0.encode()).hexdigest(),
+        )
+
+    def test_server_treats_absent_closure_key_as_legacy_false(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = args_for(Path(directory))
+            body = batch.build_body(
+                args, "misagi-http-test-0123456789ab", TOKEN,
+                source_identity(), "echo fixture > results/a.json", ["results/a.json"],
+            )
+        self.assertNotIn("RUNPOD_BATCH_ENVIRONMENT_CLOSED", body["env"])
+        git_results = [
+            __import__("subprocess").CompletedProcess([], 0, stdout=COMMIT + "\n"),
+            __import__("subprocess").CompletedProcess([], 0, stdout=TREE + "\n"),
+        ]
+        with mock.patch.dict(os.environ, body["env"], clear=True), \
+                mock.patch.object(server.subprocess, "run", side_effect=git_results) as run:
+            config = server.read_config(Path("/synthetic/repo"))
+        self.assertFalse(config["environment_closed"])
+        self.assertEqual(run.call_args_list[0].args[0], ["git", "rev-parse", "HEAD"])
+        self.assertNotIn("env", run.call_args_list[0].kwargs)
+
+        args.minimal_bootstrap = True
+        closed_body = batch.build_body(
+            args, "misagi-http-test-0123456789ab", TOKEN,
+            source_identity(), "echo fixture > results/a.json", ["results/a.json"],
+        )
+        git_results = [
+            __import__("subprocess").CompletedProcess([], 0, stdout=COMMIT + "\n"),
+            __import__("subprocess").CompletedProcess([], 0, stdout=TREE + "\n"),
+        ]
+        with mock.patch.dict(os.environ, closed_body["env"], clear=True), \
+                mock.patch.object(server.subprocess, "run", side_effect=git_results) as run:
+            config = server.read_config(Path("/synthetic/repo"))
+        self.assertTrue(config["environment_closed"])
+        self.assertEqual(
+            run.call_args_list[0].args[0], ["/usr/bin/git", "rev-parse", "HEAD"],
+        )
+        self.assertEqual(run.call_args_list[0].kwargs["env"], server.GIT_ENV)
 
     def test_cpu_body_binds_one_exact_flavor_and_no_ssh(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -301,9 +423,37 @@ class RunpodHttpBatchTest(unittest.TestCase):
             batch.validate_status([], {})
 
     def test_remote_boot_is_shell_syntax(self):
-        result = __import__("subprocess").run(
-            ["bash", "-n"], input=batch.REMOTE_BOOT, text=True, capture_output=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        for script in (batch.REMOTE_BOOT, batch.MINIMAL_REMOTE_BOOT, batch.MINIMAL_STAGE0):
+            result = __import__("subprocess").run(
+                ["bash", "-n"], input=script, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_digest_qualified_image_must_echo_exactly_and_mismatch_is_cleaned(self):
+        digest_image = (
+            "runpod/base:1.0.2-ubuntu2404@sha256:"
+            "e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            args = args_for(Path(directory))
+            args.image = digest_image
+            exact = FakeClient(image=digest_image)
+            exact.name = "misagi-http-test-0123456789ab"
+            summary = batch.guard_provider(exact.get_v2(POD), POD, exact.name, args)
+            self.assertEqual(summary["image"], digest_image)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = args_for(root)
+            args.image = digest_image
+            normalized = FakeClient(image="runpod/base:1.0.2-ubuntu2404")
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                with self.assertRaises(batch.BatchError):
+                    batch.execute(
+                        args, client=normalized, transport=FakeTransport(result_archive()),
+                        repo=root, token_factory=lambda: TOKEN,
+                        nonce_factory=lambda: "0123456789ab", sleep=lambda _seconds: None,
+                    )
+            self.assertEqual(normalized.deleted, [POD])
 
     def test_success_fetches_verifies_extracts_and_deletes_exact_id(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -469,11 +619,95 @@ class RunpodHttpBatchTest(unittest.TestCase):
         environment = {
             "RUNPOD_API_KEY": "provider", "RUNPOD_BATCH_TOKEN": TOKEN,
             "AWS_SECRET_ACCESS_KEY": "aws", "ARTIFACTS_AWS_ACCESS_KEY_ID": "id",
-            "SAFE": "kept",
+            "SAFE": "dropped", "BASH_ENV": "/tmp/hook", "ENV": "/tmp/hook",
+            "PYTHONPATH": "/tmp/injected", "PYTHONHOME": "/tmp/python",
+            "PYTHONSTARTUP": "/tmp/startup", "LD_PRELOAD": "/tmp/injected.so",
+            "RUNPOD_POD_ID": "pod-1", "HTTPS_PROXY": "http://proxy.invalid",
+            "LD_LIBRARY_PATH": "/usr/local/nvidia/lib64",
         }
         with mock.patch.dict(os.environ, environment, clear=True):
-            clean = server.scrubbed_environment()
-        self.assertEqual(clean, {"SAFE": "kept"})
+            clean = server.scrubbed_environment(environment_closed=True)
+        self.assertEqual(clean, {
+            **server.SCIENTIFIC_FIXED_ENV,
+            "RUNPOD_POD_ID": "pod-1", "HTTPS_PROXY": "http://proxy.invalid",
+            "LD_LIBRARY_PATH": "/usr/local/nvidia/lib64",
+        })
+        for forbidden in (
+            "SAFE", "BASH_ENV", "ENV", "PYTHONPATH", "PYTHONHOME",
+            "PYTHONSTARTUP", "LD_PRELOAD", "RUNPOD_API_KEY", "RUNPOD_BATCH_TOKEN",
+        ):
+            self.assertNotIn(forbidden, clean)
+
+        # Legacy batch jobs preserve the exact old environment behavior.
+        with mock.patch.dict(os.environ, environment, clear=True):
+            compatible = server.scrubbed_environment(environment_closed=False)
+        self.assertEqual(compatible.get("SAFE"), "dropped")
+        self.assertEqual(compatible.get("RUNPOD_POD_ID"), "pod-1")
+        for hook in server.STARTUP_HOOK_ENV_NAMES:
+            if hook in environment:
+                self.assertEqual(compatible.get(hook), environment[hook])
+        for forbidden in server.SECRET_ENV_NAMES:
+            self.assertNotIn(forbidden, compatible)
+
+    def test_server_runtime_commands_preserve_legacy_and_close_v11(self):
+        completed = __import__("subprocess").CompletedProcess([], 0, stdout="")
+        for closed in (False, True):
+            with self.subTest(closed=closed), mock.patch.object(
+                server.subprocess, "run", side_effect=[completed, completed],
+            ) as run:
+                server.hardware(closed)
+            smi, shell = run.call_args_list
+            self.assertEqual(
+                smi.args[0][0], "/usr/bin/nvidia-smi" if closed else "nvidia-smi",
+            )
+            self.assertEqual(
+                shell.args[0][:4],
+                (["/usr/bin/bash", "--noprofile", "--norc", "-c"]
+                 if closed else ["bash", "-lc", "command -v nvcc >/dev/null && nvcc --version || true"][:4]),
+            )
+            if closed:
+                self.assertEqual(smi.kwargs["env"], server.SCIENTIFIC_FIXED_ENV)
+                self.assertEqual(shell.kwargs["env"], server.SCIENTIFIC_FIXED_ENV)
+            else:
+                self.assertNotIn("env", smi.kwargs)
+                self.assertNotIn("env", shell.kwargs)
+
+        class State:
+            def update(self, **_values):
+                pass
+
+        config = {
+            "bootstrap": "true", "command": "true", "timeout": 30,
+            "job_id": "job-1", "outputs": ["results"], "commit": COMMIT,
+            "tree": TREE, "source_archive_sha256": SOURCE_ARCHIVE,
+            "command_sha256": "d" * 64, "max_result_bytes": 1 << 20,
+            "chunk_bytes": 1 << 20,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            for closed in (False, True):
+                current = {**config, "environment_closed": closed}
+                child = mock.Mock()
+                child.wait.return_value = 0
+                with self.subTest(closed=closed), \
+                        mock.patch.object(server, "scrubbed_environment", return_value={}), \
+                        mock.patch.object(server.subprocess, "Popen", return_value=child) as popen, \
+                        mock.patch.object(server, "build_result_archive", return_value={}), \
+                        mock.patch.object(server, "chunk_manifest", return_value=[]):
+                    server.run_job(
+                        repo, repo / "job", repo / "result.tar.gz", current, State(), {},
+                    )
+                argv = popen.call_args.args[0]
+                environment = popen.call_args.kwargs["env"]
+                self.assertEqual(argv[0], "/usr/bin/bash" if closed else "bash")
+                if closed:
+                    self.assertIn("/usr/bin/timeout", environment["JOB_CMD"])
+                    self.assertIn("/usr/bin/bash --noprofile --norc", environment["JOB_CMD"])
+                    self.assertEqual(environment["JOB_ENVIRONMENT_CLOSED"], "1")
+                else:
+                    self.assertTrue(environment["JOB_CMD"].startswith("timeout "))
+                    self.assertIn(" bash -c ", environment["JOB_CMD"])
+                    self.assertNotIn("JOB_ENVIRONMENT_CLOSED", environment)
 
 
 class HttpAdapterTest(unittest.TestCase):
