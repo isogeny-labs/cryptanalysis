@@ -18,7 +18,8 @@
 //! Every subcommand supports `--json` for a machine-readable report carrying a
 //! provenance block (binary hash, git commit, host, dispatched field backend).
 
-use std::process::ExitCode;
+use std::path::{Path, PathBuf};
+use std::process::{Command, ExitCode};
 
 use clap::{Args, Parser, Subcommand};
 use serde_json::{json, Value};
@@ -67,6 +68,45 @@ enum Action {
     Run(RunArgs),
     /// Solve a quadratic Boolean system with the FES kernel (CPU or GPU worker).
     Fes(FesArgs),
+    /// Install `ca-icx` with `cargo install` from this source checkout.
+    Install(InstallArgs),
+    /// Reinstall `ca-icx` from its source checkout, or check for a newer one.
+    Update(UpdateArgs),
+}
+
+#[derive(Args)]
+struct InstallArgs {
+    /// Cargo install root (default: $CARGO_HOME, usually ~/.cargo).
+    #[arg(long)]
+    root: Option<PathBuf>,
+    /// Reinstall even when the package version is already installed.
+    #[arg(long)]
+    force: bool,
+    /// Source suite directory; defaults to the directory this binary was built from.
+    #[arg(long)]
+    source: Option<PathBuf>,
+    /// Print the command without running it.
+    #[arg(long)]
+    dry_run: bool,
+}
+
+#[derive(Args)]
+struct UpdateArgs {
+    /// Cargo install root (default: $CARGO_HOME, usually ~/.cargo).
+    #[arg(long)]
+    root: Option<PathBuf>,
+    /// Source suite directory; defaults to the directory this binary was built from.
+    #[arg(long)]
+    source: Option<PathBuf>,
+    /// Fetch the upstream branch and report whether a newer commit exists.
+    #[arg(long)]
+    check: bool,
+    /// Fast-forward the source checkout before reinstalling.
+    #[arg(long)]
+    pull: bool,
+    /// Print the commands without running them.
+    #[arg(long)]
+    dry_run: bool,
 }
 
 #[derive(Args)]
@@ -640,6 +680,172 @@ fn fes_cmd(args: &FesArgs) -> Result<Value, String> {
     }))
 }
 
+fn source_dir(flag: Option<&PathBuf>) -> Result<PathBuf, String> {
+    let source = flag
+        .cloned()
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
+    if !source.join("Cargo.toml").is_file() {
+        return Err(format!(
+            "source directory {} has no Cargo.toml; pass --source",
+            source.display()
+        ));
+    }
+    Ok(source)
+}
+
+fn cargo_install_command(source: &Path, root: Option<&Path>, force: bool) -> Command {
+    let cargo = std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into());
+    let mut command = Command::new(cargo);
+    command
+        .arg("install")
+        .arg("--path")
+        .arg(source)
+        .arg("--bin")
+        .arg("ca-icx");
+    if let Some(root) = root {
+        command.arg("--root").arg(root);
+    }
+    if force {
+        command.arg("--force");
+    }
+    command
+}
+
+fn command_line(command: &Command) -> String {
+    let mut parts = vec![command.get_program().to_string_lossy().to_string()];
+    for arg in command.get_args() {
+        let arg = arg.to_string_lossy();
+        if arg.chars().any(char::is_whitespace) {
+            parts.push(format!("{arg:?}"));
+        } else {
+            parts.push(arg.into_owned());
+        }
+    }
+    parts.join(" ")
+}
+
+fn run_captured(mut command: Command) -> Result<(String, String), String> {
+    let name = command.get_program().to_string_lossy().to_string();
+    let output = command
+        .output()
+        .map_err(|e| format!("failed to run {name}: {e}"))?;
+    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+    if !output.status.success() {
+        return Err(format!(
+            "{name} exited with {}: {}",
+            output.status,
+            if stderr.is_empty() { &stdout } else { &stderr }
+        ));
+    }
+    Ok((stdout, stderr))
+}
+
+fn run_git(repo: &Path, args: &[&str]) -> Result<String, String> {
+    let mut command = Command::new("git");
+    command.arg("-C").arg(repo).args(args);
+    run_captured(command).map(|(stdout, _)| stdout)
+}
+
+fn run_git_optional(repo: &Path, args: &[&str]) -> Option<String> {
+    let mut command = Command::new("git");
+    command.arg("-C").arg(repo).args(args);
+    let output = command.output().ok()?;
+    if output.status.success() {
+        Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    } else {
+        None
+    }
+}
+
+fn install_cmd(args: &InstallArgs) -> Result<Value, String> {
+    let source = source_dir(args.source.as_ref())?;
+    let command = cargo_install_command(&source, args.root.as_deref(), args.force);
+    let rendered = command_line(&command);
+    if args.dry_run {
+        return Ok(json!({
+            "schema_version": 1,
+            "operation": "install",
+            "status": "dry_run",
+            "source": source,
+            "command": rendered,
+        }));
+    }
+    let (stdout, stderr) = run_captured(command)?;
+    Ok(json!({
+        "schema_version": 1,
+        "operation": "install",
+        "status": "complete",
+        "source": source,
+        "command": rendered,
+        "stdout": stdout,
+        "stderr": stderr,
+    }))
+}
+
+fn update_cmd(args: &UpdateArgs) -> Result<Value, String> {
+    let source = source_dir(args.source.as_ref())?;
+    let repo = source
+        .parent()
+        .ok_or_else(|| format!("source directory {} has no parent", source.display()))?;
+    let mut report = json!({
+        "schema_version": 1,
+        "operation": "update",
+        "status": "checking",
+        "version": env!("CARGO_PKG_VERSION"),
+        "source": source,
+        "repo": repo,
+        "update_available": Value::Null,
+    });
+
+    if repo.join(".git").exists() {
+        if let Err(error) = run_git(repo, &["fetch", "--quiet"]) {
+            report["fetch_error"] = json!(error);
+        }
+        if let Some(head) = run_git_optional(repo, &["rev-parse", "--short", "HEAD"]) {
+            report["git_head"] = json!(head);
+        }
+        if let Some(upstream) =
+            run_git_optional(repo, &["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+        {
+            report["git_upstream"] = json!(upstream);
+            if let Some(behind) = run_git_optional(repo, &["rev-list", "--count", "HEAD..@{u}"]) {
+                if let Ok(behind) = behind.parse::<u64>() {
+                    report["commits_behind"] = json!(behind);
+                    report["update_available"] = json!(behind > 0);
+                }
+            }
+        }
+    } else {
+        report["git"] = json!("not a git checkout");
+    }
+
+    if args.check {
+        report["status"] = json!("checks_passed");
+        return Ok(report);
+    }
+
+    if args.pull {
+        if !repo.join(".git").exists() {
+            return Err("--pull needs a git checkout to fast-forward".into());
+        }
+        report["pull"] = json!(run_git(repo, &["pull", "--ff-only"])?);
+    }
+
+    let command = cargo_install_command(&source, args.root.as_deref(), true);
+    let rendered = command_line(&command);
+    report["command"] = json!(rendered);
+    if args.dry_run {
+        report["status"] = json!("dry_run");
+        return Ok(report);
+    }
+    let (stdout, stderr) = run_captured(command)?;
+    report["status"] = json!("complete");
+    report["stdout"] = json!(stdout);
+    report["stderr"] = json!(stderr);
+    Ok(report)
+}
+
 fn execute(cli: &Cli) -> Result<Value, String> {
     match &cli.command {
         Some(Action::Solve(a)) => crate::cryptanalysis::certicom_dlp_cli::run(a),
@@ -650,6 +856,8 @@ fn execute(cli: &Cli) -> Result<Value, String> {
         Some(Action::XedniLift(a)) => xedni_lift_cmd(a),
         Some(Action::Run(a)) => run_cmd(a, cli.json),
         Some(Action::Fes(a)) => fes_cmd(a),
+        Some(Action::Install(a)) => install_cmd(a),
+        Some(Action::Update(a)) => update_cmd(a),
         None => {
             let name = cli
                 .curve
@@ -679,7 +887,7 @@ where
     }
     let ok = matches!(
         report["status"].as_str(),
-        Some("complete" | "checks_passed")
+        Some("complete" | "checks_passed" | "dry_run")
     );
     if cli.json {
         println!("{}", serde_json::to_string_pretty(&report).unwrap());

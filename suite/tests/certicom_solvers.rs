@@ -303,6 +303,155 @@ fn index_calculus_executes_relation_collection_la_and_descent_on_both_exact_curv
 }
 
 #[test]
+fn index_calculus_three_summands_recover_a_constructed_target() {
+    static SERIAL: AtomicU64 = AtomicU64::new(0);
+    let group = ChallengeGroup::by_name("ECCp-130").unwrap();
+    let k0 = (BigUint::one() << 100u32) + BigUint::from(17u32);
+    let k1 = (BigUint::one() << 107u32) + BigUint::from(53u32);
+    let k2 = (BigUint::one() << 113u32) + BigUint::from(91u32);
+    let secret = (&k0 + &k1 + &k2).to_string();
+    let base: Vec<Value> = [&k0, &k1, &k2]
+        .iter()
+        .map(|k| group.point_json(&group.target_from_scalar(k)))
+        .collect();
+    let document = json!({
+        "curve": "ECCp-130",
+        "label": "constructed three-summand known-answer; not a natural relation-yield measurement",
+        "factor_base": base,
+        "relation_queries": [
+            (&k0 + &k0 + &k1).to_string(),
+            (&k0 + &k1 + &k1).to_string(),
+            (&k0 + &k1 + &k2).to_string(),
+        ],
+        "descent_shifts": [BigUint::zero().to_string()],
+    });
+    let path = std::env::temp_dir().join(format!(
+        "certicom-ic-m3-{}-{}.json",
+        std::process::id(),
+        SERIAL.fetch_add(1, Ordering::Relaxed)
+    ));
+    std::fs::write(&path, document.to_string()).unwrap();
+    let report = run(
+        &[
+            "solve",
+            "ECCp-130",
+            "--method",
+            "index-calculus",
+            "--secret",
+            &secret,
+            "--preparation",
+            path.to_str().unwrap(),
+            "--summands",
+            "3",
+            "--max-iterations",
+            "4",
+        ],
+        true,
+    );
+    std::fs::remove_file(path).unwrap();
+    assert_eq!(report["scalar"], secret);
+    assert_eq!(report["index_calculus"]["summands"], 3);
+    assert_eq!(
+        report["index_calculus"]["decomposition"],
+        "signed-three-summand-mitm"
+    );
+    assert_eq!(report["index_calculus"]["rank"], 3);
+    assert_eq!(report["index_calculus"]["verified_relations"], 3);
+    assert_eq!(report["index_calculus"]["factor_base_logs_verified"], true);
+    assert_eq!(report["index_calculus"]["descent_queries"], 1);
+}
+
+#[test]
+fn index_calculus_four_summands_recover_a_constructed_target() {
+    static SERIAL: AtomicU64 = AtomicU64::new(0);
+    let group = ChallengeGroup::by_name("ECCp-130").unwrap();
+    let k0 = (BigUint::one() << 100u32) + BigUint::from(17u32);
+    let k1 = (BigUint::one() << 107u32) + BigUint::from(53u32);
+    let k2 = (BigUint::one() << 113u32) + BigUint::from(91u32);
+    let k3 = (BigUint::one() << 119u32) + BigUint::from(131u32);
+    let secret = (&k0 + &k1 + &k2 + &k3).to_string();
+    let base: Vec<Value> = [&k0, &k1, &k2, &k3]
+        .iter()
+        .map(|k| group.point_json(&group.target_from_scalar(k)))
+        .collect();
+    let document = json!({
+        "curve": "ECCp-130",
+        "label": "constructed four-summand known-answer; not a natural relation-yield measurement",
+        "factor_base": base,
+        "relation_queries": [
+            (&k0 + &k0 + &k1 + &k2).to_string(),
+            (&k0 + &k1 + &k1 + &k2).to_string(),
+            (&k0 + &k1 + &k2 + &k2).to_string(),
+            (&k0 + &k1 + &k2 + &k3).to_string(),
+        ],
+        "descent_shifts": [BigUint::zero().to_string()],
+    });
+    let path = std::env::temp_dir().join(format!(
+        "certicom-ic-m4-{}-{}.json",
+        std::process::id(),
+        SERIAL.fetch_add(1, Ordering::Relaxed)
+    ));
+    std::fs::write(&path, document.to_string()).unwrap();
+    let report = run(
+        &[
+            "solve",
+            "ECCp-130",
+            "--method",
+            "index-calculus",
+            "--secret",
+            &secret,
+            "--preparation",
+            path.to_str().unwrap(),
+            "--summands",
+            "4",
+            "--max-iterations",
+            "4",
+        ],
+        true,
+    );
+    std::fs::remove_file(path).unwrap();
+    assert_eq!(report["scalar"], secret);
+    assert_eq!(report["index_calculus"]["summands"], 4);
+    assert_eq!(
+        report["index_calculus"]["decomposition"],
+        "signed-four-summand-pair-mitm"
+    );
+    assert_eq!(report["index_calculus"]["rank"], 4);
+    assert_eq!(report["index_calculus"]["factor_base_logs_verified"], true);
+    assert_eq!(report["index_calculus"]["descent_queries"], 1);
+}
+
+#[test]
+fn install_and_update_expose_the_cargo_commands_without_running_them() {
+    let install = run(&["install", "--dry-run"], true);
+    assert_eq!(install["status"], "dry_run");
+    assert!(install["command"]
+        .as_str()
+        .unwrap()
+        .contains("cargo install --path"));
+
+    let source = std::env::temp_dir().join(format!("ca-icx-update-{}", std::process::id()));
+    std::fs::create_dir_all(&source).unwrap();
+    std::fs::write(source.join("Cargo.toml"), "[package]\nname = \"fixture\"\n").unwrap();
+    let update = run(
+        &[
+            "update",
+            "--dry-run",
+            "--source",
+            source.to_str().unwrap(),
+        ],
+        true,
+    );
+    std::fs::remove_dir_all(&source).unwrap();
+    assert_eq!(update["status"], "dry_run");
+    assert!(update["command"]
+        .as_str()
+        .unwrap()
+        .contains("cargo install --path"));
+    assert!(update["command"].as_str().unwrap().contains("--force"));
+}
+
+#[test]
 fn every_method_runs_on_the_published_point_and_reports_a_real_budget_stop() {
     for curve in ["ECC2-130", "ECCp-130"] {
         let group = ChallengeGroup::by_name(curve).unwrap();
