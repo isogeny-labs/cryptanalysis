@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -34,9 +35,11 @@ CAMPAIGN_CORE = load_module("go_peer_key_campaign_core", GO_DIR / "run_campaign.
 L2 = load_module("go_peer_key_l2", GO_DIR / "l2_measure.py")
 EXPORTER = load_module("go_peer_key_exporter", GO_DIR / "export_remote_peer_key_ab.py")
 CAMPAIGN = load_module("go_peer_key_campaign", GO_DIR / "run_remote_peer_key_campaign.py")
+RUNNER = load_module("go_peer_key_remote_runner", GO_DIR / "run_remote_ab.py")
 ANALYZER.shared = SHARED
 ANALYZER.campaign_core = CAMPAIGN_CORE
 ANALYZER.l2_core = L2
+ANALYZER.export_core = EXPORTER
 
 
 def write_json(path: Path, value: object) -> None:
@@ -169,6 +172,116 @@ def valid_execution() -> dict:
             "procs_running_after": 1,
         },
     }
+
+
+def transport_fixture() -> tuple[dict, dict]:
+    protocol = json.loads((GO_DIR / "protocol.v9.json").read_text(encoding="utf-8"))
+    protocol["freeze"]["protocol_sha256"] = "f" * 64
+    planned = protocol["extensions"]["remote_execution"]
+    command = planned["command_template"].replace(
+        planned["protocol_hash_token"], protocol["freeze"]["protocol_sha256"]
+    )
+    command_sha = hashlib.sha256(command.encode()).hexdigest()
+    name = planned["pod_name_prefix"] + "0123456789ab"
+    pod_id = "pod_fixture_123"
+    archive_sha = "a" * 64
+    manifest_sha = "b" * 64
+    result_file_sha = "c" * 64
+    archive_bytes = 1024
+    receipt = {
+        "schema": "runpod.http-batch.receipt/v1",
+        "provider_actions": True,
+        "source": {
+            **{
+                key: planned["source"][key]
+                for key in ("origin", "ref", "commit", "tree", "archive_sha256")
+            },
+            "public_ref_checked": True,
+            "public_checked_at": "2026-11-02T00:00:00+00:00",
+        },
+        "command": command,
+        "command_sha256": command_sha,
+        "outputs": [planned["output"]],
+        "request": {
+            "cloudType": "SECURE",
+            "computeType": "CPU",
+            "containerDiskInGb": 60,
+            "cpuFlavorIds": ["cpu3c"],
+            "cpuFlavorPriority": "custom",
+            "environment_keys": planned["request_environment_keys"],
+            "gpuCount": None,
+            "gpuTypeIds": None,
+            "imageName": planned["image"],
+            "minRAMPerGPU": None,
+            "minVCPUPerGPU": None,
+            "ports": ["8888/http"],
+            "secrets_redacted": True,
+            "startup_sha256": ANALYZER.EXPECTED_STARTUP_SHA256,
+            "vcpuCount": 32,
+            "name": name,
+        },
+        "transport": planned["transport"],
+        "cpu_guard": dict(ANALYZER.EXPECTED_CPU_GUARD),
+        "started_at": "2026-11-02T00:00:00+00:00",
+        "pod": {
+            "cloud": "SECURE",
+            "cost": 0.96,
+            "cpu": {"id": "cpu3c", "memory": 64, "vcpuCount": 32},
+            "createdAt": "2026-11-02T00:00:01Z",
+            "creation_response_ambiguous": False,
+            "cudaVersion": None,
+            "dataCenterId": "EU-FIXTURE-1",
+            "gpu": None,
+            "id": pod_id,
+            "image": planned["image"],
+            "name": name,
+            "startedAt": "2026-11-02T00:00:01Z",
+            "status": "RUNNING",
+        },
+        "remote_status": {
+            "archive": {
+                "bytes": archive_bytes,
+                "files": 2,
+                "manifest_sha256": manifest_sha,
+                "sha256": archive_sha,
+                "uncompressed_bytes": 2048,
+            },
+            "archive_ready": True,
+            "chunks": [{
+                "bytes": archive_bytes,
+                "index": 0,
+                "offset": 0,
+                "path": "/v1/result/000000",
+                "sha256": archive_sha,
+            }],
+            "command_sha256": command_sha,
+            "command_started_unix": 2.0,
+            "done": True,
+            "finished_unix": 3.0,
+            "hardware": {"gpus": [], "nvcc": "", "pod_id": pod_id},
+            "job_id": name,
+            "returncode": 0,
+            "schema": "runpod.http-batch.status/v1",
+            "source_archive_sha256": planned["source"]["archive_sha256"],
+            "source_commit": planned["source"]["commit"],
+            "source_tree": planned["source"]["tree"],
+            "stage": "complete",
+            "started_unix": 1.0,
+            "timed_out": False,
+            "worker_error_type": None,
+        },
+        "result": {
+            "archive": planned["controller_archive_path"],
+            "archive_bytes": archive_bytes,
+            "archive_sha256": archive_sha,
+            "metadata": str(Path(planned["controller_receipt_path"]).with_suffix(".remote")),
+            "files": [{"bytes": 1, "path": planned["output"] + "/failure.json", "sha256": result_file_sha}],
+        },
+        "cleanup": {"absence_verified": True, "delete_requested": True, "id": pod_id},
+        "error": None,
+        "finished_at": "2026-11-02T00:00:04+00:00",
+    }
+    return receipt, protocol
 
 
 def benchmark_stdout(case: str) -> bytes:
@@ -502,6 +615,33 @@ class L2Tests(unittest.TestCase):
             self.assertEqual(result["earned_level"], "L0")
             self.assertIn("raw_observation_domains", result["blocking"])
 
+    def test_zero_schedstat_bad_interval_threads_and_kernel_records_fail_closed(self) -> None:
+        mutations = []
+        no_threads = valid_execution()
+        no_threads["schedstat"]["threads_seen"] = 0
+        mutations.append(no_threads)
+        no_slices = valid_execution()
+        no_slices["schedstat"]["slices"] = 0
+        mutations.append(no_slices)
+        wrong_interval = valid_execution()
+        wrong_interval["schedstat"]["sample_interval_seconds"] = 0.02
+        mutations.append(wrong_interval)
+        negative_threads = valid_execution()
+        negative_threads["max_threads_observed"] = -1
+        mutations.append(negative_threads)
+        missing_observed_cpu = valid_execution()
+        missing_observed_cpu["tree_affinity"]["cpus_seen"] = []
+        mutations.append(missing_observed_cpu)
+        for execution in mutations:
+            result = L2.evaluate_l2(execution, valid_preflight(), valid_reservation())
+            self.assertEqual(result["earned_level"], "L0")
+            self.assertIn("raw_observation_domains", result["blocking"])
+        malformed = valid_reservation()
+        malformed["left_on_reserved"]["kernel_threads"] = [{"pid": 1}]
+        result = L2.evaluate_l2(valid_execution(), valid_preflight(), malformed)
+        self.assertEqual(result["earned_level"], "L0")
+        self.assertIn("whole_core_reservation", result["blocking"])
+
     def test_preflight_recomputes_raw_receipt_and_rejects_bad_psi(self) -> None:
         preflight = valid_preflight()
         self.assertTrue(L2.evaluate_preflight(preflight)["passes"])
@@ -528,6 +668,42 @@ class L2Tests(unittest.TestCase):
         receipt["records"][0]["restored_affinity"] = [20]
         with self.assertRaisesRegex(ValueError, "readback"):
             ANALYZER._verify_restoration(receipt, reservation, list(range(32)))
+
+    def test_restoration_rejects_bad_domains_and_inexact_eviction(self) -> None:
+        base = {
+            "attempted": 1, "restored": 1, "exited": 0, "failures": 0,
+            "passes": True, "runner_affinity_after_restore": list(range(32)),
+            "runner_affinity_passes": True,
+            "records": [{
+                "pid": 10, "tid": 11, "starttime_ticks": 12,
+                "affinity": [2, 18, 20], "evicted_affinity": [20],
+                "status": "restored", "restored_affinity": [2, 18, 20],
+            }],
+        }
+        reservation = valid_reservation()
+        reservation["threads_moved"] = 1
+        mutations = []
+        invalid_pid = copy.deepcopy(base)
+        invalid_pid["records"][0]["pid"] = 0
+        mutations.append(invalid_pid)
+        invalid_tid = copy.deepcopy(base)
+        invalid_tid["records"][0]["tid"] = -1
+        mutations.append(invalid_tid)
+        duplicate_cpu = copy.deepcopy(base)
+        duplicate_cpu["records"][0]["affinity"] = [2, 18, 18, 20]
+        mutations.append(duplicate_cpu)
+        wrong_difference = copy.deepcopy(base)
+        wrong_difference["records"][0]["evicted_affinity"] = [18, 20]
+        mutations.append(wrong_difference)
+        bool_count = copy.deepcopy(base)
+        bool_count["attempted"] = True
+        mutations.append(bool_count)
+        zero_start_identity = copy.deepcopy(base)
+        zero_start_identity["records"][0]["starttime_ticks"] = 0
+        mutations.append(zero_start_identity)
+        for receipt in mutations:
+            with self.assertRaises(ValueError):
+                ANALYZER._verify_restoration(receipt, reservation, list(range(32)))
 
 
 class BindingTests(unittest.TestCase):
@@ -623,6 +799,151 @@ class BindingTests(unittest.TestCase):
         self.assertIn("go-peer-key-ab-aa-v9", argv)
         self.assertEqual(argv[argv.index("--max-result-mib") + 1], "128")
         self.assertEqual(argv[argv.index("--timeout") + 1], "25200")
+
+    def test_transport_receipt_is_exact_and_fail_closed(self) -> None:
+        receipt, protocol = transport_fixture()
+        self.assertEqual(ANALYZER.verify_transport(receipt, protocol)["pod_id"], "pod_fixture_123")
+        mutations: list[tuple[str, dict]] = []
+        startup = copy.deepcopy(receipt)
+        startup["request"]["startup_sha256"] = "0" * 64
+        mutations.append(("startup", startup))
+        bad_name = copy.deepcopy(receipt)
+        malformed = protocol["extensions"]["remote_execution"]["pod_name_prefix"] + "0123456789abx"
+        bad_name["request"]["name"] = malformed
+        bad_name["pod"]["name"] = malformed
+        bad_name["remote_status"]["job_id"] = malformed
+        mutations.append(("name", bad_name))
+        for value in (True, math.nan, 0):
+            bad_cost = copy.deepcopy(receipt)
+            bad_cost["pod"]["cost"] = value
+            mutations.append((f"cost-{value!r}", bad_cost))
+        missing_status = copy.deepcopy(receipt)
+        del missing_status["remote_status"]["done"]
+        mutations.append(("missing-status", missing_status))
+        extra_status = copy.deepcopy(receipt)
+        extra_status["remote_status"]["unexpected"] = 1
+        mutations.append(("extra-status", extra_status))
+        top_error = copy.deepcopy(receipt)
+        top_error["error"] = {"type": "synthetic", "detail": "bad"}
+        mutations.append(("top-error", top_error))
+        for value in (False, -1):
+            bad_archive = copy.deepcopy(receipt)
+            bad_archive["remote_status"]["archive"]["uncompressed_bytes"] = value
+            mutations.append((f"archive-{value!r}", bad_archive))
+        for label, mutated in mutations:
+            with self.subTest(label=label), self.assertRaises(ValueError):
+                ANALYZER.verify_transport(mutated, protocol)
+
+    def test_build_environment_is_allowlisted_and_provider_values_do_not_leak(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="go-coord-remote-ab-") as temporary:
+            root = Path(temporary)
+            go = root / "go/bin/go"
+            go.parent.mkdir(parents=True)
+            go.write_bytes(b"fixture")
+            hostile = {
+                "GOEXPERIMENT": "arenas",
+                "GOWORK": "/tmp/hostile.work",
+                "GOAMD64": "v4",
+                "CC": "/tmp/hostile-cc",
+                "CGO_CFLAGS": "-funsafe-math-optimizations",
+            }
+            with mock.patch.dict(os.environ, hostile, clear=False):
+                environment = RUNNER.build_environment(go, root)
+            self.assertEqual(environment["GOEXPERIMENT"], "")
+            self.assertEqual(environment["CGO_CFLAGS"], "-O2 -g")
+            self.assertEqual(environment["GOWORK"], "off")
+            self.assertEqual(environment["GOAMD64"], "v1")
+            self.assertEqual(environment["CC"], "/usr/bin/gcc")
+            digest = RUNNER.environment_sha256(environment)
+            self.assertEqual(ANALYZER.verify_build_environment(environment, digest), digest)
+
+    def test_build_and_test_argv_and_aa_copy_receipts_are_exact(self) -> None:
+        go_command = "/tmp/go-coord-remote-ab-fixture/go/bin/go"
+        digest = "a" * 64
+        baseline = {
+            "command": [
+                go_command, "test", "-c", "-trimpath", "-o",
+                f"/workspace/cryptanalysis/{ANALYZER.EXPECTED_OUTPUT}/build/"
+                "coord-baseline.test",
+                ".",
+            ],
+            "cwd": "bindings/go",
+            "environment_sha256": digest,
+            "stdout": "",
+            "binary": "coord-baseline.test",
+            "binary_bytes": 10,
+            "binary_sha256": "b" * 64,
+        }
+        ANALYZER.verify_build_record(
+            baseline, ANALYZER.BASELINE_ARM, go_command, None
+        )
+        injected = copy.deepcopy(baseline)
+        injected["command"].insert(-1, "-tags=hostile")
+        with self.assertRaisesRegex(ValueError, "not exact"):
+            ANALYZER.verify_build_record(
+                injected, ANALYZER.BASELINE_ARM, go_command, None
+            )
+        aa = {
+            **baseline,
+            "command": ["byte-identical copy", "coord-baseline.test"],
+            "binary": "coord-baseline-aa-left.test",
+            "binary_bytes": 10,
+            "binary_sha256": "b" * 64,
+            "derived_from": "coord-baseline.test",
+        }
+        ANALYZER.verify_build_record(
+            aa, ANALYZER.AA_LEFT_ARM, go_command, baseline
+        )
+        aa["derived_from"] = "coord-candidate.test"
+        with self.assertRaisesRegex(ValueError, "not exact"):
+            ANALYZER.verify_build_record(
+                aa, ANALYZER.AA_LEFT_ARM, go_command, baseline
+            )
+        test_record = {
+            "command": [go_command, "test", "./..."],
+            "cwd": "bindings/go",
+            "environment_sha256": digest,
+            "exit_status": 0,
+            "log": "baseline.txt",
+            "log_bytes": 0,
+            "log_sha256": "c" * 64,
+        }
+        ANALYZER.verify_test_record(test_record, go_command, "baseline.txt")
+        test_record["command"] = [go_command, "test", "-run", "TestOnly", "./..."]
+        with self.assertRaisesRegex(ValueError, "not exact"):
+            ANALYZER.verify_test_record(test_record, go_command, "baseline.txt")
+
+    def test_wrong_answer_exclusion_does_not_invent_contention(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            row = {
+                "run_id": "fixture", "arm": ANALYZER.BASELINE_ARM,
+                "case": ANALYZER.EXPECTED_CASES[0], "replicate": 1,
+                "warmup": False, "status": "completed", "exit_status": 0,
+                "timed_out": False, "outer_wall_ns": 1000,
+                "parsed": {
+                    "iterations": 100,
+                    "metrics": {"ns/op": 1, "cpu-ns/op": 1, "B/op": 1, "allocs/op": 1},
+                    "fingerprints": fingerprints(ANALYZER.EXPECTED_CASES[0]),
+                },
+                "rusage": {},
+                "isolation": {"earned_level": "L2", "blocking": []},
+                "artifacts": {
+                    "stdout": "stdout", "stderr": "stderr", "metadata": "metadata"
+                },
+            }
+            for name in row["artifacts"].values():
+                (base / name).write_bytes(b"x")
+            run = EXPORTER.make_run(
+                row,
+                base=base,
+                timing_valid=True,
+                mismatches={(row["case"], False, 1)},
+            )
+            self.assertFalse(run["measurements"]["wall_valid"])
+            self.assertFalse(run["isolation"]["contended"])
+            self.assertNotIn("cumulative L2", " ".join(run["isolation"]["blockers"]))
+            self.assertEqual(run["verification"]["status"], "refuted")
 
     def test_failed_row_export_is_not_completed_and_wall_invalid(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -762,6 +1083,372 @@ class BindingTests(unittest.TestCase):
             self.assertEqual(exported["outcome_class"], "not_completed")
             self.assertEqual(exported["verification"]["status"], "not_run")
             self.assertFalse(exported["measurements"]["wall_valid"])
+
+
+class FailureTotalExportTests(unittest.TestCase):
+    def frozen_protocol(self, root: Path) -> tuple[Path, dict]:
+        protocol_path = root / "protocol.v9.json"
+        shutil.copy2(GO_DIR / "protocol.v9.json", protocol_path)
+        source_commit = json.loads(protocol_path.read_text())["extensions"]["remote_execution"][
+            "source"
+        ]["commit"]
+        frozen = subprocess.run(
+            [
+                "python3",
+                "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+                "freeze",
+                str(protocol_path),
+                "--commit",
+                source_commit,
+                "--filed-before-affected-data",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(frozen.returncode, 0, frozen.stdout)
+        return protocol_path, json.loads(protocol_path.read_text())
+
+    def failure_run(self, root: Path, protocol: dict) -> tuple[Path, Path]:
+        run = root / ANALYZER.EXPECTED_OUTPUT
+        (run / "campaign").mkdir(parents=True)
+        tooling = run / "tooling"
+        tooling.mkdir()
+        shutil.copy2(ANALYZER_PATH, tooling / ANALYZER_PATH.name)
+        failure_path = run / "failure.json"
+        write_json(
+            failure_path,
+            {
+                "schema": "go-coordinator-remote-failure/v1",
+                "protocol_sha256": protocol["freeze"]["protocol_sha256"],
+                "source_commit": protocol["extensions"]["remote_execution"]["source"]["commit"],
+                "phase": "fixed-peer-key-ab-aa-v9",
+                "stage": "build_baseline",
+                "error": {"type": "RuntimeError", "detail": "synthetic early failure"},
+                "usable_prefix_rows": None,
+            },
+        )
+        return run, failure_path
+
+    def test_early_failure_export_is_canonical_and_formally_inconclusive_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol_path, protocol = self.frozen_protocol(root)
+            run, failure_path = self.failure_run(root, protocol)
+            (run / "build").mkdir()
+            (run / "build/manifest.json").write_bytes(b'{"schema":')
+            output = run / "campaign/export.json"
+            export = EXPORTER.produce_failure(
+                run,
+                protocol["freeze"]["protocol_sha256"],
+                protocol["extensions"]["remote_execution"]["source"]["commit"],
+                output,
+                failure_path,
+            )
+            EXPORTER.write_once(output, export)
+            self.assertEqual(len(export["runs"]), 552)
+            self.assertTrue(all(row["status"] == "infra_error" for row in export["runs"]))
+            self.assertEqual(export["backend_record"]["usable_prefix_rows"], 0)
+            canonical = subprocess.run(
+                [
+                    "python3",
+                    "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+                    "check-export",
+                    str(output),
+                    "--protocol",
+                    str(protocol_path),
+                    "--verify-files",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(canonical.returncode, 0, canonical.stdout)
+            pre_summary_files = [path for path in run.rglob("*") if path.is_file()]
+            summary = {
+                "schema": "go-coordinator-remote-summary/v1",
+                "status": "mechanical_failure",
+                "protocol_sha256": protocol["freeze"]["protocol_sha256"],
+                "source_commit": protocol["extensions"]["remote_execution"]["source"]["commit"],
+                "failure_path": "failure.json",
+                "failure_sha256": SHARED.sha256(failure_path),
+                "failure_stage": "build_baseline",
+                "usable_prefix_rows": 0,
+                "export_path": "campaign/export.json",
+                "export_sha256": SHARED.sha256(output),
+                "remote_returncode": 2,
+                "claims_evaluated": False,
+                "output_budget_bytes": 96_000_000,
+                "output_bytes_before_summary": sum(path.stat().st_size for path in pre_summary_files),
+                "output_files_before_summary": len(pre_summary_files),
+                "remote_summary_reserve_bytes": 65_536,
+            }
+            write_json(run / "remote-summary.json", summary)
+            verified = ANALYZER.verify_failure_export(
+                run,
+                protocol_path,
+                protocol,
+                summary,
+                Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py"),
+            )
+            self.assertEqual(verified["usable_prefix_rows"], 0)
+            forged = json.loads(output.read_text())
+            forged["runs"][0]["measurements"]["counted"]["bytes_per_op"] = 7
+            forged["runs"][0]["isolation"]["contended"] = True
+            write_json(output, forged)
+            summary["export_sha256"] = SHARED.sha256(output)
+            summary["output_bytes_before_summary"] = sum(
+                path.stat().st_size
+                for path in run.rglob("*")
+                if path.is_file() and path != run / "remote-summary.json"
+            )
+            write_json(run / "remote-summary.json", summary)
+            with self.assertRaisesRegex(ValueError, "exact raw recomputation"):
+                ANALYZER.verify_failure_export(
+                    run,
+                    protocol_path,
+                    protocol,
+                    summary,
+                    Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py"),
+                )
+
+    def test_early_failure_export_without_retained_analyzer_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol_path, protocol = self.frozen_protocol(root)
+            run, failure_path = self.failure_run(root, protocol)
+            (run / "tooling" / ANALYZER_PATH.name).unlink()
+            output = run / "campaign/export.json"
+            with self.assertRaisesRegex(ValueError, "registered analyzer"):
+                EXPORTER.produce_failure(
+                    run,
+                    protocol["freeze"]["protocol_sha256"],
+                    protocol["extensions"]["remote_execution"]["source"]["commit"],
+                    output,
+                    failure_path,
+                )
+
+    def test_runner_does_not_publish_output_before_tooling_is_retained(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "owned-output"
+            options = argparse.Namespace(
+                out=output,
+                mode="combined",
+                protocol_sha256="f" * 64,
+                phase="fixed-peer-key-ab-aa-v9",
+                baseline_binary_sha256=None,
+                candidate_binary_sha256=None,
+                expected_cpus=32,
+                expected_memory_bytes=64_000_000_000,
+                expected_cpu_flavor="cpu3c",
+            )
+            with (
+                mock.patch.object(RUNNER, "RUNNER_BINDING_PATH", str(GO_DIR / "run_remote_peer_key_ab.py")),
+                mock.patch.object(RUNNER, "EXPORTER_PATH", str(GO_DIR / "export_remote_peer_key_ab.py")),
+                mock.patch.object(RUNNER, "ANALYZER_PATH", str(ANALYZER_PATH)),
+                mock.patch.object(RUNNER, "SUPPORT_PATHS", ()),
+                mock.patch.object(RUNNER, "CAMPAIGN_RUNNER_PATH", None),
+                mock.patch.object(RUNNER, "L2_MEASURE_PATH", None),
+                mock.patch.object(RUNNER, "git", return_value="a" * 40),
+                mock.patch.object(RUNNER.shutil, "copy2", side_effect=OSError("synthetic copy failure")),
+            ):
+                with self.assertRaisesRegex(OSError, "synthetic copy failure"):
+                    RUNNER.run(options)
+            self.assertFalse(output.exists())
+
+    def test_owned_runner_failure_is_normalized_to_exact_exit_2(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            options = argparse.Namespace(
+                out=Path(temporary) / "owned-output",
+                mode="combined",
+                protocol_sha256="f" * 64,
+                phase="fixed-peer-key-ab-aa-v9",
+            )
+
+            def fail(owned: argparse.Namespace) -> int:
+                owned.out.mkdir()
+                RUNNER.set_stage("build_baseline")
+                raise RuntimeError("synthetic build failure")
+
+            with (
+                mock.patch.object(RUNNER, "arguments", return_value=options),
+                mock.patch.object(RUNNER, "run", side_effect=fail),
+                mock.patch.object(RUNNER, "seal_failure") as seal,
+                mock.patch("builtins.print"),
+            ):
+                self.assertEqual(RUNNER.main(), 2)
+            seal.assert_called_once()
+            self.assertIsInstance(seal.call_args.args[1], RuntimeError)
+
+    def test_partial_failure_preserves_exact_prefix_and_fills_suffix(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol_path, protocol = self.frozen_protocol(root)
+            run, failure_path = self.failure_run(root, protocol)
+            campaign = run / "campaign"
+            planned = EXPORTER.expected_schedule()[0]
+            stdout = campaign / "raw/benchmark-output" / f"{planned['run_id']}.txt"
+            stderr = campaign / "raw/benchmark-stderr" / f"{planned['run_id']}.txt"
+            metadata = campaign / "raw/run-metadata" / f"{planned['run_id']}.json"
+            for path in (stdout, stderr, metadata):
+                path.parent.mkdir(parents=True, exist_ok=True)
+            stdout.write_bytes(benchmark_stdout(planned["case"]))
+            stderr.write_bytes(b"")
+            row = {
+                **planned,
+                "protocol_sha256": protocol["freeze"]["protocol_sha256"],
+                "status": "completed",
+                "exit_status": 0,
+                "timed_out": False,
+                "outer_wall_ns": 1_000,
+                "parsed": CAMPAIGN_CORE.parse_output(stdout.read_bytes()),
+                "rusage": {},
+                "isolation": {"earned_level": "L2", "blocking": []},
+                "started": "2026-11-02T00:00:00Z",
+                "finished": "2026-11-02T00:00:01Z",
+                "artifacts": {
+                    "stdout": str(stdout.relative_to(campaign)),
+                    "stdout_sha256": SHARED.sha256(stdout),
+                    "stderr": str(stderr.relative_to(campaign)),
+                    "stderr_sha256": SHARED.sha256(stderr),
+                    "metadata": str(metadata.relative_to(campaign)),
+                },
+            }
+            write_json(metadata, row)
+            (campaign / "rows.jsonl").write_text(
+                json.dumps(row, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            output = campaign / "export.json"
+            export = EXPORTER.produce_failure(
+                run,
+                protocol["freeze"]["protocol_sha256"],
+                protocol["extensions"]["remote_execution"]["source"]["commit"],
+                output,
+                failure_path,
+            )
+            EXPORTER.validate(export, output)
+            self.assertEqual(export["backend_record"]["usable_prefix_rows"], 1)
+            self.assertEqual(export["runs"][0]["status"], "succeeded")
+            self.assertTrue(all(row["status"] == "infra_error" for row in export["runs"][1:]))
+            EXPORTER.write_once(output, export)
+            pre_summary_files = [path for path in run.rglob("*") if path.is_file()]
+            summary = {
+                "schema": "go-coordinator-remote-summary/v1",
+                "status": "mechanical_failure",
+                "protocol_sha256": protocol["freeze"]["protocol_sha256"],
+                "source_commit": protocol["extensions"]["remote_execution"]["source"]["commit"],
+                "failure_path": "failure.json",
+                "failure_sha256": SHARED.sha256(failure_path),
+                "failure_stage": "build_baseline",
+                "usable_prefix_rows": 1,
+                "export_path": "campaign/export.json",
+                "export_sha256": SHARED.sha256(output),
+                "remote_returncode": 2,
+                "claims_evaluated": False,
+                "output_budget_bytes": 96_000_000,
+                "output_bytes_before_summary": sum(path.stat().st_size for path in pre_summary_files),
+                "output_files_before_summary": len(pre_summary_files),
+                "remote_summary_reserve_bytes": 65_536,
+            }
+            write_json(run / "remote-summary.json", summary)
+            verified = ANALYZER.verify_failure_export(
+                run,
+                protocol_path,
+                protocol,
+                summary,
+                Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py"),
+            )
+            self.assertEqual(verified["usable_prefix_rows"], 1)
+            tampered = json.loads(output.read_text())
+            tampered["runs"][0]["status"] = "failed"
+            write_json(output, tampered)
+            summary["export_sha256"] = SHARED.sha256(output)
+            summary["output_bytes_before_summary"] = sum(
+                path.stat().st_size
+                for path in run.rglob("*")
+                if path.is_file() and path != run / "remote-summary.json"
+            )
+            write_json(run / "remote-summary.json", summary)
+            with self.assertRaisesRegex(ValueError, "exact raw recomputation"):
+                ANALYZER.verify_failure_export(
+                    run,
+                    protocol_path,
+                    protocol,
+                    summary,
+                    Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py"),
+                )
+
+    def test_formal_analyzer_reaches_structured_inconclusive_before_row_loading(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run = root / ANALYZER.EXPECTED_OUTPUT
+            (run / "campaign").mkdir(parents=True)
+            protocol_path = root / "protocol.json"
+            protocol = json.loads((GO_DIR / "protocol.v9.json").read_text())
+            protocol["freeze"]["protocol_sha256"] = "f" * 64
+            write_json(protocol_path, protocol)
+            receipt_path = root / "receipt.json"
+            write_json(
+                receipt_path,
+                {
+                    "schema": "runpod.http-batch.receipt/v1",
+                    "remote_status": {"timed_out": False, "returncode": 2},
+                    "cleanup": {
+                        "absence_verified": True,
+                        "delete_requested": True,
+                        "id": "pod",
+                    },
+                    "pod": {"id": "pod"},
+                },
+            )
+            archive_path = root / "result.tar.gz"
+            archive_path.write_bytes(b"fixture")
+            write_json(run / "remote-summary.json", {"status": "mechanical_failure"})
+            write_json(run / "campaign/export.json", {"flow": {"planned": 552}})
+            options = argparse.Namespace(
+                run=run,
+                protocol=protocol_path,
+                receipt=receipt_path,
+                archive=archive_path,
+                output=None,
+                protocol_tool=Path(
+                    "/workspace/crypto-autoresearcher/tools/experiment_protocol.py"
+                ),
+            )
+            with (
+                mock.patch.object(ANALYZER, "verify_frozen_protocol", return_value={"ok": True}),
+                mock.patch.object(ANALYZER, "bind_verified_dependencies", return_value={}),
+                mock.patch.object(ANALYZER, "verify_transport", return_value={"ok": True}),
+                mock.patch.object(
+                    SHARED,
+                    "verify_archive",
+                    return_value={"sha256": "a" * 64, "manifest_sha256": "b" * 64},
+                ),
+                mock.patch.object(
+                    ANALYZER,
+                    "verify_extracted_run",
+                    return_value={"output": ANALYZER.EXPECTED_OUTPUT, "files": 3, "bytes": 3},
+                ),
+                mock.patch.object(
+                    ANALYZER,
+                    "verify_failure_export",
+                    return_value={
+                        "sha256": "c" * 64,
+                        "failure_sha256": "d" * 64,
+                        "usable_prefix_rows": 0,
+                    },
+                ),
+                mock.patch.object(
+                    ANALYZER,
+                    "load_verified_rows",
+                    side_effect=AssertionError("full-row loader must not run"),
+                ),
+            ):
+                result = ANALYZER.analyze(options)
+            self.assertEqual(result["verdict"]["overall"], "inconclusive")
+            self.assertTrue(all(value == "not_evaluated" for value in result["claims"].values()))
 
 
 class CampaignFailureTests(unittest.TestCase):

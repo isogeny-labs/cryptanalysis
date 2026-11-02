@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tarfile
@@ -66,6 +67,21 @@ CAMPAIGN_RUNNER_PATH: str | None = None
 L2_MEASURE_PATH: str | None = None
 ENABLE_AA_CONTROLS = False
 EXCLUDE_CPU_ZERO = False
+CURRENT_STAGE = "argument_validation"
+CURRENT_SOURCE_COMMIT: str | None = None
+
+
+class WorkflowAbort(BaseException):
+    pass
+
+
+def abort_on_signal(signum: int, _frame: object) -> None:
+    raise WorkflowAbort(f"combined workflow received signal {signum}")
+
+
+def set_stage(stage: str) -> None:
+    global CURRENT_STAGE
+    CURRENT_STAGE = stage
 
 
 def arguments(argv: list[str] | None = None) -> argparse.Namespace:
@@ -538,20 +554,85 @@ def prepare_sources(repo: Path, work: Path) -> tuple[Path, Path, dict[str, Any]]
     return baseline, candidate, receipt
 
 
-def build_arm(go: Path, source: Path, output: Path, cache: Path) -> dict[str, Any]:
-    env = os.environ.copy()
-    env.update({
+def build_environment(go: Path, work: Path) -> dict[str, str]:
+    """Return the complete allowlisted environment used by every Go command.
+
+    Starting from an empty mapping is deliberate: provider/controller values
+    such as GOEXPERIMENT, GOAMD64, GOWORK, CC, and CGO_* cannot reach a build.
+    All writable roots are shared by both arms and both test commands.
+    """
+
+    roots = {
+        "HOME": work / "go-home",
+        "TMPDIR": work / "tmp",
+        "GOPATH": work / "gopath",
+        "GOCACHE": work / "gocache",
+        "GOMODCACHE": work / "gomodcache",
+    }
+    for path in roots.values():
+        path.mkdir(parents=True, exist_ok=False)
+    goroot = go.resolve().parent.parent
+    environment = {
+        "PATH": "/usr/bin:/bin",
+        "HOME": str(roots["HOME"]),
+        "TMPDIR": str(roots["TMPDIR"]),
+        "LANG": "C",
+        "LC_ALL": "C",
+        "TZ": "UTC",
         "CGO_ENABLED": "1",
-        "GOCACHE": str(cache),
-        "GOFLAGS": "-buildvcs=false",
+        "CGO_CFLAGS": "-O2 -g",
+        "CGO_CPPFLAGS": "",
+        "CGO_CXXFLAGS": "-O2 -g",
+        "CGO_FFLAGS": "-O2 -g",
+        "CGO_LDFLAGS": "-O2 -g",
+        "GO111MODULE": "on",
+        "GOENV": "off",
+        "GOEXPERIMENT": "",
+        "GOWORK": "off",
+        "GOTOOLCHAIN": "local",
+        "GOFLAGS": "-buildvcs=false -mod=readonly",
         "GOMAXPROCS": "1",
-    })
+        "GOOS": "linux",
+        "GOARCH": "amd64",
+        "GOAMD64": "v1",
+        "GOROOT": str(goroot),
+        "GOPATH": str(roots["GOPATH"]),
+        "GOCACHE": str(roots["GOCACHE"]),
+        "GOMODCACHE": str(roots["GOMODCACHE"]),
+        "GOPROXY": "https://proxy.golang.org",
+        "GOSUMDB": "sum.golang.org",
+        "GONOSUMDB": "",
+        "GONOPROXY": "",
+        "GOPRIVATE": "",
+        "GOVCS": "*:off",
+        "CC": "/usr/bin/gcc",
+        "CXX": "/usr/bin/g++",
+        "AR": "/usr/bin/ar",
+    }
+    required_tools = (environment["CC"], environment["CXX"], environment["AR"])
+    if any(not Path(path).is_file() for path in required_tools):
+        raise RuntimeError("pinned compiler toolchain path is absent")
+    return environment
+
+
+def environment_sha256(environment: dict[str, str]) -> str:
+    return bytes_sha256(
+        json.dumps(environment, sort_keys=True, separators=(",", ":")).encode()
+    )
+
+
+def build_arm(
+    go: Path,
+    source: Path,
+    output: Path,
+    environment: dict[str, str],
+) -> dict[str, Any]:
     argv = [str(go), "test", "-c", "-trimpath", "-o", str(output), "."]
-    log = command(argv, cwd=source / "bindings/go", env=env)
+    log = command(argv, cwd=source / "bindings/go", env=environment)
     return {
         "command": argv,
         "cwd": "bindings/go",
-        "env": {key: env[key] for key in ("CGO_ENABLED", "GOFLAGS", "GOMAXPROCS")},
+        "environment_sha256": environment_sha256(environment),
         "stdout": log,
         "binary": output.name,
         "binary_bytes": output.stat().st_size,
@@ -559,11 +640,14 @@ def build_arm(go: Path, source: Path, output: Path, cache: Path) -> dict[str, An
     }
 
 
-def run_tests(go: Path, source: Path, cache: Path, log: Path) -> dict[str, Any]:
-    env = os.environ.copy()
-    env.update({"CGO_ENABLED": "1", "GOCACHE": str(cache), "GOFLAGS": "-buildvcs=false"})
+def run_tests(
+    go: Path,
+    source: Path,
+    environment: dict[str, str],
+    log: Path,
+) -> dict[str, Any]:
     result = subprocess.run(
-        [str(go), "test", "./..."], cwd=source / "bindings/go", env=env,
+        [str(go), "test", "./..."], cwd=source / "bindings/go", env=environment,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
     )
     log.write_text(result.stdout, encoding="utf-8")
@@ -572,6 +656,7 @@ def run_tests(go: Path, source: Path, cache: Path, log: Path) -> dict[str, Any]:
     return {
         "command": [str(go), "test", "./..."],
         "cwd": "bindings/go",
+        "environment_sha256": environment_sha256(environment),
         "exit_status": result.returncode,
         "log": log.name,
         "log_bytes": log.stat().st_size,
@@ -657,8 +742,8 @@ def row_pressure_valid(snapshot: dict[str, Any]) -> bool:
     )
 
 
-def main() -> int:
-    options = arguments()
+def run(options: argparse.Namespace) -> int:
+    global CURRENT_SOURCE_COMMIT
     if options.out.exists():
         raise SystemExit(f"refusing to overwrite {options.out}")
     if options.mode in {"run", "combined"}:
@@ -712,8 +797,41 @@ def main() -> int:
     )
     if len({path.name for path in bound_paths}) != len(bound_paths):
         raise SystemExit("bound tooling basenames must be unique for retained evidence")
+    source_commit = git(repo, "rev-parse", "HEAD")
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise RuntimeError("source commit is not a lowercase SHA-1 object id")
+    CURRENT_SOURCE_COMMIT = source_commit
     output = options.out.resolve()
-    output.mkdir(parents=True)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    retained_tooling: dict[str, dict[str, Any]] = {}
+    # Publish the owned output root atomically only after every formal tool,
+    # especially the registered analyzer, has been copied and authenticated.
+    # Thus every observable owned root can seal a canonical failure export.
+    staging = Path(
+        tempfile.mkdtemp(prefix=f".{output.name}.staging-", dir=output.parent)
+    )
+    try:
+        if bound_paths:
+            tooling_dir = staging / "tooling"
+            tooling_dir.mkdir()
+            ordered_bound_paths = tuple(
+                sorted(bound_paths, key=lambda path: (path != analyzer, path.name))
+            )
+            for source_path in ordered_bound_paths:
+                retained = tooling_dir / source_path.name
+                shutil.copy2(source_path, retained)
+                if sha256(retained) != sha256(source_path):
+                    raise RuntimeError(f"retained tooling SHA-256 mismatch: {source_path}")
+                retained_tooling[str(source_path.relative_to(repo))] = {
+                    "path": f"tooling/{retained.name}",
+                    "bytes": retained.stat().st_size,
+                    "sha256": sha256(retained),
+                }
+        staging.replace(output)
+    except BaseException:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+    set_stage("host_validation")
     initial_host = host_snapshot()
     placement = validate_host(
         initial_host, options.expected_cpus, options.expected_memory_bytes
@@ -723,36 +841,27 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="go-coord-remote-ab-") as temporary:
         work = Path(temporary)
+        set_stage("toolchain_install")
         go, toolchain = install_go(work)
+        go_environment = build_environment(go, work)
+        go_environment_digest = environment_sha256(go_environment)
         assert_affinity(expected_affinity)
+        set_stage("source_construction")
         baseline_source, candidate_source, sources = prepare_sources(repo, work)
         assert_affinity(expected_affinity)
         build_dir = output / "build"
         build_dir.mkdir()
-        source_commit = git(repo, "rev-parse", "HEAD")
         if exporter is not None:
             source_archive = git_archive_receipt(repo, source_commit)
         else:
             source_archive = None
-        retained_tooling: dict[str, dict[str, Any]] = {}
-        if bound_paths:
-            tooling_dir = output / "tooling"
-            tooling_dir.mkdir()
-            for source_path in bound_paths:
-                retained = tooling_dir / source_path.name
-                shutil.copy2(source_path, retained)
-                if sha256(retained) != sha256(source_path):
-                    raise RuntimeError(f"retained tooling SHA-256 mismatch: {source_path}")
-                retained_tooling[str(source_path.relative_to(repo))] = {
-                    "path": str(retained.relative_to(output)),
-                    "bytes": retained.stat().st_size,
-                    "sha256": sha256(retained),
-                }
         baseline_binary = build_dir / "coord-baseline.test"
         candidate_binary = build_dir / "coord-candidate.test"
-        baseline_build = build_arm(go, baseline_source, baseline_binary, work / "cache-baseline")
+        set_stage("build_baseline")
+        baseline_build = build_arm(go, baseline_source, baseline_binary, go_environment)
         assert_affinity(expected_affinity)
-        candidate_build = build_arm(go, candidate_source, candidate_binary, work / "cache-candidate")
+        set_stage("build_candidate")
+        candidate_build = build_arm(go, candidate_source, candidate_binary, go_environment)
         assert_affinity(expected_affinity)
         build_arms = {"go-baseline": baseline_build, "go-candidate": candidate_build}
         aa_left_binary = aa_right_binary = None
@@ -823,6 +932,8 @@ def main() -> int:
             "toolchain": toolchain,
             "source_archive": source_archive,
             "sources": sources,
+            "build_environment": go_environment,
+            "build_environment_sha256": go_environment_digest,
             "arms": build_arms,
         }
         write_json(build_dir / "manifest.json", build_receipt)
@@ -838,19 +949,19 @@ def main() -> int:
         candidate_campaign_sha = candidate_build["binary_sha256"]
         tests = output / "tests"
         tests.mkdir()
-        baseline_tests = run_tests(
-            go, baseline_source, work / "test-cache-baseline", tests / "baseline.txt"
-        )
+        set_stage("test_baseline")
+        baseline_tests = run_tests(go, baseline_source, go_environment, tests / "baseline.txt")
         assert_affinity(expected_affinity)
-        candidate_tests = run_tests(
-            go, candidate_source, work / "test-cache-candidate", tests / "candidate.txt"
-        )
+        set_stage("test_candidate")
+        candidate_tests = run_tests(go, candidate_source, go_environment, tests / "candidate.txt")
         assert_affinity(expected_affinity)
         write_json(
             tests / "manifest.json",
             {
                 "schema": "go-coordinator-remote-tests/v1",
                 "protocol_sha256": options.protocol_sha256,
+                "build_environment": go_environment,
+                "build_environment_sha256": go_environment_digest,
                 "arms": {
                     "go-baseline": baseline_tests,
                     "go-candidate": candidate_tests,
@@ -905,6 +1016,7 @@ def main() -> int:
                 "--expected-affinity", ",".join(str(cpu) for cpu in expected_affinity),
                 "--timeout-seconds", "1800",
             ]
+        set_stage("campaign_execution")
         campaign_process = subprocess.run(
             argv,
             cwd=repo,
@@ -916,11 +1028,18 @@ def main() -> int:
         if campaign_process.stdout:
             print(campaign_process.stdout, end="")
         campaign_returncode = campaign_process.returncode
+        set_stage("campaign_validation")
         after = host_snapshot()
         assert_affinity(expected_affinity, after["affinity"])
         rows = [
             json.loads(line) for line in (campaign / "rows.jsonl").read_text().splitlines() if line
         ]
+        if campaign_returncode != 0:
+            raise RuntimeError(
+                f"campaign sealed a mechanical failure with return code {campaign_returncode}"
+            )
+        if len(rows) != 552 or any(row.get("status") != "completed" for row in rows):
+            raise RuntimeError("campaign did not seal exactly 552 completed attempts")
         mismatch_counts = {"all_four_or_case_invariant": 0}
         for case in sorted({row["case"] for row in rows}):
             case_reference = None
@@ -989,7 +1108,6 @@ def main() -> int:
                 and memory_event_deltas is not None
                 and all(delta == 0 for delta in memory_event_deltas.values())
                 and placement_unchanged
-                and mismatches == 0
             )
             isolation = {
                 "schema": "go-coordinator-remote-isolation/v2",
@@ -1038,7 +1156,7 @@ def main() -> int:
                 and affinity_rows == 0 and pressure_rows == 0
                 and throttled_delta == 0 and memory_event_deltas is not None
                 and all(delta == 0 for delta in memory_event_deltas.values())
-                and placement_unchanged and mismatches == 0
+                and placement_unchanged
             )
             isolation = {
                 "schema": "go-coordinator-remote-isolation/v1",
@@ -1060,6 +1178,7 @@ def main() -> int:
         export_sha256 = None
         export_relative = None
         if exporter is not None and analyzer is not None:
+            set_stage("canonical_export")
             export_path = campaign / "export.json"
             command(
                 [
@@ -1080,6 +1199,7 @@ def main() -> int:
             export_relative = str(export_path.relative_to(output))
         remote_summary = {
             "schema": "go-coordinator-remote-summary/v1",
+            "status": "complete",
             "protocol_sha256": options.protocol_sha256,
             "build_manifest_sha256": sha256(build_dir / "manifest.json"),
             "tests_manifest_sha256": sha256(tests / "manifest.json"),
@@ -1121,6 +1241,134 @@ def main() -> int:
             return 1
         return campaign_returncode
     return 0
+
+
+def seal_failure(options: argparse.Namespace, error: BaseException) -> None:
+    """Seal a canonical export and summary for an owned failed invocation."""
+
+    output = options.out.resolve()
+    repo = Path(__file__).resolve().parents[3]
+    exporter = Path(EXPORTER_PATH).resolve() if EXPORTER_PATH else None
+    if (
+        options.mode not in {"run", "combined"}
+        or exporter is None
+        or options.protocol_sha256 is None
+        or re.fullmatch(r"[0-9a-f]{64}", options.protocol_sha256) is None
+    ):
+        return
+    source_commit = CURRENT_SOURCE_COMMIT
+    if source_commit is None or re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise RuntimeError("authenticated source commit is unavailable for failure sealing")
+    failure_path = output / "failure.json"
+    failure = {
+        "schema": "go-coordinator-remote-failure/v1",
+        "protocol_sha256": options.protocol_sha256,
+        "source_commit": source_commit,
+        "phase": options.phase,
+        "stage": CURRENT_STAGE,
+        "error": {
+            "type": type(error).__name__,
+            "detail": str(error)[:2048],
+        },
+        "usable_prefix_rows": None,
+    }
+    write_json(failure_path, failure)
+    campaign = output / "campaign"
+    campaign.mkdir(parents=True, exist_ok=True)
+    export_path = campaign / "export.json"
+    if export_path.exists():
+        export_path.replace(campaign / "pre-failure-export.json")
+    prior_summary = output / "remote-summary.json"
+    if prior_summary.exists():
+        prior_summary.replace(output / "pre-failure-remote-summary.json")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(exporter),
+            "--run",
+            str(output),
+            "--protocol-sha256",
+            options.protocol_sha256,
+            "--source-commit",
+            source_commit,
+            "--output",
+            str(export_path),
+            "--failure-record",
+            str(failure_path),
+        ],
+        cwd=repo,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0 or not export_path.is_file():
+        raise RuntimeError("canonical failure export could not be sealed: " + result.stdout)
+    # The exporter updates the receipt with its authenticated usable-prefix count.
+    failure = json.loads(failure_path.read_text(encoding="utf-8"))
+    summary = {
+        "schema": "go-coordinator-remote-summary/v1",
+        "status": "mechanical_failure",
+        "protocol_sha256": options.protocol_sha256,
+        "source_commit": source_commit,
+        "failure_path": "failure.json",
+        "failure_sha256": sha256(failure_path),
+        "failure_stage": failure["stage"],
+        "usable_prefix_rows": failure["usable_prefix_rows"],
+        "export_path": "campaign/export.json",
+        "export_sha256": sha256(export_path),
+        "remote_returncode": 2,
+        "claims_evaluated": False,
+    }
+    if OUTPUT_BUDGET_BYTES is not None:
+        pre_summary = tree_inventory(output, exclude={"remote-summary.json"})
+        if pre_summary["bytes"] + REMOTE_SUMMARY_RESERVE_BYTES > OUTPUT_BUDGET_BYTES:
+            raise RuntimeError("failure evidence exceeds the frozen output byte budget")
+        summary.update(
+            {
+                "output_budget_bytes": OUTPUT_BUDGET_BYTES,
+                "output_bytes_before_summary": pre_summary["bytes"],
+                "output_files_before_summary": pre_summary["files"],
+                "remote_summary_reserve_bytes": REMOTE_SUMMARY_RESERVE_BYTES,
+            }
+        )
+    write_json(output / "remote-summary.json", summary)
+    if OUTPUT_BUDGET_BYTES is not None and tree_inventory(output)["bytes"] > OUTPUT_BUDGET_BYTES:
+        raise RuntimeError("sealed failure evidence exceeds the frozen output byte budget")
+
+
+def main() -> int:
+    options = arguments()
+    output_preexisted = options.out.exists()
+    previous_term = signal.signal(signal.SIGTERM, abort_on_signal)
+    try:
+        return run(options)
+    except BaseException as error:
+        if not output_preexisted:
+            if options.out.exists():
+                try:
+                    seal_failure(options, error)
+                except BaseException as sealing_error:
+                    print(
+                        f"fatal: workflow failed and failure sealing failed: {sealing_error}",
+                        file=sys.stderr,
+                    )
+                    return 3
+                print(
+                    f"mechanical failure sealed at stage {CURRENT_STAGE}: "
+                    f"{type(error).__name__}: {error}",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    f"mechanical failure before output publication at stage {CURRENT_STAGE}: "
+                    f"{type(error).__name__}: {error}",
+                    file=sys.stderr,
+                )
+            return 2
+        raise
+    finally:
+        signal.signal(signal.SIGTERM, previous_term)
 
 
 if __name__ == "__main__":

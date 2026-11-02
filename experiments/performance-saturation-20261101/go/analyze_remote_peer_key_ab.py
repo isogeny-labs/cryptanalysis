@@ -13,6 +13,7 @@ from fractions import Fraction
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
 from pathlib import PurePosixPath
 import re
@@ -26,6 +27,7 @@ REPO = HERE.parents[2]
 shared: Any = None
 campaign_core: Any = None
 l2_core: Any = None
+export_core: Any = None
 
 
 SCHEMA = "go-coordinator-peer-key-ab-aa-analysis/2"
@@ -34,6 +36,12 @@ CANDIDATE_ARM = "go-candidate"
 AA_LEFT_ARM = "go-baseline-aa-left"
 AA_RIGHT_ARM = "go-baseline-aa-right"
 EXPECTED_ARMS = (BASELINE_ARM, CANDIDATE_ARM, AA_LEFT_ARM, AA_RIGHT_ARM)
+EXPECTED_BINARY_FILES = {
+    BASELINE_ARM: "coord-baseline.test",
+    CANDIDATE_ARM: "coord-candidate.test",
+    AA_LEFT_ARM: "coord-baseline-aa-left.test",
+    AA_RIGHT_ARM: "coord-baseline-aa-right.test",
+}
 ORDER_CYCLE = (
     (BASELINE_ARM, CANDIDATE_ARM, AA_LEFT_ARM, AA_RIGHT_ARM),
     (CANDIDATE_ARM, BASELINE_ARM, AA_RIGHT_ARM, AA_LEFT_ARM),
@@ -94,6 +102,7 @@ EXPECTED_PROTOCOL_VERSION = 9
 EXPECTED_PROTOCOL_PATH = "experiments/performance-saturation-20261101/go/protocol.v9.json"
 EXPECTED_SOURCE_ORIGIN = "https://github.com/isogeny-labs/cryptanalysis.git"
 EXPECTED_SOURCE_REF = "refs/heads/codex/go-peer-key-ab-aa-v9-20261101"
+EXPECTED_STARTUP_SHA256 = "15d32b2c8eb6e004b3b4fbb60c6be0bbd88486561dc373cca7140b3e8286ec9b"
 PROTOCOL_HASH_TOKEN = "V9_CANONICAL_SHA256_FROM_FREEZE"
 EXPECTED_OUTPUT = "go-peer-key-ab-aa-v9-run"
 EXPECTED_COMMAND_TEMPLATE = (
@@ -141,6 +150,45 @@ EXPECTED_ENVIRONMENT = {
 EXPECTED_ENVIRONMENT_SHA256 = hashlib.sha256(
     json.dumps(EXPECTED_ENVIRONMENT, sort_keys=True, separators=(",", ":")).encode()
 ).hexdigest()
+EXPECTED_BUILD_ENVIRONMENT_FIXED = {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "TZ": "UTC",
+    "CGO_ENABLED": "1",
+    "CGO_CFLAGS": "-O2 -g",
+    "CGO_CPPFLAGS": "",
+    "CGO_CXXFLAGS": "-O2 -g",
+    "CGO_FFLAGS": "-O2 -g",
+    "CGO_LDFLAGS": "-O2 -g",
+    "GO111MODULE": "on",
+    "GOENV": "off",
+    "GOEXPERIMENT": "",
+    "GOWORK": "off",
+    "GOTOOLCHAIN": "local",
+    "GOFLAGS": "-buildvcs=false -mod=readonly",
+    "GOMAXPROCS": "1",
+    "GOOS": "linux",
+    "GOARCH": "amd64",
+    "GOAMD64": "v1",
+    "GOPROXY": "https://proxy.golang.org",
+    "GOSUMDB": "sum.golang.org",
+    "GONOSUMDB": "",
+    "GONOPROXY": "",
+    "GOPRIVATE": "",
+    "GOVCS": "*:off",
+    "CC": "/usr/bin/gcc",
+    "CXX": "/usr/bin/g++",
+    "AR": "/usr/bin/ar",
+}
+EXPECTED_BUILD_DYNAMIC_SUFFIXES = {
+    "HOME": "go-home",
+    "TMPDIR": "tmp",
+    "GOROOT": "go",
+    "GOPATH": "gopath",
+    "GOCACHE": "gocache",
+    "GOMODCACHE": "gomodcache",
+}
 EXPECTED_AFFINITY_POLICY = (
     "require exactly 32 distinct allowed CPU ids; order by "
     "(package,die,numa,core,cpu), with missing topology sorting last; choose the first "
@@ -292,7 +340,7 @@ def load_verified_module(path: Path, expected_sha256: str, name: str) -> Any:
 
 
 def bind_verified_dependencies(protocol: dict[str, Any]) -> dict[str, str]:
-    global shared, campaign_core, l2_core
+    global shared, campaign_core, l2_core, export_core
     links = protocol["links"]
     shared_path = REPO / links["analysis_primitives"]
     campaign_path = REPO / links["campaign_core"]
@@ -312,10 +360,29 @@ def bind_verified_dependencies(protocol: dict[str, Any]) -> dict[str, str]:
         links["l2_measure_sha256"],
         "go_remote_ab_verified_l2_measure",
     )
+    export_path = REPO / links["exporter"]
+    export_core = load_verified_module(
+        export_path,
+        links["exporter_sha256"],
+        "go_remote_ab_verified_exporter",
+    )
+    controller_dependencies = {}
+    for path_key, hash_key in (
+        ("transport_driver", "transport_driver_sha256"),
+        ("transport_server", "transport_server_sha256"),
+        ("transport_pod", "transport_pod_sha256"),
+        ("transport_ship", "transport_ship_sha256"),
+    ):
+        path = REPO / links[path_key]
+        if raw_sha256(path) != links[hash_key]:
+            raise ValueError(f"verified transport dependency SHA-256 mismatch: {path}")
+        controller_dependencies[hash_key] = raw_sha256(path)
     return {
         "analysis_primitives_sha256": raw_sha256(shared_path),
         "campaign_core_sha256": raw_sha256(campaign_path),
         "l2_measure_sha256": raw_sha256(l2_path),
+        "exporter_sha256": raw_sha256(export_path),
+        **controller_dependencies,
     }
 
 
@@ -860,20 +927,49 @@ def verify_frozen_schedule(
     return {"rows": len(expected), "cases": EXPECTED_CASES}
 
 
+def verify_test_record(record: Any, go_command: str, expected_log: str) -> None:
+    if (
+        not isinstance(record, dict)
+        or set(record) != {
+            "command", "cwd", "environment_sha256", "exit_status",
+            "log", "log_bytes", "log_sha256",
+        }
+        or record["exit_status"] != 0
+        or record.get("command") != [go_command, "test", "./..."]
+        or record.get("cwd") != "bindings/go"
+        or record.get("log") != expected_log
+        or type(record.get("log_bytes")) is not int
+        or record["log_bytes"] < 0
+        or re.fullmatch(r"[0-9a-f]{64}", str(record.get("log_sha256", ""))) is None
+    ):
+        raise ValueError("correctness-test command/receipt is not exact")
+
+
 def verify_tests(run: Path, protocol_sha256: str) -> dict[str, Any]:
     path = run / "tests" / "manifest.json"
     manifest = shared.load_json(path)
     if manifest != {
         "schema": "go-coordinator-remote-tests/v1",
         "protocol_sha256": protocol_sha256,
+        "build_environment": manifest.get("build_environment"),
+        "build_environment_sha256": manifest.get("build_environment_sha256"),
         "arms": manifest.get("arms"),
     }:
         raise ValueError("test manifest top-level contract mismatch")
     arms = manifest["arms"]
+    environment_digest = verify_build_environment(
+        manifest.get("build_environment"), manifest.get("build_environment_sha256")
+    )
+    go_command = str(PurePosixPath(manifest["build_environment"]["GOROOT"]) / "bin" / "go")
     if set(arms) != {BASELINE_ARM, CANDIDATE_ARM}:
         raise ValueError("test manifest arm inventory mismatch")
+    expected_logs = {BASELINE_ARM: "baseline.txt", CANDIDATE_ARM: "candidate.txt"}
     for arm, record in arms.items():
-        if record["exit_status"] != 0 or record["command"][-2:] != ["test", "./..."]:
+        try:
+            verify_test_record(record, go_command, expected_logs[arm])
+        except ValueError as error:
+            raise ValueError(f"correctness tests did not pass for {arm}") from error
+        if record.get("environment_sha256") != environment_digest:
             raise ValueError(f"correctness tests did not pass for {arm}")
         log = run / "tests" / record["log"]
         if (
@@ -882,7 +978,45 @@ def verify_tests(run: Path, protocol_sha256: str) -> dict[str, Any]:
             or shared.sha256(log) != record["log_sha256"]
         ):
             raise ValueError(f"correctness test log binding mismatch for {arm}")
-    return {"manifest_sha256": shared.sha256(path), "arms": arms}
+    return {
+        "manifest_sha256": shared.sha256(path),
+        "arms": arms,
+        "environment": manifest.get("build_environment"),
+        "environment_sha256": environment_digest,
+    }
+
+
+def verify_build_environment(environment: Any, digest: Any) -> str:
+    if not isinstance(environment, dict) or any(
+        not isinstance(key, str) or not isinstance(value, str)
+        for key, value in environment.items()
+    ):
+        raise ValueError("build environment is not an exact string mapping")
+    if set(environment) != set(EXPECTED_BUILD_ENVIRONMENT_FIXED) | set(
+        EXPECTED_BUILD_DYNAMIC_SUFFIXES
+    ):
+        raise ValueError("build environment allowlist mismatch")
+    for key, value in EXPECTED_BUILD_ENVIRONMENT_FIXED.items():
+        if environment.get(key) != value:
+            raise ValueError(f"build environment fixed value mismatch: {key}")
+    roots: set[PurePosixPath] = set()
+    for key, suffix in EXPECTED_BUILD_DYNAMIC_SUFFIXES.items():
+        value = PurePosixPath(environment[key])
+        if not value.is_absolute() or value.name != suffix:
+            raise ValueError(f"build environment dynamic path mismatch: {key}")
+        roots.add(value.parent)
+    if (
+        len(roots) != 1
+        or next(iter(roots)).parent != PurePosixPath("/tmp")
+        or not next(iter(roots)).name.startswith("go-coord-remote-ab-")
+    ):
+        raise ValueError("build environment writable roots do not share the frozen temp root")
+    computed = hashlib.sha256(
+        json.dumps(environment, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if digest != computed:
+        raise ValueError("build environment SHA-256 mismatch")
+    return computed
 
 
 def verify_go_toolchain(toolchain: dict[str, Any]) -> None:
@@ -904,12 +1038,7 @@ def verify_binary_artifacts(
     build_arms: dict[str, Any],
     campaign_arms: dict[str, Any],
 ) -> None:
-    filenames = {
-        BASELINE_ARM: "coord-baseline.test",
-        CANDIDATE_ARM: "coord-candidate.test",
-        AA_LEFT_ARM: "coord-baseline-aa-left.test",
-        AA_RIGHT_ARM: "coord-baseline-aa-right.test",
-    }
+    filenames = EXPECTED_BINARY_FILES
     if set(build_arms) != set(filenames) or set(campaign_arms) != set(filenames):
         raise ValueError("build/campaign binary arm inventory mismatch")
     for arm in EXPECTED_ARMS:
@@ -932,6 +1061,53 @@ def verify_binary_artifacts(
         raise ValueError("A/A binaries are not byte-identical to the A/B baseline")
     if build_arms[CANDIDATE_ARM]["binary_sha256"] == build_arms[BASELINE_ARM]["binary_sha256"]:
         raise ValueError("candidate binary unexpectedly equals baseline")
+
+
+def verify_build_record(
+    record: Any,
+    arm: str,
+    go_command: str,
+    baseline_record: dict[str, Any] | None,
+) -> None:
+    filename = EXPECTED_BINARY_FILES[arm]
+    if not isinstance(record, dict):
+        raise ValueError("build receipt is not an object")
+    if arm in {BASELINE_ARM, CANDIDATE_ARM}:
+        command = record.get("command")
+        output_path = (
+            PurePosixPath(command[5])
+            if isinstance(command, list) and len(command) == 7
+            and isinstance(command[5], str)
+            else None
+        )
+        if (
+            set(record) != {
+                "command", "cwd", "environment_sha256", "stdout", "binary",
+                "binary_bytes", "binary_sha256",
+            }
+            or not isinstance(record.get("stdout"), str)
+            or command is None
+            or command[:5] != [go_command, "test", "-c", "-trimpath", "-o"]
+            or command[6] != "."
+            or output_path is None
+            or not output_path.is_absolute()
+            or output_path.parts[-3:] != (EXPECTED_OUTPUT, "build", filename)
+            or record.get("cwd") != "bindings/go"
+        ):
+            raise ValueError("compiled build command/receipt is not exact")
+        return
+    if baseline_record is None:
+        raise ValueError("A/A copy receipt lacks its baseline receipt")
+    expected = {
+        **baseline_record,
+        "command": ["byte-identical copy", EXPECTED_BINARY_FILES[BASELINE_ARM]],
+        "binary": filename,
+        "binary_bytes": record.get("binary_bytes"),
+        "binary_sha256": record.get("binary_sha256"),
+        "derived_from": EXPECTED_BINARY_FILES[BASELINE_ARM],
+    }
+    if record != expected:
+        raise ValueError("A/A copy receipt is not exact")
 
 
 def verify_build(
@@ -961,6 +1137,9 @@ def verify_build(
         raise ValueError("synthetic arms differ outside coord.go")
     toolchain = manifest.get("toolchain", {})
     verify_go_toolchain(toolchain)
+    build_environment_digest = verify_build_environment(
+        manifest.get("build_environment"), manifest.get("build_environment_sha256")
+    )
     source_plan = protocol["extensions"]["remote_execution"]["source"]
     source_archive = manifest.get("source_archive", {})
     if source_archive != {
@@ -1043,8 +1222,25 @@ def verify_build(
         raise ValueError("legacy runner SHA-256 field mismatch")
     if set(manifest.get("arms", {})) != set(EXPECTED_ARMS):
         raise ValueError("build arm inventory mismatch")
+    go_command = str(PurePosixPath(manifest["build_environment"]["GOROOT"]) / "bin" / "go")
+    for arm, record in manifest["arms"].items():
+        if record.get("environment_sha256") != build_environment_digest:
+            raise ValueError(f"build arm environment mismatch: {arm}")
+        try:
+            verify_build_record(
+                record,
+                arm,
+                go_command,
+                manifest["arms"][BASELINE_ARM] if arm not in {BASELINE_ARM, CANDIDATE_ARM} else None,
+            )
+        except ValueError as error:
+            raise ValueError(f"build arm command mismatch: {arm}") from error
     verify_binary_artifacts(run, manifest["arms"], campaign_arms)
-    return {"manifest_sha256": shared.sha256(path), "manifest": manifest}
+    return {
+        "manifest_sha256": shared.sha256(path),
+        "manifest": manifest,
+        "environment_sha256": build_environment_digest,
+    }
 
 
 def verify_export(
@@ -1071,6 +1267,17 @@ def verify_export(
         or len(export.get("runs", [])) != EXPECTED_ROWS
     ):
         raise ValueError("export protocol/source/run binding mismatch")
+    if not isinstance(export.get("created"), str) or not export["created"]:
+        raise ValueError("export creation timestamp is malformed")
+    expected_export = export_core.produce(
+        run,
+        protocol["freeze"]["protocol_sha256"],
+        protocol["extensions"]["remote_execution"]["source"]["commit"],
+        export_path,
+        created=export["created"],
+    )
+    if export != expected_export:
+        raise ValueError("export differs from exact raw recomputation")
     export_arms = {arm["id"]: arm for arm in export.get("arms", [])}
     if set(export_arms) != set(EXPECTED_ARMS):
         raise ValueError("export arm inventory mismatch")
@@ -1109,6 +1316,226 @@ def verify_export(
         "path": "campaign/export.json",
         "sha256": shared.sha256(export_path),
         "runs": len(export["runs"]),
+        "canonical_validator_sha256": shared.sha256(tool_path),
+        "canonical_schema_sha256": shared.sha256(schema_path),
+        "canonical_check": result.stdout.strip(),
+    }
+
+
+def verify_failure_export(
+    run: Path,
+    protocol_path: Path,
+    protocol: dict[str, Any],
+    summary: dict[str, Any],
+    tool_path: Path,
+) -> dict[str, Any]:
+    """Authenticate the failure-total export without evaluating science."""
+
+    expected_summary_keys = {
+        "schema", "status", "protocol_sha256", "source_commit", "failure_path",
+        "failure_sha256", "failure_stage", "usable_prefix_rows", "export_path",
+        "export_sha256", "remote_returncode", "claims_evaluated",
+        "output_budget_bytes", "output_bytes_before_summary",
+        "output_files_before_summary", "remote_summary_reserve_bytes",
+    }
+    protocol_sha = protocol["freeze"]["protocol_sha256"]
+    source_commit = protocol["extensions"]["remote_execution"]["source"]["commit"]
+    export_path = run / "campaign" / "export.json"
+    failure_path = run / "failure.json"
+    if (
+        set(summary) != expected_summary_keys
+        or summary.get("schema") != "go-coordinator-remote-summary/v1"
+        or summary.get("status") != "mechanical_failure"
+        or summary.get("protocol_sha256") != protocol_sha
+        or summary.get("source_commit") != source_commit
+        or summary.get("failure_path") != "failure.json"
+        or summary.get("export_path") != "campaign/export.json"
+        or summary.get("remote_returncode") != 2
+        or summary.get("claims_evaluated") is not False
+        or summary.get("failure_sha256") != shared.sha256(failure_path)
+        or summary.get("export_sha256") != shared.sha256(export_path)
+    ):
+        raise ValueError("mechanical-failure remote summary mismatch")
+    pre_summary = {"files": 0, "bytes": 0}
+    for path in run.rglob("*"):
+        if path.is_file() and path != run / "remote-summary.json":
+            pre_summary["files"] += 1
+            pre_summary["bytes"] += path.stat().st_size
+    if (
+        summary.get("output_budget_bytes") != 96_000_000
+        or summary.get("output_bytes_before_summary") != pre_summary["bytes"]
+        or summary.get("output_files_before_summary") != pre_summary["files"]
+        or summary.get("remote_summary_reserve_bytes") != 65_536
+        or pre_summary["bytes"] + 65_536 > 96_000_000
+    ):
+        raise ValueError("mechanical-failure output budget mismatch")
+
+    failure = shared.load_json(failure_path)
+    if (
+        set(failure) != {
+            "schema", "protocol_sha256", "source_commit", "phase", "stage",
+            "error", "usable_prefix_rows",
+        }
+        or failure.get("schema") != "go-coordinator-remote-failure/v1"
+        or failure.get("protocol_sha256") != protocol_sha
+        or failure.get("source_commit") != source_commit
+        or failure.get("phase") != "fixed-peer-key-ab-aa-v9"
+        or failure.get("stage") != summary.get("failure_stage")
+        or failure.get("usable_prefix_rows") != summary.get("usable_prefix_rows")
+        or type(failure.get("usable_prefix_rows")) is not int
+        or not 0 <= failure["usable_prefix_rows"] <= EXPECTED_ROWS
+        or not isinstance(failure.get("stage"), str)
+        or not failure["stage"]
+        or not isinstance(failure.get("error"), dict)
+        or set(failure["error"]) != {"type", "detail"}
+        or any(not isinstance(failure["error"].get(key), str) for key in ("type", "detail"))
+    ):
+        raise ValueError("mechanical-failure receipt mismatch")
+
+    export = shared.load_json(export_path)
+    backend = export.get("backend_record", {})
+    prefix = failure["usable_prefix_rows"]
+    if (
+        export.get("schema") != "experiment.export/v1"
+        or export.get("protocol", {}).get("sha256") != protocol_sha
+        or export.get("protocol", {}).get("protocol_id") != protocol["protocol_id"]
+        or export.get("protocol", {}).get("version") != protocol["version"]
+        or export.get("source", {}).get("commit") != source_commit
+        or len(export.get("runs", [])) != EXPECTED_ROWS
+        or backend.get("completion_status") != "mechanical_failure"
+        or backend.get("planned_rows") != EXPECTED_ROWS
+        or backend.get("usable_prefix_rows") != prefix
+        or backend.get("failure_record_sha256") != shared.sha256(failure_path)
+    ):
+        raise ValueError("mechanical-failure export binding mismatch")
+    if not isinstance(export.get("created"), str) or not export["created"]:
+        raise ValueError("mechanical-failure export creation timestamp is malformed")
+    expected_export = export_core.produce_failure(
+        run,
+        protocol_sha,
+        source_commit,
+        export_path,
+        failure_path,
+        created=export["created"],
+        rewrite_failure_receipt=False,
+    )
+    if export != expected_export:
+        raise ValueError("mechanical-failure export differs from exact raw recomputation")
+    schedule: list[dict[str, Any]] = []
+    sequence = 0
+    for case_index, case in enumerate(EXPECTED_CASES, 1):
+        rounds = [(True, value) for value in range(1, 4)]
+        rounds.extend((False, value) for value in range(1, 21))
+        for warmup, replicate in rounds:
+            for position, arm in enumerate(ORDER_CYCLE[(replicate - 1) % 4], 1):
+                sequence += 1
+                kind = "warmup" if warmup else "measured"
+                schedule.append(
+                    {
+                        "run_id": (
+                            f"{sequence:04d}_{kind}_case{case_index:02d}_r{replicate:02d}_"
+                            f"p{position}_{arm}"
+                        ),
+                        "arm": arm,
+                        "instance_id": str(case_index - 1),
+                        "replicate": replicate - 1,
+                        "warmup": warmup,
+                    }
+                )
+    for index, (observed, planned) in enumerate(zip(export["runs"], schedule, strict=True)):
+        if any(observed.get(key) != value for key, value in planned.items()):
+            raise ValueError("mechanical-failure export schedule mismatch")
+        if index >= prefix and (
+            observed.get("status") != "infra_error"
+            or observed.get("outcome_class") != "not_completed"
+            or observed.get("attempts") != 1
+            or observed.get("artifacts") != []
+            or observed.get("measurements", {}).get("wall_valid") is not False
+            or observed.get("verification", {}).get("status") != "not_run"
+            or observed.get("exclusion") != {"excluded": False, "rule": None}
+        ):
+            raise ValueError("mechanical-failure export suffix was forged")
+
+    rows_path = run / "campaign" / "rows.jsonl"
+    if prefix:
+        if not rows_path.is_file():
+            raise ValueError("mechanical-failure export claims an absent raw prefix")
+        try:
+            raw_rows = [
+                json.loads(line) for line in rows_path.read_text(encoding="utf-8").splitlines() if line
+            ]
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            raise ValueError("mechanical-failure raw prefix is malformed") from error
+        if len(raw_rows) < prefix:
+            raise ValueError("mechanical-failure raw prefix is shorter than reported")
+        raw_prefix = raw_rows[:prefix]
+        raw_schedule = export_core.expected_schedule()
+        mismatches = export_core.mismatch_cells(raw_prefix)
+        expected_prefix = [
+            export_core.make_run(
+                row,
+                base=run / "campaign",
+                timing_valid=False,
+                mismatches=mismatches,
+            )
+            for row in raw_prefix
+        ]
+        for index, raw_row in enumerate(raw_prefix):
+            if (
+                any(raw_row.get(key) != value for key, value in raw_schedule[index].items())
+                or raw_row.get("protocol_sha256") != protocol_sha
+            ):
+                raise ValueError("mechanical-failure raw prefix schedule mismatch")
+            artifacts = raw_row.get("artifacts", {})
+            if not isinstance(artifacts, dict) or any(
+                not isinstance(artifacts.get(key), str)
+                for key in ("stdout", "stderr", "metadata")
+            ):
+                raise ValueError("mechanical-failure raw prefix artifact paths are malformed")
+            stdout_path = run / "campaign" / artifacts.get("stdout", "")
+            stderr_path = run / "campaign" / artifacts.get("stderr", "")
+            metadata_path = run / "campaign" / artifacts.get("metadata", "")
+            if (
+                not stdout_path.is_file()
+                or not stderr_path.is_file()
+                or not metadata_path.is_file()
+                or artifacts.get("stdout_sha256") != shared.sha256(stdout_path)
+                or artifacts.get("stderr_sha256") != shared.sha256(stderr_path)
+                or shared.load_json(metadata_path) != raw_row
+                or campaign_core.parse_output(stdout_path.read_bytes()) != raw_row.get("parsed")
+                or export["runs"][index] != expected_prefix[index]
+            ):
+                raise ValueError("mechanical-failure raw/export prefix binding mismatch")
+            exported_artifacts = export["runs"][index].get("artifacts", [])
+            for artifact in exported_artifacts:
+                path = export_path.parent / artifact["path"]
+                if (
+                    not path.is_file()
+                    or path.stat().st_size != artifact["bytes"]
+                    or shared.sha256(path) != artifact["sha256"]
+                ):
+                    raise ValueError("mechanical-failure prefix artifact mismatch")
+
+    tool_path = tool_path.resolve()
+    schema_path = tool_path.parents[1] / "schemas" / "experiment-export.v1.json"
+    result = subprocess.run(
+        [
+            sys.executable, str(tool_path), "check-export", str(export_path),
+            "--protocol", str(protocol_path), "--verify-files",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ValueError("canonical failure export validation failed:\n" + result.stdout)
+    return {
+        "path": "campaign/export.json",
+        "sha256": shared.sha256(export_path),
+        "runs": EXPECTED_ROWS,
+        "usable_prefix_rows": prefix,
+        "failure_sha256": shared.sha256(failure_path),
         "canonical_validator_sha256": shared.sha256(tool_path),
         "canonical_schema_sha256": shared.sha256(schema_path),
         "canonical_check": result.stdout.strip(),
@@ -1168,6 +1595,14 @@ def verify_launch_contract(protocol: dict[str, Any]) -> dict[str, Any]:
         or planned.get("image") != "runpod/base:1.0.2-ubuntu2404"
         or planned.get("container_disk_gb") != 60
         or planned.get("max_price_usd_per_hour") != 1.0
+        or planned.get("request_startup_sha256") != EXPECTED_STARTUP_SHA256
+        or planned.get("build_test_environment")
+        != {
+            "inherit_provider_environment": False,
+            "fixed": EXPECTED_BUILD_ENVIRONMENT_FIXED,
+            "dynamic_paths": EXPECTED_BUILD_DYNAMIC_SUFFIXES,
+            "shared_by": ["baseline build", "candidate build", "baseline tests", "candidate tests"],
+        }
         or planned.get("controller_launch_argv") != expected_controller_argv(planned)
         or planned.get("request_environment_keys") != EXPECTED_REQUEST_ENVIRONMENT_KEYS
         or source.get("origin") != EXPECTED_SOURCE_ORIGIN
@@ -1199,6 +1634,19 @@ def verify_launch_contract(protocol: dict[str, Any]) -> dict[str, Any]:
 def verify_transport(receipt: dict[str, Any], protocol: dict[str, Any]) -> dict[str, Any]:
     planned = protocol["extensions"]["remote_execution"]
     launch = verify_launch_contract(protocol)
+    expected_top_keys = {
+        "schema", "provider_actions", "source", "command", "command_sha256",
+        "outputs", "request", "transport", "cpu_guard", "started_at", "pod",
+        "remote_status", "result", "cleanup", "error", "finished_at",
+    }
+    if set(receipt) != expected_top_keys or receipt.get("error") is not None:
+        raise ValueError("transport receipt terminal schema/error mismatch")
+    if (
+        receipt.get("schema") != "runpod.http-batch.receipt/v1"
+        or not isinstance(receipt.get("started_at"), str)
+        or not isinstance(receipt.get("finished_at"), str)
+    ):
+        raise ValueError("transport receipt identity/timestamps are malformed")
     token = planned["protocol_hash_token"]
     template = planned["command_template"]
     if template.count(token) != 1:
@@ -1217,10 +1665,17 @@ def verify_transport(receipt: dict[str, Any], protocol: dict[str, Any]) -> dict[
         raise ValueError("transport mechanism mismatch")
 
     source = receipt.get("source", {})
+    if set(source) != {
+        "origin", "ref", "commit", "tree", "archive_sha256",
+        "public_ref_checked", "public_checked_at",
+    }:
+        raise ValueError("transport source receipt schema mismatch")
     for key in ("origin", "ref", "commit", "tree"):
         if source.get(key) != planned["source"][key]:
             raise ValueError(f"transport source identity mismatch: {key}")
-    if source.get("public_ref_checked") is not True:
+    if source.get("public_ref_checked") is not True or not isinstance(
+        source.get("public_checked_at"), str
+    ):
         raise ValueError("transport did not verify the dedicated public source ref")
     archive_sha = source.get("archive_sha256")
     if archive_sha != launch["source_archive_sha256"]:
@@ -1241,52 +1696,160 @@ def verify_transport(receipt: dict[str, Any], protocol: dict[str, Any]) -> dict[
         "minVCPUPerGPU": None,
         "ports": ["8888/http"],
         "secrets_redacted": True,
-        "startup_sha256": request.get("startup_sha256"),
+        "startup_sha256": EXPECTED_STARTUP_SHA256,
         "vcpuCount": 32,
         "name": request.get("name"),
     }
     if request != expected_request:
         raise ValueError("RunPod request differs from frozen CPU request")
-    if re.fullmatch(r"[0-9a-f]{64}", request.get("startup_sha256", "")) is None:
-        raise ValueError("RunPod startup identity is malformed")
     name = request.get("name")
-    if not isinstance(name, str) or not name.startswith(planned["pod_name_prefix"]):
-        raise ValueError("RunPod job name prefix mismatch")
+    if not isinstance(name, str) or re.fullmatch(
+        re.escape(planned["pod_name_prefix"]) + r"[0-9a-f]{12}", name
+    ) is None:
+        raise ValueError("RunPod job name/nonce mismatch")
 
     pod = receipt.get("pod", {})
+    expected_pod_keys = {
+        "cloud", "cost", "cpu", "createdAt", "creation_response_ambiguous",
+        "cudaVersion", "dataCenterId", "gpu", "id", "image", "name",
+        "startedAt", "status",
+    }
+    cost = pod.get("cost")
     if (
-        pod.get("name") != name
+        set(pod) != expected_pod_keys
+        or pod.get("name") != name
         or pod.get("cloud") != "SECURE"
         or pod.get("cpu") != {"id": "cpu3c", "memory": 64, "vcpuCount": 32}
         or pod.get("image") != planned["image"]
         or pod.get("gpu") is not None
         or pod.get("cudaVersion") is not None
         or pod.get("creation_response_ambiguous") is not False
-        or not isinstance(pod.get("cost"), (int, float))
-        or pod["cost"] > planned["max_price_usd_per_hour"]
-        or not isinstance(pod.get("id"), str)
-        or not pod["id"]
+        or not isinstance(cost, (int, float))
+        or isinstance(cost, bool)
+        or not math.isfinite(cost)
+        or not 0 < cost <= planned["max_price_usd_per_hour"]
+        or re.fullmatch(r"[A-Za-z0-9_-]{3,128}", str(pod.get("id", ""))) is None
+        or pod.get("status") != "RUNNING"
+        or not isinstance(pod.get("createdAt"), str)
+        or not isinstance(pod.get("startedAt"), str)
+        or not isinstance(pod.get("dataCenterId"), str)
+        or not pod["dataCenterId"]
     ):
         raise ValueError("observed RunPod placement differs from frozen request")
 
     remote = receipt.get("remote_status", {})
+    expected_remote_keys = {
+        "archive", "archive_ready", "chunks", "command_sha256",
+        "command_started_unix", "done", "finished_unix", "hardware", "job_id",
+        "returncode", "schema", "source_archive_sha256", "source_commit",
+        "source_tree", "stage", "started_unix", "timed_out", "worker_error_type",
+    }
+    numeric_times = (
+        remote.get("started_unix"), remote.get("command_started_unix"),
+        remote.get("finished_unix"),
+    )
     if (
-        remote.get("command_sha256") != command_sha256
+        set(remote) != expected_remote_keys
+        or remote.get("schema") != "runpod.http-batch.status/v1"
+        or remote.get("stage") != "complete"
+        or remote.get("done") is not True
+        or remote.get("archive_ready") is not True
+        or remote.get("timed_out") is not False
+        or remote.get("worker_error_type") is not None
+        or type(remote.get("returncode")) is not int
+        or remote["returncode"] not in {0, 1, 2}
+        or any(
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+            or not math.isfinite(value)
+            or value <= 0
+            for value in numeric_times
+        )
+        or not (numeric_times[0] <= numeric_times[1] <= numeric_times[2])
+        or remote.get("command_sha256") != command_sha256
         or remote.get("source_archive_sha256") != archive_sha
         or remote.get("source_commit") != planned["source"]["commit"]
         or remote.get("source_tree") != planned["source"]["tree"]
         or remote.get("job_id") != name
+        or set(remote.get("hardware", {})) != {"pod_id", "gpus", "nvcc"}
         or remote.get("hardware", {}).get("pod_id") != pod["id"]
         or remote.get("hardware", {}).get("gpus") != []
+        or not isinstance(remote.get("hardware", {}).get("nvcc"), str)
     ):
         raise ValueError("remote worker source/command/hardware binding mismatch")
     remote_archive = remote.get("archive", {})
+    sha_pattern = r"[0-9a-f]{64}"
     if (
-        type(remote_archive.get("uncompressed_bytes")) is not int
-        or remote_archive["uncompressed_bytes"] > 104_000_000
-        or remote_archive.get("bytes", 0) > 128 * 1024 * 1024
+        not isinstance(remote_archive, dict)
+        or set(remote_archive) != {
+            "bytes", "files", "manifest_sha256", "sha256", "uncompressed_bytes"
+        }
+        or type(remote_archive.get("bytes")) is not int
+        or not 0 < remote_archive["bytes"] <= 128 * 1024 * 1024
+        or type(remote_archive.get("files")) is not int
+        or remote_archive["files"] <= 0
+        or type(remote_archive.get("uncompressed_bytes")) is not int
+        or not 0 < remote_archive["uncompressed_bytes"] <= 104_000_000
+        or re.fullmatch(sha_pattern, str(remote_archive.get("sha256", ""))) is None
+        or re.fullmatch(sha_pattern, str(remote_archive.get("manifest_sha256", ""))) is None
     ):
         raise ValueError("remote result exceeds the frozen output-size budget")
+    chunks = remote.get("chunks")
+    if not isinstance(chunks, list) or not chunks:
+        raise ValueError("remote result chunk inventory is absent")
+    offset = total = 0
+    for index, chunk in enumerate(chunks):
+        if (
+            not isinstance(chunk, dict)
+            or set(chunk) != {"bytes", "index", "offset", "path", "sha256"}
+            or chunk.get("index") != index
+            or chunk.get("offset") != offset
+            or chunk.get("path") != f"/v1/result/{index:06d}"
+            or type(chunk.get("bytes")) is not int
+            or not 0 < chunk["bytes"] <= 4_194_304
+            or re.fullmatch(sha_pattern, str(chunk.get("sha256", ""))) is None
+        ):
+            raise ValueError("remote result chunk inventory is malformed")
+        offset += chunk["bytes"]
+        total += chunk["bytes"]
+    if total != remote_archive["bytes"]:
+        raise ValueError("remote result chunks do not cover the archive")
+
+    result = receipt.get("result", {})
+    expected_archive_path = planned["controller_archive_path"]
+    expected_metadata_path = str(Path(planned["controller_receipt_path"]).with_suffix(".remote"))
+    if (
+        not isinstance(result, dict)
+        or set(result) != {
+            "archive", "archive_bytes", "archive_sha256", "metadata", "files"
+        }
+        or result.get("archive") != expected_archive_path
+        or result.get("metadata") != expected_metadata_path
+        or result.get("archive_bytes") != remote_archive["bytes"]
+        or result.get("archive_sha256") != remote_archive["sha256"]
+        or not isinstance(result.get("files"), list)
+        # The server's count includes .runpod-batch/files.sha256; the verified
+        # extraction inventory intentionally omits that self-authenticating
+        # manifest and retains every member it names.
+        or len(result["files"]) != remote_archive["files"] - 1
+        or any(
+            not isinstance(record, dict)
+            or set(record) != {"bytes", "path", "sha256"}
+            or type(record.get("bytes")) is not int
+            or record["bytes"] < 0
+            or not isinstance(record.get("path"), str)
+            or not record["path"]
+            or re.fullmatch(sha_pattern, str(record.get("sha256", ""))) is None
+            for record in result["files"]
+        )
+    ):
+        raise ValueError("downloaded result receipt differs from remote archive")
+    if receipt.get("cleanup") != {
+        "absence_verified": True,
+        "delete_requested": True,
+        "id": pod["id"],
+    }:
+        raise ValueError("transport cleanup receipt mismatch")
     return {
         "pod_id": pod["id"],
         "pod_name": name,
@@ -1326,18 +1889,39 @@ def _verify_restoration(
     restoration: dict[str, Any], reservation: dict[str, Any], expected_affinity: list[int]
 ) -> bool:
     records = restoration.get("records")
-    if not isinstance(records, list) or restoration.get("attempted") != len(records):
+    count_keys = ("attempted", "restored", "exited", "failures")
+    if (
+        not isinstance(records, list)
+        or any(type(restoration.get(key)) is not int or restoration[key] < 0 for key in count_keys)
+        or restoration.get("attempted") != len(records)
+        or expected_affinity != sorted(set(expected_affinity))
+        or any(type(cpu) is not int or cpu < 0 for cpu in expected_affinity)
+    ):
         raise ValueError("reservation restoration inventory mismatch")
     tids: set[int] = set()
     restored = exited = failures = 0
-    reserved = set(reservation["cpus"])
+    reservation_cpus = reservation.get("cpus")
+    if (
+        not isinstance(reservation_cpus, list)
+        or reservation_cpus != sorted(set(reservation_cpus))
+        or not reservation_cpus
+        or any(type(cpu) is not int or cpu < 0 for cpu in reservation_cpus)
+        or not set(reservation_cpus) < set(expected_affinity)
+        or type(reservation.get("threads_moved")) is not int
+        or reservation["threads_moved"] < 0
+    ):
+        raise ValueError("reservation CPU/count domain mismatch")
+    reserved = set(reservation_cpus)
+    allowed = set(expected_affinity)
     for record in records:
         if (
             not isinstance(record, dict)
             or type(record.get("pid")) is not int
+            or record["pid"] <= 0
             or type(record.get("tid")) is not int
+            or record["tid"] <= 0
             or type(record.get("starttime_ticks")) is not int
-            or record["starttime_ticks"] < 0
+            or record["starttime_ticks"] <= 0
             or record["tid"] in tids
         ):
             raise ValueError("restoration thread identity is malformed")
@@ -1347,6 +1931,13 @@ def _verify_restoration(
         if (
             not isinstance(affinity, list)
             or not isinstance(evicted, list)
+            or affinity != sorted(set(affinity))
+            or evicted != sorted(set(evicted))
+            or not affinity
+            or not evicted
+            or any(type(cpu) is not int or cpu < 0 for cpu in affinity + evicted)
+            or not set(affinity) <= allowed
+            or set(evicted) != set(affinity) - reserved
             or not reserved.intersection(affinity)
             or reserved.intersection(evicted)
         ):
@@ -1354,12 +1945,47 @@ def _verify_restoration(
         status = record.get("status")
         if status == "restored":
             restored += 1
-            if record.get("restored_affinity") != affinity:
+            if set(record) != {
+                "pid", "tid", "starttime_ticks", "affinity", "evicted_affinity",
+                "status", "restored_affinity",
+            } or record.get("restored_affinity") != affinity:
                 raise ValueError("restoration readback mismatch")
         elif status == "exited":
             exited += 1
-        elif status in {"error", "identity_mismatch", "readback_mismatch"}:
+            if set(record) != {
+                "pid", "tid", "starttime_ticks", "affinity", "evicted_affinity", "status"
+            }:
+                raise ValueError("exited restoration record has unexpected fields")
+        elif status == "error":
             failures += 1
+            if (
+                set(record) != {
+                    "pid", "tid", "starttime_ticks", "affinity", "evicted_affinity",
+                    "status", "errno",
+                }
+                or type(record.get("errno")) is not int
+                or record["errno"] <= 0
+            ):
+                raise ValueError("restoration error record is malformed")
+        elif status == "identity_mismatch":
+            failures += 1
+            if set(record) != {
+                "pid", "tid", "starttime_ticks", "affinity", "evicted_affinity", "status"
+            }:
+                raise ValueError("restoration identity record is malformed")
+        elif status == "readback_mismatch":
+            failures += 1
+            readback = record.get("restored_affinity")
+            if (
+                set(record) != {
+                    "pid", "tid", "starttime_ticks", "affinity", "evicted_affinity",
+                    "status", "restored_affinity",
+                }
+                or not isinstance(readback, list)
+                or readback != sorted(set(readback))
+                or any(type(cpu) is not int or cpu < 0 for cpu in readback)
+            ):
+                raise ValueError("restoration readback-mismatch record is malformed")
         else:
             raise ValueError("unknown restoration status")
     passes = bool(
@@ -1367,6 +1993,8 @@ def _verify_restoration(
         and restoration.get("restored") == restored
         and restoration.get("exited") == exited
         and restoration.get("failures") == failures
+        and restoration["restored"] + restoration["exited"] + restoration["failures"]
+        == restoration["attempted"]
         and restoration.get("runner_affinity_after_restore") == expected_affinity
         and restoration.get("runner_affinity_passes") is True
         and failures == 0
@@ -1515,7 +2143,6 @@ def verify_isolation(
         type(before.get("steal_ticks")) is int
         and before["steal_ticks"] == after.get("steal_ticks")
     )
-    mismatch_count = isolation.get("fingerprint_pair_mismatches")
     passes = bool(
         exact_placement
         and preflight_passes
@@ -1533,7 +2160,7 @@ def verify_isolation(
         "cgroup_nr_throttled_delta": throttle_delta,
         "memory_event_deltas": memory_deltas,
         "placement_unchanged": exact_placement,
-        "timing_valid": passes and mismatch_count == 0,
+        "timing_valid": passes,
     }
     for key, value in reported.items():
         if isolation.get(key) != value:
@@ -1591,14 +2218,86 @@ def analyze(options: argparse.Namespace) -> dict[str, Any]:
     transport = verify_transport(receipt, protocol)
     archive = shared.verify_archive(archive_path, receipt)
     extracted_run = verify_extracted_run(run, receipt, EXPECTED_OUTPUT)
+    summary_path = run / "remote-summary.json"
+    summary = shared.load_json(summary_path)
+    if summary.get("status") == "mechanical_failure":
+        if receipt.get("remote_status", {}).get("returncode") != 2:
+            raise ValueError("sealed mechanical failure must exit exactly 2")
+        failure_export = verify_failure_export(
+            run, protocol_path, protocol, summary, options.protocol_tool
+        )
+        export_doc = shared.load_json(run / "campaign" / "export.json")
+        return {
+            "schema": SCHEMA,
+            "protocol_sha256": protocol_sha256,
+            "protocol": protocol_identity,
+            "analysis": {
+                "script": expected_analysis_script["path"],
+                "script_sha256": expected_analysis_script["sha256"],
+                "status": "preregistered_deterministic",
+                "verified_dependencies": dependencies,
+            },
+            "inputs": {
+                "protocol_file_sha256": shared.sha256(protocol_path),
+                "receipt_sha256": shared.sha256(receipt_path),
+                "archive_sha256": archive["sha256"],
+                "archive_manifest_sha256": archive["manifest_sha256"],
+                "remote_summary_sha256": shared.sha256(summary_path),
+                "failure_sha256": failure_export["failure_sha256"],
+                "export_sha256": failure_export["sha256"],
+            },
+            "transport": transport,
+            "adherence": {
+                "archive_bound_run": extracted_run,
+                "frozen_schedule": {
+                    "rows": EXPECTED_ROWS,
+                    "usable_prefix_rows": failure_export["usable_prefix_rows"],
+                    "status": "failure_total",
+                },
+                "export": failure_export,
+            },
+            "flow": {
+                **export_doc["flow"],
+                "remote_returncode": 2,
+                "mechanically_complete": False,
+            },
+            "correctness": {
+                "passes": None,
+                "status": "not_evaluated",
+                "rule": "mechanical completeness precedes every scientific claim",
+            },
+            "isolation": {"passes": None, "status": "not_evaluated"},
+            "inference": {"status": "not_evaluated"},
+            "cases": [],
+            "claims": claim_statuses(
+                complete=False,
+                correctness=False,
+                allocation=False,
+                timing_numeric=False,
+                timing_isolation=False,
+            ),
+            "verdict": {
+                "overall": "inconclusive",
+                "reason": "sealed mechanical failure",
+                "allocation_gate_passes": None,
+                "timing_numeric_gate_passes": None,
+                "aa_calibration_gate_passes": None,
+                "timing_l2_gate_passes": None,
+                "timing_control_gate_passes": None,
+                "timing_claim_status": "not_evaluated",
+            },
+        }
     rows, inventory = load_verified_rows(run, protocol)
     schedule = verify_frozen_schedule(run, rows, protocol)
     tests = verify_tests(run, protocol_sha256)
     build = verify_build(run, protocol, inventory["arms"], transport)
+    if (
+        tests["environment"] != build["manifest"].get("build_environment")
+        or tests["environment_sha256"] != build["environment_sha256"]
+    ):
+        raise ValueError("build and test commands did not share one exact environment")
     isolation_path = run / "isolation.json"
-    summary_path = run / "remote-summary.json"
     isolation_record = shared.load_json(isolation_path)
-    summary = shared.load_json(summary_path)
     expected_summary_hashes = {
         "build_manifest_sha256": build["manifest_sha256"],
         "tests_manifest_sha256": tests["manifest_sha256"],
@@ -1620,6 +2319,7 @@ def analyze(options: argparse.Namespace) -> dict[str, Any]:
             pre_summary["bytes"] += path.stat().st_size
     if (
         summary.get("schema") != "go-coordinator-remote-summary/v1"
+        or summary.get("status") != "complete"
         or summary.get("output_budget_bytes") != 96_000_000
         or summary.get("output_bytes_before_summary") != pre_summary["bytes"]
         or summary.get("output_files_before_summary") != pre_summary["files"]
@@ -1648,7 +2348,7 @@ def analyze(options: argparse.Namespace) -> dict[str, Any]:
     }:
         raise ValueError("remote summary correctness detail mismatch")
     isolation = verify_isolation(run, rows, isolation_record, receipt, build["manifest"])
-    if summary.get("timing_valid") != (isolation["passes"] and correctness):
+    if summary.get("timing_valid") != isolation["passes"]:
         raise ValueError("remote summary timing-valid field mismatch")
 
     remote_returncode = receipt["remote_status"]["returncode"]

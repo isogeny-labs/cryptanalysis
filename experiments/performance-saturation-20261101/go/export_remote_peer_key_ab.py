@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 
@@ -54,6 +55,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--protocol-sha256", required=True)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--failure-record",
+        type=Path,
+        help="seal a canonical 552-cell mechanical-failure export",
+    )
     return parser.parse_args()
 
 
@@ -256,7 +262,7 @@ def make_run(
     blockers = list(row_isolation.get("blocking", []))
     if not timing_valid:
         blockers.append(
-            "session failed at least one preregistered cumulative L2 or A/A eligibility gate; see ../isolation.json"
+            "session did not establish every preregistered cumulative L2 isolation gate; see session receipts"
         )
     if pair_mismatch:
         blockers.append("paired correctness fingerprint mismatch")
@@ -294,7 +300,11 @@ def make_run(
         },
         "isolation": {
             "tier": tier,
-            "contended": not wall_valid and not row["warmup"],
+            "contended": bool(
+                not row["warmup"]
+                and status == "succeeded"
+                and tier not in {"L2", "L3"}
+            ),
             "blockers": blockers,
         },
         "verification": {
@@ -313,11 +323,296 @@ def make_run(
     }
 
 
+def make_failure_run(planned: dict[str, Any], failure: dict[str, Any]) -> dict[str, Any]:
+    """Represent a frozen schedule cell blocked by a workflow-level failure.
+
+    The export schema requires attempts >= 1.  The single combined provider
+    job is the attempt: the row was planned and entered that workflow, but its
+    benchmark child was never completed because an upstream stage failed.
+    """
+
+    replicate = planned["replicate"] - 1
+    return {
+        "run_id": planned["run_id"],
+        "arm": planned["arm"],
+        "instance_id": str(CASES.index(planned["case"])),
+        "seed": FIXTURE_SEED,
+        "replicate": replicate,
+        "warmup": planned["warmup"],
+        "status": "infra_error",
+        "outcome_class": "not_completed",
+        "attempts": 1,
+        "resumed": 0,
+        "checkpoint": None,
+        "measurements": {
+            "counted": {},
+            "wall_seconds": None,
+            "wall_valid": False,
+            "cpu_user_seconds": None,
+            "cpu_sys_seconds": None,
+            "max_rss_bytes": None,
+            "counters": {},
+        },
+        "isolation": {
+            "tier": "L0",
+            "contended": False,
+            "blockers": [
+                "combined workflow mechanical failure before this child completed: "
+                + str(failure["stage"])
+            ],
+        },
+        "verification": {
+            "status": "not_run",
+            "verifier": "benchmark child did not complete",
+        },
+        "exclusion": {"excluded": False, "rule": None},
+        "artifacts": [],
+        "started_at": None,
+        "finished_at": None,
+        "worker": None,
+        "backend_ref": planned["run_id"],
+    }
+
+
+def usable_prefix(run: Path, protocol_sha256: str) -> list[dict[str, Any]]:
+    """Return only the exact, contiguous, fully materialized row prefix."""
+
+    rows_path = run / "campaign" / "rows.jsonl"
+    if not rows_path.is_file():
+        return []
+    try:
+        rows = [json.loads(line) for line in rows_path.read_text(encoding="utf-8").splitlines() if line]
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return []
+    expected = expected_schedule()
+    prefix: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        if index >= len(expected) or not isinstance(row, dict):
+            break
+        planned = expected[index]
+        if (
+            any(row.get(key) != value for key, value in planned.items())
+            or row.get("protocol_sha256") != protocol_sha256
+        ):
+            break
+        artifacts = row.get("artifacts")
+        if not isinstance(artifacts, dict):
+            break
+        complete_artifacts = True
+        for key in ("stdout", "stderr", "metadata"):
+            relative = artifacts.get(key)
+            if not isinstance(relative, str):
+                complete_artifacts = False
+                break
+            path = run / "campaign" / relative
+            try:
+                path.resolve().relative_to((run / "campaign").resolve())
+            except ValueError:
+                complete_artifacts = False
+                break
+            if not path.is_file():
+                complete_artifacts = False
+                break
+        if not complete_artifacts:
+            break
+        prefix.append(row)
+    return prefix
+
+
+def _failure_file_inventory(
+    run: Path,
+    output: Path,
+    row_runs: list[dict[str, Any]],
+    analysis_script: Path | None,
+) -> list[dict[str, Any]]:
+    base = output.parent
+    already = {
+        (base / artifact["path"]).resolve()
+        for row in row_runs
+        for artifact in row["artifacts"]
+    }
+    if analysis_script is not None:
+        already.add(analysis_script.resolve())
+    excluded = {output.resolve(), (run / "remote-summary.json").resolve()}
+    records: list[dict[str, Any]] = []
+    for path in sorted(run.rglob("*")):
+        if path.is_symlink() or (path.exists() and not path.is_file() and not path.is_dir()):
+            raise ValueError("failure output contains a non-regular entry")
+        if not path.is_file() or path.resolve() in already or path.resolve() in excluded:
+            continue
+        suffix = path.suffix.lower()
+        kind = "log" if suffix in {".txt", ".log"} else "summary"
+        records.append(file_entry(path, base, kind))
+    return records
+
+
+def produce_failure(
+    run: Path,
+    protocol_sha256: str,
+    source_commit: str,
+    output: Path,
+    failure_path: Path,
+    *,
+    created: str | None = None,
+    rewrite_failure_receipt: bool = True,
+) -> dict[str, Any]:
+    """Produce a canonical export even when build/test/campaign setup failed."""
+
+    if re.fullmatch(r"[0-9a-f]{64}", protocol_sha256) is None:
+        raise ValueError("protocol SHA-256 must be 64 lowercase hex characters")
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise ValueError("source commit must be 40 lowercase hex characters")
+    run, output, failure_path = run.resolve(), output.resolve(), failure_path.resolve()
+    if failure_path != run / "failure.json":
+        raise ValueError("failure receipt must be the output-root failure.json")
+    failure = load_json(failure_path)
+    if (
+        failure.get("schema") != "go-coordinator-remote-failure/v1"
+        or failure.get("protocol_sha256") != protocol_sha256
+        or failure.get("source_commit") != source_commit
+        or not isinstance(failure.get("stage"), str)
+        or not failure["stage"]
+        or not isinstance(failure.get("error"), dict)
+        or set(failure["error"]) != {"type", "detail"}
+    ):
+        raise ValueError("mechanical failure receipt is malformed")
+
+    prefix = usable_prefix(run, protocol_sha256)
+    if rewrite_failure_receipt:
+        failure["usable_prefix_rows"] = len(prefix)
+        # Rewrite once before hashing/exporting so the prefix count is receipt-bound.
+        failure_path.write_text(
+            json.dumps(failure, indent=2, sort_keys=True, allow_nan=False) + "\n",
+            encoding="utf-8",
+        )
+    elif failure.get("usable_prefix_rows") != len(prefix):
+        raise ValueError("failure receipt usable prefix differs from raw evidence")
+    mismatches = mismatch_cells(prefix)
+    exported_prefix = [
+        make_run(row, base=run / "campaign", timing_valid=False, mismatches=mismatches)
+        for row in prefix
+    ]
+    schedule = expected_schedule()
+    exported_runs = exported_prefix + [
+        make_failure_run(planned, failure) for planned in schedule[len(prefix) :]
+    ]
+
+    build_path = run / "build" / "manifest.json"
+    build: dict[str, Any] = {}
+    if build_path.is_file():
+        try:
+            loaded_build = load_json(build_path)
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            # A signal or storage error may interrupt the ordinary manifest
+            # write.  Preserve those raw bytes in the failure file inventory,
+            # but never let a partial optional receipt prevent failure sealing.
+            loaded_build = {}
+        if isinstance(loaded_build, dict):
+            build = loaded_build
+    arm_records = build.get("arms") if isinstance(build.get("arms"), dict) else {}
+    arms = []
+    for arm, role in ARMS.items():
+        record = arm_records.get(arm) if isinstance(arm_records.get(arm), dict) else {}
+        digest = record.get("binary_sha256")
+        binary_name = record.get("binary")
+        binary = run / "build" / binary_name if isinstance(binary_name, str) else None
+        if (
+            re.fullmatch(r"[0-9a-f]{64}", str(digest)) is None
+            or binary is None
+            or not binary.is_file()
+            or sha256(binary) != digest
+        ):
+            digest = None
+        arms.append(
+            {
+                "id": arm,
+                "role": role,
+                "binary_sha256": digest,
+                "commit": source_commit,
+                "image_digest": "runpod/base:1.0.2-ubuntu2404",
+            }
+        )
+
+    analysis_script = run / "tooling" / ANALYZER_NAME
+    if not analysis_script.is_file():
+        raise ValueError("registered analyzer is absent from the owned output root")
+    base = output.parent
+    files = _failure_file_inventory(run, output, exported_runs, analysis_script)
+    export = {
+        "schema": SCHEMA,
+        "export_id": "GO-COORD-PEER-KEY-REMOTE-AB-AA-V9-EXPORT",
+        "created": created or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "protocol": {
+            "path": PROTOCOL_PATH,
+            "sha256": protocol_sha256,
+            "protocol_id": PROTOCOL_ID,
+            "version": PROTOCOL_VERSION,
+        },
+        "producer": {
+            "runtime": "runpod-http-batch",
+            "model": None,
+            "session": None,
+            "role": "executor",
+        },
+        "source": {"repo": "cryptanalysis", "commit": source_commit, "dirty": False},
+        "backend": "runpod",
+        "host": {
+            "path": file_entry(failure_path, base, "host")["path"],
+            "sha256": sha256(failure_path),
+            "class_id": None,
+            "summary": {
+                "cpu_model": None,
+                "logical_cpus": None,
+                "memory_bytes": None,
+                "kernel": None,
+                "hypervisor": "RunPod Secure CPU pod",
+                "isolation_tier_max": "L0",
+                "gpu": None,
+                "instance_type": "cpu3c",
+                "spot": False,
+            },
+        },
+        "arms": arms,
+        "runs": exported_runs,
+        "flow": flow(exported_runs),
+        "files": files,
+        "analysis": {
+            "script": (
+                file_entry(analysis_script, base, "analysis")
+                if analysis_script is not None else None
+            ),
+            "blinded": False,
+            "blinding_key_sha256": None,
+            "outputs": [],
+            "unmasked_at": None,
+        },
+        "notes": [
+            {
+                "kind": "observation",
+                "text": "The combined workflow sealed a mechanical failure before all frozen child executions completed.",
+                "by": "export_remote_peer_key_ab.py",
+            }
+        ],
+        "reviews_dir": "reviews",
+        "backend_record": {
+            "campaign_schema": "go-coordinator-peer-key-campaign/2",
+            "completion_status": "mechanical_failure",
+            "planned_rows": EXPECTED_ROWS,
+            "usable_prefix_rows": len(prefix),
+            "failure_record_sha256": sha256(failure_path),
+        },
+    }
+    validate(export, output)
+    return export
+
+
 def produce(
     run: Path,
     protocol_sha256: str,
     source_commit: str,
     output: Path,
+    *,
+    created: str | None = None,
 ) -> dict[str, Any]:
     if len(protocol_sha256) != 64 or any(c not in "0123456789abcdef" for c in protocol_sha256):
         raise ValueError("protocol SHA-256 must be 64 lowercase hex characters")
@@ -435,7 +730,7 @@ def produce(
     export = {
         "schema": SCHEMA,
         "export_id": "GO-COORD-PEER-KEY-REMOTE-AB-AA-V9-EXPORT",
-        "created": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "created": created or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "protocol": {
             "path": PROTOCOL_PATH,
             "sha256": protocol_sha256,
@@ -535,10 +830,42 @@ def validate(export: dict[str, Any], output: Path) -> None:
             }
             if replicates != set(range(20)):
                 raise ValueError(f"export measured cell mismatch: {arm} {instance}")
+    backend = export.get("backend_record", {})
+    if backend.get("completion_status") == "mechanical_failure":
+        prefix = backend.get("usable_prefix_rows")
+        if (
+            type(prefix) is not int
+            or not 0 <= prefix <= EXPECTED_ROWS
+            or backend.get("planned_rows") != EXPECTED_ROWS
+            or re.fullmatch(r"[0-9a-f]{64}", str(backend.get("failure_record_sha256", "")))
+            is None
+        ):
+            raise ValueError("failure export backend receipt is malformed")
+        for index, (row, planned) in enumerate(zip(runs, expected_schedule(), strict=True)):
+            expected_replicate = planned["replicate"] - 1
+            if (
+                row.get("run_id") != planned["run_id"]
+                or row.get("arm") != planned["arm"]
+                or row.get("instance_id") != str(CASES.index(planned["case"]))
+                or row.get("replicate") != expected_replicate
+                or row.get("warmup") is not planned["warmup"]
+            ):
+                raise ValueError("failure export frozen schedule mismatch")
+            if index >= prefix and (
+                row.get("status") != "infra_error"
+                or row.get("outcome_class") != "not_completed"
+                or row.get("attempts") != 1
+                or row.get("verification", {}).get("status") != "not_run"
+                or row.get("measurements", {}).get("wall_valid") is not False
+                or row.get("artifacts") != []
+            ):
+                raise ValueError("failure export suffix is not an explicit infra error")
     base = output.parent
     files = list(export["files"])
     files.extend(artifact for row in runs for artifact in row["artifacts"])
-    files.append(export["analysis"]["script"])
+    analysis_script = export["analysis"]["script"]
+    if analysis_script is not None:
+        files.append(analysis_script)
     for entry in files:
         path = base / entry["path"]
         if (
@@ -558,12 +885,21 @@ def write_once(path: Path, value: dict[str, Any]) -> None:
 
 def main() -> int:
     options = parse_args()
-    export = produce(
-        options.run,
-        options.protocol_sha256,
-        options.source_commit,
-        options.output,
-    )
+    if options.failure_record is None:
+        export = produce(
+            options.run,
+            options.protocol_sha256,
+            options.source_commit,
+            options.output,
+        )
+    else:
+        export = produce_failure(
+            options.run,
+            options.protocol_sha256,
+            options.source_commit,
+            options.output,
+            options.failure_record,
+        )
     write_once(options.output, export)
     return 0
 

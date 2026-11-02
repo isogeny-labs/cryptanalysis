@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import signal
 import shutil
 import sys
 
@@ -33,6 +34,14 @@ ACTIVE_RESERVATION: dict[int, dict[str, object]] | None = None
 ACTIVE_OUTPUT: Path | None = None
 ACTIVE_EXPECTED_AFFINITY: list[int] | None = None
 LOCK_PATH = "/tmp/crypto-bench.lock"
+
+
+class SessionAbort(BaseException):
+    pass
+
+
+def _abort_on_signal(signum: int, _frame: object) -> None:
+    raise SessionAbort(f"campaign received signal {signum}")
 
 
 def arguments() -> argparse.Namespace:
@@ -401,6 +410,7 @@ def campaign_main() -> int:
 
 def main() -> int:
     global ACTIVE_EXPECTED_AFFINITY, ACTIVE_OUTPUT, ACTIVE_RESERVATION
+    previous_term = signal.signal(signal.SIGTERM, _abort_on_signal)
     try:
         return campaign_main()
     finally:
@@ -410,11 +420,19 @@ def main() -> int:
                 try:
                     os.sched_setaffinity(0, ACTIVE_EXPECTED_AFFINITY)
                     emergency["runner_affinity_after_restore"] = sorted(os.sched_getaffinity(0))
+                    emergency["runner_affinity_passes"] = (
+                        emergency["runner_affinity_after_restore"] == ACTIVE_EXPECTED_AFFINITY
+                    )
                 except OSError as error:
                     emergency["runner_affinity_error"] = error.errno
+                    emergency["runner_affinity_passes"] = False
+                emergency["passes"] = bool(
+                    emergency.get("passes") and emergency["runner_affinity_passes"]
+                )
             if ACTIVE_OUTPUT is not None and ACTIVE_OUTPUT.is_dir():
                 common.json_file(ACTIVE_OUTPUT / "emergency-restoration.json", emergency)
             ACTIVE_RESERVATION = None
+        signal.signal(signal.SIGTERM, previous_term)
 
 
 if __name__ == "__main__":

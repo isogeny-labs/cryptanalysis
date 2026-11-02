@@ -148,6 +148,7 @@ def evaluate_preflight(preflight: dict[str, Any]) -> dict[str, Any]:
     valid = (
         limits == PREFLIGHT_LIMITS
         and isinstance(tasks, dict)
+        and all(isinstance(key, str) and key for key in tasks)
         and isinstance(pressures, dict)
         and set(pressures) == {"cpu", "memory"}
         and all(_finite_nonnegative(value) for value in tasks.values())
@@ -161,7 +162,7 @@ def evaluate_preflight(preflight: dict[str, Any]) -> dict[str, Any]:
                 break
             if any(
                 not isinstance(pressure.get(scope), dict)
-                or not {"avg10", "avg60", "avg300", "total"} <= set(pressure[scope])
+                or set(pressure[scope]) != {"avg10", "avg60", "avg300", "total"}
                 or any(
                     not _finite_nonnegative(pressure[scope][field])
                     for field in ("avg10", "avg60", "avg300", "total")
@@ -209,6 +210,39 @@ def _finite_nonnegative(value: Any) -> bool:
 
 def _nonnegative_int(value: Any) -> bool:
     return type(value) is int and value >= 0
+
+
+def _strict_cpu_list(value: Any, *, nonempty: bool = False) -> bool:
+    return bool(
+        isinstance(value, list)
+        and (value or not nonempty)
+        and all(_nonnegative_int(cpu) for cpu in value)
+        and value == sorted(set(value))
+    )
+
+
+def _valid_left_records(value: Any, reserved: set[int]) -> bool:
+    if not isinstance(value, list):
+        return False
+    identities: set[tuple[int, int]] = set()
+    for record in value:
+        if not isinstance(record, dict) or set(record) != {"pid", "tid", "comm", "affinity"}:
+            return False
+        pid, tid, affinity = record["pid"], record["tid"], record["affinity"]
+        identity = (pid, tid)
+        if (
+            type(pid) is not int
+            or pid <= 0
+            or type(tid) is not int
+            or tid <= 0
+            or identity in identities
+            or not (record["comm"] is None or isinstance(record["comm"], str))
+            or not _strict_cpu_list(affinity, nonempty=True)
+            or not reserved.intersection(affinity)
+        ):
+            return False
+        identities.add(identity)
+    return True
 
 
 def parse_cpu_list(text: str) -> set[int]:
@@ -670,21 +704,31 @@ def evaluate_l2(execution: dict[str, Any], preflight: dict[str, Any],
     contention = execution.get("contention") or {}
     jiffies = contention.get("pinned_cpu_jiffies_delta")
     psi_delta = contention.get("psi_total_delta_us")
+    reserved = execution.get("reserved_cpus")
     jiffy_keys = {"user", "nice", "system", "idle", "iowait", "irq", "softirq", "steal"}
     domains_ok = (
-        isinstance(pinned, list) and bool(pinned)
-        and all(_nonnegative_int(value) for value in pinned)
-        and len(pinned) == len(set(pinned))
+        _strict_cpu_list(pinned, nonempty=True) and len(pinned) == 1
+        and _strict_cpu_list(reserved, nonempty=True)
+        and set(pinned) <= set(reserved)
         and _nonnegative_int(wall) and wall > 0
         and all(_finite_nonnegative(rusage.get(key)) for key in ("user_s", "sys_s"))
         and all(_nonnegative_int(rusage.get(key)) for key in
                 ("maxrss_kib", "minflt", "majflt", "nvcsw", "nivcsw"))
         and all(_nonnegative_int(sched.get(key)) for key in
                 ("run_ns", "wait_ns", "slices", "threads_seen"))
+        and sched["run_ns"] > 0
+        and sched["slices"] > 0
+        and sched["threads_seen"] > 0
         and _finite_nonnegative(sched.get("sample_interval_seconds"))
+        and sched["sample_interval_seconds"] == SAMPLE_INTERVAL_SECONDS
+        and _nonnegative_int(execution.get("max_threads_observed"))
+        and execution["max_threads_observed"] > 0
         and type(contention.get("samples")) is int
         and type(contention.get("samples_with_foreign_runnable")) is int
         and 0 <= contention["samples_with_foreign_runnable"] <= contention["samples"]
+        and contention["samples"] > 0
+        and isinstance(contention.get("foreign_examples"), list)
+        and _nonnegative_int(contention.get("procs_running_after"))
         and isinstance(jiffies, dict) and set(jiffies) == jiffy_keys
         and all(_nonnegative_int(value) for value in jiffies.values())
         and isinstance(psi_delta, dict) and set(psi_delta) == {"cpu", "memory"}
@@ -696,7 +740,8 @@ def evaluate_l2(execution: dict[str, Any], preflight: dict[str, Any],
         )
         and _nonnegative_int(tree.get("tasks_outside"))
         and isinstance(tree.get("cpus_seen"), list)
-        and all(_nonnegative_int(value) for value in tree["cpus_seen"])
+        and _strict_cpu_list(tree["cpus_seen"], nonempty=True)
+        and isinstance(tree.get("examples"), list)
         and _nonnegative_int(execution.get("descendants_killed"))
     )
     check("raw_observation_domains", "L1", {"valid": domains_ok},
@@ -708,7 +753,7 @@ def evaluate_l2(execution: dict[str, Any], preflight: dict[str, Any],
         pinned,
         domains_ok and execution.get("child_affinity_observed") == pinned
         and tree.get("tasks_outside") == 0
-        and set(tree.get("cpus_seen", [])) <= set(pinned),
+        and tree.get("cpus_seen") == pinned,
     )
     check("excludes_cpu0", "L1", pinned, "CPU 0 excluded",
           isinstance(pinned, list) and 0 not in pinned)
@@ -717,16 +762,19 @@ def evaluate_l2(execution: dict[str, Any], preflight: dict[str, Any],
            "descendants_killed": execution.get("descendants_killed")},
           {"subreaper": True, "descendants_killed": 0},
           execution.get("subreaper") is True and execution.get("descendants_killed") == 0)
-    reserved = execution.get("reserved_cpus")
     left = reservation.get("left_on_reserved") or {}
+    reserved_set = set(reserved) if _strict_cpu_list(reserved, nonempty=True) else set()
     reservation_ok = (
         reservation.get("evicted") is True
-        and isinstance(reserved, list)
+        and _strict_cpu_list(reserved, nonempty=True)
         and reserved == reservation.get("cpus") == reservation.get("smt_siblings")
+        and 0 not in reserved
+        and _nonnegative_int(reservation.get("threads_moved"))
         and isinstance(left, dict)
         and set(left) == {"user_threads", "kernel_threads"}
-        and isinstance(left.get("user_threads"), list)
+        and _valid_left_records(left.get("user_threads"), reserved_set)
         and not left["user_threads"]
+        and _valid_left_records(left.get("kernel_threads"), reserved_set)
     )
     check("whole_core_reservation", "L1",
           {"execution_reserved": reserved, "receipt": reservation},
