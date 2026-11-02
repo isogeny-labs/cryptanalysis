@@ -161,7 +161,9 @@ fn xedni_lift_cli_supports_nine_point_general_cubic_mode() {
     assert_eq!(v["model"], "plane-cubic");
     assert_eq!(v["result"]["exact_constraints_preserved"], true);
     assert_eq!(v["result"]["congruence_preserved"], true);
-    assert_eq!(v["result"]["discriminant_evaluated"], false);
+    assert_eq!(v["result"]["discriminant_evaluated"], true);
+    assert_eq!(v["result"]["optimized_score"]["nonsingular"], true);
+    assert_eq!(v["result"]["optimized_score"]["discriminant"], "635904");
     assert_eq!(
         v["result"]["optimized_coefficients"],
         serde_json::json!(["1", "0", "0", "0", "0", "0", "-1", "-1", "0", "1"])

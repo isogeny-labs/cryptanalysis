@@ -8,11 +8,12 @@ Updated: 2026-11-02
 The coefficient-lifting seam of prime-field xedni now has two executable,
 certifying paths exposed as `ca-icx xedni-lift`.  Both use high-precision LLL,
 **exact-rational** Babai closest-plane selection, and a bounded exact search.
-The seven-coefficient Weierstrass path ranks by discriminant; the new
-ten-coefficient general-cubic path implements the linear Step-7 height
-objective for all `2 <= r <= 9`.  Both reject any direction that changes a
-supplied point-incidence row or coefficient residue class and recheck those
-properties on the result.
+The seven-coefficient Weierstrass path and the ten-coefficient general-cubic
+path both rank by an exact discriminant for all `2 <= r <= 9`.  The latter
+uses Fisher's direct ternary-cubic Hessian determinant, so Step 9 no longer
+depends on first finding a Step-8 Weierstrass conversion.  Both paths reject
+any direction that changes a supplied point-incidence row or coefficient
+residue class and recheck those properties on the result.
 
 The frozen p=67 comparison has **not run**.  The mandatory pre-run checkpoint
 upload is denied by both the installed presigned token (HTTP 403) and the
@@ -61,12 +62,24 @@ for every direction.  The optimizer then:
 4. uses the model-specific exact objective; and
 5. certifies `B u = B u*` and `u = u* (mod q)` on the selected vector.
 
-For the Weierstrass model, step 4 rejects singular curves and orders candidates
-by exact discriminant bit length, coefficient-height bits, then exact squared
-L2 norm.  For the general-cubic model it orders by coefficient-height bits and
-exact squared L2 norm.  General-cubic Step 8 and its discriminant are not yet
-implemented, so the machine result explicitly emits
-`discriminant_evaluated: false`.
+For both models, step 4 rejects singular curves and orders candidates by exact
+discriminant bit length, coefficient-height bits, then exact squared L2 norm.
+The general-cubic machine result now emits `discriminant_evaluated: true`.
+
+**Source and implementation.** Fisher Section 7.2 gives a direct construction
+for a ternary cubic `U`: compute its integral Hessian
+`H(U) = -det(d^2 U)/2`; put the six quadratic coefficient rows
+`U_X,U_Y,U_Z,H_X,H_Y,H_Z` into a `6 x 6` matrix; and take its determinant.
+This determinant is `+/- 1728 Delta`.  The implementation evaluates that
+matrix with fraction-free Bareiss elimination, so it detects singularity and
+supplies the Step-9 objective using integers only.
+
+This deliberately bypasses, rather than claims to implement, JKSST Step 8.
+A projective linear change sends a plane cubic to Weierstrass form only when a
+rational flex is available; an arbitrary rational point does not supply that
+condition.  A separate birational conversion or direct plane-cubic group law
+is still required by downstream rank/dependence code, but neither is needed
+to minimize the model discriminant.
 
 **Derived.** For signed input order
 `(a0,a1,a3,-a00,-a2,-a4,-a6)`, completing the square gives
@@ -95,7 +108,7 @@ The data flow and claim boundary are shown in the labeled
 **Verified control.** Under the suite's declared Rust 1.87.0 floor, the
 2026-11-02 focused validation currently establishes:
 
-- six focused library tests pass;
+- the focused library and CLI controls for both models pass;
 - both actual `ca-icx` JSON integration paths pass;
 - a synthetic rank-three coset containing the known curve
   `y^2+y=x^3-x` recovers its signed vector `(1,0,1,-1,0,1,0)` while preserving
@@ -104,14 +117,19 @@ The data flow and claim boundary are shown in the labeled
   search; and
 - the discriminant formula returns 1024 for `y^2=x^3-x`, exactly 16 times its
   elliptic discriminant 64;
+- the direct ternary formula returns `-110592 = -1728 * 64` for the same
+  Weierstrass plane cubic, returns 34,012,224 for the Fermat cubic, and returns
+  zero for the singular Hesse member `x^3+y^3+z^3-3xyz`;
 - exact Babai recovers a representative whose center coefficient has magnitude
   `10^40`, removing the former `i64` limit; and
 - nine rational multiples on `y^2=x^3-x+1` produce an exact rank-nine `9 x 10`
   incidence matrix.  General-cubic mode recovers the coefficient vector
-  `(1,0,0,0,0,0,-1,-1,0,1)` while preserving all nine rows and modulus 67.
+  `(1,0,0,0,0,0,-1,-1,0,1)` while preserving all nine rows and modulus 67;
+  its direct determinant is 635,904, equal in magnitude to `1728 * 368` for
+  the planted curve `y^2=x^3-x+1`.
 
-The complete current-tree release library suite also passes: 3,051 passed, 0
-failed, and 90 ignored in 245.29 seconds.  Direct touched-file rustfmt checks,
+The complete current-tree release library suite also passes: 3,052 passed, 0
+failed, and 90 ignored in 239.37 seconds.  Direct touched-file rustfmt checks,
 `cargo clippy --all-targets -- -D warnings`, and both release CLI integration
 paths pass on the same tree.
 
@@ -168,9 +186,9 @@ source gate for a source-faithful characteristic-two variant.
 
 | Requested item | Status | Evidence / remaining gap |
 | --- | --- | --- |
-| Reconstruct the lift and “nine point” step | verified complete at linear Step 7 | JKSST Section 3.2; ten coefficients, direct point rows, rank-nine control |
-| Implement a modern lift optimizer | verified complete for seven-coefficient mode and general-cubic Step 7 | module, exact-rational Babai, two CLI models, exact certificates, focused tests |
-| General-cubic Step 8/discriminant | not implemented | machine output explicitly says the discriminant was not evaluated |
+| Reconstruct the lift and “nine point” step | verified complete through direct Step-9 discriminant search | JKSST Section 3.2; ten coefficients, direct point rows, rank-nine control, Fisher determinant |
+| Implement a modern lift optimizer | verified complete for both coefficient models | module, exact-rational Babai, two exact discriminant objectives, exact certificates, focused tests |
+| General-cubic Step 8/conversion | bypassed for discriminant; conversion still open | direct Hessian determinant supplies `+/-1728 Delta`; downstream birational map/group law is separate |
 | Test whether it drastically improves the old algorithm | partial / blocked | frozen p=67 protocol exists; S3 checkpoint gate cannot upload |
 | Prime-field ECDLP improvement | not established | no dependence test or scalar recovery |
 | Binary and Koblitz transfer | not implemented | degree-`m` lift plus Kogure primary-text gate remain |
@@ -187,9 +205,13 @@ source gate for a source-faithful characteristic-two variant.
 3. G. Havas, B. Majewski, and K. Matthews, “Extended GCD and Hermite normal
    form algorithms via lattice basis reduction,” *Experimental Mathematics*
    7 (1998), 125--136.
-4. Jun Kogure, “Implementation of the Xedni Calculus algorithm,” IEICE
+4. T. Fisher, “The invariants of a genus one curve,” *Proceedings of the
+   London Mathematical Society* 97 (2008), 753--782,
+   DOI 10.1112/plms/pdn021; arXiv:math/0610318. Primary PDF reviewed,
+   especially Theorem 4.4 and Section 7.2.
+5. Jun Kogure, “Implementation of the Xedni Calculus algorithm,” IEICE
    Technical Report 100(77), 17--23 (2000), NDL 5409112; metadata only.
-5. Jun Kogure, “xedni calculus method (characteristic 2),” ISEC2002-10,
+6. Jun Kogure, “xedni calculus method (characteristic 2),” ISEC2002-10,
    57--60 (2002), NDL 6188214; metadata only.
 
 ## Reproduction and files
