@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import copy
 import importlib.util
 from pathlib import Path
 import unittest
@@ -21,6 +22,8 @@ def load(name: str, filename: str):
 
 remote = load("go_remote_ab", "run_remote_ab.py")
 campaign = load("go_remote_campaign", "run_remote_campaign.py")
+analyzer = load("go_remote_peer_key_analyzer", "analyze_remote_peer_key_ab.py")
+exporter = load("go_remote_peer_key_exporter", "export_remote_peer_key_ab.py")
 
 
 V3_OBSERVED_AFFINITY = [
@@ -46,13 +49,21 @@ def topology(cpus: list[int]) -> list[dict[str, int | str | None]]:
 
 def snapshot(cpus: list[int]) -> dict:
     rows = topology(cpus)
-    return {
+    value = {
         "affinity": cpus,
         "cpu_topology": rows,
         "topology_order": remote.ordered_cpus(cpus, rows),
+        "logical_cpus": max(192, len(cpus)),
+        "cpu_model": "Example Stable CPU Model",
+        "cpuset_cpus": ",".join(str(cpu) for cpu in cpus),
         "memory_max": "64000000000",
         "nvidia_devices": [],
+        "cpuinfo_sha256": "1" * 64,
+        "loadavg": "0.10 0.20 0.30 1/100 1000",
+        "pressure_cpu": "some avg10=0.1 avg60=0.2 avg300=0.3 total=1",
+        "pressure_memory": "some avg10=0.0 avg60=0.0 avg300=0.0 total=0",
     }
+    return remote.bind_stable_placement_identity(value)
 
 
 class RemoteAffinityTests(unittest.TestCase):
@@ -74,6 +85,7 @@ class RemoteAffinityTests(unittest.TestCase):
         state = snapshot(cpus)
         state["cpu_topology"] = rows
         state["topology_order"] = [103, 41, 7]
+        remote.bind_stable_placement_identity(state)
         placement = remote.validate_host(state, 3, 64_000_000_000)
         self.assertEqual(placement["topology_order"], [103, 41, 7])
         self.assertEqual(placement["benchmark_cpus"], [103])
@@ -114,6 +126,89 @@ class RemoteAffinityTests(unittest.TestCase):
                 remote.validate_host(changed, 32, 64_000_000_000)
         with self.assertRaises(RuntimeError):
             remote.validate_host(state, 32, 0)
+
+    def test_volatile_cpuinfo_load_and_pressure_are_diagnostic_only(self) -> None:
+        initial = snapshot([2, 4, 6, 8])
+        later = copy.deepcopy(initial)
+        later.update({
+            "cpuinfo_sha256": "f" * 64,
+            "loadavg": "12.0 8.0 4.0 9/100 2000",
+            "pressure_cpu": "some avg10=9.9 avg60=8.8 avg300=7.7 total=99",
+            "pressure_memory": "some avg10=1.0 avg60=2.0 avg300=3.0 total=42",
+            "meminfo": "MemAvailable: 123 kB",
+            "cpu_stat": "usage_usec 999\nnr_throttled 7",
+            "memory_events": "high 1\noom 0",
+        })
+        self.assertNotEqual(initial["cpuinfo_sha256"], later["cpuinfo_sha256"])
+        self.assertTrue(remote.stable_placement_unchanged(initial, later))
+        self.assertTrue(analyzer.stable_placement_unchanged(initial, later))
+        self.assertEqual(
+            remote.stable_placement_identity(initial),
+            analyzer.stable_placement_identity(initial),
+        )
+        self.assertEqual(
+            remote.stable_placement_sha256(initial["placement_identity"]),
+            analyzer.stable_placement_sha256(initial["placement_identity"]),
+        )
+        self.assertEqual(
+            exporter.stable_host_class_id(initial),
+            exporter.stable_host_class_id(later),
+        )
+
+    def test_every_allowlisted_placement_mutation_is_rejected(self) -> None:
+        initial = snapshot([2, 4, 6, 8])
+
+        def changed(mutator) -> dict:
+            value = copy.deepcopy(initial)
+            mutator(value)
+            return value
+
+        mutations = [
+            lambda value: value.__setitem__("cpu_model", "Different CPU Model"),
+            lambda value: value.__setitem__("logical_cpus", 256),
+            lambda value: value["affinity"].__setitem__(0, 10),
+            lambda value: value["cpu_topology"][0].__setitem__("core", 99),
+            lambda value: value["topology_order"].reverse(),
+            lambda value: value.__setitem__("cpuset_cpus", "2,4,6"),
+            lambda value: value.__setitem__("memory_max", "65000000000"),
+            lambda value: value["nvidia_devices"].append("/dev/nvidia0"),
+        ]
+        for mutate in mutations:
+            with self.subTest(mutate=mutate):
+                value = changed(mutate)
+                self.assertFalse(remote.stable_placement_snapshot_valid(value))
+                self.assertFalse(remote.stable_placement_unchanged(initial, value))
+                self.assertFalse(analyzer.stable_placement_snapshot_valid(value))
+                self.assertFalse(analyzer.stable_placement_unchanged(initial, value))
+
+    def test_rebound_valid_stable_identity_change_does_not_match(self) -> None:
+        initial = snapshot([2, 4, 6, 8])
+        changed = copy.deepcopy(initial)
+        changed["cpu_model"] = "Different CPU Model"
+        remote.bind_stable_placement_identity(changed)
+        self.assertTrue(remote.stable_placement_snapshot_valid(changed))
+        self.assertTrue(analyzer.stable_placement_snapshot_valid(changed))
+        self.assertFalse(remote.stable_placement_unchanged(initial, changed))
+        self.assertFalse(analyzer.stable_placement_unchanged(initial, changed))
+        self.assertNotEqual(
+            exporter.stable_host_class_id(initial),
+            exporter.stable_host_class_id(changed),
+        )
+
+    def test_equivalent_cpuset_text_has_one_canonical_identity(self) -> None:
+        initial = snapshot([2, 3, 4, 5])
+        later = copy.deepcopy(initial)
+        later["cpuset_cpus"] = "2-5"
+        self.assertTrue(remote.stable_placement_snapshot_valid(later))
+        self.assertTrue(analyzer.stable_placement_snapshot_valid(later))
+        self.assertTrue(remote.stable_placement_unchanged(initial, later))
+        self.assertTrue(analyzer.stable_placement_unchanged(initial, later))
+
+    def test_exporter_rejects_self_hashed_stale_identity(self) -> None:
+        value = snapshot([2, 4, 6, 8])
+        value["cpu_model"] = "Different raw model"
+        with self.assertRaises(ValueError):
+            exporter.stable_host_class_id(value)
 
 
 if __name__ == "__main__":

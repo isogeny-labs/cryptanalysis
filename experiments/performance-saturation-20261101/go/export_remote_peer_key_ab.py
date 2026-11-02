@@ -78,6 +78,82 @@ def load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def stable_host_class_id(host: dict[str, Any]) -> str:
+    """Validate and name the canonical stable placement represented by host."""
+
+    identity = host.get("placement_identity")
+    digest = host.get("placement_identity_sha256")
+    model = host.get("cpu_model")
+    logical_cpus = host.get("logical_cpus")
+    affinity = host.get("affinity")
+    topology = host.get("cpu_topology")
+    order = host.get("topology_order")
+    cpuset = host.get("cpuset_cpus")
+    memory_max = host.get("memory_max")
+    devices = host.get("nvidia_devices")
+    if (
+        not isinstance(identity, dict)
+        or identity.get("schema") != "go-cpu-placement-identity/v1"
+        or not isinstance(digest, str)
+        or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+        or not isinstance(model, str)
+        or not model.strip()
+        or type(logical_cpus) is not int
+        or logical_cpus <= 0
+        or not isinstance(affinity, list)
+        or not affinity
+        or any(type(cpu) is not int or cpu < 0 for cpu in affinity)
+        or len(set(affinity)) != len(affinity)
+        or logical_cpus < len(affinity)
+        or not isinstance(topology, list)
+        or len(topology) != len(affinity)
+        or any(not isinstance(row, dict) for row in topology)
+        or not isinstance(order, list)
+        or set(order) != set(affinity)
+        or len(order) != len(affinity)
+        or not isinstance(cpuset, str)
+        or not isinstance(memory_max, str)
+        or re.fullmatch(r"[1-9][0-9]*", memory_max) is None
+        or not isinstance(devices, list)
+        or any(not isinstance(path, str) or not path for path in devices)
+    ):
+        raise ValueError("stable host-placement identity is malformed")
+    parsed_cpuset: set[int] = set()
+    try:
+        for field in cpuset.split(","):
+            if "-" in field:
+                left, right = field.split("-", 1)
+                parsed_cpuset.update(range(int(left), int(right) + 1))
+            else:
+                parsed_cpuset.add(int(field))
+    except ValueError as error:
+        raise ValueError("stable host-placement cpuset is malformed") from error
+    if parsed_cpuset != set(affinity):
+        raise ValueError("stable host-placement cpuset differs from affinity")
+    fields = ("cpu", "package", "die", "numa", "core", "thread_siblings")
+    normalized_topology = [{field: row.get(field) for field in fields} for row in topology]
+    expected = {
+        "schema": "go-cpu-placement-identity/v1",
+        "cpu_model": model.strip(),
+        "logical_cpus": logical_cpus,
+        "affinity": list(affinity),
+        "cpu_topology": normalized_topology,
+        "topology_order": list(order),
+        "cpuset_cpus": sorted(parsed_cpuset),
+        "memory_limit_bytes": int(memory_max),
+        "nvidia_devices": sorted(devices),
+    }
+    if identity != expected:
+        raise ValueError("stable host-placement identity differs from raw host fields")
+    actual = hashlib.sha256(json.dumps(
+        identity, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=True, allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+    if actual != digest:
+        raise ValueError("stable host-placement identity SHA-256 mismatch")
+    return "runpod-secure-cpu3c-" + digest[:12]
+
+
 def file_entry(path: Path, base: Path, kind: str) -> dict[str, Any]:
     if not path.is_file():
         raise ValueError(f"export artifact is absent: {path}")
@@ -702,6 +778,7 @@ def produce(
     )
     initial_host = build["host"]
     placement = build["placement"]
+    host_class_id = stable_host_class_id(initial_host)
     analysis_script = run / "tooling" / ANALYZER_NAME
     top_files = [
         file_entry(rows_path, base, "raw"),
@@ -748,7 +825,7 @@ def produce(
         "host": {
             "path": file_entry(run / "isolation.json", base, "host")["path"],
             "sha256": sha256(run / "isolation.json"),
-            "class_id": "runpod-secure-cpu3c-" + initial_host["cpuinfo_sha256"][:12],
+            "class_id": host_class_id,
             "summary": {
                 "cpu_model": initial_host.get("cpu_model"),
                 "logical_cpus": len(placement["allowed_cpus"]),

@@ -91,6 +91,10 @@ EXPECTED_CPU_GUARD = {
     "vcpu_count": 32,
 }
 EXPECTED_MEMORY_BYTES = 64_000_000_000
+STABLE_PLACEMENT_SCHEMA = "go-cpu-placement-identity/v1"
+STABLE_TOPOLOGY_FIELDS = (
+    "cpu", "package", "die", "numa", "core", "thread_siblings",
+)
 GO_ARCHIVE = "go1.27.3.linux-amd64.tar.gz"
 GO_ARCHIVE_BYTES = 70_588_678
 GO_ARCHIVE_SHA256 = "65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40"
@@ -1886,6 +1890,128 @@ def _topology_order(affinity: list[int], topology: list[dict[str, Any]]) -> list
     )
 
 
+def _parse_cpu_set(text: object) -> set[int]:
+    if not isinstance(text, str) or not text:
+        return set()
+    cpus: set[int] = set()
+    try:
+        for field in text.split(","):
+            if "-" in field:
+                left, right = field.split("-", 1)
+                cpus.update(range(int(left), int(right) + 1))
+            else:
+                cpus.add(int(field))
+    except ValueError:
+        return set()
+    return cpus
+
+
+def stable_placement_identity(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Recompute the allowlisted placement identity from raw host fields."""
+
+    model = snapshot.get("cpu_model")
+    logical_cpus = snapshot.get("logical_cpus")
+    affinity = snapshot.get("affinity")
+    raw_topology = snapshot.get("cpu_topology")
+    order = snapshot.get("topology_order")
+    cpuset = snapshot.get("cpuset_cpus")
+    memory_max = snapshot.get("memory_max")
+    devices = snapshot.get("nvidia_devices")
+    if not isinstance(model, str) or not model.strip():
+        raise ValueError("stable placement requires a nonempty CPU model")
+    if type(logical_cpus) is not int or logical_cpus <= 0:
+        raise ValueError("stable placement requires a positive logical CPU count")
+    if (
+        not isinstance(affinity, list)
+        or not affinity
+        or any(type(cpu) is not int or cpu < 0 for cpu in affinity)
+        or len(set(affinity)) != len(affinity)
+        or logical_cpus < len(affinity)
+    ):
+        raise ValueError("stable placement affinity is malformed")
+    if not isinstance(raw_topology, list) or len(raw_topology) != len(affinity):
+        raise ValueError("stable placement topology is malformed")
+    topology: list[dict[str, Any]] = []
+    for raw in raw_topology:
+        if not isinstance(raw, dict):
+            raise ValueError("stable placement topology row is malformed")
+        row = {field: raw.get(field) for field in STABLE_TOPOLOGY_FIELDS}
+        if type(row["cpu"]) is not int or row["cpu"] < 0:
+            raise ValueError("stable placement topology CPU is malformed")
+        for field in ("package", "die", "numa", "core"):
+            if row[field] is not None and (
+                type(row[field]) is not int or row[field] < 0
+            ):
+                raise ValueError(f"stable placement topology {field} is malformed")
+        if row["thread_siblings"] is not None and not isinstance(
+            row["thread_siblings"], str
+        ):
+            raise ValueError("stable placement thread-sibling set is malformed")
+        topology.append(row)
+    if {row["cpu"] for row in topology} != set(affinity):
+        raise ValueError("stable placement topology does not cover affinity")
+    if (
+        not isinstance(order, list)
+        or any(type(cpu) is not int or cpu < 0 for cpu in order)
+        or len(order) != len(affinity)
+        or set(order) != set(affinity)
+        or order != _topology_order(affinity, topology)
+    ):
+        raise ValueError("stable placement topology order is malformed")
+    if _parse_cpu_set(cpuset) != set(affinity):
+        raise ValueError("stable placement cgroup cpuset differs from affinity")
+    if not isinstance(memory_max, str) or re.fullmatch(r"[1-9][0-9]*", memory_max) is None:
+        raise ValueError("stable placement memory limit is malformed")
+    if (
+        not isinstance(devices, list)
+        or any(not isinstance(path, str) or not path for path in devices)
+        or len(set(devices)) != len(devices)
+    ):
+        raise ValueError("stable placement GPU inventory is malformed")
+    return {
+        "schema": STABLE_PLACEMENT_SCHEMA,
+        "cpu_model": model.strip(),
+        "logical_cpus": logical_cpus,
+        "affinity": list(affinity),
+        "cpu_topology": topology,
+        "topology_order": list(order),
+        "cpuset_cpus": sorted(_parse_cpu_set(cpuset)),
+        "memory_limit_bytes": int(memory_max),
+        "nvidia_devices": sorted(devices),
+    }
+
+
+def stable_placement_sha256(identity: dict[str, Any]) -> str:
+    return hashlib.sha256(json.dumps(
+        identity, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=True, allow_nan=False,
+    ).encode("utf-8")).hexdigest()
+
+
+def stable_placement_snapshot_valid(snapshot: dict[str, Any]) -> bool:
+    try:
+        identity = stable_placement_identity(snapshot)
+    except (KeyError, TypeError, ValueError):
+        return False
+    return (
+        snapshot.get("placement_identity") == identity
+        and snapshot.get("placement_identity_sha256")
+        == stable_placement_sha256(identity)
+    )
+
+
+def stable_placement_unchanged(*snapshots: dict[str, Any]) -> bool:
+    if not snapshots or not all(stable_placement_snapshot_valid(item) for item in snapshots):
+        return False
+    identity = snapshots[0]["placement_identity"]
+    digest = snapshots[0]["placement_identity_sha256"]
+    return all(
+        item["placement_identity"] == identity
+        and item["placement_identity_sha256"] == digest
+        for item in snapshots[1:]
+    )
+
+
 def _verify_restoration(
     restoration: dict[str, Any], reservation: dict[str, Any], expected_affinity: list[int]
 ) -> bool:
@@ -2057,21 +2183,20 @@ def verify_isolation(
     before, after = isolation.get("before"), isolation.get("after")
     if not isinstance(before, dict) or not isinstance(after, dict):
         raise ValueError("session isolation snapshots are absent")
+    initial_identity = initial.get("placement_identity")
     exact_placement = bool(
         exact_placement
-        and initial["affinity"] == before.get("affinity") == after.get("affinity") == allowed
-        and initial["cpu_topology"] == before.get("cpu_topology") == after.get("cpu_topology")
-        and initial["topology_order"] == before.get("topology_order")
-        == after.get("topology_order") == order
-        and initial["cpuinfo_sha256"] == before.get("cpuinfo_sha256")
-        == after.get("cpuinfo_sha256")
-        and initial["cpu_model"] == before.get("cpu_model") == after.get("cpu_model")
-        and initial["cpuset_cpus"] == before.get("cpuset_cpus")
-        == after.get("cpuset_cpus")
-        and initial["memory_max"] == before.get("memory_max") == after.get("memory_max")
-        == str(EXPECTED_MEMORY_BYTES)
-        and initial["nvidia_devices"] == before.get("nvidia_devices")
-        == after.get("nvidia_devices") == []
+        and stable_placement_unchanged(initial, before, after)
+        and isinstance(initial_identity, dict)
+        and initial_identity.get("affinity") == allowed
+        and initial_identity.get("cpu_topology") == [
+            {field: row.get(field) for field in STABLE_TOPOLOGY_FIELDS}
+            for row in topology
+        ]
+        and initial_identity.get("topology_order") == order
+        and initial_identity.get("cpuset_cpus") == sorted(allowed)
+        and initial_identity.get("memory_limit_bytes") == EXPECTED_MEMORY_BYTES
+        and initial_identity.get("nvidia_devices") == []
     )
     reservation = manifest.get("reservation")
     if (
