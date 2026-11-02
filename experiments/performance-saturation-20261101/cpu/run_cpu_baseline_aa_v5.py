@@ -39,6 +39,7 @@ RUNTIME_DEPENDENCY_MANIFEST = HERE / "runtime-dependencies-v5.json"
 PYTHON_PREFLIGHT = HERE / "python_preflight_v5.sh"
 PYTHON_BOOTSTRAP = HERE / "python_bootstrap_v5.py"
 PYTHON_CLOSURE = HERE / "python-bootstrap-closure-v5.sha256"
+PYTHON_IMPORT_INVENTORY = HERE / "python-import-inventory-v5.txt"
 DASH = Path("/bin/dash")
 SHA256SUM = Path("/usr/bin/sha256sum")
 ISOLATED = Path("/workspace/crypto/target/release/isolated_bench")
@@ -60,6 +61,11 @@ PERFINDEX_SHA256 = "28084cd77fe28d3b031f4dc1474241ee051b2072c7b62dc7a17e0049c3e3
 ANALYZER = HERE / "analyze_cpu_baseline_aa_v5.py"
 RUNNER = Path(__file__).resolve()
 ATTEMPT_TIMEOUT_SECONDS = 86_400
+CLOSED_BOOTSTRAP_ENV = "CPU_V5_CLOSED_BOOTSTRAP"
+PERF_CONFIG_ENV = (
+    "PERF_CONFIG=/dev/null", "PERF_CONFIG_NOSYSTEM=1", "PERF_CONFIG_NOGLOBAL=1",
+)
+CLOSED_BOOTSTRAP_ENTRY: dict[str, Any] | None = None
 
 RUST_IDS = (
     "gf2_la/rref_random_4940x8357",
@@ -213,6 +219,74 @@ def closed_python_command(
     ]
 
 
+def bootstrap_environment(profile: str) -> dict[str, str]:
+    """Return the exact target environment installed by the frozen router."""
+    environment = {
+        "LANG": "C", "LC_ALL": "C", "PATH": BASE_PATH,
+        "PYTHONCOERCECLOCALE": "0", "PYTHONHASHSEED": "0",
+        "PYTHONUTF8": "1", "TZ": "UTC",
+        CLOSED_BOOTSTRAP_ENV: f"cpu-baseline-aa-v5/{profile}",
+    }
+    if profile == "wall-1":
+        environment.update({
+            "RAYON_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+        })
+    elif profile == "wall-4":
+        environment.update({
+            "RAYON_NUM_THREADS": "4", "OMP_NUM_THREADS": "4",
+            "OPENBLAS_NUM_THREADS": "1",
+        })
+    elif profile == "callgrind-1":
+        environment.update({
+            "PATH": "/workspace/.tools/valgrind/bin:/usr/bin:/bin",
+            "RAYON_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+        })
+    elif profile != "base":
+        raise ValueError(f"unknown closed Python profile: {profile}")
+    return environment
+
+
+def expected_bootstrap_entry(
+    profile: str, target: Path, arguments: list[str],
+) -> dict[str, Any]:
+    target = target.resolve()
+    process_argv = [
+        str(PYTHON), "-S", "-B", "-P", "-X", "pycache_prefix=/dev/null",
+        str(PYTHON_BOOTSTRAP), profile, str(target), *arguments,
+    ]
+    return {
+        "schema": "cpu-baseline-aa-v5-bootstrap-entry/v1",
+        "profile": profile, "target": str(target),
+        "process_argv": process_argv,
+        "process_argv_sha256": digest_value(process_argv),
+        "environment": bootstrap_environment(profile),
+    }
+
+
+def require_closed_bootstrap(profile: str) -> None:
+    """Prove and consume the external-preflight/router entry before child launch."""
+    global CLOSED_BOOTSTRAP_ENTRY
+    expected = f"cpu-baseline-aa-v5/{profile}"
+    observed = os.environ.get(CLOSED_BOOTSTRAP_ENV)
+    if observed != expected or dict(os.environ) != bootstrap_environment(profile):
+        raise SystemExit("CPU v5 target was not entered through its frozen Python bootstrap")
+    target = Path(sys.argv[0]).resolve()
+    entry = expected_bootstrap_entry(profile, target, sys.argv[1:])
+    try:
+        process_argv = [
+            part.decode("utf-8", "strict")
+            for part in Path("/proc/self/cmdline").read_bytes().split(b"\0") if part
+        ]
+    except (OSError, UnicodeDecodeError) as error:
+        raise SystemExit(f"CPU v5 cannot prove its bootstrap process argv: {error}")
+    if process_argv != entry["process_argv"]:
+        raise SystemExit("CPU v5 process argv does not prove the frozen external preflight route")
+    CLOSED_BOOTSTRAP_ENTRY = entry
+    os.environ.pop(CLOSED_BOOTSTRAP_ENV)
+
+
 def wall_environment(threads: int) -> dict[str, str]:
     """The complete, inherited-nothing environment of a wall session."""
     return {
@@ -274,6 +348,7 @@ def perf_stat_commands() -> list[dict[str, Any]]:
             argv += clean_env(
                 f"LD_LIBRARY_PATH={PERF_LIB}", "RAYON_NUM_THREADS=1",
                 "OMP_NUM_THREADS=1", "OPENBLAS_NUM_THREADS=1",
+                *PERF_CONFIG_ENV,
                 path="/usr/bin:/bin",
             ) + [
                 str(TASKSET), "-c", "0",
@@ -298,6 +373,7 @@ def perf_record_command(ordinal: int, kernel: str) -> dict[str, Any]:
     argv += clean_env(
         f"LD_LIBRARY_PATH={PERF_LIB}", "RAYON_NUM_THREADS=1",
         "OMP_NUM_THREADS=1", "OPENBLAS_NUM_THREADS=1",
+        *PERF_CONFIG_ENV,
         path="/usr/bin:/bin",
     ) + [
         str(TASKSET), "-c", "0", str(PERF),
@@ -323,9 +399,10 @@ def perf_record_candidate_templates() -> list[dict[str, Any]]:
 
 
 def callgrind_inner_argv(binary: Path, kernel: str) -> list[str]:
-    """The exact argv used by perfindex.instr_one at the frozen source."""
+    """Frozen instr_one semantics with absolute/config-closed Valgrind routing."""
     return [
-        "valgrind", "--tool=callgrind", "--callgrind-out-file=/dev/null",
+        str(VALGRIND), "--command-line-only=yes", "--tool=callgrind",
+        "--callgrind-out-file=/dev/null",
         "--instr-atstart=no", str(binary), "run", "--filter", kernel,
         "--exact", "--instr",
     ]
@@ -683,6 +760,25 @@ def command_wall_session(options: argparse.Namespace) -> int:
 def build_plan() -> dict[str, Any]:
     wall = wall_commands()
     callgrind = callgrind_commands()
+    callgrind_inner = [
+        {
+            "ordinal": record["ordinal"], "kernel": record["kernel"],
+            "arm": record["arm"],
+            "argv": callgrind_inner_argv(binary_for(record["kernel"]), record["kernel"]),
+            "registry_preludes": (
+                [
+                    {
+                        "ordinal": prelude_ordinal, "role": role,
+                        "argv": [str(binary_for(record["kernel"])), "list"]
+                        + (["--full"] if record["kernel"] in C_IDS else []),
+                    }
+                    for prelude_ordinal, role in enumerate(("base", "cand"), 1)
+                ]
+                if callgrind_requires_registry_prelude(record) else []
+            ),
+        }
+        for record in callgrind
+    ]
     perf_stat = perf_stat_commands()
     fixed_record = [perf_record_command(i, kid) for i, kid in enumerate(FIXED_RECORD_IDS, 1)]
     derived_record = perf_record_candidate_templates()
@@ -692,6 +788,7 @@ def build_plan() -> dict[str, Any]:
         "retained_artifact_root": str(V4_ROOT),
         "wall": wall,
         "callgrind": callgrind,
+        "callgrind_inner": callgrind_inner,
         "perf_stat": perf_stat,
         "perf_record": {
             "fixed": fixed_record,
@@ -702,6 +799,7 @@ def build_plan() -> dict[str, Any]:
         "digests": {
             "wall": digest_value(wall),
             "callgrind": digest_value(callgrind),
+            "callgrind_inner": digest_value(callgrind_inner),
             "perf_stat": digest_value(perf_stat),
             "perf_record_fixed": digest_value(fixed_record),
             "perf_record_derived_candidates": digest_value(derived_record),
@@ -729,6 +827,18 @@ def write_text_once(path: Path, value: str) -> None:
 
 def utc_now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat()
+
+
+def parse_utc(value: Any) -> dt.datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() != dt.timedelta(0):
+        return None
+    return parsed
 
 
 def read_optional(path: Path) -> str | None:
@@ -943,7 +1053,8 @@ def verify_bootstrap_identity(data: dict[str, Any]) -> None:
     }
     for path in (
         PYTHON, PROTOCOL_TOOL, PROTOCOL_SCHEMA, EXPORT_SCHEMA,
-        PYTHON_PREFLIGHT, PYTHON_BOOTSTRAP, PYTHON_CLOSURE, DASH, SHA256SUM,
+        PYTHON_PREFLIGHT, PYTHON_BOOTSTRAP, PYTHON_CLOSURE,
+        PYTHON_IMPORT_INVENTORY, DASH, SHA256SUM, SYSTEM_ENV,
     ):
         item = required.get(str(path))
         if item is None:
@@ -1249,15 +1360,22 @@ def validate_finalization(
         finalization = json.loads(finalization_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         return False, f"malformed export/finalization receipt: {error}"
+    derived_returncode, derivation_error = derive_scientific_returncode()
+    if derivation_error is not None:
+        return False, derivation_error
+    receipt_returncode = finalization.get("scientific_returncode")
     if (
         finalization.get("schema") != "cpu-baseline-aa-v5-finalization/v1"
         or finalization.get("status") != "validated"
         or finalization.get("export_sha256") != sha256(export_path)
         or finalization.get("analyzer_sha256") != sha256(ANALYZER)
-        or not isinstance(finalization.get("scientific_returncode"), int)
+        or not isinstance(receipt_returncode, int)
+        or isinstance(receipt_returncode, bool)
+        or parse_utc(finalization.get("completed_at")) is None
+        or receipt_returncode != derived_returncode
     ):
-        return False, "validated finalization receipt does not bind the export/analyzer"
-    if expected_returncode is not None and finalization["scientific_returncode"] != expected_returncode:
+        return False, "validated finalization receipt does not causally bind the export/analyzer/outcome"
+    if expected_returncode is not None and receipt_returncode != expected_returncode:
         return False, "analyzer process and scientific return codes differ"
     if require_terminal:
         terminal_path = RUN_ROOT / "orchestration/terminal.json"
@@ -1280,6 +1398,54 @@ def validate_finalization(
     if checked.returncode != 0:
         return False, f"independent canonical check-export failed: {checked.stderr[-1000:]}"
     return True, "validated"
+
+
+def derive_scientific_returncode() -> tuple[int | None, str | None]:
+    """Derive the analyzer's scientific code from immutable retained state."""
+    analysis_path = RUN_ROOT / "analysis/analysis.json"
+    complete_path = RUN_ROOT / "orchestration/complete.json"
+    terminal_path = RUN_ROOT / "orchestration/terminal.json"
+    try:
+        analysis = json.loads(analysis_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return None, f"analysis needed to derive scientific return code is malformed: {error}"
+    if analysis.get("schema") != "cpu-baseline-aa-v5-analysis/v1":
+        return None, "analysis schema cannot derive the scientific return code"
+    if complete_path.is_file() == terminal_path.is_file():
+        return None, "exactly one completion or terminal receipt is required"
+    if complete_path.is_file():
+        try:
+            complete = json.loads(complete_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            return None, f"completion receipt is malformed: {error}"
+        if (
+            set(complete) != {"schema", "status", "finished_at"}
+            or complete.get("schema") != "cpu-baseline-aa-v5-complete/v1"
+            or complete.get("status") != "orchestration_complete"
+            or parse_utc(complete.get("finished_at")) is None
+            or analysis.get("campaign_status") != "orchestration_complete"
+            or analysis.get("terminal") is not None
+            or analysis.get("wall", {}).get("verdict") not in {
+                "baseline_aa_complete_nonqualified",
+                "baseline_aa_false_direction_nonqualified",
+            }
+            or analysis.get("verdict") != analysis.get("wall", {}).get("verdict")
+        ):
+            return None, "completion/analysis state cannot derive a successful scientific outcome"
+        return 0, None
+    try:
+        terminal = json.loads(terminal_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return None, f"terminal receipt is malformed: {error}"
+    if (
+        terminal.get("schema") != "cpu-baseline-aa-v5-terminal/v1"
+        or terminal.get("continuation") != "forbidden"
+        or parse_utc(terminal.get("finished_at")) is None
+        or analysis.get("campaign_status") != "sealed_terminal_incomplete"
+        or analysis.get("terminal") != terminal
+    ):
+        return None, "terminal/analysis state cannot derive an incomplete scientific outcome"
+    return 1, None
 
 
 def emit_terminal_analysis(protocol_path: Path) -> bool:
@@ -1315,6 +1481,8 @@ def emit_terminal_analysis(protocol_path: Path) -> bool:
 def initialize_campaign(protocol_path: Path, protocol: dict[str, Any]) -> bool:
     orchestration = RUN_ROOT / "orchestration"
     plan = build_plan()
+    if CLOSED_BOOTSTRAP_ENTRY is None:
+        raise RuntimeError("campaign start lacks the frozen controller bootstrap-entry proof")
     write_json_durable_once(orchestration / "command-plan.json", plan)
     write_json_durable_once(orchestration / "start.json", {
         "schema": "cpu-baseline-aa-v5-start/v1", "started_at": utc_now(),
@@ -1322,6 +1490,7 @@ def initialize_campaign(protocol_path: Path, protocol: dict[str, Any]) -> bool:
         "protocol_sha256": protocol["freeze"]["protocol_sha256"],
         "plan_sha256": sha256(orchestration / "command-plan.json"),
         "plan_preimage_sha256": plan["digests"]["plan_preimage"],
+        "controller_entry": CLOSED_BOOTSTRAP_ENTRY,
         "other_cpu_work_paused_confirmed": True, "resume_policy": "forbidden",
     })
     write_system_snapshot_once("before")
@@ -1386,7 +1555,10 @@ def execute_campaign(protocol_path: Path, protocol: dict[str, Any]) -> int:
 
     write_identity_snapshot_once("campaign-after", protocol)
     write_system_snapshot_once("campaign-after")
-    write_json_once(orchestration / "complete.json", {"status": "orchestration_complete", "finished_at": utc_now()})
+    write_json_once(orchestration / "complete.json", {
+        "schema": "cpu-baseline-aa-v5-complete/v1",
+        "status": "orchestration_complete", "finished_at": utc_now(),
+    })
     write_json_once(orchestration / "finalization-request.json", {
         "schema": "cpu-baseline-aa-v5-finalization-request/v1",
         "status": "analysis_started", "started_at": utc_now(),
@@ -1406,6 +1578,7 @@ def execute_campaign(protocol_path: Path, protocol: dict[str, Any]) -> int:
             "analysis_or_export_failed", returncode=analysis.returncode,
             validation_error=None if valid else reason,
         )
+        return 2
     return analysis.returncode
 
 
@@ -1423,6 +1596,12 @@ def command_run(options: argparse.Namespace) -> int:
             return 1
         return execute_campaign(protocol_path, protocol)
     except KeyboardInterrupt:
+        if (RUN_ROOT / "orchestration/complete.json").is_file():
+            seal_finalization_failure(
+                "analysis_interrupted_after_completed_measurement",
+                error_type="KeyboardInterrupt", error="KeyboardInterrupt",
+            )
+            return 130
         write_terminal_once("interrupted_by_operator", error="KeyboardInterrupt")
         if protocol is not None and (RUN_ROOT / "orchestration/start.json").is_file():
             emit_terminal_analysis(protocol_path)
@@ -1430,6 +1609,16 @@ def command_run(options: argparse.Namespace) -> int:
             seal_finalization_failure("interrupted_before_validated_protocol_or_start")
         return 130
     except Exception as error:  # the sealed root is evidence; never resume it
+        if (RUN_ROOT / "orchestration/complete.json").is_file():
+            seal_finalization_failure(
+                "analysis_exception_after_completed_measurement",
+                error_type=type(error).__name__, error=str(error),
+            )
+            print(
+                f"cpu baseline A/A v5 analysis terminated after measurement completion: "
+                f"{type(error).__name__}: {error}", file=sys.stderr,
+            )
+            return 2
         write_terminal_once(
             "orchestration_exception", error_type=type(error).__name__, error=str(error),
         )
@@ -1552,15 +1741,16 @@ def command_finalize(options: argparse.Namespace) -> int:
         raise SystemExit(f"refusing finalize while campaign/analyzer processes are live: {live}")
     finalization_path = RUN_ROOT / "orchestration/finalization.json"
     if finalization_path.is_file():
-        receipt = json.loads(finalization_path.read_text(encoding="utf-8"))
-        expected = receipt.get("scientific_returncode")
         valid, reason = validate_finalization(
-            protocol_path, expected if isinstance(expected, int) else None,
+            protocol_path, None,
             require_terminal=(RUN_ROOT / "orchestration/terminal.json").is_file(),
         )
         if not valid:
             raise SystemExit(f"existing finalization is invalid: {reason}")
-        return int(expected)
+        derived, error = derive_scientific_returncode()
+        if error is not None or derived is None:
+            raise SystemExit(f"cannot derive existing finalization outcome: {error}")
+        return derived
     complete = RUN_ROOT / "orchestration/complete.json"
     terminal = RUN_ROOT / "orchestration/terminal.json"
     if not complete.is_file() and not terminal.is_file():
@@ -1626,4 +1816,11 @@ def command_plan(options: argparse.Namespace) -> int:
 
 if __name__ == "__main__":
     parsed = parse_args()
+    if parsed.command == "wall-session":
+        expected_profile = f"wall-{WALL_SESSION_SPECS[parsed.session]['threads']}"
+    elif parsed.command == "callgrind-one":
+        expected_profile = "callgrind-1"
+    else:
+        expected_profile = "base"
+    require_closed_bootstrap(expected_profile)
     raise SystemExit(parsed.func(parsed))

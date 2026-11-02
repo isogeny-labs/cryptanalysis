@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import random
 import subprocess
@@ -14,7 +15,9 @@ import unittest
 from unittest import mock
 
 import analyze_cpu_baseline_aa_v5 as analyzer
-import run_cpu_baseline_aa_v5 as runner
+import python_bootstrap_v5 as bootstrap
+
+runner = analyzer.runner
 
 T0 = "2026-11-01T00:00:00+00:00"
 T1 = "2026-11-01T00:00:01+00:00"
@@ -127,6 +130,13 @@ def campaign_start(root: Path, protocol: dict) -> dict:
         "protocol_sha256": protocol["freeze"]["protocol_sha256"],
         "plan_sha256": digest(plan_path),
         "plan_preimage_sha256": plan["digests"]["plan_preimage"],
+        "controller_entry": runner.expected_bootstrap_entry(
+            "base", runner.RUNNER,
+            [
+                "run", "--protocol", str(root.parent / "protocol.json"),
+                "--confirm-other-cpu-work-paused",
+            ],
+        ),
         "other_cpu_work_paused_confirmed": True, "resume_policy": "forbidden",
     })
     return plan
@@ -143,8 +153,8 @@ def failed_outer_attempt(root: Path, name: str, record: dict) -> None:
     })
     dump(outer / "launched.json", {
         "schema": "cpu-baseline-aa-v5-attempt-launch/v1", "record": record,
-        "started_at": T0, "pid": 2000 + int(record["ordinal"]),
-        "process_group": 2000 + int(record["ordinal"]),
+        "started_at": T0, "pid": 2000 + int(record.get("ordinal", 1)),
+        "process_group": 2000 + int(record.get("ordinal", 1)),
     })
     dump(outer / "receipt.json", {
         "schema": "cpu-baseline-aa-v5-attempt/v1", "record": record,
@@ -167,7 +177,9 @@ def invoke_analyzer(protocol_path: Path, root: Path) -> int:
         str(Path(analyzer.__file__).resolve()), "--protocol", str(protocol_path),
         "--run-root", str(root),
     ]
-    with mock.patch.object(sys, "argv", argv):
+    with mock.patch.object(sys, "argv", argv), mock.patch.object(
+        runner, "require_closed_bootstrap",
+    ):
         return analyzer.main()
 
 
@@ -362,6 +374,15 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
         })
         self.assertEqual(len({row["output"] for row in plan["callgrind"]}), 88)
         self.assertEqual(len({row["output"] for row in plan["perf_stat"]}), 88)
+        self.assertEqual(len(plan["callgrind_inner"]), 88)
+        self.assertEqual(
+            plan["digests"]["callgrind_inner"],
+            runner.digest_value(plan["callgrind_inner"]),
+        )
+        self.assertEqual(
+            [len(row["registry_preludes"]) for row in plan["callgrind_inner"]].count(2),
+            2,
+        )
         seed_table = runner.export_seed_table()
         self.assertEqual(len(seed_table), 1056)
         self.assertEqual({row["replicate"] for row in seed_table}, set(range(1, 7)))
@@ -407,6 +428,16 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
         )
         self.assertEqual(checked.returncode, 0, checked.stderr)
         self.assertRegex(checked.stdout.strip(), r"^[0-9a-f]{64}$")
+        direct = subprocess.run(
+            runner.clean_env() + [
+                str(runner.PYTHON), "-S", "-B", "-P", "-X",
+                "pycache_prefix=/dev/null", str(runner.PYTHON_BOOTSTRAP),
+                "base", str(runner.PROTOCOL_TOOL), "hash", str(PROTOCOL_DRAFT),
+            ],
+            cwd=runner.REPO, capture_output=True, text=True, timeout=60,
+        )
+        self.assertNotEqual(direct.returncode, 0)
+        self.assertIn("environment differs", direct.stderr)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             dependency = root / "dependency.py"
@@ -436,6 +467,129 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             self.assertNotEqual(failed.returncode, 0)
             self.assertIn("did NOT match", failed.stderr)
             self.assertNotIn("not allow-listed", failed.stderr)
+
+    def test_closed_import_routes_reject_shadow_and_optional_activation(self) -> None:
+        expected = runner.PYTHON_IMPORT_INVENTORY.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(bootstrap.import_inventory(), expected)
+        closure_paths = {
+            line.split("  ", 1)[1]
+            for line in runner.PYTHON_CLOSURE.read_text(encoding="utf-8").splitlines()
+            if line
+        }
+        executable_inventory = {
+            row.split("\t", 1)[1] for row in expected
+            if row.startswith(("P\t", "F\t"))
+        }
+        self.assertTrue(executable_inventory.issubset(closure_paths))
+        self.assertFalse(any(row.startswith(("A\t", "X\t")) for row in expected))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stdlib = root / "stdlib"
+            site = root / "site"
+            package = site / "jsonschema"
+            package.mkdir(parents=True)
+            stdlib.mkdir()
+            (stdlib / "json.py").write_text("value = 1\n", encoding="utf-8")
+            (package / "__init__.py").write_text("value = 1\n", encoding="utf-8")
+            (site / "typing_extensions.py").write_text("value = 1\n", encoding="utf-8")
+            baseline = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            (package / "rogue.py").write_text("value = 2\n", encoding="utf-8")
+            nested_extra = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertNotEqual(nested_extra, baseline)
+            (site / "jsonschema.py").write_text("value = 3\n", encoding="utf-8")
+            alternate = bootstrap.import_inventory(
+                str(stdlib), str(site), ("jsonschema",), ("typing_extensions.py",),
+            )
+            self.assertTrue(any(row.startswith("A\t") for row in alternate))
+
+            marker = root / "shadow-loaded"
+            shadow = (
+                "from pathlib import Path\n"
+                f"Path({str(marker)!r}).write_text('loaded')\n"
+            )
+            (root / "json.py").write_text(shadow, encoding="utf-8")
+            (root / "fqdn.py").write_text(shadow, encoding="utf-8")
+            checked = subprocess.run(
+                runner.closed_python_command(
+                    runner.PROTOCOL_TOOL, "hash", str(PROTOCOL_DRAFT),
+                ),
+                cwd=root, capture_output=True, text=True, timeout=60,
+            )
+            self.assertEqual(checked.returncode, 0, checked.stderr)
+            self.assertFalse(marker.exists())
+
+        planned = subprocess.run(
+            runner.closed_python_command(runner.RUNNER, "plan"),
+            cwd=runner.REPO, capture_output=True, text=True, timeout=60,
+        )
+        self.assertEqual(planned.returncode, 0, planned.stderr)
+        self.assertEqual(json.loads(planned.stdout)["schema"], "cpu-baseline-aa-v5-command-plan/v1")
+
+    def test_profiler_configuration_sources_are_closed(self) -> None:
+        callgrind = runner.callgrind_inner_argv(runner.RUST_BINARY, runner.RUST_IDS[0])
+        self.assertIn("--command-line-only=yes", callgrind)
+        baseline_plan = runner.build_plan()
+        with mock.patch.dict(os.environ, {
+            "HOME": "/tmp/untrusted-home", "VALGRIND_OPTS": "--tool=none",
+            "PERF_CONFIG": "/tmp/untrusted-perfconfig",
+        }, clear=False):
+            plan = runner.build_plan()
+        with tempfile.TemporaryDirectory() as hostile_directory:
+            hostile = Path(hostile_directory)
+            (hostile / ".valgrindrc").write_text("--tool=none\n", encoding="utf-8")
+            (hostile / ".perfconfig").write_text("[ui]\nshow-headers=false\n", encoding="utf-8")
+            with mock.patch.object(runner, "REPO", hostile):
+                hostile_plan = runner.build_plan()
+        self.assertEqual(hostile_plan["digests"], baseline_plan["digests"])
+        for record in [
+            *plan["perf_stat"], *plan["perf_record"]["fixed"],
+            *plan["perf_record"]["derived_candidates"],
+        ]:
+            self.assertIn("PERF_CONFIG_NOSYSTEM=1", record["argv"])
+            self.assertIn("PERF_CONFIG_NOGLOBAL=1", record["argv"])
+            self.assertIn("PERF_CONFIG=/dev/null", record["argv"])
+            self.assertFalse(any(item.startswith("HOME=") for item in record["argv"]))
+
+        with tempfile.TemporaryDirectory() as directory:
+            data = Path(directory) / "perf.data"
+            data.write_bytes(b"PERFILE2" + b"\0" * 200)
+            responses = [
+                subprocess.CompletedProcess([], 0, stdout="cpu-clock\n", stderr=""),
+                subprocess.CompletedProcess(
+                    [], 0, stdout="x 1 [000] 1.0: cpu-clock:\n\tframe\n", stderr="",
+                ),
+            ]
+            with mock.patch.object(analyzer.subprocess, "run", side_effect=responses) as execute:
+                self.assertEqual(analyzer.validate_perf_data(data), [])
+            self.assertEqual(execute.call_count, 2)
+            for call in execute.call_args_list:
+                argv = call.args[0]
+                self.assertIn("PERF_CONFIG_NOSYSTEM=1", argv)
+                self.assertIn("PERF_CONFIG_NOGLOBAL=1", argv)
+                self.assertIn("PERF_CONFIG=/dev/null", argv)
+
+    def test_start_receipt_binds_full_controller_entry(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                protocol_path, protocol = frozen_protocol(root)
+                plan = campaign_start(root, protocol)
+                plan_path = root / "orchestration/command-plan.json"
+                analyzer.verify_start(root, protocol_path, protocol, plan_path, plan)
+                start_path = root / "orchestration/start.json"
+                start = analyzer.load_json(start_path)
+                start["controller_entry"]["environment"]["PATH"] = "/tmp/shadow"
+                dump(start_path, start)
+                with self.assertRaises(ValueError):
+                    analyzer.verify_start(root, protocol_path, protocol, plan_path, plan)
+            finally:
+                runner.RUN_ROOT = original
 
     def test_callgrind_stream_binding_and_positive_selection(self) -> None:
         with self.assertRaises(ValueError):
@@ -636,7 +790,19 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             try:
                 terminal = root / "orchestration/terminal.json"
                 export = root / "export.json"
-                dump(terminal, {"status": "synthetic"})
+                terminal_row = {
+                    "schema": "cpu-baseline-aa-v5-terminal/v1",
+                    "status": "wall_command_failed", "finished_at": T1,
+                    "continuation": "forbidden",
+                }
+                dump(terminal, terminal_row)
+                dump(root / "analysis/analysis.json", {
+                    "schema": "cpu-baseline-aa-v5-analysis/v1",
+                    "campaign_status": "sealed_terminal_incomplete",
+                    "terminal": terminal_row,
+                    "wall": {"verdict": "inconclusive_contention_or_incomplete"},
+                    "verdict": "inconclusive_contention_or_incomplete",
+                })
                 dump(export, {
                     "files": [{"path": "orchestration/terminal.json", "sha256": digest(terminal)}],
                 })
@@ -651,10 +817,185 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                     valid, reason = runner.validate_finalization(Path("protocol.json"), 1, True)
                 self.assertTrue(valid, reason)
                 receipt = analyzer.load_json(root / "orchestration/finalization.json")
-                receipt["export_sha256"] = "0" * 64
+                receipt["scientific_returncode"] = 0
                 dump(root / "orchestration/finalization.json", receipt)
                 valid, _ = runner.validate_finalization(Path("protocol.json"), 1, True)
                 self.assertFalse(valid)
+                receipt["scientific_returncode"] = True
+                dump(root / "orchestration/finalization.json", receipt)
+                valid, _ = runner.validate_finalization(Path("protocol.json"), None, True)
+                self.assertFalse(valid)
+                receipt["scientific_returncode"] = 1
+                receipt["completed_at"] = "not-a-time"
+                dump(root / "orchestration/finalization.json", receipt)
+                valid, _ = runner.validate_finalization(Path("protocol.json"), None, True)
+                self.assertFalse(valid)
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_outer_receipt_launch_and_timeout_causality(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                record = runner.build_plan()["wall"][0]
+                name = "synthetic"
+                outer = root / "orchestration/attempts" / name
+                outer.mkdir(parents=True)
+                (outer / "stdout.txt").write_text("", encoding="utf-8")
+                (outer / "stderr.txt").write_text("", encoding="utf-8")
+                dump(outer / "started.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt-start/v1",
+                    "record": record, "started_at": T0,
+                })
+                receipt = {
+                    "schema": "cpu-baseline-aa-v5-attempt/v1", "record": record,
+                    "started_at": T0, "finished_at": T1, "returncode": 0,
+                    "launch_error": "synthetic launch failure", "timeout_error": None,
+                    "stdout_sha256": digest(outer / "stdout.txt"),
+                    "stderr_sha256": digest(outer / "stderr.txt"),
+                }
+                dump(outer / "receipt.json", receipt)
+                _, provenance, _ = analyzer.validate_attempt(root, name, record, False)
+                self.assertTrue(any("launch error must bind" in row for row in provenance))
+
+                receipt.update({
+                    "returncode": 124, "launch_error": None,
+                    "timeout_error": {
+                        "seconds": record["timeout_seconds"],
+                        "process_group_terminated": False,
+                    },
+                })
+                dump(outer / "receipt.json", receipt)
+                dump(outer / "launched.json", {
+                    "schema": "cpu-baseline-aa-v5-attempt-launch/v1",
+                    "record": record, "started_at": T0, "pid": 1,
+                    "process_group": 1,
+                })
+                _, provenance, _ = analyzer.validate_attempt(root, name, record, False)
+                self.assertTrue(any("timeout evidence must bind" in row for row in provenance))
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_controller_never_returns_success_after_failed_revalidation(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            runner.RUN_ROOT = Path(directory) / "run"
+            (runner.RUN_ROOT / "orchestration").mkdir(parents=True)
+            completed = subprocess.CompletedProcess([], 0)
+            try:
+                with (
+                    mock.patch.object(runner, "run_attempt", return_value=0),
+                    mock.patch.object(runner, "write_identity_snapshot_once"),
+                    mock.patch.object(runner, "write_system_snapshot_once"),
+                    mock.patch.object(runner, "choose_perf_record", return_value=(None, {
+                        "status": "not_attempted_missing_c_callgrind_a",
+                        "missing": list(runner.C_IDS),
+                    })),
+                    mock.patch.object(runner.subprocess, "run", return_value=completed),
+                    mock.patch.object(
+                        runner, "validate_finalization",
+                        return_value=(False, "synthetic post-analyzer rejection"),
+                    ),
+                ):
+                    code = runner.execute_campaign(Path("protocol.json"), {})
+                self.assertEqual(code, 2)
+                failure = analyzer.load_json(
+                    runner.RUN_ROOT / "orchestration/finalization-failure.json"
+                )
+                self.assertEqual(failure["reason"], "analysis_or_export_failed")
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_post_complete_analysis_failure_is_retry_only(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            runner.RUN_ROOT = Path(directory) / "run"
+            options = runner.argparse.Namespace(
+                protocol=Path(directory) / "protocol.json",
+                confirm_other_cpu_work_paused=True,
+            )
+
+            def fail_after_complete(*_args: object) -> int:
+                dump(runner.RUN_ROOT / "orchestration/complete.json", {
+                    "schema": "cpu-baseline-aa-v5-complete/v1",
+                    "status": "orchestration_complete", "finished_at": T1,
+                })
+                raise subprocess.TimeoutExpired("analyzer", 1)
+
+            try:
+                with (
+                    mock.patch.object(runner, "validate_protocol", return_value={}),
+                    mock.patch.object(runner, "initialize_campaign", return_value=True),
+                    mock.patch.object(runner, "execute_campaign", side_effect=fail_after_complete),
+                ):
+                    self.assertEqual(runner.command_run(options), 2)
+                self.assertFalse((runner.RUN_ROOT / "orchestration/terminal.json").exists())
+                self.assertTrue(
+                    (runner.RUN_ROOT / "orchestration/finalization-failure.json").is_file()
+                )
+                finalize = runner.argparse.Namespace(
+                    protocol=options.protocol, confirm_no_campaign_process_live=True,
+                )
+                with (
+                    mock.patch.object(runner, "validate_protocol", return_value={}),
+                    mock.patch.object(runner, "live_campaign_processes", return_value=[]),
+                    mock.patch.object(
+                        runner.subprocess, "run",
+                        return_value=subprocess.CompletedProcess([], 0),
+                    ),
+                    mock.patch.object(
+                        runner, "validate_finalization", return_value=(True, "validated"),
+                    ),
+                ):
+                    self.assertEqual(runner.command_finalize(finalize), 0)
+            finally:
+                runner.RUN_ROOT = original
+
+    def test_profile_schedule_is_one_cross_phase_exact_prefix(self) -> None:
+        original = runner.RUN_ROOT
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "run"
+            runner.RUN_ROOT = root
+            try:
+                plan = runner.build_plan()
+                first = plan["callgrind"][0]
+                later = plan["callgrind"][2]
+                perf = plan["perf_stat"][0]
+                failed_outer_attempt(
+                    root, f"callgrind-{first['ordinal']:03d}-{first['arm']}", first,
+                )
+                failed_outer_attempt(
+                    root, f"callgrind-{later['ordinal']:03d}-{later['arm']}", later,
+                )
+                failed_outer_attempt(
+                    root, f"perf_stat-{perf['ordinal']:03d}-{perf['arm']}", perf,
+                )
+                findings = analyzer.validate_profile_schedule(root, plan, None)
+                self.assertTrue(any("after the first incomplete" in row for row in findings))
+                self.assertTrue(any("before both prior phases" in row for row in findings) is False)
+
+                isolation = analyzer.isolation_path(first)
+                rows = analyzer.load_jsonl(isolation)
+                rows[0]["contended_samples"] = 1
+                rows[0]["left_on_reserved"] = {"1": [1]}
+                jsonl(isolation, rows)
+                _, incomplete = analyzer.validate_isolation(first, 1, True)
+                self.assertTrue(any("contended" in row for row in incomplete))
+                self.assertTrue(any("remained" in row for row in incomplete))
+
+                dump(root / "orchestration/perf-record-selection.json", {
+                    "status": "not_attempted_missing_c_callgrind_a",
+                    "missing": list(runner.C_IDS),
+                })
+                (root / "profiles/perf-record").mkdir(parents=True)
+                profiles = analyzer.profile_inventory(root, {})
+                self.assertTrue(any(
+                    "without a complete frozen selection" in row
+                    for row in profiles["perf_record"]["diagnostic_findings"]
+                ))
+                self.assertFalse(profiles["schedule_complete"])
             finally:
                 runner.RUN_ROOT = original
 
@@ -797,7 +1138,16 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                     "missing": list(runner.C_IDS),
                 })
                 dump(root / "orchestration/complete.json", {
+                    "schema": "cpu-baseline-aa-v5-complete/v1",
                     "status": "orchestration_complete", "finished_at": T1,
+                })
+                dump(root / "orchestration/finalization-failure.json", {
+                    "schema": "cpu-baseline-aa-v5-finalization-failure/v1",
+                    "status": "derived_finalization_incomplete",
+                    "reason": "analysis_exception_after_completed_measurement",
+                    "finished_at": T1, "measurement_continuation": "forbidden",
+                    "analysis_only_retry": "allowed_until_validated_finalization_exists",
+                    "error_type": "TimeoutExpired", "error": "synthetic timeout",
                 })
                 self.assertEqual(invoke_analyzer(protocol_path, root), 0)
                 export = analyzer.load_json(root / "export.json")
@@ -810,7 +1160,28 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
                 )
                 self.assertFalse((root / "orchestration/terminal.json").exists())
                 self.assertTrue((root / "orchestration/finalization.json").is_file())
+                self.assertTrue(any(
+                    item["path"] == "orchestration/finalization-failure.json"
+                    for item in export["files"]
+                ))
                 assert_canonical_export(self, protocol_path, protocol, root)
+                sealed = [
+                    root / "analysis/wall-gate.json", root / "rows.jsonl",
+                    root / "analysis/analysis.json", root / "analysis/cells.json",
+                    root / "analysis/REPORT.md", root / "export.json",
+                    root / "orchestration/finalization.json",
+                ]
+                before = {path: path.read_bytes() for path in sealed}
+                raw = root / "wall-1t/rust/compare/attempts/0001_A_gf2_la_rref_macaulay_k5m3d5.json"
+                if not raw.is_file():
+                    raw = next(
+                        path for path in (root / "wall-1t/rust/compare/attempts").glob("*.json")
+                        if not path.name.endswith(".started.json")
+                    )
+                raw.write_bytes(raw.read_bytes() + b" ")
+                with self.assertRaises(ValueError):
+                    invoke_analyzer(protocol_path, root)
+                self.assertEqual({path: path.read_bytes() for path in sealed}, before)
             finally:
                 runner.RUN_ROOT = original
 
@@ -859,6 +1230,74 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             finally:
                 runner.PERFINDEX = original_perfindex
                 runner.RUN_ROOT = original_root
+
+    def test_operational_terminal_roots_emit_canonical_checked_exports(self) -> None:
+        """Exercise wall failure, in-flight orphan, and post-wall interruption."""
+        original = runner.RUN_ROOT
+        for case in ("wall-failure", "wall-orphan", "profile-interruption"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory) / "run"
+                runner.RUN_ROOT = root
+                try:
+                    protocol_path, protocol = frozen_protocol(root)
+                    plan = campaign_start(root, protocol)
+                    self.assertEqual(boundaries(root, protocol), [])
+                    if case == "wall-failure":
+                        record = plan["wall"][0]
+                        failed_outer_attempt(root, "wall-01-rust-1t", record)
+                        terminal = {
+                            "schema": "cpu-baseline-aa-v5-terminal/v1",
+                            "status": "wall_command_failed", "finished_at": T1,
+                            "continuation": "forbidden", "record": record,
+                        }
+                    elif case == "wall-orphan":
+                        record = plan["wall"][0]
+                        outer = root / "orchestration/attempts/wall-01-rust-1t"
+                        dump(outer / "started.json", {
+                            "schema": "cpu-baseline-aa-v5-attempt-start/v1",
+                            "record": record, "started_at": T0,
+                        })
+                        dump(outer / "launched.json", {
+                            "schema": "cpu-baseline-aa-v5-attempt-launch/v1",
+                            "record": record, "started_at": T0,
+                            "pid": 1234, "process_group": 1234,
+                        })
+                        terminal = {
+                            "schema": "cpu-baseline-aa-v5-terminal/v1",
+                            "status": "orphaned_after_process_loss", "finished_at": T1,
+                            "continuation": "forbidden",
+                            "reason": "synthetic process loss",
+                        }
+                    else:
+                        for index, spec in enumerate(analyzer.session_specs(root), 1):
+                            full_session(root, index, spec)
+                        record = plan["callgrind"][0]
+                        outer = root / (
+                            "orchestration/attempts/"
+                            f"callgrind-{record['ordinal']:03d}-{record['arm']}"
+                        )
+                        dump(outer / "started.json", {
+                            "schema": "cpu-baseline-aa-v5-attempt-start/v1",
+                            "record": record, "started_at": T0,
+                        })
+                        dump(outer / "launched.json", {
+                            "schema": "cpu-baseline-aa-v5-attempt-launch/v1",
+                            "record": record, "started_at": T0,
+                            "pid": 1234, "process_group": 1234,
+                        })
+                        terminal = {
+                            "schema": "cpu-baseline-aa-v5-terminal/v1",
+                            "status": "interrupted_by_operator", "finished_at": T1,
+                            "continuation": "forbidden", "error": "KeyboardInterrupt",
+                        }
+                    dump(root / "orchestration/terminal.json", terminal)
+                    self.assertEqual(invoke_analyzer(protocol_path, root), 1)
+                    analysis = analyzer.load_json(root / "analysis/analysis.json")
+                    self.assertEqual(analysis["campaign_status"], "sealed_terminal_incomplete")
+                    self.assertEqual(analysis["terminal"], terminal)
+                    assert_canonical_export(self, protocol_path, protocol, root)
+                finally:
+                    runner.RUN_ROOT = original
 
 
 if __name__ == "__main__":

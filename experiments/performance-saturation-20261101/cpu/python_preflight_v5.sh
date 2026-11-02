@@ -4,7 +4,7 @@ set -eu
 unset PWD
 
 manifest=/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python-bootstrap-closure-v5.sha256
-expected_manifest_sha256=ac3b8f9bfcc19971758d7b5cdfdb314b00c91556101a8b0951dc93608b992ce6
+expected_manifest_sha256=5ff3f89b735e67f985d55ad3901a767392e526a6d00e594b7ba0a5d14db1b32d
 observed_manifest=$(/usr/bin/sha256sum "$manifest")
 case "$observed_manifest" in
     "$expected_manifest_sha256  $manifest") ;;
@@ -15,6 +15,7 @@ esac
     echo "CPU v5 Python zip import path unexpectedly exists" >&2
     exit 125
 }
+export CPU_V5_PREFLIGHT_VERIFIED=cpu-baseline-aa-v5/preflight-v1
 
 exec /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 \
     -S -B -P -X pycache_prefix=/dev/null \

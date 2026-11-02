@@ -16,9 +16,17 @@ import re
 import secrets
 import statistics
 import subprocess
+import sys
 from typing import Any
 
-import run_cpu_baseline_aa_v5 as runner
+
+RUNNER_PATH = Path(__file__).resolve().with_name("run_cpu_baseline_aa_v5.py")
+RUNNER_SPEC = importlib.util.spec_from_file_location("cpu_v5_frozen_runner", RUNNER_PATH)
+if RUNNER_SPEC is None or RUNNER_SPEC.loader is None:
+    raise RuntimeError("cannot load the frozen CPU v5 runner")
+runner = importlib.util.module_from_spec(RUNNER_SPEC)
+sys.modules[RUNNER_SPEC.name] = runner
+RUNNER_SPEC.loader.exec_module(runner)
 
 
 TOOL_PATH = Path("/workspace/crypto-autoresearcher/tools/experiment_protocol.py")
@@ -289,7 +297,8 @@ def validate_attempt(run_root: Path, relative: str, expected: dict[str, Any],
         try:
             started = load_json(started_path)
             if (
-                started.get("schema") != "cpu-baseline-aa-v5-attempt-start/v1"
+                set(started) != {"schema", "record", "started_at"}
+                or started.get("schema") != "cpu-baseline-aa-v5-attempt-start/v1"
                 or started.get("record") != expected
                 or parse_utc(started.get("started_at")) is None
             ):
@@ -302,10 +311,20 @@ def validate_attempt(run_root: Path, relative: str, expected: dict[str, Any],
         receipt = load_json(receipt_path)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         return None, [f"{relative}: malformed outer receipt: {error}"], incomplete
-    if receipt.get("schema") != "cpu-baseline-aa-v5-attempt/v1" or receipt.get("record") != expected:
+    if (
+        set(receipt) != {
+            "schema", "record", "started_at", "finished_at", "returncode",
+            "launch_error", "timeout_error", "stdout_sha256", "stderr_sha256",
+        }
+        or receipt.get("schema") != "cpu-baseline-aa-v5-attempt/v1"
+        or receipt.get("record") != expected
+    ):
         provenance.append(f"{relative}: outer command record mismatch")
     launched_path = directory / "launched.json"
-    if receipt.get("launch_error") is None:
+    launch_error = receipt.get("launch_error")
+    timeout_error = receipt.get("timeout_error")
+    launched_present = launched_path.is_file()
+    if launch_error is None:
         if not launched_path.is_file():
             provenance.append(f"{relative}: completed outer attempt lacks launch PID/PGID receipt")
         else:
@@ -315,14 +334,24 @@ def validate_attempt(run_root: Path, relative: str, expected: dict[str, Any],
                 provenance.append(f"{relative}: malformed launch PID/PGID receipt: {error}")
             else:
                 if (
-                    launched.get("schema") != "cpu-baseline-aa-v5-attempt-launch/v1"
+                    set(launched) != {
+                        "schema", "record", "started_at", "pid", "process_group",
+                    }
+                    or launched.get("schema") != "cpu-baseline-aa-v5-attempt-launch/v1"
                     or launched.get("record") != expected
                     or launched.get("started_at") != receipt.get("started_at")
-                    or not isinstance(launched.get("pid"), int) or launched["pid"] <= 0
+                    or not isinstance(launched.get("pid"), int)
+                    or isinstance(launched.get("pid"), bool) or launched["pid"] <= 0
                     or not isinstance(launched.get("process_group"), int)
+                    or isinstance(launched.get("process_group"), bool)
                     or launched["process_group"] <= 0
+                    or launched["process_group"] != launched["pid"]
                 ):
                     provenance.append(f"{relative}: launch PID/PGID receipt mismatch")
+    elif not isinstance(launch_error, str) or not launch_error:
+        provenance.append(f"{relative}: launch error is not a nonempty string")
+    elif launched_present:
+        provenance.append(f"{relative}: launch error contradicts a launch PID/PGID receipt")
     started_at = parse_utc(receipt.get("started_at"))
     finished_at = parse_utc(receipt.get("finished_at"))
     if started_at is None or finished_at is None or finished_at < started_at:
@@ -336,11 +365,26 @@ def validate_attempt(run_root: Path, relative: str, expected: dict[str, Any],
     if receipt.get("stdout_sha256") != sha256(stdout_path) or receipt.get("stderr_sha256") != sha256(stderr_path):
         provenance.append(f"{relative}: captured stream hash mismatch")
     status = receipt.get("returncode")
-    if not isinstance(status, int):
+    if not isinstance(status, int) or isinstance(status, bool):
         provenance.append(f"{relative}: invalid returncode")
         status = None
-    elif require_zero and status != 0:
-        incomplete.append(f"{relative}: command exited {status}")
+    else:
+        if launch_error is not None and (status != 127 or timeout_error is not None):
+            provenance.append(
+                f"{relative}: launch error must bind returncode 127 and no timeout"
+            )
+        if timeout_error is not None and (
+            launch_error is not None or status != 124 or not launched_present
+            or timeout_error != {
+                "seconds": expected["timeout_seconds"],
+                "process_group_terminated": True,
+            }
+        ):
+            provenance.append(
+                f"{relative}: timeout evidence must bind a launched returncode-124 termination"
+            )
+        if require_zero and status != 0:
+            incomplete.append(f"{relative}: command exited {status}")
     return status, provenance, incomplete
 
 
@@ -1658,7 +1702,8 @@ def validate_perf_data(path: Path, parse_with_perf: bool = True) -> list[str]:
         completed = subprocess.run(
             [
                 str(runner.SYSTEM_ENV), "-i", "PATH=/usr/bin:/bin", "LC_ALL=C", "LANG=C",
-                f"LD_LIBRARY_PATH={runner.PERF_LIB}", str(runner.PERF), "evlist", "-i", str(path),
+                f"LD_LIBRARY_PATH={runner.PERF_LIB}", *runner.PERF_CONFIG_ENV,
+                str(runner.PERF), "evlist", "-i", str(path),
             ],
             cwd=runner.REPO, capture_output=True, text=True, encoding="utf-8",
             errors="replace", timeout=60,
@@ -1670,7 +1715,8 @@ def validate_perf_data(path: Path, parse_with_perf: bool = True) -> list[str]:
         scripted = subprocess.run(
             [
                 str(runner.SYSTEM_ENV), "-i", "PATH=/usr/bin:/bin", "LC_ALL=C", "LANG=C",
-                f"LD_LIBRARY_PATH={runner.PERF_LIB}", str(runner.PERF), "script", "-i", str(path),
+                f"LD_LIBRARY_PATH={runner.PERF_LIB}", *runner.PERF_CONFIG_ENV,
+                str(runner.PERF), "script", "-i", str(path),
             ],
             cwd=runner.REPO, capture_output=True, text=True, encoding="utf-8",
             errors="replace", timeout=60,
@@ -1704,6 +1750,87 @@ def validate_profile_stdout(
     return findings, contract
 
 
+def validate_profile_schedule(
+    run_root: Path,
+    plan: dict[str, Any],
+    record_commands: list[dict[str, Any]] | None,
+) -> list[str]:
+    """Require one sequential exact prefix across all diagnostic phases."""
+    findings: list[str] = []
+    ordered: list[tuple[str, dict[str, Any], str]] = []
+    for phase in ("callgrind", "perf_stat"):
+        for record in plan[phase]:
+            ordered.append((
+                phase, record, f"{phase}-{record['ordinal']:03d}-{record['arm']}",
+            ))
+    if record_commands is not None:
+        for record in record_commands:
+            ordered.append(("perf_record", record, f"perf-record-{record['ordinal']:03d}"))
+    expected_names = {name for _, _, name in ordered}
+    attempts_root = run_root / "orchestration/attempts"
+    if attempts_root.is_dir():
+        actual_names = {
+            path.name for pattern in ("callgrind-*", "perf_stat-*", "perf-record-*")
+            for path in attempts_root.glob(pattern) if path.exists()
+        }
+        for name in sorted(actual_names - expected_names):
+            findings.append(f"{name}: unplanned profile-attempt evidence")
+
+    stopped = False
+    previous_finished: dt.datetime | None = None
+    for phase, record, name in ordered:
+        directory = run_root / "orchestration/attempts" / name
+        started_path = directory / "started.json"
+        receipt_path = directory / "receipt.json"
+        output = Path(record["output"])
+        isolation = isolation_path(record)
+        evidence = directory.exists() or output.exists() or isolation.exists()
+        if not started_path.is_file():
+            if evidence:
+                findings.append(f"{name}: profile evidence exists without its durable start")
+            stopped = True
+            continue
+        if stopped:
+            findings.append(f"{name}: profile attempt started after the first incomplete prefix item")
+        try:
+            start = load_json(started_path)
+            started_at = parse_utc(start.get("started_at"))
+        except (OSError, ValueError, json.JSONDecodeError):
+            started_at = None
+        if previous_finished is not None and (
+            started_at is None or started_at < previous_finished
+        ):
+            findings.append(f"{name}: profile start is reordered before the prior finish")
+        if not receipt_path.is_file():
+            stopped = True
+            continue
+        try:
+            finished_at = parse_utc(load_json(receipt_path).get("finished_at"))
+        except (OSError, ValueError, json.JSONDecodeError):
+            finished_at = None
+        if finished_at is None:
+            stopped = True
+        else:
+            previous_finished = finished_at
+
+    base_names = [
+        f"{phase}-{record['ordinal']:03d}-{record['arm']}"
+        for phase in ("callgrind", "perf_stat") for record in plan[phase]
+    ]
+    base_finished = all(
+        (run_root / "orchestration/attempts" / name / "receipt.json").is_file()
+        for name in base_names
+    )
+    selection_evidence = (
+        (run_root / "orchestration/perf-record-selection.json").exists()
+        or (run_root / "orchestration/perf-record-command-plan.json").exists()
+        or (run_root / "profiles/perf-record").exists()
+    )
+    if not base_finished and selection_evidence:
+        findings.append("perf-record selection/evidence exists before both prior phases finished")
+    return findings
+
+
 def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict[str, Any]:
     """Audit all diagnostic attempts; failures are retained but never wall evidence."""
     plan = runner.build_plan()
@@ -1713,6 +1840,7 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
 
     for phase in ("callgrind", "perf_stat"):
         statuses: list[int] = []
+        started_count = 0
         missing_attempts: list[str] = []
         phase_findings: list[str] = []
         phase_contracts: dict[str, str] = {}
@@ -1721,6 +1849,8 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
             status, provenance, incomplete = validate_attempt(
                 run_root, name, record, require_zero=False,
             )
+            if (run_root / "orchestration/attempts" / name / "started.json").is_file():
+                started_count += 1
             phase_findings.extend(provenance)
             phase_findings.extend(incomplete)
             if status is None:
@@ -1728,7 +1858,7 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
                 continue
             statuses.append(status)
             iso_provenance, iso_incomplete = validate_isolation(
-                record, status, require_quiet=False,
+                record, status, require_quiet=True,
             )
             phase_findings.extend(iso_provenance)
             phase_findings.extend(iso_incomplete)
@@ -1751,7 +1881,7 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
                     phase_findings.extend(f"{name}: {item}" for item in validate_perf_stat_csv(output))
         statuses_by_phase[phase] = statuses
         result[phase] = {
-            "planned": 88, "attempted": len(statuses),
+            "planned": 88, "attempted": started_count, "completed": len(statuses),
             "succeeded": sum(code == 0 for code in statuses),
             "failed": sum(code != 0 for code in statuses),
             "missing_attempts": missing_attempts, "diagnostic_findings": phase_findings,
@@ -1787,6 +1917,7 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
     else:
         selection = {"status": "absent"}
     record_statuses: list[int] = []
+    record_started = 0
     record_contracts: dict[str, str] = {}
     expected_record_commands: list[dict[str, Any]] | None = None
     c_counts: dict[str, int] = {}
@@ -1835,13 +1966,15 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
             status, provenance, incomplete = validate_attempt(
                 run_root, name, record, require_zero=False,
             )
+            if (run_root / "orchestration/attempts" / name / "started.json").is_file():
+                record_started += 1
             record_findings.extend(provenance)
             record_findings.extend(incomplete)
             if status is None:
                 continue
             record_statuses.append(status)
             iso_provenance, iso_incomplete = validate_isolation(
-                record, status, require_quiet=False,
+                record, status, require_quiet=True,
             )
             record_findings.extend(iso_provenance)
             record_findings.extend(iso_incomplete)
@@ -1857,22 +1990,31 @@ def profile_inventory(run_root: Path, wall_fingerprints: dict[str, str]) -> dict
             elif status == 0:
                 record_findings.extend(f"{name}: {item}" for item in validate_perf_data(output))
     else:
-        unexpected = sorted((run_root / "orchestration/attempts").glob("perf-record-*/receipt.json"))
-        if unexpected:
+        attempts_root = run_root / "orchestration/attempts"
+        unexpected_attempts = (
+            sorted(attempts_root.glob("perf-record-*")) if attempts_root.is_dir() else []
+        )
+        unexpected_profile_root = run_root / "profiles/perf-record"
+        if unexpected_attempts or unexpected_profile_root.exists():
             record_findings.append("perf-record attempts exist without a complete frozen selection")
 
     result["perf_record"] = {
-        "planned": 8, "attempted": len(record_statuses), "selection": selection,
+        "planned": 8, "attempted": record_started,
+        "completed": len(record_statuses), "selection": selection,
         "succeeded": sum(code == 0 for code in record_statuses),
         "failed": sum(code != 0 for code in record_statuses),
         "diagnostic_findings": record_findings, "work_contracts": record_contracts,
     }
     all_findings.extend(record_findings)
+    schedule_findings = validate_profile_schedule(run_root, plan, expected_record_commands)
+    result["schedule_findings"] = schedule_findings
+    all_findings.extend(schedule_findings)
     result["schedule_complete"] = (
         len(statuses_by_phase.get("callgrind", [])) == 88
         and len(statuses_by_phase.get("perf_stat", [])) == 88
         and expected_record_commands is not None
         and len(record_statuses) == 8
+        and not schedule_findings
     )
     result["diagnostic_findings"] = all_findings
     return result
@@ -1890,19 +2032,29 @@ def memory_bytes(value: Any) -> int | None:
     return int(match.group(1)) * 1024 if match else None
 
 
-def verify_start(run_root: Path, protocol: dict[str, Any], plan_path: Path,
-                 plan: dict[str, Any]) -> None:
+def verify_start(run_root: Path, protocol_path: Path, protocol: dict[str, Any],
+                 plan_path: Path, plan: dict[str, Any]) -> None:
     start_path = run_root / "orchestration/start.json"
     if not start_path.is_file():
         raise ValueError("missing orchestration start receipt")
     start = load_json(start_path)
+    protocol_path = protocol_path.resolve()
     expected = {
+        "schema": "cpu-baseline-aa-v5-start/v1",
+        "protocol_path": str(protocol_path),
         "protocol_sha256": protocol["freeze"]["protocol_sha256"],
         "plan_sha256": sha256(plan_path),
         "plan_preimage_sha256": plan["digests"]["plan_preimage"],
+        "controller_entry": None,
         "other_cpu_work_paused_confirmed": True,
         "resume_policy": "forbidden",
     }
+    expected["controller_entry"] = runner.expected_bootstrap_entry(
+        "base", runner.RUNNER,
+        ["run", "--protocol", str(protocol_path), "--confirm-other-cpu-work-paused"],
+    )
+    if set(start) != {*expected, "started_at"} or parse_utc(start.get("started_at")) is None:
+        raise ValueError("orchestration start receipt fields or timestamp differ")
     for field, value in expected.items():
         if start.get(field) != value:
             raise ValueError(f"orchestration start receipt mismatch: {field}")
@@ -1978,7 +2130,6 @@ def make_export(protocol_path: Path, protocol: dict[str, Any], run_root: Path,
     ignored = {
         run_root / "export.json",
         run_root / "orchestration/finalization.json",
-        run_root / "orchestration/finalization-failure.json",
     }
     export["files"] = []
     for path in sorted(run_root.rglob("*")):
@@ -2024,6 +2175,7 @@ def make_export(protocol_path: Path, protocol: dict[str, Any], run_root: Path,
 
 
 def main() -> int:
+    runner.require_closed_bootstrap("base")
     parser = argparse.ArgumentParser()
     parser.add_argument("--protocol", type=Path, required=True)
     parser.add_argument("--run-root", type=Path, required=True)
@@ -2034,6 +2186,15 @@ def main() -> int:
     if run_root != runner.RUN_ROOT.resolve():
         raise ValueError(f"run root is not the frozen one-shot path: {run_root}")
     protocol = verify_protocol(protocol_path)
+    sealed_finalization = run_root / "orchestration/finalization.json"
+    if sealed_finalization.is_file():
+        valid, reason = runner.validate_finalization(
+            protocol_path, None,
+            require_terminal=(run_root / "orchestration/terminal.json").is_file(),
+        )
+        if not valid:
+            raise ValueError(f"refusing to alter an invalid sealed finalization: {reason}")
+        return load_json(sealed_finalization)["scientific_returncode"]
     plan_path = run_root / "orchestration/command-plan.json"
     plan = load_json(plan_path)
     expected_plan = runner.build_plan()
@@ -2041,7 +2202,7 @@ def main() -> int:
         raise ValueError("retained command plan differs from frozen generator")
     if plan["digests"] != protocol["extensions"]["cpu_baseline_aa_v5"]["command_plan_digests"]:
         raise ValueError("retained command-plan digest mismatch")
-    verify_start(run_root, protocol, plan_path, plan)
+    verify_start(run_root, protocol_path, protocol, plan_path, plan)
     gate, rows, host, wall_fingerprints = analyze_wall(run_root, protocol)
     wall_complete = gate["verdict"] in {
         "baseline_aa_complete_nonqualified", "baseline_aa_false_direction_nonqualified",
@@ -2059,7 +2220,9 @@ def main() -> int:
     if complete_path.is_file():
         complete_receipt = load_json(complete_path)
         orchestration_complete = (
-            complete_receipt.get("status") == "orchestration_complete"
+            set(complete_receipt) == {"schema", "status", "finished_at"}
+            and complete_receipt.get("schema") == "cpu-baseline-aa-v5-complete/v1"
+            and complete_receipt.get("status") == "orchestration_complete"
             and parse_utc(complete_receipt.get("finished_at")) is not None
         )
         if not orchestration_complete:

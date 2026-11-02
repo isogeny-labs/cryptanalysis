@@ -33,6 +33,8 @@ timing ratio to this checkout, host, compiler, or measurement boundary.
 | [`suite/examples/perfbench/harness.rs`](../../../suite/examples/perfbench/harness.rs) | Setup and per-sample input restoration are untimed; `Workload::run` is the complete timed call; changed fingerprints invalidate a comparison. | The decisive metric is the full `run` interval, not an isolated loop or phase. Preparation remains reported but cannot support a speedup. |
 | [`tools/ca_perfbench.c`](../../../tools/ca_perfbench.c) | The C harness has 34 fixed-input kernels. It fingerprints answers, coordinates, residues, ranks, or recovered logs and refuses within-run fingerprint drift. | Require the same 34 IDs/descriptions and one exact fingerprint per ID across baseline, candidate, A/A, rounds, samples, and thread panels. |
 | [`docs/ISOLATED_BENCHMARKS.md`](../../../docs/ISOLATED_BENCHMARKS.md) | Tier-0 host evidence requires an exclusive physical-host CPU/NUMA partition, fixed frequency, IRQ control, full topology/affinity receipts, and no noise events. Tier-1 is instance-scoped and has a different claim. | The repair pins CPUs 0/0-3, reserves 0-3 under the shared global lock, and retains the service receipt, but the local KVM placement still lacks Tier-0/Tier-1 proof. Its clocks remain nonqualified even if the internal isolation/noise gate is quiet. |
+| Valgrind 3.28.0 [core manual, “Setting Default Options”](https://valgrind.org/docs/manual/manual-core.html#manual-core.defopts), checked against the installed manual and pinned `callgrind-amd64-linux` help strings | Valgrind normally reads `~/.valgrindrc`, `VALGRIND_OPTS`, and `./.valgrindrc`; this pinned core supports `--command-line-only=yes`. | Every prospective Callgrind child uses `--command-line-only=yes` under an inherited-nothing environment, so repository/user rc files cannot alter its frozen diagnostic command. |
+| Linux perf 6.12 installed `perf-config(1)` (`/workspace/.tools/perf/usr/share/man/man1/perf-config.1.gz`) | Perf reads user/system configuration by default and documents `PERF_CONFIG=/dev/null` as the way to disable configuration-file reads. | Perf stat, perf record, and offline evlist/script validation all set `PERF_CONFIG=/dev/null` (plus the pinned no-system/no-global guards) in their exact inherited-nothing command environments. |
 | Hoefler and Belli, “Scientific Benchmarking of Parallel Computing Systems,” SC15, DOI [10.1145/2807591.2807644](https://doi.org/10.1145/2807591.2807644) (publisher record retrieved) | Performance reports need reproducible environments, statistical treatment, full disclosure, and meaningful baselines. | Retain raw alternating rounds, A/A spread, exact host/build identities, confidence intervals, neutral/regressing cells, and failures. |
 | Mytkowicz et al., “Producing Wrong Data Without Doing Anything Obviously Wrong!”, ASPLOS 2009, DOI [10.1145/1508244.1508275](https://doi.org/10.1145/1508244.1508275) (publisher record retrieved) | Link order, environment size, and layout can create performance effects without semantic changes. | Build arms separately but identically, alternate fresh processes, retain environment and binary hashes, and treat Callgrind/hardware-counter deltas as diagnostics rather than portable timings. |
 
@@ -291,12 +293,20 @@ then 88 globally lexicographic software perf-stat attempts (A then B), then
 the perf-record phase. The first Rust and first C Callgrind attempts reproduce
 the retained aggregate command's two exact registry-list preludes before the
 first `perfindex.instr_one` child. Every direct child then uses that exact
-Valgrind argv, pinned to CPU 0 under the same reserve gate. Separating the
+Valgrind workload/tool argv plus the prospective config-closing
+`--command-line-only=yes` flag, pinned to CPU 0 under the same reserve gate.
+Separating the
 deterministic instruction-count children changes diagnostic process and
 reservation boundaries, which are recorded, but does not authorize a timing
 claim. Each child has its own output, status, streams, result, and isolation
 receipt, so one failure cannot suppress the remaining prescribed diagnostics.
 Profiler failures are retained and the later profiler attempts continue, but
+an operator/process interruption retains an exact prefix and stops the
+unstarted suffix. The analyzer enforces one cross-phase sequence—88 finished
+Callgrind attempts, then 88 finished perf-stat attempts, then selection and an
+exact prefix of eight perf-record attempts—and rejects any later start after
+the first missing or in-flight item. Diagnostic isolation contention and
+threads left on reserved CPUs remain explicit diagnostic findings even though
 they cannot change the wall A/A verdict.
 
 The first three perf-record IDs and filenames are fixed. Slots 4–8 require
@@ -360,19 +370,35 @@ nonqualified and non-transferable.
 Python import verification is deliberately outside the code it protects.
 Every campaign, analyzer, and canonical-tool Python process begins under an
 exact `/usr/bin/env -i` and the bound `/bin/dash` verifier
-`python_preflight_v5.sh`. Its only executable trust roots are the separately
-hashed Python, dash, `sha256sum`, and verifier bytes. Before Python starts, it
-checks `python-bootstrap-closure-v5.sha256` and all 880 listed interpreter,
+`python_preflight_v5.sh`. Its explicit executable trust roots are the
+separately hashed `/usr/bin/env`, dash, `sha256sum`, verifier, and Python
+bytes. Before Python starts, it checks
+`python-bootstrap-closure-v5.sha256` and all 881 listed interpreter,
 stdlib, schema-package, schema-resource, runner, analyzer, and canonical-tool
 files. Python then starts with `-S -B -P` and
 `-X pycache_prefix=/dev/null`; `python_bootstrap_v5.py` rejects any different
-environment, startup path, cache policy, or target before adding the exact
-site-packages path. Thus site `.pth` code and ordinary `__pycache__` files are
-not executable inputs, and the normally searched `python312.zip` path must be
-absent. The external verifier is the explicit trust boundary; it avoids the
-circular claim that runner/analyzer imports could verify themselves after
-execution. System ELF loaders and DSOs remain part of the already
-nonqualified host-class boundary.
+environment, startup path, cache policy, process argv, or target. It verifies
+the 789-entry negative import inventory, keeps both the current directory and
+the full site-packages directory off `sys.path`, and installs a finder that
+can resolve only the eight exact package roots plus `typing_extensions.py`.
+An added/shadowing stdlib or allowed-package `.py`, `.pyc`, or extension
+candidate changes the inventory and refuses launch; optional top-level
+`jsonschema` integrations are not on any import path. Thus site `.pth` code,
+ordinary `__pycache__` files, current-directory shadows, and newly installed
+optional modules are not executable inputs, and the normally searched
+`python312.zip` path must be absent. The controller persists its exact
+bootstrap argv/environment proof in `start.json`, and the analyzer validates
+every start-receipt field. The external verifier is the explicit trust
+boundary; it avoids the circular claim that runner/analyzer imports could
+verify themselves after execution. System ELF loaders and DSOs remain part
+of the already nonqualified host-class boundary.
+
+Profiler configuration is closed separately from Python. The Callgrind core
+receives `--command-line-only=yes`, while perf acquisition and offline parsing
+set the documented `PERF_CONFIG=/dev/null`; `HOME`, `VALGRIND_OPTS`, and an
+ambient `PERF_CONFIG` are never inherited. Synthetic command tests place
+hostile shadow/config variables and files around the generator and require the
+same exact frozen arrays.
 
 Analysis is mechanically separate from acquisition. Derived files are
 atomically published and may be recomputed after a controller/host crash; raw
@@ -380,13 +406,24 @@ receipts and acquired data are never resumed or overwritten. A `finalize`
 command first proves no frozen campaign process is live, writes an orphaned
 terminal receipt when needed, and launches only the analyzer. A successful
 schema/lint/`check-export --verify-files` pass creates a hash-bound finalization
-receipt. Analyzer failure never makes an invalid export look scientific and
-does not authorize another measurement attempt.
+receipt whose timestamp and scientific return code are independently derived
+from the retained completion/terminal and analysis state. A validated
+finalization is checked before any derived publish, so a racing/direct rerun
+cannot rewrite a sealed archive. Analysis failure after `complete.json` never
+creates a contradictory measurement terminal: it retains a finalization
+failure receipt, forbids measurement continuation, and permits analysis-only
+retry. The successful retry inventories that earlier failure. Analyzer or
+post-analyzer revalidation failure never returns controller success, never
+makes an invalid export look scientific, and does not authorize another
+measurement attempt.
 
-The synthetic-only test suite constructs both a complete 1,056-row root and a
-clean zero-acquisition identity-blocked root, then requires the canonical
+The synthetic-only test suite constructs a complete 1,056-row root, a clean
+zero-acquisition identity-blocked root, wall-failure and in-flight-orphan
+roots, and a post-wall profile-interruption root, then requires the canonical
 export schema, linter, file verifier, and `check-export` command to accept each
-one. The blocked fixture makes `perfindex.py` unavailable during analysis to
+one. The complete fixture also models an analysis timeout after measurement
+completion and proves that analysis-only retry retains the failure receipt.
+The blocked fixture makes `perfindex.py` unavailable during analysis to
 prove that a failed measurement dependency is not also an export bootstrap.
 These tests execute no retained benchmark, profiler, registry command, or
 provider call and contribute no timing evidence.
