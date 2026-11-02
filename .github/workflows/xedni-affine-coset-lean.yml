@@ -7,6 +7,7 @@ on:
       - '.github/workflows/xedni-affine-coset-lean.yml'
       - 'lean-toolchain'
       - 'suite/src/cryptanalysis/xedni_lift.rs'
+      - 'suite/src/cryptanalysis/lattice.rs'
       - 'research/xedni_lift_optimizer_20261101/lean/**'
   push:
     branches: [main]
@@ -14,6 +15,7 @@ on:
       - '.github/workflows/xedni-affine-coset-lean.yml'
       - 'lean-toolchain'
       - 'suite/src/cryptanalysis/xedni_lift.rs'
+      - 'suite/src/cryptanalysis/lattice.rs'
       - 'research/xedni_lift_optimizer_20261101/lean/**'
   workflow_dispatch:
 
@@ -31,6 +33,7 @@ jobs:
           sparse-checkout: |
             /lean-toolchain
             /suite/src/cryptanalysis/xedni_lift.rs
+            /suite/src/cryptanalysis/lattice.rs
             /research/xedni_lift_optimizer_20261101/lean/**
       - name: Install pinned Lean
         run: |
