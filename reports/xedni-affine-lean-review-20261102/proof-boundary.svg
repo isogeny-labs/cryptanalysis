@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="510" viewBox="0 0 920 510" role="img" aria-label="Xedni affine coset proof boundary">
+  <rect width="920" height="510" fill="#ffffff"/>
+  <style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#152238}.title{font-size:22px;font-weight:bold}.head{font-size:16px;font-weight:bold}.body{font-size:13px}.ok{fill:#e7f5e9;stroke:#31834a;stroke-width:2}.review{fill:#e7f0fb;stroke:#3868a8;stroke-width:2}.open{fill:#fff0dc;stroke:#bc7b25;stroke-width:2}.arrow{stroke:#405269;stroke-width:2;fill:none;marker-end:url(#arrow)}</style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#405269"/></marker></defs>
+  <text x="28" y="35" class="title">Xedni affine-coset proof boundary</text>
+  <rect x="25" y="70" width="260" height="105" rx="10" class="review"/>
+  <text x="42" y="96" class="head">Rust validates directions</text>
+  <text x="42" y="121" class="body">Every B·D = 0; D mod q = 0</text>
+  <text x="42" y="144" class="body">q &gt; 0 when supplied</text>
+  <rect x="330" y="70" width="260" height="105" rx="10" class="ok"/>
+  <text x="347" y="96" class="head">Lean finite-sum proof</text>
+  <text x="347" y="121" class="body">Integer combinations preserve</text>
+  <text x="347" y="144" class="body">row kernels and residues</text>
+  <rect x="635" y="70" width="260" height="105" rx="10" class="ok"/>
+  <text x="652" y="96" class="head">Affine candidates</text>
+  <text x="652" y="121" class="body">B·(u + ΣcD) = B·u</text>
+  <text x="652" y="144" class="body">(u + ΣcD) mod q = u mod q</text>
+  <path d="M285 122 H329" class="arrow"/><path d="M590 122 H634" class="arrow"/>
+  <rect x="25" y="245" width="400" height="110" rx="10" class="review"/>
+  <text x="42" y="273" class="head">Source-inspected LLL bridge</text>
+  <text x="42" y="299" class="body">Integer row subtraction and swaps keep</text>
+  <text x="42" y="322" class="body">returned rows in the validated integer span</text>
+  <path d="M225 245 V200 H460 V176" class="arrow"/>
+  <rect x="495" y="245" width="400" height="110" rx="10" class="open"/>
+  <text x="512" y="273" class="head">Implementation obligations</text>
+  <text x="512" y="299" class="body">Validator, LLL control flow, Babai, ranking,</text>
+  <text x="512" y="322" class="body">and certifier are not Lean-refined</text>
+  <text x="28" y="417" class="body">Machine: pinned Lean 4.34.1; axioms propext, Quot.sound.</text>
+  <text x="28" y="441" class="body">Hosted gate: merged first-use workflow failed; PR #1377 repair requires current-head checks.</text>
+  <text x="28" y="466" class="body">No p=67 comparison rows; no performance inference is drawn from this diagram.</text>
+</svg>
