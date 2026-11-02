@@ -181,10 +181,10 @@ EXPECTED_BUILD_ENVIRONMENT_FIXED = {
     "CXX": "/usr/bin/g++",
     "AR": "/usr/bin/ar",
 }
-EXPECTED_BUILD_DYNAMIC_SUFFIXES = {
+EXPECTED_BUILD_DYNAMIC_PATHS = {
     "HOME": "go-home",
     "TMPDIR": "tmp",
-    "GOROOT": "go",
+    "GOROOT": "toolchain/go",
     "GOPATH": "gopath",
     "GOCACHE": "gocache",
     "GOMODCACHE": "gomodcache",
@@ -993,24 +993,25 @@ def verify_build_environment(environment: Any, digest: Any) -> str:
     ):
         raise ValueError("build environment is not an exact string mapping")
     if set(environment) != set(EXPECTED_BUILD_ENVIRONMENT_FIXED) | set(
-        EXPECTED_BUILD_DYNAMIC_SUFFIXES
+        EXPECTED_BUILD_DYNAMIC_PATHS
     ):
         raise ValueError("build environment allowlist mismatch")
     for key, value in EXPECTED_BUILD_ENVIRONMENT_FIXED.items():
         if environment.get(key) != value:
             raise ValueError(f"build environment fixed value mismatch: {key}")
-    roots: set[PurePosixPath] = set()
-    for key, suffix in EXPECTED_BUILD_DYNAMIC_SUFFIXES.items():
-        value = PurePosixPath(environment[key])
-        if not value.is_absolute() or value.name != suffix:
-            raise ValueError(f"build environment dynamic path mismatch: {key}")
-        roots.add(value.parent)
+    home = PurePosixPath(environment["HOME"])
+    root = home.parent
     if (
-        len(roots) != 1
-        or next(iter(roots)).parent != PurePosixPath("/tmp")
-        or not next(iter(roots)).name.startswith("go-coord-remote-ab-")
+        not root.is_absolute()
+        or root.parent != PurePosixPath("/tmp")
+        or not root.name.startswith("go-coord-remote-ab-")
     ):
-        raise ValueError("build environment writable roots do not share the frozen temp root")
+        raise ValueError("build environment root is outside the frozen temp namespace")
+    for key, relative in EXPECTED_BUILD_DYNAMIC_PATHS.items():
+        value = PurePosixPath(environment[key])
+        expected = root / PurePosixPath(relative)
+        if not value.is_absolute() or value != expected:
+            raise ValueError(f"build environment dynamic path mismatch: {key}")
     computed = hashlib.sha256(
         json.dumps(environment, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
@@ -1600,7 +1601,7 @@ def verify_launch_contract(protocol: dict[str, Any]) -> dict[str, Any]:
         != {
             "inherit_provider_environment": False,
             "fixed": EXPECTED_BUILD_ENVIRONMENT_FIXED,
-            "dynamic_paths": EXPECTED_BUILD_DYNAMIC_SUFFIXES,
+            "dynamic_paths": EXPECTED_BUILD_DYNAMIC_PATHS,
             "shared_by": ["baseline build", "candidate build", "baseline tests", "candidate tests"],
         }
         or planned.get("controller_launch_argv") != expected_controller_argv(planned)

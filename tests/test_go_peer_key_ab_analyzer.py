@@ -837,7 +837,7 @@ class BindingTests(unittest.TestCase):
     def test_build_environment_is_allowlisted_and_provider_values_do_not_leak(self) -> None:
         with tempfile.TemporaryDirectory(prefix="go-coord-remote-ab-") as temporary:
             root = Path(temporary)
-            go = root / "go/bin/go"
+            go = root / "toolchain/go/bin/go"
             go.parent.mkdir(parents=True)
             go.write_bytes(b"fixture")
             hostile = {
@@ -857,8 +857,15 @@ class BindingTests(unittest.TestCase):
             digest = RUNNER.environment_sha256(environment)
             self.assertEqual(ANALYZER.verify_build_environment(environment, digest), digest)
 
+            wrong_layout = dict(environment)
+            wrong_layout["GOROOT"] = str(root / "go")
+            with self.assertRaisesRegex(ValueError, "dynamic path mismatch: GOROOT"):
+                ANALYZER.verify_build_environment(
+                    wrong_layout, RUNNER.environment_sha256(wrong_layout)
+                )
+
     def test_build_and_test_argv_and_aa_copy_receipts_are_exact(self) -> None:
-        go_command = "/tmp/go-coord-remote-ab-fixture/go/bin/go"
+        go_command = "/tmp/go-coord-remote-ab-fixture/toolchain/go/bin/go"
         digest = "a" * 64
         baseline = {
             "command": [
