@@ -1,0 +1,37 @@
+task_id: TASK-20261102-4d5e6f
+joints_owned:
+  - source-gate-fidelity
+review_plan_sha256: 3b5ba368fc1718c62f6f8e376a36275736ff50d90f8a2e78f15483dab017bf72
+producer_commit: d243c3ce88e077a593c3be2c2ba502d976564534
+merged_commit: 749d807be2c82175641c17c589e6883ba8b10abb
+read_sibling_reports: false
+blind_rederivation_assigned_to_this_task: false
+sources_read:
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/review-plan.yaml
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/TASK-20261102-4d5e6f/task.md
+  - /var/tmp/cryptanalysis-xedni-review-20261102/reports/xedni-affine-lean-review-20261102/blind-input.md
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:research/xedni_lift_optimizer_20261101/lean/README.md
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:research/xedni_lift_optimizer_20261101/lean/check.py
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:research/xedni_lift_optimizer_20261101/lean/receipt.json
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:lean-toolchain
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:suite/src/cryptanalysis/xedni_lift.rs
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:suite/src/cryptanalysis/lattice.rs
+  - cryptanalysis@d243c3ce88e077a593c3be2c2ba502d976564534:.github/workflows/xedni-affine-coset-lean.yml
+  - cryptanalysis@196aa0de1cbca4c975c736e83f6f27ceef941777:.github/workflows/xedni-affine-coset-lean.yml
+  - cryptanalysis@749d807be2c82175641c17c589e6883ba8b10abb:.github/workflows/xedni-affine-coset-lean.yml
+  - https://github.com/isogeny-labs/cryptanalysis/actions/runs/41505293019
+  - https://github.com/isogeny-labs/cryptanalysis/actions/runs/41505647909
+  - /var/lib/spot-codex/home/skills/review-evidence/SKILL.md
+  - /var/lib/spot-codex/home/skills/review-evidence/references/lean-review.md
+  - /var/lib/spot-codex/home/memories/MEMORY.md
+controls:
+  fresh_pinned_lean_checker: pass
+  stale_rust_hash: rejected
+  altered_axiom_receipt: rejected
+  hosted_first_use_elan: failed_at_d243c3c
+  hosted_predownload_repair: passed_at_196aa0d
+  merged_workflow_contains_repair: false
+verdict: breaks
+verdict_scope: merged hosted proof gate; conditional theorem and inspected source integer-span path hold
+report: report.md
