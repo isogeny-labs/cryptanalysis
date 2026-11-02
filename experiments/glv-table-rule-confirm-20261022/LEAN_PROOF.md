@@ -24,19 +24,37 @@ true. This is again a deterministic property of the selector. That the larger
 cap saves group operations at 42-46 bits is a measurement, reported in the
 experiment that introduced it; no theorem here says a larger table is faster.
 
+**Update for the j = 1728-only cap.** The selector in `src/curve.c` now reads
+`rcap = (c.m == 4 && lg >= 40) ? 128 : 32`: `c.m` is `aut_order`, 4 for the
+j = 1728 family and 6 for j = 0, so only j = 1728 keeps the 128-entry cap from
+40 bits and j = 0 returns to the cap of 32 at every size. The live binding moves
+to that selector and fifteen further theorems (the third table of the proof map)
+describe it, with the family test `c.m == 4` as a Boolean input `j1728`: for j = 0
+the selector is the divisor-12, cap-32 rule at every size; for j = 1728 it is that
+rule below 40 bits and `tableSize128` from 40 bits; for j = 1728 it equals the
+previous size-dependent selector `select` at every size; it never picks a smaller
+table than the divisor-12, cap-32 rule or than the divisor-48 baseline, and never a
+larger one than `select`. The earlier theorems, the earlier live pins and their
+receipts are kept. This is again a deterministic selector property. Whether a
+128-entry table saves group operations for j = 1728, and what it does for j = 0, are
+measurements (`experiments/glv-cap-j1728-confirm-20261108`); no theorem here says a
+larger table is faster.
+
 | Input or artifact | Pinned evidence |
 | --- | --- |
 | Baseline `src/curve.c` | commit `7cb3dce4cac9176d74afb6403048b5fabbaab834`, SHA-256 `e504bb18f0e80134c9ccf9abc1b7a825097286a759075090d2693ef82b406975` |
 | Current `src/curve.c` | commit `42761f85b06242cb54f2a5fa405c723451897503`, SHA-256 `3f3a100d635d814bdfa0f6624a40b9d77c9c564f65db2bbc568dcd4b55285efe` |
-| Previous live source (divisor 12, cap 32) | commit `8bf648dcbefe7b8131e5fb26909c77e68778332a`, SHA-256 `60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20`; its exact selector is re-checked by `--live` |
-| Live source (size-dependent cap) | commit `e71ebecaf3a076590ddd3affa4878b4c80d85095`, SHA-256 `e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63`; [live receipt](live-source-binding.json) |
+| Earlier live source (divisor 12, fixed cap 32) | commit `8bf648dcbefe7b8131e5fb26909c77e68778332a`, SHA-256 `60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20`; its exact selector is re-checked by `--live` |
+| Size-dependent cap for both families (previous live source) | commit `e71ebecaf3a076590ddd3affa4878b4c80d85095`, SHA-256 `e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63`; its exact selector (`rcap = lg >= 40 ? 128 : 32`) is re-checked by `--live` |
+| Live source (cap 128 from 40 bits for j = 1728 only) | commit `461f34d03f646c6346d96385906a85338c80275d`, SHA-256 `d8834d46ec20678d73bbc71a5b9ba0c0c4d1dce34a0b8a959c03eced44334856`; [live receipt](live-source-binding.json) |
 | Formal source | [TableBudget.lean](TableBudget.lean), Lean `v4.34.1` from the repository root `lean-toolchain` |
-| Source check | [check_lean_source_binding.py](check_lean_source_binding.py), [receipt](lean-source-binding.json): exact C selector in both historical pinned sources; two changed-selector controls rejected. `--live` ([receipt](live-source-binding.json)): exact size-dependent selector in the working tree and in the prior live pin; five changed-selector controls rejected (divisor 48, threshold 41, large cap 64, small cap 64, cap variable replaced by 32) |
-| Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; all 27 public theorem axiom sets contain only `propext` and `Quot.sound` (`tableSize_cases`, `capFor_below40` and `tableSize128_cases` only `propext`) |
+| Source check | [check_lean_source_binding.py](check_lean_source_binding.py), [receipt](lean-source-binding.json): exact C selector in both historical pinned sources; two changed-selector controls rejected. `--live` ([receipt](live-source-binding.json)): exact j = 1728-only selector (`rcap = (c.m == 4 && lg >= 40) ? 128 : 32`) in the working tree, and the exact selectors of the two previous live pins; seven changed-selector controls rejected (divisor 48, threshold 41, large cap 64, small cap 64, cap variable replaced by 32, family test `c.m == 6`, `&&` replaced by `||`) |
+| Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; all 42 public theorem axiom sets contain only `propext` and `Quot.sound` (`tableSize_cases`, `capFor_below40`, `tableSize128_cases`, `capJ_j0` and `capJ_j1728_from40` only `propext`) |
 | Archived measurement replay | [lean-analysis-replay.json](lean-analysis-replay.json): both 80,000-row arm files, result JSON, result Markdown, and SVG checked |
 
 The `source-and-proof` workflow's theorem-count check was raised from 8 to 27
-(the eight historical theorems plus nineteen new ones); it still requires that
+(the eight historical theorems plus nineteen new ones) and then to 42 (fifteen
+more for the j = 1728-only selector); it still requires that
 every declared theorem has a printed axiom set equal to the receipt's.
 
 The earlier six-print receipt omitted the axiom sets of `tableSize_cases` and
@@ -83,6 +101,24 @@ Current selector (size-dependent cap), the second part of `TableBudget.lean`. In
 | `old_le_select` | For every `s` and `lg`, the previous (divisor 12, cap 32) selector picks a table no larger than the current one. |
 | `baseline48_le_select` | For positive `lg`, the divisor-48 baseline picks a table no larger than the current selector. |
 
+Live selector (cap 128 from 40 bits for j = 1728 only), the third part of
+`TableBudget.lean`. `capJ j1728 lg` is `(c.m == 4 && lg >= 40) ? 128 : 32` with
+`j1728` standing for `c.m == 4`, and `selectJ j1728 s lg` is the loop with that cap
+and budget `s/(12*lg)`.
+
+| Lean declaration | Statement and role |
+| --- | --- |
+| `capJ_j0`, `capJ_j1728_below40`, `capJ_j1728_from40` | The cap is 32 for j = 0 at every size, 32 for j = 1728 below 40 bits and 128 for j = 1728 from 40 bits. |
+| `capJ_true_eq_capFor` | For j = 1728 the cap is the previous size-dependent cap at every size. |
+| `selectJ_j0`, `selectJ_j1728_below40` | j = 0 at every size, and j = 1728 below 40 bits, select exactly `loopResult (s/(12*lg))` (the divisor-12, cap-32 rule). |
+| `selectJ_j1728_from40` | j = 1728 from 40 bits selects `tableSize128 (s/(12*lg))`. |
+| `selectJ_true_eq_select` | For j = 1728 the live selector equals the previous size-dependent selector `select` at every `s` and `lg`. |
+| `selectJ_eq_old` | If the family is j = 0 or `lg < 40`, the live selector equals the divisor-12, cap-32 rule. |
+| `selectJ_bounds`, `selectJ_mono_budget` | The result is at least 8 and at most the cap; for a fixed family and `lg` a larger `sqrt_nm` cannot give a smaller table. |
+| `old_le_selectJ`, `baseline48_le_selectJ` | The live selector never picks a smaller table than the divisor-12, cap-32 rule, nor (for positive `lg`) than the divisor-48 baseline. |
+| `selectJ_le_select` | The live selector never picks a larger table than the previous size-dependent selector. |
+| `selectJ_j0_le_j1728` | For the same `s` and `lg`, j = 0 never gets a larger table than j = 1728. |
+
 The readable argument is short: the cap of 32 permits only `8 → 16 → 32`.
 The two possible successful doublings occur precisely at budget thresholds
 16 and 32. Lowering a positive divisor from `48*lg` to `12*lg` cannot lower
@@ -96,8 +132,10 @@ whenever the budget is below 64.
 The C branch returns before this selector when `n < 64`, so `lg =
 glv_ilog2(n)+1` is positive on the path covered by the proof. The full-file
 hash and exact-snippet checks bind the historical and current C start value,
-guard, cap (including the `lg >= 40` threshold and both cap values), and two
-divisors. `rbudget`, `rr` and `rcap` are 64- and 32-bit unsigned in C, and the
+guard, cap (including the `lg >= 40` threshold, both cap values and, in the live
+selector, the family test `c.m == 4`), and two divisors. That `c.m` is 4 exactly
+for j = 1728 is a property of `src/curve.c` outside this proof: the Lean model takes
+the family test as an input and does not model how `aut_order` is set. `rbudget`, `rr` and `rcap` are 64- and 32-bit unsigned in C, and the
 Lean model uses unbounded naturals; `rr` never exceeds 128, and `rbudget` is
 only compared, so no wraparound can occur in the loop. The Lean model uses unbounded natural arithmetic; it does not
 formalize the C compiler, group-order validity, division by `c.m`, other

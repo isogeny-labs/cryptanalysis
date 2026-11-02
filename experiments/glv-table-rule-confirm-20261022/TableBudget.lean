@@ -19,6 +19,14 @@ e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63). The cap is
 iterations (8 → 16 → 32 → 64 → 128 is the longest chain), and
 `loopCap_fixed` proves a fifth cannot change the result for either cap.
 
+Live scope (theorems from `capJ_j0` on): the family-dependent cap of `src/curve.c` at
+the commit pinned by `check_lean_source_binding.py --live`. The cap is
+`rcap = (c.m == 4 && lg >= 40) ? 128 : 32`, where `c.m == 4` is the j = 1728 family
+(`aut_order` 4; j = 0 has `aut_order` 6). The family test enters as a Boolean input
+`j1728`. The previous selector `select` (size-dependent cap for both families, the
+selector of `e71ebeca`) is kept; the new theorems relate the family-dependent selector
+to it and to the divisor-12, cap-32 rule.
+
 These theorems concern selector arithmetic only. They do not prove C memory
 safety, discrete-log correctness, or an operation-count improvement.
 -/
@@ -267,6 +275,107 @@ theorem baseline48_le_select (s lg : Nat) (hlg : 0 < lg) :
     loopResult (s / (48 * lg)) ≤ select s lg :=
   Nat.le_trans (loop48_le_loop12 s lg hlg) (old_le_select s lg)
 
+/-! ### Live selector: cap 128 from 40 bits for j = 1728 only (`src/curve.c` at the live pin) -/
+
+/-- The cap of the live C selector: `(c.m == 4 && lg >= 40) ? 128 : 32`, with `j1728`
+standing for `c.m == 4`. -/
+def capJ (j1728 : Bool) (lg : Nat) : Nat := if j1728 = true ∧ 40 ≤ lg then 128 else 32
+
+/-- The live selector as a function of the family test, `sqrt_nm` (`s`) and `lg`. -/
+def selectJ (j1728 : Bool) (s lg : Nat) : Nat := loopCap (capJ j1728 lg) (s / (12 * lg))
+
+theorem capJ_j0 (lg : Nat) : capJ false lg = 32 := by
+  simp [capJ]
+
+theorem capJ_j1728_below40 (lg : Nat) (h : lg < 40) : capJ true lg = 32 := by
+  have : ¬ 40 ≤ lg := by omega
+  simp [capJ, this]
+
+theorem capJ_j1728_from40 (lg : Nat) (h : 40 ≤ lg) : capJ true lg = 128 := by
+  simp [capJ, h]
+
+/-- j = 1728 uses the same cap as the previous size-dependent selector, at every size. -/
+theorem capJ_true_eq_capFor (lg : Nat) : capJ true lg = capFor lg := by
+  by_cases h : lg < 40
+  · rw [capJ_j1728_below40 lg h, capFor_below40 lg h]
+  · have h40 : 40 ≤ lg := by omega
+    rw [capJ_j1728_from40 lg h40, capFor_from40 lg h40]
+
+/-- j = 0: the selector is the divisor-12, cap-32 rule at every size. -/
+theorem selectJ_j0 (s lg : Nat) : selectJ false s lg = loopResult (s / (12 * lg)) := by
+  rw [selectJ, capJ_j0, loopCap32_eq_loopResult]
+
+/-- j = 1728 below 40 bits: the divisor-12, cap-32 rule. -/
+theorem selectJ_j1728_below40 (s lg : Nat) (h : lg < 40) :
+    selectJ true s lg = loopResult (s / (12 * lg)) := by
+  rw [selectJ, capJ_j1728_below40 lg h, loopCap32_eq_loopResult]
+
+/-- j = 1728 from 40 bits: the cap-128 five-case formula. -/
+theorem selectJ_j1728_from40 (s lg : Nat) (h : 40 ≤ lg) :
+    selectJ true s lg = tableSize128 (s / (12 * lg)) := by
+  rw [selectJ, capJ_j1728_from40 lg h, loopCap128_eq_tableSize128]
+
+/-- For j = 1728 the live selector is the previous size-dependent selector at every
+`sqrt_nm` and `lg`. -/
+theorem selectJ_true_eq_select (s lg : Nat) : selectJ true s lg = select s lg := by
+  rw [selectJ, select, capJ_true_eq_capFor]
+
+/-- The selector equals the divisor-12, cap-32 rule for j = 0 at every size and for
+j = 1728 below 40 bits. -/
+theorem selectJ_eq_old (j1728 : Bool) (s lg : Nat) (h : j1728 = false ∨ lg < 40) :
+    selectJ j1728 s lg = loopResult (s / (12 * lg)) := by
+  rcases h with h | h
+  · subst h
+    exact selectJ_j0 s lg
+  · cases j1728
+    · exact selectJ_j0 s lg
+    · exact selectJ_j1728_below40 s lg h
+
+theorem selectJ_bounds (j1728 : Bool) (s lg : Nat) :
+    8 ≤ selectJ j1728 s lg ∧ selectJ j1728 s lg ≤ capJ j1728 lg := by
+  cases j1728
+  · rw [selectJ_j0, capJ_j0]
+    exact loopResult_bounds _
+  · rw [selectJ_true_eq_select, capJ_true_eq_capFor]
+    exact select_bounds s lg
+
+theorem selectJ_mono_budget (j1728 : Bool) {s s' : Nat} (lg : Nat) (h : s ≤ s') :
+    selectJ j1728 s lg ≤ selectJ j1728 s' lg := by
+  cases j1728
+  · rw [selectJ_j0, selectJ_j0, loopResult_eq_tableSize, loopResult_eq_tableSize]
+    exact tableSize_mono (Nat.div_le_div_right h)
+  · rw [selectJ_true_eq_select, selectJ_true_eq_select]
+    exact select_mono_budget lg h
+
+/-- The live selector never picks a smaller table than the divisor-12, cap-32 rule. -/
+theorem old_le_selectJ (j1728 : Bool) (s lg : Nat) :
+    loopResult (s / (12 * lg)) ≤ selectJ j1728 s lg := by
+  cases j1728
+  · rw [selectJ_j0]
+    exact Nat.le_refl _
+  · rw [selectJ_true_eq_select]
+    exact old_le_select s lg
+
+/-- The live selector never picks a larger table than the previous size-dependent
+selector (which used cap 128 from 40 bits for both families). -/
+theorem selectJ_le_select (j1728 : Bool) (s lg : Nat) :
+    selectJ j1728 s lg ≤ select s lg := by
+  cases j1728
+  · rw [selectJ_j0]
+    exact old_le_select s lg
+  · rw [selectJ_true_eq_select]
+    exact Nat.le_refl _
+
+/-- Within the live selector, j = 0 never gets a larger table than j = 1728. -/
+theorem selectJ_j0_le_j1728 (s lg : Nat) : selectJ false s lg ≤ selectJ true s lg := by
+  rw [selectJ_j0, selectJ_true_eq_select]
+  exact old_le_select s lg
+
+/-- The live selector never picks a smaller table than the divisor-48, cap-32 baseline. -/
+theorem baseline48_le_selectJ (j1728 : Bool) (s lg : Nat) (hlg : 0 < lg) :
+    loopResult (s / (48 * lg)) ≤ selectJ j1728 s lg :=
+  Nat.le_trans (loop48_le_loop12 s lg hlg) (old_le_selectJ j1728 s lg)
+
 #print axioms loopResult_eq_tableSize
 #print axioms loopResult_fixed
 #print axioms tableSize_cases
@@ -295,5 +404,21 @@ theorem baseline48_le_select (s lg : Nat) (hlg : 0 < lg) :
 #print axioms select_eq_old_below40
 #print axioms old_le_select
 #print axioms baseline48_le_select
+
+#print axioms capJ_j0
+#print axioms capJ_j1728_below40
+#print axioms capJ_j1728_from40
+#print axioms capJ_true_eq_capFor
+#print axioms selectJ_j0
+#print axioms selectJ_j1728_below40
+#print axioms selectJ_j1728_from40
+#print axioms selectJ_true_eq_select
+#print axioms selectJ_eq_old
+#print axioms selectJ_bounds
+#print axioms selectJ_mono_budget
+#print axioms old_le_selectJ
+#print axioms selectJ_le_select
+#print axioms selectJ_j0_le_j1728
+#print axioms baseline48_le_selectJ
 
 end GlvTableBudget
