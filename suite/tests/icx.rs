@@ -141,6 +141,34 @@ fn xedni_lift_cli_preserves_the_certified_affine_coset() {
 }
 
 #[test]
+fn xedni_lift_cli_supports_nine_point_general_cubic_mode() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_lift_nine_points.json"
+    );
+    let v = run_json(&[
+        "xedni-lift",
+        "--model",
+        "plane-cubic",
+        "--input",
+        fixture,
+        "--radius",
+        "0",
+        "--max-candidates",
+        "1",
+    ]);
+    assert_eq!(v["operation"], "xedni-lift");
+    assert_eq!(v["model"], "plane-cubic");
+    assert_eq!(v["result"]["exact_constraints_preserved"], true);
+    assert_eq!(v["result"]["congruence_preserved"], true);
+    assert_eq!(v["result"]["discriminant_evaluated"], false);
+    assert_eq!(
+        v["result"]["optimized_coefficients"],
+        serde_json::json!(["1", "0", "0", "0", "0", "0", "-1", "-1", "0", "1"])
+    );
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {

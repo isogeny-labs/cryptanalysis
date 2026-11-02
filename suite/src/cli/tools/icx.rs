@@ -166,10 +166,14 @@ struct XedniLiftArgs {
     /// exact_constraints, and congruence_modulus fields.
     #[arg(long)]
     input: std::path::PathBuf,
+    /// Coefficient model: `weierstrass` (seven terms, discriminant objective)
+    /// or `plane-cubic` (ten terms, exact Step-7 height objective).
+    #[arg(long, default_value = "weierstrass")]
+    model: String,
     /// Exact-search distance around each Babai coefficient.
     #[arg(long, default_value_t = 2)]
     radius: i64,
-    /// Hard cap on exact discriminant evaluations.
+    /// Hard cap on exact objective evaluations.
     #[arg(long, default_value_t = 50_000)]
     max_candidates: usize,
 }
@@ -345,18 +349,35 @@ fn xedni_lift_cmd(args: &XedniLiftArgs) -> Result<Value, String> {
     let input: xedni_lift::AffineLiftInput = serde_json::from_slice(&bytes)
         .map_err(|e| format!("parse {}: {e}", args.input.display()))?;
     let problem = xedni_lift::AffineLiftProblem::try_from(input)?;
-    let result = xedni_lift::optimize_weierstrass_lift(
-        &problem,
-        xedni_lift::LiftSearchOptions {
-            neighborhood_radius: args.radius,
-            max_candidates: args.max_candidates,
-        },
-    )?;
+    let options = xedni_lift::LiftSearchOptions {
+        neighborhood_radius: args.radius,
+        max_candidates: args.max_candidates,
+    };
+    let (model, scope, result) = match args.model.as_str() {
+        "weierstrass" => (
+            "weierstrass",
+            "prime-field xedni Steps 7-9 seven-coefficient coset optimization; no dependence or ECDLP success claim",
+            serde_json::to_value(xedni_lift::optimize_weierstrass_lift(&problem, options)?)
+                .map_err(|e| format!("serialize lift result: {e}"))?,
+        ),
+        "plane-cubic" => (
+            "plane-cubic",
+            "prime-field xedni Step 7 ten-coefficient coset optimization for up to nine incidence rows; no Step-8 conversion, discriminant, dependence, or ECDLP success claim",
+            serde_json::to_value(xedni_lift::optimize_plane_cubic_lift(&problem, options)?)
+                .map_err(|e| format!("serialize lift result: {e}"))?,
+        ),
+        other => {
+            return Err(format!(
+                "unknown xedni lift model {other:?}; use weierstrass|plane-cubic"
+            ));
+        }
+    };
     Ok(json!({
         "schema_version": 1,
         "operation": "xedni-lift",
         "status": "complete",
-        "scope": "prime-field xedni Steps 7-9 coefficient-coset optimization; no dependence or ECDLP success claim",
+        "scope": scope,
+        "model": model,
         "input": args.input,
         "search": {
             "radius": args.radius,

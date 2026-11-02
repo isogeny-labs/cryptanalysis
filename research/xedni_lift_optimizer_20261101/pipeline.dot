@@ -1,24 +1,34 @@
 digraph xedni_lift {
   graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.52,
-         label="Certified prime-field xedni coefficient-lift optimizer (2026-11-01)",
+         label="Certified prime-field xedni coefficient-lift optimizer (updated 2026-11-02)",
          labelloc=t, fontsize=18, fontname="DejaVu Sans"];
   node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
         color="#334155", fillcolor="#f8fafc", margin="0.14,0.09"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
 
   input [label="Feasible affine coset\nu* + span_Z(D)\npoint rows B; modulus q", fillcolor="#dbeafe"];
+  wmodel [label="7-term Weierstrass\nSteps 7-9", fillcolor="#e0f2fe"];
+  cmodel [label="10-term plane cubic\nStep 7; 2 <= r <= 9", fillcolor="#e0f2fe"];
   certify [label="Exact input certificate\nB D_i = 0\nD_i = 0 (mod q)", fillcolor="#dcfce7"];
   lll [label="LLL-HP (delta 0.99)\nreduce admissible directions", fillcolor="#ede9fe"];
-  babai [label="Babai nearest-plane\ncoefficient-height control", fillcolor="#fef3c7"];
-  search [label="Bounded neighborhood\nexact discriminant objective", fillcolor="#ffedd5"];
-  output [label="Selected nonsingular curve\nrecheck incidence + congruence", fillcolor="#dcfce7"];
-  claim [label="Claim boundary\nconstant-stage optimizer only\nno dependence / ECDLP result", fillcolor="#fee2e2", color="#b91c1c"];
+  babai [label="Exact-rational Babai\narbitrary-size center coefficients", fillcolor="#fef3c7"];
+  wsearch [label="Weierstrass neighborhood\ndiscriminant + height", fillcolor="#ffedd5"];
+  csearch [label="Plane-cubic neighborhood\nheight + exact L2", fillcolor="#ffedd5"];
+  output [label="Selected coefficient vector\nrecheck incidence + congruence", fillcolor="#dcfce7"];
+  gap [label="OPEN for plane cubic\nStep 8 + discriminant", style="rounded,filled,dashed", fillcolor="#fff7ed", color="#c2410c"];
+  claim [label="Claim boundary\ncoefficient-stage optimizer only\nno dependence / ECDLP result", fillcolor="#fee2e2", color="#b91c1c"];
 
-  input -> certify [label="all decimal BigInts"];
+  input -> wmodel;
+  input -> cmodel [label="projective points accepted"];
+  wmodel -> certify;
+  cmodel -> certify;
   certify -> lll [label="valid directions"];
   lll -> babai [label="reduced basis"];
-  babai -> search [label="CVP center"];
-  search -> output [label="best exact score"];
+  babai -> wsearch [label="model = Weierstrass"];
+  babai -> csearch [label="model = plane cubic"];
+  wsearch -> output [label="best exact score"];
+  csearch -> output [label="best exact score"];
+  csearch -> gap [style=dashed, label="not inferred"];
   output -> claim [style=dashed, label="interpretation gate"];
 }
 

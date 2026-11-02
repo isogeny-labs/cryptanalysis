@@ -1,0 +1,17 @@
+digraph nine_point_control {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.28, ranksep=0.4,
+         label="Nine-point planted control: maximum coefficient bit length",
+         labelloc=t, fontsize=17, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+        color="#334155", margin="0.14,0.09"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#64748b"];
+
+  input [label="Input scalar representative\n14 bits", fillcolor="#fecaca"];
+  babai [label="Exact-rational Babai\n1 bit", fillcolor="#bfdbfe"];
+  selected [label="Radius-zero selected\n1 bit", fillcolor="#bbf7d0"];
+  scope [label="Planted rank-nine fixture\nnot HMM-HNF; not a natural lift", fillcolor="#fef3c7", color="#92400e"];
+
+  input -> babai [label="13-bit reduction"];
+  babai -> selected [label="same candidate"];
+  selected -> scope [style=dashed, label="claim limit"];
+}
