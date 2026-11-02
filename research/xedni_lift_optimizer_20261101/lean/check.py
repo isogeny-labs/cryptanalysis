@@ -29,6 +29,7 @@ def main() -> int:
         raise ValueError("unknown receipt schema")
     for field, relative in (("lean_sha256", "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean"),
                             ("rust_sha256", "suite/src/cryptanalysis/xedni_lift.rs"),
+                            ("lattice_sha256", "suite/src/cryptanalysis/lattice.rs"),
                             ("toolchain_sha256", "lean-toolchain")):
         actual = digest(ROOT / relative)
         if actual != receipt[field]:

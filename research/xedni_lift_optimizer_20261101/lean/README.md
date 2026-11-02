@@ -31,8 +31,9 @@ The theorem is a standalone Lean `Init` module at the repository's pinned
 python3 research/xedni_lift_optimizer_20261101/lean/check.py
 ```
 
-The [receipt](receipt.json) pins this Lean source, `lean-toolchain`, and
-`suite/src/cryptanalysis/xedni_lift.rs` by SHA-256 at source commit
+The [receipt](receipt.json) pins this Lean source, `lean-toolchain`,
+`suite/src/cryptanalysis/xedni_lift.rs`, and its LLL basis implementation
+`suite/src/cryptanalysis/lattice.rs` by SHA-256 at source commit
 `545de2e1c91a301b342b45317f402be4497647ba`. The checker runs Lean and
 compares all three `#print axioms` lines with the receipt. The accepted axioms are
 `propext` and `Quot.sound`; `sorryAx`, custom research axioms, and unverified
