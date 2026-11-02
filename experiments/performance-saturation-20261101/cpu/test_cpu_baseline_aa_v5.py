@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+import errno
 import hashlib
 import json
 import multiprocessing
 import os
 from pathlib import Path
 import random
+import signal
 import subprocess
 import sys
 import tempfile
@@ -220,6 +222,21 @@ def concurrent_analyzer_worker(
         raise
     finally:
         analyzer.atomic_publish = original_publish
+
+
+def finalization_seal_worker(root: Path, value: dict, kill_stage: str | None) -> None:
+    """Exercise the exact flock/cleanup/no-replace seal sequence in a child process."""
+    path = root / "orchestration/finalization.json"
+    with analyzer.exclusive_finalization_lock(root):
+        analyzer.cleanup_stale_finalization_temps(path)
+        if path.is_file():
+            return
+
+        def failpoint(stage: str, _temporary: Path) -> None:
+            if stage == kill_stage:
+                os.kill(os.getpid(), signal.SIGKILL)
+
+        analyzer.write_json_exclusive(path, value, failpoint)
 
 
 def assert_canonical_export(test: unittest.TestCase, protocol_path: Path,
@@ -456,6 +473,13 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
         )
         self.assertIn(
             "runtime dependency inventory differs from the frozen manifest", findings,
+        )
+
+    def test_protocol_inventory_wording_matches_directory_routing_contract(self) -> None:
+        text = PROTOCOL_DRAFT.read_text(encoding="utf-8")
+        self.assertNotIn("789-entry", text)
+        self.assertEqual(
+            text.count("857-entry directory-routing/executable import inventory"), 5,
         )
 
     def test_analyzer_identity_bindings_must_all_equal_observed_bytes(self) -> None:
@@ -1134,6 +1158,93 @@ class CpuBaselineAaV5Tests(unittest.TestCase):
             analyzer.atomic_publish(path, b"{\"ok\":true}\n")
             self.assertEqual(path.read_text(encoding="utf-8"), '{"ok":true}\n')
             self.assertEqual(list(path.parent.glob(".analysis.json.tmp-*")), [])
+
+    def test_finalization_seal_is_crash_atomic_no_replace_and_recoverable(self) -> None:
+        value = {
+            "schema": "cpu-baseline-aa-v5-finalization/v1",
+            "status": "validated", "export_sha256": "a" * 64,
+            "analyzer_sha256": "b" * 64, "scientific_returncode": 0,
+            "completed_at": T1,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+
+            partial = base / "partial/finalization.json"
+            partial.parent.mkdir(parents=True)
+
+            def partial_failure(stage: str, _temporary: Path) -> None:
+                if stage == "after_partial_write":
+                    raise RuntimeError("injected partial write")
+
+            with self.assertRaisesRegex(RuntimeError, "partial write"):
+                analyzer.write_json_exclusive(partial, value, partial_failure)
+            self.assertFalse(partial.exists())
+            self.assertEqual(list(partial.parent.glob(".finalization.json.seal-v1-*")), [])
+            analyzer.write_json_exclusive(partial, value)
+            self.assertEqual(analyzer.load_json(partial), value)
+
+            write_error = base / "write-error/finalization.json"
+            write_error.parent.mkdir(parents=True)
+            real_write = os.write
+            write_calls = 0
+
+            def fail_second_write(descriptor: int, data: bytes) -> int:
+                nonlocal write_calls
+                write_calls += 1
+                if write_calls == 2:
+                    raise OSError(errno.EIO, "injected finalization write error")
+                return real_write(descriptor, data)
+
+            with mock.patch.object(analyzer.os, "write", side_effect=fail_second_write):
+                with self.assertRaisesRegex(OSError, "write error"):
+                    analyzer.write_json_exclusive(write_error, value)
+            self.assertFalse(write_error.exists())
+            self.assertEqual(
+                list(write_error.parent.glob(".finalization.json.seal-v1-*")), [],
+            )
+            analyzer.write_json_exclusive(write_error, value)
+            complete = write_error.read_bytes()
+            with self.assertRaises(FileExistsError):
+                analyzer.write_json_exclusive(write_error, {**value, "status": "different"})
+            self.assertEqual(write_error.read_bytes(), complete)
+
+            context = multiprocessing.get_context("fork")
+            for kill_stage, public_exists in (
+                ("after_partial_write", False),
+                ("after_temp_fsync", False),
+                ("after_link", True),
+            ):
+                with self.subTest(kill_stage=kill_stage):
+                    root = base / kill_stage
+                    (root / "orchestration").mkdir(parents=True)
+                    public = root / "orchestration/finalization.json"
+                    killed = context.Process(
+                        target=finalization_seal_worker,
+                        args=(root, value, kill_stage),
+                    )
+                    killed.start()
+                    killed.join(timeout=30)
+                    self.assertFalse(killed.is_alive())
+                    self.assertEqual(killed.exitcode, -signal.SIGKILL)
+                    self.assertEqual(public.is_file(), public_exists)
+                    if public_exists:
+                        self.assertEqual(analyzer.load_json(public), value)
+                    self.assertEqual(
+                        len(list(public.parent.glob(".finalization.json.seal-v1-*"))), 1,
+                    )
+
+                    recovered = context.Process(
+                        target=finalization_seal_worker,
+                        args=(root, value, None),
+                    )
+                    recovered.start()
+                    recovered.join(timeout=30)
+                    self.assertFalse(recovered.is_alive())
+                    self.assertEqual(recovered.exitcode, 0)
+                    self.assertEqual(analyzer.load_json(public), value)
+                    self.assertEqual(
+                        list(public.parent.glob(".finalization.json.seal-v1-*")), [],
+                    )
 
     def test_signaled_isolation_status_uses_frozen_normalization(self) -> None:
         original = runner.RUN_ROOT

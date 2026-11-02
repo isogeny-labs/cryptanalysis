@@ -15,11 +15,12 @@ from pathlib import Path
 import random
 import re
 import secrets
+import stat
 import statistics
 import subprocess
 import sys
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Callable
 
 
 RUNNER_PATH = Path(__file__).resolve().with_name("run_cpu_baseline_aa_v5.py")
@@ -126,25 +127,98 @@ def atomic_publish(path: Path, data: bytes) -> None:
         os.close(parent)
 
 
-def write_json_exclusive(path: Path, value: Any) -> None:
-    """Durably create the immutable final seal without replacement."""
+FinalizationFailpoint = Callable[[str, Path], None]
+
+
+def fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def finalization_temp_prefix(path: Path) -> str:
+    return f".{path.name}.seal-v1-u{os.geteuid()}-"
+
+
+def cleanup_stale_finalization_temps(path: Path) -> int:
+    """Remove only this user's versioned seal temps while holding the run lock."""
+    prefix = finalization_temp_prefix(path)
+    pattern = re.compile(re.escape(prefix) + r"p[0-9]+-[0-9a-f]{32}\.tmp")
+    removed = 0
+    for entry in os.scandir(path.parent):
+        if pattern.fullmatch(entry.name) is None:
+            continue
+        try:
+            observed = entry.stat(follow_symlinks=False)
+        except FileNotFoundError:
+            continue
+        if observed.st_uid != os.geteuid() or not stat.S_ISREG(observed.st_mode):
+            continue
+        try:
+            os.unlink(entry.path)
+        except FileNotFoundError:
+            continue
+        removed += 1
+    if removed:
+        fsync_directory(path.parent)
+    return removed
+
+
+def write_json_exclusive(
+    path: Path, value: Any, failpoint: FinalizationFailpoint | None = None,
+) -> None:
+    """Crash-atomically publish the immutable final seal without replacement."""
     data = (
         json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
                    allow_nan=False) + "\n"
     ).encode("utf-8")
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    temporary = path.with_name(
+        finalization_temp_prefix(path)
+        + f"p{os.getpid()}-{secrets.token_hex(16)}.tmp"
+    )
+    descriptor = os.open(
+        temporary,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
+        0o600,
+    )
+    temporary_exists = True
     try:
-        offset = 0
-        while offset < len(data):
-            offset += os.write(descriptor, data[offset:])
-        os.fsync(descriptor)
+        try:
+            split = max(1, len(data) // 2)
+            for index, block in enumerate((data[:split], data[split:])):
+                offset = 0
+                while offset < len(block):
+                    offset += os.write(descriptor, block[offset:])
+                if index == 0 and failpoint is not None:
+                    failpoint("after_partial_write", temporary)
+            os.fsync(descriptor)
+            if failpoint is not None:
+                failpoint("after_temp_fsync", temporary)
+        finally:
+            os.close(descriptor)
+        os.link(temporary, path, follow_symlinks=False)
+        if failpoint is not None:
+            failpoint("after_link", temporary)
+        fsync_directory(path.parent)
+        if failpoint is not None:
+            failpoint("after_link_fsync", temporary)
+        os.unlink(temporary)
+        temporary_exists = False
+        if failpoint is not None:
+            failpoint("after_temp_unlink", temporary)
+        fsync_directory(path.parent)
+        if failpoint is not None:
+            failpoint("after_cleanup_fsync", temporary)
     finally:
-        os.close(descriptor)
-    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
-    try:
-        os.fsync(parent)
-    finally:
-        os.close(parent)
+        if temporary_exists:
+            try:
+                os.unlink(temporary)
+            except FileNotFoundError:
+                pass
+            else:
+                fsync_directory(path.parent)
 
 
 @contextmanager
@@ -2248,6 +2322,7 @@ def analyze_locked(protocol_path: Path, run_root: Path, wall_gate_only: bool) ->
     """Recheck the seal and publish derived artifacts while holding the run lock."""
     protocol = verify_protocol(protocol_path)
     sealed_finalization = run_root / "orchestration/finalization.json"
+    cleanup_stale_finalization_temps(sealed_finalization)
     if sealed_finalization.is_file():
         valid, reason = runner.validate_finalization(
             protocol_path, None,

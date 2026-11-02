@@ -4,7 +4,7 @@ set -eu
 unset PWD
 
 manifest=/workspace/cryptanalysis/experiments/performance-saturation-20261101/cpu/python-bootstrap-closure-v5.sha256
-expected_manifest_sha256=600bbb4ab6428604f4c571cab2c47b8f4f23ced16ecb5d015d94962edac898d1
+expected_manifest_sha256=82135ae95bc8594be862d854863b413dfbeea170bac89b1b05f9a6c62d914e1d
 observed_manifest=$(/usr/bin/sha256sum "$manifest")
 case "$observed_manifest" in
     "$expected_manifest_sha256  $manifest") ;;
