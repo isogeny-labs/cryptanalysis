@@ -38,6 +38,12 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
             | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Download pinned Lean toolchain
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
+        run: |
+          set -euo pipefail
+          elan toolchain install "$ELAN_TOOLCHAIN"
       - name: Check theorem, axioms, and Rust source binding
         env:
           ELAN_TOOLCHAIN: leanprover/lean4:v4.34.1
