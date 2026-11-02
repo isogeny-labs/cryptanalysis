@@ -1,0 +1,1349 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "gpu-f4-update-grid-ab-rtx5090-http-v11-20261101",
+  "version": 11,
+  "created": "2026-11-02",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/performance-saturation-20261101/gpu",
+  "authors": [
+    "Codex performance-saturation study lane"
+  ],
+  "links": {
+    "literature": "LITERATURE.md",
+    "runner": "run_gpu_geometry_ab_v11.sh",
+    "analysis": "analyze_gpu_geometry_ab_v11.py",
+    "retained_aa_baseline": "V7_REPORT.md",
+    "superseded_protocol": "protocol-http-rtx5090-geometry-v10.json",
+    "superseded_outcome": "geometry-v10-outcome.json",
+    "orchestrator": "orchestrate_gpu_geometry_v11.py",
+    "finalizer": "finalize_gpu_geometry_ab_v11.py",
+    "build_preflight": "preflight_gpu_geometry_v11.py"
+  },
+  "question": "On one numerically isolated Secure RTX 5090 session, does changing only the CUDA F4 update-grid target from four to six blocks per SM improve the primary device stage by at least 2% with its simultaneous interval strictly above the same-session byte-identical A/A noise floor, without a >2% device or complete-stage holdout regression?",
+  "claims": [
+    {
+      "id": "C0",
+      "text": "The same-session byte-identical baseline and baseline-aa intervals contain one and resolve clock noise to at most two percent on every registered cell and metric.",
+      "class": "comparative",
+      "decided_by": [
+        "C-aa-admissibility"
+      ],
+      "if_supported": "each registered A/B clock is read against its corresponding symmetric same-session A/A noise floor",
+      "if_not_supported": "all measured clocks are wall_valid=false and the terminal timing outcome is invalid_measurement"
+    },
+    {
+      "id": "C1",
+      "text": "Baseline, baseline-aa, and candidate reproduce every registered matrix shape, rank, refuted result, pinned count, and word-operation count exactly; baseline and baseline-aa binaries are byte-identical.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-correctness"
+      ],
+      "if_supported": "the timing rows are correctness-admissible",
+      "if_not_supported": "the session is invalid and no timing or mechanism claim is admitted"
+    },
+    {
+      "id": "C2",
+      "text": "The six-block target improves primary k0n13m2d6 device-stage time by at least two percent and its simultaneous A/B interval clears the symmetric same-session A/A noise floor.",
+      "class": "comparative",
+      "decided_by": [
+        "C-geometry"
+      ],
+      "if_supported": "report a device-stage engineering speedup scoped to this exact session",
+      "if_not_supported": "do not retain the production candidate for performance"
+    },
+    {
+      "id": "C3",
+      "text": "The six-block target has no greater-than-two-percent complete-stage regression on any registered cell and no greater-than-two-percent device-stage regression on any non-primary cell.",
+      "class": "comparative",
+      "decided_by": [
+        "C-geometry"
+      ],
+      "if_supported": "the candidate passes the prospective non-regression family",
+      "if_not_supported": "the candidate is rejected even if the primary point estimate improves"
+    },
+    {
+      "id": "C4",
+      "text": "Nsys shows exactly the registered four-to-six-block update-grid transformation while launch order, all non-update geometry, and update resource use remain fixed.",
+      "class": "exact_computation",
+      "decided_by": [
+        "C-mechanism"
+      ],
+      "if_supported": "the observed timing comparison has the registered mechanism",
+      "if_not_supported": "the session is invalid for the geometry claim"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "More update blocks expose additional independent work on the primary matrix without changing arithmetic work.",
+      "mechanism": "The update kernel remains at 256 threads, 31 registers per thread, 16 KiB static shared memory, and zero local bytes per thread; six blocks fill the RTX 5090's 48-warp per-SM limit when enough tiles exist.",
+      "predictions": [
+        {
+          "id": "P1",
+          "metric": "device_ms",
+          "direction": "lower",
+          "minimum_effect": "median paired baseline/candidate speedup >= 1.02 and simultaneous lower bound > 1 on k0n13m2d6",
+          "provenance": {
+            "written_at": "2026-11-01",
+            "first_recorded_in": "LITERATURE.md V8 prospective update-grid A/B",
+            "data_seen": [
+              {
+                "path": "V7_REPORT.md",
+                "measured": "v7 baseline showed update as 51.7% of primary kernel time; no six-block candidate data existed"
+              }
+            ],
+            "sample_status": "partially_in_sample",
+            "decisive_scope": "all v11 rows are fresh; v7 selected the mechanism but supplied no candidate outcome"
+          },
+          "role": "decisive"
+        }
+      ]
+    }
+  ],
+  "arms": [
+    {
+      "id": "baseline",
+      "role": "baseline",
+      "description": "The candidate commit build-closure archive with only suite/src/cryptanalysis/f4_gpu.rs overlaid from the retained v7 production commit, preserving the four-block-per-SM target.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": "sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59"
+      },
+      "parameters": {
+        "archive_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "overlay_origin_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "update_blocks_per_sm": 4,
+        "update_threads": 256,
+        "update_tile_words": 32,
+        "maximum_parts": 32
+      }
+    },
+    {
+      "id": "baseline-aa",
+      "role": "control_aa",
+      "description": "A byte-identical copy of the constructed baseline instrument under the baseline-aa label, interleaved on the same pod to measure label/order clock noise in this exact session.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": "sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59"
+      },
+      "parameters": {
+        "archive_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "overlay_origin_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+        "update_blocks_per_sm": 4,
+        "update_threads": 256,
+        "update_tile_words": 32,
+        "maximum_parts": 32,
+        "byte_identical_to": "baseline",
+        "purpose": "same-session A/A clock interval and symmetric noise floor"
+      }
+    },
+    {
+      "id": "candidate",
+      "role": "candidate",
+      "description": "The same candidate commit build-closure archive without an overlay, containing only the registered six-block-per-SM production change relative to the constructed baseline tree.",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "build": [
+          [
+            "cargo",
+            "build",
+            "--release",
+            "--locked",
+            "--example",
+            "f4_matrix_bench"
+          ]
+        ],
+        "binary_sha256": null,
+        "flags": {
+          "CARGO_INCREMENTAL": "0",
+          "F4_F2_ECHELON": "cuda",
+          "F4_F2_ECHELON_VERBOSE": "1"
+        },
+        "env": {
+          "CUDA_VISIBLE_DEVICES": "0"
+        },
+        "threads": 1,
+        "image_digest": "sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59"
+      },
+      "parameters": {
+        "archive_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "overlay_origin_commit": null,
+        "update_blocks_per_sm": 6,
+        "update_threads": 256,
+        "update_tile_words": 32,
+        "maximum_parts": 32
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa-control",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": false,
+      "arm": null,
+      "expected_detection": null,
+      "not_applicable_reason": "Every execution is a deterministic known-answer control; any shape, answer, or work mismatch invalidates the session before timing is interpreted."
+    },
+    "negative": {
+      "present": false,
+      "arm": null,
+      "null_population": null,
+      "not_applicable_reason": "This fixed-input engineering comparison makes no discovery, detector-yield, or population claim."
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "update_blocks_per_sm",
+        "levels": [
+          4,
+          6
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "arm_source_tree",
+        "treatment": "fixed",
+        "value": "one candidate build-closure archive copied twice; baseline overlays one exact registered production file",
+        "how": "the runner refuses unless a recursive comparison reports only suite/src/cryptanalysis/f4_gpu.rs and its two hashes plus scoped git diff match this protocol"
+      },
+      {
+        "name": "workloads_and_answers",
+        "treatment": "fixed",
+        "value": "extensions.workloads",
+        "how": "the frozen analyzer is the executable workload registry and exact oracle"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "crossed",
+        "value": "the six measured rounds use each permutation of baseline, candidate, and baseline-aa exactly once",
+        "how": "each label occupies each launch position twice and every pair direction is three-versus-three; warmup uses a separate fixed order"
+      },
+      {
+        "name": "process_layout_and_cache",
+        "treatment": "randomized",
+        "value": "fresh process per cell and arm",
+        "how": "one complete warmup per label and cell is excluded; every measured label is a fresh process"
+      },
+      {
+        "name": "gpu",
+        "treatment": "fixed",
+        "value": "one NVIDIA GeForce RTX 5090 in Runpod Secure Cloud",
+        "how": "controller and runner refuse any other model or count"
+      },
+      {
+        "name": "gpu_state",
+        "treatment": "measured",
+        "value": "200 ms nvidia-smi telemetry",
+        "how": "UUID, pstate, temperature, utilization, memory, power, and clocks are retained per execution; >=90 C invalidates the row"
+      },
+      {
+        "name": "numeric_isolation",
+        "treatment": "measured",
+        "value": "per-execution pre/post PSI, cgroup, memory-event, and steal snapshots",
+        "how": "CPU some avg10 <=10, CPU full avg10=0, memory some/full avg10=0, and zero throttle/memory/steal deltas are mandatory"
+      },
+      {
+        "name": "profiling_overhead",
+        "treatment": "fixed",
+        "value": "post-timing diagnostic only",
+        "how": "all 105 unprofiled same-session A/A+A/B rows gate before baseline/candidate Nsys captures; profiled durations never enter a timing statistic and NCU is forbidden"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "value": "hash-pinned standard-library analyzer",
+        "how": "the remote analyzer uses exact rational 20-interval simultaneous A/A+A/B inference and is provisional; the controller-side finalizer reruns it read-only and alone emits a terminal verdict"
+      },
+      {
+        "name": "provider_placement",
+        "treatment": "measured",
+        "value": "one exact Secure pod ID with >=16 vCPU and >=62 GB RAM",
+        "how": "the authenticated receipt records provider placement, price, lifetime, result hashes, and exact-ID cleanup; physical host exclusivity is not claimed"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-aa-control",
+        "arms": [
+          "baseline",
+          "baseline-aa"
+        ],
+        "differs_in": [],
+        "design": "aa",
+        "reason": "the two binaries are byte-identical and differ only in label and balanced within-round order",
+        "threshold": null
+      },
+      {
+        "id": "C-aa-admissibility",
+        "arms": [
+          "baseline",
+          "baseline-aa"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "the same-session byte-identical A/A interval is the mandatory clock-admissibility and noise-floor gate",
+        "threshold": "each of ten same-session two-sided intervals contains 1 and lies within [50/51,51/50], equivalently max(upper,1/lower)<=51/50"
+      },
+      {
+        "id": "C-correctness",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [],
+        "design": "absolute",
+        "reason": "known-answer and exact-work gate",
+        "threshold": "exact equality to all extensions.workloads fields in every warmup, measured row, and profile"
+      },
+      {
+        "id": "C-geometry",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [
+          "update_blocks_per_sm"
+        ],
+        "design": "one_factor",
+        "reason": "the constructed trees and scoped source hashes make update_blocks_per_sm the only production variable",
+        "threshold": "primary device median paired speedup >=1.02 with simultaneous lower >1; all registered non-regression medians and lower bounds >=50/51"
+      },
+      {
+        "id": "C-mechanism",
+        "arms": [
+          "baseline",
+          "candidate"
+        ],
+        "differs_in": [
+          "update_blocks_per_sm"
+        ],
+        "design": "absolute",
+        "reason": "post-timing Nsys launch/resource identity gate",
+        "threshold": "2,941 update launches per arm with exact four-versus-six formula, unchanged non-update geometry, 256 threads, 31 registers/thread, 16 KiB static shared, zero dynamic shared and zero local bytes/thread"
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": "Measured rounds use all six label permutations exactly once: B,C,A; A,C,B; C,B,A; A,B,C; B,A,C; C,A,B, where B=baseline, A=baseline-aa, C=candidate. Each label occupies each position twice and every pair direction is 3/3. Warmup is separately B,A,C.",
+    "seed_derivation": {
+      "method": "harness_drawn",
+      "seeds": [],
+      "nonce": null,
+      "note": "The frozen analyzer's WORKLOADS registry selects deterministic matrices and the harness consumes no algorithm seed; export rows record zero as an explicit unused receipt value."
+    },
+    "instance_sampling": {
+      "rule": "The five exact v7 cells are fixed before candidate timing; no cell is added, removed, or reweighted after observation.",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "The analyzer, exact resampling distribution, thresholds, and verdict vocabulary are frozen and labels are required for the mechanism gate.",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 5,
+    "replicates": 6,
+    "warmups": 1,
+    "power": {
+      "method": "paired_bootstrap",
+      "alpha": 0.05,
+      "tests_in_family": 20,
+      "correction": "bonferroni",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "N=6 fixed same-round triples. For each of five cells and two clocks, form one A/B and one A/A median-ratio distribution: 20 two-sided interval cells and 40 Bonferroni tails at exact probability .05/(2*20)=1/800. Enumerate all 6^6 resamples with exact rational arithmetic and no RNG. Each A/A interval must contain 1 and its symmetric floor must be <=51/50; the primary A/B lower endpoint must strictly exceed that floor as well as the 1.02 point threshold."
+    },
+    "preflight_runtime": {
+      "fixed_seconds": 1200,
+      "per_sample_seconds": 30,
+      "threads": 1,
+      "estimated_total_seconds": 5400,
+      "measured_on": "V10 created one pod but failed its incomplete source-closure build before any warmup, measurement, or profiling row. V11 budgets 5,400 seconds for independent local and remote clean closure builds, one fixed settle, 105 unprofiled fresh processes, two Nsys traces, exact 20-interval analysis, export, and terminal finalization."
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "device_ms",
+        "name": "CUDA elimination device interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "The verbose device interval from queued panel work through final CUDA synchronization; upload, download, build, startup, profiles, and analysis are excluded.",
+        "source": "raw/*/*/*/*.log F4_F2_ECHELON device field",
+        "formula": null,
+        "aggregation": "paired_ratio",
+        "resolution": "the exact decimal text emitted by the production instrument",
+        "uncertainty": "paired_bootstrap_ci95"
+      },
+      {
+        "id": "complete_ms",
+        "name": "charged CUDA F4 upload plus device plus download interval",
+        "unit": "ms",
+        "kind": "timed",
+        "definition": "Exact-decimal sum of the production verbose upload, device, and download fields; matrix construction, process startup, build, verification, profile, and analysis remain excluded.",
+        "source": "analyze_gpu_geometry_ab_v11.py Fraction(upload_ms)+Fraction(device_ms)+Fraction(download_ms)",
+        "formula": "upload_ms + device_ms + download_ms",
+        "aggregation": "paired_ratio",
+        "resolution": "the exact decimal text emitted for each component",
+        "uncertainty": "paired_bootstrap_ci95"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "word_ops",
+        "name": "word XOR operations",
+        "unit": "64-bit word XORs",
+        "kind": "counted",
+        "definition": "Exact pivot-history and trailing-update work emitted by the production harness.",
+        "source": "raw JSON word_ops",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "1",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "answer_gate",
+        "name": "exact answer and matrix-shape gate",
+        "unit": "pass/fail",
+        "kind": "exact",
+        "definition": "Exact equality of rows, columns, rank, refuted, pinned, and word_ops in every execution.",
+        "source": "analyze_gpu_geometry_ab_v11.py validate_execution",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "exact",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "nsys_geometry",
+        "name": "ordered CUDA launch geometry and resources",
+        "unit": "trace",
+        "kind": "exact",
+        "definition": "Post-timing SQLite rows for all primary kernels, including exact update launch sequence and resource fields.",
+        "source": "profiles/nsys/*/k0n13m2d6.sqlite CUPTI_ACTIVITY_KIND_KERNEL",
+        "formula": null,
+        "aggregation": "per_row",
+        "resolution": "one launch",
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierB",
+    "warmups": 1,
+    "order": "alternate",
+    "clock": "monotonic",
+    "counters": [
+      "word_ops",
+      "rank",
+      "refuted",
+      "pinned",
+      "rows",
+      "cols",
+      "cgroup.nr_throttled",
+      "cgroup.throttled_usec",
+      "cgroup.memory.events",
+      "steal_jiffies",
+      "cpu.psi",
+      "memory.psi",
+      "nvidia_smi.telemetry"
+    ],
+    "record": [
+      "provider",
+      "requested_cloud",
+      "pod_id",
+      "machine_id",
+      "cpu_model",
+      "cpu_count",
+      "memory_bytes",
+      "kernel",
+      "gpu_uuid",
+      "gpu_name",
+      "compute_capability",
+      "driver_version",
+      "rustc_version",
+      "cargo_version",
+      "nsys_version",
+      "tooling_commit",
+      "candidate_archive_sha256",
+      "baseline_f4_sha256",
+      "candidate_f4_sha256",
+      "production_diff_sha256",
+      "binary_sha256",
+      "source_tree_diff_count",
+      "foreign_compute_processes",
+      "arm_order",
+      "numeric_isolation_before_after",
+      "transport_receipt_sha256",
+      "result_archive_sha256",
+      "cleanup_absence_verified",
+      "terminal_verdict_sha256",
+      "registration_commit",
+      "freeze_commit",
+      "canonical_protocol_tool_sha256",
+      "preflight_receipt_sha256",
+      "remote_build_preflight_sha256",
+      "nvrtc_wheel_sha256",
+      "nvrtc_library_sha256",
+      "nvrtc_builtins_sha256",
+      "nsys_deb_sha256",
+      "nsys_binary_sha256",
+      "image_manifest_digest"
+    ],
+    "timed_primary_justification": "The optimization changes launch geometry while exact word_ops is invariant, so counts cannot measure scheduling or memory-latency effects. Clocks are evidence only for successful fresh-process rows that earn the frozen numeric tierB gate and whose byte-identical baseline/baseline-aa interval from this same pod contains 1 and lies within [50/51,51/50]. Primary A/B evidence must strictly clear the corresponding symmetric A/A noise floor."
+  },
+  "execution": {
+    "backend": "runpod",
+    "queue": null,
+    "placement": {
+      "cloud": "SECURE",
+      "gpu_type": "NVIDIA GeForce RTX 5090",
+      "gpu_count": 1,
+      "min_vcpu": 16,
+      "min_ram_gb": 62,
+      "image": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+      "disk_gb": 100,
+      "max_price_usd_per_hour": 1.19,
+      "ports": [
+        "8888/http"
+      ],
+      "transport": "authenticated Runpod HTTPS proxy",
+      "unique_pod_name_required": true,
+      "keep": false,
+      "max_hours": 3,
+      "maximum_cost_exposure_usd": 3.57,
+      "isolation_scope": "same-pod paired instance scope; physical-host exclusivity is not asserted",
+      "image_manifest_digest": "sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+      "image_index_digest": "sha256:963056222f8edbe7a1103d31cea21df027b4d25dbc6e2fe65167a5040fca0ee8",
+      "image_platform": "linux/amd64",
+      "provider_image_echo": "must equal the complete tag@sha256 manifest reference verbatim"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 9000,
+    "checkpoint": {
+      "policy": "none",
+      "interval_seconds": null,
+      "grace_seconds": null,
+      "restore_validation": "none",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "rule": "Attempt exactly one fixed-order warmup and six measured fresh-process triples using all six label permutations once for every registered cell, followed by exactly one primary Nsys capture for baseline and candidate.",
+      "kind": "fixed_n",
+      "preregistered": true
+    },
+    {
+      "rule": "Stop and retain the session on any source, identity, correctness, isolation, process, profiler, archive, or cleanup gate failure; do not replace the pod or row.",
+      "kind": "invalidation",
+      "preregistered": true
+    },
+    {
+      "rule": "The provider controller may create at most one pod and maximum cost exposure is USD 3.57.",
+      "kind": "budget",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "Any missing, unreadable, truncated, failed, timed-out, nonzero-runner, nonzero-controller, corrupt-archive/export, missing completion marker, or unproved exact-ID cleanup evidence yields incomplete_session.",
+    "With completion established, any protocol/freeze/tool/argv/source/archive/overlay/scoped-diff/GPU/arm/request/pod/price/host/order/row/export/file identity mismatch yields invalid_measurement.",
+    "The baseline and baseline-aa binaries must be byte-identical; the candidate must differ, and the 105-row ledger must match the separate warmup plus all-six-permutations measured schedule exactly.",
+    "Any missing, duplicate, retried, resumed, failed, non-CUDA, wrong-answer, wrong-work, or wrong-order execution invalidates the session.",
+    "Any measured row with CPU PSI some avg10 >10, CPU PSI full avg10 !=0, memory PSI some/full avg10 !=0, a cgroup throttle/memory-event delta, a steal delta, GPU temperature >=90 C, a foreign GPU process, or malformed telemetry is invalid.",
+    "If any same-session A/A interval excludes 1 or extends outside [50/51,51/50] (symmetric floor >51/50), all measured wall_valid fields are false and the terminal clock verdict is invalid_measurement.",
+    "Any Nsys trace without exactly 2,941 ordered update launches, exact four-versus-six grid formula, identical non-update geometry, or exact update resources invalidates the session.",
+    "Any profile duration entering either A/A or A/B timing distribution invalidates the analysis."
+  ],
+  "decision_rule": {
+    "text": "First require complete evidence, exact identities/answers/work, numeric tierB isolation, and every same-session byte-identical A/A interval both to contain 1 and to lie within [50/51,51/50]. For every cell and each of device_ms and complete_ms, enumerate all 6^6 paired bootstrap medians with exact Fractions for both baseline/candidate and baseline/baseline-aa. Across 20 two-sided intervals use Bonferroni per-tail probability 1/800. Define each clock's A/A noise floor as max(A/A upper,1/A/A lower), which must be <=51/50. geometry_supported requires the primary device median >=51/50 and its A/B lower endpoint strictly greater than that primary A/A noise floor, plus A/B median and lower >=50/51 for complete_ms on all five cells and device_ms on all four non-primary cells. A failed A/A containment or resolution gate makes clocks invalid_measurement and every exported measured wall_valid false; otherwise any failed A/B timing gate yields geometry_not_supported. The controller-side finalizer then applies incomplete_session before invalid_measurement before the two timing outcomes.",
+    "comparison_ids": [
+      "C-correctness",
+      "C-aa-admissibility",
+      "C-geometry",
+      "C-mechanism"
+    ],
+    "threshold": "all ten A/A intervals contain 1 and lie within [50/51,51/50]; primary device A/B median >=51/50 and lower > max(A/A upper,1/A/A lower); nine non-regression A/B medians and lower bounds >=50/51",
+    "statistic": "for each same-round triple, baseline/candidate and baseline/baseline-aa ratios; exact median of six pair ratios",
+    "interval": "twenty exact two-sided paired-bootstrap median intervals over all 6^6 resamples; 40 Bonferroni tails at exact rational probability 1/800; no RNG, interpolation, Monte Carlo, or asymptotic approximation",
+    "multiple_comparison_correction": "bonferroni",
+    "effect_size_measure": "paired baseline/candidate speedup read against symmetric same-session baseline/baseline-aa clock noise",
+    "verdict_vocabulary": [
+      "geometry_supported",
+      "geometry_not_supported",
+      "invalid_measurement",
+      "incomplete_session"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "analyze_gpu_geometry_ab_v11.py",
+      "sha256": "3294b5596ae98cc1ba7b7e5f9fd4dec04d630ab9bd053dd6253360ab6fefb849"
+    },
+    "inputs": [
+      "local preflight-receipts/<run_id>.json",
+      "host.json",
+      "source-identities.json",
+      "binary-sha256.tsv",
+      "order.tsv",
+      "metadata/remote-build-preflight.json",
+      "metadata/measurement-environment.json",
+      "metadata/nvrtc-install.json",
+      "metadata/nvrtc-after.sha256",
+      "metadata/nsys-install.json",
+      "metadata/nsys-version.txt",
+      "metadata/nsys-after.sha256",
+      "metadata/gpu.csv",
+      "raw/warmup (three labels)",
+      "raw/measure (six same-round triples)",
+      "profiles/nsys",
+      "rows.jsonl",
+      "analysis.json",
+      "export.json",
+      "completed-at.txt",
+      "runner-exit.status",
+      "HTTP transport receipt and remote metadata",
+      "hash-bound result archive and internal manifest",
+      "exact-ID cleanup receipt"
+    ],
+    "outputs": [
+      "rows.jsonl",
+      "analysis.json",
+      "export.json",
+      "final-verdicts/<run_id>.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "paired baseline/candidate and baseline/baseline-aa device and complete-stage ratios by cell",
+      "simultaneous A/B intervals overlaid with symmetric same-session A/A noise floors",
+      "baseline-to-candidate update-grid transition counts"
+    ],
+    "report_dir": "reports"
+  },
+  "inadmissible": [
+    "Changing the cell set, warmup count, replicate count, arm order, family size, interval quantile, thresholds, stage boundaries, or verdict precedence after any v11 row exists.",
+    "Using v7 timing rows in the v11 distribution, treating a profile duration as a speedup, or choosing a favorable subset of launches or pairs.",
+    "Rebuilding one arm with a different archive, dependency lockfile, compiler invocation, environment, target directory policy, or source overlay.",
+    "Retrying a failed scientific row, resuming a process, creating a replacement pod, or relaxing an isolation or mechanism gate.",
+    "Calling a complete algorithm or end-to-end index-calculus speedup from this F4 upload/device/download stage comparison."
+  ],
+  "literature": [
+    {
+      "ref": "LITERATURE.md V8 prospective update-grid A/B",
+      "provenance": "internal",
+      "claim": "Records the retained v7 planning evidence, source audit, official CUDA occupancy guidance, Nsys SQLite mechanism fields, and canonical export/statistical contract.",
+      "verified_by": "source-linked table in the study directory"
+    },
+    {
+      "ref": "https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html",
+      "provenance": "retrieved",
+      "claim": "Occupancy and launch configuration are resource-dependent; a larger grid alone is not evidence of improvement.",
+      "verified_by": "LITERATURE.md"
+    },
+    {
+      "ref": "https://docs.nvidia.com/nsight-systems/AnalysisGuide/index.html#exported-data",
+      "provenance": "retrieved",
+      "claim": "The exported CUDA kernel activity table exposes ordered grid, block, register, shared-memory, and local-memory fields used by the frozen mechanism gate.",
+      "verified_by": "analyze_gpu_geometry_ab_v11.py mechanism_gate"
+    },
+    {
+      "ref": "crypto-autoresearcher:docs/experiment-protocol.md",
+      "provenance": "internal",
+      "claim": "Protocol, analysis, multiplicity, outputs, and invalidation rules are frozen before data and every session emits experiment.export/v1.",
+      "verified_by": "crypto-autoresearcher tools/experiment_protocol.py"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "draft",
+    "protocol_sha256": null,
+    "commit": null,
+    "frozen_at": null,
+    "filed_before_affected_data": true
+  },
+  "extensions": {
+    "workloads": [
+      {
+        "role": "holdout",
+        "tag": "k0n13m2d5",
+        "cell": "0:13:2:1234",
+        "degree": 5,
+        "rows": 30225,
+        "cols": 53871,
+        "rank": 27250,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 10745652033
+      },
+      {
+        "role": "holdout",
+        "tag": "k0n9m3d5",
+        "cell": "0:9:3:77",
+        "degree": 5,
+        "rows": 33147,
+        "cols": 87118,
+        "rank": 31069,
+        "refuted": false,
+        "pinned": 1,
+        "word_ops": 1196809344
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d5",
+        "cell": "1:11:2:301",
+        "degree": 5,
+        "rows": 14861,
+        "cols": 21196,
+        "rank": 12091,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 986408355
+      },
+      {
+        "role": "holdout",
+        "tag": "k1n11m2d6",
+        "cell": "1:11:2:301",
+        "degree": 6,
+        "rows": 68156,
+        "cols": 60040,
+        "rank": 46747,
+        "refuted": false,
+        "pinned": 0,
+        "word_ops": 57968918179
+      },
+      {
+        "role": "primary",
+        "tag": "k0n13m2d6",
+        "cell": "0:13:2:1234",
+        "degree": 6,
+        "rows": 168363,
+        "cols": 188203,
+        "rank": 130583,
+        "refuted": true,
+        "pinned": 0,
+        "word_ops": 1110114894889
+      }
+    ],
+    "production_identity": {
+      "construction": "extract the exact candidate build-closure archive (suite, bindings/rust, include, src, cuda, challenges) twice; overwrite only baseline suite/src/cryptanalysis/f4_gpu.rs with the exact retained v7 blob; copy that built baseline byte-for-byte as baseline-aa",
+      "archive_paths": [
+        "suite",
+        "bindings/rust",
+        "include",
+        "src",
+        "cuda",
+        "challenges"
+      ],
+      "candidate_commit": "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+      "candidate_tree": "af0ac7e239c0acaa063c1a1441d6fb374ebbf30b",
+      "candidate_archive_sha256": "554dcaacb7ff1fcfb27f4b49bb60b2d03ac9201978091c5e516fff356d1f9b8d",
+      "baseline_origin_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+      "production_path": "suite/src/cryptanalysis/f4_gpu.rs",
+      "baseline_f4_sha256": "da8c53c757cac0dfd81d1f75bfc5845610b645338215e52710efa11d57783944",
+      "candidate_f4_sha256": "77832323d4d5a2b6b49fa2ca26fe40de1a80c0a8e17a9bb1949081a30fa84953",
+      "production_diff_sha256": "34bf0033dd2bbd14b30ef2eaacaceb2d3bf9869504fca043585b1c78b48e43d3",
+      "only_production_path_differs": true,
+      "unrelated_intervening_changes": "present identically in both extracted archives and therefore excluded from the independent variable",
+      "candidate_archive_bytes": 19435520,
+      "candidate_archive_files": 1253,
+      "required_archive_members": [
+        "suite/src/cryptanalysis/f4_gpu.rs",
+        "cuda/ca_device.cuh",
+        "challenges/elliptic/corpus.json",
+        "suite/Cargo.lock",
+        "bindings/rust/cryptanalysis-sys/build.rs"
+      ],
+      "clean_build_preflight": "both local controller and remote pod independently rebuild isolated extracted closure roots under exact environments before affected rows"
+    },
+    "tooling_source": {
+      "public_origin": "https://github.com/isogeny-labs/cryptanalysis.git",
+      "public_ref": "refs/heads/codex/runpod-http-gpu-geometry-v11-20261101",
+      "commit": "2049cec0101cfb0a313b7a6289556c3bb7bc0688",
+      "tree": "90aa0499d0dcfdc6967116ce1722cc3e43fa5260",
+      "git_archive_sha256": "15014a648f500dcf2bbf4c2860ef91443f8ca42cdb2ef265a2ede063df761b7f",
+      "files": {
+        "experiments/performance-saturation-20261101/gpu/analyze_gpu_geometry_ab_v11.py": "3294b5596ae98cc1ba7b7e5f9fd4dec04d630ab9bd053dd6253360ab6fefb849",
+        "experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab_v11.py": "a0f329cb7f7852e1ef083d84240e36bbe4109b918f52f1d32a2aff3dcacccfef",
+        "experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v11.py": "e79424092c6492b3aa36104579264cbbab4ba9e530f60efaf83dece5f3ba83f8",
+        "experiments/performance-saturation-20261101/gpu/preflight_gpu_geometry_v11.py": "e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572",
+        "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh": "e0e04dbdd861a111ce34ed7a670bc343278ec9d30d97165336829fa3220a4884",
+        "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh": "de9c0aa2024e0f5570a4f7138467d95ed7124b56453726d846b3be8c2b9e2900",
+        "cloud/runpod_http_batch.py": "fe482e647cccd03afd21b4c85b1048c4ebf0e683f5760d5db333d975552bba37",
+        "cloud/runpod_http_batch_server.py": "d22301276832821ccdb0820890f5c2cce5cbcb5e9c525f0d0132b4bdb22c345a",
+        "cloud/runpod_pod.py": "5f3b6df538408f2da0048f2fab1d0de609b75306ab5c82edb3a25eade6e0a91c",
+        "cloud/ship.py": "872f80bcee75d75abb8d873becd4dc79861c3d5b5685bc7cf5f3dfba66b5120f",
+        "cloud/tree.py": "f8bb6f66f5e9679466ff4bd6fc487729a55c2629b3badc66234af2c242eaeb87",
+        "cloud/pod_env.sh": "76c78941d6f5df3a2bb648ae253b7b1da6888dae24a16af302709fffbc3dfa54",
+        "cloud/job_runner.sh": "20a9c2b9e359b1189c6dc3507be2487e59ffe9ca481080bf3dce9a6fa829fde7",
+        "experiments/performance-saturation-20261101/gpu/test_gpu_geometry_ab_v11.py": "566e4be85c3073eb7ba899ac1db19c75bea9d9ae86d7a56c83048b6023b5849f",
+        "experiments/performance-saturation-20261101/gpu/test_gpu_geometry_finalizer_v11.py": "0d0944f94a2df9bdf0238dfafc1564cde51652feac79f2607fc16b365c16f92c",
+        "experiments/performance-saturation-20261101/gpu/test_gpu_geometry_orchestrator_v11.py": "c4496c98926714279b0053f83cc33d4ad2e1cbcfe342298998ba1762b95409b7",
+        "experiments/performance-saturation-20261101/gpu/test_gpu_geometry_preflight_v11.py": "8695d22691aee583ed02605b8da9395aa534d79c0eb47141c4cbb793bdfb4849",
+        "cloud/tests/test_job_runner.py": "118aef5f0e02ce692b35c16edfccd633dd78b650067b595bef9faa553b6222eb",
+        "cloud/tests/test_nsys_installer.py": "3f4f99c14ea9d7d5b671de77a4f3c15fd1ff4e09fa79b5579fbfc39edd1703fc",
+        "cloud/tests/test_runpod_http_batch.py": "8c7aa258e763b383c669b98a351e72e7a4197e5df813b93c36574abfae0ebea9",
+        "cloud/tests/test_runpod_http_recover.py": "bfd111df0a4c50b10580ae733eb4fa2084f78ec382e642c391eb3d0a6d1c74b5",
+        "cloud/tests/test_runpod_pod.py": "22810d161850fa164d671611f3bee346b64b2d6513d825c365dc44168cf32834",
+        "cloud/runpod_http_recover.py": "a505029e0e98dd8c61bc0c35d6dee02b3077c9c3807611eb2f5bb402b6f2ebf0",
+        "experiments/performance-saturation-20261101/gpu/LITERATURE.md": "d9c23b183cba75390763f08c9cfa5a6bb22d4073be12e5db1c70cfbf98b8de18",
+        "experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-geometry-v10.json": "976746dabd10710bbdaa33b8b4f02d1bab204ccdf24d1dba3930b8adad4a8869",
+        "experiments/performance-saturation-20261101/gpu/geometry-v10-outcome.json": "6af255126223ce6c68ff2fb1008f4351cc630d125cb9d6bca6e2cb4c390654af"
+      },
+      "public_ref_state": "not pushed in this draft; publishing exactly this immutable tooling commit to exactly this new ref is the sole permitted pre-launch ref mutation"
+    },
+    "profiler_plan": {
+      "order": [
+        "unprofiled_same_session_aa_ab",
+        "nsys"
+      ],
+      "cell": "k0n13m2d6",
+      "captures": 2,
+      "reports": [
+        "cuda_gpu_kern_sum",
+        "cuda_api_sum"
+      ],
+      "sqlite_table": "CUPTI_ACTIVITY_KIND_KERNEL",
+      "expected_kernel_launches_per_arm": 11765,
+      "expected_update_launches_per_arm": 2941,
+      "ncu_policy": "outside v11; must not be installed, resolved, invoked, or used as a gate",
+      "unprofiled_rows": 105,
+      "measured_clock_rows": 90,
+      "aa_profile_policy": "baseline-aa is unprofiled only; Nsys mechanism remains the post-timing baseline/candidate comparison"
+    },
+    "isolation_contract": {
+      "post_build_fixed_settle_seconds": 30,
+      "cpu_psi_some_avg10_max": 10,
+      "cpu_psi_full_avg10": 0,
+      "memory_psi_some_avg10": 0,
+      "memory_psi_full_avg10": 0,
+      "cgroup_nr_throttled_delta": 0,
+      "cgroup_throttled_usec_delta": 0,
+      "memory_event_deltas": 0,
+      "steal_jiffies_delta": 0,
+      "gpu_temperature_c_exclusive_max": 90,
+      "foreign_compute_processes": 0,
+      "scope": "tierB is earned only by the registered numeric per-process PSI/cgroup/memory-event/steal/GPU-temperature/no-foreign-process gates; it is not an L2 cache, physical-host exclusivity, or topology claim",
+      "tier_definition": "tierB requires every measured fresh process to pass the frozen numeric before/after CPU PSI, memory PSI, cgroup throttle, memory-event, steal, GPU-temperature, and no-foreign-process gates; failure stops analysis. Even when those gates pass, an A/A interval that excludes 1 or has symmetric floor >51/50 forces all measured wall_valid=false."
+    },
+    "transport": {
+      "schema": "runpod.http-batch.receipt/v1",
+      "driver": "cloud/runpod_http_batch.py",
+      "server": "cloud/runpod_http_batch_server.py",
+      "authentication": "fresh ephemeral bearer with at least 256 random bits",
+      "result_chunk_bytes": 4194304,
+      "result_limit_mib": 4096,
+      "provider_create_attempts": 1,
+      "startup_wait_seconds": 900,
+      "command_timeout_seconds": 9000,
+      "maximum_lifetime_seconds": 10800,
+      "cleanup": "exact newly created pod ID in finally; absence verified by exact v2 GET returning 404",
+      "no_ssh": true,
+      "no_object_storage": true,
+      "no_user_long_lived_credentials_sent_to_pod": true,
+      "recovery": "only the committed exact-ID recovery tool may observe and clean up the already allocated registered pod after local controller loss; it may not allocate a replacement",
+      "minimal_bootstrap": true,
+      "generic_pod_env_executed": false,
+      "startup_package_mutation": false,
+      "docker_entrypoint": [
+        "/usr/bin/bash",
+        "--noprofile",
+        "--norc",
+        "-c"
+      ],
+      "startup_sha256": "fbfe43cbc2a9638b4a6116dead27b2419ab577d6609cff55709d72012fe50e6d",
+      "remote_boot_sha256": "62248060bf92a9f2b29dc311aeeac4630811e2dccc5fa9754ea3d75fbada7d13",
+      "bootstrap_sha256": "fddc38a9c8be17ec4fc35d218c5643f37f1a279d30f43519f63776f7a2bbc79f",
+      "startup_path": "/usr/bin:/bin",
+      "image": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59"
+    },
+    "launch": {
+      "orchestrator_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v11.py",
+        "<run_id>",
+        "--protocol",
+        "experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-geometry-v11.json",
+        "--protocol-sha256",
+        "<frozen_protocol_sha256>",
+        "--protocol-tool",
+        "/workspace/crypto-autoresearcher/tools/experiment_protocol.py"
+      ],
+      "preflight_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "experiments/performance-saturation-20261101/gpu/preflight_gpu_geometry_v11.py",
+        "run",
+        "--repo",
+        "/workspace/cryptanalysis",
+        "--run-id",
+        "<run_id>",
+        "--protocol-sha256",
+        "<frozen_protocol_sha256>",
+        "--out",
+        "experiments/performance-saturation-20261101/gpu/preflight-receipts/<run_id>.json"
+      ],
+      "controller_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "cloud/runpod_http_batch.py",
+        "misagi-f4-geometry-v11",
+        "--source-ref",
+        "refs/heads/codex/runpod-http-gpu-geometry-v11-20261101",
+        "--source-commit",
+        "2049cec0101cfb0a313b7a6289556c3bb7bc0688",
+        "--cloud",
+        "SECURE",
+        "--gpu",
+        "NVIDIA GeForce RTX 5090",
+        "--gpu-count",
+        "1",
+        "--min-vcpu",
+        "16",
+        "--min-ram",
+        "62",
+        "--image",
+        "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+        "--disk",
+        "100",
+        "--max-price",
+        "1.19",
+        "--max-hours",
+        "3",
+        "--wait",
+        "900",
+        "--timeout",
+        "9000",
+        "--reconcile-seconds",
+        "60",
+        "--max-result-mib",
+        "4096",
+        "--minimal-bootstrap",
+        "--receipt",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+        "--archive",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+        "--out",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+        "--",
+        "GPU_STUDY_SECURE=1 /usr/bin/bash --noprofile --norc experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh 'experiments/performance-saturation-20261101/gpu/runs-http' '<run_id>' '<frozen_protocol_sha256>' '<preflight_receipt_sha256>'"
+      ],
+      "public_ref_publish_template": "git push origin 2049cec0101cfb0a313b7a6289556c3bb7bc0688:refs/heads/codex/runpod-http-gpu-geometry-v11-20261101",
+      "preconditions": [
+        "the v11 public ref resolves without credentials to exactly the registered tooling commit",
+        "the local v11 draft registration and immediate scoped freeze commit authenticate and canonical validation returns zero findings",
+        "all runtime tools, transitive cloud tools, canonical tool, and schemas match exact hashes before any provider call",
+        "the isolated local clean-build preflight passes and publishes its exact receipt before controller allocation",
+        "the constructed preflight/controller/finalizer argv exactly match the frozen templates",
+        "the preflight, output, receipt, archive, remote-metadata, and terminal-verdict paths do not exist",
+        "RUNPOD_API_KEY remains only in the local controller/provider scope"
+      ]
+    },
+    "output_contract": {
+      "run_id": "gpu-geometry-http-rtx5090-v11-<UTC>-<nonce>",
+      "output_root": "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+      "transport_receipt": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+      "result_archive": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+      "remote_metadata": "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.remote",
+      "terminal_verdict": "experiments/performance-saturation-20261101/gpu/final-verdicts/<run_id>.json",
+      "required_session_files": [
+        "host.json",
+        "source-identities.json",
+        "binary-sha256.tsv",
+        "order.tsv",
+        "warmup-gate.json",
+        "measure-gate.json",
+        "nsys-gate.json",
+        "analysis-gate.json",
+        "analysis.json",
+        "rows.jsonl",
+        "export.json",
+        "completed-at.txt",
+        "runner-exit.status",
+        "metadata/tooling-git-head.txt",
+        "metadata/tooling-git-status.txt",
+        "metadata/tooling-sha256.txt",
+        "metadata/remote-build-preflight.json",
+        "metadata/measurement-environment.json",
+        "metadata/nvrtc-install.json",
+        "metadata/nvrtc-after.sha256",
+        "metadata/nsys-install.json",
+        "metadata/nsys-version.txt",
+        "metadata/nsys-after.sha256",
+        "metadata/nsys-reports.txt",
+        "metadata/nsys-reports.status",
+        "metadata/gpu.csv",
+        "metadata/gpu-topology.txt"
+      ],
+      "manifest": "every archive member is SHA-256 bound by the authenticated HTTP batch internal manifest; receipt inventory, chunks, extracted session, and four remote metadata files must match exactly",
+      "cleanup": "terminal completion requires delete_requested=true and absence_verified=true for the exact created pod ID",
+      "expected_export_rows": 105,
+      "expected_order_rows": 105,
+      "schedule": "warmup r00 baseline,baseline-aa,candidate; measured r01 B,C,A; r02 A,C,B; r03 C,B,A; r04 A,B,C; r05 B,A,C; r06 C,A,B (B=baseline,A=baseline-aa,C=candidate); workload registry order within every round",
+      "preflight_receipt": "experiments/performance-saturation-20261101/gpu/preflight-receipts/<run_id>.json"
+    },
+    "lineage": {
+      "baseline_protocol": "protocol-http-rtx5090-v7.json",
+      "baseline_protocol_sha256": "4b71152b91077781544520da18b0bafa4a762cf634be4c278867452c11e20c08",
+      "baseline_evidence_commit": "7c712913b7e912494e87c35e854cfd0129bad89c",
+      "baseline_verdict": "aa_calibration_admissible",
+      "reuse": "planning and workload selection only; zero v7 or v10 execution rows or trace durations enter v11",
+      "superseded_protocol": "protocol-http-rtx5090-geometry-v10.json",
+      "superseded_protocol_sha256": "22f0c1801cfadaaa4b33e20d2edcb6850402af41468788efb03e7b8786155388",
+      "superseded_protocol_file_sha256": "976746dabd10710bbdaa33b8b4f02d1bab204ccdf24d1dba3930b8adad4a8869",
+      "superseded_outcome": "geometry-v10-outcome.json",
+      "superseded_outcome_sha256": "6af255126223ce6c68ff2fb1008f4351cc630d125cb9d6bca6e2cb4c390654af",
+      "superseded_classification": "incomplete_session/build_failure_before_data",
+      "superseded_scientific_rows": 0,
+      "superseded_reason": "v10 closure omitted top-level cuda, so compilation failed before candidate build, warmup, measurement, or profiling",
+      "replay_policy": "v10 remains immutable and must not be replayed",
+      "v11_change": "non-scientific closure and authentication repair: complete build roots, independent clean-build gates, strict environments, hash-bound native tools/startup/image, and failure-total finalization",
+      "v11_scientific_design_change": false
+    },
+    "source_delivery": {
+      "bootstrap_depth": 1,
+      "tooling_ref": "refs/heads/codex/runpod-http-gpu-geometry-v11-20261101",
+      "deepen_commits": 64,
+      "current_distance_to_baseline_commit": 40,
+      "current_distance_to_candidate_commit": 37,
+      "invariant": "After bootstrap, fetch --deepen=64 from the same immutable tooling ref and require FETCH_HEAD to equal the checked-out tooling commit; baseline and candidate are respectively 40 and 37 commits behind this immutable v11 tooling commit.",
+      "required_ancestors": [
+        "59b6d7e17100d4d16db5d25c2762a5d5cf45ef4f",
+        "7c712913b7e912494e87c35e854cfd0129bad89c"
+      ]
+    },
+    "finalization": {
+      "schema": "gpu-f4-update-grid-ab-finalization/v1",
+      "orchestrator": {
+        "path": "orchestrate_gpu_geometry_v11.py",
+        "sha256": "e79424092c6492b3aa36104579264cbbab4ba9e530f60efaf83dece5f3ba83f8"
+      },
+      "script": {
+        "path": "finalize_gpu_geometry_ab_v11.py",
+        "sha256": "a0f329cb7f7852e1ef083d84240e36bbe4109b918f52f1d32a2aff3dcacccfef"
+      },
+      "remote_analyzer": {
+        "path": "analyze_gpu_geometry_ab_v11.py",
+        "sha256": "3294b5596ae98cc1ba7b7e5f9fd4dec04d630ab9bd053dd6253360ab6fefb849",
+        "classification": "provisional_mechanical",
+        "terminal": false
+      },
+      "canonical_protocol_tool": {
+        "path": "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+        "sha256": "0f46a2b856bb1df2d155c4a676b46c6118d82c45cf8e5cc0492315aeb45c84e4"
+      },
+      "finalizer_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B",
+        "experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab_v11.py",
+        "--protocol",
+        "experiments/performance-saturation-20261101/gpu/protocol-http-rtx5090-geometry-v11.json",
+        "--protocol-sha256",
+        "<frozen_protocol_sha256>",
+        "--protocol-tool",
+        "/workspace/crypto-autoresearcher/tools/experiment_protocol.py",
+        "--preflight-receipt",
+        "experiments/performance-saturation-20261101/gpu/preflight-receipts/<run_id>.json",
+        "--receipt",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.json",
+        "--archive",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.result.tar.gz",
+        "--remote-metadata",
+        "experiments/performance-saturation-20261101/gpu/http-receipts/<run_id>.remote",
+        "--session",
+        "experiments/performance-saturation-20261101/gpu/runs-http/<run_id>",
+        "--out",
+        "experiments/performance-saturation-20261101/gpu/final-verdicts/<run_id>.json"
+      ],
+      "preflight_files": [
+        "experiments/performance-saturation-20261101/gpu/analyze_gpu_geometry_ab_v11.py",
+        "experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab_v11.py",
+        "experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v11.py",
+        "experiments/performance-saturation-20261101/gpu/preflight_gpu_geometry_v11.py",
+        "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh",
+        "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh",
+        "cloud/runpod_http_batch.py",
+        "cloud/runpod_http_batch_server.py",
+        "cloud/runpod_pod.py",
+        "cloud/ship.py",
+        "cloud/tree.py",
+        "cloud/pod_env.sh",
+        "cloud/job_runner.sh"
+      ],
+      "remote_transitive_files": [
+        "experiments/performance-saturation-20261101/gpu/analyze_gpu_geometry_ab_v11.py",
+        "experiments/performance-saturation-20261101/gpu/finalize_gpu_geometry_ab_v11.py",
+        "experiments/performance-saturation-20261101/gpu/orchestrate_gpu_geometry_v11.py",
+        "experiments/performance-saturation-20261101/gpu/preflight_gpu_geometry_v11.py",
+        "experiments/performance-saturation-20261101/gpu/run_gpu_geometry_ab_v11.sh",
+        "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh",
+        "cloud/runpod_http_batch.py",
+        "cloud/runpod_http_batch_server.py",
+        "cloud/runpod_pod.py",
+        "cloud/ship.py",
+        "cloud/tree.py",
+        "cloud/pod_env.sh",
+        "cloud/job_runner.sh"
+      ],
+      "request": {
+        "name_prefix": "misagi-f4-geometry-v11",
+        "cloudType": "SECURE",
+        "computeType": "GPU",
+        "imageName": "runpod/base:1.0.2-ubuntu2404@sha256:e93bf61149910d35407fc865078ceb9b2887e986befd2b7c0eee322abe47ac59",
+        "containerDiskInGb": 100,
+        "ports": [
+          "8888/http"
+        ],
+        "gpuTypeIds": [
+          "NVIDIA GeForce RTX 5090"
+        ],
+        "gpuCount": 1,
+        "minVCPUPerGPU": 16,
+        "minRAMPerGPU": 62,
+        "environment_keys": [
+          "BASH_ENV",
+          "ENV",
+          "LD_PRELOAD",
+          "PATH",
+          "POD_BOOT_B64",
+          "POD_MAX_SECONDS",
+          "PYTHONHOME",
+          "PYTHONPATH",
+          "PYTHONSTARTUP",
+          "RUNPOD_BATCH_BOOTSTRAP_B64",
+          "RUNPOD_BATCH_CHUNK_BYTES",
+          "RUNPOD_BATCH_COMMAND_B64",
+          "RUNPOD_BATCH_COMMAND_SHA256",
+          "RUNPOD_BATCH_ENVIRONMENT_CLOSED",
+          "RUNPOD_BATCH_JOB_ID",
+          "RUNPOD_BATCH_MAX_RESULT_BYTES",
+          "RUNPOD_BATCH_OUTPUTS_B64",
+          "RUNPOD_BATCH_OWNERSHIP_ID",
+          "RUNPOD_BATCH_PORT",
+          "RUNPOD_BATCH_SOURCE_ARCHIVE_SHA256",
+          "RUNPOD_BATCH_SOURCE_COMMIT",
+          "RUNPOD_BATCH_SOURCE_REF",
+          "RUNPOD_BATCH_SOURCE_TREE",
+          "RUNPOD_BATCH_SOURCE_URL",
+          "RUNPOD_BATCH_TIMEOUT_SECONDS",
+          "RUNPOD_BATCH_TOKEN"
+        ],
+        "startup_sha256": "fbfe43cbc2a9638b4a6116dead27b2419ab577d6609cff55709d72012fe50e6d",
+        "secrets_redacted": true,
+        "bootstrap_sha256": "fddc38a9c8be17ec4fc35d218c5643f37f1a279d30f43519f63776f7a2bbc79f",
+        "remote_boot_sha256": "62248060bf92a9f2b29dc311aeeac4630811e2dccc5fa9754ea3d75fbada7d13",
+        "entrypoint": [
+          "/usr/bin/bash",
+          "--noprofile",
+          "--norc",
+          "-c"
+        ]
+      },
+      "receipt_transport": {
+        "kind": "runpod-https-proxy",
+        "port": 8888,
+        "chunk_bytes": 4194304,
+        "authentication": "ephemeral bearer"
+      },
+      "terminal_vocabulary": [
+        "geometry_supported",
+        "geometry_not_supported",
+        "invalid_measurement",
+        "incomplete_session"
+      ],
+      "precedence": [
+        "incomplete_session",
+        "invalid_measurement",
+        "geometry_not_supported",
+        "geometry_supported"
+      ],
+      "completion_definition": "local and remote clean-build preflights passed; all required artifacts readable; controller/remote/runner zero; archive and export intact; completed-at present; exact-ID deletion and 404 absence proven; one write-once terminal verdict published",
+      "validity_definition": "with completion established, every frozen source/tool/image/startup/environment/native-library identity, 105-row schedule, schema, request, pod, host, correctness, numeric tierB isolation, same-session A/A interval, A/B analysis, and Nsys mechanism check passes",
+      "write_once": true,
+      "output_outside_archive": true,
+      "no_retry": true,
+      "aa_contract": {
+        "arms": [
+          "baseline",
+          "baseline-aa"
+        ],
+        "binary_identity": "exact SHA-256 equality",
+        "interval_cells": 10,
+        "ab_interval_cells": 10,
+        "total_interval_cells": 20,
+        "sides": 2,
+        "per_tail_probability": {
+          "numerator": 1,
+          "denominator": 800
+        },
+        "admissibility": "every A/A interval contains 1 and lies within [50/51,51/50], equivalently its symmetric floor is <=51/50",
+        "noise_floor": "max(A/A upper, 1/A/A lower) for the matching cell and metric",
+        "primary_intersection": "A/B lower endpoint strictly greater than the matching A/A noise floor"
+      },
+      "build_preflight": {
+        "path": "preflight_gpu_geometry_v11.py",
+        "sha256": "e52262dec35559e2c1e8f559c1b9817568a2b9e484dd6e76df5c8e9eaaf56572"
+      },
+      "canonical_protocol_schemas": {
+        "/workspace/crypto-autoresearcher/schemas/experiment-protocol.v1.json": "a9b948f2be323f862b98301eb7a5aa147ecc29db35041737f0aa3dfd03ad2443",
+        "/workspace/crypto-autoresearcher/schemas/experiment-export.v1.json": "108f0ae9c1be3ed141bca3c22216eba049f2c76677f11013109a4740f19bd757"
+      }
+    },
+    "native_tooling": {
+      "nvrtc": {
+        "package": "nvidia-cuda-nvrtc-cu12",
+        "version": "12.9.86",
+        "wheel_url": "https://files.pythonhosted.org/packages/b8/85/e4af82cc9202023862090bfca4ea827d533329e925c758f0cde964cb54b7/nvidia_cuda_nvrtc_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl",
+        "wheel_sha256": "210cf05005a447e29214e9ce50851e83fc5f4358df8b453155d5e1918094dcb4",
+        "wheel_bytes": 89568129,
+        "libraries": [
+          {
+            "member": "nvidia/cuda_nvrtc/lib/libnvrtc.so.12",
+            "sha256": "7c67c6b51ea0e0279634cebd676ff7efda1674806444520c84430ad5c35fe625",
+            "bytes": 106244480
+          },
+          {
+            "member": "nvidia/cuda_nvrtc/lib/libnvrtc-builtins.so.12.9",
+            "sha256": "6507cf33450cfb22970c2c1e7aa8e7c0a33e39d864720277b05f61a92791e2e8",
+            "bytes": 7202760
+          }
+        ],
+        "extraction": "two exact unique wheel members extracted adjacent; no Python package code executes",
+        "compile_probe": {
+          "architecture": "compute_120",
+          "returncode": 0
+        },
+        "loader_policy": "CA_NVRTC_LIB is exact; extracted NVRTC root is first in LD_LIBRARY_PATH before validated recorded driver roots; both libraries are rehashed after profiles"
+      },
+      "nsight_systems": {
+        "package": "nsight-systems-2026.3.2",
+        "control_version": "2026.3.2.476-263238834031v0",
+        "deb_url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/nsight-systems-2026.3.2_2026.3.2.476-1_amd64.deb",
+        "deb_sha256": "e9bf0ff9c613ff5545095a4177676a9579cb666e78c8621c3792f3559e2c1690",
+        "deb_bytes": 448261416,
+        "binary_path": "<remote-task-root>/nsys-package/opt/nvidia/nsight-systems/2026.3.2/target-linux-x64/nsys",
+        "binary_sha256": "68a5fb843322bda1b090900a0297b9d5bee43daf8b870a809a6f8aa93059ae16",
+        "binary_bytes": 87282816,
+        "version_output": "NVIDIA Nsight Systems version 2026.3.2.476-263238834031v0",
+        "extractor_path": "ecc2k130/runner/codegen/extract_nsys_tools_v11.sh",
+        "extractor_sha256": "de9c0aa2024e0f5570a4f7138467d95ed7124b56453726d846b3be8c2b9e2900",
+        "installed": false,
+        "maintainer_scripts_executed": false,
+        "system_package_manager_mutation": false,
+        "dependency_source": "exact deb packaged files plus digest-pinned image system DSOs; missing dependencies fail closed",
+        "post_profile_rehash": true
+      }
+    },
+    "environment_closure": {
+      "runner_path": "/usr/bin:/bin",
+      "build_system_path": "/usr/bin:/bin",
+      "measurement_construction": "env -i exact allowlist",
+      "local_python": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B"
+      ],
+      "canonical_python": [
+        "/usr/bin/python3",
+        "-I",
+        "-B"
+      ],
+      "remote_python": [
+        "/usr/bin/python3",
+        "-I",
+        "-S",
+        "-B"
+      ],
+      "network_forward_allowlist": [
+        "ALL_PROXY",
+        "HTTPS_PROXY",
+        "HTTP_PROXY",
+        "NO_PROXY",
+        "SSL_CERT_FILE",
+        "CURL_CA_BUNDLE"
+      ],
+      "startup_hooks_absent": [
+        "BASH_ENV",
+        "ENV",
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "PYTHONSTARTUP",
+        "LD_PRELOAD"
+      ],
+      "provider_driver_loader_policy": "only normalized absolute existing roots under /usr/local/nvidia, /usr/local/cuda, /usr/lib, or /lib are accepted and recorded"
+    }
+  }
+}
