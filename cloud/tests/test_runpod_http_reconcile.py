@@ -140,6 +140,29 @@ class AmbiguousCreateReconciliationTests(unittest.TestCase):
         self.assertFalse(out.exists())
         self.assertEqual(client.deleted, [])
 
+    def test_failed_immediate_inventory_remains_reconcilable(self):
+        def mark_inventory_failure(value):
+            value["capacity_gate"] = {"create_attempted": True}
+            value["reconciliation"]["last_match_count"] = None
+
+        args, out, client = self.run_case(FakeClient([]), mark_inventory_failure)
+        self.assertEqual(reconcile.execute(args, client=client, sleep=lambda _s: None), 0)
+        self.assertTrue(json.loads(out.read_text())["absence_verified_by_name_and_marker"])
+        self.assertEqual(client.deleted, [])
+
+    def test_non_integer_zero_match_counts_are_refused(self):
+        for malformed in (False, 0.0):
+            with self.subTest(malformed=malformed):
+                args, out, client = self.run_case(
+                    FakeClient([]),
+                    lambda value, malformed=malformed: value["reconciliation"].update(
+                        last_match_count=malformed),
+                )
+                with self.assertRaises(batch.BatchError):
+                    reconcile.execute(args, client=client, sleep=lambda _s: None)
+                self.assertFalse(out.exists())
+                self.assertEqual(client.deleted, [])
+
 
 if __name__ == "__main__":
     unittest.main()

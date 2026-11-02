@@ -43,9 +43,18 @@ class V11ImmutableLineageTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, path)
             self.assertEqual(sha256(result.stdout), expected, path)
+            if "v11" in Path(path).stem:
+                live_path = REPO / path
+                self.assertTrue(live_path.is_file(), live_path)
+                self.assertEqual(sha256(live_path.read_bytes()), expected, live_path)
 
     def test_v11_outcome_binds_the_write_once_zero_data_artifacts(self) -> None:
-        outcome = json.loads(V11_OUTCOME.read_text(encoding="utf-8"))
+        outcome_bytes = V11_OUTCOME.read_bytes()
+        self.assertEqual(
+            sha256(outcome_bytes),
+            "d8c1e73e6637d905e5c5215f98b1baeddcd44e967f5e737774f6a55aa722a410",
+        )
+        outcome = json.loads(outcome_bytes)
         self.assertEqual(outcome["scientific_rows"], 0)
         self.assertEqual(outcome["claims_admitted"], [])
         self.assertEqual(

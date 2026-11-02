@@ -526,13 +526,17 @@ def marker_matches(pod: dict, name: str, ownership_id: str) -> bool:
 
 
 def reconcile_ambiguous(client, name: str, ownership_id: str, seconds: int,
-                        sleep=time.sleep):
+                        sleep=time.sleep, progress: dict | None = None):
     deadline = time.monotonic() + seconds
     attempts = 0
     while True:
         attempts += 1
+        if progress is not None:
+            progress.update({"attempts": attempts, "last_match_count": None})
         matches = [pod for pod in client.named(name)
                    if marker_matches(pod, name, ownership_id)]
+        if progress is not None:
+            progress["last_match_count"] = len(matches)
         if len(matches) > 1:
             raise BatchError("multiple exact-name marker-bound pods after ambiguous create")
         if matches:
@@ -1043,21 +1047,39 @@ def execute(args, *, client=None, transport=None, repo=REPO,
             if created.get("name") != name:
                 raise BatchError("create response name mismatch")
             pod_id = candidate_id
-        except BaseException as error:
-            recovered, attempts, match_count = reconcile_ambiguous(
-                client, name, ownership_id, args.reconcile_seconds, sleep=sleep)
+        except BaseException as create_error:
             if reconciliation_enabled:
-                receipt["reconciliation"].update({
-                    "attempted": True, "attempts": attempts,
-                    "last_match_count": match_count,
-                    "owned_pod_id": (
-                        pod_identifier(recovered) if recovered is not None else None),
-                })
+                receipt["reconciliation"]["attempted"] = True
+            try:
+                recovered, attempts, match_count = reconcile_ambiguous(
+                    client, name, ownership_id, args.reconcile_seconds, sleep=sleep,
+                    progress=(receipt["reconciliation"] if reconciliation_enabled else None))
+                if reconciliation_enabled:
+                    receipt["reconciliation"].update({
+                        "attempts": attempts,
+                        "last_match_count": match_count,
+                        "owned_pod_id": (
+                            pod_identifier(recovered) if recovered is not None else None),
+                    })
+            except BaseException as reconciliation_error:
+                status = (
+                    f" status={reconciliation_error.status}"
+                    if isinstance(reconciliation_error, ProviderError)
+                    and type(reconciliation_error.status) is int else ""
+                )
+                detail = safe_error(reconciliation_error, (token,))
+                raise BatchError(
+                    "pod creation response was refused or ambiguous; "
+                    "exact-name reconciliation failed "
+                    f"({type(reconciliation_error).__name__}{status}: {detail}); no retry"
+                ) from create_error
             if recovered is not None:
                 pod_id = pod_identifier(recovered)
                 receipt["pod"] = {"id": pod_id, "name": name,
                                   "creation_response_ambiguous": True}
-            raise BatchError("pod creation response was refused or ambiguous; no retry") from error
+            raise BatchError(
+                "pod creation response was refused or ambiguous; no retry"
+            ) from create_error
 
         summary = wait_provider(client, pod_id, name, args, sleep=sleep)
         receipt["pod"] = {**summary, "creation_response_ambiguous": False}

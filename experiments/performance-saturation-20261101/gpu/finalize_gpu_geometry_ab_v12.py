@@ -805,14 +805,51 @@ def check_receipt_core(
     judge.check(set(reconciliation) == reconciliation_keys,
                 "receipt.reconciliation.keys", "validity",
                 "exact non-secret ambiguous-create ownership binding")
+    attempted = reconciliation.get("attempted")
+    attempts = reconciliation.get("attempts")
+    last_match_count = reconciliation.get("last_match_count")
+    owned_pod_id = reconciliation.get("owned_pod_id")
+    last_match_count_ok = (
+        last_match_count is None
+        or type(last_match_count) is int and last_match_count >= 0
+    )
+    owned_pod_id_ok = (
+        owned_pod_id is None
+        or isinstance(owned_pod_id, str)
+        and POD_ID_RE.fullmatch(owned_pod_id) is not None
+    )
+    reconciliation_state_ok = (
+        type(attempted) is bool
+        and type(attempts) is int
+        and last_match_count_ok
+        and owned_pod_id_ok
+        and (
+            attempted is False
+            and attempts == 0
+            and last_match_count is None
+            and owned_pod_id is None
+            or attempted is True
+            and attempts >= 1
+            and (owned_pod_id is None or last_match_count == 1)
+        )
+    )
     judge.check(
         SHA256_RE.fullmatch(str(reconciliation.get("ownership_id", ""))) is not None
         and reconciliation.get("configured_seconds") == 60
-        and type(reconciliation.get("attempted")) is bool
-        and type(reconciliation.get("attempts")) is int
-        and reconciliation.get("attempts", -1) >= 0,
+        and reconciliation_state_ok,
         "receipt.reconciliation.binding", "validity",
-        "hash ownership marker and bounded exact-name reconciliation",
+        "hash ownership marker and internally consistent exact-name reconciliation",
+    )
+    judge.check(
+        receipt_error is not None
+        or (
+            attempted is False
+            and attempts == 0
+            and last_match_count is None
+            and owned_pod_id is None
+        ),
+        "receipt.reconciliation.success", "validity",
+        "successful completion has the exact untouched reconciliation state",
     )
 
     source = receipt.get("source") if isinstance(receipt.get("source"), dict) else {}

@@ -530,6 +530,28 @@ class FinalizerAdversarialTests(unittest.TestCase):
         )
         self.assertTrue(failures(judge, "receipt.error.schema"))
 
+    def test_success_requires_exact_untouched_reconciliation_state(self) -> None:
+        mutations = (
+            ("attempted", True),
+            ("attempts", 1),
+            ("last_match_count", -7),
+            ("last_match_count", False),
+            ("owned_pod_id", "other_pod"),
+        )
+        for key, value in mutations:
+            with self.subTest(key=key, value=value):
+                receipt = good_receipt()
+                receipt["reconciliation"][key] = value
+                judge = MOD.Judge()
+                MOD.check_receipt_core(
+                    receipt, minimal_protocol(), "run-1", "a" * 64, "b" * 64,
+                    "experiments/performance-saturation-20261101/gpu/runs-http/run-1", judge,
+                )
+                self.assertTrue(
+                    failures(judge, "receipt.reconciliation.binding")
+                    or failures(judge, "receipt.reconciliation.success")
+                )
+
     def test_exact_order_and_header_only_or_truncated_order(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "order.tsv"

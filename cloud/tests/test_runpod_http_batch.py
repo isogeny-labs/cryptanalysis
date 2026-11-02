@@ -127,7 +127,7 @@ def catalog_row(availability="LOW"):
 class FakeClient:
     def __init__(self, create_error=None, reconcile=False, wrong_name=False,
                  compute_type="GPU", image="runpod/base:1.0.2-ubuntu2404",
-                 catalog_rows=None):
+                 catalog_rows=None, named_error_on_call=None):
         self.create_error = create_error
         self.reconcile = reconcile
         self.create_calls = 0
@@ -139,9 +139,12 @@ class FakeClient:
         self.image = image
         self.catalog_rows = catalog_rows or [[catalog_row()]]
         self.catalog_calls = 0
+        self.named_error_on_call = named_error_on_call
 
     def named(self, name):
         self.named_calls += 1
+        if self.named_calls == self.named_error_on_call:
+            raise batch.ProviderError(f"reconciliation inventory failed {TOKEN}", 503)
         if self.reconcile and self.named_calls > 1:
             return [{"id": POD, "name": name, "env": {
                 "RUNPOD_BATCH_OWNERSHIP_ID": hashlib.sha256(TOKEN.encode()).hexdigest()}}]
@@ -602,6 +605,33 @@ class RunpodHttpBatchTest(unittest.TestCase):
                 hashlib.sha256(TOKEN.encode()).hexdigest())
             self.assertTrue(receipt["reconciliation"]["attempted"])
             self.assertEqual(receipt["reconciliation"]["last_match_count"], 0)
+
+    def test_reconciliation_failure_does_not_replace_create_cause(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = args_for(root)
+            args.record_reconciliation_binding = True
+            client = FakeClient(
+                batch.ProviderError(f"create capacity refused {TOKEN}", 500),
+                named_error_on_call=2,
+            )
+            with mock.patch.object(batch, "source_identity", return_value=source_identity()):
+                with self.assertRaises(batch.BatchError):
+                    batch.execute(
+                        args, client=client, transport=FakeTransport(result_archive()), repo=root,
+                        token_factory=lambda: TOKEN, nonce_factory=lambda: "0123456789ab",
+                        sleep=lambda _seconds: None)
+            receipt_text = args.receipt.read_text()
+            receipt = json.loads(receipt_text)
+            self.assertEqual(client.create_calls, 1)
+            self.assertEqual(receipt["error"]["cause"]["type"], "ProviderError")
+            self.assertEqual(receipt["error"]["cause"]["provider_status"], 500)
+            self.assertIn("exact-name reconciliation failed", receipt["error"]["detail"])
+            self.assertIn("status=503", receipt["error"]["detail"])
+            self.assertNotIn(TOKEN, receipt_text)
+            self.assertTrue(receipt["reconciliation"]["attempted"])
+            self.assertEqual(receipt["reconciliation"]["attempts"], 1)
+            self.assertIsNone(receipt["reconciliation"]["last_match_count"])
 
     def test_catalog_gate_waits_for_capacity_before_the_only_create(self):
         with tempfile.TemporaryDirectory() as directory:
