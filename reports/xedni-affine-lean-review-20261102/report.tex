@@ -32,14 +32,17 @@ integer LLL row operations, certifier, receipt, and workflow. Both filed
 separate attestations; the shared independence checker found zero declared
 violations after a documented cross-repository field-name adapter.
 
-\textbf{Workflow finding.} The merged proof workflow at cryptanalysis
-\texttt{749d807} failed on first-use elan setup even though Lean returned
-zero. Repair PR \href{https://github.com/isogeny-labs/cryptanalysis/pull/1377}
-{\#1377} adds explicit toolchain download and binds \texttt{lattice.rs} in
-the source hash and workflow paths. Hosted run
-\href{https://github.com/isogeny-labs/cryptanalysis/actions/runs/41505647909}
-{41505647909} passed at earlier repair head \texttt{196aa0d}; current-head
-and post-merge checks are required before describing the merged gate as green.
+\textbf{Workflow finding and repair.} The original merged workflow at
+cryptanalysis \texttt{749d807} failed on first-use elan setup even though Lean
+returned zero. Repair PR
+\href{https://github.com/isogeny-labs/cryptanalysis/pull/1377}{\#1377}
+added explicit toolchain download and bound \texttt{lattice.rs} in the source
+hash and workflow paths. All 28 applicable checks passed at head
+\texttt{937b387}, including hosted Lean run
+\href{https://github.com/isogeny-labs/cryptanalysis/actions/runs/41507496535}
+{41507496535}. The repair merged as \texttt{15d5263}; its
+\href{https://github.com/isogeny-labs/cryptanalysis/actions/runs/41510072421}
+{main-push Lean run} passed. The earlier failure remains historical evidence.
 
 \textbf{Claim separation.} The Lean algebra is machine checked and faithful
 to the conditional candidate invariant. The Rust LLL span property is
