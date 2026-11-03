@@ -1,0 +1,22 @@
+{
+ "baseline": "main fbabd9df6",
+ "perfindex_instr": {
+  "relation/c_ic_precompute_zp44": [428257845, 186517609],
+  "relation/c_ic_log_zp44": [52139182, 21721434],
+  "relation/c_ic_randexp_zp36": [53065586, 26271981],
+  "relation/c_dense_solve": [40035301, 13477809],
+  "relation/c_linsolve_sparse": [205043666, 109008366],
+  "note": "base Ir, cand Ir (Callgrind, run function only); every dlp and field_ec kernel 1.000; fingerprints identical, gate valid"
+ },
+ "full_kernel_whole_run_ir": {"relation/c_ic_precompute_zp52": [4944223933, 2094670815]},
+ "ca_ic_lsieve_p52": {"p": 4503599627372423, "g": 5, "h": 3905665969129385, "x": 1234567890123, "main_ir": 3041121260, "new_ir": 1286816943,
+   "identical_outputs": "status, x, check, factor_base, unknowns, relations, verified_logs, lanczos_iterations on 4 targets (x = 1234567890123, 99999999999, 2222222222222, 7)"},
+ "perfindex_compare_wall_relation": {
+  "relation/c_ic_precompute_zp44": {"base_ms": 32.611, "cand_ms": 17.412, "speedup": 1.878, "ci95": [1.766, 1.883]},
+  "relation/c_ic_log_zp44": {"base_ms": 2.774, "cand_ms": 2.144, "speedup": 1.306, "ci95": [1.282, 1.349]},
+  "relation/c_ic_randexp_zp36": {"base_ms": 3.377, "cand_ms": 2.861, "speedup": 1.178, "ci95": [1.177, 1.193]},
+  "relation/c_dense_solve": {"base_ms": 11.013, "cand_ms": 1.245, "speedup": 8.800, "ci95": [6.355, 9.314]},
+  "relation/c_linsolve_sparse": {"base_ms": 16.921, "cand_ms": 9.615, "speedup": 1.761, "ci95": [1.736, 1.781]},
+  "area_index": 2.139, "rounds": 7, "taskset": 3, "valid": true
+ }
+}
