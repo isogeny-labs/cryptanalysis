@@ -202,7 +202,8 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
     for (size_t k = 0; k < (size_t)n * n; k++) M[k] %= q;
     for (uint32_t i = 0; i < n; i++) rhs[i] %= q;
     const uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1 ? q - 1 : 1);
-    const uint32_t chunk = 128 - 2 * bits >= 32 ? UINT32_MAX : (uint32_t)1 << (128 - 2 * bits);
+    const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
+    const uint32_t chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
     const uint64_t r64 = (uint64_t)((((ca_u128)1) << 64) % q), r64p = shoup_pre(r64, q);
     const uint64_t onep = shoup_pre(1, q);
     ca_status rc = CA_OK;
@@ -458,7 +459,8 @@ static ca_status lz_init(lz_ctx *z, const ca_spmat *A, uint64_t q)
     memset(z, 0, sizeof(*z));
     z->q = q;
     uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1);
-    z->dot_chunk = 128 - 2 * bits >= 32 ? UINT32_MAX : (uint32_t)1 << (128 - 2 * bits);
+    const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
+    z->dot_chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
     if (q >= ((uint64_t)1 << 63)) return CA_OK;
     z->r64 = (uint64_t)((((ca_u128)1) << 64) % q);
     z->r64p = shoup_pre(z->r64, q);
