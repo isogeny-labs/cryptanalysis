@@ -888,6 +888,116 @@ def check_new_hasse() -> str:
     return HASSE_SHA256
 
 
+# Self-contained core-Lean Lake projects: no Mathlib or any other dependency,
+# their own pinned toolchain, every tracked module built natively and every
+# theorem axiom-audited from a `#print axioms` line in its own source. A pin
+# change here is a gate change (AGENTS.md, "Mathematical results should
+# include Lean proofs").
+CORE_LEAN_PROJECTS = {
+    "research/handbook-ff-ic-ideas-20261103/formal": {
+        "toolchain": "leanprover/lean4:v4.34.1",
+        "library": "HandbookIC",
+    },
+}
+CORE_FORBIDDEN = re.compile(
+    r"\b(?:sorry|admit|sorryAx|native_decide|axiom|unsafe|implemented_by|extern)\b")
+
+
+def core_lean_project_of(path: str) -> str | None:
+    for project in CORE_LEAN_PROJECTS:
+        if path.startswith(project + "/"):
+            return project
+    return None
+
+
+def check_core_lean_projects(paths: set[str]) -> dict[str, str]:
+    """Natively build each registered dependency-free project and audit every theorem."""
+    checked: dict[str, str] = {}
+    by_project: dict[str, set[str]] = {}
+    for path in paths:
+        project = core_lean_project_of(path)
+        require(project is not None, f"unreviewed Lean corpus addition: {path}")
+        by_project.setdefault(project, set()).add(path)
+    for project in sorted(by_project):
+        added = by_project[project]
+        record = CORE_LEAN_PROJECTS[project]
+        directory = ROOT / project
+        require((directory / "lean-toolchain").read_text().strip() == record["toolchain"],
+                f"core Lean project toolchain changed: {project}")
+        lakefile = (directory / "lakefile.toml").read_text()
+        require(not re.search(r"^\s*\[\[require\]\]", lakefile, re.MULTILINE) and
+                "require" not in lakefile.split("\n[[lean_lib]]")[0].replace("# ", ""),
+                f"core Lean project must not declare dependencies: {project}")
+        require(re.search(r'^\s*name\s*=\s*"' + re.escape(record["library"]) + r'"\s*$',
+                          lakefile.split("[[lean_lib]]", 1)[-1], re.MULTILINE),
+                f"core Lean project library changed: {project}")
+        manifest = json.loads((directory / "lake-manifest.json").read_text())
+        require(manifest.get("packages") == [], f"core Lean project pulled packages: {project}")
+        tracked = {p for p in run(["git", "ls-files", "--", project + "/*.lean"]).stdout.splitlines()}
+        require(tracked == added, f"core Lean project has frozen or untracked sources: {project}")
+        modules: dict[str, str] = {}
+        for path in sorted(added):
+            file = ROOT / path
+            require(not file.is_symlink() and file.is_file(), f"core Lean source is not a plain file: {path}")
+            relative = Path(path).relative_to(project)
+            require(relative.parts[0] in (record["library"], record["library"] + ".lean"),
+                    f"core Lean source outside its library: {path}")
+            modules[path] = ".".join(relative.with_suffix("").parts)
+        root_path = f"{project}/{record['library']}.lean"
+        require(root_path in modules, f"core Lean project root module missing: {root_path}")
+        root_lines = [line.strip() for line in (ROOT / root_path).read_text().splitlines() if line.strip()]
+        require(all(re.fullmatch(r"import\s+[\w.]+", line) for line in root_lines),
+                f"core Lean root module must only import: {root_path}")
+        imported = {line.split()[1] for line in root_lines}
+        require(imported == {m for p, m in modules.items() if p != root_path},
+                f"core Lean root module must import every module exactly: {root_path}")
+        for path in sorted(added):
+            source = (ROOT / path).read_text()
+            require(not CORE_FORBIDDEN.search(source), f"forbidden proof escape in {path}")
+        print(f"building core Lean project: {project}", flush=True)
+        run(["lake", "build"], cwd=directory, timeout=900, failure_diagnostics=True)
+        for path, module in modules.items():
+            olean = directory / ".lake/build/lib/lean" / (module.replace(".", "/") + ".olean")
+            require(olean.is_file(), f"core Lean module not built: {path}")
+        for path in sorted(added):
+            if path == root_path:
+                checked[path] = digest(ROOT / path)
+                continue
+            source = (ROOT / path).read_text()
+            # Dotted declaration names (`theorem Cost.foo` in `namespace HandbookIC`)
+            # are compared by their last component, like the printed names.
+            declared = [name.rsplit(".", 1)[-1] for name in re.findall(
+                r"^[ \t]*(?:protected\s+)?(?:theorem|lemma)\s+([\w.']+)", source, re.MULTILINE)]
+            requested = re.findall(r"^#print axioms\s+([\w.']+)", source, re.MULTILINE)
+            require(declared and len(declared) == len(set(declared)) and
+                    set(declared) == {name.rsplit(".", 1)[-1] for name in requested} and
+                    len(declared) == len(requested),
+                    f"incomplete declaration audit in {path}")
+            print(f"compiling core Lean source: {path}", flush=True)
+            result = run(["lake", "env", "lean", str(ROOT / path)], cwd=directory,
+                         timeout=900, failure_diagnostics=True)
+            printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$",
+                                 result.stdout, re.MULTILINE)
+            axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$",
+                                    result.stdout, re.MULTILINE)
+            printed_names = [name for name, _ in printed] + axiom_free
+            require(len(printed_names) == len(declared) and
+                    {name.rsplit(".", 1)[-1] for name in printed_names} == set(declared),
+                    f"incomplete native axiom output for {path}")
+            require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                        <= {"propext", "Classical.choice", "Quot.sound"}
+                        for _, names in printed),
+                    f"unexpected foundation in {path}")
+            print(f"verified native axiom outputs: {path}", flush=True)
+            for line in result.stdout.splitlines():
+                if re.fullmatch(r"'[^']+' (?:depends on axioms: \[[^]]*\]|does not depend on any axioms)", line):
+                    print(line, flush=True)
+            require(digest(ROOT / path) == hashlib.sha256(source.encode()).hexdigest(),
+                    f"core Lean source changed during audit: {path}")
+            checked[path] = digest(ROOT / path)
+    return checked
+
+
 def tracked_corpus_sources() -> list[str]:
     """Discover every tracked Lean source; only the separate gate selftests differ."""
     return [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
@@ -921,7 +1031,9 @@ def main() -> None:
     else:
         print(encoded.decode(), end="")
     hasse_addition = HASSE_SOURCE in additions
-    checked = check_new_hecke(additions - {HASSE_SOURCE})
+    core_additions = {path for path in additions if core_lean_project_of(path)}
+    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions)
+    checked.update(check_core_lean_projects(core_additions))
     if hasse_addition:
         checked[HASSE_SOURCE] = check_new_hasse()
     print(f"native added theorem modules checked: {len(checked)}")
