@@ -25,6 +25,17 @@ static void test_zp(void)
     ca_elem gen;
     CHECK(ca_group_find_generator(&g, &gen, 1) == CA_OK);
     CHECK_EQ_U64(ca_group_elem_order(&g, &gen), 500001);
+    /* the rho walk's inline step and hash are the vtable's */
+    CHECK(ca_zp_group_is_native(&g));
+    ca_elem a = gen, prod, step;
+    for (int i = 0; i < 64; i++) {
+        ca_group_op(&g, &prod, &a, &gen);
+        step = a;
+        step.w[0] = ca_mont_mul(&g.mont, a.w[0], gen.w[0]);
+        CHECK(ca_group_equal(&g, &prod, &step));
+        CHECK_EQ_U64(ca_group_hash(&g, &a), ca_zp_hash_word(a.w[0]));
+        a = prod;
+    }
 }
 
 static void test_ec(void)
