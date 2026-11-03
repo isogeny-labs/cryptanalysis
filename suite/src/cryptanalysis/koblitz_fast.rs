@@ -621,7 +621,6 @@ impl FrobeniusCanon {
     }
 
     /// The normal coordinates of a field element.
-    #[inline]
     #[inline(always)]
     pub fn coords(&self, x: u64) -> u64 {
         let b = x.to_le_bytes();

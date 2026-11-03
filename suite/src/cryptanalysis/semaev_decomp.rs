@@ -137,8 +137,6 @@ pub struct Gf2 {
     red: Box<[[u64; 256]; 8]>,
     positions: usize,
     has_clmul: bool,
-    /// `⌊z^{2n} / irr⌋`, the Barrett constant of [`Self::mul_barrett`].
-    mu: u64,
 }
 
 /// Spread the low 32 bits of `x` so that bit `i` lands at bit `2i`.
@@ -216,16 +214,6 @@ impl Gf2 {
         #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
         let has_clmul = false;
 
-        // `⌊z^{2n} / irr⌋` by long division: degree `n`, so it fits a word.
-        let mut rem: u128 = 1u128 << (2 * n);
-        let mut mu = 0u64;
-        for i in (0..=n).rev() {
-            if (rem >> (i + n)) & 1 == 1 {
-                mu |= 1u64 << i;
-                rem ^= u128::from(bits) << i;
-            }
-        }
-
         Self {
             n,
             irr: bits,
@@ -233,26 +221,7 @@ impl Gf2 {
             red,
             positions,
             has_clmul,
-            mu,
         }
-    }
-
-    /// `c mod irr` for a carry-less product `c` of degree `< 2n − 1`, by
-    /// Barrett's reduction on polynomials: with `μ = ⌊z^{2n}/irr⌋` the
-    /// quotient is exactly `q = ⌊⌊c/z^n⌋ · μ / z^n⌋` (no correction step
-    /// over `F_2[z]`), and the remainder is the low `n` bits of `c + q·irr`.
-    /// Two carry-less multiplications and a few shifts, where
-    /// [`Self::reduce`] makes `⌈(n−1)/8⌉` dependent table lookups; the
-    /// same field element.  `⌊c/z^n⌋` has degree `≤ n − 2` and `μ`
-    /// degree `n`, so every operand fits a word.
-    #[cfg(target_arch = "x86_64")]
-    #[target_feature(enable = "pclmulqdq")]
-    #[inline]
-    unsafe fn barrett(&self, c: u128) -> u64 {
-        let hi = (c >> self.n) as u64;
-        let q = (clmul_u64(hi, self.mu) >> self.n) as u64;
-        let qf = clmul_u64(q, self.irr) as u64;
-        ((c as u64) ^ qf) & self.mask
     }
 
     /// Whether the carry-less multiply instruction was detected at
@@ -315,7 +284,7 @@ impl Gf2 {
         if self.has_clmul {
             // SAFETY: guarded by the runtime feature detection recorded
             // in `has_clmul` at construction.
-            return unsafe { self.barrett(clmul_u64(a, b)) };
+            return self.reduce(unsafe { clmul_u64(a, b) });
         }
         self.reduce(self.clmul(a, b))
     }
@@ -329,7 +298,7 @@ impl Gf2 {
         #[cfg(target_arch = "x86_64")]
         if self.has_clmul {
             // SAFETY: as in `mul`; the sum still has degree `< 2n − 1`.
-            return unsafe { self.barrett(clmul_u64(a, b) ^ clmul_u64(c, d)) };
+            return self.reduce(unsafe { clmul_u64(a, b) ^ clmul_u64(c, d) });
         }
         self.reduce(self.clmul(a, b) ^ self.clmul(c, d))
     }
@@ -342,7 +311,7 @@ impl Gf2 {
         if self.has_clmul {
             // SAFETY: guarded by the runtime feature detection recorded
             // in `has_clmul` at construction.
-            return unsafe { self.barrett(clmul_u64(a, a)) };
+            return self.reduce(unsafe { clmul_u64(a, a) });
         }
         #[cfg(target_arch = "aarch64")]
         if self.has_clmul {
@@ -1362,12 +1331,12 @@ mod tests {
     /// Batch inversion equals element-wise inversion on every length
     /// around the lane count and a full block, with zeros scattered in
     /// (left as zero) and a slice of nothing but zeros.
-    /// The Barrett reduction behind `mul`, `sqr` and `dot2` on hosts with
-    /// a carry-less multiply against the byte-table fold, which is the
-    /// reference: degrees from 2 to 63, random operands and the edge
-    /// values `0`, `1` and all ones, and a zero `a·a + b·b` sum.
+    /// `mul`, `sqr` and `dot2` (the inlined carry-less path on hosts that
+    /// have it) against the reference fold of the generic product:
+    /// degrees from 2 to 63, random operands, the edge values `0`, `1`
+    /// and all ones, and a zero `a·a + b·b` sum.
     #[test]
-    fn barrett_reduction_matches_the_table_fold() {
+    fn field_products_match_the_reference_fold() {
         use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
         let mut s = 0x5EED_BA77_E770_0001u64;
         for n in [2u32, 3, 7, 8, 9, 16, 24, 31, 32, 33, 41, 53, 61, 62, 63] {
