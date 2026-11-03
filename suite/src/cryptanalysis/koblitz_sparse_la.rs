@@ -315,24 +315,14 @@ impl<'r, const W: usize> LazyLanes<'r, W> {
         self.mac(a, src);
     }
 
-    /// Lane `l` gains `Σ_k vals[k] · x[cols[k]·n + l]`, the lanes read
-    /// through a raw pointer so the inner loop carries no bounds checks
-    /// (it was two a product): the same products in the same order, so the
-    /// same exact sums.
-    ///
-    /// # Safety
-    ///
-    /// `x.add(c·n) .. x.add(c·n + W)` must be in bounds of one allocation
-    /// for every `c` in `cols`.
+    /// Lane `l` gains `Σ_k vals[k] · x[cols[k]·n + l]`.
     #[inline(always)]
-    unsafe fn add_sparse_raw(&mut self, cols: &[u32], vals: &[u64], x: *const u64, n: usize) {
+    fn add_sparse(&mut self, cols: &[u32], vals: &[u64], x: &[u64], n: usize) {
         let (mut cols, mut vals) = (cols, vals);
         loop {
             let take = vals.len().min(self.room);
             for (&c, &a) in cols[..take].iter().zip(&vals[..take]) {
-                // SAFETY: the caller's contract.
-                let src = unsafe { std::slice::from_raw_parts(x.add(c as usize * n), W) };
-                self.mac(a, src);
+                self.mac(a, &x[c as usize * n..]);
             }
             self.room -= take;
             (cols, vals) = (&cols[take..], &vals[take..]);
@@ -1019,10 +1009,6 @@ pub struct CsrMatrix {
     /// reductions ([`Reducer::lazy_terms`] for the largest stored
     /// coefficient); `None` for a modulus outside `[2, 2⁶³)`.
     lazy: Option<(Reducer, usize)>,
-    /// One more than the largest stored column index (0 when empty):
-    /// a block vector of at least `col_end · n` words covers every read
-    /// [`Self::row_lazy`] makes, which it checks once a row.
-    col_end: usize,
 }
 
 /// Rows below this many are multiplied serially.
@@ -1051,7 +1037,6 @@ impl CsrMatrix {
             .copied()
             .fold(modulus.saturating_sub(1), u64::max);
         let lazy = Reducer::new(modulus).map(|r| (r, r.lazy_terms(a_max)));
-        let col_end = col_idx.iter().map(|&c| c as usize + 1).max().unwrap_or(0);
         Self {
             n_rows: rows.len(),
             n_cols,
@@ -1060,7 +1045,6 @@ impl CsrMatrix {
             vals,
             modulus,
             lazy,
-            col_end,
         }
     }
 
@@ -1095,23 +1079,15 @@ impl CsrMatrix {
         let span = self.row_ptr[i]..self.row_ptr[i + 1];
         let row = (&self.col_idx[span.clone()], &self.vals[span]);
         let extra = (self.n_cols * n, extra);
-        // Every stored column `c < col_end` and every lane `j + l < n`,
-        // so each read `x[c·n + j + l]` lies below `col_end · n ≤ x.len()`.
-        assert!(
-            self.col_end * n <= x.len(),
-            "block vector shorter than the matrix's columns"
-        );
         let mut j = 0;
         while j + 4 <= n {
             let acc = LazyLanes::<4>::new(red, *terms);
-            // SAFETY: the assertion above, with `j + 4 ≤ n`.
-            unsafe { csr_lanes(acc, row, x, j, n, extra, &mut out[j..j + 4]) };
+            csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 4]);
             j += 4;
         }
         while j < n {
             let acc = LazyLanes::<1>::new(red, *terms);
-            // SAFETY: the assertion above, with `j + 1 ≤ n`.
-            unsafe { csr_lanes(acc, row, x, j, n, extra, &mut out[j..j + 1]) };
+            csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 1]);
             j += 1;
         }
     }
@@ -1158,25 +1134,18 @@ impl CsrMatrix {
 /// `W` lanes of one CSR row `(columns, coefficients)` times `x`, where
 /// `x` starts at the first of those lanes and holds `n` lanes per column,
 /// plus `extra.1` times the lanes at offset `extra.0` when nonzero.
-///
-/// # Safety
-///
-/// `x[c·n + j .. c·n + j + W]` must be in bounds for every column `c` in
-/// `cols` ([`CsrMatrix::row_lazy`] checks `col_end · n ≤ x.len()` and
-/// `j + W ≤ n`).  The homogenising column is read through a checked slice.
 #[inline(always)]
-unsafe fn csr_lanes<const W: usize>(
+fn csr_lanes<const W: usize>(
     mut acc: LazyLanes<'_, W>,
     (cols, vals): (&[u32], &[u64]),
     x: &[u64],
-    j: usize,
     n: usize,
     extra: (usize, u64),
     out: &mut [u64],
 ) {
-    acc.add_sparse_raw(cols, vals, x.as_ptr().add(j), n);
+    acc.add_sparse(cols, vals, x, n);
     if extra.1 != 0 {
-        acc.add(extra.1, &x[extra.0 + j..]);
+        acc.add(extra.1, &x[extra.0..]);
     }
     acc.finish(out);
 }
