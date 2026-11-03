@@ -606,11 +606,11 @@ static __attribute__((noinline)) int rho_zp_dp(rho_shared *sh, rho_walk *wk, uin
  * multiplier is ever rejected (retry stays 0) and there is no window test.
  * The constants live in locals: the stores of the pass are uint64_t
  * lvalues, which through sh would force a reload of each per walk. */
-static void rho_zp_round(rho_shared *sh, rho_walk *walks, ca_rng *rng, uint64_t *ops,
+static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rng, uint64_t *ops,
                          uint64_t abandon)
 {
     const ca_group *g = sh->g;
-    const uint32_t W = sh->walks, rmask = sh->r_mask, r = sh->r;
+    const uint32_t rmask = sh->r_mask, r = sh->r;
     const uint64_t rmagic = sh->r_magic, P = g->mont.p, NPI = (uint64_t)0 - g->mont.pinv;
     const uint64_t N = sh->n, dpm = sh->dp_mask;
     const ca_elem *M = sh->M;
@@ -710,7 +710,7 @@ static void *rho_thread_main(void *arg)
          * points. */
 #ifndef CA_RHO_TRACE
         if (zp_fused) {
-            rho_zp_round(sh, walks, &rng, &ops, abandon);
+            rho_zp_round(sh, walks, W, &rng, &ops, abandon); /* W: the walks allocated */
             goto round_done;
         }
 #endif
