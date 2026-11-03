@@ -1,0 +1,1808 @@
+[
+ {
+  "id": "H001",
+  "source_page": 1,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Kloosterman/Walsh ranking of affine cosets for the factor base",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "17.2.1 Mutually unbiased bases"
+  ],
+  "claim": "Valid-point counts across the 2^(n-m) cosets of a fixed V exceed binomial spread; a dual-sum (Walsh) predictor ranks cosets with Spearman >= 0.6, so best-of-K gives >= 1.05x relations per factor-base element. A13 measured coset choice as near-null, so this is a predictor test only.",
+  "prediction": "Spread 1.0-1.5x binomial SD; predictor rho 0.6-0.9; best-of-64 gain 1.03-1.10x, shrinking with n.",
+  "cheapest_test": "n=17, m=8: all 512 cosets; count valid points and S3 relations over 2000 targets; correlate with Walsh prediction; 5 random b.",
+  "falsifier": "Spearman < 0.3, or best-of-64 gain < 1.02x with bootstrap CI containing 1.",
+  "lean_target": "Define Coset and validCount as a Prop over HandbookIC.Core; prove the coset-average of smoothCount equals total/2^(n-m) by a finite-sum partition lemma, so gains are variance-only.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H002",
+  "source_page": 1,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Cyclic-shift window factor base: Frobenius merge factor about 2",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "17.1.6.3 Linear polynomial dynamical systems"
+  ],
+  "claim": "New angle only on the closed census: for a window V=span{x,...,x^(2^(m-1))} of dim about n/2, Frobenius classes number |V|/c with c in [1.8,3] independent of n, so orbit quotient shrinks columns about 2x, not n x. The existence obstruction itself is closed.",
+  "prediction": "Mean class size about 3.0; classes/|V| about 0.5 (0.33-0.56); LA B^2 term falls at most about 4x.",
+  "cheapest_test": "n=19,29 (also 11,13,37): enumerate window elements, compute classes by repeated squaring, report class-size distribution.",
+  "falsifier": "Column reduction >= 4 for the window at n=29 or 37.",
+  "lean_target": "Define window orbit count as a Prop over HandbookIC.Core; prove by bit counting that elements whose k-shift stays in the window number 2^(m-k).",
+  "prior_art_status": "tried-closed"
+ },
+ {
+  "id": "H003",
+  "source_page": 2,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Kneser/Freiman-extremal subspaces with small product span",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "16.7.2 Polynomial multiplication",
+   "16.7.3 Matrix multiplication structure"
+  ],
+  "claim": "Among d-dim subspaces of GF(2^n), n prime, dim(V*V)=2d-1 holds only for u*span{1,w,..,w^(d-1)}; random subspaces give min(n,d(d+1)/2). Product-span size controls the linearised-decision candidate dimension.",
+  "prediction": "n=23,d=7: random V gives dim 23; interval V gives 13; no non-AP subspace in 1000 samples drops below 2d-1.",
+  "cheapest_test": "n=17..23, d=5..8: sample subspaces, Gaussian-eliminate pairwise products, histogram dim(V*V).",
+  "falsifier": "A non-AP subspace with dim(V*V)<2d-1 at prime n, or random subspaces below the generic value at >1%.",
+  "lean_target": "Define prodSpan as a Nat over HandbookIC.Core; prove AP basis gives 2d-1 distinct sums by omega/induction, with Kneser as a named hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H004",
+  "source_page": 3,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Fano-factor selection of equal-size subspace factor bases",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "16.2.1 Basic concepts of stream ciphers"
+  ],
+  "claim": "Solution count N(V) over random k-dim subspaces is over-dispersed against a symmetric null, so best-of-M selection gives >= 1.2x relations per candidate at fixed |V|.",
+  "prediction": "Fano factor exceeds null by >1.5; best of 300 gives 1.2-1.6x; random-b negative control 1.0+-0.05.",
+  "cheapest_test": "n=19,k=7,m=3: 300 random V, brute-force N(V); compare dispersion with null and Frobenius-invariant positive control.",
+  "falsifier": "Dispersion within 0.9-1.1 of null, or best-of-M gain <1.05 after multiple-comparison correction.",
+  "lean_target": "Define smoothCount per factor base; prove that a c-fold larger smoothCount at equal factorBase and linearAlgebra cost divides Cost.relations by c in Nat arithmetic.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H005",
+  "source_page": 4,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Trace-code rank-profile criterion for factor-base subspace shape",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "15.1.2.4 Subfield and trace codes",
+   "15.1.2.3 Reed-Muller codes"
+  ],
+  "claim": "At fixed dimension, dispersion index of decomposition counts over targets differs across V shapes (prefix, contains 1, trace-zero, random); the low-rank mass of Dickson forms B_gamma predicts which shape maximises P(N0>=1).",
+  "prediction": "Random V index within 5% of 1; prefix and 1-containing V 1.15-1.6; P(N0>=1) differs >= 0.03 between shapes.",
+  "cheapest_test": "Exact N0(r) for all r at n=17..23 per shape via Artin-Schreier enumeration; 20 random V per shape; subfield-like degenerate positive control.",
+  "falsifier": "All shapes within 5% dispersion and 0.01 in P(N0>=1), or predictor Spearman < 0.5.",
+  "lean_target": "Define smoothCount V r over a toy bit-vector field; prove sum_r smoothCount V r equals unordered pairs times solutions per x3 by double counting.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H006",
+  "source_page": 5,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Cyclotomic-coset factor base x^s in a Frobenius orbit",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "14.7.1 Association schemes",
+   "14.6.5 Cyclotomic classes"
+  ],
+  "claim": "F={x: x^s in C}, C a Frobenius orbit in mu_M, is Frobenius-stable for any n with |F|=s*n, no table needed; yield equals a random stable set within 10%. Divisors of 2^n-1 near 2^(n/2) limit availability.",
+  "prediction": "Yield ratio 0.9-1.1; membership 1.0-1.5x a hash lookup at |F| about 2^28; n=29, s=1103 gives |F|=31987.",
+  "cheapest_test": "n=29, s=1103: compare m=2 yield and columns against random orbit union and Hamming ball; list divisors of 2^n-1 near 2^(n/2) for n in 53..131.",
+  "falsifier": "Yield ratio outside [0.8,1.25], or no divisor within 8x of 2^(n/2) for most n.",
+  "lean_target": "Model GF(2^n)* as Fin(2^n-1) via log; prove F is stable under i->2i mod (2^n-1) and |F|=s*n when ord_M(2)=n.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H007",
+  "source_page": 6,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "2-torsion translation as extra projectivity in subfield orbit quotient",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "14.4.2 Collineations and coordinate frames"
+  ],
+  "claim": "For even-order binary curves with iota-closed subfield base (sqrt b in V), quotienting by <Frobenius, iota> instead of <Frobenius> halves unknown classes and relations needed; 2-torsion saturation may already do this.",
+  "prediction": "Class ratio 0.50+-0.05; relations to full rank 0.50+-0.10; dense LA x0.25-0.5.",
+  "cheapest_test": "y^2+xy=x^3+x^2+1 over GF(2^18), V=GF(2^6), m=3: build relation matrices on pi-classes vs (pi,iota)-classes, verify logs by brute force.",
+  "falsifier": "Class ratio >0.6, a mod-l inconsistent relation, or code already quotients by iota.",
+  "lean_target": "Define quotient DLPInstance and relation_transfer as a Prop; prove orbitRepresentatives N (2*d) <= orbitRepresentatives N d via Nat.div_le_div_left.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H008",
+  "source_page": 8,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Exponential-sum bias of S3 triple count T(V) across subspaces",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "12.5.3 Bounds for rational places",
+   "12.7.3 Case of curves"
+  ],
+  "claim": "T(V), the count of S3 solutions in V^3, varies beyond clumped-Poisson across V; offline search beats a random V by more than noise, while structured families (polynomial basis, trace-kernel) stay within 5% of random.",
+  "prediction": "std/mean of T 10-25%; best of 1000 gives 1.2-1.5x mean; structured families within 5%.",
+  "cheapest_test": "n=20,l=7: T(V) for 2000 random V and 6 structured families; dispersion vs Poisson with A/A split.",
+  "falsifier": "Dispersion within 1.1 of clumped-Poisson and no structured family beyond 5%.",
+  "lean_target": "Define tripleCount over Fin B to G; prove it is permutation-invariant and <= B^3, and Cost.relations is antitone in it.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H009",
+  "source_page": 9,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Artin-Schreier splitting density of cosets of V",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "12.1.3 Extensions of function fields"
+  ],
+  "claim": "Only about half of V lies on E (Tr(v+a+b/v^2)=0); the best coset has density 0.5+O(sqrt(k(n-k))2^(-k/2)), raising useful fraction by (rho/0.5)^m, visible at small k and vanishing at cryptographic size. Koblitz trace-zero policy already forces density 1.",
+  "prediction": "n=24,k=8,m=3: best of 10^4 cosets rho 0.60-0.70, gain 1.7-2.7x; n=48,k=16 gain <1.15x.",
+  "cheapest_test": "n=20..30: E-density of 10^4 random cosets; fit best density to Chernoff prediction; S3 solves on best vs median V.",
+  "falsifier": "Best-of-10^4 density within 0.02 of 0.5 at n=24,k=8, or gain <1.3x useful relations per call.",
+  "lean_target": "Define onCurve density as a Prop; prove the useful m-tuple fraction is the m-th power of per-element density by counting.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H010",
+  "source_page": 10,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Legendre-sequence bias selection of affine cosets (odd p and binary)",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "10.4.4.3 Legendre sequence and related bit sequences"
+  ],
+  "claim": "Best-of-T coset selection by lift fraction raises it from 1/2 to 1/2+0.35*sqrt(ln T/|V|); gain is a toy-scale effect shrinking like 1/sqrt|V|.",
+  "prediction": "|V|=2^10,T=2^10: 2.6-3% gain in B per enumerated x; under 0.1% at |V|>=2^20.",
+  "cheapest_test": "GF(2^17) and p about 2^20: lift fraction over 2000 cosets of a dim-10 subspace vs Gaussian and random-coset nulls, with A/A.",
+  "falsifier": "Max over T cosets within one standard error of the iid-binomial null, or realised gain <0.5% at |V|=2^10.",
+  "lean_target": "Prove liftFraction = 1/2 + (1/(2|V|))*sum chi for chi in {+1,-1} and that best-of-T never lowers it (max monotone).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H011",
+  "source_page": 10,
+  "source_idx": 8,
+  "merged_from": [],
+  "title": "Primitive-polynomial LFSR enumeration of factor-base abscissae",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "11.1.1.3 Primitive elements",
+   "11.1.3.2 Modular reduction in extension fields"
+  ],
+  "claim": "Factor base {t^i}, t primitive, is enumerated with one shift plus <=hw(f)-1 XORs, >=10x cheaper than random-x sampling, with relation yield equal to a random-x base within 10%.",
+  "prediction": "Enumeration 5-15x cheaper in bit ops; yield within +-5%; end-to-end gain <2%.",
+  "cheapest_test": "GF(2^n), n=19,23,29: B=2^10 for both bases, 10^5 targets each, matched seeds, A/A arm, count bit ops.",
+  "falsifier": "Yield differs >10%, or enumeration saving <3x in measured cycles.",
+  "lean_target": "Given hypothesis order t = 2^n-1, prove t^i = t^j implies i=j mod (2^n-1) so FactorBase entries are distinct for B <= 2^n-1.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H012",
+  "source_page": 11,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Factor base restricted to cofactor image subgroup via character test",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "10.1.4.3 Characteristic functions",
+   "10.1.4.4 Gauss sums"
+  ],
+  "claim": "Drawing F only from H=hE(F_q) (Tr(x)=Tr(a) for h=2, half-trace test for h=4) raises per-tuple m=3 decomposition success by h at fixed |F|; matched rho in H is cheaper by sqrt(h), so net gap closes at most sqrt(h).",
+  "prediction": "Yield ratio 2.0+-0.15 (h=2), 4.0+-0.4 (h=4) on GF(2^17..21).",
+  "cheapest_test": "GF(2^19), a=0 and a=1 Koblitz: filtered vs unfiltered F (|F|=2^6), 2000 targets in H; check halving test against brute-force 2E membership.",
+  "falsifier": "Yield ratio 95% CI upper bound <1.2 for h=4, or halving test disagrees with brute force on any point.",
+  "lean_target": "Define H closed under add with FactorBase inside H; prove pair-sum fibres average at least h*B^2/N by pigeonhole.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H013",
+  "source_page": 12,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Valid-point fraction of Frobenius-invariant subspaces (orbit-level variance)",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "9.1.2 Walsh transform",
+   "9.1.1.2 Trace representation"
+  ],
+  "claim": "For invariant V the point-existence indicator is orbit-constant, so valid fraction has spread about 0.5*sqrt(n/|V|); best-of-K invariant subspaces give yield (1+2eps)^m above median. Moment identities caution that per-curve spectra are invariant.",
+  "prediction": "n=23,d=8..9,m=3: spread 0.12-0.16; best of 2000 fraction >=0.75; yield >=2.5x median; generic V <=1.5x.",
+  "cheapest_test": "2000 random invariant subspaces at n=23,d about 8: valid fraction vs relations on 500 targets; regress on fraction^3.",
+  "falsifier": "Spread equals iid-coin spread, yield ratio <1.3x, or R^2 <0.5.",
+  "lean_target": "Prove validCount equals sum over orbit reps of orbit size times indicator when isPoint is orbit-constant, giving relations <= validCount^m.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H014",
+  "source_page": 12,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Swap hill-climbing on exact S3 yield N(V)",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "9.1.3 Parameters of Boolean functions",
+   "9.1.1.1 Algebraic normal form"
+  ],
+  "claim": "N(V) is overdispersed across subspaces; swap hill-climbing finds V with several times median yield in a few hundred evaluations, transferring to fresh targets.",
+  "prediction": "Var/Mean >=3 at n=23,d=8; climbed V >=2x median, >=1.8x on fresh targets; <=1.5x at n=31.",
+  "cheapest_test": "Brute-force N(V) for 2000 random V at n=19..23; 500-step swap climbs from 20 starts; retest on 2000 fresh targets.",
+  "falsifier": "Dispersion <1.5, or climbed V <1.2x median on fresh targets.",
+  "lean_target": "Prove x3-solutions for fixed (x1,x2) form 0 or a coset of size 2^k under additivity hypothesis, so smoothCount <= 2|V|^2.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H015",
+  "source_page": 13,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Best-of-T scaling/translate of V by Kloosterman liftable bias",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "7.1.4 Artin-Schreier hypersurfaces",
+   "6.3.5 Incomplete character sums"
+  ],
+  "claim": "Solutions need all x_i liftable, so yield scales as (2*liftFrac)^m; best of T scalings lambda*V (or translates) raises liftFrac by about sqrt(2 ln T/2^d)/2 at unchanged solve cost. Prime-degree lift repulsion is a closed-leaning negative.",
+  "prediction": "GF(2^29),d=10,T=2^10: liftFrac about 0.55, m=3 yield ratio about 1.33 (1.2-1.5); at d=20 only about 1.03.",
+  "cheapest_test": "n=29,d=10: 1000 random V vs best-of-1024; count S3 solutions over 50 x_R, paired.",
+  "falsifier": "Yield ratio <1.1, or fails to track (liftFrac ratio)^m within 15%.",
+  "lean_target": "Prove max liftCount >= average (pigeonhole) and Cost.relations N c m = N/c^m is antitone in c via Nat.div_le_div_left.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H016",
+  "source_page": 13,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Affine-hull dimension of S3(V^3) as subspace selection criterion",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "6.4.2 Sum-product estimate"
+  ],
+  "claim": "Solution count over V^2 is about |V|^2*2^(-w(V))*[c0 in hull], w the hull dimension (about dim span(V*V)); K-structured V has w<n and high yield for hull-compatible x_R but risks rank collapse in E(K).",
+  "prediction": "n=24,k=6: V=K+K*theta, w<=18, yield about 64x generic when c0 in hull; average over x_R unchanged unless hull is steerable.",
+  "cheapest_test": "n=24,k=6: random vs K-structured V; compute w by elimination, count solutions on 200 (V,x_R) draws, correlate log2 count with n-w; check relation rank mod ell.",
+  "falsifier": "Corr <0.8, average yield equal to generic within 5% with no steering, or rank <90% of columns.",
+  "lean_target": "Define hullDim <= n and Cost.relations = N*2^(n-hullDim)/|V|^2; prove it is antitone in hullDim and equals generic at hullDim=n.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H017",
+  "source_page": 13,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Legendre-biased multiplicative coset selection for prime-field factor bases",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "7.1.5 Kummer hypersurfaces",
+   "7.3.2 Jacobi sums"
+  ],
+  "claim": "x3 in F_p iff chi(f(x1))=chi(f(x2)), so yield from coset gH goes as (2 liftFrac)^m; best of T cosets gains (1+sqrt(2 ln T/B))^3, vanishing at production size. Window families are closed; coset selection is untested.",
+  "prediction": "p about 2^40,B=2^10,T=2^10: liftFrac about 0.558, gain about 1.39; gain-1 scales as B^(-1/2).",
+  "cheapest_test": "p about 2^40 curve; 1000 random cosets vs best-of-1024; count S3 solutions by x1,x2 enumeration; scaling over B=2^8..2^14.",
+  "falsifier": "Gain <1.1 at B=2^10, or log-log slope of gain-1 outside -0.5+-0.15.",
+  "lean_target": "Reuse the abstract liftCount model; prove max >= average and Cost.relations antitone in the lift ratio c.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H018",
+  "source_page": 14,
+  "source_idx": 1,
+  "merged_from": [
+   "P5-1"
+  ],
+  "title": "Rotation-closed Hamming-ball necklace factor base for primitive-root n",
+  "ic_phase": "factor-base",
+  "handbook_sections": [
+   "5.2.1 Normal bases",
+   "5.3.1 Low complexity normal bases",
+   "14.9.2 Weights of multiples"
+  ],
+  "claim": "Where no invariant subspace exists, W_w={wt_ONB<=w} is Frobenius-closed with necklace storage |W_w|/n and popcount membership; yield equals a random closed set within 5%. Encyclopedia C6 rejected it as storage-only, so the claim is a cost, not yield, gain.",
+  "prediction": "Yield ratio 0.95-1.05; necklace count exact by Burnside; membership >=1.3x faster than hash at 2^28; end-to-end <=1.1x.",
+  "cheapest_test": "n=29, |W_w| about 2^12-2^17: m=2 collection on a Koblitz toy vs random closed set and non-stable set of equal size; microbenchmark membership.",
+  "falsifier": "Yield ratio outside [0.9,1.1], orbit count off Burnside, or popcount not faster than hashing.",
+  "lean_target": "Prove wt(rot v)=wt v so ball is rot-closed and, for prime n, rot has only fixed points 0 and all-ones, giving exact necklace count.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H019",
+  "source_page": 1,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Groebner-fan bi-weight order for the bilinear S3 subspace system",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "17.1.4.2 Groebner fan parameter estimation"
+  ],
+  "claim": "On bilinear S3 with |V|=|W|=2^m, m=8..12, the best fan-selected bi-weight order cuts the largest F4 matrix >=2x vs grevlex, yet F4 stays above the 2^m lookup baseline.",
+  "prediction": "Matrix ratio 0.3-0.7, shrinking with m; F4 time >=10x the lookup baseline at m>=10.",
+  "cheapest_test": "n=20, 50 targets: msolve/F4 under grevlex, (1^10,0^10) refined by grevlex, and 5 random fan weights; compare matrix size, dreg, time.",
+  "falsifier": "Best bi-weight matrix >=0.8x grevlex, or loses a paired sign test (p<0.05).",
+  "lean_target": "Define Sys with bilinear_a/bilinear_b hypotheses; prove S3 is affine-bilinear from additivity of squaring and smoothCount decomposes by linear algebra for toy n.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H020",
+  "source_page": 1,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Canalyzing-depth pre-sieve for the post-trace decomposition predicate",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "17.1.4.1 Minimal-sets algorithm",
+   "17.1.6.1 Nested canalyzing functions"
+  ],
+  "claim": "P(a)=[x2 in W] and the S3 bit components have canalyzing depth 0 for >=99% of targets, minimal determining set >=0.9m, so no m/4-bit pre-sieve discards >5% beyond the trace test. Expected negative; closes the route.",
+  "prediction": "Depth 0 in >99%; determining set 0.9-1.0m; pre-sieve discards 0-3%.",
+  "cheapest_test": "n=18,m=9, 500 targets: enumerate P, brute-force subsets up to 3 for canalyzing variables; random-function negative control.",
+  "falsifier": "Determining set <=m/4 for >5% of targets, or pre-sieve discards >=10% losslessly.",
+  "lean_target": "Define Canalyzing and DetSet over Pred m; prove pre-sieve soundness from DetSet and decide no canalyzing variable for explicit m<=5 functions.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H021",
+  "source_page": 2,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Frobenius-linear decision test for 2-point decomposition on interval bases",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "16.7.2 Polynomial operations arithmetic",
+   "16.3.3.12 Linearization"
+  ],
+  "claim": "For V=span{1,..,t^(d-1)}, 3d-1<=n, S3 is F2-linear in bits of (pi,s) with pi reduction-free; deciding x(R)=x1+x2 costs one n x (3d-1) elimination, not 2^d, returning identical decompositions.",
+  "prediction": "Per-relation cost 2^(n-2d)*n^3/64; total about 2^(2n/3) at d=n/3; >=100x speedup at n=31,d=9.",
+  "cheapest_test": "Koblitz n=31 (also 23,37), d=9: 2^16 targets, compare decomposition sets and time vs enumeration; fit log2 cost slope vs n.",
+  "falsifier": "Any missed decomposition, speedup <10x at n=31,d=9, or slope not within 20% of 1/3.",
+  "lean_target": "State decomposes -> mem cand from additivity of Phi(pi)=pi^2+x3*pi; prove soundness by unfolding and relCostPerHit n d <= 2^(n-d).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H022",
+  "source_page": 2,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Block-multigraded Macaulay matrices for Weil-restricted S_{m+1}",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "16.3.3.12 Direct attacks with polynomial solvers",
+   "16.3.3.8 Rank structure"
+  ],
+  "claim": "Bit-degree popcount(e) per block makes the system multihomogeneous; at the first-fall multidegree the multigraded Macaulay matrix has >=10x fewer columns than total degree at m=3. m=2 bidegree was measured column-heavy.",
+  "prediction": "Column ratio >=10 at d=7,n=21, growing with d; first fall at multidegree (1,1,1) or (2,1,1).",
+  "cheapest_test": "Build sparse F2 Macaulay matrices for m=3, n=21, d=7 in both gradings to degree 3; compare columns and rank at recovery.",
+  "falsifier": "Column ratio <2 at first fall, or multigraded rank fails to recover the planted decomposition at smaller size.",
+  "lean_target": "Define bitDeg and block multidegree; prove bitDeg e <=2 for e<=4 by decide and the monomial-count inequality by induction on d.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H023",
+  "source_page": 3,
+  "source_idx": 0,
+  "merged_from": [
+   "P12-0"
+  ],
+  "title": "One-bit trace criterion as a dead-target sieve for 2-decompositions",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "16.3.3.1 Linearization equations",
+   "16.3.2.4 Frobenius-additive structure",
+   "9.1.1.2 Trace representation"
+  ],
+  "claim": "For V in ker Tr, targets with Tr(b/z^2)=1 (equivalently Tr(x_R)!=(m-1)Tr(a)) have no V-decomposition; live targets carry 2x yield, halving solves per relation. Leads record this as closed (<=0.2 bits, degree-2 fall); remaining angle is the m=2 loop savings.",
+  "prediction": "Dead fraction 50+-2%, zero counterexamples, live mean 2.0x, additions ratio 0.50+-0.03.",
+  "cheapest_test": "n=17,19, b=1 and random b, k=8 subspaces inside/outside ker Tr: enumerate x1, tabulate counts against Tr(b/z^2).",
+  "falsifier": "Any decomposition of a Tr=1 target for V in ker Tr, dead fraction outside 0.48-0.52, or live mean not near 2x.",
+  "lean_target": "State h_dead (Dec R c -> tr R = false) as hypothesis; prove List.filter by tr preserves relations and cost <= baseline.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H024",
+  "source_page": 3,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Lifted (s,p) enumeration with half-trace bit-GEMM tables",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "16.3.2.5 Oil and vinegar",
+   "16.3.3.2 Critical bilinear relations"
+  ],
+  "claim": "For fixed z, S3 is affine in (s,p); enumerating s in V with precomputed half-trace and 1/s^2 tables uses <=0.6 field multiplications and no inversion per candidate vs >=4, returning the identical relation set.",
+  "prediction": "Identical multiset; 0.5+-0.1 mults per candidate; 3-6x faster at n=45,k=15, <2x once tables exceed L2.",
+  "cheapest_test": "n=33 (m=2,k=16) and n=45 (m=3,k=15): count mults and time both loops over 1000 targets; compare relation sets.",
+  "falsifier": "Relation sets differ, gain <1.5x at k<=18, or table traffic erases the saving.",
+  "lean_target": "State h_bij linking Dec to a lifted (s,p) witness; prove lifted.filter Dec equals naive.filter Dec up to swap and Cost.relations lifted <= naive.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H025",
+  "source_page": 3,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Optimal normal basis coordinates to minimise monomials of Weil-restricted S3",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "16.3.1.1 Bipolar construction",
+   "16.3.1.3 Isomorphism of polynomials"
+  ],
+  "claim": "Choosing S,T as consecutive ONB elements gives >=10x fewer monomials and >=3x sparser Macaulay matrices than a random basis pair at equal degree of regularity, lowering F4 time.",
+  "prediction": "Monomial ratio about n/2 (10-30x at n 30-60); F4 time 2-5x; dreg unchanged.",
+  "cheapest_test": "n=29 (type II) and n=28 (type I): k=9 subspace S3 in random vs ONB basis; count ANF monomials; run F4 with fixed hybrid guesses.",
+  "falsifier": "Monomial ratio <2 after restriction to V, or F4 time not improved despite density.",
+  "lean_target": "Prove invertible linear substitution gives a solution-set bijection (smoothCount equal), so only a density hypothesis monomials sys' <= monomials sys/c changes cost.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H026",
+  "source_page": 4,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Gray-code Artin-Schreier enumeration over the hyperplane Tr(s)=Tr(b/r^2)",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "15.1.2.4 Trace codes",
+   "15.1.2.1 Standard array decoding",
+   "15.1.2.3 Reed-Muller codes"
+  ],
+  "claim": "With s=x1+x2, w^2+rw+r^2s^2+b=0 is solvable iff Tr(s)=Tr(b/r^2); Gray-code walk over V cap hyperplane finds all m=2 decompositions with >=5x fewer multiplications per relation than hash-lookup of x(R-P), same relation set.",
+  "prediction": "Multiplication ratio 8-12x, wall-clock 3-6x (1/s^2 table memory-bound).",
+  "cheapest_test": "n=31,l=15, 10^4 targets: count multiplications and cache-missing reads in both; check set equality; repeat n=41,l=20.",
+  "falsifier": "Relation sets differ, multiplication ratio <2, or wall-clock ratio <1.",
+  "lean_target": "Prove S_3=0 iff w^2+rw+r^2s^2+b=0 as a char-2 ring identity, and decide the pair construction for n=5,7.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H027",
+  "source_page": 4,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Rank profile of Weil-restricted S3 components as F4 degree predictor (invariant vs random V)",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "15.1.2.3 Reed-Muller codes",
+   "15.1.2.4 Trace codes",
+   "15.1.3 Cyclic codes"
+  ],
+  "claim": "For m=2, n=23..31, l=n/2, Frobenius-invariant V gives F4 solving degree >=1 below random V of equal dimension, predicted by the dimension of the low-rank component subspace.",
+  "prediction": "Degree drops 4->3 in >=60% at n=31,l=15; low-rank dimension >=3 higher; time 1.5-3x lower.",
+  "cheapest_test": "n=31 and n=21: 50 targets, rank profile of n component forms, F4 (msolve/M4GB) degree and time; invariant V vs 20 random V.",
+  "falsifier": "Paired bootstrap CI of degree difference contains 0, or Spearman(low-rank dim, degree) <0.4.",
+  "lean_target": "Define rank over Bool by elimination; prove rank is basis-change invariant and decide rank profiles at n=7.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H028",
+  "source_page": 6,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Determinantal elliptic-normal-curve system keeping y",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "14.4.5 k-Arcs",
+   "14.4.1 Projective and affine spaces"
+  ],
+  "claim": "The det[phi_j(P_i)]=0 system on |kO| keeping y, with Weil-restricted x only, has lower F4/F5 degree of regularity and solve time than S_{m+1} at equal V for m=3,4.",
+  "prediction": "dreg lower by >=1 at m=3; time ratio 0.3-0.8 for n<=25, vanishing at n>=40.",
+  "cheapest_test": "E over GF(2^21), dim V=7, m=3: build both systems for 200 targets, run same F4, record dreg, matrix size, time, matching projected solutions.",
+  "falsifier": "dreg not lower, median time ratio >=1, or solution sets differ.",
+  "lean_target": "State hdet (sum of logs zero iff detVanishes); prove variable/equation balance m*(n/m+n)=(m+1)*n when m divides n.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H029",
+  "source_page": 7,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Rank-count law as null model for S3 pair matrices",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "13.2.1 Matrices of specified rank",
+   "13.3.5 Orthogonal groups, characteristic two"
+  ],
+  "claim": "S3 is F2-affine in x1 for fixed (x2,x3), so solution sets are cosets of a kernel; some V (invariant, trace-orthogonal) have rank-deficient M(x2,x3) at >=2x the uniform-matrix rate, raising relations per pair.",
+  "prediction": "Random V within 5% of 2^-(n-m+1); best of 200 structured V gives 1.5-4x excess.",
+  "cheapest_test": "n=19,m=8 and n=23,m=9: 100 subspaces, all 2^16 pairs, bit-packed rank, histogram kernel dimension vs closed-form rank-count law.",
+  "falsifier": "All structured V within 10% of null (bootstrap CI contains 1).",
+  "lean_target": "Prove the x1-solution set is empty or a coset of a linear-map kernel of size 2^dim, via a kernel-cardinality lemma over Bool vectors.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H030",
+  "source_page": 7,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Fill-triggered M4RI/PLE backend for Macaulay matrices (matched-degree test)",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "13.4.1.1 Tiny finite fields",
+   "13.4.2.2 PLE decomposition"
+  ],
+  "claim": "Four-Russians PLE is already landed and positive; the open part is a fill trigger (>15% after 30% pivots) on binary Semaev Macaulay matrices n=19..29, giving >=2x fewer bit ops than sparse F4.",
+  "prediction": "2-5x for >=20k x 20k, <1x below 2k x 2k; decomposition total -20-40% at n=29.",
+  "cheapest_test": "Dump 10 Macaulay matrices at 5k..40k columns, run both backends on the same host, compare time and word-XORs, confirm equal rank.",
+  "falsifier": "Speedup <1.2x at 20k x 20k, or fill stays <5%.",
+  "lean_target": "Prove m4ri op count <= schoolbook count when 2^k*k <= r*c for fixed r,c,pivots, with rank equality as hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H031",
+  "source_page": 8,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Halving-trace character appended as an explicit linear equation in the solver",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "12.2.6 Torsion subgroup",
+   "12.2.5 Twists"
+  ],
+  "claim": "Adding psi(P)=Tr(x_P)+Tr(a) sum constraint up front and eliminating one bit removes no true decomposition and cuts F4/hybrid time at fixed (n,l,m); fall-degree records suggest F4 gets it at degree 2.",
+  "prediction": "Zero decompositions lost; hybrid time ratio 0.5-0.7; dreg change <=1.",
+  "cheapest_test": "n=31,l=10,m=3, 200 targets: solve with/without the equation (msolve or hybrid guess loop); compare solution sets; brute-force check.",
+  "falsifier": "Any decomposition violating the equation, time ratio >0.9, or F4 derives it below d_reg.",
+  "lean_target": "Given hpsi (psi homomorphism), prove a relation implies sum a_i*psi(FB i) = psi R mod 2 by list induction.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H032",
+  "source_page": 8,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Affine shift/scale and Montgomery-model scan to minimise S_m monomials",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "12.3.7 Montgomery curves",
+   "12.3.8 Twisted Edwards",
+   "12.3.5 Short Weierstrass"
+  ],
+  "claim": "x->u(x-c) with c,u in the subfield keeps the base intact; nnz(S4) and F4 matrix size vary >25% over (c,u) and 2-isogenous Montgomery models, and short Weierstrass is not the minimum.",
+  "prediction": "Montgomery S4 >=25% fewer monomials; min over c <=0.75x nnz at c=0; F4 time 0.8-0.9.",
+  "cheapest_test": "Build S4 over F_p (p=1009) in each form, scan (c,u), record nnz; msolve on Weil-restricted n=3,m=3 for 5 extremal (c,u).",
+  "falsifier": "nnz spread <5%, or F4 time ratio >0.95.",
+  "lean_target": "Prove a bijective reparametrization transports solution sets so smoothCount is invariant; nnz minimum over a Fin K search space exists.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H033",
+  "source_page": 9,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Support and Newton-polytope structure of GF(2)-defined Koblitz S_4, S_5",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "11.5.2.2 Polytope indecomposability",
+   "11.5.2.3 Sparse bivariate Hensel lifting"
+  ],
+  "claim": "Over GF(2) in e-coordinates, S_4,S_5 support fills <=30% of the weighted-dense set (Frobenius-closed exponent sets) with Minkowski-indecomposable polytope; density falls with m, giving sparse Macaulay rows.",
+  "prediction": "S_4 density 15-40%; S_5 5-25%; polytope indecomposable at m=3,4,5.",
+  "cheapest_test": "Compute S_3 by hand, S_4,S_5 by resultant over GF(2); count monomials vs weighted-dense; F4 sparse vs dense row storage on S_4 toys.",
+  "falsifier": "S_5 density >=60%, or a nontrivial factorization of some S_m.",
+  "lean_target": "Define polynomials as lists of (exponent, Bool) with Frobenius-closed support; decide monomial counts of S_3, S_4 and polytope indecomposability for m=3,4.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H034",
+  "source_page": 9,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Linearized subspace-polynomial test L_V mod N for root membership",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "11.3.3 Rabin irreducibility test",
+   "11.4 Univariate factorization"
+  ],
+  "claim": "For degree d<=16 completion polynomial N, L_V mod N = 0 decides all roots in V with about k Frobenius powers, >=2x fewer multiplications than distinct-degree plus equal-degree root finding, identical decisions.",
+  "prediction": "n=48,k=16,d=8: multiplication ratio 2.5-4.",
+  "cheapest_test": "GF(2^n), n=24..48, 10^5 random N of degree 4-16 with 1% planted V-roots; compare decisions and counted multiplications.",
+  "falsifier": "Any differing decision, or counted multiplications not lower by 1.5x.",
+  "lean_target": "Prove N | L_V implies every root of N is a factor-base element by list induction over the product of linear factors.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H035",
+  "source_page": 10,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Canonical sign bit Tr(y/x) resolving x-only Semaev solutions",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "11.1.9.2 Half-trace",
+   "11.1.6.2 Squaring in characteristic two"
+  ],
+  "claim": "For odd n, s(P)=Tr(y/x) is a negation-sign bit and sum s(P_i) equals a closed form in (x1,x2,x3) (one sqrt, trace, inversion), selecting the valid sign class without 2^(m-1) trial additions.",
+  "prediction": "Closed form matches brute force exactly; sign-resolution ops fall to about one inversion plus one half-trace; total change <5%.",
+  "cheapest_test": "5 toy curves, n in {11,...,19}: all zero-sum triples; compare sum Tr(y_i/x_i) with closed form; time vs brute-force addition for m=3,4.",
+  "falsifier": "Any triple disagreeing with the true sign class, or sign resolution <2% of decomposition time.",
+  "lean_target": "Prove s(-P)=s(P)+1 from Tr additivity and Tr 1=1 (n odd), so s is a section of the negation quotient.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H036",
+  "source_page": 10,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Extraneous diagonal factor of S_4(x,x,y,z)",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "10.5.3 Degree growth"
+  ],
+  "claim": "S_4(x,x,X3,X4) contains an extraneous square factor from the degenerate P+P=O branch; its squarefree part has lower degree and removing it lowers F4 dreg by >=1 for some (m,l).",
+  "prediction": "Squarefree degree about 25% lower; F4 time -20-50% on diagonal subsystem; no effect off-diagonal.",
+  "cheapest_test": "Singular over GF(2^k), k=7..13: build S_3,S_4, substitute x1=x2, factor; F4 on diagonal Weil-restricted systems with/without the factor.",
+  "falsifier": "Substituted polynomial squarefree of full degree, or time and dreg unchanged within A/A.",
+  "lean_target": "State diagonalFactor | S_4(x,x,y,z) as hypothesis and prove the conditional degree reduction; decide per-variable degree 2 of S_3.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H037",
+  "source_page": 10,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Sparse relative defining polynomial for Weil restriction on composite n",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "11.1.3.2 Modular reduction",
+   "11.1.1.2 Extension field generation"
+  ],
+  "claim": "On composite n=l*m (55,57,91,93,95), a sparse relative defining polynomial lowers F4 time by a constant factor while dreg stays identical to a dense choice.",
+  "prediction": "dreg identical; time ratio dense/sparse 1.2-2x at n=57,l=19,m=3; no exponent change.",
+  "cheapest_test": "n=55 and n=57: restricted S_3 with 5 random irreducibles and the best sparse one; record monomials, dreg, F4 time, randomised order, A/A.",
+  "falsifier": "Runtime ratio within A/A noise, or dreg differing across choices.",
+  "lean_target": "Prove dreg invariance under invertible linear substitution given a degree-invariance hypothesis; cost record unchanged in exponent.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H038",
+  "source_page": 11,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Dembowski-Ostrom rank spectrum of the fixed-s S_3 system (MinRank screen)",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "9.5.5 Planar DO polynomials",
+   "10.1.4.2 Nonlinearity"
+  ],
+  "claim": "With x2=x1+s, S_3 is a DO quadratic map; for structured V (subfield-adjacent, Frobenius-stable) the min component rank is >=2 below the random-map null, giving cheaper per-s rank-aware solves than generic F4 hybrid. Open lead, unrun.",
+  "prediction": "n=21,d=7: random V matches null (KS p>0.05); structured V min rank lower by >=2 in >=30% of cases.",
+  "cheapest_test": "n=21,d=7: all 2^21 mu, 14x14 bilinear form ranks; histogram for random V, structured V, 200 random quadratic maps.",
+  "falsifier": "No V family differs from null at 5%, or F4 dreg unchanged when low-rank components are added.",
+  "lean_target": "Prove the expansion S3 x1 (x1+s) x3 = x1^4+(s^2+x3)x1^2+s x3 x1+s^2 x3^2+beta in char 2 and rank <=2d.",
+  "prior_art_status": "tried-open"
+ },
+ {
+  "id": "H039",
+  "source_page": 12,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Heavy Walsh coefficient of the decomposability indicator as target prefilter",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "9.1.2 Walsh transform",
+   "9.3.2 Bent functions"
+  ],
+  "claim": "The decomposability indicator D of a subspace base has a normalised Walsh coefficient several times the random null near V-perp-related u; targets selected by that parity decompose more often. Trace and learned prefilters were null; this tests the full spectrum.",
+  "prediction": "Max coefficient >=3x null on >=70% of curves; favoured-class success >=1.2x; else <=1.5x (null).",
+  "cheapest_test": "n=20: exact D on all targets, FWHT; compare to 200 random equal-density sets and the trace-parity positive control.",
+  "falsifier": "Max within 1.5x null on >=70% of curves, or favoured-class gain <1.1x.",
+  "lean_target": "Prove Parseval sum_u walsh^2 = N*|D| under a character-orthogonality hypothesis, giving a floor on max |walsh|.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H040",
+  "source_page": 12,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Low-degree annihilators of the decomposability indicator",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "9.1.6.3 Optimal algebraic immunity"
+  ],
+  "claim": "For subspace or invariant V at toy scale, algebraic immunity of D is >=2 below ceil(n/2), and the annihilator test rejects a constant fraction of undecomposable targets; degree e may track F4 dreg.",
+  "prediction": "AI(D)<=ceil(n/2)-2 for >=80% of (curve,V); rejects >=20% of undecomposable targets; random sets AI >= ceil(n/2)-1.",
+  "cheapest_test": "Exhaustive D for n=14..18; find AI by F2 linear algebra on monomials of degree <=e; 100 random equal-density sets; compare e with F4 dreg.",
+  "falsifier": "AI within 1 of ceil(n/2) on >=80% of cases, or rejection <5%.",
+  "lean_target": "Prove by counting that if sum_{i<=e} C(n,i) exceeds |supp D| a nonzero degree-<=e annihilator exists, bounding AI for sparse D.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H041",
+  "source_page": 13,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Trace-form isotropic block pairs giving free linear equations",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "7.2.3 Trace forms"
+  ],
+  "claim": "S3 coordinates are Tr(mu s t) bilinear forms; choosing V1 in (mu V2)^perp for a subspace M of mu kills the bilinear part on dim M coordinates, so first-fall degree drops >=2 and F4 time >=4x vs random pairs. MinRank family is open.",
+  "prediction": "n=26,d1=d2=13: random dim M about 0; isotropic pairs 4-8; F4 ratio about 5x (2x-30x).",
+  "cheapest_test": "n=26: random and isotropic V1,V2; rank of 26 Gram matrices; msolve/F4 on 30 x_R each with matched solution counts.",
+  "falsifier": "dim M no larger than random, or F4 ratio <1.5x.",
+  "lean_target": "Prove k independent affine-linear equations reduce the 2^(unknowns) enumeration bound by 2^k (Nat.pow_sub) under a rank hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H042",
+  "source_page": 14,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Exact character-sum yield ranking of cyclic-code subspaces",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "6.2.2 Additive character sums",
+   "6.2.4 Generic estimates",
+   "6.3.3.3 Dual BCH distance"
+  ],
+  "claim": "Frobenius-invariant subspaces of equal dimension m about n/3 on one Koblitz curve have yield N(V) differing by >=3 sigma_binomial; top decile is >=1.2x median and the ranking transfers between a=0 and a=1 curves. Coset indicators were random-level.",
+  "prediction": "n=35: best/median 1.15-1.6; Spearman across curves >0.5.",
+  "cheapest_test": "n=35 (or 21,45): all divisors g with dim 10-13; exact N(V) on 3 Koblitz toys; ranked table with binomial intervals; A/A split.",
+  "falsifier": "All N(V)/E within 2 sigma, or cross-curve Spearman <0.2.",
+  "lean_target": "Prove orthogonality of xor-parity characters and the indicator expansion of V; state Weil bound as a Cost hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H043",
+  "source_page": 14,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Sparse Gauss-period normal basis for the restricted Semaev system",
+  "ic_phase": "decomposition",
+  "handbook_sections": [
+   "5.3.2 Gauss periods",
+   "5.3.1 Optimal normal bases"
+  ],
+  "claim": "In a type-II ONB the multiplication tensor has about 2d-1 nonzeros, so restricted S3 has <=0.5x monomials and F4 time falls, with dreg unchanged; G3 sparse-ONB hypothesis is open and unmeasured.",
+  "prediction": "Monomial ratio 0.3-0.6 at d=5..7,q=2^5; F4 time ratio 0.4-0.9.",
+  "cheapest_test": "d=5,q=2^5 (n=25): 3d-variable S3 in polynomial vs ONB basis, same F4 and seeds, interleaved, 20 repeats.",
+  "falsifier": "Monomial ratio >0.8 or F4 time ratio >1.0 at d=5 and d=7.",
+  "lean_target": "Define MulTable complexity as a count of true entries; decide ONB type-II complexity 2d-1 at d=5 and prove product coordinates have that many terms.",
+  "prior_art_status": "tried-open"
+ },
+ {
+  "id": "H044",
+  "source_page": 2,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Order-6 automorphism-orbit quotient for j=0 curves, q=1 mod 3",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "16.6.5 Endomorphisms",
+   "16.6.4 Restriction of scalars"
+  ],
+  "claim": "For y^2=x^3+b, S_m is weighted-homogeneous so F_q-subspace bases are closed under x->wx and negation; quotienting by order 6 needs B/6 relations vs B/2, cutting relations and LA size 3x. Matches unrun DGM-01 ablation.",
+  "prediction": "q=97,n=3: relations ratio (negation-only)/(order-6) = 3.0+-10%; dreg not increased.",
+  "cheapest_test": "Existing Diem-style IC on a j=0 toy twice (negation-only vs order-6 reps), same V; compare relations to full rank.",
+  "falsifier": "Ratio <2.5, or lambda-twisted signs make logs inconsistent mod l.",
+  "lean_target": "Given act with log(act j g)=lam^j*log g, prove relations_needed with B/6 <= with B/2 (Nat.div_le_div_left) and twisted-row consistency.",
+  "prior_art_status": "tried-open"
+ },
+ {
+  "id": "H045",
+  "source_page": 4,
+  "source_idx": 0,
+  "merged_from": [
+   "P1-5",
+   "P3-7"
+  ],
+  "title": "Stop collection at orientability threshold; target-only left-kernel extraction",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "15.3 LDPC and Gallager codes",
+   "15.5.1 Tornado codes",
+   "17.3.8 Coding over networks",
+   "15.5.2 LT and fountain codes"
+  ],
+  "claim": "t=log_P Q is determined at the first left-kernel vector y of the factor-base part with y.b nonzero, at N/B about 0.918 (m=3), 0.5 (m=2), below B+1; online echelon stopping at target-determined (N_det vs N_full) is the same rule. Solver contract exists, N_det unmeasured.",
+  "prediction": "N_dep/B = 0.92+-0.03 (m=3), about 0.52 (m=2); about 8% saving for m=3, about 2x for m=2.",
+  "cheapest_test": "Koblitz n=23..29, m=3, Frobenius-orbit columns: prefix ranks mod ell on real relations; first N with rank<N and y.b!=0; check recovered t; 20 seeds.",
+  "falsifier": "Median N_dep/B outside [0.88,0.96], wrong t, or left-kernel solve costs more than relations saved.",
+  "lean_target": "Prove t = -(y.a)(y.b)^(-1) mod n from a dependency y with unit y.b by Int.emod algebra, and monotonicity of Determined under appended relations.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H046",
+  "source_page": 5,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Cayley-graph walk candidate generation with lambda_2-selected generators",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "14.10.3 Expander graphs",
+   "14.10.4 Cayley graphs"
+  ],
+  "claim": "Walking R_{i+1}=R_i+s_j on Cay(Z_N,S) with r=8-16 generators yields relations per candidate equal to iid (a,b) within 3% at >=5x fewer group-op equivalents per relation for m=2; no gain if the baseline already walks.",
+  "prediction": "Yield ratio 0.97-1.03; lag-1 autocorrelation <0.01; duplicates <0.1% over 10^7 steps; ops 5-9x fewer.",
+  "cheapest_test": "Prime-field curve of order about 2^24: iid control, walks r=4,8,16 with random S, r=16 with lambda_2-minimised S; count relations, rank at R=B+20, ops.",
+  "falsifier": "Yield ratio <0.9, rank deficient in >1% of runs, or autocorrelation >0.05 at r>=8.",
+  "lean_target": "Prove by induction that log (walk i).1 = a*1 + b*logQ mod N so every emitted relation is sound, and the return-probability character-sum formula.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H047",
+  "source_page": 5,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Koblitz tau-adic Gray-code enumeration with a_0=1 orbit-duplicate filter",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "14.8.5 Digital (t,s)-sequences",
+   "14.8.6 Gray-code enumeration"
+  ],
+  "claim": "Gray-code enumeration of tau-adic strings with a_0=1 costs one mixed addition per candidate, orbit-duplicate rate 0 (50% unfiltered), and yield equal to iid within 3%.",
+  "prediction": "Duplicates 50+-1% unfiltered at k=20, 0% filtered; yield ratio 0.97-1.03; about 1 addition vs 2n/3 per candidate.",
+  "cheapest_test": "Koblitz a=1, n=17,19: enumerate 2^20 strings both ways; count distinct orbits and m=2 relations over a stable base; compare iid tau-adic digits.",
+  "falsifier": "Duplicates >1% after filter, yield ratio outside [0.9,1.1], or rank growth lower by >1%.",
+  "lean_target": "Prove gray is injective on Fin(2^k) with one-bit steps (decide k<=8, induction) and the incremental log update equals the closed form.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H048",
+  "source_page": 6,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Walsh-bias audit of the decomposable-target indicator for linear prefilters",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "14.2.3 Directions and Redei polynomials",
+   "14.2.4 Sets determining few directions"
+  ],
+  "claim": "For random V the max normalised Walsh coefficient of D_V stays within random-set fluctuation; bias beyond that exists only for inversion- or Frobenius-closed V (e.g. alpha=1). Trace and weight prefilters were null.",
+  "prediction": "Random V max |W|/|D| about 0.01-0.02 at n=22; inversion-closed V 0.02-0.1; yield gain <=1.02-1.1x, likely null.",
+  "cheapest_test": "n=20-22: FFT of D_V for 20 random, 20 invariant, 20 inversion-closed V vs random sets of equal density; planted-correlation positive control.",
+  "falsifier": "No coefficient above the 4-sigma null band for any family, or detector fails the planted control.",
+  "lean_target": "Prove Parseval for the integer Walsh transform on toy n by finite-sum identity, giving the floor max|walsh|>=sqrt|D|.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H049",
+  "source_page": 7,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Streaming PLE rank certificate to stop at rank B-1 versus fixed excess",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "13.4.2.2 PLE decomposition",
+   "13.4.4.2 Rank, determinant, characteristic polynomial"
+  ],
+  "claim": "Certifying rank B-1 online stops collection 4-12% below a fixed 1.05-1.1 B excess and always solves; the incremental interface exists but the saving is unmeasured.",
+  "prediction": "Median saving about 7%; relations phase falls the same fraction.",
+  "cheapest_test": "Replay stored toy streams; rank mod ell per 1% increment; first count with rank=B-1 vs 1.1B; 30 seeds per curve, paired; charge probe cost at 0/0.1/1 GAE.",
+  "falsifier": "Median saving <2%, or probe cost exceeds saved relation cost.",
+  "lean_target": "Prove stop time k* = least k with rankAt k >= B-1 satisfies k* <= fixed-rule time by monotonicity, with probe cost as a separate field.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H050",
+  "source_page": 9,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Fano factor of solution counts: Frobenius clumping of yield per call",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "11.2.3.2 Factorization patterns",
+   "11.2.3.5 Permutations and integers"
+  ],
+  "claim": "On invariant V, solutions per target are compound-Poisson with Fano factor about n, so independent relations per call are orbits, not solutions; yield accounting must divide by orbit multiplicity.",
+  "prediction": "n=23,m=3: Fano 15-23 invariant, 0.9-1.2 non-invariant; mean orbits per call within 20% of non-invariant mean.",
+  "cheapest_test": "S_3 for 2000 targets with normal-basis-span V vs random V of equal dimension; record solutions, orbits, variance/mean.",
+  "falsifier": "Invariant-V Fano below 3, or non-invariant Fano above 2.",
+  "lean_target": "Prove solutions <= k*orbits and orbits >= solutions/k by induction on the list of orbit sizes.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H051",
+  "source_page": 10,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Low-discrepancy lattice sweeps over (a,b) at high saturation",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "10.4.5.5 Discrepancy",
+   "10.4.5.2 Lattice test"
+  ],
+  "claim": "A Korobov rank-1 lattice over (a,b) has fewer duplicate relations and faster rank growth than iid when relations needed are >=10% of the effective space; no difference below 1% saturation.",
+  "prediction": "At 20% saturation duplicates 10%->under 3%, relations to full rank -5-8%; at 1% difference <0.5%.",
+  "cheapest_test": "Toy curve of order about 2^16, B=64: iid vs Korobov vs Sobol, interleaved seeds, A/A, 100 repetitions, paired bootstrap.",
+  "falsifier": "Relations-to-full-rank intervals overlap at 20% saturation, or lattice arm has lower rank.",
+  "lean_target": "Prove an injective (a,b) sweep has zero duplicates given deterministic decomposition; rank gain stays empirical.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H052",
+  "source_page": 11,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Multiplier-closed table via commuting x-only maps (Dickson analogue)",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "9.6.1 Dickson polynomials basics",
+   "9.6.2.2 Maps Phi_a, Psi_a"
+  ],
+  "claim": "A table {x(kF_j): k in K} built by composing R_2,R_3 raises relations per tuple by about |K| without enlarging the matrix; cost follows K*B+N/K, optimum 2*sqrt(NB) (BSGS-IC hybrid), still above rho.",
+  "prediction": "GF(2^20),B=2^7,|K|=16: relations per 10^6 tuples x16+-3; rank >= B-2; cost 2^14.5 vs 2^20.",
+  "cheapest_test": "GF(2^20), m=3, B=128: K=1,4,16,64; relations per tuple, table cost, rank; compare against a plain base of size K*B at equal budget.",
+  "falsifier": "Yield gain <|K|/2, rank deficiency >3, or total cost at optimal K not >=4x below K=1.",
+  "lean_target": "Prove relation_scale (relation over table entries gives a relation over F with coefficients sum k*c) and (K*B+N/K)^2 >= 4NB in Nat.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H053",
+  "source_page": 13,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Consecutive-scalar sampling with pseudorandomness (C_2) guard",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "6.3.5.2 Measures of pseudorandomness",
+   "6.3.5 Incomplete character sums"
+  ],
+  "claim": "Scanning k,k+1,... with R_{k+1}=R_k+P gives hit rate [x(kP) in V] within 3% of independent scalars with no excess correlation, at one addition per candidate instead of a scalar multiplication.",
+  "prediction": "Hit-rate ratio 1.00+-0.03; lag-1 correlation within 4/sqrt(hits); candidate cost drop about 20x, end-to-end 5-10x.",
+  "cheapest_test": "2^24 consecutive points vs 2^24 independent; hit counts, autocorrelation to lag 16, Mauduit-Sarkozy C_2 for windows 2^6..2^12.",
+  "falsifier": "Hit-rate ratio outside 0.95-1.05, lag z-score >4, or pair-collision rate differing >5%.",
+  "lean_target": "Prove Cost.relations_seq <= relations_indep when addCost <= scalarMulCost under equal-hit-rate hypothesis (Nat.mul_le_mul).",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H054",
+  "source_page": 14,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Cubic/sextic Jacobi-sum j=0 panels with mu_3/mu_6 factor-base quotient",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "6.1.2 Jacobi and Gauss sums of small orders"
+  ],
+  "claim": "On j=0 toys, quotienting by mu_3 on top of negation (log lifted by lambda^2+lambda+1=0) cuts relations, search cost and LA size 3x; Jacobi sums choose prime-order test curves. Overlaps order-6 idea; this adds lambda-lifted logs.",
+  "prediction": "Relation time to full rank falls 2.5-3.2x vs negation-only at p 2^28..2^36; rank deficiency <2; logs match baseline 100/100.",
+  "cheapest_test": "p about 2^30, p=1 mod 3, prime-order b via Jacobi sum: baseline orbit key vs mu_3 key with lambda in the matrix; 10 seeds interleaved; validate vs rho.",
+  "falsifier": "Relations fall <2x, any wrong log, or baseline already uses mu_3.",
+  "lean_target": "Given log(act 1 P)=lam*log P with lam^3=1, prove column count B/3 and that relation correctness follows by rewriting through lam.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H055",
+  "source_page": 14,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Gray-code incremental products over a subspace factor base",
+  "ic_phase": "relation-collection",
+  "handbook_sections": [
+   "5.3.5 Fast arithmetic using normal bases"
+  ],
+  "claim": "Enumerating x1 in V in Gray order updates p=x1*x2 and s=x1+x2 by XOR, cutting inner-loop multiplications from about 5 to 4 per pair and time 10-20% at m>=16; same relation list.",
+  "prediction": "Counted mults 4.0 vs 5.0; throughput 1.1-1.25x independent of n in [53,131].",
+  "cheapest_test": "n=53,m=16: pair loop with/without Gray enumeration; instrumented field type; 20 interleaved repeats; identical relation lists.",
+  "falsifier": "Mult reduction <10%, differing relation lists, or wall-clock gain <1.05x.",
+  "lean_target": "Prove f(x xor b)=f x xor f b for linear f so the incremental update equals the direct product, and Gray visits V once (induction on m).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H056",
+  "source_page": 1,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Overlap-bounded degree-balanced relation selection before filtering",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "17.3.5 Sequences with small Hamming correlation"
+  ],
+  "claim": "At fixed B, RS-profile greedy selection (balanced column coverage, capped pairwise overlap) needs >=5% fewer relations for full column rank than uniform subsampling of the same pool, with no heavier matrix.",
+  "prediction": "3-12% fewer (central 6%); gain shrinks with pool size; zero when pool equals needed count.",
+  "cheapest_test": "n=23, subspace FB dim 11 (B about 2000), pool 6000 weight-3 relations, 200 seeds: smallest N for rank B-1 mod 31-bit prime, uniform vs greedy; A/A shuffle.",
+  "falsifier": "Paired mean reduction <2%, or CI includes 0 while A/A centres at 0.",
+  "lean_target": "Prove a coverage-0 column forces rank <= B-1 via explicit kernel vector e_c, and RS design covers each symbol q^(k-1) times with overlap <=k-1 for small q by decide.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H057",
+  "source_page": 2,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Density-evolution threshold for filtering overhead (non-uniform degrees)",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "16.3.3.12 Sparse linear solving",
+   "coding-theory cross-over"
+  ],
+  "claim": "Core size after peeling matches the density-evolution fixed point within 5% using measured column degrees (2-core at c*=0.818 for m=3); the cost-optimal overhead c is predictable without running LA and differs from the current default.",
+  "prediction": "m=3 uniform: core fraction 0.45-0.60 at c=1.02; within 3% at c=1.2; measured-degree prediction within 5%.",
+  "cheapest_test": "Archived toy sets n=23..29: sweep c 0.8-1.3 by subsampling, measure core after peeling, compare with recursion using measured degrees.",
+  "falsifier": "Core deviates >15% from prediction, or filtering already within 2% of optimal c.",
+  "lean_target": "Prove peel preserves the solution set on remaining columns (singleton elimination) and terminates (length decreases, Nat.lt_wfRel).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H058",
+  "source_page": 3,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Closed-form 2-core as a hidden-structure diagnostic",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "15.5.2 LT and fountain codes",
+   "15.5.3 Raptor codes"
+  ],
+  "claim": "On real m=3 matrices post-peeling core fraction equals density evolution (0.72 at c=1.0, 0.85 at c=1.2) within 3 points; deficits measure engineerable structure (orbits, symmetrisation), excess measures hidden bias.",
+  "prediction": "Core 0.72+-0.03 at c=1.0, 0.85+-0.03 at c=1.2; orbit-merged columns >=5 points smaller.",
+  "cheapest_test": "n=31 Koblitz, m=3, B about 2000: run singleton filter and compare with formula; 20 seeds.",
+  "falsifier": "Core within +-1 point (nothing to engineer), or >5 points off both ways without cause.",
+  "lean_target": "State h_core : coreCols <= coreFrac*B as hypothesis; prove peeling terminates, preserves kernel solvability, and linearAlgebra cost after <= before.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H059",
+  "source_page": 4,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Closed-form peeling core with max-degree inactivation ordering",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "15.5 Raptor codes",
+   "15.5.1 Tornado codes",
+   "15.3 LDPC density evolution"
+  ],
+  "claim": "For m=3 the core is 0.635B at N=0.918B and 0.723B at N=B; peel plus Raptor inactivation then Wiedemann on the core costs >=1.5x fewer modmuls than on the unfiltered matrix. Risk: relabels structured elimination.",
+  "prediction": "Core within 3% (random), 8% (real); core Wiedemann 0.4-0.7 of unfiltered count.",
+  "cheapest_test": "Peeler on saved toy relations (n about 27, B 2^12..2^14): core after peeling and inactivation; block Wiedemann modmuls vs structured GE at equal weight.",
+  "falsifier": "Core off by >8% on real data, or core-only modmuls not below 0.9 of structured-GE + Wiedemann.",
+  "lean_target": "Prove peel-step invariance (solution of reduced system extends uniquely by back-substitution for unit coefficient) and linearAlgebra <= d*d*w.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H060",
+  "source_page": 6,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Inactivation-decoding order replacing greedy singleton/clique removal",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "14.4.6 k-Arcs and linear MDS codes"
+  ],
+  "claim": "Inactivating the max-residual-weight column when peeling stalls leaves a dense core >=10% smaller than singleton-plus-clique filtering at oversampling 1.1, lowering Lanczos cost; Markowitz pivoting is the nearest prior art.",
+  "prediction": "Core -15-40% at row weight 4-6; dense-phase cost -30-60%; whole-solve effect small.",
+  "cheapest_test": "Toy matrices n=20-24 orbit-quotiented: singleton-clique vs max-weight inactivation; compare dense core dimension, total ops, rank mod l.",
+  "falsifier": "Core not >=10% smaller, or rank differs after filtering.",
+  "lean_target": "Prove a unit-coefficient single-column peel preserves solution sets (Int.emod) and inactivation is a column permutation leaving solution sets invariant.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H061",
+  "source_page": 8,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Z/4 torsion character from halving to prune sign patterns and reject corrupt rows",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "12.2.6 Torsion and Tate module",
+   "12.2.7 Weil and Tate pairing"
+  ],
+  "claim": "On cofactor-4 curves psi4: E(F_q)->Z/4 (two halvings) is a homomorphism; checking sum eps_i psi4(P_i)=psi4(R) mod 4 prunes about half the sign patterns and rejects corrupt or twist-contaminated rows with probability 3/4 before group ops or LA.",
+  "prediction": "Survivors 0.35-0.6 of 2^m; sign-resolution additions down 1.5-2x; corrupt rows rejected about 0.75.",
+  "cheapest_test": "a=0 Koblitz n=31: homomorphism check on random pairs; 10^5 brute-force m=3 relations, true vs corrupted; a=1 (h=2) control.",
+  "falsifier": "Homomorphism fails, survivors >0.6, corrupt rejection <60%, or psi4 cost exceeds saving.",
+  "lean_target": "Given psi4 hypotheses, prove a valid relation satisfies sum a_i psi4(P_i)=psi4(R) mod 4, and exactly 2^(m-1) sign patterns survive when all psi4(P_i) are odd.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H062",
+  "source_page": 9,
+  "source_idx": 0,
+  "merged_from": [
+   "P9-1"
+  ],
+  "title": "Coupon-collector relation count and orbit-quotient coverage law, with rare-column steering",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "11.6.10 Sparse linear systems",
+   "11.2.3.5 Permutations and integers"
+  ],
+  "claim": "Relations to full rank follow (B/m)(ln B+c), and after orbit quotient (B_orb/m)ln B_orb, so saving is n*lnB/ln(B/n), not n (subfield arm measured closed). Fixing x1 to a rare column may lower total solver calls; the Koblitz arm and steering are open.",
+  "prediction": "n=24-30,m=3: 3-5B relations to full rank; steering 1.3-2x fewer solver calls or cancelled; quotient saving within 15% of n*lnB/ln(B/n).",
+  "cheapest_test": "3-5 curves, n in {22,24,26}: log column sets in arrival order, incremental rank mod group order, fit B/m(lnB+c); folded matrix; steered arm, 20 seeds, count solver calls.",
+  "falsifier": "Full rank at <=1.15B unsteered, steering needs >= unsteered solver calls, or quotient saving equals n within 5%.",
+  "lean_target": "Prove cover needs >=ceil(B/m) relations by pigeonhole on supports and a surjective fold gives the column bound ceil((B/k)/m).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H063",
+  "source_page": 11,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Run-structure canonicalisation of normal-basis necklaces in filtering",
+  "ic_phase": "relation-filtering",
+  "handbook_sections": [
+   "10.2.4 Run property of LFSR sequences",
+   "10.3.2 Autocorrelation of sequences"
+  ],
+  "claim": "The minimal rotation starts at a maximal zero run, so clz/ctz plus 1-2 comparisons canonicalise 131-bit necklaces >=10x faster than naive and 3x faster than Booth, identical outputs. A related arm gave an unresolved 8% instruction saving.",
+  "prediction": "Mean candidates 1.6+-0.4; 15-40x over naive, 3-8x over Booth.",
+  "cheapest_test": "C microbenchmark, 10^7 random 131-bit vectors: naive, Booth, run-based; assert identical outputs; cycles and candidate histogram; real toy x-coordinates.",
+  "falsifier": "Any output differing from naive, mean candidates >4, or speedup over Booth <1.5x.",
+  "lean_target": "Prove the lexicographically minimal rotation begins at a maximal run of zeros (exchange argument), so the run-based algorithm returns canonical v.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H064",
+  "source_page": 1,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Sparse fountain-coded SpMV for block Wiedemann on Spot",
+  "ic_phase": "linear-algebra",
+  "handbook_sections": [
+   "17.3.8 Coding over networks"
+  ],
+  "claim": "Sparse-coded SpMV with redundancy 1.25 keeps expected iteration time <=1.15x no-failure and at preemption q=0.1 beats 2x replication and checkpoint-restart in core-seconds; orchestration saving, not a mathematical speedup.",
+  "prediction": "Flops 1.3-1.6x; break-even q about 0.03-0.08; gain <=1.4x at q=0.1, none at q<0.03.",
+  "cheapest_test": "Simulate B=20000,w=6,k=16 mod 61-bit prime, n=20 workers, q in {0.01,0.03,0.1,0.3}; compare restart, replication, dense RS, sparse fountain; verify decode.",
+  "falsifier": "Coded cost >= min(replication,restart) at q=0.1, or decode failure >1e-3.",
+  "lean_target": "Given hdec (full column rank of any received selection), prove A v is a linear function of received coded results; cost inequality as explicit arithmetic.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H065",
+  "source_page": 1,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Block Wiedemann early stop by confirmed linear-complexity profile",
+  "ic_phase": "linear-algebra",
+  "handbook_sections": [
+   "17.2.4 Period finding",
+   "17.3.1 Sequences"
+  ],
+  "claim": "Online Berlekamp-Massey with a stability window delta stops at about 2L*+delta; on filtered IC matrices L* is >=3% below N/m+N/n, saving >=3% of SpMVs with failure probability <1e-6.",
+  "prediction": "Savings 0-4% (central 1%); null most likely.",
+  "cheapest_test": "B=3000 weight-3 matrix mod 31-bit prime after clique filtering; scalar and block (m=n=4) Wiedemann with online BM; compare iterations over 100 matrices; verify kernel vector.",
+  "falsifier": "Median saving <2%, or an early-stopped run returns a wrong kernel vector.",
+  "lean_target": "Prove LinComp is monotone in t and LinComp <= N under a minpoly-degree hypothesis, so the 2*LinComp+delta rule is sound when verified.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H066",
+  "source_page": 3,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Functional-only Wiedemann reading kernel coordinates from the BM sequence",
+  "ic_phase": "linear-algebra",
+  "handbook_sections": [
+   "16.2.1 LFSR synthesis, linear complexity, Berlekamp-Massey"
+  ],
+  "claim": "Recovering log(Q) via coordinate functionals u=e_i and a normaliser uses 2N+O(1) matvecs instead of 3N, a 33% cut with identical output.",
+  "prediction": "Matvec ratio 0.67+-0.02; log(Q) identical in 100% of 200 runs.",
+  "cheapest_test": "3000x3000 weight-3 matrix mod 40-bit prime from an n=31 curve: standard Wiedemann kernel vs functional variant; matvecs and log(Q).",
+  "falsifier": "Scalar BM fails to give the minimal polynomial in >5% of runs, or ratio >0.8.",
+  "lean_target": "Prove that if c annihilates s_j=u(A^j b) then u(x)=sum formula for the x defined by c, by linearity of abstract u, with 3N-N=2N in Nat.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H067",
+  "source_page": 7,
+  "source_idx": 0,
+  "merged_from": [],
+  "title": "Displacement-rank solve of the un-quotiented Frobenius-twisted relation matrix",
+  "ic_phase": "linear-algebra",
+  "handbook_sections": [
+   "13.4.5.2 Structured matrices and displacement rank",
+   "13.2.6 Hankel and Toeplitz"
+  ],
+  "claim": "After full orbit expansion, M-ZMD has constant generator rank (<=8) independent of B, enabling O(alpha^2 B) Toeplitz-like solves; relation supports chosen by smoothness may carry no shift structure.",
+  "prediction": "Median displacement rank <=8 for n in {17,19,23}, B 2^8..2^11; random control >=0.45B; solve cost down >=10x at B=2^11.",
+  "cheapest_test": "Un-quotient toy Koblitz runs, reduce mod ell, compute rank(M-ZMD) over F_ell; shuffled-support control; seconds for B<=2048.",
+  "falsifier": "Rank grows linearly (slope >=0.2) and matches the shuffled control.",
+  "lean_target": "Under twist-closure hypothesis, prove rank(M-ZMD) <= number of orbit boundaries by a Fin B counting argument.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H068",
+  "source_page": 7,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Waring-type coverage threshold for descent steps",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "13.1.6 The Waring problem over finite fields"
+  ],
+  "claim": "Representing a target as a sum of k cubes from {v^3: v in V} is complete once km>=n+2log2(n)+O(1); below it a fraction exp(-2^(km-n)) is uncovered, so descent retries are 1+exp(-mu), not geometric.",
+  "prediction": "n=17,19,23,m=n/3+2: uncovered fraction matches exp(-mu) within 20% for km-n in [-2,3] and is 0 at about 5.",
+  "cheapest_test": "n=17,m=8,k=3: N_3(t) for all t by Walsh-Hadamard convolution; compare to Poisson(mu); smallest km-n with zero uncovered.",
+  "falsifier": "Variance >1.5x Poisson, or full coverage needs km-n>10.",
+  "lean_target": "Prove by pigeonhole on Fin n functions that 2^(km)<2^n implies cover cannot hold for all t, so km>=n is necessary.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H069",
+  "source_page": 9,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Riemann-Roch counting threshold on descent level size",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "12.1.2 Divisors and Riemann-Roch theorem"
+  ],
+  "claim": "An m-term descent step succeeds with probability 1-exp(-C(|V'|,m-1)/q), sharp at |V'|^(m-1)=(m-1)!q; for m=3 the first level needs about sqrt(2q) (rho scale), so descent is cheap only for m>=4. Yield law measured, sharp threshold not.",
+  "prediction": "n=24,m=3: 50% crossing near d=12-13; m=4 near d=8-9.",
+  "cheapest_test": "n=24 toy: all pairs/triples from V' of dim 8..14 into a hash of x-sums; fraction of 10^4 random targets decomposed vs Poisson curve.",
+  "falsifier": "Measured threshold dimension differs from the formula by >=1.5 at m=3 or m=4.",
+  "lean_target": "Prove by Fintype-free pigeonhole that covering all targets needs C(|V'|,m-1)>=n.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H070",
+  "source_page": 11,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Kloosterman/Weil yield bound for codimension-c descent targets",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "10.1.4.4 Gauss sums",
+   "10.1.3 DFT"
+  ],
+  "claim": "Descent yield from V1 to V' is |V1|^2*2^(-c)(1+eps) with |eps|<=C*2^c*sqrt(q)/|V1|^2, C<=4; at |V1|=q^(1/3) bias decays like q^(-1/6), so exploitable bias exists only at toy sizes.",
+  "prediction": "n=19..23,d=6..8,c=1..3: |eps| below the bound; >10% only when the bound exceeds 10%; median |eps|<3% at d>=n/3.",
+  "cheapest_test": "Exhaustive counts of (x1,x2) in V1^2 with x3 in V' for 300 random (V1,V',beta) triples at n=19..23.",
+  "falsifier": "Any |eps| above the C=4 bound, or persistent bias >10% at d>=n/3 for structured V1.",
+  "lean_target": "Prove orthogonality and the indicator expansion of V' as 2^-c times a character sum, giving N as a sum of pair sums; Weil bound as hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H071",
+  "source_page": 12,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Bilinear dreg and time of the 2-point descent system",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "9.1.1.1 Algebraic normal form",
+   "9.2.7 Quadratic APN functions"
+  ],
+  "claim": "With r fixed, S_3 is bilinear in the two bit blocks; F4 dreg <=d+1 is below the generic-quadratic prediction and time per decomposition scales with a smaller base than 2^d enumeration. The bound is published; the measured slope on descent systems is untried.",
+  "prediction": "n=17..29, d=ceil(n/2)+2: dreg <=d+1 and >=1 below semi-regular at n>=21; log2 time slope about 0.35n vs 0.5n.",
+  "cheapest_test": "msolve/F4 on Weil-restricted descent systems for n=17..27 (50 targets); compare with random bilinear, generic quadratic, and enumerate-over-x1 plus F2 algebra.",
+  "falsifier": "dreg matches the semi-regular prediction, or time slope per bit >= enumeration at n>=25.",
+  "lean_target": "Prove that fixing x1 gives an affine system in x2 (linear algebra over Fin 2), so per-x1 cost is O(n d^2) and descent <= 2^d*n*d^2.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H072",
+  "source_page": 12,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Descent chain chosen by per-level valid-point fraction",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "9.1.2 Walsh transform",
+   "9.1.3 Parameters of Boolean functions"
+  ],
+  "claim": "Among nested invariant chains V_0<...<V_k of fixed dimensions, per-level success varies beyond binomial noise; the best chain has >=2x fewer expected trials per full descent than the median. A null on the factor-base twin predicts a null here.",
+  "prediction": "n=23, dims (6,8,10,12,14), m=2: per-level spread >=1.5x; best-of-500 product of trials <=0.5x median; non-invariant <=0.8.",
+  "cheapest_test": "500 random nested invariant chains at n=23; per-level success on 2000 points via exhaustive 2-decomposition; compare with the product of valid fractions.",
+  "falsifier": "Per-level spread within binomial noise, or best/median trials ratio >0.8.",
+  "lean_target": "Define Cost.descent = sum_i N/smoothCount_i; prove componentwise larger smoothCount gives smaller descent cost by Nat arithmetic.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H073",
+  "source_page": 13,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Per-level liftable-bias selection of descent sets",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "7.1.4 Artin-Schreier hypersurfaces",
+   "6.3.4.2 Inversive congruential pseudorandom numbers"
+  ],
+  "claim": "Selecting each descent level's V by best-of-T liftable bias cuts attempts per node by (2*liftFrac)^(-m) and total descent cost by the product over levels, with no linear algebra. Shrinks as 2^(-d/2); expected to fail if the factor-base twin fails.",
+  "prediction": "n=29, levels d=(8,11,14), T=2^8: liftFrac 0.58, 0.55, 0.53; total cost ratio about 2.5x (1.5-3.5x).",
+  "cheapest_test": "n=29: 200 random targets, chosen vs random level sets, m=2 closed-form pair enumeration; mean attempts per level, paired bootstrap.",
+  "falsifier": "Total attempts ratio <1.15, or per-level ratio not within 20% of (2*liftFrac_measured)^m.",
+  "lean_target": "Prove Cost.descent biased <= random by induction on levels using Nat.div_le_div_left, given c_k >= c_k'>0.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H074",
+  "source_page": 14,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Completely normal element for conversion-free subfield-tower descent",
+  "ic_phase": "descent",
+  "handbook_sections": [
+   "5.4.1 Complete normal basis theorem",
+   "5.4.3 Cyclotomic modules and complete generators"
+  ],
+  "claim": "A completely normal beta is normal over every F_{2^d}, d|n, so successive Weil restrictions need zero basis-conversion maps (vs about n^2/64 word ops each) and invariant subspaces nest as kernels ker g_d(sigma). Composite n only; prime n such as 131 excluded.",
+  "prediction": "Conversion cost 0; total descent saving <3% at n=36; yield unchanged.",
+  "cheapest_test": "n=12,36 over F_2: find completely normal beta by checking circulant rank of Tr_{n/d}(beta) at each d | n; count conversions in a three-level descent script vs independent normal elements.",
+  "falsifier": "No completely normal element within 1000 trials at n=36 (bug), or descent time differs >5% from baseline.",
+  "lean_target": "Define IsCompletelyNormal via Bool-Gaussian rank per divisor; decide an explicit beta for n=6 and take existence as a hypothesis.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H075",
+  "source_page": 2,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Hankel rank spectrum of the trace-component pencil and yield overdispersion",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "16.3.3.8 Rank attacks",
+   "16.3.3.9 MinRank"
+  ],
+  "claim": "On interval V the component bilinear forms are Hankel with Daykin rank counts 3*2^(n-2d+2r-1); decomposition counts per target are overdispersed vs Poisson(2^(2d-n)) by the low-rank Walsh spectrum, and low-rank combinations become linear after r branchings.",
+  "prediction": "n=19,d=8: rank-1 count 48, rank-2 count 192; Var/Mean>1 by a computable amount at n=17..21.",
+  "cheapest_test": "n=19,d=8: Hankel rank histogram over all 2^19 delta vs formula; brute-force decomposition counts for all 2^19 targets vs Walsh-sum prediction.",
+  "falsifier": "Histogram deviates from 3*2^(n-2d+2r-1) beyond the 2x kernel factor, or Var/Mean equals 1 within error.",
+  "lean_target": "Prove sum_r count r = 2^(2d-1) and count 0 = 1, and decide Daykin counts for d=2,3.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H076",
+  "source_page": 4,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Batch-target marginal cost: left-kernel growth about 0.75 per extra relation",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "15.5.1 Tornado codes",
+   "15.3 LDPC rank above ML threshold"
+  ],
+  "claim": "Above the orientability threshold left-kernel dimension grows about 0.74 per extra relation, each dependency giving an equation in the unknown target logs; k targets need about c_3 B+2k relations, so extra targets cost about 2 attempts. Must be priced against matched batch rho.",
+  "prediction": "Slope 0.70-0.78 for N/B in [0.92,1.0]; 1.3-2.0 relations per extra target; k=64, B=2000: about 1968 vs 64x1840.",
+  "cheapest_test": "Random 3-uniform hypergraphs B=2000..8000 mod 61-bit prime: left-kernel dimension vs N, then k=1..64 target-carrying rows; repeat on real Koblitz relations with planted Q_j.",
+  "falsifier": "Slope outside [0.55,0.9], >4 relations per target, or real-vs-simulation mismatch >15%.",
+  "lean_target": "Prove that k dependencies with unit determinant D give t as the unique solution of D t = -(y.a), via an adjugate argument at bounded k.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H077",
+  "source_page": 5,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Strength-2 covering array screening of the autolab configuration space",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "14.7.4 Covering arrays"
+  ],
+  "claim": "A 6-run binary (or 9-run ternary) strength-2 covering array plus a pairwise model finds a configuration within 10% of the exhaustive best on >=80% of toy curves using <5% of 128 runs; a process-cost tool for finding measured improvements.",
+  "prediction": "Within 10% on 80-95% of 50 curves; failures on three-way interactions.",
+  "cheapest_test": "Full 2^7 grid on 50 toy curves (n=17..23 binary, 20-bit prime) as ground truth; replay the preregistered 6-row array offline with a pairwise model.",
+  "falsifier": "<60% of curves within 10%, or median regret >25%.",
+  "lean_target": "Prove by decide that arr : Fin 6 -> Fin 7 -> Bool covers every (u,v) pair for every column pair, and additive cost is determined by pairwise tables.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H078",
+  "source_page": 6,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Sidon-defect of Carlitz-torsion and spread-element factor bases",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "14.5.3 Difference families and BIBDs",
+   "14.4.4 Singer cycles",
+   "13.5.5 Carlitz torsion",
+   "14.3.3 Desarguesian spread"
+  ],
+  "claim": "General sumset-coverage and energy were measured null (Sidon base 1.107x only); the untested families are Carlitz/Drinfeld torsion ker(C_a) and spread elements mu*GF(q), predicted to show >3% coverage deficit from structure-induced collisions.",
+  "prediction": "Random and spread V within 1% of Poisson; Carlitz-torsion V 0-5% excess collisions, direction uncertain.",
+  "cheapest_test": "n=20-22, dim-7 subspaces, 50 per family, 5 curves: exhaustive pair-sum x-image size vs Poisson; random-subset negative control; planted AP positive control.",
+  "falsifier": "All families within 1% of Poisson, or the positive control shows no defect.",
+  "lean_target": "Prove coverage V <= B(B+1)/2 with equality iff pair sums are injective, via List.Nodup.",
+  "prior_art_status": "tried-closed"
+ },
+ {
+  "id": "H079",
+  "source_page": 7,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "Delayed-reduction PLE dense core moving the hybrid switch point",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "13.4.6.1 Hybrid sparse-dense methods",
+   "13.4.1.2 Word size prime fields",
+   "13.4.2.2 PLE decomposition"
+  ],
+  "claim": "With 2-3 limb ell, delayed modular reduction in blocked PLE cuts dense per-entry cost near the block size, moving the optimal dense core >=1.5x larger and total LA cost down >=15%.",
+  "prediction": "Core 0.05B->0.09B; LA cost -15-30% at B=2^16..2^20; kernel 3-6x fewer cycles per MAC.",
+  "cheapest_test": "Microbenchmark 3-limb mul-add reduce-each vs delayed (k=8,16) in blocked PLE of 2048x2048; plug constants into the hybrid cost model, recompute argmin core.",
+  "falsifier": "Dense kernel speedup <1.5x, or optimum core moves <1.2x.",
+  "lean_target": "Prove that if per-op constant d'<=d then the argmin core c'>=c under convex-sparse assumptions and hybridCost(c',d')<=hybridCost(c,d).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H080",
+  "source_page": 9,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Hamming-weight degree and mixed-volume predictor for F4 cost",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "11.5.2.1 Ostrowski's theorem",
+   "11.5.2.2 Polytope indecomposability"
+  ],
+  "claim": "Bit-degree popcount of exponents plus BKK mixed volume of Weil-restricted supports predicts the F4 maximum degree within +-1 on >=85% of toy instances vs <=65% for the semi-regular bound.",
+  "prediction": "Weight predictor 85-95% hit rate; semi-regular 50-65% (n=15..24, m=3, k=n/3, 100 systems).",
+  "cheapest_test": "100 Weil-restricted S_3,S_4 systems: run F4, record max degree and matrix size; compute both predictors; compare hit rates (testable from existing degree data).",
+  "falsifier": "Weight predictor within 5 points of semi-regular, or hit rate <70%.",
+  "lean_target": "Prove popcount(a+b)<=popcount a+popcount b and weightDeg <= total degree; the F4 link stays empirical.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H081",
+  "source_page": 10,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Correlation measure C_2 of the decomposability indicator along an additive sweep",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "10.4.5.3 Correlation measure of order k"
+  ],
+  "claim": "For generic shifts C_2 stays within 3*sqrt(L ln L), but for tau-multiple shifts on Koblitz curves it exceeds it, understating yield variance in the cost model.",
+  "prediction": "Generic: sqrt(L) scaling; tau shift excess 2-5x, yield variance 1.5-3x binomial; non-Koblitz no excess.",
+  "cheapest_test": "Koblitz GF(2^17), B=100: indicator for L=2^16 and order-2 correlation for shifts {1,2,tau-multiples,random}; random-curve null; planted positive control.",
+  "falsifier": "C_2 for tau-shifts within the random-curve null band with the positive control detected.",
+  "lean_target": "Prove |C2|<=L and C2 d = L-2*disagreements as a counting identity (decide small L).",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H082",
+  "source_page": 13,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Multihomogeneous Bezout/mixed-volume predictor of F4 time for split systems",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "7.1.3 Toric hypersurfaces"
+  ],
+  "claim": "log F4 time correlates with log B_mh at Spearman >=0.9 vs <=0.6 for total-degree Bezout, so a B_mh-driven model picks the best (d,m,split) more often; counts only if chosen parameters measurably cut time.",
+  "prediction": "Spearman 0.9+-0.05 vs 0.55+-0.15; argmin agreement >=70% vs <=40%.",
+  "cheapest_test": "200 systems, n in 18..26, d in n/3..n/2, m in {2,3}: msolve/F4 with timeouts; compute both predictors symbolically; Spearman with bootstrap CI.",
+  "falsifier": "Spearman gap <0.1 with CI overlapping zero, or argmin agreement no better than Bezout.",
+  "lean_target": "Prove the block-degree cost model is monotone in each block degree via Nat.mul_le_mul induction and Cost.total is the field sum.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H083",
+  "source_page": 13,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Variance-to-mean (Poisson) audit of decomposition counts via log-domain spectrum",
+  "ic_phase": "cost-model",
+  "handbook_sections": [
+   "6.3.6.3 Thin sets with small DFT",
+   "6.3.6.4 Character sums over arbitrary sets"
+  ],
+  "claim": "Spectrum ratio max|F_hat|/sqrt(B) was measured generic (closed); the unrun angle is variance-to-mean of decompositions per target equalling 1.00+-0.03 for subspace and orbit bases, with any peak showing as overdispersion.",
+  "prediction": "ell about 2^28,B=2^12: ratio 6.2+-0.5 for random and structured; variance/mean 1.00+-0.03.",
+  "cheapest_test": "Toy order about 2^28: BSGS logs, subspace/orbit/random FBs, sampled-t FFT, decomposition counts for 10^5 targets.",
+  "falsifier": "Structured spectrum ratio >1.25, or variance/mean >1.1.",
+  "lean_target": "Prove coverage m is monotone in m and bounded by n, and sum of decomposeCount over targets is B^m by induction on m.",
+  "prior_art_status": "tried-closed"
+ },
+ {
+  "id": "H084",
+  "source_page": 2,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Koblitz twin-curve amortisation: S3 independent of a",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "16.4.1.3 Special curves",
+   "16.4.2.2 Pairings and twists"
+  ],
+  "claim": "One S3 solve over V gives relations for E_0 and E_1: about 50% pure E_0, 50% pure E_1, mixed <1%, so a paired workload amortises 2x; single-curve use only filters. Amortisation, not a single-instance gain.",
+  "prediction": "n=23,a=1,b=1: split 50+-2%, mixed <1%; two-instance throughput 2.0x.",
+  "cheapest_test": "n=23,d=8: enumerate V^2, roots of S3, classify types by trace test, tabulate counts.",
+  "falsifier": "Mixed >1%, split off 50/50 by >5%, or no two-instance workload exists in the protocol.",
+  "lean_target": "Under hypothesis hmix, prove solutions partition into pure0 and pure1 so smoothCount_total = E0 + E1 and amortised relations = total/2.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H085",
+  "source_page": 5,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Select GHS/Weil-descent covers by maximal rational-point count",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "14.8.3 Niederreiter-Xing function fields"
+  ],
+  "claim": "Relation probability per divisor class scales as N^g/(g!#J); top-decile-N genus-g covers yield >=3x the bottom decile, so choose covers by N_q(g) rather than at random.",
+  "prediction": "2000 genus-3 curves over F_8: Pearson r>0.95 with N^g/(g!#J); top/bottom decile 3-10x; q=16,g=4 upper bound about 69x.",
+  "cheapest_test": "Enumerate y^2+hy=f over F_8 (g=3); N and #J from L-polynomial; sumset of g-point sums via Cantor arithmetic; covered fraction vs formula.",
+  "falsifier": "r<0.8, decile ratio <1.5, or the real GHS family offers no choice of N for the target.",
+  "lean_target": "Define smoothCount g N via a local choose; prove monotonicity in N and that a surjective sum map onto size J gives smoothCount >= J.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H086",
+  "source_page": 7,
+  "source_idx": 3,
+  "merged_from": [],
+  "title": "Invariant-dimension screen 3m>n+4 with rotation-only membership",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "13.2.3 Matrix representations of finite fields",
+   "13.2.4 Circulant matrices"
+  ],
+  "claim": "Primes n in 53..131 with ord_n(2)<=n/3 (73, 89, 113, 127) admit invariant subspaces of dimension m with 3m>n+4; orbit-distinct S3 counts there match generic subspaces within 10% while membership costs a few rotations/XORs instead of a matrix product.",
+  "prediction": "n=23 (m=11,12) and n=31 (m=10,15): counts within +-10% of random V; membership 5-20x fewer word ops.",
+  "cheapest_test": "n=23,m=11: S3 over V^3 with x3 fixed on a few hundred values for invariant g vs 50 random V; time membership.",
+  "falsifier": "Invariant count deviates >25% from random V, or membership gain <2x.",
+  "lean_target": "Prove a shift- and xor-closed set of Fin n -> Bool is a union of shift-orbits, so smoothCount V <= n*(orbit reps).",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H087",
+  "source_page": 8,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Volcano ascent to a j=0 or 1728 crater for an Aut-6 or Aut-4 quotient",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "12.2.3 Isogenies",
+   "12.2.8 Endomorphism ring and automorphism group",
+   "12.2.9 Ordinary curves"
+  ],
+  "claim": "For smooth-conductor floor curves, walking to the crater (Aut order 6 or 4) lets the factor base close under zeta, cutting relations and LA size about 3x at equal base size; rho cost is level-independent, and random-curve targets are not covered.",
+  "prediction": "p about 2^30..2^40, f=2 or 4: relations ratio (crater/floor) 0.33+-0.05; LA ratio about 0.11 dense; walk cost <1e-3.",
+  "cheapest_test": "5 toy floor curves D=-12 or -48; Velu walk to j=0; same m=2 small-x IC with orbit quotient on both; random curve control.",
+  "falsifier": "Relation ratio >0.5, transported log fails, or base cannot be made orbit-closed.",
+  "lean_target": "Prove orbitRepresentatives N 6 = orbitRepresentatives (orbitRepresentatives N 2) 3 and log'(phi g)=d*log g from the homomorphism hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H088",
+  "source_page": 11,
+  "source_idx": 5,
+  "merged_from": [
+   "P4-3",
+   "P14-0",
+   "P5-0"
+  ],
+  "title": "Invariant-subspace dimension menu from x^n-1 as a curve-size selector with yield test",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "10.2.1 LFSR sequences",
+   "10.2.3 Maximal period sequences",
+   "15.1.3 Cyclic codes",
+   "14.9.2 Weights of multiples of polynomials",
+   "5.4.3 Cyclotomic modules"
+  ],
+  "claim": "The census (2 primitive mod n gives only dims 0,1,n-1,n, including n=131) is closed. New angle: the explicit near-n/2 and near-n/3 dimension and count table for n=53..131, plus a measured yield and partial-stability (coordinate subspace column ratio >=0.97) test where such subspaces exist.",
+  "prediction": "At most 25% of primes admit dim within 1 of n/3; n=127 has 7j and 7j+1 dims; coordinate subspaces at n=23 give columns/|V_I| in [0.97,1.0]; invariant yield equals generic within 10%.",
+  "cheapest_test": "Factor x^n-1 over F_2 for n=53..131; subset-sum divisor degrees; n=73 (d=24,25) invariant vs generic yield on a toy curve; n=23 coordinate-subspace orbit counts.",
+  "falsifier": "A primitive-root prime with a stable subspace of dimension in [2,n-2], or columns/|V_I|<0.9 at n=23.",
+  "lean_target": "Define cosetSize and IsStable on Fin n -> Bool; decide trivial stable subspaces for n=11,13 and the dimension arithmetic, with semisimplicity as a hypothesis.",
+  "prior_art_status": "tried-closed"
+ },
+ {
+  "id": "H089",
+  "source_page": 11,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Berlekamp-Massey linear-complexity screen of Tr(x(kG)) for weak curves",
+  "ic_phase": "curve-selection",
+  "handbook_sections": [
+   "10.4.2 Linear complexity analysis",
+   "10.4.4.1 Explicit sequences"
+  ],
+  "claim": "For smooth curves over GF(2^n) in ecdb, BM linear complexity of N=2048 terms of Tr(x(kG)) lies in N/2+-8; a nodal cubic gives L<=3n, validating the screen. An anomaly would be a lead.",
+  "prediction": "At least 1000 smooth curves fall in [1016,1032]; nodal b=0 cubic over GF(2^21) gives L<=63; expected null.",
+  "cheapest_test": "For each ecdb curve with n<=40 and 5 generators: 2048 multiples, trace bit, BM over GF(2); nodal and supersingular controls; shuffled-sequence null.",
+  "falsifier": "Positive control not detected (L>3n), or smooth curves outside the band above the 2^-16 rate.",
+  "lean_target": "Prove BM returns L<=r for a sequence with an order-r recurrence by induction, soundness only.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H090",
+  "source_page": 2,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "ONB canonical orbit key with trace as parity (type-II n=53,131)",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "16.7.4 Normal bases",
+   "16.7.5 Optimal normal bases"
+  ],
+  "claim": "In a type-II ONB Frobenius is a bit rotation and Tr is parity, so orbit canonicalisation is the least rotation in about n bit-ops vs about n-1 squarings; only an end-to-end measured saving counts (repricing alone is accounting).",
+  "prediction": "Canonicalisation 5-20% of collection cost in polynomial basis, <1% in ONB; end-to-end 1.05-1.25x at n=131; <5% share at n=53 means no gain.",
+  "cheapest_test": "Instrument the Frobenius-orbit IC at n=53,131: squarings and mults spent canonicalising as a fraction of per-relation cost at 0/0.1/1 GAE vs the ONB bit-op count.",
+  "falsifier": "Canonicalisation <3% of per-relation cost at all prices, or ONB multiplication overhead gives end-to-end ratio <1.0 at 1 GAE.",
+  "lean_target": "Prove canon (rotate j v)=canon v and idempotence by a list lemma, and decide that 2 has order 131 mod 263.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H091",
+  "source_page": 3,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "GF2P8AFFINEQB bit-matrix applies for the linear maps of the lifted loop",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "16.2.6 AES (Rijndael)"
+  ],
+  "claim": "On GFNI+AVX-512 hosts the linear-map part of the lifted loop reaches >=2x the candidates per cycle of 8-bit table lookups at n=64..131 (throughput- not load-bound); block count is quadratic in n/8.",
+  "prediction": "Ratio 1.5-3x at n=64, below 1x at n>=131.",
+  "cheapest_test": "One n=64 and one n=131 F2-linear map over 2^20 vectors, table vs VGF2P8AFFINEQB, perf stat cycles on a GFNI host via isolab-eks; report the crossover n.",
+  "falsifier": "Table lookup faster at n=64 or crossover below n=48; host without GFNI voids, not refutes.",
+  "lean_target": "Prove blocks(n)=(ceil(n/8))^2 and instructions=blocks*ceil(T/8) with each instruction applying one 8x8 bit matrix, and XOR-linearity of the composite.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H092",
+  "source_page": 5,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Longest-zero-run canonicalisation of Frobenius orbits (bit-parallel)",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "14.9.2 Cyclic structure F_2[X]/(X^n-1)",
+   "necklaces"
+  ],
+  "claim": "Minimal rotation starts at a maximal zero run; clz/ctz plus about 2 comparisons canonicalise a 131-bit word in O(n/64) ops, identical to naive. An earlier arm saved 8% instructions but did not resolve against the native limit.",
+  "prediction": "At least 10x fewer cycles than naive; end-to-end >=1.2x if canonicalisation was >=20% of candidate cost; ties 1.3-2.2.",
+  "cheapest_test": "C microbenchmark on random 131-bit words, 10^8 calls; verify equality with naive on 10^7 words and all words for n<=24; count ties; perf-ipc where a PMU exists.",
+  "falsifier": "Any output differing from naive, speedup <3x, or mean tied starts >4.",
+  "lean_target": "Prove by exhaustive decide for n<=12 that canon w = min over rotations at runStarts w, plus the general exchange argument.",
+  "prior_art_status": "tried-open"
+ },
+ {
+  "id": "H093",
+  "source_page": 6,
+  "source_idx": 2,
+  "merged_from": [],
+  "title": "MDS-arc checksum protection for block Lanczos/Wiedemann on Spot",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "14.4.6 k-Arcs and linear MDS codes"
+  ],
+  "claim": "With r=4 Vandermonde checksum rows c^(j)A, every corruption of <=4 coordinates per matvec is detected and <=2 corrected at <2% extra cost, vs about 100% for duplicate verification. Engineering saving.",
+  "prediction": "Overhead 0.01-0.1% extra multiplies at dimension 2^16; detection 100% within bound; beats checkpoint-only by 1.2-2x at 5%/hour preemption.",
+  "cheapest_test": "Block Lanczos mod 31-bit l on a 2e4-dim sparse matrix, 20 nonzeros per row; inject 1-5 faults per 1000 matvecs; four arms: none, checkpoint, duplicate, MDS checksum.",
+  "falsifier": "Any undetected corruption inside the bound, a miscorrection, or overhead >2%.",
+  "lean_target": "Prove single_fault_detect (one changed coordinate changes the checksum when c_i is a unit mod l) with Int.emod; location needs a Vandermonde-unit hypothesis.",
+  "prior_art_status": "untried"
+ },
+ {
+  "id": "H094",
+  "source_page": 6,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Latin-square XOR-skewed storage for conflict-free pair-sum table access",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "14.1.1 Prime powers",
+   "14.1.5 Affine and projective planes"
+  ],
+  "claim": "Banking entry (i,j) at i XOR j over GF(2^5) gives conflict-free access along rows, columns and all slopes a!=1, removing shared-memory bank conflicts in the pair-sum kernel; odd-stride padding is already used elsewhere.",
+  "prediction": "Replays drop from 2-4 per warp access to 0; kernel 1.1-1.3x if memory-bound.",
+  "cheapest_test": "CUDA kernel, B=2^12: row-major, padded, XOR-skewed layouts; ncu l1tex bank-conflict counters; cycles per pair.",
+  "falsifier": "Speedup <5% or non-zero conflicts after skewing.",
+  "lean_target": "Prove by decide that for each fixed a!=1 the map i -> i xor (a*i+c) is injective on Fin 32 given the GF(32) multiplication table hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H095",
+  "source_page": 6,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Projective-plane block design to shard all-pairs decomposition",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "14.5.1 Block designs basics",
+   "14.4.1 Projective spaces",
+   "14.5.3 Singer difference sets"
+  ],
+  "claim": "Placing shard pairs by lines of PG(2,p) (lambda=1) gives zero redundant pair work and per-worker transfer B(p+1)/M vs B for all-gather; total work identical.",
+  "prediction": "p=7 (M=57): per-worker memory down about 7x; wall-clock 1.0-1.5x on Spot clusters.",
+  "cheapest_test": "Simulate 57 workers at B=2^14: bytes moved and work per worker for all-gather, random 2-D tiling and Singer design; check coverage equals C(M,2) exactly.",
+  "falsifier": "Wall-clock gain <10%, or any shard pair covered zero or twice.",
+  "lean_target": "With hypothesis pair_cover (each pair in a unique block), prove total pair work = C(M,2) and per-worker load (p+1)*B/M by Nat arithmetic.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H096",
+  "source_page": 7,
+  "source_idx": 6,
+  "merged_from": [],
+  "title": "Reverse Cuthill-McKee reordering for block-Wiedemann matvec locality",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "13.4.5.1 Reordering",
+   "13.4.4.1 Wiedemann"
+  ],
+  "claim": "For B>=2^20 and 130-bit ell, RCM plus heavy-column grouping cuts L2 misses per nonzero >=30% and cycles per nonzero >=1.25x vs insertion order; a cycle-level, not op-count, gain.",
+  "prediction": "1.25-1.8x lower cycles per nonzero; <1.1x at B=2^16; IPC 0.6->0.9.",
+  "cheapest_test": "Synthetic B=2^14..2^22, row weight 6, Zipf(1) column weights: insertion vs RCM vs degree sort, perf stat cycles and L2 misses on an isolab host, 20 paired repeats.",
+  "falsifier": "Ratio <1.1 at B=2^22 with CI excluding 1.25, or no PMU and simulated miss reduction <10%.",
+  "lean_target": "Prove a permutation equiv leaves relations and the factor-base solution set invariant by sum reindexing over List.finRange.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H097",
+  "source_page": 8,
+  "source_idx": 4,
+  "merged_from": [],
+  "title": "Batch-affine vs projective candidate generation, binary vs prime split",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "12.3.3 Coordinate systems",
+   "12.3.4 Explicit formulas",
+   "12.3.6 Char-2 short Weierstrass"
+  ],
+  "claim": "With k>=64 walks, batch-affine addition is >=1.6x faster per candidate than projective plus batch conversion in GF(2^131) with CLMUL, and <=1.1x on 255-bit Edwards. Prime side measured against batching; binary side unmeasured.",
+  "prediction": "GF(2^131): 1.8-2.3x at k=64..256; GF(2^53): 1.3-1.6x; 2^255-19: 0.95-1.1x.",
+  "cheapest_test": "C microbenchmark, 1e7 additions per scheme with matched tables and seeds on isolab-eks; M/S/I ledger matching formulas; A/A arm; perf-ipc cycles.",
+  "falsifier": "Binary speedup <1.15x at k=64, or prime-field speedup >1.3x.",
+  "lean_target": "Prove 5M+S <= 11M+5S and (3(k-1)M+I)/k <= 3M+I/k by omega; the cycle ratio stays an empirical hypothesis.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H098",
+  "source_page": 8,
+  "source_idx": 7,
+  "merged_from": [],
+  "title": "Booth/Duval canonical key at n=131 against squaring chains",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "12.2.8 Frobenius on Koblitz",
+   "12.3.6 Char-2 arithmetic"
+  ],
+  "claim": "Normal-basis keys are integrated (8.6x at degree 61); open is Booth/Duval at n=131: one basis change plus Booth is >=1.5x fewer cycles than min-over-squarings, with identical orbit partition.",
+  "prediction": "n=131 AVX2: polynomial basis 1.3e3-2e3 cycles vs 4e2-8e2; speedup 1.6-3x; 1.0-1.3x at n=53.",
+  "cheapest_test": "C benchmark, 1e6 random x for n in {53,83,131}: min over squarings vs Booth on a normal-basis image; orbit ids via hash map; perf-ipc cycles; A/A.",
+  "falsifier": "Speedup <1.15x at n=131, any orbit-partition mismatch, or basis change exceeds the saving.",
+  "lean_target": "Prove key(rotate w)=key w and key w<=w, and orbit count N/n for a free prime-order action.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H099",
+  "source_page": 10,
+  "source_idx": 1,
+  "merged_from": [],
+  "title": "Itoh-Tsujii plus Montgomery batching as the affine-add primitive of the collection loop",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "11.1.8.2 Inversion in extension fields",
+   "11.1.5.2 Multiplication in extension fields"
+  ],
+  "claim": "Batched affine addition (about 5 mults) with Itoh-Tsujii (8 mults at n=131) beats Lopez-Dahab mixed addition (8-11 mults) per point-sum at batch >=16 for n in 53..131, no Z coordinate.",
+  "prediction": "1.3-1.8x at batch 16-64 at n=131; break-even batch 4-8 when squaring is about 0.1 mult.",
+  "cheapest_test": "GF(2^n), n in {53,83,131}: affine+batch+Itoh-Tsujii vs LD mixed add, interleaved, A/A, batch 1,4,16,64; ns and mults per add.",
+  "falsifier": "LD mixed add at least as fast at batch 16 for n=131, or break-even batch >64.",
+  "lean_target": "Prove itohTsujiiMuls 131 = 8 by decide and batchInvMuls k = 3*(k-1) plus one inversion; counts only, not a speedup.",
+  "prior_art_status": "partially-tried"
+ },
+ {
+  "id": "H100",
+  "source_page": 14,
+  "source_idx": 5,
+  "merged_from": [],
+  "title": "Rotation-based membership test g(sigma)x=0 with sparse generator",
+  "ic_phase": "hardware",
+  "handbook_sections": [
+   "5.3.5 Fast arithmetic using normal bases",
+   "5.2.1 Normal bases"
+  ],
+  "claim": "Membership in V=ker g(sigma) costs wt(g) XORs of rotations (normal basis), 8-15x cheaper than the polynomial-basis matrix test, but whole-loop gain is only 1-5% since roots and inversions dominate; likely null.",
+  "prediction": "Membership 8-15x fewer cycles; loop 1-5%; net <1.05x or negative if multiplication must run in the normal basis.",
+  "cheapest_test": "n=127, V dim 63 or 7*9: membership microbenchmark in both bases (1e8 candidates), then the n=31 toy S3 pair loop; perf-ipc where available.",
+  "falsifier": "Full-loop speedup >1.2x (then it matters), or membership speedup <3x.",
+  "lean_target": "Prove rot^n=id, applyPoly commutes with rot, and the kernel is xor-closed; cost wt(g)*ceil(n/64) per test; g | x^n-1 by decide for fixed n.",
+  "prior_art_status": "partially-tried"
+ }
+]

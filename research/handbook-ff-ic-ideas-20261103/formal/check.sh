@@ -27,7 +27,8 @@ if grep -rnE 'sorry|admit|\baxiom\b|native_decide|unsafe|partial|implemented_by|
 fi
 echo "none" > receipts/forbidden-tokens.txt
 # Axiom audit: every theorem in every module.
-python3 - <<'PY' > receipts/axioms.lean
+AUDIT_DIR=$(mktemp -d)
+python3 - <<'PY' > "$AUDIT_DIR/axioms.lean"
 import re, pathlib
 files = sorted(pathlib.Path('HandbookIC').glob('**/*.lean')) 
 print('import HandbookIC')
@@ -42,7 +43,8 @@ for f in files:
             name = m.group(1)
             print(f'#print axioms {ns + "." + name if ns else name}')
 PY
-lake env lean receipts/axioms.lean 2>&1 | tee receipts/axioms.log
+cp "$AUDIT_DIR/axioms.lean" receipts/axioms-requests.txt  # not a tracked .lean source: the gate admits only library modules
+lake env lean "$AUDIT_DIR/axioms.lean" 2>&1 | tee receipts/axioms.log
 echo "axioms exit: ${PIPESTATUS[0]}" | tee -a receipts/axioms.log
 python3 - <<'PY'
 import re, pathlib
