@@ -416,9 +416,11 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uin
          * located by the scalar loop below */
         for (; i + 4 <= stop; i += 4) {
             const ic_fbdiv *d = div + i;
-            if ((v * d[0].inv <= d[0].lim) + (v * d[1].inv <= d[1].lim) +
-                    (v * d[2].inv <= d[2].lim) + (v * d[3].inv <= d[3].lim) !=
-                0)
+            /* bitwise on purpose: all four tests, one branch (|| would
+             * branch on each, which is what this loop avoids) */
+            // cppcheck-suppress bitwiseOnBoolean
+            if ((v * d[0].inv <= d[0].lim) | (v * d[1].inv <= d[1].lim) |
+                (v * d[2].inv <= d[2].lim) | (v * d[3].inv <= d[3].lim))
                 break;
         }
         for (; i < stop; i++)
