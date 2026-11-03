@@ -144,3 +144,16 @@ Registered: `research/handbook-ff-ic-ideas-20261103/formal` (library
 supporting lemmas of the Handbook-of-Finite-Fields idea catalogue. Those
 theorems are cost-model and counting lemmas over abstract definitions; none
 models the elliptic-curve group law, and none proves a speedup.
+
+## Receipt-bound standalone modules
+
+`RECEIPT_BOUND_SOURCES` registers single `import Init` modules that carry
+their own receipt-bound checker (`research/xedni_lift_optimizer_20261101/lean/
+XedniAffineCoset.lean` with `check.py`, landed by #1376 under the
+`Xedni affine-coset Lean proof` workflow, which left this gate red on `main`
+until it was admitted here). The gate pins the source and the checker by
+SHA-256, refuses any proof escape and any theorem without its own
+`#print axioms` line, runs the checker natively, and admits the module only
+when the printed axiom sets name exactly the registered theorems within the
+standard foundations and the checker reports verification. A changed proof or
+checker is a gate change. Controls: `ReceiptBoundSourceControls`.

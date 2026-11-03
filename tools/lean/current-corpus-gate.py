@@ -998,6 +998,65 @@ def check_core_lean_projects(paths: set[str]) -> dict[str, str]:
     return checked
 
 
+# Receipt-bound standalone core-Lean modules: one `import Init` source checked
+# by its own receipt-bound script (which pins the source, the toolchain and
+# the Rust sources it bridges, runs `lean` and compares every `#print axioms`
+# line with the receipt). The gate pins the source and the checker by SHA-256
+# and runs the checker natively, so a changed proof or checker is a gate change.
+# research/xedni_lift_optimizer_20261101 landed with #1376 (2026-11-02) under
+# its own workflow and left this gate red on main until it was admitted here.
+RECEIPT_BOUND_SOURCES = {
+    "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean": {
+        "sha256": "c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757",
+        "checker": "research/xedni_lift_optimizer_20261101/lean/check.py",
+        "checker_sha256": "2de54fd792c4664c9426f671f118faffd59c346fea31254fe18061fede261834",
+        "namespace": "XedniAffineCoset",
+        "theorems": frozenset({"direction_span_closed", "candidate_preserves_divisibility",
+                               "candidate_preserves"}),
+    },
+}
+
+
+def check_receipt_bound_source(path: str) -> str:
+    """Run the module's own receipt-bound checker; admit only its exact pinned bytes."""
+    record = RECEIPT_BOUND_SOURCES[path]
+    file = ROOT / path
+    checker = ROOT / record["checker"]
+    require(not file.is_symlink() and file.is_file() and digest(file) == record["sha256"],
+            f"receipt-bound source changed without native review: {path}")
+    require(not checker.is_symlink() and checker.is_file() and
+            digest(checker) == record["checker_sha256"],
+            f"receipt-bound checker changed without native review: {record['checker']}")
+    source = file.read_text()
+    require(not re.search(r"\b(?:sorry|admit|sorryAx|native_decide|axiom)\b", source),
+            f"forbidden proof escape in {path}")
+    declared = re.findall(r"^[ \t]*(?:theorem|lemma)\s+(\w+)", source, re.MULTILINE)
+    requested = re.findall(r"^#print axioms\s+([\w.]+)", source, re.MULTILINE)
+    require(set(declared) == record["theorems"] == {name.rsplit(".", 1)[-1] for name in requested}
+            and len(declared) == len(requested) == len(record["theorems"]),
+            f"incomplete declaration audit in {path}")
+    print(f"running receipt-bound checker: {record['checker']}", flush=True)
+    result = run(["python3", str(checker)], cwd=ROOT, timeout=900, failure_diagnostics=True)
+    printed = re.findall(r"^'([^']+)' depends on axioms: \[([^]]*)\]$", result.stdout, re.MULTILINE)
+    axiom_free = re.findall(r"^'([^']+)' does not depend on any axioms$", result.stdout, re.MULTILINE)
+    printed_names = [name for name, _ in printed] + axiom_free
+    require(set(printed_names) == {f"{record['namespace']}.{name}" for name in record["theorems"]}
+            and len(printed_names) == len(record["theorems"]),
+            f"incomplete native axiom output for {path}")
+    require(all({axiom.strip() for axiom in names.split(",") if axiom.strip()}
+                <= {"propext", "Classical.choice", "Quot.sound"} for _, names in printed),
+            f"unexpected foundation in {path}")
+    require("verified" in result.stdout.splitlines()[-1],
+            f"receipt-bound checker did not report verification: {path}")
+    print(f"verified native axiom outputs: {path}", flush=True)
+    for line in result.stdout.splitlines():
+        if re.fullmatch(r"'[^']+' (?:depends on axioms: \[[^]]*\]|does not depend on any axioms)", line):
+            print(line, flush=True)
+    require(digest(file) == record["sha256"] and digest(checker) == record["checker_sha256"],
+            f"receipt-bound inputs changed during audit: {path}")
+    return digest(file)
+
+
 def tracked_corpus_sources() -> list[str]:
     """Discover every tracked Lean source; only the separate gate selftests differ."""
     return [path for path in run(["git", "ls-files", "--", "*.lean"]).stdout.splitlines()
@@ -1032,8 +1091,11 @@ def main() -> None:
         print(encoded.decode(), end="")
     hasse_addition = HASSE_SOURCE in additions
     core_additions = {path for path in additions if core_lean_project_of(path)}
-    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions)
+    receipt_additions = additions & set(RECEIPT_BOUND_SOURCES)
+    checked = check_new_hecke(additions - {HASSE_SOURCE} - core_additions - receipt_additions)
     checked.update(check_core_lean_projects(core_additions))
+    for path in sorted(receipt_additions):
+        checked[path] = check_receipt_bound_source(path)
     if hasse_addition:
         checked[HASSE_SOURCE] = check_new_hasse()
     print(f"native added theorem modules checked: {len(checked)}")

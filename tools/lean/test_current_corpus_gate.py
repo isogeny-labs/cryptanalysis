@@ -899,3 +899,77 @@ class CoreLeanProjectControls(unittest.TestCase):
         self.assertEqual(gate.core_lean_project_of(f"{self.PROJECT}/HandbookIC/Core.lean"), self.PROJECT)
         self.assertIsNone(gate.core_lean_project_of("experiments/hecke-432-x/formal/A.lean"))
         self.assertIsNone(gate.core_lean_project_of(self.PROJECT + "-other/HandbookIC/Core.lean"))
+
+
+class ReceiptBoundSourceControls(unittest.TestCase):
+    """Receipt-bound standalone modules: exact bytes, own checker, audited output."""
+
+    SOURCE = "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean"
+    PRINTED = ("'XedniAffineCoset.candidate_preserves_divisibility' depends on axioms: [propext, Quot.sound]\n"
+               "'XedniAffineCoset.direction_span_closed' depends on axioms: [propext, Quot.sound]\n"
+               "'XedniAffineCoset.candidate_preserves' depends on axioms: [propext, Quot.sound]\n"
+               "Xedni affine-coset proof and source binding verified\n")
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        record = gate.RECEIPT_BOUND_SOURCES[self.SOURCE]
+        for relative in (self.SOURCE, record["checker"]):
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(REPOSITORY / relative, target)
+        self.root_patch = patch.object(gate, "ROOT", self.root)
+        self.root_patch.start()
+        self.addCleanup(self.root_patch.stop)
+
+    def test_pinned_bytes_match_the_registered_digests(self):
+        record = gate.RECEIPT_BOUND_SOURCES[self.SOURCE]
+        self.assertEqual(gate.digest(self.root / self.SOURCE), record["sha256"])
+        self.assertEqual(gate.digest(self.root / record["checker"]), record["checker_sha256"])
+
+    def test_admitted_through_its_own_checker(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = self.PRINTED
+            checked = gate.check_receipt_bound_source(self.SOURCE)
+        self.assertEqual(checked, gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["sha256"])
+        self.assertEqual(run.call_args.args[0][0], "python3")
+        self.assertTrue(run.call_args.args[0][1].endswith("check.py"))
+
+    def test_changed_source_refused_before_native_command(self):
+        file = self.root / self.SOURCE
+        file.write_text(file.read_text() + "\n-- changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            run.assert_not_called()
+
+    def test_changed_checker_refused_before_native_command(self):
+        checker = self.root / gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["checker"]
+        checker.write_text(checker.read_text() + "\n# changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "checker changed"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            run.assert_not_called()
+
+    def test_nonstandard_axiom_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = self.PRINTED.replace("propext, Quot.sound", "ClaimAsAxiom", 1)
+            with self.assertRaisesRegex(ValueError, "unexpected foundation"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_missing_printout_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = "\n".join(self.PRINTED.splitlines()[1:]) + "\n"
+            with self.assertRaisesRegex(ValueError, "incomplete native axiom output"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_checker_failure_is_not_admission(self):
+        with patch.object(gate, "run", side_effect=ValueError("python3 exited 1")) as run:
+            with self.assertRaisesRegex(ValueError, "python3 exited 1"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            self.assertEqual(run.call_count, 1)
+
+    def test_only_the_registered_path_is_routed(self):
+        self.assertIn(self.SOURCE, gate.RECEIPT_BOUND_SOURCES)
+        self.assertNotIn("research/xedni_lift_optimizer_20261101/lean/Other.lean", gate.RECEIPT_BOUND_SOURCES)
