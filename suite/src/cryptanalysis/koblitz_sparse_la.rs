@@ -1009,9 +1009,10 @@ pub struct CsrMatrix {
     /// reductions ([`Reducer::lazy_terms`] for the largest stored
     /// coefficient); `None` for a modulus outside `[2, 2⁶³)`.
     lazy: Option<(Reducer, usize)>,
-    /// Every stored coefficient is below `2⁵²` and every row holds at most
-    /// [`ifma::MAX_TERMS`] − 1 entries, so the AVX-512 IFMA row kernel
-    /// ([`ifma::row4`]) applies whenever the CPU has it.
+    /// Every stored coefficient (and `m − 1`, the homogenising column's
+    /// bound) is below `2⁵²` and every row holds fewer than
+    /// [`ifma::MAX_TERMS`] entries, so the AVX-512 IFMA row kernel applies
+    /// whenever the CPU has it ([`Self::ifma_lazy`]).
     #[cfg_attr(not(all(target_arch = "x86_64", suite_avx512)), allow(dead_code))]
     ifma_ok: bool,
 }
@@ -1087,22 +1088,57 @@ impl CsrMatrix {
         let row = (&self.col_idx[span.clone()], &self.vals[span]);
         let extra = (self.n_cols * n, extra);
         let mut j = 0;
-        #[cfg(all(target_arch = "x86_64", suite_avx512))]
-        if self.ifma_ok && extra.1 < 1 << 52 && ifma::enabled() {
-            while j + 4 <= n {
-                // SAFETY: `enabled` checked avx512f, avx512vl and avx512ifma.
-                let done = unsafe { ifma::row4(row, x, j, n, extra, red, &mut out[j..j + 4]) };
-                if !done {
-                    // An operand word at or above 2⁵²: the exact u128 path.
-                    let acc = LazyLanes::<4>::new(red, *terms);
-                    csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 4]);
-                }
-                j += 4;
-            }
-        }
         while j + 4 <= n {
             let acc = LazyLanes::<4>::new(red, *terms);
             csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 4]);
+            j += 4;
+        }
+        while j < n {
+            let acc = LazyLanes::<1>::new(red, *terms);
+            csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 1]);
+            j += 1;
+        }
+    }
+
+    /// The reducer when the IFMA row kernel applies to this matrix on this
+    /// CPU, decided once per product rather than once a row.
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[inline]
+    fn ifma_lazy(&self) -> Option<&(Reducer, usize)> {
+        if self.ifma_ok && ifma::enabled() {
+            self.lazy.as_ref()
+        } else {
+            None
+        }
+    }
+
+    /// [`Self::row_lazy`] with each four-lane group on [`ifma::row4`]; a
+    /// group whose operand words reach `2⁵²`, and the lanes past the last
+    /// group, take the `u128` lanes.  `extra < m ≤ 2⁵²` (`ifma_ok` bounds
+    /// the stored coefficients by `m − 1 < 2⁵²`).
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    fn row_ifma(
+        &self,
+        i: usize,
+        x: &[u64],
+        n: usize,
+        extra: u64,
+        (red, terms): &(Reducer, usize),
+        out: &mut [u64],
+    ) {
+        let span = self.row_ptr[i]..self.row_ptr[i + 1];
+        let row = (&self.col_idx[span.clone()], &self.vals[span]);
+        let extra = (self.n_cols * n, extra);
+        debug_assert!(extra.1 < 1 << 52);
+        let mut j = 0;
+        while j + 4 <= n {
+            // SAFETY: `ifma_lazy` checked avx512f, avx512vl and avx512ifma,
+            // and `ifma_ok` the row's length and coefficients.
+            let done = unsafe { ifma::row4(row, x, j, n, extra, red, &mut out[j..j + 4]) };
+            if !done {
+                let acc = LazyLanes::<4>::new(red, *terms);
+                csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 4]);
+            }
             j += 4;
         }
         while j < n {
@@ -1147,6 +1183,11 @@ impl CsrMatrix {
     pub fn mul_block(&self, x: &[u64], n: usize, y: &mut [u64]) {
         debug_assert_eq!(x.len(), self.n_cols * n);
         debug_assert_eq!(y.len(), self.n_rows * n);
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(lazy) = self.ifma_lazy() {
+            self.for_each_row(y, n, |i, out| self.row_ifma(i, x, n, 0, lazy, out));
+            return;
+        }
         self.for_each_row(y, n, |i, out| self.row_into(i, x, n, out));
     }
 }
@@ -1302,6 +1343,15 @@ impl BlockOperator for Homogenised<'_> {
         let m = self.a.modulus;
         let (ya, yt) = y.split_at_mut(big_n * n);
         yt.iter_mut().for_each(|v| *v = 0);
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(lazy) = self.a.ifma_lazy() {
+            self.a.for_each_row(ya, n, |i, out| {
+                let bi = self.b[i];
+                let bi = if bi < m { bi } else { bi % m };
+                self.a.row_ifma(i, x, n, negmod(bi, m), lazy, out);
+            });
+            return;
+        }
         if let Some(lazy) = &self.a.lazy {
             // `−b_i · t_j` is one more product in row `i`'s sum, against
             // the `t` lanes that follow `A`'s `N·n` in `x`: one reduction
