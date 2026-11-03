@@ -24,7 +24,8 @@ replayed measurement lowers cost against the named IC baseline.
 | `formal-results.json` | per Lean batch: author record, verifier record, whether a repair round ran |
 | `formal/` | the core-Lean 4 project `HandbookIC` (toolchain `leanprover/lean4:v4.34.1`, no Mathlib): `Core.lean` vocabulary, `Ideas/B01..B10.lean` claim statements and supporting theorems, `check.sh` and `receipts/` |
 | `diagram.svg`, `phases.svg` | chapter × IC-phase heatmap; ideas per phase with Lean status |
-| `report.html`, `report.pdf` | this README, the two figures and `IDEAS.md`, rendered |
+| `report.html` | this README, the two figures and `IDEAS.md`, rendered (self-contained HTML) |
+| `report.pdf` | the same, rendered by `node render_pdf.js` (Chromium); **not in Git**: the store policy assigns a 406,852-byte PDF to the artifact store, and this session's AWS token was rejected (`InvalidClientTokenId`), so the push `python3 tools/artifacts/artifacts.py push research/handbook-ff-ic-ideas-20261103/report.pdf` is still to be run from a session with the `ARTIFACTS_AWS_*` credentials. sha256 of the built PDF: `08139011af08d5b7a42370114d6b1b0a1158421ba820a7c61ed06c2b18918c0b`. Rebuild: `pandoc` the concatenation of README.md, the figure links and IDEAS.md to `report.html`, then `node render_pdf.js`. |
 | `prior-art-index.md` | the lab records the prior-art pass searched |
 | `workflow.js` | the orchestration script (Sonnet miners/selector/formalizers/critic, Haiku prior-art and verifiers) |
 
