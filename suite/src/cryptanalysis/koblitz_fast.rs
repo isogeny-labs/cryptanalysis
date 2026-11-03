@@ -617,7 +617,12 @@ impl FrobeniusCanon {
         for (slot, table) in padded.iter_mut().zip(&tables) {
             *slot = *table;
         }
-        Some(Self { n, mask, tables, padded })
+        Some(Self {
+            n,
+            mask,
+            tables,
+            padded,
+        })
     }
 
     /// The normal coordinates of a field element.

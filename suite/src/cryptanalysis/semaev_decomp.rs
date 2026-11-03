@@ -1340,7 +1340,9 @@ mod tests {
         use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
         let mut s = 0x5EED_BA77_E770_0001u64;
         for n in [2u32, 3, 7, 8, 9, 16, 24, 31, 32, 33, 41, 53, 61, 62, 63] {
-            let Some(irr) = find_irreducible_sparse(n) else { continue };
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
             let gf = Gf2::new(&irr);
             let edge = [0u64, 1, gf.mask, gf.mask >> 1, 1 << (n - 1)];
             for i in 0..4096 {
