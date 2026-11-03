@@ -762,3 +762,214 @@ class GlvSizedCapControls(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
+
+
+class CoreLeanProjectControls(unittest.TestCase):
+    """Dependency-free core-Lean projects: refusals fire before any native command."""
+
+    PROJECT = "research/handbook-ff-ic-ideas-20261103/formal"
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        self.project = self.root / self.PROJECT
+        (self.project / "HandbookIC").mkdir(parents=True)
+        record = gate.CORE_LEAN_PROJECTS[self.PROJECT]
+        (self.project / "lean-toolchain").write_text(record["toolchain"] + "\n")
+        (self.project / "lakefile.toml").write_text(
+            'name = "handbookIC"\nversion = "0.1.0"\ndefaultTargets = ["HandbookIC"]\n\n'
+            '[[lean_lib]]\nname = "HandbookIC"\n')
+        (self.project / "lake-manifest.json").write_text(json.dumps({"packages": []}))
+        (self.project / "HandbookIC.lean").write_text("import HandbookIC.Core\n")
+        (self.project / "HandbookIC/Core.lean").write_text(
+            "namespace HandbookIC\ntheorem zero_le_one : 0 ≤ 1 := Nat.zero_le 1\nend HandbookIC\n"
+            "#print axioms HandbookIC.zero_le_one\n")
+        self.paths = {f"{self.PROJECT}/HandbookIC.lean", f"{self.PROJECT}/HandbookIC/Core.lean"}
+        self.root_patch = patch.object(gate, "ROOT", self.root)
+        self.root_patch.start()
+        self.addCleanup(self.root_patch.stop)
+
+    def native(self, printed="'HandbookIC.zero_le_one' does not depend on any axioms\n"):
+        def runtime(args, **kwargs):
+            if args[:2] == ["git", "ls-files"]:
+                return SimpleNamespace(stdout="\n".join(sorted(self.paths)) + "\n")
+            if args == ["lake", "build"]:
+                for name in ("HandbookIC.olean", "HandbookIC/Core.olean"):
+                    target = kwargs["cwd"] / ".lake/build/lib/lean" / name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(b"synthetic unit fixture, NOT a Lean object")
+                return SimpleNamespace(stdout="")
+            return SimpleNamespace(stdout=printed)
+        return runtime
+
+    def test_admitted_project_builds_then_audits_every_module(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = self.native()
+            checked = gate.check_core_lean_projects(set(self.paths))
+        self.assertEqual(set(checked), self.paths)
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertEqual(commands[0][:2], ["git", "ls-files"])
+        self.assertEqual(commands[1], ["lake", "build"])
+        self.assertEqual(commands[2][:3], ["lake", "env", "lean"])
+        self.assertEqual(run.call_args_list[1].kwargs["cwd"], self.project)
+
+    def test_unregistered_path_refused(self):
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "unreviewed Lean corpus addition"):
+                gate.check_core_lean_projects({"research/other/formal/X.lean"})
+            run.assert_not_called()
+
+    def test_proof_escape_refused_before_build(self):
+        core = self.project / "HandbookIC/Core.lean"
+        core.write_text(core.read_text().replace("Nat.zero_le 1", "by sorry"))
+        with patch.object(gate, "run") as run:
+            run.side_effect = self.native()
+            with self.assertRaisesRegex(ValueError, "forbidden proof escape"):
+                gate.check_core_lean_projects(set(self.paths))
+            self.assertEqual([c.args[0][:2] for c in run.call_args_list], [["git", "ls-files"]])
+
+    def test_dependency_declaration_refused(self):
+        lakefile = self.project / "lakefile.toml"
+        lakefile.write_text(lakefile.read_text() + '\n[[require]]\nname = "mathlib"\n')
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "must not declare dependencies"):
+                gate.check_core_lean_projects(set(self.paths))
+            run.assert_not_called()
+
+    def test_changed_toolchain_pin_refused(self):
+        (self.project / "lean-toolchain").write_text("leanprover/lean4:v4.99.0\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "toolchain changed"):
+                gate.check_core_lean_projects(set(self.paths))
+            run.assert_not_called()
+
+    def test_root_module_must_import_every_module(self):
+        (self.project / "HandbookIC/Ideas").mkdir()
+        extra = self.project / "HandbookIC/Ideas/B01.lean"
+        extra.write_text("import HandbookIC.Core\ntheorem t : True := trivial\n#print axioms t\n")
+        self.paths.add(f"{self.PROJECT}/HandbookIC/Ideas/B01.lean")
+        with patch.object(gate, "run") as run:
+            run.side_effect = self.native()
+            with self.assertRaisesRegex(ValueError, "import every module exactly"):
+                gate.check_core_lean_projects(set(self.paths))
+            self.assertEqual(run.call_count, 1)
+
+    def test_theorem_without_axiom_request_refused(self):
+        core = self.project / "HandbookIC/Core.lean"
+        core.write_text(core.read_text().replace("#print axioms HandbookIC.zero_le_one\n", ""))
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = self.native()
+            with self.assertRaisesRegex(ValueError, "incomplete declaration audit"):
+                gate.check_core_lean_projects(set(self.paths))
+            self.assertEqual([c.args[0] for c in run.call_args_list][1], ["lake", "build"])
+            self.assertEqual(run.call_count, 2)
+
+    def test_nonstandard_axiom_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = self.native("'HandbookIC.zero_le_one' depends on axioms: [ClaimAsAxiom]\n")
+            with self.assertRaisesRegex(ValueError, "unexpected foundation"):
+                gate.check_core_lean_projects(set(self.paths))
+
+    def test_missing_native_printout_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = self.native("")
+            with self.assertRaisesRegex(ValueError, "incomplete native axiom output"):
+                gate.check_core_lean_projects(set(self.paths))
+
+    def test_unbuilt_module_refused(self):
+        def runtime(args, **kwargs):
+            if args[:2] == ["git", "ls-files"]:
+                return SimpleNamespace(stdout="\n".join(sorted(self.paths)) + "\n")
+            return SimpleNamespace(stdout="")
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.side_effect = runtime
+            with self.assertRaisesRegex(ValueError, "module not built"):
+                gate.check_core_lean_projects(set(self.paths))
+
+    def test_untracked_or_frozen_project_source_refused(self):
+        def runtime(args, **kwargs):
+            return SimpleNamespace(stdout=f"{self.PROJECT}/HandbookIC.lean\n")
+        with patch.object(gate, "run") as run:
+            run.side_effect = runtime
+            with self.assertRaisesRegex(ValueError, "frozen or untracked"):
+                gate.check_core_lean_projects(set(self.paths))
+
+    def test_main_routes_core_additions_away_from_hecke_checker(self):
+        self.assertEqual(gate.core_lean_project_of(f"{self.PROJECT}/HandbookIC/Core.lean"), self.PROJECT)
+        self.assertIsNone(gate.core_lean_project_of("experiments/hecke-432-x/formal/A.lean"))
+        self.assertIsNone(gate.core_lean_project_of(self.PROJECT + "-other/HandbookIC/Core.lean"))
+
+
+class ReceiptBoundSourceControls(unittest.TestCase):
+    """Receipt-bound standalone modules: exact bytes, own checker, audited output."""
+
+    SOURCE = "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean"
+    PRINTED = ("'XedniAffineCoset.candidate_preserves_divisibility' depends on axioms: [propext, Quot.sound]\n"
+               "'XedniAffineCoset.direction_span_closed' depends on axioms: [propext, Quot.sound]\n"
+               "'XedniAffineCoset.candidate_preserves' depends on axioms: [propext, Quot.sound]\n"
+               "Xedni affine-coset proof and source binding verified\n")
+
+    def setUp(self):
+        self.scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(self.scratch.cleanup)
+        self.root = Path(self.scratch.name)
+        record = gate.RECEIPT_BOUND_SOURCES[self.SOURCE]
+        for relative in (self.SOURCE, record["checker"]):
+            target = self.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(REPOSITORY / relative, target)
+        self.root_patch = patch.object(gate, "ROOT", self.root)
+        self.root_patch.start()
+        self.addCleanup(self.root_patch.stop)
+
+    def test_pinned_bytes_match_the_registered_digests(self):
+        record = gate.RECEIPT_BOUND_SOURCES[self.SOURCE]
+        self.assertEqual(gate.digest(self.root / self.SOURCE), record["sha256"])
+        self.assertEqual(gate.digest(self.root / record["checker"]), record["checker_sha256"])
+
+    def test_admitted_through_its_own_checker(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = self.PRINTED
+            checked = gate.check_receipt_bound_source(self.SOURCE)
+        self.assertEqual(checked, gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["sha256"])
+        self.assertEqual(run.call_args.args[0][0], "python3")
+        self.assertTrue(run.call_args.args[0][1].endswith("check.py"))
+
+    def test_changed_source_refused_before_native_command(self):
+        file = self.root / self.SOURCE
+        file.write_text(file.read_text() + "\n-- changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            run.assert_not_called()
+
+    def test_changed_checker_refused_before_native_command(self):
+        checker = self.root / gate.RECEIPT_BOUND_SOURCES[self.SOURCE]["checker"]
+        checker.write_text(checker.read_text() + "\n# changed\n")
+        with patch.object(gate, "run") as run:
+            with self.assertRaisesRegex(ValueError, "checker changed"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            run.assert_not_called()
+
+    def test_nonstandard_axiom_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = self.PRINTED.replace("propext, Quot.sound", "ClaimAsAxiom", 1)
+            with self.assertRaisesRegex(ValueError, "unexpected foundation"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_missing_printout_refused(self):
+        with patch.object(gate, "run") as run, redirect_stdout(StringIO()):
+            run.return_value.stdout = "\n".join(self.PRINTED.splitlines()[1:]) + "\n"
+            with self.assertRaisesRegex(ValueError, "incomplete native axiom output"):
+                gate.check_receipt_bound_source(self.SOURCE)
+
+    def test_checker_failure_is_not_admission(self):
+        with patch.object(gate, "run", side_effect=ValueError("python3 exited 1")) as run:
+            with self.assertRaisesRegex(ValueError, "python3 exited 1"):
+                gate.check_receipt_bound_source(self.SOURCE)
+            self.assertEqual(run.call_count, 1)
+
+    def test_only_the_registered_path_is_routed(self):
+        self.assertIn(self.SOURCE, gate.RECEIPT_BOUND_SOURCES)
+        self.assertNotIn("research/xedni_lift_optimizer_20261101/lean/Other.lean", gate.RECEIPT_BOUND_SOURCES)
