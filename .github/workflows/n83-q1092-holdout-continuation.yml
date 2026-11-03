@@ -151,7 +151,7 @@ jobs:
       SHARD_INDEX: ${{ matrix.shard }}
       EXPECTED_FROZEN_PLAN_SHA256: __Q1092_FROZEN_PLAN_SHA256_PENDING__
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}

@@ -28,7 +28,7 @@ jobs:
       # of them, and a manifest missing from disk costs one lazy blob fetch, a
       # round trip each (690 of them cancelled this job at its cap twice on
       # 2026-11-03). The checkout fetches the whole set in one batch instead.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 2
           filter: blob:none

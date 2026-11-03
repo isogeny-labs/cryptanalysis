@@ -26,7 +26,7 @@ jobs:
     env:
       EXP: experiments/glv-table-walltime-above40-20261103
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # the full tree does not fit beside two build trees; only these paths are used
           sparse-checkout: |
