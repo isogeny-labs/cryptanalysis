@@ -552,6 +552,10 @@ pub struct FrobeniusCanon {
     /// `tables[i][b]`: the normal coordinates of the field element whose
     /// `i`-th byte is `b` and whose other bytes are zero.
     tables: Vec<[u64; 256]>,
+    /// `tables` padded with zero tables to eight, so [`Self::coords`] is
+    /// a fixed, fully unrolled walk over the eight bytes of a word.  A
+    /// byte at or above `⌈n/8⌉` contributes nothing, as in `tables`.
+    padded: Box<[[u64; 256]; 8]>,
 }
 
 impl FrobeniusCanon {
@@ -608,18 +612,24 @@ impl FrobeniusCanon {
                 }
                 table
             })
-            .collect();
-        Some(Self { n, mask, tables })
+            .collect::<Vec<[u64; 256]>>();
+        let mut padded = Box::new([[0u64; 256]; 8]);
+        for (slot, table) in padded.iter_mut().zip(&tables) {
+            *slot = *table;
+        }
+        Some(Self { n, mask, tables, padded })
     }
 
     /// The normal coordinates of a field element.
     #[inline]
+    #[inline(always)]
     pub fn coords(&self, x: u64) -> u64 {
-        let mut acc = 0u64;
-        for (i, table) in self.tables.iter().enumerate() {
-            acc ^= table[((x >> (8 * i)) & 0xff) as usize];
-        }
-        acc
+        let b = x.to_le_bytes();
+        let t = &*self.padded;
+        (t[0][usize::from(b[0])] ^ t[1][usize::from(b[1])])
+            ^ (t[2][usize::from(b[2])] ^ t[3][usize::from(b[3])])
+            ^ ((t[4][usize::from(b[4])] ^ t[5][usize::from(b[5])])
+                ^ (t[6][usize::from(b[6])] ^ t[7][usize::from(b[7])]))
     }
 
     /// The least rotation of the normal coordinates: a name for the
@@ -675,15 +685,18 @@ impl FrobeniusCanon {
             return (c, 0);
         }
         // Grow the run length while some run is still that long.
+        // `rot` is `rotl^len(zeros)`, advanced by one constant rotation a
+        // step rather than recomputed from `zeros` with a variable shift.
         let mut run = zeros;
-        let mut len = 1u32;
+        let mut rot = zeros;
+        let back = n - 1;
         loop {
-            let next = run & self.rotl(zeros, len);
+            rot = ((rot << 1) | (rot >> back)) & self.mask;
+            let next = run & rot;
             if next == 0 {
                 break;
             }
             run = next;
-            len += 1;
         }
         // `run` marks the top bit `p` of every zero run of length `len`.
         let mut best = u64::MAX;
@@ -1173,6 +1186,7 @@ mod tests {
                 n,
                 mask,
                 tables: Vec::new(),
+                padded: Box::new([[0u64; 256]; 8]),
             };
             let mut words = vec![0, mask, 1, 1 << (n - 1), mask ^ 1, mask >> 1];
             for period in 1..=n.min(12) {
