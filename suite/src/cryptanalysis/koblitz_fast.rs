@@ -285,6 +285,39 @@ impl FastCurve {
         lambdas: &mut Vec<u64>,
         scratch: &mut BatchScratch,
     ) {
+        #[cfg(target_arch = "x86_64")]
+        if self.field.has_clmul() {
+            // SAFETY: `has_clmul` is the runtime detection of `pclmulqdq`,
+            // the only feature the copy enables.
+            return unsafe { self.add_many_lazy_clmul(p, qs, out, lambdas, scratch) };
+        }
+        self.add_many_lazy_body(p, qs, out, lambdas, scratch)
+    }
+
+    /// [`Self::add_many_lazy_scalar`] compiled with `pclmulqdq` enabled,
+    /// so the slope and abscissa products inline (the same body).
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn add_many_lazy_clmul(
+        &self,
+        p: FastPoint,
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        lambdas: &mut Vec<u64>,
+        scratch: &mut BatchScratch,
+    ) {
+        self.add_many_lazy_body(p, qs, out, lambdas, scratch)
+    }
+
+    #[inline(always)]
+    fn add_many_lazy_body(
+        &self,
+        p: FastPoint,
+        qs: &[FastPoint],
+        out: &mut Vec<FastPoint>,
+        lambdas: &mut Vec<u64>,
+        scratch: &mut BatchScratch,
+    ) {
         let f = &self.field;
         scratch.dens.clear();
         scratch.dens.extend(qs.iter().map(|q| {

@@ -137,6 +137,8 @@ pub struct Gf2 {
     red: Box<[[u64; 256]; 8]>,
     positions: usize,
     has_clmul: bool,
+    /// `⌊z^{2n} / irr⌋`, the Barrett constant of [`Self::mul_barrett`].
+    mu: u64,
 }
 
 /// Spread the low 32 bits of `x` so that bit `i` lands at bit `2i`.
@@ -153,6 +155,7 @@ fn spread32(x: u64) -> u64 {
 
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "pclmulqdq")]
+#[inline]
 unsafe fn clmul_u64(a: u64, b: u64) -> u128 {
     use std::arch::x86_64::*;
     let x = _mm_set_epi64x(0, a as i64);
@@ -213,6 +216,16 @@ impl Gf2 {
         #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
         let has_clmul = false;
 
+        // `⌊z^{2n} / irr⌋` by long division: degree `n`, so it fits a word.
+        let mut rem: u128 = 1u128 << (2 * n);
+        let mut mu = 0u64;
+        for i in (0..=n).rev() {
+            if (rem >> (i + n)) & 1 == 1 {
+                mu |= 1u64 << i;
+                rem ^= u128::from(bits) << i;
+            }
+        }
+
         Self {
             n,
             irr: bits,
@@ -220,7 +233,33 @@ impl Gf2 {
             red,
             positions,
             has_clmul,
+            mu,
         }
+    }
+
+    /// `c mod irr` for a carry-less product `c` of degree `< 2n − 1`, by
+    /// Barrett's reduction on polynomials: with `μ = ⌊z^{2n}/irr⌋` the
+    /// quotient is exactly `q = ⌊⌊c/z^n⌋ · μ / z^n⌋` (no correction step
+    /// over `F_2[z]`), and the remainder is the low `n` bits of `c + q·irr`.
+    /// Two carry-less multiplications and a few shifts, where
+    /// [`Self::reduce`] makes `⌈(n−1)/8⌉` dependent table lookups; the
+    /// same field element.  `⌊c/z^n⌋` has degree `≤ n − 2` and `μ`
+    /// degree `n`, so every operand fits a word.
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    #[inline]
+    unsafe fn barrett(&self, c: u128) -> u64 {
+        let hi = (c >> self.n) as u64;
+        let q = (clmul_u64(hi, self.mu) >> self.n) as u64;
+        let qf = clmul_u64(q, self.irr) as u64;
+        ((c as u64) ^ qf) & self.mask
+    }
+
+    /// Whether the carry-less multiply instruction was detected at
+    /// construction (`pclmulqdq` on x86-64, PMULL on AArch64).
+    #[inline(always)]
+    pub fn has_clmul(&self) -> bool {
+        self.has_clmul
     }
 
     /// Fold a `< 2^{2n−1}` carry-less product back into the field.
@@ -270,8 +309,14 @@ impl Gf2 {
     /// No early-out on a zero operand: `clmul` handles it correctly and
     /// the branch would be unpredictable, which costs more than the
     /// multiply it skips.
-    #[inline]
+    #[inline(always)]
     pub fn mul(&self, a: u64, b: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: guarded by the runtime feature detection recorded
+            // in `has_clmul` at construction.
+            return unsafe { self.barrett(clmul_u64(a, b)) };
+        }
         self.reduce(self.clmul(a, b))
     }
 
@@ -281,18 +326,23 @@ impl Gf2 {
     /// products, and the fold is most of what a multiplication costs.
     #[inline(always)]
     fn dot2(&self, a: u64, b: u64, c: u64, d: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: as in `mul`; the sum still has degree `< 2n − 1`.
+            return unsafe { self.barrett(clmul_u64(a, b) ^ clmul_u64(c, d)) };
+        }
         self.reduce(self.clmul(a, b) ^ self.clmul(c, d))
     }
 
     /// With `pclmulqdq`, `a·a` is one instruction and beats the
     /// twelve-step bit spread; without it the spread is the cheap path.
-    #[inline]
+    #[inline(always)]
     pub fn sqr(&self, a: u64) -> u64 {
         #[cfg(target_arch = "x86_64")]
         if self.has_clmul {
             // SAFETY: guarded by the runtime feature detection recorded
             // in `has_clmul` at construction.
-            return self.reduce(unsafe { clmul_u64(a, a) });
+            return unsafe { self.barrett(clmul_u64(a, a)) };
         }
         #[cfg(target_arch = "aarch64")]
         if self.has_clmul {
@@ -334,6 +384,7 @@ impl Gf2 {
     }
 
     /// `a^(2^k)`.
+    #[inline(always)]
     pub fn sqr_k(&self, mut a: u64, k: u32) -> u64 {
         for _ in 0..k {
             a = self.sqr(a);
@@ -350,6 +401,23 @@ impl Gf2 {
     /// multiplications, against `n − 2` for square-and-multiply —
     /// 7 instead of 22 at `n = 24`.
     pub fn inv(&self, a: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: as in `batch_inv`.
+            return unsafe { self.inv_clmul(a) };
+        }
+        self.inv_body(a)
+    }
+
+    /// [`Self::inv`] with `pclmulqdq` enabled (see `batch_inv_clmul`).
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn inv_clmul(&self, a: u64) -> u64 {
+        self.inv_body(a)
+    }
+
+    #[inline(always)]
+    fn inv_body(&self, a: u64) -> u64 {
         if a == 0 || self.n <= 1 {
             return a;
         }
@@ -388,6 +456,27 @@ impl Gf2 {
     /// Both passes walk `xs` and `scratch` as zipped chunks, so the loops
     /// carry no bounds checks and no `Vec` growth checks.
     pub fn batch_inv(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: `has_clmul` records the runtime detection of
+            // `pclmulqdq`, the only feature the copy enables.
+            return unsafe { self.batch_inv_clmul(xs, scratch) };
+        }
+        self.batch_inv_body(xs, scratch)
+    }
+
+    /// [`Self::batch_inv`] compiled with `pclmulqdq` enabled, so the
+    /// carry-less products and their Barrett reduction inline into the
+    /// loops instead of being a call per multiplication.  The same body,
+    /// the same values.
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn batch_inv_clmul(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
+        self.batch_inv_body(xs, scratch)
+    }
+
+    #[inline(always)]
+    fn batch_inv_body(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
         const LANES: usize = 4;
         scratch.clear();
         scratch.resize(xs.len(), 0);
@@ -1273,6 +1362,38 @@ mod tests {
     /// Batch inversion equals element-wise inversion on every length
     /// around the lane count and a full block, with zeros scattered in
     /// (left as zero) and a slice of nothing but zeros.
+    /// The Barrett reduction behind `mul`, `sqr` and `dot2` on hosts with
+    /// a carry-less multiply against the byte-table fold, which is the
+    /// reference: degrees from 2 to 63, random operands and the edge
+    /// values `0`, `1` and all ones, and a zero `a·a + b·b` sum.
+    #[test]
+    fn barrett_reduction_matches_the_table_fold() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut s = 0x5EED_BA77_E770_0001u64;
+        for n in [2u32, 3, 7, 8, 9, 16, 24, 31, 32, 33, 41, 53, 61, 62, 63] {
+            let Some(irr) = find_irreducible_sparse(n) else { continue };
+            let gf = Gf2::new(&irr);
+            let edge = [0u64, 1, gf.mask, gf.mask >> 1, 1 << (n - 1)];
+            for i in 0..4096 {
+                let (a, b) = if i < 25 {
+                    (edge[i % 5], edge[i / 5])
+                } else {
+                    (xorshift(&mut s) & gf.mask, xorshift(&mut s) & gf.mask)
+                };
+                let want = gf.reduce(gf.clmul(a, b));
+                assert_eq!(gf.mul(a, b), want, "n = {n}, mul({a:#x}, {b:#x})");
+                assert_eq!(gf.sqr(a), gf.reduce(gf.clmul(a, a)), "n = {n}, sqr({a:#x})");
+                let (c, d) = (xorshift(&mut s) & gf.mask, xorshift(&mut s) & gf.mask);
+                assert_eq!(
+                    gf.dot2(a, b, c, d),
+                    gf.reduce(gf.clmul(a, b) ^ gf.clmul(c, d)),
+                    "n = {n}, dot2"
+                );
+                assert_eq!(gf.dot2(a, a, a, a), 0, "n = {n}, dot2 of equal products");
+            }
+        }
+    }
+
     #[test]
     fn batch_inversion_matches_elementwise() {
         use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
