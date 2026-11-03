@@ -1,0 +1,22 @@
+{
+ "instance": {"group": "zp", "p": 4503599627372423, "order": 2251799813686211, "g": 1377747092617056, "h": 3666041038937390, "threads": 1},
+ "baseline": "main fbabd9df6 (after #1380)",
+ "callgrind_ir_solve": {
+  "seed1": {"ops": 103317083, "main": 11090838937, "fused": 6971404689},
+  "seed2": {"ops": 14606732, "main": 1563271818, "fused": 981122494},
+  "seed3": {"ops": 50399197, "main": 5412493838, "fused": 3403134007}
+ },
+ "ir_per_op": {
+  "seed1": {"main": 107.35, "fused": 67.48},
+  "seed2": {"main": 107.02, "fused": 67.17},
+  "seed3": {"main": 107.39, "fused": 67.52}
+ },
+ "ir_per_op_history_seed2": {"before #1380 (0045cfa09)": 125.58, "#1380 native step (fbabd9df6)": 107.02, "fused round (this change)": 67.17, "target": 100.0},
+ "identical_outputs": {"seeds": [1, 2, 3, 4, 5, 6], "fields": ["status", "x", "ops", "iterations", "table_entries", "collisions", "bytes_peak"], "x": 230086908134825},
+ "perfindex_instr": {"dlp/c_rho_zp40": [233308726, 146925023], "dlp/c_rho_ec36": [190785114, 190186983], "note": "base Ir, cand Ir; every other dlp, field_ec and relation kernel 1.000; fingerprints identical, gate valid"},
+ "perfindex_compare_wall": {
+  "dlp/c_rho_zp40": {"base_ms": 29.223, "cand_ms": 23.919, "speedup": 1.240, "ci95": [1.204, 1.269], "aa_noise_ln": 0.0059, "verdict": "faster"},
+  "dlp/c_rho_ec36": {"base_ms": 19.915, "cand_ms": 19.811, "speedup": 1.000, "ci95": [0.958, 1.029], "aa_noise_ln": 0.033, "verdict": "neutral"},
+  "performance_index": 1.015, "performance_index_ci95": [1.008, 1.029], "rounds": 7, "taskset": 3, "valid": true
+ }
+}
