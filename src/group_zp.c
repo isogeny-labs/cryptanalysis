@@ -39,7 +39,7 @@ static int zp_equal(const ca_group *g, const ca_elem *a, const ca_elem *b)
 static uint64_t zp_hash(const ca_group *g, const ca_elem *a)
 {
     (void)g;
-    return ca_mix64(a->w[0] ^ 0x5bd1e995ULL);
+    return ca_zp_hash_word(a->w[0]);
 }
 
 /* The scratch pointer is non-const because the vtable slot is shared with the
@@ -77,6 +77,8 @@ static const ca_group_vtable zp_vt = {
     zp_op, zp_dbl, zp_inv, zp_identity, zp_is_identity, zp_equal, zp_hash,
     zp_batch_op, zp_encode, zp_decode, zp_is_valid, NULL,
 };
+
+int ca_zp_group_is_native(const ca_group *g) { return g->vt == &zp_vt; }
 
 /* k*a in (Z/pZ)^*: the square-and-multiply of ca_group_mul on the one
  * residue word, with inline Montgomery arithmetic instead of two indirect

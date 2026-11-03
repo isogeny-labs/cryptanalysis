@@ -563,6 +563,10 @@ static void *rho_thread_main(void *arg)
      * vtable's entries (ca_internal.h), so every value agrees with the
      * generic path. */
     const int ec = ca_ec_group_is_native(g);
+    /* The native (Z/pZ)^* group: each walk's step is one Montgomery
+     * product of its residue word, done in place below instead of staging
+     * the multipliers and points and dispatching zp_batch_op. */
+    const int zp = !ec && ca_zp_group_is_native(g);
     const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
     if (!walks || !Yn || !B || !scratch) {
         free(walks); free(Yn); free(B); free(scratch);
@@ -638,6 +642,15 @@ static void *rho_thread_main(void *arg)
             }
 #undef BM
 #undef RHO_CHAINS
+        } else if (zp) {
+            /* zp_batch_op's product, element by element: the other words
+             * of the point are carried over as the copy-then-multiply did. */
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                Yn[w] = wk->Y;
+                Yn[w].w[0] = ca_mont_mul(&g->mont, wk->Y.w[0], sh->M[wk->idx].w[0]);
+            }
         } else {
             for (uint32_t w = 0; w < W; w++) {
                 rho_walk *wk = &walks[w];
@@ -663,6 +676,9 @@ static void *rho_thread_main(void *arg)
                 ca_elem *y = &Yn[w];
                 neg = sh->negmap ? ca_ec_canon_words(ecc.p, &y->w[1], y->w[2]) : 0;
                 h = ca_ec_hash_words(y->w[0], y->w[1], y->w[2]);
+            } else if (zp) {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_zp_hash_word(Yn[w].w[0]);
             } else {
                 neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
                 h = ca_group_hash(g, &Yn[w]);

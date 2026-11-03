@@ -97,6 +97,10 @@ struct ca_group;
  * same functions, so every value agrees) and its batched step adds the
  * table entries where they lie instead of copying them first. */
 
+/* zp_hash on the residue word: the vtable's zp_hash calls this, and the
+ * rho walk inlines it for the native (Z/pZ)^* group. */
+static inline uint64_t ca_zp_hash_word(uint64_t x) { return ca_mix64(x ^ 0x5bd1e995ULL); }
+
 /* ec_hash: equal points hash equal; the walk's index and distinguished-
  * point test read it. */
 static inline uint64_t ca_ec_hash_words(uint64_t x, uint64_t y, uint64_t inf)
@@ -121,6 +125,9 @@ static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
 /* Whether g is the native E(F_p) group of ca_group_ec_init (not a user
  * group of the same kind), so that the helpers here describe it. */
 int ca_ec_group_is_native(const struct ca_group *g);
+/* Whether g is the library's own (Z/pZ)^* group, whose rho step the walk
+ * performs inline (one Montgomery product per walk, no staging copies). */
+int ca_zp_group_is_native(const struct ca_group *g);
 
 /* The field constants the affine group law reads, copied out of the group
  * once per batch.  The stores of a batch (points, denominators, products)
