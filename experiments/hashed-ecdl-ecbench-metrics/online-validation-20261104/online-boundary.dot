@@ -1,0 +1,23 @@
+digraph boundary {
+  graph [rankdir=TB, bgcolor="white", pad="0.15", nodesep="0.18", ranksep="0.25"];
+  node [shape=box, style="rounded,filled", fillcolor="#eff5fb", color="#395b78", fontname="Helvetica", fontsize=10];
+  edge [color="#395b78", arrowsize=0.7];
+  subgraph cluster_cold {
+    label="Cold native one-target solve (all phases)"; color="#8aa4bb";
+    setup [label="Reusable preparation\nCurve/configuration + initial bases/indexes"];
+    subgraph cluster_online {
+      label="Online: target_validation through return; retries included"; color="#4d8e72";
+      validation [label="Target subgroup validation\nTarget scalar multiplication included", fillcolor="#e5f3eb"];
+      query [label="Relation target / query"];
+      oracle [label="Network + contraction / selector search"];
+      checks [label="Witness / relation checks + row assembly"];
+      recovery [label="Elimination + scalar/certificate replay"];
+      validation -> query -> oracle -> checks -> recovery;
+    }
+    setup -> validation;
+  }
+  stop [label="Return success, explicit limit or invalidity\nPreserve outcome and available counters", fillcolor="#fff1dc"];
+  recovery -> stop;
+  setup -> stop [label="preparation limit", fontsize=8, style=dashed];
+  validation -> stop [label="validation error", fontsize=8, style=dashed];
+}

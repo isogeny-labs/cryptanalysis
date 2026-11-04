@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T0723Z-descent-phases-k0n53",
+  "latest_record": "20261104T1538Z-gf2-penta-fold",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 6,
+    "measured": 8,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -691,10 +691,41 @@
     },
     {
       "better": "higher",
-      "first": 1.254,
-      "latest": 1.254,
+      "first": 1.136,
+      "latest": 1.136,
       "latest_derived": {
         "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
+      "points": [
+        {
+          "commit": "1011c46a8754",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 15,
+          "record": "20261104T1632Z-pair-filter-two-bit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.093,
+            1.162
+          ],
+          "summary": "Two-bit presence filter for CPU-built folded pair tables: k0n53 relation collection 1.136x (CI 1.093-1.162) vs main a08cbbef7, descent 1.085x (neutral), same decompositions; device one-bit layout kept",
+          "value": 1.136
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.254,
+      "latest": 1.085,
+      "latest_derived": {
+        "improvement_vs_first_percent": -13.4769,
+        "improvement_vs_previous_percent": -13.4769
       },
       "metric": "wall_ratio.koblitz_descent_k0n53_m2_x4",
       "points": [
@@ -714,6 +745,24 @@
           ],
           "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
           "value": 1.254
+        },
+        {
+          "commit": "1011c46a8754",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -13.4769,
+            "improvement_vs_previous_percent": -13.4769
+          },
+          "n": 15,
+          "record": "20261104T1632Z-pair-filter-two-bit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.996,
+            1.159
+          ],
+          "summary": "Two-bit presence filter for CPU-built folded pair tables: k0n53 relation collection 1.136x (CI 1.093-1.162) vs main a08cbbef7, descent 1.085x (neutral), same decompositions; device one-bit layout kept",
+          "value": 1.085
         }
       ],
       "problem": "ic:N53",
@@ -747,6 +796,66 @@
         }
       ],
       "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.794,
+      "latest": 0.794,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.gf2_n53_mul_sqr_1m",
+      "points": [
+        {
+          "commit": "72581544e602",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 9,
+          "record": "20261104T1538Z-gf2-penta-fold",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.557,
+            0.86
+          ],
+          "summary": "Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.991 index vs main a08cbbef7 on a host without VPCLMULQDQ; dropped (reverted on the branch)",
+          "value": 0.794
+        }
+      ],
+      "problem": "kernel:gf2_n53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.865,
+      "latest": 0.865,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
+      "points": [
+        {
+          "commit": "72581544e602",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 9,
+          "record": "20261104T1538Z-gf2-penta-fold",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.644,
+            0.99
+          ],
+          "summary": "Negative result: shift-xor fold for the n=53 pentanomial, faster in isolation, was 0.794x on gf2_n53_mul_sqr_1m and 0.991 index vs main a08cbbef7 on a host without VPCLMULQDQ; dropped (reverted on the branch)",
+          "value": 0.865
+        }
+      ],
+      "problem": "kernel:gf2_n53",
       "unit": "ratio"
     },
     {
