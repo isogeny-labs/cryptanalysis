@@ -95,7 +95,7 @@ Distance to the matched reference at 40 bits (derived: value / rho-1 mean S =
 - It establishes a recorded first point per arm at 40 bits in `S`, with raw
   rows in S3 and the command, build and host in Git. The next run of the same
   command yields the progress report's first gain-vs-previous entry.
-- It does not establish a speedup, a ranking between arms, or anything about
+- It does not establish a speedup `[pcc:unverified]`, a ranking between arms, or anything about
   the index-calculus baseline: no code changed, n = 5 per cell, L0 host.
 - Limits: wall time on a shared VM; the reference is the run's own rho arm,
   not a frozen external reference; no replay certificate.
