@@ -2620,6 +2620,9 @@ pub struct FoldedStorage<'a> {
     pub words: &'a [u32],
     pub present: &'a [u64],
     pub present_mask: u64,
+    /// Whether each key sets two bits of its filter word
+    /// ([`PairSumTable::two_bit_filter`]) rather than one.
+    pub two_bit_filter: bool,
     pub tagged: bool,
     /// The normal basis the keys were named in; empty if the build fell
     /// back to the squaring chain.
@@ -2636,6 +2639,7 @@ impl FoldedStorage<'_> {
             words: self.words.to_vec(),
             present: self.present.to_vec(),
             present_mask: self.present_mask,
+            two_bit_filter: self.two_bit_filter,
             canon_tables: self.canon_tables.to_vec(),
         }
     }
@@ -2657,6 +2661,10 @@ pub struct FoldedParts {
     /// One bit per `pair_filter_hash(key) & present_mask`.
     pub present: Vec<u64>,
     pub present_mask: u64,
+    /// Whether each key also set bit `(h >> 32) & 63` of the same word
+    /// (see [`PairSumTable::two_bit_filter`]).  `false` for the
+    /// one-bit layout `gpu/ecc2k`'s fold kernel writes.
+    pub two_bit_filter: bool,
     /// The normal basis the keys were named in, as
     /// [`FrobeniusCanon::tables`] gives it.
     pub canon_tables: Vec<[u64; 256]>,
@@ -2714,6 +2722,14 @@ pub struct PairSumTable {
     /// few.  No false negatives, so the answer is unchanged.
     present: Vec<u64>,
     present_mask: u64,
+    /// Whether each key sets a second bit of the same filter word,
+    /// `(h >> 32) & 63`, and a lookup needs both.  One load either way;
+    /// the false-positive rate falls from `1 − e^{−ρ}` to about
+    /// `(1 − e^{−2ρ})²` at load `ρ` (12.3% → 5.4% at k0n53's), and each
+    /// false positive costs a bucket lookup.  Set on folded tables this
+    /// side builds; a table taken over with [`Self::from_folded_parts`]
+    /// keeps the layout it was built with.
+    two_bit_filter: bool,
     /// Whether the stored keys are folded by the signed Frobenius group
     /// `G = ⟨π, −1⟩`.
     ///
@@ -3343,6 +3359,7 @@ impl PairSumTable {
             bucket_shift,
             present,
             present_mask,
+            two_bit_filter: false,
             fold: false,
             canon: None,
             orbit_start: Vec::new(),
@@ -3458,6 +3475,7 @@ impl PairSumTable {
             bucket_shift,
             present,
             present_mask,
+            two_bit_filter: false,
             fold: false,
             canon: None,
             orbit_start: Vec::new(),
@@ -3480,6 +3498,27 @@ impl PairSumTable {
         kc: &KoblitzCurve,
         fb: &FrobeniusFactorBase,
         byte_budget: u128,
+    ) -> Option<Self> {
+        Self::build_folded_with_filter(kc, fb, byte_budget, true)
+    }
+
+    /// [`Self::build_folded_within`] with the one-bit filter layout that
+    /// `gpu/ecc2k`'s fold kernel writes, so its stored state can be
+    /// compared word for word (`examples/dump_fold_vectors.rs`,
+    /// `examples/load_fold_table.rs`).  The same answers.
+    pub fn build_folded_within_one_bit_filter(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        byte_budget: u128,
+    ) -> Option<Self> {
+        Self::build_folded_with_filter(kc, fb, byte_budget, false)
+    }
+
+    fn build_folded_with_filter(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        byte_budget: u128,
+        two_bit_filter: bool,
     ) -> Option<Self> {
         let n_points = fb.points.len();
         if n_points > u32::MAX as usize {
@@ -3581,8 +3620,13 @@ impl PairSumTable {
                         Self::compact_rest(key)
                     };
                 }
-                let h = (pair_filter_hash(key) & present_mask) as usize;
-                present_atomic[h >> 6].fetch_or(1u64 << (h & 63), Ordering::Relaxed);
+                let full = pair_filter_hash(key);
+                let h = (full & present_mask) as usize;
+                let mut bits = 1u64 << (h & 63);
+                if two_bit_filter {
+                    bits |= 1u64 << ((full >> 32) & 63);
+                }
+                present_atomic[h >> 6].fetch_or(bits, Ordering::Relaxed);
             });
         });
         let present: Vec<u64> = present_atomic
@@ -3600,6 +3644,7 @@ impl PairSumTable {
                 words: rests,
                 present,
                 present_mask,
+                two_bit_filter,
                 canon_tables: Vec::new(),
             },
             tagged,
@@ -3640,6 +3685,7 @@ impl PairSumTable {
             bucket_shift: parts.bucket_shift,
             present: parts.present,
             present_mask: parts.present_mask,
+            two_bit_filter: parts.two_bit_filter,
             fold: true,
             canon,
             orbit_start,
@@ -3799,6 +3845,7 @@ impl PairSumTable {
             words: &self.rests,
             present: &self.present,
             present_mask: self.present_mask,
+            two_bit_filter: self.two_bit_filter,
             tagged: self.tagged,
             canon_tables: self.canon.as_ref().map_or(&[], |c| c.tables()),
         })
@@ -4041,8 +4088,14 @@ impl PairSumTable {
     /// `true` still has to be checked against the entries.
     #[inline]
     fn admitted(&self, key: u64) -> bool {
-        let h = (pair_filter_hash(key) & self.present_mask) as usize;
-        self.present[h >> 6] >> (h & 63) & 1 == 1
+        let full = pair_filter_hash(key);
+        let h = (full & self.present_mask) as usize;
+        let word = self.present[h >> 6];
+        let first = word >> (h & 63) & 1 == 1;
+        if self.two_bit_filter {
+            return first && word >> ((full >> 32) & 63) & 1 == 1;
+        }
+        first
     }
 
     /// All `(i, j)` with `P_i + P_j` equal to the packed point.
@@ -12157,6 +12210,57 @@ mod tests {
                 "m = {m}: the compact table decomposed nothing at all"
             );
         }
+    }
+
+    #[test]
+    fn two_bit_filter_decomposes_as_the_one_bit_one_and_admits_fewer() {
+        // Degree 53, so a probe is almost never a stored sum and what the
+        // filter admits is its false positives (at degree 31 the subgroup
+        // is small enough for a modest base to cover half of it).
+        let kc = KoblitzCurve::new(0, 53).expect("degree 53 curve");
+        let fb = build_subgroup_orbit_factor_base(&kc, 3, 1500).expect("base");
+        let one = PairSumTable::build_folded_within_one_bit_filter(&kc, &fb, u128::MAX)
+            .expect("one-bit table");
+        let two = PairSumTable::build_folded_within(&kc, &fb, u128::MAX).expect("two-bit table");
+        assert!(two.two_bit_filter && !one.two_bit_filter);
+        let fc = FastCurve::new(&kc.curve).expect("fits a word");
+        let g = fc.lift(kc.generator());
+        // Every stored pair sum is present in both; random multiples of
+        // the generator, mostly absent, get the same answer from both and
+        // the same decomposition.
+        for i in (0..fb.points.len()).step_by(37) {
+            for j in (i..fb.points.len()).step_by(53) {
+                let sum = fc.add(fc.lift(&fb.points[i]), fc.lift(&fb.points[j]));
+                if sum.infinity {
+                    continue;
+                }
+                assert!(two.contains_key(two.key_of(sum)), "pair ({i}, {j}) lost");
+            }
+        }
+        let (mut admitted_one, mut admitted_two, mut probes) = (0usize, 0usize, 0usize);
+        let mut p = g;
+        for _ in 0..20_000 {
+            p = fc.add(p, g);
+            if p.infinity {
+                continue;
+            }
+            probes += 1;
+            let (k1, k2) = (one.key_of(p), two.key_of(p));
+            assert_eq!(k1, k2);
+            // `contains_key` may answer a sixteen-bit tag collision with
+            // `true`; the two-bit filter rejects some of those first, so
+            // its answers are a subset.  What is decomposed is the same.
+            assert!(!two.contains_key(k2) || one.contains_key(k1));
+            assert_eq!(one.decompose_fast(p, 2), two.decompose_fast(p, 2));
+            admitted_one += usize::from(one.admitted(k1));
+            admitted_two += usize::from(two.admitted(k2));
+        }
+        assert!(
+            // At this table's load (about 0.18 of the filter's bits)
+            // the expected rates are 16% and 10%.
+            admitted_two * 4 < admitted_one * 3,
+            "two-bit filter admitted {admitted_two} of {probes}, one-bit {admitted_one}"
+        );
     }
 
     #[test]
