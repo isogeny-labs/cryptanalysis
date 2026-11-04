@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T0557Z-proj-orbit-fast",
+  "latest_record": "20261104T0723Z-descent-phases-k0n53",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 5,
+    "measured": 6,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -413,6 +413,33 @@
     },
     {
       "better": "lower",
+      "first": 12.29,
+      "latest": 12.29,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "filter_admit_rate",
+      "points": [
+        {
+          "commit": "fe79ec13a9eb",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 8000000,
+          "record": "20261104T0723Z-descent-phases-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+          "value": 12.29
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "percent"
+    },
+    {
+      "better": "lower",
       "first": 573015816.0,
       "latest": 573015816.0,
       "latest_derived": {
@@ -548,6 +575,119 @@
       ],
       "problem": "ic:N53",
       "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 38.5,
+      "latest": 38.5,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "share.add_many_lazy",
+      "points": [
+        {
+          "commit": "fe79ec13a9eb",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 3,
+          "record": "20261104T0723Z-descent-phases-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            37.8,
+            38.7
+          ],
+          "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+          "value": 38.5
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "percent"
+    },
+    {
+      "better": "lower",
+      "first": 35.3,
+      "latest": 35.3,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "share.contains_key_loop",
+      "points": [
+        {
+          "commit": "fe79ec13a9eb",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 3,
+          "record": "20261104T0723Z-descent-phases-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            33.8,
+            36.0
+          ],
+          "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+          "value": 35.3
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "percent"
+    },
+    {
+      "better": "lower",
+      "first": 10.6,
+      "latest": 10.6,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "share.keys_of",
+      "points": [
+        {
+          "commit": "fe79ec13a9eb",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 3,
+          "record": "20261104T0723Z-descent-phases-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            10.1,
+            10.9
+          ],
+          "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+          "value": 10.6
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "percent"
+    },
+    {
+      "better": "neutral",
+      "first": 12073000.0,
+      "latest": 12073000.0,
+      "latest_derived": {},
+      "metric": "trials",
+      "points": [
+        {
+          "commit": "fe79ec13a9eb",
+          "date": "2026-11-04",
+          "derived": {},
+          "n": null,
+          "record": "20261104T0723Z-descent-phases-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+          "value": 12073000.0
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "count"
     },
     {
       "better": "higher",

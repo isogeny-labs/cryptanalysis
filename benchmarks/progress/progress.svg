@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1930" viewBox="0 0 900 1930" font-family="Helvetica, Arial, sans-serif" font-size="12">
-<rect width="900" height="1930" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="2240" viewBox="0 0 900 2240" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="900" height="2240" fill="white"/>
 <text x="60" y="30" font-size="18" font-weight="bold">Benchmark progress: cryptanalysis</text>
-<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 5, invalid 0, censored 0.</text>
+<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 6, invalid 0, censored 0.</text>
 <text x="60" y="84" font-weight="bold">Cumulative gain vs first record, unit S (derived, %)</text>
 <rect x="60" y="94" width="560" height="220" fill="none" stroke="#999"/>
 <line x1="60" y1="314.0" x2="620" y2="314.0" stroke="#eee"/>
@@ -154,7 +154,7 @@
 <circle cx="340.0" cy="1444.0" r="4" fill="#637bad"><title>20261104T0352Z-descent-walks-k0n53: 735.3 ir_per_op (n=8)</title></circle>
 <rect x="636" y="1355" width="10" height="10" fill="#637bad"/>
 <text x="650" y="1364">ic:N53 · ir_per_trial.w64</text>
-<text x="60" y="1634" font-weight="bold">Series in unit ratio: gain vs first record (derived, %)</text>
+<text x="60" y="1634" font-weight="bold">Series in unit percent: gain vs first record (derived, %)</text>
 <rect x="60" y="1644" width="560" height="220" fill="none" stroke="#999"/>
 <line x1="60" y1="1864.0" x2="620" y2="1864.0" stroke="#eee"/>
 <text x="54" y="1868.0" text-anchor="end" fill="#555">-1.2</text>
@@ -172,49 +172,79 @@
 <text x="620.0" y="1880" text-anchor="middle" fill="#555">2026-11-05</text>
 <line x1="60" y1="1754.0" x2="620" y2="1754.0" stroke="#bbb" stroke-dasharray="4 3"/>
 <text transform="translate(16,1754.0) rotate(-90)" text-anchor="middle" fill="#555">% better than first</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#167f73"><title>20261104T0352Z-descent-walks-k0n53: 0.9918 ratio (n=768)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#167f73"><title>20261104T0723Z-descent-phases-k0n53: 12.29 percent (n=8000000)</title></circle>
 <rect x="636" y="1649" width="10" height="10" fill="#167f73"/>
-<text x="650" y="1658">ic:N53 · cost_per_trial_ratio.aa</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#637bad"><title>20261104T0352Z-descent-walks-k0n53: 1.0391 ratio (n=768)</title></circle>
+<text x="650" y="1658">ic:N53 · filter_admit_rate</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#637bad"><title>20261104T0723Z-descent-phases-k0n53: 38.5 percent (n=3)</title></circle>
 <rect x="636" y="1665" width="10" height="10" fill="#637bad"/>
-<text x="650" y="1674">ic:N53 · cost_per_trial_ratio.w128</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#aa8b5b"><title>20261104T0352Z-descent-walks-k0n53: 1.0834 ratio (n=768)</title></circle>
+<text x="650" y="1674">ic:N53 · share.add_many_lazy</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#aa8b5b"><title>20261104T0723Z-descent-phases-k0n53: 35.3 percent (n=3)</title></circle>
 <rect x="636" y="1681" width="10" height="10" fill="#aa8b5b"/>
-<text x="650" y="1690">ic:N53 · cost_per_trial_ratio.w256</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#93a1a4"><title>20261104T0352Z-descent-walks-k0n53: 1.0946 ratio (n=768)</title></circle>
+<text x="650" y="1690">ic:N53 · share.contains_key_loop</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#93a1a4"><title>20261104T0723Z-descent-phases-k0n53: 10.6 percent (n=3)</title></circle>
 <rect x="636" y="1697" width="10" height="10" fill="#93a1a4"/>
-<text x="650" y="1706">ic:N53 · cost_per_trial_ratio.w512</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#69879e"><title>20261104T0352Z-descent-walks-k0n53: 1.2224 ratio (n=7)</title></circle>
-<rect x="636" y="1713" width="10" height="10" fill="#69879e"/>
-<text x="650" y="1722">ic:N53 · perfbench_descent_k0n53_r</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#b05c5c"><title>20261104T0557Z-proj-orbit-fast: 1.254 ratio (n=15)</title></circle>
-<rect x="636" y="1729" width="10" height="10" fill="#b05c5c"/>
-<text x="650" y="1738">ic:N53 · wall_ratio.koblitz_descen</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#5c8a3a"><title>20261104T0557Z-proj-orbit-fast: 1.151 ratio (n=15)</title></circle>
-<rect x="636" y="1745" width="10" height="10" fill="#5c8a3a"/>
-<text x="650" y="1754">ic:N53 · wall_ratio.koblitz_rung_k</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2148 ratio (n=7)</title></circle>
-<rect x="636" y="1761" width="10" height="10" fill="#8a5ca8"/>
-<text x="650" y="1770">kernel:suite_gf2_koblitz · perfind</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 4.1436 ratio (n=7)</title></circle>
-<rect x="636" y="1777" width="10" height="10" fill="#167f73"/>
-<text x="650" y="1786">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1933 ratio (n=7)</title></circle>
-<rect x="636" y="1793" width="10" height="10" fill="#637bad"/>
-<text x="650" y="1802">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.0116 ratio (n=7)</title></circle>
-<rect x="636" y="1809" width="10" height="10" fill="#aa8b5b"/>
-<text x="650" y="1818">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 1.4638 ratio (n=7)</title></circle>
-<rect x="636" y="1825" width="10" height="10" fill="#93a1a4"/>
-<text x="650" y="1834">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2539 ratio (n=7)</title></circle>
-<rect x="636" y="1841" width="10" height="10" fill="#69879e"/>
-<text x="650" y="1850">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1078 ratio (n=7)</title></circle>
-<rect x="636" y="1857" width="10" height="10" fill="#b05c5c"/>
-<text x="650" y="1866">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1986 ratio (n=7)</title></circle>
-<rect x="636" y="1873" width="10" height="10" fill="#5c8a3a"/>
-<text x="650" y="1882">kernel:suite_gf2_koblitz · wall_ra</text>
+<text x="650" y="1706">ic:N53 · share.keys_of</text>
+<text x="60" y="1944" font-weight="bold">Series in unit ratio: gain vs first record (derived, %)</text>
+<rect x="60" y="1954" width="560" height="220" fill="none" stroke="#999"/>
+<line x1="60" y1="2174.0" x2="620" y2="2174.0" stroke="#eee"/>
+<text x="54" y="2178.0" text-anchor="end" fill="#555">-1.2</text>
+<line x1="60" y1="2119.0" x2="620" y2="2119.0" stroke="#eee"/>
+<text x="54" y="2123.0" text-anchor="end" fill="#555">-0.6</text>
+<line x1="60" y1="2064.0" x2="620" y2="2064.0" stroke="#eee"/>
+<text x="54" y="2068.0" text-anchor="end" fill="#555">0</text>
+<line x1="60" y1="2009.0" x2="620" y2="2009.0" stroke="#eee"/>
+<text x="54" y="2013.0" text-anchor="end" fill="#555">0.6</text>
+<line x1="60" y1="1954.0" x2="620" y2="1954.0" stroke="#eee"/>
+<text x="54" y="1958.0" text-anchor="end" fill="#555">1.2</text>
+<text x="60.0" y="2190" text-anchor="middle" fill="#555">2026-11-03</text>
+<text x="246.7" y="2190" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="433.3" y="2190" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="620.0" y="2190" text-anchor="middle" fill="#555">2026-11-05</text>
+<line x1="60" y1="2064.0" x2="620" y2="2064.0" stroke="#bbb" stroke-dasharray="4 3"/>
+<text transform="translate(16,2064.0) rotate(-90)" text-anchor="middle" fill="#555">% better than first</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#167f73"><title>20261104T0352Z-descent-walks-k0n53: 0.9918 ratio (n=768)</title></circle>
+<rect x="636" y="1959" width="10" height="10" fill="#167f73"/>
+<text x="650" y="1968">ic:N53 · cost_per_trial_ratio.aa</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#637bad"><title>20261104T0352Z-descent-walks-k0n53: 1.0391 ratio (n=768)</title></circle>
+<rect x="636" y="1975" width="10" height="10" fill="#637bad"/>
+<text x="650" y="1984">ic:N53 · cost_per_trial_ratio.w128</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#aa8b5b"><title>20261104T0352Z-descent-walks-k0n53: 1.0834 ratio (n=768)</title></circle>
+<rect x="636" y="1991" width="10" height="10" fill="#aa8b5b"/>
+<text x="650" y="2000">ic:N53 · cost_per_trial_ratio.w256</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#93a1a4"><title>20261104T0352Z-descent-walks-k0n53: 1.0946 ratio (n=768)</title></circle>
+<rect x="636" y="2007" width="10" height="10" fill="#93a1a4"/>
+<text x="650" y="2016">ic:N53 · cost_per_trial_ratio.w512</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#69879e"><title>20261104T0352Z-descent-walks-k0n53: 1.2224 ratio (n=7)</title></circle>
+<rect x="636" y="2023" width="10" height="10" fill="#69879e"/>
+<text x="650" y="2032">ic:N53 · perfbench_descent_k0n53_r</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#b05c5c"><title>20261104T0557Z-proj-orbit-fast: 1.254 ratio (n=15)</title></circle>
+<rect x="636" y="2039" width="10" height="10" fill="#b05c5c"/>
+<text x="650" y="2048">ic:N53 · wall_ratio.koblitz_descen</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#5c8a3a"><title>20261104T0557Z-proj-orbit-fast: 1.151 ratio (n=15)</title></circle>
+<rect x="636" y="2055" width="10" height="10" fill="#5c8a3a"/>
+<text x="650" y="2064">ic:N53 · wall_ratio.koblitz_rung_k</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2148 ratio (n=7)</title></circle>
+<rect x="636" y="2071" width="10" height="10" fill="#8a5ca8"/>
+<text x="650" y="2080">kernel:suite_gf2_koblitz · perfind</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 4.1436 ratio (n=7)</title></circle>
+<rect x="636" y="2087" width="10" height="10" fill="#167f73"/>
+<text x="650" y="2096">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1933 ratio (n=7)</title></circle>
+<rect x="636" y="2103" width="10" height="10" fill="#637bad"/>
+<text x="650" y="2112">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.0116 ratio (n=7)</title></circle>
+<rect x="636" y="2119" width="10" height="10" fill="#aa8b5b"/>
+<text x="650" y="2128">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 1.4638 ratio (n=7)</title></circle>
+<rect x="636" y="2135" width="10" height="10" fill="#93a1a4"/>
+<text x="650" y="2144">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2539 ratio (n=7)</title></circle>
+<rect x="636" y="2151" width="10" height="10" fill="#69879e"/>
+<text x="650" y="2160">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1078 ratio (n=7)</title></circle>
+<rect x="636" y="2167" width="10" height="10" fill="#b05c5c"/>
+<text x="650" y="2176">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="2064.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1986 ratio (n=7)</title></circle>
+<rect x="636" y="2183" width="10" height="10" fill="#5c8a3a"/>
+<text x="650" y="2192">kernel:suite_gf2_koblitz · wall_ra</text>
 </svg>
