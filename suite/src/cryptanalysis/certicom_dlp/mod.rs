@@ -249,6 +249,8 @@ pub struct SolverOptions {
     pub max_table_entries: usize,
     pub max_matrix_entries: usize,
     pub factor_base_size: usize,
+    /// Summands per index-calculus decomposition (`m`); 2, 3 or 4.
+    pub summands: u32,
     pub max_base_candidates: u64,
     pub seed: u64,
 }
@@ -261,6 +263,7 @@ impl Default for SolverOptions {
             max_table_entries: 65_536,
             max_matrix_entries: 1_048_576,
             factor_base_size: 16,
+            summands: 2,
             max_base_candidates: 4096,
             seed: 1,
         }
