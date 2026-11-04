@@ -164,7 +164,7 @@ impl Encoder {
         )
     }
 
-    fn constraint(
+    pub(crate) fn constraint(
         &mut self,
         words: &[Word],
         function: impl Fn(&[BigUint], &mut Meter) -> Result<bool> + Send + Sync + 'static,
