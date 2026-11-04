@@ -23,6 +23,11 @@ pub mod reduction;
 pub mod ring;
 pub mod weighted;
 
+/// Structured-predicate backend with its own explicitly named curve/types.
+pub use structured_tensor as structured_backend;
+/// Versioned JSON interface shared with the bindings structured backend.
+pub use structured_tensor::structured_runner;
+
 pub use num_bigint::{BigInt, BigUint};
 
 /// Invalid input, exhausted resources, or a failed internal consistency check.
