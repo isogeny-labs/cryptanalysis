@@ -8977,9 +8977,37 @@ pub struct IndividualLogSolver<'a> {
     fast: Option<(FastCurve, FastPoint)>,
     h: BigUint,
     r_u64: u64,
+    /// Walks stepped together by [`Self::solve_by_walking`]; their slope
+    /// inversions share one field inversion per round.
+    walks: usize,
 }
 
 impl<'a> IndividualLogSolver<'a> {
+    /// The walk count [`Self::new`] sets on a subgroup below
+    /// [`Self::WIDE_WALKS_MIN_ORDER`].
+    pub const DEFAULT_WALKS: usize = 64;
+
+    /// The walk count [`Self::new`] sets on a subgroup of order at least
+    /// [`Self::WIDE_WALKS_MIN_ORDER`]: chosen by the frozen protocol
+    /// `experiments/descent-walks-k0n53-20261104/PROTOCOL.md` on k0n53
+    /// (`r ≈ 2^44.3`; per-trial cost 1.095× lower than 64 walks, 95% CI
+    /// 1.080–1.109, A/A noise ±1.7%).  On k0n31 (`r ≈ 2^29`) 512 walks
+    /// made the rung 0.835× as fast — a descent there takes too few
+    /// trials to repay starting 512 walks — so smaller subgroups keep 64.
+    pub const WIDE_WALKS: usize = 512;
+
+    /// See [`Self::WIDE_WALKS`].
+    pub const WIDE_WALKS_MIN_ORDER: u64 = 1 << 40;
+
+    /// Step `walks` (at least 1) walks together in the walked descent.
+    /// The probes are drawn in a different order for each count, so the
+    /// trials to the first decomposition and the relation found change
+    /// with it (the logarithm, verified, does not).
+    pub fn with_walks(mut self, walks: usize) -> Self {
+        self.walks = walks.max(1);
+        self
+    }
+
     /// `None` when the table's columns do not match the base's signed
     /// orbits, a column has no logarithm, or the strategy needs a pair
     /// table and none was supplied.
@@ -9020,6 +9048,11 @@ impl<'a> IndividualLogSolver<'a> {
             fast,
             h: &kc.cofactor % r,
             r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
+            walks: if *r >= BigUint::from(Self::WIDE_WALKS_MIN_ORDER) {
+                Self::WIDE_WALKS
+            } else {
+                Self::DEFAULT_WALKS
+            },
         })
     }
 
@@ -9121,32 +9154,32 @@ impl<'a> IndividualLogSolver<'a> {
         let pair = self.pair?;
         let m = self.descent_m();
         let q_fast = fc.lift(q);
-        const WALKS: usize = 64;
+        let walks = self.walks;
         // Walks must not tread on each other, so they start one stride
         // apart on the same line and each is stepped by G.  Building
         // them that way costs three scalar multiplications and 63
         // additions, where drawing each start costs two scalar
         // multiplications apiece — which on a walk of a few hundred
         // rounds is most of the descent.
-        let stride = (self.r_u64 / WALKS as u64).max(1 << 20);
+        let stride = (self.r_u64 / walks as u64).max(1 << 20);
         let mut rng = StdRng::seed_from_u64(self.opts.seed ^ 0x57_41_4c_4b_44_45_53_00);
         let a0 = rng.gen_range(1..self.r_u64);
         let b = rng.gen_range(1..self.r_u64);
         let stride_point = fc.mul_u64(*g, stride);
-        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(WALKS);
-        let mut states: Vec<FastPoint> = Vec::with_capacity(WALKS);
+        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(walks);
+        let mut states: Vec<FastPoint> = Vec::with_capacity(walks);
         let mut state = fc.add(fc.mul_u64(*g, a0), fc.mul_u64(q_fast, b));
         let mut a = a0;
-        for _ in 0..WALKS {
+        for _ in 0..walks {
             coefficients.push((a, b));
             states.push(state);
             state = fc.add(state, stride_point);
             a = (a + stride) % self.r_u64;
         }
-        let mut advanced = Vec::with_capacity(WALKS);
-        let mut lambdas: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut advanced = Vec::with_capacity(walks);
+        let mut lambdas: Vec<u64> = Vec::with_capacity(walks);
         let mut scratch = BatchScratch::default();
-        let mut keys: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut keys: Vec<u64> = Vec::with_capacity(walks);
         while report.trials < self.opts.max_trials {
             // Key every state of the round first and prefetch its filter
             // word, so the 64 probes' cache misses overlap instead of
@@ -10157,6 +10190,8 @@ mod tests {
     /// report `a ≥ r` there).
     #[test]
     fn descent_walk_steps_a_by_one_mod_r() {
+        // Few enough walks that first hits after a wrap occur at r = 127;
+        // the stepping is the same for every walk count.
         const WALKS: u64 = 64;
         let kc = KoblitzCurve::new(0, 9).unwrap();
         let fb = build_frobenius_factor_base(&kc, 0).unwrap();
@@ -10179,7 +10214,9 @@ mod tests {
                 allow_direct_relation: true,
                 ..opts.clone()
             };
-            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair)).unwrap();
+            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair))
+                .unwrap()
+                .with_walks(WALKS as usize);
             // The walks' start, drawn as `solve_by_walking` draws it: one
             // `a₀` and one `b` for all of them, walk `w` starting at
             // `a₀ + w·stride`.
