@@ -12,6 +12,11 @@ remaining, not as a pass/fail gate. Relabelling and accounting changes are
 not improvements. Full rule: [`AGENTS.md`](AGENTS.md), "Success criterion:
 iterative improvement of the index-calculus baseline".
 
+**Sabotage is assumed** (owner, 2026-11-04): a result is cited by its pcc claim
+id and standing (`[pcc:ID]`), or labelled `[pcc:unverified]` as an assertion.
+CI runs `python3 tools/pcc/pcc.py canary` and `ledger verify`. Rule:
+[`AGENTS.md`](AGENTS.md), "Sabotage is assumed: proof-carrying claims".
+
 Read **[AGENTS.md](AGENTS.md)**: it is the contract for every runtime, Claude
 Code included.
 
@@ -33,3 +38,11 @@ Look up curve facts and existing measurements in the lab's curve database
 before computing them: MCP server `ecdb` (export `ECDB_TOKEN` from secret
 `ecdb/api` first) or `scripts/ecdb.sh`. AGENTS.md, "Querying the curve
 database (ecdb)".
+
+**Benchmark records** (owner, 2026-11-04): every benchmark run leaves a
+`bench.record/v1` record in Git (`python3 tools/benchrec.py init|run|add-raw|
+metric|close`), its raw data in S3 by SHA-256, and a regenerated progress
+report in `benchmarks/progress/`, in the same PR. The hooks refuse unrecorded
+benchmark launchers and unrecorded pushes; the `bench-records` check fails
+the PR. AGENTS.md, "Benchmark records: data in S3, metadata in Git, one
+progress report"; [docs/benchmark-records.md](docs/benchmark-records.md).
