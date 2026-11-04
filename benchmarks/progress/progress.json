@@ -1,16 +1,251 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T1538Z-gf2-penta-fold",
+  "latest_record": "20261104T1757Z-n83-fieldops",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 8,
+    "measured": 9,
     "open": 0
   },
   "repo": "cryptanalysis",
   "schema": "bench.progress/v1",
   "series": [
+    {
+      "better": "lower",
+      "first": 8.976,
+      "latest": 8.976,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 4.094891
+      },
+      "metric": "e2e_cold_wall_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 4.094891
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": 2.192,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 8.976
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "wall_s"
+    },
+    {
+      "better": "higher",
+      "first": 1.261015,
+      "latest": 1.261015,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "e2e_paired_a_over_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.254132,
+            1.268056
+          ],
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 1.261015
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 0.39219,
+      "latest": 0.39219,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 4.095509
+      },
+      "metric": "s_e2e_cold",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 4.095509
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": 0.095761,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 0.39219
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 0.007481,
+      "latest": 0.007481,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "s_online",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 0.007481
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "S"
+    },
+    {
+      "better": "higher",
+      "first": 1.306917,
+      "latest": 1.306917,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "stage_index_build_a_over_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.30008,
+            1.313446
+          ],
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 1.306917
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.405339,
+      "latest": 1.405339,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "stage_online_a_over_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.363152,
+            1.445999
+          ],
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 1.405339
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.199575,
+      "latest": 1.199575,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "stage_rank_stage_a_over_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.189425,
+            1.209878
+          ],
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 1.199575
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.316541,
+      "latest": 1.316541,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "stage_scan_selftest_a_over_b",
+      "points": [
+        {
+          "commit": "20e1e8dbb0d4",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 36,
+          "record": "20261104T1757Z-n83-fieldops",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.307667,
+            1.326899
+          ],
+          "summary": "n=83 field ops Tier 1 run 41869146827: end-to-end cold A/B 1.2610 [1.2541, 1.2681], exact (identical relations, probes, digests); in-run gap to rT770 4.096 for B",
+          "value": 1.316541
+        }
+      ],
+      "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+      "unit": "ratio"
+    },
     {
       "better": "lower",
       "first": 1.572895,
