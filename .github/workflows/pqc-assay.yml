@@ -40,7 +40,7 @@ jobs:
           sparse-checkout: |
             include
             verification/pqc-assay
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: verification/pqc-assay/.cache
           key: assay-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('verification/pqc-assay/toolchain.env') }}

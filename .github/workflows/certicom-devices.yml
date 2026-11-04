@@ -54,7 +54,7 @@ jobs:
             echo 'manifest=Cargo.toml' >> "$GITHUB_OUTPUT"
             echo 'workspace=.' >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry/index
