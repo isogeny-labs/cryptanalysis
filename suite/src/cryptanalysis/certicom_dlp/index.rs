@@ -36,6 +36,8 @@ pub struct IndexReport {
     pub factor_base_candidates: u64,
     pub factor_base_source: &'static str,
     pub decomposition: &'static str,
+    /// Summands per decomposition (`m`), 2 to 4.
+    pub summands: u32,
     pub relation_queries: u64,
     pub verified_relations: u64,
     pub trivial_relations: u64,
@@ -115,18 +117,38 @@ fn build_factor_base(
     Ok((base, tried))
 }
 
+struct PairEntry {
+    sum: ChallengePoint,
+    left: usize,
+    left_negative: bool,
+    right: usize,
+    right_negative: bool,
+}
+
 struct Decomposer<'a> {
     group: &'a ChallengeGroup,
     base: &'a [ChallengePoint],
     lookup: HashMap<Option<(BigUint, BigUint)>, (usize, bool)>,
+    /// Summands per decomposition (`m`): 2, 3 or 4.
+    summands: u32,
+    /// Pair sums used by the `m = 3` and `m = 4` meet-in-the-middle paths.
+    pairs: Vec<PairEntry>,
+    pair_index: HashMap<Option<(BigUint, BigUint)>, usize>,
 }
 
 impl<'a> Decomposer<'a> {
     fn new(
         group: &'a ChallengeGroup,
         base: &'a [ChallengePoint],
+        summands: u32,
+        max_table_entries: usize,
         deadline: Option<Instant>,
     ) -> Result<Self, String> {
+        if !(2..=4).contains(&summands) {
+            return Err(format!(
+                "index-calculus decomposition supports m = 2, 3 or 4 summands, got {summands}"
+            ));
+        }
         let mut lookup = HashMap::new();
         for (i, point) in base.iter().enumerate() {
             check_deadline(deadline)?;
@@ -146,52 +168,132 @@ impl<'a> Decomposer<'a> {
             }
         }
         check_deadline(deadline)?;
+
+        let signed_count = 2 * base.len();
+        let pair_budget = signed_count
+            .checked_mul(signed_count + 1)
+            .map(|v| v / 2)
+            .ok_or("factor base is too large for a signed pair table")?;
+        if summands >= 3 && pair_budget > max_table_entries {
+            return Err(format!(
+                "m = {summands} needs up to {pair_budget} signed pair sums, above max-table-entries {max_table_entries}"
+            ));
+        }
+
+        let mut pairs = Vec::new();
+        let mut pair_index = HashMap::new();
+        if summands >= 3 {
+            for left in 0..signed_count {
+                check_deadline(deadline)?;
+                let (left_index, left_negative, left_point) = signed_point(group, base, left);
+                for right in left..signed_count {
+                    check_deadline(deadline)?;
+                    let (right_index, right_negative, right_point) =
+                        signed_point(group, base, right);
+                    let sum = group.add(&left_point, &right_point);
+                    if sum == group.identity() {
+                        continue;
+                    }
+                    let key = group.key(&sum);
+                    if pair_index.contains_key(&key) {
+                        continue;
+                    }
+                    pair_index.insert(key, pairs.len());
+                    pairs.push(PairEntry {
+                        sum,
+                        left: left_index,
+                        left_negative,
+                        right: right_index,
+                        right_negative,
+                    });
+                }
+            }
+            check_deadline(deadline)?;
+        }
+
         Ok(Self {
             group,
             base,
             lookup,
+            summands,
+            pairs,
+            pair_index,
         })
+    }
+
+    fn add_signed(&self, row: &mut [BigUint], index: usize, negative: bool, n: &BigUint) {
+        let value = if negative {
+            n - BigUint::one()
+        } else {
+            BigUint::one()
+        };
+        row[index] = (&row[index] + value) % n;
     }
 
     fn row(&self, target: &ChallengePoint) -> Option<Vec<BigUint>> {
         let n = self.group.order();
-        let signed = |negative| {
-            if negative {
-                n - BigUint::one()
-            } else {
-                BigUint::one()
-            }
-        };
         if let Some(&(j, negative)) = self.lookup.get(&self.group.key(target)) {
             let mut row = vec![BigUint::zero(); self.base.len()];
-            row[j] = signed(negative);
+            self.add_signed(&mut row, j, negative, n);
             return Some(row);
         }
-        for (i, point) in self.base.iter().enumerate() {
-            for neg_i in [false, true] {
-                let left = if neg_i {
-                    self.group.neg(point)
-                } else {
-                    point.clone()
-                };
-                let right = self.group.add(target, &self.group.neg(&left));
-                if let Some(&(j, neg_j)) = self.lookup.get(&self.group.key(&right)) {
-                    let right = if neg_j {
-                        self.group.neg(&self.base[j])
-                    } else {
-                        self.base[j].clone()
-                    };
-                    if self.group.add(&left, &right) != *target {
+        match self.summands {
+            2 => {
+                for left in 0..2 * self.base.len() {
+                    let (i, neg_i, left_point) = signed_point(self.group, self.base, left);
+                    let right = self.group.add(target, &self.group.neg(&left_point));
+                    let Some(&(j, neg_j)) = self.lookup.get(&self.group.key(&right)) else {
                         continue;
-                    }
+                    };
                     let mut row = vec![BigUint::zero(); self.base.len()];
-                    row[i] = signed(neg_i);
-                    row[j] = (&row[j] + signed(neg_j)) % n;
+                    self.add_signed(&mut row, i, neg_i, n);
+                    self.add_signed(&mut row, j, neg_j, n);
                     return Some(row);
                 }
+                None
             }
+            3 => {
+                for left in 0..2 * self.base.len() {
+                    let (i, neg_i, left_point) = signed_point(self.group, self.base, left);
+                    let rest = self.group.add(target, &self.group.neg(&left_point));
+                    if rest == self.group.identity() {
+                        continue;
+                    }
+                    let Some(&pair) = self.pair_index.get(&self.group.key(&rest)) else {
+                        continue;
+                    };
+                    let pair = &self.pairs[pair];
+                    let mut row = vec![BigUint::zero(); self.base.len()];
+                    self.add_signed(&mut row, i, neg_i, n);
+                    self.add_signed(&mut row, pair.left, pair.left_negative, n);
+                    self.add_signed(&mut row, pair.right, pair.right_negative, n);
+                    return Some(row);
+                }
+                None
+            }
+            4 => {
+                for first in &self.pairs {
+                    let rest = self
+                        .group
+                        .add(target, &self.group.neg(&first.sum));
+                    if rest == self.group.identity() {
+                        continue;
+                    }
+                    let Some(&second) = self.pair_index.get(&self.group.key(&rest)) else {
+                        continue;
+                    };
+                    let second = &self.pairs[second];
+                    let mut row = vec![BigUint::zero(); self.base.len()];
+                    self.add_signed(&mut row, first.left, first.left_negative, n);
+                    self.add_signed(&mut row, first.right, first.right_negative, n);
+                    self.add_signed(&mut row, second.left, second.left_negative, n);
+                    self.add_signed(&mut row, second.right, second.right_negative, n);
+                    return Some(row);
+                }
+                None
+            }
+            _ => None,
         }
-        None
     }
 
     fn row_on_device(
@@ -200,6 +302,9 @@ impl<'a> Decomposer<'a> {
         worker: &mut DeviceWorker,
     ) -> Result<Option<Vec<BigUint>>, String> {
         worker.ensure_active()?;
+        if self.summands != 2 {
+            return Ok(self.row(target));
+        }
         if self.lookup.contains_key(&self.group.key(target)) {
             let row = self.row(target);
             worker.ensure_active()?;
@@ -251,6 +356,29 @@ impl<'a> Decomposer<'a> {
     }
 }
 
+fn decomposition_name(summands: u32) -> &'static str {
+    match summands {
+        3 => "signed-three-summand-mitm",
+        4 => "signed-four-summand-pair-mitm",
+        _ => "signed-two-summand-mitm",
+    }
+}
+
+fn signed_point(
+    group: &ChallengeGroup,
+    base: &[ChallengePoint],
+    position: usize,
+) -> (usize, bool, ChallengePoint) {
+    let index = position / 2;
+    let negative = position % 2 == 1;
+    let point = if negative {
+        group.neg(&base[index])
+    } else {
+        base[index].clone()
+    };
+    (index, negative, point)
+}
+
 /// Run an actual IC pipeline on the named curve, using either cofactor-cleared
 /// low-x points and uniform query scalars or explicit public preparation work.
 /// The target is never passed to factor-base construction or log preparation.
@@ -295,9 +423,16 @@ fn index_impl(
     check_deadline(deadline)?;
     group.validate(target)?;
     check_deadline(deadline)?;
+    if !(2..=4).contains(&opts.summands) {
+        return Err(format!(
+            "index-calculus decomposition supports m = 2, 3 or 4 summands, got {}",
+            opts.summands
+        ));
+    }
     let mut report = SolveReport::pending(group, "index-calculus");
     let mut stages = IndexReport {
-        decomposition: "signed-two-summand-mitm",
+        decomposition: decomposition_name(opts.summands),
+        summands: opts.summands,
         linear_algebra_backend: "cpu-biguint",
         ..IndexReport::default()
     };
@@ -347,8 +482,14 @@ fn index_impl(
         check_deadline(deadline)?;
         return Ok(report);
     }
-    let decomposer = Decomposer::new(group, &base, deadline)?;
-    report.table_entries = decomposer.lookup.len();
+    let decomposer = Decomposer::new(
+        group,
+        &base,
+        opts.summands,
+        opts.max_table_entries,
+        deadline,
+    )?;
+    report.table_entries = decomposer.lookup.len() + decomposer.pairs.len();
     let n = group.order();
     let generator = group.generator();
     let mut rng = StdRng::seed_from_u64(opts.seed);

@@ -95,10 +95,10 @@ sentence a model writes, is data.
 | `lean` | a Lake project or standalone file, a theorem name, `decl_sha256` | declaration text hashes to `decl_sha256`; no `sorry`/`admit`/`axiom`/`native_decide`/`skipKernelTC`/`#exit` outside comments and strings; conclusion is not `True`; `lake build` + transitive axiom audit (`propext`, `Classical.choice`, `Quot.sound` only) when `lake` is present, else `not_covered` | the theorem as stated | that the statement is the claim (a reader checks fidelity, B3 of the sheriff checklist) |
 | `certificate` | `pcc.solve-certificate/v1`: curve, `P`, `Q`, `k` | `P`, `Q` on the curve; `n` prime; `[n]P = O`; `1 ≤ k < n`; `[k]P = Q`, with arithmetic in the verifier (plain Python, no producer code) | that solution | the search, its cost, its distribution |
 | `zk-certificate` | `pcc.zk-solve-certificate/v1`: curve, `P`, `Q`, Schnorr `(R, s)` | as above, then `[s]P = R + [e]Q` with `e = H(domain ‖ curve ‖ P ‖ Q ‖ R) mod n` | knowledge of `k` with `Q = [k]P`, without revealing `k` | the same limits as `certificate` |
-| `replay` | replay certificate JSON **and** a verdict signature | the pinned file hashes; `status`, `runs`, `scalars_verified` as the validation gate reads them; a signature by a keyring key over the certificate's digest | fabrication is bounded by an independent replay | execution: a replay is never an execution proof |
-| `recompute` | validator report JSON and a signature | raw data files hash as pinned; every headline number recomputed within `rel_tol`; signature by a keyring key | the headline follows from the raw data | that the raw data were produced as described |
+| `replay` | replay certificate JSON **and** a keyring signature | the pinned file hashes; `status`, `runs`, `scalars_verified` as the validation gate reads them; a signature by a keyring key over the certificate's digest. Unsigned: `not_covered` (independence not established); signed by the wrong key or over other bytes: `fail` | fabrication is bounded by an independent replay | execution: a replay is never an execution proof |
+| `recompute` | validator report JSON and a keyring signature, with `evidence_dir` naming the directory its `raw_data` paths are relative to (default: the report's directory) | raw data files exist inside the repository and hash as pinned (an unpinned entry leaves the proof `not_covered`); every headline number recomputed within `rel_tol`; signature by a keyring key (unsigned: `not_covered`; wrong: `fail`) | the headline follows from the raw data | that the raw data were produced as described |
 | `execution` | receipt, journal, verifier binary pinned by SHA-256, image id | the verifier binary hashes to its pin **and** the pin is in `keyring.trusted_verifiers`; the verifier reports `verified: true`, `dev_mode: false`, the pinned image id, the receipt digest; the journal commits to the raw-result SHA-256 | the prescribed computation produced those bytes (to the proof system's stated security, about 96 bits for RISC Zero v3) | native cost, wall time, or anything outside the guest |
-| `attestation` | `pcc.signature/v1` over a subject digest | Ed25519 signature by a keyring key, subject digest matches the artifact | who vouched for which bytes | anything about the bytes themselves |
+| `attestation` | `pcc.signature/v1` over a subject digest | Ed25519 signature by a keyring key, subject digest matches the artifact (unsigned: `not_covered`; wrong: `fail`) | who vouched for which bytes | anything about the bytes themselves |
 
 Minimum proof per claim kind: `theorem` → `lean`; `solve` → `certificate` or
 `zk-certificate`; `measurement` → `recompute` **and** `replay`; `speedup` →
@@ -121,10 +121,13 @@ zk-certificate: tampered `s`; proof transplanted to a different `Q`;
 lean: `sorry` in a proof; `native_decide`; a user `axiom`; `skipKernelTC`;
 `#exit` before the theorem; statement edited after pinning (`decl_sha256`);
 conclusion `True`;
-replay: no signature; signature by an untrusted key; empty `runs`; status
-not verified;
-recompute: headline claimed ≠ recomputed; raw data digest mismatch; no
-signature;
+replay: signature by an untrusted key; signature over other bytes; empty
+`runs` even when signed; status not verified; (no signature at all, or
+`independent: true` written by the producer without a signature, must leave
+the proof `not_covered`, never `verified`);
+recompute: headline claimed ≠ recomputed; raw data digest mismatch; raw data
+path outside the repository; (an unpinned raw-data entry must leave the proof
+`not_covered`);
 execution: `dev_mode: true`; verifier binary digest mismatch; verifier
 digest not in the keyring; journal does not commit to the raw result; wrong
 image id;
@@ -171,6 +174,18 @@ The in-house `src/zk/stark_v2.rs` is a one-column affine AIR, disclaimed by
 its own header, and is not wired as a backend. Statement fidelity of a Lean
 theorem (that it says what the claim says) remains a reader's job; the tool
 only pins the statement so it cannot drift after review.
+
+## 7a. The first claims
+
+`scripts/pcc_leaderboard_claims.py` records one `measurement` claim per
+validated leaderboard row (Tables A and B: 19 rows on 2026-11-04), its proofs
+the row's replay certificate and validator report as `VALIDATION.json` pins
+them, its `row` block the gate's row digest. The script is idempotent and
+re-runs after every leaderboard rebuild; a changed row gets a new claim that
+names the one it supersedes. Until the CI key signs, every one of them stands
+`not_covered`: the replay and the recompute are on disk and re-check, but
+nobody independent has vouched for them yet. That is the true state and the
+board says so.
 
 ## 8. Reading a result under this contract
 

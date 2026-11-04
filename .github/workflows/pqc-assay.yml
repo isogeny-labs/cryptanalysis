@@ -35,12 +35,12 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends \
             ca-certificates clang-19=1:19.1.7-3+b1 curl git gcc libc6-dev
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             include
             verification/pqc-assay
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: verification/pqc-assay/.cache
           key: assay-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('verification/pqc-assay/toolchain.env') }}

@@ -27,7 +27,7 @@ jobs:
       matrix:
         variant: [cpu, gpu]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free disk for the CUDA devel base
         if: matrix.variant == 'gpu'
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL

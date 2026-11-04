@@ -61,6 +61,9 @@ pub struct SolveArgs {
     pub max_matrix_entries: usize,
     #[arg(long, default_value_t = 16)]
     pub factor_base_size: usize,
+    /// Summands per index-calculus decomposition (`m`): 2, 3 or 4.
+    #[arg(long = "summands", alias = "m", default_value_t = 2)]
+    pub summands: u32,
     #[arg(long, default_value_t = 4096)]
     pub max_base_candidates: u64,
     #[arg(long, default_value_t = 1)]
@@ -133,6 +136,7 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
         max_table_entries: args.max_table_entries,
         max_matrix_entries: args.max_matrix_entries,
         factor_base_size: args.factor_base_size,
+        summands: args.summands,
         max_base_candidates: args.max_base_candidates,
         seed: args.seed,
     };
@@ -142,6 +146,12 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
     }
     if args.method != Method::IndexCalculus && args.preparation.is_some() {
         return Err("--preparation applies to index-calculus only".into());
+    }
+    if args.method == Method::IndexCalculus && !(2..=4).contains(&args.summands) {
+        return Err(format!(
+            "--summands/--m takes 2, 3 or 4 for index calculus, got {}",
+            args.summands
+        ));
     }
     let device_options = dlp::worker::DeviceOptions {
         backend: args.backend,
@@ -236,7 +246,7 @@ pub fn run(args: &SolveArgs) -> Result<Value, String> {
     value["planted_recovered"] = json!(matches_planted);
     value["preparation_label"] = json!(preparation_label);
     value["requested_backend"] = json!(args.backend.name());
-    value["limits"] = json!({"max_iterations": opts.max_iterations, "max_restarts": opts.max_restarts, "max_table_entries": opts.max_table_entries, "max_matrix_entries": opts.max_matrix_entries, "factor_base_size": opts.factor_base_size, "max_base_candidates": opts.max_base_candidates,"seed":opts.seed,"gpu_batch_size":args.gpu_batch_size,"gpu_rho_walks":args.gpu_rho_walks,"gpu_timeout_seconds":args.gpu_timeout_seconds,"gpu_device":args.gpu_device});
+    value["limits"] = json!({"max_iterations": opts.max_iterations, "max_restarts": opts.max_restarts, "max_table_entries": opts.max_table_entries, "max_matrix_entries": opts.max_matrix_entries, "factor_base_size": opts.factor_base_size, "summands": opts.summands, "max_base_candidates": opts.max_base_candidates,"seed":opts.seed,"gpu_batch_size":args.gpu_batch_size,"gpu_rho_walks":args.gpu_rho_walks,"gpu_timeout_seconds":args.gpu_timeout_seconds,"gpu_device":args.gpu_device});
     if let Some(worker) = &worker {
         worker.ensure_active()?;
     }
@@ -273,7 +283,8 @@ pub fn display(report: &Value) {
     }
     if let Some(stages) = report.get("index_calculus").filter(|v| !v.is_null()) {
         println!(
-            "IC: {} base points, {} verified relations, rank {}, {} descent queries",
+            "IC: m = {}, {} base points, {} verified relations, rank {}, {} descent queries",
+            stages["summands"],
             stages["factor_base_size"],
             stages["verified_relations"],
             stages["rank"],

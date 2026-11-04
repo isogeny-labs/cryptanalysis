@@ -5,12 +5,313 @@
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 2,
+    "measured": 4,
     "open": 0
   },
   "repo": "cryptanalysis",
   "schema": "bench.progress/v1",
   "series": [
+    {
+      "better": "lower",
+      "first": 1.572895,
+      "latest": 1.572895,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.918258
+      },
+      "metric": "bsgs_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.918258
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            1.361188,
+            1.849539
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.572895
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.251399,
+      "latest": 1.251399,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.730568
+      },
+      "metric": "grumpy_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.730568
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.6363,
+            1.587654
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.251399
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.220064,
+      "latest": 1.220064,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.712275
+      },
+      "metric": "kangaroo_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.712275
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.674053,
+            2.517512
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.220064
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.712912,
+      "latest": 1.712912,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "rho1_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.220231,
+            2.312175
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.712912
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.241484,
+      "latest": 1.241484,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.72478
+      },
+      "metric": "rhot_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.72478
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.950702,
+            1.568038
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.241484
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "higher",
+      "first": 0.9918,
+      "latest": 0.9918,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "cost_per_trial_ratio.aa",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 768,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9746,
+            1.0092
+          ],
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 0.9918
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0391,
+      "latest": 1.0391,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "cost_per_trial_ratio.w128",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 768,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0081,
+            1.0641
+          ],
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 1.0391
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0834,
+      "latest": 1.0834,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "cost_per_trial_ratio.w256",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 768,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0637,
+            1.1021
+          ],
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 1.0834
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0946,
+      "latest": 1.0946,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "cost_per_trial_ratio.w512",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 768,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0802,
+            1.1086
+          ],
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 1.0946
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "neutral",
+      "first": 3840.0,
+      "latest": 3840.0,
+      "latest_derived": {},
+      "metric": "descents_verified",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {},
+          "n": null,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 3840.0
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "count"
+    },
     {
       "better": "lower",
       "first": 573015816.0,
@@ -64,6 +365,90 @@
       ],
       "problem": "ic:N53",
       "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 692.5,
+      "latest": 692.5,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir_per_trial.w512",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 8,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 692.5
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ir_per_op"
+    },
+    {
+      "better": "lower",
+      "first": 735.3,
+      "latest": 735.3,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir_per_trial.w64",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 8,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 735.3
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ir_per_op"
+    },
+    {
+      "better": "higher",
+      "first": 1.2224,
+      "latest": 1.2224,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "perfbench_descent_k0n53_ratio",
+      "points": [
+        {
+          "commit": "20228687b467",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0352Z-descent-walks-k0n53",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.088,
+            1.362
+          ],
+          "summary": "k0n53 walked descent, frozen protocol: 512 walks per shared inversion lower cost per trial 1.095x (CI 1.080-1.109, A/A +-1.7%) vs 64, all 3840 logs verified; adopted for subgroups >= 2^40 (k0n31 regressed at 512); perfbench descent vs main 1.222x",
+          "value": 1.2224
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
     },
     {
       "better": "higher",

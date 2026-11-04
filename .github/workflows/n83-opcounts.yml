@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           filter: blob:none
           sparse-checkout-cone-mode: false
@@ -86,7 +86,7 @@ jobs:
     # 20 x (cS 27 s + cP 51 s + rT 3 s) about 27 min on the stacked runner.
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
