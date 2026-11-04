@@ -136,6 +136,9 @@ pub struct Gf2 {
     /// at most eight rows are ever used.
     red: Box<[[u64; 256]; 8]>,
     positions: usize,
+    /// `t` when the modulus is a trinomial `z^n + z^t + 1` that
+    /// [`Self::reduce`] folds by shifts, `0` when the table is used.
+    tri: u32,
     has_clmul: bool,
 }
 
@@ -214,12 +217,24 @@ impl Gf2 {
         #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
         let has_clmul = false;
 
+        // The shift fold needs `h · z^t` (h below `2^{n−1}`) to fit a
+        // word and the second fold's overflow, below `2^{t−1}`, to land
+        // under `z^n` after its own shift: `n − 1 + t ≤ 64`, `2t − 1 ≤ n`.
+        // Trinomials only: a pentanomial's four-term chain measured
+        // slower than the table at n = 53 (0.84× on `mul`/`sqr`), while
+        // the trinomial fold is faster at n = 41 (signed rho 1.29×).
+        let tri = match irr.low_terms.as_slice() {
+            &[0, t] | &[t, 0] if t > 0 && n >= 2 && n - 1 + t <= 64 && 2 * t <= n + 1 => t,
+            _ => 0,
+        };
+
         Self {
             n,
             irr: bits,
             mask: (1u64 << n) - 1,
             red,
             positions,
+            tri,
             has_clmul,
         }
     }
@@ -237,8 +252,25 @@ impl Gf2 {
     /// high part is non-zero": a data-dependent exit here is a branch
     /// the predictor cannot learn, and costs more than the one or two
     /// redundant lookups it saves.
+    ///
+    /// A trinomial modulus `z^n + z^t + 1` folds by shifts instead:
+    /// `h·(z^n mod irr)` is `h ⊕ h≪t`, twice, with no memory traffic.
+    /// `tri` is fixed per field, so its branch is always predicted.
     #[inline(always)]
     fn reduce(&self, w: u128) -> u64 {
+        let t = self.tri;
+        if t != 0 {
+            let lo = (w as u64) & self.mask;
+            let h = (w >> self.n) as u64;
+            let r = h ^ (h << t);
+            let h2 = r >> self.n;
+            return lo ^ (r & self.mask) ^ h2 ^ (h2 << t);
+        }
+        self.reduce_table(w)
+    }
+
+    #[inline(always)]
+    fn reduce_table(&self, w: u128) -> u64 {
         let mut acc = (w as u64) & self.mask;
         let mut h = (w >> self.n) as u64;
         for row in &self.red[..self.positions] {
@@ -1363,6 +1395,34 @@ mod tests {
                 assert_eq!(gf.dot2(a, a, a, a), 0, "n = {n}, dot2 of equal products");
             }
         }
+    }
+
+    #[test]
+    fn shift_fold_matches_the_table_fold() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut s = 0x0F01_D5A1_7AB1_E001u64;
+        let mut folded = 0;
+        for n in 2u32..=63 {
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
+            let gf = Gf2::new(&irr);
+            folded += usize::from(gf.tri != 0);
+            // Every value a product can take: below `2^{2n−1}`.
+            let top = 2 * n - 1;
+            let wmask = if top >= 128 { u128::MAX } else { (1u128 << top) - 1 };
+            for i in 0..4096 {
+                let w = match i {
+                    0 => 0,
+                    1 => wmask,
+                    2 => 1u128 << (top - 1),
+                    _ => (((xorshift(&mut s) as u128) << 64) | xorshift(&mut s) as u128) & wmask,
+                };
+                assert_eq!(gf.reduce(w), gf.reduce_table(w), "n = {n}, w = {w:#x}");
+            }
+        }
+        // 33 of the 62 sizes have a trinomial that passes the bounds.
+        assert!(folded >= 30, "only {folded} fields took the shift fold");
     }
 
     #[test]
