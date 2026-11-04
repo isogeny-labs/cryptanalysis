@@ -221,6 +221,8 @@ fn external_oracle_replay_has_independent_group_work_and_matrix_accounting() {
     let mut observed_rng = Seeded(42);
     let actual = solve(&mut observed_rng, &mut observed);
     let snapshot = session.finish().unwrap();
+    assert_eq!(snapshot.online_start_phase, Some("target_validation"));
+    assert_eq!(snapshot.phases["target_validation"].scalar_mults, 1);
     assert_eq!(actual.scalar, expected.scalar);
     assert_eq!(actual.relations, expected.relations);
     assert_eq!(actual.dependency, expected.dependency);
@@ -382,6 +384,8 @@ fn observed_explicit_partial_defaults_preserve_certificate_rng_and_work() {
     )
     .unwrap();
     let snapshot = session.finish().unwrap();
+    assert_eq!(snapshot.online_start_phase, Some("target_validation"));
+    assert_eq!(snapshot.phases["target_validation"].scalar_mults, 1);
     assert_eq!(actual.scalar, expected.scalar);
     assert_eq!(actual.relations, expected.relations);
     assert_eq!(actual.dependency, expected.dependency);
@@ -400,6 +404,49 @@ fn observed_explicit_partial_defaults_preserve_certificate_rng_and_work() {
             > 0
     );
     assert!(statistics.decodes > 0);
+}
+
+#[test]
+fn target_validation_is_online_after_reusable_preparation_on_first_query_failure() {
+    let mut setup = Meter::new(Limits::default());
+    let curve = curve(&mut setup);
+    let target = curve
+        .mul(curve.generator(), &3u8.into(), &mut setup)
+        .unwrap();
+    let config = Config {
+        threshold: Some(11u8.into()),
+        columns: 64,
+        trials: 32,
+        ..Config::default()
+    };
+    let session = hashed_ecdl_tensor::metrics::Session::start().unwrap();
+    let mut meter = Meter::new(Limits::default());
+    let error = reduction::solve_with_oracle(
+        &curve,
+        &target,
+        &config,
+        &mut Seeded(42),
+        |_, _, _, _| Err(Error::Limit("control stops on first oracle call".into())),
+        &mut meter,
+    )
+    .unwrap_err();
+    let snapshot = session.finish().unwrap();
+    assert!(
+        matches!(error, Error::Limit(ref reason) if reason == "control stops on first oracle call")
+    );
+    assert_eq!(snapshot.phases["setup"].scalar_mults, 0);
+    assert_eq!(snapshot.phases["target_validation"].scalar_mults, 1);
+    let cold_wall = snapshot.phases.values().map(|p| p.wall_ns).sum::<u64>();
+    assert_eq!(
+        cold_wall,
+        snapshot.phases["setup"].wall_ns
+            + snapshot.phases["factor_base"].wall_ns
+            + snapshot.online_wall_ns.unwrap()
+    );
+    assert_eq!(
+        snapshot.online_phases_ns.values().sum::<u64>(),
+        snapshot.online_wall_ns.unwrap()
+    );
 }
 
 #[test]

@@ -537,13 +537,17 @@ fn solve_using(
     oracle: &mut impl FnMut(&Curve, &[FactorBase], &Point, &mut Meter) -> Result<Option<Vec<Point>>>,
     meter: &mut Meter,
 ) -> Result<Certificate> {
-    if config.slots < 2 || config.trials == 0 || !curve.in_subgroup(target, meter)? {
+    if config.slots < 2 || config.trials == 0 {
         return Err(invalid("reduction input"));
     }
     meter.vector(config.slots, "factor-base slots")?;
     config.validate_hash_prime(curve, meter)?;
     // Identity has an immediate, independently checkable certificate.
     if target == &Point::Infinity {
+        crate::metrics::phase("target_validation")?;
+        if !curve.in_subgroup(target, meter)? {
+            return Err(invalid("reduction input"));
+        }
         return Ok(Certificate {
             version: 1,
             prime: BigUint::zero(),
@@ -554,6 +558,7 @@ fn solve_using(
             scalar: BigUint::zero(),
         });
     }
+    let mut target_validated = false;
     for _ in 0..config.trials {
         crate::metrics::phase("factor_base")?;
         meter.charge(1, "fresh-seed trial")?;
@@ -601,6 +606,16 @@ fn solve_using(
             .ok_or_else(|| overflow("relation attempts"))?;
         let mut relations = Vec::with_capacity(required);
         let mut matrix = Vec::with_capacity(required);
+        // Initial bases/indexes and row capacity are reusable preparation.
+        // Start per-target accounting before the subgroup multiplication;
+        // later seed/base retries stay inside the same online interval.
+        if !target_validated {
+            crate::metrics::phase("target_validation")?;
+            if !curve.in_subgroup(target, meter)? {
+                return Err(invalid("reduction input"));
+            }
+            target_validated = true;
+        }
         for _ in 0..attempts {
             crate::metrics::phase("relation_target")?;
             let u = random_below(curve.order(), rng, meter)?;

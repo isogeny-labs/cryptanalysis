@@ -157,11 +157,7 @@ impl Collector {
         max_columns: usize,
         meter: &mut Meter,
     ) -> Result<Self> {
-        if bases.len() < 2
-            || max_relations == 0
-            || max_columns == 0
-            || !curve.in_subgroup(target, meter)?
-        {
+        if bases.len() < 2 || max_relations == 0 || max_columns == 0 {
             return Err(invalid("partial collector policy"));
         }
         meter.vector(bases.len(), "partial base slots")?;
@@ -171,6 +167,10 @@ impl Collector {
             {
                 return Err(invalid("partial hash field range"));
             }
+        }
+        crate::metrics::phase("target_validation")?;
+        if !curve.in_subgroup(target, meter)? {
+            return Err(invalid("partial collector policy"));
         }
         Ok(Self {
             curve: curve.clone(),
