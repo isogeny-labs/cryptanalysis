@@ -1232,6 +1232,7 @@ mod ifma {
     pub(super) use imp::*;
 
     #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[clippy::msrv = "1.89"]
     mod imp {
         use super::super::Reducer;
         use std::arch::x86_64::*;
