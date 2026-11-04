@@ -12,6 +12,11 @@ remaining, not as a pass/fail gate. Relabelling and accounting changes are
 not improvements. Full rule: [`AGENTS.md`](AGENTS.md), "Success criterion:
 iterative improvement of the index-calculus baseline".
 
+**Sabotage is assumed** (owner, 2026-11-04): a result is cited by its pcc claim
+id and standing (`[pcc:ID]`), or labelled `[pcc:unverified]` as an assertion.
+CI runs `python3 tools/pcc/pcc.py canary` and `ledger verify`. Rule:
+[`AGENTS.md`](AGENTS.md), "Sabotage is assumed: proof-carrying claims".
+
 Read **[AGENTS.md](AGENTS.md)**: it is the contract for every runtime, Claude
 Code included.
 
