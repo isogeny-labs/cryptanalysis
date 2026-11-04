@@ -412,10 +412,7 @@ static inline uint32_t rho_index(const rho_shared *sh, uint64_t h)
     return (uint32_t)(((ca_u128)low * sh->r) >> 64);
 }
 
-static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d)
-{
-    *a = ca_addmod(*a, d, n);
-}
+static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d) { *a = ca_addmod(*a, d, n); }
 
 /* k * (the base the table was built from) as the sum of the stored
  * 2^b * base over the set bits of k.  Each set bit costs one operation, as
