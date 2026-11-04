@@ -1,0 +1,293 @@
+{
+  "branch": "claude/suite-la-halve",
+  "closed_utc": "2026-11-04T03:43:22+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "instr",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-main/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-msq2/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/ir-replay",
+        "--filter",
+        "field_ec/gf2_n53_inv_16k,field_ec/koblitz_curve_mul_n53_1k"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T03:43:07+00:00",
+      "wall_s": 9.129
+    }
+  ],
+  "commit": "796825b49768d204fd80ac1c054de541587dcdfd",
+  "commit_dirty": false,
+  "created_utc": "2026-11-04T03:42:26+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261104-suite-gf2-inv-chain"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "L0",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39"
+  },
+  "id": "20261104T0342Z-suite-gf2-inv-chain",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "perfindex_wall_index",
+      "note": "main 304ab63c7 / candidate 658b8e363 paired wall, 32 kernels, CPU 3, L0",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1757,
+        1.2847
+      ],
+      "unit": "ratio",
+      "value": 1.2148
+    },
+    {
+      "baseline": 54902826.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.gf2_n53_inv_16k",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 19775530.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.gf2_n53_inv_16k",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        4.095516756704017,
+        4.312249724757568
+      ],
+      "unit": "ratio",
+      "value": 4.143610769084613
+    },
+    {
+      "baseline": 96250347.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_curve_mul_n53_1k",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 54008142.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_curve_mul_n53_1k",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.4600398581265033,
+        1.4749423431379882
+      ],
+      "unit": "ratio",
+      "value": 1.4638246850749566
+    },
+    {
+      "baseline": 441242023.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_signed_rho_k0_n41",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 336396040.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_signed_rho_k0_n41",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1713210392400761,
+        1.3357810716914156
+      ],
+      "unit": "ratio",
+      "value": 1.198554122022555
+    },
+    {
+      "baseline": 267808431.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_rung_k0n31",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 231419594.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_rung_k0n31",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0910353649145967,
+        1.1603502259641116
+      ],
+      "unit": "ratio",
+      "value": 1.107795036117005
+    },
+    {
+      "baseline": 771552630.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_descent_k0n53_m2_x4",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 731162666.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_descent_k0n53_m2_x4",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.1568430901515376,
+        1.3706740089348124
+      ],
+      "unit": "ratio",
+      "value": 1.2538920670090716
+    },
+    {
+      "baseline": 381318973.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_collect_k0n41_w164_u4096",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 314744546.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_collect_k0n41_w164_u4096",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.8439199196000577,
+        1.226748285748371
+      ],
+      "unit": "ratio",
+      "value": 1.1932737924369219
+    },
+    {
+      "baseline": 331686721.0,
+      "better": "lower",
+      "n": 1,
+      "name": "ir.koblitz_collect_k0n53_w477_u1024",
+      "note": "Callgrind Ir, scalar path; baseline = main 304ab63c7",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ir",
+      "value": 326059256.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 7,
+      "name": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
+      "note": "main / candidate median wall, 95% CI",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9701583378292028,
+        1.054221736397461
+      ],
+      "unit": "ratio",
+      "value": 1.011643446989867
+    }
+  ],
+  "problem": "kernel:suite_gf2_koblitz",
+  "raw": [
+    {
+      "bytes": 8396,
+      "path": "experiments/suite-gf2-inv-chain-20261104/data/measurements.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/16/1639a697365f8ef3cc368a728f5481ae6909eb92a795867a4dfbba459fb7f564",
+      "sha256": "1639a697365f8ef3cc368a728f5481ae6909eb92a795867a4dfbba459fb7f564",
+      "uploaded": false
+    },
+    {
+      "bytes": 246218,
+      "path": "experiments/suite-gf2-inv-chain-20261104/data/perfindex-compare.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e9/e90b48fd06f7e862947f721a81112759c3fe16072777bfbd1a06e50382cd8e6a",
+      "sha256": "e90b48fd06f7e862947f721a81112759c3fe16072777bfbd1a06e50382cd8e6a",
+      "uploaded": false
+    },
+    {
+      "bytes": 8599,
+      "path": "experiments/suite-gf2-inv-chain-20261104/data/perfindex-instr.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/81/8190ae9e800280e89cf464424eb67caa6c08c3d0c5cc13a7aac29a9ecd25d638",
+      "sha256": "8190ae9e800280e89cf464424eb67caa6c08c3d0c5cc13a7aac29a9ecd25d638",
+      "uploaded": false
+    },
+    {
+      "bytes": 1332,
+      "path": "experiments/suite-gf2-inv-chain-20261104/data/perfindex-instr-replay.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b5/b5859c21e881c7e1ced14203e92fa84672f6eb93dc9027ad8ac0042827a6278e",
+      "sha256": "b5859c21e881c7e1ced14203e92fa84672f6eb93dc9027ad8ac0042827a6278e",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261104-suite-gf2-inv-chain/report.pdf",
+    "png": [
+      "benchmarks/20261104-suite-gf2-inv-chain/ir_and_wall.png"
+    ],
+    "svg": [
+      "benchmarks/20261104-suite-gf2-inv-chain/ir_and_wall.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "suite-gf2-inv-chain",
+  "status": "measured",
+  "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+  "validation": null
+}

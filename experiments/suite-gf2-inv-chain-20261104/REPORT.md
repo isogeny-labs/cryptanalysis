@@ -17,11 +17,11 @@
 - **Outcome:**
   - Performance index **1.215×** (95% CI 1.176–1.285) over the 32
     kernels compared.
-  - Single inversion: 4.14× faster natively.
-  - `KoblitzCurve::mul`: 1.46× faster.
-  - Signed Frobenius rho at n = 41: 1.20× faster.
-  - k0n31 IC rung: 1.11× faster.
-  - PDP enumeration: 1.72–1.93× faster.
+  - Single inversion: 4.14× faster natively. [pcc:unverified]
+  - `KoblitzCurve::mul`: 1.46× faster. [pcc:unverified]
+  - Signed Frobenius rho at n = 41: 1.20× faster. [pcc:unverified]
+  - k0n31 IC rung: 1.11× faster. [pcc:unverified]
+  - PDP enumeration: 1.72–1.93× faster. [pcc:unverified]
 
 ![instructions and wall](figures/ir_and_wall.svg)
 
@@ -49,7 +49,7 @@
      by an `Arc`.
    - `KoblitzCurve::mul` builds a `FastCurve`, and with it a `Gf2`, on
      every call. It used to rebuild 16 KiB of tables each time; it no
-     longer does (1.46× faster, 1.78× fewer instructions).
+     longer does (1.46× faster, 1.78× fewer instructions) [pcc:unverified].
 4. **AVX-512 IFMA CSR rows** (`koblitz_sparse_la.rs`).
    - The sparse matrix–block product accumulates the 52-bit halves of
      each product with `vpmadd52lo/hi` when every operand is below 2^52.
@@ -86,7 +86,7 @@ These were added in `semaev_decomp.rs`:
 
 ## Distance remaining
 
-These are stage and kernel speedups of the binary-field (Koblitz) index
+These are stage and kernel speedups [pcc:unverified] of the binary-field (Koblitz) index
 calculus, not a complete-solve comparison.
 
 - No end-to-end matched-rho row is claimed here.

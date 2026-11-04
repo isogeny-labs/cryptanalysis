@@ -1,16 +1,446 @@
 {
   "headline_unit": "S",
-  "latest_record": null,
+  "latest_record": "20261104T0342Z-suite-gf2-inv-chain",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 0,
+    "measured": 1,
     "open": 0
   },
   "repo": "cryptanalysis",
   "schema": "bench.progress/v1",
-  "series": [],
+  "series": [
+    {
+      "better": "lower",
+      "first": 19775530.0,
+      "latest": 19775530.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.gf2_n53_inv_16k",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 19775530.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 314744546.0,
+      "latest": 314744546.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_collect_k0n41_w164_u4096",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 314744546.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 326059256.0,
+      "latest": 326059256.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_collect_k0n53_w477_u1024",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 326059256.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 54008142.0,
+      "latest": 54008142.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_curve_mul_n53_1k",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 54008142.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 731162666.0,
+      "latest": 731162666.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_descent_k0n53_m2_x4",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 731162666.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 231419594.0,
+      "latest": 231419594.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_rung_k0n31",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 231419594.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 336396040.0,
+      "latest": 336396040.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_signed_rho_k0_n41",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 336396040.0
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ir"
+    },
+    {
+      "better": "higher",
+      "first": 1.2148,
+      "latest": 1.2148,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "perfindex_wall_index",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.1757,
+            1.2847
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.2148
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 4.143610769084613,
+      "latest": 4.143610769084613,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.gf2_n53_inv_16k",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            4.095516756704017,
+            4.312249724757568
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 4.143610769084613
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.1932737924369219,
+      "latest": 1.1932737924369219,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_collect_k0n41_w164_u4096",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.8439199196000577,
+            1.226748285748371
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.1932737924369219
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.011643446989867,
+      "latest": 1.011643446989867,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.9701583378292028,
+            1.054221736397461
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.011643446989867
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.4638246850749566,
+      "latest": 1.4638246850749566,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_curve_mul_n53_1k",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.4600398581265033,
+            1.4749423431379882
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.4638246850749566
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.2538920670090716,
+      "latest": 1.2538920670090716,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_descent_k0n53_m2_x4",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.1568430901515376,
+            1.3706740089348124
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.2538920670090716
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.107795036117005,
+      "latest": 1.107795036117005,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_rung_k0n31",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0910353649145967,
+            1.1603502259641116
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.107795036117005
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.198554122022555,
+      "latest": 1.198554122022555,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_signed_rho_k0_n41",
+      "points": [
+        {
+          "commit": "796825b49768",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 7,
+          "record": "20261104T0342Z-suite-gf2-inv-chain",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.1713210392400761,
+            1.3357810716914156
+          ],
+          "summary": "Rust suite Gf2 inversion chain by nibble tables, trinomial shift fold, shared tables, IFMA CSR rows: perfindex wall index 1.215x vs main 304ab63c7 (candidate 658b8e363; wall and full Ir runs of 2026-11-04 02:20-02:45Z recorded from their data, Ir replayed under this record with identical counts); inv 4.14x, KoblitzCurve::mul 1.46x; fingerprints identical",
+          "value": 1.198554122022555
+        }
+      ],
+      "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    }
+  ],
   "units": {
     "S": {
       "better": "lower",
