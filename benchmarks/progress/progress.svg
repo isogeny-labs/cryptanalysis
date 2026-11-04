@@ -1,6 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" font-family="Helvetica, Arial, sans-serif" font-size="12">
-<rect width="900" height="380" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="690" viewBox="0 0 900 690" font-family="Helvetica, Arial, sans-serif" font-size="12">
+<rect width="900" height="690" fill="white"/>
 <text x="60" y="30" font-size="18" font-weight="bold">Benchmark progress: cryptanalysis</text>
-<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 0, invalid 0, censored 0.</text>
-<text x="60" y="100">No measured records yet.</text>
+<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 1, invalid 0, censored 0.</text>
+<text x="60" y="84" font-weight="bold">Series in unit ir: gain vs first record (derived, %)</text>
+<rect x="60" y="94" width="560" height="220" fill="none" stroke="#999"/>
+<line x1="60" y1="314.0" x2="620" y2="314.0" stroke="#eee"/>
+<text x="54" y="318.0" text-anchor="end" fill="#555">-1.2</text>
+<line x1="60" y1="259.0" x2="620" y2="259.0" stroke="#eee"/>
+<text x="54" y="263.0" text-anchor="end" fill="#555">-0.6</text>
+<line x1="60" y1="204.0" x2="620" y2="204.0" stroke="#eee"/>
+<text x="54" y="208.0" text-anchor="end" fill="#555">0</text>
+<line x1="60" y1="149.0" x2="620" y2="149.0" stroke="#eee"/>
+<text x="54" y="153.0" text-anchor="end" fill="#555">0.6</text>
+<line x1="60" y1="94.0" x2="620" y2="94.0" stroke="#eee"/>
+<text x="54" y="98.0" text-anchor="end" fill="#555">1.2</text>
+<text x="60.0" y="330" text-anchor="middle" fill="#555">2026-11-03</text>
+<text x="246.7" y="330" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="433.3" y="330" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="620.0" y="330" text-anchor="middle" fill="#555">2026-11-05</text>
+<line x1="60" y1="204.0" x2="620" y2="204.0" stroke="#bbb" stroke-dasharray="4 3"/>
+<text transform="translate(16,204.0) rotate(-90)" text-anchor="middle" fill="#555">% better than first</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 1.978e+07 ir (n=1)</title></circle>
+<rect x="636" y="99" width="10" height="10" fill="#167f73"/>
+<text x="650" y="108">kernel:suite_gf2_koblitz · ir.gf2_</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 3.147e+08 ir (n=1)</title></circle>
+<rect x="636" y="115" width="10" height="10" fill="#637bad"/>
+<text x="650" y="124">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 3.261e+08 ir (n=1)</title></circle>
+<rect x="636" y="131" width="10" height="10" fill="#aa8b5b"/>
+<text x="650" y="140">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 5.401e+07 ir (n=1)</title></circle>
+<rect x="636" y="147" width="10" height="10" fill="#93a1a4"/>
+<text x="650" y="156">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 7.312e+08 ir (n=1)</title></circle>
+<rect x="636" y="163" width="10" height="10" fill="#69879e"/>
+<text x="650" y="172">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 2.314e+08 ir (n=1)</title></circle>
+<rect x="636" y="179" width="10" height="10" fill="#b05c5c"/>
+<text x="650" y="188">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="204.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 3.364e+08 ir (n=1)</title></circle>
+<rect x="636" y="195" width="10" height="10" fill="#5c8a3a"/>
+<text x="650" y="204">kernel:suite_gf2_koblitz · ir.kobl</text>
+<text x="60" y="394" font-weight="bold">Series in unit ratio: gain vs first record (derived, %)</text>
+<rect x="60" y="404" width="560" height="220" fill="none" stroke="#999"/>
+<line x1="60" y1="624.0" x2="620" y2="624.0" stroke="#eee"/>
+<text x="54" y="628.0" text-anchor="end" fill="#555">-1.2</text>
+<line x1="60" y1="569.0" x2="620" y2="569.0" stroke="#eee"/>
+<text x="54" y="573.0" text-anchor="end" fill="#555">-0.6</text>
+<line x1="60" y1="514.0" x2="620" y2="514.0" stroke="#eee"/>
+<text x="54" y="518.0" text-anchor="end" fill="#555">0</text>
+<line x1="60" y1="459.0" x2="620" y2="459.0" stroke="#eee"/>
+<text x="54" y="463.0" text-anchor="end" fill="#555">0.6</text>
+<line x1="60" y1="404.0" x2="620" y2="404.0" stroke="#eee"/>
+<text x="54" y="408.0" text-anchor="end" fill="#555">1.2</text>
+<text x="60.0" y="640" text-anchor="middle" fill="#555">2026-11-03</text>
+<text x="246.7" y="640" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="433.3" y="640" text-anchor="middle" fill="#555">2026-11-04</text>
+<text x="620.0" y="640" text-anchor="middle" fill="#555">2026-11-05</text>
+<line x1="60" y1="514.0" x2="620" y2="514.0" stroke="#bbb" stroke-dasharray="4 3"/>
+<text transform="translate(16,514.0) rotate(-90)" text-anchor="middle" fill="#555">% better than first</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2148 ratio (n=7)</title></circle>
+<rect x="636" y="409" width="10" height="10" fill="#167f73"/>
+<text x="650" y="418">kernel:suite_gf2_koblitz · perfind</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 4.1436 ratio (n=7)</title></circle>
+<rect x="636" y="425" width="10" height="10" fill="#637bad"/>
+<text x="650" y="434">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1933 ratio (n=7)</title></circle>
+<rect x="636" y="441" width="10" height="10" fill="#aa8b5b"/>
+<text x="650" y="450">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 1.0116 ratio (n=7)</title></circle>
+<rect x="636" y="457" width="10" height="10" fill="#93a1a4"/>
+<text x="650" y="466">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 1.4638 ratio (n=7)</title></circle>
+<rect x="636" y="473" width="10" height="10" fill="#69879e"/>
+<text x="650" y="482">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2539 ratio (n=7)</title></circle>
+<rect x="636" y="489" width="10" height="10" fill="#b05c5c"/>
+<text x="650" y="498">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1078 ratio (n=7)</title></circle>
+<rect x="636" y="505" width="10" height="10" fill="#5c8a3a"/>
+<text x="650" y="514">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="514.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1986 ratio (n=7)</title></circle>
+<rect x="636" y="521" width="10" height="10" fill="#8a5ca8"/>
+<text x="650" y="530">kernel:suite_gf2_koblitz · wall_ra</text>
 </svg>
