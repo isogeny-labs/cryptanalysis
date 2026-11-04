@@ -122,3 +122,38 @@ See [the admission record](../../problems/lean-ci-evidence-source-admission.md)
 for actual source-f3aa native success:77 added modules, including all three original engineering controls.
 
 After complete declaration and foundation validation, the checker now prints the original native axiom output lines into the successful job log too; complete raw command evidence remains retained. This improves readable custody without changing proof admission.
+
+## Dependency-free core-Lean projects
+
+`CORE_LEAN_PROJECTS` registers self-contained Lake projects that pull no
+package (no Mathlib) and pin their own toolchain. For every tracked `.lean`
+source under such a project the gate refuses, before any native command, a
+changed toolchain pin, a `[[require]]` or non-empty manifest package list, a
+source outside the registered library, a root module that does more than
+import every other module exactly once, and any proof escape
+(`sorry`, `admit`, `sorryAx`, `native_decide`, `axiom`, `unsafe`,
+`implemented_by`, `extern`). It then runs `lake build` in the project, requires
+the `.olean` of every module, recompiles each module with `lake env lean`, and
+admits it only when every `theorem`/`lemma` has its own `#print axioms` line
+whose native output stays within `propext`, `Classical.choice`, `Quot.sound`.
+`main` routes these paths away from the Hecke Mathlib checker. Controls:
+`CoreLeanProjectControls` in `test_current_corpus_gate.py`.
+
+Registered: `research/handbook-ff-ic-ideas-20261103/formal` (library
+`HandbookIC`, toolchain `leanprover/lean4:v4.34.1`): the claim statements and
+supporting lemmas of the Handbook-of-Finite-Fields idea catalogue. Those
+theorems are cost-model and counting lemmas over abstract definitions; none
+models the elliptic-curve group law, and none proves a speedup.
+
+## Receipt-bound standalone modules
+
+`RECEIPT_BOUND_SOURCES` registers single `import Init` modules that carry
+their own receipt-bound checker (`research/xedni_lift_optimizer_20261101/lean/
+XedniAffineCoset.lean` with `check.py`, landed by #1376 under the
+`Xedni affine-coset Lean proof` workflow, which left this gate red on `main`
+until it was admitted here). The gate pins the source and the checker by
+SHA-256, refuses any proof escape and any theorem without its own
+`#print axioms` line, runs the checker natively, and admits the module only
+when the printed axiom sets name exactly the registered theorems within the
+standard foundations and the checker reports verification. A changed proof or
+checker is a gate change. Controls: `ReceiptBoundSourceControls`.

@@ -24,6 +24,10 @@ jobs:
     timeout-minutes: 30
     steps:
       # The merge commit and its first parent (the base); blobs on demand only.
+      # Every manifest is in the sparse set: wire_workflows.py --check reads all
+      # of them, and a manifest missing from disk costs one lazy blob fetch, a
+      # round trip each (690 of them cancelled this job at its cap twice on
+      # 2026-11-03). The checkout fetches the whole set in one batch instead.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
@@ -33,6 +37,7 @@ jobs:
             /tools/artifacts/
             /.artifacts/
             /.github/workflows/
+            **/.artifacts.json
       - name: Pull store data this workflow reads (tools/artifacts)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
