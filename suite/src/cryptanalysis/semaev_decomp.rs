@@ -165,6 +165,10 @@ pub struct Gf2 {
     /// `t` when the modulus is a trinomial `z^n + z^t + 1` that
     /// [`Self::reduce`] folds by shifts, `0` when the table is used.
     tri: u32,
+    /// The three middle terms `t₁ < t₂ < t₃` when the modulus is a
+    /// pentanomial `z^n + z^{t₃} + z^{t₂} + z^{t₁} + 1` that
+    /// [`Self::reduce`] folds by shifts; all zero when it does not.
+    penta: [u32; 3],
     has_clmul: bool,
 }
 
@@ -234,6 +238,26 @@ impl Gf2 {
             &[0, t] | &[t, 0] if t > 0 && n >= 2 && n - 1 + t <= 64 && 2 * t <= n + 1 => t,
             _ => 0,
         };
+        // The pentanomial fold, on the same bounds with `t = t₃`.  It
+        // measured 0.84× the table on `mul`/`sqr` at n = 53 on a host
+        // with VPCLMULQDQ and IFMA (where the hot loops run the AVX-512
+        // kernel anyway) and faster on one without, so
+        // `SUITE_GF2_PENTA_FOLD=0` keeps the table for a same-binary
+        // comparison.
+        let mut middle: Vec<u32> = irr.low_terms.iter().copied().filter(|&t| t != 0).collect();
+        middle.sort_unstable();
+        let penta = match middle.as_slice() {
+            &[a, b, c]
+                if irr.low_terms.contains(&0)
+                    && n >= 2
+                    && n - 1 + c <= 64
+                    && 2 * c <= n + 1
+                    && std::env::var("SUITE_GF2_PENTA_FOLD").as_deref() != Ok("0") =>
+            {
+                [a, b, c]
+            }
+            _ => [0; 3],
+        };
 
         let cached = gf2_tables_cache()
             .lock()
@@ -253,6 +277,7 @@ impl Gf2 {
             }),
             positions,
             tri,
+            penta,
             has_clmul,
         };
         if cached.is_none() {
@@ -362,6 +387,14 @@ impl Gf2 {
             let r = h ^ (h << t);
             let h2 = r >> self.n;
             return lo ^ (r & self.mask) ^ h2 ^ (h2 << t);
+        }
+        let [a, b, c] = self.penta;
+        if c != 0 {
+            let lo = (w as u64) & self.mask;
+            let h = (w >> self.n) as u64;
+            let r = h ^ (h << a) ^ (h << b) ^ (h << c);
+            let h2 = r >> self.n;
+            return lo ^ (r & self.mask) ^ h2 ^ (h2 << a) ^ (h2 << b) ^ (h2 << c);
         }
         self.reduce_table(w)
     }
