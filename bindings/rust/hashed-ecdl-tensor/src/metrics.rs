@@ -28,15 +28,18 @@ pub struct Phase {
 pub struct Snapshot {
     /// Exclusive cold phases, summed across retries.
     pub phases: BTreeMap<String, Phase>,
-    /// Canonical exclusive online phases, from first query through final replay.
+    /// Canonical exclusive online phases, from target validation through replay.
     pub online_phases_ns: BTreeMap<String, u64>,
-    /// None when no target-dependent query was entered.
+    /// First target-dependent phase; retained to audit the interval boundary.
+    pub online_start_phase: Option<&'static str>,
+    /// None when no target validation or query was entered.
     pub online_wall_ns: Option<u64>,
 }
 struct Recorder {
     phase: &'static str,
     last: Instant,
     online: Option<Instant>,
+    online_start_phase: Option<&'static str>,
     phases: BTreeMap<String, Phase>,
     online_phases: BTreeMap<String, u64>,
 }
@@ -93,6 +96,7 @@ impl Session {
                 phase: "setup",
                 last: Instant::now(),
                 online: None,
+                online_start_phase: None,
                 phases: BTreeMap::new(),
                 online_phases: BTreeMap::new(),
             });
@@ -130,6 +134,7 @@ impl Session {
             Ok(Snapshot {
                 phases: recorder.phases,
                 online_phases_ns: recorder.online_phases,
+                online_start_phase: recorder.online_start_phase,
                 online_wall_ns,
             })
         });
@@ -152,8 +157,10 @@ pub fn phase(name: &'static str) -> Result<()> {
         if let Some(recorder) = slot.borrow_mut().as_mut() {
             let now = Instant::now();
             recorder.flush(now)?;
-            if name == "relation_target" && recorder.online.is_none() {
+            if matches!(name, "target_validation" | "relation_target") && recorder.online.is_none()
+            {
                 recorder.online = Some(now);
+                recorder.online_start_phase = Some(name);
             }
             recorder.phase = name;
         }

@@ -1,0 +1,128 @@
+{
+  "branch": "claude/simd-add-many",
+  "closed_utc": "2026-11-04T16:46:42+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "instr",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-filter/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/ir-filter",
+        "--filter",
+        "relation/koblitz,pdp/mitm,dlp/koblitz"
+      ],
+      "cwd": ".",
+      "exit": 1,
+      "started_utc": "2026-11-04T16:36:19+00:00",
+      "wall_s": 105.735
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/perf/perfindex.py",
+        "compare",
+        "--base",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+        "--cand",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-filter/perfbench",
+        "--out",
+        "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/wall-filter",
+        "--filter",
+        "relation/koblitz_descent_k0n53_m2_x4,relation/koblitz_collect_k0n53_w477_u1024,relation/koblitz_collect_k0n41_w164_u4096,relation/koblitz_rung_k0n31,pdp/mitm",
+        "--rounds",
+        "15",
+        "--threads",
+        "1",
+        "--taskset",
+        "3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T16:38:13+00:00",
+      "wall_s": 377.054
+    }
+  ],
+  "commit": "1011c46a875483ed94832a859dcb9183dc3c5e05",
+  "commit_dirty": false,
+  "created_utc": "2026-11-04T16:32:07+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261104-pair-filter-two-bit"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "L0",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39"
+  },
+  "id": "20261104T1632Z-pair-filter-two-bit",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 15,
+      "name": "wall_ratio.koblitz_collect_k0n53_w477_u1024",
+      "note": "main / two-bit filter, A/A +-3.9%",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.093,
+        1.162
+      ],
+      "unit": "ratio",
+      "value": 1.136
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 15,
+      "name": "wall_ratio.koblitz_descent_k0n53_m2_x4",
+      "note": "neutral at A/A +-11.5%",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.996,
+        1.159
+      ],
+      "unit": "ratio",
+      "value": 1.085
+    }
+  ],
+  "problem": "ic:N53",
+  "raw": [
+    {
+      "bytes": 4014,
+      "path": "experiments/pair-filter-two-bit-20261104/data/filter-instr.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/ac/ace415842b95337a2dfa803df22427562d52148b78f9912b2cdfee636bdb389c",
+      "sha256": "ace415842b95337a2dfa803df22427562d52148b78f9912b2cdfee636bdb389c",
+      "uploaded": false
+    },
+    {
+      "bytes": 96585,
+      "path": "experiments/pair-filter-two-bit-20261104/data/filter-compare.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/80/80c35f3314963e45a9e70ffef295cbb6d8554a325affde608f395f705362a4f6",
+      "sha256": "80c35f3314963e45a9e70ffef295cbb6d8554a325affde608f395f705362a4f6",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261104-pair-filter-two-bit/report.pdf",
+    "png": [],
+    "svg": [
+      "benchmarks/20261104-pair-filter-two-bit/wall.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "pair-filter-two-bit",
+  "status": "measured",
+  "summary": "Two-bit presence filter for CPU-built folded pair tables: k0n53 relation collection 1.136x (CI 1.093-1.162) vs main a08cbbef7, descent 1.085x (neutral), same decompositions; device one-bit layout kept",
+  "validation": null
+}

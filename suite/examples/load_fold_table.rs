@@ -116,6 +116,8 @@ fn read_table(path: &str) -> Result<TableFile, String> {
             words,
             present,
             present_mask,
+            // The device's fold kernel writes one bit per key.
+            two_bit_filter: false,
             canon_tables,
         },
     })
@@ -212,7 +214,7 @@ fn check(path: &str, sample: Option<usize>) -> Result<(), String> {
     let file = read_table(path)?;
     let kc = KoblitzCurve::new(0, file.degree).ok_or("no Koblitz curve at that degree")?;
     let fb = build_subgroup_orbit_factor_base(&kc, file.seed, file.base_request)?;
-    let cpu = PairSumTable::build_folded_within(&kc, &fb, u128::MAX)
+    let cpu = PairSumTable::build_folded_within_one_bit_filter(&kc, &fb, u128::MAX)
         .ok_or("the CPU would not build this table")?;
     let moved = {
         // The control: one bucket's words shifted into the next bucket,

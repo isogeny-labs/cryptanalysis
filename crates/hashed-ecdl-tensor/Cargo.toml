@@ -15,6 +15,10 @@ num-traits = "0.2"
 getrandom = "0.2"
 serde = "1"
 serde_json = "1"
+structured-tensor = { package = "hashed-ecdl-tensor", path = "../../bindings/rust/hashed-ecdl-tensor" }
+
+[dev-dependencies]
+sha2 = "0.10"
 
 [lints.clippy]
 needless_range_loop = "allow"

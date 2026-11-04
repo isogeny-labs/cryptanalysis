@@ -1,0 +1,170 @@
+{
+  "branch": "claude/descent-phases",
+  "closed_utc": "2026-11-04T07:29:57+00:00",
+  "commands": [
+    {
+      "argv": [
+        "sh",
+        "-c",
+        "for i in 1 2 3; do taskset -c 3 /tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/tgt/release/examples/descent_phases --walks 512 --targets 64; done > experiments/descent-phases-k0n53-20261104/data/phases-simd.jsonl; KIC_SCAN_SIMD=0 SUITE_LA_IFMA=0 taskset -c 3 /tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/tgt/release/examples/descent_phases --walks 512 --targets 64 > experiments/descent-phases-k0n53-20261104/data/phases-scalar.jsonl"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T07:23:52+00:00",
+      "wall_s": 7.866
+    },
+    {
+      "argv": [
+        "sh",
+        "-c",
+        "for r in 1 2 3; do for d in 0 16 8 64 32; do taskset -c 3 /tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/tgt/release/examples/descent_phases --walks 512 --targets 64 --prefetch-distance $d 2>/dev/null; done; done > experiments/descent-phases-k0n53-20261104/data/prefetch-distance.jsonl"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T07:25:50+00:00",
+      "wall_s": 28.306
+    },
+    {
+      "argv": [
+        "sh",
+        "-c",
+        "for i in 1 2 3; do taskset -c 3 /tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/tgt/release/examples/descent_phases --probe-bench; done 2> experiments/descent-phases-k0n53-20261104/data/probe-bench.txt"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T07:28:35+00:00",
+      "wall_s": 4.426
+    }
+  ],
+  "commit": "fe79ec13a9eb9894d8ad0ca79b52f53060757846",
+  "commit_dirty": true,
+  "created_utc": "2026-11-04T07:23:52+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261104-descent-phases-k0n53"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "L0",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39"
+  },
+  "id": "20261104T0723Z-descent-phases-k0n53",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 3,
+      "name": "share.add_many_lazy",
+      "note": "share of native descent time, AVX-512 on",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        37.8,
+        38.7
+      ],
+      "unit": "percent",
+      "value": 38.5
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 3,
+      "name": "share.contains_key_loop",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        33.8,
+        36.0
+      ],
+      "unit": "percent",
+      "value": 35.3
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 3,
+      "name": "share.keys_of",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        10.1,
+        10.9
+      ],
+      "unit": "percent",
+      "value": 10.6
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 8000000,
+      "name": "filter_admit_rate",
+      "note": "presence filter false-positive rate on random keys",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "percent",
+      "value": 12.29
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": null,
+      "name": "trials",
+      "note": "",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 12073000.0
+    }
+  ],
+  "problem": "ic:N53",
+  "raw": [
+    {
+      "bytes": 1784,
+      "path": "experiments/descent-phases-k0n53-20261104/data/phases-simd.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/db/db9ef127ec7ad2ce69ab428d6d242f18c3a3425dadbdf0eacd3d0fde9d7466e2",
+      "sha256": "db9ef127ec7ad2ce69ab428d6d242f18c3a3425dadbdf0eacd3d0fde9d7466e2",
+      "uploaded": false
+    },
+    {
+      "bytes": 594,
+      "path": "experiments/descent-phases-k0n53-20261104/data/phases-scalar.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9f/9f2d68ac3ba304ff6c8e046344aa7325baee120570a6253f71395b735f2202dd",
+      "sha256": "9f2d68ac3ba304ff6c8e046344aa7325baee120570a6253f71395b735f2202dd",
+      "uploaded": false
+    },
+    {
+      "bytes": 9108,
+      "path": "experiments/descent-phases-k0n53-20261104/data/prefetch-distance.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/dd/dde89db159e535e76a8ec18292f7f4384e55a053130a2a2a2bf47d0c3e8359e2",
+      "sha256": "dde89db159e535e76a8ec18292f7f4384e55a053130a2a2a2bf47d0c3e8359e2",
+      "uploaded": false
+    },
+    {
+      "bytes": 1216,
+      "path": "experiments/descent-phases-k0n53-20261104/data/probe-bench.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9b/9bb9a78d01bf5356630436d867e22cbed481100550fe6cfd486675205788202b",
+      "sha256": "9bb9a78d01bf5356630436d867e22cbed481100550fe6cfd486675205788202b",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261104-descent-phases-k0n53/report.pdf",
+    "png": [],
+    "svg": [
+      "benchmarks/20261104-descent-phases-k0n53/phases.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "descent-phases-k0n53",
+  "status": "measured",
+  "summary": "Diagnostic native phase profile of the k0n53 walked descent at 512 walks (main fe79ec13a): batched add 38-39%, filter probe loop 34-36% (filter admits 12.3% of keys), keys_of 10-11%; no solver change",
+  "validation": null
+}

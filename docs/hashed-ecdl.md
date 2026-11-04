@@ -40,6 +40,12 @@ formal verification and complete algorithm/complexity audit remain open. See the
 
 ## Native implementation
 
+The [structured prime-field consumer](ic/structured-prime-ic-20261104/README.md)
+exposes public JSON requests, exact counts, signed prefix witnesses and semantic
+replay through the bindings backend and suite adapter. Local membership/setup
+is reused under one explicit request budget. Receipts retain producer-assertion
+standing; the linked report records the entry points and checks. [pcc:unverified]
+
 The source is Akshima et al., *A Subexponential Time Algorithm for Elliptic
 Curve Discrete Logarithm*, v0.2,
 [pinned Bochum revision](https://github.com/bochum-crypto/subexponential-ecdl/tree/1ee44e562b1b9a50ea339f3b8f81112b5a24b96f).

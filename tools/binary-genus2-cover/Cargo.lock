@@ -235,6 +235,7 @@ dependencies = [
  "libc",
  "num-bigint 0.4.8",
  "num-integer",
+ "num-rational",
  "num-traits",
  "rand",
  "rayon",
@@ -339,6 +340,7 @@ dependencies = [
  "num-traits",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -346,6 +348,7 @@ name = "hashed-ecdl-tensor"
 version = "0.1.1"
 dependencies = [
  "getrandom",
+ "hashed-ecdl-tensor 0.1.0",
  "num-bigint 0.5.1",
  "num-integer",
  "num-rational",
