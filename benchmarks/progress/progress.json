@@ -1,16 +1,174 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T0342Z-suite-gf2-inv-chain",
+  "latest_record": "20261104T0538Z-ca-bench-generic-ec",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 1,
+    "measured": 2,
     "open": 0
   },
   "repo": "cryptanalysis",
   "schema": "bench.progress/v1",
   "series": [
+    {
+      "better": "lower",
+      "first": 1.572895,
+      "latest": 1.572895,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.918258
+      },
+      "metric": "bsgs_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.918258
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            1.361188,
+            1.849539
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.572895
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.251399,
+      "latest": 1.251399,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.730568
+      },
+      "metric": "grumpy_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.730568
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.6363,
+            1.587654
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.251399
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.220064,
+      "latest": 1.220064,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.712275
+      },
+      "metric": "kangaroo_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.712275
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.674053,
+            2.517512
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.220064
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.712912,
+      "latest": 1.712912,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "rho1_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.220231,
+            2.312175
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.712912
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 1.241484,
+      "latest": 1.241484,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0,
+        "value_over_reference": 0.72478
+      },
+      "metric": "rhot_s_ec40",
+      "points": [
+        {
+          "commit": "d3a0f1320886",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "value_over_reference": 0.72478
+          },
+          "n": 5,
+          "record": "20261104T0538Z-ca-bench-generic-ec",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.950702,
+            1.568038
+          ],
+          "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+          "value": 1.241484
+        }
+      ],
+      "problem": "ecdlp:ca-bench-generic-ec",
+      "unit": "S"
+    },
     {
       "better": "lower",
       "first": 19775530.0,
