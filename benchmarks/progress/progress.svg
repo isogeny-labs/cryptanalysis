@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1930" viewBox="0 0 900 1930" font-family="Helvetica, Arial, sans-serif" font-size="12">
 <rect width="900" height="1930" fill="white"/>
 <text x="60" y="30" font-size="18" font-weight="bold">Benchmark progress: cryptanalysis</text>
-<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 4, invalid 0, censored 0.</text>
+<text x="60" y="50" fill="#555">Values from bench.record/v1 records; percentages and ratios derived, same unit within a series. Records: open 0, measured 5, invalid 0, censored 0.</text>
 <text x="60" y="84" font-weight="bold">Cumulative gain vs first record, unit S (derived, %)</text>
 <rect x="60" y="94" width="560" height="220" fill="none" stroke="#999"/>
 <line x1="60" y1="314.0" x2="620" y2="314.0" stroke="#eee"/>
@@ -103,27 +103,33 @@
 <text x="620.0" y="1260" text-anchor="middle" fill="#555">2026-11-05</text>
 <line x1="60" y1="1134.0" x2="620" y2="1134.0" stroke="#bbb" stroke-dasharray="4 3"/>
 <text transform="translate(16,1134.0) rotate(-90)" text-anchor="middle" fill="#555">% better than first</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 1.978e+07 ir (n=1)</title></circle>
+<circle cx="340.0" cy="1134.0" r="4" fill="#167f73"><title>20261104T0557Z-proj-orbit-fast: 5.73e+08 ir (n=1)</title></circle>
 <rect x="636" y="1029" width="10" height="10" fill="#167f73"/>
-<text x="650" y="1038">kernel:suite_gf2_koblitz · ir.gf2_</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 3.147e+08 ir (n=1)</title></circle>
+<text x="650" y="1038">ic:N53 · ir.koblitz_descent_k0n53_</text>
+<circle cx="340.0" cy="1134.0" r="4" fill="#637bad"><title>20261104T0557Z-proj-orbit-fast: 2.026e+08 ir (n=1)</title></circle>
 <rect x="636" y="1045" width="10" height="10" fill="#637bad"/>
-<text x="650" y="1054">kernel:suite_gf2_koblitz · ir.kobl</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 3.261e+08 ir (n=1)</title></circle>
+<text x="650" y="1054">ic:N53 · ir.koblitz_rung_k0n31</text>
+<circle cx="340.0" cy="1134.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.978e+07 ir (n=1)</title></circle>
 <rect x="636" y="1061" width="10" height="10" fill="#aa8b5b"/>
-<text x="650" y="1070">kernel:suite_gf2_koblitz · ir.kobl</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 5.401e+07 ir (n=1)</title></circle>
+<text x="650" y="1070">kernel:suite_gf2_koblitz · ir.gf2_</text>
+<circle cx="340.0" cy="1134.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 3.147e+08 ir (n=1)</title></circle>
 <rect x="636" y="1077" width="10" height="10" fill="#93a1a4"/>
 <text x="650" y="1086">kernel:suite_gf2_koblitz · ir.kobl</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 7.312e+08 ir (n=1)</title></circle>
+<circle cx="340.0" cy="1134.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 3.261e+08 ir (n=1)</title></circle>
 <rect x="636" y="1093" width="10" height="10" fill="#69879e"/>
 <text x="650" y="1102">kernel:suite_gf2_koblitz · ir.kobl</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 2.314e+08 ir (n=1)</title></circle>
+<circle cx="340.0" cy="1134.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 5.401e+07 ir (n=1)</title></circle>
 <rect x="636" y="1109" width="10" height="10" fill="#b05c5c"/>
 <text x="650" y="1118">kernel:suite_gf2_koblitz · ir.kobl</text>
-<circle cx="340.0" cy="1134.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 3.364e+08 ir (n=1)</title></circle>
+<circle cx="340.0" cy="1134.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 7.312e+08 ir (n=1)</title></circle>
 <rect x="636" y="1125" width="10" height="10" fill="#5c8a3a"/>
 <text x="650" y="1134">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="1134.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 2.314e+08 ir (n=1)</title></circle>
+<rect x="636" y="1141" width="10" height="10" fill="#8a5ca8"/>
+<text x="650" y="1150">kernel:suite_gf2_koblitz · ir.kobl</text>
+<circle cx="340.0" cy="1134.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 3.364e+08 ir (n=1)</title></circle>
+<rect x="636" y="1157" width="10" height="10" fill="#167f73"/>
+<text x="650" y="1166">kernel:suite_gf2_koblitz · ir.kobl</text>
 <text x="60" y="1324" font-weight="bold">Series in unit ir_per_op: gain vs first record (derived, %)</text>
 <rect x="60" y="1334" width="560" height="220" fill="none" stroke="#999"/>
 <line x1="60" y1="1554.0" x2="620" y2="1554.0" stroke="#eee"/>
@@ -181,28 +187,34 @@
 <circle cx="340.0" cy="1754.0" r="4" fill="#69879e"><title>20261104T0352Z-descent-walks-k0n53: 1.2224 ratio (n=7)</title></circle>
 <rect x="636" y="1713" width="10" height="10" fill="#69879e"/>
 <text x="650" y="1722">ic:N53 · perfbench_descent_k0n53_r</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2148 ratio (n=7)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#b05c5c"><title>20261104T0557Z-proj-orbit-fast: 1.254 ratio (n=15)</title></circle>
 <rect x="636" y="1729" width="10" height="10" fill="#b05c5c"/>
-<text x="650" y="1738">kernel:suite_gf2_koblitz · perfind</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 4.1436 ratio (n=7)</title></circle>
+<text x="650" y="1738">ic:N53 · wall_ratio.koblitz_descen</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#5c8a3a"><title>20261104T0557Z-proj-orbit-fast: 1.151 ratio (n=15)</title></circle>
 <rect x="636" y="1745" width="10" height="10" fill="#5c8a3a"/>
-<text x="650" y="1754">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1933 ratio (n=7)</title></circle>
+<text x="650" y="1754">ic:N53 · wall_ratio.koblitz_rung_k</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#8a5ca8"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2148 ratio (n=7)</title></circle>
 <rect x="636" y="1761" width="10" height="10" fill="#8a5ca8"/>
-<text x="650" y="1770">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 1.0116 ratio (n=7)</title></circle>
+<text x="650" y="1770">kernel:suite_gf2_koblitz · perfind</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#167f73"><title>20261104T0342Z-suite-gf2-inv-chain: 4.1436 ratio (n=7)</title></circle>
 <rect x="636" y="1777" width="10" height="10" fill="#167f73"/>
 <text x="650" y="1786">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 1.4638 ratio (n=7)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#637bad"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1933 ratio (n=7)</title></circle>
 <rect x="636" y="1793" width="10" height="10" fill="#637bad"/>
 <text x="650" y="1802">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2539 ratio (n=7)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#aa8b5b"><title>20261104T0342Z-suite-gf2-inv-chain: 1.0116 ratio (n=7)</title></circle>
 <rect x="636" y="1809" width="10" height="10" fill="#aa8b5b"/>
 <text x="650" y="1818">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1078 ratio (n=7)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#93a1a4"><title>20261104T0342Z-suite-gf2-inv-chain: 1.4638 ratio (n=7)</title></circle>
 <rect x="636" y="1825" width="10" height="10" fill="#93a1a4"/>
 <text x="650" y="1834">kernel:suite_gf2_koblitz · wall_ra</text>
-<circle cx="340.0" cy="1754.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1986 ratio (n=7)</title></circle>
+<circle cx="340.0" cy="1754.0" r="4" fill="#69879e"><title>20261104T0342Z-suite-gf2-inv-chain: 1.2539 ratio (n=7)</title></circle>
 <rect x="636" y="1841" width="10" height="10" fill="#69879e"/>
 <text x="650" y="1850">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#b05c5c"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1078 ratio (n=7)</title></circle>
+<rect x="636" y="1857" width="10" height="10" fill="#b05c5c"/>
+<text x="650" y="1866">kernel:suite_gf2_koblitz · wall_ra</text>
+<circle cx="340.0" cy="1754.0" r="4" fill="#5c8a3a"><title>20261104T0342Z-suite-gf2-inv-chain: 1.1986 ratio (n=7)</title></circle>
+<rect x="636" y="1873" width="10" height="10" fill="#5c8a3a"/>
+<text x="650" y="1882">kernel:suite_gf2_koblitz · wall_ra</text>
 </svg>
