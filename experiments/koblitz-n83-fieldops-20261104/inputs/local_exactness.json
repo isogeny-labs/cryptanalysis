@@ -1,0 +1,54 @@
+{
+ "crate_tests": "online-b cargo test --release --locked --bins: 38 passed, 0 failed (fieldops_tests: 4 of 4)",
+ "label": "LOCAL EXACTNESS (shared cloud-agent VM; correctness only, timings are not evidence)",
+ "profile_identities": {
+  "cold_layout_and_index_digests_equal_A_B": true,
+  "rank_relations_probes_roots_equal_A_B": true
+ },
+ "smoke": {
+  "command": "run_schedule.py --one-per-arm (first run of every arm in every segment) through arm.py's gates, then verify_receipt.py",
+  "processes": 102,
+  "processes_by_arm": {
+   "cM10FO": 1,
+   "cM10RF": 1,
+   "cM38FO": 13,
+   "cM38FOX": 12,
+   "cM38FOaa": 12,
+   "cM38RF": 13,
+   "cPFO": 1,
+   "cPRF": 1,
+   "kM38FO": 12,
+   "kM38FOaa": 12,
+   "kM38RF": 12,
+   "rT": 12
+  },
+  "processes_with_issues_or_unverified": 0,
+  "verifier_checks_failing_expected_for_a_partial_smoke": [
+   "all_aa_pairs_complete",
+   "all_planted_pairs_complete",
+   "all_primary_pairs_complete",
+   "every_scheduled_row_present",
+   "receipt_matches_schedule",
+   "runner_identity_matches_frozen_files"
+  ],
+  "verifier_checks_passing": [
+   "all_executed_rows_valid",
+   "binaries_unchanged",
+   "every_ic_row_ran_its_arms_field_ops_pipeline",
+   "every_ic_row_ran_its_arms_rank_probe_pipeline",
+   "every_row_ran_its_arms_binary",
+   "host_cpu_identity_unchanged",
+   "one_index_and_layout_digest_set_per_base_equal_frozen",
+   "one_probe_count_per_point_and_base",
+   "one_relation_per_point_and_base",
+   "one_scalar_per_point_ic_and_rho",
+   "oracle_replay",
+   "placement_pinned_every_process",
+   "primary_probe_law_inside_frozen_band",
+   "q0_matches_archived_and_frozen_identities",
+   "rank_relations_probes_root_calls_and_counters_identical_per_seed",
+   "rank_tables_equal_frozen_verified_tables",
+   "rows_in_schedule_order"
+  ]
+ }
+}
