@@ -5695,11 +5695,7 @@ fn projected_signed_orbit_map_fast(
     fb: &FrobeniusFactorBase,
 ) -> Option<ProjectedSignedOrbitMap> {
     let fc = FastCurve::new(&kc.curve)?;
-    let projected: Vec<FastPoint> = fb
-        .points
-        .par_iter()
-        .map(|point| fc.mul(fc.lift(point), &kc.cofactor))
-        .collect();
+    let projected = project_by_cofactor(kc, fb, &fc);
     let mut representatives: Vec<FastPoint> = Vec::new();
     let mut seen: HashSet<u64> = HashSet::new();
     for &point in &projected {
@@ -5755,6 +5751,47 @@ fn projected_signed_orbit_map_fast(
         orbit_of,
         representatives: representatives.into_iter().map(|p| fc.lower(p)).collect(),
     })
+}
+
+/// `[h]P` for every base point, one scalar multiplication per π-orbit.
+///
+/// `[h]` commutes with the Frobenius `π`, so along an orbit
+/// `points[i_k] = π^k(points[i_0])` the projections are
+/// `π^k([h]points[i_0])`: one multiplication for the orbit's first point,
+/// then one Frobenius step (two `2^k`-th powers) per point.  At degree 53
+/// on a 15264-point base that is about 290 multiplications instead of
+/// 15264.  Points no orbit lists (none in a base this module builds) are
+/// multiplied one by one, so the result is the same either way.
+fn project_by_cofactor(
+    kc: &KoblitzCurve,
+    fb: &FrobeniusFactorBase,
+    fc: &FastCurve,
+) -> Vec<FastPoint> {
+    let mut projected: Vec<Option<FastPoint>> = vec![None; fb.points.len()];
+    let walked: Vec<Vec<(usize, FastPoint)>> = fb
+        .orbits
+        .par_iter()
+        .map(|orbit| {
+            let Some(&first) = orbit.first() else {
+                return Vec::new();
+            };
+            let mut current = fc.mul(fc.lift(&fb.points[first]), &kc.cofactor);
+            let mut out = Vec::with_capacity(orbit.len());
+            for &i in orbit {
+                out.push((i, current));
+                current = fc.frobenius_k(current, kc.k);
+            }
+            out
+        })
+        .collect();
+    for (i, p) in walked.into_iter().flatten() {
+        projected[i] = Some(p);
+    }
+    projected
+        .into_par_iter()
+        .zip(fb.points.par_iter())
+        .map(|(p, point)| p.unwrap_or_else(|| fc.mul(fc.lift(point), &kc.cofactor)))
+        .collect()
 }
 
 /// Number of nonzero signed-Frobenius columns remaining after every
@@ -12080,6 +12117,31 @@ mod tests {
                 "m = {m}: the compact table decomposed nothing at all"
             );
         }
+    }
+
+    #[test]
+    fn orbit_walked_cofactor_projection_matches_per_point_products() {
+        let mut checked = 0;
+        for (degree, points) in [(15u32, 300usize), (31, 600), (37, 800), (53, 2000)] {
+            let Some(kc) = KoblitzCurve::new(0, degree) else {
+                continue;
+            };
+            let Ok(fb) = build_subgroup_orbit_factor_base(&kc, 3, points) else {
+                continue;
+            };
+            let fc = FastCurve::new(&kc.curve).expect("fits in a word");
+            let walked = project_by_cofactor(&kc, &fb, &fc);
+            assert_eq!(walked.len(), fb.points.len());
+            for (i, point) in fb.points.iter().enumerate() {
+                assert_eq!(
+                    walked[i],
+                    fc.mul(fc.lift(point), &kc.cofactor),
+                    "degree {degree}, point {i}"
+                );
+            }
+            checked += 1;
+        }
+        assert!(checked >= 3, "only {checked} degrees available");
     }
 
     #[test]
