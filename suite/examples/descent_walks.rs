@@ -16,7 +16,7 @@
 //! ```
 
 use cryptanalysis_suite::cryptanalysis::koblitz_index_calculus::{
-    build_subgroup_orbit_factor_base, ColumnCoverage, CollectedRelation, DecompositionStrategy,
+    build_subgroup_orbit_factor_base, CollectedRelation, ColumnCoverage, DecompositionStrategy,
     FactorBaseLogSolver, IndividualLogSolver, KoblitzCurve, KoblitzIcOptions, LinearAlgebra,
     PairSumTable, RelationCollector, RelationWorkUnit,
 };
@@ -41,7 +41,11 @@ fn main() {
         .iter()
         .position(|a| a == "--walks")
         .and_then(|i| args.get(i + 1))
-        .map(|v| v.split(',').map(|w| w.parse().expect("walk count")).collect())
+        .map(|v| {
+            v.split(',')
+                .map(|w| w.parse().expect("walk count"))
+                .collect()
+        })
         .unwrap_or_else(|| vec![64, 64, 128, 256, 512]);
     let n_targets: u64 = arg(&args, "--targets", 48);
     let target_seed: u64 = arg(&args, "--target-seed", 1000);

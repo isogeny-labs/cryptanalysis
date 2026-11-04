@@ -8983,8 +8983,21 @@ pub struct IndividualLogSolver<'a> {
 }
 
 impl<'a> IndividualLogSolver<'a> {
-    /// The walk count [`Self::new`] sets.
+    /// The walk count [`Self::new`] sets on a subgroup below
+    /// [`Self::WIDE_WALKS_MIN_ORDER`].
     pub const DEFAULT_WALKS: usize = 64;
+
+    /// The walk count [`Self::new`] sets on a subgroup of order at least
+    /// [`Self::WIDE_WALKS_MIN_ORDER`]: chosen by the frozen protocol
+    /// `experiments/descent-walks-k0n53-20261104/PROTOCOL.md` on k0n53
+    /// (`r ≈ 2^44.3`; per-trial cost 1.095× lower than 64 walks, 95% CI
+    /// 1.080–1.109, A/A noise ±1.7%).  On k0n31 (`r ≈ 2^29`) 512 walks
+    /// made the rung 0.835× as fast — a descent there takes too few
+    /// trials to repay starting 512 walks — so smaller subgroups keep 64.
+    pub const WIDE_WALKS: usize = 512;
+
+    /// See [`Self::WIDE_WALKS`].
+    pub const WIDE_WALKS_MIN_ORDER: u64 = 1 << 40;
 
     /// Step `walks` (at least 1) walks together in the walked descent.
     /// The probes are drawn in a different order for each count, so the
@@ -9035,7 +9048,11 @@ impl<'a> IndividualLogSolver<'a> {
             fast,
             h: &kc.cofactor % r,
             r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
-            walks: Self::DEFAULT_WALKS,
+            walks: if *r >= BigUint::from(Self::WIDE_WALKS_MIN_ORDER) {
+                Self::WIDE_WALKS
+            } else {
+                Self::DEFAULT_WALKS
+            },
         })
     }
 
@@ -10173,6 +10190,8 @@ mod tests {
     /// report `a ≥ r` there).
     #[test]
     fn descent_walk_steps_a_by_one_mod_r() {
+        // Few enough walks that first hits after a wrap occur at r = 127;
+        // the stepping is the same for every walk count.
         const WALKS: u64 = 64;
         let kc = KoblitzCurve::new(0, 9).unwrap();
         let fb = build_frobenius_factor_base(&kc, 0).unwrap();
@@ -10195,7 +10214,9 @@ mod tests {
                 allow_direct_relation: true,
                 ..opts.clone()
             };
-            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair)).unwrap();
+            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair))
+                .unwrap()
+                .with_walks(WALKS as usize);
             // The walks' start, drawn as `solve_by_walking` draws it: one
             // `a₀` and one `b` for all of them, walk `w` starting at
             // `a₀ + w·stride`.
