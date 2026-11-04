@@ -3920,7 +3920,10 @@ impl PairSumTable {
     /// has a whole row of rests in hand at once and none of them depend
     /// on each other.  Interleaving them turns the chain from
     /// latency-bound into throughput-bound.  `out` is cleared first.
-    fn keys_of(&self, points: &[FastPoint], out: &mut Vec<u64>) {
+    /// Exposed, like [`Self::prefetch_key`], so a benchmark can model the
+    /// descent loop exactly.
+    #[doc(hidden)]
+    pub fn keys_of(&self, points: &[FastPoint], out: &mut Vec<u64>) {
         out.clear();
         if !self.fold {
             out.extend(points.iter().map(|p| p.pack()));
