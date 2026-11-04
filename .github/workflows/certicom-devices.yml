@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install stable Rust
         run: |
           cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
@@ -71,7 +71,7 @@ jobs:
     container: nvidia/cuda:12.9.1-devel-ubuntu24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Compile native CUDA workers; this job does not execute GPU kernels
         shell: bash
         run: |
@@ -86,7 +86,7 @@ jobs:
       matrix:
         phase: [library, cli]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Compile native Metal shader and worker
         run: make -C gpu/certicom metal
       - name: Probe whether this macOS runner exposes a Metal device
@@ -148,7 +148,7 @@ jobs:
       CERTICOM_TEST_BACKEND: ${{ inputs.hardware_backend }}
       CARGO_BUILD_JOBS: '2'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install stable Rust
         run: |
           cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"

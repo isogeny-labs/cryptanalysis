@@ -27,7 +27,7 @@ jobs:
     env:
       EXP: experiments/glv-cap-by-size-walltime-20261107
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # the full tree does not fit beside two build trees; only these paths are used
           sparse-checkout: |
