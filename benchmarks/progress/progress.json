@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T0538Z-ca-bench-generic-ec",
+  "latest_record": "20261104T0613Z-ca-bench-generic-ec-run2",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 3,
+    "measured": 4,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -17,6 +17,7 @@
       "latest": 1.572895,
       "latest_derived": {
         "improvement_vs_first_percent": 0.0,
+        "improvement_vs_previous_percent": 0.0,
         "value_over_reference": 0.918258
       },
       "metric": "bsgs_s_ec40",
@@ -38,6 +39,25 @@
           ],
           "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
           "value": 1.572895
+        },
+        {
+          "commit": "e87c5a702273",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "improvement_vs_previous_percent": 0.0,
+            "value_over_reference": 0.918258
+          },
+          "n": 5,
+          "record": "20261104T0613Z-ca-bench-generic-ec-run2",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            1.361188,
+            1.849539
+          ],
+          "summary": "ca_bench generic EC rerun at e87c5a70: bsgs/rho-1/kangaroo/grumpy identical op totals to run 1 (0.00%), rho-T 1.241 -> 1.340 within spread",
+          "value": 1.572895
         }
       ],
       "problem": "ecdlp:ca-bench-generic-ec",
@@ -49,6 +69,7 @@
       "latest": 1.251399,
       "latest_derived": {
         "improvement_vs_first_percent": 0.0,
+        "improvement_vs_previous_percent": 0.0,
         "value_over_reference": 0.730568
       },
       "metric": "grumpy_s_ec40",
@@ -70,6 +91,25 @@
           ],
           "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
           "value": 1.251399
+        },
+        {
+          "commit": "e87c5a702273",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "improvement_vs_previous_percent": 0.0,
+            "value_over_reference": 0.730568
+          },
+          "n": 5,
+          "record": "20261104T0613Z-ca-bench-generic-ec-run2",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.6363,
+            1.587654
+          ],
+          "summary": "ca_bench generic EC rerun at e87c5a70: bsgs/rho-1/kangaroo/grumpy identical op totals to run 1 (0.00%), rho-T 1.241 -> 1.340 within spread",
+          "value": 1.251399
         }
       ],
       "problem": "ecdlp:ca-bench-generic-ec",
@@ -81,6 +121,7 @@
       "latest": 1.220064,
       "latest_derived": {
         "improvement_vs_first_percent": 0.0,
+        "improvement_vs_previous_percent": 0.0,
         "value_over_reference": 0.712275
       },
       "metric": "kangaroo_s_ec40",
@@ -102,6 +143,25 @@
           ],
           "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
           "value": 1.220064
+        },
+        {
+          "commit": "e87c5a702273",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "improvement_vs_previous_percent": 0.0,
+            "value_over_reference": 0.712275
+          },
+          "n": 5,
+          "record": "20261104T0613Z-ca-bench-generic-ec-run2",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            0.674053,
+            2.517512
+          ],
+          "summary": "ca_bench generic EC rerun at e87c5a70: bsgs/rho-1/kangaroo/grumpy identical op totals to run 1 (0.00%), rho-T 1.241 -> 1.340 within spread",
+          "value": 1.220064
         }
       ],
       "problem": "ecdlp:ca-bench-generic-ec",
@@ -112,7 +172,8 @@
       "first": 1.712912,
       "latest": 1.712912,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0
+        "improvement_vs_first_percent": 0.0,
+        "improvement_vs_previous_percent": 0.0
       },
       "metric": "rho1_s_ec40",
       "points": [
@@ -132,6 +193,24 @@
           ],
           "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
           "value": 1.712912
+        },
+        {
+          "commit": "e87c5a702273",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0,
+            "improvement_vs_previous_percent": 0.0
+          },
+          "n": 5,
+          "record": "20261104T0613Z-ca-bench-generic-ec-run2",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.220231,
+            2.312175
+          ],
+          "summary": "ca_bench generic EC rerun at e87c5a70: bsgs/rho-1/kangaroo/grumpy identical op totals to run 1 (0.00%), rho-T 1.241 -> 1.340 within spread",
+          "value": 1.712912
         }
       ],
       "problem": "ecdlp:ca-bench-generic-ec",
@@ -140,10 +219,11 @@
     {
       "better": "lower",
       "first": 1.241484,
-      "latest": 1.241484,
+      "latest": 1.340192,
       "latest_derived": {
-        "improvement_vs_first_percent": 0.0,
-        "value_over_reference": 0.72478
+        "improvement_vs_first_percent": -7.9508,
+        "improvement_vs_previous_percent": -7.9508,
+        "value_over_reference": 0.782406
       },
       "metric": "rhot_s_ec40",
       "points": [
@@ -164,6 +244,25 @@
           ],
           "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
           "value": 1.241484
+        },
+        {
+          "commit": "e87c5a702273",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -7.9508,
+            "improvement_vs_previous_percent": -7.9508,
+            "value_over_reference": 0.782406
+          },
+          "n": 5,
+          "record": "20261104T0613Z-ca-bench-generic-ec-run2",
+          "reference": 1.712912,
+          "reference_kind": "matched_rho",
+          "spread": [
+            1.135774,
+            1.685172
+          ],
+          "summary": "ca_bench generic EC rerun at e87c5a70: bsgs/rho-1/kangaroo/grumpy identical op totals to run 1 (0.00%), rho-T 1.241 -> 1.340 within spread",
+          "value": 1.340192
         }
       ],
       "problem": "ecdlp:ca-bench-generic-ec",
