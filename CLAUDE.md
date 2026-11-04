@@ -33,3 +33,11 @@ Look up curve facts and existing measurements in the lab's curve database
 before computing them: MCP server `ecdb` (export `ECDB_TOKEN` from secret
 `ecdb/api` first) or `scripts/ecdb.sh`. AGENTS.md, "Querying the curve
 database (ecdb)".
+
+**Benchmark records** (owner, 2026-11-04): every benchmark run leaves a
+`bench.record/v1` record in Git (`python3 tools/benchrec.py init|run|add-raw|
+metric|close`), its raw data in S3 by SHA-256, and a regenerated progress
+report in `benchmarks/progress/`, in the same PR. The hooks refuse unrecorded
+benchmark launchers and unrecorded pushes; the `bench-records` check fails
+the PR. AGENTS.md, "Benchmark records: data in S3, metadata in Git, one
+progress report"; [docs/benchmark-records.md](docs/benchmark-records.md).
