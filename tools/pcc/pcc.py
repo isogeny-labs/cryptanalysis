@@ -700,9 +700,16 @@ def _num(x: Any) -> bool:
 
 
 def _signed(repo: Path, proof: dict[str, Any], kr: dict[str, Any], subject_kind: str, subject_sha256: str,
-            reasons: list[str]) -> bool:
+            reasons: list[str], notes: list[str] | None = None) -> bool:
+    """True when a keyring key signed the subject. A missing signature is not a
+    failure but leaves independence unestablished (the caller reports
+    not_covered); a signature that is present and wrong fails."""
     sig_spec = proof.get("signature")
     sig = None
+    if sig_spec is None:
+        if notes is not None:
+            notes.append(f"{subject_kind}: unsigned; independence needs a keyring signature")
+        return False
     if isinstance(sig_spec, dict) and "path" in sig_spec:
         p = _rel(repo, sig_spec["path"], reasons, "signature")
         if p is None:
@@ -717,7 +724,8 @@ def _signed(repo: Path, proof: dict[str, Any], kr: dict[str, Any], subject_kind:
     return check_signature(sig, kr, subject_kind, subject_sha256, reasons, subject_kind)
 
 
-def verify_replay(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str]) -> str:
+def verify_replay(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str],
+                  notes: list[str]) -> str:
     got = _pinned(repo, proof, reasons, "replay certificate")
     if got is None:
         return "fail"
@@ -734,11 +742,32 @@ def verify_replay(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons
         reasons.append("replay certificate: no runs")
     # `independent: true` is a producer-written boolean and is not read.
     # Independence is the signature of a keyring key over the certificate.
-    _signed(repo, proof, kr, "replay-certificate", sha256_file(path), reasons)
-    return "fail" if reasons else "pass"
+    signed = _signed(repo, proof, kr, "replay-certificate", sha256_file(path), reasons, notes)
+    if reasons:
+        return "fail"
+    return "pass" if signed else "not_covered"
 
 
-def verify_recompute(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str]) -> str:
+def _raw_data_path(repo: Path, base: Path, name: Any, reasons: list[str]) -> Path | None:
+    """A raw_data entry, relative to the evidence directory first and to the
+    repository root second; either way it must stay inside the repository."""
+    what = f"validator report raw_data {name}"
+    if not isinstance(name, str) or not name:
+        reasons.append(f"{what}: no path")
+        return None
+    for root in (base, repo):
+        cand = (root / name).resolve()
+        if not cand.is_relative_to(repo):
+            reasons.append(f"{what}: escapes the repository")
+            return None
+        if cand.exists():
+            return cand
+    reasons.append(f"{what}: does not exist under {base.relative_to(repo).as_posix() or '.'} or the repository root")
+    return None
+
+
+def verify_recompute(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str],
+                     notes: list[str]) -> str:
     got = _pinned(repo, proof, reasons, "validator report")
     if got is None:
         return "fail"
@@ -749,19 +778,28 @@ def verify_recompute(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reas
     if str(rep.get("status", "")).lower() not in {"pass", "passed"}:
         reasons.append(f"validator report: status {rep.get('status')!r} is not pass")
     raw = rep.get("raw_data")
+    # raw_data paths are relative to the evidence directory the validation gate
+    # names (docs/VALIDATION_GATE.md), by default the report's own directory.
+    base = path.parent
+    ev = proof.get("evidence_dir")
+    if ev is not None:
+        base = _rel(repo, ev, reasons, "recompute evidence_dir") or base
+    unpinned = 0
     if not isinstance(raw, list) or not raw:
         reasons.append("validator report: raw_data is empty")
     else:
         for item in raw:
             name = item.get("path") if isinstance(item, dict) else item
-            p = _rel(repo, name, reasons, f"validator report raw_data {name}")
-            if p and isinstance(item, dict):
-                if not isinstance(item.get("sha256"), str):
-                    reasons.append(f"validator report raw_data {name}: no sha256 pin")
-                elif item["sha256"] != sha256_file(p):
-                    reasons.append(f"validator report raw_data {name}: sha256 mismatch")
-            elif p:
-                reasons.append(f"validator report raw_data {name}: no sha256 pin")
+            p = _raw_data_path(repo, base, name, reasons)
+            if p is None:
+                continue
+            pin = item.get("sha256") if isinstance(item, dict) else None
+            if not isinstance(pin, str):
+                unpinned += 1
+            elif pin != sha256_file(p):
+                reasons.append(f"validator report raw_data {name}: sha256 mismatch")
+    if unpinned:
+        notes.append(f"validator report: {unpinned} raw_data file(s) carry no sha256 pin; their binding is not established")
     heads = rep.get("headline")
     if not isinstance(heads, list) or not heads:
         reasons.append("validator report: no headline numbers recomputed")
@@ -775,8 +813,10 @@ def verify_recompute(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reas
             if abs(h["claimed"] - h["recomputed"]) > tol * scale:
                 reasons.append(f"validator report: {h.get('name', '?')} claimed {h['claimed']} "
                                f"but recomputed {h['recomputed']}")
-    _signed(repo, proof, kr, "validator-report", sha256_file(path), reasons)
-    return "fail" if reasons else "pass"
+    signed = _signed(repo, proof, kr, "validator-report", sha256_file(path), reasons, notes)
+    if reasons:
+        return "fail"
+    return "pass" if signed and not unpinned else "not_covered"
 
 
 def verify_execution(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str],
@@ -859,13 +899,16 @@ def _pinned_file(repo: Path, spec: Any, reasons: list[str], what: str) -> Path |
     return p
 
 
-def verify_attestation(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str]) -> str:
+def verify_attestation(proof: dict[str, Any], repo: Path, kr: dict[str, Any], reasons: list[str],
+                       notes: list[str]) -> str:
     spath = _pinned_file(repo, proof.get("subject"), reasons, "attestation subject")
     if spath is None:
         return "fail"
     kind = proof.get("subject_kind", "artifact")
-    _signed(repo, proof, kr, str(kind), sha256_file(spath), reasons)
-    return "fail" if reasons else "pass"
+    signed = _signed(repo, proof, kr, str(kind), sha256_file(spath), reasons, notes)
+    if reasons:
+        return "fail"
+    return "pass" if signed else "not_covered"
 
 
 # ----------------------------------------------------------------------------
@@ -935,13 +978,13 @@ def verify_claim(claim: dict[str, Any], repo: Path, kr: dict[str, Any]) -> dict[
                 got = _pinned(repo, pr, pr_reasons, "zk solve certificate")
                 v = "pass" if got and verify_zk_solve_certificate(got[1], pr_reasons) else "fail"
             elif kind == "replay":
-                v = verify_replay(pr, repo, kr, pr_reasons)
+                v = verify_replay(pr, repo, kr, pr_reasons, notes)
             elif kind == "recompute":
-                v = verify_recompute(pr, repo, kr, pr_reasons)
+                v = verify_recompute(pr, repo, kr, pr_reasons, notes)
             elif kind == "execution":
                 v = verify_execution(pr, repo, kr, pr_reasons, notes)
             else:
-                v = verify_attestation(pr, repo, kr, pr_reasons)
+                v = verify_attestation(pr, repo, kr, pr_reasons, notes)
         except Exception as e:  # a crashing verifier is a failed proof, never a pass
             v = "fail"
             pr_reasons.append(f"{kind}: verifier error {type(e).__name__}: {e}")
@@ -1348,7 +1391,7 @@ def _run_canaries(fx: Fixture) -> list[tuple[str, str, str, list[str]]]:
     # replay / recompute
     def no_sig(copy, c):
         del c["proofs"][0]["signature"]
-    check("replay:no signature", "fail", "measurement", no_sig)
+    check("replay:no signature (unsigned is uncovered, never verified)", "not_covered", "measurement", no_sig)
 
     def stranger_sig(copy, c):
         (copy / "runs/replay-certificate.sig.json").write_text(json.dumps(
@@ -1372,7 +1415,21 @@ def _run_canaries(fx: Fixture) -> list[tuple[str, str, str, list[str]]]:
         rewrite(copy, "runs/replay-certificate.json", lambda o: o.__setitem__("independent", True))
         repin(c, 0, copy)
         del c["proofs"][0]["signature"]
-    check("replay:independent:true written by the producer, unsigned", "fail", "measurement", independent_true_only)
+    check("replay:independent:true written by the producer, unsigned", "not_covered", "measurement", independent_true_only)
+
+    def unpinned_raw(copy, c):
+        rewrite(copy, "runs/validator-report.json", lambda o: o.__setitem__("raw_data", ["raw.jsonl"]))
+        repin(c, 1, copy)
+        (copy / "runs/validator-report.sig.json").write_text(json.dumps(
+            make_signature(fx.secret, "fixture-ci", "validator-report", sha256_file(copy / "runs/validator-report.json"))))
+    check("recompute:raw data without a sha256 pin", "not_covered", "measurement", unpinned_raw)
+
+    def raw_outside(copy, c):
+        rewrite(copy, "runs/validator-report.json", lambda o: o.__setitem__("raw_data", [{"path": "../../etc/passwd", "sha256": "0" * 64}]))
+        repin(c, 1, copy)
+        (copy / "runs/validator-report.sig.json").write_text(json.dumps(
+            make_signature(fx.secret, "fixture-ci", "validator-report", sha256_file(copy / "runs/validator-report.json"))))
+    check("recompute:raw data path outside the repository", "fail", "measurement", raw_outside)
 
     def headline(copy, c):
         rewrite(copy, "runs/validator-report.json", lambda o: o["headline"][0].__setitem__("recomputed", 11.5))
