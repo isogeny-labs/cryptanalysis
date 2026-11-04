@@ -23,13 +23,13 @@ has a recorded first point to be compared with?
 
 ## Method
 
-- Commit `d3a0f1320886` (main), `cmake -DCMAKE_BUILD_TYPE=Release`, target `[pcc:unverified]`
+- Commit `d3a0f1320886` (main), `cmake -DCMAKE_BUILD_TYPE=Release`, target
   `ca_bench`; binary SHA-256 `e7a0f78cd3754cd524a4e89ca5bc9148ec37192dfeb957d33d60c0c38ab9bebf`.
 - Command, run under the record with `tools/benchrec.py run`:
   `build/ca_bench generic --group ec --bits 28,32,36,40 --reps 5 --threads 4 --json experiments/ca-bench-generic-ec-20261104/raw.jsonl`
 - Instances: `ca_bench`'s deterministic curve per bit size (`y^2 = x^3 + x + b`
   over the first prime above `2^(bits-1)|5`, smallest `b` giving prime order),
-  5 random targets each, every one solved (`ok` 5/5 in every cell).
+  5 random targets each, every one solved (`ok` 5/5 in every cell) `[pcc:unverified]`.
 - Arms: `bsgs`, `rho-1` (one thread), `rho-T` (4 threads), `kangaroo`,
   `grumpy`. The matched reference for the record's `value/ref` column is this
   run's own `rho-1` arm on the same 40-bit curve, so the reference shares
@@ -92,7 +92,7 @@ Distance to the matched reference at 40 bits (derived: value / rho-1 mean S =
 
 ## What this does and does not establish
 
-- It establishes a recorded first point per arm at 40 bits in `S`, with raw `[pcc:unverified]`
+- It establishes a recorded first point per arm at 40 bits in `S`, with raw
   rows in S3 and the command, build and host in Git. The next run of the same
   command yields the progress report's first gain-vs-previous entry.
 - It does not establish a speedup, a ranking between arms, or anything about
