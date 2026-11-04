@@ -34,7 +34,7 @@ impl CurveParams {
     // ── Convenience constructors ──────────────────────────────────────────────
 
     /// Certicom ECCp-131 challenge, including its published base point.
-    /// Parameters: https://www.certicom.com/en/curves-list
+    /// Parameters: <https://www.certicom.com/en/curves-list>
     pub fn eccp131() -> Self {
         let hex = |value: &[u8]| BigUint::parse_bytes(value, 16).expect("ECCp-131 hex constant");
         CurveParams {

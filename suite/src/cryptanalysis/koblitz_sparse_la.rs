@@ -1009,6 +1009,12 @@ pub struct CsrMatrix {
     /// reductions ([`Reducer::lazy_terms`] for the largest stored
     /// coefficient); `None` for a modulus outside `[2, 2⁶³)`.
     lazy: Option<(Reducer, usize)>,
+    /// Every stored coefficient (and `m − 1`, the homogenising column's
+    /// bound) is below `2⁵²` and every row holds fewer than
+    /// [`ifma::MAX_TERMS`] entries, so the AVX-512 IFMA row kernel applies
+    /// whenever the CPU has it ([`Self::ifma_lazy`]).
+    #[cfg_attr(not(all(target_arch = "x86_64", suite_avx512)), allow(dead_code))]
+    ifma_ok: bool,
 }
 
 /// Rows below this many are multiplied serially.
@@ -1037,6 +1043,7 @@ impl CsrMatrix {
             .copied()
             .fold(modulus.saturating_sub(1), u64::max);
         let lazy = Reducer::new(modulus).map(|r| (r, r.lazy_terms(a_max)));
+        let ifma_ok = a_max < 1 << 52 && row_ptr.windows(2).all(|w| w[1] - w[0] < ifma::MAX_TERMS);
         Self {
             n_rows: rows.len(),
             n_cols,
@@ -1045,6 +1052,7 @@ impl CsrMatrix {
             vals,
             modulus,
             lazy,
+            ifma_ok,
         }
     }
 
@@ -1092,6 +1100,54 @@ impl CsrMatrix {
         }
     }
 
+    /// The reducer when the IFMA row kernel applies to this matrix on this
+    /// CPU, decided once per product rather than once a row.
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[inline]
+    fn ifma_lazy(&self) -> Option<&(Reducer, usize)> {
+        if self.ifma_ok && ifma::enabled() {
+            self.lazy.as_ref()
+        } else {
+            None
+        }
+    }
+
+    /// [`Self::row_lazy`] with each four-lane group on [`ifma::row4`]; a
+    /// group whose operand words reach `2⁵²`, and the lanes past the last
+    /// group, take the `u128` lanes.  `extra < m ≤ 2⁵²` (`ifma_ok` bounds
+    /// the stored coefficients by `m − 1 < 2⁵²`).
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    fn row_ifma(
+        &self,
+        i: usize,
+        x: &[u64],
+        n: usize,
+        extra: u64,
+        (red, terms): &(Reducer, usize),
+        out: &mut [u64],
+    ) {
+        let span = self.row_ptr[i]..self.row_ptr[i + 1];
+        let row = (&self.col_idx[span.clone()], &self.vals[span]);
+        let extra = (self.n_cols * n, extra);
+        debug_assert!(extra.1 < 1 << 52);
+        let mut j = 0;
+        while j + 4 <= n {
+            // SAFETY: `ifma_lazy` checked avx512f, avx512vl and avx512ifma,
+            // and `ifma_ok` the row's length and coefficients.
+            let done = unsafe { ifma::row4(row, x, j, n, extra, red, &mut out[j..j + 4]) };
+            if !done {
+                let acc = LazyLanes::<4>::new(red, *terms);
+                csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 4]);
+            }
+            j += 4;
+        }
+        while j < n {
+            let acc = LazyLanes::<1>::new(red, *terms);
+            csr_lanes(acc, row, &x[j..], n, extra, &mut out[j..j + 1]);
+            j += 1;
+        }
+    }
+
     /// One `mulmod` per entry and lane: the path for a modulus the
     /// [`Reducer`] does not cover, and the reference the lazy path is
     /// tested against.
@@ -1127,6 +1183,11 @@ impl CsrMatrix {
     pub fn mul_block(&self, x: &[u64], n: usize, y: &mut [u64]) {
         debug_assert_eq!(x.len(), self.n_cols * n);
         debug_assert_eq!(y.len(), self.n_rows * n);
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(lazy) = self.ifma_lazy() {
+            self.for_each_row(y, n, |i, out| self.row_ifma(i, x, n, 0, lazy, out));
+            return;
+        }
         self.for_each_row(y, n, |i, out| self.row_into(i, x, n, out));
     }
 }
@@ -1148,6 +1209,100 @@ fn csr_lanes<const W: usize>(
         acc.add(extra.1, &x[extra.0..]);
     }
     acc.finish(out);
+}
+
+/// The CSR row product on AVX-512 IFMA (`vpmadd52lo/hi`), four lanes in
+/// one 256-bit register.
+///
+/// For `a, t < 2⁵²` the 104-bit product `a·t` is `hi·2⁵² + lo` with `hi`
+/// and `lo` the two halves the instructions return, so summing the halves
+/// in separate 64-bit lanes and forming `Σhi·2⁵² + Σlo` at the end is the
+/// exact integer `Σ a·t` the `u128` lanes of [`LazyLanes`] sum, and one
+/// [`Reducer::reduce`] gives the same canonical residue.  Each half is
+/// below `2⁵²`, so up to [`MAX_TERMS`] − 1 products (and the homogenising
+/// term) cannot overflow a 64-bit lane.  A product's inputs must fit 52
+/// bits — the instructions read only those bits: coefficients are checked
+/// when the matrix is built, operand words as they are loaded, and a row
+/// with an operand word at or above `2⁵²` is recomputed on the `u128` path.
+mod ifma {
+    /// Products a 64-bit lane of 52-bit halves absorbs: `2⁶⁴ / 2⁵²`.
+    pub(super) const MAX_TERMS: usize = 1 << 12;
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    pub(super) use imp::*;
+
+    #[cfg(all(target_arch = "x86_64", suite_avx512))]
+    #[clippy::msrv = "1.89"]
+    mod imp {
+        use super::super::Reducer;
+        use std::arch::x86_64::*;
+
+        /// The CPU has avx512f, avx512vl and avx512ifma, and
+        /// `SUITE_LA_IFMA=0` (a same-binary control) is not set.
+        pub(in super::super) fn enabled() -> bool {
+            static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+            *ON.get_or_init(|| {
+                is_x86_feature_detected!("avx512f")
+                    && is_x86_feature_detected!("avx512vl")
+                    && is_x86_feature_detected!("avx512ifma")
+                    && std::env::var("SUITE_LA_IFMA").as_deref() != Ok("0")
+            })
+        }
+
+        /// Lanes `j .. j + 4` of one row: `out[l] = (Σ_k vals[k] ·
+        /// x[cols[k]·n + j + l] + extra.1 · x[extra.0 + j + l]) mod m`.
+        /// Returns `false`, having written nothing, when an operand word
+        /// read is `≥ 2⁵²`.
+        ///
+        /// # Safety
+        ///
+        /// The CPU must have avx512f, avx512vl and avx512ifma; the row must
+        /// hold fewer than `MAX_TERMS` entries, all below `2⁵²`, and
+        /// `extra.1 < 2⁵²`.
+        #[target_feature(enable = "avx512f,avx512vl,avx512ifma")]
+        pub(in super::super) unsafe fn row4(
+            (cols, vals): (&[u32], &[u64]),
+            x: &[u64],
+            j: usize,
+            n: usize,
+            extra: (usize, u64),
+            red: &Reducer,
+            out: &mut [u64],
+        ) -> bool {
+            let mut lo = _mm256_setzero_si256();
+            let mut hi = _mm256_setzero_si256();
+            let mut seen = _mm256_setzero_si256();
+            for (&c, &a) in cols.iter().zip(vals) {
+                let at = c as usize * n + j;
+                let src = &x[at..at + 4];
+                let t = _mm256_loadu_si256(src.as_ptr().cast());
+                let av = _mm256_set1_epi64x(a as i64);
+                lo = _mm256_madd52lo_epu64(lo, av, t);
+                hi = _mm256_madd52hi_epu64(hi, av, t);
+                seen = _mm256_or_si256(seen, t);
+            }
+            if extra.1 != 0 {
+                let src = &x[extra.0 + j..extra.0 + j + 4];
+                let t = _mm256_loadu_si256(src.as_ptr().cast());
+                let av = _mm256_set1_epi64x(extra.1 as i64);
+                lo = _mm256_madd52lo_epu64(lo, av, t);
+                hi = _mm256_madd52hi_epu64(hi, av, t);
+                seen = _mm256_or_si256(seen, t);
+            }
+            let mut s = [0u64; 4];
+            _mm256_storeu_si256(s.as_mut_ptr().cast(), seen);
+            if (s[0] | s[1] | s[2] | s[3]) >> 52 != 0 {
+                return false;
+            }
+            let (mut l, mut h) = ([0u64; 4], [0u64; 4]);
+            _mm256_storeu_si256(l.as_mut_ptr().cast(), lo);
+            _mm256_storeu_si256(h.as_mut_ptr().cast(), hi);
+            for ((o, &lv), &hv) in out.iter_mut().zip(&l).zip(&h) {
+                *o = red.reduce(((hv as u128) << 52) + lv as u128);
+            }
+            true
+        }
+    }
 }
 
 /// A square linear operator on block vectors, as block Wiedemann sees it.
@@ -1189,6 +1344,15 @@ impl BlockOperator for Homogenised<'_> {
         let m = self.a.modulus;
         let (ya, yt) = y.split_at_mut(big_n * n);
         yt.iter_mut().for_each(|v| *v = 0);
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if let Some(lazy) = self.a.ifma_lazy() {
+            self.a.for_each_row(ya, n, |i, out| {
+                let bi = self.b[i];
+                let bi = if bi < m { bi } else { bi % m };
+                self.a.row_ifma(i, x, n, negmod(bi, m), lazy, out);
+            });
+            return;
+        }
         if let Some(lazy) = &self.a.lazy {
             // `−b_i · t_j` is one more product in row `i`'s sum, against
             // the `t` lanes that follow `A`'s `N·n` in `x`: one reduction
@@ -1978,6 +2142,61 @@ mod tests {
                     .sum();
                 assert_eq!(o as u128, sum % wide as u128);
             }
+        }
+    }
+
+    /// The IFMA row kernel against the per-entry products, on operands it
+    /// takes (canonical, and just under `2⁵²`): a square matrix through
+    /// the homogenised operator too, and rows of up to 4,000 distinct
+    /// columns, most of a 64-bit lane's headroom.  One operand word at
+    /// `2⁵²` sends its rows to the `u128` path.
+    #[test]
+    fn ifma_rows_match_per_entry_products() {
+        let mut rng = StdRng::seed_from_u64(52);
+        for &modulus in &[21_044_858_204_113u64, (1 << 52) - 3, P] {
+            for &(rows, cols, row_len) in &[(48usize, 48usize, 13usize), (6, 8192, 4000)] {
+                let a = random_csr(&mut rng, rows, cols, row_len, modulus, modulus);
+                for n in [4usize, 5, 8] {
+                    for top in [modulus, 1 << 52] {
+                        let mut x: Vec<u64> =
+                            (0..cols * n).map(|_| rng.gen_range(0..top)).collect();
+                        if top == 1 << 52 {
+                            let at = rng.gen_range(0..cols * n);
+                            x[at] = 1 << 52;
+                        }
+                        let mut y = vec![0u64; rows * n];
+                        a.mul_block(&x, n, &mut y);
+                        for (i, out) in y.chunks(n).enumerate() {
+                            let mut expect = vec![0u64; n];
+                            a.row_into_per_entry(i, &x, n, &mut expect);
+                            assert_eq!(out, &expect[..], "modulus {modulus}, n {n}, row {i}");
+                        }
+                        if rows != cols {
+                            continue;
+                        }
+                        let b: Vec<u64> = (0..rows).map(|_| rng.gen_range(0..modulus)).collect();
+                        let t: Vec<u64> = (0..n).map(|_| rng.gen_range(0..modulus)).collect();
+                        let xt: Vec<u64> = x.iter().chain(&t).copied().collect();
+                        let op = Homogenised { a: &a, b: &b };
+                        let mut z = vec![1u64; (rows + 1) * n];
+                        op.apply(&xt, n, &mut z);
+                        for (i, out) in z[..rows * n].chunks(n).enumerate() {
+                            for (j, &o) in out.iter().enumerate() {
+                                let ax = y[i * n + j];
+                                let expect = submod(ax, mulmod(b[i], t[j], modulus), modulus);
+                                assert_eq!(
+                                    o, expect,
+                                    "homogenised, modulus {modulus}, n {n}, row {i}"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #[cfg(all(target_arch = "x86_64", suite_avx512))]
+        if is_x86_feature_detected!("avx512ifma") && is_x86_feature_detected!("avx512vl") {
+            assert!(super::ifma::enabled() || std::env::var("SUITE_LA_IFMA").as_deref() == Ok("0"));
         }
     }
 

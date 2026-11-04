@@ -86,21 +86,13 @@ static int ec_equal(const ca_group *g, const ca_elem *a, const ca_elem *b)
 static uint64_t ec_hash(const ca_group *g, const ca_elem *a)
 {
     (void)g;
-    if (FINF(a)) return 0x9e3779b97f4a7c15ULL;
-    return ca_mix64(FX(a) * 0x9E3779B97F4A7C15ULL ^ ca_mix64(FY(a)));
+    return ca_ec_hash_words(FX(a), FY(a), FINF(a));
 }
 
-/* Montgomery product with the modulus and -(-p^{-1}) = p^{-1} passed in
- * registers; the reduction of ca_mont_redc, so the same result. */
-static inline uint64_t bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+ca_ec_consts ca_ec_consts_of(const ca_group *g)
 {
-    ca_u128 t = (ca_u128)a * b;
-    uint64_t u = (uint64_t)t * pinv_pos;
-    uint64_t hi = (uint64_t)(t >> 64);
-    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
-    uint64_t rr = hi - mh;
-    if (hi < mh) rr += p;
-    return rr;
+    ca_ec_consts c = {g->p, (uint64_t)0 - g->mont.pinv, g->a_mont, g->mont.r1};
+    return c;
 }
 
 /*
@@ -120,7 +112,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
      * ca_mont_redc, so the same residues. */
     const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
     const uint64_t one = g->mont.r1;
-#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), bmul((x), (y), P, NPI))
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
 #define BA(x, y) ca_addmod((x), (y), P)
 #define BS(x, y) ca_submod((x), (y), P)
     uint64_t *den = scratch;       /* n denominators */
@@ -149,7 +141,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         if (ax == FX(B)) {
             if (ay == FY(B) && ay != 0) {
                 CA_FC_ADD(CA_FC_SQR, 1);
-                uint64_t x2 = bmul(ax, ax, P, NPI);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
                 uint64_t num = BA(BA(BA(x2, x2), x2), AM);
                 lam = BM(num, di);
             } else {
@@ -161,7 +153,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         }
         const uint64_t bx = FX(B);
         CA_FC_ADD(CA_FC_SQR, 1);
-        uint64_t x3 = BS(BS(bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
         uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
         FX(&r[i]) = x3;
         FY(&r[i]) = y3;
@@ -216,16 +208,15 @@ static int ec_is_valid(const ca_group *g, const ca_elem *a)
  * with negation, so this is a valid canonical choice. */
 static int ec_canonicalize(const ca_group *g, ca_elem *a)
 {
-    if (FINF(a) || FY(a) == 0) return 0;
-    uint64_t ny = g->p - FY(a);
-    if (ny < FY(a)) { FY(a) = ny; return 1; }
-    return 0;
+    return ca_ec_canon_words(g->p, &FY(a), FINF(a));
 }
 
 static const ca_group_vtable ec_vt = {
     ec_op, ec_dbl, ec_inv, ec_identity, ec_is_identity, ec_equal, ec_hash,
     ec_batch_op, ec_encode, ec_decode, ec_is_valid, ec_canonicalize,
 };
+
+int ca_ec_group_is_native(const ca_group *g) { return g->vt == &ec_vt; }
 
 /*
  * Scalar multiplication in Jacobian coordinates (X : Y : Z), affine

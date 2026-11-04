@@ -9,6 +9,9 @@ explain the gap and what would let the work move past it.
 
 | Problem | Status | What it blocks | What would unblock it |
 | --- | --- | --- | --- |
+| [Xedni affine-CVP checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open | Frozen p=67 exact-discriminant comparison for the new coefficient-coset optimizer | Valid checkpoint upload and a passing gate, then the four frozen rows |
+| [Prime IC Jacobian timing checkpoint access](prime-ic-jacobian-checkpoint-access.md) | open | Measured relation-collection speedup claim for the new Jacobian lane backend | Successful checkpoint gate plus a retained paired run on an isolation-qualified host |
+| [Prime-field arity-three CDCL(T) implementation](prime-field-m3-cdclt-implementation.md) | open, narrowed | Freezing and running the corrected `m=3`, `s=6..14` prime-field PDP exponent screen | Development oracle and representation sizing now pass; still need the production typed IR, source-bound `F_p` theory and explanation/proof checker, matched exporters, complete accounting, power/preflight and immutable freeze |
 | [Xedni successor native proof qualification](xedni-successor-native-proof-qualification.md) | investigating | Qualifying the five bounded-witness declarations and resolving the original circular-hypothesis review | Exact-source native compilation and five foundation audits, with complete retained diagnostics and all applicable CI passing |
 | [Transfer audit completeness and geometric proof bridges](transfer-audit-completeness.md) | investigating | classification of all efficient transfers and cryptographic-size isogeny paths | explicit transfer universe, verified path provider, geometric Lean bridges and restored checkpoint transport |
 | [D39 scalar-closure execution](hecke-d39-scalar-closure-execution.md) | resolved for this session | Checkpoint access for finite audit | Successful uploads, six-arm audit and independent controls retained |
@@ -35,6 +38,7 @@ explain the gap and what would let the work move past it.
 | [KernelAgent bridge to the ECC2K-130 CUDA walk](ecc2k130-kernelagent-cuda-bridge.md) | Investigating | Direct KernelAgent optimization of the production compatible CUDA walk | Verified same-workload input, provider, and accessible GPU profiling |
 | [ECC2K-130 Frobenius GPU critical path](ecc2k130-frobenius-gpu-critical-path.md) | Investigating | A confirmed production-compatible useful-update speedup after source-correlated profiling and additional bounded screens | Proved and checked grouped-inverse synchronization change, then matched correctness and timing confirmation |
 | [Cryptanalysis Git remote rejects PR branch push](cryptanalysis-git-remote-rejects-push.md) | resolved for transport | publishing and reviewing the committed Lean evidence audit | Git read/write restored and branch pushed; hosted PR gate remains separate |
+| [PDP oracle PS-5: no GPU and no allocation, device gate and 50x claim unevaluated](pdp-ps5-gpu-device-run-blocked.md) | open | the device replay of the PS-0 corpus, pairs per second, A/A and ABAB against PS-3, the 50x/20x thresholds and the expected ratio; CPU emulation parity and counted operations are done | an owner-approved allocation and cap, a device `gpu` block, the corpus replayed on the device with equal digests, then an A/A and ABAB timing |
 
 ## Add or update a problem
 

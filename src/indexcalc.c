@@ -369,53 +369,96 @@ static int ic_precomp_save(const char *journal, const ca_ic_ctx *ctx,
 
 /* ---- smoothness test by trial division ---------------------------------- */
 
+/* The first index j in [lo, hi) with fb[j]^2 > v, or hi. */
+static inline uint32_t tf_square_bound(const uint32_t *fb, uint32_t lo, uint32_t hi, uint64_t v)
+{
+    /* the usual case until v is small: the bound has not moved */
+    if (lo < hi && (uint64_t)fb[hi - 1] * fb[hi - 1] <= v) return hi;
+    while (lo < hi) {
+        uint32_t mid = lo + (hi - lo) / 2;
+        if ((uint64_t)fb[mid] * fb[mid] > v)
+            hi = mid;
+        else
+            lo = mid + 1;
+    }
+    return lo;
+}
+
 /* Factor v over the primes fb[0..nfb) ; writes exponents to (col,val) with
  * column offset col0.  Returns 1 if fully smooth.  div[] holds each
- * prime's exact-division constants (ic_fbdiv). */
+ * prime's exact-division constants (ic_fbdiv).
+ *
+ * The scan stops at the first prime q with q^2 > v (v is then 1 or prime).
+ * That bound moves only when a division shrinks v, so it is kept as an
+ * index, `stop`, and found again by binary search after each division
+ * rather than tested against every prime: a prime that does not divide
+ * costs one product and one compare. */
 static int trial_factor(uint64_t v, const uint32_t *fb, const ic_fbdiv *div, uint32_t nfb,
                         uint32_t col0, relation *rel, uint32_t *cnt)
 {
     uint32_t n = *cnt;
-    for (uint32_t i = 0; i < nfb && v > 1; i++) {
-        uint32_t q = fb[i];
-        if ((uint64_t)q * q > v) {
-            /* v is prime: in the base iff <= fb[nfb-1] */
-            if (v <= fb[nfb - 1]) {
-                /* find index by binary search */
-                uint32_t lo = i, hi = nfb;
-                while (lo < hi) {
-                    uint32_t mid = (lo + hi) / 2;
-                    if (fb[mid] < v) lo = mid + 1; else hi = mid;
-                }
-                if (lo < nfb && fb[lo] == v) {
-                    if (n >= IC_MAX_REL_COLS) return 0;
-                    rel->col[n] = col0 + lo;
-                    rel->val[n] = 1;
-                    n++;
-                    v = 1;
-                    break;
-                }
-            }
-            *cnt = n;
-            return 0;
-        }
-        int32_t e = 0;
-        if (q == 2) {
-            e = __builtin_ctzll(v);
-            v >>= e;
-        } else {
-            const uint64_t inv = div[i].inv, lim = div[i].lim;
-            while (v * inv <= lim) {
-                v *= inv;
-                e++;
-            }
-        }
+    uint32_t i = 0;
+    if (v > 1 && nfb > 0 && fb[0] == 2 && (uint64_t)4 <= v) {
+        /* q = 2, a shift; the only even prime, so fb[0] if present */
+        int32_t e = __builtin_ctzll(v);
+        v >>= e;
         if (e) {
             if (n >= IC_MAX_REL_COLS) return 0;
-            rel->col[n] = col0 + i;
+            rel->col[n] = col0;
             rel->val[n] = e;
             n++;
         }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        /* four primes a step, one branch for the four tests; a hit is
+         * located by the scalar loop below */
+        for (; i + 4 <= stop; i += 4) {
+            const ic_fbdiv *d = div + i;
+            /* all four tests, then one branch (|| would branch on each) */
+            const unsigned h0 = v * d[0].inv <= d[0].lim, h1 = v * d[1].inv <= d[1].lim;
+            const unsigned h2 = v * d[2].inv <= d[2].lim, h3 = v * d[3].inv <= d[3].lim;
+            if (h0 | h1 | h2 | h3) break;
+        }
+        for (; i < stop; i++)
+            if (v * div[i].inv <= div[i].lim) break;
+        if (i == stop) break;
+        const uint64_t inv = div[i].inv, lim = div[i].lim;
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
     }
     *cnt = n;
     return v == 1;

@@ -39,15 +39,7 @@ struct PackedCudaEngine : CudaEngine<CfgF131> {
         cudaDeviceSynchronize();
         if (profWarpSteps > 0) eccPacked131::phaseProfileReport(profWarpSteps);
 #endif
-#if ECC_PACKED_L2_PERSIST
-        cudaFree(fieldBlob);
-#else
-        cudaFree(P.x); cudaFree(P.y); cudaFree(P.pchain);
-        cudaFree(denominators);
-#endif
-        cudaFree(P.dead);
-        cudaFree(P.seed); cudaFree(P.startIter); cudaFree(P.dp); cudaFree(P.dpCount);
-        cudaFree(P.hist); cudaFree(twConsts);
+        // Device buffers are zeroed and freed by the base's devMem.
     }
 #if ECC_WALK_TABLE && !ECC_TABLE_GLOBAL
     static size_t dynamicSharedBytes() { return eccPacked131::TW_SHARED_BYTES; }
@@ -234,7 +226,7 @@ struct PackedCudaEngine : CudaEngine<CfgF131> {
         P.runId = o.runId; P.maxIters = o.maxIters; P.iterBase = 0; P.dpCap = o.dpCap;
         const size_t bytes = physicalFieldCount() * sizeof(unsigned);
 #if ECC_PACKED_L2_PERSIST
-        CUDA_CHECK(cudaMalloc(&fieldBlob, bytes * size_t(persistFieldCount())));
+        CUDA_CHECK(devMem.alloc(&fieldBlob, bytes * size_t(persistFieldCount())));
         P.x = fieldBlob;
         P.y = fieldBlob + physicalFieldCount();
         P.pchain = fieldBlob + 2 * physicalFieldCount();
@@ -243,30 +235,31 @@ struct PackedCudaEngine : CudaEngine<CfgF131> {
 #endif
         applyPackedL2Persist(fieldBlob, bytes * size_t(persistFieldCount()));
 #else
-        CUDA_CHECK(cudaMalloc(&P.x, bytes)); CUDA_CHECK(cudaMalloc(&P.y, bytes));
-        CUDA_CHECK(cudaMalloc(&P.pchain, bytes));
+        CUDA_CHECK(devMem.alloc(&P.x, bytes));
+        CUDA_CHECK(devMem.alloc(&P.y, bytes));
+        CUDA_CHECK(devMem.alloc(&P.pchain, bytes));
 #if ECC_PACKED_CACHE_DENOM && !ECC_TABLE_TAG_DENOM
-        CUDA_CHECK(cudaMalloc(&denominators, bytes * denominatorFields));
+        CUDA_CHECK(devMem.alloc(&denominators, bytes * denominatorFields));
 #endif
 #endif
-        CUDA_CHECK(cudaMalloc(&P.dead, eccPacked131::goal22DeadBytes(slotCount())));
+        CUDA_CHECK(devMem.alloc(&P.dead, eccPacked131::goal22DeadBytes(slotCount())));
         CUDA_CHECK(cudaMemset(P.dead, 0, eccPacked131::goal22DeadBytes(slotCount())));
-        CUDA_CHECK(cudaMalloc(&P.seed, laneCount() * sizeof(u64)));
-        CUDA_CHECK(cudaMalloc(&P.startIter, laneCount() * sizeof(u64)));
+        CUDA_CHECK(devMem.alloc(&P.seed, laneCount() * sizeof(u64)));
+        CUDA_CHECK(devMem.alloc(&P.startIter, laneCount() * sizeof(u64)));
 #if ECC_WALK_TABLE
         if (!sol || !sol->walk.ready) { fprintf(stderr, "packed table walk: no resolver table\n"); exit(1); }
         {
             std::vector<uint32_t> consts(eccPacked131::TW_WORDS);
             eccPacked131::twFillConsts(sol->walk, consts.data());
-            CUDA_CHECK(cudaMalloc(&twConsts, consts.size() * sizeof(uint32_t)));
+            CUDA_CHECK(devMem.alloc(&twConsts, consts.size() * sizeof(uint32_t)));
             CUDA_CHECK(cudaMemcpy(twConsts, consts.data(), consts.size() * sizeof(uint32_t), cudaMemcpyHostToDevice));
             P.twConsts = twConsts;
         }
-        CUDA_CHECK(cudaMalloc(&P.hist, eccPacked131::goal22HistoryBytes(laneCount())));
+        CUDA_CHECK(devMem.alloc(&P.hist, eccPacked131::goal22HistoryBytes(laneCount())));
 #endif
-        CUDA_CHECK(cudaMalloc(&P.dp, size_t(P.dpCap) * sizeof(DpRecord)));
+        CUDA_CHECK(devMem.alloc(&P.dp, size_t(P.dpCap) * sizeof(DpRecord)));
         // Second counter signals overdue restarts without emitting false DPs.
-        CUDA_CHECK(cudaMalloc(&P.dpCount, 3 * sizeof(unsigned)));
+        CUDA_CHECK(devMem.alloc(&P.dpCount, 3 * sizeof(unsigned)));
         CUDA_CHECK(cudaMemset(P.dpCount, 0, 3 * sizeof(unsigned)));
         using R = Ref<CfgF131>;
         auto basis = R::make(R::fromLimbs(px), R::fromLimbs(py));

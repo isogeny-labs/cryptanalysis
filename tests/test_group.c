@@ -25,6 +25,17 @@ static void test_zp(void)
     ca_elem gen;
     CHECK(ca_group_find_generator(&g, &gen, 1) == CA_OK);
     CHECK_EQ_U64(ca_group_elem_order(&g, &gen), 500001);
+    /* the rho walk's inline step and hash are the vtable's */
+    CHECK(ca_zp_group_is_native(&g));
+    ca_elem a = gen, prod, step;
+    for (int i = 0; i < 64; i++) {
+        ca_group_op(&g, &prod, &a, &gen);
+        step = a;
+        step.w[0] = ca_mont_mul(&g.mont, a.w[0], gen.w[0]);
+        CHECK(ca_group_equal(&g, &prod, &step));
+        CHECK_EQ_U64(ca_group_hash(&g, &a), ca_zp_hash_word(a.w[0]));
+        a = prod;
+    }
 }
 
 static void test_ec(void)
@@ -75,6 +86,28 @@ static void test_ec(void)
     for (int i = 0; i < 64; i++) {
         ca_group_op(&g, &chk, &a[i], &b[i]);
         CHECK(ca_group_equal(&g, &chk, &r[i]));
+    }
+    /* The element arithmetic the rho walk's fused step uses (ca_internal.h):
+     * denominator, one inversion, addition; the doubling, inverse-pair and
+     * identity cases above included.  Also in place, as the walk does it. */
+    CHECK(ca_ec_group_is_native(&g));
+    const ca_ec_consts c = ca_ec_consts_of(&g);
+    for (int i = 0; i < 64; i++) {
+        uint64_t di = ca_mont_inv(&g.mont, ca_ec_add_den(&c, &a[i], &b[i]));
+        ca_elem y;
+        ca_ec_add_with_di(&c, &y, &a[i], &b[i], di);
+        CHECK(ca_group_equal(&g, &r[i], &y));
+        y = a[i];
+        ca_ec_add_with_di(&c, &y, &y, &b[i], di);
+        CHECK(ca_group_equal(&g, &r[i], &y));
+    }
+    /* and the inline canonicalisation and hash are the vtable's */
+    for (int i = 0; i < 64; i++) {
+        ca_elem c1 = r[i], c2 = r[i];
+        int f1 = ca_group_canonicalize(&g, &c1);
+        int f2 = ca_ec_canon_words(g.p, &c2.w[1], c2.w[2]);
+        CHECK(f1 == f2 && ca_group_equal(&g, &c1, &c2));
+        CHECK_EQ_U64(ca_group_hash(&g, &c1), ca_ec_hash_words(c2.w[0], c2.w[1], c2.w[2]));
     }
     /* encode/decode round trip and on-curve check */
     uint64_t w[4];

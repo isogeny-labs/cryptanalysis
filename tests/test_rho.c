@@ -24,12 +24,50 @@ static void run_rho(const ca_group *g, const ca_elem *gen, const ca_rho_params *
     if (ratio_out) *ratio_out = total_ops / reps / sqrt((double)n);
 }
 
+/* The native (Z/pZ)^* group takes a fused round in rho.c; the same group
+ * behind a copy of its vtable is not native and takes the staged batch_op
+ * path.  Same seed, same answer, same operations and table: the fused round
+ * is the staged one reordered, not a different walk.  r = 32 indexes by mask,
+ * r = 20 by fastmod, and max_ops checks that a capped run stops at the same
+ * count. */
+static void check_zp_fused_matches_staged(void)
+{
+    ca_group g, g2;
+    ca_elem gen;
+    fx_zp_safe(&g, &gen, 2000000579ULL);
+    static ca_group_vtable vt2;
+    vt2 = *g.vt;
+    g2 = g;
+    g2.vt = &vt2;
+    const uint32_t rs[2] = {32, 20};
+    for (int k = 0; k < 6; k++) {
+        ca_elem h;
+        fx_instance(&g, &gen, 123456789ULL * (uint64_t)(k + 1) % g.order, &h);
+        ca_rho_params p;
+        ca_rho_params_default(&p);
+        p.seed = 77 + (uint64_t)k;
+        p.r = rs[k & 1];
+        if (k == 5) p.max_ops = 20000;
+        uint64_t x1 = 0, x2 = 0;
+        ca_stats s1 = {0}, s2 = {0};
+        ca_status rc1 = ca_rho_solve(&g, &gen, &h, &p, &x1, &s1);
+        ca_status rc2 = ca_rho_solve(&g2, &gen, &h, &p, &x2, &s2);
+        CHECK(rc1 == rc2);
+        CHECK(x1 == x2);
+        CHECK(s1.group_ops == s2.group_ops);
+        CHECK(s1.iterations == s2.iterations);
+        CHECK(s1.table_entries == s2.table_entries);
+    }
+}
+
 int main(void)
 {
     ca_group g;
     ca_elem gen;
     ca_rho_params p;
     ca_rho_params_default(&p);
+
+    check_zp_fused_matches_staged();
 
     /* Z_p^* subgroup of prime order ~2^30 */
     fx_zp_safe(&g, &gen, 2000000579ULL);

@@ -10,7 +10,10 @@ The latter two are partial finite proofs, not formalizations of their full
 geometric interpretations.
 The gate's own fixture and audit sources under `tools/lean/` are checked by
 the separate self-test and excluded from the research-file count.
-It compares the result with the [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json).
+It compares the result with the [November 1 size-dependent GLV cap receipt](../../reports/lean-current-corpus-20261101-glv-cap/receipt.json).
+The [October 25 main-update receipt](../../reports/lean-current-corpus-20261025-main-update/receipt.json)
+remains unchanged as the record of the fixed-cap (32) binding, which the gate still replays with its own
+negative controls; it is no longer the receipt the gate compares against.
 The [previous CM receipt](../../reports/lean-current-corpus-20261025-cm/receipt.json)
 remains unchanged. Main's reviewed C analysis repairs have a new whole-file
 hash; the gate checks that source against its current live binding, while
@@ -119,3 +122,38 @@ See [the admission record](../../problems/lean-ci-evidence-source-admission.md)
 for actual source-f3aa native success:77 added modules, including all three original engineering controls.
 
 After complete declaration and foundation validation, the checker now prints the original native axiom output lines into the successful job log too; complete raw command evidence remains retained. This improves readable custody without changing proof admission.
+
+## Dependency-free core-Lean projects
+
+`CORE_LEAN_PROJECTS` registers self-contained Lake projects that pull no
+package (no Mathlib) and pin their own toolchain. For every tracked `.lean`
+source under such a project the gate refuses, before any native command, a
+changed toolchain pin, a `[[require]]` or non-empty manifest package list, a
+source outside the registered library, a root module that does more than
+import every other module exactly once, and any proof escape
+(`sorry`, `admit`, `sorryAx`, `native_decide`, `axiom`, `unsafe`,
+`implemented_by`, `extern`). It then runs `lake build` in the project, requires
+the `.olean` of every module, recompiles each module with `lake env lean`, and
+admits it only when every `theorem`/`lemma` has its own `#print axioms` line
+whose native output stays within `propext`, `Classical.choice`, `Quot.sound`.
+`main` routes these paths away from the Hecke Mathlib checker. Controls:
+`CoreLeanProjectControls` in `test_current_corpus_gate.py`.
+
+Registered: `research/handbook-ff-ic-ideas-20261103/formal` (library
+`HandbookIC`, toolchain `leanprover/lean4:v4.34.1`): the claim statements and
+supporting lemmas of the Handbook-of-Finite-Fields idea catalogue. Those
+theorems are cost-model and counting lemmas over abstract definitions; none
+models the elliptic-curve group law, and none proves a speedup.
+
+## Receipt-bound standalone modules
+
+`RECEIPT_BOUND_SOURCES` registers single `import Init` modules that carry
+their own receipt-bound checker (`research/xedni_lift_optimizer_20261101/lean/
+XedniAffineCoset.lean` with `check.py`, landed by #1376 under the
+`Xedni affine-coset Lean proof` workflow, which left this gate red on `main`
+until it was admitted here). The gate pins the source and the checker by
+SHA-256, refuses any proof escape and any theorem without its own
+`#print axioms` line, runs the checker natively, and admits the module only
+when the printed axiom sets name exactly the registered theorems within the
+standard foundations and the checker reports verification. A changed proof or
+checker is a gate change. Controls: `ReceiptBoundSourceControls`.

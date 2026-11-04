@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           filter: blob:none
@@ -125,7 +125,7 @@ jobs:
           declared = {'GlvTableBudget.' + name for name in
                       re.findall(r'^theorem\s+(\w+)',
                                  (directory / 'TableBudget.lean').read_text(), re.MULTILINE)}
-          assert len(declared) == 8 and set(actual) == declared and actual == expected, (actual, expected, declared)
+          assert len(declared) == 27 and set(actual) == declared and actual == expected, (actual, expected, declared)
           assert all(axioms <= {'propext', 'Quot.sound'} for axioms in actual.values())
           print(run.stdout, end='')
           PY

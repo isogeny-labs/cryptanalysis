@@ -477,12 +477,21 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
 /* Apply the exponent update for a step with multiplier i and sign flag. */
 static inline void walk_apply(const rho_shared *sh, rho_walk *w, uint32_t i, int negated)
 {
-    exp_add(sh->n, &w->a, sh->alpha[i]);
-    exp_add(sh->n, &w->b, sh->beta[i]);
-    if (negated) {
-        w->a = w->a ? sh->n - w->a : 0;
-        w->b = w->b ? sh->n - w->b : 0;
+    const uint64_t n = sh->n;
+    uint64_t a = ca_addmod(w->a, sh->alpha[i], n);
+    uint64_t b = ca_addmod(w->b, sh->beta[i], n);
+    if (sh->negmap) {
+        /* With the negation map, `negated` is a coin flip on walk data, so
+         * the negated coefficients are formed unconditionally and selected:
+         * the values the branch gave, without its mispredictions.  Without
+         * the map `negated` is always 0 and this is skipped. */
+        uint64_t na = a ? n - a : 0;
+        uint64_t nb = b ? n - b : 0;
+        a = negated ? na : a;
+        b = negated ? nb : b;
     }
+    w->a = a;
+    w->b = b;
 }
 
 /* One full (unbatched) step of the walk function.  Used only for cycle
@@ -584,6 +593,101 @@ static int rho_try_solve(rho_shared *sh, uint64_t a1, uint64_t b1, uint64_t a2, 
     return 0;
 }
 
+#ifndef CA_RHO_TRACE
+/* The distinguished-point event of the native (Z/pZ)^* round: the table
+ * insertion, solve attempt, restarts and limits of the bookkeeping pass in
+ * rho_thread_main, statement for statement.  Out of line because one step in
+ * 2^dp_bits reaches it.  Returns 1 when the round ends at this walk. */
+static __attribute__((noinline)) int rho_zp_dp(rho_shared *sh, rho_walk *wk, uint64_t h,
+                                               ca_rng *rng, uint64_t *ops)
+{
+    uint64_t oa, ob;
+    int rc;
+    pthread_mutex_lock(&sh->lock);
+    rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
+    size_t entries = sh->tab.count;
+    pthread_mutex_unlock(&sh->lock);
+    atomic_fetch_add(&sh->total_dps, 1);
+    if (rc < 0) {
+        pthread_mutex_lock(&sh->lock);
+        sh->status = CA_ERR_NOMEM;
+        atomic_store(&sh->done, 1);
+        pthread_mutex_unlock(&sh->lock);
+        return 1;
+    }
+    if (rc == 1) {
+        if (oa == wk->a && ob == wk->b) {
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        } else {
+            pthread_mutex_lock(&sh->lock);
+            if (!atomic_load(&sh->done) && rho_try_solve(sh, oa, ob, wk->a, wk->b)) {
+                sh->status = CA_OK;
+                atomic_store(&sh->done, 1);
+            }
+            pthread_mutex_unlock(&sh->lock);
+            if (atomic_load(&sh->done)) return 1;
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        }
+    }
+    wk->since_dp = 0;
+    if (sh->max_table && entries > sh->max_table) {
+        pthread_mutex_lock(&sh->lock);
+        if (!atomic_load(&sh->done)) sh->status = CA_ERR_LIMIT;
+        atomic_store(&sh->done, 1);
+        pthread_mutex_unlock(&sh->lock);
+        return 1;
+    }
+    return 0;
+}
+
+/* One round of the native (Z/pZ)^* walk without the negation map (the group
+ * has none), fused: each walk's index, Montgomery product, hash, exponent
+ * update and distinguished-point test in one pass, in walk order.  The
+ * staged pass computes all W products first and commits them in walk order,
+ * stopping at the walk that ends the round; a walk's product reads only its
+ * own state, so computing it just before its commit gives the same values,
+ * the same rng draws and the same ops.  Without the negation map no
+ * multiplier is ever rejected (retry stays 0) and there is no window test.
+ * The constants live in locals: the stores of the pass are uint64_t
+ * lvalues, which through sh would force a reload of each per walk. */
+static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rng, uint64_t *ops,
+                         uint64_t abandon)
+{
+    const ca_group *g = sh->g;
+    const uint32_t rmask = sh->r_mask, r = sh->r;
+    const uint64_t rmagic = sh->r_magic, P = g->mont.p, NPI = (uint64_t)0 - g->mont.pinv;
+    const uint64_t N = sh->n, dpm = sh->dp_mask;
+    const ca_elem *M = sh->M;
+    const uint64_t *al = sh->alpha, *be = sh->beta;
+    /* the staged pass forms (and counts) all W products, those past a walk
+     * that ends the round included */
+    *ops += W;
+    CA_FC_ADD(CA_FC_MUL, W);
+    for (uint32_t w = 0; w < W; w++) {
+        rho_walk *wk = &walks[w];
+        uint32_t upper = (uint32_t)(wk->h >> 32);
+        uint32_t i = rmask ? upper & rmask : (uint32_t)(((ca_u128)(rmagic * upper) * r) >> 64);
+        uint64_t y = ca_ec_bmul(wk->Y.w[0], M[i].w[0], P, NPI);
+        uint64_t h = ca_zp_hash_word(y);
+        wk->Y.w[0] = y;
+        wk->h = h;
+        wk->idx = i;
+        wk->a = ca_addmod(wk->a, al[i], N);
+        wk->b = ca_addmod(wk->b, be[i], N);
+        uint64_t sd = wk->since_dp + 1;
+        wk->since_dp = sd;
+        if ((h & dpm) == 0) {
+            if (rho_zp_dp(sh, wk, h, rng, ops)) return;
+        } else if (sd > abandon) {
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        }
+    }
+}
+#endif
+
 static void *rho_thread_main(void *arg)
 {
     rho_thread *th = arg;
@@ -594,6 +698,20 @@ static void *rho_thread_main(void *arg)
     ca_elem *Yn = calloc(W, sizeof(ca_elem));
     ca_elem *B = calloc(W, sizeof(ca_elem));
     uint64_t *scratch = calloc(2 * (size_t)W, sizeof(uint64_t));
+    /* The native E(F_p) group takes the step without the vtable: the
+     * batched addition is fused into the bookkeeping pass below, and the
+     * canonicalisation and hash are the inline functions behind the
+     * vtable's entries (ca_internal.h), so every value agrees with the
+     * generic path. */
+    const int ec = ca_ec_group_is_native(g);
+    /* The native (Z/pZ)^* group: each walk's step is one Montgomery
+     * product of its residue word, done in place below instead of staging
+     * the multipliers and points and dispatching zp_batch_op. */
+    const int zp = !ec && ca_zp_group_is_native(g);
+    const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
+#ifndef CA_RHO_TRACE
+    const int zp_fused = zp && !sh->negmap;
+#endif
     if (!walks || !Yn || !B || !scratch) {
         free(walks); free(Yn); free(B); free(scratch);
         pthread_mutex_lock(&sh->lock);
@@ -621,13 +739,77 @@ static void *rho_thread_main(void *arg)
     const uint64_t abandon = (uint64_t)24 << sh->dp_bits;
 
     while (!atomic_load_explicit(&sh->done, memory_order_relaxed)) {
-        for (uint32_t w = 0; w < W; w++) {
-            rho_walk *wk = &walks[w];
-            if (!wk->retry) wk->idx = rho_index(sh, wk->h);
-            B[w] = sh->M[wk->idx];
+        /* The simultaneous inversion of the batch, by Montgomery's trick.
+         * Generic groups go through the vtable's batch_op: copy the
+         * multipliers and the points out, add, and read the results back.
+         * The native EC group reads each walk's point and its multiplier
+         * where they lie, and runs the trick over RHO_CHAINS interleaved
+         * chains (walk w belongs to chain w mod RHO_CHAINS): a Montgomery
+         * product takes about twelve cycles of latency and one chain of
+         * them is a serial dependency through the whole batch, twice (the
+         * products, then the inverses), so four chains let the core overlap
+         * them.  Suffix products in place of prefix products put the
+         * inverses out in walk order.  The chain totals are joined with the
+         * prefix/suffix trick again, so the batch still pays one field
+         * inversion; it pays 3 RHO_CHAINS - 2 extra multiplications for the
+         * join (10 of about 770 at 256 walks).  Same denominators, same
+         * points. */
+#ifndef CA_RHO_TRACE
+        if (zp_fused) {
+            rho_zp_round(sh, walks, W, &rng, &ops, abandon); /* W: the walks allocated */
+            goto round_done;
         }
-        for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
-        ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+#endif
+        uint64_t *const den = scratch, *const suf = scratch + W;
+        if (ec) {
+#define RHO_CHAINS 4u
+#define BM(x, y)   (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
+            const uint32_t k = W < RHO_CHAINS ? W : RHO_CHAINS;
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                den[w] = ca_ec_add_den(&ecc, &wk->Y, &sh->M[wk->idx]);
+            }
+            for (uint32_t w = W; w-- > 0;) suf[w] = w + k < W ? BM(den[w], suf[w + k]) : den[w];
+            /* total[j] = suf[j] is chain j's product; invert the product of
+             * the totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+            uint64_t before[RHO_CHAINS], after[RHO_CHAINS], inv[RHO_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[k - 1] = ecc.one;
+            for (uint32_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[k - 1], suf[k - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            /* The additions, in walk order: den[w]^{-1} from chain j's
+             * running inverse, then the step into Yn[w]. */
+            for (uint32_t w = 0, j = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                uint64_t di = w + k < W ? BM(inv[j], suf[w + k]) : inv[j];
+                inv[j] = BM(inv[j], den[w]);
+                ca_ec_add_with_di(&ecc, &Yn[w], &wk->Y, &sh->M[wk->idx], di);
+                j = j + 1 == k ? 0 : j + 1;
+            }
+#undef BM
+#undef RHO_CHAINS
+        } else if (zp) {
+            /* zp_batch_op's product, element by element: the other words
+             * of the point are carried over as the copy-then-multiply did. */
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                Yn[w] = wk->Y;
+                Yn[w].w[0] = ca_mont_mul(&g->mont, wk->Y.w[0], sh->M[wk->idx].w[0]);
+            }
+        } else {
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                B[w] = sh->M[wk->idx];
+            }
+            for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
+            ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+        }
         ops += W;
 #ifdef CA_RHO_TRACE
         sh->tr.step_ops += W;
@@ -638,8 +820,19 @@ static void *rho_thread_main(void *arg)
 #ifdef CA_RHO_TRACE
             tr_done = w + 1;
 #endif
-            int neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
-            uint64_t h = ca_group_hash(g, &Yn[w]);
+            int neg;
+            uint64_t h;
+            if (ec) {
+                ca_elem *y = &Yn[w];
+                neg = sh->negmap ? ca_ec_canon_words(ecc.p, &y->w[1], y->w[2]) : 0;
+                h = ca_ec_hash_words(y->w[0], y->w[1], y->w[2]);
+            } else if (zp) {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_zp_hash_word(Yn[w].w[0]);
+            } else {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_group_hash(g, &Yn[w]);
+            }
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
                 wk->idx = (wk->idx + 1) % sh->r;
                 wk->retry++; /* bounded as in walk_step_single */
@@ -789,6 +982,9 @@ static void *rho_thread_main(void *arg)
                 atomic_fetch_add(&sh->restarts, 1);
             }
         }
+#ifndef CA_RHO_TRACE
+    round_done:
+#endif
 #ifdef CA_RHO_TRACE
         sh->tr.unprocessed += W - tr_done; /* slots left unused when the solve ended mid-round */
 #endif

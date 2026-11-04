@@ -178,6 +178,8 @@ fn large_primes_are_the_default_and_cut_the_precompute() {
     let (ok, default) = prime(&args);
     assert!(ok, "{default}");
     assert_eq!(default["logs"]["collection"], "large_primes");
+    assert_eq!(default["configuration"]["relation_coordinates"], "affine");
+    assert_eq!(default["configuration"]["relation_lanes"], 1);
     assert_eq!(default["factor_base"]["sizing"], "batch");
     assert_eq!(default["descent"]["learn"], true);
     // Against the control on the same base (the default would size the
@@ -218,6 +220,36 @@ fn large_primes_are_the_default_and_cut_the_precompute() {
         mean(&lp),
         mean(&full)
     );
+}
+
+#[test]
+fn jacobian_relation_lanes_recover_every_prime_curve_type() {
+    for (selector, curve, expected_type) in [
+        ("--curve", "p224", "generic"),
+        ("--type", "j0", "j0"),
+        ("--type", "j1728", "j1728"),
+    ] {
+        let (ok, v) = prime(&[
+            selector,
+            curve,
+            "--bits",
+            "20",
+            "--targets",
+            "4",
+            "--no-rho",
+            "--relation-coordinates",
+            "jacobian",
+        ]);
+        assert!(ok, "{curve}: {v}");
+        assert_eq!(v["status"], "complete", "{curve}");
+        assert_eq!(v["curve_type"], expected_type, "{curve}");
+        assert_eq!(v["configuration"]["relation_coordinates"], "jacobian");
+        assert_eq!(v["configuration"]["relation_lanes"], 32);
+        assert_eq!(v["logs"]["rejected_relations"], 0);
+        assert_eq!(v["logs"]["uncertified_columns"], 0);
+        assert_eq!(v["logs"]["inconsistent_components"], 0);
+        assert_eq!(v["descent"]["verified"], 4);
+    }
 }
 
 #[test]

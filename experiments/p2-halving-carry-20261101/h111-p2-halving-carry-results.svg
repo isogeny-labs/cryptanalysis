@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#f7f9fc"/>
+  <style>
+    .title{font:700 42px sans-serif;fill:#13213c}.sub{font:22px sans-serif;fill:#3e4d67}
+    .label{font:22px sans-serif;fill:#17233b}.small{font:18px sans-serif;fill:#536078}
+    .metric{font:700 34px sans-serif;fill:#13213c}.axis{stroke:#aeb8c9;stroke-width:2}
+    .tick{font:18px sans-serif;fill:#647089}.candidate{stroke:#2563eb;stroke-width:14;stroke-linecap:round}
+    .control{stroke:#ef4444;stroke-width:14;stroke-linecap:round}.iso{stroke:#7c3aed;stroke-width:14;stroke-linecap:round}
+  </style>
+  <text x="80" y="70" class="title">H111: first-layer halving carry — measured result</text>
+  <text x="80" y="108" class="sub">28 complete rows · 9,096 targets · 24 frozen predicates · no exact parity oracle</text>
+  <rect x="80" y="140" width="440" height="115" rx="18" fill="#e8f0ff" stroke="#2563eb"/>
+  <text x="110" y="187" class="small">ROWS WITH AN EXACT PREDICATE</text><text x="110" y="232" class="metric">0 / 28</text>
+  <rect x="580" y="140" width="440" height="115" rx="18" fill="#ecfdf3" stroke="#16a34a"/>
+  <text x="610" y="187" class="small">STRUCTURAL / TORSION CHECKS</text><text x="610" y="232" class="metric">all passed</text>
+  <rect x="1080" y="140" width="440" height="115" rx="18" fill="#fff4e5" stroke="#f59e0b"/>
+  <text x="1110" y="187" class="small">DECODERS EXECUTED</text><text x="1110" y="232" class="metric">0</text>
+  <text x="80" y="315" class="label">Best accuracy after selecting among all 24 predicates</text>
+  <line x1="360" y1="345" x2="1400" y2="345" class="axis"/>
+  <line x1="360" y1="335" x2="360" y2="790" class="axis"/><text x="340" y="825" class="tick">50%</text>
+  <line x1="880" y1="335" x2="880" y2="790" class="axis" stroke-dasharray="6 8"/><text x="860" y="825" class="tick">60%</text>
+  <line x1="1400" y1="335" x2="1400" y2="790" class="axis"/><text x="1380" y="825" class="tick">70%</text>
+  <text x="90" y="390" class="label">E101</text><line x1="740" y1="383" x2="994" y2="383" class="candidate"/>
+  <text x="90" y="440" class="label">E127</text><line x1="649" y1="433" x2="938" y2="433" class="candidate"/>
+  <text x="90" y="490" class="label">E149</text><line x1="548" y1="483" x2="888" y2="483" class="candidate"/>
+  <text x="90" y="540" class="label">E211</text><line x1="571" y1="533" x2="1180" y2="533" class="candidate"/>
+  <text x="90" y="590" class="label">E283</text><line x1="583" y1="583" x2="843" y2="583" class="candidate"/>
+  <text x="90" y="640" class="label">E503</text><line x1="621" y1="633" x2="851" y2="633" class="candidate"/>
+  <text x="90" y="690" class="label">E907</text><line x1="497" y1="683" x2="607" y2="683" class="candidate"/>
+  <text x="90" y="750" class="label">random sections</text><line x1="456" y1="743" x2="938" y2="743" class="control"/>
+  <text x="90" y="790" class="label">matched labels</text><line x1="614" y1="783" x2="1323" y2="783" class="control"/>
+  <line x1="1057" y1="723" x2="1082" y2="723" class="iso"/><text x="1110" y="730" class="small">coordinate-isomorphic: 63.4–63.9%</text>
+  <circle cx="1210" cy="855" r="7" fill="#2563eb"/><text x="1230" y="862" class="small">candidate ranges</text>
+  <circle cx="1420" cy="855" r="7" fill="#ef4444"/><text x="1440" y="862" class="small">controls</text>
+</svg>

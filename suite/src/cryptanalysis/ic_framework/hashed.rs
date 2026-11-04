@@ -127,7 +127,7 @@ fn slot_spec(ctx: &InstanceCtx<'_, PrimeCurve>, params: &Params) -> Result<SlotS
             let value: BigUint = raw
                 .parse()
                 .map_err(|_| format!("s is not an integer: `{raw}`"))?;
-            if value < (&p << 1) || value > (&p << 2) || !value.to_u64().is_some() {
+            if value < (&p << 1) || value > (&p << 2) || value.to_u64().is_none() {
                 return Err("s must be an integer in [2p, 4p]".into());
             }
             if !tensor::arithmetic::is_prime(&value, &mut meter)
@@ -354,6 +354,7 @@ impl FactorBaseBuilder<PrimeCurve> for HashedAffineBase<'_> {
 }
 
 /// The exact Boolean tensor-contraction oracle over the same slot bases.
+#[derive(Default)]
 pub struct HashedTensorOracle {
     curve: Option<TensorCurve>,
     bases: Vec<TensorBase>,
@@ -365,23 +366,6 @@ pub struct HashedTensorOracle {
     relation_steps: u64,
     limit_hits: u64,
     integrity_failures: u64,
-}
-
-impl Default for HashedTensorOracle {
-    fn default() -> Self {
-        Self {
-            curve: None,
-            bases: Vec::new(),
-            limits: None,
-            slots: Vec::new(),
-            slot_index: Vec::new(),
-            setup_steps: 0,
-            setup_square_roots: 0,
-            relation_steps: 0,
-            limit_hits: 0,
-            integrity_failures: 0,
-        }
-    }
 }
 
 impl HashedTensorOracle {

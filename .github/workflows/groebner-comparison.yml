@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: '1.11'
       - name: Resolve adapter dependencies (not benchmark evidence)
@@ -138,7 +138,7 @@ jobs:
       image: sagemath/sagemath:10.6
       options: --user root
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}

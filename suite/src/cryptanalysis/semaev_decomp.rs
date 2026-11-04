@@ -103,6 +103,7 @@
 //!   polynomials and subspace polynomials.
 
 use crate::binary_ecc::{F2mElement, IrreduciblePoly};
+use std::collections::HashMap;
 
 /// Highest polynomial degree the fixed-size helpers handle.  The
 /// quartic is degree 4 and squaring one of its remainders reaches 6,
@@ -125,6 +126,31 @@ const MAX_DEG: usize = 6;
 /// Squaring skips the multiply entirely: in characteristic 2 it is the
 /// `F₂`-linear bit-spreading `Σ aᵢ zⁱ ↦ Σ aᵢ z^{2i}`, then the same
 /// reduction.
+/// The tables a [`Gf2`] reads, built once per modulus and shared by
+/// every `Gf2` over it (see [`Gf2::new`]).
+#[derive(Debug)]
+struct Gf2Tables {
+    /// `red[j][v] = (v · z^{n + 8j}) mod irr`.  Fixed-size rows indexed
+    /// by a byte, so a lookup carries no bounds check; `n ≤ 63` means
+    /// at most eight rows are ever used.
+    red: [[u64; 256]; 8],
+    /// `msq[i][j][v] = (v · z^{4j})^{2^k}` for the `i`-th run length `k`
+    /// of the inversion chain (see [`Gf2::inv`]), indexed through
+    /// `msq_at[k]`.  Squaring is `F₂`-linear, so `a^{2^k}` is the XOR
+    /// of one entry per nibble of `a`: `⌈n/4⌉` independent loads where
+    /// the loop is `k` dependent squarings.
+    msq: Vec<[[u64; 16]; 16]>,
+    msq_at: [u8; 64],
+}
+
+/// Every modulus's tables, so the many short-lived `Gf2`s a
+/// `KoblitzCurve::mul` builds (one per call) do not rebuild them.
+fn gf2_tables_cache() -> &'static std::sync::Mutex<HashMap<u64, std::sync::Arc<Gf2Tables>>> {
+    static CACHE: std::sync::OnceLock<std::sync::Mutex<HashMap<u64, std::sync::Arc<Gf2Tables>>>> =
+        std::sync::OnceLock::new();
+    CACHE.get_or_init(Default::default)
+}
+
 #[derive(Clone, Debug)]
 pub struct Gf2 {
     pub n: u32,
@@ -134,8 +160,11 @@ pub struct Gf2 {
     /// `red[j][v] = (v · z^{n + 8j}) mod irr`.  Fixed-size rows indexed
     /// by a byte, so a lookup carries no bounds check; `n ≤ 63` means
     /// at most eight rows are ever used.
-    red: Box<[[u64; 256]; 8]>,
+    tab: std::sync::Arc<Gf2Tables>,
     positions: usize,
+    /// `t` when the modulus is a trinomial `z^n + z^t + 1` that
+    /// [`Self::reduce`] folds by shifts, `0` when the table is used.
+    tri: u32,
     has_clmul: bool,
 }
 
@@ -153,6 +182,7 @@ fn spread32(x: u64) -> u64 {
 
 #[cfg(target_arch = "x86_64")]
 #[target_feature(enable = "pclmulqdq")]
+#[inline]
 unsafe fn clmul_u64(a: u64, b: u64) -> u128 {
     use std::arch::x86_64::*;
     let x = _mm_set_epi64x(0, a as i64);
@@ -184,10 +214,66 @@ impl Gf2 {
             .iter()
             .fold(1u64 << n, |acc, &t| acc | (1u64 << t));
 
+        let positions = (n as usize - 1).div_ceil(8).max(1);
+        debug_assert!(positions <= 8);
+
+        #[cfg(target_arch = "x86_64")]
+        let has_clmul = std::arch::is_x86_feature_detected!("pclmulqdq");
+        #[cfg(target_arch = "aarch64")]
+        let has_clmul = std::arch::is_aarch64_feature_detected!("aes");
+        #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+        let has_clmul = false;
+
+        // The shift fold needs `h · z^t` (h below `2^{n−1}`) to fit a
+        // word and the second fold's overflow, below `2^{t−1}`, to land
+        // under `z^n` after its own shift: `n − 1 + t ≤ 64`, `2t − 1 ≤ n`.
+        // Trinomials only: a pentanomial's four-term chain measured
+        // slower than the table at n = 53 (0.84× on `mul`/`sqr`), while
+        // the trinomial fold is faster at n = 41 (signed rho 1.29×).
+        let tri = match irr.low_terms.as_slice() {
+            &[0, t] | &[t, 0] if t > 0 && n >= 2 && n - 1 + t <= 64 && 2 * t <= n + 1 => t,
+            _ => 0,
+        };
+
+        let cached = gf2_tables_cache()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .get(&bits)
+            .cloned();
+        let mut gf = Self {
+            n,
+            irr: bits,
+            mask: (1u64 << n) - 1,
+            tab: cached.clone().unwrap_or_else(|| {
+                std::sync::Arc::new(Gf2Tables {
+                    red: Self::red_table(n, bits, positions),
+                    msq: Vec::new(),
+                    msq_at: [u8::MAX; 64],
+                })
+            }),
+            positions,
+            tri,
+            has_clmul,
+        };
+        if cached.is_none() {
+            let (msq, msq_at) = gf.build_msq();
+            gf.tab = std::sync::Arc::new(Gf2Tables {
+                red: gf.tab.red,
+                msq,
+                msq_at,
+            });
+            gf2_tables_cache()
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .entry(bits)
+                .or_insert_with(|| gf.tab.clone());
+        }
+        gf
+    }
+
+    fn red_table(n: u32, bits: u64, positions: usize) -> [[u64; 256]; 8] {
         // `pow[i] = z^{n+i} mod irr`, enough of them to cover the
         // `n − 1` high bits a product of two field elements can have.
-        let positions = (n as usize - 1).div_ceil(8);
-        let positions = positions.max(1);
         let mut pow = vec![0u64; positions * 8];
         let mut cur = bits ^ (1u64 << n); // z^n ≡ the low terms
         for slot in pow.iter_mut() {
@@ -198,29 +284,63 @@ impl Gf2 {
             }
         }
 
-        debug_assert!(positions <= 8);
-        let mut red = Box::new([[0u64; 256]; 8]);
+        let mut red = [[0u64; 256]; 8];
         for j in 0..positions {
             for v in 1usize..256 {
                 red[j][v] = red[j][v & (v - 1)] ^ pow[j * 8 + v.trailing_zeros() as usize];
             }
         }
 
-        #[cfg(target_arch = "x86_64")]
-        let has_clmul = std::arch::is_x86_feature_detected!("pclmulqdq");
-        #[cfg(target_arch = "aarch64")]
-        let has_clmul = std::arch::is_aarch64_feature_detected!("aes");
-        #[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
-        let has_clmul = false;
+        red
+    }
 
-        Self {
-            n,
-            irr: bits,
-            mask: (1u64 << n) - 1,
-            red,
-            positions,
-            has_clmul,
+    /// The run lengths `k ≥ 2` that [`Self::inv_body`]'s chain squares
+    /// by, each as a nibble table.
+    fn build_msq(&self) -> (Vec<[[u64; 16]; 16]>, [u8; 64]) {
+        let mut msq = Vec::new();
+        let mut msq_at = [u8::MAX; 64];
+        if self.n <= 2 {
+            return (msq, msq_at);
         }
+        let e = self.n - 1;
+        let mut len = 1u32;
+        let mut lens = Vec::new();
+        for bit in (0..(31 - e.leading_zeros())).rev() {
+            lens.push(len);
+            len *= 2;
+            if (e >> bit) & 1 == 1 {
+                len += 1;
+            }
+        }
+        let nibbles = self.n.div_ceil(4) as usize;
+        for k in lens {
+            if k < 2 || msq_at[k as usize] != u8::MAX {
+                continue;
+            }
+            let mut t = [[0u64; 16]; 16];
+            for (j, row) in t.iter_mut().enumerate().take(nibbles) {
+                for b in 0..4 {
+                    if 4 * j + b < self.n as usize {
+                        let img = self.sqr_k_loop(1u64 << (4 * j + b), k);
+                        for (v, slot) in row.iter_mut().enumerate() {
+                            if (v >> b) & 1 == 1 {
+                                *slot ^= img;
+                            }
+                        }
+                    }
+                }
+            }
+            msq_at[k as usize] = msq.len() as u8;
+            msq.push(t);
+        }
+        (msq, msq_at)
+    }
+
+    /// Whether the carry-less multiply instruction was detected at
+    /// construction (`pclmulqdq` on x86-64, PMULL on AArch64).
+    #[inline(always)]
+    pub fn has_clmul(&self) -> bool {
+        self.has_clmul
     }
 
     /// Fold a `< 2^{2n−1}` carry-less product back into the field.
@@ -229,11 +349,28 @@ impl Gf2 {
     /// high part is non-zero": a data-dependent exit here is a branch
     /// the predictor cannot learn, and costs more than the one or two
     /// redundant lookups it saves.
+    ///
+    /// A trinomial modulus `z^n + z^t + 1` folds by shifts instead:
+    /// `h·(z^n mod irr)` is `h ⊕ h≪t`, twice, with no memory traffic.
+    /// `tri` is fixed per field, so its branch is always predicted.
     #[inline(always)]
     fn reduce(&self, w: u128) -> u64 {
+        let t = self.tri;
+        if t != 0 {
+            let lo = (w as u64) & self.mask;
+            let h = (w >> self.n) as u64;
+            let r = h ^ (h << t);
+            let h2 = r >> self.n;
+            return lo ^ (r & self.mask) ^ h2 ^ (h2 << t);
+        }
+        self.reduce_table(w)
+    }
+
+    #[inline(always)]
+    fn reduce_table(&self, w: u128) -> u64 {
         let mut acc = (w as u64) & self.mask;
         let mut h = (w >> self.n) as u64;
-        for row in &self.red[..self.positions] {
+        for row in &self.tab.red[..self.positions] {
             acc ^= row[usize::from(h as u8)];
             h >>= 8;
         }
@@ -270,8 +407,14 @@ impl Gf2 {
     /// No early-out on a zero operand: `clmul` handles it correctly and
     /// the branch would be unpredictable, which costs more than the
     /// multiply it skips.
-    #[inline]
+    #[inline(always)]
     pub fn mul(&self, a: u64, b: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: guarded by the runtime feature detection recorded
+            // in `has_clmul` at construction.
+            return self.reduce(unsafe { clmul_u64(a, b) });
+        }
         self.reduce(self.clmul(a, b))
     }
 
@@ -281,12 +424,17 @@ impl Gf2 {
     /// products, and the fold is most of what a multiplication costs.
     #[inline(always)]
     fn dot2(&self, a: u64, b: u64, c: u64, d: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: as in `mul`; the sum still has degree `< 2n − 1`.
+            return self.reduce(unsafe { clmul_u64(a, b) ^ clmul_u64(c, d) });
+        }
         self.reduce(self.clmul(a, b) ^ self.clmul(c, d))
     }
 
     /// With `pclmulqdq`, `a·a` is one instruction and beats the
     /// twelve-step bit spread; without it the spread is the cheap path.
-    #[inline]
+    #[inline(always)]
     pub fn sqr(&self, a: u64) -> u64 {
         #[cfg(target_arch = "x86_64")]
         if self.has_clmul {
@@ -334,7 +482,31 @@ impl Gf2 {
     }
 
     /// `a^(2^k)`.
-    pub fn sqr_k(&self, mut a: u64, k: u32) -> u64 {
+    #[inline(always)]
+    pub fn sqr_k(&self, a: u64, k: u32) -> u64 {
+        self.sqr_k_loop(a, k)
+    }
+
+    /// `a^(2^k)` for a run length of the inversion chain: one nibble
+    /// table lookup per nibble of `a` when [`Self::build_msq`] made a
+    /// table for `k`, the squaring loop otherwise.  Same value.
+    #[inline(always)]
+    fn sqr_k_chain(&self, a: u64, k: u32) -> u64 {
+        let i = self.tab.msq_at[(k & 63) as usize];
+        if let Some(t) = self.tab.msq.get(i as usize) {
+            let mut acc = 0u64;
+            let mut a = a;
+            for row in &t[..self.n.div_ceil(4) as usize] {
+                acc ^= row[(a & 15) as usize];
+                a >>= 4;
+            }
+            return acc;
+        }
+        self.sqr_k_loop(a, k)
+    }
+
+    #[inline(always)]
+    fn sqr_k_loop(&self, mut a: u64, k: u32) -> u64 {
         for _ in 0..k {
             a = self.sqr(a);
         }
@@ -350,6 +522,23 @@ impl Gf2 {
     /// multiplications, against `n − 2` for square-and-multiply —
     /// 7 instead of 22 at `n = 24`.
     pub fn inv(&self, a: u64) -> u64 {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: as in `batch_inv`.
+            return unsafe { self.inv_clmul(a) };
+        }
+        self.inv_body(a)
+    }
+
+    /// [`Self::inv`] with `pclmulqdq` enabled (see `batch_inv_clmul`).
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn inv_clmul(&self, a: u64) -> u64 {
+        self.inv_body(a)
+    }
+
+    #[inline(always)]
+    fn inv_body(&self, a: u64) -> u64 {
         if a == 0 || self.n <= 1 {
             return a;
         }
@@ -357,7 +546,7 @@ impl Gf2 {
         let mut beta = a;
         let mut len = 1u32;
         for bit in (0..(31 - e.leading_zeros())).rev() {
-            beta = self.mul(self.sqr_k(beta, len), beta);
+            beta = self.mul(self.sqr_k_chain(beta, len), beta);
             len *= 2;
             if (e >> bit) & 1 == 1 {
                 beta = self.mul(self.sqr(beta), a);
@@ -388,6 +577,27 @@ impl Gf2 {
     /// Both passes walk `xs` and `scratch` as zipped chunks, so the loops
     /// carry no bounds checks and no `Vec` growth checks.
     pub fn batch_inv(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
+        #[cfg(target_arch = "x86_64")]
+        if self.has_clmul {
+            // SAFETY: `has_clmul` records the runtime detection of
+            // `pclmulqdq`, the only feature the copy enables.
+            return unsafe { self.batch_inv_clmul(xs, scratch) };
+        }
+        self.batch_inv_body(xs, scratch)
+    }
+
+    /// [`Self::batch_inv`] compiled with `pclmulqdq` enabled, so the
+    /// carry-less products and their Barrett reduction inline into the
+    /// loops instead of being a call per multiplication.  The same body,
+    /// the same values.
+    #[cfg(target_arch = "x86_64")]
+    #[target_feature(enable = "pclmulqdq")]
+    unsafe fn batch_inv_clmul(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
+        self.batch_inv_body(xs, scratch)
+    }
+
+    #[inline(always)]
+    fn batch_inv_body(&self, xs: &mut [u64], scratch: &mut Vec<u64>) {
         const LANES: usize = 4;
         scratch.clear();
         scratch.resize(xs.len(), 0);
@@ -1273,6 +1483,108 @@ mod tests {
     /// Batch inversion equals element-wise inversion on every length
     /// around the lane count and a full block, with zeros scattered in
     /// (left as zero) and a slice of nothing but zeros.
+    /// `mul`, `sqr` and `dot2` (the inlined carry-less path on hosts that
+    /// have it) against the reference fold of the generic product:
+    /// degrees from 2 to 63, random operands, the edge values `0`, `1`
+    /// and all ones, and a zero `a·a + b·b` sum.
+    #[test]
+    fn field_products_match_the_reference_fold() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut s = 0x5EED_BA77_E770_0001u64;
+        for n in [2u32, 3, 7, 8, 9, 16, 24, 31, 32, 33, 41, 53, 61, 62, 63] {
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
+            let gf = Gf2::new(&irr);
+            let edge = [0u64, 1, gf.mask, gf.mask >> 1, 1 << (n - 1)];
+            for i in 0..4096 {
+                let (a, b) = if i < 25 {
+                    (edge[i % 5], edge[i / 5])
+                } else {
+                    (xorshift(&mut s) & gf.mask, xorshift(&mut s) & gf.mask)
+                };
+                let want = gf.reduce(gf.clmul(a, b));
+                assert_eq!(gf.mul(a, b), want, "n = {n}, mul({a:#x}, {b:#x})");
+                assert_eq!(gf.sqr(a), gf.reduce(gf.clmul(a, a)), "n = {n}, sqr({a:#x})");
+                let (c, d) = (xorshift(&mut s) & gf.mask, xorshift(&mut s) & gf.mask);
+                assert_eq!(
+                    gf.dot2(a, b, c, d),
+                    gf.reduce(gf.clmul(a, b) ^ gf.clmul(c, d)),
+                    "n = {n}, dot2"
+                );
+                assert_eq!(gf.dot2(a, a, a, a), 0, "n = {n}, dot2 of equal products");
+            }
+        }
+    }
+
+    #[test]
+    fn chain_squaring_tables_match_the_squaring_loop() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut s = 0x7AB1_E5C0_FFEE_0001u64;
+        for n in 2u32..=63 {
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
+            let gf = Gf2::new(&irr);
+            for k in 0..64u32 {
+                for i in 0..64 {
+                    let a = if i == 0 {
+                        gf.mask
+                    } else {
+                        xorshift(&mut s) & gf.mask
+                    };
+                    assert_eq!(
+                        gf.sqr_k_chain(a, k),
+                        gf.sqr_k_loop(a, k),
+                        "n = {n}, k = {k}"
+                    );
+                }
+            }
+            for i in 0..256 {
+                let a = if i == 0 {
+                    1
+                } else {
+                    xorshift(&mut s) & gf.mask
+                };
+                if a != 0 {
+                    assert_eq!(gf.mul(gf.inv(a), a), 1, "n = {n}, a = {a:#x}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn shift_fold_matches_the_table_fold() {
+        use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;
+        let mut s = 0x0F01_D5A1_7AB1_E001u64;
+        let mut folded = 0;
+        for n in 2u32..=63 {
+            let Some(irr) = find_irreducible_sparse(n) else {
+                continue;
+            };
+            let gf = Gf2::new(&irr);
+            folded += usize::from(gf.tri != 0);
+            // Every value a product can take: below `2^{2n−1}`.
+            let top = 2 * n - 1;
+            let wmask = if top >= 128 {
+                u128::MAX
+            } else {
+                (1u128 << top) - 1
+            };
+            for i in 0..4096 {
+                let w = match i {
+                    0 => 0,
+                    1 => wmask,
+                    2 => 1u128 << (top - 1),
+                    _ => (((xorshift(&mut s) as u128) << 64) | xorshift(&mut s) as u128) & wmask,
+                };
+                assert_eq!(gf.reduce(w), gf.reduce_table(w), "n = {n}, w = {w:#x}");
+            }
+        }
+        // 33 of the 62 sizes have a trinomial that passes the bounds.
+        assert!(folded >= 30, "only {folded} fields took the shift fold");
+    }
+
     #[test]
     fn batch_inversion_matches_elementwise() {
         use crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse;

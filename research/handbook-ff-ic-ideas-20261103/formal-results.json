@@ -1,0 +1,1989 @@
+[
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B01.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B01.lean",
+   "ideas": [
+    {
+     "id": "H001",
+     "claim_decl": "H001_claim",
+     "theorems": [
+      "H001_partition_sum",
+      "H001_no_gain_without_variance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Walsh/Kloosterman dual-sum predictor correlation (Spearman >= 0.6) with coset valid-point counts and the resulting best-of-64 gain; claim quantifies over observation records."
+    },
+    {
+     "id": "H002",
+     "claim_decl": "H002_claim",
+     "theorems": [
+      "H002_stay_count",
+      "H002_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That Frobenius class sizes of the window span{x,...,x^(2^(m-1))} in GF(2^n) are at most 3 and sum to |V| (hypothesis of the claim); the shift action as a bit shift on window coordinates."
+    },
+    {
+     "id": "H003",
+     "claim_decl": "H003_claim",
+     "theorems": [
+      "H003_ap_sums",
+      "H003_claim_holds",
+      "H003_ap_le_generic"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Kneser/Freiman lower bound dim(V*V) >= 2d-1 and the equality characterisation (V is u*span{1,w,..,w^(d-1)}) in GF(2^n), n prime; both are hypotheses. The AP sumset count is proved on exponents only."
+    },
+    {
+     "id": "H004",
+     "claim_decl": "H004_claim",
+     "theorems": [
+      "H004_cost_divides",
+      "H004_cost_antitone",
+      "H004_cost_improves"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Over-dispersion of the solution count N(V) over random k-dim subspaces of GF(2^n) (Fano factor vs symmetric null) and the measured best-of-M gain >= 1.2x; proved part is only the cost arithmetic."
+    },
+    {
+     "id": "H005",
+     "claim_decl": "H005_claim",
+     "theorems": [
+      "H005_sum_counts",
+      "H005_best_ge"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Dickson-form low-rank (trace-code) predictor linking V shape to P(N0>=1) and the exact Artin-Schreier N0(r) enumeration; double counting is proved for an abstract pair-to-r map, not the field."
+    },
+    {
+     "id": "H006",
+     "claim_decl": "H006_claim",
+     "theorems": [
+      "H006_stable",
+      "H006_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "GF(2^n)* as Z/(2^n-1) via a primitive element, x^s as multiplication by s, ord_M(2)=n for M | 2^n-1, yield-vs-random-stable-set ratio and the existence of divisors of 2^n-1 near 2^(n/2); the |F| = s*n count is checked only by decide for N=63, s=3, n=6."
+    },
+    {
+     "id": "H007",
+     "claim_decl": "H007_claim",
+     "theorems": [
+      "H007_monotone",
+      "H007_half",
+      "H007_claim_holds",
+      "H007_cost_improves"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the 2-torsion translation iota acts freely and commutes with Frobenius on the iota-closed subfield base (sqrt b in V), giving orbit size 2d, plus mod-l consistency of relations transferred to the quotient DLP instance."
+    },
+    {
+     "id": "H008",
+     "claim_decl": "H008_claim",
+     "theorems": [
+      "H008_le_cube",
+      "H008_cost_antitone",
+      "H008_perm_invariant"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Exponential-sum/Weil-type bias of the S3 triple count T(V) across subspaces and the best-of-1000 gain of 1.2-1.5x; the S3 relation is an abstract Bool predicate here. Permutation invariance is proved only for a single-index count, not the full triple count."
+    },
+    {
+     "id": "H009",
+     "claim_decl": "H009_claim",
+     "theorems": [
+      "H009_tuples_length",
+      "H009_good_count",
+      "H009_monotone"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Artin-Schreier splitting criterion Tr(v+a+b/v^2)=0 defining the on-curve predicate, the Chernoff best-coset density 0.5+O(sqrt(k(n-k))2^(-k/2)), and Koblitz trace-zero policy; the strict-improvement conjunct of the claim is stated but not proved."
+    },
+    {
+     "id": "H010",
+     "claim_decl": "H010_claim",
+     "theorems": [
+      "H010_claim_holds",
+      "H010_best_monotone",
+      "H010_best_ge"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the +-1 characters are Legendre/quadratic-character values of the lift predicate on cosets of V in GF(2^n) or F_p, and the 0.35*sqrt(ln T/|V|) extreme-value gain of best-of-T selection; only the integer identity 2*lifts = |V| + sum chi and max-monotonicity are proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B01.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "b01_ite_sum",
+    "b01_sum_zero",
+    "b01_sum_replicate",
+    "b01_sum_le",
+    "b01_bucket_sum",
+    "b01Best_ge_mem",
+    "b01Best_append_ge",
+    "H001_partition_sum",
+    "H001_no_gain_without_variance",
+    "h002_filter_range_lt",
+    "H002_stay_count",
+    "H002_claim_holds",
+    "H003_ap_sums",
+    "H003_claim_holds",
+    "H003_ap_le_generic",
+    "H004_cost_divides",
+    "H004_cost_antitone",
+    "H004_cost_improves",
+    "H005_sum_counts",
+    "H005_best_ge",
+    "H006_stable",
+    "H006_instance",
+    "H007_monotone",
+    "H007_half",
+    "H007_claim_holds",
+    "H007_cost_improves",
+    "h008_sum_le",
+    "H008_le_cube",
+    "H008_cost_antitone",
+    "H008_perm_invariant",
+    "h009_flat_length",
+    "h009_tuples_length",
+    "H009_good_count",
+    "H009_monotone",
+    "H010_claim_holds",
+    "H010_best_monotone",
+    "H010_best_ge"
+   ],
+   "claim_decls_present": [
+    "H001_claim",
+    "H002_claim",
+    "H003_claim",
+    "H004_claim",
+    "H005_claim",
+    "H006_claim",
+    "H007_claim",
+    "H008_claim",
+    "H009_claim",
+    "H010_claim"
+   ],
+   "problems": [
+    "lake was not on PATH; the run used /root/.elan/bin/lake (toolchain leanprover--lean4---v4.34.1). This does not affect the verdict.",
+    "The module compiles with warnings only (unused variables and an unused simp argument); no errors.",
+    "H006_instance and H007_cost_improves depend on no axioms; the other 35 theorems depend only on propext, Classical.choice and Quot.sound.",
+    "The expected-ideas list names H007_cost_improves and H006_instance among the theorems; both are present and compile."
+   ],
+   "pass": true,
+   "log_excerpt": "lake env lean HandbookIC/Ideas/B01.lean: EXIT=0, 0 lines matching 'error:'; only linter warnings (unused variables at lines 281 and 397, unused simp arg at line 540). Scratch copy with 37 '#print axioms HandbookIC.Ideas.B01.<name>' lines: EXIT=0, 0 errors; 35 theorems depend on [propext], [propext, Quot.sound], or [propext, Classical.choice, Quot.sound]; H006_instance and H007_cost_improves depend on no axioms. Scratch copy: /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B01.lean; output: /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B01.out"
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B02.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B02.lean",
+   "ideas": [
+    {
+     "id": "H011",
+     "claim_decl": "H011_claim",
+     "theorems": [
+      "H011_pow_add",
+      "H011_distinct_lt",
+      "H011_distinct",
+      "H011_enum_cost_ratio"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That t is primitive in GF(2^n) (pow k != 1 for 0<k<2^n-1), that the field multiplication is associative with cancellation, and that LFSR step cost is hw(f) bit ops. The 10x saving and the yield match are not proved."
+    },
+    {
+     "id": "H012",
+     "claim_decl": "H012_claim",
+     "theorems": [
+      "h012_pigeon",
+      "H012_pair_fibre_average",
+      "H012_pair_sum_mem"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That H=hE(F_q) has size N/h and is closed under addition, and that the character or half-trace test decides membership. Pair sums are modelled as a list of labels below M."
+    },
+    {
+     "id": "H013",
+     "claim_decl": "H013_claim",
+     "theorems": [
+      "H013_valid_eq_repsum",
+      "H013_claim_holds",
+      "H013_valid_le_total",
+      "h013_filter_const"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the point-existence indicator is constant on Frobenius orbits of V, that the relation count is at most validCount^m, and the spread of order 0.5*sqrt(n/|V|)."
+    },
+    {
+     "id": "H014",
+     "claim_decl": "H014_claim",
+     "theorems": [
+      "H014_fibre_le_two",
+      "H014_total_le",
+      "h014_two_bound",
+      "h014_flat_len"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That S3 solutions in x3 are the fibre of an xor-additive map such as x^2+x with kernel {0,e}, and that V is duplicate-free. Overdispersion of N(V) and hill-climb transfer are not proved."
+    },
+    {
+     "id": "H015",
+     "claim_decl": "H015_claim",
+     "theorems": [
+      "H015_sum_le_len_mul_max",
+      "H015_rel_antitone",
+      "H015_cost_improves",
+      "h015_le_max"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That yield scales as (2*liftFrac)^m, that the liftCount list comes from Kloosterman-liftable x over the scalings lambda*V, and that the gain is about sqrt(2 ln T/2^d)/2. The yield ratio c is a natural-number stand-in."
+    },
+    {
+     "id": "H016",
+     "claim_decl": "H016_claim",
+     "theorems": [
+      "H016_antitone",
+      "H016_generic_at_full",
+      "H016_hull_at_least_generic",
+      "H016_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the solution count is |V|^2*2^(-w) times [c0 in hull], that hullDim is about dim span(V*V), and that rank does not collapse in E(K). The formula for h016Rel is assumed."
+    },
+    {
+     "id": "H017",
+     "claim_decl": "H017_claim",
+     "theorems": [
+      "H017_agree_ge_half",
+      "H017_cost_antitone",
+      "H017_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That x3 is in F_p iff chi(f(x1))=chi(f(x2)), the Legendre bias of the coset gH, and the gain (1+sqrt(2 ln T/B))^3. The best-of-T statement reuses the H015 abstract max-versus-average lemma."
+    },
+    {
+     "id": "H018",
+     "claim_decl": "H018_claim",
+     "theorems": [
+      "H018_wt_rot",
+      "H018_ball_closed",
+      "h018_fixed_const",
+      "h018_wt_const",
+      "H018_fixed_weight"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That Frobenius acts as cyclic rotation in the ONB. Rot-by-1 fixed points are proved to be 0 or all-ones for any n. The prime-n orbit structure of rot^k (exact Burnside necklace count), the popcount speedup and the yield match are not proved."
+    },
+    {
+     "id": "H019",
+     "claim_decl": "H019_claim",
+     "theorems": [
+      "H019_zero_left",
+      "H019_kernel",
+      "H019_len_decomp",
+      "H019_toy_count"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That S3 restricted to V x W is xor-bilinear (additivity of squaring in char 2). Groebner-fan matrix sizes, F4 cost and the lookup-baseline comparison are not modelled."
+    },
+    {
+     "id": "H020",
+     "claim_decl": "H020_claim",
+     "theorems": [
+      "H020_presieve_sound",
+      "H020_detset_mono",
+      "H020_canal_is_detset",
+      "H020_parity3_no_canal",
+      "H020_and3_canal",
+      "H020_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the post-trace decomposition predicate P(a) and the S3 bit components behave like the toy predicates, with canalyzing depth 0 for at least 99% of targets and determining set at least 0.9m. Only soundness and monotonicity of the pre-sieve and two 3-bit instance checks are proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B02.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "H011_pow_add",
+    "H011_distinct_lt",
+    "H011_distinct",
+    "H011_enum_cost_ratio",
+    "h012_len_split",
+    "h012_cnt_rm_ne",
+    "h012_rm_lt",
+    "h012_pigeon",
+    "H012_pair_fibre_average",
+    "H012_pair_sum_mem",
+    "h013_filter_const",
+    "H013_valid_eq_repsum",
+    "H013_claim_holds",
+    "H013_valid_le_total",
+    "h014_two_bound",
+    "h014_flat_len",
+    "H014_fibre_le_two",
+    "H014_total_le",
+    "h015_le_max",
+    "H015_sum_le_len_mul_max",
+    "H015_rel_antitone",
+    "H015_cost_improves",
+    "H015_claim_holds",
+    "H016_antitone",
+    "H016_generic_at_full",
+    "H016_hull_at_least_generic",
+    "H016_claim_holds",
+    "H017_agree_ge_half",
+    "H017_cost_antitone",
+    "H017_claim_holds",
+    "h018_wt_append",
+    "H018_wt_rot",
+    "H018_ball_closed",
+    "h018_fixed_const",
+    "h018_wt_const",
+    "H018_fixed_weight",
+    "H018_claim_holds",
+    "H019_zero_left",
+    "H019_kernel",
+    "H019_len_decomp",
+    "H019_claim_holds",
+    "H019_toy_count",
+    "H020_presieve_sound",
+    "H020_detset_mono",
+    "H020_canal_is_detset",
+    "H020_parity3_no_canal",
+    "H020_and3_canal",
+    "H020_claim_holds"
+   ],
+   "claim_decls_present": [
+    "H011_claim",
+    "H012_claim",
+    "H013_claim",
+    "H014_claim",
+    "H015_claim",
+    "H016_claim",
+    "H017_claim",
+    "H018_claim",
+    "H019_claim",
+    "H020_claim"
+   ],
+   "problems": [
+    "`lake` is not on the default PATH; it was run from /root/.elan/bin (toolchain leanprover/lean4:v4.34.1). The module itself is unchanged.",
+    "The compile emits linter warnings only (deprecated if_pos/if_neg, unused simp argument List.filter_cons at lines 217, 219, 243, 245, unused variables hc/hcc at line 384). These are not errors and do not affect pass.",
+    "Forbidden-token grep matched nothing, so forbidden_tokens is empty. Matches inside doc comments would have counted, and none occurred.",
+    "Axioms: 15 theorems depend only on propext, 29 on propext and Quot.sound, 3 on propext, Classical.choice and Quot.sound (h013_filter_const, H013_valid_eq_repsum, H013_claim_holds), and H012_pair_sum_mem depends on no axioms. All 48 theorems are within the permitted set.",
+    "All ten def <id>_claim declarations are present (lines 52, 168, 222, 317, 392, 424, 461, 543, 595, 661). The module was not edited."
+   ],
+   "pass": true,
+   "log_excerpt": "No failing command. Compile exit status 0 with zero 'error:' lines; output consisted only of linter warnings (deprecated if_pos/if_neg; unused simp argument List.filter_cons; unused variables hc/hcc at line 384). #print axioms run on the scratch copy at /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B02.lean exited 0 with zero errors; the full output is at /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_out.txt."
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B03.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B03.lean",
+   "ideas": [
+    {
+     "id": "H021",
+     "claim_decl": "H021_claim",
+     "theorems": [
+      "H021_sound",
+      "H021_relCost_le",
+      "H021_claim_proved",
+      "H021_instance_n31_d9"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "S3 is F2-linear in the bits of (pi,s) on interval bases with 3d-1<=n, so the n x (3d-1) elimination decides exactly h021Decomposes; taken as the hypothesis hlin. The 2^(n-2d)*n^3/64 cost formula and the speedup are not derived."
+    },
+    {
+     "id": "H022",
+     "claim_decl": "H022_claim",
+     "theorems": [
+      "h022Mono_pos",
+      "h022Mono_le_succ",
+      "h022Mono_mono",
+      "H022_bitDeg_le_two",
+      "H022_claim_proved"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Macaulay columns are modelled by squarefree monomial counts, not by the actual sparse matrix. The first-fall degree of the total-degree system (assumed at least 5) and the first-fall multidegree (1,1,1) are not derived. Matrix rank at recovery is not modelled."
+    },
+    {
+     "id": "H023",
+     "claim_decl": "H023_claim",
+     "theorems": [
+      "H023_filter_preserved",
+      "H023_live_le",
+      "H023_partition",
+      "H023_claim_proved",
+      "H023_strict_improvement"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The hypothesis h_dead: for V in ker Tr, Tr(x_R) != (m-1)Tr(a) implies no V-decomposition. The 50 percent dead fraction and the 2x live yield are not derived."
+    },
+    {
+     "id": "H024",
+     "claim_decl": "H024_claim",
+     "theorems": [
+      "h024_decode_lifted",
+      "H024_claim_proved",
+      "H024_ratio",
+      "H024_xor_cancel"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The multiplication counts (at most 0.6 against at least 4 per candidate) are constants, not derived from half-trace and 1/s^2 table lookups. That S3 is affine in (s,p) for fixed z and that a lifted witness corresponds to Dec is not modelled. Only the pure (s,x1) re-indexing bijection on XOR-closed lists is proved, so relation-set equality holds up to the swap."
+    },
+    {
+     "id": "H025",
+     "claim_decl": "H025_claim",
+     "theorems": [
+      "H025_count_invariant",
+      "H025_cost_scaling",
+      "H025_claim_proved"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The ONB basis change is modelled only as an abstract left-invertible map f with left inverse g on Nat points. The monomial density ratio (monos' * c <= monos), the F4 cost proportional to monomials * columns, and the dreg-unchanged claim are hypotheses or model choices."
+    },
+    {
+     "id": "H026",
+     "claim_decl": "H026_claim",
+     "theorems": [
+      "H026_claim_proved",
+      "H026_identity_gf8",
+      "H026_iff_gf8",
+      "H026_gray_one_bit",
+      "H026_hyperplane_half"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The Artin-Schreier identity is checked by decide only over GF(8), not for general n such as 31 or 41. Solvability iff Tr(s)=Tr(b/r^2) (hypothesis hsolv), the trace map itself, and the multiplication and cache-miss counts are not modelled. The Gray walk is stated only as V.filter hyp."
+    },
+    {
+     "id": "H027",
+     "claim_decl": "H027_claim",
+     "theorems": [
+      "H027_claim_proved",
+      "h027Ins_length",
+      "h027Insert_length_le",
+      "h027Rank_fold_le",
+      "H027_rank_le_rows",
+      "H027_rank_instances_n7"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The mechanism hypothesis (low-rank-dimension excess of at least 3 implies an F4 degree drop of at least 1) and the 60 percent dimension-excess rate are assumptions. The Weil-restricted component forms, F4 degrees and basis-change invariance of rank are not modelled; rank is only bounded by the row count and checked on n=7 examples."
+    },
+    {
+     "id": "H028",
+     "claim_decl": "H028_claim",
+     "theorems": [
+      "H028_var_balance",
+      "H028_time_ratio_implies_faster",
+      "H028_balance_m3_n21"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The hypothesis hdet (sum of logs zero iff the determinant vanishes on |kO|) is not stated as a theorem. The dreg drop, time ratio and solution-set equality are measured outcomes held in a record, not derived. Only the variable count arithmetic m*(n/m+n) = (m+1)*n is proved."
+    },
+    {
+     "id": "H029",
+     "claim_decl": "H029_claim",
+     "theorems": [
+      "H029_coset",
+      "H029_claim_proved",
+      "H029_fibres_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That S3 is F2-affine in x1 (the additivity hypothesis hadd) and that a structured V has an at least 2x excess of rank-deficient pair matrices are assumed. The coset result is proved only as an iff, and the cardinality of the kernel coset is not proved. The closed-form rank-count law is not formalised."
+    },
+    {
+     "id": "H030",
+     "claim_decl": "H030_claim",
+     "theorems": [
+      "H030_m4ri_le_schoolbook",
+      "H030_trigger_mono",
+      "H030_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The M4RI cost model (p/k blocks, each 2^k*c+r*c) and the schoolbook model p*r*c are idealised dense counts. Sparse-F4 cost, fill dynamics, the 15 percent after 30 percent trigger actually firing, and the measured 2x speedup at 20k x 20k are not derived. H030_claim itself is a stated measurement prediction and is not proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B03.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "b03FilterMono",
+    "H021_sound",
+    "H021_relCost_le",
+    "H021_claim_proved",
+    "H021_instance_n31_d9",
+    "h022Mono_pos",
+    "h022Mono_le_succ",
+    "h022Mono_mono",
+    "H022_bitDeg_le_two",
+    "H022_claim_proved",
+    "H023_filter_preserved",
+    "H023_live_le",
+    "H023_partition",
+    "H023_claim_proved",
+    "H023_strict_improvement",
+    "h024_decode_lifted",
+    "H024_claim_proved",
+    "H024_ratio",
+    "H024_xor_cancel",
+    "H025_count_invariant",
+    "H025_cost_scaling",
+    "H025_claim_proved",
+    "H026_claim_proved",
+    "H026_identity_gf8",
+    "H026_iff_gf8",
+    "H026_gray_one_bit",
+    "H026_hyperplane_half",
+    "H027_claim_proved",
+    "h027Ins_length",
+    "h027Insert_length_le",
+    "h027Rank_fold_le",
+    "H027_rank_le_rows",
+    "H027_rank_instances_n7",
+    "H028_var_balance",
+    "H028_time_ratio_implies_faster",
+    "H028_balance_m3_n21",
+    "H029_coset",
+    "H029_claim_proved",
+    "H029_fibres_instance",
+    "H030_m4ri_le_schoolbook",
+    "H030_trigger_mono",
+    "H030_instance"
+   ],
+   "claim_decls_present": [
+    "H021_claim",
+    "H022_claim",
+    "H023_claim",
+    "H024_claim",
+    "H025_claim",
+    "H026_claim",
+    "H027_claim",
+    "H028_claim",
+    "H029_claim",
+    "H030_claim"
+   ],
+   "problems": [
+    "Step 1 first attempt failed because `lake` was not on PATH (exit 127); rerun with PATH=/root/.elan/bin:$PATH (toolchain leanprover--lean4---v4.34.1). Not a module problem.",
+    "Expected-ideas list names H021..H030 as the claim-bearing ideas; H021_claim..H030_claim are all present. The module has 42 theorems in total, not only the per-idea names the author listed (e.g. b03FilterMono also exists); all 42 were checked for axioms.",
+    "Axiom check: H026_identity_gf8 is a decide-style GF(8) check and is listed for axioms only; the author's missing_bridge notes (hsolv, trace map, cost models) are hypotheses or model choices, not mechanically checked here."
+   ],
+   "pass": true,
+   "log_excerpt": "Step 1: PATH=/root/.elan/bin:$PATH lake env lean HandbookIC/Ideas/B03.lean -> exit 0, empty output, 0 error lines. Step 2: grep -nE 'sorry|admit|\\baxiom\\b|native_decide|unsafe|partial|implemented_by|extern' over B03.lean -> no matches. Step 4: lake env lean on scratchpad copy axioms_B03.lean (42 #print axioms lines) -> exit 0, no errors. Every printed set is a subset of {propext, Classical.choice, Quot.sound} (or empty); 0 non-standard axioms."
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B04.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B04.lean",
+   "ideas": [
+    {
+     "id": "H031",
+     "claim_decl": "H031_claim",
+     "theorems": [
+      "H031_nsmul_psi",
+      "H031_combo_psi",
+      "H031_filter_keeps_valid",
+      "H031_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the halving-trace character psi(P)=Tr(x_P)+Tr(a) is a homomorphism to Z/2 on the curve group (the h031Hom record), and that F4/hybrid time ratio and d_reg behave as predicted."
+    },
+    {
+     "id": "H032",
+     "claim_decl": "H032_claim",
+     "theorems": [
+      "H032_smoothCount_invariant",
+      "H032_exists_min",
+      "H032_min_le_origin",
+      "H032_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That x->u(x-c) and 2-isogenous Montgomery models are bijections of the decomposition solution set preserving the base (the hypothesis g(f a)=a), and the actual nnz(S4) / F4 time values over the scan."
+    },
+    {
+     "id": "H033",
+     "claim_decl": "H033_claim",
+     "theorems": [
+      "H033_S3_sym",
+      "H033_S3_nodup",
+      "H033_S3_box",
+      "H033_S3_density",
+      "H033_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The actual supports of S_4, S_5 over GF(2) (resultant computation), Frobenius-closure of those exponent sets, the weighted-dense reference set, and Minkowski indecomposability of the Newton polytopes (Indec is an abstract predicate)."
+    },
+    {
+     "id": "H034",
+     "claim_decl": "H034_claim",
+     "theorems": [
+      "H034_mem_of_prod_zero",
+      "H034_prod_zero_of_mem",
+      "H034_roots_in_V",
+      "H034_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That GF(2^n) is an integral domain (h034Dom), that N | L_V yields L_V vanishing on roots of N, that L_V vanishes exactly on V, and the 1.5x+ multiplication-count advantage over distinct/equal-degree factoring."
+    },
+    {
+     "id": "H035",
+     "claim_decl": "H035_claim",
+     "theorems": [
+      "H035_sign_neg",
+      "H035_flip_all",
+      "H035_trials_gt_one",
+      "H035_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Field trace additivity and Tr(1)=1 for odd n (h035Tr record), negation being (x,y+x) on the binary curve, and the closed form for sum s(P_i) in (x1,x2,x3)."
+    },
+    {
+     "id": "H036",
+     "claim_decl": "H036_claim",
+     "theorems": [
+      "H036_deg_factor",
+      "H036_degree_drop",
+      "H036_quarter_drop",
+      "H036_S3_degree2",
+      "H036_diag_S3",
+      "H036_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That S_4(x,x,y,z) actually factors as f^2*g with deg f>0 from the degenerate P+P=O branch (hypothesis s = f*f*g), and the F4 d_reg/time effect of removing the factor."
+    },
+    {
+     "id": "H037",
+     "claim_decl": "H037_claim",
+     "theorems": [
+      "H037_dreg_invariant",
+      "H037_time_le",
+      "H037_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the degree-d Macaulay predicates of the dense and sparse relative-polynomial systems coincide (invertible linear substitution invariance), and the measured constants cs<=cd with the 1.2-2x time ratio."
+    },
+    {
+     "id": "H038",
+     "claim_decl": "H038_claim",
+     "theorems": [
+      "H038_expansion_diff",
+      "H038_expansion_mod2",
+      "H038_exponents_pow2",
+      "H038_low_rank_exists",
+      "H038_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Reduction of the Z-identity mod 2 to GF(2^n) (char-2 expansion), the S_3 form (x1x2+x1x3+x2x3)^2+x1x2x3+b for the binary curve, the rank bound <=2d, and the empirical rank spectrum vs random-map null (>=30% structured cases)."
+    },
+    {
+     "id": "H039",
+     "claim_decl": "H039_claim",
+     "theorems": [
+      "H039_list_sum_le",
+      "H039_floor",
+      "H039_parseval_instance",
+      "H039_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Parseval sum_u W(u)^2 = N|D| from character orthogonality on F_2^n (taken as hypothesis hP; only verified by decide on one n=3 instance), and the actual decomposability indicator D of a curve's subspace base."
+    },
+    {
+     "id": "H040",
+     "claim_decl": "H040_claim",
+     "theorems": [
+      "H040_mon_succ_le",
+      "H040_mon_mono",
+      "H040_instance14",
+      "H040_instance16",
+      "H040_annihilator_of_count",
+      "H040_count_persists",
+      "H040_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The GF(2) linear-algebra step that more degree-<=e monomials than |supp D| yields a nonzero annihilator (hypothesis hlin), the identity sum_{i<=e}C(n,i)=2^n at e=n, the actual |supp D| of curve indicators, and the rejection-rate/F4 d_reg link."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B04.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "H031_nsmul_psi",
+    "H031_combo_psi",
+    "H031_filter_keeps_valid",
+    "H031_claim_holds",
+    "H032_smoothCount_invariant",
+    "H032_exists_min",
+    "H032_min_le_origin",
+    "H032_claim_holds",
+    "H033_S3_sym",
+    "H033_S3_nodup",
+    "H033_S3_box",
+    "H033_S3_density",
+    "H033_claim_holds",
+    "H034_mem_of_prod_zero",
+    "H034_prod_zero_of_mem",
+    "H034_roots_in_V",
+    "H034_claim_holds",
+    "H035_sign_neg",
+    "H035_flip_all",
+    "H035_trials_gt_one",
+    "H035_claim_holds",
+    "H036_deg_factor",
+    "H036_degree_drop",
+    "H036_quarter_drop",
+    "H036_S3_degree2",
+    "H036_diag_S3",
+    "H036_claim_holds",
+    "H037_dreg_invariant",
+    "H037_time_le",
+    "H037_claim_holds",
+    "H038_expansion_diff",
+    "H038_expansion_mod2",
+    "H038_exponents_pow2",
+    "H038_low_rank_exists",
+    "H038_claim_holds",
+    "H039_list_sum_le",
+    "H039_floor",
+    "H039_parseval_instance",
+    "H039_claim_holds",
+    "H040_mon_succ_le",
+    "H040_mon_mono",
+    "H040_instance14",
+    "H040_instance16",
+    "H040_annihilator_of_count",
+    "H040_count_persists",
+    "H040_claim_holds"
+   ],
+   "claim_decl_present": "[\"H031_claim\",\"H032_claim\",\"H033_claim\",\"H034_claim\",\"H035_claim\",\"H036_claim\",\"H037_claim\",\"H038_claim\",\"H039_claim\",\"H040_claim\"]",
+   "claim_decls_present": [
+    "H031_claim",
+    "H032_claim",
+    "H033_claim",
+    "H034_claim",
+    "H035_claim",
+    "H036_claim",
+    "H037_claim",
+    "H038_claim",
+    "H039_claim",
+    "H040_claim"
+   ],
+   "problems": [],
+   "pass": true,
+   "log_excerpt": "Step 1: 'lake' was not on PATH (the first call failed with 'lake: No such file or directory'). Re-ran with PATH=/root/.elan/bin:$PATH (toolchain leanprover/lean4:v4.34.1): 'lake env lean HandbookIC/Ideas/B04.lean' exited 0 with no output (0 lines, 0 'error:' lines). Step 2: grep for sorry|admit|axiom|native_decide|unsafe|partial|implemented_by|extern returned no matches (exit 1). Step 4: scratch copy at /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B04.lean with 46 '#print axioms HandbookIC.Ideas.B04.<name>' lines (one per theorem); lean exited 0. Output: 25 theorems depend on [propext, Quot.sound] or [propext] only; 13 depend on no axioms (H033_S3_nodup, H033_S3_box, H033_S3_density, H034_roots_in_V, H035_sign_neg, H035_claim_holds, H036_S3_degree2, H036_diag_S3, H037_dreg_invariant, H037_time_le, H037_claim_holds, H040_instance14, H040_instance16, H040_annihilator_of_count, H040_claim_holds); 6 depend on [propext, Classical.choice, Quot.sound] (H038_expansion_diff, H038_expansion_mod2, H038_claim_holds, and the rest in the propext/Quot.sound group). No axiom outside propext, Classical.choice, Quot.sound appeared. Output file: /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_out.txt. Compile log written to /tmp/claude-0/b04_compile.txt (empty). The module was not edited."
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B05.lean",
+   "compiled": true,
+   "compile_command": "export PATH=$HOME/.elan/bin:$PATH; cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B05.lean",
+   "ideas": [
+    {
+     "id": "H041",
+     "claim_decl": "H041_claim",
+     "theorems": [
+      "H041_reduction_factor",
+      "H041_strict",
+      "H041_claim_holds",
+      "H041_mono"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the isotropic choice V1 in (mu V2)^perp actually yields k = dim M independent affine equations (Gram-matrix rank over F_2 for the trace forms) and that F4 time scales with the enumeration bound. The Lean file proves only the 2^u -> 2^(u-k) arithmetic under k <= u."
+    },
+    {
+     "id": "H042",
+     "claim_decl": "H042_claim",
+     "theorems": [
+      "H042_orthogonality_4",
+      "H042_indicator_expansion_4",
+      "H042_ratio_needs_eps"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The Weil/binomial sigma for the cyclic-code subspace yields on Koblitz curves, the exact N(V) as a character sum over the curve, and the cross-curve (a=0 vs a=1) rank transfer. Orthogonality and indicator expansion are checked only by decide on 4-bit strings."
+    },
+    {
+     "id": "H043",
+     "claim_decl": "H043_claim",
+     "theorems": [
+      "H043_complexity_d5",
+      "H043_complexity_d7",
+      "H043_terms_le_two",
+      "H043_cx_le"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the abstract fold model (b_1*b_j = b_{j+1}+b_{j-1}, zero index drops) is the real type-II ONB multiplication tensor for F_{2^d} with 2d+1 prime and 2 primitive, the general equality complexity = 2d-1 (only decided for d=5,7; the general upper bound 2d is proved), and the monomial and F4 time ratios of the restricted Semaev system."
+    },
+    {
+     "id": "H044",
+     "claim_decl": "H044_claim",
+     "theorems": [
+      "H044_twisted_consistent",
+      "H044_order6",
+      "H044_ratio",
+      "H044_claim_holds",
+      "H044_total_improves"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That for y^2=x^3+b with q = 1 mod 3 the Semaev summation basis is closed under x -> wx and negation, the automorphism of order 6 acts on logs by multiplication by lam with lam^6 = 1 mod n (taken as a hypothesis), and the quotiented relations remain independent (full rank) with dreg not increased."
+    },
+    {
+     "id": "H045",
+     "claim_decl": "H045_claim",
+     "theorems": [
+      "H045_extract",
+      "H045_claim_holds",
+      "H045_determined_mono"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The hypothesis (Ya + Yb*x) = 0 mod n, i.e. summing the relations along a left-kernel vector (swap of the double sum over rows and columns of the factor-base logs), that real Koblitz orbit relations reach a dependency at N/B about 0.92 (m=3), and that left-kernel solving costs less than the relations saved."
+    },
+    {
+     "id": "H046",
+     "claim_decl": "H046_claim",
+     "theorems": [
+      "H046_walk_sound",
+      "H046_claim_holds",
+      "H046_ops_per_relation"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The expander mixing property (yield ratio within 3% of iid, lag-1 autocorrelation, duplicate rate) from lambda_2 of Cay(Z_N,S), encoded only as the hypothesis h046Mixing, and the group-op cost model (iid candidate at least 6 ops versus 1 mixed addition)."
+    },
+    {
+     "id": "H047",
+     "claim_decl": "H047_claim",
+     "theorems": [
+      "H047_gray_injective_6",
+      "H047_gray_onebit_8",
+      "H047_gray_closed_8",
+      "H047_filter_half_6",
+      "H047_gray_cost"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The general-k statement (gray injective, one-bit steps, closed on 2^k, half of strings with a_0=1) is only decided for k=6 or 8; the identification of the tau-adic orbit-duplicate structure (a_0=1 removes Frobenius duplicates) and the incremental point update equal to the closed form tau-adic expansion on a Koblitz curve; yield equal to iid within 3%."
+    },
+    {
+     "id": "H048",
+     "claim_decl": "H048_claim",
+     "theorems": [
+      "H048_parseval_3",
+      "H048_floor"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the decomposable-target indicator D_V of a curve (Semaev summation polynomial solvability on V) is a set to which Parseval applies, the random-set Walsh fluctuation band, and the existence of bias for inversion- or Frobenius-closed V. Parseval is decided only for all subsets of the 3-bit cube; the floor lemma is proved for arbitrary lists."
+    },
+    {
+     "id": "H049",
+     "claim_decl": "H049_claim",
+     "theorems": [
+      "H049_stop_le_fixed",
+      "H049_net_improvement",
+      "H049_priced_saving"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That rankAt (rank mod ell of the first k collected relations) reaches B-1 below the fixed 1.05-1.1 B excess, i.e. the hypothesis B-1 <= r K at the fixed time K, with a streaming PLE probe whose cost is the separate priced field; the 4-12% saving is empirical."
+    },
+    {
+     "id": "H050",
+     "claim_decl": "H050_claim",
+     "theorems": [
+      "H050_solutions_le",
+      "H050_orbits_le",
+      "H050_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That solutions on a Frobenius-invariant V decompose into orbits of size dividing n (orbit sizes taken as the input list with 1 <= s <= k), and the compound-Poisson Fano factor about n and non-invariant Fano about 1, which are not formalised."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B05.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "H041_reduction_factor",
+    "H041_strict",
+    "H041_claim_holds",
+    "H041_mono",
+    "H042_orthogonality_4",
+    "H042_indicator_expansion_4",
+    "H042_ratio_needs_eps",
+    "H043_complexity_d5",
+    "H043_complexity_d7",
+    "H043_terms_le_two",
+    "H043_cx_le",
+    "H044_twisted_consistent",
+    "H044_order6",
+    "H044_ratio",
+    "H044_claim_holds",
+    "H044_total_improves",
+    "H045_extract",
+    "H045_claim_holds",
+    "H045_determined_mono",
+    "H046_walk_sound",
+    "H046_claim_holds",
+    "H046_ops_per_relation",
+    "H047_gray_injective_6",
+    "H047_gray_onebit_8",
+    "H047_gray_closed_8",
+    "H047_filter_half_6",
+    "H047_gray_cost",
+    "H048_parseval_3",
+    "H048_floor",
+    "H049_stop_le_fixed",
+    "H049_net_improvement",
+    "H049_priced_saving",
+    "H050_solutions_le",
+    "H050_orbits_le",
+    "H050_claim_holds"
+   ],
+   "claim_decls_present": [
+    "H041_claim",
+    "H042_claim",
+    "H043_claim",
+    "H044_claim",
+    "H045_claim",
+    "H046_claim",
+    "H047_claim",
+    "H048_claim",
+    "H049_claim",
+    "H050_claim"
+   ],
+   "problems": [
+    "The lake binary is not on the default PATH; it was run from /root/.elan/bin, which is the same toolchain, so the compile is not affected.",
+    "Three theorems depend on no axioms at all (H043_complexity_d5, H043_complexity_d7, H047_filter_half_6); this is allowed since the requirement is a subset of {propext, Classical.choice, Quot.sound}.",
+    "Axioms printed for every theorem are within the allowed set, so no problems remain for the criteria asked."
+   ],
+   "pass": true,
+   "log_excerpt": "Step 1: cd .../formal && lake env lean HandbookIC/Ideas/B05.lean -> exit=0, 0 'error:' lines (no output).\nStep 2: grep -nE 'sorry|admit|\\baxiom\\b|native_decide|unsafe|partial|implemented_by|extern' HandbookIC/Ideas/B05.lean -> no matches.\nStep 4: scratch copy .../scratchpad/axioms_B05.lean with 35 '#print axioms HandbookIC.Ideas.B05.<name>' lines -> exit=0, 0 'error:' lines. Sample output:\n'HandbookIC.Ideas.B05.H041_strict' depends on axioms: [propext, Classical.choice, Quot.sound]\n'HandbookIC.Ideas.B05.H043_complexity_d5' does not depend on any axioms\n'HandbookIC.Ideas.B05.H047_filter_half_6' does not depend on any axioms\n'HandbookIC.Ideas.B05.H050_claim_holds' depends on axioms: [propext, Quot.sound]\n(all 35 printed axiom sets are subsets of {propext, Classical.choice, Quot.sound})"
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B06.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B06.lean",
+   "ideas": [
+    {
+     "id": "H051",
+     "claim_decl": "H051_claim",
+     "theorems": [
+      "H051_dups_zero_of_nodup",
+      "H051_korobov_nodup",
+      "H051_korobov_dups_zero",
+      "H051_dups_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Relation-rank growth and the 10%->3% duplicate rate at 20% saturation are empirical (h051Prediction); the proofs assume the decomposition is a deterministic function of (a,b), so distinct (a,b) give distinct relations. The second conjunct of H051_claim is not provable from the model."
+    },
+    {
+     "id": "H052",
+     "claim_decl": "H052_claim",
+     "theorems": [
+      "H052_relation_scale",
+      "H052_four_le_sq",
+      "H052_cost_lower_bound",
+      "H052_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the table entries x(kF_j) have logs k*log F_j (commuting Dickson R_2/R_3 maps acting as scalar multiplication on the x-line), and the relations-per-tuple gain of about |K| and rank >= B-2. Only the exponent-side coefficient sum and the (K*B+M)^2 >= 4NB bound are proved."
+    },
+    {
+     "id": "H053",
+     "claim_decl": "H053_claim",
+     "theorems": [
+      "H053_seq_le_indep",
+      "H053_seq_lt_indep",
+      "H053_speedup",
+      "H053_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Equal hit rate of consecutive scalars k, k+1, ... versus independent scalars (Mauduit-Sarkozy C_2 pseudorandomness, lag correlation) is assumed via the shared expectedTrials count. The addition-cost versus scalar-multiplication-cost gap is a hypothesis (add < mul)."
+    },
+    {
+     "id": "H054",
+     "claim_decl": "H054_claim",
+     "theorems": [
+      "H054_cols_exact",
+      "H054_cube_action",
+      "H054_rewrite",
+      "H054_la_ninth",
+      "H054_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the j=0 curve has a mu_3 automorphism acting on points with log(act P) = lam*log P and lam^3 = 1 mod n (and the primality and order facts from the Jacobi sum). The orbit action being free on the factor base and the 2.5-3.2x relation-time gain are assumed or empirical."
+    },
+    {
+     "id": "H055",
+     "claim_decl": "H055_claim",
+     "theorems": [
+      "H055_incremental_eq",
+      "H055_mult_saving",
+      "H055_gray_visits_once_m4",
+      "H055_gray_single_flip_m4",
+      "H055_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the field multiplication by a fixed element (and the Frobenius or trace maps used) is an XOR-linear map f on bit vectors in the chosen basis, and the real 5 versus 4 multiplication count and wall-clock gain. Gray bijectivity is only checked by decide for m=4, not proved for all m."
+    },
+    {
+     "id": "H056",
+     "claim_decl": "H056_claim",
+     "theorems": [
+      "H056_finSum_zero",
+      "H056_finSum_single",
+      "H056_dot_unit",
+      "H056_zero_coverage_kernel",
+      "H056_RS_design_q5",
+      "H056_RS_overlap_q3",
+      "H056_claim_holds_fragment"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Relations are modelled as integer row vectors; rank over a 31-bit prime field and the real RS-profile greedy selector, the 5-6% reduction in relations needed, and the gain shrinking with pool size are empirical. RS design properties are checked by decide for q=5 (coverage) and q=3 (overlap) only. H056_claim's second conjunct is only the weak fragment N_greedy <= N_uniform."
+    },
+    {
+     "id": "H057",
+     "claim_decl": "H057_claim",
+     "theorems": [
+      "H057_cost_transfer",
+      "H057_claim_holds",
+      "H057_peel_sound",
+      "b06_peel_solvable"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The density-evolution recursion and its fixed point (c* = 0.818 for m=3) and the match of measured core size within 5% are not formalised; they enter as the hypothesis h057Within 5 core pred. Only the transfer of core-size error to dense-phase cost, peel soundness and the termination measure are proved."
+    },
+    {
+     "id": "H058",
+     "claim_decl": "H058_claim",
+     "theorems": [
+      "H058_core_le",
+      "H058_claim_holds",
+      "H058_classify_sound",
+      "H058_classify_instance",
+      "H058_peel_preserves"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The closed-form core fractions (0.72 at c=1.0, 0.85 at c=1.2) and the interpretation of deficits as orbit or symmetrisation structure and excess as hidden bias are empirical. The bound 100*core <= f*B is a hypothesis. Peeling is modelled for unit-coefficient singleton columns over Int mod m only."
+    },
+    {
+     "id": "H059",
+     "claim_decl": "H059_claim",
+     "theorems": [
+      "H059_wiedemann_gain",
+      "H059_claim_holds",
+      "H059_peel_backsub",
+      "H059_inactivate_max",
+      "b06_backsub_unique"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The core fractions 0.635B at N=0.918B and 0.723B at N=B (here 1000*core <= 723*B is a hypothesis), the Wiedemann cost model d*d*w versus the real block Wiedemann modmul count, and the claim that inactivation does not just relabel structured elimination."
+    },
+    {
+     "id": "H060",
+     "claim_decl": "H060_claim",
+     "theorems": [
+      "H060_dense_cubic",
+      "H060_inactivation_perm",
+      "H060_claim_holds",
+      "H060_unit_peel",
+      "b06_perm_solvable"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That max-residual-weight inactivation yields a core at least 10% smaller than singleton-plus-clique filtering (10*dIn <= 9*dSC is a hypothesis) at oversampling 1.1, and the dense-phase cost being cubic in the core dimension. Only the cost monotonicity, solution-set invariance under column permutation and unit-coefficient peel soundness are proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B06.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "b06_termSum_congr",
+    "b06_peel_solvable",
+    "b06_backsub_unique",
+    "b06_erase_length_lt",
+    "b06_termSum_perm",
+    "b06_perm_solvable",
+    "b06_LA_mono",
+    "b06_foldl_max_ge",
+    "b06_le_maxDeg",
+    "H051_dups_zero_of_nodup",
+    "H051_korobov_nodup",
+    "H051_korobov_dups_zero",
+    "H051_dups_instance",
+    "H052_relation_scale",
+    "H052_four_le_sq",
+    "H052_cost_lower_bound",
+    "H052_claim_holds",
+    "H053_seq_le_indep",
+    "H053_seq_lt_indep",
+    "H053_speedup",
+    "H053_claim_holds",
+    "H054_cols_exact",
+    "H054_cube_action",
+    "H054_rewrite",
+    "H054_la_ninth",
+    "H054_claim_holds",
+    "H055_incremental_eq",
+    "H055_mult_saving",
+    "H055_gray_visits_once_m4",
+    "H055_gray_single_flip_m4",
+    "H055_claim_holds",
+    "H056_finSum_zero",
+    "H056_finSum_single",
+    "H056_dot_unit",
+    "H056_zero_coverage_kernel",
+    "H056_RS_design_q5",
+    "H056_RS_overlap_q3",
+    "H056_claim_holds_fragment",
+    "H057_cost_transfer",
+    "H057_claim_holds",
+    "H057_peel_sound",
+    "H058_core_le",
+    "H058_claim_holds",
+    "H058_classify_sound",
+    "H058_classify_instance",
+    "H058_peel_preserves",
+    "H059_wiedemann_gain",
+    "H059_claim_holds",
+    "H059_peel_backsub",
+    "H059_inactivate_max",
+    "H060_dense_cubic",
+    "H060_inactivation_perm",
+    "H060_claim_holds",
+    "H060_unit_peel"
+   ],
+   "claim_decls_present": [
+    "H051_claim",
+    "H052_claim",
+    "H053_claim",
+    "H054_claim",
+    "H055_claim",
+    "H056_claim",
+    "H057_claim",
+    "H058_claim",
+    "H059_claim",
+    "H060_claim"
+   ],
+   "problems": [],
+   "pass": true,
+   "log_excerpt": "Step 1: `lake` was not on PATH; the elan toolchain at /root/.elan/bin was prepended to PATH (toolchain leanprover/lean4:v4.34.1). `lake env lean HandbookIC/Ideas/B06.lean` exited 0 with no output, so no 'error:' lines. Step 2: grep for sorry|admit|axiom|native_decide|unsafe|partial|implemented_by|extern returned no matches (exit 1). Step 3: 54 theorems and 10 claim defs (H051_claim to H060_claim) found. Step 4: scratchpad copy /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B06.lean with 54 '#print axioms' lines compiled with exit 0; output in /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_out.txt. Every theorem depends only on a subset of {propext, Classical.choice, Quot.sound}; several depend on nothing. Minor note: an earlier empty compile log was written to /tmp/claude-0/b06_compile.txt rather than the scratchpad; it contains no content."
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B07.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B07.lean",
+   "ideas": [
+    {
+     "id": "H061",
+     "claim_decl": "H061_claim",
+     "theorems": [
+      "H061_relation_character",
+      "H061_patterns_length",
+      "H061_survivors_m3",
+      "H061_survivors_m4",
+      "H061_survivors_half_m3"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Existence of the Z/4 homomorphism psi4 via two halvings on cofactor-4 curves (modelled as h061Hom). The general 2^(m-1) survivor count for odd psi4 is stated in the claim but only proved for m=3 and m=4 instances by decide."
+    },
+    {
+     "id": "H062",
+     "claim_decl": "H062_claim",
+     "theorems": [
+      "H062_flatten_len",
+      "H062_cover_bound",
+      "H062_orbit_cover_bound",
+      "H062_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The coupon-collector (B/m)(ln B + c) law and the steering gain are empirical. Not modelled: that relations are random m-column supports, that a surjective fold from the curve's automorphism or Frobenius action gives B/k orbit columns, and that rank mod the group order equals support coverage."
+    },
+    {
+     "id": "H063",
+     "claim_decl": "H063_claim",
+     "theorems": [
+      "H063_rot_length",
+      "H063_lexLe_lz",
+      "H063_claim_holds",
+      "H063_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That normal-basis x-coordinates are 131-bit necklaces under Frobenius rotation. The proved result is that a lexicographic minimum has a maximal leading zero run. The candidate-count (about 1.6) and speedup over Booth are not proved."
+    },
+    {
+     "id": "H064",
+     "claim_decl": "H064_claim",
+     "theorems": [
+      "H064_cost_lt_replication",
+      "H064_decode_any_two",
+      "H064_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Full column rank of any received selection of sparse fountain-coded rows (hdec), the decode-failure probability below 1e-3, the preemption model q, and the restart and checkpoint costs. Only the flop-factor versus replication arithmetic and a 2+1 parity decode are proved."
+    },
+    {
+     "id": "H065",
+     "claim_decl": "H065_claim",
+     "theorems": [
+      "H065_first_ge",
+      "H065_first_le",
+      "H065_first_mono",
+      "H065_linComp_mono",
+      "H065_linComp_le",
+      "H065_saving",
+      "H065_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That ok t L (a recurrence of order L explains the first t terms) is prefix-closed for the actual Wiedemann or Berlekamp-Massey sequence, that the minimal-polynomial degree is at most N, that the stability window delta gives failure below 1e-6, and that L* is at least 3% below N/m+N/n on filtered IC matrices (empirical)."
+    },
+    {
+     "id": "H066",
+     "claim_decl": "H066_claim",
+     "theorems": [
+      "H066_functional_comb",
+      "H066_matvec_count",
+      "H066_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the BM minimal polynomial of the scalar sequence u(A^j b) is the true annihilator, that the coordinate functionals u=e_i with a normaliser recover log(Q) for the actual relation matrix mod the group order, and the 2N+O(1) count of the O(1) overhead. Only linearity of u over a combination and the matvec arithmetic are proved."
+    },
+    {
+     "id": "H067",
+     "claim_decl": "H067_claim",
+     "theorems": [
+      "H067_count_le",
+      "H067_claim_holds",
+      "H067_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the un-quotiented Frobenius-twisted relation matrix is shift-invariant away from orbit boundaries (the twist-closure hypothesis), that smoothness-selected supports keep that structure, and that rank(M-ZMD) is at most the number of nonzero displacement rows. Matrix rank over F_ell is not defined here, only the nonzero-row count."
+    },
+    {
+     "id": "H068",
+     "claim_decl": "H068_claim",
+     "theorems": [
+      "H068_tuples_length",
+      "H068_cover_count",
+      "H068_necessary",
+      "H068_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the cube set V has 2^m elements and that sums of cubes in F_{2^n} are indexed by t < 2^n. The Poisson law exp(-2^(km-n)) for the uncovered fraction and the sharp threshold km >= n + 2log2(n) are empirical and not proved. Only the necessary condition km >= n is proved."
+    },
+    {
+     "id": "H069",
+     "claim_decl": "H069_claim",
+     "theorems": [
+      "H069_subsets_length",
+      "H069_threshold",
+      "H069_claim_holds",
+      "H069_instance"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That a descent step is an (m-1)-subset sum from V' hashed into the targets, and the Poisson success law 1-exp(-C(|V'|,m-1)/q) with its sharp threshold. The relation to dimension d is also missing: |V'|=2^d. Only the pigeonhole necessity N <= C(|V'|,m-1) is proved."
+    },
+    {
+     "id": "H070",
+     "claim_decl": "H070_claim",
+     "theorems": [
+      "H070_indicator_expansion",
+      "H070_single_bit",
+      "H070_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The Weil/Kloosterman bound on the non-trivial character sums (C <= 4, |eps| <= C*2^c*sqrt(q)/|V1|^2), identification of the parity bits with trace-form characters of the subspace V', and the pair-sum structure of N over V1^2. Only the product-of-characters indicator expansion of a codimension-c parity condition is proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B07.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "b07_nodup_le",
+    "b07_cover_le",
+    "b07_flatMap_length",
+    "H061_relation_character",
+    "H061_patterns_length",
+    "H061_survivors_m3",
+    "H061_survivors_m4",
+    "H061_survivors_half_m3",
+    "H062_flatten_len",
+    "H062_cover_bound",
+    "H062_orbit_cover_bound",
+    "H062_claim_holds",
+    "H063_rot_length",
+    "H063_lexLe_lz",
+    "H063_claim_holds",
+    "H063_instance",
+    "H064_cost_lt_replication",
+    "H064_decode_any_two",
+    "H064_claim_holds",
+    "H065_first_ge",
+    "H065_first_le",
+    "H065_first_mono",
+    "H065_linComp_mono",
+    "H065_linComp_le",
+    "H065_saving",
+    "H065_claim_holds",
+    "H066_functional_comb",
+    "H066_matvec_count",
+    "H066_claim_holds",
+    "H067_count_le",
+    "H067_claim_holds",
+    "H067_instance",
+    "H068_tuples_length",
+    "H068_cover_count",
+    "H068_necessary",
+    "H068_claim_holds",
+    "H069_subsets_length",
+    "H069_threshold",
+    "H069_claim_holds",
+    "H069_instance",
+    "H070_indicator_expansion",
+    "H070_single_bit",
+    "H070_claim_holds"
+   ],
+   "claim_decls_present": [
+    "H061_claim",
+    "H062_claim",
+    "H063_claim",
+    "H064_claim",
+    "H065_claim",
+    "H066_claim",
+    "H067_claim",
+    "H068_claim",
+    "H069_claim",
+    "H070_claim"
+   ],
+   "problems": [
+    "lake is not on the default PATH; the run used /root/.elan/bin (toolchain leanprover/lean4:v4.34.1). This does not affect the result.",
+    "The compile prints only linter warnings (unused variables at B07.lean:161 and :366). It has no error lines.",
+    "Five theorems depend on no axioms at all (H061_survivors_m3, H061_survivors_m4, H063_instance, H067_instance, H069_instance). This is allowed by the rule."
+   ],
+   "pass": true,
+   "log_excerpt": "lake env lean HandbookIC/Ideas/B07.lean: EXIT=0, 0 'error:' lines, only linter warnings. Scratch copy axioms_B07.lean with 43 '#print axioms' lines: EXIT=0, 0 errors. Axiom sets: 17 theorems [propext, Classical.choice, Quot.sound]; 20 theorems [propext, Quot.sound]; 1 theorem [propext]; 5 theorems no axioms. Output at /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_out.txt"
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B08.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B08.lean",
+   "ideas": [
+    {
+     "id": "H071",
+     "claim_decl": "H071_claim",
+     "theorems": [
+      "H071_affine_in_x2",
+      "H071_descent_bound",
+      "H071_cost_total",
+      "h071XorSum_xor"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the Weil-restricted descent system is the bilinear form modelled here, and the measured F4 dreg, semi-regular prediction and log-time slopes (supplied as fields of h071Measure)."
+    },
+    {
+     "id": "H072",
+     "claim_decl": "H072_claim",
+     "theorems": [
+      "H072_monotone",
+      "H072_cost_total"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Per-level valid-point counts of random nested invariant chains and the median-chain statistic are hypotheses. The Prop assumes the best-of-500 chain exists with at least 2x fewer trials; Lean does not derive per-level spread from curve structure."
+    },
+    {
+     "id": "H073",
+     "claim_decl": "H073_claim",
+     "theorems": [
+      "H073_biased_le",
+      "H073_work_mono"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That best-of-T selection raises the liftable fraction above 1/2 and that attempts per node scale as (2 liftFrac)^(-m). Per-level liftFrac, attempts and nodes are record fields; the 1.15x total ratio is asserted."
+    },
+    {
+     "id": "H074",
+     "claim_decl": "H074_claim",
+     "theorems": [
+      "H074_normal_of_cn",
+      "H074_nonzero_of_cn",
+      "H074_six",
+      "H074_six_zero_not",
+      "H074_conv_saving"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The model is a GF(2) circulant-rank proxy over the group ring. Real normality of Tr_{n/d}(beta) over F_{2^d} (F_{2^d}-linear independence of conjugates) is not formalised. Existence of a completely normal element at n=36 and the <3% saving are hypotheses. The n=6 instance beta=1 is trivial under the proxy."
+    },
+    {
+     "id": "H075",
+     "claim_decl": "H075_claim",
+     "theorems": [
+      "H075_geom",
+      "H075_daykin_sum",
+      "H075_count_zero_two",
+      "H075_hist_two",
+      "H075_hist_three"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Daykin counts for general d are asserted, not proved: the brute-force count equals the formula is proved only by decide at d=2,3. The link from Hankel ranks of the trace-component pencil to per-target decomposition counts, and the Var/Mean>1 overdispersion, are hypotheses."
+    },
+    {
+     "id": "H076",
+     "claim_decl": "H076_claim",
+     "theorems": [
+      "H076_batch_le_separate",
+      "H076_k64",
+      "H076_adjugate",
+      "H076_unique"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The kernel-growth slope 0.70-0.78 of random 3-uniform hypergraphs above the orientability threshold, the relation count c3*B, and the bridge from real Koblitz relations to the random model are assumed. Only the k=2 adjugate step is proved, not general k."
+    },
+    {
+     "id": "H077",
+     "claim_decl": "H077_claim",
+     "theorems": [
+      "H077_covers",
+      "H077_main_effects",
+      "H077_budget"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the pairwise model fitted on the 6 array rows picks a configuration within 10% of the exhaustive best on at least 80% of curves. This depends on the real cost functions having small three-way interactions; the claim takes pick and best as hypotheses."
+    },
+    {
+     "id": "H078",
+     "claim_decl": "H078_claim",
+     "theorems": [
+      "H078_pairs_length",
+      "H078_distinct_le",
+      "H078_distinct_eq_iff",
+      "H078_coverage_le",
+      "H078_coverage_eq_iff",
+      "H078_tri_two_mul",
+      "H078_sidon_example"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That Carlitz torsion ker(C_a) and spread elements mu*GF(q) subspaces yield x-images with a coverage deviation of at least 1% from Poisson. Mean coverage and expectation are Nat inputs, and the x-coordinate image map is not modelled."
+    },
+    {
+     "id": "H079",
+     "claim_decl": "H079_claim",
+     "theorems": [
+      "H079_mono_d",
+      "H079_cost_down",
+      "H079_argmin_up"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The 3-6x delayed-reduction kernel speed-up (3*d' <= 2*d), the sparse cost curve being convex, and the 1.5x core shift and 15% LA cost drop. The strict single-crossing theorem needs a strictly increasing dense cost, while the Prop's 1.5x shift and 15% drop are empirical."
+    },
+    {
+     "id": "H080",
+     "claim_decl": "H080_claim",
+     "theorems": [
+      "h080Pop_eq",
+      "H080_pop_le",
+      "H080_pop_one",
+      "H080_pop_add",
+      "H080_weight_le_total",
+      "H080_weight_mul",
+      "H080_hits_le"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The link from the bit-degree weight (and the BKK mixed volume, not modelled) to the F4 maximum degree, plus the hit-rate numbers 85% vs 65%, which come from F4 runs on Weil-restricted systems (hypothesis fromWeilF4Runs)."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B08.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "h071XorSum_xor",
+    "h071_and_xor",
+    "H071_affine_in_x2",
+    "H071_descent_bound",
+    "H071_cost_total",
+    "H072_monotone",
+    "H072_cost_total",
+    "H073_biased_le",
+    "H073_work_mono",
+    "H074_normal_of_cn",
+    "H074_nonzero_of_cn",
+    "H074_six",
+    "H074_six_zero_not",
+    "H074_conv_saving",
+    "H075_geom",
+    "H075_daykin_sum",
+    "H075_count_zero_two",
+    "H075_hist_two",
+    "H075_hist_three",
+    "H076_batch_le_separate",
+    "H076_k64",
+    "H076_adjugate",
+    "H076_unique",
+    "H077_covers",
+    "H077_main_effects",
+    "H077_budget",
+    "H078_pairs_length",
+    "H078_distinct_le",
+    "H078_distinct_eq_iff",
+    "H078_coverage_le",
+    "H078_coverage_eq_iff",
+    "H078_tri_two_mul",
+    "H078_sidon_example",
+    "H079_mono_d",
+    "H079_cost_down",
+    "H079_argmin_up",
+    "h080Pop_eq",
+    "H080_pop_le",
+    "H080_pop_one",
+    "H080_pop_add",
+    "H080_weight_le_total",
+    "H080_weight_mul",
+    "H080_hits_le"
+   ],
+   "claim_decls_present": [
+    "H071_claim",
+    "H072_claim",
+    "H073_claim",
+    "H074_claim",
+    "H075_claim",
+    "H076_claim",
+    "H077_claim",
+    "H078_claim",
+    "H079_claim",
+    "H080_claim"
+   ],
+   "problems": [
+    "Step 1 first failed with 'lake: command not found' because the elan toolchain is not on PATH; rerunning with PATH=/root/.elan/bin:$PATH (toolchain leanprover--lean4---v4.34.1) gave exit 0 and no error lines. This is an environment issue, not a module problem.",
+    "The compile log was written to /tmp/claude-0/b08_compile.log, outside the scratchpad, contrary to the session's scratchpad rule. It is empty and harmless.",
+    "Axioms check: 43 theorems listed. Every one depends only on propext, Classical.choice, Quot.sound or on nothing. The claim-level results are the 'proved-support' results named in the batch; the axioms check does not validate the statement fidelity or the missing bridges the author listed."
+   ],
+   "pass": true,
+   "log_excerpt": "Step 1: PATH=/root/.elan/bin:$PATH lake env lean HandbookIC/Ideas/B08.lean -> exit 0, no output, zero 'error:' lines. Step 2: grep for sorry|admit|axiom|native_decide|unsafe|partial|implemented_by|extern -> no matches (grep exit 1). Step 4: lake env lean scratchpad/axioms_B08.lean -> exit 0, 43 #print axioms lines. Results: 'does not depend on any axioms' for h071_and_xor, H076_k64, H077_budget; all others depend on subsets of [propext, Classical.choice, Quot.sound]. Full output: /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B08.out"
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B09.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B09.lean",
+   "ideas": [
+    {
+     "id": "H081",
+     "claim_decl": "H081_claim",
+     "theorems": [
+      "H081_corr_identity",
+      "H081_dis_le",
+      "H081_corr_abs_le",
+      "H081_C2_abs_le",
+      "H081_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That the decomposability indicator of a Koblitz GF(2^17) additive sweep has the stated generic sqrt(L ln L) band and a tau-shift excess is a measured fact, not proved; the band hypothesis is an explicit premise."
+    },
+    {
+     "id": "H082",
+     "claim_decl": "H082_claim",
+     "theorems": [
+      "H082_prod_mono",
+      "H082_total_sum",
+      "H082_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Monotonicity of F4 running time in the multihomogeneous Bezout bound (the Spearman >= 0.9 correlation) is a hypothesis; the true mixed-volume bound is replaced by a block-degree product."
+    },
+    {
+     "id": "H083",
+     "claim_decl": "H083_claim",
+     "theorems": [
+      "H083_sums_length",
+      "H083_coverage_step",
+      "H083_coverage_mono",
+      "H083_coverage_le",
+      "H083_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Variance/mean of decomposition counts equal to 1 and the flat Fourier spectrum of subspace/orbit bases on a real curve group are not proved; only the counting skeleton of m-fold sums on the exponent side is."
+    },
+    {
+     "id": "H084",
+     "claim_decl": "H084_claim",
+     "theorems": [
+      "H084_partition",
+      "H084_amortised",
+      "H084_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The no-mixed-solution hypothesis (mixed < 1%) and the 50/50 E0/E1 split from the trace test on Koblitz n=23 are curve facts assumed as hypotheses; the S3 solution set is an abstract list with a type tag."
+    },
+    {
+     "id": "H085",
+     "claim_decl": "H085_claim",
+     "theorems": [
+      "H085_choose_step",
+      "H085_choose_mono",
+      "H085_choose_small",
+      "H085_surj_card",
+      "H085_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The relation to the actual probability N^g/(g! #J) via L-polynomials and Cantor arithmetic, and surjectivity of the g-point sum map onto the Jacobian, are assumed; only binomial monotonicity and a surjection-cardinality bound are proved."
+    },
+    {
+     "id": "H086",
+     "claim_decl": "H086_claim",
+     "theorems": [
+      "H086_orbit_closed",
+      "H086_countP_or",
+      "H086_countP_reps",
+      "H086_card_le",
+      "H086_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Existence of Frobenius-invariant subspaces of dimension m with 3m>n+4 for n=73,89,113,127, and that the orbit-distinct S3 count matches generic subspaces within 10%, are not proved; the orbit-size bound and orbit-key cover are hypotheses."
+    },
+    {
+     "id": "H087",
+     "claim_decl": "H087_claim",
+     "theorems": [
+      "H087_orbit_six",
+      "H087_orbit_four",
+      "H087_transport",
+      "H087_claim_holds",
+      "H087_relation_ratio"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Existence of the Velu isogeny walk to a j=0/1728 crater, free action of Aut of order 6 or 4 on the factor base, and that the isogeny is a homomorphism of cyclic groups with image order dividing the source order are assumed (divisibility is a hypothesis of the transport lemma)."
+    },
+    {
+     "id": "H088",
+     "claim_decl": "H088_claim",
+     "theorems": [
+      "H088_trivial_stable",
+      "H088_zero_rot_11_13",
+      "H088_dims_primitive",
+      "H088_ord_values",
+      "H088_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Semisimplicity of F_2[x]/(x^n-1) and the identification of stable subspaces with unions of cyclotomic cosets are taken as the hypothesis StableDim d <-> d in h088Dims sizes; the measured yield and column-ratio tests are not modelled."
+    },
+    {
+     "id": "H089",
+     "claim_decl": "H089_claim",
+     "theorems": [
+      "H089_lc_mono",
+      "H089_fold_congr",
+      "H089_determined",
+      "H089_bands",
+      "H089_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Berlekamp-Massey itself is not implemented; only the soundness skeleton (an order-r recurrence is determined by r terms, complexity bound monotone) is proved. That Tr(x(kG)) on smooth curves has complexity N/2+-8 and nodal cubics have L<=3n is a curve fact not proved."
+    },
+    {
+     "id": "H090",
+     "claim_decl": "H090_claim",
+     "theorems": [
+      "H090_canon_idem",
+      "H090_check_five",
+      "H090_order_131",
+      "H090_cost_gain",
+      "H090_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "That a type-II ONB at n=53,131 makes Frobenius a bit rotation and trace parity is assumed; rotation-invariance of the least-rotation canon is proved by decide only for n=5 and in general only as a hypothesis-based idempotence lemma, and the end-to-end measured saving (canonicalisation share of per-relation cost) is not modelled beyond Cost arithmetic."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B09.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "b09_sum_const",
+    "H081_corr_identity",
+    "H081_dis_le",
+    "H081_corr_abs_le",
+    "b09_rotl_length",
+    "H081_C2_abs_le",
+    "H081_claim_holds",
+    "H082_prod_mono",
+    "H082_total_sum",
+    "H082_claim_holds",
+    "H083_sums_length",
+    "H083_coverage_step",
+    "H083_coverage_mono",
+    "H083_coverage_le",
+    "H083_claim_holds",
+    "b09_smooth_true",
+    "H084_partition",
+    "H084_amortised",
+    "H084_claim_holds",
+    "H085_choose_step",
+    "H085_choose_mono",
+    "H085_choose_small",
+    "H085_surj_card",
+    "H085_claim_holds",
+    "H086_orbit_closed",
+    "H086_countP_or",
+    "H086_countP_reps",
+    "H086_card_le",
+    "H086_claim_holds",
+    "H087_orbit_six",
+    "H087_orbit_four",
+    "H087_transport",
+    "H087_claim_holds",
+    "H087_relation_ratio",
+    "H088_trivial_stable",
+    "H088_zero_rot_11_13",
+    "H088_dims_primitive",
+    "H088_ord_values",
+    "H088_claim_holds",
+    "H089_lc_mono",
+    "H089_fold_congr",
+    "H089_determined",
+    "H089_bands",
+    "H089_claim_holds",
+    "H090_canon_idem",
+    "H090_check_five",
+    "H090_order_131",
+    "H090_cost_gain",
+    "H090_claim_holds"
+   ],
+   "claim_decls_present": [
+    "H081_claim",
+    "H082_claim",
+    "H083_claim",
+    "H084_claim",
+    "H085_claim",
+    "H086_claim",
+    "H087_claim",
+    "H088_claim",
+    "H089_claim",
+    "H090_claim"
+   ],
+   "problems": [
+    "lake is not on the default PATH; the run used /root/.elan/bin/lake (toolchain leanprover--lean4---v4.34.1). This does not change the result.",
+    "Not every theorem depends only on propext, Classical.choice and Quot.sound: H081_corr_identity, H081_corr_abs_le, H081_C2_abs_le, H084_partition, H084_amortised, H084_claim_holds, H085_surj_card, H086_countP_reps, H086_card_le, H086_claim_holds, H088_trivial_stable and H086_claim_holds use only those three, so no axiom is outside the allowed set. Several theorems depend on no axioms at all. All 49 printed axiom sets are within {propext, Classical.choice, Quot.sound}.",
+    "Author-listed missing bridges are hypotheses or unmodelled facts, not Lean axioms. This check does not verify statement fidelity to those claims."
+   ],
+   "pass": true,
+   "log_excerpt": "lake env lean HandbookIC/Ideas/B09.lean (via /root/.elan/bin/lake): exit 0, no output, 0 'error:' lines, 0 'warning:' lines. Axiom check on scratch copy /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B09.lean: exit 0, 49 '#print axioms' lines, 0 errors. Every printed set is a subset of [propext, Classical.choice, Quot.sound]. Forbidden-token grep (sorry|admit|axiom|native_decide|unsafe|partial|implemented_by|extern): no matches. All ten def H08x_claim declarations are present (lines 83, 119, 175, 215, 258, 321, 353, 398, 458, 508)."
+  },
+  "repaired": false
+ },
+ {
+  "formal": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B10.lean",
+   "compiled": true,
+   "compile_command": "cd /home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal && lake env lean HandbookIC/Ideas/B10.lean",
+   "ideas": [
+    {
+     "id": "H091",
+     "claim_decl": "H091_claim",
+     "theorems": [
+      "h091_xor_xor",
+      "H091_apply_linear",
+      "H091_comp_linear",
+      "H091_blocks_64",
+      "H091_blocks_131",
+      "H091_blocks_quadratic",
+      "H091_blocks_mono",
+      "H091_instr_mono"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Measured cycles per GFNI instruction vs per table lookup on a GFNI+AVX-512 host (throughput- not load-bound); H091_claim takes the 2x cycle ratio as a hypothesis."
+    },
+    {
+     "id": "H092",
+     "claim_decl": "H092_claim",
+     "theorems": [
+      "H092_le_lz",
+      "H092_min_has_max_run",
+      "H092_fast_eq_naive_upto6",
+      "H092_ops_131",
+      "H092_ops_ratio"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "General-n proof that the fast run-start canonical form equals the naive minimum rotation is only exhaustive for n<=6 plus the exchange lemma (min rotation has max zero run); the word-op model is not measured cycles."
+    },
+    {
+     "id": "H093",
+     "claim_decl": "H093_claim",
+     "theorems": [
+      "H093_cks_add",
+      "H093_cks_single",
+      "H093_detect_of_mds",
+      "H093_single_fault_detect",
+      "H093_overhead_le_2pct",
+      "H093_cheaper_than_duplicate"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The Vandermonde/MDS property (any nonzero error pattern of weight 1..4 is seen by some checksum row mod l) and unit weights mod l are hypotheses; correction of <=2 faults is not modelled; overhead ratio depends on the measured check period q and row weight."
+    },
+    {
+     "id": "H094",
+     "claim_decl": "H094_claim",
+     "theorems": [
+      "h094_xor_cancel",
+      "h094_xor_eq_zero",
+      "H094_row_conflict_free",
+      "H094_skew_injective"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The GF(32) multiplication table is an abstract structure h094GF32 (distributivity, one, no zero divisors) rather than a concrete table; kernel bank-conflict counters and speedup are measured on GPU, not proved."
+    },
+    {
+     "id": "H095",
+     "claim_decl": "H095_claim",
+     "theorems": [
+      "H095_line_pairs",
+      "H095_work_sum",
+      "H095_total_work",
+      "H095_transfer_le",
+      "H095_p7_transfer",
+      "H095_claim_holds"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Existence of the PG(2,p) line blocks with lambda=1 (pair cover) is a hypothesis; the total-work and transfer arithmetic is proved from block count and block size; wall-clock gain on Spot clusters is empirical."
+    },
+    {
+     "id": "H096",
+     "claim_decl": "H096_claim",
+     "theorems": [
+      "h096_finSum_ofFn",
+      "H096_finSum_perm",
+      "H096_relation_invariant",
+      "H096_cycles_ratio"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The 30% L2-miss reduction from RCM ordering and the memory-bound fraction (2*compute <= miss stall) are measured hypotheses; only permutation invariance of relations and the cycle-model implication are proved."
+    },
+    {
+     "id": "H097",
+     "claim_decl": "H097_claim",
+     "theorems": [
+      "H097_mixed_le",
+      "H097_batchInv_le",
+      "H097_affine_le_proj",
+      "H097_ledger_ratio"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Cycle cost is assumed proportional to the M/S/I ledger (CLMUL multiplication/squaring/inversion costs S<=M/10, I<=25M); the prime-field (<=1.1x) arm and real cycle ratio are unmeasured here."
+    },
+    {
+     "id": "H098",
+     "claim_decl": "H098_claim",
+     "theorems": [
+      "H098_orbit_count",
+      "H098_orbit_count_div",
+      "H098_key_rotation_invariant_upto6",
+      "H098_key_le_word_upto6",
+      "H098_orbits_n5",
+      "H098_orbits_n7"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "H098_claim (key rotation invariance and key<=w for all words) is proved only exhaustively for n<=6; Booth/Duval equals naive minimum rotation, the free prime-order action at n=131, and the 1.5x cycle gain after basis change are not proved."
+    },
+    {
+     "id": "H099",
+     "claim_decl": "H099_claim",
+     "theorems": [
+      "H099_itoh_131",
+      "H099_itoh_83",
+      "H099_itoh_53",
+      "H099_batchInv_20",
+      "H099_breakeven_131",
+      "H099_batch_beats_ld_131",
+      "H099_claim_131"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "The Itoh-Tsujii multiplication count formula (floor(log2(n-1)) + wt(n-1) - 1) and the LD mixed-add cost 8M+5S are assumed; H099_claim for general n in 53..131 is stated, only n=131 is proved; real ns per add is empirical."
+    },
+    {
+     "id": "H100",
+     "claim_decl": "H100_claim",
+     "theorems": [
+      "H100_rotPow_eq",
+      "H100_rot_pow_n",
+      "H100_apply_rot",
+      "H100_apply_xor",
+      "H100_kernel_xor_closed",
+      "H100_kernel_rot_invariant",
+      "H100_cost_ratio",
+      "H100_claim_holds",
+      "H100_divides_x7",
+      "H100_divides_x15"
+     ],
+     "status": "proved-support",
+     "missing_bridge": "Normal-basis representation of Frobenius as rotation, g | x^n-1 for the chosen n=127 generator (checked by decide only for n=7 and n=15), and the whole-loop speedup (1-5%, likely null) are not proved."
+    }
+   ]
+  },
+  "verify": {
+   "file": "/home/user/cryptanalysis/research/handbook-ff-ic-ideas-20261103/formal/HandbookIC/Ideas/B10.lean",
+   "compiled": true,
+   "forbidden_tokens": [],
+   "axioms_ok": true,
+   "decls_checked": [
+    "60 theorems in namespace HandbookIC.Ideas.B10, each given a #print axioms line in /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B10.lean; output in /tmp/claude-0/-home-user/381fb568-a391-5eab-9a8f-72e38290c528/scratchpad/axioms_B10.out",
+    "def H091_claim, H092_claim, H093_claim, H094_claim, H095_claim, H096_claim, H097_claim, H098_claim, H099_claim, H100_claim"
+   ],
+   "claim_decls_present": [
+    "H091_claim",
+    "H092_claim",
+    "H093_claim",
+    "H094_claim",
+    "H095_claim",
+    "H096_claim",
+    "H097_claim",
+    "H098_claim",
+    "H099_claim",
+    "H100_claim"
+   ],
+   "problems": [],
+   "pass": true,
+   "log_excerpt": "lake env lean HandbookIC/Ideas/B10.lean: exit 0, no output (no error: lines). Note: lake is not on the default PATH; the run used /root/.elan/bin/lake. Axiom check on the scratchpad copy: exit 0, no errors. Every theorem's axioms are a subset of {propext, Classical.choice, Quot.sound}; 20 report no axioms at all and the rest report a subset of those three."
+  },
+  "repaired": false
+ }
+]

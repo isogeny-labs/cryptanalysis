@@ -1,0 +1,54 @@
+{
+  "evidence": {
+    "allocation": {
+      "instance_id": "gh-41234470385-1-paired-walltime",
+      "provider": "github_actions",
+      "receipt_sha256": "fce0c04aebc7e155f4ed355fce7a9729a8236e834996aeb9ed7d4e0c292c69ad"
+    },
+    "architecture": "x86_64",
+    "cgroup": "/sys/fs/cgroup/system.slice/hosted-compute-agent.service",
+    "cmdline": "BOOT_IMAGE=/vmlinuz-7.0.0-1017-azure root=PARTUUID=6a568bb8-39a2-40cc-a70f-9d67aaad1bc2 ro console=tty1 console=ttyS0 earlyprintk=ttyS0 nvme_core.io_timeout=240 rootflags=nobarrier,data=writeback,journal_async_commit,commit=30 panic=-1",
+    "compiler": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cpu.max": "max 100000",
+    "cpu.pressure": "some avg10=6.82 avg60=3.18 avg300=0.79 total=2549160\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=47613",
+    "cpu.stat": "usage_usec 54551953\nuser_usec 50133458\nsystem_usec 4418494\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+    "cpu_model": "AMD EPYC 7763 64-Core Processor",
+    "cpus": [
+      0
+    ],
+    "cpuset.cpus.effective": "0-3",
+    "execution_cpu": 0,
+    "frequency": {
+      "0": {
+        "current_khz": null
+      }
+    },
+    "host": "runnervm48cm3",
+    "host_exclusivity_proved": false,
+    "irq_affinity_overlap": [],
+    "kernel": "7.0.0-1017-azure",
+    "mem_nodes": [
+      0
+    ],
+    "memory.current": "635723776",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+    "memory.max": "max",
+    "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+    "per_cpu_counter_available": true,
+    "runner_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "self_cgroup": "/sys/fs/cgroup/system.slice/hosted-compute-agent.service",
+    "timestamp_ns": 1793475016459585910,
+    "topology": {
+      "0": "0-1"
+    },
+    "virtualization": "microsoft"
+  },
+  "ok": true,
+  "problems": [],
+  "tier": "tier1"
+}
