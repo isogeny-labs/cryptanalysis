@@ -5,8 +5,12 @@ date: 2026-11-04
 
 # n = 83: inlined field operations, exact changes only (Tier 1 design)
 
-**Status (2026-11-04): frozen design, run pending.** The design sections below
-are frozen before any timing on the Tier 1 runner. Every profile figure in
+**Status (2026-11-04): result in. Verdict: improvement; every gate passes and
+the run is valid** `[pcc:unverified]`. R = E2E(A) / E2E(B) = **1.2610 [1.2541, 1.2681]** over 36
+alternating pairs, run
+[41869146827](https://github.com/isogeny-labs/cryptanalysis/actions/runs/41869146827),
+Tier 1, instance scope. The design sections below are the frozen text,
+unchanged; they were frozen before any timing on the Tier 1 runner. Every profile figure in
 them comes from the shared cloud-agent VM; those figures are local
 diagnostics, used only to rank candidates and size the design. The result
 section is added with the archived receipt.
@@ -182,7 +186,87 @@ for this integration). It clones crypto 770f6a69 from the public
 
 ## Result
 
-Pending.
+Run [41869146827](https://github.com/isogeny-labs/cryptanalysis/actions/runs/41869146827)
+(workflow `n83-fieldops.yml`, push trigger, frozen commit `20e1e8db`, attempt
+1, conclusion success) on one GitHub-hosted `ubuntu-24.04` runner
+(`GitHub Actions 1000157034`, image 20261026.354.1, AMD EPYC 9V74, execution
+CPU 0). The job ran 16:37 to 17:41 UTC (64 min); the schedule took 45 min
+against the 165-minute guard. The receipt is archived in
+[`run_github_41869146827/`](run_github_41869146827/) (the 1.5 MB run log in
+the artifact store, `panel/.artifacts.json`).
+
+**Verdict: improvement** `[pcc:unverified]`. R = sum E2E(A) / sum E2E(B) =
+**1.2610 [1.2541, 1.2681]** over 36 alternating pairs (12 points x
+3 pairs; two-stage paired bootstrap, 10,000 draws). All 282 scheduled rows ran
+and are valid, none was skipped by the time guard, and every gate passes:
+
+- one index and layout digest set per base (K600, M10, M38), each equal to the
+  frozen one, and the Q0 identities equal to the archived ones;
+- identical relation digests, probe vectors, root calls and counters per rank
+  seed across kM38RF, kM38FO and kM38FOaa, and rank tables equal to the frozen
+  verified tables `[pcc:unverified]`;
+- every IC row's `rank_probe_pipeline` and `field_ops_pipeline` equal to its
+  arm's; runner identity, binaries, CPU record and pinning unchanged;
+- one scalar per point across every IC and rho process, replayed in the
+  pinned oracle.
+
+`verify_receipt.py` re-run on a copy of the receipt reproduces
+`panel/result.json` and `panel/result_table.md` byte for byte.
+
+![Frozen ratios with 95% bootstrap intervals, from result.json
+(`figures/make_result_figure.py`, [SVG](figures/result.svg)).](figures/result.svg)
+
+### Primary, controls and stages (frozen rule)
+
+| stage | side A mean (ms) | side B mean (ms) | A / B [95%] |
+| --- | ---: | ---: | --- |
+| index build (cold process) | 5,802 | 4,439 | 1.3069 [1.3001, 1.3134] |
+| scan self-test | 1,184 | 899 | 1.3165 [1.3077, 1.3269] |
+| rank stage (rank process) | 3,790 | 3,160 | 1.1996 [1.1894, 1.2099] |
+| online, one target | 241 | 171 | 1.4053 [1.3632, 1.4460] |
+| cold process | 7,528 | 5,816 | 1.2944 [1.2877, 1.3011] |
+| end to end (rank + cold) | 11,319 | 8,976 | 1.2610 [1.2541, 1.2681] |
+
+- A/A: B / Baa end to end 0.9998 [0.9944, 1.0051], cold 0.9998 [0.9949, 1.0062],
+  both inside [0.97, 1.03].
+- Planted: cM38FOX / cM38FO index build 2.7348 [2.7233, 2.7463],
+  lower bound above 1; the planted processes kept the frozen layout digests.
+- Probe law: kM38RF and kM38FO both 0.9789 of the law over 576 attempts,
+  inside the frozen band [0.80, 1.20].
+- Order: A first 1.2577, B first 1.2621; every
+  point's ratio lies in [1.250, 1.281].
+- Peak RSS and cold minor faults are unchanged (A / B 0.9999 and 1.0001).
+
+The stages moved further than the local model's (0.853, 0.906, 0.931 and 0.784
+as B / A): on this host the inlined products shorten the index build by 1.31x,
+the self-test by 1.32x, the rank stage by 1.20x and the online solve by 1.41x
+`[pcc:unverified]`.
+
+### Distance to rho
+
+In this run's own matched rT770 rho (12 processes, mean cold 2,192 ms), the
+end-to-end cold gap is **5.164 for side A and
+4.096 for side B** (point estimates); S end to end cold
+is 0.4946 for A and 0.3922 for B in rT770 steps
+`[pcc:unverified]`. Side A is the code the row landed with, which read 3.924
+in its own run (run 39527997793, AMD EPYC 9V45, rT770 step 175.95 ns). Here,
+on an AMD EPYC 9V74 (rT770 step 247.22 ns), the same code takes 11.32 s end
+to end against 7.27 s there, while the matched rho's cold mean moved from
+1,853 ms to 2,192 ms, so the in-run gap is higher on this host class. That is a
+cross-run host artifact of the kind `docs/ic/BASELINES.md` already records;
+only paired deltas within one run are valid, and the paired ratio here is
+1.261. Applied to the landed 3.924, it would give about 3.11; that figure is
+illustrative and not measured.
+
+### Limits of this result
+
+- Wall time on one GitHub-hosted runner, one pinned CPU, Tier 1 instance
+  scope, no host-wide exclusivity; not replayed on another host class.
+- The gap to rho depends on the host class (above); the paired ratio is the
+  result.
+- Factor-base construction is charged to neither arm, as in every n = 83 row,
+  so the cold S is a lower bound.
+- The section 5a GAE band is not computable from this run (wall time only).
 
 ## Files
 
@@ -196,3 +280,5 @@ Pending.
   `arm.py`, `verify_receipt.py` and `test_verify_receipt.py`.
 - **Local diagnostics:** `profile/run_cold.sh`, `profile/run_rank.sh`,
   `profile/raw/` and `inputs/local_profile.json`.
+- **Receipt:** `run_github_41869146827/`; figure `figures/result.svg` and
+  `.png` from `figures/make_result_figure.py`; this report as `README.pdf`.
