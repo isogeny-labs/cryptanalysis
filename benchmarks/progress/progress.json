@@ -1,16 +1,130 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T0342Z-suite-gf2-inv-chain",
+  "latest_record": "20261104T0557Z-proj-orbit-fast",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 1,
+    "measured": 2,
     "open": 0
   },
   "repo": "cryptanalysis",
   "schema": "bench.progress/v1",
   "series": [
+    {
+      "better": "lower",
+      "first": 573015816.0,
+      "latest": 573015816.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_descent_k0n53_m2_x4",
+      "points": [
+        {
+          "commit": "dfa95aaed0cc",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0557Z-proj-orbit-fast",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
+          "value": 573015816.0
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ir"
+    },
+    {
+      "better": "lower",
+      "first": 202615780.0,
+      "latest": 202615780.0,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "ir.koblitz_rung_k0n31",
+      "points": [
+        {
+          "commit": "dfa95aaed0cc",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 1,
+          "record": "20261104T0557Z-proj-orbit-fast",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
+          "value": 202615780.0
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ir"
+    },
+    {
+      "better": "higher",
+      "first": 1.254,
+      "latest": 1.254,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_descent_k0n53_m2_x4",
+      "points": [
+        {
+          "commit": "dfa95aaed0cc",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 15,
+          "record": "20261104T0557Z-proj-orbit-fast",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.118,
+            1.371
+          ],
+          "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
+          "value": 1.254
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.151,
+      "latest": 1.151,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "wall_ratio.koblitz_rung_k0n31",
+      "points": [
+        {
+          "commit": "dfa95aaed0cc",
+          "date": "2026-11-04",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 15,
+          "record": "20261104T0557Z-proj-orbit-fast",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.088,
+            1.396
+          ],
+          "summary": "Cofactor projection of the factor base by one scalar product per Frobenius orbit: Callgrind Ir k0n53 descent 1.276x, k0n31 rung 1.142x vs main d3a0f1320, fingerprints identical; wall 1.254x / 1.151x (neutral at L0 noise)",
+          "value": 1.151
+        }
+      ],
+      "problem": "ic:N53",
+      "unit": "ratio"
+    },
     {
       "better": "lower",
       "first": 19775530.0,
