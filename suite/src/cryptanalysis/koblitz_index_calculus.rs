@@ -8977,9 +8977,24 @@ pub struct IndividualLogSolver<'a> {
     fast: Option<(FastCurve, FastPoint)>,
     h: BigUint,
     r_u64: u64,
+    /// Walks stepped together by [`Self::solve_by_walking`]; their slope
+    /// inversions share one field inversion per round.
+    walks: usize,
 }
 
 impl<'a> IndividualLogSolver<'a> {
+    /// The walk count [`Self::new`] sets.
+    pub const DEFAULT_WALKS: usize = 64;
+
+    /// Step `walks` (at least 1) walks together in the walked descent.
+    /// The probes are drawn in a different order for each count, so the
+    /// trials to the first decomposition and the relation found change
+    /// with it (the logarithm, verified, does not).
+    pub fn with_walks(mut self, walks: usize) -> Self {
+        self.walks = walks.max(1);
+        self
+    }
+
     /// `None` when the table's columns do not match the base's signed
     /// orbits, a column has no logarithm, or the strategy needs a pair
     /// table and none was supplied.
@@ -9020,6 +9035,7 @@ impl<'a> IndividualLogSolver<'a> {
             fast,
             h: &kc.cofactor % r,
             r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
+            walks: Self::DEFAULT_WALKS,
         })
     }
 
@@ -9121,32 +9137,32 @@ impl<'a> IndividualLogSolver<'a> {
         let pair = self.pair?;
         let m = self.descent_m();
         let q_fast = fc.lift(q);
-        const WALKS: usize = 64;
+        let walks = self.walks;
         // Walks must not tread on each other, so they start one stride
         // apart on the same line and each is stepped by G.  Building
         // them that way costs three scalar multiplications and 63
         // additions, where drawing each start costs two scalar
         // multiplications apiece — which on a walk of a few hundred
         // rounds is most of the descent.
-        let stride = (self.r_u64 / WALKS as u64).max(1 << 20);
+        let stride = (self.r_u64 / walks as u64).max(1 << 20);
         let mut rng = StdRng::seed_from_u64(self.opts.seed ^ 0x57_41_4c_4b_44_45_53_00);
         let a0 = rng.gen_range(1..self.r_u64);
         let b = rng.gen_range(1..self.r_u64);
         let stride_point = fc.mul_u64(*g, stride);
-        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(WALKS);
-        let mut states: Vec<FastPoint> = Vec::with_capacity(WALKS);
+        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(walks);
+        let mut states: Vec<FastPoint> = Vec::with_capacity(walks);
         let mut state = fc.add(fc.mul_u64(*g, a0), fc.mul_u64(q_fast, b));
         let mut a = a0;
-        for _ in 0..WALKS {
+        for _ in 0..walks {
             coefficients.push((a, b));
             states.push(state);
             state = fc.add(state, stride_point);
             a = (a + stride) % self.r_u64;
         }
-        let mut advanced = Vec::with_capacity(WALKS);
-        let mut lambdas: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut advanced = Vec::with_capacity(walks);
+        let mut lambdas: Vec<u64> = Vec::with_capacity(walks);
         let mut scratch = BatchScratch::default();
-        let mut keys: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut keys: Vec<u64> = Vec::with_capacity(walks);
         while report.trials < self.opts.max_trials {
             // Key every state of the round first and prefetch its filter
             // word, so the 64 probes' cache misses overlap instead of
