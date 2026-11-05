@@ -97,9 +97,11 @@ ca_ec_consts ca_ec_consts_of(const ca_group *g)
 
 /*
  * Batched affine addition with Montgomery's simultaneous inversion trick:
- * one field inversion for n additions at the cost of 3(n-1) extra
- * multiplications.  Special cases (infinity, doubling, inverse pairs)
- * are handled inline so that the common path stays branch-light.
+ * one field inversion for n additions at the cost of about 2n extra
+ * multiplications, run over four interleaved chains so the serial dependency
+ * of a Montgomery product does not idle the multiply ports.  Special cases
+ * (infinity, doubling, inverse pairs) are handled inline so that the common
+ * path stays branch-light.
  */
 static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
                         size_t n, uint64_t *scratch)
@@ -115,8 +117,15 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
 #define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
 #define BA(x, y) ca_addmod((x), (y), P)
 #define BS(x, y) ca_submod((x), (y), P)
+    /* Interleaved chains, the same scheme rho_thread_main uses: a Montgomery
+     * product is a serial dependency, and one chain through the whole batch
+     * leaves the multiply ports idle.  Four chains quarter the dependency
+     * length and cost 3*4-2 = 10 extra multiplications out of 3n+2n, while
+     * the suffix products put the inverses out in element order. */
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
     uint64_t *den = scratch;       /* n denominators */
-    uint64_t *pre = scratch + n;   /* n prefix products */
+    uint64_t *suf = scratch + n;   /* n suffix products */
     for (size_t i = 0; i < n; i++) {
         uint64_t d;
         if (FINF(&a[i]) || FINF(&b[i])) d = one;
@@ -127,12 +136,22 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         } else
             d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
-        pre[i] = i ? BM(pre[i - 1], d) : d;
     }
-    uint64_t inv = ec_field_inv(g, pre[n - 1]);
-    for (size_t i = n; i-- > 0;) {
-        uint64_t di = i ? BM(inv, pre[i - 1]) : inv; /* den[i]^{-1} */
-        inv = BM(inv, den[i]);
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    /* totals[j] = suf[j] is chain j's product; invert the product of the
+     * totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
         const ca_elem *A = &a[i], *B = &b[i];
         if (FINF(A)) { r[i] = *B; continue; }
         if (FINF(B)) { r[i] = *A; continue; }
