@@ -423,8 +423,8 @@ static void rho_fb_mul(const rho_shared *sh, ca_elem *r, const ca_elem *pow, uin
 {
     ca_elem acc;
     ca_group_identity(sh->g, &acc);
-    for (int b = 0; k >> b; b++)
-        if ((k >> b) & 1) {
+    for (int b = 0; k; b++, k >>= 1)
+        if (k & 1) {
             ca_group_op(sh->g, &acc, &acc, &pow[b]);
             (*ops)++;
         }
