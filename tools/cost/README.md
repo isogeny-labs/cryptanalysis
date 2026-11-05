@@ -14,5 +14,7 @@ The contract — units, exhaustive and disjoint rows, normalization, deltas,
 break-even fan-outs, `log2` improvements, and "least value at or above"
 claim rounding — is in
 [docs/INSTRUCTION-COST-ACCOUNTING.md](../../docs/INSTRUCTION-COST-ACCOUNTING.md).
+A worked application to the rho walk, including the tunings it ruled out, is in
+[docs/RHO-WALK-COST.md](../../docs/RHO-WALK-COST.md).
 
 Standard library only, Python 3.9+.

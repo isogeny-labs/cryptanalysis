@@ -1,0 +1,11 @@
+{
+  "name": "rho walk step, 256 simultaneous walks (native E(F_p))",
+  "unit": "Montgomery multiplications per step",
+  "source": "src/rho.c rho_thread_main, ec branch; inversion priced at 180 multiplications from ca_bench ops (450 ns / 2.5 ns)",
+  "rows": [
+    {"stage": "affine add", "per": "step", "count": 3, "note": "lambda, x3, y3"},
+    {"stage": "batch-inverse products", "per": "step", "count": 3, "note": "suffix product, di, running inverse"},
+    {"stage": "batch inversion", "per": "step", "count": "0.703125", "note": "one inversion per 256 steps, 180 multiplications each"}
+  ],
+  "declared_total": 6.703125
+}

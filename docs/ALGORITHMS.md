@@ -457,7 +457,9 @@ routine review gate for any published cost figure is
 machine-checked form of that gate is
 [INSTRUCTION-COST-ACCOUNTING.md](INSTRUCTION-COST-ACCOUNTING.md) with
 `tools/cost/ledger.py`. The arithmetic itself does not apply to this library's
-`p < 2^64` Montgomery paths; the methodology does.
+`p < 2^64` Montgomery paths; the methodology does, and
+[RHO-WALK-COST.md](RHO-WALK-COST.md) applies it to the rho walk: six
+multiplications per step, and the tunings that measured no change.
 
 ## References
 
