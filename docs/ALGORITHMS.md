@@ -439,6 +439,26 @@ around 56 bits, and the gap widens quickly above it.
   (`O(p^{1/4})`, with the quadratic-twist fallback when the group exponent
   is small), used by the tests and the `ca ec-order` command.
 
+## Truncated products and error budgets
+
+Not an algorithm in the library, but a cross-cutting technique worth knowing
+when reading or extending the multiword paths: when a consumer only needs a
+fixed 128-bit window of a 256-bit product, that window can be evaluated
+directly from four single-word products per row, skipping the fold and the
+carry chain, at the price of a one-sided error of at most 64 units of
+`2^-128`. Adjacent windows are obtained by multiplying by `beta = 2^(64d)`
+rather than by computing a second product.
+
+The method, its error table, and the verification protocol that must accompany
+it (exact certificate, bit-exact model, mutants, static count) are in
+[TECHNIQUES-TRUNCATED-FRACTION.md](TECHNIQUES-TRUNCATED-FRACTION.md). The
+routine review gate for any published cost figure is
+[REVIEW-CHECKLIST-COST-CLAIMS.md](REVIEW-CHECKLIST-COST-CLAIMS.md), and the
+machine-checked form of that gate is
+[INSTRUCTION-COST-ACCOUNTING.md](INSTRUCTION-COST-ACCOUNTING.md) with
+`tools/cost/ledger.py`. The arithmetic itself does not apply to this library's
+`p < 2^64` Montgomery paths; the methodology does.
+
 ## References
 
 * D. Shanks, *Class number, a theory of factorization and genera*, 1971.

@@ -8,6 +8,7 @@ JOBS ?= $(shell nproc 2>/dev/null || echo 4)
         coordinator coordinator-test fpga fpga-lint fpga-synth ecc2k130 ecc2k130-gpu \
         ecc2k130-cpu ecc2k130-metal gpu-health gpu-health-image \
         suite suite-build suite-test suite-lint suite-python \
+        cost-check \
         cloud-doctor cloud-all modal-setup modal-bench modal-long modal-sync \
         modal-sync-loop runpod-start runpod-status runpod-stop \
         fanout-start fanout-status fanout-stop \
@@ -113,6 +114,15 @@ gpu-health:
 
 gpu-health-image:
 	docker build -f deploy/gpu-health/Dockerfile -t gpu-health:dev .
+
+# ---- instruction-cost ledgers (tools/cost/) --------------------------------
+# A ledger states a per-unit cost as a sum of stage rows plus the claim it
+# supports.  The checker recomputes the totals, the stage deltas, the
+# improvement in bits and the claim rounding in exact arithmetic; it cannot
+# check that a count is true (see docs/INSTRUCTION-COST-ACCOUNTING.md).
+cost-check:
+	python3 tools/cost/test_ledger.py
+	python3 tools/cost/ledger.py check tools/cost/examples/*.json
 
 # ---- the attack suite (suite/) ---------------------------------------------
 # The Rust cryptanalysis library and its tools (ca-suite, ca-ic,
