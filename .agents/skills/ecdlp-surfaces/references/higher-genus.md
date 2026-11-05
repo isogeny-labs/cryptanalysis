@@ -238,8 +238,8 @@ a rejected lattice does not rule out other polarizations or covers.
 For any same-field genus-g Jacobian candidate, the elliptic Frobenius quadratic
 must divide its degree-2g Frobenius polynomial over the integers for a nonzero
 homomorphism from E. This is a necessary filter, not a curve or map construction.
-The existing `frobenius_filter` handles only degree four and its documented
-u64/i128 range; it cannot test arbitrary genus or q=2^83. Preserve trace signs
+The existing `frobenius_filter` handles only degree four (arbitrary-precision
+integers, so q=2^83 works); it cannot test arbitrary genus. Preserve trace signs
 and use an appropriate checked native integer backend for a broader filter.
 
 A product or a compatible characteristic polynomial does not establish a
