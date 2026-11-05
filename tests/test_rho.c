@@ -68,6 +68,34 @@ int main(void)
     ca_rho_params_default(&p);
 
     check_zp_fused_matches_staged();
+    /* Exercise fixed-base setup with scalars whose top uint64 bit is set.
+     * y^2 = x^3 + 1 over this p == 2 (mod 3) has p+1 points; (0,1)
+     * is a nonidentity point of order 3. The work cap avoids a large search.
+     * Under UBSan this catches a shift by 64 in the table scalar loop. */
+    {
+        ca_group wide;
+        ca_elem point;
+        const uint64_t prime = UINT64_C(18446744073709551557);
+        CHECK(ca_group_ec_init(&wide, prime, 0, 1, prime + 1) == CA_OK);
+        const uint64_t words[4] = {0, 1, 0, 0};
+        CHECK(ca_group_encode(&wide, &point, words));
+        ca_rho_params bounded;
+        ca_rho_params_default(&bounded);
+        bounded.r = 16;
+        bounded.walks_per_thread = 1;
+        bounded.negation_map = 0;
+        bounded.dp_bits = 0;
+        bounded.seed = 1;
+        bounded.max_ops = 1000;
+        uint64_t answer = 0;
+        ca_status result = ca_rho_solve(&wide, &point, &point, &bounded, &answer, NULL);
+        CHECK(result == CA_OK || result == CA_ERR_LIMIT);
+        if (result == CA_OK) {
+            ca_elem recovered;
+            ca_group_mul(&wide, &recovered, &point, answer, NULL);
+            CHECK(ca_group_equal(&wide, &recovered, &point));
+        }
+    }
 
     /* Z_p^* subgroup of prime order ~2^30 */
     fx_zp_safe(&g, &gen, 2000000579ULL);
