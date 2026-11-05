@@ -1,4 +1,5 @@
 use ecdlp_surfaces::{
+    bigint::BigInt,
     cli::Args,
     curve::{Curve, Point},
     frobenius::filter,
@@ -207,10 +208,12 @@ fn frobenius_rejects_incompatible_or_invalid_candidates() {
 
 #[test]
 fn polynomial_overflow_and_invalid_trace_are_errors() {
-    assert!(filter(101, -7, [i128::MAX, 0, 0, 0]).is_err());
+    // Former i128 overflow is now exact: no error, and the value is preserved.
+    let huge = filter(101, -7, [i128::MAX, 0, 0, 0]).unwrap();
+    assert_eq!(huge.quotient[1], i128::MAX - 7);
     assert!(filter(101, 21, [14, 251, 1414, 10201]).is_err());
     assert!(filter(1, 0, [0, 0, 0, 0]).is_err());
-    assert!(filter(i64::MAX as u64 + 1, 0, [0, 0, 0, 0]).is_err());
+    assert!(filter(BigInt::pow2(83), BigInt::pow2(43), [0, 0, 0, 0]).is_err());
 }
 
 #[test]
@@ -229,4 +232,79 @@ fn json_escapes_control_characters_and_preserves_unicode() {
         text("\u{0}\"\\\n\t中文").pretty(),
         "\"\\u0000\\\"\\\\\\n\\t中文\""
     );
+}
+
+// q = 2^83 anchors (GF(2^83) Koblitz a=0 / a=1). Every literal below was
+// computed with Python integers by research/frobenius_filter_bigint_n83_20261105/reference.py.
+const Q83: &str = "2^83";
+const T_A0: &str = "-6151469093347";
+const T_A1: &str = "6151469093347";
+const C4: &str = "93536104789177786765035829293842113257979682750464"; // q^2
+const SQUARE_A0: [&str; 4] = [
+    "12302938186694",
+    "57183385120237428994961225",
+    "118986717048137308772278645501462577152",
+    C4,
+];
+const SQUARE_A1: [&str; 4] = [
+    "-12302938186694",
+    "57183385120237428994961225",
+    "-118986717048137308772278645501462577152",
+    C4,
+];
+const MIXED: [&str; 4] = ["0", "-18497758892569295404363593", "0", C4];
+
+fn big(s: &str) -> BigInt {
+    BigInt::parse(s).unwrap()
+}
+fn run83(trace: &str, c: [&str; 4]) -> ecdlp_surfaces::frobenius::Filter {
+    filter(big(Q83), big(trace), c.map(big)).unwrap()
+}
+
+#[test]
+fn q_2_pow_83_squares_pass_with_exact_quotients() {
+    for (trace, c, u) in [
+        (T_A0, SQUARE_A0, "6151469093347"),
+        (T_A1, SQUARE_A1, "-6151469093347"),
+    ] {
+        let r = run83(trace, c);
+        assert_eq!(r.q.to_string(), "9671406556917033397649408");
+        assert!(r.passes_necessary_conditions());
+        assert_eq!(r.quotient, [big("1"), big(c[0]).add(&big(trace)), big(Q83)]);
+        assert_eq!(r.quotient[1], big(u).mul(&big("2")).sub(&big(u)));
+        assert_eq!(r.remainder, [0, 0]);
+    }
+}
+
+#[test]
+fn q_2_pow_83_mixed_product_passes_for_either_factor() {
+    for trace in [T_A0, T_A1] {
+        let r = run83(trace, MIXED);
+        assert!(r.passes_necessary_conditions(), "trace {trace}");
+        // Quotient is the other factor T^2 - t1*T + q = T^2 + t*T + q.
+        assert_eq!(r.quotient[1], big(trace));
+        assert_eq!(r.remainder, [0, 0]);
+    }
+}
+
+#[test]
+fn q_2_pow_83_wrong_factor_fails() {
+    // (T^2 - t0 T + q)^2 does not contain the a=1 factor T^2 - t1 T + q.
+    let r = run83(T_A1, SQUARE_A0);
+    assert!(r.reciprocal);
+    assert!(!r.divides);
+    assert!(!r.passes_necessary_conditions());
+    // A Hasse-violating source trace is an error at this size too.
+    assert!(filter(big(Q83), big("2^43"), SQUARE_A0.map(big)).is_err());
+    // A reciprocity break (c4 off by one) is caught at 250 bits.
+    let mut broken = SQUARE_A0.map(big);
+    broken[3] = broken[3].add(&big("1"));
+    let r = filter(big(Q83), big(T_A0), broken).unwrap();
+    assert!(!r.reciprocal && !r.divides && !r.passes_necessary_conditions());
+}
+
+#[test]
+fn args_accept_power_of_two_and_decimal_q() {
+    assert_eq!(big("2^83"), big("9671406556917033397649408"));
+    assert_eq!(big("-2^3"), -8);
 }
