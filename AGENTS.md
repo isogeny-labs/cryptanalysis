@@ -135,6 +135,23 @@ start by `.claude/hooks/lead-atlas-brief.sh`) says whether anything changed
 since its last review. Run `--match "<idea>"` before proposing an ECDLP
 mechanism, and update the lead a landed result advances.
 
+## Shared knowledge base
+
+The shared `research-kb` MCP server indexes this repository and its siblings
+(about 22k documents, 151k passages and 1.7k Lean declarations) and serves one
+read-only catalog to Claude Code, Codex and OpenCode. Query it before a
+literature or prior-art question, a new lead/mechanism/factor base/solver, a
+"first"/"best"/"not known"/negative claim, a cross-repository question, or a
+subagent handoff. Read the best hits, check `claim_status`, `authority`,
+`evidence_level` and `superseded`, and read the primary file; a score is
+relevance, not truth. Record the `source_id` and `repo:path` under "Sources
+checked"; no result is not evidence of absence.
+
+The binding rule is `crypto-autoresearcher:docs/lab-contract.md` §11; the
+canonical procedure is `crypto:.agents/skills/research-kb/SKILL.md` (commit
+`bc10008055`); the local pointer skill is `research-kb`. The CLI fallback is
+`scripts/research-kb status|search|theorems|brief`.
+
 ## Local LMFDB curve catalog
 
 When LMFDB catalog data could answer a curve, isogeny, genus 2, or finite-field

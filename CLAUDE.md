@@ -39,6 +39,15 @@ before computing them: MCP server `ecdb` (export `ECDB_TOKEN` from secret
 `ecdb/api` first) or `scripts/ecdb.sh`. AGENTS.md, "Querying the curve
 database (ecdb)".
 
+**Knowledge base first.** The shared `research-kb` MCP server is the
+cross-repository retrieval layer. Query it before a literature or lead claim,
+a factor-base/solver choice, a novelty or "not tried" statement, or a subagent
+handoff; read the best hits and record the `source_id`/`repo:path`. Canonical
+procedure: `crypto:.agents/skills/research-kb/SKILL.md`; local skill
+`research-kb`; fallback `scripts/research-kb`. AGENTS.md, "Shared knowledge
+base"; lab contract §11.
+
+
 **Benchmark records** (owner, 2026-11-04): every benchmark run leaves a
 `bench.record/v1` record in Git (`python3 tools/benchrec.py init|run|add-raw|
 metric|close`), its raw data in S3 by SHA-256, and a regenerated progress
