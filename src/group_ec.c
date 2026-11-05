@@ -137,8 +137,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
             d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
     }
-    for (size_t i = n; i-- > 0;)
-        suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
     /* totals[j] = suf[j] is chain j's product; invert the product of the
      * totals once and split it: inv_j = inv * prod_{i != j} total_i. */
     uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
