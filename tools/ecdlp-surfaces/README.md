@@ -97,9 +97,22 @@ conditions, and checks that the quotient has the elliptic shape and Hasse bound.
 A nonzero algebraic homomorphism E -> A over F_q, where A is an abelian surface,
 requires the source factor in A's Frobenius polynomial. Passing this filter
 does not construct that map, determine its kernel, certify subgroup preservation,
-or establish that the supplied polynomial is realized by a variety. The caller
+or establish that the supplied polynomial is realized by a variety. `--q`, `--trace` and `--coeffs` take decimal integers or `2^k` (optionally
+signed, e.g. `--q 2^83`); `0x` hex is also read. Large values print as exact JSON
+numbers (read them with an arbitrary-precision JSON parser, e.g. Python). The caller
 supplies an actual field size and a source trace; prime-power validity and all
 Honda-Tate existence conditions are not checked.
+
+At q=2^83, E x E for the a=0 anchor (trace -6151469093347, so `(T^2+6151469093347*T+2^83)^2`):
+
+```sh
+cargo run --release --offline --bin frobenius_filter -- --q 2^83 --trace=-6151469093347 \
+  --coeffs 12302938186694,57183385120237428994961225,118986717048137308772278645501462577152,93536104789177786765035829293842113257979682750464
+```
+
+`research/frobenius_filter_bigint_n83_20261105/reference.py` recomputes these
+coefficients and the filter booleans with Python integers; the Rust tests
+hard-code them. This is a polynomial bookkeeping check, not a transfer.
 
 For an incompatible example, the polynomial `(T^2+101)^2` is rejected:
 
@@ -153,8 +166,8 @@ product `E_(1-a) x E_(1-a)` over the same field: the Frobenius factors differ
 and the source prime does not divide the target elliptic order.
 
 Large exact integers are JSON decimal strings; field elements are hexadecimal
-coefficient masks. The separate general `frobenius_filter` retains its u64/i128
-limits and is not run at q=2^83. The binary CLI has fixed n=83 presets; it is
+coefficient masks. The separate general `frobenius_filter` uses the crate's own
+arbitrary-precision integers, so it accepts q=2^83 (see section 3). The binary CLI has fixed n=83 presets; it is
 not a general binary-curve or arbitrary abelian-surface-map constructor.
 
 The [n=83 study protocol](../../research/ecdlp_surfaces_n83_20261012/PROTOCOL.md)
@@ -172,7 +185,8 @@ explanatory diagram, PDF, exact inputs, and evidence boundaries.
 
 The odd-prime point arithmetic and enumeration support 3 < p <= 10,000.
 This matches the small-field Python prototype. Arithmetic uses u64/u128;
-the polynomial filter uses checked i128 arithmetic and q <= i64::MAX.
+the polynomial filter uses the crate's small arbitrary-precision `BigInt`
+(`src/bigint.rs`, no dependencies) with no upper bound on q beyond input size.
 The binary checker uses bounded u128 arithmetic for the pinned n=83 fixtures.
 These are mathematical demonstration tools with variable-time arithmetic;
 general cryptographic-curve and secret-key implementations are not supplied.
