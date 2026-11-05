@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261104T1757Z-n83-fieldops",
+  "latest_record": "20261105T0736Z-rho-plain-negmap-retrospective",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 9,
+    "measured": 10,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -1520,6 +1520,36 @@
         }
       ],
       "problem": "kernel:suite_gf2_koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 0.7482981743733009,
+      "latest": 0.7482981743733009,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "quoted_pooled_candidate_over_main",
+      "points": [
+        {
+          "commit": "0df3e3e0c537",
+          "date": "2026-11-05",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 240,
+          "record": "20261105T0736Z-rho-plain-negmap-retrospective",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.7413404602903986,
+            0.755555794726141
+          ],
+          "summary": "Retrospective index of October 30 group_ops measurements, not a new trial; historical environment and execution details remain incomplete. [pcc:unverified]",
+          "value": 0.7482981743733009
+        }
+      ],
+      "problem": "rho-plain-negmap-counts-20261030",
       "unit": "ratio"
     }
   ],
