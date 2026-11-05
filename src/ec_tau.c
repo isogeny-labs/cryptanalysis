@@ -231,25 +231,39 @@ static void jac_batch_to_affine(const ca_group *g, ca_elem *out, const tau_jac *
 static int jac_batch_to_affine_scratch(const ca_group *g, ca_elem *out, const tau_jac *in, size_t n,
                                        uint64_t *prefixes, uint64_t *inversions)
 {
-    uint64_t product = g->mont.r1;
+    const uint64_t one = g->mont.r1;
     int has_point = 0;
-    for (size_t i = 0; i < n; i++) {
-        uint64_t z = in[i].z ? in[i].z : g->mont.r1;
-        has_point |= in[i].z != 0;
-        product = fm(g, product, z);
-        prefixes[i] = product;
-    }
+    for (size_t i = 0; i < n; i++) has_point |= in[i].z != 0;
     if (!has_point) {
         for (size_t i = 0; i < n; i++) out[i] = (ca_elem){{0, 0, 1, 0}};
         if (inversions) *inversions = 0;
         return 1;
     }
-    uint64_t inverse = ca_mont_inv(&g->mont, product);
-    if (!inverse) return 0;
+    /* Four interleaved chains, as in ec_batch_op: a block here can be 4096
+     * points, and one prefix product through it is a serial Montgomery
+     * dependency four times longer than any other work in the block.  Suffix
+     * products put the inverses out in element order; the chain totals are
+     * joined with the same trick, so the block still pays one inversion. */
+    enum { TAU_CHAINS = 4 };
+    const size_t k = n < TAU_CHAINS ? n : TAU_CHAINS;
     for (size_t i = n; i-- > 0;) {
+        uint64_t z = in[i].z ? in[i].z : one;
+        prefixes[i] = i + k < n ? fm(g, z, prefixes[i + k]) : z;
+    }
+    uint64_t before[TAU_CHAINS], after[TAU_CHAINS], inv[TAU_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = fm(g, before[j - 1], prefixes[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = fm(g, after[j + 1], prefixes[j + 1]);
+    uint64_t all = fm(g, before[k - 1], prefixes[k - 1]);
+    uint64_t inverse = ca_mont_inv(&g->mont, all);
+    if (!inverse) return 0;
+    for (size_t j = 0; j < k; j++) inv[j] = fm(g, inverse, fm(g, before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
         tau_jac p = in[i];
-        uint64_t invz = fm(g, inverse, i ? prefixes[i - 1] : g->mont.r1);
-        inverse = fm(g, inverse, p.z ? p.z : g->mont.r1);
+        uint64_t invz = i + k < n ? fm(g, inv[j], prefixes[i + k]) : inv[j];
+        inv[j] = fm(g, inv[j], p.z ? p.z : one);
+        j = j + 1 == k ? 0 : j + 1;
         if (!p.z) {
             out[i] = (ca_elem){{0, 0, 1, 0}};
             continue;
