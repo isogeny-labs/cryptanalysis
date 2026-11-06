@@ -150,7 +150,9 @@ checked"; no result is not evidence of absence.
 The binding rule is `crypto-autoresearcher:docs/lab-contract.md` §11; the
 canonical procedure is `crypto:.agents/skills/research-kb/SKILL.md` (commit
 `bc10008055`); the local pointer skill is `research-kb`. The CLI fallback is
-`scripts/research-kb status|search|theorems|brief`.
+`scripts/research-kb status|search|theorems|brief`. The receipt audit is
+`scripts/kb_usage_report.py` (locked; `docs/shared-code.lock.json`) and
+`.github/workflows/kb-usage-report.yml` runs it weekly, report-only.
 
 ## Local LMFDB curve catalog
 
