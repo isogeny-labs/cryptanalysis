@@ -22,7 +22,27 @@ change can rescue the family.
 
 ## What would unblock it
 
-### Claim
+### Definitions, because the floor is not the same statement for all of them
+
+Three things get called "degree of regularity":
+
+| name | definition | floor here |
+|---|---|---|
+| `d_reg` (semi-regular / Macaulay) | least `d` such that the degree-`d` graded piece of `R/I` vanishes | `>= N` |
+| F4/F5 solving degree | top degree of a polynomial in the computed Groebner basis | **not** `>= N` in general |
+| first-fall degree `d_ff` | first degree where the rank drops faster than semi-regular | a proxy, no floor |
+
+Claim A below is about the first. The second can in principle be smaller: a
+reduced basis may generate `C` from lower-degree elements. What survives for
+the second is a **size** floor, not a degree floor: a zero-dimensional quotient
+with `D` solutions needs linear algebra on at least `D` states, and the
+Macaulay matrix at degree `d` in `n` variables has `binom(n+d, d)` columns. For
+the decomposition system `D` is small (the system is overdetermined: a random
+pair `(b1, b2)` satisfies `S_3 = 0` with probability `~2/p`), so this does not
+rescue the attack, but the claim must be stated as Claim A, not as "the
+solving degree is at least `N`".
+
+### Claim A (degree floor)
 
 Let `B` be a factor base of size `N`, and let the membership condition be a
 polynomial `C(x)` of degree `N`. For the system
@@ -35,7 +55,7 @@ C(x_i) = 0                        for i = 1..m-1
 the degree of regularity satisfies `d_reg >= N`, for every `m` and every
 coordinate function `h` used to build `S_m`.
 
-### Argument
+### Argument for Claim A
 
 `d_reg` is the largest degree reached by the Macaulay matrix before the ideal
 becomes zero-dimensional (equivalently, the top degree of the `d`-th
@@ -73,6 +93,36 @@ d_reg < p^{1/(18 omega)} = p^{1/36}
 The gap widens with `p`: the floor grows like `p^{1/3}` while the requirement
 grows like `p^{1/36}`.
 
+### Claim B (description floor)
+
+Any algebraic description of membership in a set of size `N` costs `Omega(N)`:
+a univariate polynomial vanishing exactly on `B` has degree `N`, and the
+auxiliary-variable encoding below needs `Omega(N)` variables. Claim A turns the
+first into a degree floor. The second is not a theorem, but the semi-regular
+prediction is that a dense system in `n` variables with `Omega(n)` quadrics has
+`d_reg = Omega(n)`, so the wall reappears with `n` in place of `N`.
+
+### Auxiliary-variable (boolean indicator) encodings
+
+Replace `C(x_i) = 0` by
+
+```
+z_{i,b}^2 - z_{i,b} = 0,  sum_b z_{i,b} = 1,  x_i - sum_b b z_{i,b} = 0
+```
+
+for `b in B`. Every generator now has degree `<= 2`, so Claim A's letter no
+longer applies. What is left is Claim B: `n = (m-1)N + O(1)` variables and
+`(m-1)(N+1)` equations. For `m = 3`, `N = p^{1/3}`, that is already `~2p^{1/3}`
+variables — the algebraic description is as large as the degree-`N` generator
+it replaced.
+
+The honest status: this encoding is **not** excluded by Claim A, and the
+semi-regular argument that it is excluded by Claim B is heuristic. A Macaulay
+rank computation at toy size (`p = 2^10`, `N = 2^3`, `n ~ 16`) would settle
+which of the two floors is operative. Until then, the claim to defend is
+"every known encoding pays `Omega(N)` in degree or dimension", not "no encoding
+can do better".
+
 ### What would beat it
 
 Only one of:
@@ -101,10 +151,12 @@ below the constraint floor.
 
 - The argument is elementary and should be checkable by a reviewer in minutes;
   it is **not** peer-reviewed.
-- It assumes `d_reg` is defined via the Macaulay/F4 degree, and that membership
-  is imposed by a single degree-`N` polynomial. Encodings using `N` auxiliary
-  variables (boolean indicators) escape the letter of the claim while paying
-  the same cost in dimension; that case needs its own statement.
+- Claim A assumes `d_reg` is the graded-vanishing (Macaulay) degree and that
+  membership is one degree-`N` polynomial. The F4 solving degree is not bounded
+  by `N` in general; only Claim B applies there.
+- Claim B is heuristic: it rests on the semi-regular prediction for dense
+  systems with `Omega(n)` quadrics. The boolean-indicator encoding escapes
+  Claim A by construction, and its exclusion depends entirely on Claim B.
 - The `p^{1/(18 omega)}` threshold is the constant from the cost model in the
   delphi brief; changing the model changes the exact shortfall, not the
   asymptotic gap `p^{1/3}` vs `p^{1/36}`.
@@ -113,11 +165,18 @@ below the constraint floor.
 
 ## Next discriminating step
 
-Formalize the claim for the two-variable case (`m = 3`, `C(x_1), C(x_2)`) as a
-statement about the initial ideal, and check it against a Macaulay rank
-computation at `p = 2^10`, `N = 2^3`: the measured `d_reg` should be `>= N`
-and the rank profile should show the degree-`N` jump when `C` enters. If it
-does not, the argument above is wrong and should be withdrawn.
+Two computations, both at toy size:
+
+1. **Claim A.** `m = 3`, `p = 2^10`, `N = 2^3`, membership by `prod (x - b)`;
+   compute the Macaulay rank profile. `d_reg` should be `>= N` and the profile
+   should show a jump exactly when multiples of `C` enter.
+2. **Claim B.** The same system in the boolean-indicator encoding (`n ~ 16`);
+   measure `d_reg` and compare with the semi-regular prediction. If the
+   indicator encoding is materially cheaper than the degree-`N` one, Claim B is
+   false and the family is not dead.
+
+If either computation contradicts the corresponding claim, the document is
+wrong and should be withdrawn rather than patched.
 
 ## Resolution and history
 
