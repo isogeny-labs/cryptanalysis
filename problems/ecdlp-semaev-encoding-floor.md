@@ -178,6 +178,29 @@ Two computations, both at toy size:
 If either computation contradicts the corresponding claim, the document is
 wrong and should be withdrawn rather than patched.
 
+## Preliminary probe (2026-11-06)
+
+`tools/semaev/gb_solving_degree.py` builds a solvable instance, then compares
+Groebner bases for the two encodings:
+
+| p | N | encoding | variables | basis size | max basis degree |
+|---|---|---|---|---|---|
+| 101 | 3 | `prod (x - b)` | 2 | 2 | 2 |
+| 101 | 3 | indicators | 8 | 8 | 2 |
+| 1009 | 4 | `prod (x - b)` | 2 | 2 | 2 |
+| 1009 | 4 | indicators | 10 | 10 | 2 |
+
+Two readings, both provisional. First, the solving degree is **2**, below `N`,
+in both encodings and both sizes — direct confirmation that Claim A does not
+transfer to the F4 definition. Second, the indicator encoding is not visibly
+worse at this scale; the basis grows with the variable count but the degree
+does not.
+
+Neither size is large enough to test Claim B: `N` must be big enough for the
+degree to climb, and the right observable is a rank profile, not the maximum
+degree of a basis of a solvable instance. Treat this as a smoke test of the
+harness, not evidence either way.
+
 ## Resolution and history
 
 - 2026-11-06: written from a delphi-goal run on prime-field ECDLP; the support
