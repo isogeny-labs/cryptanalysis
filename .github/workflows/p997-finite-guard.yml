@@ -1,0 +1,48 @@
+name: p997 finite-record guard
+# artifact-store: no-pull (reads only the sealed small Git inputs and receipt JSON)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/hecke-432-prime997/**'
+      - 'experiments/hecke-432-prime997-20261025/**'
+      - 'reports/2026-11-07-hecke-p997-audit-followup/receipt.json'
+      - '.github/workflows/p997-finite-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/hecke-432-prime997/**'
+      - 'experiments/hecke-432-prime997-20261025/**'
+      - 'reports/2026-11-07-hecke-p997-audit-followup/receipt.json'
+      - '.github/workflows/p997-finite-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finite-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/hecke-432-prime997/
+            /experiments/hecke-432-prime997-20261025/
+            /reports/2026-11-07-hecke-p997-audit-followup/receipt.json
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Recheck sealed finite records and exact receipt
+        run: |
+          python3 -I tools/hecke-432-prime997/verify.py --output "$RUNNER_TEMP/p997-finite-guard.json"
+          cmp "$RUNNER_TEMP/p997-finite-guard.json" reports/2026-11-07-hecke-p997-audit-followup/receipt.json
+      - name: Exercise positive and mutation controls
+        run: |
+          python3 tools/hecke-432-prime997/test_controls.py -v
+          python3 -O tools/hecke-432-prime997/test_controls.py -v
