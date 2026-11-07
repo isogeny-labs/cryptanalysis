@@ -340,5 +340,12 @@ jobs:
 
           The cryptanalysis-sage-$version-source.tar.gz asset contains the pinned Sage patch stack. The macOS arm64 Sage accelerator archive contains seven compiled/runtime modules for an already built Sage at the pinned commit and matching Python ABI. It is not a full Sage installation; see docs/SAGE_RELEASE.md.
           EOF
-          gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" \
-            --title "cryptanalysis $version" --notes-file notes.md "${flags[@]}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # release-please already drafted this release, with its changelog
+            # as the notes. Keep those notes and just attach the build.
+            gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false "${flags[@]}"
+          else
+            gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" \
+              --title "cryptanalysis $version" --notes-file notes.md "${flags[@]}"
+          fi
