@@ -13,8 +13,9 @@ not turn the measured operation-count gain into a theorem.
 | Input or artifact | Pinned evidence |
 | --- | --- |
 | Baseline `src/curve.c` | commit `7cb3dce4cac9176d74afb6403048b5fabbaab834`, SHA-256 `e504bb18f0e80134c9ccf9abc1b7a825097286a759075090d2693ef82b406975` |
-| Current `src/curve.c` | commit `42761f85b06242cb54f2a5fa405c723451897503`, SHA-256 `3f3a100d635d814bdfa0f6624a40b9d77c9c564f65db2bbc568dcd4b55285efe` |
-| Merged source at this PR update | commit `d488af97a0cae6d7e96686da17aeff2f0db5f29f`, SHA-256 `4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20`; [live receipt](live-source-binding.json) |
+| Original c12 `src/curve.c` | commit `42761f85b06242cb54f2a5fa405c723451897503`, SHA-256 `3f3a100d635d814bdfa0f6624a40b9d77c9c564f65db2bbc568dcd4b55285efe` |
+| Earlier merged `src/curve.c` | commit `d488af97a0cae6d7e96686da17aeff2f0db5f29f`, SHA-256 `4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20` |
+| Pinned live-source check | commit `8bf648dcbefe7b8131e5fb26909c77e68778332a`, SHA-256 `60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20`; [live receipt](live-source-binding.json). The same C file hash was read at cryptanalysis main `927d1eada55ff51e87b89930cad48672147e0929`. |
 | Formal source | [TableBudget.lean](TableBudget.lean), Lean `v4.34.1` from the repository root `lean-toolchain` |
 | Source check | [check_lean_source_binding.py](check_lean_source_binding.py), [receipt](lean-source-binding.json): exact C selector in both pinned sources; two changed-selector controls rejected |
 | Kernel and axiom check | [lean-receipt.json](lean-receipt.json): build exit 0; all eight public theorem axiom sets contain only `propext` and `Quot.sound` |
