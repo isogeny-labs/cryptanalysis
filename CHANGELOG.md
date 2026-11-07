@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.1...cryptanalysis-v0.1.2) (2026-11-07)
+
+
+### Bug Fixes
+
+* **release:** trust the dimpase tap before installing Sage prerequisites ([e19dc2b](https://github.com/isogeny-labs/cryptanalysis/commit/e19dc2b5081ced0f7cdea916e87bca25c8c9ab64))
+* **release:** trust the dimpase tap before installing Sage prerequisites ([4d96b51](https://github.com/isogeny-labs/cryptanalysis/commit/4d96b51e7e1d785dac872dd3592f1a5c81028e36))
+
 ## [0.1.1](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.0...cryptanalysis-v0.1.1) (2026-11-07)
 
 
