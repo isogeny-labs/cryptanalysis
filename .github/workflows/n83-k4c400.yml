@@ -73,7 +73,7 @@ jobs:
             "$artifacts_cli_python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-k4c400-20261107
+          python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-n83-fieldops-20261104
 
       - name: Freeze runner and source identity
         shell: bash
@@ -198,6 +198,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: n83-k4c400-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/n83-fo/
+          path: ${{ runner.temp }}/n83-k4/
           if-no-files-found: error
           retention-days: 30
