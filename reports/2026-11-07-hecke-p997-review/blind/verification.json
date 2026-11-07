@@ -1,0 +1,128 @@
+{
+  "input_path": "/var/tmp/cryptanalysis-p997-review-20261107/reports/2026-11-07-hecke-p997-review/blind-input.md",
+  "input_sha256": "4f46b7c9675eb35cfff1b42eed67baef4b16255b1687dbc68283eecaea4359f9",
+  "source_revision_supplied_by_parent": "639fb3de7",
+  "source_revision_independently_verified": false,
+  "claims": {
+    "A1": {
+      "verdict": "holds",
+      "eligible_triples": 1,
+      "failures": []
+    },
+    "A2": {
+      "verdict": "holds",
+      "eligible_triples": 91,
+      "failures": []
+    },
+    "A3": {
+      "verdict": "holds",
+      "eligible_triples": 325,
+      "failures": [],
+      "exactly_two_positive": [
+        [
+          0,
+          24,
+          24
+        ],
+        [
+          24,
+          0,
+          24
+        ],
+        [
+          24,
+          24,
+          0
+        ]
+      ]
+    },
+    "A4": {
+      "verdict": "holds",
+      "evaluated_lhs": 78,
+      "rhs": 78
+    },
+    "A5": {
+      "verdict": "holds",
+      "eligible_F_values": 139,
+      "failures": [],
+      "endpoint_witnesses": [
+        {
+          "F": 79,
+          "natural_difference": 929
+        },
+        {
+          "F": 217,
+          "natural_difference": 791
+        }
+      ]
+    }
+  },
+  "negative_controls": {
+    "A1_at_sum_71": {
+      "verdict": "breaks",
+      "eligible_triples": 3,
+      "all_counterexamples": [
+        [
+          23,
+          24,
+          24
+        ],
+        [
+          24,
+          23,
+          24
+        ],
+        [
+          24,
+          24,
+          23
+        ]
+      ]
+    },
+    "A3_without_cap": {
+      "verdict": "breaks",
+      "eligible_triples": 1225,
+      "all_counterexamples": [
+        [
+          0,
+          0,
+          48
+        ],
+        [
+          0,
+          48,
+          0
+        ],
+        [
+          48,
+          0,
+          0
+        ]
+      ]
+    },
+    "A2_at_sum_zero": {
+      "verdict": "breaks",
+      "eligible_triples": 1,
+      "all_counterexamples": [
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "additional_bound_checks": [
+    {
+      "F": 78,
+      "natural_difference": 930,
+      "violated_bound": "<= 929"
+    },
+    {
+      "F": 218,
+      "natural_difference": 790,
+      "violated_bound": ">= 791"
+    }
+  ],
+  "all_assertions_passed": true
+}
