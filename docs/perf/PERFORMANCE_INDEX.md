@@ -239,3 +239,18 @@ a regression.  No instruction-count measurement was available on this macOS
 host.  A quiet, isolated rerun of the same frozen comparison is needed for a
 performance claim.  The focused `group`, `bsgs`, and `rho` C tests passed in
 both builds; the candidate rho test additionally exercises `r=15`.
+
+## Integrity checks for paired comparisons
+
+The comparison refuses empty, duplicate or mismatched selected kernel rosters
+and changed kernel areas before measured invocations. Select an explicitly
+matching workload on both sides rather than silently dropping missing kernels.
+Every kernel must have the same positive paired-round count across baseline
+and candidate, across kernels, and across A/A repeats when supplied. Recorded
+round IDs must be complete and in order. Timing/instruction values must be
+finite and positive with nonempty output fingerprints. Selected area weights
+must be finite, nonnegative, and have a positive sum. These checks prevent zip
+truncation and bootstrap truncation from changing the requested comparison.
+
+Run synthetic regression checks (no benchmark launches) with:
+`python3 -m unittest discover -s scripts/perf -p test_perfindex.py`.
