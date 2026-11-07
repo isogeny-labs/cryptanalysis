@@ -1,0 +1,20 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\title{Independent archive audit: GLV cap wall time}
+\author{Cryptanalysis evidence review}
+\date{7 November 2026}
+\begin{document}
+\maketitle
+\noindent\textbf{Result.} The 8,014,606-byte GitHub Actions archive (SHA256 recorded in the tracked artifact manifest) contains 960 files. An independent parser checked all 210 paired rows and 420 run rows in 14 cells: status, expected inputs and outputs, stable binary hashes, pairing, operation counts, and exact published median wall ratios. No row failed or timed out. Seven cells resolved faster, five slower, and two 38-bit null cells were unresolved.\\[6pt]
+\noindent\textbf{Interval check.} A fresh 10,000-resample paired bootstrap placed all 28 interval endpoints within 0.008 of the published endpoints. This tests the conclusion and scale; it does not reconstruct the producer's random seed or quantile convention.\\[6pt]
+\begin{center}\begin{tabular}{lrrrrrrr}\toprule
+Cell bits&38&40&41&42&44&46&48\\\midrule
+$j=1728$ ratio&0.997&1.049&0.950&0.938&1.212&0.802&1.010\\
+$j=0$ ratio&0.998&0.771&1.027&1.086&1.106&1.105&0.943\\\bottomrule\end{tabular}\end{center}
+\noindent\textbf{Custody.} The archived 14 summaries equal the published summary payloads. All 14 archived and committed preflights are OK and agree on stable host and allocation fields. Dynamic counters and timestamps differ. The archive was copied to the repository's content-addressed S3 store; the tracked artifact manifest records its hash and byte count, and remote verification passed.\\[6pt]
+\noindent\textbf{Scope.} The findings validate the specific seeded, single-runner Tier 1 panels. Host exclusivity was not proved. There was one panel per cell, so this review does not establish a population wall-time saving or a cross-runner latency comparison. The producer did not supply an \texttt{experiment.export/v1} bundle. The audit checked archive rows and summaries; it did not re-execute the benchmark binary.\\[6pt]
+\noindent\textbf{Replay.} See \texttt{REPORT.md}, \texttt{audit\_archive.py}, \texttt{audit.json}, and the tracked \texttt{.artifacts.json} in the review directory. The plot \texttt{ratios.svg} shows point estimates and the published paired intervals.
+\end{document}
