@@ -1,0 +1,68 @@
+name: release-please
+
+# Keeps a Release PR current from conventional commits on main. Merging it
+# drafts `cryptanalysis-vX.Y.Z`, and the `assets` job creates the tag and
+# dispatches `ec2k-gpu-release.yml` at it to build the CLI tarballs and publish.
+#
+# Dispatch, not tag push: release-please acts with GITHUB_TOKEN, and GitHub
+# starts no workflow for a tag or release that token creates. Dispatching at
+# the tag keeps github.ref == refs/tags/cryptanalysis-v..., which is what the
+# release workflow's publish job keys on.
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  assets:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: write # create the draft release's tag before dispatch
+    steps:
+      - name: tag the release commit and dispatch the build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+          RELEASE_SHA: ${{ needs.release-please.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$TAG" =~ ^cryptanalysis-v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "release-please reported tag '$TAG', which is not cryptanalysis-vX.Y.Z; not dispatching" >&2
+            exit 1
+          fi
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "invalid release commit '$RELEASE_SHA'" >&2; exit 1; }
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            existing="$(gh api "repos/$GITHUB_REPOSITORY/commits/refs/tags/$TAG" --jq '.sha')"
+            [ "$existing" = "$RELEASE_SHA" ] || { echo "tag $TAG already points elsewhere" >&2; exit 1; }
+          else
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" --method POST \
+              -f "ref=refs/tags/$TAG" -f "sha=$RELEASE_SHA" >/dev/null
+          fi
+          gh workflow run ec2k-gpu-release.yml --repo "$GITHUB_REPOSITORY" --ref "$TAG"
+          echo "dispatched ec2k-gpu-release.yml at $TAG"
