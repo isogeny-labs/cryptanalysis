@@ -92,4 +92,6 @@ review; the diagram maps the proof boundary without modifying measured data.
 ![Evidence-to-bound diagram](proof-boundary.svg)
 
 All exact reviewer controls, receipts, input access and finite recheck code
-are archived under [`blind/`](blind/) and [`source/`](source/).
+are archived under [`blind/`](blind/) and [`source/`](source/). The
+[replay instructions](REPLAY.md) were exercised against the pinned Git tree
+and reproduced the committed finite recheck JSON byte for byte.
