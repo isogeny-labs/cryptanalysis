@@ -1,0 +1,54 @@
+review_plan: hecke432-dual-map-equation-20261107-v1
+archival_task: T-1803
+reviewed_revision: 06335430add4198a2b82efe8db3f0f5c75f03043
+claim_under_review: >-
+  The new Lean declarations state a polynomial numerator identity and, for
+  field elements X and Y with X nonzero and Y squared equal to X cubed minus
+  16, the cited rational coordinates satisfy the target equation with 432.
+  Determine whether these statements match and prove the algebraic part of
+  the archived map formula; do not infer the complete modular-map identity.
+coordinator_prior: >-
+  The polynomial identity appears plausible and the X-nonzero side condition
+  is necessary for the rational expressions. The exact pinned Lean build has
+  not yet concluded, and the archived map claim has separate exceptional-point,
+  isogeny-degree, modular-parametrization, and Sturm bridges.
+joint_owners:
+  - joint: blind algebra, assumptions, exceptional values, nearby false cases
+    owner: blind_algebra
+    attack: Derive both identities from the displayed equations alone; find a concrete counterexample when the source-curve hypothesis or a formula coefficient is changed.
+    breaking_artifact: Exact field values satisfying the actual assumptions but falsifying the conclusion, or a widened statement falsified by an explicit tuple.
+  - joint: source-to-statement fidelity, original formula, archived scope, build and proof surface
+    owner: source_fidelity
+    attack: Compare the elaborated Lean types and source formula against the archived RESULT and Sage program; locate every unproved bridge and test whether the theorem silently assumes a conclusion.
+    breaking_artifact: An exact mismatch in coefficient, denominator, curve, quantifier or exception, or a source-backed claim not represented by the theorem.
+mutual_blindness:
+  reviewers_may_read_sibling_reports_before_filing: false
+  coordinator_composes_after_both_file: true
+blind_rederivation:
+  required: true
+  owner: blind_algebra
+  permitted: reports/2026-11-07-hecke432-dual-map-formal-review/blind-input.md
+  forbidden: producer Lean source, proof text, archived reports, receipts, Git history, sibling output
+  quantities: [numerator-polynomial, affine-target-equation, exceptional-x-zero]
+proves_too_much_controls:
+  - object: replace 128 by 127 in the target Y-coordinate numerator
+    expected: target equation fails for some source-curve point
+    owner: blind_algebra
+  - object: drop the source-curve equation
+    expected: target equation fails for some nonzero-X pair
+    owner: blind_algebra
+  - object: set X to zero
+    expected: the rational coordinate formula is undefined and the theorem cannot be applied
+    owner: blind_algebra
+  - object: infer a global isogeny or modular-map identity from the affine equation alone
+    expected: this requires additional geometric and modular bridges
+    owner: source_fidelity
+inputs:
+  lean_sha256: 3028963daa2e9e6a068af99440ac1cc242dfde975d55bba17aaf3a6d277d4b26
+  dependencies_sha256: dced6afeb9c210df8891781827a72ab8c165f8937c8e6a2577c12f7935b60236
+  archived_result_sha256: c8bef40953cd7400ddf7863335215a9429cab2a60abe066ed754cbd11c115cc9
+  archived_sage_sha256: 85001b63b51fbaf164a3c1af6cdba362c048ee14102957de3db3dc1876a0c92f
+  lean_toolchain: leanprover/lean4:v4.35.0-rc4
+  mathlib_revision: 021c46bdd042f67b538b9f9871d556a93713a9a9
+machine_replay: Rebuild the exact source at the pinned revision and audit the named theorem axioms; retain command, inputs, output, exit status, and hosted run ID.
+procedure_deviations: []
