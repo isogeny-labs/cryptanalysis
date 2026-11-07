@@ -1,0 +1,52 @@
+{
+  "input_paths": {
+    "factor_certificate": "experiments/hecke-432-j1728-resolvent-field-20261026/factor_certificate.json",
+    "kummer_result": "experiments/hecke-432-j1728-relative-quartic-galois-resolvent-20261026/kummer_result.json",
+    "relative_discriminant_support": "experiments/hecke-432-j1728-relative-quartic-local-order-20261026/conjugate_support_result.json",
+    "split_certificate": "experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json"
+  },
+  "input_sha256": {
+    "factor_certificate": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918",
+    "kummer_result": "c2374bf6bdfa73541915732d322db0e22c476f340ccccaf731179c3df3af2f4b",
+    "relative_discriminant_support": "2f8e4c07ba73e3b457682e27852a11dcee7f5bff177d0d326d123ec6c6a90e1d",
+    "split_certificate": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+  },
+  "observation_timeout_seconds": 300,
+  "prediction_rule": {
+    "character_pair": [
+      1,
+      1
+    ],
+    "relative_degrees_if_pair_matches": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "relative_degrees_otherwise": [
+      2,
+      2
+    ],
+    "valuation_policy": "Require even valuations; divide each radicand by p^valuation before residue square test because p is the unramified base uniformizer."
+  },
+  "prediction_timeout_seconds": 300,
+  "prior_selected_primes": [
+    7,
+    11,
+    23,
+    31
+  ],
+  "question": "For five previously unmeasured odd rational primes, predict each quartic local splitting type from the two independent Kummer radicand characters, then compare with separately computed quartic residue-factor observations at the same exact base places.",
+  "rational_primes": [
+    13,
+    17,
+    19,
+    29,
+    37
+  ],
+  "status": "FROZEN_BEFORE_UNSEEN_PRIME_PREDICTION",
+  "target_sides": [
+    "left",
+    "right"
+  ]
+}

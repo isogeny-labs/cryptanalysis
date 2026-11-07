@@ -1,0 +1,9 @@
+# Independent oracle replay phase correction
+
+The P1 review on PR1325 correctly identified that an external oracle's independent membership and group-sum replay occurred before the checking phase began. This charged real verification calls to relation search, while the later checking label contained matrix-row construction. Total work still balanced, but the phase breakdown was wrong.
+
+Switch to relation_check inside solve_with_oracle before any independent replay. Enter a distinct cold matrix_build phase before row construction. The canonical five online phases include matrix construction under target_relation_check; all five still sum exactly to the online interval. Tensor witness_check remains distinct from generic oracle search and maps to the same canonical check category.
+
+The regression control runs the actual finite selector and independent certificate verifier. It compares certificates, relations, dependency, RNG state and charged work with observation disabled/enabled; independently checked group operations must appear in the check phase, with none in matrix construction. It fails on the original implementation at membership replay accounting, then passes with the repair. The full native release suite passes97/0/0; final whitespace-only rustfmt normalization is followed by11/0/0 finite-extension controls, fmt and strict all-target clippy. Failed formatter checks are retained in status records. No scientific timing, scalability or speedup result is claimed.
+
+Sources checked: AGENTS.md exclusive cold/online phase contract, existing metrics::Session semantics, both original reduction replay paths, and the actual finite selector/control. Original historical source manifests, report/PDF and96-test receipts are unchanged and retain their original source scope. This is a library CI/review repair. New exact-head hosted checks and review remain required before merge.

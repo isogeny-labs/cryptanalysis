@@ -38,7 +38,8 @@
 #   CHECKPOINT_MAX_TOTAL_MB cap on the untracked tarball input (default 300)
 #
 # Layout: s3://$BUCKET/$PREFIX/<repo>/<branch>/<UTC stamp>-<sha>/
-#   checkpoint.tar.gz  (meta.json RESUME.md files/<spec and lead files>
+#   checkpoint.tar.gz  (meta.json RESUME.md relay/<HANDOFF.md handoff.json relay.jsonl>
+#                       files/<spec and lead files>
 #                       branch.bundle worktree.patch untracked.tar.gz
 #                       skipped-untracked.txt)
 #   RESUME.md  meta.json  (copies, for reading without unpacking)
@@ -184,7 +185,9 @@ state_hash() {
     git diff --binary HEAD 2>/dev/null || true
     [ -f .resume/RESUME.md ] && cat .resume/RESUME.md
     git ls-files --others --exclude-standard | grep -Ev "$EXCLUDE_RE" | grep -v '^\.resume/' | while IFS= read -r f; do
-      [ -f "$f" ] && stat -f '%N %z %m' "$f" 2>/dev/null || stat -c '%n %s %Y' "$f" 2>/dev/null || true
+      if [ -f "$f" ]; then
+        python3 -c 'import os,sys; p=sys.argv[1]; s=os.stat(p); print(p, s.st_size, int(s.st_mtime))' "$f"
+      fi
     done
   } | shasum -a 256 | cut -d' ' -f1
 }
@@ -267,6 +270,10 @@ cmd_push() {
   trap 'rm -rf -- "$stage"; trap - RETURN' RETURN
 
   [ -f .resume/RESUME.md ] && cp .resume/RESUME.md "$stage/RESUME.md"
+  # Runtime relay handoff (scripts/relay.py), so another runtime or host can take over.
+  mkdir -p "$stage/relay"
+  for f in HANDOFF.md handoff.json relay.jsonl; do [ -f ".resume/$f" ] && cp ".resume/$f" "$stage/relay/$f"; done
+  rmdir "$stage/relay" 2>/dev/null || true
 
   local f
   while IFS= read -r f; do
@@ -288,7 +295,7 @@ cmd_push() {
   : > "$stage/untracked.list"; : > "$stage/skipped-untracked.txt"
   while IFS= read -r f; do
     [ -f "$f" ] || continue
-    sz="$(stat -f %z "$f" 2>/dev/null || stat -c %s "$f")"
+    sz="$(python3 -c 'import os,sys; print(os.stat(sys.argv[1]).st_size)' "$f")"
     if [ "$sz" -gt "$maxb" ] || [ $((total + sz)) -gt "$capb" ]; then
       printf '%s\t%s bytes\n' "$f" "$sz" >> "$stage/skipped-untracked.txt"
     else
@@ -406,7 +413,7 @@ resolve_ref() {
 }
 
 cmd_share() {
-  local ref="" days=7 a
+  local ref="" days=7
   while [ $# -gt 0 ]; do case "$1" in --days) days="$2"; shift ;; *) ref="$1" ;; esac; shift; done
   [ -n "$ref" ] || die "usage: share <repo>/<branch>[/<stamp>] [--days N]"
   local -a ref_parts
@@ -472,12 +479,16 @@ print(m["repo"], s[-2], s[-1])' "$dl/meta.json")
   [ -f "$dl/untracked.tar.gz" ] && tar -xzf "$dl/untracked.tar.gz" -C "$dest"
   mkdir -p "$dest/.resume"
   [ -f "$dl/RESUME.md" ] && cp "$dl/RESUME.md" "$dest/.resume/RESUME.md"
+  [ -d "$dl/relay" ] && cp "$dl/relay/"* "$dest/.resume/"
   cp "$dl/meta.json" "$dest/.resume/restored-from.json"
   [ -f "$dl/skipped-untracked.txt" ] && { echo "Not in the checkpoint (too large):"; cat "$dl/skipped-untracked.txt"; }
   rm -rf "$dl"
   echo "restored $src"
   echo "  worktree: $dest (branch $newb)"
   echo "  read:     $dest/.resume/RESUME.md"
+  if [ -f "$dest/.resume/HANDOFF.md" ]; then
+    echo "  handoff:  $dest/.resume/HANDOFF.md (python3 scripts/relay.py accept)"
+  fi
 }
 
 case "${1:-}" in

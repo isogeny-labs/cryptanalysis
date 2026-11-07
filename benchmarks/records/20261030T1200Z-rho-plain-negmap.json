@@ -1,0 +1,214 @@
+{
+ "branch": "rho-confirm-20261026",
+ "closed_utc": "2026-10-30T12:30:00+00:00",
+ "commands": [
+  {
+   "argv": [
+    "python3",
+    "experiments/rho-confirm-20261026/run.py",
+    "--label",
+    "main",
+    "--out",
+    "main.jsonl"
+   ],
+   "cwd": ".",
+   "exit": 0,
+   "started_utc": "2026-10-30T10:00:00+00:00",
+   "wall_s": 0.0
+  },
+  {
+   "argv": [
+    "python3",
+    "experiments/rho-confirm-20261026/run.py",
+    "--label",
+    "candidate",
+    "--out",
+    "cand.jsonl"
+   ],
+   "cwd": ".",
+   "exit": 0,
+   "started_utc": "2026-10-30T10:30:00+00:00",
+   "wall_s": 0.0
+  },
+  {
+   "argv": [
+    "python3",
+    "experiments/rho-confirm-20261026/analyze.py",
+    "main.jsonl",
+    "cand.jsonl",
+    "--out",
+    "experiments/rho-confirm-20261026"
+   ],
+   "cwd": ".",
+   "exit": 0,
+   "started_utc": "2026-10-30T11:00:00+00:00",
+   "wall_s": 0.0
+  }
+ ],
+ "commit": "8d711d0d55bb555f9521d71fae10338babfcb775",
+ "created_utc": "2026-10-30T12:00:00+00:00",
+ "entries": [
+  "benchmarks/20261030-rho-plain-negmap"
+ ],
+ "host": {
+  "cpu": "generic x86_64 (4 vCPU shared VM)",
+  "cpus_online": 4,
+  "hostname": "vm",
+  "isolation": "L0 shared 4 vCPU VM, one thread, operation counts only",
+  "platform": "Linux"
+ },
+ "id": "20261030T1200Z-rho-plain-negmap",
+ "metrics": [
+  {
+   "better": "lower",
+   "n": 12000,
+   "name": "group_ops_ratio_pooled",
+   "note": "pooled candidate/main over 12000 paired solves, 6 sizes at 20-40 bits; Bonferroni CI [0.7413, 0.7556]",
+   "unit": "ratio",
+   "value": 0.7483
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_20",
+   "note": "20 bits, CI [0.6528, 0.6803]",
+   "unit": "ratio",
+   "value": 0.6661
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_24",
+   "note": "24 bits, CI [0.6085, 0.6523]",
+   "unit": "ratio",
+   "value": 0.6296
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_28",
+   "note": "28 bits, CI [0.5648, 0.6160]",
+   "unit": "ratio",
+   "value": 0.5875
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_32",
+   "note": "32 bits, CI [0.8286, 0.8944]",
+   "unit": "ratio",
+   "value": 0.8612
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_36",
+   "note": "36 bits, CI [0.8670, 0.9048]",
+   "unit": "ratio",
+   "value": 0.8856
+  },
+  {
+   "better": "lower",
+   "n": 2000,
+   "name": "group_ops_ratio_40",
+   "note": "40 bits, CI [0.9165, 0.9482]",
+   "unit": "ratio",
+   "value": 0.9345
+  },
+  {
+   "baseline": 2.166,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_20",
+   "note": "held-out mean S, main 2.166",
+   "reference": 2.166,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 1.441
+  },
+  {
+   "baseline": 1.827,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_24",
+   "note": "held-out mean S, main 1.827",
+   "reference": 1.827,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 1.149
+  },
+  {
+   "baseline": 1.758,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_28",
+   "note": "held-out mean S, main 1.758",
+   "reference": 1.758,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 1.033
+  },
+  {
+   "baseline": 1.139,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_32",
+   "note": "held-out mean S, main 1.139",
+   "reference": 1.139,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 0.98
+  },
+  {
+   "baseline": 1.073,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_36",
+   "note": "held-out mean S, main 1.073",
+   "reference": 1.073,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 0.95
+  },
+  {
+   "baseline": 0.973,
+   "better": "lower",
+   "n": 2000,
+   "name": "mean_s_40",
+   "note": "held-out mean S, main 0.973",
+   "reference": 0.973,
+   "reference_kind": "matched_rho",
+   "unit": "S",
+   "value": 0.909
+  }
+ ],
+ "problem": "ecdlp:rho-plain-negmap",
+ "raw": [
+  {
+   "bytes": 96752,
+   "path": "experiments/rho-confirm-20261026/rows_main.jsonl.gz",
+   "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/10/10ec81cc0a6058f5b9ce9b4a35544e342ab05d29a9cc937c8f1dda44c1db9c53",
+   "sha256": "10ec81cc0a6058f5b9ce9b4a35544e342ab05d29a9cc937c8f1dda44c1db9c53"
+  },
+  {
+   "bytes": 95279,
+   "path": "experiments/rho-confirm-20261026/rows_candidate.jsonl.gz",
+   "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/11/117373d8a2fb6b95781f05daec077cac4e01ecbc9f3212ee1dbcf8d980e4dee1",
+   "sha256": "117373d8a2fb6b95781f05daec077cac4e01ecbc9f3212ee1dbcf8d980e4dee1"
+  },
+  {
+   "bytes": 90339,
+   "path": "experiments/rho-confirm-20261026/REPORT.pdf",
+   "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/e5/e531348dc3fb2c5acac8aa44d0a4a402d597c53ad157d11154427b4e5e2447b2",
+   "sha256": "e531348dc3fb2c5acac8aa44d0a4a402d597c53ad157d11154427b4e5e2447b2"
+  }
+ ],
+ "repo": "cryptanalysis",
+ "reports": {
+  "pdf": "benchmarks/20261030-rho-plain-negmap/report.pdf"
+ },
+ "schema": "bench.record/v1",
+ "slug": "rho-plain-negmap",
+ "status": "measured",
+ "summary": "Plain negation-map rho: pooled held-out group_ops ratio 0.7483 [0.7413, 0.7556] over 12000 paired solves at 20-40 bits; all 24000 solves correct; operation counts only, no wall claim."
+}

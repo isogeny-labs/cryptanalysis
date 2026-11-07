@@ -34,3 +34,24 @@ sha256sum -c experiments/koblitz-n83-opcounts-20261023/ANALYSIS_V2.sha256
 python3 -m unittest discover -s experiments/koblitz-n83-opcounts-20261023 -p test_analyze_v2.py -v
 python3 experiments/koblitz-n83-opcounts-20261023/analyze_v2.py --receipt-dir /path/to/panel
 ```
+
+## Chronology (added 2026-11-06, sheriff case SHF-20261106-a114e7, CAN-4)
+
+This analyzer postdates the data it accepts. Times are UTC, from the git
+objects and the archived `runs.jsonl` (`finished_unix_s` minus
+`process_wall_ms`):
+
+| event | time | commit or record |
+| --- | --- | --- |
+| protocol frozen | 2026-10-23 01:11:19 | `765061e1b`, parent of run head `1a6067f63` |
+| first run (serial 1, kS) | 01:23:55 to 01:26:49 | `run_github_39882571652/panel/runs.jsonl` |
+| last run (serial 62, rT) | 01:56:40 to 01:56:42 | the same |
+| this analyzer | 02:59:00 | `ad1fbc64d` |
+
+It is stricter only (complete-panel gate before the unchanged band
+arithmetic), and its counts and band are byte-identical to the in-run v1
+output, so there is no forking-path effect on any number. The protocol,
+run and analyzer commits are not on `main` (squash merge of #1077); the
+ancestry is provable from `refs/pull/1077/head` (`8b205273`) and
+`claude/n83-opcounts-run` (`1a6067f63`). `ARTIFACT.json` is an archived
+receipt and is not edited; see `CORRECTIONS-20261106.md`.

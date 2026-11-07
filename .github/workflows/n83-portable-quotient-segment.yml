@@ -49,7 +49,7 @@ jobs:
       SEGMENT_QUERY_REPS_LOG2: ${{ inputs.query_reps_log2 || '29' }}
       SEGMENT_FROM_WAVE: ${{ inputs.from_wave || false }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}

@@ -1,0 +1,31 @@
+{
+  "kind": "symbolic-and-abstract-group-correctness",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "docs/known-label-next-leads-20261028",
+    "-p",
+    "test_algebra.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "output": "test_bipartite_component_requires_anchor (test_algebra.AlgebraChecks.test_bipartite_component_requires_anchor) ... ok\ntest_cross_sign_family_independence_is_not_assumed (test_algebra.AlgebraChecks.test_cross_sign_family_independence_is_not_assumed) ... ok\ntest_cycle_label_defect_is_a_dlp_certificate (test_algebra.AlgebraChecks.test_cycle_label_defect_is_a_dlp_certificate) ... ok\ntest_prony_all_distinct_small_index_signatures (test_algebra.AlgebraChecks.test_prony_all_distinct_small_index_signatures) ... ok\ntest_triangle_and_prony_identities_symbolically (test_algebra.AlgebraChecks.test_triangle_and_prony_identities_symbolically) ... ok\ntest_triangle_recovers_individual_labels (test_algebra.AlgebraChecks.test_triangle_recovers_individual_labels) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.064s\n\nOK\n",
+  "source_sha256": {
+    "label_graph.py": "b1629da21fb243b8a07d484aa7bc41a5dbdbbe55948111369b48602679309cb8",
+    "test_algebra.py": "d21154511ad754e81bc0bc03ee2aba47b7a144b07d8a425f60c4db0d2f9c13fc",
+    "Algebra.lean": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d"
+  },
+  "versions": {
+    "python": "3.12.14",
+    "sympy": "1.14.0"
+  },
+  "elliptic_curve_performance_experiment": false,
+  "lean": {
+    "executable": null,
+    "lake": null,
+    "source_status": "unbuilt; no checked proof claimed"
+  }
+}

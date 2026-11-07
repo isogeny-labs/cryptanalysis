@@ -74,6 +74,9 @@ def cmd_fetch(args) -> int:
     for repo in cfg.github_watch_repos:
         calls.append((f"github-releases:{repo}", functools.partial(
             sources.github_repo_releases, repo, gh_get)))
+    for repo in cfg.github_watch_commits:
+        calls.append((f"github-commits:{repo}", functools.partial(
+            sources.github_repo_commits, repo, gh_get)))
 
     run_id = store_mod.start_run(db, json.dumps({"kind": "fetch"}))
     new_count, failures = 0, 0

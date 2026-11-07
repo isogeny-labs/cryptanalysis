@@ -21,6 +21,24 @@ cargo test --release                  # 2867 unit + 65 integration tests, ~10 mi
 ./target/release/crax --help         # the unified command line: docs/CRAX.md
 ```
 
+## Install and update
+
+The suite is source-installed (`publish = false`, local path dependencies):
+
+```sh
+# from suite/
+cargo install --path . --bin ca-icx
+ca-icx install                 # same command from inside the CLI
+ca-icx update --check          # fetch upstream and report whether a newer commit exists
+ca-icx update --pull           # fast-forward this checkout, then reinstall
+ca-icx update                  # reinstall from the current checkout
+```
+
+`install` and `update` accept `--root` (cargo install root), `--source` (suite
+directory; defaults to the directory the binary was built from) and `--dry-run`.
+`update --check` never modifies the checkout; `--pull` is opt-in and refused
+when the checkout is not a git repository.
+
 Requirements: Rust 1.87 or newer (declared in `Cargo.toml`, checked in CI).
 The shared analysis crate is vendored under `vendor/crypto-analysis-core/`
 from a pinned crypto revision. The bootstrap verifies the upstream source
@@ -347,11 +365,15 @@ Use the exact-curve solver entry point for rho, BSGS, and index calculus:
 cargo run --release --bin ca-icx -- solve ECC2-130 --method bsgs --secret 12345 --interval-width 65536 --json
 cargo run --release --bin ca-icx -- solve ECCp-130 --method rho --challenge --max-iterations 16 --max-restarts 0 --json
 cargo run --release --bin ca-icx -- solve ECC2-130 --method index-calculus --challenge --factor-base-size 16 --max-iterations 32 --json
+cargo run --release --bin ca-icx -- solve ECCp-130 --method index-calculus --challenge --summands 3 --max-iterations 32 --json
 ```
 
 The same interface is available as `crax icx solve`. Each method accepts either
 curve and its aliases. `solve` uses the published 131-bit parameters;
-`--challenge` selects the published target.
+`--challenge` selects the published target. `--summands` (alias `--m`) selects
+the decomposition arity for index calculus: `2` (default, signed pairs), `3`
+(one point plus a pair-sum), or `4` (two pair-sums). Higher arity raises the
+relation yield but also the pair-table budget and per-query work.
 `ca-icx run` remains the separate smaller-analogue experiment interface. Use
 `--point X,Y` for an external target or `--secret K` for a known-answer target.
 Scalars, coordinates, interval bounds and relation coefficients retain their
@@ -362,10 +384,10 @@ honors `--max-table-entries` and `--max-matrix-entries`.
 
 The native [solver API](src/cryptanalysis/certicom_dlp/mod.rs) exposes `rho`,
 `bsgs`, and `index_calculus`. The IC pipeline builds a cofactor-cleared low-x
-factor base, decomposes public points into signed pairs, collects verified
-relations, solves their full-width system modulo the subgroup order, verifies
-every recovered base log, and descends the target. It requires full rank and
-never falls back to another DLP method. These challenge solvers use Rust's
+factor base, decomposes public points into signed `m`-summands (2 to 4),
+collects verified relations, solves their full-width system modulo the subgroup
+order, verifies every recovered base log, and descends the target. It requires
+full rank and never falls back to another DLP method. These challenge solvers use Rust's
 full-width arithmetic; the root C group API retains its 64-bit limit.
 
 `--preparation FILE.json` supplies external IC work using these fields:

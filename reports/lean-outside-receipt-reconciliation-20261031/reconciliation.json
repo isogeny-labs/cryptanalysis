@@ -1,0 +1,991 @@
+{
+  "schema": "lean.outside-receipt-reconciliation/v3",
+  "source_inventory": {
+    "repo": "aburan28/crypto-autoresearcher",
+    "pr_head": "f4330e1a29feb8fdea9f1eab7131ae5cde2e2b6f",
+    "manifest_sha256": "b7e8bbb2540b5f8337c171a5c7295bd3f83720b0bda6a329e542b8bd14cf00cb",
+    "cryptanalysis_commit": "d3673ee089dd2a3a4ba15da087b95ebf2fb8e123"
+  },
+  "evidence": {
+    "job": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41164430544/job/124428817573",
+    "job_head_sha": "d3673ee089dd2a3a4ba15da087b95ebf2fb8e123",
+    "job_conclusion": "success",
+    "job_log_sha256": "9e0c9a0acb5184add97faf84129024327904a5c7d98e33bce6e9d78008463916",
+    "gate_sha256": "0a3e5f4fa78ba768ff36ce0628a9b17f17152fd8f23d1bb9ffda2eb36116842d",
+    "transfer": {
+      "producer_pr": 1315,
+      "producer_head": "e11e4e0b87376f63233ddeeb3822319f4b28cbaf",
+      "hosted_check": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41009248637/job/123911146641",
+      "hosted_conclusion": "success",
+      "source_sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+      "source_identical_at_frozen_commit": true,
+      "archived_audit": "tools/transfer-audit/evidence/final-check-attempt3/lean-audit.txt",
+      "audited_theorems": 12,
+      "audit_failures": 0,
+      "audit_trusted": 0,
+      "archived_audit_sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c"
+    }
+  },
+  "counts": {
+    "outside_receipt": 87,
+    "exhaustive_native_module_audits": 39,
+    "generic_native_builds_with_declared_axiom_outputs": 37,
+    "separate_hasse_source": 1,
+    "verifier_self_test_fixtures": 7,
+    "verifier_implementations": 2,
+    "separate_transfer_theorem_source": 1
+  },
+  "rows": [
+    {
+      "path": "bindings/rust/curve-audit/formal/HasseSquareBounds.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "conditional_arithmetic_theorem_source",
+      "machine_status": "passed_separate_hasse_gate",
+      "review_report": "reports/hasse-square-bridge-20261027/report.md",
+      "review_outcome": "validated_scoped_arithmetic_at_reviewed_revision",
+      "remaining_bridges": [
+        "actual_curve_order_divisibility",
+        "actual_curve_hasse_bound",
+        "Rust_BigUint_and_parser_correspondence",
+        "concrete_P192_P224_certificate_binding"
+      ]
+    },
+    {
+      "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 1812,
+        "declarations": 4,
+        "theorems": 4
+      },
+      "review_report": "reports/known-label-formal-review-20261028/report.md",
+      "review_outcome": "inconclusive_complete_fidelity_gate",
+      "remaining_review": "independent elaborated-type comparison"
+    },
+    {
+      "path": "docs/known-label-pair-index-20261029/PairIndex.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 2258,
+        "declarations": 7,
+        "theorems": 7
+      },
+      "review_outcome": "not_independently_reviewed_in_this_packet",
+      "remaining_review": "semantic fidelity and concrete subgroup/algorithm bridges"
+    },
+    {
+      "path": "experiments/hecke-27-coordinate-bridge-20261025/formal/CoordinateInvolution.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3355,
+        "axiom_output_log_line": 3357
+      }
+    },
+    {
+      "path": "experiments/hecke-432-b-coordinate-resolvent-20261025/formal/BPoleBound.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3361,
+        "axiom_output_log_line": 3363
+      }
+    },
+    {
+      "path": "experiments/hecke-432-b-coordinate-resolvent-20261025/formal/BranchElimination.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3366,
+        "axiom_output_log_line": 3368
+      }
+    },
+    {
+      "path": "experiments/hecke-432-collision-singular-locus-20261026/formal/SignBranch.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3382,
+        "declarations": 4,
+        "theorems": 4
+      }
+    },
+    {
+      "path": "experiments/hecke-432-cusp-image-20261025/formal/CuspArithmetic.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3383,
+        "axiom_output_log_line": 3385
+      }
+    },
+    {
+      "path": "experiments/hecke-432-direct-chain-crossprime-20261025/formal/ChainCoverage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3388,
+        "axiom_output_log_line": 3390
+      }
+    },
+    {
+      "path": "experiments/hecke-432-direct-lift-20261025/formal/DirectLiftRank.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3393,
+        "axiom_output_log_line": 3395
+      }
+    },
+    {
+      "path": "experiments/hecke-432-exact-gcd-inverse-20261025/formal/GCDRoot.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3397,
+        "axiom_output_log_line": 3399
+      }
+    },
+    {
+      "path": "experiments/hecke-432-geometric-fiber-20261025/formal/GeometricFiber.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3401,
+        "axiom_output_log_line": 3403
+      }
+    },
+    {
+      "path": "experiments/hecke-432-inverse-filter-crossprime-20261025/formal/PairEquality.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3405,
+        "axiom_output_log_line": 3407
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-cubic-twist-holdout-20261026/formal/FrobeniusObstruction.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3417,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-derivative-ideal-20261026/formal/BranchCollision.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3435,
+        "declarations": 5,
+        "theorems": 5
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-discriminant-norms-20261026/formal/DiscriminantNormPowers.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3441,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-discriminant-norms-20261026/formal/NumericDiscriminants.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3449,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-fast-local-root-gate-20261026/formal/FrobeniusGcdGate.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3455,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-fiber-overlap-20261026/formal/RepeatedRoot.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3461,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-field-index-gate-20261026/formal/FieldIndex.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3471,
+        "declarations": 3,
+        "theorems": 3
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-field-index-gate-20261026/formal/GramChangeBasis.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3477,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-kummer-prime-holdout-20261026/KummerOrbit.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3490,
+        "declarations": 4,
+        "theorems": 5
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-norm-power-20261026/formal/NormPowers.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3502,
+        "declarations": 4,
+        "theorems": 4
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-octic-collision-holdout-20261026/formal/SourceDiscriminant.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3508,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-octic-factor-search-20261026/formal/OcticFactors.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3516,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-path-holdout-20261026/formal/PathLedger.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3534,
+        "declarations": 5,
+        "theorems": 9
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-product-holdout-20261026/formal/ProductLedger.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3554,
+        "declarations": 6,
+        "theorems": 10
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-quadratic-extensions-20261026/formal/SquareThreeGate.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3564,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-quadratic-residue-class-20261026/formal/QuadraticResidueTables.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3581,
+        "declarations": 5,
+        "theorems": 8
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-quartic-conjugacy-20261026/ConjugateFactors.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3596,
+        "declarations": 7,
+        "theorems": 4
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-ideal-overlap-20261026/formal/IdealOverlapTables.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3619,
+        "declarations": 8,
+        "theorems": 11
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quadratic-local-20261026/formal/QuadraticLocal.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3636,
+        "declarations": 5,
+        "theorems": 8
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-galois-resolvent-20261026/formal/CubicResolvent.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3648,
+        "declarations": 4,
+        "theorems": 4
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/formal/FourCycleParity.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3656,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/formal/QuadraticSplit.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3666,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-local-order-20261026/formal/IdealSupport.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3676,
+        "declarations": 3,
+        "theorems": 3
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-local-order-20261026/formal/QuarticLocalTables.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3691,
+        "declarations": 4,
+        "theorems": 7
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-p23-local-replay-20261026/formal/P23ResidueSquare.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3701,
+        "declarations": 3,
+        "theorems": 3
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-relative-quartic-splitting-20261026/formal/SquarefreeMass.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3712,
+        "declarations": 2,
+        "theorems": 5
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-resolvent-field-20261026/formal/FactorRootGate.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3718,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-resultant-projection-20261026/formal/UniversalResultant.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3726,
+        "declarations": 1,
+        "theorems": 3
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-root-prime-support-20261026/formal/RootGcd.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3738,
+        "declarations": 4,
+        "theorems": 4
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-simple-root-shortcut-20261026/SimpleRootV4.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3751,
+        "declarations": 4,
+        "theorems": 5
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-sqrt2-resultants-20261026/formal/BoundedGate.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3757,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-j1728-sqrt2-split-20261026/formal/FrobeniusSwapGate.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3763,
+        "declarations": 1,
+        "theorems": 1
+      }
+    },
+    {
+      "path": "experiments/hecke-432-kernel-transport-20261025/formal/ExactImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3764,
+        "axiom_output_log_line": 3766
+      }
+    },
+    {
+      "path": "experiments/hecke-432-lift-ambiguity-20261025/formal/CommonTranslation.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3768,
+        "axiom_output_log_line": 3770
+      }
+    },
+    {
+      "path": "experiments/hecke-432-map-identity-20261025/formal/MapImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3772,
+        "axiom_output_log_line": 3774
+      }
+    },
+    {
+      "path": "experiments/hecke-432-moduli-shift-evaluator-20261025/formal/QuarterShiftLattice.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3776,
+        "axiom_output_log_line": 3778
+      }
+    },
+    {
+      "path": "experiments/hecke-432-original-C-lift-20261025/formal/OriginalCImage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3781,
+        "axiom_output_log_line": 3783
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime1039-collision-prediction-20261026/formal/ChainCoverage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3792,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime1039-collision-prediction-20261026/formal/ObservedGroups.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3802,
+        "declarations": 3,
+        "theorems": 3
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime887-20261025/formal/Prime887ImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3803,
+        "axiom_output_log_line": 3805
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime887-automorphism-correction-20261025/formal/OrbitCount.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3808,
+        "axiom_output_log_line": 3810
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime887-direct-chain-inverse-20261025/formal/ChainCoverage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3813,
+        "axiom_output_log_line": 3815
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime887-inverse-pair-20261025/formal/FinitePairFilter.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3819,
+        "axiom_output_log_line": 3821
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime907-20261025/formal/Prime907ImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3824,
+        "axiom_output_log_line": 3826
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime919-20261025/formal/Prime919ImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3829,
+        "axiom_output_log_line": 3831
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime919-direct-inverse-20261025/formal/ChainCoverage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3841,
+        "declarations": 2,
+        "theorems": 2
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime937-20261025/formal/Prime937CuspImage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3842,
+        "axiom_output_log_line": 3844
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime997-20261025/formal/Prime997FiberSaturation.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3847,
+        "axiom_output_log_line": 3849
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime997-exact-b-image-20261025/formal/ExactBImage.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3855,
+        "axiom_output_log_line": 3857
+      }
+    },
+    {
+      "path": "experiments/hecke-432-prime997-inverse-pair-20261025/formal/InversePair.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3860,
+        "axiom_output_log_line": 3862
+      }
+    },
+    {
+      "path": "experiments/hecke-432-rational-generator-fibers-20261025/formal/TraceBound.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3864,
+        "axiom_output_log_line": 3866
+      }
+    },
+    {
+      "path": "experiments/hecke-432-relative-resolvent-20261025/formal/RelativePoleBound.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3869,
+        "axiom_output_log_line": 3871
+      }
+    },
+    {
+      "path": "experiments/hecke-432-shift-descent-20261025/formal/ShiftSubgroup.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3874,
+        "axiom_output_log_line": 3876
+      }
+    },
+    {
+      "path": "experiments/hecke-432-sign-branch-holdout-20261026/formal/ObservedClasses.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_theorem_source",
+      "machine_status": "passed_exhaustive_module_audit",
+      "machine_details": {
+        "line": 3899,
+        "declarations": 5,
+        "theorems": 10
+      }
+    },
+    {
+      "path": "experiments/hecke-432-stable-kernel-chains-20261025/formal/FiniteImageGap.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3900,
+        "axiom_output_log_line": 3902
+      }
+    },
+    {
+      "path": "experiments/hecke-432-terminal-involution-20261025/formal/DeckArithmetic.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3904,
+        "axiom_output_log_line": 3906
+      }
+    },
+    {
+      "path": "experiments/hecke-432-twist-correspondence-20261025/formal/TwistCoordinates.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3909,
+        "axiom_output_log_line": 3911
+      }
+    },
+    {
+      "path": "experiments/hecke-432-y-primitive-20261025/formal/YPrimitive.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3913,
+        "axiom_output_log_line": 3915
+      }
+    },
+    {
+      "path": "experiments/hecke-d2631-atkin-commutation-20261026/formal/AffineTransport.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3917,
+        "axiom_output_log_line": 3919
+      }
+    },
+    {
+      "path": "experiments/hecke-new-quotient-holdout-20261026/formal/MixedSix.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3922,
+        "axiom_output_log_line": 3924
+      }
+    },
+    {
+      "path": "experiments/hecke-x011-global-fricke-20261026/formal/FrickeAffine.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3925,
+        "axiom_output_log_line": 3927
+      }
+    },
+    {
+      "path": "experiments/xedni-bounded-witness-20261030/formal/WitnessObstruction.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3932,
+        "axiom_output_log_line": 3934
+      }
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/XedniObstruction.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3940,
+        "axiom_output_log_line": 3942
+      }
+    },
+    {
+      "path": "reports/ci-xedni-proof-elaboration-repair-20261030/xedni-core-arithmetic-compatibility-controls-20261030.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "research_or_ci_control_source",
+      "machine_status": "passed_native_build_and_declared_axiom_outputs",
+      "machine_details": {
+        "compile_log_line": 3957,
+        "axiom_output_log_line": 3959
+      }
+    },
+    {
+      "path": "tools/lean/AuditAxioms.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_implementation",
+      "machine_status": "not_a_theorem_source",
+      "software_review": "not_reconciled_in_this_packet"
+    },
+    {
+      "path": "tools/lean/AuditHeckeAxioms.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_implementation",
+      "machine_status": "not_a_theorem_source",
+      "software_review": "not_reconciled_in_this_packet"
+    },
+    {
+      "path": "tools/lean/selftest/fail/Axiom.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1427,
+        "expected_class": "fail",
+        "observed_outcome": "FAIL_audit",
+        "theorems": 1,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/fail/BuildError.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1428,
+        "expected_class": "fail",
+        "observed_outcome": "FAIL_build",
+        "theorems": 0,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/fail/Empty.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1429,
+        "expected_class": "fail",
+        "observed_outcome": "FAIL_audit",
+        "theorems": 0,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/fail/Native.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1430,
+        "expected_class": "fail",
+        "observed_outcome": "FAIL_audit",
+        "theorems": 1,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/fail/Sorry.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1431,
+        "expected_class": "fail",
+        "observed_outcome": "FAIL_audit",
+        "theorems": 2,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/pass/Good.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1425,
+        "expected_class": "pass",
+        "observed_outcome": "PASS",
+        "theorems": 2,
+        "trusted": 0
+      }
+    },
+    {
+      "path": "tools/lean/selftest/pass/Trusted.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "verifier_self_test_fixture",
+      "machine_status": "expected_fixture_outcome_observed",
+      "machine_details": {
+        "line": 1426,
+        "expected_class": "pass",
+        "observed_outcome": "PASS",
+        "theorems": 1,
+        "trusted": 1
+      }
+    },
+    {
+      "path": "tools/lean/transfer-audit/TransferAudit.lean",
+      "receipt_coverage": "outside_97_source_receipt",
+      "role": "tool_certificate_theorem_source",
+      "machine_status": "separate_source_bound_gate_success",
+      "software_review": "not_reconciled_in_this_packet",
+      "machine_details": {
+        "producer_pr": 1315,
+        "producer_head": "e11e4e0b87376f63233ddeeb3822319f4b28cbaf",
+        "hosted_check": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41009248637/job/123911146641",
+        "hosted_conclusion": "success",
+        "source_sha256": "c4aac198d49a7f58cfef0032958ffc6b44a0cdbc55d18915d0936ca3307cc28b",
+        "source_identical_at_frozen_commit": true,
+        "archived_audit": "tools/transfer-audit/evidence/final-check-attempt3/lean-audit.txt",
+        "audited_theorems": 12,
+        "audit_failures": 0,
+        "audit_trusted": 0,
+        "archived_audit_sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c"
+      },
+      "review_outcome": "semantic_and_geometric_bridges_not_independently_reconciled"
+    }
+  ],
+  "limits": [
+    "A successful compiler/axiom gate does not establish theorem-to-research-claim fidelity.",
+    "Generic route checks declared theorem/lemma names and their #print axioms output; it does not perform the exhaustive module audit used for the 39 dedicated sources.",
+    "The two verifier implementations are infrastructure sources, not research theorem claims.",
+    "The 97-source receipt and this separate gate are distinct evidence routes.",
+    "TransferAudit.lean is a separate theorem source about tool-certificate semantics; its finite-group and geometric bridges are not supplied by the corpus job."
+  ]
+}

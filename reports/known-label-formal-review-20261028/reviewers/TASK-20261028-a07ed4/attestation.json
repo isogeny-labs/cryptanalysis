@@ -1,0 +1,125 @@
+{
+  "review_attestation": {
+    "task_id": "TASK-20261028-a07ed4",
+    "joints_owned": [
+      "J2"
+    ],
+    "producer": "ffeacb44b6a151aebc84619f30a70591eb44e0f6",
+    "prospective_plan_commit_supplied": "dcebcd1842d112ebc3d985f02245cf0a8b7a8391",
+    "archival_task": "TASK-20261028-871ca0",
+    "conductor_task": "T-765",
+    "policy": "review-adversarial",
+    "reasoning_effort_requested": "xhigh",
+    "verdict": "holds",
+    "verdict_scope": "J2 source-level statement and claim fidelity only; not native proof acceptance or validation of surrounding research claims",
+    "sources_read": [
+      {
+        "path": "reports/known-label-formal-review-20261028/fidelity-handoff.json",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/fidelity-handoff.json",
+        "sha256": "133c1ccea4d578dedbd1f073e7a442c22822ade294efb56c9e8bf90906b498bc",
+        "read_scope": "complete file",
+        "role": "review_administration",
+        "declared_sha256": null,
+        "declared_hash_verified": null
+      },
+      {
+        "path": "reports/known-label-formal-review-20261028/review-plan.json",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/review-plan.json",
+        "sha256": "2579b4dd93b2f1df7a54eca0b952fb30a51917c3c5259f7c8b6b3c9ae21724f1",
+        "read_scope": "complete file",
+        "role": "review_administration",
+        "declared_sha256": null,
+        "declared_hash_verified": null
+      },
+      {
+        "path": "reports/known-label-formal-review-20261028/inputs.json",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/reports/known-label-formal-review-20261028/inputs.json",
+        "sha256": "7e56a082b8daa59be27cc282dec32379823dbbdbeaecef30a144f6b032387fb0",
+        "read_scope": "complete file",
+        "role": "review_administration",
+        "declared_sha256": null,
+        "declared_hash_verified": null
+      },
+      {
+        "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/docs/known-label-next-leads-20261028/Algebra.lean",
+        "sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+        "read_scope": "complete file",
+        "role": "producer_source",
+        "declared_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+        "declared_hash_verified": true
+      },
+      {
+        "path": "docs/known-label-next-leads-20261028/README.md",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/docs/known-label-next-leads-20261028/README.md",
+        "sha256": "7f99c207eb07dbdd8fe58f294ed3b6728941c6b297b36e636269353c0da52d7b",
+        "read_scope": "complete file",
+        "role": "producer_source",
+        "declared_sha256": "7f99c207eb07dbdd8fe58f294ed3b6728941c6b297b36e636269353c0da52d7b",
+        "declared_hash_verified": true
+      },
+      {
+        "path": "docs/known-label-next-leads-20261028/CHECKS.json",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/docs/known-label-next-leads-20261028/CHECKS.json",
+        "sha256": "7f36cbd7f2167f0eaef1ca93083c64bdd09628c16b2e627a6b803f8bdceb85e6",
+        "read_scope": "complete file",
+        "role": "producer_source",
+        "declared_sha256": "7f36cbd7f2167f0eaef1ca93083c64bdd09628c16b2e627a6b803f8bdceb85e6",
+        "declared_hash_verified": true
+      },
+      {
+        "path": "tools/lean/README.md",
+        "absolute_path": "/var/tmp/cryptanalysis-known-label-review-20261028/tools/lean/README.md",
+        "sha256": "5b62ba399a527fd8e7ffbf842a8c499d05955072ca6e78f35b7404fbfa0ca635",
+        "read_scope": "complete file",
+        "role": "producer_source",
+        "declared_sha256": "5b62ba399a527fd8e7ffbf842a8c499d05955072ca6e78f35b7404fbfa0ca635",
+        "declared_hash_verified": true
+      }
+    ],
+    "source_hashes_verified": true,
+    "administrative_hashes_recorded_without_external_expected_digest": true,
+    "read_sibling_reports": false,
+    "read_blind_brief": false,
+    "read_producer_test_code": false,
+    "read_unrelated_repository_files": false,
+    "read_memory_files": false,
+    "read_git_history": false,
+    "source_commit_provenance_independently_verified": false,
+    "native_ci_read": false,
+    "native_lean_build_run": false,
+    "experiment_run": false,
+    "cloud_calls_made": false,
+    "source_edited": false,
+    "pr_mutations": false,
+    "agents_spawned": false,
+    "native_validity": "not_verified_by_this_reviewer",
+    "checked_elaborated_types_observed": false,
+    "universal_checked_proof_claimed": false,
+    "visible_coordinator_prior": true,
+    "mutual_blindness_preserved": true,
+    "blind_expression_only_rederivation_claimed": false,
+    "checks_performed": [
+      "Read all seven permitted input files and no other input files",
+      "Verified all four permitted producer SHA-256 hashes against inputs.json",
+      "Compared every source proposition with its proof-map entry",
+      "Inspected source-level quantifiers, assumptions, coefficients and absence of division",
+      "Hand-worked characteristic2, characteristic3, zero-divisor, coincident-input and nonunit obstructions",
+      "Enumerated missing graph, signature, probability and performance bridges",
+      "Preserved unbuilt/native-pending and unformalized-bridge claim boundaries"
+    ],
+    "procedure_deviations": [],
+    "operational_notes": [
+      "Initial output-assembly command using python failed with command not found and wrote no files; retried with python3.",
+      "Review-plan prior was intentionally visible; J1 owns blind algebra rederivation.",
+      "Allowed CHECKS.json records producer test outcomes; those tests were not read or rerun.",
+      "Source bytes match the manifest; commit ancestry and push provenance were deliberately not inspected.",
+      "Requested reasoning policy is recorded, not a separate model/runtime attestation."
+    ],
+    "outputs_written": [
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-a07ed4/report.md",
+      "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261028-a07ed4/attestation.json"
+    ],
+    "report_sha256": "9a751f894af046004c7fd255f205bd76097f5e6335deb01bc1929064e228c1c5"
+  }
+}

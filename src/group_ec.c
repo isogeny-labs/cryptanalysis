@@ -86,28 +86,22 @@ static int ec_equal(const ca_group *g, const ca_elem *a, const ca_elem *b)
 static uint64_t ec_hash(const ca_group *g, const ca_elem *a)
 {
     (void)g;
-    if (FINF(a)) return 0x9e3779b97f4a7c15ULL;
-    return ca_mix64(FX(a) * 0x9E3779B97F4A7C15ULL ^ ca_mix64(FY(a)));
+    return ca_ec_hash_words(FX(a), FY(a), FINF(a));
 }
 
-/* Montgomery product with the modulus and -(-p^{-1}) = p^{-1} passed in
- * registers; the reduction of ca_mont_redc, so the same result. */
-static inline uint64_t bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+ca_ec_consts ca_ec_consts_of(const ca_group *g)
 {
-    ca_u128 t = (ca_u128)a * b;
-    uint64_t u = (uint64_t)t * pinv_pos;
-    uint64_t hi = (uint64_t)(t >> 64);
-    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
-    uint64_t rr = hi - mh;
-    if (hi < mh) rr += p;
-    return rr;
+    ca_ec_consts c = {g->p, (uint64_t)0 - g->mont.pinv, g->a_mont, g->mont.r1};
+    return c;
 }
 
 /*
  * Batched affine addition with Montgomery's simultaneous inversion trick:
- * one field inversion for n additions at the cost of 3(n-1) extra
- * multiplications.  Special cases (infinity, doubling, inverse pairs)
- * are handled inline so that the common path stays branch-light.
+ * one field inversion for n additions at the cost of about 2n extra
+ * multiplications, run over four interleaved chains so the serial dependency
+ * of a Montgomery product does not idle the multiply ports.  Special cases
+ * (infinity, doubling, inverse pairs) are handled inline so that the common
+ * path stays branch-light.
  */
 static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
                         size_t n, uint64_t *scratch)
@@ -120,11 +114,18 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
      * ca_mont_redc, so the same residues. */
     const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
     const uint64_t one = g->mont.r1;
-#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), bmul((x), (y), P, NPI))
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
 #define BA(x, y) ca_addmod((x), (y), P)
 #define BS(x, y) ca_submod((x), (y), P)
+    /* Interleaved chains, the same scheme rho_thread_main uses: a Montgomery
+     * product is a serial dependency, and one chain through the whole batch
+     * leaves the multiply ports idle.  Four chains quarter the dependency
+     * length and cost 3*4-2 = 10 extra multiplications out of 3n+2n, while
+     * the suffix products put the inverses out in element order. */
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
     uint64_t *den = scratch;       /* n denominators */
-    uint64_t *pre = scratch + n;   /* n prefix products */
+    uint64_t *suf = scratch + n;   /* n suffix products */
     for (size_t i = 0; i < n; i++) {
         uint64_t d;
         if (FINF(&a[i]) || FINF(&b[i])) d = one;
@@ -135,12 +136,22 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         } else
             d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
-        pre[i] = i ? BM(pre[i - 1], d) : d;
     }
-    uint64_t inv = ec_field_inv(g, pre[n - 1]);
-    for (size_t i = n; i-- > 0;) {
-        uint64_t di = i ? BM(inv, pre[i - 1]) : inv; /* den[i]^{-1} */
-        inv = BM(inv, den[i]);
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    /* totals[j] = suf[j] is chain j's product; invert the product of the
+     * totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
         const ca_elem *A = &a[i], *B = &b[i];
         if (FINF(A)) { r[i] = *B; continue; }
         if (FINF(B)) { r[i] = *A; continue; }
@@ -149,7 +160,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         if (ax == FX(B)) {
             if (ay == FY(B) && ay != 0) {
                 CA_FC_ADD(CA_FC_SQR, 1);
-                uint64_t x2 = bmul(ax, ax, P, NPI);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
                 uint64_t num = BA(BA(BA(x2, x2), x2), AM);
                 lam = BM(num, di);
             } else {
@@ -161,7 +172,7 @@ static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const c
         }
         const uint64_t bx = FX(B);
         CA_FC_ADD(CA_FC_SQR, 1);
-        uint64_t x3 = BS(BS(bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
         uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
         FX(&r[i]) = x3;
         FY(&r[i]) = y3;
@@ -216,16 +227,15 @@ static int ec_is_valid(const ca_group *g, const ca_elem *a)
  * with negation, so this is a valid canonical choice. */
 static int ec_canonicalize(const ca_group *g, ca_elem *a)
 {
-    if (FINF(a) || FY(a) == 0) return 0;
-    uint64_t ny = g->p - FY(a);
-    if (ny < FY(a)) { FY(a) = ny; return 1; }
-    return 0;
+    return ca_ec_canon_words(g->p, &FY(a), FINF(a));
 }
 
 static const ca_group_vtable ec_vt = {
     ec_op, ec_dbl, ec_inv, ec_identity, ec_is_identity, ec_equal, ec_hash,
     ec_batch_op, ec_encode, ec_decode, ec_is_valid, ec_canonicalize,
 };
+
+int ca_ec_group_is_native(const ca_group *g) { return g->vt == &ec_vt; }
 
 /*
  * Scalar multiplication in Jacobian coordinates (X : Y : Z), affine

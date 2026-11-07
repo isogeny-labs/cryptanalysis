@@ -1,0 +1,412 @@
+@KnownLabelLeads.positive_pair_product.{u_1} : ∀ {K : Type u_1} [inst : CommRing.{u_1} K] (a b c : K),
+  @Eq.{u_1 + 1} K
+    (@HMul.hMul.{u_1, u_1, u_1} K K K
+      (@instHMul.{u_1} K
+        (@Distrib.toMul.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@HMul.hMul.{u_1, u_1, u_1} K K K
+        (@instHMul.{u_1} K
+          (@Distrib.toMul.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@OfNat.ofNat.{u_1} K (nat_lit 2)
+          (@instOfNatAtLeastTwo.{u_1} K (nat_lit 2)
+            (@AddMonoidWithOne.toNatCast.{u_1} K
+              (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+            ⋯))
+        a)
+      b)
+    (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+      (@instHAdd.{u_1} K
+        (@Distrib.toAdd.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@HSub.hSub.{u_1, u_1, u_1} K K K
+        (@instHSub.{u_1} K
+          (@SubNegMonoid.toSub.{u_1} K
+            (@AddGroup.toSubNegMonoid.{u_1} K
+              (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+        (@HPow.hPow.{u_1, 0, u_1} K Nat K
+          (@instHPow.{u_1, 0} K Nat
+            (@NPow.toPow.{u_1} K
+              (@Monoid.toNPow.{u_1} K
+                (@Semiring.toMonoid.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+          (@HSub.hSub.{u_1, u_1, u_1} K K K
+            (@instHSub.{u_1} K
+              (@SubNegMonoid.toSub.{u_1} K
+                (@AddGroup.toSubNegMonoid.{u_1} K
+                  (@AddGroupWithOne.toAddGroup.{u_1} K
+                    (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+            (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+              (@instHAdd.{u_1} K
+                (@Distrib.toAdd.{u_1} K
+                  (@instDistribOfSemiring.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+              a b)
+            c)
+          (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+            (@instHAdd.{u_1} K
+              (@Distrib.toAdd.{u_1} K
+                (@instDistribOfSemiring.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+            (@HPow.hPow.{u_1, 0, u_1} K Nat K
+              (@instHPow.{u_1, 0} K Nat
+                (@NPow.toPow.{u_1} K
+                  (@Monoid.toNPow.{u_1} K
+                    (@Semiring.toMonoid.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+              a (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))
+            (@HPow.hPow.{u_1, 0, u_1} K Nat K
+              (@instHPow.{u_1, 0} K Nat
+                (@NPow.toPow.{u_1} K
+                  (@Monoid.toNPow.{u_1} K
+                    (@Semiring.toMonoid.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+              b (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2)))))
+          (@HPow.hPow.{u_1, 0, u_1} K Nat K
+            (@instHPow.{u_1, 0} K Nat
+              (@NPow.toPow.{u_1} K
+                (@Monoid.toNPow.{u_1} K
+                  (@Semiring.toMonoid.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+            c (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))))
+      (@HMul.hMul.{u_1, u_1, u_1} K K K
+        (@instHMul.{u_1} K
+          (@Distrib.toMul.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@HMul.hMul.{u_1, u_1, u_1} K K K
+          (@instHMul.{u_1} K
+            (@Distrib.toMul.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          (@OfNat.ofNat.{u_1} K (nat_lit 2)
+            (@instOfNatAtLeastTwo.{u_1} K (nat_lit 2)
+              (@AddMonoidWithOne.toNatCast.{u_1} K
+                (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+              ⋯))
+          c)
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+            (@instHAdd.{u_1} K
+              (@Distrib.toAdd.{u_1} K
+                (@instDistribOfSemiring.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+            a b)
+          c)))
+@KnownLabelLeads.signed_second_moment.{u_1} : ∀ {K : Type u_1} [inst : CommRing.{u_1} K] (a b c : K),
+  @Eq.{u_1 + 1} K
+    (@HSub.hSub.{u_1, u_1, u_1} K K K
+      (@instHSub.{u_1} K
+        (@SubNegMonoid.toSub.{u_1} K
+          (@AddGroup.toSubNegMonoid.{u_1} K
+            (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+      (@HPow.hPow.{u_1, 0, u_1} K Nat K
+        (@instHPow.{u_1, 0} K Nat
+          (@NPow.toPow.{u_1} K
+            (@Monoid.toNPow.{u_1} K
+              (@Semiring.toMonoid.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+            (@instHAdd.{u_1} K
+              (@Distrib.toAdd.{u_1} K
+                (@instDistribOfSemiring.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+            a b)
+          c)
+        (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))
+      (@HSub.hSub.{u_1, u_1, u_1} K K K
+        (@instHSub.{u_1} K
+          (@SubNegMonoid.toSub.{u_1} K
+            (@AddGroup.toSubNegMonoid.{u_1} K
+              (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+        (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+          (@instHAdd.{u_1} K
+            (@Distrib.toAdd.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          (@HPow.hPow.{u_1, 0, u_1} K Nat K
+            (@instHPow.{u_1, 0} K Nat
+              (@NPow.toPow.{u_1} K
+                (@Monoid.toNPow.{u_1} K
+                  (@Semiring.toMonoid.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+            a (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))
+          (@HPow.hPow.{u_1, 0, u_1} K Nat K
+            (@instHPow.{u_1, 0} K Nat
+              (@NPow.toPow.{u_1} K
+                (@Monoid.toNPow.{u_1} K
+                  (@Semiring.toMonoid.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+            b (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2)))))
+        (@HPow.hPow.{u_1, 0, u_1} K Nat K
+          (@instHPow.{u_1, 0} K Nat
+            (@NPow.toPow.{u_1} K
+              (@Monoid.toNPow.{u_1} K
+                (@Semiring.toMonoid.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+          c (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))))
+    (@HMul.hMul.{u_1, u_1, u_1} K K K
+      (@instHMul.{u_1} K
+        (@Distrib.toMul.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@HMul.hMul.{u_1, u_1, u_1} K K K
+        (@instHMul.{u_1} K
+          (@Distrib.toMul.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@OfNat.ofNat.{u_1} K (nat_lit 2)
+          (@instOfNatAtLeastTwo.{u_1} K (nat_lit 2)
+            (@AddMonoidWithOne.toNatCast.{u_1} K
+              (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+            ⋯))
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          a c))
+      (@HSub.hSub.{u_1, u_1, u_1} K K K
+        (@instHSub.{u_1} K
+          (@SubNegMonoid.toSub.{u_1} K
+            (@AddGroup.toSubNegMonoid.{u_1} K
+              (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+        b c))
+@KnownLabelLeads.signed_third_moment.{u_1} : ∀ {K : Type u_1} [inst : CommRing.{u_1} K] (a b c : K),
+  @Eq.{u_1 + 1} K
+    (@HSub.hSub.{u_1, u_1, u_1} K K K
+      (@instHSub.{u_1} K
+        (@SubNegMonoid.toSub.{u_1} K
+          (@AddGroup.toSubNegMonoid.{u_1} K
+            (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+      (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+        (@instHAdd.{u_1} K
+          (@Distrib.toAdd.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@Neg.neg.{u_1} K
+          (@NegZeroClass.toNeg.{u_1} K
+            (@SubNegZeroMonoid.toNegZeroClass.{u_1} K
+              (@SubtractionMonoid.toSubNegZeroMonoid.{u_1} K
+                (@SubtractionCommMonoid.toSubtractionMonoid.{u_1} K
+                  (@AddCommGroup.toDivisionAddCommMonoid.{u_1} K
+                    (@Ring.toAddCommGroup.{u_1} K (@CommRing.toRing.{u_1} K inst)))))))
+          (@HPow.hPow.{u_1, 0, u_1} K Nat K
+            (@instHPow.{u_1, 0} K Nat
+              (@NPow.toPow.{u_1} K
+                (@Monoid.toNPow.{u_1} K
+                  (@Semiring.toMonoid.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+            (@HSub.hSub.{u_1, u_1, u_1} K K K
+              (@instHSub.{u_1} K
+                (@SubNegMonoid.toSub.{u_1} K
+                  (@AddGroup.toSubNegMonoid.{u_1} K
+                    (@AddGroupWithOne.toAddGroup.{u_1} K
+                      (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+              (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+                (@instHAdd.{u_1} K
+                  (@Distrib.toAdd.{u_1} K
+                    (@instDistribOfSemiring.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+                a b)
+              c)
+            (@OfNat.ofNat.{0} Nat (nat_lit 3) (instOfNatNat (nat_lit 3)))))
+        (@HMul.hMul.{u_1, u_1, u_1} K K K
+          (@instHMul.{u_1} K
+            (@Distrib.toMul.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          (@HMul.hMul.{u_1, u_1, u_1} K K K
+            (@instHMul.{u_1} K
+              (@Distrib.toMul.{u_1} K
+                (@instDistribOfSemiring.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+            (@OfNat.ofNat.{u_1} K (nat_lit 3)
+              (@instOfNatAtLeastTwo.{u_1} K (nat_lit 3)
+                (@AddMonoidWithOne.toNatCast.{u_1} K
+                  (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                    (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+                ⋯))
+            (@HSub.hSub.{u_1, u_1, u_1} K K K
+              (@instHSub.{u_1} K
+                (@SubNegMonoid.toSub.{u_1} K
+                  (@AddGroup.toSubNegMonoid.{u_1} K
+                    (@AddGroupWithOne.toAddGroup.{u_1} K
+                      (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+              (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+                (@instHAdd.{u_1} K
+                  (@Distrib.toAdd.{u_1} K
+                    (@instDistribOfSemiring.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+                a b)
+              c))
+          (@HSub.hSub.{u_1, u_1, u_1} K K K
+            (@instHSub.{u_1} K
+              (@SubNegMonoid.toSub.{u_1} K
+                (@AddGroup.toSubNegMonoid.{u_1} K
+                  (@AddGroupWithOne.toAddGroup.{u_1} K
+                    (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+            (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+              (@instHAdd.{u_1} K
+                (@Distrib.toAdd.{u_1} K
+                  (@instDistribOfSemiring.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+              (@HPow.hPow.{u_1, 0, u_1} K Nat K
+                (@instHPow.{u_1, 0} K Nat
+                  (@NPow.toPow.{u_1} K
+                    (@Monoid.toNPow.{u_1} K
+                      (@Semiring.toMonoid.{u_1} K
+                        (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+                a (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2))))
+              (@HPow.hPow.{u_1, 0, u_1} K Nat K
+                (@instHPow.{u_1, 0} K Nat
+                  (@NPow.toPow.{u_1} K
+                    (@Monoid.toNPow.{u_1} K
+                      (@Semiring.toMonoid.{u_1} K
+                        (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+                b (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2)))))
+            (@HPow.hPow.{u_1, 0, u_1} K Nat K
+              (@instHPow.{u_1, 0} K Nat
+                (@NPow.toPow.{u_1} K
+                  (@Monoid.toNPow.{u_1} K
+                    (@Semiring.toMonoid.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+              c (@OfNat.ofNat.{0} Nat (nat_lit 2) (instOfNatNat (nat_lit 2)))))))
+      (@HMul.hMul.{u_1, u_1, u_1} K K K
+        (@instHMul.{u_1} K
+          (@Distrib.toMul.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@OfNat.ofNat.{u_1} K (nat_lit 2)
+          (@instOfNatAtLeastTwo.{u_1} K (nat_lit 2)
+            (@AddMonoidWithOne.toNatCast.{u_1} K
+              (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+            ⋯))
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+            (@instHAdd.{u_1} K
+              (@Distrib.toAdd.{u_1} K
+                (@instDistribOfSemiring.{u_1} K
+                  (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+            (@HPow.hPow.{u_1, 0, u_1} K Nat K
+              (@instHPow.{u_1, 0} K Nat
+                (@NPow.toPow.{u_1} K
+                  (@Monoid.toNPow.{u_1} K
+                    (@Semiring.toMonoid.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+              a (@OfNat.ofNat.{0} Nat (nat_lit 3) (instOfNatNat (nat_lit 3))))
+            (@HPow.hPow.{u_1, 0, u_1} K Nat K
+              (@instHPow.{u_1, 0} K Nat
+                (@NPow.toPow.{u_1} K
+                  (@Monoid.toNPow.{u_1} K
+                    (@Semiring.toMonoid.{u_1} K
+                      (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+              b (@OfNat.ofNat.{0} Nat (nat_lit 3) (instOfNatNat (nat_lit 3)))))
+          (@HPow.hPow.{u_1, 0, u_1} K Nat K
+            (@instHPow.{u_1, 0} K Nat
+              (@NPow.toPow.{u_1} K
+                (@Monoid.toNPow.{u_1} K
+                  (@Semiring.toMonoid.{u_1} K
+                    (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst))))))
+            c (@OfNat.ofNat.{0} Nat (nat_lit 3) (instOfNatNat (nat_lit 3)))))))
+    (@HMul.hMul.{u_1, u_1, u_1} K K K
+      (@instHMul.{u_1} K
+        (@Distrib.toMul.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@HMul.hMul.{u_1, u_1, u_1} K K K
+        (@instHMul.{u_1} K
+          (@Distrib.toMul.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        (@HMul.hMul.{u_1, u_1, u_1} K K K
+          (@instHMul.{u_1} K
+            (@Distrib.toMul.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          (@OfNat.ofNat.{u_1} K (nat_lit 6)
+            (@instOfNatAtLeastTwo.{u_1} K (nat_lit 6)
+              (@AddMonoidWithOne.toNatCast.{u_1} K
+                (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+              ⋯))
+          c)
+        (@HSub.hSub.{u_1, u_1, u_1} K K K
+          (@instHSub.{u_1} K
+            (@SubNegMonoid.toSub.{u_1} K
+              (@AddGroup.toSubNegMonoid.{u_1} K
+                (@AddGroupWithOne.toAddGroup.{u_1} K
+                  (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+          a c))
+      (@HSub.hSub.{u_1, u_1, u_1} K K K
+        (@instHSub.{u_1} K
+          (@SubNegMonoid.toSub.{u_1} K
+            (@AddGroup.toSubNegMonoid.{u_1} K
+              (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+        b c))
+@KnownLabelLeads.triangle_identity.{u_1} : ∀ {K : Type u_1} [inst : CommRing.{u_1} K] (a b c : K),
+  @Eq.{u_1 + 1} K
+    (@HMul.hMul.{u_1, u_1, u_1} K K K
+      (@instHMul.{u_1} K
+        (@Distrib.toMul.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@OfNat.ofNat.{u_1} K (nat_lit 2)
+        (@instOfNatAtLeastTwo.{u_1} K (nat_lit 2)
+          (@AddMonoidWithOne.toNatCast.{u_1} K
+            (@AddGroupWithOne.toAddMonoidWithOne.{u_1} K
+              (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))
+          ⋯))
+      a)
+    (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+      (@instHAdd.{u_1} K
+        (@Distrib.toAdd.{u_1} K
+          (@instDistribOfSemiring.{u_1} K (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+      (@HSub.hSub.{u_1, u_1, u_1} K K K
+        (@instHSub.{u_1} K
+          (@SubNegMonoid.toSub.{u_1} K
+            (@AddGroup.toSubNegMonoid.{u_1} K
+              (@AddGroupWithOne.toAddGroup.{u_1} K (@Ring.toAddGroupWithOne.{u_1} K (@CommRing.toRing.{u_1} K inst))))))
+        (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+          (@instHAdd.{u_1} K
+            (@Distrib.toAdd.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          a b)
+        (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+          (@instHAdd.{u_1} K
+            (@Distrib.toAdd.{u_1} K
+              (@instDistribOfSemiring.{u_1} K
+                (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+          b c))
+      (@HAdd.hAdd.{u_1, u_1, u_1} K K K
+        (@instHAdd.{u_1} K
+          (@Distrib.toAdd.{u_1} K
+            (@instDistribOfSemiring.{u_1} K
+              (@CommSemiring.toSemiring.{u_1} K (@CommRing.toCommSemiring.{u_1} K inst)))))
+        c a))

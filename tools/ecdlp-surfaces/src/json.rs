@@ -6,6 +6,8 @@ pub enum Json {
     Null,
     Bool(bool),
     Number(i128),
+    /// Pre-rendered exact integer text (arbitrary precision).
+    Integer(String),
     String(String),
     Array(Vec<Json>),
     Object(Vec<(String, Json)>),
@@ -13,6 +15,9 @@ pub enum Json {
 
 pub fn number<T: Into<i128>>(n: T) -> Json {
     Json::Number(n.into())
+}
+pub fn big(n: &crate::bigint::BigInt) -> Json {
+    Json::Integer(n.to_string())
 }
 pub fn text(s: impl Into<String>) -> Json {
     Json::String(s.into())
@@ -67,6 +72,7 @@ impl Json {
             Self::Null => "null".into(),
             Self::Bool(b) => b.to_string(),
             Self::Number(n) => n.to_string(),
+            Self::Integer(n) => n.clone(),
             Self::String(s) => quoted(s),
             Self::Array(items) => {
                 if items.is_empty() {

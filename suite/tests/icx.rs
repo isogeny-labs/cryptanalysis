@@ -80,6 +80,97 @@ fn estimate_labels_koblitz_as_ic_relevant() {
 }
 
 #[test]
+fn xedni_audit_distinguishes_prime_and_binary_lift_domains() {
+    let prime = run_json(&["xedni", "p256"]);
+    assert_eq!(prime["operation"], "xedni");
+    assert_eq!(prime["count"], 1);
+    assert_eq!(prime["assessments"][0]["original_rational_lift"], true);
+    assert_eq!(prime["assessments"][0]["minimum_global_field_degree"], 1);
+
+    for (curve, family) in [("sect163r1", "binary"), ("sect163k1", "koblitz")] {
+        let binary = run_json(&["xedni", curve]);
+        assert_eq!(binary["assessments"][0]["family"], family);
+        assert_eq!(binary["assessments"][0]["residue_degree"], 163);
+        assert_eq!(binary["assessments"][0]["minimum_global_field_degree"], 163);
+        assert_eq!(
+            binary["assessments"][0]["evidence_status"],
+            "primary-source-gated"
+        );
+    }
+}
+
+#[test]
+fn xedni_koblitz_family_audit_preserves_each_extension_degree() {
+    let report = run_json(&["xedni", "--family", "koblitz"]);
+    let rows = report["assessments"].as_array().expect("assessments");
+    assert!(!rows.is_empty());
+    for row in rows {
+        assert_eq!(row["family"], "koblitz");
+        assert_eq!(row["minimum_global_field_degree"], row["residue_degree"]);
+        assert_eq!(row["original_rational_lift"], false);
+    }
+}
+
+#[test]
+fn xedni_lift_cli_preserves_the_certified_affine_coset() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_lift_toy.json"
+    );
+    let v = run_json(&[
+        "xedni-lift",
+        "--input",
+        fixture,
+        "--radius",
+        "1",
+        "--max-candidates",
+        "100",
+    ]);
+    assert_eq!(v["operation"], "xedni-lift");
+    assert_eq!(v["result"]["exact_constraints_preserved"], true);
+    assert_eq!(v["result"]["congruence_preserved"], true);
+    assert_eq!(v["result"]["optimized_score"]["nonsingular"], true);
+    assert!(
+        v["result"]["optimized_score"]["discriminant_bits"]
+            .as_u64()
+            .unwrap()
+            < v["result"]["baseline_score"]["discriminant_bits"]
+                .as_u64()
+                .unwrap()
+    );
+}
+
+#[test]
+fn xedni_lift_cli_supports_nine_point_general_cubic_mode() {
+    let fixture = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/xedni_lift_nine_points.json"
+    );
+    let v = run_json(&[
+        "xedni-lift",
+        "--model",
+        "plane-cubic",
+        "--input",
+        fixture,
+        "--radius",
+        "0",
+        "--max-candidates",
+        "1",
+    ]);
+    assert_eq!(v["operation"], "xedni-lift");
+    assert_eq!(v["model"], "plane-cubic");
+    assert_eq!(v["result"]["exact_constraints_preserved"], true);
+    assert_eq!(v["result"]["congruence_preserved"], true);
+    assert_eq!(v["result"]["discriminant_evaluated"], true);
+    assert_eq!(v["result"]["optimized_score"]["nonsingular"], true);
+    assert_eq!(v["result"]["optimized_score"]["discriminant"], "635904");
+    assert_eq!(
+        v["result"]["optimized_coefficients"],
+        serde_json::json!(["1", "0", "0", "0", "0", "0", "-1", "-1", "0", "1"])
+    );
+}
+
+#[test]
 fn aliases_resolve() {
     // NIST/SEC aliases must map to the canonical curve.
     for (alias, canonical) in [("nistp256", "p256"), ("k-163", "sect163k1")] {

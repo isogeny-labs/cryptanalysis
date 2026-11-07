@@ -1,0 +1,25 @@
+{
+  "audit_policy": "Independent all-j source census and source image only after frozen source-free prediction and direct inverse; preserve all zeros and exceptions.",
+  "inputs": {
+    "b_resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/relative_b_resolvent.json",
+      "sha256": "a68adf5a4902ae3744a3db85799934f871e806788aa8d29e666a805c952d23aa"
+    },
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "inverse_filter": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-inverse-filter-crossprime-20261025/inverse_filter.py",
+      "sha256": "92766978eb1ef3d481e4ed49c1574ffda722a7576cfbcd71ebe6f7c0acd52183"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    }
+  },
+  "prediction": "Every valid rational C,E,B triple is double iff D_C(P_B)=0 and 2*y_B*d_T(P_B)=0; otherwise singleton. Source-chain multiplicity assessed only after source-free gradient screen.",
+  "prime": 1279,
+  "prime_selection": "first prime p > 1231 with p congruent 7 mod 12 and -15 a nonzero square; p=1279",
+  "status": "FROZEN_BEFORE_P1279_SOURCE_FREE_SCREEN"
+}

@@ -1,0 +1,73 @@
+{
+  "instance": "ECC2K-130",
+  "instance_sha256": "19038eb792b7ca3d5d38ccfa9789f1b2306a92da4a75db2390d1e79ad4570770",
+  "target": "published Q",
+  "encoding": "implicit binary point coordinates",
+  "factor_base_seed": 1,
+  "factor_base_seeds": [
+    {
+      "prime": 5444517870735015415413993718908291383363,
+      "alpha": 2873816344366618365533914464424214950234,
+      "beta": 10409234017673608357083055217615539999,
+      "threshold": 208701085205324515399
+    },
+    {
+      "prime": 5444517870735015415413993718908291383363,
+      "alpha": 2561519556081548986640586492247333131510,
+      "beta": 2612296193394931722487717189818667199545,
+      "threshold": 208701085205324515399
+    }
+  ],
+  "network": {
+    "variables": 1195386,
+    "constraints": 74688,
+    "boolean_network_edges": 2694680,
+    "maximum_degree": 1032,
+    "multiplication_blocks": [
+      {
+        "type": "binary_polynomial",
+        "input_bits": 131,
+        "ring_bits": 54,
+        "transform_length": 81,
+        "count": 35
+      },
+      {
+        "type": "integer",
+        "input_bits": 133,
+        "ring_bits": 129,
+        "transform_length": 16,
+        "count": 4
+      }
+    ]
+  },
+  "contraction_plan": {
+    "size": 2694681,
+    "lambda": 22,
+    "leaf_threshold": 673671,
+    "root_u": 0,
+    "root_a": 0,
+    "extension_degree": 88,
+    "groups": 64,
+    "paper_recursion_eligible": false,
+    "experimental_parameters": false
+  },
+  "backend": "recursive_cauchy_modes_hermite",
+  "scalar_ring_ell": 1,
+  "status": "budget_exhausted",
+  "challenge_solved": false,
+  "subexponential_runtime_claimed": false,
+  "source": "https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/build/quantitative-contraction.tex",
+  "compiled_graph_verified": true,
+  "reason": "paper root u=0: exact leaf has 1195386 independent bits; configured budget is 2000000 operations",
+  "statistics": {
+    "calls": 1,
+    "leaves": 1,
+    "recursive_calls": 0,
+    "mode_tuples": 0,
+    "interpolation_values": 0,
+    "max_depth": 0,
+    "max_precision": 0,
+    "experimental_parameters": false
+  },
+  "elapsed_seconds": 8.57541940200008
+}

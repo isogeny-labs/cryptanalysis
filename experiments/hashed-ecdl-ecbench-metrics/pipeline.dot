@@ -1,0 +1,14 @@
+digraph native_ecbench {
+  graph [rankdir=TB, bgcolor="white", fontname="DejaVu Sans", fontsize=12, nodesep=0.2, ranksep=0.28, pad=0.1];
+  node [shape=box, style="rounded,filled", fillcolor="#edf3f8", color="#63758a", fontname="DejaVu Sans", fontsize=10, margin="0.12,0.08"];
+  edge [color="#63758a", arrowsize=0.65];
+  panel [label="Frozen plan before launch\n4 registered prime curves, 8 public targets each\n9 arms; 1 warmup + 5 measured rounds = 1,728 executions"];
+  native [label="Actual native hashed-ecdl-tensor\nsource | selectors | exact width | partial relations"];
+  phases [label="Cold setup / bases / network build / contraction\nwitness and row checks / elimination / recovery\nGroup calls counted; diagnostic meter work incompletely priced"];
+  development [label="Development controls\nNative certificate + RNG + work invariance\nIndependent scalar checks; seeded success/exhaustion replay",fillcolor="#e9f2eb"];
+  checkpoint [label="GATE: current-source S3 checkpoint + readback\nTemporary existing OIDC identity; actual permission unverified",fillcolor="#fff3df"];
+  image [label="GATE: exact source / native binary / OCI image\nAuthenticated publish and execution receipts pending",fillcolor="#fff3df"];
+  run [label="One EKS Spot native L2 session (not launched)\nc8a.2xlarge; 4 vCPU / 4 GiB; original 1,800 s\nRetain all failures; no measurement retries",fillcolor="#fff3df"];
+  audit [label="Native replay-all / L2 / A-A / S3 hashes\nComplete admitted pairs only; report every unknown\nChallenge scalars and general audit remain open",fillcolor="#f1ecf6"];
+  panel -> native -> phases -> development -> checkpoint -> image -> run -> audit;
+}

@@ -9,10 +9,11 @@
  * {Y, -Y} after each step (negating (a, b) when needed), and idx() is
  * evaluated on the canonical form.  Fruitless 2-cycles are suppressed by
  * the look-ahead rule "if idx(Y + M_i) == i use M_{i+1} instead" and
- * longer cycles are caught by a sliding-window self-comparison; a walk
- * caught in a cycle escapes deterministically from the minimum element of
- * the cycle by doubling, so two walks that merged inside the cycle stay
- * merged.
+ * longer cycles are caught by a sliding-window self-comparison, and 2- and
+ * 4-cycles at once by comparing each new point with the points two and four
+ * steps back; a walk caught in a cycle escapes deterministically from the
+ * minimum element of the cycle by doubling, so two walks that merged inside
+ * the cycle stay merged.
  *
  * Distinguished points (hash with dp_bits trailing zeros) are stored in a
  * shared table with their (a, b).  A second arrival at the same point with
@@ -21,6 +22,7 @@
 #include "cryptanalysis/ca_rho.h"
 #include "dlog_internal.h"
 
+#include <math.h>
 #include <pthread.h>
 #include <stdatomic.h>
 #include <errno.h>
@@ -104,6 +106,10 @@ typedef struct rho_shared {
     uint64_t max_ops, max_table;
     uint64_t setup_ops;
     uint64_t setup_prior;
+    /* Elliptic curves: 2^b * base and 2^b * target, so that a walk start or a
+     * table entry is a sum over the set bits of its scalars. */
+    int fb_bits;
+    ca_elem *fb_base, *fb_target;
     double elapsed_prior;
     const char *checkpoint_path;
 
@@ -129,6 +135,9 @@ typedef struct rho_walk {
     uint64_t since_dp;
     ca_elem saved;
     uint32_t win;
+    ca_elem hist[4]; /* the last committed points, newest first */
+    uint64_t hist_h[4];
+    uint32_t hist_n;
 #ifdef CA_RHO_TRACE
     uint64_t ring[RHO_RING];
     uint64_t ring_n;   /* committed points since the walk start or the last escape */
@@ -403,19 +412,46 @@ static inline uint32_t rho_index(const rho_shared *sh, uint64_t h)
     return (uint32_t)(((ca_u128)low * sh->r) >> 64);
 }
 
-static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d)
+static inline void exp_add(uint64_t n, uint64_t *a, uint64_t d) { *a = ca_addmod(*a, d, n); }
+
+/* k * (the base the table was built from) as the sum of the stored
+ * 2^b * base over the set bits of k.  Each set bit costs one operation, as
+ * ca_group_mul charges it; the doublings that built the table were charged
+ * to the setup. */
+static void rho_fb_mul(const rho_shared *sh, ca_elem *r, const ca_elem *pow, uint64_t k,
+                       uint64_t *ops)
 {
-    *a = ca_addmod(*a, d, n);
+    ca_elem acc;
+    ca_group_identity(sh->g, &acc);
+    for (int b = 0; k; b++, k >>= 1)
+        if (k & 1) {
+            ca_group_op(sh->g, &acc, &acc, &pow[b]);
+            (*ops)++;
+        }
+    *r = acc;
 }
 
+/* a * base and b * target for a walk start or a table entry. */
+static void rho_start_mul(const rho_shared *sh, ca_elem *t1, ca_elem *t2, uint64_t a, uint64_t b,
+                          uint64_t *ops)
+{
+    if (sh->fb_base) {
+        rho_fb_mul(sh, t1, sh->fb_base, a, ops);
+        rho_fb_mul(sh, t2, sh->fb_target, b, ops);
+    } else {
+        ca_group_mul(sh->g, t1, &sh->base, a, ops);
+        ca_group_mul(sh->g, t2, &sh->target, b, ops);
+    }
+}
+
+// cppcheck-suppress constParameterPointer ; CA_RHO_TRACE builds write through sh (trail_counter)
 static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops)
 {
     const ca_group *g = sh->g;
     w->a = ca_rng_below(rng, sh->n);
     w->b = ca_rng_below(rng, sh->n);
     ca_elem t1, t2;
-    ca_group_mul(g, &t1, &sh->base, w->a, ops);
-    ca_group_mul(g, &t2, &sh->target, w->b, ops);
+    rho_start_mul(sh, &t1, &t2, w->a, w->b, ops);
     ca_group_op(g, &w->Y, &t1, &t2);
     (*ops)++;
     if (sh->negmap && ca_group_canonicalize(g, &w->Y)) {
@@ -426,6 +462,7 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
     w->retry = 0;
     w->since_dp = 0;
     w->win = 0;
+    w->hist_n = 0;
 #ifdef CA_RHO_TRACE
     w->ring_n = 0;
     w->charged = 0;
@@ -437,12 +474,21 @@ static void walk_restart(rho_shared *sh, rho_walk *w, ca_rng *rng, uint64_t *ops
 /* Apply the exponent update for a step with multiplier i and sign flag. */
 static inline void walk_apply(const rho_shared *sh, rho_walk *w, uint32_t i, int negated)
 {
-    exp_add(sh->n, &w->a, sh->alpha[i]);
-    exp_add(sh->n, &w->b, sh->beta[i]);
-    if (negated) {
-        w->a = w->a ? sh->n - w->a : 0;
-        w->b = w->b ? sh->n - w->b : 0;
+    const uint64_t n = sh->n;
+    uint64_t a = ca_addmod(w->a, sh->alpha[i], n);
+    uint64_t b = ca_addmod(w->b, sh->beta[i], n);
+    if (sh->negmap) {
+        /* With the negation map, `negated` is a coin flip on walk data, so
+         * the negated coefficients are formed unconditionally and selected:
+         * the values the branch gave, without its mispredictions.  Without
+         * the map `negated` is always 0 and this is skipped. */
+        uint64_t na = a ? n - a : 0;
+        uint64_t nb = b ? n - b : 0;
+        a = negated ? na : a;
+        b = negated ? nb : b;
     }
+    w->a = a;
+    w->b = b;
 }
 
 /* One full (unbatched) step of the walk function.  Used only for cycle
@@ -504,6 +550,7 @@ static uint32_t walk_escape_cycle(rho_shared *sh, rho_walk *w, uint64_t *ops)
     w->h = ca_group_hash(g, &w->Y);
     w->retry = 0;
     w->win = 0;
+    w->hist_n = 0;
     return cycle_len;
 }
 
@@ -543,6 +590,101 @@ static int rho_try_solve(rho_shared *sh, uint64_t a1, uint64_t b1, uint64_t a2, 
     return 0;
 }
 
+#ifndef CA_RHO_TRACE
+/* The distinguished-point event of the native (Z/pZ)^* round: the table
+ * insertion, solve attempt, restarts and limits of the bookkeeping pass in
+ * rho_thread_main, statement for statement.  Out of line because one step in
+ * 2^dp_bits reaches it.  Returns 1 when the round ends at this walk. */
+static __attribute__((noinline)) int rho_zp_dp(rho_shared *sh, rho_walk *wk, uint64_t h,
+                                               ca_rng *rng, uint64_t *ops)
+{
+    uint64_t oa, ob;
+    int rc;
+    pthread_mutex_lock(&sh->lock);
+    rc = ca_htab_insert(&sh->tab, h, wk->a, wk->b, &oa, &ob);
+    size_t entries = sh->tab.count;
+    pthread_mutex_unlock(&sh->lock);
+    atomic_fetch_add(&sh->total_dps, 1);
+    if (rc < 0) {
+        pthread_mutex_lock(&sh->lock);
+        sh->status = CA_ERR_NOMEM;
+        atomic_store(&sh->done, 1);
+        pthread_mutex_unlock(&sh->lock);
+        return 1;
+    }
+    if (rc == 1) {
+        if (oa == wk->a && ob == wk->b) {
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        } else {
+            pthread_mutex_lock(&sh->lock);
+            if (!atomic_load(&sh->done) && rho_try_solve(sh, oa, ob, wk->a, wk->b)) {
+                sh->status = CA_OK;
+                atomic_store(&sh->done, 1);
+            }
+            pthread_mutex_unlock(&sh->lock);
+            if (atomic_load(&sh->done)) return 1;
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        }
+    }
+    wk->since_dp = 0;
+    if (sh->max_table && entries > sh->max_table) {
+        pthread_mutex_lock(&sh->lock);
+        if (!atomic_load(&sh->done)) sh->status = CA_ERR_LIMIT;
+        atomic_store(&sh->done, 1);
+        pthread_mutex_unlock(&sh->lock);
+        return 1;
+    }
+    return 0;
+}
+
+/* One round of the native (Z/pZ)^* walk without the negation map (the group
+ * has none), fused: each walk's index, Montgomery product, hash, exponent
+ * update and distinguished-point test in one pass, in walk order.  The
+ * staged pass computes all W products first and commits them in walk order,
+ * stopping at the walk that ends the round; a walk's product reads only its
+ * own state, so computing it just before its commit gives the same values,
+ * the same rng draws and the same ops.  Without the negation map no
+ * multiplier is ever rejected (retry stays 0) and there is no window test.
+ * The constants live in locals: the stores of the pass are uint64_t
+ * lvalues, which through sh would force a reload of each per walk. */
+static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rng, uint64_t *ops,
+                         uint64_t abandon)
+{
+    const ca_group *g = sh->g;
+    const uint32_t rmask = sh->r_mask, r = sh->r;
+    const uint64_t rmagic = sh->r_magic, P = g->mont.p, NPI = (uint64_t)0 - g->mont.pinv;
+    const uint64_t N = sh->n, dpm = sh->dp_mask;
+    const ca_elem *M = sh->M;
+    const uint64_t *al = sh->alpha, *be = sh->beta;
+    /* the staged pass forms (and counts) all W products, those past a walk
+     * that ends the round included */
+    *ops += W;
+    CA_FC_ADD(CA_FC_MUL, W);
+    for (uint32_t w = 0; w < W; w++) {
+        rho_walk *wk = &walks[w];
+        uint32_t upper = (uint32_t)(wk->h >> 32);
+        uint32_t i = rmask ? upper & rmask : (uint32_t)(((ca_u128)(rmagic * upper) * r) >> 64);
+        uint64_t y = ca_ec_bmul(wk->Y.w[0], M[i].w[0], P, NPI);
+        uint64_t h = ca_zp_hash_word(y);
+        wk->Y.w[0] = y;
+        wk->h = h;
+        wk->idx = i;
+        wk->a = ca_addmod(wk->a, al[i], N);
+        wk->b = ca_addmod(wk->b, be[i], N);
+        uint64_t sd = wk->since_dp + 1;
+        wk->since_dp = sd;
+        if ((h & dpm) == 0) {
+            if (rho_zp_dp(sh, wk, h, rng, ops)) return;
+        } else if (sd > abandon) {
+            walk_restart(sh, wk, rng, ops);
+            atomic_fetch_add(&sh->restarts, 1);
+        }
+    }
+}
+#endif
+
 static void *rho_thread_main(void *arg)
 {
     rho_thread *th = arg;
@@ -553,6 +695,20 @@ static void *rho_thread_main(void *arg)
     ca_elem *Yn = calloc(W, sizeof(ca_elem));
     ca_elem *B = calloc(W, sizeof(ca_elem));
     uint64_t *scratch = calloc(2 * (size_t)W, sizeof(uint64_t));
+    /* The native E(F_p) group takes the step without the vtable: the
+     * batched addition is fused into the bookkeeping pass below, and the
+     * canonicalisation and hash are the inline functions behind the
+     * vtable's entries (ca_internal.h), so every value agrees with the
+     * generic path. */
+    const int ec = ca_ec_group_is_native(g);
+    /* The native (Z/pZ)^* group: each walk's step is one Montgomery
+     * product of its residue word, done in place below instead of staging
+     * the multipliers and points and dispatching zp_batch_op. */
+    const int zp = !ec && ca_zp_group_is_native(g);
+    const ca_ec_consts ecc = ec ? ca_ec_consts_of(g) : (ca_ec_consts){0, 0, 0, 0};
+#ifndef CA_RHO_TRACE
+    const int zp_fused = zp && !sh->negmap;
+#endif
     if (!walks || !Yn || !B || !scratch) {
         free(walks); free(Yn); free(B); free(scratch);
         pthread_mutex_lock(&sh->lock);
@@ -580,13 +736,77 @@ static void *rho_thread_main(void *arg)
     const uint64_t abandon = (uint64_t)24 << sh->dp_bits;
 
     while (!atomic_load_explicit(&sh->done, memory_order_relaxed)) {
-        for (uint32_t w = 0; w < W; w++) {
-            rho_walk *wk = &walks[w];
-            if (!wk->retry) wk->idx = rho_index(sh, wk->h);
-            B[w] = sh->M[wk->idx];
+        /* The simultaneous inversion of the batch, by Montgomery's trick.
+         * Generic groups go through the vtable's batch_op: copy the
+         * multipliers and the points out, add, and read the results back.
+         * The native EC group reads each walk's point and its multiplier
+         * where they lie, and runs the trick over RHO_CHAINS interleaved
+         * chains (walk w belongs to chain w mod RHO_CHAINS): a Montgomery
+         * product takes about twelve cycles of latency and one chain of
+         * them is a serial dependency through the whole batch, twice (the
+         * products, then the inverses), so four chains let the core overlap
+         * them.  Suffix products in place of prefix products put the
+         * inverses out in walk order.  The chain totals are joined with the
+         * prefix/suffix trick again, so the batch still pays one field
+         * inversion; it pays 3 RHO_CHAINS - 2 extra multiplications for the
+         * join (10 of about 770 at 256 walks).  Same denominators, same
+         * points. */
+#ifndef CA_RHO_TRACE
+        if (zp_fused) {
+            rho_zp_round(sh, walks, W, &rng, &ops, abandon); /* W: the walks allocated */
+            goto round_done;
         }
-        for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
-        ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+#endif
+        uint64_t *const den = scratch, *const suf = scratch + W;
+        if (ec) {
+#define RHO_CHAINS 4u
+#define BM(x, y)   (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), ecc.p, ecc.npi))
+            const uint32_t k = W < RHO_CHAINS ? W : RHO_CHAINS;
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                den[w] = ca_ec_add_den(&ecc, &wk->Y, &sh->M[wk->idx]);
+            }
+            for (uint32_t w = W; w-- > 0;) suf[w] = w + k < W ? BM(den[w], suf[w + k]) : den[w];
+            /* total[j] = suf[j] is chain j's product; invert the product of
+             * the totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+            uint64_t before[RHO_CHAINS], after[RHO_CHAINS], inv[RHO_CHAINS];
+            before[0] = ecc.one;
+            for (uint32_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+            after[k - 1] = ecc.one;
+            for (uint32_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+            uint64_t all = BM(before[k - 1], suf[k - 1]);
+            all = ca_mont_inv(&g->mont, all);
+            for (uint32_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+            /* The additions, in walk order: den[w]^{-1} from chain j's
+             * running inverse, then the step into Yn[w]. */
+            for (uint32_t w = 0, j = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                uint64_t di = w + k < W ? BM(inv[j], suf[w + k]) : inv[j];
+                inv[j] = BM(inv[j], den[w]);
+                ca_ec_add_with_di(&ecc, &Yn[w], &wk->Y, &sh->M[wk->idx], di);
+                j = j + 1 == k ? 0 : j + 1;
+            }
+#undef BM
+#undef RHO_CHAINS
+        } else if (zp) {
+            /* zp_batch_op's product, element by element: the other words
+             * of the point are carried over as the copy-then-multiply did. */
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                Yn[w] = wk->Y;
+                Yn[w].w[0] = ca_mont_mul(&g->mont, wk->Y.w[0], sh->M[wk->idx].w[0]);
+            }
+        } else {
+            for (uint32_t w = 0; w < W; w++) {
+                rho_walk *wk = &walks[w];
+                if (!wk->retry) wk->idx = rho_index(sh, wk->h);
+                B[w] = sh->M[wk->idx];
+            }
+            for (uint32_t w = 0; w < W; w++) Yn[w] = walks[w].Y;
+            ca_group_batch_op(g, Yn, Yn, B, W, scratch);
+        }
         ops += W;
 #ifdef CA_RHO_TRACE
         sh->tr.step_ops += W;
@@ -597,8 +817,19 @@ static void *rho_thread_main(void *arg)
 #ifdef CA_RHO_TRACE
             tr_done = w + 1;
 #endif
-            int neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
-            uint64_t h = ca_group_hash(g, &Yn[w]);
+            int neg;
+            uint64_t h;
+            if (ec) {
+                ca_elem *y = &Yn[w];
+                neg = sh->negmap ? ca_ec_canon_words(ecc.p, &y->w[1], y->w[2]) : 0;
+                h = ca_ec_hash_words(y->w[0], y->w[1], y->w[2]);
+            } else if (zp) {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_zp_hash_word(Yn[w].w[0]);
+            } else {
+                neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
+                h = ca_group_hash(g, &Yn[w]);
+            }
             if (sh->negmap && rho_index(sh, h) == wk->idx && wk->retry + 1 < sh->r) {
                 wk->idx = (wk->idx + 1) % sh->r;
                 wk->retry++; /* bounded as in walk_step_single */
@@ -629,45 +860,63 @@ static void *rho_thread_main(void *arg)
 #endif
 
             if (sh->negmap) {
-                if (wk->win == 0) {
-                    wk->saved = wk->Y;
-                    wk->win = RHO_WINDOW;
-                } else {
-                    wk->win--;
-                    if (wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved)) {
+                /* a repeat of the point two or four steps back is a 2- or 4-cycle */
+                int in_cycle = (wk->hist_n >= 2 && h == wk->hist_h[1] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[1])) ||
+                               (wk->hist_n >= 4 && h == wk->hist_h[3] &&
+                                ca_group_equal(g, &wk->Y, &wk->hist[3]));
+                if (!in_cycle) {
+                    for (int k = 3; k > 0; k--) {
+                        wk->hist[k] = wk->hist[k - 1];
+                        wk->hist_h[k] = wk->hist_h[k - 1];
+                    }
+                    wk->hist[0] = wk->Y;
+                    wk->hist_h[0] = h;
+                    if (wk->hist_n < 4) wk->hist_n++;
+                    if (wk->win == 0) {
+                        wk->saved = wk->Y;
+                        wk->win = RHO_WINDOW;
+                    } else {
+                        wk->win--;
+                        in_cycle =
+                            wk->Y.w[0] == wk->saved.w[0] && ca_group_equal(g, &wk->Y, &wk->saved);
+                    }
+                }
+                if (in_cycle) {
 #ifdef CA_RHO_TRACE
-                        uint64_t o0_ = ops;
+                    uint64_t o0_ = ops;
 #endif
 #ifdef CA_RHO_TRACE
-                        uint32_t cl_ =
+                    uint32_t cl_ =
 #endif
                         walk_escape_cycle(sh, wk, &ops);
-                        h = wk->h;
+                    h = wk->h;
 #ifdef CA_RHO_TRACE
-                        {
-                            rho_trace *tr = &sh->tr;
-                            tr->escape_ops += ops - o0_;
-                            tr->escapes++;
-                            if (cl_ == 0) tr->escape_unclosed++;
-                            else tr->cycle_len[cl_]++;
-                            /* committed points that lie on the cycle: the last c steps repeat the
-                             * point cl_ earlier, plus the first traversal */
-                            uint64_t c = 0, avail = wk->ring_n;
-                            if (cl_) {
-                                while (c + cl_ < RHO_RING && c + cl_ < avail &&
-                                       wk->ring[(wk->ring_n - 1 - c) % RHO_RING] ==
-                                           wk->ring[(wk->ring_n - 1 - c - cl_) % RHO_RING])
-                                    c++;
-                            }
-                            uint64_t cyc = cl_ ? c + cl_ : 0;
-                            if (cyc > avail) cyc = avail;
-                            if (cyc > wk->since_dp - wk->charged) cyc = wk->since_dp - wk->charged;
-                            tr->escape_cycle_steps += cyc;
-                            wk->charged += cyc;
-                            wk->ring_n = 0; /* the jump leaves the cycle */
+                    {
+                        rho_trace *tr = &sh->tr;
+                        tr->escape_ops += ops - o0_;
+                        tr->escapes++;
+                        if (cl_ == 0)
+                            tr->escape_unclosed++;
+                        else
+                            tr->cycle_len[cl_]++;
+                        /* committed points that lie on the cycle: the last c steps repeat the
+                         * point cl_ earlier, plus the first traversal */
+                        uint64_t c = 0, avail = wk->ring_n;
+                        if (cl_) {
+                            while (c + cl_ < RHO_RING && c + cl_ < avail &&
+                                   wk->ring[(wk->ring_n - 1 - c) % RHO_RING] ==
+                                       wk->ring[(wk->ring_n - 1 - c - cl_) % RHO_RING])
+                                c++;
                         }
-#endif
+                        uint64_t cyc = cl_ ? c + cl_ : 0;
+                        if (cyc > avail) cyc = avail;
+                        if (cyc > wk->since_dp - wk->charged) cyc = wk->since_dp - wk->charged;
+                        tr->escape_cycle_steps += cyc;
+                        wk->charged += cyc;
+                        wk->ring_n = 0; /* the jump leaves the cycle */
                     }
+#endif
                 }
             }
 
@@ -730,6 +979,9 @@ static void *rho_thread_main(void *arg)
                 atomic_fetch_add(&sh->restarts, 1);
             }
         }
+#ifndef CA_RHO_TRACE
+    round_done:
+#endif
 #ifdef CA_RHO_TRACE
         sh->tr.unprocessed += W - tr_done; /* slots left unused when the solve ended mid-round */
 #endif
@@ -812,7 +1064,20 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         uint64_t budget = sqrt_n / (48u * (uint64_t)lg);
         uint32_t r = 8;
         uint32_t cap = sh.negmap ? 1024u : 32u;
-        while ((uint64_t)r * 2 <= budget && r * 2 <= cap) r *= 2;
+        if (sh.negmap) {
+            /* A table of r multipliers costs about r * log2(n) operations
+             * once the scalar multiplications use fixed-base tables, while
+             * each step is rejected by the look-ahead with probability 1/r
+             * and falls into a fruitless cycle at a similar rate; the sum is
+             * smallest near sqrt(steps / log2(n)), and steps grow like
+             * sqrt(n).  Take the power of two nearest to
+             * 1.5 * sqrt(sqrt(n) / log2(n)), within [8, 1024]
+             * (experiments/rho-selection-20261024). */
+            double want = 1.5 * sqrt((double)sqrt_n / (double)lg);
+            while ((double)r * 1.41421356 <= want && r * 2 <= cap) r *= 2;
+        } else {
+            while ((uint64_t)r * 2 <= budget && r * 2 <= cap) r *= 2;
+        }
         sh.r = r;
     }
     if (sh.r < 4) sh.r = 4;
@@ -842,7 +1107,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     if (dp < 0) {
         double expected = 1.25 * (double)sqrt_n / (sh.negmap ? 1.4142 : 1.0);
         double total_walks = (double)threads * W;
-        double per_walk = expected / (32.0 * total_walks);
+        /* Distinguished points per walk: more of them shorten the wait between
+         * a collision and its detection; 128 with the negation map, where the
+         * wait is a larger share of the cost. */
+        double per_walk = expected / ((sh.negmap ? 128.0 : 32.0) * total_walks);
         dp = per_walk >= 2.0 ? ilog2_u64((uint64_t)per_walk) : 0;
         /* keep the DP table under ~2^24 entries */
         int min_dp = ilog2_u64((uint64_t)expected) - 24;
@@ -863,18 +1131,39 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.alpha = calloc(sh.r, sizeof(uint64_t));
     sh.beta = calloc(sh.r, sizeof(uint64_t));
     if (!sh.M || !sh.alpha || !sh.beta) {
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     ca_rng rng;
     ca_rng_seed(&rng, sh.seed);
     uint64_t setup_ops = 0;
+    if (g->kind == CA_GROUP_EC) {
+        sh.fb_bits = ilog2_u64(n) + 1;
+        sh.fb_base = calloc(2 * (size_t)sh.fb_bits, sizeof(ca_elem));
+        if (!sh.fb_base) {
+            free(sh.M);
+            free(sh.alpha);
+            free(sh.beta);
+            free(sh.fb_base);
+            return CA_ERR_NOMEM;
+        }
+        sh.fb_target = sh.fb_base + sh.fb_bits;
+        sh.fb_base[0] = *base;
+        sh.fb_target[0] = *target;
+        for (int b = 1; b < sh.fb_bits; b++) {
+            ca_group_dbl(g, &sh.fb_base[b], &sh.fb_base[b - 1]);
+            ca_group_dbl(g, &sh.fb_target[b], &sh.fb_target[b - 1]);
+            setup_ops += 2;
+        }
+    }
     for (uint32_t i = 0; i < sh.r; i++) {
         sh.alpha[i] = ca_rng_below(&rng, n);
         sh.beta[i] = ca_rng_below(&rng, n);
         ca_elem t1, t2;
-        ca_group_mul(g, &t1, base, sh.alpha[i], &setup_ops);
-        ca_group_mul(g, &t2, target, sh.beta[i], &setup_ops);
+        rho_start_mul(&sh, &t1, &t2, sh.alpha[i], sh.beta[i], &setup_ops);
         ca_group_op(g, &sh.M[i], &t1, &t2);
         setup_ops++;
     }
@@ -884,7 +1173,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
 #endif
     double expected_dps = 1.25 * (double)sqrt_n / (double)(1ULL << dp) + 1024;
     if (ca_htab_init(&sh.tab, (size_t)(expected_dps < 1e8 ? expected_dps : 1e8)) != CA_OK) {
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         return CA_ERR_NOMEM;
     }
     pthread_mutex_init(&sh.lock, NULL);
@@ -892,7 +1184,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     sh.status = CA_ERR_INTERNAL;
     if (existing && !rho_checkpoint_load(&sh, &saved)) {
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_INVALID;
     }
@@ -903,7 +1198,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         if (!rho_checkpoint_save(&sh, ca_now() - t0) ||
             !rho_progress(&sh, ca_now() - t0, verbose)) {
             ca_htab_free(&sh.tab);
-            free(sh.M); free(sh.alpha); free(sh.beta);
+            free(sh.M);
+            free(sh.alpha);
+            free(sh.beta);
+            free(sh.fb_base);
             pthread_mutex_destroy(&sh.lock);
             return CA_ERR_INTERNAL;
         }
@@ -917,7 +1215,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
         free(ths);
         free(created);
         ca_htab_free(&sh.tab);
-        free(sh.M); free(sh.alpha); free(sh.beta);
+        free(sh.M);
+        free(sh.alpha);
+        free(sh.beta);
+        free(sh.fb_base);
         pthread_mutex_destroy(&sh.lock);
         return CA_ERR_NOMEM;
     }
@@ -1039,7 +1340,10 @@ static ca_status rho_solve_impl(const ca_group *g, const ca_elem *base, const ca
     free(ths);
     free(created);
     ca_htab_free(&sh.tab);
-    free(sh.M); free(sh.alpha); free(sh.beta);
+    free(sh.M);
+    free(sh.alpha);
+    free(sh.beta);
+    free(sh.fb_base);
     pthread_mutex_destroy(&sh.lock);
     return rc;
 }

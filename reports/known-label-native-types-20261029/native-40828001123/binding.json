@@ -1,0 +1,73 @@
+{
+  "schema": "known-label-native-evidence-binding/v1",
+  "pr_head": "42fb95ed95a6bbf06ea38422b32cc3e22988b08d",
+  "native_checkout": "2e5184f9febb3bb0cb5e52a782708bfdf3c56319",
+  "run": 40828001123,
+  "attempt": 1,
+  "job": 123295387820,
+  "artifact": 12877004890,
+  "artifact_sha256": "e6052d06aed2ada9881a89e37e49a8d939b7d022e79758097791e8868209c4d2",
+  "retained_records_verified": 221,
+  "successful_command_records": 217,
+  "known_label_commands": [
+    {
+      "record": "command-1k54ro_c/record.json",
+      "argv": [
+        "lean",
+        "/tmp/mathlib-corpus-4fg_kgq0/CollectedTypes.lean"
+      ],
+      "returncode": 0
+    },
+    {
+      "record": "command-9v58lkof/record.json",
+      "argv": [
+        "lean",
+        "--run",
+        "/home/runner/work/_temp/lean-corpus-evidence/module-inputs-3bdoa_8q/AuditHeckeAxioms.lean",
+        "docs.known-label-next-leads-20261028.Algebra"
+      ],
+      "returncode": 0
+    },
+    {
+      "record": "command-xzx1jw40/record.json",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-R",
+        "/home/runner/work/cryptanalysis/cryptanalysis",
+        "-o",
+        "/tmp/mathlib-corpus-4fg_kgq0/docs/known-label-next-leads-20261028/Algebra.olean",
+        "/home/runner/work/cryptanalysis/cryptanalysis/docs/known-label-next-leads-20261028/Algebra.lean"
+      ],
+      "returncode": 0
+    }
+  ],
+  "source_and_pin_files_matched_to_head": [
+    "docs/known-label-next-leads-20261028/Algebra.lean",
+    "tools/lean/AuditHeckeAxioms.lean",
+    "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+    "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+    "experiments/hecke-432-formal-ci-20261025/lake-manifest.json"
+  ],
+  "source_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+  "gate_sha256": "f84a1c1307e10453d558331ac10e7923b47ef07a3b4663eb245ec141b3692789",
+  "auditor_sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+  "compiled_object_digests": {
+    "Algebra.olean": "20b75db37c292ff6ac019cc0650b9bf618ff2fb6da45dbbe931c5453e8c60b37"
+  },
+  "theorem_names": [
+    "KnownLabelLeads.positive_pair_product",
+    "KnownLabelLeads.signed_second_moment",
+    "KnownLabelLeads.signed_third_moment",
+    "KnownLabelLeads.triangle_identity"
+  ],
+  "type_stdout_sha256": "bece54644b2e7349baa91dbb25691d058369b09f2efd32ddaa8080a49bed3366",
+  "native_status": "passed under declared Lean/Lake/runner trust",
+  "semantic_fidelity": "not_reviewed",
+  "limitations": [
+    "Compiled object bytes are not retained; hashes and successful phase-boundary checks are recorded.",
+    "No independent kernel or dependency binary rechecker.",
+    "No graph/group/probability, implementation or historical execution bridge supplied."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "transfer-audit-ci-fix/v1",
+  "failed_head": "fb3134b97dcb37f12ab19c7df164518415bc069d",
+  "failed_run": 41005457350,
+  "failure": "runner has no rg executable",
+  "bash_syntax_exit_code": 0,
+  "no_rg_full_regression_exit_code": 0,
+  "regression_path_prefix": "/tmp/transfer-audit-no-rg (rg exits 127 if called)",
+  "hosted_fix_verified": false,
+  "transition": {
+    "path": "tools/transfer-audit/check.sh",
+    "from_commit": "fb3134b97dcb37f12ab19c7df164518415bc069d",
+    "from_sha256": "2e2609f5b5203f9341a097d6e2580efa8b2708fb8dd5a9f27669c044bd07d440",
+    "to_sha256": "605e207ded5bf365d8e2ed528054cb146720d8196d3033ccfe798aff53242e2c",
+    "reason": "remove optional rg dependency; check the exact pinned Lean version using existing Python"
+  },
+  "entries": [
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/check-before.sh.txt",
+      "bytes": 2688,
+      "sha256": "2e2609f5b5203f9341a097d6e2580efa8b2708fb8dd5a9f27669c044bd07d440"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/job-123899219508.txt",
+      "bytes": 34583,
+      "sha256": "a392f0a683798edcb923287af93de7dbfa7613649e8f585cff269e2b186dbada"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression/b163-certificate.json",
+      "bytes": 80210,
+      "sha256": "feed6fa97a54d1f960bf2a0b3d7efcf23285890f6a460e977efb908c08df385e"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression/completed.json",
+      "bytes": 311,
+      "sha256": "31ae8babb4017f4200fe559462e3b8bd448f425aa132829eefe4a13ee3694ed7"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression/lean-audit.txt",
+      "bytes": 1015,
+      "sha256": "cb950505be133d1bf34cb33efcb70fa59bad47e403a0e8682879f16162b2d22c"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression/lean-build.txt",
+      "bytes": 575,
+      "sha256": "19a5063069175013b52a6375a76b35e1cffab7a0258e84eaf77c8b6eab65ac62"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression/lean-version.txt",
+      "bytes": 106,
+      "sha256": "355a9a028f81641782d75d6e6b58dec70f29d2f61238a9e271690259d9bf5680"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/no-rg-regression.txt",
+      "bytes": 5808,
+      "sha256": "6f379233ed1ddd7b997ec858e76499f0ca69c4cec68dffe02f146bf0ee067791"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/rg-unavailable.sh.txt",
+      "bytes": 19,
+      "sha256": "c07d6c0d3d6f1bcd8396ab432e050a0578f73e7e644c5c3fd230386c1294cb75"
+    },
+    {
+      "path": "tools/transfer-audit/evidence/hosted-check-41005457350/snapshot.json",
+      "bytes": 665,
+      "sha256": "0e242c36ddb60a082a5d2af6b13529351f8223d0d52a52f5924879d54a1cf415"
+    }
+  ]
+}

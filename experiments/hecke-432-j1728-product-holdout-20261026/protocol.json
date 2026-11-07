@@ -1,0 +1,37 @@
+{
+  "audit_policy": "Independent all-j source census and source image only after frozen source-free prediction and direct inverse; preserve all zeros and exceptions.",
+  "inputs": {
+    "b_resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/relative_b_resolvent.json",
+      "sha256": "a68adf5a4902ae3744a3db85799934f871e806788aa8d29e666a805c952d23aa"
+    },
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "factor_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-product-holdout-20261026/factor_result.json",
+      "sha256": "5735c5ccec2254950004299f3e4be1a8e2a6a49da9cb6040715878abd37926e2"
+    },
+    "inverse_filter": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-inverse-filter-crossprime-20261025/inverse_filter.py",
+      "sha256": "92766978eb1ef3d481e4ed49c1574ffda722a7576cfbcd71ebe6f7c0acd52183"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    },
+    "sieve_protocol": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-product-holdout-20261026/sieve_protocol.json",
+      "sha256": "0dd988782f9797d56a61d69fe36f71a8c585c4f88c8d80289a7742aadb40624e"
+    },
+    "sieve_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-product-holdout-20261026/sieve_result.json",
+      "sha256": "f686b5f462bae11e684a64d04d84bd205338edbf2d0baea886fb7cd3a07f9e5a"
+    }
+  },
+  "prediction": "For j1728 valid triples, rational 27-path j-sequence count times unit 16-path B factor measured on p1319 and p1367; generic restricted-Jacobian behavior is a secondary diagnostic.",
+  "prime": 1439,
+  "prime_selection": "First p>1367 congruent 23 mod 24 with at least four valid j1728 triples on two rational C sheets, selected by sieve_protocol.json; p=1439",
+  "status": "FROZEN_BEFORE_P1439_SOURCE_FREE_SCREEN"
+}

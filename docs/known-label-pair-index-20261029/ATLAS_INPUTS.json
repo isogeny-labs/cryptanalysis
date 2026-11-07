@@ -1,0 +1,836 @@
+{
+  "repository": "isogeny-labs/crypto-autoresearcher",
+  "ref": "f598670fd53cfbf91e6cb880e4e13b829c154149",
+  "files": [
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-augmented-oracle-ggm.yaml",
+      "sha": "f35ea50dd909de745c6bfbb1b081704ecd71f739"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-coordinate-statistic-leakage.yaml",
+      "sha": "0b4659338ec424d1024d12f6c77754e7b994effe"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-cryptoscale-candidate-screen.yaml",
+      "sha": "6a7d310e10c531c27b876f289f9910c995434edd"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-curve-model-representation.yaml",
+      "sha": "129c76e1f30ed582cc7c7c4d28cfc3c0695c2c16"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-dl-character-sum-pseudorandom.yaml",
+      "sha": "5a177160452bce42ac201b01051ede8b041a8b76"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-elliptic-net-eds.yaml",
+      "sha": "ac2c93ec0be62ba48ddba0dc40deac45ec3d82ae"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-four-list-ktree-join.yaml",
+      "sha": "1df1caacf70756d342df9492ad7c27f36d86a406"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-global-lift-height.yaml",
+      "sha": "98a57213d9c9f8f0d06132e392162589405b65ba"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-hnp-advice-leakage.yaml",
+      "sha": "075cefd2d5ab8899019fbc3ee2ccee33be38e960"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-ideas-corpus-algebraic-transforms.yaml",
+      "sha": "a4a4278bb2e5cf8201db2e5acf398d79ada4fea5"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-invertible-hint-subset.yaml",
+      "sha": "97f961efabfa753382801595705aadfbcc9780da"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-lossy-object-propagation.yaml",
+      "sha": "5e1a27e78660d932b2ad22235df28174d63f618d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-methodology-instruments.yaml",
+      "sha": "75b2f3409acc496f3c08fbbacbcecd9bfa052344"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-miller-pairing-cocycle.yaml",
+      "sha": "a22b6c7fef3d93474bd12c0f9d161429e1d6ed3a"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-ml-learned-models.yaml",
+      "sha": "9c9214cf00833864005c58435a8115b00ce51ce6"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-padic-jet-canonical-lift.yaml",
+      "sha": "1d2a414ff652525b3922eb277bc68e467f9525c9"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-quantum-ecdlp-resources.yaml",
+      "sha": "c7b130e30a14bdaee65e05ffc5d567d5a23f1dd7"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-split-jacobian-projection.yaml",
+      "sha": "166ca6237c1ef8cd4b87dc16d1f19425f7896c93"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/exotic/LEAD-EXO-torsor-deck-period.yaml",
+      "sha": "3aa54a2a2b71936711a3397d43d3faa06ffe6fab"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-advice-table-variants.yaml",
+      "sha": "1e0b8ecd11d7bcdc732f1061ba4e1167dbb61438"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-automorphism-class-walks.yaml",
+      "sha": "c1a090c4163d6e4d4a85cefae418b7414048ef1b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-batched-inversion-shared-pm.yaml",
+      "sha": "1e91a1fb8d65c8c3e481dab14bb9677debafd944"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-best-of-candidates-indegree.yaml",
+      "sha": "f3b1dd25f6b2fbc201f0321633d1284416d43814"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-bsgs-family-memory.yaml",
+      "sha": "f37b2c5b3d4a40ddd320ebe839703267ffe12fff"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-cheaper-step-primitives.yaml",
+      "sha": "fecca9e0ddcb108fe1680ec8787b601250370d3b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-cheon-aux-acquisition.yaml",
+      "sha": "25d52a1b29662c1d5fef732c8b852c14c8869474"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-cheon-deployed-applicability.yaml",
+      "sha": "cfc5e2515fd18421cfddc2319d7a3f797ffb084e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-cheon-toy-reproduction.yaml",
+      "sha": "1e6be1dfce737dfaabf58a126b9471b46d0e879d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-correlated-walks-shared-sums.yaml",
+      "sha": "30021f9ebed17099280ca31bb93bdbfbd0416232"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-dp-multitarget-precomputation.yaml",
+      "sha": "430604c58acf9549815bf70cb81a77a3fee67e45"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-ecc2k130-gpu-fpga-throughput.yaml",
+      "sha": "d43093fe413dcab49123abb18272661cc93d961a"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-ecc2k130-iteration-function.yaml",
+      "sha": "5bce30968cdc9aacb40e1789a1c2bd086b68c564"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-generic-sqrt-lower-bound.yaml",
+      "sha": "15a3f40156831acfc8cd2e8a7ea75364e67e9f2d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-grumpy-store-all-schedules.yaml",
+      "sha": "1d38489988c5edbac6c2a4f1dcb8cf7c01eb39e1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-kangaroo-interval.yaml",
+      "sha": "f199bcd15af345ca013ee2b1d15ffb616eb414d8"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-lhw-modular-filter-price.yaml",
+      "sha": "1ea5cefdcc88cd252ce5a5fb519bf92b0015f5a1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-lhw-polymem-collision-walks.yaml",
+      "sha": "fba574e5e115c75fdadf489465508af038cf1c8b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-lhw-preprocessing-frontier.yaml",
+      "sha": "c23f525f1c69b5046017e0e5dc9d8629cddab451"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-matched-rho-calibration.yaml",
+      "sha": "adb6f2596b8dc3ff5afbba97e408dca4f1341e27"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-native-step-cost.yaml",
+      "sha": "9538540c9b5c2cf5505443bb4c7d1f5ca8305560"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-negation-map-fruitless-cycles.yaml",
+      "sha": "0a0a46e2bdd37940a44186dea799e8736d353c5e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-non-automorphism-equivalence.yaml",
+      "sha": "62acb86ad76b2705fe8f3a455fbd47466be9f053"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-pool-class-quotient.yaml",
+      "sha": "8d1452cf5f474accfd342586cfad0eaa00cfa2f2"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-prime-gpu-rho.yaml",
+      "sha": "9dd7e9a09f982b0b74055a26c13144fd228d5311"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/generic/LEAD-RHO-r-adding-walk-mixing.yaml",
+      "sha": "57e0fe25b6ac256c208a3c890e5bc9a2ff1657ce"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-cofactor-torsion-quotients.yaml",
+      "sha": "798cd0c58bd722a1ddbf027cf51b056abcea7857"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-composite-degree-c2pnb.yaml",
+      "sha": "6862f43e11188969221cddceac3e7ae4154c3e36"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-decomposition-encoding-and-sat.yaml",
+      "sha": "a47ec0320a5cfa35500ed463c05ab620d461b40a"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-ecc2k130-jacobian-carrier.yaml",
+      "sha": "d877e6a3435b22df1a00c1e484b05ceef2c8a52c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-factor-base-subspace-choice.yaml",
+      "sha": "970c1ad2f32f9f103e2f09661d9720e531c4c692"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-free-relations-self-collision.yaml",
+      "sha": "a9f2e25de9bf462c40028271d2ab95b89b496e7c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-frobenius-orbit-factor-base.yaml",
+      "sha": "d6829ad9e2fa0630829eb9dd7884b1e15590ef83"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-frobenius-search-symmetry.yaml",
+      "sha": "9d708e68d81b1ed3d588c5cb9d3fa56059307722"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-generic-table-oracle.yaml",
+      "sha": "a9fc3d2a90bf46f9238cbf93fd9767dc2ddb2d91"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-kic-golden-base-exact-decomp.yaml",
+      "sha": "ed28a3e21c995693518b5f86884e00c286147aca"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-koblitz-rho-reference.yaml",
+      "sha": "217630d917de4be30c6b905f6955b2f83593b69c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-koblitz-setup-phase-cost.yaml",
+      "sha": "e781b435530852c2d57cc034c480883a416ebef1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-large-prime-variants.yaml",
+      "sha": "bc83aa95f76527575c0c93f2e4911ee972d8ca56"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-learned-cost-model-factor-base-selection.yaml",
+      "sha": "d32107da909f8da7cc08e3faacf7abec19d4907e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-multi-target-and-portfolio.yaml",
+      "sha": "3fdf0047439ac069bf6b59f2f972176eaf99392b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-nonlinear-frob-stable-bases.yaml",
+      "sha": "f80e8ecccb6e1f79b58508bff8dc8437d7f12d9c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-oakley-quintic-tower.yaml",
+      "sha": "0d06cb18068dd78021debefc0c154b4cd0e3a938"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-orbit-linear-algebra.yaml",
+      "sha": "322962f2785c6179fb1d3ecbdbcacc3ceb875478"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-prime-degree-algebraic-decomposition.yaml",
+      "sha": "79ec1568dcf46cfff674e7b443af1beef491177d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-quasi-subfield-polynomials.yaml",
+      "sha": "acee088ff004fe001acdeabcb98ecbde591273c4"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-retained-setup-online.yaml",
+      "sha": "bef0ba229a1e7d06d349a7de8db0270615e3ff9b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-binary/LEAD-ICB-tau-horner-chain.yaml",
+      "sha": "592f73943bd95e31204df732c8b20fb405e429ed"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-boolean-f4-f5-f6-engines.yaml",
+      "sha": "a94d52525b541aeea37f861892b9817608c733db"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-chained-semaev-dreg-vs-semiregular.yaml",
+      "sha": "b13bfe8f5d1388d1d8932c298333deceacb10622"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-charged-toy-ic-exponent-vs-rho.yaml",
+      "sha": "15714c474b174d56818eb84532a488c99c5e4c3e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-curve-presentation-invariance.yaml",
+      "sha": "158535dca6c431a3227ddc3f1d89e8a983366088"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-decomposition-probability-audit.yaml",
+      "sha": "986d0631dc59e6aa524a2ac2ac9e23fdcdd482cc"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-descent-closure-degree-at-scale.yaml",
+      "sha": "f9eb4bea1714e8266bd001bed16fc97f7a64fb02"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-first-fall-degree-assumptions.yaml",
+      "sha": "a1aace9fe6789f811022dd31db949779e9afba94"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-generic-oracle-arity-cost-floor.yaml",
+      "sha": "529bc47c8169f23f9f1ee42d27b039d23c8c47cb"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-gpu-rootfind-oracle.yaml",
+      "sha": "8289384f86bfcd64c0289f365d87cc24b83fb6aa"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-hybrid-guess-determine-l7.yaml",
+      "sha": "c66ab8779b7bd12cc698702e54213edf7e5d1d19"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-linearization-excess-fb-prior.yaml",
+      "sha": "98aa4dc93b8a89c473c53420a533f3b367131525"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-prime-field-semaev-solving-degree.yaml",
+      "sha": "407c512b72704b4709220b882eaa210aee506295"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-relation-graph-rank-large-prime.yaml",
+      "sha": "71a7aa4dcb9040a68ed36adfa64e77fa6847f2b1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-rootfind-pairtable-oracle.yaml",
+      "sha": "39bd62c328ee5acf6407fc14d3951446598841ba"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-sat-xor-pdp-oracle.yaml",
+      "sha": "b9c92aa53a6b90ff347029eeafa34dcd0603639e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-semaev-chain-cost-model.yaml",
+      "sha": "b861187766061a0c9820151075648958ca2cc4b7"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-semaev-cover-monodromy.yaml",
+      "sha": "91c01afd6c246bffb4eb71afe627c879076031d4"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-semaev-yield-model-coset-typing.yaml",
+      "sha": "a7203bd86c249dec9949f52b927c66f84ea5bf1d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-engine/LEAD-ICE-syzygy-cascade-signatures.yaml",
+      "sha": "8d66c7c2d57dc34c8fc21cd9e8a7354e2f5385c3"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-algebraic-membership-factor-base.yaml",
+      "sha": "91b8b95f7febc0038cf61d88032742f67b5b77db"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-char0-lifting-xedni-smoothness.yaml",
+      "sha": "755e7fdd7b8b8952b34023944a415f61a316f698"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-coincidence-harvest-structured-base.yaml",
+      "sha": "2d40055b02fbc217ef126cbeaca29bd19cec83b1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-construction-normal-form.yaml",
+      "sha": "f7053697a2380f7c32b076257dec38130307cee8"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-coppersmith-smallroot-semaev.yaml",
+      "sha": "4d9a7c060de4f22eab6bae6d5baa131bb1b0b10d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-digit-presentation-solving-degree.yaml",
+      "sha": "6b5991833d155984eb40054ad2af2ac0eed4719c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-extension-field-embedding.yaml",
+      "sha": "cc9ee932070e2d3900ef184597422b18daac61b1"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-full-width-arity-grid.yaml",
+      "sha": "57b889298b3af2723aa1bee8f240dc831cbae394"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-generic-table-decomposition.yaml",
+      "sha": "622fa178f3f4fa6c20b4e62e39d529aa50016447"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-gfp5-oa-sdhp-jv.yaml",
+      "sha": "ddd6e1c1d11a7582667194e506131460c136e063"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-gfp5-odd-char-cover.yaml",
+      "sha": "88f0eef9f7a5a5db886760a18a47e0beeb8848d9"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-gfp5-rho-reference-audit.yaml",
+      "sha": "a31800d4c8e79880cf8ca03dd8950631d2294e9b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-gfp5-symmetrized-gaudry.yaml",
+      "sha": "5443375b7bacb803c59dc0cd3b12b79212008fa0"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-icperf-binary-pdp-solver.yaml",
+      "sha": "8da902877e9923d864303b61ae23d1e53ee45886"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-icperf-writability-boundary.yaml",
+      "sha": "4a6d054a289d3774991da64d74e3c52afe073660"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-isogeny-transported-relation-yield.yaml",
+      "sha": "ff3988003500e5e3c5622c5e9bff3fb4f81aa6c2"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-lattice-ic-relation-construction.yaml",
+      "sha": "c933da4a80f92bad141e52ed2f10703466fe23b2"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-pkm-tower-algebraic-oracle.yaml",
+      "sha": "c85dd8e57fd42046b40489a765d966f9c6d4ad54"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-prime-ic-constant-engineering.yaml",
+      "sha": "754f9f0c5426ccb6591db7b1197eebe7cb1bad72"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-representation-subset-sum.yaml",
+      "sha": "d35a3152c98da662afb4c0d4f4db368714a4d173"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-residual-partial-relations.yaml",
+      "sha": "5e0546b2ca1490ff6745fecd209a6784202f2240"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-retained-setup-online.yaml",
+      "sha": "c90c9c880b8a8923a1d494679bbcdcbfac957f5c"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-self-pairing-prime-order.yaml",
+      "sha": "fe7db8523a77f35c9a60a1e26cad6697242d3ca6"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-xedni-function-field-sections.yaml",
+      "sha": "363ae33adf9ec13f875610148c1e7bb7ce8eff67"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/ic-prime/LEAD-ICP-xline-symmetry-special-j.yaml",
+      "sha": "27685ee8a8e0ff17f21e484d7a922caf60ab56af"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-automorphism-quotient-rho.yaml",
+      "sha": "8f4b7c3b3e93911e33300b99da53079aa06eb8ef"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-class-group-ecdlp-bridge.yaml",
+      "sha": "c2f64ed84509906b4ae740115062f11885f9b217"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-class-representative-ic-selection.yaml",
+      "sha": "8c13d6e88b5ce6939d35be982439897f36cccb66"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-curve-generation-provenance-seeds.yaml",
+      "sha": "5cbc931b30d1eea769cdcf4db3dc3e536c6eec85"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-endo-scalar-action-generic.yaml",
+      "sha": "36bdd47d9b6866940b6cb1e01e30ea5fed48b401"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-glv-gls-isogeny-loop-scalar-mult.yaml",
+      "sha": "20cf7065cd105368f0dc98aa54a42c4eb7f07d62"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-isogeny-class-generic-invariance.yaml",
+      "sha": "331cacc21fa9c09526118d548451e0ce537039ab"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-isogeny-transport-preprocessing.yaml",
+      "sha": "6cb7f4bd860f73215f2dd9ee3ef66b790564115b"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-isogeny-walk-weak-neighbour.yaml",
+      "sha": "3f25d9de36c38db5d60722dec8f097af4e4a4a3f"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-jmv-random-self-reduction.yaml",
+      "sha": "1ed44ac17ddde10b8a5cfb86ea8805063c937c78"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-koblitz-volcano-descendants.yaml",
+      "sha": "fbcdf9da2aba735f2bf173304de684efc8b58af5"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-p192-class-cm-relations.yaml",
+      "sha": "75cb676365cece7014d39a27ebfb5c3886542dca"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-safecurves-parameter-audit.yaml",
+      "sha": "c83953678831412a1c9a2398616384613a31ae9f"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-secp256k1-cm-class-audit.yaml",
+      "sha": "f7bcb889fbc6f1c289db3d63e45c86ca64744936"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-small-cm-disc-nonunit-endo.yaml",
+      "sha": "fceeef3088802df2844eceed6b9396bc0e6444de"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-special-j-ic-semaev.yaml",
+      "sha": "1c322110c0d8665a474bbd192fe6f6449c8d7ff6"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/structure/LEAD-STR-torsion-module-leak.yaml",
+      "sha": "8f65ebeb66798f3f07626d5af83c0916d9ead5f4"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-anomalous-padic-lift.yaml",
+      "sha": "4e539266adeeca94cc4d0748281dd7c553ec18f3"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-cm-canonical-lift-heights.yaml",
+      "sha": "68c5b303c96df37831e6a9dd6b9bafd09c19d2a8"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-cover-catalog-jacobian-transfer.yaml",
+      "sha": "0299580b770445ad46eec98b277314fa53cc7c44"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-curve-parameter-transfer-audits.yaml",
+      "sha": "dc34ba657c58be2f41c92b91e3b8fd10b26fed71"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-function-field-xedni-lift.yaml",
+      "sha": "8a72fdc7f29073665dc11839b1995f5a781274f6"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-ghs-binary-composite.yaml",
+      "sha": "7a8e315896e5bf9d6d0e0ea2776fd24419c30012"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-global-lift-small-height.yaml",
+      "sha": "1e95631fff222e90f42802748c5ece44c192dd3d"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-jv-nagao-genus2-cover-decomp.yaml",
+      "sha": "30ff0fc00fc891dfa92cc9284b17facf7f5c26db"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-jv-sieve-fp6-weak-class.yaml",
+      "sha": "d7bd07a33d20f6c4a82df579885f52b652c22130"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-miller-cocycle-nonhom-transfer.yaml",
+      "sha": "f1293850def06696ae5e8cbbd21a7de38fb6c7ae"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-mov-small-embedding-degree.yaml",
+      "sha": "ffbc27b47206352745ac8dcf64efdc6e4ee92f4f"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-odd-char-descent-smith-quartic.yaml",
+      "sha": "46f785041df13202107ea2fafad47b43f72767df"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-one-point-self-pairing.yaml",
+      "sha": "847532996469e3b089988e4a158759ff10c37751"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-padic-canonical-section.yaml",
+      "sha": "109ef598d74d01cfabae36f4d339b85b5f8caa20"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-pairing-target-field-recost.yaml",
+      "sha": "4e58dbad96e31d7ce9b33c02e6f896379987326e"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-prime-field-isogeny-to-weak.yaml",
+      "sha": "9ccc250a43c254fe2a6cc29ebb6002a2952dee79"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-same-field-genus-g-embedding.yaml",
+      "sha": "2ecaa73de365010ff01745ec25dd409a048adec8"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-second-torsion-direction.yaml",
+      "sha": "69e32c0e4cb8d2aaa75f3d564c621b2cd5f865a3"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-small-genus-cover-general.yaml",
+      "sha": "2a3bbba368584339340b1fb337d6569cf2512927"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-teske-secret-isogeny-trapdoor.yaml",
+      "sha": "3f63b42d2c0254cb775a898ca859243b315147f2"
+    },
+    {
+      "path": "knowledge/leads/ecdlp/transfer/LEAD-TRF-teske-trapdoor-fp6-weak-class.yaml",
+      "sha": "45a9fa57de9e206239d3f3b7e5628fd75f5e2899"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-037e22.yaml",
+      "sha": "47f6e9d72436eda040b09161c1a61ee2b0a4718c"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-0528e7.yaml",
+      "sha": "a6a7d9ef53f16568249a6a6dc030b3526d9fd9ab"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-13bf67.yaml",
+      "sha": "d2c111ea90a1657ffab85d529a44fee7480fa2ba"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-18cc42.yaml",
+      "sha": "3887929fceb2f9d03d4084577d9f83f57aa80415"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-1c2928.yaml",
+      "sha": "dc22b707283b58e6226de57f8eca799f92495604"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-2480c6.yaml",
+      "sha": "a2c33cff5d8d7058a59bb9745a5c1bf7f656dd73"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-33f837.yaml",
+      "sha": "71bc1ee817c77c3e989c7e92b08269509c259ca1"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-38be82.yaml",
+      "sha": "7a0d0937ec86349c1b960111ddf951173e224075"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-46c2c6.yaml",
+      "sha": "2cb6adcada92a2a04f39bc6bd3e070585203434b"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-482ed3.yaml",
+      "sha": "9485d9527b890af3144705d336101ac1e16c952d"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-53c89f.yaml",
+      "sha": "0e75d07707c4eb9cfc3b3c63f9aeca1699725e13"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-5b1c0a.yaml",
+      "sha": "6464eebfacfd4e0c42f294e0bc57f0f975c1524f"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-6239aa.yaml",
+      "sha": "5320f2faacc915a3c36ebf57e79ebf01cf904f8d"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-6654ba.yaml",
+      "sha": "8a96c8fc5232ea32232f4763cfde7641a11783e5"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-755e35.yaml",
+      "sha": "90b659188bb5c9b2015ee4c6982379ce27276f6a"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-7d93f6.yaml",
+      "sha": "5d1e5d3a854d545c27f8f56079caa0ba6be1722d"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-817bf8.yaml",
+      "sha": "635f72a800bc23d7374afbdcc46aaf58e752b0b8"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-825bca.yaml",
+      "sha": "f17e7ceef2098e2eaed3ae802e6e556eb915ba14"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-898783.yaml",
+      "sha": "f51c412b3ff5eff15a14f9e8e94d424ba538e7e2"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-93979e.yaml",
+      "sha": "96f5289f14d1dd5fee077b95615eaa0e8af35f28"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-cb1c58.yaml",
+      "sha": "f3beee48428b665dbf3e9134aa11e53e02308381"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-cd0049.yaml",
+      "sha": "3d6495f2531b89e5ccd299f23e0e1251b6fffc46"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-cd86f5.yaml",
+      "sha": "1ccd5a507afec000080adeccf756d9c8c576aacd"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-e7f98e.yaml",
+      "sha": "4a7a864e2d8ae48dd222ba2a128399cda7881373"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-ea34b8.yaml",
+      "sha": "5d83e0efcc22fc2ed6afc7b1f57044326d1737e2"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-fb88e6.yaml",
+      "sha": "67430076c406a2320f44208ef8294a77a7a84c60"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-fbd582.yaml",
+      "sha": "ffe82a3ce55adcc4c4fe2926b7622ec73316e8d5"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/generic-rho/KR-RHO-fbd7b1.yaml",
+      "sha": "1a1873293eb7d5b29128e460a03851c6c6c6cbec"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-081a58.yaml",
+      "sha": "82c4f49535a4b95405c30b96527606e6598b3ae8"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-0d2021.yaml",
+      "sha": "4762efd689afbda1027f46d9370171e67f37db8a"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-139da0.yaml",
+      "sha": "63681ba4f71b72072113fc77956758259a7bdc99"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-1fcdbc.yaml",
+      "sha": "d571a62f130368e2c9e5111dca5898e9f5256594"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-401ebf.yaml",
+      "sha": "a8e8e58f16ab2c9e83505dde086108a1603b630e"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-46d822.yaml",
+      "sha": "41681375986dbd09f95a42db53115dcef8b967fb"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-49c882.yaml",
+      "sha": "7cb7a560f1b4ef8c36fc76ab8977b89abe4527f4"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-5765d2.yaml",
+      "sha": "8c9028399189843e4b465d8df170dad562ce8776"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-5931ee.yaml",
+      "sha": "29d7fccede356f87a2d3e46b199bbd7d7f0f8efb"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-5a43e5.yaml",
+      "sha": "bd208a2db1ba3b472db51878a9b231812a5a37bc"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-5ea2f8.yaml",
+      "sha": "3dc390034ccf8e405ae1f4c7175da9a45630f04d"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-64659b.yaml",
+      "sha": "41ce90afb7615302eb9ffafb2d3ee81f15e878d5"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-73db3f.yaml",
+      "sha": "a4d9a44d68106d1f8fb1444df3282eb46dc1fe62"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-791cb7.yaml",
+      "sha": "b79dbb2f547c4a9f260ad2731c233b16a0952a66"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-889857.yaml",
+      "sha": "9e18582dc337f25728a8efaff3da31b7a57cd27f"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-8b9daa.yaml",
+      "sha": "42d7edb467c1226804e166f98b24c206ca1715b2"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-955fd6.yaml",
+      "sha": "b30d5763a3fcab139756e25faa70a695a45d2d84"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-9e610d.yaml",
+      "sha": "5d043a89249ebc2aca3a95c80a4df0a13f838174"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-a4dd54.yaml",
+      "sha": "dcde8369a9a5ddd02f9598ec17b06a213d1e9628"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-ae532f.yaml",
+      "sha": "fbf0db97f6196b2dfd3eecf54dec08518df106ec"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-b0fcda.yaml",
+      "sha": "91a4795fbb136e5027a729f6d9c3774aaeecb9a2"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-cd159a.yaml",
+      "sha": "d8d3646d3df27e4e6ff70ea330022e7b95110a87"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-e2d81b.yaml",
+      "sha": "81db9524bc13694580b61b37fffba235c22fd3b7"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-e847d1.yaml",
+      "sha": "a161da568b570ab253b3345fe706bbc561062ffc"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-f3da82.yaml",
+      "sha": "73e648d681754a2c5f75f3ee7a314ae2cf24a4dd"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-f5c584.yaml",
+      "sha": "bf3a87930e50de8485a34f3d15dd4138680a5305"
+    },
+    {
+      "path": "knowledge/frontiers/ecdlp/index-calculus/KR-IC-fbdb61.yaml",
+      "sha": "920015b246a912190be107e6eae435adee8f94e3"
+    }
+  ],
+  "tools": [
+    {
+      "path": "tools/lead_atlas.py",
+      "sha": "98a1c200874d0106f83a61495f27f23598cc4f1b"
+    },
+    {
+      "path": "tools/build_frontier_map.py",
+      "sha": "6353e7038a1f33ea2b11f987c0651d4368a8fc8f"
+    },
+    {
+      "path": "orchestration/fast_yaml.py",
+      "sha": "6a35b0628932ba0c20c814a45faa84fd54182062"
+    }
+  ]
+}

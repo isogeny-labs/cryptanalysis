@@ -1,0 +1,35 @@
+{
+  "hypothesis_for_future_prime": "If every matched (27-path,B) cell has one cyclic 16 path, then valid j1728 triple multiplicity equals the rational 27-path j-sequence count. Freeze this product rule before a third-prime complete inverse.",
+  "inputs": {
+    "p1319_audit.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/audit.json",
+      "sha256": "97dde1c0a89115ec6664caad6dbdabb28cc22e739dfdee46612afa00047294aa"
+    },
+    "p1319_source_census.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/source_census.json",
+      "sha256": "19d2e563a45e3f76caeb60e0ee189dab65f897f1caa48b27b0fab89c11e3dd39"
+    },
+    "p1319_source_image.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/source_image.json",
+      "sha256": "fba636454b138664e298d52fe2ed55e9a1f80106745bda269ab040c6960ebc80"
+    },
+    "p1367_audit.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/audit.json",
+      "sha256": "c67e34fdcee72932de2ffa4372a1c47019edabe8f256776c38d5b5ad41028fd9"
+    },
+    "p1367_source_census.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/source_census.json",
+      "sha256": "37aa7959818ed845f2638c87221dfd4d47a73108481e7a9424f981cfe8ea0360"
+    },
+    "p1367_source_image.json": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/source_image.json",
+      "sha256": "4b370c60122b56da537304d72e69d2bee40c648d933f0c6366097707aef6cc67"
+    }
+  },
+  "measurement": "for every j1728 source chain in the independent all-j image, group by rational 27-path index, j-sequence, and B point; count distinct cyclic 16-path indices; retain zero cells in the C-sheet comparison",
+  "primes": [
+    1319,
+    1367
+  ],
+  "status": "FROZEN_BEFORE_RETROSPECTIVE_16_PATH_FACTOR_AUDIT"
+}

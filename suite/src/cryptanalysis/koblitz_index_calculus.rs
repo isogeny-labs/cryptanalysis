@@ -2620,6 +2620,9 @@ pub struct FoldedStorage<'a> {
     pub words: &'a [u32],
     pub present: &'a [u64],
     pub present_mask: u64,
+    /// Whether each key sets two bits of its filter word
+    /// ([`PairSumTable::two_bit_filter`]) rather than one.
+    pub two_bit_filter: bool,
     pub tagged: bool,
     /// The normal basis the keys were named in; empty if the build fell
     /// back to the squaring chain.
@@ -2636,6 +2639,7 @@ impl FoldedStorage<'_> {
             words: self.words.to_vec(),
             present: self.present.to_vec(),
             present_mask: self.present_mask,
+            two_bit_filter: self.two_bit_filter,
             canon_tables: self.canon_tables.to_vec(),
         }
     }
@@ -2657,6 +2661,10 @@ pub struct FoldedParts {
     /// One bit per `pair_filter_hash(key) & present_mask`.
     pub present: Vec<u64>,
     pub present_mask: u64,
+    /// Whether each key also set bit `(h >> 32) & 63` of the same word
+    /// (see [`PairSumTable::two_bit_filter`]).  `false` for the
+    /// one-bit layout `gpu/ecc2k`'s fold kernel writes.
+    pub two_bit_filter: bool,
     /// The normal basis the keys were named in, as
     /// [`FrobeniusCanon::tables`] gives it.
     pub canon_tables: Vec<[u64; 256]>,
@@ -2714,6 +2722,14 @@ pub struct PairSumTable {
     /// few.  No false negatives, so the answer is unchanged.
     present: Vec<u64>,
     present_mask: u64,
+    /// Whether each key sets a second bit of the same filter word,
+    /// `(h >> 32) & 63`, and a lookup needs both.  One load either way;
+    /// the false-positive rate falls from `1 − e^{−ρ}` to about
+    /// `(1 − e^{−2ρ})²` at load `ρ` (12.3% → 5.4% at k0n53's), and each
+    /// false positive costs a bucket lookup.  Set on folded tables this
+    /// side builds; a table taken over with [`Self::from_folded_parts`]
+    /// keeps the layout it was built with.
+    two_bit_filter: bool,
     /// Whether the stored keys are folded by the signed Frobenius group
     /// `G = ⟨π, −1⟩`.
     ///
@@ -3343,6 +3359,7 @@ impl PairSumTable {
             bucket_shift,
             present,
             present_mask,
+            two_bit_filter: false,
             fold: false,
             canon: None,
             orbit_start: Vec::new(),
@@ -3458,6 +3475,7 @@ impl PairSumTable {
             bucket_shift,
             present,
             present_mask,
+            two_bit_filter: false,
             fold: false,
             canon: None,
             orbit_start: Vec::new(),
@@ -3480,6 +3498,27 @@ impl PairSumTable {
         kc: &KoblitzCurve,
         fb: &FrobeniusFactorBase,
         byte_budget: u128,
+    ) -> Option<Self> {
+        Self::build_folded_with_filter(kc, fb, byte_budget, true)
+    }
+
+    /// [`Self::build_folded_within`] with the one-bit filter layout that
+    /// `gpu/ecc2k`'s fold kernel writes, so its stored state can be
+    /// compared word for word (`examples/dump_fold_vectors.rs`,
+    /// `examples/load_fold_table.rs`).  The same answers.
+    pub fn build_folded_within_one_bit_filter(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        byte_budget: u128,
+    ) -> Option<Self> {
+        Self::build_folded_with_filter(kc, fb, byte_budget, false)
+    }
+
+    fn build_folded_with_filter(
+        kc: &KoblitzCurve,
+        fb: &FrobeniusFactorBase,
+        byte_budget: u128,
+        two_bit_filter: bool,
     ) -> Option<Self> {
         let n_points = fb.points.len();
         if n_points > u32::MAX as usize {
@@ -3581,8 +3620,13 @@ impl PairSumTable {
                         Self::compact_rest(key)
                     };
                 }
-                let h = (pair_filter_hash(key) & present_mask) as usize;
-                present_atomic[h >> 6].fetch_or(1u64 << (h & 63), Ordering::Relaxed);
+                let full = pair_filter_hash(key);
+                let h = (full & present_mask) as usize;
+                let mut bits = 1u64 << (h & 63);
+                if two_bit_filter {
+                    bits |= 1u64 << ((full >> 32) & 63);
+                }
+                present_atomic[h >> 6].fetch_or(bits, Ordering::Relaxed);
             });
         });
         let present: Vec<u64> = present_atomic
@@ -3600,6 +3644,7 @@ impl PairSumTable {
                 words: rests,
                 present,
                 present_mask,
+                two_bit_filter,
                 canon_tables: Vec::new(),
             },
             tagged,
@@ -3640,6 +3685,7 @@ impl PairSumTable {
             bucket_shift: parts.bucket_shift,
             present: parts.present,
             present_mask: parts.present_mask,
+            two_bit_filter: parts.two_bit_filter,
             fold: true,
             canon,
             orbit_start,
@@ -3799,6 +3845,7 @@ impl PairSumTable {
             words: &self.rests,
             present: &self.present,
             present_mask: self.present_mask,
+            two_bit_filter: self.two_bit_filter,
             tagged: self.tagged,
             canon_tables: self.canon.as_ref().map_or(&[], |c| c.tables()),
         })
@@ -3920,7 +3967,10 @@ impl PairSumTable {
     /// has a whole row of rests in hand at once and none of them depend
     /// on each other.  Interleaving them turns the chain from
     /// latency-bound into throughput-bound.  `out` is cleared first.
-    fn keys_of(&self, points: &[FastPoint], out: &mut Vec<u64>) {
+    /// Exposed, like [`Self::prefetch_key`], so a benchmark can model the
+    /// descent loop exactly.
+    #[doc(hidden)]
+    pub fn keys_of(&self, points: &[FastPoint], out: &mut Vec<u64>) {
         out.clear();
         if !self.fold {
             out.extend(points.iter().map(|p| p.pack()));
@@ -4038,8 +4088,14 @@ impl PairSumTable {
     /// `true` still has to be checked against the entries.
     #[inline]
     fn admitted(&self, key: u64) -> bool {
-        let h = (pair_filter_hash(key) & self.present_mask) as usize;
-        self.present[h >> 6] >> (h & 63) & 1 == 1
+        let full = pair_filter_hash(key);
+        let h = (full & self.present_mask) as usize;
+        let word = self.present[h >> 6];
+        let first = word >> (h & 63) & 1 == 1;
+        if self.two_bit_filter {
+            return first && word >> ((full >> 32) & 63) & 1 == 1;
+        }
+        first
     }
 
     /// All `(i, j)` with `P_i + P_j` equal to the packed point.
@@ -5695,11 +5751,7 @@ fn projected_signed_orbit_map_fast(
     fb: &FrobeniusFactorBase,
 ) -> Option<ProjectedSignedOrbitMap> {
     let fc = FastCurve::new(&kc.curve)?;
-    let projected: Vec<FastPoint> = fb
-        .points
-        .par_iter()
-        .map(|point| fc.mul(fc.lift(point), &kc.cofactor))
-        .collect();
+    let projected = project_by_cofactor(kc, fb, &fc);
     let mut representatives: Vec<FastPoint> = Vec::new();
     let mut seen: HashSet<u64> = HashSet::new();
     for &point in &projected {
@@ -5755,6 +5807,47 @@ fn projected_signed_orbit_map_fast(
         orbit_of,
         representatives: representatives.into_iter().map(|p| fc.lower(p)).collect(),
     })
+}
+
+/// `[h]P` for every base point, one scalar multiplication per π-orbit.
+///
+/// `[h]` commutes with the Frobenius `π`, so along an orbit
+/// `points[i_k] = π^k(points[i_0])` the projections are
+/// `π^k([h]points[i_0])`: one multiplication for the orbit's first point,
+/// then one Frobenius step (two `2^k`-th powers) per point.  At degree 53
+/// on a 15264-point base that is about 290 multiplications instead of
+/// 15264.  Points no orbit lists (none in a base this module builds) are
+/// multiplied one by one, so the result is the same either way.
+fn project_by_cofactor(
+    kc: &KoblitzCurve,
+    fb: &FrobeniusFactorBase,
+    fc: &FastCurve,
+) -> Vec<FastPoint> {
+    let mut projected: Vec<Option<FastPoint>> = vec![None; fb.points.len()];
+    let walked: Vec<Vec<(usize, FastPoint)>> = fb
+        .orbits
+        .par_iter()
+        .map(|orbit| {
+            let Some(&first) = orbit.first() else {
+                return Vec::new();
+            };
+            let mut current = fc.mul(fc.lift(&fb.points[first]), &kc.cofactor);
+            let mut out = Vec::with_capacity(orbit.len());
+            for &i in orbit {
+                out.push((i, current));
+                current = fc.frobenius_k(current, kc.k);
+            }
+            out
+        })
+        .collect();
+    for (i, p) in walked.into_iter().flatten() {
+        projected[i] = Some(p);
+    }
+    projected
+        .into_par_iter()
+        .zip(fb.points.par_iter())
+        .map(|(p, point)| p.unwrap_or_else(|| fc.mul(fc.lift(point), &kc.cofactor)))
+        .collect()
 }
 
 /// Number of nonzero signed-Frobenius columns remaining after every
@@ -8977,9 +9070,37 @@ pub struct IndividualLogSolver<'a> {
     fast: Option<(FastCurve, FastPoint)>,
     h: BigUint,
     r_u64: u64,
+    /// Walks stepped together by [`Self::solve_by_walking`]; their slope
+    /// inversions share one field inversion per round.
+    walks: usize,
 }
 
 impl<'a> IndividualLogSolver<'a> {
+    /// The walk count [`Self::new`] sets on a subgroup below
+    /// [`Self::WIDE_WALKS_MIN_ORDER`].
+    pub const DEFAULT_WALKS: usize = 64;
+
+    /// The walk count [`Self::new`] sets on a subgroup of order at least
+    /// [`Self::WIDE_WALKS_MIN_ORDER`]: chosen by the frozen protocol
+    /// `experiments/descent-walks-k0n53-20261104/PROTOCOL.md` on k0n53
+    /// (`r ≈ 2^44.3`; per-trial cost 1.095× lower than 64 walks, 95% CI
+    /// 1.080–1.109, A/A noise ±1.7%).  On k0n31 (`r ≈ 2^29`) 512 walks
+    /// made the rung 0.835× as fast — a descent there takes too few
+    /// trials to repay starting 512 walks — so smaller subgroups keep 64.
+    pub const WIDE_WALKS: usize = 512;
+
+    /// See [`Self::WIDE_WALKS`].
+    pub const WIDE_WALKS_MIN_ORDER: u64 = 1 << 40;
+
+    /// Step `walks` (at least 1) walks together in the walked descent.
+    /// The probes are drawn in a different order for each count, so the
+    /// trials to the first decomposition and the relation found change
+    /// with it (the logarithm, verified, does not).
+    pub fn with_walks(mut self, walks: usize) -> Self {
+        self.walks = walks.max(1);
+        self
+    }
+
     /// `None` when the table's columns do not match the base's signed
     /// orbits, a column has no logarithm, or the strategy needs a pair
     /// table and none was supplied.
@@ -9020,6 +9141,11 @@ impl<'a> IndividualLogSolver<'a> {
             fast,
             h: &kc.cofactor % r,
             r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
+            walks: if *r >= BigUint::from(Self::WIDE_WALKS_MIN_ORDER) {
+                Self::WIDE_WALKS
+            } else {
+                Self::DEFAULT_WALKS
+            },
         })
     }
 
@@ -9121,32 +9247,32 @@ impl<'a> IndividualLogSolver<'a> {
         let pair = self.pair?;
         let m = self.descent_m();
         let q_fast = fc.lift(q);
-        const WALKS: usize = 64;
+        let walks = self.walks;
         // Walks must not tread on each other, so they start one stride
         // apart on the same line and each is stepped by G.  Building
         // them that way costs three scalar multiplications and 63
         // additions, where drawing each start costs two scalar
         // multiplications apiece — which on a walk of a few hundred
         // rounds is most of the descent.
-        let stride = (self.r_u64 / WALKS as u64).max(1 << 20);
+        let stride = (self.r_u64 / walks as u64).max(1 << 20);
         let mut rng = StdRng::seed_from_u64(self.opts.seed ^ 0x57_41_4c_4b_44_45_53_00);
         let a0 = rng.gen_range(1..self.r_u64);
         let b = rng.gen_range(1..self.r_u64);
         let stride_point = fc.mul_u64(*g, stride);
-        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(WALKS);
-        let mut states: Vec<FastPoint> = Vec::with_capacity(WALKS);
+        let mut coefficients: Vec<(u64, u64)> = Vec::with_capacity(walks);
+        let mut states: Vec<FastPoint> = Vec::with_capacity(walks);
         let mut state = fc.add(fc.mul_u64(*g, a0), fc.mul_u64(q_fast, b));
         let mut a = a0;
-        for _ in 0..WALKS {
+        for _ in 0..walks {
             coefficients.push((a, b));
             states.push(state);
             state = fc.add(state, stride_point);
             a = (a + stride) % self.r_u64;
         }
-        let mut advanced = Vec::with_capacity(WALKS);
-        let mut lambdas: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut advanced = Vec::with_capacity(walks);
+        let mut lambdas: Vec<u64> = Vec::with_capacity(walks);
         let mut scratch = BatchScratch::default();
-        let mut keys: Vec<u64> = Vec::with_capacity(WALKS);
+        let mut keys: Vec<u64> = Vec::with_capacity(walks);
         while report.trials < self.opts.max_trials {
             // Key every state of the round first and prefetch its filter
             // word, so the 64 probes' cache misses overlap instead of
@@ -10157,6 +10283,8 @@ mod tests {
     /// report `a ≥ r` there).
     #[test]
     fn descent_walk_steps_a_by_one_mod_r() {
+        // Few enough walks that first hits after a wrap occur at r = 127;
+        // the stepping is the same for every walk count.
         const WALKS: u64 = 64;
         let kc = KoblitzCurve::new(0, 9).unwrap();
         let fb = build_frobenius_factor_base(&kc, 0).unwrap();
@@ -10179,7 +10307,9 @@ mod tests {
                 allow_direct_relation: true,
                 ..opts.clone()
             };
-            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair)).unwrap();
+            let solver = IndividualLogSolver::new(&kc, &fb, &table, &walking, Some(&pair))
+                .unwrap()
+                .with_walks(WALKS as usize);
             // The walks' start, drawn as `solve_by_walking` draws it: one
             // `a₀` and one `b` for all of them, walk `w` starting at
             // `a₀ + w·stride`.
@@ -12080,6 +12210,82 @@ mod tests {
                 "m = {m}: the compact table decomposed nothing at all"
             );
         }
+    }
+
+    #[test]
+    fn two_bit_filter_decomposes_as_the_one_bit_one_and_admits_fewer() {
+        // Degree 53, so a probe is almost never a stored sum and what the
+        // filter admits is its false positives (at degree 31 the subgroup
+        // is small enough for a modest base to cover half of it).
+        let kc = KoblitzCurve::new(0, 53).expect("degree 53 curve");
+        let fb = build_subgroup_orbit_factor_base(&kc, 3, 1500).expect("base");
+        let one = PairSumTable::build_folded_within_one_bit_filter(&kc, &fb, u128::MAX)
+            .expect("one-bit table");
+        let two = PairSumTable::build_folded_within(&kc, &fb, u128::MAX).expect("two-bit table");
+        assert!(two.two_bit_filter && !one.two_bit_filter);
+        let fc = FastCurve::new(&kc.curve).expect("fits a word");
+        let g = fc.lift(kc.generator());
+        // Every stored pair sum is present in both; random multiples of
+        // the generator, mostly absent, get the same answer from both and
+        // the same decomposition.
+        for i in (0..fb.points.len()).step_by(37) {
+            for j in (i..fb.points.len()).step_by(53) {
+                let sum = fc.add(fc.lift(&fb.points[i]), fc.lift(&fb.points[j]));
+                if sum.infinity {
+                    continue;
+                }
+                assert!(two.contains_key(two.key_of(sum)), "pair ({i}, {j}) lost");
+            }
+        }
+        let (mut admitted_one, mut admitted_two, mut probes) = (0usize, 0usize, 0usize);
+        let mut p = g;
+        for _ in 0..20_000 {
+            p = fc.add(p, g);
+            if p.infinity {
+                continue;
+            }
+            probes += 1;
+            let (k1, k2) = (one.key_of(p), two.key_of(p));
+            assert_eq!(k1, k2);
+            // `contains_key` may answer a sixteen-bit tag collision with
+            // `true`; the two-bit filter rejects some of those first, so
+            // its answers are a subset.  What is decomposed is the same.
+            assert!(!two.contains_key(k2) || one.contains_key(k1));
+            assert_eq!(one.decompose_fast(p, 2), two.decompose_fast(p, 2));
+            admitted_one += usize::from(one.admitted(k1));
+            admitted_two += usize::from(two.admitted(k2));
+        }
+        assert!(
+            // At this table's load (about 0.18 of the filter's bits)
+            // the expected rates are 16% and 10%.
+            admitted_two * 4 < admitted_one * 3,
+            "two-bit filter admitted {admitted_two} of {probes}, one-bit {admitted_one}"
+        );
+    }
+
+    #[test]
+    fn orbit_walked_cofactor_projection_matches_per_point_products() {
+        let mut checked = 0;
+        for (degree, points) in [(15u32, 300usize), (31, 600), (37, 800), (53, 2000)] {
+            let Some(kc) = KoblitzCurve::new(0, degree) else {
+                continue;
+            };
+            let Ok(fb) = build_subgroup_orbit_factor_base(&kc, 3, points) else {
+                continue;
+            };
+            let fc = FastCurve::new(&kc.curve).expect("fits in a word");
+            let walked = project_by_cofactor(&kc, &fb, &fc);
+            assert_eq!(walked.len(), fb.points.len());
+            for (i, point) in fb.points.iter().enumerate() {
+                assert_eq!(
+                    walked[i],
+                    fc.mul(fc.lift(point), &kc.cofactor),
+                    "degree {degree}, point {i}"
+                );
+            }
+            checked += 1;
+        }
+        assert!(checked >= 3, "only {checked} degrees available");
     }
 
     #[test]

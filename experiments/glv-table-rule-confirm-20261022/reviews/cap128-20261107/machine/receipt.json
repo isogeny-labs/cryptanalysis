@@ -1,0 +1,18 @@
+{
+  "schema": "glv-cap128-independent-machine-review/v1",
+  "target_commit": "702b680419b529a79b6415830057a47310be2b78",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "command": "ELAN_TOOLCHAIN=leanprover/lean4:v4.34.1 lean TableBudget.lean",
+  "exit_code": 0,
+  "axiom_prints": 27,
+  "axioms": [
+    "Quot.sound",
+    "propext"
+  ],
+  "source_binding_command": "python3 check_lean_source_binding.py --live",
+  "source_binding_exit_code": 0,
+  "negative_controls_rejected": 5,
+  "lean_sha256sums": "all seven entries pass",
+  "forbidden_construct_scan": "no sorry, custom axiom, unsafe, or native_decide in TableBudget.lean",
+  "leanchecker": "not run; leanchecker --help did not respond and was terminated"
+}

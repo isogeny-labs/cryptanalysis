@@ -83,6 +83,16 @@ class RankTests(unittest.TestCase):
         self.assertEqual(rank_mod.tier_of(7.9, 8.0, 3.0), "watch")
         self.assertEqual(rank_mod.tier_of(2.9, 8.0, 3.0), "noise")
 
+    def test_explicitly_watched_items_are_never_noise(self):
+        cfg = config_mod.load(None)
+        cfg.topics = self.topics
+        commit = item(title="openai/math: Merge pull request #3", abstract="Update 10-26")
+        commit["extra"] = {"kind": "commit"}
+        plain = item(title="Merge pull request #3", abstract="Update 10-26")
+        tiers = {it["title"]: t for it, _s, t, _ in rank_mod.rank_items([commit, plain], cfg)}
+        self.assertEqual(tiers["openai/math: Merge pull request #3"], "watch")
+        self.assertEqual(tiers["Merge pull request #3"], "noise")
+
 
 class ReportTests(unittest.TestCase):
     def test_digest_sections(self):

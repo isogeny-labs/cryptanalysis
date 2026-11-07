@@ -1,0 +1,27 @@
+{
+  "schema": "glv-cap128-source-fidelity-attestation/v1",
+  "reviewer_role": "independent_source_fidelity",
+  "task": "T-1842",
+  "reviewed_commit": "702b680419b529a79b6415830057a47310be2b78",
+  "joints_owned": ["C selector to Lean type correspondence", "integer and control-flow preconditions", "predecessor and baseline selector comparison", "proof narrative fidelity"],
+  "sources_read": [
+    "experiments/glv-table-rule-confirm-20261022/TableBudget.lean",
+    "experiments/glv-table-rule-confirm-20261022/LEAN_PROOF.md",
+    "src/curve.c",
+    "experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py",
+    "experiments/glv-table-rule-confirm-20261022/live-source-binding.json",
+    "experiments/glv-table-rule-confirm-20261022/lean-receipt.json",
+    "lean-toolchain",
+    "git show 8bf648dcbefe7b8131e5fb26909c77e68778332a:src/curve.c (selector excerpt)",
+    "git show 7cb3dce4cac9176d74afb6403048b5fabbaab834:src/curve.c (selector excerpt)",
+    "/var/lib/spot-codex/home/skills/review-evidence/SKILL.md",
+    "/var/lib/spot-codex/home/skills/review-evidence/references/lean-review.md"
+  ],
+  "sibling_access": false,
+  "blind_rederivation": false,
+  "builds_or_experiments_run": false,
+  "source_fidelity_verdict": "holds",
+  "machine_status": "archived_receipt_only_not_independently_verified",
+  "scope": "19 theorem types from capFor_below40 through baseline48_le_select; conditional pure arithmetic of the GLV table selector",
+  "narrative_correction_required": "LEAN_PROOF.md incorrectly says the C loop multiplies only 8 and 16; the cap-128 path can also multiply 32 and 64"
+}

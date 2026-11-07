@@ -1,0 +1,36 @@
+{
+  "base_field_degree": 36,
+  "input_paths": {
+    "conjugacy_result": "experiments/hecke-432-j1728-quartic-conjugacy-20261026/conjugacy_result.json",
+    "factor_certificate": "experiments/hecke-432-j1728-resolvent-field-20261026/factor_certificate.json",
+    "split_certificate": "experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json"
+  },
+  "input_sha256": {
+    "conjugacy_result": "7a24477b165f702ff046c1ebab3c17c4b65f70589f0ee98cda4279c268b1fdf7",
+    "factor_certificate": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918",
+    "split_certificate": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+  },
+  "left_to_right_automorphism": "alpha -> alpha, s -> -s",
+  "observation_timeout_seconds": 300,
+  "prediction_rule": "Factor only the left quartic at P. If the reduction is squarefree, assign its sorted factor degrees to the right quartic at sigma(P); else preserve unknown.",
+  "prediction_timeout_seconds": 300,
+  "previously_observed_primes": [
+    7,
+    11,
+    13,
+    17,
+    19,
+    23,
+    29,
+    31,
+    37
+  ],
+  "rational_primes": [
+    41,
+    43,
+    47,
+    53,
+    59
+  ],
+  "status": "FROZEN_BEFORE_LEFT_PRODUCER"
+}

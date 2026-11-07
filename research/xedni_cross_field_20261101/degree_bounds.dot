@@ -1,0 +1,25 @@
+digraph degree_bounds {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.3,
+         label="Minimum global field degree for a residue-field lift\nExact lower bound [K:Q] >= residue degree; not a timing measurement",
+         labelloc=t, fontsize=18, fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans", fontsize=12];
+  edge [style=invis];
+
+  p [shape=plaintext, label="p256 (prime)"];
+  b [shape=plaintext, label="sect163r1 (random binary)"];
+  k [shape=plaintext, label="sect163k1 (Koblitz)"];
+  pb [shape=box, style=filled, fixedsize=true, width=0.16, height=0.42,
+      color="#4c78a8", fillcolor="#4c78a8", fontcolor="#111827", label="1"];
+  bb [shape=box, style=filled, fixedsize=true, width=6.52, height=0.42,
+      color="#59a14f", fillcolor="#59a14f", fontcolor="white", label="163"];
+  kb [shape=box, style=filled, fixedsize=true, width=6.52, height=0.42,
+      color="#f28e2b", fillcolor="#f28e2b", fontcolor="#111827", label="163"];
+
+  { rank=same; p; b; k; }
+  { rank=same; pb; bb; kb; }
+  p -> pb;
+  b -> bb;
+  k -> kb;
+  p -> b -> k [weight=20];
+  pb -> bb -> kb [weight=20];
+}

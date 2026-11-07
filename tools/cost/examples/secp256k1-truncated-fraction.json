@@ -1,0 +1,31 @@
+{
+  "name": "secp256k1 truncated-fraction label, per incidence",
+  "unit": "instructions per incidence",
+  "source": "external submission note, six-class-stored-leaf-birthday-124921470249497 (LEAF23 lineage)",
+  "rows": [
+    {"stage": "fwd", "per": "incidence", "count": 98},
+    {"stage": "bwd", "per": "incidence", "count": 1297.5},
+    {"stage": "keys", "per": "incidence", "count": 146.5},
+    {"stage": "fixup", "per": "incidence", "count": 33}
+  ],
+  "declared_total": 1575,
+  "baseline": {
+    "rows": [
+      {"stage": "fwd", "per": "incidence", "count": 98},
+      {"stage": "bwd", "per": "incidence", "count": 1206.5},
+      {"stage": "keys", "per": "incidence", "count": 334.5},
+      {"stage": "fixup", "per": "incidence", "count": 37}
+    ],
+    "declared_total": 1676
+  },
+  "improvement": {"bits": "0.089670"},
+  "break_even": [
+    {
+      "moved": "bwd",
+      "saved": "keys",
+      "moved_fanout": 1,
+      "saved_fanout": 1,
+      "note": "the extra 91 instructions in bwd buy the 188 saved in keys, once each per incidence"
+    }
+  ]
+}

@@ -99,13 +99,21 @@ static inline uint64_t shoup_mul(uint64_t a, uint64_t w, uint64_t wp, uint64_t q
 
 /* ---- dense elimination -------------------------------------------------- */
 
-ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x)
+static ca_status dense_solve_rowops(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x)
 {
 #define A(i, j) M[(size_t)(i) * n + (j)]
     /* Reduce once: every entry the elimination writes is already in
      * [0, q), so the per-access % q of the loops below had nothing left to
      * do after the first touch.  Below 2^63 each row update multiplies by
-     * a fixed factor, which Shoup's precomputation makes division-free. */
+     * a fixed factor, which Shoup's precomputation makes division-free.
+     *
+     * Forward elimination with the pivot row normalised, then back
+     * substitution: the pivot of column c is the first row at or below c
+     * whose entry is nonzero, the same row Gauss-Jordan elimination picks
+     * (its extra updates touch only the rows above c), so singularity is
+     * decided identically, and the solution is the unique one.  It updates
+     * the rows below the pivot only, about two thirds of the products of
+     * Gauss-Jordan.  M and rhs are left in echelon form. */
     for (size_t k = 0; k < (size_t)n * n; k++) M[k] %= q;
     for (uint32_t i = 0; i < n; i++) rhs[i] %= q;
     const int shoup = q < ((uint64_t)1 << 63);
@@ -114,31 +122,136 @@ ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint6
         while (piv < n && A(piv, c) == 0) piv++;
         if (piv == n) return CA_ERR_SINGULAR;
         if (piv != c) {
-            for (uint32_t j = 0; j < n; j++) { uint64_t t = A(c, j); A(c, j) = A(piv, j); A(piv, j) = t; }
+            for (uint32_t j = c; j < n; j++) {
+                uint64_t t = A(c, j);
+                A(c, j) = A(piv, j);
+                A(piv, j) = t;
+            }
             uint64_t t = rhs[c]; rhs[c] = rhs[piv]; rhs[piv] = t;
         }
         uint64_t inv = ca_invmod(A(c, c), q);
-        for (uint32_t j = c; j < n; j++) A(c, j) = ca_mulmod(A(c, j), inv, q);
+        A(c, c) = 1;
+        for (uint32_t j = c + 1; j < n; j++) A(c, j) = ca_mulmod(A(c, j), inv, q);
         rhs[c] = ca_mulmod(rhs[c], inv, q);
-        for (uint32_t i = 0; i < n; i++) {
-            if (i == c) continue;
+        for (uint32_t i = c + 1; i < n; i++) {
             uint64_t f = A(i, c);
             if (!f) continue;
+            A(i, c) = 0;
             if (shoup) {
                 uint64_t fp = shoup_pre(f, q);
-                for (uint32_t j = c; j < n; j++)
+                for (uint32_t j = c + 1; j < n; j++)
                     A(i, j) = ca_submod(A(i, j), shoup_mul(A(c, j), f, fp, q), q);
                 rhs[i] = ca_submod(rhs[i], shoup_mul(rhs[c], f, fp, q), q);
             } else {
-                for (uint32_t j = c; j < n; j++)
+                for (uint32_t j = c + 1; j < n; j++)
                     A(i, j) = ca_submod(A(i, j), ca_mulmod(f, A(c, j), q), q);
                 rhs[i] = ca_submod(rhs[i], ca_mulmod(f, rhs[c], q), q);
             }
         }
     }
-    for (uint32_t i = 0; i < n; i++) x[i] = rhs[i];
+    for (uint32_t c = n; c-- > 0;) {
+        uint64_t t = rhs[c];
+        for (uint32_t j = c + 1; j < n; j++) t = ca_submod(t, ca_mulmod(A(c, j), x[j], q), q);
+        x[c] = t;
+    }
 #undef A
     return CA_OK;
+}
+
+/* sum_k a[k] b[k] mod q over n terms (q < 2^63): `chunk` products fit in
+ * the 128-bit sum (dense_chunk), reduced as hi (2^64 mod q) + lo. */
+static uint64_t dense_dot(const uint64_t *a, const uint64_t *b, uint32_t n, uint64_t q,
+                          uint32_t chunk, uint64_t r64, uint64_t r64p, uint64_t onep)
+{
+    uint64_t r = 0;
+    for (uint32_t i0 = 0; i0 < n;) {
+        uint32_t i1 = n - i0 > chunk ? i0 + chunk : n;
+        ca_u128 acc = 0;
+        uint32_t i = i0;
+        for (; i + 2 <= i1; i += 2) acc += (ca_u128)a[i] * b[i] + (ca_u128)a[i + 1] * b[i + 1];
+        if (i < i1) acc += (ca_u128)a[i] * b[i];
+        uint64_t hi = (uint64_t)(acc >> 64), lo = (uint64_t)acc;
+        r = ca_addmod(r, ca_addmod(shoup_mul(hi, r64, r64p, q), shoup_mul(lo, 1, onep, q), q), q);
+        i0 = i1;
+    }
+    return r;
+}
+
+ca_status ca_dense_solve_mod_prime(uint64_t *M, uint32_t n, uint64_t *rhs, uint64_t q, uint64_t *x)
+{
+    /* Below 2^63, Crout's order of the same elimination: the entry the row
+     * operations would leave at (i, c) is a(i, c) - sum_{k<c} l(i, k)
+     * u(k, c), with l(i, k) the multiplier of row i at step k (the entry
+     * at (i, k) when step k ran) and u(k, .) the normalised pivot row k.
+     * Each entry is therefore one dot product, summed in 128 bits and
+     * reduced once, instead of c Shoup products and subtractions.  Column c
+     * is formed for the rows at and below c, its first nonzero row is the
+     * pivot (the row dense_solve_rowops picks: same values), the rows are
+     * swapped whole (their multipliers with them), and row c of U is
+     * formed and normalised (into M, whose row c right of the diagonal is
+     * read no more, and transposed into UT, so that every dot product runs
+     * over contiguous words).  Same pivots, same singularity, the unique
+     * solution.  M and rhs are overwritten. */
+    if (n == 0) return CA_OK;
+    if (q >= ((uint64_t)1 << 63)) return dense_solve_rowops(M, n, rhs, q, x);
+    uint64_t *UT =
+        malloc((size_t)n * (n + 1) * sizeof(uint64_t)); /* UT[j][k] = u(k, j); j = n: rhs */
+    if (!UT) return dense_solve_rowops(M, n, rhs, q, x);
+#define A(i, j)   M[(size_t)(i) * n + (j)]
+#define UTm(j, k) UT[(size_t)(j) * n + (k)]
+    for (size_t k = 0; k < (size_t)n * n; k++) M[k] %= q;
+    for (uint32_t i = 0; i < n; i++) rhs[i] %= q;
+    const uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1 ? q - 1 : 1);
+    const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
+    const uint32_t chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
+    const uint64_t r64 = (uint64_t)((((ca_u128)1) << 64) % q), r64p = shoup_pre(r64, q);
+    const uint64_t onep = shoup_pre(1, q);
+    ca_status rc = CA_OK;
+    for (uint32_t c = 0; c < n; c++) {
+        /* column c at and below the diagonal: a(i, c) - l(i, 0..c) . u(0..c, c) */
+        for (uint32_t i = c; i < n; i++)
+            A(i, c) = ca_submod(A(i, c),
+                                dense_dot(&A(i, 0), &UTm(c, 0), c, q, chunk, r64, r64p, onep), q);
+        uint32_t piv = c;
+        while (piv < n && A(piv, c) == 0) piv++;
+        if (piv == n) {
+            rc = CA_ERR_SINGULAR;
+            break;
+        }
+        if (piv != c) {
+            for (uint32_t j = 0; j < n; j++) {
+                uint64_t t = A(c, j);
+                A(c, j) = A(piv, j);
+                A(piv, j) = t;
+            }
+            uint64_t t = rhs[c];
+            rhs[c] = rhs[piv];
+            rhs[piv] = t;
+        }
+        const uint64_t inv = ca_invmod(A(c, c), q), invp = shoup_pre(inv, q);
+        /* row c of U right of the diagonal, and the right-hand side */
+        for (uint32_t j = c + 1; j < n; j++) {
+            uint64_t t = ca_submod(
+                A(c, j), dense_dot(&A(c, 0), &UTm(j, 0), c, q, chunk, r64, r64p, onep), q);
+            UTm(j, c) = A(c, j) = shoup_mul(t, inv, invp, q); /* a(c, j) is read no more */
+        }
+        {
+            uint64_t t =
+                ca_submod(rhs[c], dense_dot(&A(c, 0), &UTm(n, 0), c, q, chunk, r64, r64p, onep), q);
+            UTm(n, c) = shoup_mul(t, inv, invp, q);
+        }
+    }
+    if (rc == CA_OK) {
+        /* back substitution: x_c = rhs'_c - sum_{j>c} u(c, j) x_j */
+        for (uint32_t c = n; c-- > 0;)
+            x[c] = ca_submod(
+                UTm(n, c), dense_dot(&A(c, c + 1), &x[c + 1], n - c - 1, q, chunk, r64, r64p, onep),
+                q);
+    }
+#undef UTm
+#undef A
+    free(UT);
+    return rc;
 }
 
 /* ---- modular vector helpers ------------------------------------------- */
@@ -149,19 +262,6 @@ static inline uint64_t coef_mod(int64_t v, uint64_t q)
     if (v >= 0) return (uint64_t)v % q;
     uint64_t m = (uint64_t)(-v) % q;
     return m ? q - m : 0;
-}
-
-static inline uint64_t vdot(const uint64_t *a, const uint64_t *b, uint32_t n, uint64_t q)
-{
-    /* each product < 2^128; four of them fit in 128 bits only if q < 2^62 */
-    ca_u128 acc = 0;
-    uint64_t r = 0;
-    uint32_t chunk_mask = (q >> 62) ? 0u : 3u;
-    for (uint32_t i = 0; i < n; i++) {
-        acc += (ca_u128)a[i] * b[i];
-        if ((i & chunk_mask) == chunk_mask || i + 1 == n) { r = ca_addmod(r, (uint64_t)(acc % q), q); acc = 0; }
-    }
-    return r;
 }
 
 /* v mod q for a signed 128-bit v, canonical. */
@@ -209,6 +309,267 @@ static void spmtv(const ca_spmat *A, const uint64_t *w, uint64_t *z, uint64_t q,
     for (uint32_t j = 0; j < A->cols; j++) z[j] = i128_mod(acc[j], q);
 }
 
+/* ---- the Lanczos kernels ------------------------------------------------ */
+
+/* What one Lanczos call reads besides A: its transpose (A^T in CSR, built
+ * once, so that A^T w is a row gather like A v rather than a scatter into
+ * 128-bit column accumulators), whether the 64-bit kernels apply, and the
+ * constants of the reductions. */
+typedef struct lz_ctx {
+    uint64_t q;
+    int fast;       /* 0: the 128-bit scatter kernels; 1: 64-bit gathers; 2: 128-bit gathers */
+    uint32_t tcols; /* rows of A^T = cols of A */
+    uint32_t *tptr, *tcol; /* A^T in CSR */
+    int32_t *tval;
+    uint32_t dot_chunk; /* vdot terms summed in 128 bits between reductions */
+    uint64_t r64, r64p; /* 2^64 mod q and its Shoup constant (q < 2^63) */
+    uint64_t npi;       /* q^{-1} mod 2^64, for lz_redc */
+    uint64_t onep;      /* Shoup constant of 1: floor(2^64 / q), a remainder by q */
+    uint64_t bias64;    /* K q, K the largest row or column sum of |val| */
+    ca_u128 bias128;    /* the same, for the 128-bit gather */
+} lz_ctx;
+
+/* v mod q for an unsigned 128-bit v: below 2^63 as hi * (2^64 mod q) + lo
+ * with two Shoup products (lo mod q is lo * 1), no division; otherwise by
+ * the library's 128-bit remainder.  Canonical either way. */
+static inline uint64_t lz_u128_mod(const lz_ctx *z, ca_u128 v)
+{
+    uint64_t hi = (uint64_t)(v >> 64), lo = (uint64_t)v, q = z->q;
+    if (q >= ((uint64_t)1 << 63)) return (uint64_t)(v % q);
+    uint64_t l = shoup_mul(lo, 1, z->onep, q);
+    if (!hi) return l;
+    return ca_addmod(shoup_mul(hi, z->r64, z->r64p, q), l, q);
+}
+
+/* u 2^-64 mod q for u < q 2^64 (Montgomery's reduction, the subtraction
+ * form of ca_mont_redc): canonical. */
+static inline uint64_t lz_redc(const lz_ctx *z, ca_u128 u)
+{
+    const uint64_t q = z->q, lo = (uint64_t)u, hi = (uint64_t)(u >> 64);
+    const uint64_t m = lo * z->npi;
+    const uint64_t mh = (uint64_t)(((ca_u128)m * q) >> 64);
+    uint64_t r = hi - mh;
+    if (hi < mh) r += q;
+    return r;
+}
+
+/* The three products a Lanczos step reads, w.Bw, w.b' and Bw.Bw, mod q in
+ * one pass.  Each product is at most (q-1)^2 < 2^(2 bits(q-1)), so
+ * z->dot_chunk = 2^(128 - 2 bits(q-1)) of them (all of them below 2^48)
+ * fit in a 128-bit sum before it must be reduced. */
+static inline void vdot3(const lz_ctx *z, const uint64_t *w, const uint64_t *Bw, const uint64_t *bp,
+                         uint32_t n, uint64_t out[3])
+{
+    uint64_t r0 = 0, r1 = 0, r2 = 0, q = z->q;
+    for (uint32_t i0 = 0; i0 < n;) {
+        uint32_t i1 = n - i0 > z->dot_chunk ? i0 + z->dot_chunk : n;
+        ca_u128 a0 = 0, a1 = 0, a2 = 0;
+        for (uint32_t i = i0; i < i1; i++) {
+            const uint64_t wi = w[i], bi = Bw[i];
+            a0 += (ca_u128)wi * bi;
+            a1 += (ca_u128)wi * bp[i];
+            a2 += (ca_u128)bi * bi;
+        }
+        r0 = ca_addmod(r0, lz_u128_mod(z, a0), q);
+        r1 = ca_addmod(r1, lz_u128_mod(z, a1), q);
+        r2 = ca_addmod(r2, lz_u128_mod(z, a2), q);
+        i0 = i1;
+    }
+    out[0] = r0;
+    out[1] = r1;
+    out[2] = r2;
+}
+
+/* y_i = D_i * (sum_k val_k v[col_k]) mod q over the rows of a CSR matrix,
+ * in signed 64-bit arithmetic; D == NULL leaves out the scaling.  lz_init
+ * admits this only when K (2q - 1) < 2^64, K the largest row or column sum
+ * of |val|: no partial sum overflows int64, and adding K q makes the sum
+ * nonnegative and keeps it below 2^64, so its remainder is one Shoup
+ * product by 1, no division.  The value is the exact (A v)_i mod q the
+ * 128-bit kernels compute. */
+static void spmv64(const lz_ctx *z, uint32_t rows, const uint32_t *ptr, const uint32_t *col,
+                   const int32_t *val, const uint64_t *v, uint64_t *y, const uint64_t *D,
+                   const uint64_t *Dp)
+{
+    const uint64_t q = z->q, onep = z->onep, bias = z->bias64;
+    for (uint32_t i = 0; i < rows; i++) {
+        uint32_t k = ptr[i];
+        const uint32_t e = ptr[i + 1];
+        int64_t acc = 0;
+        /* two terms a step: the loop control is most of what a term costs */
+        for (; k + 2 <= e; k += 2)
+            acc +=
+                (int64_t)val[k] * (int64_t)v[col[k]] + (int64_t)val[k + 1] * (int64_t)v[col[k + 1]];
+        if (k < e) acc += (int64_t)val[k] * (int64_t)v[col[k]];
+        /* a Shoup product reduces any 64-bit operand: by D_i when scaling,
+         * by 1 otherwise */
+        const uint64_t u = (uint64_t)acc + bias;
+        y[i] = D ? shoup_mul(u, D[i], Dp[i], q) : shoup_mul(u, 1, onep, q);
+    }
+}
+
+/* The same gather in signed 128-bit arithmetic, for moduli too large for
+ * spmv64: every term is below 2^31 * 2^63 = 2^94 in size and lz_init
+ * admits it only for rows of fewer than 2^31 terms, so the sum stays below
+ * 2^125 and needs no intermediate reduction; the reduction is lz_u128_mod
+ * of the sum plus K q (nonnegative), not the library's 128-bit remainder. */
+static void spmv128(const lz_ctx *z, uint32_t rows, const uint32_t *ptr, const uint32_t *col,
+                    const int32_t *val, const uint64_t *v, uint64_t *y, const uint64_t *DR,
+                    const uint64_t *DRp)
+{
+    const uint64_t q = z->q;
+    for (uint32_t i = 0; i < rows; i++) {
+        uint32_t k = ptr[i];
+        const uint32_t e = ptr[i + 1];
+        ca_i128 acc = 0;
+        /* v < q < 2^63: one signed 64 x 64 -> 128 product a term */
+        for (; k + 4 <= e; k += 4) {
+            acc += (ca_i128)((int64_t)val[k]) * (int64_t)v[col[k]];
+            acc += (ca_i128)((int64_t)val[k + 1]) * (int64_t)v[col[k + 1]];
+            acc += (ca_i128)((int64_t)val[k + 2]) * (int64_t)v[col[k + 2]];
+            acc += (ca_i128)((int64_t)val[k + 3]) * (int64_t)v[col[k + 3]];
+        }
+        switch (e - k) { /* the last 0-3 terms, straight-line */
+        case 3: acc += (ca_i128)((int64_t)val[k + 2]) * (int64_t)v[col[k + 2]]; /* fall through */
+        case 2: acc += (ca_i128)((int64_t)val[k + 1]) * (int64_t)v[col[k + 1]]; /* fall through */
+        case 1: acc += (ca_i128)((int64_t)val[k]) * (int64_t)v[col[k]];         /* fall through */
+        default: break;
+        }
+        /* acc >= -K (q - 1), so u = acc + K q is positive and below 2 K q <
+         * q 2^64: its Montgomery reduction is u 2^-64 mod q, and the Shoup
+         * product by 2^64 D_i mod q (2^64 mod q without the scaling) puts
+         * back the 2^64 */
+        const ca_u128 u = (ca_u128)acc + z->bias128;
+        const uint64_t r = lz_redc(z, u);
+        y[i] = DR ? shoup_mul(r, DR[i], DRp[i], q) : shoup_mul(r, z->r64, z->r64p, q);
+    }
+}
+
+static void lz_free(lz_ctx *z)
+{
+    free(z->tptr);
+    free(z->tcol);
+    free(z->tval);
+}
+
+/* Decide the kernels and build A^T for the 64-bit ones.  CA_ERR_NOMEM only
+ * when the transpose cannot be allocated. */
+static ca_status lz_init(lz_ctx *z, const ca_spmat *A, uint64_t q)
+{
+    memset(z, 0, sizeof(*z));
+    z->q = q;
+    uint32_t bits = 64 - (uint32_t)__builtin_clzll(q - 1);
+    const uint32_t room = 128 - 2 * bits; /* products a 128-bit sum holds: 2^room */
+    z->dot_chunk = room >= 32 ? UINT32_MAX : (uint32_t)1 << (room & 31);
+    if (q >= ((uint64_t)1 << 63)) return CA_OK;
+    z->r64 = (uint64_t)((((ca_u128)1) << 64) % q);
+    z->r64p = shoup_pre(z->r64, q);
+    z->onep = shoup_pre(1, q);
+    {
+        uint64_t inv = q; /* Newton: q^{-1} mod 2^64, 3 -> 6 -> ... -> 96 bits */
+        for (int it = 0; it < 5; it++) inv *= 2 - q * inv;
+        z->npi = inv;
+    }
+    /* the largest row and column sums of |val|: each below nnz * 2^31 */
+    uint64_t *csum = calloc(A->cols ? A->cols : 1, sizeof(uint64_t));
+    if (!csum) return CA_ERR_NOMEM;
+    uint64_t rmax = 0, cmax = 0;
+    for (uint32_t i = 0; i < A->rows; i++) {
+        uint64_t rs = 0;
+        for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++) {
+            uint64_t a = (uint64_t)(A->val[k] < 0 ? -(int64_t)A->val[k] : A->val[k]);
+            rs += a;
+            csum[A->col[k]] += a;
+        }
+        if (rs > rmax) rmax = rs;
+    }
+    for (uint32_t j = 0; j < A->cols; j++)
+        if (csum[j] > cmax) cmax = csum[j];
+    free(csum);
+    /* level 1: K (2q - 1) < 2^64.  A row sum lies in [-K (q - 1), K (q - 1)],
+     * so it fits in int64 (K (q - 1) < 2^63), and plus K q it lies in
+     * [K, K (2q - 1)], nonnegative and below 2^64. */
+    const uint64_t K = rmax > cmax ? rmax : cmax; /* below nnz 2^31 < 2^63 */
+    const uint64_t lim = UINT64_MAX / (2 * q - 1);
+    int level = K <= lim ? 1 : 2;
+    z->bias64 = level == 1 ? K * q : 0;
+    z->bias128 = (ca_u128)K * q;
+    if (level == 2) {
+        /* the 128-bit gather needs every row and column shorter than 2^31 */
+        uint32_t lmax = 0;
+        for (uint32_t i = 0; i < A->rows; i++)
+            if (A->row_ptr[i + 1] - A->row_ptr[i] > lmax) lmax = A->row_ptr[i + 1] - A->row_ptr[i];
+        uint32_t *cl = calloc(A->cols ? A->cols : 1, sizeof(uint32_t));
+        if (!cl) return CA_ERR_NOMEM;
+        for (uint32_t k = 0; k < A->nnz; k++)
+            if (++cl[A->col[k]] > lmax) lmax = cl[A->col[k]];
+        free(cl);
+        if (lmax >= (uint32_t)1 << 31) return CA_OK;
+    }
+    z->tcols = A->cols;
+    z->tptr = calloc((size_t)A->cols + 1, sizeof(uint32_t));
+    z->tcol = malloc((A->nnz ? A->nnz : 1) * sizeof(uint32_t));
+    z->tval = malloc((A->nnz ? A->nnz : 1) * sizeof(int32_t));
+    if (!z->tptr || !z->tcol || !z->tval) {
+        lz_free(z);
+        return CA_ERR_NOMEM;
+    }
+    for (uint32_t k = 0; k < A->nnz; k++) z->tptr[A->col[k] + 1]++;
+    for (uint32_t j = 0; j < A->cols; j++) z->tptr[j + 1] += z->tptr[j];
+    /* rows in increasing order within each column: the sum is exact, so
+     * the order does not matter, but it keeps the gather sequential */
+    uint32_t *fill = malloc((A->cols ? A->cols : 1) * sizeof(uint32_t));
+    if (!fill) {
+        lz_free(z);
+        return CA_ERR_NOMEM;
+    }
+    memcpy(fill, z->tptr, A->cols * sizeof(uint32_t));
+    for (uint32_t i = 0; i < A->rows; i++) {
+        for (uint32_t k = A->row_ptr[i]; k < A->row_ptr[i + 1]; k++) {
+            uint32_t slot = fill[A->col[k]]++;
+            z->tcol[slot] = i;
+            z->tval[slot] = A->val[k];
+        }
+    }
+    free(fill);
+    z->fast = level;
+    return CA_OK;
+}
+
+/* y = D (A v) mod q, D == NULL for none; DR_i = 2^64 D_i mod q (with its
+ * Shoup constants DRp) for the 128-bit gather. */
+static void lz_av(const lz_ctx *z, const ca_spmat *A, const uint64_t *v, uint64_t *y,
+                  const uint64_t *D, const uint64_t *Dp, const uint64_t *DR, const uint64_t *DRp)
+{
+    if (z->fast == 1) {
+        spmv64(z, A->rows, A->row_ptr, A->col, A->val, v, y, D, Dp);
+        return;
+    }
+    if (z->fast == 2) {
+        spmv128(z, A->rows, A->row_ptr, A->col, A->val, v, y, D ? DR : NULL, DRp);
+        return;
+    }
+    spmv(A, v, y, z->q);
+    if (!D) return;
+    if (z->q < ((uint64_t)1 << 63)) {
+        for (uint32_t i = 0; i < A->rows; i++) y[i] = shoup_mul(y[i], D[i], Dp[i], z->q);
+    } else {
+        for (uint32_t i = 0; i < A->rows; i++) y[i] = ca_mulmod(y[i], D[i], z->q);
+    }
+}
+
+/* z = A^T w mod q. */
+static void lz_atw(const lz_ctx *z, const ca_spmat *A, const uint64_t *w, uint64_t *out,
+                   ca_i128 *acc)
+{
+    if (z->fast == 1)
+        spmv64(z, z->tcols, z->tptr, z->tcol, z->tval, w, out, NULL, NULL);
+    else if (z->fast == 2)
+        spmv128(z, z->tcols, z->tptr, z->tcol, z->tval, w, out, NULL, NULL);
+    else
+        spmtv(A, w, out, z->q, acc);
+}
+
 /*
  * Lanczos on B = A^T D A with random diagonal D, solving B x = A^T D b.
  * Returns CA_OK if A x == b verified, CA_ERR_SINGULAR on breakdown.
@@ -221,14 +582,21 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     uint64_t *Dp = malloc(m * sizeof(uint64_t)); /* Shoup constants of D */
     const int shoup = q < ((uint64_t)1 << 63);
     uint64_t *tmp_m = malloc(m * sizeof(uint64_t));
-    uint64_t *bp = malloc(n * sizeof(uint64_t));      /* A^T D b */
+    uint64_t *bp = calloc(n, sizeof(uint64_t)); /* A^T D b */
     uint64_t *w0 = calloc(n, sizeof(uint64_t));
     uint64_t *w1 = calloc(n, sizeof(uint64_t));
     uint64_t *w2 = calloc(n, sizeof(uint64_t));
     uint64_t *Bw = calloc(n, sizeof(uint64_t));
     ca_i128 *acc = malloc(n * sizeof(ca_i128));
+    uint64_t *DR = NULL, *DRp = NULL; /* 2^64 D_i mod q, for the 128-bit gather */
     ca_status rc = CA_ERR_SINGULAR;
+    lz_ctx z;
+    memset(&z, 0, sizeof(z));
     if (!D || !Dp || !tmp_m || !bp || !w0 || !w1 || !w2 || !Bw || !acc) {
+        rc = CA_ERR_NOMEM;
+        goto out;
+    }
+    if (lz_init(&z, A, q) != CA_OK) {
         rc = CA_ERR_NOMEM;
         goto out;
     }
@@ -236,8 +604,20 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
         D[i] = 1 + ca_rng_below(rng, q - 1);
         Dp[i] = shoup ? shoup_pre(D[i], q) : 0;
     }
+    if (z.fast == 2) {
+        DR = malloc((m ? m : 1) * sizeof(uint64_t));
+        DRp = malloc((m ? m : 1) * sizeof(uint64_t));
+        if (!DR || !DRp) {
+            rc = CA_ERR_NOMEM;
+            goto out;
+        }
+        for (uint32_t i = 0; i < m; i++) {
+            DR[i] = shoup_mul(z.r64, D[i], Dp[i], q);
+            DRp[i] = shoup_pre(DR[i], q);
+        }
+    }
     for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mulmod(D[i], b[i] % q, q);
-    spmtv(A, tmp_m, bp, q, acc);
+    lz_atw(&z, A, tmp_m, bp, acc);
     memset(x, 0, n * sizeof(uint64_t));
     /* w_prev = w0 (i-1), w_cur = w1 (i) */
     uint64_t *w_prev = w0, *w_cur = w1, *w_next = w2;
@@ -246,34 +626,39 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     uint32_t it = 0;
     for (it = 0; it < n + 8; it++) {
         /* Bw = A^T D A w_cur */
-        spmv(A, w_cur, tmp_m, q);
-        if (shoup) {
-            for (uint32_t i = 0; i < m; i++) tmp_m[i] = shoup_mul(tmp_m[i], D[i], Dp[i], q);
-        } else {
-            for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mulmod(tmp_m[i], D[i], q);
-        }
-        spmtv(A, tmp_m, Bw, q, acc);
-        uint64_t wBw = vdot(w_cur, Bw, n, q);
+        lz_av(&z, A, w_cur, tmp_m, D, Dp, DR, DRp);
+        lz_atw(&z, A, tmp_m, Bw, acc);
+        uint64_t dots[3];
+        vdot3(&z, w_cur, Bw, bp, n, dots);
+        uint64_t wBw = dots[0];
         int zero = 1;
         for (uint32_t j = 0; j < n; j++) if (w_cur[j]) { zero = 0; break; }
         if (zero) { rc = CA_OK; break; }
         if (wBw == 0) { rc = CA_ERR_SINGULAR; break; } /* breakdown */
         uint64_t inv = ca_invmod(wBw, q);
         /* x += (w . bp) / (w . Bw) * w */
-        uint64_t coef = ca_mulmod(vdot(w_cur, bp, n, q), inv, q);
+        uint64_t coef = ca_mulmod(dots[1], inv, q);
         /* w_next = Bw - c1 w_cur - c2 w_prev */
-        uint64_t c1 = ca_mulmod(vdot(Bw, Bw, n, q), inv, q);
+        uint64_t c1 = ca_mulmod(dots[2], inv, q);
         uint64_t c2 = prev_wBw ? ca_mulmod(wBw, ca_invmod(prev_wBw, q), q) : 0;
         if (shoup) {
             /* coef, c1 and c2 are fixed for the whole vector update */
             const uint64_t coefp = shoup_pre(coef, q), c1p = shoup_pre(c1, q),
                            c2p = shoup_pre(c2, q);
-            for (uint32_t j = 0; j < n; j++)
-                x[j] = ca_addmod(x[j], shoup_mul(w_cur[j], coef, coefp, q), q);
-            for (uint32_t j = 0; j < n; j++) {
-                uint64_t t = ca_submod(Bw[j], shoup_mul(w_cur[j], c1, c1p, q), q);
-                if (c2) t = ca_submod(t, shoup_mul(w_prev[j], c2, c2p, q), q);
-                w_next[j] = t;
+            /* one pass: x and w_next both read w_cur */
+            if (c2) {
+                for (uint32_t j = 0; j < n; j++) {
+                    const uint64_t wj = w_cur[j];
+                    x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
+                    uint64_t t = ca_submod(Bw[j], shoup_mul(wj, c1, c1p, q), q);
+                    w_next[j] = ca_submod(t, shoup_mul(w_prev[j], c2, c2p, q), q);
+                }
+            } else {
+                for (uint32_t j = 0; j < n; j++) {
+                    const uint64_t wj = w_cur[j];
+                    x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
+                    w_next[j] = ca_submod(Bw[j], shoup_mul(wj, c1, c1p, q), q);
+                }
             }
         } else {
             for (uint32_t j = 0; j < n; j++)
@@ -289,13 +674,16 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     }
     if (rc == CA_OK) {
         /* verify A x == b */
-        spmv(A, x, tmp_m, q);
+        lz_av(&z, A, x, tmp_m, NULL, NULL, NULL, NULL);
         for (uint32_t i = 0; i < m; i++) {
             if (tmp_m[i] != b[i] % q) { rc = CA_ERR_SINGULAR; break; }
         }
     }
     if (iters_out) *iters_out = it;
 out:
+    lz_free(&z);
+    free(DR);
+    free(DRp);
     free(D);
     free(Dp);
     free(tmp_m);

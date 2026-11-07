@@ -1,0 +1,22 @@
+{
+  "input_paths": {
+    "factor_certificate": "experiments/hecke-432-j1728-resolvent-field-20261026/factor_certificate.json",
+    "global_discriminant": "experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/global_disc_result.json",
+    "root_replay": "experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/root_replay.json",
+    "split_certificate": "experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json"
+  },
+  "input_sha256": {
+    "factor_certificate": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918",
+    "global_discriminant": "bac65a026ba8f8e1309eaa41a3a2677481d3f983310f883c661e9a1dc2debdfb",
+    "root_replay": "70bf47c407a74aeefc435a0051229b4534d520da609dab70b05153c60c6e2b73",
+    "split_certificate": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+  },
+  "question": "For each irreducible quartic over L=K(sqrt2), factor its cubic resolvent over L and identify the transitive subgroup of A4 using the exact discriminant square witness.",
+  "resolvent_formula": "y^3 - b*y^2 + (a*c-4*d)*y + (4*b*d-a^2*d-c^2) for x^4+a*x^3+b*x^2+c*x+d",
+  "sides": [
+    "left",
+    "right"
+  ],
+  "status": "FROZEN_BEFORE_CUBIC_RESOLVENT_FACTORING",
+  "timeout_seconds": 300
+}

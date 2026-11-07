@@ -1,12 +1,14 @@
-use crate::Result;
+use crate::{bigint::BigInt, Result};
 
-#[derive(Clone, Copy, Debug)]
+/// Result of filtering a quartic by a source quadratic. All integers are
+/// arbitrary precision, so cryptographic field sizes need no overflow handling.
+#[derive(Clone, Debug)]
 pub struct Filter {
-    pub q: u64,
-    pub source_trace: i128,
-    pub coefficients: [i128; 4],
-    pub quotient: [i128; 3],
-    pub remainder: [i128; 2],
+    pub q: BigInt,
+    pub source_trace: BigInt,
+    pub coefficients: [BigInt; 4],
+    pub quotient: [BigInt; 3],
+    pub remainder: [BigInt; 2],
     pub divides: bool,
     pub reciprocal: bool,
     pub quotient_elliptic_shape: bool,
@@ -19,46 +21,42 @@ impl Filter {
     }
 }
 
-fn plus(a: i128, b: i128) -> Result<i128> {
-    a.checked_add(b)
-        .ok_or_else(|| "Polynomial arithmetic exceeds i128.".into())
-}
-fn minus(a: i128, b: i128) -> Result<i128> {
-    a.checked_sub(b)
-        .ok_or_else(|| "Polynomial arithmetic exceeds i128.".into())
-}
-fn times(a: i128, b: i128) -> Result<i128> {
-    a.checked_mul(b)
-        .ok_or_else(|| "Polynomial arithmetic exceeds i128.".into())
-}
-
 /// Filter T^4+c1*T^3+c2*T^2+c3*T+c4 by T^2-trace*T+q.
 /// Inputs are supplied field sizes and polynomials, not constructed varieties.
 /// Passing does not construct a homomorphism or certify its action on a subgroup.
-pub fn filter(q: u64, trace: i128, coefficients: [i128; 4]) -> Result<Filter> {
-    if q < 2 || q > i64::MAX as u64 {
-        return Err("q must be between 2 and i64::MAX.".into());
+pub fn filter(
+    q: impl Into<BigInt>,
+    trace: impl Into<BigInt>,
+    coefficients: [impl Into<BigInt>; 4],
+) -> Result<Filter> {
+    let q: BigInt = q.into();
+    let trace: BigInt = trace.into();
+    let coefficients = coefficients.map(Into::into);
+    if q.is_negative() || q.bit_len() < 2 {
+        return Err("q must be at least 2.".into());
     }
-    let qi = i128::from(q);
-    let hasse = times(4, qi)?;
-    if times(trace, trace)? > hasse {
+    let hasse = BigInt::from(4).mul(&q);
+    if trace.mul(&trace) > hasse {
         return Err("The source trace violates the elliptic Hasse bound.".into());
     }
-    let [c1, c2, c3, c4] = coefficients;
-    let u = plus(c1, trace)?;
-    let v = minus(plus(c2, times(trace, u)?)?, qi)?;
-    let r1 = minus(plus(c3, times(trace, v)?)?, times(qi, u)?)?;
-    let r0 = minus(c4, times(qi, v)?)?;
-    let square_u = u.checked_mul(u);
+    let [c1, c2, c3, c4] = &coefficients;
+    let u = c1.add(&trace);
+    let v = c2.add(&trace.mul(&u)).sub(&q);
+    let r1 = c3.add(&trace.mul(&v)).sub(&q.mul(&u));
+    let r0 = c4.sub(&q.mul(&v));
+    let divides = r1.is_zero() && r0.is_zero();
+    let reciprocal = *c3 == q.mul(c1) && *c4 == q.mul(&q);
+    let quotient_elliptic_shape = v == q;
+    let quotient_hasse_bound = u.mul(&u) <= hasse;
     Ok(Filter {
         q,
         source_trace: trace,
         coefficients,
-        quotient: [1, u, v],
+        quotient: [BigInt::from(1), u, v],
         remainder: [r1, r0],
-        divides: r1 == 0 && r0 == 0,
-        reciprocal: c3 == times(qi, c1)? && c4 == times(qi, qi)?,
-        quotient_elliptic_shape: v == qi,
-        quotient_hasse_bound: square_u.map(|square| square <= hasse).unwrap_or(false),
+        divides,
+        reciprocal,
+        quotient_elliptic_shape,
+        quotient_hasse_bound,
     })
 }

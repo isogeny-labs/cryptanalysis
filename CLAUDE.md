@@ -12,6 +12,11 @@ remaining, not as a pass/fail gate. Relabelling and accounting changes are
 not improvements. Full rule: [`AGENTS.md`](AGENTS.md), "Success criterion:
 iterative improvement of the index-calculus baseline".
 
+**Sabotage is assumed** (owner, 2026-11-04): a result is cited by its pcc claim
+id and standing (`[pcc:ID]`), or labelled `[pcc:unverified]` as an assertion.
+CI runs `python3 tools/pcc/pcc.py canary` and `ledger verify`. Rule:
+[`AGENTS.md`](AGENTS.md), "Sabotage is assumed: proof-carrying claims".
+
 Read **[AGENTS.md](AGENTS.md)**: it is the contract for every runtime, Claude
 Code included.
 
@@ -28,3 +33,25 @@ merge it".
 resume the effort from it alone. The hooks push it to S3 with the specs,
 leads and unpushed work, and refuse run launchers until that succeeds.
 AGENTS.md, "Resume checkpoints in S3 before every run".
+
+Look up curve facts and existing measurements in the lab's curve database
+before computing them: MCP server `ecdb` (export `ECDB_TOKEN` from secret
+`ecdb/api` first) or `scripts/ecdb.sh`. AGENTS.md, "Querying the curve
+database (ecdb)".
+
+**Knowledge base first.** The shared `research-kb` MCP server is the
+cross-repository retrieval layer. Query it before a literature or lead claim,
+a factor-base/solver choice, a novelty or "not tried" statement, or a subagent
+handoff; read the best hits and record the `source_id`/`repo:path`. Canonical
+procedure: `crypto:.agents/skills/research-kb/SKILL.md`; local skill
+`research-kb`; fallback `scripts/research-kb`. AGENTS.md, "Shared knowledge
+base"; lab contract §11.
+
+
+**Benchmark records** (owner, 2026-11-04): every benchmark run leaves a
+`bench.record/v1` record in Git (`python3 tools/benchrec.py init|run|add-raw|
+metric|close`), its raw data in S3 by SHA-256, and a regenerated progress
+report in `benchmarks/progress/`, in the same PR. The hooks refuse unrecorded
+benchmark launchers and unrecorded pushes; the `bench-records` check fails
+the PR. AGENTS.md, "Benchmark records: data in S3, metadata in Git, one
+progress report"; [docs/benchmark-records.md](docs/benchmark-records.md).

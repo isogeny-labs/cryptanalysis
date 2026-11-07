@@ -22,7 +22,7 @@ jobs:
     env:
       CARGO_TARGET_DIR: /tmp/split671-native-target
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}

@@ -1,0 +1,30 @@
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/crypto/crates/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 4.62s
+     Running tests/strict_json.rs (crates/hashed-ecdl-tensor/target/release/deps/strict_json-169e5fa6a6824dcc)
+
+running 3 tests
+test strict_json_point_forms_reject_duplicate_variants_and_coordinates ... FAILED
+test strict_json_rejects_duplicate_certificate_fields_and_nested_records ... FAILED
+test strict_json_records_keep_required_fields_and_reject_unknown_fields ... ok
+
+failures:
+
+---- strict_json_point_forms_reject_duplicate_variants_and_coordinates stdout ----
+
+thread 'strict_json_point_forms_reject_duplicate_variants_and_coordinates' (58117) panicked at tests/strict_json.rs:65:9:
+{"Affine":{"x":[],"y":[1]},"Affine":{"x":[1],"y":[2]}}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- strict_json_rejects_duplicate_certificate_fields_and_nested_records stdout ----
+
+thread 'strict_json_rejects_duplicate_certificate_fields_and_nested_records' (58119) panicked at tests/strict_json.rs:13:14:
+called `Result::unwrap_err()` on an `Ok` value: Certificate { version: 1, prime: 11, threshold: 5, seeds: [HashSeed { alpha: 1, beta: 0 }], relations: [Relation { u: 1, v: 2, points: [Affine { x: 0, y: 1 }] }], dependency: [1], scalar: 4 }
+
+
+failures:
+    strict_json_point_forms_reject_duplicate_variants_and_coordinates
+    strict_json_rejects_duplicate_certificate_fields_and_nested_records
+
+test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test strict_json`

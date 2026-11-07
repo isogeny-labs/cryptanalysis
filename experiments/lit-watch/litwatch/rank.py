@@ -3,7 +3,8 @@
 Scores are comparable only within one config version. Every scored item
 records which topics fired, so a digest reader can see *why* something
 ranked. Tiers: candidate (>= candidate_threshold), watch (>= watch_threshold),
-else noise (kept in store, omitted from digest).
+else noise (kept in store, omitted from digest). Releases and commits come only
+from repositories the config watches explicitly, so they are never noise.
 """
 
 from __future__ import annotations
@@ -67,12 +68,16 @@ def tier_of(score: float, candidate_threshold: float, watch_threshold: float) ->
     return "noise"
 
 
+WATCHED_KINDS = ("release", "commit")
+
+
 def rank_items(items: list[dict], config) -> list[tuple[dict, float, str, list[str]]]:
     scored = []
     for it in items:
         score, topics = score_item(it, config.topics, config.title_mult)
-        scored.append((it, score,
-                       tier_of(score, config.candidate_threshold, config.watch_threshold),
-                       topics))
+        tier = tier_of(score, config.candidate_threshold, config.watch_threshold)
+        if tier == "noise" and (it.get("extra") or {}).get("kind") in WATCHED_KINDS:
+            tier = "watch"
+        scored.append((it, score, tier, topics))
     scored.sort(key=lambda r: (-r[1], r[0].get("published") or ""))
     return scored

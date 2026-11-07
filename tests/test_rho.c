@@ -24,12 +24,78 @@ static void run_rho(const ca_group *g, const ca_elem *gen, const ca_rho_params *
     if (ratio_out) *ratio_out = total_ops / reps / sqrt((double)n);
 }
 
+/* The native (Z/pZ)^* group takes a fused round in rho.c; the same group
+ * behind a copy of its vtable is not native and takes the staged batch_op
+ * path.  Same seed, same answer, same operations and table: the fused round
+ * is the staged one reordered, not a different walk.  r = 32 indexes by mask,
+ * r = 20 by fastmod, and max_ops checks that a capped run stops at the same
+ * count. */
+static void check_zp_fused_matches_staged(void)
+{
+    ca_group g, g2;
+    ca_elem gen;
+    fx_zp_safe(&g, &gen, 2000000579ULL);
+    static ca_group_vtable vt2;
+    vt2 = *g.vt;
+    g2 = g;
+    g2.vt = &vt2;
+    const uint32_t rs[2] = {32, 20};
+    for (int k = 0; k < 6; k++) {
+        ca_elem h;
+        fx_instance(&g, &gen, 123456789ULL * (uint64_t)(k + 1) % g.order, &h);
+        ca_rho_params p;
+        ca_rho_params_default(&p);
+        p.seed = 77 + (uint64_t)k;
+        p.r = rs[k & 1];
+        if (k == 5) p.max_ops = 20000;
+        uint64_t x1 = 0, x2 = 0;
+        ca_stats s1 = {0}, s2 = {0};
+        ca_status rc1 = ca_rho_solve(&g, &gen, &h, &p, &x1, &s1);
+        ca_status rc2 = ca_rho_solve(&g2, &gen, &h, &p, &x2, &s2);
+        CHECK(rc1 == rc2);
+        CHECK(x1 == x2);
+        CHECK(s1.group_ops == s2.group_ops);
+        CHECK(s1.iterations == s2.iterations);
+        CHECK(s1.table_entries == s2.table_entries);
+    }
+}
+
 int main(void)
 {
     ca_group g;
     ca_elem gen;
     ca_rho_params p;
     ca_rho_params_default(&p);
+
+    check_zp_fused_matches_staged();
+    /* Exercise fixed-base setup with scalars whose top uint64 bit is set.
+     * y^2 = x^3 + 1 over this p == 2 (mod 3) has p+1 points; (0,1)
+     * is a nonidentity point of order 3. The work cap avoids a large search.
+     * Under UBSan this catches a shift by 64 in the table scalar loop. */
+    {
+        ca_group wide;
+        ca_elem point;
+        const uint64_t prime = UINT64_C(18446744073709551557);
+        CHECK(ca_group_ec_init(&wide, prime, 0, 1, prime + 1) == CA_OK);
+        const uint64_t words[4] = {0, 1, 0, 0};
+        CHECK(ca_group_encode(&wide, &point, words));
+        ca_rho_params bounded;
+        ca_rho_params_default(&bounded);
+        bounded.r = 16;
+        bounded.walks_per_thread = 1;
+        bounded.negation_map = 0;
+        bounded.dp_bits = 0;
+        bounded.seed = 1;
+        bounded.max_ops = 1000;
+        uint64_t answer = 0;
+        ca_status result = ca_rho_solve(&wide, &point, &point, &bounded, &answer, NULL);
+        CHECK(result == CA_OK || result == CA_ERR_LIMIT);
+        if (result == CA_OK) {
+            ca_elem recovered;
+            ca_group_mul(&wide, &recovered, &point, answer, NULL);
+            CHECK(ca_group_equal(&wide, &recovered, &point));
+        }
+    }
 
     /* Z_p^* subgroup of prime order ~2^30 */
     fx_zp_safe(&g, &gen, 2000000579ULL);
