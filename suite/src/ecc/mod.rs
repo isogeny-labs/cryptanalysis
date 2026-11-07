@@ -19,6 +19,7 @@ pub mod keys;
 pub mod p256_field;
 pub mod p256_point;
 pub mod point;
+pub mod s56;
 pub mod schnorr;
 pub mod secp256k1_field;
 pub mod secp256k1_point;
