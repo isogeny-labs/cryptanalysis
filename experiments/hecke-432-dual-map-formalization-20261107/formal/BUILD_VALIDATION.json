@@ -1,0 +1,25 @@
+{
+  "schema": "lean-build-validation/v1",
+  "observed_utc": "2026-11-07T06:14:00Z",
+  "source_commit": "06335430add4198a2b82efe8db3f0f5c75f03043",
+  "source_file": "experiments/hecke-432-dual-map-formalization-20261107/formal/DualCurveEquation.lean",
+  "source_sha256": "3028963daa2e9e6a068af99440ac1cc242dfde975d55bba17aaf3a6d277d4b26",
+  "toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "lean_commit": "c29b6dda4f7c20e3eeaa717c4e565663c5cfa364",
+  "mathlib_commit": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "workspace": "experiments/hecke-432-formal-ci-20261025",
+  "command": "lake env lean -R ../.. ../hecke-432-dual-map-formalization-20261107/formal/DualCurveEquation.lean",
+  "exit_status": 0,
+  "output_file": "lean-build-output.txt",
+  "output_sha256": "af577a58b5d6218bf8911f002546a293b2c5c9cc1d17501ddf7a2d86e7f390a6",
+  "axioms": {
+    "Hecke432DualCurve.numerator_identity": ["propext", "Quot.sound"],
+    "Hecke432DualCurve.curve_equation": ["propext", "Classical.choice", "Quot.sound"]
+  },
+  "lean4checker_fresh": "unavailable on this host",
+  "notes": [
+    "Mathlib published cache was retrieved after lake update; all 9023 requested files decompressed.",
+    "lake update changed only the shared workspace name field in the tracked manifest; that incidental change was restored before the final identical build.",
+    "No sorry, admit, sorryAx, custom axiom, or unsafe declaration occurs in the source file."
+  ]
+}
