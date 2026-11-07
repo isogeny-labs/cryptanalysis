@@ -1,0 +1,26 @@
+{
+  "schema": "sealed-source-review/v1",
+  "review_date": "2026-10-30",
+  "base_head": "ac7dfecb6bfd0a8e2aa98c8bf74cb2d7c8deebcc",
+  "historical_published_revision": "b33318c17e91cd4fd597c55ae99bf810ceb18b3d",
+  "qualification": "Exploratory; earlier public preregistration is not established",
+  "original_seal_sha256": "2a8b4c5974aa939e968c08bc64df65e4e46aa28bce7a8799328ed395d6ef4df5",
+  "source_path": "formal/MixedSix.lean",
+  "sealed_source_archive": "review-20261030/MixedSix.sealed.lean.txt",
+  "sealed_source_sha256": "710bbf06230e206b433fd856d2d996a0951494389b58f9448322d9fd7f7a1442",
+  "current_source_sha256": "217d9a05ff5483fc27115d583a4a0d26539f5583a003c184fe126368a7a3290a",
+  "transition": [
+    "Remove public modifier from the two theorem declarations",
+    "Move qualified axiom-print commands inside namespace MixedSix"
+  ],
+  "proof_statement_or_body_changes": false,
+  "legacy_seal_check_on_live_tree": "Fails on the documented source-version mismatch; not represented as a pass",
+  "artifact_recovery": {
+    "path": "producer.stdout",
+    "bytes": 82025,
+    "sha256": "b8cb43a47e6ea6255184eb34ebd43b674f814be41f4b559650918aa7f0449388",
+    "source": "Immutable published GitHub revision above",
+    "reason": "Artifact-tool hydration could not start because aws CLI was absent"
+  },
+  "execution_scope": "Documentation rendering and source-byte verification; no new Sage/Lean/benchmark run"
+}

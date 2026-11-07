@@ -1,0 +1,158 @@
+{
+  "branch": "main",
+  "closed_utc": "2026-11-04T05:40:47+00:00",
+  "commands": [
+    {
+      "argv": [
+        "build/ca_bench",
+        "generic",
+        "--group",
+        "ec",
+        "--bits",
+        "28,32,36,40",
+        "--reps",
+        "5",
+        "--threads",
+        "4",
+        "--json",
+        "experiments/ca-bench-generic-ec-20261104/raw.jsonl"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-04T05:38:30+00:00",
+      "wall_s": 4.139
+    }
+  ],
+  "commit": "d3a0f1320886d6ce7ae95c23d015cb8e67e35f78",
+  "commit_dirty": false,
+  "created_utc": "2026-11-04T05:38:29+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261104-ca-bench-generic-ec"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "L0 shared 4 vCPU VM, no pinning",
+    "platform": "Linux-6.18.44-fc-v233-x86_64-with-glibc2.39"
+  },
+  "id": "20261104T0538Z-ca-bench-generic-ec",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5,
+      "name": "bsgs_s_ec40",
+      "note": "bsgs on the 40-bit prime-order curve p=549755813911 a=1 b=91 n=549756147371; mean of 5 instances, spread min..max; reference = this run's rho-1 mean S on the same curve",
+      "reference": 1.712912,
+      "reference_kind": "matched_rho",
+      "spread": [
+        1.361188,
+        1.849539
+      ],
+      "unit": "S",
+      "value": 1.572895
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5,
+      "name": "rho1_s_ec40",
+      "note": "rho-1 on the 40-bit prime-order curve p=549755813911 a=1 b=91 n=549756147371; mean of 5 instances, spread min..max; reference = this run's rho-1 mean S on the same curve",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.220231,
+        2.312175
+      ],
+      "unit": "S",
+      "value": 1.712912
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5,
+      "name": "rhot_s_ec40",
+      "note": "rho-T on the 40-bit prime-order curve p=549755813911 a=1 b=91 n=549756147371; mean of 5 instances, spread min..max; reference = this run's rho-1 mean S on the same curve",
+      "reference": 1.712912,
+      "reference_kind": "matched_rho",
+      "spread": [
+        0.950702,
+        1.568038
+      ],
+      "unit": "S",
+      "value": 1.241484
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5,
+      "name": "kangaroo_s_ec40",
+      "note": "kangaroo on the 40-bit prime-order curve p=549755813911 a=1 b=91 n=549756147371; mean of 5 instances, spread min..max; reference = this run's rho-1 mean S on the same curve",
+      "reference": 1.712912,
+      "reference_kind": "matched_rho",
+      "spread": [
+        0.674053,
+        2.517512
+      ],
+      "unit": "S",
+      "value": 1.220064
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 5,
+      "name": "grumpy_s_ec40",
+      "note": "grumpy on the 40-bit prime-order curve p=549755813911 a=1 b=91 n=549756147371; mean of 5 instances, spread min..max; reference = this run's rho-1 mean S on the same curve",
+      "reference": 1.712912,
+      "reference_kind": "matched_rho",
+      "spread": [
+        0.6363,
+        1.587654
+      ],
+      "unit": "S",
+      "value": 1.251399
+    }
+  ],
+  "problem": "ecdlp:ca-bench-generic-ec",
+  "raw": [
+    {
+      "bytes": 31642,
+      "path": "experiments/ca-bench-generic-ec-20261104/raw.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/18/183c3f484282573109027c5f2fb11feb3f7122bcc05ca172bd6e1fdbb98330cc",
+      "sha256": "183c3f484282573109027c5f2fb11feb3f7122bcc05ca172bd6e1fdbb98330cc",
+      "uploaded": true
+    },
+    {
+      "bytes": 2269,
+      "path": "experiments/ca-bench-generic-ec-20261104/stdout.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/6e/6e60bf1ab1b457a7dd89d25f97916020c9a0c857197d890fcf03af7c2b4839df",
+      "sha256": "6e60bf1ab1b457a7dd89d25f97916020c9a0c857197d890fcf03af7c2b4839df",
+      "uploaded": true
+    },
+    {
+      "bytes": 7713,
+      "path": "experiments/ca-bench-generic-ec-20261104/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/3a/3adca1deceff3545d8dbdb0a7f78ef05c512b931ae2b63dfa107f1ac41ed4133",
+      "sha256": "3adca1deceff3545d8dbdb0a7f78ef05c512b931ae2b63dfa107f1ac41ed4133",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261104-ca-bench-generic-ec/report.pdf",
+    "png": [
+      "benchmarks/20261104-ca-bench-generic-ec/s_by_bits.png"
+    ],
+    "svg": [
+      "benchmarks/20261104-ca-bench-generic-ec/s_by_bits.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ca-bench-generic-ec",
+  "status": "measured",
+  "summary": "ca_bench generic, EC 28-40 bits, 5 instances per cell: 40-bit S bsgs 1.573, rho-1 1.713, rho-T 1.241, kangaroo 1.220, grumpy 1.251; first record, no code change",
+  "validation": null
+}

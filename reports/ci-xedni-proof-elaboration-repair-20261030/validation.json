@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-30T11:31:46.447960+00:00",
+  "observed_failed_source": "832e01578b8744912e5517b3c2fc2c61d2e1472e",
+  "run_id": 41042594820,
+  "job_id": 124018778233,
+  "observed_errors": [
+    "line80: decide target contains free Fin variable",
+    "line87: simplifier leaves integer successor nonzero goal",
+    "line90: simplifier rewrites integer cast before natAbs reduction"
+  ],
+  "repair": "Explicit definitional change, core Int.ofNat_ne_zero/Nat.succ_ne_zero term, direct natAbs reduction. All5 theorem statements and first3 proof bodies unchanged.",
+  "patched_source_sha256": "6aa4475da5af80cc9db15407efb6f02ce792dbd6c18dac0d1e74f5c3fa208645",
+  "local_core_arithmetic_controls": {
+    "toolchain": "Lean4.34.1 installed core-only compatibility diagnostic",
+    "returncode": 0,
+    "controls": 3,
+    "axioms": {
+      "constant_bound": [],
+      "successor_nonzero": [
+        "propext"
+      ],
+      "bound_contradiction": [
+        "propext"
+      ]
+    },
+    "scope": "Actual core arithmetic proof-term compatibility only; not compilation of the project or qualification at its pinned Lean4.35.0-rc4/Mathlib021c46 toolchain."
+  },
+  "native_project_status": "Pending fresh actual corpus build of all5 declarations at unchanged original pins; originalP1 remainsOPEN.",
+  "sealed_originals": "All9 original20261028 sealed files remain unchanged.",
+  "graphics": "Statements/quantifiers/claims unchanged; existing proof map, mathematical report, SVG and PDF remain current. No new research result or measurement."
+}

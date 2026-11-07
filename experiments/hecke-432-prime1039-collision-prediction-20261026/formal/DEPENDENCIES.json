@@ -1,0 +1,35 @@
+{
+  "axiom_audit": [
+    "#print axioms double_iff_special",
+    "#print axioms single_double_totals",
+    "#print axioms group_count",
+    "#print axioms generated_keys_perm_sources",
+    "#print axioms fiber_total"
+  ],
+  "axioms_observed": {
+    "double_iff_special": [],
+    "fiber_total": [],
+    "generated_keys_perm_sources": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "group_count": [],
+    "single_double_totals": []
+  },
+  "build_commands": [
+    "lean ObservedGroups.lean",
+    "lean ChainCoverage.lean"
+  ],
+  "build_exit_codes": [
+    0,
+    0
+  ],
+  "lean4checker_fresh": "unavailable_on_host",
+  "lean_compiler_commit": "c29b6dda4f7c20e3eeaa717c4e565663c5cfa364",
+  "lean_toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib": "not used",
+  "observed_groups_json_sha256": "b2e177aff152a7e5a4232b4fd9806bd510f0e2ab1c9ddd725243d5c4258811f2",
+  "scope": "exact 30-class x-coordinate ledger and finite-list source-key implication; concrete modular-curve map and all-j enumeration are independent executable audits",
+  "standard_library": "Std bundled with pinned Lean toolchain"
+}

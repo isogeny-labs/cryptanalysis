@@ -1,0 +1,64 @@
+{
+ "valid": true,
+ "performance_index": 2.2243586715950525,
+ "performance_index_ci95": [
+  2.2243586715950525,
+  2.2243586715950525
+ ],
+ "areas": {
+  "field_ec": {
+   "index": 2.2243586715950525,
+   "weight": 1.0,
+   "kernels": 2
+  }
+ },
+ "kernels": [
+  {
+   "id": "field_ec/gf2_n53_inv_16k",
+   "area": "field_ec",
+   "fingerprints": [
+    "850146e8175cbeb9"
+   ],
+   "valid": true,
+   "base_median_ns": 54902826,
+   "cand_median_ns": 19775530,
+   "speedup": 2.776301115570607,
+   "speedup_ci95": [
+    2.776301115570607,
+    2.776301115570607
+   ],
+   "aa_noise_ln": null,
+   "verdict": "faster",
+   "d": [
+    1.0211195077888773
+   ],
+   "n": []
+  },
+  {
+   "id": "field_ec/koblitz_curve_mul_n53_1k",
+   "area": "field_ec",
+   "fingerprints": [
+    "89ee27edd14cb8d4"
+   ],
+   "valid": true,
+   "base_median_ns": 96250347,
+   "cand_median_ns": 54008142,
+   "speedup": 1.7821451254516403,
+   "speedup_ci95": [
+    1.7821451254516403,
+    1.7821451254516403
+   ],
+   "aa_noise_ln": null,
+   "verdict": "faster",
+   "d": [
+    0.5778177653799746
+   ],
+   "n": []
+  }
+ ],
+ "rounds": 1,
+ "mode": "callgrind_ir",
+ "unit": "Ir",
+ "base": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-main/perfbench",
+ "cand": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-msq2/perfbench"
+}

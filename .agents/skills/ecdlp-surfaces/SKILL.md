@@ -60,8 +60,9 @@ identify its exact remaining construction or validation step.
 5. For the standalone degree-four polynomial filter, require a finite-field size `q`, the
    source trace `t`, and four coefficients `c1,c2,c3,c4` for
    `T^4+c1*T^3+c2*T^2+c3*T+c4`. The caller must establish the source trace and
-   prime-power field size. The filter uses checked `i128` arithmetic and
-   accepts `q <= i64::MAX`; arithmetic overflow is an error.
+   prime-power field size. The filter uses the crate's own
+   arbitrary-precision integers; `--q`, `--trace` and `--coeffs` accept decimal
+   or `2^k` (e.g. `--q 2^83`), so cryptographic sizes work.
 
 ## Run the public demonstration
 
@@ -145,7 +146,7 @@ order lacks the source prime.
 Frobenius characteristic polynomials have integer coefficients: preserve their
 trace signs when comparing a=0 and a=1. Large exact integers are JSON decimal
 strings; field elements are hexadecimal masks. The general `frobenius_filter`
-still has its documented u64/i128 limits. The binary command handles these
+also accepts q=2^83 (arbitrary precision). The binary command handles these
 specific product tests and does not construct arbitrary surface maps.
 
 The [n=83 protocol](../../../research/ecdlp_surfaces_n83_20261012/PROTOCOL.md)

@@ -194,6 +194,30 @@ pub trait DecompositionOracle<G: CountedGroup> {
         Ok(())
     }
 
+    /// Native work performed by `prepare`, charged to the oracle setup
+    /// phase after preparation completes. Existing oracles default to none.
+    fn setup_native(&self) -> BTreeMap<String, u64> {
+        BTreeMap::new()
+    }
+
+    /// `bitop/v1`-only set-up counters, kept apart from the JSON `native`
+    /// block so committed records stay byte-identical.
+    fn setup_work_native(&self) -> BTreeMap<String, u64> {
+        BTreeMap::new()
+    }
+
+    /// Native counters the oracle accumulated over the relation phase
+    /// beyond [`OracleCounters`], folded into the relation phase's counters
+    /// by name.
+    fn relation_counters(&self) -> BTreeMap<String, u64> {
+        BTreeMap::new()
+    }
+
+    /// `bitop/v1`-only relation-phase counters, folded into `work_native`.
+    fn relation_work_native(&self) -> BTreeMap<String, u64> {
+        BTreeMap::new()
+    }
+
     /// Decompose `point`, or decide it does not decompose.
     fn decompose(
         &mut self,

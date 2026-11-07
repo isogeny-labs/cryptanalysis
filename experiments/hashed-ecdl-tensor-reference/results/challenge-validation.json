@@ -1,0 +1,35 @@
+{
+  "status": "valid",
+  "instance": {
+    "name": "ECC2K-130",
+    "degree": 131,
+    "polynomial": "0x800000000000000000000000000002007",
+    "a": "0x0",
+    "b": "0x1",
+    "order": "680564733841876926932320129493409985129",
+    "cofactor": 4,
+    "P": [
+      "0x51c99bfa6f18de467c80c23b98c7994aa",
+      "0x42ea2d112ecec71fcf7e000d7efc978bd"
+    ],
+    "Q": [
+      "0x6c997f3e7f2c66a4a5d2fda13756a37b1",
+      "0x4a38d11829d32d347bd0c0f584d546e9a"
+    ]
+  },
+  "checks": {
+    "field_polynomial_irreducible": true,
+    "subgroup_order_prime": true,
+    "P_nonidentity": true,
+    "Q_nonidentity": true,
+    "P_on_curve": true,
+    "Q_on_curve": true,
+    "nP_is_identity": true,
+    "nQ_is_identity": true,
+    "P_encoding_roundtrip": true,
+    "Q_encoding_roundtrip": true,
+    "cofactor_times_order_matches_frobenius_count": true,
+    "published_P_equals_hU": true,
+    "published_Q_equals_hV": true
+  }
+}

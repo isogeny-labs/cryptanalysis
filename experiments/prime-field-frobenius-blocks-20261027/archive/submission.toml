@@ -1,0 +1,31 @@
+[submission]
+name = "frobenius-orbit-lifts-and-progression-certificates"
+solver = "research-prototype"
+track = "representation"
+algorithm_family = "factor-base-construction-and-trace-divisors"
+date = "2026-10-27"
+
+[capabilities]
+uses_rho = false
+uses_bsgs = true
+uses_distinguished_points = false
+uses_negation_map = false
+uses_representation = true
+uses_oracle_tokens_only = false
+
+[claim]
+mechanism = "Constant-degree fixed-invariant Frobenius lifts and homogeneous binomial block resultants; exact chosen-base and trace-kernel accounting."
+falsifier = "Restriction to a small prescribed parameter set restores rare hits, or complete component costs lose to matched pairs and reused-table BSGS. Both occurred in these tests."
+
+[validation]
+train_bits = [9, 11, 14, 17]
+holdout_bits = []
+trials = 8
+seeds = 8
+baseline = "matched batched pairs and amortized interval multi-target BSGS"
+
+[artifacts]
+claim = "CLAIM.md"
+writeup = "WRITEUP.md"
+results = "results.json"
+manifest = "manifest.json"

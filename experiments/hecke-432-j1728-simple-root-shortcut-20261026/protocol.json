@@ -1,0 +1,47 @@
+{
+  "control_primes": [
+    7,
+    11,
+    23,
+    31,
+    41,
+    43,
+    47,
+    53,
+    59
+  ],
+  "holdout_primes": [
+    61,
+    67,
+    71,
+    73,
+    79
+  ],
+  "input_paths": {
+    "factor_certificate": "experiments/hecke-432-j1728-resolvent-field-20261026/factor_certificate.json",
+    "galois_result": "experiments/hecke-432-j1728-relative-quartic-galois-resolvent-20261026/result.json",
+    "prior_local_resolution": "experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/final_result.json",
+    "prior_local_screen": "experiments/hecke-432-j1728-relative-quartic-local-order-20261026/result.json",
+    "prior_right_direct_comparison": "experiments/hecke-432-j1728-single-sided-splitting-20261026/direct_comparison.json",
+    "prior_right_observations": "experiments/hecke-432-j1728-single-sided-splitting-20261026/observations.json",
+    "relative_discriminant_support": "experiments/hecke-432-j1728-relative-quartic-local-order-20261026/conjugate_support_result.json",
+    "split_certificate": "experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json"
+  },
+  "input_sha256": {
+    "factor_certificate": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918",
+    "galois_result": "0658977d46e7d86604aac2a3b99ba496f5413a282a4c1d1b0b46723701134607",
+    "prior_local_resolution": "5e32a3abbe75317a715806a675b9efe4cf34b9bc44ea01f5379782c299a96a54",
+    "prior_local_screen": "644506f29ad69a92d47b11a80ed3156cd1c3d4a6d366b02a791c00a24f5f861e",
+    "prior_right_direct_comparison": "3896b3617e5407eaf39d9d588b381dbc4e9012a764eda1c10c750088b41487c8",
+    "prior_right_observations": "0fc85b51d459a5666ae0ecb04caeca251e1e77957f15358cc1a6171846c2477b",
+    "relative_discriminant_support": "2f8e4c07ba73e3b457682e27852a11dcee7f5bff177d0d326d123ec6c6a90e1d",
+    "split_certificate": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+  },
+  "observation_side": "right_at_conjugate_place",
+  "observation_timeout_seconds": 300,
+  "ordinary_rule": "If reduction is squarefree, use its irreducible factor degrees. Retain all other reductions unresolved.",
+  "prediction_side": "left",
+  "prediction_timeout_seconds": 300,
+  "simple_root_rule": "For a monic integral quartic whose splitting field is Galois V4 over the base, one simple linear factor in the mod-P reduction Hensel-lifts to a local root. The regular V4 action then forces trivial local decomposition group and relative degrees [1,1,1,1].",
+  "status": "FROZEN_BEFORE_SHORTCUT_CONTROL_AND_HOLDOUT"
+}

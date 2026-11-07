@@ -1,0 +1,18 @@
+{
+  "at_utc": "2026-10-29T03:19:14.025022+00:00",
+  "command": [
+    "python3",
+    "/home/ec2-user/scratch/known-label-review-20261028/checker-recovered/tools/check_review_independence.py",
+    "--plan",
+    "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/review-plan-v3.json",
+    "--reports",
+    "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-32bc7d/attestation-checker.json",
+    "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-a07ed4/attestation-checker.json",
+    "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/attestation.json"
+  ],
+  "exit_code": 0,
+  "stdout": "PASS: 3 report(s), every joint owned and attested, blindness respected, controls declared\n",
+  "stderr": "",
+  "scope": "Joint independence declarations only. Original J1/J2 are historical source-level evidence, not new README or elaborated-type reviews. See integration-plan-clarification.json.",
+  "reviewer_manifest_sha256": "eaaf4286cfb78e4f99a91df089e055a9ee361e949f144e4f6a09950aab4f8747"
+}

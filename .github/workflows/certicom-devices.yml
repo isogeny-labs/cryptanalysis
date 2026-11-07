@@ -33,8 +33,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v7
+      - name: Install stable Rust
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - id: crate
         shell: bash
         run: |
@@ -45,9 +54,14 @@ jobs:
             echo 'manifest=Cargo.toml' >> "$GITHUB_OUTPUT"
             echo 'workspace=.' >> "$GITHUB_OUTPUT"
           fi
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/cache@v6
         with:
-          workspaces: ${{ steps.crate.outputs.workspace }} -> target
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            ${{ steps.crate.outputs.workspace }}/target
+          key: certicom-${{ runner.os }}-${{ runner.arch }}-${{ steps.crate.outputs.workspace }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Cross-check the shared device source against independent Rust arithmetic
         env:
           CARGO_BUILD_JOBS: '2'
@@ -57,7 +71,7 @@ jobs:
     container: nvidia/cuda:12.9.1-devel-ubuntu24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Compile native CUDA workers; this job does not execute GPU kernels
         shell: bash
         run: |
@@ -72,7 +86,7 @@ jobs:
       matrix:
         phase: [library, cli]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Compile native Metal shader and worker
         run: make -C gpu/certicom metal
       - name: Probe whether this macOS runner exposes a Metal device
@@ -92,8 +106,17 @@ jobs:
           else
             exit "$status"
           fi
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install stable Rust
         if: steps.probe.outputs.available == 'true'
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Qualify Metal arithmetic and all three solvers (${{ matrix.phase }})
         if: steps.probe.outputs.available == 'true'
         env:
@@ -125,8 +148,17 @@ jobs:
       CERTICOM_TEST_BACKEND: ${{ inputs.hardware_backend }}
       CARGO_BUILD_JOBS: '2'
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v7
+      - name: Install stable Rust
+        run: |
+          cargo_bin="${CARGO_HOME:-$HOME/.cargo}/bin"
+          export PATH="$cargo_bin:$PATH"
+          echo "$cargo_bin" >> "$GITHUB_PATH"
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          fi
+          rustup toolchain install stable --profile minimal
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Qualify the requested device through the library and release CLI
         shell: bash
         run: bash gpu/certicom/qualify.sh

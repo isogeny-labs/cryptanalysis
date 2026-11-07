@@ -71,14 +71,14 @@
 //! a charged (per-target, database paid) comparison that index calculus
 //! can win, and a whole-process one it loses unless the precomputation is
 //! amortised over `Ω(√r)` targets.  Counts are reported in group
-//! operations (affine additions, each sharing a batched inversion on both
-//! sides), so they compare across implementations; wall time is reported
-//! beside them.
+//! operations (one charge per oracle difference or walk step, independent of
+//! the coordinate backend), so they compare algorithms rather than field
+//! formulas; wall time is reported beside them.
 //!
 //! None of this threatens a deployed curve: at 256 bits the precomputation
 //! alone is `≈ 2^{256}/w` operations.
 
-use crate::cryptanalysis::bsgs_fast::{FastCurve, FastField, FastPoint};
+use crate::cryptanalysis::bsgs_fast::{FastCurve, FastField, FastJacobianPoint, FastPoint};
 use crate::cryptanalysis::ec_index_calculus_curves::{classify, CurveKind, ScaledInstance};
 use crate::cryptanalysis::fx_hash::FxMap;
 use crate::ecc::curve::CurveParams;
@@ -112,6 +112,10 @@ pub const PEEL_POINTS: usize = 32;
 /// fewer than three quarters of the base certify.  Each round asks for
 /// another `relations_per_orbit · m`.
 const MAX_COLLECTION_ROUNDS: u32 = 4;
+/// Independent adding-walk lanes used by the Jacobian relation collector.
+/// A lane round pays one simultaneous inversion to expose every affine
+/// abscissa needed by the partition function.
+pub const JACOBIAN_RELATION_LANES: usize = 32;
 /// The most differences one learning descent records.  A healthy descent
 /// hits far sooner; this only bounds the memory of a descent whose base is
 /// too small to certify, which walks to [`OrbitIcOptions::max_descent_ops`]
@@ -1371,6 +1375,9 @@ pub struct OrbitIcOptions {
     /// Collect the logarithm relations with the single-large-prime
     /// variation (see [`solve_logs`]) instead of full 2-decompositions.
     pub large_primes: bool,
+    /// Coordinate representation of the single-large-prime adding walk.
+    /// Full-decomposition collection remains affine.
+    pub relation_coordinates: RelationCoordinates,
     /// Descend the targets in turn, each adding its differences to the
     /// database for the next ([`descend_and_learn`]).
     pub learn: bool,
@@ -1395,12 +1402,39 @@ impl Default for OrbitIcOptions {
             orbits_per_target: 0.5,
             relations_per_orbit: 1.5,
             large_primes: true,
+            relation_coordinates: RelationCoordinates::Affine,
             learn: true,
             max_ops: 1 << 32,
             max_descent_ops: 1 << 30,
             rho_max_steps: 0,
             skip_rho: false,
             seed: 1,
+        }
+    }
+}
+
+/// Coordinates used by the single-large-prime relation walk.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RelationCoordinates {
+    /// The historical single affine walk, one inversion per advance.
+    Affine,
+    /// Independent Jacobian lanes, batch-normalized once per lane round
+    /// and advanced with inversion-free mixed additions.
+    Jacobian,
+}
+
+impl RelationCoordinates {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Affine => "affine",
+            Self::Jacobian => "jacobian",
+        }
+    }
+
+    pub fn lanes(self) -> usize {
+        match self {
+            Self::Affine => 1,
+            Self::Jacobian => JACOBIAN_RELATION_LANES,
         }
     }
 }
@@ -1672,26 +1706,108 @@ struct Anchor {
 /// `Aut = {±1}`, every collision is of those two kinds).  Here the step
 /// depends on the point, so two probes that differ by a base-point
 /// difference part ways at the next step.
-struct AddingWalk<'t> {
+struct AddingWalk {
     point: FastPoint,
     a: u64,
-    table: &'t RhoJumps,
 }
 
-impl<'t> AddingWalk<'t> {
-    fn new(c: &OrbitCurve, rng: &mut StdRng, table: &'t RhoJumps) -> Self {
+impl AddingWalk {
+    fn new(c: &OrbitCurve, rng: &mut StdRng) -> Self {
         let a = rng.gen_range(1..c.r);
         Self {
             point: c.mul_g(a),
             a,
-            table,
         }
     }
-    fn advance(&mut self, c: &OrbitCurve) {
-        let (jump, u) = self.table.jumps[partition(self.point.x)];
+    fn advance(&mut self, c: &OrbitCurve, table: &RhoJumps) {
+        let (jump, u) = table.jumps[partition(self.point.x)];
         self.point = c.fast.add(self.point, jump);
         self.a = add_r(self.a, u, c.r);
     }
+}
+
+/// Process one affine probe against the large-prime table.  Both walk
+/// representations call this exact relation path; coordinates affect only
+/// how the next probe is reached.
+fn collect_large_prime_probe(
+    c: &OrbitCurve,
+    fb: &OrbitFactorBase,
+    pt: FastPoint,
+    a: u64,
+    rows: &mut Vec<Relation>,
+    anchors: &mut FxMap<u64, Anchor>,
+    den: &mut [u64],
+    scratch: &mut [u64],
+    rep: &mut LogsReport,
+) -> bool {
+    let f = &c.fast.f;
+    let r = c.r;
+    let m = fb.len();
+    if pt.infinity {
+        return false;
+    }
+    for start in (0..m).step_by(SWEEP_BLOCK) {
+        let block = &fb.reps[start..(start + SWEEP_BLOCK).min(m)];
+        for (i, q) in block.iter().enumerate() {
+            let d = f.sub(pt.x, q.x);
+            den[i] = if d == 0 { f.one() } else { d };
+        }
+        f.batch_inv(&mut den[..block.len()], &mut scratch[..block.len()]);
+        rep.oracle_ops += block.len() as u64;
+        for (i, q) in block.iter().enumerate() {
+            let o = (start + i) as u32;
+            if q.x == pt.x {
+                // R = ±P_o: a one-term relation.
+                let e = if q.y == pt.y { 1 } else { r - 1 };
+                rows.push(Relation {
+                    terms: vec![(o, e)],
+                    rhs: a,
+                });
+                continue;
+            }
+            // D = R − P_o, so a ≡ x_o + log D.
+            let lam = f.mul(f.add(pt.y, q.y), den[i]);
+            let xd = f.sub(f.sub(f.sqr(lam), pt.x), q.x);
+            let d = FastPoint {
+                x: xd,
+                y: f.sub(f.mul(lam, f.sub(pt.x, xd)), pt.y),
+                infinity: false,
+            };
+            if let Some(&o2) = fb.index.get(&xd) {
+                // D = β(P_o2) is a base point: a ≡ x_o + e(β)·x_o2.
+                if let Some(e) = c.image_eig(fb.reps[o2 as usize], d) {
+                    rows.push(Relation {
+                        terms: vec![(o, 1), (o2, e)],
+                        rhs: a,
+                    });
+                    rep.full_relations += 1;
+                }
+                continue;
+            }
+            match anchors.entry(c.canonical_x(xd)) {
+                Entry::Vacant(slot) => {
+                    slot.insert(Anchor { o, a, d });
+                }
+                Entry::Occupied(slot) => {
+                    let first = *slot.get();
+                    // D = γ(D₁) and a₁ ≡ x_o₁ + log D₁, so
+                    // x_o − e(γ)·x_o₁ ≡ a − e(γ)·a₁.
+                    match c.image_eig(first.d, d) {
+                        Some(1) if first.o == o => return true,
+                        Some(g) => {
+                            rows.push(Relation {
+                                terms: vec![(o, 1), (first.o, r - g)],
+                                rhs: sub_r(a, mul_r(g, first.a, r), r),
+                            });
+                            rep.combined_relations += 1;
+                        }
+                        None => {}
+                    }
+                }
+            }
+        }
+    }
+    false
 }
 
 /// The single-large-prime collection for [`solve_logs`]: every probe is
@@ -1704,7 +1820,13 @@ impl<'t> AddingWalk<'t> {
 struct LargePrimeCollector<'t> {
     table: &'t RhoJumps,
     rng: StdRng,
-    walk: AddingWalk<'t>,
+    coordinates: RelationCoordinates,
+    walk: Option<AddingWalk>,
+    jacobian_points: Vec<FastJacobianPoint>,
+    jacobian_scalars: Vec<u64>,
+    normalized: Vec<FastPoint>,
+    norm_den: Vec<u64>,
+    norm_scratch: Vec<u64>,
     rows: Vec<Relation>,
     /// Every large prime's first occurrence.
     anchors: FxMap<u64, Anchor>,
@@ -1721,12 +1843,32 @@ impl<'t> LargePrimeCollector<'t> {
         rep: &mut LogsReport,
     ) -> Self {
         let mut rng = StdRng::seed_from_u64(opts.seed ^ 0x6c6f_6773_5f70_7262);
-        let walk = AddingWalk::new(c, &mut rng, table);
-        rep.probe_ops += scalar_mul_ops(c.r);
+        let coordinates = opts.relation_coordinates;
+        let lanes = coordinates.lanes();
+        let (walk, jacobian_points, jacobian_scalars) = match coordinates {
+            RelationCoordinates::Affine => (Some(AddingWalk::new(c, &mut rng)), vec![], vec![]),
+            RelationCoordinates::Jacobian => {
+                let mut points = Vec::with_capacity(lanes);
+                let mut scalars = Vec::with_capacity(lanes);
+                for _ in 0..lanes {
+                    let a = rng.gen_range(1..c.r);
+                    points.push(FastJacobianPoint::from_affine(&c.fast.f, c.mul_g(a)));
+                    scalars.push(a);
+                }
+                (None, points, scalars)
+            }
+        };
+        rep.probe_ops += lanes as u64 * scalar_mul_ops(c.r);
         Self {
             table,
             rng,
+            coordinates,
             walk,
+            jacobian_points,
+            jacobian_scalars,
+            normalized: vec![FastPoint::INFINITY; lanes],
+            norm_den: vec![0u64; lanes],
+            norm_scratch: vec![0u64; lanes],
             rows: Vec::new(),
             anchors: FxMap::default(),
             den: vec![0u64; SWEEP_BLOCK],
@@ -1751,90 +1893,102 @@ impl<'t> LargePrimeCollector<'t> {
         want: usize,
         rep: &mut LogsReport,
     ) {
-        let f = &c.fast.f;
-        let r = c.r;
         let m = fb.len();
-        let (den, scratch) = (&mut self.den, &mut self.scratch);
-        while m > 0 && self.rows.len() < want && rep.oracle_ops < opts.max_ops {
+        if m == 0 {
+            return;
+        }
+        match self.coordinates {
+            RelationCoordinates::Affine => self.collect_affine(c, fb, opts, want, rep),
+            RelationCoordinates::Jacobian => self.collect_jacobian(c, fb, opts, want, rep),
+        }
+        rep.distinct_large_primes = self.anchors.len() as u64;
+    }
+
+    fn collect_affine(
+        &mut self,
+        c: &OrbitCurve,
+        fb: &OrbitFactorBase,
+        opts: &OrbitIcOptions,
+        want: usize,
+        rep: &mut LogsReport,
+    ) {
+        while self.rows.len() < want && rep.oracle_ops < opts.max_ops {
             rep.trials += 1;
-            let (pt, a) = (self.walk.point, self.walk.a);
-            let mut returned = false;
-            if !pt.infinity {
-                'probe: for start in (0..m).step_by(SWEEP_BLOCK) {
-                    let block = &fb.reps[start..(start + SWEEP_BLOCK).min(m)];
-                    for (i, q) in block.iter().enumerate() {
-                        let d = f.sub(pt.x, q.x);
-                        den[i] = if d == 0 { f.one() } else { d };
-                    }
-                    f.batch_inv(&mut den[..block.len()], &mut scratch[..block.len()]);
-                    rep.oracle_ops += block.len() as u64;
-                    for (i, q) in block.iter().enumerate() {
-                        let o = (start + i) as u32;
-                        if q.x == pt.x {
-                            // R = ±P_o: a one-term relation.
-                            let e = if q.y == pt.y { 1 } else { r - 1 };
-                            self.rows.push(Relation {
-                                terms: vec![(o, e)],
-                                rhs: a,
-                            });
-                            continue;
-                        }
-                        // D = R − P_o, so a ≡ x_o + log D.
-                        let lam = f.mul(f.add(pt.y, q.y), den[i]);
-                        let xd = f.sub(f.sub(f.sqr(lam), pt.x), q.x);
-                        let d = FastPoint {
-                            x: xd,
-                            y: f.sub(f.mul(lam, f.sub(pt.x, xd)), pt.y),
-                            infinity: false,
-                        };
-                        if let Some(&o2) = fb.index.get(&xd) {
-                            // D = β(P_o2) is a base point: a ≡ x_o + e(β)·x_o2.
-                            if let Some(e) = c.image_eig(fb.reps[o2 as usize], d) {
-                                self.rows.push(Relation {
-                                    terms: vec![(o, 1), (o2, e)],
-                                    rhs: a,
-                                });
-                                rep.full_relations += 1;
-                            }
-                            continue;
-                        }
-                        match self.anchors.entry(c.canonical_x(xd)) {
-                            Entry::Vacant(slot) => {
-                                slot.insert(Anchor { o, a, d });
-                            }
-                            Entry::Occupied(slot) => {
-                                let first = *slot.get();
-                                // D = γ(D₁) and a₁ ≡ x_o₁ + log D₁, so
-                                // x_o − e(γ)·x_o₁ ≡ a − e(γ)·a₁.
-                                match c.image_eig(first.d, d) {
-                                    Some(1) if first.o == o => {
-                                        returned = true;
-                                        break 'probe;
-                                    }
-                                    Some(g) => {
-                                        self.rows.push(Relation {
-                                            terms: vec![(o, 1), (first.o, r - g)],
-                                            rhs: sub_r(a, mul_r(g, first.a, r), r),
-                                        });
-                                        rep.combined_relations += 1;
-                                    }
-                                    None => {}
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            let walk = self.walk.as_ref().expect("affine collector has one walk");
+            let returned = collect_large_prime_probe(
+                c,
+                fb,
+                walk.point,
+                walk.a,
+                &mut self.rows,
+                &mut self.anchors,
+                &mut self.den,
+                &mut self.scratch,
+                rep,
+            );
             if returned {
-                self.walk = AddingWalk::new(c, &mut self.rng, self.table);
-                rep.probe_ops += scalar_mul_ops(r);
+                self.walk = Some(AddingWalk::new(c, &mut self.rng));
+                rep.probe_ops += scalar_mul_ops(c.r);
                 rep.walk_restarts += 1;
             } else {
-                self.walk.advance(c);
+                self.walk
+                    .as_mut()
+                    .expect("affine collector has one walk")
+                    .advance(c, self.table);
                 rep.probe_ops += 1;
             }
         }
-        rep.distinct_large_primes = self.anchors.len() as u64;
+    }
+
+    fn collect_jacobian(
+        &mut self,
+        c: &OrbitCurve,
+        fb: &OrbitFactorBase,
+        opts: &OrbitIcOptions,
+        want: usize,
+        rep: &mut LogsReport,
+    ) {
+        while self.rows.len() < want && rep.oracle_ops < opts.max_ops {
+            c.fast.jacobian_to_affine_batch(
+                &self.jacobian_points,
+                &mut self.normalized,
+                &mut self.norm_den,
+                &mut self.norm_scratch,
+            );
+            for lane in 0..self.jacobian_points.len() {
+                if self.rows.len() >= want || rep.oracle_ops >= opts.max_ops {
+                    break;
+                }
+                rep.trials += 1;
+                let pt = self.normalized[lane];
+                let a = self.jacobian_scalars[lane];
+                let returned = collect_large_prime_probe(
+                    c,
+                    fb,
+                    pt,
+                    a,
+                    &mut self.rows,
+                    &mut self.anchors,
+                    &mut self.den,
+                    &mut self.scratch,
+                    rep,
+                );
+                if returned {
+                    let next = self.rng.gen_range(1..c.r);
+                    self.jacobian_points[lane] =
+                        FastJacobianPoint::from_affine(&c.fast.f, c.mul_g(next));
+                    self.jacobian_scalars[lane] = next;
+                    rep.probe_ops += scalar_mul_ops(c.r);
+                    rep.walk_restarts += 1;
+                } else {
+                    let (jump, u) = self.table.jumps[partition(pt.x)];
+                    self.jacobian_points[lane] =
+                        c.fast.jacobian_add_mixed(self.jacobian_points[lane], jump);
+                    self.jacobian_scalars[lane] = add_r(a, u, c.r);
+                    rep.probe_ops += 1;
+                }
+            }
+        }
     }
 }
 
@@ -2691,25 +2845,41 @@ mod tests {
     #[test]
     fn known_answer_runs_for_every_type() {
         for kind in [CurveKind::Generic, CurveKind::J0, CurveKind::J1728] {
-            for opts in [full_decompositions(), OrbitIcOptions::default()] {
+            let jacobian = OrbitIcOptions {
+                relation_coordinates: RelationCoordinates::Jacobian,
+                ..OrbitIcOptions::default()
+            };
+            for opts in [full_decompositions(), OrbitIcOptions::default(), jacobian] {
                 let inst = instance(kind, 20, 6);
                 let targets = inst.targets(4, 1);
                 assert_eq!(targets[0], (inst.known_log, inst.target));
                 let points: Vec<FastPoint> = targets.iter().map(|&(_, q)| q).collect();
                 let rep = run_known_answer(&inst.curve, &points, &opts);
                 let lp = opts.large_primes;
-                assert_eq!(rep.logs.rejected_relations, 0, "{kind:?} {lp}");
-                assert_eq!(rep.logs.uncertified_columns, 0, "{kind:?} {lp}");
-                assert_eq!(rep.logs.system.inconsistent_components, 0, "{kind:?} {lp}");
+                let coords = opts.relation_coordinates.as_str();
+                assert_eq!(rep.logs.rejected_relations, 0, "{kind:?} {lp} {coords}");
+                assert_eq!(rep.logs.uncertified_columns, 0, "{kind:?} {lp} {coords}");
+                assert_eq!(
+                    rep.logs.system.inconsistent_components, 0,
+                    "{kind:?} {lp} {coords}"
+                );
                 assert!(
                     rep.logs.certified_columns > rep.logs.orbits * 3 / 4,
-                    "{kind:?} {lp}"
+                    "{kind:?} {lp} {coords}"
                 );
-                assert_eq!(rep.descents_verified(), targets.len(), "{kind:?} {lp}");
-                assert_eq!(rep.rhos_verified(), targets.len(), "{kind:?} {lp}");
+                assert_eq!(
+                    rep.descents_verified(),
+                    targets.len(),
+                    "{kind:?} {lp} {coords}"
+                );
+                assert_eq!(rep.rhos_verified(), targets.len(), "{kind:?} {lp} {coords}");
                 for (i, &(k, _)) in targets.iter().enumerate() {
-                    assert_eq!(rep.descents[i].recovered, Some(k), "{kind:?} {lp} {i}");
-                    assert_eq!(rep.rhos[i].recovered, Some(k), "{kind:?} {lp} {i}");
+                    assert_eq!(
+                        rep.descents[i].recovered,
+                        Some(k),
+                        "{kind:?} {lp} {coords} {i}"
+                    );
+                    assert_eq!(rep.rhos[i].recovered, Some(k), "{kind:?} {lp} {coords} {i}");
                 }
             }
         }

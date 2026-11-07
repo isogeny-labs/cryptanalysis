@@ -1,0 +1,34 @@
+{
+  "axiom_audit": [
+    "#print axioms negation_fixed_iff_y_zero",
+    "#print axioms restricted_B_derivative_zero_iff",
+    "#print axioms restricted_jacobian_zero_iff",
+    "#print axioms observed_fiber_totals"
+  ],
+  "axioms_observed": {
+    "negation_fixed_iff_y_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "observed_fiber_totals": [],
+    "restricted_B_derivative_zero_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "restricted_jacobian_zero_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "build_command": "lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-collision-singular-locus-20261026/formal/SignBranch.lean",
+  "build_exit_code": 0,
+  "lean4checker_fresh": "unavailable_on_host",
+  "lean_compiler_commit": "c29b6dda4f7c20e3eeaa717c4e565663c5cfa364",
+  "lean_toolchain": "leanprover/lean4:v4.35.0-rc4",
+  "mathlib_revision": "021c46bdd042f67b538b9f9871d556a93713a9a9",
+  "project": "experiments/hecke-432-formal-ci-20261025",
+  "scope": "field sign branch, restricted product-zero equivalence, observed count identities; full modular-curve Jacobian and normalization bridge remains written mathematics and finite-field replay"
+}

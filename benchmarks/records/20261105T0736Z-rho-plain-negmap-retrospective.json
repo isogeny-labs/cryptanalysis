@@ -1,0 +1,221 @@
+{
+  "branch": null,
+  "closed_utc": "2026-11-05T07:36:52+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "experiments/rho-confirm-20261026/run.py",
+        "--label",
+        "main",
+        "--out",
+        "main.jsonl"
+      ],
+      "cwd": null,
+      "env": {
+        "CRYPTANALYSIS_LIB": "<main build>/libcryptanalysis.so"
+      },
+      "exit": null,
+      "provenance": "Documentary command template transcribed from the existing REPORT.md; not a captured execution receipt. Exact build paths, working directory, start/end times and exit codes were not recorded.",
+      "started_utc": null,
+      "wall_s": null
+    },
+    {
+      "argv": [
+        "python3",
+        "experiments/rho-confirm-20261026/run.py",
+        "--label",
+        "candidate",
+        "--out",
+        "cand.jsonl"
+      ],
+      "cwd": null,
+      "env": {
+        "CRYPTANALYSIS_LIB": "<candidate build>/libcryptanalysis.so"
+      },
+      "exit": null,
+      "provenance": "Documentary command template transcribed from the existing REPORT.md; not a captured execution receipt. Exact build paths, working directory, start/end times and exit codes were not recorded.",
+      "started_utc": null,
+      "wall_s": null
+    },
+    {
+      "argv": [
+        "python3",
+        "experiments/rho-confirm-20261026/analyze.py",
+        "main.jsonl",
+        "cand.jsonl",
+        "--out",
+        "experiments/rho-confirm-20261026"
+      ],
+      "cwd": null,
+      "env": {},
+      "exit": null,
+      "provenance": "Documentary command template transcribed from the existing REPORT.md; not a captured execution receipt. Exact build paths, working directory, start/end times and exit codes were not recorded.",
+      "started_utc": null,
+      "wall_s": null
+    }
+  ],
+  "commit": "0df3e3e0c537d545c8875eb673cf6b01e4a89379",
+  "commit_dirty": null,
+  "created_utc": "2026-11-05T07:36:52+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261030-rho-plain-negmap"
+  ],
+  "host": {
+    "cpu": null,
+    "cpus_online": 4,
+    "description": "Original REPORT.md describes a shared 4-vCPU VM; precise historical machine metadata was not recorded.",
+    "hostname": null,
+    "isolation": "unstated",
+    "platform": null
+  },
+  "id": "20261105T0736Z-rho-plain-negmap-retrospective",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 240,
+      "name": "quoted_pooled_candidate_over_main",
+      "note": "Geometric pooled candidate / main over six size strata; 40 curves per stratum. Quoted 95% bootstrap interval; not a new measurement or matched-rho comparison. [pcc:unverified]",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.7413404602903986,
+        0.755555794726141
+      ],
+      "unit": "ratio",
+      "value": 0.7482981743733009
+    }
+  ],
+  "problem": "rho-plain-negmap-counts-20261030",
+  "provenance": {
+    "baseline_commit": "3321bbfb129b6101a6279bb40edb1b51ff61f7e6",
+    "data_commit": "a4d8111fc7ac2629ba0d4f4663a249ee68da5d76",
+    "import_date": "2026-11-05T07:36:52+00:00",
+    "kind": "retrospective_import",
+    "limitations": [
+      "No new execution or scientific verification was performed.",
+      "Historical branch, dirty state, exact host and command execution metadata are unknown.",
+      "S3 locations are derived content addresses, not a claim that this session uploaded or checked those objects.",
+      "S quotes the original group_ops normalization, not fully priced end-to-end GAE.",
+      "No matched-rho value is inferred or manufactured."
+    ],
+    "measurement_date": "2026-10-30",
+    "protocol_commit": "47c2f11f4562cd47e1195d731cb51f6bc9977ed7",
+    "quoted_partial_normalizations": {
+      "cells": {
+        "20": {
+          "candidate": 1.4412171645069476,
+          "main": 2.165843766082042
+        },
+        "24": {
+          "candidate": 1.1494661877532455,
+          "main": 1.8268457162621572
+        },
+        "28": {
+          "candidate": 1.032816148407753,
+          "main": 1.7575771109847405
+        },
+        "32": {
+          "candidate": 0.9799870470078438,
+          "main": 1.1387055934492658
+        },
+        "36": {
+          "candidate": 0.9502485052296988,
+          "main": 1.0730284285085612
+        },
+        "40": {
+          "candidate": 0.9090342736739746,
+          "main": 0.9726217231702069
+        }
+      },
+      "note": "Exact original S_main/S_candidate quotations; these are group_ops-only and are deliberately excluded from the fully priced S headline series. [pcc:unverified]"
+    },
+    "quoted_size_strata": {
+      "20": {
+        "S_candidate": 1.4412171645069476,
+        "S_main": 2.165843766082042,
+        "hi": 0.6802826872513885,
+        "lo": 0.6528145778092471,
+        "ratio": 0.6660735604555098
+      },
+      "24": {
+        "S_candidate": 1.1494661877532455,
+        "S_main": 1.8268457162621572,
+        "hi": 0.6523136940744841,
+        "lo": 0.6084676531935523,
+        "ratio": 0.629574608534588
+      },
+      "28": {
+        "S_candidate": 1.032816148407753,
+        "S_main": 1.7575771109847405,
+        "hi": 0.6160014170487583,
+        "lo": 0.5648136202931217,
+        "ratio": 0.5874593577083174
+      },
+      "32": {
+        "S_candidate": 0.9799870470078438,
+        "S_main": 1.1387055934492658,
+        "hi": 0.8944467712485605,
+        "lo": 0.8285813955360276,
+        "ratio": 0.8611877799387656
+      },
+      "36": {
+        "S_candidate": 0.9502485052296988,
+        "S_main": 1.0730284285085612,
+        "hi": 0.9047510549004837,
+        "lo": 0.8670317314188175,
+        "ratio": 0.8856100145313129
+      },
+      "40": {
+        "S_candidate": 0.9090342736739746,
+        "S_main": 0.9726217231702069,
+        "hi": 0.9482453240025615,
+        "lo": 0.9164827585737706,
+        "ratio": 0.9344595598963387
+      }
+    },
+    "seed": 20261026,
+    "source_report": "experiments/rho-confirm-20261026/REPORT.md",
+    "source_results": "experiments/rho-confirm-20261026/results.json",
+    "standing": "unverified"
+  },
+  "raw": [
+    {
+      "bytes": 96752,
+      "path": "experiments/rho-confirm-20261026/rows_main.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/10/10ec81cc0a6058f5b9ce9b4a35544e342ab05d29a9cc937c8f1dda44c1db9c53",
+      "sha256": "10ec81cc0a6058f5b9ce9b4a35544e342ab05d29a9cc937c8f1dda44c1db9c53",
+      "uploaded": false
+    },
+    {
+      "bytes": 95279,
+      "path": "experiments/rho-confirm-20261026/rows_candidate.jsonl.gz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/11/117373d8a2fb6b95781f05daec077cac4e01ecbc9f3212ee1dbcf8d980e4dee1",
+      "sha256": "117373d8a2fb6b95781f05daec077cac4e01ecbc9f3212ee1dbcf8d980e4dee1",
+      "uploaded": false
+    },
+    {
+      "bytes": 1230,
+      "path": "experiments/rho-confirm-20261026/results.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a1/a1c3226cdfaab1bebbc92ccb70bf50edb7df16550a6c783a2a2f5fe6344f464b",
+      "sha256": "a1c3226cdfaab1bebbc92ccb70bf50edb7df16550a6c783a2a2f5fe6344f464b",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/rho-confirm-20261026/REPORT.pdf",
+    "png": [
+      "benchmarks/20261030-rho-plain-negmap/confirm.png"
+    ],
+    "svg": [
+      "benchmarks/20261030-rho-plain-negmap/confirm.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "slug": "rho-plain-negmap-retrospective",
+  "status": "measured",
+  "summary": "Retrospective index of October 30 group_ops measurements, not a new trial; historical environment and execution details remain incomplete. [pcc:unverified]"
+}

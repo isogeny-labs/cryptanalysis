@@ -1,0 +1,41 @@
+"""Render the source-to-conditional-bound map; no experimental data are changed."""
+from pathlib import Path
+
+out = Path(__file__).with_name("proof-boundary.svg")
+out.write_text('''<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="480" viewBox="0 0 1040 480">
+<style>
+text {font-family: DejaVu Sans, sans-serif; fill:#172638}
+.title {font-size:22px;font-weight:bold}.label {font-size:16px;font-weight:bold}
+.body {font-size:14px}.small {font-size:12px}.box {fill:#eaf3fa;stroke:#43749a;stroke-width:2}
+.conditional {fill:#fff1d7;stroke:#a36617;stroke-width:2}.arrow {stroke:#53677a;stroke-width:2;fill:none;marker-end:url(#tip)}
+</style>
+<defs><marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#53677a"/></marker></defs>
+<text x="30" y="38" class="title">p=997: recorded counts and the conditional Lean boundary</text>
+<rect x="30" y="70" width="285" height="112" rx="10" class="box"/>
+<text x="48" y="101" class="label">Archived source census</text>
+<text x="48" y="129" class="body">1,800 noncuspidal source pairs</text>
+<text x="48" y="154" class="small">finite recheck; modular-map bridge separate</text>
+<path d="M315,126 L372,126" class="arrow"/>
+<rect x="375" y="70" width="285" height="112" rx="10" class="box"/>
+<text x="393" y="101" class="label">Projected E image</text>
+<text x="393" y="128" class="body">72 E points; fiber sizes:</text>
+<text x="393" y="154" class="body">6 x 12, 60 x 24, 6 x 48</text>
+<path d="M660,126 L717,126" class="arrow"/>
+<rect x="720" y="70" width="285" height="112" rx="10" class="conditional"/>
+<text x="738" y="101" class="label">Conditional lift model</text>
+<text x="738" y="128" class="body">3 rational B lifts per E point;</text>
+<text x="738" y="154" class="body">each occupied B fiber at most 24</text>
+<path d="M860,182 L860,233" class="arrow"/>
+<rect x="390" y="237" width="615" height="105" rx="10" class="conditional"/>
+<text x="410" y="269" class="label">Lean covers the arithmetic implications</text>
+<text x="410" y="298" class="body">minimum occupied B lifts = 6 + 60 + 2 x 6 = 78</text>
+<text x="410" y="325" class="body">maximum = 72 x 3 = 216 (from the lift model)</text>
+<path d="M695,342 L695,388" class="arrow"/>
+<rect x="390" y="392" width="615" height="60" rx="10" class="conditional"/>
+<text x="410" y="419" class="body">With cusp identity: full B image 79..217 of 1,008</text>
+<text x="410" y="441" class="body">Natural complement 791..929</text>
+<text x="30" y="272" class="small">Blue: archived finite counts.</text>
+<text x="30" y="296" class="small">Amber: requires the stated bridge/degree</text>
+<text x="30" y="316" class="small">hypotheses; no Lean modular-map model.</text>
+</svg>''', encoding="utf-8")
+print(out)

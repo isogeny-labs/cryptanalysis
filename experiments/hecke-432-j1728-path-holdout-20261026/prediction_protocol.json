@@ -1,0 +1,38 @@
+{
+  "inputs": {
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "intermediate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime919-20261025/intermediate_j.json",
+      "sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2"
+    },
+    "path_enumerator": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-stable-kernel-chains-20261025/enumerate_chains_sage.py",
+      "sha256": "81e2105f58b444077e36a82ce0cd1a96754552ff16e50c865062379d55ee338c"
+    },
+    "prediction_code": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/predict_27_sage.py",
+      "sha256": "da14cc584e0e216495c826faa186381c15d82983b2397de50d7aaf593a3b9a9b"
+    },
+    "screen_result": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/screen_result.json",
+      "sha256": "8488a347f7f46524a1a9932a191e9e14002fafc8613d372bd20a4ba0c7ad6d87"
+    },
+    "source_free_rows": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-path-holdout-20261026/source_free_rows.json",
+      "sha256": "35983ac3deea61b458e1ffa12e915d05f99e764f24b049b5cbdca33db93e97ee"
+    }
+  },
+  "prediction": "For every valid j1728 C,E,B triple, multiplicity equals the count of rational cyclic 27 paths on this canonical j1728 source whose source/intermediate/target j sequence equals the sequence computed from C. This computation uses no cyclic 16 paths, B forward evaluation, full source census, or prior p1367 chain multiplicity.",
+  "prime": 1367,
+  "source_model": [
+    0,
+    0,
+    0,
+    1,
+    0
+  ],
+  "status": "FROZEN_BEFORE_P1367_27_PATH_PREDICTION"
+}

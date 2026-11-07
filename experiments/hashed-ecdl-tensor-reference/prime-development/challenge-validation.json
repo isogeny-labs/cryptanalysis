@@ -1,0 +1,34 @@
+{
+  "status": "valid",
+  "instance": {
+    "name": "Certicom ECCp-131",
+    "field_type": "prime",
+    "prime": "0x48e1d43f293469e33194c43186b3abc0b",
+    "a": "0x41cb121ce2b31f608a76fc8f23d73cb66",
+    "b": "0x2f74f717e8dec90991e5ea9b2ff03da58",
+    "order": "1550031797834347859219047037805205710577",
+    "cofactor": 1,
+    "P": [
+      "0x3df84a96b5688ef574fa91a32e197198a",
+      "0x14721161917a44fb7b4626f36f0942e71"
+    ],
+    "Q": [
+      "0x3aa6f004fc62e2da1ed0bfb62c3ffb568",
+      "0x9c21c284ba8a445bb2701bf55e3a67ed"
+    ]
+  },
+  "checks": {
+    "field_modulus_prime": true,
+    "subgroup_order_prime": true,
+    "P_nonidentity": true,
+    "P_on_curve": true,
+    "Q_on_curve": true,
+    "positive_coprime_cofactor": true,
+    "nP_is_identity": true,
+    "nQ_is_identity": true,
+    "P_encoding_roundtrip": true,
+    "Q_encoding_roundtrip": true,
+    "curve_cardinality_matches_cofactor_times_order": true
+  },
+  "cardinality_check": "unique multiple of certified prime point order in Hasse interval"
+}

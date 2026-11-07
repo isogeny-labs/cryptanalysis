@@ -1,0 +1,26 @@
+tools/lean/transfer-audit/TransferAudit.lean:59:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 1
+  b ≥ 0
+  b - e ≥ 0
+  a ≥ 0
+  a - b ≥ 0
+  a - f ≤ -1
+where
+ a := ↑n
+ b := ↑l * ↑l
+ c := ↑l
+ d := ↑n.sqrt
+ e := ↑(n.sqrt + 1) * ↑(n.sqrt + 1)
+ f := ↑n.sqrt.succ * ↑n.sqrt.succ
+'TransferAudit.size_obstruction' depends on axioms: [propext, Quot.sound]
+'TransferAudit.divisibility_obstruction' depends on axioms: [propext, Quot.sound]
+'TransferAudit.closed_coverage' depends on axioms: [propext, Quot.sound]
+'TransferAudit.invariant_transport' does not depend on any axioms
+'TransferAudit.b163_genus63_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TransferAudit.b163_genus64_bound' depends on axioms: [propext, sorryAx, Quot.sound]
+'TransferAudit.b163_obstruction' depends on axioms: [propext, Classical.choice, Quot.sound]

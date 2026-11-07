@@ -282,7 +282,12 @@ def build(n: int, family: str, l: int, seed: int, points: bool = True, strict_li
     import external
 
     extra = dict(extra or {})
-    if family in external.FAMILIES:
+    if family == "heckecm":
+        if extra:
+            raise ValueError("heckecm takes no extra parameters")
+        from hecke_source_archive import build as hecke_build
+        doc = hecke_build(n, l, seed, points)
+    elif family in external.FAMILIES:
         doc = external.build(n, family, l, seed, points, extra)
     elif extra:
         raise ValueError(f"family {family} takes no extra recipe parameters")

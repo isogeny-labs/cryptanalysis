@@ -1,0 +1,62 @@
+{
+  "schema": "curve-audit.native-cli.v1",
+  "cwd": "/tmp/cryptanalysis-curve-replay-20261027",
+  "target_dir": "/var/tmp/curve-audit-native-20261027-target",
+  "source_head_before_fix": "50bd627d77df9568a6466546a78b910ac498d9f6",
+  "binary_sha256": "83380088501971481dd66260afb52c5758971011c63ca85a826c53382f9a4a0f",
+  "records": [
+    {
+      "label": "cargo-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "bindings/rust/Cargo.toml",
+        "-p",
+        "ca-curve-audit"
+      ],
+      "start_unix": 1793080030.6961496,
+      "end_unix": 1793080034.7075615,
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "165068e42a0d37efecc184df7ece6148d4acddcbf6832ad212c975ff508d6f25"
+    },
+    {
+      "label": "cli-p192",
+      "command": [
+        "/var/tmp/curve-audit-native-20261027-target/debug/ca-curve-audit",
+        "audit",
+        "--input",
+        "bindings/rust/curve-audit/examples/nist-p192.json",
+        "--prime-certificates",
+        "bindings/rust/curve-audit/examples/nist-p192-pratt.json",
+        "--max-k",
+        "6"
+      ],
+      "start_unix": 1793080034.7077622,
+      "end_unix": 1793080034.774573,
+      "exit_code": 0,
+      "stdout_sha256": "a0b69f515208f38f1c63b8a34ceda21e1c09082da3261d584628700b9d659a7c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cli-p224",
+      "command": [
+        "/var/tmp/curve-audit-native-20261027-target/debug/ca-curve-audit",
+        "audit",
+        "--input",
+        "bindings/rust/curve-audit/examples/nist-p224.json",
+        "--prime-certificates",
+        "bindings/rust/curve-audit/examples/nist-p224-pratt.json",
+        "--max-k",
+        "6"
+      ],
+      "start_unix": 1793080034.774771,
+      "end_unix": 1793080034.8686626,
+      "exit_code": 0,
+      "stdout_sha256": "d7852d732b310304cd970a333af5ab483b30b50b358bca3d4c439629116dd38d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

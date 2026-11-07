@@ -30,9 +30,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/ghs-sweeper
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+      - name: Install stable Rust with formatting and lint tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Formatting
         run: cargo fmt --manifest-path experiments/ghs-sweeper/Cargo.toml -- --check
       - name: Clippy

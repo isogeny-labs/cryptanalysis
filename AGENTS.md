@@ -6,6 +6,51 @@ the shared-code parity list — are stated once in
 `crypto-autoresearcher:docs/lab-contract.md`. That file wins on a shared
 convention; this file wins on anything specific to this repository.
 
+## Sabotage is assumed: proof-carrying claims
+
+Owner rule, 2026-11-04. Every producer, this session included, is assumed to
+be sabotaging the work: numbers, booleans, receipts, proofs, prose and chat
+answers are data until a verifier the producer did not write has checked them.
+The contract is [`docs/SABOTAGE_RESISTANCE.md`](docs/SABOTAGE_RESISTANCE.md);
+the tool is `tools/pcc/pcc.py` (byte-identical across the lab's repositories;
+`docs/shared-code.lock.json`).
+
+- **A claim is a record.** Before a result is cited anywhere (leaderboard,
+  benchmarks, PR body, session log, paper, chat), write it with
+  `python3 tools/pcc/pcc.py claim new --kind <theorem|solve|measurement|speedup|execution|absence> --statement "…" --proof KIND:PATH …`.
+  The record pins every proof by SHA-256 and lands in `pcc/claims/` and the
+  ledger `pcc/ledger.jsonl`.
+- **Only a signed verdict verifies.** `pcc verify` runs the verifier for each
+  proof kind (Lean statement binding and holes, solve and zero-knowledge
+  solve certificates with the tool's own arithmetic, replay certificates and
+  validator reports with a keyring signature, execution receipts through a
+  verifier pinned in `pcc/keyring.json`). The signed verdict is written by CI
+  on `main` (`pcc-gate.yml`, key `ci-main`), never by the producing session.
+  `independent: true` and `verified: true` written by a producer are not read.
+- **Standing, not words.** `python3 tools/pcc/pcc.py standing <id>` is the only
+  source for "verified". Anything else is an unverified assertion and is
+  labelled so: in prose, cite `[pcc:<id>]` for a verified claim or tag the
+  sentence `[pcc:unverified]`. `pcc lint-prose` enforces this on pull request
+  bodies in CI and is run on reports and session logs.
+- **The ledger is append-only.** `pcc ledger verify --base origin/main` runs
+  on every pull request: the base ledger must be a prefix of the head's and
+  every hash link must hold. Never edit or rewrite `pcc/ledger.jsonl`.
+- **Bypasses are recorded.** `CHECKPOINT_SKIP=<reason>` still works, and the
+  hook now appends a `bypass` entry to the ledger and pushes a checkpoint
+  before the command runs. Commit the ledger with the work.
+- **The verifier is tested against sabotage.** `pcc canary` plants every
+  sabotage class in the contract into a passing fixture and must reject each
+  one; CI runs it on every pull request. A new way to cheat the gate becomes a
+  new canary in the same change that closes it.
+- **Chat answers follow the same rule.** State a result with its claim id and
+  standing, or say that it is an unverified assertion. Never present a
+  self-check, a replay, a hash or a model's agreement as verification.
+
+What this does not yet give: a real execution-proof backend. Until a verifier
+digest is listed under `trusted_verifiers` in `pcc/keyring.json`, every
+`execution` proof is `not_covered`, and no result here is execution verified
+(`crypto-autoresearcher:docs/execution-proof-chain.md`, milestones open).
+
 ## Success criterion: iterative improvement of the index-calculus baseline
 
 Owner's rule, 2026-10-15. It replaces any earlier wording that treats only
@@ -89,6 +134,47 @@ and evidence. `python3 tools/lead_atlas.py --brief` there (printed at session
 start by `.claude/hooks/lead-atlas-brief.sh`) says whether anything changed
 since its last review. Run `--match "<idea>"` before proposing an ECDLP
 mechanism, and update the lead a landed result advances.
+
+## Shared knowledge base
+
+The shared `research-kb` MCP server indexes this repository and its siblings
+(about 22k documents, 151k passages and 1.7k Lean declarations) and serves one
+read-only catalog to Claude Code, Codex and OpenCode. Query it before a
+literature or prior-art question, a new lead/mechanism/factor base/solver, a
+"first"/"best"/"not known"/negative claim, a cross-repository question, or a
+subagent handoff. Read the best hits, check `claim_status`, `authority`,
+`evidence_level` and `superseded`, and read the primary file; a score is
+relevance, not truth. Record the `source_id` and `repo:path` under "Sources
+checked"; no result is not evidence of absence.
+
+The binding rule is `crypto-autoresearcher:docs/lab-contract.md` §11; the
+canonical procedure is `crypto:.agents/skills/research-kb/SKILL.md` (commit
+`bc10008055`); the local pointer skill is `research-kb`. The CLI fallback is
+`scripts/research-kb status|search|theorems|brief`. The receipt audit is
+`scripts/kb_usage_report.py` (locked; `docs/shared-code.lock.json`) and
+`.github/workflows/kb-usage-report.yml` runs it weekly, report-only.
+
+## Local LMFDB curve catalog
+
+When LMFDB catalog data could answer a curve, isogeny, genus 2, or finite-field
+abelian-variety question, use the local indexes described by
+[the LMFDB query skill](.agents/skills/lmfdb-local-query/SKILL.md) before
+fetching the same data remotely. On the Mac with the NAS mounted, start with:
+
+```sh
+/Users/adamburan/.pyenv/versions/3.9.10/bin/python3 tools/lmfdb/query.py \
+  --dataset-dir /Volumes/SSD990/llm/tmp/lmfdb-query-cache-20261025 --list
+```
+
+The NAS source is `/Volumes/data/workspaces/lmfdb-agent-query-20261019/data/`.
+Check its mount and complete manifests if the SSD cache is unavailable. Cite
+the source, extraction time, and exact label in research artifacts. The
+`av_fq` index contains isogeny classes rather than individual curves. An
+LMFDB label alone does not identify a cryptographic challenge: verify the
+field, equation, subgroup order, cofactor, generator, and target metadata.
+The archive and read-only LAN service are documented in
+`/Volumes/data/workspaces/lmfdb-network-20261025/README.md`; the service
+waits for a valid archive `COMPLETE.json` before opening its endpoint.
 
 ## Research searches must leave visual reports
 
@@ -283,6 +369,48 @@ resume the effort are checked into S3**, and kept current while it runs.
 
 A checkpoint is a safety net, not the record: the spec, protocol and results
 still land in a PR under the rules above.
+Switching runtimes when a budget runs out (Claude Code ↔ Codex):
+[docs/runtime-relay.md](docs/runtime-relay.md); on a pending `.resume/HANDOFF.md`, run
+`python3 scripts/relay.py accept` first.
+
+## Benchmark records: data in S3, metadata in Git, one progress report
+
+Owner's rule, 2026-11-04; mechanics in
+[docs/benchmark-records.md](docs/benchmark-records.md) (shared, byte-identical).
+**Every benchmark run leaves a `bench.record/v1` record in Git and its raw
+data in S3, and regenerates the progress report, in the same PR.** The record
+(`tools/benchrec.py`; `benchmarks/records/`) names the commit, host, command,
+every raw file by SHA-256 and content-addressed S3 location
+(`s3://setec-astronomy-artifacts/store/sha256/<aa>/<hex>`, or the prefix the
+run already wrote to), and every measured value in the shared unit vocabulary
+(`S`, `gae`, `log2_gae`, `ns_per_gae`, `ir`, `ir_per_op`, `cycles_per_op`,
+`ipc`, `wall_s`, `cpu_s`, `ops_per_s`, `fmul`, `ratio`, `percent`, `count`,
+`bytes`); any other unit is rejected. Records are written once; a rerun, an
+invalid run and a censored run each get their own record.
+
+The progress report (`benchmarks/progress/`: `progress.json`, `PROGRESS.md`,
+`progress.svg`, `progress.pdf`) is generated only from the records and always
+states progress the same way: gain versus the first record and versus the
+previous record, in percent within one series (same problem, metric and
+unit), and value over reference (the distance remaining to the matched rho,
+1.0 = parity). The headline panel is in `S`; every other unit has its own
+panel and is never mixed in. Derived numbers are labelled derived; a record
+is not a validated result and does not move the leaderboard, `benchmarks/`
+rows or `VALIDATION.json`, which keep their own gates.
+
+**Enforced.** Claude Code (`.claude/hooks/benchrec-hook.sh`) refuses a
+benchmark launcher (`ecbench`, `perfindex`, `perf_ipc`, `perf stat`,
+`callgrind`, `hyperfine`, `cargo bench`, `isolated_bench`, `tools/profile.sh`,
+`task_card.py run`, `autolab`, `icms`, `scripts/*bench*`, `make bench`) that
+does not run as `tools/benchrec.py run <record> -- ...` or carry
+`BENCHREC=<record>`, and refuses `git push` and `gh pr create` while
+`tools/benchrec.py gate` fails (a record opened here and not closed, an
+incomplete record, a stale progress report); `BENCHREC_SKIP=<reason>` opts a
+command that is not a benchmark out. Other runtimes run `python3
+tools/benchrec.py gate` before pushing. The `bench-records` workflow fails a
+PR that adds a `benchmarks/` entry without a record naming it, carries a
+malformed, open or edited record, cites a raw object that is not in S3, or
+leaves the progress report stale.
 
 ## Track research work in pull requests
 
@@ -901,6 +1029,50 @@ Correctness passes do not establish speedups: require matched full-operation
 benchmarks on each claimed device, including conversion and transfer costs,
 before enabling device-specific automatic routing or making performance
 claims. Keep unmeasured backends opt-in.
+
+## Querying the curve database (ecdb)
+
+ecdb is the lab's curve database: a Postgres catalogue on RDS (us-west-2)
+with an HTTP API and an MCP endpoint. Its guide is
+[crypto's `ecdb/docs/AGENTS.md`](https://github.com/isogeny-labs/crypto/blob/main/ecdb/docs/AGENTS.md); read it before the first query.
+It holds:
+
+- every curve of crypto's registry, walk outputs and trait catalogue, with
+  Jacobians, isogenies, covers, transfer prices, polynomials and GLV data;
+- crypto's measured results: the IC leaderboard, the progress timeline, the
+  boundary ledger, `benchmarks/` and every ecbench session with its runs;
+- this repository's IC candidate catalogue (`experiments/ic-candidate-catalog/curves.yaml`), factor-base cells, identity fixtures and the ECC challenge index, each linked to an ecdb curve only by an exact EC1, curve_uid or ICV1 slug.
+
+How to reach it:
+
+- **MCP:** server `ecdb` in `.mcp.json`. Export the read token before the
+  runtime starts:
+
+  ```sh
+  export ECDB_TOKEN=$(aws secretsmanager get-secret-value --region us-west-2 --secret-id ecdb/api --query SecretString --output text | jq -r .read_token)
+  ```
+
+- **Shell:** `scripts/ecdb.sh` (`curve <ref> [part]`, `sql '<query>'`,
+  `results leaderboard`, `ecbench [session]`), and `check`, which reports
+  whether ecdb's copy of this repository's files matches the checkout.
+
+Rules:
+
+- **Token.** Never print, commit or log it. Without AWS access to `ecdb/api`,
+  say so and use the repository files.
+- **Look up before computing.** Query ecdb for a curve fact or an existing
+  measurement before recomputing it, and resolve curve names there. On an
+  ambiguous name (409), choose a candidate explicitly.
+- **Cite the source, not the query.** Every row names its source file and
+  SHA-256, and a claim cites that file or run. Measured rows are the
+  producers' frozen records in their own units: compare a ratio only within
+  one family, session or dataset.
+- **Values.** Keep each value's status: unknown is `null`, never 0.
+  Transfer prices are formula estimates, not speedups. Twist and
+  isomorphism rows do not transport a logarithm.
+- **Keep it current.** When a file ecdb imports from this repository
+  changes, `scripts/ecdb.sh check` lists it. Redeploying ecdb (crypto's
+  `ecdb/deploy/`) re-imports it.
 
 ## Cross-repository curve identity in comparisons
 

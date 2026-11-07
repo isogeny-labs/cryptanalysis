@@ -490,5 +490,84 @@ class MonitorTests(unittest.TestCase):
         self.assertTrue(res["dlp_verified"])
 
 
+class GeneralCurveTests(unittest.TestCase):
+    """y^2 + xy = x^3 + a2 x^2 + a6 for a6 outside F_2: group order, decompositions, a2 = 0 regression."""
+
+    @staticmethod
+    def brute_order(n: int, a2: int, a6: int) -> int:
+        K = kernel.Field(n, gf2n.modulus(n), a2, a6)
+        ys = np.arange(1 << n, dtype=np.uint64)
+        y2 = K.mul_vec(ys, ys)
+        count = 1  # infinity
+        for x in range(1 << n):
+            lhs = y2 ^ K.mul_vec(np.full(1 << n, x, dtype=np.uint64), ys)
+            rhs = K.mul(K.sqr(x), x) ^ K.mul(a2, K.sqr(x)) ^ a6
+            count += int((lhs == rhs).sum())
+        return count
+
+    def test_trace_count_order_matches_brute_force(self):
+        from toycurve import trace_count_order
+
+        for n in (7, 9, 11, 13):
+            for a2 in (0, 1):
+                for a6 in (1, 3, 5, (1 << (n - 1)) + 3):
+                    K = kernel.Field(n, gf2n.modulus(n), a2, a6)
+                    self.assertEqual(trace_count_order(K), self.brute_order(n, a2, a6), (n, a2, a6))
+
+    def test_trace_count_agrees_with_koblitz_closed_form(self):
+        from toycurve import koblitz_order, trace_count_order
+
+        for n in (13, 17, 19):
+            for a2 in (0, 1):
+                self.assertEqual(trace_count_order(kernel.Field(n, gf2n.modulus(n), a2, 1)), koblitz_order(n, a2))
+
+    def test_ordinary_curve_group_structure(self):
+        from toycurve import pick_ordinary_a6
+
+        a6 = pick_ordinary_a6(13, 1, 0)
+        self.assertNotIn(a6, (0, 1))
+        C = ToyCurve(13, 1, a6)
+        self.assertEqual(C.order, self.brute_order(13, 1, a6))
+        self.assertEqual(C.order, C.h * C.r)
+        self.assertIn(C.h, (2, 4))
+        self.assertFalse(C.frobenius_endo)
+        self.assertEqual(C.K.smul(C.G, C.r)[0], kernel.INF_X)
+        self.assertNotEqual(C.G[0], kernel.INF_X)
+        self.assertEqual(C.tag[0], "o")
+
+    def test_ordinary_curve_indices_give_distinct_curves(self):
+        from toycurve import pick_ordinary_a6
+
+        for n, a2 in ((7, 0), (9, 0), (13, 1)):
+            picks = [pick_ordinary_a6(n, a2, i) for i in range(6)]
+            self.assertEqual(len(set(picks)), len(picks), (n, a2, picks))
+
+    def test_ordinary_curve_decomposition_agrees_with_the_oracle(self):
+        import profile as prof
+
+        a6 = 4297  # n = 13, a2 = 0: #E = 8252 = 4 * 2063
+        C = ToyCurve(13, 0, a6)
+        self.assertEqual((C.order, C.h), (8252, 4))
+        cfg = {"n": 13, "a2": 0, "a6": a6, "m": 3, "l": 3, "family": "kertrace", "seed": 201,
+               "limits": {"d_max": 10, "max_cols": 40_000, "max_rows": 200_000}, "modes": ["mxl"]}
+        _, _, targets = prof.workload(C, 3, 40)
+        recs = [prof.task_target(cfg, "ordinary", i, t) for i, t in enumerate(targets)]
+        recs += [prof.task_target(cfg, "planted", i, None) for i in range(3)]
+        self.assertTrue(all(r["oracle_agrees"] for r in recs if "oracle_agrees" in r))
+        decomposable = [r for r in recs if r.get("oracle_ordered")]
+        self.assertGreaterEqual(len(decomposable), 3)  # not vacuous: planted targets decompose
+        for r in decomposable:
+            self.assertEqual(r["pdp_status"]["mxl"], "verified_decomposition")
+
+    def test_a2_zero_koblitz_records_are_unchanged(self):
+        C = ToyCurve(13)
+        self.assertEqual((C.order, C.h, C.r, C.tag, C.curve_id), (8012, 4, 2003, "kb1", "EC1N13Ckb1h0f132ba0b5e2"))
+        self.assertTrue(C.frobenius_endo)
+        fb = FactorBase(C, "geomtrace", 3, 202)
+        # digest of the factor base in experiments/fb-cost-model/data/pool_w3.jsonl (geomtrace, seed 202)
+        self.assertEqual(fb.digest, "9441d40867ec022e8714bc7cbd2db2be80ee2ba27ccea15835c42384c5583814")
+        self.assertEqual(ToyCurve(13, 1).curve_id, "EC1N13Cka1h7d9c6adf5d9d")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,38 @@
+{
+  "candidate_scope": "source-free rational C,E resolvent pairs and B inverse filter; source j computed from exact coordinate map; no cyclic 16 or 27 source chain enumeration in prime selection",
+  "inputs": {
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "intermediate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime919-20261025/intermediate_j.json",
+      "sha256": "1f73ef2bc230820cd3605df20402dd5a32f5a5d31cc100218f5a219f2aeec5c2"
+    },
+    "inverse_filter": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-inverse-filter-crossprime-20261025/inverse_filter.py",
+      "sha256": "92766978eb1ef3d481e4ed49c1574ffda722a7576cfbcd71ebe6f7c0acd52183"
+    },
+    "path_enumerator": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-stable-kernel-chains-20261025/enumerate_chains_sage.py",
+      "sha256": "81e2105f58b444077e36a82ce0cd1a96754552ff16e50c865062379d55ee338c"
+    },
+    "prior_exception_audit": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-sign-branch-holdout-20261026/audit.json",
+      "sha256": "97dde1c0a89115ec6664caad6dbdabb28cc22e739dfdee46612afa00047294aa"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    }
+  },
+  "prediction_rule": "for each selected-prime valid triple with source j=1728, predicted source-chain multiplicity equals the number of rational cyclic 27 paths on the canonical j=1728 source whose sequence of source/intermediate/target j values equals the j sequence computed from C; freeze these predictions before 16-path enumeration and full inverse",
+  "preserve_zero_cells": true,
+  "prime_cap_exclusive": 5000,
+  "selection_rule": "scan ascending primes p>1319 below 5000 with p congruent 23 mod 24; select first with at least four valid rational C,E,B triples with source j=1728 across at least two distinct C points",
+  "status": "FROZEN_BEFORE_J1728_SOURCE_FREE_PRIME_SIEVE"
+}

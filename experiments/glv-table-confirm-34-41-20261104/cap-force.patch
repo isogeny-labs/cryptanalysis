@@ -1,0 +1,17 @@
+--- a/src/curve.c	2026-10-31 21:13:38.443824822 +0000
++++ b/src/curve.c	2026-10-31 21:13:38.471704643 +0000
+@@ -751,7 +751,13 @@
+     int lg = glv_ilog2(n) + 1;
+     uint64_t rbudget = sqrt_nm / (12u * (uint64_t)lg);
+     uint32_t rr = 8;
+-    while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 128) rr *= 2;
++#ifndef CA_GLV_CAP /* measurement only: experiments/glv-table-confirm-34-41-20261104 */
++#define CA_GLV_CAP 128
++#endif
++    while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= CA_GLV_CAP) rr *= 2;
++#ifdef CA_GLV_FORCE_R
++    rr = CA_GLV_FORCE_R;
++#endif
+     c.r = rr;
+     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
+     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);

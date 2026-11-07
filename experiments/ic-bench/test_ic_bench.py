@@ -217,7 +217,8 @@ class PrimeBridgeTest(unittest.TestCase):
         out = prime_bridge.normalize(self.report(), host="test")
         rec = out["receipt"]
         analyze.validate_run(copy.deepcopy(rec))
-        self.assertTrue(rec["candidate_id"].startswith("IC1P18Cj0fb48PDP2orbitRClpLAgraphTDlearnISO0h"))
+        self.assertTrue(rec["candidate_id"].startswith(
+            "IC1P18Cj0fb48PDP2orbitRClpaffine1LAgraphTDlearnISO0h"))
         self.assertEqual(rec["operation_unit"], "prime_group_operation")
         self.assertEqual(rec["total_operations"], 1166)
         self.assertEqual(rec["counts"]["final_rank"], 8)

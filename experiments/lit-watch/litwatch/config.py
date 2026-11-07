@@ -84,6 +84,8 @@ queries = ["ECDLP", "isogeny", "3SUM", "topic:lean4"]
 min_stars = 5
 # Repos/orgs whose releases are always worth a look, `owner/name` form.
 watch_repos = []
+# Repos that publish by commit rather than release (latest default-branch commits).
+watch_commits = []
 """
 
 
@@ -112,6 +114,7 @@ class Config:
     github_queries: list[str] = field(default_factory=list)
     github_min_stars: int = 5
     github_watch_repos: list[str] = field(default_factory=list)
+    github_watch_commits: list[str] = field(default_factory=list)
 
 
 def load(path: str | Path | None) -> Config:
@@ -139,6 +142,7 @@ def load(path: str | Path | None) -> Config:
         github_queries=list(data.get("github", {}).get("queries", [])),
         github_min_stars=int(data.get("github", {}).get("min_stars", 5)),
         github_watch_repos=list(data.get("github", {}).get("watch_repos", [])),
+        github_watch_commits=list(data.get("github", {}).get("watch_commits", [])),
     )
     return cfg
 

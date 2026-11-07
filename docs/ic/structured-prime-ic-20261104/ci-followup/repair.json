@@ -1,0 +1,60 @@
+{
+  "schema": "structured-ic-transitive-lock-repair/v1",
+  "standing": "producer_assertion",
+  "claim": "PCC-20261104-f011a3",
+  "failed_head": "96823dc4019497254db3de35195caad7610215bc",
+  "failed_job": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41866620958/job/126702330034",
+  "lockfile": "tools/binary-genus2-cover/Cargo.lock",
+  "change": "two missing dependency edges; registry package versions unchanged",
+  "before_locked_metadata_exit": 101,
+  "after_locked_metadata_exit": 0,
+  "after_metadata_stdout_sha256": "e09080e2dac00a601614b0b9cedcc1db8ff208f462fc27d0661abc13f417d9fb",
+  "after_metadata_retention": "graph summary here; complete dependency resolution reproducible from the committed Cargo.lock",
+  "tensor_packages": [
+    {
+      "name": "hashed-ecdl-tensor",
+      "version": "0.1.0",
+      "manifest_path": "bindings/rust/hashed-ecdl-tensor/Cargo.toml",
+      "new_dependencies": [
+        {
+          "name": "sha2",
+          "rename": null,
+          "requirement": "^0.10"
+        }
+      ]
+    },
+    {
+      "name": "hashed-ecdl-tensor",
+      "version": "0.1.1",
+      "manifest_path": "crates/hashed-ecdl-tensor/Cargo.toml",
+      "new_dependencies": [
+        {
+          "name": "hashed-ecdl-tensor",
+          "rename": "structured-tensor",
+          "requirement": "*"
+        },
+        {
+          "name": "sha2",
+          "rename": null,
+          "requirement": "^0.10"
+        }
+      ]
+    }
+  ],
+  "all_target_compile": "cargo check --locked --all-targets -j 2, completed",
+  "native_consumer_controls": "bindings and suite structured_cli, each reports three passing tests",
+  "scope_note": "No native arithmetic, test, gate, source pin, archived result or ledger was changed.",
+  "published_lock_fix_commit": "2015e2303c86e8cad1c040390a5d36a3dae2eec3",
+  "published_fix_comparison": "matches the locally regenerated lockfile byte-for-byte; external published fix retained by fast-forward",
+  "current_base": "a606367c241535d7b9e897314bf32e00a0b1e938",
+  "merge_blocker": {
+    "files": [
+      "docs/session-logs/2026-11-04.md",
+      "pcc/ledger.jsonl"
+    ],
+    "base_ledger_entries": 3,
+    "head_ledger_entries": 2,
+    "first_divergence_seq": 1,
+    "resolution": "left untouched; maintainer action needed under append-only preservation rule"
+  }
+}

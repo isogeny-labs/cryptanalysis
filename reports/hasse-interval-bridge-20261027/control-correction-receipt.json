@@ -1,0 +1,36 @@
+{
+  "schema": "cryptanalysis.center_interval_control_correction.v1",
+  "observed_utc": "2026-10-27T05:14:06.564891+00:00",
+  "first_attempt": "attempt-1-machine-receipt.json",
+  "reason": "Initial boundary fixture contained literal backslash-u escapes; source/audit and other controls from attempt 1 retained.",
+  "boundary_control_sha256": "930504dae815b421a4073d6af78c65ea9f3c4b94e5cb70fb573b8f9eb4cf24da",
+  "steps": [
+    {
+      "name": "boundary-build",
+      "command": [
+        "lean",
+        "-o",
+        "BoundaryControl.olean",
+        "BoundaryControl.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 30.082,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "boundary-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "BoundaryControl"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 25.574,
+      "stdout_sha256": "9bec2fe3079cb5b74af3154b3a475189f663811aaa0d5982ee25421150cffc77",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "expected_exits_met": true
+}

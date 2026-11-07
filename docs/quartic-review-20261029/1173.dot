@@ -1,0 +1,14 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="P_B(T) over pinned K = Q(alpha)\nT^3 - z T^2 - 64"];
+n1 [label="Res_T(cubic, P_B)\n= -16 R_E(z) = -16 u q4(z)q8(z)"];
+n2 [label="Universal 5x5 Sylvester determinant\nproved over a commutative ring"];
+n3 [label="56 saved C points x 13 coefficients\n= 728 finite coefficient comparisons"];
+n4 [label="Concrete number-field interpretation\nremains separate from the ring identity"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n2 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n3 [label="scope condition / recorded check", style=solid];
+n1 -> n4 [label="scope condition / recorded check", style=dashed];
+}

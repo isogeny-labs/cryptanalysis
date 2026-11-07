@@ -1,0 +1,38 @@
+"""Bound the checked-Sage relative quadratic local calculation."""
+import json
+import subprocess
+import time
+from hashlib import sha256
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SAGE = '/Volumes/SSD990/cryptanalysis/sage'
+
+
+def main():
+    protocol_path = HERE / 'protocol.json'
+    protocol = json.loads(protocol_path.read_text())
+    command = [SAGE, '-python', str(HERE / 'run_sage.py')]
+    start = time.monotonic()
+    try:
+        run = subprocess.run(command, capture_output=True, text=True,
+                             timeout=protocol['timeout_seconds'])
+        status = 'COMPLETED' if run.returncode == 0 else 'SAGE_ERROR'
+        stdout, stderr, returncode = run.stdout, run.stderr, run.returncode
+    except subprocess.TimeoutExpired as exc:
+        status = 'TIME_LIMIT'
+        stdout = (exc.stdout or b'').decode(errors='replace')
+        stderr = (exc.stderr or b'').decode(errors='replace')
+        returncode = None
+    receipt = {'status': status, 'command': command,
+               'protocol_sha256': sha256(protocol_path.read_bytes()).hexdigest(),
+               'source_sha256': sha256((HERE / 'run_sage.py').read_bytes()).hexdigest(),
+               'elapsed_seconds': round(time.monotonic() - start, 3),
+               'returncode': returncode, 'stdout': stdout, 'stderr': stderr}
+    (HERE / 'attempt.json').write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
+    print(json.dumps({'status': status, 'elapsed_seconds': receipt['elapsed_seconds'],
+                      'stdout_tail': stdout[-600:], 'stderr_tail': stderr[-600:]}, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

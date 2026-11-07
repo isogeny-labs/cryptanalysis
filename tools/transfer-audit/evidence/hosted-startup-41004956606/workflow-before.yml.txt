@@ -1,0 +1,48 @@
+name: Rust transfer audit and proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/transfer-audit/**'
+      - 'tools/lean/transfer-audit/**'
+      - 'suite/src/binary_ecc/**'
+      - 'tools/lean/AuditAxioms.lean'
+      - '.github/workflows/transfer-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/transfer-audit/**'
+      - 'tools/lean/transfer-audit/**'
+      - 'suite/src/binary_ecc/**'
+      - 'tools/lean/AuditAxioms.lean'
+      - '.github/workflows/transfer-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certificates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Hydrate transfer-audit inputs
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-east-2' }}
+        run: python3 tools/artifacts/artifacts.py pull tools/transfer-audit
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Install pinned Lean
+        run: |
+          set -euo pipefail
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain "$(cat tools/lean/transfer-audit/lean-toolchain)"
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Verify source-bound native and Lean certificates
+        run: tools/transfer-audit/check.sh "$RUNNER_TEMP/transfer-audit"

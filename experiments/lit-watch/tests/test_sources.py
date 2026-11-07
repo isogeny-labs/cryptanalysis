@@ -87,6 +87,14 @@ GH_RELEASES = [{
     "body": "notes",
 }]
 
+GH_COMMITS = [{
+    "sha": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+    "html_url": "https://github.com/openai/math/commit/7ef5c0cc5ca4",
+    "author": {"login": "octo"},
+    "commit": {"message": "Merge pull request #3\n\nUpdate 10-26",
+               "committer": {"date": "2026-10-26T14:18:03-07:00"}},
+}]
+
 
 class ArxivTests(unittest.TestCase):
     def test_entries_and_version_stripping(self):
@@ -153,6 +161,13 @@ class GithubTests(unittest.TestCase):
             "o/r", lambda url: json.dumps(GH_RELEASES).encode())
         self.assertEqual(out[0]["ext_id"], "release:o/r@v1.0")
         self.assertEqual(out[0]["published"], "2026-10-01")
+
+    def test_commit_items(self):
+        out = sources.github_repo_commits(
+            "openai/math", lambda url: json.dumps(GH_COMMITS).encode())
+        self.assertEqual(out[0]["ext_id"], "commit:openai/math@7ef5c0cc5ca4")
+        self.assertEqual(out[0]["title"], "openai/math: Merge pull request #3")
+        self.assertEqual(out[0]["published"], "2026-10-26")
 
 
 class DateTests(unittest.TestCase):

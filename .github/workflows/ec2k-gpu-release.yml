@@ -67,7 +67,7 @@ jobs:
           - machine: aarch64
             runner: ubuntu-22.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -117,7 +117,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -166,7 +166,7 @@ jobs:
       run:
         working-directory: .
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -223,7 +223,7 @@ jobs:
       run:
         working-directory: .
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Pull store data this workflow reads (tools/artifacts)
         shell: bash
         working-directory: ${{ github.workspace }}
@@ -259,6 +259,9 @@ jobs:
         working-directory: ${{ runner.temp }}/sage-upstream
         run: |
           python3 -m pip install setuptools
+          # Homebrew refuses formulae from a third-party tap until it is trusted,
+          # and Sage's dependency list pulls pari from dimpase/tap.
+          brew trust dimpase/tap
           # Sage prints shell commands for Homebrew; eval is intentional here.
           # shellcheck disable=SC2046
           eval $(build/bin/sage-print-system-package-command homebrew update)
@@ -340,5 +343,12 @@ jobs:
 
           The cryptanalysis-sage-$version-source.tar.gz asset contains the pinned Sage patch stack. The macOS arm64 Sage accelerator archive contains seven compiled/runtime modules for an already built Sage at the pinned commit and matching Python ABI. It is not a full Sage installation; see docs/SAGE_RELEASE.md.
           EOF
-          gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" \
-            --title "cryptanalysis $version" --notes-file notes.md "${flags[@]}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # release-please already drafted this release, with its changelog
+            # as the notes. Keep those notes and just attach the build.
+            gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false "${flags[@]}"
+          else
+            gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" \
+              --title "cryptanalysis $version" --notes-file notes.md "${flags[@]}"
+          fi

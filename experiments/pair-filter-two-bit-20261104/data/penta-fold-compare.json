@@ -1,0 +1,6296 @@
+{
+ "valid": true,
+ "performance_index": 0.9911992542636036,
+ "performance_index_ci95": [
+  0.9495055939575525,
+  1.0429861004761922
+ ],
+ "areas": {
+  "dlp": {
+   "index": 1.057010961452141,
+   "weight": 0.3333333333333333,
+   "kernels": 1
+  },
+  "field_ec": {
+   "index": 0.9362187085983673,
+   "weight": 0.3333333333333333,
+   "kernels": 7
+  },
+  "relation": {
+   "index": 0.9840702290570202,
+   "weight": 0.3333333333333333,
+   "kernels": 5
+  }
+ },
+ "kernels": [
+  {
+   "id": "dlp/koblitz_signed_rho_k0_n41",
+   "area": "dlp",
+   "fingerprints": [
+    "b657682a398de120"
+   ],
+   "valid": true,
+   "base_median_ns": 71309026,
+   "cand_median_ns": 66492732,
+   "speedup": 1.057010961452141,
+   "speedup_ci95": [
+    1.0154732047986268,
+    1.195963195287587
+   ],
+   "aa_noise_ln": 0.0725006081751058,
+   "verdict": "neutral",
+   "d": [
+    -0.025890551914720256,
+    0.38053271796326466,
+    0.03735182222481557,
+    0.17895188188402245,
+    0.16663870421179985,
+    0.05307311525970247,
+    0.0699302628177488,
+    0.015354715475139943,
+    0.055445077176941075
+   ],
+   "n": [
+    -0.19028711675702642,
+    0.39866957895336824,
+    0.018852108170134465,
+    0.004058773330865603,
+    0.16856404913255787,
+    -0.048900990270542156,
+    0.08283959508401423,
+    -0.011469776935507695,
+    0.03951040888746304
+   ]
+  },
+  {
+   "id": "field_ec/frobenius_canon_n53_bulk_256k",
+   "area": "field_ec",
+   "fingerprints": [
+    "fc89705e0b592e52"
+   ],
+   "valid": true,
+   "base_median_ns": 5322677,
+   "cand_median_ns": 6217528,
+   "speedup": 0.9834114258389156,
+   "speedup_ci95": [
+    0.6858888896302195,
+    1.019146097896426
+   ],
+   "aa_noise_ln": 0.015532282108249352,
+   "verdict": "neutral",
+   "d": [
+    -0.01648691193012804,
+    -0.40900441248977326,
+    -0.16891730165188462,
+    -0.18335545167768638,
+    -2.8688579066955912e-06,
+    -0.016727705362301535,
+    0.10437390357171425,
+    0.018965117757881227,
+    -0.37703963284362857
+   ],
+   "n": [
+    0.010476380755597836,
+    0.017982492429026182,
+    -0.22747101820934332,
+    0.009827427531168303,
+    -0.0018479424763086162,
+    0.050672103947095176,
+    -0.06558628428577677,
+    0.010441768270193462,
+    -0.007544034839492088
+   ]
+  },
+  {
+   "id": "field_ec/gf2_n53_batch_inv_4x64k",
+   "area": "field_ec",
+   "fingerprints": [
+    "6ccfe670287a7b16"
+   ],
+   "valid": true,
+   "base_median_ns": 8761549,
+   "cand_median_ns": 8610577,
+   "speedup": 0.9942239643173738,
+   "speedup_ci95": [
+    0.6824835872154815,
+    1.570318049971527
+   ],
+   "aa_noise_ln": 0.4666616007908444,
+   "verdict": "neutral",
+   "d": [
+    -0.3820168002481054,
+    -0.24532800073340166,
+    0.4512781784434391,
+    -0.2487091017444343,
+    0.5331463737782794,
+    0.012941687566307286,
+    -0.44249357504716397,
+    0.02451079198212465,
+    -0.005792781490787269
+   ],
+   "n": [
+    -0.5619143370679721,
+    0.018074113152556196,
+    0.4025793006991056,
+    -0.2690056978411746,
+    0.41361151205968116,
+    0.010430218738501057,
+    -0.39505549102600523,
+    0.008739047334958078,
+    -0.31475893753598033
+   ]
+  },
+  {
+   "id": "field_ec/gf2_n53_inv_16k",
+   "area": "field_ec",
+   "fingerprints": [
+    "850146e8175cbeb9"
+   ],
+   "valid": true,
+   "base_median_ns": 2242049,
+   "cand_median_ns": 2647034,
+   "speedup": 0.8691016644926952,
+   "speedup_ci95": [
+    0.7134836877708323,
+    1.3669172777182859
+   ],
+   "aa_noise_ln": 0.4910787645407258,
+   "verdict": "neutral",
+   "d": [
+    -0.3375957045959227,
+    -0.1402951703493298,
+    -0.5807027497231654,
+    -0.17421063197479605,
+    -0.04991035656347572,
+    0.4356355037733786,
+    -0.263529421879706,
+    0.3125580421714157,
+    0.034641446571378194
+   ],
+   "n": [
+    -0.5132543761710373,
+    0.14720381942298963,
+    -0.0007979931232769904,
+    -0.6508880215199901,
+    -0.41479388987456334,
+    0.48370662578430207,
+    -0.005468741530644758,
+    0.3312280888579022,
+    0.06620456427800869
+   ]
+  },
+  {
+   "id": "field_ec/gf2_n53_mul_sqr_1m",
+   "area": "field_ec",
+   "fingerprints": [
+    "5d61bbda19e2b3d2"
+   ],
+   "valid": true,
+   "base_median_ns": 10886144,
+   "cand_median_ns": 14228005,
+   "speedup": 0.7937852009438937,
+   "speedup_ci95": [
+    0.5573459655547334,
+    0.8600792956936634
+   ],
+   "aa_noise_ln": 0.10755670472087235,
+   "verdict": "slower",
+   "d": [
+    0.2978180521365759,
+    -0.28687476585861704,
+    -0.22694977427567192,
+    -0.2309423821127131,
+    -0.15073068969018094,
+    -0.6970151671818798,
+    -0.2990955468002986,
+    -0.20788349504688963,
+    -0.5845691087934385
+   ],
+   "n": [
+    0.2497890203229105,
+    -0.07254600345398109,
+    -0.5564781317506752,
+    0.009754413633286928,
+    0.07251413306990653,
+    -0.011375104579930224,
+    -0.14253961346930455,
+    0.03389220470359666,
+    0.17467248797680449
+   ]
+  },
+  {
+   "id": "field_ec/koblitz_curve_mul_n53_1k",
+   "area": "field_ec",
+   "fingerprints": [
+    "89ee27edd14cb8d4"
+   ],
+   "valid": true,
+   "base_median_ns": 5790754,
+   "cand_median_ns": 6115524,
+   "speedup": 0.9610448639729103,
+   "speedup_ci95": [
+    0.8001087239242608,
+    1.0145351076062739
+   ],
+   "aa_noise_ln": 0.05720763158542811,
+   "verdict": "neutral",
+   "d": [
+    -0.0780396267093634,
+    -0.22300765564311875,
+    -0.0384321238052521,
+    0.014430485506821673,
+    0.05766509087130544,
+    -0.09835378114007415,
+    -0.41786518329484207,
+    -0.03973418642629521,
+    -0.029977591189626247
+   ],
+   "n": [
+    -0.7533190126456583,
+    0.335864596268955,
+    0.007673424955748676,
+    0.003030942777810514,
+    -0.5697573029438359,
+    -0.024486800886993766,
+    0.020407898570753535,
+    -0.8308414755181561,
+    -0.03858601887591266
+   ]
+  },
+  {
+   "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+   "area": "field_ec",
+   "fingerprints": [
+    "ac4fa250bbc691c4"
+   ],
+   "valid": true,
+   "base_median_ns": 9935079,
+   "cand_median_ns": 9817142,
+   "speedup": 0.9886868508578225,
+   "speedup_ci95": [
+    0.9357181910794274,
+    1.2858561521381726
+   ],
+   "aa_noise_ln": 0.304819154996644,
+   "verdict": "neutral",
+   "d": [
+    0.02247461357537406,
+    -0.02828543179761643,
+    0.43995143872245795,
+    -0.0378764923421408,
+    0.25142476274574715,
+    0.0384262570794983,
+    -0.09187341207892333,
+    -0.011377629593175714,
+    -0.06644092574419196
+   ],
+   "n": [
+    0.044381420164423264,
+    0.2936104463125944,
+    0.44963860188069216,
+    -0.41347241940215024,
+    0.034715694413561635,
+    -0.2055977033567004,
+    0.007885777661500292,
+    -0.004048518278460523,
+    -0.3429791413836983
+   ]
+  },
+  {
+   "id": "field_ec/koblitz_n53_fast_mul_2k",
+   "area": "field_ec",
+   "fingerprints": [
+    "efe72aaf90c26a6a"
+   ],
+   "valid": true,
+   "base_median_ns": 15839657,
+   "cand_median_ns": 16744096,
+   "speedup": 0.9836616309677575,
+   "speedup_ci95": [
+    0.9153085491611945,
+    1.0603506624100698
+   ],
+   "aa_noise_ln": 0.04066991249114117,
+   "verdict": "neutral",
+   "d": [
+    0.3948964268377035,
+    -0.028337730157531164,
+    0.005619682819353254,
+    0.05859966701162896,
+    -0.08849405835184371,
+    -0.12356293956094862,
+    -0.01274436824581205,
+    -0.0164733120347884,
+    -0.04407008349284672
+   ],
+   "n": [
+    0.155379091303987,
+    0.022420120817120037,
+    0.027431480163996477,
+    0.04904018589579668,
+    -0.07547260049770017,
+    -0.005361146548479621,
+    -0.45988668915275965,
+    0.00984413638677883,
+    0.023080654618265233
+   ]
+  },
+  {
+   "id": "relation/koblitz_collect_k0n41_w164_u4096",
+   "area": "relation",
+   "fingerprints": [
+    "5db139c2b89ef0f5"
+   ],
+   "valid": true,
+   "base_median_ns": 48727435,
+   "cand_median_ns": 49483049,
+   "speedup": 0.9957237284154725,
+   "speedup_ci95": [
+    0.8864829077373301,
+    1.6545552100320369
+   ],
+   "aa_noise_ln": 0.5857177720961021,
+   "verdict": "neutral",
+   "d": [
+    -0.0644481354742369,
+    0.0015226269230041761,
+    0.6511652358606889,
+    0.5035322174402058,
+    -0.47420748474468555,
+    -0.057023910988191845,
+    0.09580222696334299,
+    -0.0042854409837573635,
+    -0.12049343426589668
+   ],
+   "n": [
+    0.02856461302100034,
+    -0.3950612249400392,
+    0.5584313215464596,
+    0.5852275672808729,
+    -0.4856037902498001,
+    -0.0687645013085872,
+    -0.5808700542114563,
+    0.016996098387110872,
+    -0.00950869648035348
+   ]
+  },
+  {
+   "id": "relation/koblitz_collect_k0n53_w477_u1024",
+   "area": "relation",
+   "fingerprints": [
+    "cbaf6ffbd5aff92b"
+   ],
+   "valid": true,
+   "base_median_ns": 61341721,
+   "cand_median_ns": 70652138,
+   "speedup": 0.8652583696682877,
+   "speedup_ci95": [
+    0.6439155082268658,
+    0.9896482962703449
+   ],
+   "aa_noise_ln": 0.1317969846777006,
+   "verdict": "neutral",
+   "d": [
+    -0.4285668313045568,
+    -0.2619634144340267,
+    -0.1371912936847137,
+    -0.14472712339207194,
+    -0.44018775989053494,
+    0.02850943904559154,
+    -0.010405655264548327,
+    -0.12366505082073492,
+    -0.46114379867911703
+   ],
+   "n": [
+    -0.29713170098044706,
+    -0.3819804641385247,
+    -0.13535980229970532,
+    -0.0033186035396745943,
+    -0.2651310999105056,
+    0.042507342807870906,
+    -0.07237310538796846,
+    -0.05331835512302667,
+    -0.08889584829198746
+   ]
+  },
+  {
+   "id": "relation/koblitz_descent_k0n53_m2_x4",
+   "area": "relation",
+   "fingerprints": [
+    "d83e70c7593c69d6"
+   ],
+   "valid": true,
+   "base_median_ns": 90440093,
+   "cand_median_ns": 89378610,
+   "speedup": 0.9722688008130081,
+   "speedup_ci95": [
+    0.8538030454521934,
+    1.059041771539859
+   ],
+   "aa_noise_ln": 0.28639251545300926,
+   "verdict": "neutral",
+   "d": [
+    -0.10204238786898757,
+    -0.028122968706649813,
+    -0.15805473772601725,
+    0.1279948713214368,
+    0.0009659750158597871,
+    0.046805958474294716,
+    -0.23489321253137221,
+    0.0573645101660641,
+    -0.03906133144712447
+   ],
+   "n": [
+    -0.08617322377685617,
+    -0.011977875592668915,
+    0.24078043553476614,
+    0.1943853218203392,
+    -0.36041292748668524,
+    -0.31921596740115993,
+    0.04557302912573539,
+    0.033730470683156204,
+    0.19316910525631273
+   ]
+  },
+  {
+   "id": "relation/koblitz_pair_table_k0n41_folded",
+   "area": "relation",
+   "fingerprints": [
+    "ad1429caee869059"
+   ],
+   "valid": true,
+   "base_median_ns": 46857511,
+   "cand_median_ns": 31311816,
+   "speedup": 1.1152163476574717,
+   "speedup_ci95": [
+    0.9327731324420272,
+    1.6580198294644843
+   ],
+   "aa_noise_ln": 0.21658404835527975,
+   "verdict": "neutral",
+   "d": [
+    -0.5495211640056795,
+    0.10904841986348136,
+    0.4319548834788042,
+    0.05212474697542491,
+    -0.06959326692891415,
+    0.0601365249792318,
+    0.518383310249162,
+    0.24636202688015085,
+    0.5056240165115993
+   ],
+   "n": [
+    0.039219448212037024,
+    -0.02737460760267939,
+    -0.053471094677873025,
+    0.14608393926566826,
+    -0.66977554795685,
+    0.04013479191045211,
+    0.48131229910121937,
+    0.23481651224702502,
+    0.2717884241010797
+   ]
+  },
+  {
+   "id": "relation/koblitz_rung_k0n31",
+   "area": "relation",
+   "fingerprints": [
+    "7874561aa3c8630a"
+   ],
+   "valid": true,
+   "base_median_ns": 28552054,
+   "cand_median_ns": 29738494,
+   "speedup": 0.987871199906236,
+   "speedup_ci95": [
+    0.7182605243688456,
+    1.5861618278316312
+   ],
+   "aa_noise_ln": 0.695750924850845,
+   "verdict": "neutral",
+   "d": [
+    0.07849274446193258,
+    0.46131715321021294,
+    -0.5078090074144971,
+    0.014790347965200014,
+    0.47107905557605817,
+    -0.3309229284367087,
+    -0.012202954199827514,
+    -0.04153797383246615,
+    -0.04712064504042397
+   ],
+   "n": [
+    0.5641494031728704,
+    -0.004787349825902287,
+    0.015193258396022452,
+    -0.46927756970919,
+    0.48129049257338424,
+    0.0254924656558674,
+    -0.6866512764512298,
+    0.024315038545345197,
+    -0.47736125571387417
+   ]
+  }
+ ],
+ "rounds": 9,
+ "mode": "wall",
+ "unit": "ms",
+ "base": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+ "cand": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-penta/perfbench",
+ "threads": 1,
+ "samples_per_invocation": 5,
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "cpu_flags": [
+   "pclmulqdq",
+   "popcnt",
+   "avx",
+   "bmi1",
+   "avx2",
+   "bmi2",
+   "avx512f",
+   "avx512dq",
+   "adx",
+   "avx512cd",
+   "avx512bw",
+   "avx512vl",
+   "avx512_vnni"
+  ],
+  "logical_cores": 4,
+  "memory": "16477348 kB",
+  "os": "Linux 6.18.44-fc-v233",
+  "arch": "x86_64",
+  "rustc": "rustc 1.97.0 (2d8144b78 2026-07-07)",
+  "loadavg_start": [
+   1.16650390625,
+   2.26171875,
+   1.8486328125
+  ],
+  "loadavg_end": [
+   1.0830078125,
+   1.46826171875,
+   1.60986328125
+  ]
+ },
+ "raw": {
+  "dlp/koblitz_signed_rho_k0_n41": {
+   "A": [
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 25653084,
+     "median_ns": 65230720,
+     "min_ns": 64622477,
+     "samples_ns": [
+      65895018,
+      65055553,
+      64622477,
+      65230720,
+      73887749
+     ],
+     "round": 0
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 33341755,
+     "median_ns": 100902065,
+     "min_ns": 80172467,
+     "samples_ns": [
+      80172467,
+      101343095,
+      101377703,
+      100585669,
+      100902065
+     ],
+     "round": 1
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 33798391,
+     "median_ns": 73007504,
+     "min_ns": 68847383,
+     "samples_ns": [
+      70688400,
+      68847383,
+      73007504,
+      79967606,
+      86152372
+     ],
+     "round": 2
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 26824916,
+     "median_ns": 78453589,
+     "min_ns": 65263676,
+     "samples_ns": [
+      65263676,
+      72151092,
+      80068940,
+      78964676,
+      78453589
+     ],
+     "round": 3
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 23749533,
+     "median_ns": 79092428,
+     "min_ns": 69215298,
+     "samples_ns": [
+      69215298,
+      80522355,
+      86958836,
+      77872488,
+      79092428
+     ],
+     "round": 4
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 24392866,
+     "median_ns": 69574906,
+     "min_ns": 66545704,
+     "samples_ns": [
+      66545704,
+      67947161,
+      69574906,
+      71928877,
+      74193594
+     ],
+     "round": 5
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 33631186,
+     "median_ns": 71309026,
+     "min_ns": 70101815,
+     "samples_ns": [
+      104955789,
+      89263368,
+      71309026,
+      70437924,
+      70101815
+     ],
+     "round": 6
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 25041169,
+     "median_ns": 66713928,
+     "min_ns": 65149287,
+     "samples_ns": [
+      67368224,
+      82611519,
+      65656938,
+      66713928,
+      65149287
+     ],
+     "round": 7
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 39694409,
+     "median_ns": 70033128,
+     "min_ns": 65708279,
+     "samples_ns": [
+      65708279,
+      68244388,
+      73791384,
+      75238522,
+      70033128
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 43792887,
+     "median_ns": 66941632,
+     "min_ns": 66053507,
+     "samples_ns": [
+      66053507,
+      68350083,
+      66857050,
+      66941632,
+      70014558
+     ],
+     "round": 0
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 22604760,
+     "median_ns": 68966279,
+     "min_ns": 67274740,
+     "samples_ns": [
+      71946687,
+      68966279,
+      70010578,
+      68375431,
+      67274740
+     ],
+     "round": 1
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 38187350,
+     "median_ns": 70330841,
+     "min_ns": 66261952,
+     "samples_ns": [
+      79325130,
+      66535307,
+      70330841,
+      83497463,
+      66261952
+     ],
+     "round": 2
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 33394089,
+     "median_ns": 65598665,
+     "min_ns": 65553326,
+     "samples_ns": [
+      65622281,
+      65675679,
+      65598138,
+      65553326,
+      65598665
+     ],
+     "round": 3
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 24149441,
+     "median_ns": 66952167,
+     "min_ns": 66642560,
+     "samples_ns": [
+      68020458,
+      66952167,
+      66670317,
+      67040458,
+      66642560
+     ],
+     "round": 4
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 26297458,
+     "median_ns": 65978626,
+     "min_ns": 65587414,
+     "samples_ns": [
+      73780477,
+      65763632,
+      65587414,
+      65978626,
+      66989220
+     ],
+     "round": 5
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 35468632,
+     "median_ns": 66492732,
+     "min_ns": 65867945,
+     "samples_ns": [
+      66296173,
+      65867945,
+      66492732,
+      89529422,
+      79189094
+     ],
+     "round": 6
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 22774252,
+     "median_ns": 65697379,
+     "min_ns": 65633919,
+     "samples_ns": [
+      65805671,
+      65697379,
+      65664323,
+      65633919,
+      66410344
+     ],
+     "round": 7
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 25416617,
+     "median_ns": 66255820,
+     "min_ns": 65253154,
+     "samples_ns": [
+      65690799,
+      65253154,
+      66831824,
+      66418904,
+      66255820
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 26556269,
+     "median_ns": 78902873,
+     "min_ns": 78534583,
+     "samples_ns": [
+      78534583,
+      79324353,
+      78786677,
+      79325777,
+      78902873
+     ],
+     "round": 0
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 25295635,
+     "median_ns": 67726722,
+     "min_ns": 65294000,
+     "samples_ns": [
+      69541618,
+      65294000,
+      74109558,
+      67726722,
+      67633190
+     ],
+     "round": 1
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 33216801,
+     "median_ns": 71644051,
+     "min_ns": 66915339,
+     "samples_ns": [
+      66915339,
+      69852983,
+      71644051,
+      78335796,
+      77628169
+     ],
+     "round": 2
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 25930889,
+     "median_ns": 78135809,
+     "min_ns": 65290635,
+     "samples_ns": [
+      65290635,
+      78135809,
+      99505232,
+      87544047,
+      66220787
+     ],
+     "round": 3
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 35284942,
+     "median_ns": 66823385,
+     "min_ns": 65807698,
+     "samples_ns": [
+      72401478,
+      69447334,
+      66789373,
+      65807698,
+      66823385
+     ],
+     "round": 4
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 28117197,
+     "median_ns": 73061748,
+     "min_ns": 66098096,
+     "samples_ns": [
+      73061748,
+      76654974,
+      75797199,
+      69179057,
+      66098096
+     ],
+     "round": 5
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 24496538,
+     "median_ns": 65639872,
+     "min_ns": 65147982,
+     "samples_ns": [
+      68161528,
+      65837800,
+      65639872,
+      65147982,
+      65410373
+     ],
+     "round": 6
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 23699342,
+     "median_ns": 67483527,
+     "min_ns": 65762873,
+     "samples_ns": [
+      84674413,
+      85093464,
+      65762873,
+      67483527,
+      67210993
+     ],
+     "round": 7
+    },
+    {
+     "id": "dlp/koblitz_signed_rho_k0_n41",
+     "area": "dlp",
+     "fingerprint": "b657682a398de120",
+     "setup_ns": 24466871,
+     "median_ns": 67320041,
+     "min_ns": 65457895,
+     "samples_ns": [
+      67320041,
+      67619159,
+      70944480,
+      65457895,
+      66063176
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/frobenius_canon_n53_bulk_256k": {
+   "A": [
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 205429690,
+     "median_ns": 5396915,
+     "min_ns": 5249546,
+     "samples_ns": [
+      5268436,
+      5249546,
+      5523196,
+      5586449,
+      5396915
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 145824991,
+     "median_ns": 5378253,
+     "min_ns": 5257600,
+     "samples_ns": [
+      5257600,
+      5378253,
+      5529377,
+      5301756,
+      5479385
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 209682505,
+     "median_ns": 5251192,
+     "min_ns": 5184849,
+     "samples_ns": [
+      5251192,
+      5184849,
+      5260555,
+      5409315,
+      5249287
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 245479958,
+     "median_ns": 5308562,
+     "min_ns": 5227408,
+     "samples_ns": [
+      5394631,
+      5299103,
+      5227408,
+      5308562,
+      5341863
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 156012590,
+     "median_ns": 5228554,
+     "min_ns": 5189957,
+     "samples_ns": [
+      5193884,
+      5255419,
+      5228554,
+      5228993,
+      5189957
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 176920439,
+     "median_ns": 6654930,
+     "min_ns": 6569117,
+     "samples_ns": [
+      7010605,
+      6569117,
+      6839388,
+      6654930,
+      6609536
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 194480678,
+     "median_ns": 6230491,
+     "min_ns": 5184890,
+     "samples_ns": [
+      6450591,
+      6230491,
+      6909338,
+      5184890,
+      5337382
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 215403157,
+     "median_ns": 5322677,
+     "min_ns": 5209574,
+     "samples_ns": [
+      5491238,
+      5408916,
+      5284718,
+      5209574,
+      5322677
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 164232274,
+     "median_ns": 5242875,
+     "min_ns": 5221224,
+     "samples_ns": [
+      5242875,
+      5428590,
+      5221224,
+      5221962,
+      5309312
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 159152396,
+     "median_ns": 5486631,
+     "min_ns": 5433435,
+     "samples_ns": [
+      5564154,
+      5435743,
+      5486631,
+      5433435,
+      6337213
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 189428654,
+     "median_ns": 8095983,
+     "min_ns": 7951784,
+     "samples_ns": [
+      8153259,
+      7951784,
+      8095983,
+      8037317,
+      8203802
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 142247441,
+     "median_ns": 6217528,
+     "min_ns": 6137458,
+     "samples_ns": [
+      6217528,
+      6137458,
+      6150396,
+      6282756,
+      7032934
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 197880039,
+     "median_ns": 6376864,
+     "min_ns": 6361192,
+     "samples_ns": [
+      6361192,
+      6376085,
+      6415230,
+      6376864,
+      6426650
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 165933742,
+     "median_ns": 5228569,
+     "min_ns": 5213834,
+     "samples_ns": [
+      5348955,
+      5353116,
+      5213834,
+      5228569,
+      5216561
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 287032553,
+     "median_ns": 6767188,
+     "min_ns": 6636465,
+     "samples_ns": [
+      6767188,
+      6639022,
+      6963442,
+      6636465,
+      6810732
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 150198086,
+     "median_ns": 5612977,
+     "min_ns": 5358103,
+     "samples_ns": [
+      5358103,
+      5612977,
+      5393096,
+      5696438,
+      5680695
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 141834066,
+     "median_ns": 5222683,
+     "min_ns": 5211446,
+     "samples_ns": [
+      5250198,
+      5222683,
+      5218960,
+      5211446,
+      5248021
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 183145736,
+     "median_ns": 7643913,
+     "min_ns": 7609601,
+     "samples_ns": [
+      7643913,
+      7730523,
+      7681786,
+      7609601,
+      7616709
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 171438696,
+     "median_ns": 5340670,
+     "min_ns": 5284607,
+     "samples_ns": [
+      5340670,
+      5284607,
+      5624369,
+      5288833,
+      5834855
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 189766655,
+     "median_ns": 5282403,
+     "min_ns": 5244577,
+     "samples_ns": [
+      5317891,
+      5348586,
+      5270444,
+      5282403,
+      5244577
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 232407876,
+     "median_ns": 6592457,
+     "min_ns": 6310990,
+     "samples_ns": [
+      6592457,
+      6310990,
+      6463116,
+      7030848,
+      7074121
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 195610598,
+     "median_ns": 5256648,
+     "min_ns": 5228512,
+     "samples_ns": [
+      5228512,
+      5252841,
+      5256648,
+      5359082,
+      5303863
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 147175679,
+     "median_ns": 5238225,
+     "min_ns": 5222289,
+     "samples_ns": [
+      5238225,
+      5247371,
+      5245694,
+      5237972,
+      5222289
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 165194693,
+     "median_ns": 6326112,
+     "min_ns": 6098716,
+     "samples_ns": [
+      6326112,
+      6623822,
+      6253476,
+      6098716,
+      6880185
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 189167543,
+     "median_ns": 6652824,
+     "min_ns": 6179825,
+     "samples_ns": [
+      6536983,
+      6694433,
+      6749825,
+      6652824,
+      6179825
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 147736397,
+     "median_ns": 5267388,
+     "min_ns": 5261904,
+     "samples_ns": [
+      5267388,
+      5802279,
+      5261904,
+      5267139,
+      6310686
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/frobenius_canon_n53_bulk_256k",
+     "area": "field_ec",
+     "fingerprint": "fc89705e0b592e52",
+     "setup_ns": 155664041,
+     "median_ns": 5282577,
+     "min_ns": 5198438,
+     "samples_ns": [
+      5198438,
+      5232183,
+      6000261,
+      5282577,
+      6129741
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/gf2_n53_batch_inv_4x64k": {
+   "A": [
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 260087974,
+     "median_ns": 8651538,
+     "min_ns": 8613586,
+     "samples_ns": [
+      8745434,
+      8617531,
+      8613586,
+      8651538,
+      8811743
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 152907779,
+     "median_ns": 8656996,
+     "min_ns": 8580315,
+     "samples_ns": [
+      8676130,
+      8656996,
+      8594414,
+      8580315,
+      9693242
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 228056293,
+     "median_ns": 13192154,
+     "min_ns": 10639946,
+     "samples_ns": [
+      13024925,
+      13192154,
+      13201179,
+      13257575,
+      10639946
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 148705183,
+     "median_ns": 8782308,
+     "min_ns": 8437433,
+     "samples_ns": [
+      8540572,
+      8437433,
+      12474786,
+      8782308,
+      11429468
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 155283719,
+     "median_ns": 14145025,
+     "min_ns": 13954126,
+     "samples_ns": [
+      14145025,
+      13991195,
+      13954126,
+      14167553,
+      14206071
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 146692923,
+     "median_ns": 8667395,
+     "min_ns": 8517641,
+     "samples_ns": [
+      8677725,
+      8517641,
+      8667395,
+      8552005,
+      8710876
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 161583188,
+     "median_ns": 8907269,
+     "min_ns": 8554503,
+     "samples_ns": [
+      9771843,
+      8907269,
+      8981639,
+      8889644,
+      8554503
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 145995269,
+     "median_ns": 8761549,
+     "min_ns": 8648487,
+     "samples_ns": [
+      8761549,
+      8743547,
+      11525233,
+      8648487,
+      19157072
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 159738850,
+     "median_ns": 8560842,
+     "min_ns": 8476882,
+     "samples_ns": [
+      8851545,
+      8560842,
+      8476882,
+      8551664,
+      8649762
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 158187880,
+     "median_ns": 12676551,
+     "min_ns": 12485678,
+     "samples_ns": [
+      12485678,
+      12676551,
+      12810248,
+      12605051,
+      13162627
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 151088038,
+     "median_ns": 11063991,
+     "min_ns": 9248557,
+     "samples_ns": [
+      9248557,
+      12270204,
+      11063991,
+      11816621,
+      10033403
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 140430424,
+     "median_ns": 8400944,
+     "min_ns": 8309453,
+     "samples_ns": [
+      8400944,
+      8309453,
+      8317633,
+      8552149,
+      8405070
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 244074363,
+     "median_ns": 11262159,
+     "min_ns": 8340507,
+     "samples_ns": [
+      14547630,
+      14305643,
+      11262159,
+      8340507,
+      8420033
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 139938762,
+     "median_ns": 8299677,
+     "min_ns": 8275058,
+     "samples_ns": [
+      8299677,
+      8312545,
+      8359392,
+      8275058,
+      8285917
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 147859775,
+     "median_ns": 8555947,
+     "min_ns": 8507506,
+     "samples_ns": [
+      8791978,
+      8555947,
+      8563481,
+      8553154,
+      8507506
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 217383398,
+     "median_ns": 13864911,
+     "min_ns": 12807781,
+     "samples_ns": [
+      12807781,
+      14841469,
+      13864911,
+      13792653,
+      14911468
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 214259893,
+     "median_ns": 8549407,
+     "min_ns": 8365281,
+     "samples_ns": [
+      8549407,
+      10139178,
+      10750945,
+      8405577,
+      8365281
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 155530734,
+     "median_ns": 8610577,
+     "min_ns": 8475795,
+     "samples_ns": [
+      8475795,
+      8548927,
+      8610577,
+      8646492,
+      8659677
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 183101248,
+     "median_ns": 15175032,
+     "min_ns": 13766557,
+     "samples_ns": [
+      16024719,
+      14082949,
+      13766557,
+      15175032,
+      15866776
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 201670222,
+     "median_ns": 8501934,
+     "min_ns": 8362652,
+     "samples_ns": [
+      8362652,
+      8537795,
+      8451023,
+      8828250,
+      8501934
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 164666737,
+     "median_ns": 8820186,
+     "min_ns": 8578055,
+     "samples_ns": [
+      8578055,
+      8741218,
+      8834674,
+      8886256,
+      8820186
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 180087764,
+     "median_ns": 11493078,
+     "min_ns": 9070523,
+     "samples_ns": [
+      9070523,
+      9283126,
+      11493078,
+      13103854,
+      13838188
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 146979509,
+     "median_ns": 9353508,
+     "min_ns": 8794840,
+     "samples_ns": [
+      8999110,
+      9603256,
+      9353508,
+      8794840,
+      9606736
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 152847689,
+     "median_ns": 8577462,
+     "min_ns": 8493119,
+     "samples_ns": [
+      8537017,
+      8577462,
+      8493119,
+      8765676,
+      8928202
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 216171924,
+     "median_ns": 13222543,
+     "min_ns": 8905381,
+     "samples_ns": [
+      13618884,
+      12514542,
+      13298362,
+      13222543,
+      8905381
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 145971607,
+     "median_ns": 8685315,
+     "min_ns": 8461655,
+     "samples_ns": [
+      8635160,
+      8978314,
+      8685315,
+      8830774,
+      8461655
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_batch_inv_4x64k",
+     "area": "field_ec",
+     "fingerprint": "6ccfe670287a7b16",
+     "setup_ns": 153891556,
+     "median_ns": 11727746,
+     "min_ns": 10474971,
+     "samples_ns": [
+      12625734,
+      12417980,
+      11014095,
+      10474971,
+      11727746
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/gf2_n53_inv_16k": {
+   "A": [
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 245758144,
+     "median_ns": 2242049,
+     "min_ns": 2211589,
+     "samples_ns": [
+      2242049,
+      2213031,
+      2243676,
+      2211589,
+      2291871
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 163232502,
+     "median_ns": 2707150,
+     "min_ns": 2319648,
+     "samples_ns": [
+      2802394,
+      2474783,
+      2319648,
+      2707150,
+      3148937
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 217078212,
+     "median_ns": 2235969,
+     "min_ns": 2215042,
+     "samples_ns": [
+      2335348,
+      2215042,
+      2235969,
+      2224951,
+      2362314
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 143847731,
+     "median_ns": 2223826,
+     "min_ns": 2198609,
+     "samples_ns": [
+      2200509,
+      2244624,
+      2223826,
+      2198609,
+      2229441
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 237776059,
+     "median_ns": 2229660,
+     "min_ns": 2217400,
+     "samples_ns": [
+      2227332,
+      2245854,
+      2217400,
+      2229660,
+      2250907
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 167353390,
+     "median_ns": 3622533,
+     "min_ns": 3281754,
+     "samples_ns": [
+      3867755,
+      3831013,
+      3622533,
+      3281754,
+      3396293
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 143256163,
+     "median_ns": 2221119,
+     "min_ns": 2193674,
+     "samples_ns": [
+      2243776,
+      2216058,
+      2221119,
+      2222055,
+      2193674
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 143658329,
+     "median_ns": 3179697,
+     "min_ns": 2684552,
+     "samples_ns": [
+      3280760,
+      3572687,
+      3167375,
+      3179697,
+      2684552
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 145865358,
+     "median_ns": 2391485,
+     "min_ns": 2255217,
+     "samples_ns": [
+      4103662,
+      2829497,
+      2391485,
+      2255217,
+      2283512
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 144822420,
+     "median_ns": 3142397,
+     "min_ns": 3099990,
+     "samples_ns": [
+      3188255,
+      3407561,
+      3099990,
+      3142397,
+      3119502
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 170795947,
+     "median_ns": 3114883,
+     "min_ns": 2801537,
+     "samples_ns": [
+      3114883,
+      2801537,
+      3161605,
+      2901976,
+      3437611
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 180441489,
+     "median_ns": 3996334,
+     "min_ns": 3766091,
+     "samples_ns": [
+      4055709,
+      4468481,
+      3986840,
+      3766091,
+      3996334
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 139388922,
+     "median_ns": 2647034,
+     "min_ns": 2377083,
+     "samples_ns": [
+      2377083,
+      2647034,
+      2633442,
+      2881648,
+      2877125
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 138905671,
+     "median_ns": 2343767,
+     "min_ns": 2318534,
+     "samples_ns": [
+      2318534,
+      2329210,
+      2707277,
+      2343767,
+      2365748
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 155373929,
+     "median_ns": 2343248,
+     "min_ns": 2293801,
+     "samples_ns": [
+      2343248,
+      2377785,
+      2293801,
+      2367465,
+      2337523
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 150924538,
+     "median_ns": 2890821,
+     "min_ns": 2729477,
+     "samples_ns": [
+      2729477,
+      2904538,
+      2890821,
+      3160692,
+      2780466
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 198975824,
+     "median_ns": 2326181,
+     "min_ns": 2317567,
+     "samples_ns": [
+      2326181,
+      2317567,
+      2381706,
+      2320570,
+      2338922
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 203624146,
+     "median_ns": 2310059,
+     "min_ns": 2285486,
+     "samples_ns": [
+      2309576,
+      2310059,
+      2330988,
+      2285486,
+      2351888
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 188476765,
+     "median_ns": 3745835,
+     "min_ns": 3410950,
+     "samples_ns": [
+      3410950,
+      3745835,
+      3990616,
+      3618168,
+      4038038
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 211533509,
+     "median_ns": 2336590,
+     "min_ns": 2275449,
+     "samples_ns": [
+      2295554,
+      2336590,
+      2512593,
+      2690092,
+      2275449
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 142826359,
+     "median_ns": 2237754,
+     "min_ns": 2225933,
+     "samples_ns": [
+      2239170,
+      2244467,
+      2235337,
+      2225933,
+      2237754
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 176167935,
+     "median_ns": 4263614,
+     "min_ns": 4226115,
+     "samples_ns": [
+      4261561,
+      4263614,
+      4226115,
+      4405179,
+      4459538
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 160799394,
+     "median_ns": 3375836,
+     "min_ns": 2450157,
+     "samples_ns": [
+      3375836,
+      3540848,
+      3381355,
+      2450157,
+      3213208
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 151366470,
+     "median_ns": 2233270,
+     "min_ns": 2216344,
+     "samples_ns": [
+      2238456,
+      2233270,
+      2216344,
+      2231115,
+      2260645
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 162625119,
+     "median_ns": 2233299,
+     "min_ns": 2203240,
+     "samples_ns": [
+      2203901,
+      2329376,
+      2264543,
+      2203240,
+      2233299
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 144187473,
+     "median_ns": 2283154,
+     "min_ns": 2211013,
+     "samples_ns": [
+      2211013,
+      2352989,
+      2323609,
+      2262695,
+      2283154
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_inv_16k",
+     "area": "field_ec",
+     "fingerprint": "850146e8175cbeb9",
+     "setup_ns": 164291575,
+     "median_ns": 2238285,
+     "min_ns": 2234474,
+     "samples_ns": [
+      2274110,
+      2236107,
+      2247300,
+      2234474,
+      2238285
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/gf2_n53_mul_sqr_1m": {
+   "A": [
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 150708133,
+     "median_ns": 19447120,
+     "min_ns": 19314746,
+     "samples_ns": [
+      19640443,
+      19447120,
+      19314746,
+      19596741,
+      19334872
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 202426710,
+     "median_ns": 10679622,
+     "min_ns": 10485482,
+     "samples_ns": [
+      10986785,
+      10513791,
+      10721162,
+      10485482,
+      10679622
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 205421830,
+     "median_ns": 10763881,
+     "min_ns": 10581936,
+     "samples_ns": [
+      10763881,
+      10681088,
+      10581936,
+      10985809,
+      10854557
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 144193593,
+     "median_ns": 10742873,
+     "min_ns": 10645039,
+     "samples_ns": [
+      10645039,
+      11068171,
+      10663708,
+      10855443,
+      10742873
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 180110556,
+     "median_ns": 11869305,
+     "min_ns": 11391009,
+     "samples_ns": [
+      11534584,
+      11869305,
+      11391009,
+      12488023,
+      12050431
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 150041703,
+     "median_ns": 10886144,
+     "min_ns": 10620353,
+     "samples_ns": [
+      10716662,
+      11362103,
+      10886144,
+      10944827,
+      10620353
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 142650137,
+     "median_ns": 10666829,
+     "min_ns": 10520810,
+     "samples_ns": [
+      10551579,
+      10666829,
+      10520810,
+      10859992,
+      10785632
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 193958853,
+     "median_ns": 11085965,
+     "min_ns": 10564352,
+     "samples_ns": [
+      11085965,
+      11255879,
+      10829782,
+      11513275,
+      10564352
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 145998076,
+     "median_ns": 13011100,
+     "min_ns": 10933925,
+     "samples_ns": [
+      10933925,
+      13011100,
+      13251694,
+      14022771,
+      12858542
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 193785918,
+     "median_ns": 14438250,
+     "min_ns": 13463048,
+     "samples_ns": [
+      14053941,
+      13463048,
+      15346368,
+      16160210,
+      14438250
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 156989679,
+     "median_ns": 14228005,
+     "min_ns": 13600761,
+     "samples_ns": [
+      14228005,
+      16799267,
+      13766766,
+      13600761,
+      16606892
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 141659285,
+     "median_ns": 13506161,
+     "min_ns": 13476788,
+     "samples_ns": [
+      13506161,
+      13502516,
+      13738347,
+      13893638,
+      13476788
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 137568743,
+     "median_ns": 13533728,
+     "min_ns": 13488158,
+     "samples_ns": [
+      13488158,
+      13533728,
+      13869901,
+      13682940,
+      13520362
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 155302911,
+     "median_ns": 13800245,
+     "min_ns": 13512036,
+     "samples_ns": [
+      13835796,
+      13512036,
+      14114169,
+      13527279,
+      13800245
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 141381942,
+     "median_ns": 21856666,
+     "min_ns": 21107900,
+     "samples_ns": [
+      21628839,
+      22084303,
+      21107900,
+      22513833,
+      21856666
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 138689238,
+     "median_ns": 14385696,
+     "min_ns": 13465165,
+     "samples_ns": [
+      13465165,
+      14385696,
+      23608604,
+      15403503,
+      13528047
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 280347457,
+     "median_ns": 13647596,
+     "min_ns": 13545601,
+     "samples_ns": [
+      13562301,
+      13647596,
+      13545601,
+      13690149,
+      14285772
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 165936533,
+     "median_ns": 23344746,
+     "min_ns": 23075003,
+     "samples_ns": [
+      23266582,
+      23437865,
+      23075003,
+      23344746,
+      23615683
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 150753157,
+     "median_ns": 15148628,
+     "min_ns": 10898964,
+     "samples_ns": [
+      18267766,
+      14370905,
+      15148628,
+      16166204,
+      10898964
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 185296133,
+     "median_ns": 11483181,
+     "min_ns": 11038277,
+     "samples_ns": [
+      15455079,
+      11483181,
+      11079919,
+      12884018,
+      11038277
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 175356936,
+     "median_ns": 18777781,
+     "min_ns": 18464685,
+     "samples_ns": [
+      18777781,
+      19023200,
+      19671517,
+      18464685,
+      18553141
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 143432244,
+     "median_ns": 10638592,
+     "min_ns": 10529447,
+     "samples_ns": [
+      10548224,
+      10768520,
+      10791158,
+      10638592,
+      10529447
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 150735336,
+     "median_ns": 11039078,
+     "min_ns": 10820684,
+     "samples_ns": [
+      10820684,
+      11407755,
+      10952417,
+      11682371,
+      11039078
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 145615339,
+     "median_ns": 11010682,
+     "min_ns": 10533393,
+     "samples_ns": [
+      11342477,
+      10670151,
+      11010682,
+      11543770,
+      10533393
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 142461991,
+     "median_ns": 12300974,
+     "min_ns": 11419310,
+     "samples_ns": [
+      20956166,
+      11419310,
+      12444236,
+      11436757,
+      12300974
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 189541393,
+     "median_ns": 10716533,
+     "min_ns": 10485718,
+     "samples_ns": [
+      10716533,
+      10485718,
+      10682152,
+      16148790,
+      15520599
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/gf2_n53_mul_sqr_1m",
+     "area": "field_ec",
+     "fingerprint": "5d61bbda19e2b3d2",
+     "setup_ns": 200973477,
+     "median_ns": 10925837,
+     "min_ns": 10794443,
+     "samples_ns": [
+      14106440,
+      11155522,
+      10925837,
+      10794443,
+      10884211
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/koblitz_curve_mul_n53_1k": {
+   "A": [
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 145183164,
+     "median_ns": 5656418,
+     "min_ns": 5538542,
+     "samples_ns": [
+      5656418,
+      6291333,
+      5941416,
+      5538542,
+      5578096
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 162120736,
+     "median_ns": 8133262,
+     "min_ns": 7396353,
+     "samples_ns": [
+      9808845,
+      8133262,
+      14863950,
+      7586152,
+      7396353
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 201684031,
+     "median_ns": 5671463,
+     "min_ns": 5654740,
+     "samples_ns": [
+      5666672,
+      5675626,
+      5671463,
+      5654740,
+      6015893
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 229863977,
+     "median_ns": 10617396,
+     "min_ns": 8816492,
+     "samples_ns": [
+      10619201,
+      10617396,
+      10716976,
+      9035101,
+      8816492
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 154835471,
+     "median_ns": 6431064,
+     "min_ns": 5561420,
+     "samples_ns": [
+      6183720,
+      8204775,
+      5561420,
+      8442459,
+      6431064
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 146699725,
+     "median_ns": 5592829,
+     "min_ns": 5577473,
+     "samples_ns": [
+      5592829,
+      5896890,
+      5705193,
+      5592239,
+      5577473
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 154775119,
+     "median_ns": 5731727,
+     "min_ns": 5582378,
+     "samples_ns": [
+      5582378,
+      5630709,
+      5790010,
+      5731727,
+      5812124
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 165113540,
+     "median_ns": 5812457,
+     "min_ns": 5650524,
+     "samples_ns": [
+      5687956,
+      6160501,
+      5899128,
+      5812457,
+      5650524
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 149445219,
+     "median_ns": 5790754,
+     "min_ns": 5606459,
+     "samples_ns": [
+      5644601,
+      5790754,
+      5817311,
+      5606459,
+      6297257
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 145911678,
+     "median_ns": 6115524,
+     "min_ns": 5868814,
+     "samples_ns": [
+      6522929,
+      6196486,
+      5868814,
+      6115524,
+      5915276
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 165862347,
+     "median_ns": 10165196,
+     "min_ns": 9403704,
+     "samples_ns": [
+      10191915,
+      9403704,
+      10533891,
+      10165196,
+      10119799
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 140998659,
+     "median_ns": 5893672,
+     "min_ns": 5848819,
+     "samples_ns": [
+      5898593,
+      5891935,
+      5893672,
+      5848819,
+      5960085
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 196121402,
+     "median_ns": 10465282,
+     "min_ns": 9437757,
+     "samples_ns": [
+      10413962,
+      9437757,
+      10546510,
+      10465282,
+      10538363
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 146768744,
+     "median_ns": 6070706,
+     "min_ns": 5833795,
+     "samples_ns": [
+      5859277,
+      6070706,
+      6297704,
+      5833795,
+      7544971
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 143267021,
+     "median_ns": 6170865,
+     "min_ns": 5981067,
+     "samples_ns": [
+      6154773,
+      6170865,
+      6179823,
+      5981067,
+      7113135
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 138089186,
+     "median_ns": 8704865,
+     "min_ns": 7444326,
+     "samples_ns": [
+      8724276,
+      8304201,
+      7444326,
+      8704865,
+      9133105
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 147773000,
+     "median_ns": 6048060,
+     "min_ns": 5977280,
+     "samples_ns": [
+      6305724,
+      6048060,
+      5977280,
+      6048518,
+      6015697
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 140075502,
+     "median_ns": 5966975,
+     "min_ns": 5889310,
+     "samples_ns": [
+      5889310,
+      5966975,
+      6015075,
+      5980515,
+      5913167
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 209879268,
+     "median_ns": 12014447,
+     "min_ns": 11472924,
+     "samples_ns": [
+      12014447,
+      12182079,
+      12071208,
+      11906106,
+      11472924
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 209844678,
+     "median_ns": 5813004,
+     "min_ns": 5785430,
+     "samples_ns": [
+      5785430,
+      5813004,
+      5893308,
+      5856539,
+      5797765
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 199614255,
+     "median_ns": 5628110,
+     "min_ns": 5545192,
+     "samples_ns": [
+      5709349,
+      5893322,
+      5545192,
+      5613170,
+      5628110
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 234765809,
+     "median_ns": 10585264,
+     "min_ns": 10129934,
+     "samples_ns": [
+      10516500,
+      10129934,
+      10690845,
+      10585264,
+      10613863
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 194336660,
+     "median_ns": 11369079,
+     "min_ns": 11241723,
+     "samples_ns": [
+      11491740,
+      11369079,
+      11353130,
+      11241723,
+      12220473
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 141586051,
+     "median_ns": 5731470,
+     "min_ns": 5658485,
+     "samples_ns": [
+      7954156,
+      8677747,
+      5731470,
+      5658485,
+      5709238
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 196829599,
+     "median_ns": 5615940,
+     "min_ns": 5568094,
+     "samples_ns": [
+      5709854,
+      5623893,
+      5615940,
+      5581653,
+      5568094
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 144708714,
+     "median_ns": 13341038,
+     "min_ns": 13213418,
+     "samples_ns": [
+      13443499,
+      13213418,
+      13341038,
+      13389239,
+      13259947
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_curve_mul_n53_1k",
+     "area": "field_ec",
+     "fingerprint": "89ee27edd14cb8d4",
+     "setup_ns": 165881269,
+     "median_ns": 6018563,
+     "min_ns": 5603562,
+     "samples_ns": [
+      7883208,
+      8482233,
+      5905168,
+      5603562,
+      6018563
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/koblitz_n53_add_many_lazy_64x2k": {
+   "A": [
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 162984018,
+     "median_ns": 10098299,
+     "min_ns": 9563356,
+     "samples_ns": [
+      9914294,
+      10142161,
+      10098299,
+      10216111,
+      9563356
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 185029505,
+     "median_ns": 13029404,
+     "min_ns": 9927087,
+     "samples_ns": [
+      13029404,
+      9927087,
+      24809756,
+      19243564,
+      10614426
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 237774416,
+     "median_ns": 14814466,
+     "min_ns": 10601933,
+     "samples_ns": [
+      13231535,
+      10601933,
+      15481107,
+      14814466,
+      15430699
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 252027886,
+     "median_ns": 9452257,
+     "min_ns": 9434977,
+     "samples_ns": [
+      9509750,
+      9435669,
+      9474987,
+      9434977,
+      9452257
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 164097373,
+     "median_ns": 12449847,
+     "min_ns": 10404293,
+     "samples_ns": [
+      12397462,
+      10404293,
+      12449847,
+      13824383,
+      14013918
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 201446310,
+     "median_ns": 9935079,
+     "min_ns": 9435871,
+     "samples_ns": [
+      10093781,
+      10109338,
+      9435871,
+      9821019,
+      9935079
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 177610382,
+     "median_ns": 9602577,
+     "min_ns": 9450151,
+     "samples_ns": [
+      9450151,
+      9602577,
+      9518943,
+      9809939,
+      10423109
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 174313330,
+     "median_ns": 9432733,
+     "min_ns": 9402669,
+     "samples_ns": [
+      9402669,
+      9432733,
+      9448399,
+      9403949,
+      9438696
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 202909306,
+     "median_ns": 9599328,
+     "min_ns": 9471961,
+     "samples_ns": [
+      9765684,
+      9551626,
+      9471961,
+      9721934,
+      9599328
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 158488211,
+     "median_ns": 9873875,
+     "min_ns": 9662646,
+     "samples_ns": [
+      9894813,
+      9873875,
+      9662646,
+      10055305,
+      9727026
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 321050486,
+     "median_ns": 13403208,
+     "min_ns": 9469784,
+     "samples_ns": [
+      16123322,
+      16191203,
+      13403208,
+      9601662,
+      9469784
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 197101532,
+     "median_ns": 9541519,
+     "min_ns": 9482161,
+     "samples_ns": [
+      9482161,
+      9590180,
+      9541519,
+      9659667,
+      9496962
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 153150759,
+     "median_ns": 9817142,
+     "min_ns": 9503686,
+     "samples_ns": [
+      9782208,
+      13119461,
+      9817142,
+      9503686,
+      9927205
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 206505055,
+     "median_ns": 9682146,
+     "min_ns": 9491326,
+     "samples_ns": [
+      9700895,
+      9625807,
+      9701064,
+      9682146,
+      9491326
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 159599219,
+     "median_ns": 9560553,
+     "min_ns": 9528593,
+     "samples_ns": [
+      9560553,
+      9655567,
+      9558283,
+      9528593,
+      9901597
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 153991227,
+     "median_ns": 10526595,
+     "min_ns": 9737948,
+     "samples_ns": [
+      9737948,
+      10000743,
+      10526595,
+      16076212,
+      16339636
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 172180454,
+     "median_ns": 9540668,
+     "min_ns": 9505430,
+     "samples_ns": [
+      9924800,
+      9524822,
+      9540668,
+      9505430,
+      9620117
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 157997272,
+     "median_ns": 10258781,
+     "min_ns": 9575771,
+     "samples_ns": [
+      9575771,
+      10971873,
+      10227607,
+      10258781,
+      10426068
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 160729930,
+     "median_ns": 9659922,
+     "min_ns": 9499029,
+     "samples_ns": [
+      9531742,
+      11987250,
+      9659922,
+      9499029,
+      10676843
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 160260305,
+     "median_ns": 9714292,
+     "min_ns": 9529560,
+     "samples_ns": [
+      10356808,
+      9714292,
+      10233135,
+      9529560,
+      9532128
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 159335543,
+     "median_ns": 9449535,
+     "min_ns": 9402340,
+     "samples_ns": [
+      9486624,
+      9402340,
+      9449535,
+      9498138,
+      9437536
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 250528191,
+     "median_ns": 14292372,
+     "min_ns": 14046095,
+     "samples_ns": [
+      14428637,
+      14046095,
+      14227628,
+      14380502,
+      14292372
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 274238434,
+     "median_ns": 12025058,
+     "min_ns": 9534933,
+     "samples_ns": [
+      9677696,
+      15891027,
+      16888498,
+      12025058,
+      9534933
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 172063899,
+     "median_ns": 12202850,
+     "min_ns": 12092125,
+     "samples_ns": [
+      12092125,
+      12183656,
+      12989457,
+      13011948,
+      12202850
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 181645245,
+     "median_ns": 9527151,
+     "min_ns": 9470792,
+     "samples_ns": [
+      9527151,
+      9774212,
+      9470792,
+      9579043,
+      9481210
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 167823275,
+     "median_ns": 9470999,
+     "min_ns": 9423141,
+     "samples_ns": [
+      9523765,
+      9611796,
+      9470999,
+      9468416,
+      9423141
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_add_many_lazy_64x2k",
+     "area": "field_ec",
+     "fingerprint": "ac4fa250bbc691c4",
+     "setup_ns": 159486251,
+     "median_ns": 13526791,
+     "min_ns": 9939521,
+     "samples_ns": [
+      13746506,
+      13805570,
+      13526791,
+      11105673,
+      9939521
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "field_ec/koblitz_n53_fast_mul_2k": {
+   "A": [
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 177009051,
+     "median_ns": 27656334,
+     "min_ns": 23303751,
+     "samples_ns": [
+      26625933,
+      23303751,
+      27656334,
+      28606127,
+      28039136
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 171742885,
+     "median_ns": 15709773,
+     "min_ns": 15561750,
+     "samples_ns": [
+      15561750,
+      15709773,
+      15789172,
+      15860943,
+      15651602
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 144353106,
+     "median_ns": 16129775,
+     "min_ns": 15377252,
+     "samples_ns": [
+      16178536,
+      15437142,
+      16129775,
+      16831592,
+      15377252
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 235039107,
+     "median_ns": 28578289,
+     "min_ns": 28249541,
+     "samples_ns": [
+      28249541,
+      28778812,
+      28532676,
+      28578289,
+      28771348
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 144491899,
+     "median_ns": 15839657,
+     "min_ns": 15535869,
+     "samples_ns": [
+      15698659,
+      15911949,
+      15839657,
+      15535869,
+      15843795
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 173640913,
+     "median_ns": 15836167,
+     "min_ns": 15272170,
+     "samples_ns": [
+      15836167,
+      16256080,
+      15539706,
+      16340221,
+      15272170
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 142661957,
+     "median_ns": 15580866,
+     "min_ns": 15331131,
+     "samples_ns": [
+      15580866,
+      15896678,
+      15331131,
+      15526795,
+      15610792
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 142912459,
+     "median_ns": 15352433,
+     "min_ns": 15309137,
+     "samples_ns": [
+      15309137,
+      15350394,
+      15389294,
+      15378548,
+      15352433
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 153304369,
+     "median_ns": 16022206,
+     "min_ns": 15592169,
+     "samples_ns": [
+      16567611,
+      18064550,
+      15592169,
+      15850701,
+      16022206
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 211665753,
+     "median_ns": 18633450,
+     "min_ns": 16407911,
+     "samples_ns": [
+      17164745,
+      18633450,
+      16407911,
+      18821517,
+      21209218
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 154284566,
+     "median_ns": 16161320,
+     "min_ns": 15970782,
+     "samples_ns": [
+      16264031,
+      16068920,
+      16176346,
+      15970782,
+      16161320
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 141715776,
+     "median_ns": 16039385,
+     "min_ns": 15758128,
+     "samples_ns": [
+      15758134,
+      16201154,
+      15758128,
+      16039385,
+      16308827
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 236456728,
+     "median_ns": 26951734,
+     "min_ns": 26161122,
+     "samples_ns": [
+      27417337,
+      27025488,
+      26812741,
+      26951734,
+      26161122
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 142628919,
+     "median_ns": 17305265,
+     "min_ns": 16370542,
+     "samples_ns": [
+      16697389,
+      16370542,
+      17305265,
+      29385872,
+      26628231
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 140329145,
+     "median_ns": 17918959,
+     "min_ns": 16455110,
+     "samples_ns": [
+      17918959,
+      26179595,
+      17338643,
+      17979317,
+      16455110
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 173714105,
+     "median_ns": 15780705,
+     "min_ns": 15634330,
+     "samples_ns": [
+      15773627,
+      15835630,
+      15780705,
+      15887077,
+      15634330
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 167832876,
+     "median_ns": 15607433,
+     "min_ns": 15541369,
+     "samples_ns": [
+      15566291,
+      15708871,
+      15541369,
+      15607433,
+      15783723
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 141696887,
+     "median_ns": 16744096,
+     "min_ns": 15917716,
+     "samples_ns": [
+      15917716,
+      15978738,
+      19577687,
+      16901496,
+      16744096
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 170353756,
+     "median_ns": 23676327,
+     "min_ns": 22660543,
+     "samples_ns": [
+      22786299,
+      22660543,
+      23676327,
+      34510162,
+      34816386
+     ],
+     "round": 0
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 149322537,
+     "median_ns": 15361477,
+     "min_ns": 15208278,
+     "samples_ns": [
+      15965362,
+      15458481,
+      15361477,
+      15208278,
+      15296382
+     ],
+     "round": 1
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 145512464,
+     "median_ns": 15693325,
+     "min_ns": 15404979,
+     "samples_ns": [
+      16785213,
+      15404979,
+      15693325,
+      15821330,
+      15682526
+     ],
+     "round": 2
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 213341978,
+     "median_ns": 27210614,
+     "min_ns": 26840166,
+     "samples_ns": [
+      27210614,
+      27260167,
+      26840166,
+      27290323,
+      26883259
+     ],
+     "round": 3
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 143578948,
+     "median_ns": 17081386,
+     "min_ns": 15548348,
+     "samples_ns": [
+      15548348,
+      20102546,
+      18233984,
+      17081386,
+      15954172
+     ],
+     "round": 4
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 171995074,
+     "median_ns": 15921295,
+     "min_ns": 15234995,
+     "samples_ns": [
+      26940828,
+      18303160,
+      15234995,
+      15455628,
+      15921295
+     ],
+     "round": 5
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 144600439,
+     "median_ns": 24678448,
+     "min_ns": 19061761,
+     "samples_ns": [
+      19061761,
+      19768128,
+      29162127,
+      29578436,
+      24678448
+     ],
+     "round": 6
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 141502595,
+     "median_ns": 15202043,
+     "min_ns": 15135643,
+     "samples_ns": [
+      15280452,
+      15221699,
+      15202043,
+      15182238,
+      15135643
+     ],
+     "round": 7
+    },
+    {
+     "id": "field_ec/koblitz_n53_fast_mul_2k",
+     "area": "field_ec",
+     "fingerprint": "efe72aaf90c26a6a",
+     "setup_ns": 170868502,
+     "median_ns": 15656638,
+     "min_ns": 15382001,
+     "samples_ns": [
+      15656638,
+      16198397,
+      15579809,
+      15382001,
+      16100375
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "relation/koblitz_collect_k0n41_w164_u4096": {
+   "A": [
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 99684217,
+     "median_ns": 48727435,
+     "min_ns": 45754688,
+     "samples_ns": [
+      46145548,
+      49307476,
+      48761450,
+      48727435,
+      45754688
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 65637033,
+     "median_ns": 47022997,
+     "min_ns": 45045468,
+     "samples_ns": [
+      70252913,
+      48069794,
+      47022997,
+      45327479,
+      45045468
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 60308927,
+     "median_ns": 88551359,
+     "min_ns": 47386324,
+     "samples_ns": [
+      88551359,
+      91008774,
+      90116495,
+      87869177,
+      47386324
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 85769001,
+     "median_ns": 81551064,
+     "min_ns": 49174584,
+     "samples_ns": [
+      95165652,
+      94372363,
+      81551064,
+      49174584,
+      66362896
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 92606237,
+     "median_ns": 46386714,
+     "min_ns": 45421275,
+     "samples_ns": [
+      46386714,
+      46398002,
+      45930163,
+      45421275,
+      48722038
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 70762023,
+     "median_ns": 46740277,
+     "min_ns": 45730143,
+     "samples_ns": [
+      51158345,
+      46353835,
+      47869201,
+      45730143,
+      46740277
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 59214008,
+     "median_ns": 52096847,
+     "min_ns": 44473134,
+     "samples_ns": [
+      69387550,
+      52174266,
+      52096847,
+      45230891,
+      44473134
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 61451876,
+     "median_ns": 49940663,
+     "min_ns": 46964470,
+     "samples_ns": [
+      50365369,
+      49940663,
+      46964470,
+      51620556,
+      46985119
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 64343968,
+     "median_ns": 45410805,
+     "min_ns": 44429965,
+     "samples_ns": [
+      44703488,
+      45410805,
+      44429965,
+      50456400,
+      73777136
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 58455218,
+     "median_ns": 51971233,
+     "min_ns": 49529366,
+     "samples_ns": [
+      51726051,
+      49529366,
+      52875965,
+      66103047,
+      51971233
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 57763257,
+     "median_ns": 46951453,
+     "min_ns": 46260100,
+     "samples_ns": [
+      47118899,
+      46260100,
+      46843249,
+      46951453,
+      47287231
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 58843048,
+     "median_ns": 46174028,
+     "min_ns": 45500293,
+     "samples_ns": [
+      46777280,
+      46174028,
+      45500293,
+      45663392,
+      47619674
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 60887189,
+     "median_ns": 49288814,
+     "min_ns": 47960214,
+     "samples_ns": [
+      49288814,
+      47960214,
+      48135877,
+      53070564,
+      52609533
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 93480092,
+     "median_ns": 74531404,
+     "min_ns": 64724951,
+     "samples_ns": [
+      80230353,
+      68306440,
+      74531404,
+      74715179,
+      64724951
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 58706979,
+     "median_ns": 49483049,
+     "min_ns": 47924867,
+     "samples_ns": [
+      60207921,
+      56604859,
+      49483049,
+      48875721,
+      47924867
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 56017172,
+     "median_ns": 47337472,
+     "min_ns": 46322760,
+     "samples_ns": [
+      46322760,
+      47337472,
+      48342223,
+      46378560,
+      49905174
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 92431985,
+     "median_ns": 50155140,
+     "min_ns": 46684795,
+     "samples_ns": [
+      46684795,
+      50346152,
+      53097937,
+      50155140,
+      48328417
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 73007077,
+     "median_ns": 51225810,
+     "min_ns": 48457158,
+     "samples_ns": [
+      59907556,
+      48457158,
+      50565452,
+      51225810,
+      51564607
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 65649450,
+     "median_ns": 47355246,
+     "min_ns": 46027360,
+     "samples_ns": [
+      46238969,
+      62128909,
+      68526952,
+      47355246,
+      46027360
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 59581248,
+     "median_ns": 69804467,
+     "min_ns": 55815721,
+     "samples_ns": [
+      55815721,
+      66211538,
+      82190231,
+      80555457,
+      69804467
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 57194598,
+     "median_ns": 50660747,
+     "min_ns": 49013175,
+     "samples_ns": [
+      49013175,
+      49217641,
+      55040705,
+      56779334,
+      50660747
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 60987560,
+     "median_ns": 45422238,
+     "min_ns": 44912029,
+     "samples_ns": [
+      44912029,
+      44981163,
+      45422238,
+      53712279,
+      71508607
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 61881276,
+     "median_ns": 75385645,
+     "min_ns": 72385215,
+     "samples_ns": [
+      75516740,
+      72385215,
+      75385645,
+      76077012,
+      72408592
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 96863063,
+     "median_ns": 50067433,
+     "min_ns": 46778792,
+     "samples_ns": [
+      46778792,
+      48827984,
+      50067433,
+      62234456,
+      50277166
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 58929123,
+     "median_ns": 93127962,
+     "min_ns": 59461069,
+     "samples_ns": [
+      59461069,
+      63747796,
+      93968634,
+      94090735,
+      93127962
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 60701751,
+     "median_ns": 49099039,
+     "min_ns": 46177526,
+     "samples_ns": [
+      47029029,
+      46177526,
+      50511013,
+      49099039,
+      56801549
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n41_w164_u4096",
+     "area": "relation",
+     "fingerprint": "5db139c2b89ef0f5",
+     "setup_ns": 59590297,
+     "median_ns": 45844662,
+     "min_ns": 45260308,
+     "samples_ns": [
+      45844662,
+      47947304,
+      45270365,
+      45260308,
+      47157214
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "relation/koblitz_collect_k0n53_w477_u1024": {
+   "A": [
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 810575337,
+     "median_ns": 70982582,
+     "min_ns": 65751143,
+     "samples_ns": [
+      70982582,
+      68890410,
+      65751143,
+      83129534,
+      95882861
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 1057388237,
+     "median_ns": 74148281,
+     "min_ns": 66076214,
+     "samples_ns": [
+      67050768,
+      79948820,
+      74148281,
+      66076214,
+      82509503
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 684295151,
+     "median_ns": 58481525,
+     "min_ns": 57542012,
+     "samples_ns": [
+      57542012,
+      58532809,
+      58012627,
+      58481525,
+      60454534
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 687454427,
+     "median_ns": 59208219,
+     "min_ns": 57571712,
+     "samples_ns": [
+      58932405,
+      64510814,
+      59516124,
+      59208219,
+      57571712
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 665665923,
+     "median_ns": 61341721,
+     "min_ns": 60119285,
+     "samples_ns": [
+      60176985,
+      60119285,
+      61405043,
+      63834518,
+      61341721
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 654055941,
+     "median_ns": 61838419,
+     "min_ns": 60195678,
+     "samples_ns": [
+      62580803,
+      67611462,
+      61838419,
+      60195678,
+      61507741
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 678593120,
+     "median_ns": 58608703,
+     "min_ns": 57468884,
+     "samples_ns": [
+      57468884,
+      58037845,
+      59693349,
+      58813956,
+      58608703
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 749853703,
+     "median_ns": 62433583,
+     "min_ns": 58481062,
+     "samples_ns": [
+      58481062,
+      72888858,
+      62433583,
+      62591108,
+      61704077
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 681669327,
+     "median_ns": 58688199,
+     "min_ns": 58162581,
+     "samples_ns": [
+      58688199,
+      58162581,
+      59448195,
+      58912398,
+      58472372
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 820576980,
+     "median_ns": 108962235,
+     "min_ns": 91135139,
+     "samples_ns": [
+      110230240,
+      108962235,
+      111354358,
+      103138730,
+      91135139
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 928609136,
+     "median_ns": 96354134,
+     "min_ns": 78586689,
+     "samples_ns": [
+      96354134,
+      95985323,
+      78586689,
+      97857779,
+      98458568
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 806919016,
+     "median_ns": 67081090,
+     "min_ns": 60866457,
+     "samples_ns": [
+      86613719,
+      67081090,
+      68513379,
+      60866457,
+      64475374
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 611743066,
+     "median_ns": 68428369,
+     "min_ns": 60412166,
+     "samples_ns": [
+      89877015,
+      68428369,
+      60435854,
+      60412166,
+      71326811
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 748346619,
+     "median_ns": 95263618,
+     "min_ns": 86271858,
+     "samples_ns": [
+      96656304,
+      95263618,
+      93901210,
+      86271858,
+      96033747
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 734637370,
+     "median_ns": 60100334,
+     "min_ns": 58859383,
+     "samples_ns": [
+      70956520,
+      64020624,
+      58859383,
+      59366339,
+      60100334
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 714029377,
+     "median_ns": 59221749,
+     "min_ns": 58549318,
+     "samples_ns": [
+      58549318,
+      59221749,
+      58562119,
+      61168157,
+      60746929
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 693080095,
+     "median_ns": 70652138,
+     "min_ns": 63280296,
+     "samples_ns": [
+      77244373,
+      70652138,
+      80973580,
+      68450451,
+      63280296
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 650369518,
+     "median_ns": 93072845,
+     "min_ns": 90418568,
+     "samples_ns": [
+      90418568,
+      92329319,
+      94161627,
+      93072845,
+      93112679
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 683266051,
+     "median_ns": 95542027,
+     "min_ns": 61540071,
+     "samples_ns": [
+      61540071,
+      94067250,
+      96529150,
+      95542027,
+      102063697
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 1119467891,
+     "median_ns": 108640835,
+     "min_ns": 107818615,
+     "samples_ns": [
+      108640835,
+      108863967,
+      107818615,
+      108169841,
+      109025362
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 853417904,
+     "median_ns": 66958344,
+     "min_ns": 62464210,
+     "samples_ns": [
+      90741899,
+      90966927,
+      62797405,
+      62464210,
+      66958344
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 668833523,
+     "median_ns": 59405034,
+     "min_ns": 58914393,
+     "samples_ns": [
+      88328370,
+      59405034,
+      58914393,
+      59173212,
+      60797331
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 727040534,
+     "median_ns": 79965182,
+     "min_ns": 60189752,
+     "samples_ns": [
+      87476178,
+      90544465,
+      79965182,
+      60189752,
+      61032998
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 637301304,
+     "median_ns": 59264916,
+     "min_ns": 58413347,
+     "samples_ns": [
+      66735208,
+      61900453,
+      58413347,
+      59264916,
+      58837403
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 767678297,
+     "median_ns": 63007660,
+     "min_ns": 58867831,
+     "samples_ns": [
+      60694555,
+      63007660,
+      65609683,
+      58867831,
+      83406646
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 711712176,
+     "median_ns": 65852782,
+     "min_ns": 64887735,
+     "samples_ns": [
+      64887735,
+      67983905,
+      76216927,
+      65852782,
+      65096333
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_collect_k0n53_w477_u1024",
+     "area": "relation",
+     "fingerprint": "cbaf6ffbd5aff92b",
+     "setup_ns": 688990016,
+     "median_ns": 64144254,
+     "min_ns": 63196335,
+     "samples_ns": [
+      63196335,
+      63959530,
+      64144254,
+      71628604,
+      77693674
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "relation/koblitz_descent_k0n53_m2_x4": {
+   "A": [
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4444628852,
+     "median_ns": 80708105,
+     "min_ns": 80051807,
+     "samples_ns": [
+      82157259,
+      80051807,
+      80187295,
+      80708105,
+      81266283
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4696444592,
+     "median_ns": 83808015,
+     "min_ns": 81816115,
+     "samples_ns": [
+      84202877,
+      83926657,
+      83808015,
+      82522271,
+      81816115
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 5249117702,
+     "median_ns": 105406395,
+     "min_ns": 83607765,
+     "samples_ns": [
+      110245154,
+      108588529,
+      105406395,
+      83607765,
+      83618922
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 5117392314,
+     "median_ns": 143456164,
+     "min_ns": 133649975,
+     "samples_ns": [
+      143456164,
+      133649975,
+      138556915,
+      143687811,
+      144279985
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4832799514,
+     "median_ns": 88392790,
+     "min_ns": 84956135,
+     "samples_ns": [
+      106932535,
+      100037512,
+      84956135,
+      87756297,
+      88392790
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 5382567507,
+     "median_ns": 90440093,
+     "min_ns": 85476402,
+     "samples_ns": [
+      114050928,
+      85476402,
+      90440093,
+      102388808,
+      89704829
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4472449999,
+     "median_ns": 88283625,
+     "min_ns": 84497199,
+     "samples_ns": [
+      86089459,
+      84497199,
+      91839137,
+      95433393,
+      88283625
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4257834291,
+     "median_ns": 93673165,
+     "min_ns": 86424149,
+     "samples_ns": [
+      86424149,
+      93673165,
+      91089129,
+      93848160,
+      102410083
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4539529646,
+     "median_ns": 101455641,
+     "min_ns": 84949069,
+     "samples_ns": [
+      101455641,
+      102747169,
+      94099433,
+      114345171,
+      84949069
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4350914880,
+     "median_ns": 89378610,
+     "min_ns": 85333814,
+     "samples_ns": [
+      92406149,
+      85333814,
+      87272667,
+      89378610,
+      126014950
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4664760305,
+     "median_ns": 86198400,
+     "min_ns": 85934583,
+     "samples_ns": [
+      86002508,
+      86198400,
+      96571217,
+      94213193,
+      85934583
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4867121302,
+     "median_ns": 123455164,
+     "min_ns": 106730957,
+     "samples_ns": [
+      129957041,
+      123455164,
+      113195521,
+      134508771,
+      106730957
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 5074019902,
+     "median_ns": 126221038,
+     "min_ns": 84665406,
+     "samples_ns": [
+      128317219,
+      131719199,
+      126221038,
+      84665406,
+      86342991
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4525893891,
+     "median_ns": 88307446,
+     "min_ns": 86294963,
+     "samples_ns": [
+      90060613,
+      87905175,
+      88307446,
+      86294963,
+      92194113
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4489295610,
+     "median_ns": 86304498,
+     "min_ns": 85501394,
+     "samples_ns": [
+      85501394,
+      87718070,
+      87429539,
+      85684152,
+      86304498
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4430190843,
+     "median_ns": 111658807,
+     "min_ns": 91002153,
+     "samples_ns": [
+      91037027,
+      91002153,
+      111658807,
+      131035244,
+      129343143
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4253030475,
+     "median_ns": 88450869,
+     "min_ns": 87731998,
+     "samples_ns": [
+      107980708,
+      88800356,
+      88267391,
+      87731998,
+      88450869
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4471159153,
+     "median_ns": 105497051,
+     "min_ns": 96590457,
+     "samples_ns": [
+      118166574,
+      105353915,
+      122978368,
+      105497051,
+      96590457
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4462750672,
+     "median_ns": 87971441,
+     "min_ns": 85580977,
+     "samples_ns": [
+      88898694,
+      115298387,
+      85580977,
+      87971441,
+      87134786
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 5629626193,
+     "median_ns": 84817893,
+     "min_ns": 82823098,
+     "samples_ns": [
+      116814534,
+      82823098,
+      84559910,
+      84817893,
+      95774810
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 6159141891,
+     "median_ns": 82850922,
+     "min_ns": 81447379,
+     "samples_ns": [
+      107398351,
+      82850922,
+      83011606,
+      82654875,
+      81447379
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4540801238,
+     "median_ns": 118113283,
+     "min_ns": 81757801,
+     "samples_ns": [
+      81757801,
+      82343427,
+      118113283,
+      133992507,
+      137068095
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4938998118,
+     "median_ns": 126748313,
+     "min_ns": 89128099,
+     "samples_ns": [
+      89128099,
+      115222616,
+      126748313,
+      128894744,
+      127700534
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4431207252,
+     "median_ns": 124449952,
+     "min_ns": 123672968,
+     "samples_ns": [
+      125272990,
+      123672968,
+      124449952,
+      124431298,
+      125501667
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4866229313,
+     "median_ns": 84350574,
+     "min_ns": 82388393,
+     "samples_ns": [
+      82388393,
+      89175696,
+      89995869,
+      83537345,
+      84350574
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4554241537,
+     "median_ns": 90566219,
+     "min_ns": 81131872,
+     "samples_ns": [
+      90566219,
+      103331234,
+      133696203,
+      81608218,
+      81131872
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_descent_k0n53_m2_x4",
+     "area": "relation",
+     "fingerprint": "d83e70c7593c69d6",
+     "setup_ns": 4040769298,
+     "median_ns": 83634203,
+     "min_ns": 81820590,
+     "samples_ns": [
+      112586479,
+      86346538,
+      83634203,
+      81820590,
+      82652174
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "relation/koblitz_pair_table_k0n41_folded": {
+   "A": [
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 46303139,
+     "median_ns": 29914414,
+     "min_ns": 29218874,
+     "samples_ns": [
+      29218874,
+      31073098,
+      30717035,
+      29914414,
+      29703016
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 45296638,
+     "median_ns": 57052684,
+     "min_ns": 44659532,
+     "samples_ns": [
+      59275866,
+      57552990,
+      57052684,
+      52332251,
+      44659532
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 46429087,
+     "median_ns": 46857511,
+     "min_ns": 32148011,
+     "samples_ns": [
+      32148011,
+      35504971,
+      52253319,
+      48415319,
+      46857511
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 60303386,
+     "median_ns": 70314777,
+     "min_ns": 68510179,
+     "samples_ns": [
+      69328383,
+      68510179,
+      72779112,
+      70314777,
+      71221351
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 29542487,
+     "median_ns": 29058340,
+     "min_ns": 28913357,
+     "samples_ns": [
+      30213360,
+      29058340,
+      28913357,
+      29043781,
+      30228147
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 32435594,
+     "median_ns": 32884140,
+     "min_ns": 31708345,
+     "samples_ns": [
+      32039415,
+      31708345,
+      32884140,
+      53493088,
+      43665185
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 58211992,
+     "median_ns": 49275804,
+     "min_ns": 30690136,
+     "samples_ns": [
+      49275804,
+      40445687,
+      30690136,
+      59133497,
+      49565244
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 31462646,
+     "median_ns": 40059168,
+     "min_ns": 33419057,
+     "samples_ns": [
+      40059168,
+      35904237,
+      62581814,
+      44499262,
+      33419057
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 49388508,
+     "median_ns": 53779823,
+     "min_ns": 53324473,
+     "samples_ns": [
+      53779823,
+      56359328,
+      53324473,
+      53720431,
+      57045148
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 28679158,
+     "median_ns": 51824427,
+     "min_ns": 29999884,
+     "samples_ns": [
+      29999884,
+      46413413,
+      56441656,
+      51824427,
+      56677860
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 33498494,
+     "median_ns": 51158400,
+     "min_ns": 39738381,
+     "samples_ns": [
+      39738381,
+      52552659,
+      53611378,
+      51158400,
+      50193465
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 31105081,
+     "median_ns": 30421708,
+     "min_ns": 28520490,
+     "samples_ns": [
+      28520490,
+      30421708,
+      29896972,
+      32777313,
+      37769526
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 59068333,
+     "median_ns": 66743521,
+     "min_ns": 65874028,
+     "samples_ns": [
+      66743521,
+      68810095,
+      65874028,
+      68072032,
+      66705679
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 35522595,
+     "median_ns": 31152634,
+     "min_ns": 29240836,
+     "samples_ns": [
+      49929834,
+      34732634,
+      31152634,
+      29240836,
+      29814298
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 29444931,
+     "median_ns": 30964889,
+     "min_ns": 30211418,
+     "samples_ns": [
+      30779190,
+      31212680,
+      30964889,
+      30211418,
+      35698999
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 45083337,
+     "median_ns": 29342878,
+     "min_ns": 28867476,
+     "samples_ns": [
+      28867476,
+      28932798,
+      29342878,
+      30797007,
+      30621016
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 28545836,
+     "median_ns": 31311816,
+     "min_ns": 29757205,
+     "samples_ns": [
+      31332230,
+      29757205,
+      32163432,
+      29898011,
+      31311816
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 49963374,
+     "median_ns": 32436176,
+     "min_ns": 30885774,
+     "samples_ns": [
+      51651800,
+      50394766,
+      30885774,
+      31667000,
+      32436176
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 41977605,
+     "median_ns": 28763896,
+     "min_ns": 28414606,
+     "samples_ns": [
+      28414606,
+      29108311,
+      28763896,
+      28924043,
+      28742139
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 44767224,
+     "median_ns": 58636052,
+     "min_ns": 55233826,
+     "samples_ns": [
+      55233826,
+      58636052,
+      58300186,
+      59415428,
+      58679285
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 29251705,
+     "median_ns": 49431230,
+     "min_ns": 47915791,
+     "samples_ns": [
+      49748655,
+      47915791,
+      49431230,
+      53114562,
+      49279147
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 59704791,
+     "median_ns": 60757956,
+     "min_ns": 56192681,
+     "samples_ns": [
+      71308834,
+      70324655,
+      60757956,
+      56192681,
+      58598721
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 44192764,
+     "median_ns": 56774148,
+     "min_ns": 48328248,
+     "samples_ns": [
+      60084259,
+      59783070,
+      56774148,
+      50825818,
+      48328248
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 28795897,
+     "median_ns": 31590476,
+     "min_ns": 29837717,
+     "samples_ns": [
+      31590476,
+      32672768,
+      31605081,
+      30339624,
+      29837717
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 29202043,
+     "median_ns": 30451062,
+     "min_ns": 29689492,
+     "samples_ns": [
+      34109872,
+      30451062,
+      29689492,
+      30103161,
+      30610563
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 29303158,
+     "median_ns": 31675422,
+     "min_ns": 31588978,
+     "samples_ns": [
+      31588978,
+      31634239,
+      32120747,
+      31675422,
+      33013600
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_pair_table_k0n41_folded",
+     "area": "relation",
+     "fingerprint": "ad1429caee869059",
+     "setup_ns": 31693524,
+     "median_ns": 40981057,
+     "min_ns": 34087994,
+     "samples_ns": [
+      40981057,
+      34087994,
+      40512760,
+      48095769,
+      55469630
+     ],
+     "round": 8
+    }
+   ]
+  },
+  "relation/koblitz_rung_k0n31": {
+   "A": [
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 8056188,
+     "median_ns": 51390352,
+     "min_ns": 32152567,
+     "samples_ns": [
+      32152567,
+      76079219,
+      54257511,
+      47359237,
+      51390352
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 6945341,
+     "median_ns": 47170064,
+     "min_ns": 46848538,
+     "samples_ns": [
+      46928993,
+      47170064,
+      48046902,
+      47323454,
+      46848538
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5237939,
+     "median_ns": 28447338,
+     "min_ns": 28100754,
+     "samples_ns": [
+      28100754,
+      28515158,
+      28795098,
+      28215124,
+      28447338
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5597434,
+     "median_ns": 28516621,
+     "min_ns": 28097288,
+     "samples_ns": [
+      28443949,
+      32562733,
+      29474326,
+      28516621,
+      28097288
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5102370,
+     "median_ns": 44805580,
+     "min_ns": 33775273,
+     "samples_ns": [
+      45385189,
+      44805580,
+      44754663,
+      45861666,
+      33775273
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5223015,
+     "median_ns": 29227927,
+     "min_ns": 27798242,
+     "samples_ns": [
+      29227927,
+      28368631,
+      27798242,
+      38368334,
+      56472240
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5260235,
+     "median_ns": 28463279,
+     "min_ns": 27982109,
+     "samples_ns": [
+      28880341,
+      28463279,
+      27982109,
+      28850063,
+      28006554
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5333523,
+     "median_ns": 28552054,
+     "min_ns": 27630336,
+     "samples_ns": [
+      28552054,
+      28622655,
+      27679596,
+      28657112,
+      27630336
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 7778414,
+     "median_ns": 28351885,
+     "min_ns": 28124306,
+     "samples_ns": [
+      28124306,
+      28132645,
+      28915368,
+      28351885,
+      29564564
+     ],
+     "round": 8
+    }
+   ],
+   "B": [
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 8660782,
+     "median_ns": 47510831,
+     "min_ns": 46844548,
+     "samples_ns": [
+      50589537,
+      47774603,
+      46844548,
+      47485065,
+      47510831
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5419696,
+     "median_ns": 29738494,
+     "min_ns": 28632058,
+     "samples_ns": [
+      29792253,
+      28632058,
+      28783746,
+      29961632,
+      29738494
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5336642,
+     "median_ns": 47269421,
+     "min_ns": 28407616,
+     "samples_ns": [
+      28407616,
+      43355224,
+      47269421,
+      47836634,
+      47278018
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5056366,
+     "median_ns": 28097954,
+     "min_ns": 27945955,
+     "samples_ns": [
+      27945955,
+      28002204,
+      28473957,
+      28445060,
+      28097954
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5640854,
+     "median_ns": 27973388,
+     "min_ns": 27859041,
+     "samples_ns": [
+      27918198,
+      28103169,
+      27973388,
+      27859041,
+      28086360
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 10265186,
+     "median_ns": 40692654,
+     "min_ns": 29734780,
+     "samples_ns": [
+      29734780,
+      38840983,
+      48740292,
+      48274525,
+      40692654
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5215802,
+     "median_ns": 28812743,
+     "min_ns": 28369797,
+     "samples_ns": [
+      28812743,
+      28605453,
+      28369797,
+      29456836,
+      29976237
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5144830,
+     "median_ns": 29763025,
+     "min_ns": 29240502,
+     "samples_ns": [
+      29777991,
+      29687333,
+      29878358,
+      29240502,
+      29763025
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5393520,
+     "median_ns": 29719820,
+     "min_ns": 29391609,
+     "samples_ns": [
+      30638356,
+      31757167,
+      29719820,
+      29525287,
+      29391609
+     ],
+     "round": 8
+    }
+   ],
+   "A2": [
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 7960653,
+     "median_ns": 29233083,
+     "min_ns": 28702820,
+     "samples_ns": [
+      29262045,
+      32856030,
+      29233083,
+      28702820,
+      29199843
+     ],
+     "round": 0
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5274009,
+     "median_ns": 47396425,
+     "min_ns": 36165839,
+     "samples_ns": [
+      36165839,
+      47008544,
+      47485502,
+      47412929,
+      47396425
+     ],
+     "round": 1
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5334715,
+     "median_ns": 28018397,
+     "min_ns": 27656098,
+     "samples_ns": [
+      28186922,
+      28018397,
+      28147511,
+      27788474,
+      27656098
+     ],
+     "round": 2
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5374257,
+     "median_ns": 45593478,
+     "min_ns": 27992888,
+     "samples_ns": [
+      46373851,
+      48135318,
+      45593478,
+      27992888,
+      30156853
+     ],
+     "round": 3
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5200437,
+     "median_ns": 27689193,
+     "min_ns": 27572580,
+     "samples_ns": [
+      27619011,
+      27689193,
+      27810363,
+      27572580,
+      27784917
+     ],
+     "round": 4
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5215259,
+     "median_ns": 28492252,
+     "min_ns": 27744911,
+     "samples_ns": [
+      30473767,
+      27744911,
+      28003862,
+      28527687,
+      28492252
+     ],
+     "round": 5
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 9996652,
+     "median_ns": 56557967,
+     "min_ns": 55953268,
+     "samples_ns": [
+      55953268,
+      56531679,
+      56557967,
+      56687551,
+      60061540
+     ],
+     "round": 6
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 5321199,
+     "median_ns": 27866182,
+     "min_ns": 27794268,
+     "samples_ns": [
+      56689097,
+      53182332,
+      27866182,
+      27843621,
+      27794268
+     ],
+     "round": 7
+    },
+    {
+     "id": "relation/koblitz_rung_k0n31",
+     "area": "relation",
+     "fingerprint": "7874561aa3c8630a",
+     "setup_ns": 7528263,
+     "median_ns": 45698011,
+     "min_ns": 44740714,
+     "samples_ns": [
+      45698011,
+      45152370,
+      46126207,
+      45903341,
+      44740714
+     ],
+     "round": 8
+    }
+   ]
+  }
+ }
+}

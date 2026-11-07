@@ -1,0 +1,95 @@
+{
+  "observed_at": "2026-10-30T00:07:27.138754+00:00",
+  "base": "1caa747d9bb888e0b98c739a59b17fbb1bd92e99",
+  "failure": {
+    "run": 40973574762,
+    "url": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40973574762",
+    "conclusion": "startup_failure",
+    "jobs": 0,
+    "policy_error": "The actions dtolnay/rust-toolchain@stable, swatinem/rust-cache@v2, and dtolnay/rust-toolchain@1.78.0 are not allowed in isogeny-labs/cryptanalysis because all actions must be from a repository owned by your enterprise, created by GitHub, or verified in the GitHub Marketplace."
+  },
+  "source_review": [
+    {
+      "url": "https://docs.github.com/en/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization",
+      "finding": "Respect the existing organization verified-creator/GitHub-owned action policy; no permission change."
+    },
+    {
+      "url": "https://rust-lang.github.io/rustup/concepts/profiles.html",
+      "finding": "Minimal installs compiler/stdlib/Cargo; request rustfmt and clippy explicitly for stable."
+    },
+    {
+      "path": ".github/workflows/ghs-sweeper.yml",
+      "ref": "1caa747d9bb888e0b98c739a59b17fbb1bd92e99",
+      "finding": "Reuse the direct rustup setup already adopted by this repository."
+    },
+    {
+      "path": ".github/workflows/ghs-sweeper.yml",
+      "finding": "Existing repository pattern already runs the same correctness job on both pull_request and push with matched path filters."
+    }
+  ],
+  "scope": "Workflow setup/cache only; scientific and Rust/C code unchanged. Hosted execution pending; no native test success claimed from structural assertions.",
+  "historical_setup_assertions": {
+    "source": "d41c2bfb30533ee19b6b3ac8b4e3c6859eb07473",
+    "assertions": {
+      "Format": true,
+      "Strict lint for the tensor crate and binding": true,
+      "Exact arithmetic, recursive controls and full reduction": true,
+      "Declared minimum Rust version": true,
+      "events": true,
+      "permissions": true,
+      "concurrency": true,
+      "runner": true,
+      "timeout": true,
+      "working_directory": true,
+      "checkout_and_sparse_inputs": true,
+      "only_github_owned_actions": true,
+      "stable_toolchain_explicit": true,
+      "minimum_toolchain_explicit": true
+    }
+  },
+  "assertions": {
+    "Format": true,
+    "Strict lint for the tensor crate and binding": true,
+    "Exact arithmetic, recursive controls and full reduction": true,
+    "Declared minimum Rust version": true,
+    "permissions": true,
+    "concurrency": true,
+    "runner": true,
+    "timeout": true,
+    "working_directory": true,
+    "checkout_and_sparse_inputs": true,
+    "only_github_owned_actions": true,
+    "stable_toolchain_explicit": true,
+    "minimum_toolchain_explicit": true,
+    "original_push_and_manual_events_preserved": true,
+    "pull_requests_use_same_branches_and_paths": true
+  },
+  "coverage_repair": "The original workflow ran only after main pushes or manual dispatch. PR1302 has28green checks but none runs these native Rust commands. Add a pull_request trigger with the same existing main branch/five path filters, preserving original push/manual behavior. This gates native correctness before merging future changes.",
+  "updated_at": "2026-10-30T03:45:22.057202+00:00",
+  "integrated_main": "cf35a825b25c3f1ece5d7d36dd98d78ea66a4022",
+  "integration": "Normal main integrations; workflow byte-identical to source219. All fifteen preservation assertions remain unchanged; new integrated-head native and normal CI pending.",
+  "integration_history": [
+    {
+      "main": "b14932651dcf9df2ba346fdc7efdb63b68904475",
+      "merge": "7b4e7aadc20bd78cd98ac89a49747ab57311c029",
+      "conflicts": []
+    },
+    {
+      "main": "7f07bce0d8da8ec9d31c13094a5b7d5060b679cf",
+      "merge": "d5f48572",
+      "conflicts": [
+        "docs/session-logs/2026-10-30.md"
+      ],
+      "resolution": "Both complete ordered parent histories retained and verified. No Rust or scientific conflict resolution."
+    }
+  ],
+  "prior_current_head_validation": {
+    "source": "21943959f6ceb12156fb67678e08e1e45aa5bde4",
+    "contexts": 29,
+    "success": 28,
+    "legitimate_skip": 1,
+    "native_job": 123833273796,
+    "native_conclusion": "success",
+    "qualifies_latest_integrated_source": false
+  }
+}

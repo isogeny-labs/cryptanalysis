@@ -1,0 +1,7 @@
+Initial synthetic unit-test attempt, 2026-10-30: 3 tests ran; 2 failed.
+The torsion test expected 2(5,5)=(16,60), but arithmetic returned (16,306).
+The relation test expected e_2-2e_1 for the same incorrect doubling fixture.
+Manual check: slope=(3*25-2*5-10)/(2*5+1)=5;
+x(2P)=25+1-5-5=16; y(2P)=-5*16-(5-5*5)-1=-61=306 mod367.
+Corrected test expectations only; arithmetic implementation unchanged.
+The full original traceback remains in the session tool transcript.

@@ -1,0 +1,127 @@
+{
+  "schema": "cryptanalysis.center_interval_native_review.v1",
+  "producer_commit": "f4489073826e85854ebb1a142db9e94c957d9794",
+  "auditor_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "python_version": "3.9.25",
+  "observed_utc": "2026-10-27T05:12:57.210896+00:00",
+  "scratch": "/tmp/center-native-20261027",
+  "inputs_before": {
+    "HasseUnique.lean": "f72e23b6d89fa7259b2502348b5af850bc18b8cf5f429b143a7292427358c400",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "BoundaryControl.lean": "914d6592953b3f18db0e4bbe6d17c44cc58584c764a2398097ff8d87620ecd5d",
+    "FalseControl.lean": "2dda80b69b6303cfe882fe7a170d29d38a21b8aff6d36de676e921747f0cf30d"
+  },
+  "inputs_after": {
+    "HasseUnique.lean": "f72e23b6d89fa7259b2502348b5af850bc18b8cf5f429b143a7292427358c400",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc",
+    "BoundaryControl.lean": "914d6592953b3f18db0e4bbe6d17c44cc58584c764a2398097ff8d87620ecd5d",
+    "FalseControl.lean": "2dda80b69b6303cfe882fe7a170d29d38a21b8aff6d36de676e921747f0cf30d"
+  },
+  "steps": [
+    {
+      "name": "source-build",
+      "command": [
+        "lean",
+        "-o",
+        "HasseUnique.olean",
+        "HasseUnique.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 45.922,
+      "stdout_sha256": "ee84235e3f04d83beca5bf0b4f0a996254e89e6ae9390b7f075534ecea1798b5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "HasseUnique"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 27.577,
+      "stdout_sha256": "ee9c50f4e51842548e03aac4a9d976620570766c344aa9a2b2b93d262f842a0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "boundary-build",
+      "command": [
+        "lean",
+        "-o",
+        "BoundaryControl.olean",
+        "BoundaryControl.lean"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 4.119,
+      "stdout_sha256": "996905a49ee84ab61d2e1d4786c71f47397fe07a7ac473056bed8e4859cea9de",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "boundary-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "BoundaryControl"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 18.376,
+      "stdout_sha256": "725f200dfc5caee1b3dc722a0402d60f0c5e703b72852e5a60c3cef9773bc279",
+      "stderr_sha256": "2d28a748d8fe5ac8f184d8b877633c6f21d1ea14ff653006880596a2a3651711"
+    },
+    {
+      "name": "false-build",
+      "command": [
+        "lean",
+        "-o",
+        "FalseControl.olean",
+        "FalseControl.lean"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.774,
+      "stdout_sha256": "c2185df7c041f8370185e30798e76ed6271b5acff5d5f6367d0aa136a6dddff3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "false-audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "FalseControl"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 54.978,
+      "stdout_sha256": "c348a1c357e3e97ab886aed062854091c2fb5bca35e1a3350afbe218cdbeb3d2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "wrong-module",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "MissingModule"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 16.953,
+      "stdout_sha256": "725f200dfc5caee1b3dc722a0402d60f0c5e703b72852e5a60c3cef9773bc279",
+      "stderr_sha256": "01a060bb622a6f7f7dca4abae3d46d723af7bfd1335a1e3886799c879d2f2bd8"
+    }
+  ],
+  "expected_exits": {
+    "source-build": 0,
+    "source-audit": 0,
+    "boundary-build": 0,
+    "boundary-audit": 0,
+    "false-build": 0,
+    "false-audit": 1,
+    "wrong-module": 1
+  },
+  "expected_exits_met": false,
+  "trust_boundary": "installed pinned Lean kernel; lean4checker --fresh unavailable"
+}

@@ -38,7 +38,7 @@ from descent import Pieces, xs_to_assignment  # noqa: E402
 from factor_base import FactorBase, product_profile  # noqa: E402
 from sym import SymPieces  # noqa: E402
 from relations import Oracle, classify_solution, exact_subgroup_yield, predicted_yield  # noqa: E402
-from toycurve import ToyCurve, canonical, sha256_hex  # noqa: E402
+from toycurve import ToyCurve, canonical, pick_ordinary_a6, sha256_hex  # noqa: E402
 
 SCHEMA = "pdp-degree-profile/1"
 SOURCES = [
@@ -114,14 +114,19 @@ def pdp_config(m: int, limits: macaulay.Limits, formulation: str = "direct") -> 
 _CTX: dict = {}
 
 
+def _curve(cfg: dict) -> ToyCurve:
+    """The toy curve of a cell.  a2 = 0, a6 = 1 (the default) is the ECC2K-130 family and leaves records unchanged."""
+    return ToyCurve(cfg["n"], cfg.get("a2", 0), cfg.get("a6", 1))
+
+
 def _context(cfg: dict):
     form = cfg.get("formulation", "direct")
-    key = (cfg["n"], cfg["family"], cfg["l"], cfg["seed"], cfg["m"], form)
+    key = (cfg["n"], cfg["family"], cfg["l"], cfg["seed"], cfg["m"], form, cfg.get("a2", 0), cfg.get("a6", 1))
     if key not in _CTX:
         if len(_CTX) > 8:
             _CTX.clear()
         t0 = time.perf_counter_ns()
-        C = ToyCurve(cfg["n"])
+        C = _curve(cfg)
         t1 = time.perf_counter_ns()
         fb = FactorBase(C, cfg["family"], cfg["l"], cfg["seed"])
         t2 = time.perf_counter_ns()
@@ -367,7 +372,7 @@ def mode_stats(mode: str, ordinary: list[dict], planted: list[dict], p_dec: floa
 
 
 def summarize(cfg: dict, struct: dict, records: list[dict], wid: str, wrec: dict, run: int) -> dict:
-    C = ToyCurve(cfg["n"])
+    C = _curve(cfg)
     m, l, n = cfg["m"], cfg["l"], cfg["n"]
     limits = macaulay.Limits(**cfg["limits"])
     modes = cfg.get("modes", ["xl", "mxl"])
@@ -395,7 +400,8 @@ def summarize(cfg: dict, struct: dict, records: list[dict], wid: str, wrec: dict
         "run_id": f"{sid}W{wid}R{run}",
         "label": struct["label"] + ("" if form == "direct" else "sym"),
         "cell": {"n": n, "m": m, "l": l, "N": struct["structure"].get("sym_unknowns", m * l), "family": cfg["family"],
-                 "seed": cfg["seed"], "formulation": form},
+                 "seed": cfg["seed"], "formulation": form,
+                 **({"a2": cfg["a2"], "a6": cfg["a6"]} if (cfg.get("a2", 0), cfg.get("a6", 1)) != (0, 1) else {})},
         "curve": C.summary(),
         "workload": wrec,
         "factor_base": fb_record,
@@ -493,7 +499,8 @@ def run(args) -> list[dict]:
         for line in Path(args.out).read_text().splitlines():
             if line.strip():
                 c = json.loads(line)["cell"]
-                done.add((c["n"], c["m"], c["l"], c["family"], c["seed"], c.get("formulation", "direct")))
+                done.add((c["n"], c["m"], c["l"], c["family"], c["seed"], c.get("formulation", "direct"),
+                          c.get("a2", 0), c.get("a6", 1)))
     ns = [int(v) for v in args.n.split(",")]
     ls = []
     for part in args.l.split(","):
@@ -504,7 +511,9 @@ def run(args) -> list[dict]:
             ls.append(int(part))
     with ProcessPoolExecutor(max_workers=args.jobs) as pool:
         for n in ns:
-            C = ToyCurve(n)
+            a6 = pick_ordinary_a6(n, args.a2, args.a6_index) if args.a6 == 0 else args.a6
+            C = ToyCurve(n, args.a2, a6)
+            print(f"curve n={n} a2={args.a2} a6={a6} id={C.curve_id} order={C.order} h={C.h} r_bits={C.r.bit_length()}", flush=True)
             wid, wrec, targets = workload(C, args.workload_seed, args.targets)
             for l in ls:
                 if args.formulation == "direct" and args.m * l > args.max_vars:
@@ -512,10 +521,11 @@ def run(args) -> list[dict]:
                 cfgs = []
                 for fam in families:
                     for seed in (seeds if fam not in ("prefix",) else [0]):
-                        if (n, args.m, l, fam, seed, args.formulation) in done:
+                        if (n, args.m, l, fam, seed, args.formulation, args.a2, a6) in done:
                             continue
                         cfg = {
                             "n": n, "m": args.m, "l": l, "family": fam, "seed": seed, "limits": limits,
+                            **({"a2": args.a2, "a6": a6} if (args.a2, a6) != (0, 1) else {}),
                             "dreg": args.dreg, "dreg_targets": args.dreg_targets,
                             "dreg_limits": {**limits, "d_max": args.dreg_max},
                             "sat": args.sat, "sat_time_limit": args.sat_time_limit,
@@ -576,6 +586,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--n", required=True, help="comma-separated field degrees")
     ap.add_argument("--m", type=int, required=True)
+    ap.add_argument("--a2", type=int, default=0, help="curve coefficient a2 (0 or 1 for Koblitz, any field element otherwise)")
+    ap.add_argument("--a6", type=int, default=1,
+                    help="curve coefficient a6 as an integer in the polynomial basis (1 = Koblitz; "
+                    "'--a6 0' picks pick_ordinary_a6(n, a2, --a6-index) per field degree)")
+    ap.add_argument("--a6-index", type=int, default=0, help="with --a6 0: which ordinary curve (0, 1, ...)")
     ap.add_argument("--l", required=True, help="dimensions, e.g. 3,4,5 or 3-7")
     ap.add_argument("--families", default="prefix,geometric,random,normal,kertrace")
     ap.add_argument("--seeds", default="1,2")

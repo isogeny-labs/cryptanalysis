@@ -1,0 +1,937 @@
+{
+  "classification": "Python/mock software controls; no native proof evidence",
+  "independent_cases": 21,
+  "producer_selected_tests": 20,
+  "producer_skipped_class": "QuarticRegistrationControls requires an input outside permitted review scope",
+  "python": "3.9.25 (main, Jul 15 2026, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "results": [
+    {
+      "case": "positive_synthetic_full_pipeline",
+      "accepted": true,
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "error": null,
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-pgo629x6/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-pgo629x6:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-pgo629x6/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xn9shotr/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-pgo629x6:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "missing_type",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: incomplete native elaborated types in docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-cfs4gdlo/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-cfs4gdlo:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-cfs4gdlo/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-slzgqiwu/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-cfs4gdlo:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "duplicate_type",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: incomplete native elaborated types in docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-ic_b0uyr/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-ic_b0uyr:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-ic_b0uyr/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-kfybvdy3/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-ic_b0uyr:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "wrong_namespace_type",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: incomplete native elaborated types in docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-59osag6l/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-59osag6l:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-59osag6l/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-_qj21i2l/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-59osag6l:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "empty_types",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: incomplete native elaborated types in docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-j1k51h5v/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-j1k51h5v:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-j1k51h5v/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-p_ceg18_/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-j1k51h5v:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "extra_type",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: incomplete native elaborated types in docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-yz3167_m/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-yz3167_m:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-yz3167_m/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-61s61t6v/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-yz3167_m:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "nonzero_compile",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: lake failed: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\nSTDERR-SUFFIX\n",
+      "stdout": "",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-n85qiy13",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-rbobi_vk/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-n85qiy13/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-n85qiy13/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "nonzero_audit",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: lean failed: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\nSTDERR-SUFFIX\n",
+      "stdout": "",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-z7xwz8_l",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jagf1o2b/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-z7xwz8_l/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-z7xwz8_l/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-z7xwz8_l/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-z7xwz8_l/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jagf1o2b:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "nonzero_types",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: lean failed: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\nSTDERR-SUFFIX\n",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-d7ln3f1u/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-d7ln3f1u:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-d7ln3f1u/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-x_f8tx90/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-d7ln3f1u:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_source_mutation_compile",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label source changed during audit: docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-6qzz_8z6",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-c7dxgcmx/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-6qzz_8z6/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-6qzz_8z6/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-6qzz_8z6/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-6qzz_8z6/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-c7dxgcmx:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "69021d0bcfd728c5f99a02c7249df920a959e031bce1182938b83ad5bd9264f5",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_project_mutation_compile",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label project input changed: lakefile.toml",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-2nf9olkr/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-2nf9olkr:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-2nf9olkr/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-w2xocwsk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-2nf9olkr:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_source_mutation_audit",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label source changed during audit: docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-00hr3h8v",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-1130rd2s/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-00hr3h8v/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-00hr3h8v/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-00hr3h8v/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-00hr3h8v/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-1130rd2s:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "69021d0bcfd728c5f99a02c7249df920a959e031bce1182938b83ad5bd9264f5",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_project_mutation_audit",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label project input changed: lakefile.toml",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-lzavyz9x/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-lzavyz9x:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-lzavyz9x/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3e7f6uf9/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-lzavyz9x:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_source_mutation_types",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label source changed during audit: docs/known-label-next-leads-20261028/Algebra.lean",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-uskh0_ku/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-uskh0_ku:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-uskh0_ku/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v_yodj7x/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-uskh0_ku:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "69021d0bcfd728c5f99a02c7249df920a959e031bce1182938b83ad5bd9264f5",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_project_mutation_types",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: known-label project input changed: lakefile.toml",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-xh40ozy7/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-xh40ozy7:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-xh40ozy7/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-xqzjdg81/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-xh40ozy7:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_type_wrapper_mutation",
+      "accepted": false,
+      "returned": null,
+      "error": "ValueError: type wrapper changed during collection",
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-rsky6ov3/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-rsky6ov3:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-rsky6ov3/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-v6k7zl24/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-rsky6ov3:synthetic-dependency-path"
+        }
+      ],
+      "events": [],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_auditor_mutation_unchecked",
+      "accepted": true,
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "error": null,
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jg1jwux4/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jg1jwux4:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jg1jwux4/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-f31d1syk/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-jg1jwux4:synthetic-dependency-path"
+        }
+      ],
+      "events": [
+        "auditor source was persistently replaced after compile"
+      ],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "dc2305d726272b217a002db7f23de98e8b329ed272121df2c8e07e9f12bf1acc",
+      "synthetic_only": true
+    },
+    {
+      "case": "persistent_object_mutation_unchecked",
+      "accepted": true,
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "error": null,
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-umt8mbat/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-umt8mbat:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-umt8mbat/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-spbm5tli/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-umt8mbat:synthetic-dependency-path"
+        }
+      ],
+      "events": [
+        "compiled placeholder object was persistently replaced before type collection"
+      ],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "missing_object_unchecked",
+      "accepted": true,
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "error": null,
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-7uz3riye/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-7uz3riye:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-7uz3riye/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-3rznacki/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-7uz3riye:synthetic-dependency-path"
+        }
+      ],
+      "events": [
+        "compiled placeholder object was removed before type collection"
+      ],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "transient_mutations_undetected",
+      "accepted": true,
+      "returned": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "error": null,
+      "stdout": "'KnownLabelLeads.positive_pair_product' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_second_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.signed_third_moment' depends on axioms: [propext, Quot.sound]\n'KnownLabelLeads.triangle_identity' depends on axioms: [propext, Quot.sound]\nok    KnownLabelLeads.positive_pair_product  [propext, Quot.sound]\nok    KnownLabelLeads.signed_second_moment  [propext, Quot.sound]\nok    KnownLabelLeads.signed_third_moment  [propext, Quot.sound]\nok    KnownLabelLeads.triangle_identity  [propext, Quot.sound]\naudited 4 theorems; 0 failing, 0 trusted\nknown-label native audit: docs/known-label-next-leads-20261028/Algebra.lean: 4 declarations, 4 theorems\nBEGIN NATIVE ELABORATED TYPES\n{\"module\": \"docs/known-label-next-leads-20261028/Algebra.lean\", \"names\": [\"KnownLabelLeads.positive_pair_product\", \"KnownLabelLeads.signed_second_moment\", \"KnownLabelLeads.signed_third_moment\", \"KnownLabelLeads.triangle_identity\"], \"wrapper_sha256\": \"7a8956f6df193424da3b41c7b21a92ff54dc778a266acba190b230a8481e1d6d\", \"stdout_sha256\": \"90ddfc3779aa2d504a2eff7a131a191dc93c17e979f1b9369c7736958d67e1d2\"}\nimport \u00abdocs\u00bb.\u00abknown-label-next-leads-20261028\u00bb.\u00abAlgebra\u00bb\nset_option pp.universes true\nset_option pp.explicit true\nset_option pp.fullNames true\n#check @KnownLabelLeads.positive_pair_product\n#check @KnownLabelLeads.signed_second_moment\n#check @KnownLabelLeads.signed_third_moment\n#check @KnownLabelLeads.triangle_identity\n@KnownLabelLeads.positive_pair_product.{u_1} : Type u_1\n@KnownLabelLeads.signed_second_moment.{u_1} : Type u_1\n@KnownLabelLeads.signed_third_moment.{u_1} : Type u_1\n@KnownLabelLeads.triangle_identity.{u_1} : Type u_1\nEND NATIVE ELABORATED TYPES\n",
+      "calls": [
+        {
+          "phase": "compile",
+          "args": [
+            "lake",
+            "env",
+            "lean",
+            "-R",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h",
+            "-o",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-_n36qfcg/docs/known-label-next-leads-20261028/Algebra.olean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h/docs/known-label-next-leads-20261028/Algebra.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": null
+        },
+        {
+          "phase": "audit",
+          "args": [
+            "lean",
+            "--run",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h/tools/lean/AuditHeckeAxioms.lean",
+            "docs.known-label-next-leads-20261028.Algebra"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-_n36qfcg:synthetic-dependency-path"
+        },
+        {
+          "phase": "types",
+          "args": [
+            "lean",
+            "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-_n36qfcg/CollectedTypes.lean"
+          ],
+          "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/fixture-8h6lqn4h/experiments/hecke-432-formal-ci-20261025",
+          "lean_path": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc/independent-controls/temporary/mathlib-corpus-_n36qfcg:synthetic-dependency-path"
+        }
+      ],
+      "events": [
+        "source, project and wrapper were changed then restored during synthetic command"
+      ],
+      "source_sha256_after": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "audit_source_sha256_after": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "synthetic_only": true
+    },
+    {
+      "case": "real_python_child_failure_diagnostics",
+      "accepted": false,
+      "error": "/usr/bin/python3 failed: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxREAL-SUFFIX",
+      "stdout": "",
+      "native_lean": false
+    }
+  ]
+}

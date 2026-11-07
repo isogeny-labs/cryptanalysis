@@ -1,0 +1,14 @@
+digraph classification {
+ graph [rankdir=TB, bgcolor="white", pad="0.2"];
+ node [shape=box, style="rounded,filled", fillcolor="#eef4fa", fontname="DejaVu Sans", fontsize=11];
+ edge [fontname="DejaVu Sans", fontsize=10];
+ abstract [label="Abstract maps from a prime-order subgroup\nExistence iff r divides target group order\nEfficient evaluation remains separate"];
+ algebraic [label="Algebraic homomorphisms W -> A\nFrobenius gcd classifies nonzero Hom up to isogeny\nActual target polynomial is a premise"];
+ explicit [label="Evaluated implementation families\nFrobenius orbit and same-field genus-three pullback\nPrime-subgroup and scalar-control checks"];
+ size [label="All target Jacobians over each subfield\nDeclared genus bound + exact Weil upper bound\nB-163 over F2: genus <= 63 excluded", fillcolor="#e5f2e9"];
+ open [label="Open coverage\nOther maps, large isogeny paths, higher genus\nNo universal weakness or security verdict",fillcolor="#fff0d8"];
+ abstract -> size [label="necessary cardinality"];
+ algebraic -> explicit [label="existence does not construct a map",style=dashed];
+ size -> open [label="outside declared bound"];
+ explicit -> open [label="outside implemented families"];
+}

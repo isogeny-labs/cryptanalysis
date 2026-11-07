@@ -1,0 +1,20 @@
+{
+  "claim_rule": "a prime is certified good only if every rational coefficient denominator is invertible and the rational norms of source-y denominator, base unit, both relative units, and both conjugate-pair resultants have nonzero numerator modulo p; all other primes remain exceptional until direct check",
+  "inputs": {
+    "base_certificate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-resolvent-field-20261026/factor_certificate.json",
+      "sha256": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918"
+    },
+    "pair_norms": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-sqrt2-resultants-20261026/resultant_norms.json",
+      "sha256": "9c29bfa92a9d876411b167be13cf152369091f87bb4fc2f377c768ee63eb8078"
+    },
+    "sqrt2_certificate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json",
+      "sha256": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+    }
+  },
+  "prime_cap_exclusive": 20000,
+  "question": "complete the sufficient good-reduction screen for applying the exact sqrt2 factor certificate to a rational C point, including source y denominator, base and relative units, all rational coefficient denominators, and conjugate-pair resultant norms",
+  "status": "FROZEN_BEFORE_FULL_REDUCTION_BRIDGE_GATE"
+}

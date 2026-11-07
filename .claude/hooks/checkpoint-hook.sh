@@ -8,7 +8,9 @@
 #   SessionStart                       point a new session at an existing RESUME.md.
 #
 # A run that genuinely needs no checkpoint (a smoke test, a unit test that
-# happens to match) can opt out with "CHECKPOINT_SKIP=<reason>" in the command.
+# happens to match) can opt out with "CHECKPOINT_SKIP=<reason>" in the command;
+# the skip is recorded in the pcc ledger (append-bypass) and a checkpoint push is
+# attempted before it is honoured.
 set -uo pipefail
 
 input="$(cat)"
@@ -58,7 +60,19 @@ case "$event" in
   PreToolUse)
     cmd="$(field tool_input.command)"
     bg="$(field tool_input.run_in_background)"
-    [[ "$cmd" == *CHECKPOINT_SKIP=* ]] && exit 0
+    if [[ "$cmd" == *CHECKPOINT_SKIP=* ]]; then
+      root="$(git -C "${cwd:-.}" rev-parse --show-toplevel 2>/dev/null)" || exit 0
+      reason="${cmd#*CHECKPOINT_SKIP=}"
+      reason="${reason%%[[:space:]]*}"
+      reason="${reason//[\"\']/}"
+      if [ -f "$root/tools/pcc/pcc.py" ]; then
+        python3 "$root/tools/pcc/pcc.py" ledger append-bypass --reason "$reason" --command "$cmd" >/dev/null 2>&1 || true
+      fi
+      pushed=failed
+      if [ -x "$root/scripts/checkpoint.sh" ] && (cd "$root" && scripts/checkpoint.sh push >/dev/null 2>&1); then pushed=ok; fi
+      echo "CHECKPOINT_SKIP bypass recorded in pcc/ledger.jsonl (reason: ${reason:-none}); checkpoint push $pushed." >&2
+      exit 0
+    fi
     if [ "$bg" != "True" ] && ! printf '%s' "$cmd" | grep -qE "$LAUNCH_RE"; then
       exit 0
     fi

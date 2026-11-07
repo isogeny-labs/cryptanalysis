@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           filter: blob:none
           sparse-checkout-cone-mode: false
@@ -40,6 +40,7 @@ jobs:
             /suite/Cargo.lock
             /suite/build.rs
             /suite/src/
+            /crates/
             /suite/vendor/crypto-analysis-core/
             /suite/cuda/
             /suite/docs/ic/calibration.json
@@ -78,9 +79,10 @@ jobs:
             export ARTIFACTS_AWS="$artifacts_cli_aws"
           fi
           python3 tools/artifacts/artifacts.py pull --jobs 16 docs/ecdlp-surfaces research/binary_genus2_cover_20261014
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+      - name: Install stable Rust with formatting and lint tools
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+          echo 'RUSTUP_TOOLCHAIN=stable' >> "$GITHUB_ENV"
       - name: Verify pinned crypto analysis dependency
         run: tools/bootstrap_crypto_analysis_core.sh
       - run: tools/binary-genus2-cover/check.sh
@@ -88,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             research/binary_genus2_cover_20261014/lean

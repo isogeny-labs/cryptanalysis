@@ -1,0 +1,149 @@
+{
+  "review_attestation": {
+    "task_id": "TASK-20261029-9058ad",
+    "joints_owned": [
+      "J3"
+    ],
+    "verdict": "holds",
+    "verdict_scope": "Software admission and source-aware integration, conditional on trusted tools/output and a stable workspace; no native proof validity claim.",
+    "producer": "5b20d2a705601327877f708655f37b92bc762da8",
+    "supplied_review_commit": "1aa4e3e26",
+    "independent_from_producer": true,
+    "sources_read": [
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/handoff-J3-v3.json",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/review-plan-v3.json",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/inputs-v3.json",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/integration-source-diff.patch",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-68d1a5/report.md",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/tools/lean/current-corpus-gate.py",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/tools/lean/test_current_corpus_gate.py",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/tools/lean/AuditHeckeAxioms.lean",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/tools/lean/hecke-audit-selftest.py",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/.github/workflows/lean-proof-gate.yml",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/tools/ci/quartic_certificates.json",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/docs/known-label-next-leads-20261028/Algebra.lean",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "/home/ec2-user/cryptanalysis-known-label-review-20261029/experiments/hecke-432-formal-ci-20261025/lake-manifest.json"
+    ],
+    "read_sibling_reports": false,
+    "prior_same_joint_report_read": true,
+    "prior_same_joint_report_path": "/home/ec2-user/cryptanalysis-known-label-review-20261029/reports/known-label-formal-review-20261028/reviewers/TASK-20261028-68d1a5/report.md",
+    "prior_report_permission": "Expressly permitted by handoff-J3-v3.json and review-plan-v3.json prior_j3_access for regression review.",
+    "native_proof_validity": "not_verified",
+    "controls": {
+      "existing_unit_tests": {
+        "count": 26,
+        "exit_code": 0,
+        "status": "passed",
+        "output": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/existing-tests.txt"
+      },
+      "independent_mock_cases": {
+        "count": 46,
+        "refused": 40,
+        "accepted": 6,
+        "all_expectations_met": true,
+        "valid_acceptances": 2,
+        "trust_boundary_acceptances": 4,
+        "native_evidence": false,
+        "results": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/control-results.json",
+        "output": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/controls-output.txt"
+      },
+      "audit_cardinality": {
+        "three": "refused",
+        "four": "accepted",
+        "five": "refused"
+      },
+      "persistent_project_mutations": {
+        "count": 6,
+        "refused": 6,
+        "files": [
+          "lean-toolchain",
+          "lakefile.toml",
+          "lake-manifest.json"
+        ],
+        "phases": [
+          "compile",
+          "audit"
+        ]
+      },
+      "workflow_lockfile_routes": {
+        "pull_request": {
+          "target": "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+          "matching_patterns": [
+            "**/lake-manifest.json"
+          ]
+        },
+        "push": {
+          "target": "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+          "matching_patterns": [
+            "**/lake-manifest.json"
+          ]
+        }
+      },
+      "real_python_child_exit_7": {
+        "pass": true,
+        "actual": "refused",
+        "error": "/usr/bin/python3 failed: ",
+        "child_exit": 7
+      },
+      "archived_diff_reconstruction": {
+        "status": "both prior and current blob prefixes matched for both files",
+        "output": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/integration-diff-check.json",
+        "git_history_access": false
+      },
+      "producer_sha256_matches": 10,
+      "allowed_sources_unchanged_at_close": 15
+    },
+    "findings": [
+      {
+        "id": "J3-I1",
+        "kind": "integration_verified",
+        "description": "Exact four-theorem check added; prior persistent-mutation, source, qualified-name, workflow lockfile, and main-origin refusal controls retained."
+      },
+      {
+        "id": "J3-B1",
+        "kind": "retained_trust_boundary",
+        "description": "Fabricated FAIL row or nonstandard axiom in forged ok rows is accepted if trusted auditor output otherwise claims four good rows, zero failures, and exit zero. No native bypass demonstrated."
+      },
+      {
+        "id": "J3-B2",
+        "kind": "retained_trust_boundary",
+        "description": "Transient source/project changes restored before endpoint hashing are accepted in mocks. Stable-workspace assumption required."
+      }
+    ],
+    "limits": [
+      "No Lean or Mathlib build, native auditor execution, elaborated-type review, mathematical derivation, or native CI evidence.",
+      "Mock subprocess outputs provide software admission evidence only; no compiled artifact was produced or loaded.",
+      "Installed tool identity, inherited environment, dependency caches and binaries remain trusted.",
+      "Workflow routing was checked statically; actual tracked inventory, hosted events, CI, branch protection and remote state were not inspected.",
+      "Git ancestry and supplied producer/review commit provenance were not independently verified.",
+      "The native auditor output protocol and stable workspace are necessary boundaries of the holds verdict.",
+      "Known-label deletion from the tracked inventory is not independently rejected as a required inventory member.",
+      "J1/J2 and overall scientific claims remain outside this review."
+    ],
+    "deviations": [],
+    "procedure_clarifications": [
+      {
+        "source": "Parent message after dispatch",
+        "detail": "The parent identified inherited stale round/prior-plan/reuse prose in review-plan-v3 and will preserve it with an additive correction. The J3 handoff, manifest and diff remain the intended inputs."
+      },
+      {
+        "source": "Parent message after dispatch",
+        "detail": "The parent stated that two README files changed while Algebra and CHECKS stayed exact, so original J2 is historical source-statement evidence only. Those unlisted files and the additive correction were not read or independently verified."
+      },
+      {
+        "source": "Handoff and explicit prior_j3_access",
+        "detail": "One archived prior J3 report was expressly allowed for regression review; no J1/J2 sibling report or blind brief was read."
+      }
+    ],
+    "write_scope": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad",
+    "repository_edits": false,
+    "memory_read": false,
+    "native_ci_read": false,
+    "additional_agents_spawned": false,
+    "external_jobs_launched": false,
+    "report_path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/report.md",
+    "source_ledger_path": "/home/ec2-user/scratch/known-label-review-20261028/TASK-20261029-9058ad/source-ledger.json"
+  }
+}

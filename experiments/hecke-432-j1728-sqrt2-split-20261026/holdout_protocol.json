@@ -1,0 +1,22 @@
+{
+  "inputs": {
+    "coordinate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-27-coordinate-bridge-20261025/coordinate_map.json",
+      "sha256": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1"
+    },
+    "eliminant": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-cubic-twist-holdout-20261026/elimination_result.json",
+      "sha256": "68159a86b24fc4e8db6b9e5a8eea0c63c98ccacc2b823abf1d838c934606aae3"
+    },
+    "sqrt2_certificate": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-sqrt2-split-20261026/sqrt2_factor_certificate.json",
+      "sha256": "b69cbecc540866cd256bae70d142476d3e151e2f87c7f85c362f179ab4d759cd"
+    }
+  },
+  "lower_bound_inclusive": 8000,
+  "prediction": "for every selected C point, the two sqrt2-factor pairs specialize with coprime members in GF(p^2), Frobenius exchanges each pair, and the base degree-12 C-E resolvent has no rational x_E root",
+  "preserve_zero_cells": true,
+  "selection_rule": "scan ascending primes p congruent 11 mod 24; select the first three with exactly two rational source-j1728 C points, using only the eliminant and source-j map",
+  "status": "FROZEN_BEFORE_SQRT2_FROBENIUS_HOLDOUT",
+  "upper_bound_exclusive": 20000
+}

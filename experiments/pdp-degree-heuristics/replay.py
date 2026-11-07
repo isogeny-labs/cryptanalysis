@@ -42,9 +42,10 @@ def recompute(card: dict) -> dict:
     cfg = {
         "n": cell["n"], "m": cell["m"], "l": cell["l"], "family": cell["family"], "seed": cell["seed"],
         "limits": limits, "modes": card["point_decomposition"].get("modes", ["xl", "mxl"]),
+        **({"a2": cell["a2"], "a6": cell["a6"]} if "a6" in cell else {}),
         "formulation": form, "max_solutions": 1 << 16 if form != "direct" else 4096,
     }
-    C = ToyCurve(cell["n"])
+    C = ToyCurve(cell["n"], cell.get("a2", 0), cell.get("a6", 1))
     wid, wrec, targets = prof.workload(C, card["workload"]["seed"], card["workload"]["target_count"])
     struct = prof.task_structure(cfg)
     records = [prof.task_target(cfg, "ordinary", i, t) for i, t in enumerate(targets)]

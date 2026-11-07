@@ -1,0 +1,150 @@
+{
+  "claim_label": "OBSERVATION",
+  "result_class": "failed_or_overfit",
+  "complete_attack_demonstrated": false,
+  "subsqrt_cost_law": null,
+  "construction_identity_checks_passed": true,
+  "finite_domain_bound": "B prescribed orbit parameter values cover at most 2B nonzero traces",
+  "finite_domain_scope": "irreducible orbit polynomials; fixed invariants; independent uniform labeled input",
+  "norm_lift": {
+    "target_constant_pairs": 17272,
+    "extension_lifts_verified": 17068,
+    "errors": 0
+  },
+  "cubic_lift": {
+    "target_constant_pairs": 8568,
+    "orbits_independently_verified_in_common_fields": 2796,
+    "exhaustive_parameter_systems": 632,
+    "errors": 0
+  },
+  "lift_relations": {
+    "bases": 64,
+    "successful_bases": 46,
+    "failed_bases": 18,
+    "divisors_verified": 78,
+    "all_relation_sets_match": true
+  },
+  "quadratic_conjugate_choices": {
+    "extension_sum_identity": 2,
+    "extension_sum_nonidentity_in_trace_kernel": 302
+  },
+  "largest_lift_benchmarks": {
+    "quadratic": {
+      "construction_cpu_s": 0.1688963329999993,
+      "formal_construction_cpu_s": 0,
+      "direct_pairs_cpu_s": 0.05089847300000372,
+      "trace_fibers_cpu_s": 0.7207068559999996,
+      "projection_and_fibers_cpu_s": 0.5286495799999997,
+      "orbit_projection_setup_cpu_s": 7.241999995244441e-06,
+      "relations": 7,
+      "attempts": 1007,
+      "rejected_lifts": 622,
+      "unfiltered_construction_cpu_s": 0.013749428999997093,
+      "trials": 8,
+      "B": 48,
+      "projection_degrees": [
+        96
+      ],
+      "membership_nonzero_coefficients": [
+        49
+      ]
+    },
+    "cubic": {
+      "construction_cpu_s": 0.7982504469999938,
+      "formal_construction_cpu_s": 0.2709416209999951,
+      "direct_pairs_cpu_s": 0.04819026500000234,
+      "trace_fibers_cpu_s": 0.6524648159999948,
+      "projection_and_fibers_cpu_s": 0.84274983500001,
+      "orbit_projection_setup_cpu_s": 1.3739971350000033,
+      "relations": 5,
+      "attempts": 1322,
+      "rejected_lifts": 937,
+      "unfiltered_construction_cpu_s": 0.006341992000002961,
+      "trials": 8,
+      "B": 48,
+      "projection_degrees": [
+        192
+      ],
+      "membership_nonzero_coefficients": [
+        49
+      ]
+    }
+  },
+  "block_validation": {
+    "exhaustive_blocks": 3978,
+    "hit_indices_verified": 6000,
+    "identity_indices_verified": 1080,
+    "pole_cases_recovered": 1620,
+    "independent_resultants": 11124,
+    "errors": 0
+  },
+  "complete_labeled_domain_construction": {
+    "binomial_chain": {
+      "complete_cpu_s": 2.351736994000035,
+      "construction_group_ops": 45973,
+      "blocks": 515,
+      "failed_blocks": 58,
+      "verified_hit_indices": 1055,
+      "identity_opportunities": 13,
+      "antipodal_opportunities": 353,
+      "trials": 8
+    },
+    "coordinate_products": {
+      "complete_cpu_s": 2.276435382999953,
+      "construction_group_ops": 45973,
+      "blocks": 515,
+      "failed_blocks": 58,
+      "verified_hit_indices": 1055,
+      "identity_opportunities": 13,
+      "antipodal_opportunities": 353,
+      "trials": 8
+    },
+    "sequential": {
+      "complete_cpu_s": 2.755015272000154,
+      "construction_group_ops": 1080978,
+      "blocks": 515,
+      "failed_blocks": 58,
+      "verified_hit_indices": 1055,
+      "identity_opportunities": 13,
+      "antipodal_opportunities": 353,
+      "trials": 8
+    },
+    "interval_bsgs": {
+      "complete_cpu_s": 0.26226389699994,
+      "construction_group_ops": 77662,
+      "blocks": 515,
+      "failed_blocks": 58,
+      "verified_hit_indices": 1055,
+      "identity_opportunities": 13,
+      "antipodal_opportunities": 353,
+      "trials": 8
+    }
+  },
+  "complete_construction_parameters": {
+    "p": 65537,
+    "r": 65371,
+    "raw_coset_size": 64,
+    "usable_coordinates": 33,
+    "M": 2048,
+    "bsgs_baby_table_points": 2048,
+    "predicted_blocks_for_tuning": 66,
+    "these_are_component_not_full_attack_runs": true
+  },
+  "independent_audit": {
+    "known_labels_verified": 1664,
+    "extension_lifts_verified": 2496,
+    "principal_divisors_verified": 78,
+    "extension_divisor_zeros_verified": 588,
+    "independent_progression_blocks_replayed": 595,
+    "progression_indices_replayed": 1163264,
+    "hit_indices_checked_in_records": 1439,
+    "complete_construction_transcripts_verified": 8,
+    "errors": 0
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "python_flint": "0.9.0"
+  },
+  "timing_scope": "Serial CPU process time; all eight trials summed; setup, failures, inputs, output recovery and label verification included. No scaling extrapolation."
+}

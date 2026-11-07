@@ -1,0 +1,290 @@
+{
+  "schema": "review_attestation/v1",
+  "reviewer_task": "TASK-20261029-b339cc",
+  "conductor_task": "T-790",
+  "review_policy": "review-adversarial",
+  "requested_reasoning_effort": "xhigh",
+  "reviewed_at_utc": "2026-10-29T06:04:19.844535+00:00",
+  "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+  "pull_request": "https://github.com/isogeny-labs/cryptanalysis/pull/1289",
+  "frozen_proof_sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+  "joints_owned": [
+    "Native type-collection orchestration, fresh-module import, exact-name completeness, isolation, failure propagation and evidence retention"
+  ],
+  "verdict": "breaks",
+  "verdict_scope": "Workflow evidence retention; complete mutation-resistant execution input binding is also absent. Native type validity and semantic fidelity are not evaluated.",
+  "machine_status": "not_verified",
+  "fidelity": "not_reviewed",
+  "review_outcome": "needs_revision",
+  "findings": [
+    {
+      "id": "F1",
+      "verdict": "breaks",
+      "priority": "medium",
+      "title": "Command and refusal evidence is discarded",
+      "source_locations": [
+        "tools/lean/current-corpus-gate.py:94",
+        "tools/lean/current-corpus-gate.py:399",
+        "tools/lean/current-corpus-gate.py:434",
+        ".github/workflows/lean-proof-gate.yml"
+      ],
+      "controls": [
+        "nonzero_compile",
+        "nonzero_audit",
+        "nonzero_types",
+        "real_python_child_failure_diagnostics",
+        "missing_type",
+        "duplicate_type",
+        "wrong_namespace_type"
+      ],
+      "native_exploit_claim": false
+    },
+    {
+      "id": "F2",
+      "verdict": "breaks",
+      "priority": "medium",
+      "title": "Full mutable verifier/object input chain is not bound",
+      "source_locations": [
+        "tools/lean/current-corpus-gate.py:370",
+        "tools/lean/current-corpus-gate.py:396",
+        "tools/lean/current-corpus-gate.py:431"
+      ],
+      "controls": [
+        "persistent_auditor_mutation_unchecked",
+        "persistent_object_mutation_unchecked",
+        "missing_object_unchecked",
+        "transient_mutations_undetected"
+      ],
+      "limitation": "Python mock controls establish absent binding checks. They do not prove native import of a tampered, missing or stale object.",
+      "native_exploit_claim": false
+    }
+  ],
+  "sources_read": [
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "d1a0d81924ec1ca840073a9e3d2e0f804cfc5d008c1d3a92df3c87fb2f65bbeb",
+      "bytes": 35138,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:tools/lean/current-corpus-gate.py",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "tools/lean/test_current_corpus_gate.py",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "811708798518d02706b47b673257654e669b13187d902b03c4c6c4aeb2d61a1a",
+      "bytes": 19416,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:tools/lean/test_current_corpus_gate.py",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "tools/lean/AuditHeckeAxioms.lean",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "c2ba62cad8b2678cd3058489c146ed78b2fe2c4ef5b8c059ae6426e25864c241",
+      "bytes": 1686,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:tools/lean/AuditHeckeAxioms.lean",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "docs/known-label-next-leads-20261028/Algebra.lean",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "d0e0fa1892bc800999e3b5330f543bf2e99811f607606901f363fce27bcb428d",
+      "bytes": 911,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:docs/known-label-next-leads-20261028/Algebra.lean",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "bytes": 29,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:experiments/hecke-432-formal-ci-20261025/lean-toolchain",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "efb8f87487140c5a80d7931e29aff9eda54b008323153887b10a13f2beca3e00",
+      "bytes": 186,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:experiments/hecke-432-formal-ci-20261025/lakefile.toml",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+      "bytes": 3170,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:experiments/hecke-432-formal-ci-20261025/lake-manifest.json",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": ".github/workflows/lean-proof-gate.yml",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "b0dc11834186edf44c875f340ce48cec64bd9a0d75acbd80534b0e8b84104b26",
+      "bytes": 3623,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:.github/workflows/lean-proof-gate.yml",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/README.md",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "00175f2463d9dfb9859b22e3ed6e544e64fd7966a0bc89dc5a369e4426557a2b",
+      "bytes": 2867,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:reports/known-label-native-types-20261029/README.md",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/bindings.json",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "19774796c1c4bf474faa93430624fca0e81a5c546507d3cc833e7ec7c5f1df25",
+      "bytes": 1273,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:reports/known-label-native-types-20261029/bindings.json",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/unit-tests.txt",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "f2307af62c8ccad7d3e233e89105bdeb362b3954134287ba94f5e989ecafb4f1",
+      "bytes": 3106,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:reports/known-label-native-types-20261029/unit-tests.txt",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "reports/known-label-native-types-20261029/review-plan.json",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "a89f5bd56240ae86ec68862fe653f265bfaa32dbcfc0d068385ab2494d7a7b8b",
+      "bytes": 2662,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:reports/known-label-native-types-20261029/review-plan.json",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "AGENTS.md",
+      "revision": "a2aa1586df54ca0250e30e88c544fa549c456fc9",
+      "sha256": "894806c9cd787f8b869ba8dbfb9a54d7e098a3e8aa188cdfc99e6c101055e7ec",
+      "bytes": 58471,
+      "origin": "git show a2aa1586df54ca0250e30e88c544fa549c456fc9:AGENTS.md",
+      "kind": "immutable_repository_input",
+      "scope": "Allowed review input; only assigned workflow joint reviewed"
+    },
+    {
+      "path": "/var/lib/spot-codex/home/skills/review-evidence/SKILL.md",
+      "sha256": "faadf52e1364483b09e8cb3c18b613477918df55e40f4ed404627f1eb0756fd7",
+      "bytes": 11825,
+      "kind": "applicable_skill_policy"
+    },
+    {
+      "path": "/var/lib/spot-codex/home/skills/review-evidence/references/lean-review.md",
+      "sha256": "86886a664aa8aa59411cfd6441848399ced79128e186d0afe9aa8673f03ec4c7",
+      "bytes": 10971,
+      "kind": "applicable_skill_policy"
+    },
+    {
+      "path": "/var/lib/spot-codex/home/plugins/cache/openai-curated-remote/cloud-environment/0.1.2/skills/runtime/SKILL.md",
+      "sha256": "c23513e361a6f9dbe1c28e5c41de635f355469b4ec1740ae1cd2de1d38a91bd3",
+      "bytes": 3985,
+      "kind": "applicable_skill_policy"
+    }
+  ],
+  "generated_artifacts_read": [
+    "independent-controls/sources.json",
+    "independent-controls/results.json",
+    "independent-controls/snapshot/* (exact copies of enumerated sources)",
+    "report.md"
+  ],
+  "sibling_report_access": false,
+  "sibling_message_access": false,
+  "memory_access": false,
+  "session_history_access": false,
+  "blind_rederivation": {
+    "required": false,
+    "performed": false,
+    "compliance": "This is the assigned adversarial workflow review, not a blind mathematical derivation."
+  },
+  "input_boundary_compliance": {
+    "plan_read_first": true,
+    "all_repository_inputs_from_exact_git_show": true,
+    "mutable_producer_source_read": false,
+    "snapshot_hashes_rechecked": true,
+    "source_snapshot_unchanged": true,
+    "only_scratch_test_fixtures_mutated": true,
+    "unlisted_quartic_fixture_not_read": true
+  },
+  "execution": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 independent-controls/run_controls.py",
+    "cwd": "/home/ec2-user/scratch/known-label-native-types-20261029/TASK-20261029-b339cc",
+    "independent_scenarios": 21,
+    "selected_producer_tests": 20,
+    "all_assertions_passed": true,
+    "producer_class_not_run": "QuarticRegistrationControls requires an input outside allowed scope",
+    "native_lean_or_lake_executed": false,
+    "real_child_process": "One Python diagnostic child, timeout=5 seconds",
+    "synthetic_output_is_proof_evidence": false,
+    "native_builds": 0,
+    "experiments": 0,
+    "network_calls": 0,
+    "installations": 0,
+    "new_capacity": 0,
+    "paid_jobs_launched": 0,
+    "total_cloud_billing_measured": false,
+    "resource_constraints": "Preserved $25/day and no new capacity; no local heavy build and no action on other task heavy reservation"
+  },
+  "pending_native_validation": [
+    "Fresh hosted exact-final-head original-source compilation and complete retained stdout/stderr/exit evidence",
+    "Fresh-module identity and audited compiled-object binding under pinned Lean and Mathlib",
+    "Exact four-name exhaustive axiom audit and actual native elaborated-type output",
+    "Independent source-to-elaborated-type comparison for each of four identities",
+    "Affected-joint re-review of repaired immutable snapshot and final-head CI before guarded merge"
+  ],
+  "claims_not_made": [
+    "End-to-end theorem validity",
+    "Native elaboration success",
+    "Semantic fidelity approval",
+    "Graph/group/probability bridge",
+    "Historical execution verification",
+    "Scientific promotion",
+    "Merged PR or passing current-head CI"
+  ],
+  "artifacts": [
+    {
+      "path": "report.md",
+      "sha256": "4f4058d099527d3dfe645e7131c79617edf0dee2570de406355b59f93dd6736e",
+      "bytes": 12483
+    },
+    {
+      "path": "independent-controls/run_controls.py",
+      "sha256": "e51334b29e1ca872a2c327ecd0d773d1d084d75478371d0b0003fc35881e1437",
+      "bytes": 9470
+    },
+    {
+      "path": "independent-controls/results.json",
+      "sha256": "12172be7b75fb9bb2ca6bda797d50a3f0a4b9b4eee4944f33127597aa64a79c9",
+      "bytes": 79997
+    },
+    {
+      "path": "independent-controls/producer-selected-tests.txt",
+      "sha256": "16240a7b56e978a5d7e6ff0a7eeead4d55e769a5c33aa28cab82496fd1c6ae31",
+      "bytes": 2144
+    },
+    {
+      "path": "independent-controls/sources.json",
+      "sha256": "352f7a583777de9483dbd87df139928fd9b63f586b247bb848a63df86127f599",
+      "bytes": 2993
+    },
+    {
+      "path": "independent-controls/policy-sources.json",
+      "sha256": "4bee216b2349840df99071ae60a70612941a00fd973aee229a6547fa72bb4212",
+      "bytes": 734
+    }
+  ]
+}
