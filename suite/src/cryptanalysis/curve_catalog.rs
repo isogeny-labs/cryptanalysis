@@ -24,6 +24,9 @@
 //! exact global count — the registry grows, and an exact count would be a
 //! brittle assertion that fails on every addition (see `CLAUDE.md`).
 //!
+//! S56 is explicitly a synthetic research fixture, included to use the same
+//! parameter inspection and IC dispatch interfaces.
+//!
 //! ## Scope note
 //!
 //! Membership here is about *coverage of standardized parameter sets*, not
@@ -352,6 +355,13 @@ pub fn names() -> Vec<&'static str> {
 }
 
 fn prime_curves(v: &mut Vec<CatalogCurve>) {
+    v.push(CatalogCurve {
+        name: crate::ecc::s56::NAME,
+        aliases: &["s56"],
+        family: Family::Prime,
+        standard: "Public synthetic research fixture; SHA-1 counter 1841 provenance unverified",
+        object: CurveObject::Prime(CurveParams::s56()),
+    });
     let (curve, _) = crate::ecc::certicom::prime_challenge("eccp-131").unwrap();
     v.push(CatalogCurve {
         name: "eccp-131",
@@ -892,6 +902,21 @@ fn char3_curves(v: &mut Vec<CatalogCurve>) {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn s56_catalog_alias_and_native_generator() {
+        let curve = super::by_name("S56").expect("S56 alias");
+        assert_eq!(curve.name, crate::ecc::s56::NAME);
+        assert_eq!(curve.family, super::Family::Prime);
+        let super::CurveObject::Prime(parameters) = &curve.object else {
+            panic!("S56 must dispatch to prime-field IC");
+        };
+        assert_eq!(parameters.p, num_bigint::BigUint::from(crate::ecc::s56::P));
+        assert_eq!(parameters.n, num_bigint::BigUint::from(crate::ecc::s56::N));
+        for check in curve.verify() {
+            assert!(check.passed, "{}: {}", check.name, check.detail);
+        }
+    }
+
     use super::*;
 
     #[test]

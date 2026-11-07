@@ -2454,3 +2454,77 @@ curves:
         status: not_enumerated
         scope: null
         links: []
+  s56:
+    label: S56 public synthetic research fixture
+    curve_tag: fp
+    curve_ref: s56/sha1-counter-1841
+    curve_id: EC1P56Cfph89d1f28a8527
+    curve_uid: urn:ec-record:1:sha256:89d1f28a8527f4709853f99bf350944571bc333dfb4a726fc254f9034079b5d9
+    icv1_identity:
+      slug: icv1-fp56-tm132906245-e876a6ea
+      full: ICV1:fp-71776123356250111:-132906245:71776123489156357:51515385884595611:unk:unk:r:e876a6ea11f2
+      status: registered_representation
+    field:
+      characteristic: 71776123356250111
+      degree: 1
+      representation: prime
+      element_encoding: hex integer modulo the characteristic
+    curve:
+      model: short Weierstrass
+      coefficients:
+      - 0
+      - 0
+      - 0
+      - 71776123356250108
+      - 11246936090499842
+      subgroup_order: '71776123489156357'
+      cofactor: 1
+      generator:
+      - '0x3'
+      - '0x1daf3b905eafec'
+      target_group: prime-order subgroup
+    trait_status:
+      ordinary:
+        value: null
+        status: unknown
+      j_invariant:
+        value: null
+        status: unknown
+      endomorphism_discriminant:
+        value: null
+        status: unknown
+      volcano_component:
+        value: null
+        status: unknown
+      volcano_total_depth:
+        value: null
+        status: unknown
+    factor_base_refs: []
+    factor_base_link_status: not_reconciled
+    endomorphism:
+      endomorphism_order_conductor: null
+      frobenius_order_conductor: null
+      volcano_levels: null
+      status: unproved_not_used
+    isogeny_routes:
+      incoming: []
+      outgoing: []
+    evidence_ref: experiments/s56-integration-20261107/README.md
+    representation_links:
+      same_field_isomorphisms:
+        status: not_enumerated
+        scope: null
+        links: []
+      twists:
+        status: not_enumerated
+        scope: null
+        links: []
+      base_changes:
+        status: not_enumerated
+        scope: null
+        links: []
+    provenance:
+      sha1_seed_counter_reported: 1841
+      seed_derivation_status: unverified_missing_seed_encoding_and_transcript
+      arithmetic_witness: suite/src/ecc/s56.rs
+      claim_status: unverified
