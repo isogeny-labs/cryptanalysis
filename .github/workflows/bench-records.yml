@@ -39,6 +39,8 @@ jobs:
           filter: blob:none
       - name: Tool tests
         run: python3 -m unittest tools/test_benchrec.py
+      - name: Paired comparison integrity tests
+        run: python3 -m unittest discover -s scripts/perf -p test_perfindex.py
       - name: Configure S3 credentials
         if: ${{ env.KEY_ID != '' }}
         uses: aws-actions/configure-aws-credentials@v4
