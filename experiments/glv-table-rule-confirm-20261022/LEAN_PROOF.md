@@ -97,12 +97,12 @@ The C branch returns before this selector when `n < 64`, so `lg =
 glv_ilog2(n)+1` is positive on the path covered by the proof. The full-file
 hash and exact-snippet checks bind the historical and current C start value,
 guard, cap (including the `lg >= 40` threshold and both cap values), and two
-divisors. `rbudget`, `rr` and `rcap` are 64- and 32-bit unsigned in C, and the
-Lean model uses unbounded naturals; `rr` never exceeds 128, and `rbudget` is
-only compared, so no wraparound can occur in the loop. The Lean model uses unbounded natural arithmetic; it does not
-formalize the C compiler, group-order validity, division by `c.m`, other
-solver paths, or memory behavior. The C loop itself multiplies only 8 and 16
-by two before the cap stops it.
+divisors. `rbudget`, `rr` and `rcap` are 64- and 32-bit unsigned in C. On the
+reached selector path, `rr` can double from 8 through 16, 32, and 64 to at
+most 128; the guard's `rr * 2` is at most 256, so these loop operations cannot
+wrap. The Lean model uses unbounded natural arithmetic; it does not formalize
+the C compiler, group-order validity, division by `c.m`, other solver paths,
+or memory behavior.
 
 ## Archived outcome and graph state
 
