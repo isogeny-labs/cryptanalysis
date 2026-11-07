@@ -1,0 +1,7 @@
+# Frozen independent review plan: size-dependent GLV cap
+
+Target cryptanalysis main: `702b680419b529a79b6415830057a47310be2b78` (2026-11-07). Scope: 19 new `GlvTableBudget` declarations from `capFor_below40` through `baseline48_le_select`; source fidelity to the target C selector and the conditional mathematical claim. Historical eight declarations were reviewed separately. Do not infer performance from selector theorems or run new trials.
+
+Inputs SHA-256: `TableBudget.lean` ff60c81349e98cbae472f16873ab63672005b74098721a678fc514425b55448e; `LEAN_PROOF.md` ab863ed839221fc6479e39e4cee75fd7fb1b34e56d9c91d0887ab6f70b135a6d; `check_lean_source_binding.py` f0eb5c9a5ed53dfeea4f504d955567a333d7904dd6a12b473a33d9af4575236e; `live-source-binding.json` f3fba6eeb94b7930b2f0c8589060378c86194e8336e058f1cd0b616f15519c98; `src/curve.c` e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5fbed7f63; root `lean-toolchain` d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b (Lean 4.34.1).
+
+Checks: fresh pinned Lean compile and all 27 axiom prints; forbidden-construct scan; live source-binding checker including mutation controls; blind case reasoning without source/proof access; independent theorem-type/C fidelity review without blind report access; manifest and PDF visual inspection. Report machine acceptance, source fidelity, measured-performance boundary, and any counterexample separately. Existing experiment records and diagrams remain immutable.
