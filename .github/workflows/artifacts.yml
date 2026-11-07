@@ -16,7 +16,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  required-store:
+    # Preserve the existing required context while the canonical validation
+    # remains displayed as "artifacts". A skipped/failed/cancelled producer fails.
+    name: store
+    needs: [store]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    permissions:
+      contents: read
+    steps:
+      - name: Require the canonical artifact validation to succeed
+        env:
+          ARTIFACT_RESULT: ${{ needs.store.result }}
+        run: test "$ARTIFACT_RESULT" = success
+
+  size:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /tools/artifacts/
+            /.artifacts/
+      - name: No added or modified file that belongs in the store
+        if: github.event_name == 'pull_request'
+        env:
+          LARGE_FILE_OK: ${{ contains(github.event.pull_request.labels.*.name, 'large-file-ok') }}
+        run: |
+          if python3 tools/artifacts/artifacts.py check HEAD^1 HEAD; then exit 0; fi
+          if [ "$LARGE_FILE_OK" = true ]; then
+            echo "::warning::store-policy files committed under the large-file-ok label"
+            exit 0
+          fi
+          exit 1
+
   store:
+    name: artifacts
     runs-on: ubuntu-24.04
     # A large integration's lazy Git blobs are checked before workflow wiring.
     # Run 40604596682 passed policy/unit checks but was cancelled at ten minutes
