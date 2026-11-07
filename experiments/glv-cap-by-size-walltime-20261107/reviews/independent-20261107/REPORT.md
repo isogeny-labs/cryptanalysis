@@ -1,6 +1,6 @@
 # Independent raw-row audit: GLV cap wall time, Tier 1
 
-**Verdict: supports the reported instance-scoped measurements.** The archived GitHub Actions artifact has SHA256 `07d3b18f56b07dcd3826e6932529235791ae7f49b821fa638380b2130d607450` and 960 members. The independent script replayed all 14 cell summaries from 210 paired rows and 420 run rows, verified the case inputs, expected result, binary stability, pair-to-run links, operation counts, and exact published median wall ratios. All rows were valid; no run timed out or failed. The classification is 7 resolved faster, 5 resolved slower, and 2 null cells unresolved.
+**Verdict: supports the reported instance-scoped measurements.** [pcc:unverified] The archived GitHub Actions artifact has SHA256 `07d3b18f56b07dcd3826e6932529235791ae7f49b821fa638380b2130d607450` and 960 members. The independent script replayed all 14 cell summaries from 210 paired rows and 420 run rows, verified the case inputs, expected result, binary stability, pair-to-run links, operation counts, and exact published median wall ratios. All rows were valid; no run timed out or failed. The classification is 7 resolved faster, 5 resolved slower, and 2 null cells unresolved.
 
 | Cell | Ref/candidate wall ratio | Published 95% interval | Independent bootstrap interval | Result |
 |---|---:|---:|---:|---|
@@ -22,6 +22,8 @@
 The independent intervals use 10,000 paired bootstrap resamples with a new seed. All endpoints are within 0.008 of the published intervals. This checks the conclusion and scale, not an exact reconstruction of the producer seed or quantile convention. The 38-bit null cells cross 1.000 in both the published and independent intervals.
 
 ![Independent raw-row ratios](ratios.svg)
+
+PCC record `PCC-20261107-414bea` pins the independent machine output. Its current standing is `unverified`: no independent CI-signed execution verdict covers these archived benchmark rows. The row recomputation and custody checks above are reproducible local audit findings.
 
 ## Custody and checks
 
