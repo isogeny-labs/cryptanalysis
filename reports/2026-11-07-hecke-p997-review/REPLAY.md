@@ -32,8 +32,11 @@ to the sealed `audit.json`. Repeating the archived audit may rewrite an
 `audit.json` in its working directory, so replay it in an isolated extract,
 never in the sealed experiment tree.
 
-The hosted Lean proof gate is recorded in `machine-receipt.json` and
-`hosted-lean-42339546067.log`. The proof gate at that head is run through
+The hosted Lean proof gate is recorded in `machine-receipt.json`; the raw
+`hosted-lean-42339546067.log` is bound by `.artifacts.json` and held in the
+content-addressed store. Hydrate it with
+`python3 tools/artifacts/artifacts.py pull reports/2026-11-07-hecke-p997-review`
+and compare its SHA-256 with the machine receipt. The proof gate at that head is run through
 `.github/workflows/lean-proof-gate.yml`; the report binds its exact gate and
 workflow hashes. This replay does not independently authenticate the older
 Sage execution or supply the modular-map bridge.

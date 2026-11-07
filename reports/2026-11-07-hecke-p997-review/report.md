@@ -75,7 +75,9 @@ block while this plan uses that field as its ID. The original plan and
 checker failure are retained; the plan was not rewritten after verdicts.
 Reviewer attestations and source-access lists permit manual inspection, but
 the automated independence gate remains open for this round. The fresh
-machine receipt, hosted log and checker output are saved beside this report.
+machine receipt, hosted-log artifact manifest and checker output are saved
+beside this report. The 274,142-byte raw hosted log is stored by SHA-256 at
+`s3://setec-astronomy-artifacts/store/sha256/55/554c60f41f47049bca5f3cc9db7468e5c1c89cb24602cb11d5883bd5a8d3589b`.
 No canonical quantitative graph or dashboard input changes in this technical
 review; the diagram maps the proof boundary without modifying measured data.
 
