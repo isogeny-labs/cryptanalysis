@@ -16,6 +16,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  required-store:
+    # Preserve the existing required context while the canonical validation
+    # remains displayed as "artifacts". A skipped/failed/cancelled producer fails.
+    name: store
+    needs: [store]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    permissions:
+      contents: read
+    steps:
+      - name: Require the canonical artifact validation to succeed
+        env:
+          ARTIFACT_RESULT: ${{ needs.store.result }}
+        run: test "$ARTIFACT_RESULT" = success
+
   size:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
