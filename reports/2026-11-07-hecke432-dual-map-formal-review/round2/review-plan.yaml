@@ -1,0 +1,54 @@
+review_plan:
+  id: hecke432-dual-map-equation-20261107-round2
+  archival_task: T-1803
+  reviewed_revision: 06335430add4198a2b82efe8db3f0f5c75f03043
+  coordinator_prior: >-
+    The first round's two reviewers found the affine algebra and source match
+    plausible, while the pinned Lean build was pending. Its independence checker
+    exited 2 because the plan schema was wrong; this is a new review round with
+    an explicit informed prior, fresh reviewers, and a correctly shaped plan.
+  claim_under_review: >-
+    The two Lean declarations express the numerator polynomial identity and
+    the conditional target-curve equation for the archived rational formula.
+    No global isogeny, modular map, or Sturm conclusion follows from them alone.
+  joints:
+    - joint: blind algebra and nearby false controls
+      assigned_to: T-1805
+      attack_plan: >-
+        Re-derive both identities from only the blind input and give exact
+        source-point counterexamples for a coefficient mutation and a removed
+        source-curve hypothesis; analyze X equals zero separately.
+    - joint: source-to-statement fidelity and missing geometric bridges
+      assigned_to: T-1806
+      attack_plan: >-
+        Compare exact producer Lean declarations and pins to the archived Sage
+        formula and RESULT at their pinned revisions; identify every omitted
+        exceptional, group, degree, modular, differential and cusp bridge.
+  blindness:
+    mutual: true
+    lifted_for: []
+  blind_rederivation:
+    required: true
+    assigned_to: T-1805
+    quantity: numerator identity, rational target equation, and false controls
+    parameters: X cubed, coefficients 16 64 128 432, X nonzero
+    blind_from:
+      - experiments/hecke-432-dual-map-formalization-20261107/formal/DualCurveEquation.lean
+      - experiments/hecke-432-map-identity-20261025/RESULT.md
+      - experiments/hecke-432-map-identity-20261025/compare_qseries_sage.py
+      - reports/2026-11-07-hecke432-dual-map-formal-review/blind/report.md
+      - reports/2026-11-07-hecke432-dual-map-formal-review/source/report.md
+  proves_too_much:
+    objects:
+      - replace 128 by 127 in the rational Y coordinate
+      - drop the source-curve equation
+      - set X equal to zero in the rational formula
+      - infer a global isogeny from an affine target equation
+    failure_signature: >-
+      Exact nonzero residual or undefined denominator for the first three;
+      identify the missing geometric construction for the fourth.
+  inputs:
+    lean_sha256: 3028963daa2e9e6a068af99440ac1cc242dfde975d55bba17aaf3a6d277d4b26
+    archived_result_sha256: c8bef40953cd7400ddf7863335215a9429cab2a60abe066ed754cbd11c115cc9
+    archived_sage_sha256: 85001b63b51fbaf164a3c1af6cdba362c048ee14102957de3db3dc1876a0c92f
+  procedure_deviations: []
