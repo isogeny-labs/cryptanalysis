@@ -259,6 +259,9 @@ jobs:
         working-directory: ${{ runner.temp }}/sage-upstream
         run: |
           python3 -m pip install setuptools
+          # Homebrew refuses formulae from a third-party tap until it is trusted,
+          # and Sage's dependency list pulls pari from dimpase/tap.
+          brew trust dimpase/tap
           # Sage prints shell commands for Homebrew; eval is intentional here.
           # shellcheck disable=SC2046
           eval $(build/bin/sage-print-system-package-command homebrew update)
