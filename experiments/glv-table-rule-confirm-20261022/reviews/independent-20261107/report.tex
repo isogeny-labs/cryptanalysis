@@ -1,0 +1,23 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{graphicx}
+\usepackage{array}
+\begin{document}
+\section*{Independent GLV table-selector review}
+\textbf{2026-11-07.} Eight named theorems compile under pinned Lean 4.34.1. For the same nonnegative input and positive log factor, changing the budget divisor from 48 to 12 cannot decrease the selected 8/16/32 table size. This is a conditional selector-arithmetic result.
+\medskip
+\begin{center}\begin{tabular}{c|c|c}Budget & C loop & Lean formula\\\hline $b<16$ & 8 & 8\\$16\leq b<32$ & 16 & 16\\$b\geq32$ & 32 & 32\end{tabular}\end{center}
+\noindent The loop starts at 8, doubles under both the budget and cap-32 guards, and changes at most twice. Positive denominators give $b_{48}\leq b_{12}$; the case table is nondecreasing. A third step is fixed.
+\medskip
+\noindent \textbf{Checks.} Fresh \texttt{lean TableBudget.lean} exited zero; each of eight printed axiom sets contains only Lean's \texttt{propext} and possibly \texttt{Quot.sound}. The live C-source binding checker passed and rejected wrong-divisor and wrong-cap mutations. A blind algebra reviewer and a separate source-fidelity reviewer concurred. Exact files, hashes, and commands are in the companion Markdown and machine receipts.
+\medskip
+\noindent \textbf{Boundary.} The C branch implies a positive log factor. The external \texttt{c.m>0} invariant is required for C division and was not proved here. The review does not replay the experiment's performance rows. An older source hash in \texttt{LEAN\_PROOF.md} is stale; the pinned live C hash and current target agree.
+\medskip
+\noindent \textbf{Diagram.} The vector source \texttt{diagram.svg} plots the exact three-case selector. It represents proved arithmetic, not measured operation counts.
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(410,115)
+\put(25,17){\vector(1,0){370}}\put(25,17){\vector(0,1){85}}
+\thicklines\put(25,36){\line(1,0){110}}\put(135,36){\line(0,1){25}}\put(135,61){\line(1,0){110}}\put(245,61){\line(0,1){25}}\put(245,86){\line(1,0){135}}
+\put(7,33){8}\put(1,58){16}\put(1,83){32}\put(125,3){16}\put(235,3){32}\put(350,3){budget}
+\end{picture}\end{center}
+\noindent Source target: \texttt{927d1ead...}. C SHA-256: \texttt{60796724...afe20}. Full receipt and reviewer attestations accompany this PDF.
+\end{document}

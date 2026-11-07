@@ -1,0 +1,35 @@
+{
+  "review": "T-1836 blind algebra review of GLV table selector",
+  "sources_read": [
+    "The assigned task prompt: definitions of step, loop start, tableSize, b48, b12, and requested targets and controls"
+  ],
+  "repository_access": false,
+  "sibling_report_access": false,
+  "producer_proof_map_access": false,
+  "receipt_access": false,
+  "git_history_access": false,
+  "builds_or_experiments_run": false,
+  "sibling_contact": false,
+  "joints_owned": [
+    "Direct case analysis of step from r=8 through r3",
+    "Identification of the loop fixed point with tableSize",
+    "Monotonicity of tableSize",
+    "Positive-denominator floor quotient ordering b48 <= b12",
+    "Composition to loop-result ordering",
+    "Specified boundary calculations and lg=0 premise trap",
+    "Counterexamples to nearby strict claims"
+  ],
+  "holds": [
+    "The loop reaches tableSize(b) within two steps and r3=r2 for every natural b",
+    "tableSize is nondecreasing",
+    "For natural s and positive lg, b48<=b12 and the corresponding loop result is nondecreasing"
+  ],
+  "breaks": [
+    "tableSize is strictly increasing in b",
+    "For every natural s and positive lg, the b48 loop result is strictly less than the b12 loop result"
+  ],
+  "inconclusive": [
+    "Fidelity of any repository implementation or Lean proof to these supplied definitions",
+    "Any runtime or performance implication"
+  ]
+}
