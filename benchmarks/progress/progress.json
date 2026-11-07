@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261105T0736Z-rho-plain-negmap-retrospective",
+  "latest_record": "20261107T2050Z-n83-fieldops2-local",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 11,
+    "measured": 12,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -1454,6 +1454,114 @@
         }
       ],
       "problem": "kernel:gf2_n53",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0425,
+      "latest": 1.0425,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "local_index_build_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0425
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0507,
+      "latest": 1.0507,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "local_online_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0507
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0163,
+      "latest": 1.0163,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "local_rank_stage_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 3,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 1.0163
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.9385,
+      "latest": 0.9385,
+      "latest_derived": {
+        "improvement_vs_first_percent": -0.0
+      },
+      "metric": "local_scan_selftest_a_over_b",
+      "points": [
+        {
+          "commit": "12d419499d1f",
+          "date": "2026-11-07",
+          "derived": {
+            "improvement_vs_first_percent": -0.0
+          },
+          "n": 4,
+          "record": "20261107T2050Z-n83-fieldops2-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+          "value": 0.9385
+        }
+      ],
+      "problem": "kernel:n83_fieldops2_local_diag",
       "unit": "ratio"
     },
     {

@@ -1,0 +1,101 @@
+{
+  "branch": "claude/n83-fieldops2",
+  "closed_utc": "2026-11-07T20:55:34+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-fieldops2-20261107/profile/run_local_profile.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-07T20:50:47+00:00",
+      "wall_s": 140.836
+    }
+  ],
+  "commit": "12d419499d1f2ba4a8380da58f139f0d0db11912",
+  "commit_dirty": false,
+  "created_utc": "2026-11-07T20:50:42+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39"
+  },
+  "id": "20261107T2050Z-n83-fieldops2-local",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 4,
+      "name": "local_index_build_a_over_b",
+      "note": "LOCAL DIAGNOSTIC on a shared VM (not evidence): A / B means of alternating fresh pinned processes, A = field-ops row, B = R1; sizes the Tier 1 power check only",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0425
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 3,
+      "name": "local_rank_stage_a_over_b",
+      "note": "LOCAL DIAGNOSTIC on a shared VM (not evidence): A / B means of alternating fresh pinned processes, A = field-ops row, B = R1; sizes the Tier 1 power check only",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0163
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 4,
+      "name": "local_online_a_over_b",
+      "note": "LOCAL DIAGNOSTIC on a shared VM (not evidence): A / B means of alternating fresh pinned processes, A = field-ops row, B = R1; sizes the Tier 1 power check only",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 1.0507
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 4,
+      "name": "local_scan_selftest_a_over_b",
+      "note": "LOCAL DIAGNOSTIC on a shared VM (not evidence): A / B means of alternating fresh pinned processes, A = field-ops row, B = R1; sizes the Tier 1 power check only",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "ratio",
+      "value": 0.9385
+    }
+  ],
+  "problem": "kernel:n83_fieldops2_local_diag",
+  "raw": [
+    {
+      "bytes": 3827,
+      "path": "experiments/koblitz-n83-fieldops2-20261107/inputs/local_profile.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/d7/d715420e0d33df10abe8ed09aea7e7c7181b227682769b9b9d3ee0b0d1bb85e6",
+      "sha256": "d715420e0d33df10abe8ed09aea7e7c7181b227682769b9b9d3ee0b0d1bb85e6",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/koblitz-n83-fieldops2-20261107/profile/local_profile.pdf",
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "n83-fieldops2-local",
+  "status": "measured",
+  "summary": "LOCAL DIAGNOSTIC (shared VM, one pinned CPU, not evidence): R1 vs the field-ops row, identical index, layout, relation, probe and root-call digests on 4 cold and 3 rank rounds; sizes the Tier 1 power check",
+  "validation": null
+}
