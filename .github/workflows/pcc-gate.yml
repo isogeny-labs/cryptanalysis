@@ -47,6 +47,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Report and graph Python source syntax
+        run: python3 tools/ci/check_report_graph_python.py
       - name: Sabotage canary
         run: python3 tools/pcc/pcc.py canary
       - name: Fetch base tip
