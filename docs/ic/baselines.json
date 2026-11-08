@@ -274,6 +274,113 @@
         "r": 8569786107849059,
         "log2_r": 52.93
       },
+      "experiment": "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108 (branch claude/n83-fo2d4; PR #1447)",
+      "pipeline": {
+        "name": "the field-ops-2 producer R1 on the D4 closure base (arms cD4R1 / kD4R1; binary ic_online_fieldops2_r770): the field-ops producer (arms cD4FO / kD4FO, the previous row) with, at n = 83, the inlined GF(2^83) product and square called with the field degree 83 and the mask 2^83 - 1 as constants (R1: `if gf.n == 83 { return fast_field::mul(83, (1 << 83) - 1, tail, a, b) }` at the head of fmul and of fsqr; both sides built with -C target-feature=+pclmulqdq), on the D4 base (K' = 4 x 100 multipliers = 400 orbits, make_closure_base.py --columns 4 --norm 165; factor-log table = the first four logs of the verified M38 table). Exact: every relation, probe, root call, counter, rank table, index and layout digest equals the previous row's per rank seed and point (gated per process, across both binaries); field_ops_pipeline gate: fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables on the previous row's binary, the same plus +n83_const_reduce_shift on this one (derived source d923d63ab823353ceebd2dfe113baa2a4934beeb59c3859eb1604851c0a6b8fc, 5 counted invertible edits of 8dc428ea...). The D4 identity is the one koblitz-n83-k4c400-20261107 froze; both binaries reproduce it. Owner ruling 2026-11-07: K' >= 4 counts as an index-calculus row",
+        "candidate_id": "IC1N83Ckb1fb99600PDP4s3rootindexRCguidedLAdenseTDsingleISO0hc0ecc1fffbd7",
+        "candidate_id_status": "unchanged from the previous row: no new IC1 manifest was written (D4 base, R1 producer)",
+        "commit": "crypto 770f6a6925a0d29b768bd79074f54a173e967fe7; cryptanalysis bca22e9f9fac82cd8accb3ef1008b56332b50cd7 (protocol and schedule frozen at that commit, before any timing)",
+        "protocol": "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108/protocol.json (sha256 98f520086143352dff056e015bbd27e3755977ee7e3afd72a2c4f139fcad47f4)",
+        "run": "GitHub Actions 42450569196, one ubuntu-24.04 runner (GitHub Actions 1000203805, Intel Xeon Platinum 8573C), one pinned CPU"
+      },
+      "targets": "12 new held-out public points (3 alternating primary pairs per point = 36 pairs, same point and rank seed per pair, ABAB or BABA; 2 A/A pairs and 1 planted pair per point; one fresh pinned process per cold arm per run), rank blocks: 36 of kD4FO (side A) and 60 of kD4R1 (36 primary + 24 A/A reference) plus 24 of kD4R1aa (4 attempts each, seeds 2601-2636), Q0 in one block",
+      "unit": "one rT770 rho step as measured in this run (254.811 ns), per sqrt(r) (23,588.7 ms); end-to-end cold = mean rank stage over the arm's 36 primary blocks + mean cold (setup + one-target online, cached table) over the points",
+      "s_ic_cold": 0.2132,
+      "s_ic_online": 0.0288,
+      "s_ic_setup": 0.1844,
+      "s_ic_rank_stage": 0.07577,
+      "s_ic_setup_without_rank_stage": 0.1086,
+      "s_ic_cold_without_rank_stage": 0.1374,
+      "s_ic_setup_derivation": "result.json (run 42450569196, statistics): rho_ms_per_step 2.548111e-04 ms x sqrt(r) (r = 8569786107849059) = 23,588.7 ms per unit; rank stage mean(kD4R1, the 36 primary pairs) 1787.41 ms = 0.075774; setup mean cD4R1 2561.22 ms = 0.108578 (cached-table load and verification included); s_ic_setup = 0.184352 = rank stage + setup; s_ic_cold 0.213153 (= S_e2e_cold.B, 5028.00 ms) minus s_ic_online 0.028801 (679.37 ms) = s_ic_setup. Every S is rounded once (4 significant digits) from the unrounded quotient. S_cold_without_rank.cD4R1 0.1374 (3240.59 ms) is setup without the rank stage plus online. Side A (the previous row's code, same run) read S_e2e_cold 0.2239 (rank stage 0.0796, online 0.029470) at 5281.3 ms.",
+      "wall_ms": {
+        "e2e_cold_mean": 5028.0,
+        "rank_stage_mean": 1787.4,
+        "cold_without_rank_mean": 3240.6,
+        "setup_mean": 2561.2,
+        "index_build_mean": 1961.0,
+        "scan_selftest_mean": 208.1,
+        "ic_online_mean": 679.4,
+        "rho_online_mean": 2142.5,
+        "rho_cold": 2461.5
+      },
+      "reference_rho": {
+        "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
+        "is_tuned_rho_rT770": true,
+        "s_rho_cold": 0.1044,
+        "s_rho_online": 0.0908285
+      },
+      "gap_cold_ic_over_rho": {
+        "value": 2.043,
+        "ci95": null,
+        "statistic": "end-to-end cold kD4R1+cD4R1 over rT770, point estimate from result.json e2e_cold_gap_over_rT.B (no interval is computed for the gaps in this run); the previous row's arms kD4FO+cD4FO in the same run 2.1455. Cross-run host and panel artifact: the previous row as landed read 2.0485 in its own run (run 42425640847, Intel Xeon Platinum 8370C, rT770 step 275.68 ns, rho cold mean 2,610.5 ms over 20 processes); this run is on an Intel Xeon Platinum 8573C (rT770 step 254.81 ns, rho cold mean 2461.5 ms over 12 processes with random step counts). Only the paired within-run delta is a delta (2.1455 -> 2.0426, 1.0504 [1.0467, 1.0541]); gaps do not compose across runs. Wall time on one host class, factor-base construction excluded; the section 5a MODEL band is in section_5a_band"
+      },
+      "gap_online_ic_over_rho": {
+        "value": 0.3171,
+        "ci95": null,
+        "note": "cD4R1 online (679.37 ms) over rT770 online (2142.52 ms), point estimate (no interval in this run); the previous row's arm cD4FO 0.3245 in the same run (695.15 ms), online A / B 1.0232 [1.0091, 1.0314]; the previous row as landed read 0.1970 in its own run: the cross-run difference is a panel and host artifact (the one-target scan length is random per point)"
+      },
+      "gap_tuned_rho": "measured on this row (point estimates, one run): end-to-end cold 2.043; online 0.3171",
+      "gap_bernstein_lange": {
+        "kind": "not measured on this row",
+        "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
+      },
+      "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, GitHub Actions 1000203805, Intel Xeon Platinum 8573C, one pinned CPU; CPU-only); repeated alternating pairs in the promoting run; not replayed on another host class",
+      "tier1_qualification": {
+        "status": "qualified at Tier 1 in the promoting run (repeated alternating pairs)",
+        "run": "42450569196 (cryptanalysis:experiments/koblitz-n83-fo2d4-20261108)",
+        "ratio": "end-to-end cold kD4FO+cD4FO / kD4R1+cD4R1 1.0504",
+        "ci95": [
+          1.0467,
+          1.0541
+        ],
+        "design": "36 repeated alternating pairs (12 new points x 3 pairs, same point and rank seed per pair, adjacent in time on one pinned CPU), two-stage paired bootstrap, frozen rule: lower bound above 1; primary = end to end (cold only rejected before data, see protocol primary_choice)",
+        "controls": "A/A end to end 0.9995 [0.9969, 1.0019], A/A cold 0.9987 [0.9958, 1.0015] (both inside [0.97, 1.03]); planted index build cD4R1X / cD4R1 3.0054 [2.9892, 3.0195], planted cold 2.2156 [2.1094, 2.3312] (every index key also checked against lift_scan; layout digests unchanged)",
+        "gates": "278/278 rows valid, 0 skipped by the time guard; every gate passed; probe law 0.9916 for kD4FO and kD4R1 (144 attempts each, bootstrap [0.7738, 1.2394]; inside [0.80, 1.20], estimate); receipt reproduced byte for byte by verify_receipt.py and band_model.py on a full copy of the receipt directory",
+        "scope": "Tier 1, instance scoped: one GitHub-hosted ubuntu-24.04 runner (GitHub Actions 1000203805, Intel Xeon Platinum 8573C), one pinned CPU; no host-wide exclusivity; one instance; not replayed on another host class",
+        "row_numbers": "this run's: the row's S, gaps and 1.0504 [1.0467, 1.0541] are those of run 42450569196"
+      },
+      "verified": "278/278 rows valid, 0 skipped by the time guard; 12/12 points, 36 primary pairs, 24 A/A pairs and 12 planted pairs complete; K600 and D4 tables and the D4 closure base verified in the pinned oracle before timing (three planted corruptions rejected); one scalar per point across every IC arm and rT770 (oracle replay); one relation and one probe count per point across both binaries; one index and layout digest set across both binaries, equal to D4's frozen one; every IC row ran its arm's field_ops_pipeline and rank_probe_pipeline (fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables on side A's binary, the same plus +n83_const_reduce_shift on side B's); Q0 equal to D4's frozen identity for both binaries; rank tables equal the frozen verified table; identical relations, per-attempt probes, root calls and counters across kD4FO, kD4R1 and kD4R1aa per rank seed; probe-law band pass; A/A and planted controls pass; every process on CPU 0; no contention flags; verify_receipt.py and band_model.py re-run on a full copy of the whole receipt directory reproduce result.json, result_table.md and band_model.json byte for byte",
+      "source_figure": "end-to-end cold kD4FO+cD4FO / kD4R1+cD4R1 1.0504 [1.0467, 1.0541] in wall time on one host class (index build 1.0745 [1.0721, 1.0772], scan self-test 1.0027 [0.9947, 1.0108], rank stage 1.0505 [1.0461, 1.0550], setup 1.0575 [1.0553, 1.0599], cold 1.0503 [1.0460, 1.0544], online 1.0232 [1.0091, 1.0314], process CPU time 1.0430 [1.0403, 1.0463]); the end-to-end saving is 253.3 ms (5281.3 -> 5028.0), 90.3 ms of it in the rank stage and 146.1 ms in the index build",
+      "headline_scope": {
+        "metric": "wall time: the frozen primary R = E2E(kD4FO, cD4FO) / E2E(kD4R1, cD4R1) = 1.0504 [1.0467, 1.0541], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner, Intel Xeon Platinum 8573C), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
+        "operation_counts": {
+          "rank_stage_attempts": {
+            "kD4FO": 144,
+            "kD4R1": 240,
+            "note": "kD4FO: 36 primary blocks x 4 attempts; kD4R1: 36 primary + 24 A/A reference blocks x 4 (plus 24 blocks of kD4R1aa); identical work on both binaries per seed (gated)"
+          },
+          "not_counted": "neither producer emits operation counts, and R1 changes no group operation: the work per pair is identical on both sides (probes, relations, root calls, counters, digests gated), so any group-operation count ratio is 1 by construction and the gain is in field arithmetic only; ns per probe 115.7 (kD4FO) and 110.3 (kD4R1)"
+        },
+        "derivation": "recomputed 2026-11-08 from experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/result.json (statistics.mean_per_side, primary_e2e_paired_A_over_B, stage_secondary_*_A_over_B, rank_stage, probe_law, S_e2e_cold, S_online, S_rho_cold, e2e_cold_gap_over_rT, rho_mean_cold_ms, rho_mean_online_ms, rho_ms_per_step); allocation.json and protocol.json for host and design"
+      },
+      "uncharged_phases": {
+        "factor_base_construction": "Not charged to either side (both sides alike), the same convention as every n=83 row: every IC process loads the D4 header from file; construction was not timed in this run. The omission is common to the sides, so R > 1 holds for any X >= 0 and falls with X: 1.0504 is an upper bound on the every-phase ratio and S 0.2132 a lower bound on the every-phase cold S.",
+        "linear_algebra": "represented by the verified load of the cached factor-log table in cD4FO and cD4R1"
+      },
+      "section_5a_band": "MODEL band, section 5a (experiments/koblitz-n83-fo2d4-20261108/band_model.py, frozen; run unchanged band.py of koblitz-n83-opcounts-20261023): rho is COUNTED in this run (every rT process's charges_setup_and_solve); the IC arms are MODELLED from the archived counted run 39882571652 applied to this run's measured probes and attempts, because neither producer emits operation counts. Both sides do identical group-operation work (gated), so the model gives them the SAME units and cannot see a field-arithmetic change. Gap to rT770 at w = 0, 0.1, 1 GAE per unpriced native operation, both sides: 9.844e-05, 0.7217 [0.4782, 1.177], 2.875 [1.905, 4.69]; A vs B unresolved (identical by construction), against rho unresolved (the order changes by w = 1). No counted band was run (the counted producer of PR #1448 was not used on this design, in CI or locally); per that PR (as relayed by the coordinator, not re-checked here) the model under-states the unpriced IC operations by about 1.4x, so these gaps are probably low. A derived model: factor-base construction and linear algebra are not charged beyond la_*, the intervals carry no model uncertainty. [pcc:unverified]",
+      "replication": "The run is itself a Tier 1 repeated-alternating-pair measurement (36 pairs; see tier1_qualification). Not replayed on another host class. verify_receipt.py and band_model.py reproduce the archived outputs byte for byte on a full copy of the receipt directory, and the gates make every relation, per-attempt probe count, root call, counter and digest equal across both binaries per seed with the index layout equal to the frozen one.",
+      "next_improvement": "Remaining cost on D4 (this run, side B): rank stage 1787.4 ms of 5028.0 ms (35.5%, heavy-tailed: 4 relations of about 4.1 M probes) and index build 1961.0 ms (39.0%); the online stage is 679.4 ms. Gap to the tuned rho is 2.04 end to end in this run (point estimate; a host and panel artifact against the landed 2.05). Other closure shapes (headers a, b, c of the k4c400 prototype) are untested at Tier 1; a counted section 5a band for this producer (PR #1448's counted producer) would price the unpriced IC work instead of modelling it.",
+      "sources": [
+        "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108/README.md (branch claude/n83-fo2d4, PR #1447)",
+        "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/panel/result.json",
+        "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108/run_github_42450569196/band/band_model.json and allocation.json",
+        "cryptanalysis:experiments/koblitz-n83-fo2d4-20261108/protocol.json",
+        "cryptanalysis:benchmarks/records/20261108T0611Z-n83-fo2d4.json",
+        "cryptanalysis:experiments/koblitz-n83-k4c400-20261107/ (the D4 base and the row replaced)",
+        "cryptanalysis:experiments/koblitz-n83-fieldops2-20261107/ (the R1 producer)"
+      ]
+    }
+  ],
+  "other_records": [
+    {
+      "n": 83,
+      "a": 1,
+      "curve": {
+        "curve_id": "EC1N83Ce1h35c7ced6b497",
+        "icv1": "icv1-f2m83-t6151469093347-9eba6cd5",
+        "r": 8569786107849059,
+        "log2_r": 52.93
+      },
       "experiment": "cryptanalysis:experiments/koblitz-n83-k4c400-20261107 (branch claude/n83-k4c400; PR #1434)",
       "pipeline": {
         "name": "the field-ops producer on the D4 closure base (arms cD4FO / kD4FO; secondary: none): the field-ops producer (binary ic_online_fieldops_r770, derived source 8dc428ea..., run UNCHANGED and with every environment variable of the field-ops row) on the Z[tau]-multiplier closure base D4 (make_closure_base.py --columns 4 --norm 165: K' = 4 unknown-log columns x 100 multipliers = 400 orbits, factor-log table = the first four logs of the verified M38 table) in place of M38 (K' = 16 x 38 = 608 orbits). Same producer and same keys; the rank stage needs 4 relations instead of 16, the stored states fall from 15,341,360 to 6,640,200, the logical states (13,280,000) fall under 2^24 so the Feistel self-test domain steps from 2^26 to 2^24, the table has 12,618,968 entries (M38 30,366,551; 4.98% of D4's logical keys lost to within-column coincidences) in 2^25 slots, and the probe law r / (166 E) rises from 1.700 M to 4.091 M probes per relation and per target. Per-base frozen identities (arm.py): header and table SHA-256, base hash, columns, orbits, multiplier list, digests and layout digests. Owner ruling 2026-11-07: a closure base with K' >= 4 unknown-log columns counts as an index-calculus row; K' = 0 stays a known-log reference row. NOT stacked on field-ops-2 (R1): the run measured D4 against the field-ops producer on M38",
@@ -287,22 +394,6 @@
       "unit": "one rT770 rho step as measured in this run (275.685 ns), per sqrt(r) (25,521.0 ms); end-to-end cold = mean rank stage over the arm's 60 primary blocks + mean cold (setup + one-target online, cached table) over the points",
       "s_ic_cold": 0.2095,
       "s_ic_online": 0.01803,
-      "s_ic_setup": 0.1915,
-      "s_ic_rank_stage": 0.08549,
-      "s_ic_setup_without_rank_stage": 0.106,
-      "s_ic_cold_without_rank_stage": 0.1241,
-      "s_ic_setup_derivation": "result.json (run 42425640847, statistics): rho_ms_per_step 2.756846e-04 ms x sqrt(r) (r = 8569786107849059) = 25,521.0 ms per unit; rank stage mean(kD4FO, the 60 primary pairs) 2,181.76 ms = 0.085489 -> 0.08549; setup mean cD4FO 2,705.88 ms = 0.106026 -> 0.1060 (cached-table load and verification included); s_ic_setup = 0.085489 + 0.106026 = 0.191515 -> 0.1915 = s_ic_cold 0.209540 -> 0.2095 (= S_e2e_cold.B, 5,347.68 ms) - s_ic_online 0.018026 -> 0.01803 (460.04 ms). Every S is rounded once from the unrounded quotient. S_cold_without_rank.cD4FO 0.1241 (3,165.92 ms) is setup without the rank stage plus online. Side A (the M38 base, same run) read S_e2e_cold 0.4194 (rank stage 0.1495, cold without rank 0.2699, online 0.011693) at 10,703.0 ms.",
-      "wall_ms": {
-        "e2e_cold_mean": 5347.7,
-        "rank_stage_mean": 2181.8,
-        "cold_without_rank_mean": 3165.9,
-        "setup_mean": 2705.9,
-        "index_build_mean": 2138.0,
-        "scan_selftest_mean": 219.9,
-        "ic_online_mean": 460.0,
-        "rho_online_mean": 2335.3,
-        "rho_cold": 2610.5
-      },
       "reference_rho": {
         "name": "rT770, A's tuned StrongRhoG<Gf2_128 fold>, 64 lanes, DP 6, escape off, same points, same runner",
         "is_tuned_rho_rT770": true,
@@ -325,51 +416,8 @@
         "note": "no BL walk ran in this experiment; the earlier measured figure (online 235 [61, 645]) is B's row, now in other_records, a different run and producer"
       },
       "evidence_tier": "Tier 1 (instance scoped; one GitHub-hosted ubuntu-24.04 runner, GitHub Actions 1000197724, Intel Xeon Platinum 8370C, one pinned CPU; CPU-only); repeated alternating pairs in the promoting run; not replayed on another host class",
-      "tier1_qualification": {
-        "status": "qualified at Tier 1 in the promoting run (repeated alternating pairs)",
-        "run": "42425640847 (cryptanalysis:experiments/koblitz-n83-k4c400-20261107)",
-        "ratio": "end-to-end cold kM38FO+cM38FO (M38) / kD4FO+cD4FO (D4) 2.0014",
-        "ci95": [
-          1.8777,
-          2.1308
-        ],
-        "design": "60 repeated alternating pairs (20 new points x 3 pairs, same point and rank seed per pair, adjacent in time on one pinned CPU), two-stage paired bootstrap, frozen rule: lower bound above 1",
-        "controls": "A/A end to end 1.0022 [0.9982, 1.0064] (interval contains 1: the frozen rule; the template's point-estimate band was replaced, see the experiment README), A/A cold 1.0007 [0.9960, 1.0053] (inside [0.97, 1.03]); planted index build cD4FOX / cD4FO 2.6961 [2.6802, 2.7099] (every index key also checked against lift_scan and the selected canonicalizer)",
-        "gates": "462/462 rows valid, 0 skipped by the time guard; every gate passed; probe law 1.0999 for kD4FO (240 attempts; bootstrap interval [0.9383, 1.2634], estimate inside [0.80, 1.20]) and 1.0018 for kM38FO (960 attempts), both gated over at least 64 attempts; receipt reproduced byte for byte by verify_receipt.py and band_model.py on a copy",
-        "scope": "Tier 1, instance scoped: one GitHub-hosted ubuntu-24.04 runner (GitHub Actions 1000197724, Intel Xeon Platinum 8370C), one pinned CPU; no host-wide exclusivity; one instance; not replayed on another host class; the field-ops and field-ops-2 runs were on AMD EPYC 9V74",
-        "row_numbers": "this run's: the row's S, gaps and 2.0014 [1.8777, 2.1308] are those of run 42425640847. A first run of the same frozen design (42420993318) read 1.964 [1.841, 2.091] in its job log; it uploaded no receipt, so it is cited as a log reading, not archived or re-verified"
-      },
       "verified": "462/462 rows valid, 0 skipped by the time guard (guard not tripped); 20/20 points, 60 primary pairs, 40 A/A pairs and 20 planted pairs complete; M38 and D4 headers and tables verified in the pinned oracle before timing (three planted corruptions rejected on each); one scalar per point across every IC arm and rT770 (oracle replay); one relation and one probe count per point and base; one index and layout digest set per base (M38, D4), each equal to the frozen one; every IC row ran its arm's field_ops_pipeline and rank_probe_pipeline on the one binary ic_online_fieldops_r770; Q0 equal to each base's frozen identity; rank tables equal the frozen verified tables; identical relations, per-attempt probes, root calls and counters across kD4FO and kD4FOaa per rank seed; probe-law bands pass (kD4FO 1.0999, kM38FO 1.0018, estimates in [0.80, 1.20], each over at least 64 attempts); A/A and planted controls pass; every process on CPU 0; no contention flags; verify_receipt.py and band_model.py re-run on a copy of the whole receipt directory reproduce result.json, result_table.md and band_model.json byte for byte",
       "source_figure": "end-to-end cold kM38FO+cM38FO (M38) / kD4FO+cD4FO (D4) 2.0014 [1.8777, 2.1308] in wall time on one host class (index build 2.3928 [2.3794, 2.4065], scan self-test 4.9689 [4.8934, 5.0602], rank stage 1.7485 [1.5039, 2.0287], setup 2.4353 [2.4198, 2.4516], cold 2.1757 [2.0530, 2.2975], online 0.6487 [0.3347, 1.1395], process CPU time 2.0715 [1.9855, 2.1626]); the end-to-end saving is 5,355.3 ms (10,703.0 -> 5,347.7), 1,633.1 ms of it in the rank stage, 2,977.8 ms in the index build, 872.9 ms in the self-test, with the online stage 161.6 ms slower; peak RSS 1,898 MB -> 915 MB",
-      "headline_scope": {
-        "metric": "wall time: the frozen primary R = E2E(kM38FO, cM38FO) / E2E(kD4FO, cD4FO) = 2.0014 [1.8777, 2.1308], and every S on this row, are wall-time figures from one run on one host class (GitHub ubuntu-24.04 runner, Intel Xeon Platinum 8370C), converted to that run's rT770 step. They are not operation counts and do not transfer to another host without the measured per-operation speed.",
-        "operation_counts": {
-          "rank_stage_attempts": {
-            "kM38FO": 960,
-            "kD4FO": 400,
-            "note": "kM38FO: 60 primary blocks x 16 attempts; kD4FO: 60 primary + 40 A/A blocks x 4 (plus 40 blocks of kD4FOaa); one relation per attempt in every arm (gated)"
-          },
-          "rank_stage_probes_per_attempt": {
-            "kM38FO": 1703101.0,
-            "kD4FO": 4499902.6,
-            "note": "mean probes per relation; law value r / (166 E): 1,700,068.5 (M38, ratio 1.0018 over 960 attempts) and 4,091,080.8 (D4, ratio 1.0999 over 240 primary attempts, bootstrap [0.9383, 1.2634]); gate band 0.80-1.20, pass"
-          },
-          "index_stored_states": {
-            "cM38FO": 15341360,
-            "cD4FO": 6640200,
-            "ratio": 2.3102,
-            "note": "the D4 base stores 2.31x fewer states; table entries 30,366,551 -> 12,618,968; Feistel domain 2^26 -> 2^24"
-          },
-          "not_counted": "setup and index build emit no operation count comparable to probes, so no single end-to-end operation-count ratio exists; the D4 rank stage does 4 attempts of 4.50 M probes (18.0 M) against 16 of 1.70 M (27.2 M); ns per probe 121.4 (kD4FO)"
-        },
-        "derivation": "recomputed 2026-11-08 from experiments/koblitz-n83-k4c400-20261107/run_github_42425640847/panel/result.json (statistics.mean_per_side, primary_e2e_paired_A_over_B, stage_secondary_*_A_over_B, rank_stage, probe_law, S_e2e_cold, S_online, S_rho_cold, e2e_cold_gap_over_rT, rho_mean_cold_ms, rho_mean_online_ms, rho_ms_per_step); allocation.json and protocol.json for host and design"
-      },
-      "uncharged_phases": {
-        "factor_base_construction": "Not charged to any arm (side A and side B alike), the same convention as every n=83 row: every IC process loads the K600 base and each closure header from file; construction was not timed in this run. The omission is common to the arms, so R > 1 holds for any X >= 0 and falls with X. X was measured on another host class (427.524 ms for the K600 base, koblitz-n83-replay-20261017, run 39007026856): adding it to both arms' E2E gives R 1.0244 and cold S 0.3986 (illustrative, mixes hosts, ignores the closure images). So 1.0256 is an upper bound on the every-phase ratio and S 0.3798 a lower bound on the every-phase cold S.",
-        "linear_algebra": "represented by the verified load of the cached factor-log table in cM38RF and cM38FO"
-      },
-      "section_5a_band": "MODEL band, section 5a (experiments/koblitz-n83-k4c400-20261107/band_model.py, frozen; run unchanged band.py of koblitz-n83-opcounts-20261023): rho is COUNTED in this run (every rT process's charges_setup_and_solve); the IC arms are MODELLED from the archived counted run 39882571652 (per-probe and per-attempt composition) applied to this run's measured probes and attempts and each base's exact entries, because the field-ops producer emits no operation counts. Gap to rT770 at w = 0, 0.1, 1 GAE per unpriced native operation: D4 (this row) 9.771e-05, 0.7272 [0.5657, 0.9728], 2.897 [2.254, 3.876]; M38 (the paired reference) 0.0003322, 1.136 [0.8876, 1.518], 4.527 [3.536, 6.046]. D4 is cheaper than M38 at every weight; against the matched rho both are unresolved (the order flips inside the band: D4 is below rho at w = 0 and 0.1 and above it at w = 1). A derived model, not a counted run of this producer: factor-base construction and linear algebra are not charged beyond la_*, the intervals carry no model uncertainty. The counts are exact per (point, seed, base), so the first run of the design (42420993318) gives the same band. [pcc:unverified]",
-      "replication": "The run is itself a Tier 1 repeated-alternating-pair measurement (60 pairs; see tier1_qualification). Not replayed on another host class. A first run of the same frozen design on another runner instance (42420993318) read 1.964 [1.841, 2.091] in its job log (no receipt archived; the intervals overlap with this run's 2.0014 [1.8777, 2.1308]). verify_receipt.py and band_model.py reproduce the archived outputs byte for byte on a copy of the whole receipt directory, and the gates make every relation, per-attempt probe count, root call and counter equal across kD4FO and kD4FOaa with the index layout equal to the frozen one per base.",
       "next_improvement": "Stack the D4 header on the field-ops-2 producer (R1 x D4 was not run) and re-measure against this row; then the rank stage (D4: 2,181.8 ms of 5,347.7 ms, 40.8%, heavy-tailed: 4 relations of 4.50 M probes each) and the index build (2,138.0 ms, 40.0%); other closure shapes (headers a, b, c of the local prototype) are untested at Tier 1; the online stage is now slower than on M38 (460.0 vs 298.4 ms) because each target costs 2.41x more probes. Gap to the tuned rho is 2.05 end to end in this run (point estimate; a host and panel artifact against the landed 4.096 and 3.165).",
       "sources": [
         "cryptanalysis:experiments/koblitz-n83-k4c400-20261107/README.md (branch claude/n83-k4c400, PR #1434)",
@@ -379,10 +427,10 @@
         "cryptanalysis:benchmarks/records/20261108T0044Z-n83-k4c400.json",
         "cryptanalysis:docs/ic/BASELINES.md (owner ruling 2026-11-07)",
         "cryptanalysis:experiments/koblitz-n83-fieldops-20261104/ (the baseline replaced)"
-      ]
-    }
-  ],
-  "other_records": [
+      ],
+      "role": "previous baseline (the field-ops producer on the D4 closure base, arms kD4FO / cD4FO), superseded by the field-ops-2 producer on the same D4 base",
+      "superseded_note": "2026-11-08: field-ops-2 (R1) on D4 (koblitz-n83-fo2d4-20261108, run 42450569196) measured 1.0504 [1.0467, 1.0541] end to end against this row's code on the same base, same points and seeds, in one run. This row's own run is 42425640847 (2.0014 [1.8777, 2.1308] over M38); its in-run gap to rT770 was 2.0485."
+    },
     {
       "n": 19,
       "a": 1,
@@ -4183,6 +4231,33 @@
       "cross_run_context_note": "context only, and a cross-run rho-gap artifact: the matched rho's cold mean is a mean of random-length processes and moves with panel and host class (2,730.5 ms there, 2,610.5 ms here, another host class); gaps do not compose across runs. D4 is not measured against R1: R1 x D4 was not run. The headline decision rests on the paired ratios against the common field-ops / M38 reference only: D4 2.0014 [1.8777, 2.1308] (run 42425640847) against R1 1.0256 [1.0236, 1.0278] (run 42424680756), intervals disjoint, which does not prove D4 beats R1 and is not a composed ratio",
       "cold_speedup": "end-to-end cold kM38FO+cM38FO / kD4FO+cD4FO 2.0014 [1.8777, 2.1308] over 60 alternating pairs in wall time on one host class, factor-base construction charged to no arm; index build 2.3928 [2.3794, 2.4065], self-test 4.9689 [4.8934, 5.0602], rank stage 1.7485 [1.5039, 2.0287], online 0.6487 [0.3347, 1.1395] (slower, not separated); A/A 1.0022 [0.9982, 1.0064]; planted index build 2.6961 [2.6802, 2.7099]; one GitHub-hosted host class (Intel Xeon Platinum 8370C), not replayed",
       "class": "engineering (a smaller closure base: K' 16 -> 4, orbits 608 -> 400); promoted by its own frozen primary (95% lower bound 1.8777 above 1), every gate and both controls passed; Tier 1 as qualified in the promoting run; counts as an index-calculus row under the owner ruling of 2026-11-07 (K' >= 4)"
+    },
+    {
+      "n": 83,
+      "from": "the field-ops producer on the D4 closure base (kD4FO + cD4FO), same run 42450569196, points, rank seeds and rT770 (the paired reference; the previous row's own run, 42425640847, read its in-run gap 2.0485)",
+      "to": "the field-ops-2 producer R1 on the same D4 base (arms kD4R1 + cD4R1; run 42450569196)",
+      "cold_gap": [
+        2.1455,
+        2.0426
+      ],
+      "online_gap": [
+        0.3245,
+        0.3171
+      ],
+      "gap_fields": "cold_gap and online_gap hold the paired within-run gap point estimates (same run, points and rT770); no interval is computed for them in this run",
+      "baseline_row_replaced": true,
+      "cross_run_context_from": "the previous row as landed (run 42425640847: 275.68 ns rT770 step, Intel Xeon Platinum 8370C, 20 points, rank seeds 2501-2560)",
+      "cross_run_context_cold_gap": [
+        2.0485,
+        2.0426
+      ],
+      "cross_run_context_online_gap": [
+        0.197,
+        0.3171
+      ],
+      "cross_run_context_note": "context only, and a cross-run rho-gap artifact: the matched rho's cold mean is a mean of random-length processes and moves with panel and host class (2,610.5 ms there, 2461.5 ms here, another host class); gaps do not compose across runs. The decision rests on the paired within-run ratio only",
+      "cold_speedup": "end-to-end cold kD4FO+cD4FO / kD4R1+cD4R1 1.0504 [1.0467, 1.0541] over 36 alternating pairs in wall time on one host class, factor-base construction charged to no arm; index build 1.0745 [1.0721, 1.0772], self-test 1.0027 [0.9947, 1.0108] (unchanged), rank stage 1.0505 [1.0461, 1.0550], online 1.0232 [1.0091, 1.0314]; A/A 0.9995 [0.9969, 1.0019]; planted index build 3.0054 [2.9892, 3.0195]; one GitHub-hosted host class (Intel Xeon Platinum 8573C), not replayed",
+      "class": "engineering (a constant reduce shift at n = 83, R1, on the D4 base: exact, same work per pair); promoted by its own frozen primary (95% lower bound 1.0467 above 1), every gate and both controls passed; Tier 1 as qualified in the promoting run"
     }
   ],
   "corrections": [

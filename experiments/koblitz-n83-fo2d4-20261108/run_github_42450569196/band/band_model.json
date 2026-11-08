@@ -1,0 +1,432 @@
+{
+  "arms": {
+    "A": {
+      "cost_gae": {
+        "0": [
+          841.0058236272877,
+          841.0058236272877
+        ],
+        "0.1": [
+          7408500.9860686995,
+          7408500.9860686995
+        ],
+        "1": [
+          74077440.80827434,
+          74077440.80827434
+        ]
+      },
+      "family": "ic",
+      "mean_bounded_scalar_muls": 0.0,
+      "mean_group_ops": 841.0058236272877,
+      "mean_unpriced_native_ops": 74076599.80245073
+    },
+    "B": {
+      "cost_gae": {
+        "0": [
+          841.0058236272877,
+          841.0058236272877
+        ],
+        "0.1": [
+          7408500.9860686995,
+          7408500.9860686995
+        ],
+        "1": [
+          74077440.80827434,
+          74077440.80827434
+        ]
+      },
+      "family": "ic",
+      "mean_bounded_scalar_muls": 0.0,
+      "mean_group_ops": 841.0058236272877,
+      "mean_unpriced_native_ops": 74076599.80245073
+    },
+    "rT": {
+      "cost_gae": {
+        "0": [
+          8543377.416666666,
+          8547017.416666666
+        ],
+        "0.1": [
+          10265229.950000001,
+          10268869.950000001
+        ],
+        "1": [
+          25761902.75,
+          25765542.75
+        ]
+      },
+      "family": "rho",
+      "mean_bounded_scalar_muls": 35.0,
+      "mean_group_ops": 8543377.416666666,
+      "mean_unpriced_native_ops": 17218525.333333332
+    }
+  },
+  "counts_sha256": "981c664ca715acb3c5d77586534466357bf854e64d17eb3288402a28cb1de464",
+  "frobenius_as_group": false,
+  "gap_to_reference": {
+    "A": {
+      "0": [
+        {
+          "ci95": [
+            6.941130360153964e-05,
+            0.00015792267281189188
+          ],
+          "ratio": 9.84395026241764e-05,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            6.939045714090106e-05,
+            0.00015781480431987125
+          ],
+          "ratio": 9.83975792523048e-05,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ],
+      "0.1": [
+        {
+          "ci95": [
+            0.4782284816417646,
+            1.1770715015806514
+          ],
+          "ratio": 0.721708234706296,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            0.47809342699735213,
+            1.1763825571350053
+          ],
+          "ratio": 0.7214524112333022,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ],
+      "1": [
+        {
+          "ci95": [
+            1.9053439244471866,
+            4.689741744778742
+          ],
+          "ratio": 2.875464655198046,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            1.9051294811196173,
+            4.688647601400696
+          ],
+          "ratio": 2.8750584269479185,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ]
+    },
+    "B": {
+      "0": [
+        {
+          "ci95": [
+            6.941130360153964e-05,
+            0.00015792267281189188
+          ],
+          "ratio": 9.84395026241764e-05,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            6.939045714090106e-05,
+            0.00015781480431987125
+          ],
+          "ratio": 9.83975792523048e-05,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ],
+      "0.1": [
+        {
+          "ci95": [
+            0.4782284816417646,
+            1.1770715015806514
+          ],
+          "ratio": 0.721708234706296,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            0.47809342699735213,
+            1.1763825571350053
+          ],
+          "ratio": 0.7214524112333022,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ],
+      "1": [
+        {
+          "ci95": [
+            1.9053439244471866,
+            4.689741744778742
+          ],
+          "ratio": 2.875464655198046,
+          "rho_scalar_mul_gae": 0.0
+        },
+        {
+          "ci95": [
+            1.9051294811196173,
+            4.688647601400696
+          ],
+          "ratio": 2.8750584269479185,
+          "rho_scalar_mul_gae": 104.0
+        }
+      ]
+    }
+  },
+  "label": "MODEL band: rho counted in this run; IC units modelled from the archived counted run 39882571652 (see band_model.py); not a counted run of the field-ops producer",
+  "model_constants": {
+    "la_mulmods_at_600": 15692741,
+    "la_row_eliminations_at_600": 60197,
+    "per_attempt": {
+      "descent_mulmods": 0.0066555740432612314,
+      "ec_add": 66.69068219633944,
+      "ec_add_trivial": 1.9983361064891847,
+      "ec_double": 101.51048252911814,
+      "ec_frobenius": 0.0,
+      "ec_lift_x": 0.0,
+      "ec_scalar_mul": 1.9983361064891847,
+      "la_inversions": 0.9983361064891847,
+      "relation_lifts": 1.0,
+      "root_filter_inserts": 0.0,
+      "root_filter_queries": 0.0
+    },
+    "per_probe": {
+      "canonicalizations": 1.0299228459225953,
+      "field_half_trace": 0.514961824175946,
+      "field_inv": 0.018025799318609488,
+      "field_mul": 5.620055207254386,
+      "field_sqr": 1.0300887119506186,
+      "fold_rotations": 0.0029797541248356646,
+      "frobenius_x": 0.4940753106695558,
+      "root_index_probes": 1.0,
+      "s3_root_solves": 0.5149634659622561,
+      "s3_root_solves_library": 2.6418287917269747e-06
+    },
+    "stacked_mean_attempts": 601,
+    "stacked_mean_probes": 1001957435.05,
+    "units": 20
+  },
+  "pairs": [
+    {
+      "arms": [
+        "A",
+        "B"
+      ],
+      "cells": [
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 1.0
+        },
+        {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "ratio": 1.0,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 1.0
+        }
+      ],
+      "ranked": false,
+      "statement": "unresolved: the order of A and B is the same at every weight, but the 95% interval does not exclude 1 everywhere"
+    },
+    {
+      "arms": [
+        "A",
+        "rT"
+      ],
+      "cells": [
+        {
+          "ci95": [
+            6.941130360153964e-05,
+            0.00015792267281189188
+          ],
+          "ratio": 9.84395026241764e-05,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            6.939045714090106e-05,
+            0.00015781480431987125
+          ],
+          "ratio": 9.83975792523048e-05,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            0.4782284816417646,
+            1.1770715015806514
+          ],
+          "ratio": 0.721708234706296,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            0.47809342699735213,
+            1.1763825571350053
+          ],
+          "ratio": 0.7214524112333022,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            1.9053439244471866,
+            4.689741744778742
+          ],
+          "ratio": 2.875464655198046,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 1.0
+        },
+        {
+          "ci95": [
+            1.9051294811196173,
+            4.688647601400696
+          ],
+          "ratio": 2.8750584269479185,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 1.0
+        }
+      ],
+      "ranked": false,
+      "statement": "unresolved: the order of A and rT is not the same at every weight (it changes by w = 1)"
+    },
+    {
+      "arms": [
+        "B",
+        "rT"
+      ],
+      "cells": [
+        {
+          "ci95": [
+            6.941130360153964e-05,
+            0.00015792267281189188
+          ],
+          "ratio": 9.84395026241764e-05,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            6.939045714090106e-05,
+            0.00015781480431987125
+          ],
+          "ratio": 9.83975792523048e-05,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.0
+        },
+        {
+          "ci95": [
+            0.4782284816417646,
+            1.1770715015806514
+          ],
+          "ratio": 0.721708234706296,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            0.47809342699735213,
+            1.1763825571350053
+          ],
+          "ratio": 0.7214524112333022,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 0.1
+        },
+        {
+          "ci95": [
+            1.9053439244471866,
+            4.689741744778742
+          ],
+          "ratio": 2.875464655198046,
+          "rho_scalar_mul_gae": 0.0,
+          "weight_gae": 1.0
+        },
+        {
+          "ci95": [
+            1.9051294811196173,
+            4.688647601400696
+          ],
+          "ratio": 2.8750584269479185,
+          "rho_scalar_mul_gae": 104.0,
+          "weight_gae": 1.0
+        }
+      ],
+      "ranked": false,
+      "statement": "unresolved: the order of B and rT is not the same at every weight (it changes by w = 1)"
+    }
+  ],
+  "points": [
+    "s000",
+    "s001",
+    "s002",
+    "s003",
+    "s004",
+    "s005",
+    "s006",
+    "s007",
+    "s008",
+    "s009",
+    "s010",
+    "s011"
+  ],
+  "reference": "rT",
+  "rho_scalar_mul_bound_gae": [
+    0.0,
+    104.0
+  ],
+  "schema": "ic-band/v1",
+  "weights_gae": [
+    0.0,
+    0.1,
+    1.0
+  ]
+}
