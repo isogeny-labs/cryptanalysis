@@ -55,3 +55,9 @@ report in `benchmarks/progress/`, in the same PR. The hooks refuse unrecorded
 benchmark launchers and unrecorded pushes; the `bench-records` check fails
 the PR. AGENTS.md, "Benchmark records: data in S3, metadata in Git, one
 progress report"; [docs/benchmark-records.md](docs/benchmark-records.md).
+
+## Persistent scientific research loop
+
+Read and follow [AGENTS.md](AGENTS.md#persistent-scientific-research-loop).
+That section governs hypothesis testing, recovery from obstacles, continued
+iteration, checkpoints and evidence required before stopping in this runtime.
