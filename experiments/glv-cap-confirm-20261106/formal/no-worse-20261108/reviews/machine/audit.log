@@ -1,0 +1,17 @@
+/var/tmp/cryptanalysis-glv-cap-logic-pr-20261108/tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    GLVCapNoWorse.Interval.mk.inj  []
+ok    GLVCapNoWorse.Interval.mk.injEq  [propext]
+ok    GLVCapNoWorse.Interval.mk.sizeOf_spec  []
+ok    GLVCapNoWorse.pooled_pass_does_not_bound_family_upper  []
+ok    GLVCapNoWorse.published_j0_not_bounded_by_pooled_pass  []
+ok    GLVCapNoWorse.published_j0_point_above_one  []
+ok    GLVCapNoWorse.published_j0_straddles_one  []
+ok    GLVCapNoWorse.published_j0_wellFormed  []
+ok    GLVCapNoWorse.published_pooled_noWorsePass  []
+ok    GLVCapNoWorse.published_pooled_wellFormed  []
+audited 10 theorems in [NoWorseLogic]; 0 failing, 0 trusted (native_decide)
