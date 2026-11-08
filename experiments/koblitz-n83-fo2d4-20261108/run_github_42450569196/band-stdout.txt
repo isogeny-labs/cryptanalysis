@@ -1,0 +1,24 @@
+**MODEL band: rho counted in this run; IC units modelled from the archived counted run 39882571652 (see band_model.py); not a counted run of the field-ops producer**
+
+# Section 5a band
+
+Points: 12 (s000, s001, s002, s003, s004, s005 ...). Reference: rT. Weights (GAE per unpriced native operation): 0, 0.1, 1.
+Rho scalar multiplications not decomposed by the rho: priced at 0 and 104 GAE each (both ends).
+
+| arm | mean group ops | mean unpriced native ops | cost w=0 | cost w=0.1 | cost w=1 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A | 841 | 7.408e+07 | 841 | 7.409e+06 | 7.408e+07 |
+| B | 841 | 7.408e+07 | 841 | 7.409e+06 | 7.408e+07 |
+| rT | 8.543e+06 | 1.722e+07 | 8.543e+06-8.547e+06 | 1.027e+07-1.027e+07 | 2.576e+07-2.577e+07 |
+
+| gap to rT | w=0 | w=0.1 | w=1 |
+| --- | ---: | ---: | ---: |
+| A | 9.844e-05 [6.941e-05, 0.0001579] / 9.84e-05 [6.939e-05, 0.0001578] | 0.7217 [0.4782, 1.177] / 0.7215 [0.4781, 1.176] | 2.875 [1.905, 4.69] / 2.875 [1.905, 4.689] |
+| B | 9.844e-05 [6.941e-05, 0.0001579] / 9.84e-05 [6.939e-05, 0.0001578] | 0.7217 [0.4782, 1.177] / 0.7215 [0.4781, 1.176] | 2.875 [1.905, 4.69] / 2.875 [1.905, 4.689] |
+
+Pairs (ranked only where the order holds across the band):
+
+- A vs B: unresolved: the order of A and B is the same at every weight, but the 95% interval does not exclude 1 everywhere
+- A vs rT: unresolved: the order of A and rT is not the same at every weight (it changes by w = 1)
+- B vs rT: unresolved: the order of B and rT is not the same at every weight (it changes by w = 1)
+
