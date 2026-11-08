@@ -28,7 +28,7 @@ added to the original measurement beyond its existing evidence.
 | Lean kernel and transitive axioms | Coordinator | Build exact named source under pinned Lean and `proof-gate.sh`; reject wrong theorem names, holes, custom axioms, native evaluation or omitted modules. |
 | Empirical bridge | Coordinator | Check that no reviewer treats the decision-rule proof as proof of bootstrap coverage, source binary identity, or historical solver correctness. |
 
-The blind algebra reviewer receives only a minimal input card with the
+The blind algebra reviewer receives only `BLIND_INPUT.json` with the
 predicate and endpoint decimals, without the producer proof or source code.
 The source-fidelity reviewer receives the pushed head, source and report but
 not the blind review. Reviewers must not read each other's reports before

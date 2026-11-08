@@ -19,7 +19,8 @@ endpoint is greater than one, and marks the no-worse check passed when none
 is rejected. It loads the JSON decimals without binary-float rounding and
 compares all four pooled interval endpoints, the `j = 0` interval, and its
 point estimate with the values encoded in `NoWorseLogic.lean` at scale
-10^16. The required `gate` job runs this binding check on every PR.
+10^16 and with the blind review card in `BLIND_INPUT.json`. The required
+`gate` job runs this binding check on every PR.
 
 | Lean declaration | Exact scope |
 | --- | --- |

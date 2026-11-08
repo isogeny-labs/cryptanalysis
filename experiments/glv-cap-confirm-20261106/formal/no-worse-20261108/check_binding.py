@@ -32,6 +32,7 @@ def check(study):
     code = study / 'analyze.py'
     results = study / 'results.json'
     proof = study / 'formal/no-worse-20261108/NoWorseLogic.lean'
+    blind = study / 'formal/no-worse-20261108/BLIND_INPUT.json'
     require(digest(code) == ANALYZE_SHA, 'frozen analysis source changed')
     require(digest(results) == RESULTS_SHA, 'frozen result JSON changed')
     source = code.read_text()
@@ -44,6 +45,17 @@ def check(study):
                       for b in (40, 41, 42, 43)]
     expected_j0 = tuple(scaled(x) for x in data['by_family']['j0']['ci95'])
     expected_point = scaled(data['by_family']['j0']['geomean_over_main'])
+    card = json.loads(blind.read_text())
+    require(card['schema'] == 'glv-cap-no-worse-blind-input/v1', 'blind input schema changed')
+    require(card['scale'] == int(SCALE), 'blind input scale changed')
+    require(card['rule'] == 'pooled-size check passes exactly when every supplied pooled-size lower endpoint is at most scale',
+            'blind input rule changed')
+    require([tuple(card['pooled_size_intervals'][str(b)]) for b in (40, 41, 42, 43)] == expected_sizes,
+            'blind input pooled intervals differ from JSON')
+    require(tuple(card['separate_family_interval']) == expected_j0,
+            'blind input family interval differs from JSON')
+    require(card['separate_family_point_estimate'] == expected_point,
+            'blind input family point differs from JSON')
     text = proof.read_text()
 
     def one(pattern):
