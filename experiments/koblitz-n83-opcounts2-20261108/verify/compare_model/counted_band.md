@@ -1,0 +1,57 @@
+
+## Counted vs modelled IC units
+
+| base | point | kind | counted | model | counted/model |
+|---|---|---|---:|---:|---:|
+| D4 | s000 | canonicalizations | 33625360 | 2.095e+07 | 1.605 |
+| D4 | s000 | root_index_probes | 20343984 | 2.034e+07 | 1.000 |
+| D4 | s000 | s3_root_solves | 16814331 | 1.048e+07 | 1.605 |
+| D4 | s000 | s3_root_solves_library | 2447 | 53.75 | 45.530 |
+| D4 | s000 | frobenius_x | 18477460 | 1.005e+07 | 1.838 |
+| D4 | s000 | fold_rotations | 60794 | 6.062e+04 | 1.003 |
+| D4 | s000 | field_half_trace | 8419602 | 1.048e+07 | 0.804 |
+| D4 | s000 | field_mul | 108441795 | 1.143e+08 | 0.948 |
+| D4 | s000 | field_sqr | 23462800 | 2.096e+07 | 1.120 |
+| D4 | s000 | field_inv | 247077 | 3.667e+05 | 0.674 |
+| D4 | s000 | ec_add | 320 | 333.5 | 0.960 |
+| D4 | s000 | ec_double | 464 | 507.6 | 0.914 |
+| D4 | s000 | ec_add_trivial | 9 | 9.992 | 0.901 |
+| D4 | s000 | ec_scalar_mul | 9 | 9.992 | 0.901 |
+| D4 | s000 | ec_frobenius | 0 | 0 | - |
+| D4 | s000 | ec_lift_x | 102362 | 0 | - |
+| D4 | s000 | relation_lifts | 5 | 5 | 1.000 |
+| D4 | s000 | descent_mulmods | 4 | 0.03328 | 120.200 |
+| D4 | s000 | root_filter_inserts | 0 | 0 | - |
+| D4 | s000 | root_filter_queries | 0 | 0 | - |
+| D4 | s000 | la_inversions | 4 | 4.992 | 0.801 |
+| D4 | s000 | la_mulmods | 40 | 4.65 | 8.603 |
+| D4 | s000 | la_row_eliminations | 6 | 2.675 | 2.243 |
+| D4 | s000 | root_index_inserts | 13280400 | 1.262e+07 | 1.052 |
+| D4 | s000 | **group_ops** | 784 | 841 | 0.932 |
+| D4 | s000 | **unpriced_native_ops** | 102707200 | 7.45e+07 | 1.379 |
+| M38 | s000 | canonicalizations | 68939080 | 3.94e+07 | 1.750 |
+| M38 | s000 | root_index_probes | 38252802 | 3.825e+07 | 1.000 |
+| M38 | s000 | s3_root_solves | 34470995 | 1.97e+07 | 1.750 |
+| M38 | s000 | s3_root_solves_library | 2655 | 101.1 | 26.272 |
+| M38 | s000 | frobenius_x | 37072972 | 1.89e+07 | 1.962 |
+| M38 | s000 | fold_rotations | 113864 | 1.14e+05 | 0.999 |
+| M38 | s000 | field_half_trace | 16347786 | 1.97e+07 | 0.830 |
+| M38 | s000 | field_mul | 209981553 | 2.15e+08 | 0.977 |
+| M38 | s000 | field_sqr | 47939267 | 3.94e+07 | 1.217 |
+| M38 | s000 | field_inv | 526848 | 6.895e+05 | 0.764 |
+| M38 | s000 | ec_add | 1111 | 1134 | 0.980 |
+| M38 | s000 | ec_double | 1698 | 1726 | 0.984 |
+| M38 | s000 | ec_add_trivial | 33 | 33.97 | 0.971 |
+| M38 | s000 | ec_scalar_mul | 33 | 33.97 | 0.971 |
+| M38 | s000 | ec_frobenius | 0 | 0 | - |
+| M38 | s000 | ec_lift_x | 221002 | 0 | - |
+| M38 | s000 | relation_lifts | 17 | 17 | 1.000 |
+| M38 | s000 | descent_mulmods | 4 | 0.1131 | 35.353 |
+| M38 | s000 | root_filter_inserts | 0 | 0 | - |
+| M38 | s000 | root_filter_queries | 0 | 0 | - |
+| M38 | s000 | la_inversions | 16 | 16.97 | 0.943 |
+| M38 | s000 | la_mulmods | 956 | 297.6 | 3.213 |
+| M38 | s000 | la_row_eliminations | 71 | 42.81 | 1.659 |
+| M38 | s000 | root_index_inserts | 30682720 | 3.037e+07 | 1.010 |
+| M38 | s000 | **group_ops** | 2809 | 2859 | 0.982 |
+| M38 | s000 | **unpriced_native_ops** | 209757116 | 1.467e+08 | 1.430 |
