@@ -64,3 +64,18 @@ jobs:
           exit 1
       - name: Workflows that name moved data pull it
         run: python3 tools/artifacts/wire_workflows.py --check
+
+  # Preserve the canonical store check and expose the literal merge context.
+  required-artifacts:
+    name: artifacts
+    needs: [store]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    permissions:
+      contents: read
+    steps:
+      - name: Require the canonical store job to succeed
+        env:
+          ARTIFACT_RESULT: ${{ needs.store.result }}
+        run: test "$ARTIFACT_RESULT" = success

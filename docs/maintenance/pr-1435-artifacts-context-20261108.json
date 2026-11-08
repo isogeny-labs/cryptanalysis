@@ -1,0 +1,32 @@
+{
+  "schema": "pr-maintenance/source-context-compatibility/v1",
+  "repository": "isogeny-labs/cryptanalysis",
+  "pull_request": 1435,
+  "parent": "325a07cc987bb87a6789051f403e71c2e80a994a",
+  "observed_main": "71b028679303b24123a9ac7afe7696e3143ee206",
+  "timestamp_utc": "2026-11-08T00:02:53Z",
+  "problem": "The canonical artifacts workflow's job ID store reports store; the complete current-head snapshot contains no literal artifacts context required by this checker's merge guard.",
+  "old_workflow_blob": "c5805dbf17ab8bce700659dd7d4f2e9bbbbcaa65",
+  "canonical_store_run": 42421734768,
+  "canonical_store_workflow": 395300251,
+  "canonical_store_job": 128551413706,
+  "old_complete_snapshot": {
+    "contexts": 31,
+    "executed_success": 29,
+    "legitimate_skips": 2,
+    "legacy_statuses": 0,
+    "empty_check_page_2": true
+  },
+  "change": "Add only required-artifacts/display artifacts, depending on store and failing unless needs.store.result is success. Every existing job and non-job workflow field is unchanged.",
+  "structural_verification": "Duplicate-key-rejecting YAML comparison; original workflow bytes are an exact prefix. No workflow commands or tests executed locally.",
+  "policy_tool_blob": "c49cd3de885c5b4292c283eb85e4327b872529ed",
+  "policy_config_blob": "0f8d2aee66f5f164888fba6f361f8c115811c3cd",
+  "new_head_ci": "Unobserved before publication; all new-head contexts, duplicates and matrices count, including this new job. Final executed count must be <=30.",
+  "holds": [
+    "Open/auto-merge off; no main integration, retry or PR merge",
+    "Actual DIRTY state; full source and historical-exclusion/generated-progress review incomplete",
+    "All complete public-parent journals and trailing bytes must be preserved in any later admissible integration",
+    "No record/statistics or PDF read/render, experiment, archive access, custody or scientific admission",
+    "All frozen/PCC/provenance/private-history protections remain unchanged"
+  ]
+}
