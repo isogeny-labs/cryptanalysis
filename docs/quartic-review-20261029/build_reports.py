@@ -55,7 +55,9 @@ for entry in studies:
  if pr in (1164,1190):summary=re.sub(r'\bprospective(?:ly)?\b','retrospective',summary,flags=re.I)
  title,nodes=mechanisms.get(pr,('Evidence and proof boundaries for this study',['Pinned inputs: original source and protocols',entry['title'],'Submitted exact arithmetic / algebra certificates','Pinned Lean project and theorem axiom audit','Full concrete field / ideal / transport bridge:\nonly established where separately proved']))
  dot=['digraph evidence {','graph [rankdir=TB, bgcolor="white", pad="0.25"];','node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];','edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];']
- for i,n in enumerate(nodes):dot.append(f'n{i} [label={json.dumps('\n'.join(textwrap.fill(line,width=52) for line in n.splitlines()),ensure_ascii=False)}];')
+ for i,n in enumerate(nodes):
+  label=json.dumps('\n'.join(textwrap.fill(line,width=52) for line in n.splitlines()),ensure_ascii=False)
+  dot.append(f'n{i} [label={label}];')
  edges={1167:[(0,1),(1,2),(1,3),(3,4)],1170:[(0,1),(1,2),(0,3),(2,4),(3,4)],1171:[(0,1),(1,2),(2,3),(0,4)],1173:[(0,1),(2,1),(1,3),(1,4)]}.get(pr,[(i,i+1) for i in range(len(nodes)-1)])
  for a,b in edges:dot.append(f'n{a} -> n{b} [label="scope condition / recorded check", style='+('dashed' if b==4 else 'solid')+'];')
  dot.append('}');(OUT/f'{pr}.dot').write_text('\n'.join(dot)+'\n');subprocess.run(['dot','-Tsvg',str(OUT/f'{pr}.dot'),'-o',str(OUT/f'{pr}.svg')],check=True)
