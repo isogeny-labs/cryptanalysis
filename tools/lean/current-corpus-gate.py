@@ -998,14 +998,25 @@ def check_core_lean_projects(paths: set[str]) -> dict[str, str]:
     return checked
 
 
-# Receipt-bound standalone core-Lean modules: one `import Init` source checked
-# by its own receipt-bound script (which pins the source, the toolchain and
-# the Rust sources it bridges, runs `lean` and compares every `#print axioms`
-# line with the receipt). The gate pins the source and the checker by SHA-256
-# and runs the checker natively, so a changed proof or checker is a gate change.
+# Receipt-bound standalone core-Lean modules checked by their own source-bound
+# scripts. Each checker pins its relevant inputs and toolchain, runs `lean`,
+# and compares every `#print axioms` line. The gate pins the proof source and
+# checker by SHA-256, so changing either requires a new review.
 # research/xedni_lift_optimizer_20261101 landed with #1376 (2026-11-02) under
 # its own workflow and left this gate red on main until it was admitted here.
 RECEIPT_BOUND_SOURCES = {
+    "experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/NoWorseLogic.lean": {
+        "sha256": "613d9eb1ca98ee95418984b5dac2b8bfcbcd6b705c20b38289bfc93e90a7f2d6",
+        "checker": "experiments/glv-cap-confirm-20261106/formal/no-worse-20261108/check_native.py",
+        "checker_sha256": "c3e11092ed731a43fde1eb4f57e801fa619d8231be50469a196ad8ff3c6d6d0c",
+        "namespace": "GLVCapNoWorse",
+        "theorems": frozenset({
+            "published_pooled_noWorsePass", "published_pooled_wellFormed",
+            "published_j0_straddles_one", "published_j0_point_above_one",
+            "published_j0_wellFormed", "published_j0_not_bounded_by_pooled_pass",
+            "pooled_pass_does_not_bound_family_upper",
+        }),
+    },
     "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean": {
         "sha256": "c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757",
         "checker": "research/xedni_lift_optimizer_20261101/lean/check.py",
