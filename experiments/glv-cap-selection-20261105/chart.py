@@ -24,7 +24,8 @@ for b in SIZES:
         rows.append((f"  {f} {b}", {a: (c[a]["over_main"], *c[a]["ci95"]) for a, _, _ in ARMS}, False))
 for i, (name, d, bold) in enumerate(rows):
     y = 64 + i * 28
-    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end" xml:space="preserve"{" font-weight=\"bold\"" if bold else ""}>{name}</text>')
+    weight = ' font-weight="bold"' if bold else ''
+    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end" xml:space="preserve"{weight}>{name}</text>')
     for j, (a, col, _) in enumerate(ARMS):
         p, lo, hi = d[a]
         yy = y + j * 9
