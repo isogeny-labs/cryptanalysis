@@ -1,0 +1,37 @@
+[package]
+name = "n83-closure-indexlift-online"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# koblitz-n83-opcounts2-20261108: the op-counting field-ops-2 producer,
+# derived by ../make_counted2_source.py into ../derived/. The crate, the
+# dependency set, Cargo.lock and .cargo/config.toml are
+# ../../koblitz-n83-fieldops2-20261107/online-b's (verbatim lock and flags);
+# crypto 770f6a69 is that experiment's restored snapshot. Build the counting
+# binary with `--features op-counts`; it counts only when run with
+# KIC_OPCOUNTS=1. Without the feature the same source is the uncounted build.
+[features]
+op-counts = []
+
+[[bin]]
+name = "ic_online_fieldops2_counted_r770"
+path = "../derived/koblitz_orbit_dlp_fast_online_fieldops2_counted.rs"
+
+# The uncounted reference for local_verify.py: the frozen field-ops-2 source
+# (d923d63a...), built here with the same lock and flags.
+[[bin]]
+name = "ic_online_fieldops2_r770"
+path = "../../koblitz-n83-fieldops2-20261107/snapshots/r770/examples/koblitz_orbit_dlp_fast_online_fieldops2.rs"
+
+[dependencies]
+crypto_lib = { package = "crypto", path = "../../koblitz-n83-fieldops2-20261107/snapshots/r770", default-features = false }
+blake3 = "1.5"
+hex = "0.4"
+libc = "0.2"
+num-bigint = { version = "0.4", features = ["rand"] }
+num-traits = "0.2"
+rand = { version = "0.8", features = ["small_rng"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["arbitrary_precision", "raw_value"] }
+
