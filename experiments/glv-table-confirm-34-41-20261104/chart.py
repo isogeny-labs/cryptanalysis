@@ -26,7 +26,8 @@ p = R["primary"]
 rows.append(("both pooled", p["geomean_over_main"], *p["ci"], True))
 for i, (name, pt, lo, hi, bold) in enumerate(rows):
     y = 70 + i * 28
-    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end"{" font-weight=\"bold\"" if bold else ""}>{name}</text>')
+    weight = ' font-weight="bold"' if bold else ''
+    o.append(f'<text x="{x0 - 8}" y="{y + 10}" text-anchor="end"{weight}>{name}</text>')
     o.append(f'<line x1="{xp(lo):.1f}" x2="{xp(hi):.1f}" y1="{y + 6}" y2="{y + 6}" stroke="{COL}" stroke-width="{3 if bold else 2}"/><circle cx="{xp(pt):.1f}" cy="{y + 6}" r="3.5" fill="{COL}"/>')
 o.append("</svg>")
 (HERE / "ratios.svg").write_text("\n".join(o) + "\n")
