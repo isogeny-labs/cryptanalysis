@@ -17,7 +17,7 @@ information about `k` from `P` and `Q`? If not, establish it in Lean.
    Any solver for base `P'` is a solver for base `P` at the price of one
    scalar multiplication and one modular inversion. This is an algebraic
    identity, not a heuristic, and it is proved in Lean
-   (`formal/BasePointIndependence.lean`, theorems `transfer`, `transfer_back`,
+   (`formal/BasePointIndependence/Core.lean`, theorems `transfer`, `transfer_back`,
    `transfer_roundtrip`; claim PCC-20261108-0876eb, Lean proofs bound by
    statement hash, proof gate PASS locally, `not_covered` on a CI host
    without Lean, standing unverified until a keyholder signs its verdict
@@ -125,10 +125,14 @@ are cited and checked numerically only.
 
 ## Check receipt
 
-`formal/check.sh` runs the pinned toolchain (`formal/lean-toolchain`,
-`leanprover/lean4:v4.34.1`, no Mathlib, no Lake dependencies) and writes
-`formal/RECEIPT.txt` with `lean --version`, the file's SHA-256 and every
-`#print axioms` line. The committed receipt shows the standard foundations
+`formal/` is a dependency-free Lake project (`formal/lean-toolchain`
+`leanprover/lean4:v4.34.1`, no Mathlib, empty `lake-manifest.json`),
+registered in `tools/lean/current-corpus-gate.py` under `CORE_LEAN_PROJECTS`
+so the `corpus` CI check builds it natively and audits every theorem's
+`#print axioms` line. `formal/check.sh` runs `lake build` and
+`lake env lean` on `BasePointIndependence/Core.lean` and writes
+`formal/RECEIPT.txt` with `lean --version`, the source SHA-256 and every
+`#print axioms` line (22 theorems). The committed receipt shows the standard foundations
 only (`propext`, `Quot.sound`); `sorryAx` does not appear. Run on
 2026-11-08 with the Lean 4.34.1 Linux release binary unpacked into the
 session scratchpad (elan is not installed in this environment).

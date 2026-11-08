@@ -898,6 +898,10 @@ CORE_LEAN_PROJECTS = {
         "toolchain": "leanprover/lean4:v4.34.1",
         "library": "HandbookIC",
     },
+    "research/base-point-independence-20261108/formal": {
+        "toolchain": "leanprover/lean4:v4.34.1",
+        "library": "BasePointIndependence",
+    },
 }
 CORE_FORBIDDEN = re.compile(
     r"\b(?:sorry|admit|sorryAx|native_decide|axiom|unsafe|implemented_by|extern)\b")
