@@ -7,7 +7,7 @@ from `crypto`'s generator-effect study and cited by path.
 **Question (owner, 2026-11-08).** Does the choice of base point `P` on an
 elliptic curve affect the hardness of recovering `k` from `Q = [k]P`? Can
 arithmetic progressions, of scalars or of points, be used to derive
-information about `k` from `P` and `Q`? If not, prove it in Lean.
+information about `k` from `P` and `Q`? If not, establish it in Lean.
 
 **Answer.**
 
@@ -18,7 +18,10 @@ information about `k` from `P` and `Q`? If not, prove it in Lean.
    scalar multiplication and one modular inversion. This is an algebraic
    identity, not a heuristic, and it is proved in Lean
    (`formal/BasePointIndependence.lean`, theorems `transfer`, `transfer_back`,
-   `transfer_roundtrip`). The statement is about the subgroup: it says nothing
+   `transfer_roundtrip`; claim PCC-20261108-0876eb, Lean proofs bound by
+   statement hash, proof gate PASS locally, `not_covered` on a CI host
+   without Lean, standing unverified until a keyholder signs its verdict
+   `[pcc:unverified]`). The statement is about the subgroup: it says nothing
    about choosing a *different subgroup* or a *different curve*, which do change
    hardness (cofactor attacks, anomalous curves, MOV, isogeny transfers).
 2. **"Impossible" is computational, not information-theoretic.** `Q`
@@ -86,6 +89,13 @@ random generator equally hard, which is also what `crypto`'s E4 measured
 the point.
 
 ## Proof map
+
+Claim PCC-20261108-0876eb (`pcc/claims/PCC-20261108-0876eb.json`, kind
+`theorem`, standing unverified until a keyholder signs its verdict
+`[pcc:unverified]`) binds the statements of `transfer`, `transfer_back`,
+`log_unique`, `ap_const_diff`, `ap_log_shift` and `ap_base_sum_mem` by
+SHA-256 and runs `tools/lean/proof-gate.sh` when Lean is on PATH
+(`PASS 32 thm 0 trusted` on 2026-11-08).
 
 | result | Lean declaration | hypotheses | axioms used | status |
 |:--|:--|:--|:--|:--|
