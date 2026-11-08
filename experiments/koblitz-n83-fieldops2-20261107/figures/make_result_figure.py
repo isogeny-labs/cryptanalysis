@@ -2,7 +2,9 @@
 """Draw the frozen ratios of the n=83 field-ops-2 run with their 95% intervals.
 
 Usage: make_result_figure.py RUN_DIR   (RUN_DIR = run_github_<id>/)
-Reads RUN_DIR/panel/result.json only; writes figures/result.svg. A ratio above
+Reads RUN_DIR/panel/result.json only; writes figures/result.svg and, with
+Pillow, figures/result.png (the same layout drawn directly: this host has no
+SVG rasterizer). A ratio above
 1 means side B (R1) is faster, except the A/A (near 1 by design) and the
 planted control (the planted arm is slower by design).
 """
@@ -31,9 +33,9 @@ def main():
     run = Path(sys.argv[1]).resolve()
     stats = json.loads((run / "panel" / "result.json").read_text())["statistics"]
     rows = [(label, key, colour) for label, key, colour in ROWS if key in stats]
-    values = [v for _, key, _ in rows for v in (stats[key]["estimate"], *stats[key]["ci95"])]
-    lo, hi = min(0.9, min(values) - 0.02), max(1.1, max(values) + 0.02)
-    W, left, right, top, row_h = 900, 270, 140, 70, 34
+    values = [v for _, key, _ in rows if key != PLANTED_KEY for v in (stats[key]["estimate"], *stats[key]["ci95"])]
+    lo, hi = min(0.98, min(values) - 0.005), max(1.06, max(values) + 0.005)
+    W, left, right, top, row_h = 1010, 270, 250, 70, 34
     gw = W - left - right
     H = top + row_h * len(rows) + 60
     X = lambda v: left + (v - lo) / (hi - lo) * gw
@@ -47,7 +49,7 @@ def main():
     for k in range(0, 11):
         v = lo + (hi - lo) * k / 10
         o.append(f'<line x1="{X(v):.1f}" y1="{top - 8}" x2="{X(v):.1f}" y2="{top + row_h * len(rows)}" stroke="#eee"/>')
-        o.append(f'<text x="{X(v):.1f}" y="{top + row_h * len(rows) + 18}" text-anchor="middle" fill="#555">{v:.2f}</text>')
+        o.append(f'<text x="{X(v):.1f}" y="{top + row_h * len(rows) + 18}" text-anchor="middle" fill="#555">{v:.3f}</text>')
     o.append(f'<line x1="{X(1):.1f}" y1="{top - 8}" x2="{X(1):.1f}" y2="{top + row_h * len(rows)}" '
              'stroke="#888" stroke-dasharray="5 4"/>')
     for i, (label, key, colour) in enumerate(rows):
@@ -55,8 +57,12 @@ def main():
         y = top + row_h * i + row_h / 2
         est, (a, b) = s["estimate"], s["ci95"]
         o.append(f'<text x="{left - 10}" y="{y + 4:.1f}" text-anchor="end">{label}</text>')
-        o.append(f'<line x1="{X(a):.1f}" y1="{y:.1f}" x2="{X(b):.1f}" y2="{y:.1f}" stroke="{colour}" stroke-width="3"/>')
-        o.append(f'<circle cx="{X(est):.1f}" cy="{y:.1f}" r="5" fill="{colour}"/>')
+        if key != PLANTED_KEY:
+            o.append(f'<line x1="{X(a):.1f}" y1="{y:.1f}" x2="{X(b):.1f}" y2="{y:.1f}" stroke="{colour}" stroke-width="3"/>')
+        if key == PLANTED_KEY:
+            o.append(f'<text x="{X(hi) - 6:.1f}" y="{y + 4:.1f}" text-anchor="end" fill="{colour}">off scale, to the right</text>')
+        else:
+            o.append(f'<circle cx="{X(est):.1f}" cy="{y:.1f}" r="5" fill="{colour}"/>')
         o.append(f'<text x="{W - right + 10}" y="{y + 4:.1f}" fill="#333">{est:.4f} [{a:.4f}, {b:.4f}]</text>')
     o.append(f'<text x="{left + gw / 2:.1f}" y="{top + row_h * len(rows) + 40}" text-anchor="middle" '
              'fill="#555">ratio (wall time, one host class)</text>')
@@ -64,6 +70,44 @@ def main():
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text("\n".join(o) + "\n")
     print(OUT)
+    png(rows, stats, run, lo, hi, W, H, left, right, top, row_h, X)
+
+
+def png(rows, stats, run, lo, hi, W, H, left, right, top, row_h, X):
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        return
+    s = 1.5
+    img = Image.new("RGB", (int(W * s), int(H * s)), "white")
+    d = ImageDraw.Draw(img)
+    regular = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    f, fb = ImageFont.truetype(regular, int(12 * s)), ImageFont.truetype(bold, int(15 * s))
+    P = lambda x, y: (x * s, y * s)  # noqa: E731
+    d.text(P(20, 14), "n = 83 field ops 2 (R1), Tier 1 %s: frozen ratios, 95%% two-stage paired bootstrap" % run.name[11:], fill="black", font=fb)
+    d.text(P(20, 38), "ratio of sums over 36 primary pairs (12 points), 24 A/A pairs, 12 planted pairs; one pinned CPU; above 1 = side B faster", fill="#555555", font=f)
+    bottom = top + row_h * len(rows)
+    for k in range(0, 11):
+        v = lo + (hi - lo) * k / 10
+        d.line([P(X(v), top - 8), P(X(v), bottom)], fill="#eeeeee")
+        d.text(P(X(v) - 12, bottom + 8), "%.3f" % v, fill="#555555", font=f)
+    for y in range(top - 8, bottom, 9):
+        d.line([P(X(1), y), P(X(1), min(y + 5, bottom))], fill="#888888")
+    for i, (label, key, colour) in enumerate(rows):
+        est, (a, b) = stats[key]["estimate"], stats[key]["ci95"]
+        y = top + row_h * i + row_h / 2
+        w = d.textlength(label, font=f) / s
+        d.text(P(left - 10 - w, y - 8), label, fill="black", font=f)
+        if key == PLANTED_KEY:
+            d.text(P(X(hi) - 6 - d.textlength("off scale, to the right", font=f) / s, y - 8), "off scale, to the right", fill=colour, font=f)
+        else:
+            d.line([P(X(a), y), P(X(b), y)], fill=colour, width=int(3 * s))
+            d.ellipse([P(X(est) - 5, y - 5), P(X(est) + 5, y + 5)], fill=colour)
+        d.text(P(W - right + 10, y - 8), "%.4f [%.4f, %.4f]" % (est, a, b), fill="#333333", font=f)
+    d.text(P(left + (W - left - right) / 2 - 90, bottom + 30), "ratio (wall time, one host class)", fill="#555555", font=f)
+    img.save(OUT.with_suffix(".png"), dpi=(150, 150), optimize=True)
+    print(OUT.with_suffix(".png"))
 
 
 if __name__ == "__main__":
