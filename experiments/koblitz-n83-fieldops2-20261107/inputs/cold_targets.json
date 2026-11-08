@@ -1,0 +1,121 @@
+{
+  "beat_id": "koblitz.compact_orbit.n83_single_target",
+  "disjoint_from": [
+    "q0",
+    "eval (B's panel_b, 16 points)",
+    "scanorder-heldout (384 points)",
+    "combined-primary-v1 (576 points)",
+    "probepipe-primary-v1 (384 points)",
+    "statefold-cold-v1 (16 points)",
+    "tablefilter-primary-v1 (384 points)",
+    "stacked-cold-v1 (20 points)",
+    "rankcut-cold-v1 (20 points)",
+    "eval (64 points)",
+    "rankprobe-cold-v1 (20 points)",
+    "indexlift-cold-v1 (20 points)",
+    "k899-cold-v1 (20 points)",
+    "rotkey-cold-v1 (20 points)",
+    "onlineframe-v1 (64 points)",
+    "closure-cold-v1 (20 points)",
+    "knownlog-cold-v1 (40 points)",
+    "blrankprobe-cold-v1 (64 points)",
+    "closureindexlift-cold-v1 (20 points)",
+    "closureindexlift-rep-cold-v1 (10 points)",
+    "indexbuild-cold-v1 (12 points)",
+    "indexbuild2-cold-v1 (12 points)",
+    "rankfinder-cold-v1 (12 points)",
+    "fieldops-cold-v1 (12 points)"
+  ],
+  "domain": "kic-n83-single-target-public-point-v1",
+  "input_law": "public hash-to-curve: x = SHA-256('kic-n83-single-target-public-point-v1|fieldops2-cold-v1|<seed>|<counter>')[0:8] little-endian mod 2^n for the first counter whose x lifts; y by half-trace, sign by bit 0 of digest byte 8; Q = [h]P. No scalar is known to either arm.",
+  "points": [
+    {
+      "point": [
+        "8090793004767010163968953",
+        "4236553826694057268612632"
+      ],
+      "seed": 0
+    },
+    {
+      "point": [
+        "119110606475698065802605",
+        "142747845269027575172317"
+      ],
+      "seed": 1
+    },
+    {
+      "point": [
+        "8853125730348577512524632",
+        "1107221764089326034156159"
+      ],
+      "seed": 2
+    },
+    {
+      "point": [
+        "189615123130437675205883",
+        "5675561336710728384442006"
+      ],
+      "seed": 3
+    },
+    {
+      "point": [
+        "5745701938460771665924976",
+        "1523648766306653050634656"
+      ],
+      "seed": 4
+    },
+    {
+      "point": [
+        "4218328298442803692441340",
+        "7475968160323936115300735"
+      ],
+      "seed": 5
+    },
+    {
+      "point": [
+        "8923906902149101062426718",
+        "3866569866098298254009800"
+      ],
+      "seed": 6
+    },
+    {
+      "point": [
+        "181764612683528938279131",
+        "7708511787663968820562046"
+      ],
+      "seed": 7
+    },
+    {
+      "point": [
+        "528770363370511793848615",
+        "4158322309071193086113906"
+      ],
+      "seed": 8
+    },
+    {
+      "point": [
+        "7748084993020905373746596",
+        "3570960653432707777809525"
+      ],
+      "seed": 9
+    },
+    {
+      "point": [
+        "5281934117042496968690497",
+        "5216998830367561629581361"
+      ],
+      "seed": 10
+    },
+    {
+      "point": [
+        "3499257695790427056474987",
+        "3082496346168683534246330"
+      ],
+      "seed": 11
+    }
+  ],
+  "role": "fieldops2-cold-v1",
+  "scalar_known_to_anyone": false,
+  "schema": 1,
+  "sized_by": "fixed 12 points x 3 alternating primary pairs (power_check.py checks the design)"
+}
