@@ -1,0 +1,192 @@
+{
+  "branch": "claude/n83-fieldops2",
+  "closed_utc": "2026-11-08T00:23:44+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "experiments/koblitz-n83-fieldops2-20261107/verify_receipt.py",
+        "/tmp/claude-0/-home-user/db62bab2-798a-5439-886c-764eafc92fd6/scratchpad/vcopy-fo2b/panel"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-08T00:23:26+00:00",
+      "wall_s": 6.66
+    }
+  ],
+  "commit": "4734da1274a393773dd92c7cca6c7dd7aaa0b9fa",
+  "commit_dirty": true,
+  "created_utc": "2026-11-08T00:23:21+00:00",
+  "curve_uid": "EC1N83Ce1h35c7ced6b497",
+  "entries": [
+    "benchmarks/20261107-n83-fieldops2"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v310-x86_64-with-glibc2.39"
+  },
+  "id": "20261108T0023Z-n83-fieldops2",
+  "metrics": [
+    {
+      "baseline": 0.389538,
+      "better": "lower",
+      "n": 36,
+      "name": "s_e2e_cold",
+      "note": "R1 producer (side B), end-to-end cold = rank stage + cold; baseline = the landed field-ops row (side A) in the same run; Tier 1 run 42424680756 (AMD EPYC 9V74); S in this run's rT770 steps (245.81 ns) per sqrt(r); rT770 steps differ between host classes, so S compares only within one run",
+      "reference": 0.119991,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "S",
+      "value": 0.379816
+    },
+    {
+      "baseline": 0.017783,
+      "better": "lower",
+      "n": 36,
+      "name": "s_online",
+      "note": "one-target online, side B; baseline = side A; Tier 1 run 42424680756 (AMD EPYC 9V74); S in this run's rT770 steps (245.81 ns) per sqrt(r); rT770 steps differ between host classes, so S compares only within one run",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "S",
+      "value": 0.01783
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "e2e_paired_a_over_b",
+      "note": "primary: sum E2E(A) / sum E2E(B) over 36 alternating pairs, 95% two-stage paired bootstrap; above 1 = side B faster",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.023615,
+        1.027769
+      ],
+      "unit": "ratio",
+      "value": 1.025597
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_index_build_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.048387,
+        1.051482
+      ],
+      "unit": "ratio",
+      "value": 1.050012
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_scan_selftest_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.992171,
+        1.002737
+      ],
+      "unit": "ratio",
+      "value": 0.997597
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_rank_stage_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.001765,
+        1.01081
+      ],
+      "unit": "ratio",
+      "value": 1.006121
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 36,
+      "name": "stage_online_a_over_b",
+      "note": "labelled stage secondary, A / B; does not decide",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.992023,
+        1.003772
+      ],
+      "unit": "ratio",
+      "value": 0.99741
+    },
+    {
+      "baseline": 8.864117,
+      "better": "lower",
+      "n": 36,
+      "name": "e2e_cold_wall_b",
+      "note": "end-to-end cold wall, side B (mean over 36 primary pairs); baseline = side A in the same run; reference = this run's matched rT770 cold mean; Tier 1 run 42424680756 (AMD EPYC 9V74)",
+      "reference": 2.730455,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 8.642885
+    }
+  ],
+  "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
+  "raw": [
+    {
+      "bytes": 1485029,
+      "path": "experiments/koblitz-n83-fieldops2-20261107/run_github_42424680756/panel/runs.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/91/91c6644d37b27fa06ceb4044df1b1af9168a45c3c6e74b456dacdf065089b239",
+      "sha256": "91c6644d37b27fa06ceb4044df1b1af9168a45c3c6e74b456dacdf065089b239",
+      "uploaded": true
+    },
+    {
+      "bytes": 29512,
+      "path": "experiments/koblitz-n83-fieldops2-20261107/run_github_42424680756/panel/result.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7a/7ad3d14fcb853b63a78f36683b6bcf4b8a8e7a81576528c333d36c809d3d3dd9",
+      "sha256": "7ad3d14fcb853b63a78f36683b6bcf4b8a8e7a81576528c333d36c809d3d3dd9",
+      "uploaded": true
+    },
+    {
+      "bytes": 29965,
+      "path": "experiments/koblitz-n83-fieldops2-20261107/run_github_42424680756/runner-stdout.jsonl",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/cd/cd6ae6c2225316611e1d78663547c8b39b2b7c5ece47e17b49247f34a386bbdb",
+      "sha256": "cd6ae6c2225316611e1d78663547c8b39b2b7c5ece47e17b49247f34a386bbdb",
+      "uploaded": true
+    },
+    {
+      "bytes": 797,
+      "path": "experiments/koblitz-n83-fieldops2-20261107/run_github_42424680756/allocation.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/af/af151c5a03af0c72ed04ba6da6b1152eecbb2f19803bbac47079a30a3a725eb8",
+      "sha256": "af151c5a03af0c72ed04ba6da6b1152eecbb2f19803bbac47079a30a3a725eb8",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261107-n83-fieldops2/report.pdf",
+    "png": [
+      "benchmarks/20261107-n83-fieldops2/result.png"
+    ],
+    "svg": [
+      "benchmarks/20261107-n83-fieldops2/result.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "n83-fieldops2",
+  "status": "measured",
+  "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
+  "validation": null
+}
