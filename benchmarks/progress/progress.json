@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261108T0023Z-n83-fieldops2",
+  "latest_record": "20261108T0044Z-n83-k4c400",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 13,
+    "measured": 14,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -14,11 +14,11 @@
     {
       "better": "lower",
       "first": 8.976,
-      "latest": 8.642885,
+      "latest": 5.34768,
       "latest_derived": {
-        "improvement_vs_first_percent": 3.7112,
-        "improvement_vs_previous_percent": 3.7112,
-        "value_over_reference": 3.165364
+        "improvement_vs_first_percent": 40.4225,
+        "improvement_vs_previous_percent": 38.1262,
+        "value_over_reference": 2.0485
       },
       "metric": "e2e_cold_wall_b",
       "points": [
@@ -52,6 +52,22 @@
           "spread": null,
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 8.642885
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 40.4225,
+            "improvement_vs_previous_percent": 38.1262,
+            "value_over_reference": 2.0485
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": 2.610534,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 5.34768
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -60,10 +76,10 @@
     {
       "better": "higher",
       "first": 1.261015,
-      "latest": 1.025597,
+      "latest": 2.001428,
       "latest_derived": {
-        "improvement_vs_first_percent": -18.6689,
-        "improvement_vs_previous_percent": -18.6689
+        "improvement_vs_first_percent": 58.7156,
+        "improvement_vs_previous_percent": 95.1476
       },
       "metric": "e2e_paired_a_over_b",
       "points": [
@@ -101,6 +117,24 @@
           ],
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 1.025597
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 58.7156,
+            "improvement_vs_previous_percent": 95.1476
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.877732,
+            2.13079
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 2.001428
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -109,11 +143,11 @@
     {
       "better": "lower",
       "first": 0.39219,
-      "latest": 0.379816,
+      "latest": 0.20954,
       "latest_derived": {
-        "improvement_vs_first_percent": 3.1551,
-        "improvement_vs_previous_percent": 3.1551,
-        "value_over_reference": 3.165371
+        "improvement_vs_first_percent": 46.5718,
+        "improvement_vs_previous_percent": 44.8312,
+        "value_over_reference": 2.04849
       },
       "metric": "s_e2e_cold",
       "points": [
@@ -147,6 +181,22 @@
           "spread": null,
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 0.379816
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 46.5718,
+            "improvement_vs_previous_percent": 44.8312,
+            "value_over_reference": 2.04849
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": 0.10229,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.20954
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -155,10 +205,10 @@
     {
       "better": "lower",
       "first": 0.007481,
-      "latest": 0.01783,
+      "latest": 0.018026,
       "latest_derived": {
-        "improvement_vs_first_percent": -138.3371,
-        "improvement_vs_previous_percent": -138.3371
+        "improvement_vs_first_percent": -140.9571,
+        "improvement_vs_previous_percent": -1.0993
       },
       "metric": "s_online",
       "points": [
@@ -190,6 +240,21 @@
           "spread": null,
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 0.01783
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -140.9571,
+            "improvement_vs_previous_percent": -1.0993
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.018026
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -198,10 +263,10 @@
     {
       "better": "higher",
       "first": 1.306917,
-      "latest": 1.050012,
+      "latest": 2.392818,
       "latest_derived": {
-        "improvement_vs_first_percent": -19.6573,
-        "improvement_vs_previous_percent": -19.6573
+        "improvement_vs_first_percent": 83.0888,
+        "improvement_vs_previous_percent": 127.8848
       },
       "metric": "stage_index_build_a_over_b",
       "points": [
@@ -239,6 +304,24 @@
           ],
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 1.050012
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 83.0888,
+            "improvement_vs_previous_percent": 127.8848
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            2.379372,
+            2.406501
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 2.392818
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -247,10 +330,10 @@
     {
       "better": "higher",
       "first": 1.405339,
-      "latest": 0.99741,
+      "latest": 0.648659,
       "latest_derived": {
-        "improvement_vs_first_percent": -29.0271,
-        "improvement_vs_previous_percent": -29.0271
+        "improvement_vs_first_percent": -53.8432,
+        "improvement_vs_previous_percent": -34.9657
       },
       "metric": "stage_online_a_over_b",
       "points": [
@@ -288,6 +371,24 @@
           ],
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 0.99741
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": -53.8432,
+            "improvement_vs_previous_percent": -34.9657
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.33468,
+            1.139527
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 0.648659
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -296,10 +397,10 @@
     {
       "better": "higher",
       "first": 1.199575,
-      "latest": 1.006121,
+      "latest": 1.748513,
       "latest_derived": {
-        "improvement_vs_first_percent": -16.1269,
-        "improvement_vs_previous_percent": -16.1269
+        "improvement_vs_first_percent": 45.761,
+        "improvement_vs_previous_percent": 73.7875
       },
       "metric": "stage_rank_stage_a_over_b",
       "points": [
@@ -337,6 +438,24 @@
           ],
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 1.006121
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 45.761,
+            "improvement_vs_previous_percent": 73.7875
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.503876,
+            2.028689
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 1.748513
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",
@@ -345,10 +464,10 @@
     {
       "better": "higher",
       "first": 1.316541,
-      "latest": 0.997597,
+      "latest": 4.968908,
       "latest_derived": {
-        "improvement_vs_first_percent": -24.2259,
-        "improvement_vs_previous_percent": -24.2259
+        "improvement_vs_first_percent": 277.4214,
+        "improvement_vs_previous_percent": 398.0877
       },
       "metric": "stage_scan_selftest_a_over_b",
       "points": [
@@ -386,6 +505,24 @@
           ],
           "summary": "n=83 field ops 2 (R1) Tier 1 run 42424680756: end-to-end cold A/B 1.0256 [1.0236, 1.0278], exact (identical relations, probes, digests); in-run gap to rT770 3.165 for B (3.246 for A)",
           "value": 0.997597
+        },
+        {
+          "commit": "a28148a61337",
+          "date": "2026-11-08",
+          "derived": {
+            "improvement_vs_first_percent": 277.4214,
+            "improvement_vs_previous_percent": 398.0877
+          },
+          "n": 60,
+          "record": "20261108T0044Z-n83-k4c400",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            4.893423,
+            5.060173
+          ],
+          "summary": "n=83 D4 (K'=4, 400 orbits) vs M38 on the field-ops producer, Tier 1 run 42425640847: end-to-end cold A/B 2.0014 [1.8777, 2.1308], every gate and control passes; in-run gap to rT770 2.049 for D4 (4.100 for M38); not stacked on R1",
+          "value": 4.968908
         }
       ],
       "problem": "ecdlp:EC1N83Ce1h35c7ced6b497",

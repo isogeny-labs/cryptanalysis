@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+"""Build the power prior (`inputs/power_prior.json`) from the field-ops run.
+
+Source: run 41869146827, `koblitz-n83-fieldops-20261104` (on main, archived as
+`run_github_41869146827/`, `panel/runs.jsonl` hydrated by
+`tools/artifacts/artifacts.py pull`; its SHA-256 is checked against the
+archive's `.artifacts.json`). That run measured the field-ops producer (its
+side B, arms kM38FO and cM38FO) on the M38 closure base in 36 alternating
+primary pairs and 24 A/A pairs on one GitHub runner: exactly this
+experiment's side A. Each raw record's SHA-256 must equal the wrapper's
+`raw_result_sha256`, and only valid rows are used.
+
+Per primary pair (point, pair) it keeps the producer's side B (the M38 side):
+kM38FO's rank stage (with its 16 per-attempt times and probe counts) and process wall, and cM38FO's cold time, setup, index
+build, scan self-test, online time and process wall. Per A/A pair it keeps the
+B / Baa ratios of the rank stage, the cold time, the index build and the
+self-test. Every arm's process walls are kept for the runtime estimate.
+
+Nothing here is a result of this experiment. The D4 side is not in it: the
+power check models it from the local prototype (`inputs/local_profile.json`).
+This is the field-ops experiment's `make_power_prior.py` with the source run
+moved one experiment on.
+"""
+
+import argparse
+import base64
+import hashlib
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+OUT = HERE / "inputs" / "power_prior.json"
+RUN_DIR = HERE.parent / "koblitz-n83-fieldops-20261104" / "run_github_41869146827"
+RUNS_SHA256 = "e730e2cc8834a8fa726f34315cc52a92d4b656c0fec66f87aca13e4659e95475"
+
+
+def raw_of(run_dir, row):
+    lines = (run_dir / "panel" / row["stdout_file"]).read_text().splitlines()
+    encoded = next(line[len("raw_b64="):] for line in lines if line.startswith("raw_b64="))
+    raw_bytes = base64.b64decode(encoded, validate=True)
+    summary = dict(w.split("=", 1) for w in next(l for l in reversed(lines) if "raw_result_sha256=" in l).split()
+                   if "=" in w)
+    if summary["raw_result_sha256"] != hashlib.sha256(raw_bytes).hexdigest():
+        raise SystemExit("raw record digest differs for serial %d" % row["serial"])
+    return json.loads(raw_bytes)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-dir", type=Path, default=RUN_DIR)
+    args = parser.parse_args()
+    runs_path = args.run_dir / "panel" / "runs.jsonl"
+    run_sha = hashlib.sha256(runs_path.read_bytes()).hexdigest()
+    if run_sha != RUNS_SHA256:
+        raise SystemExit("runs.jsonl differs from the pinned archive: " + run_sha)
+    allocation = json.loads((args.run_dir / "allocation.json").read_text())
+    rows = [json.loads(line) for line in runs_path.read_text().splitlines() if line]
+    sides, walls = {}, {}
+    for row in rows:
+        if row["status"] != "valid":
+            continue
+        walls.setdefault(row["arm"], []).append(row["process_wall_ms"])
+        if row.get("role") not in ("primary", "aa"):
+            continue
+        raw = raw_of(args.run_dir, row)
+        f = raw["fields"]
+        key = "%s/%s/%d" % (row["role"], row["point_id"], row["pair"])
+        side = sides.setdefault(key, {}).setdefault(row["side"], {})
+        if row["arm"].startswith("k"):
+            side["rank_stage_ms"] = f["rank_stage_ms"]
+            summary = next(r for r in raw["records"] if r.get("kind") == "compact_orbit_dlp_summary")
+            side["rank_attempt_ns"] = summary["rank_attempt_ns"]
+            side["rank_attempt_probes"] = summary["rank_attempt_probes"]
+            side["rank_wall_ms"] = row["process_wall_ms"]
+        else:
+            side.update({"cold_ms": f["cold_ms"], "setup_ms": f["setup_ms"], "index_ms": f["index_ms"],
+                         "scan_selftest_ms": f["scan_selftest_ms"], "online_ms": f["online_ms"],
+                         "cold_wall_ms": row["process_wall_ms"]})
+    primary = {k[len("primary/"):]: v["B"] for k, v in sorted(sides.items()) if k.startswith("primary/")}
+    aa = {}
+    for k, v in sorted(sides.items()):
+        if k.startswith("aa/"):
+            b, c = v["B"], v["Baa"]
+            aa[k[len("aa/"):]] = {"rank_stage": b["rank_stage_ms"] / c["rank_stage_ms"],
+                                  "cold": b["cold_ms"] / c["cold_ms"], "index": b["index_ms"] / c["index_ms"],
+                                  "scan_selftest": b["scan_selftest_ms"] / c["scan_selftest_ms"]}
+    prior = {
+        "schema": 1,
+        "sources": {"run": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41869146827",
+                    "archive": "experiments/koblitz-n83-fieldops-20261104/run_github_41869146827 (on main)",
+                    "runs_jsonl_sha256": run_sha,
+                    "host": "GitHub ubuntu-24.04 runner %s, %s, one pinned CPU (allocation.json)" % (
+                        allocation["runner_name"], allocation["observed_cpu_model"])},
+        "side_A_primary_pairs": primary,
+        "aa_ratios_B_over_Baa": aa,
+        "process_wall_ms": {arm: sorted(v) for arm, v in sorted(walls.items())},
+    }
+    OUT.write_text(json.dumps(prior, indent=1, sort_keys=True) + "\n")
+    print(str(OUT))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,642 @@
+{
+ "arms": {
+  "cD4FO": {
+   "base": "D4",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the field-ops arm cM38FO on base D4 (same binary ic_online_fieldops_r770)",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "role": "PRIMARY candidate cold: cM38FO's configuration on the D4 base",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "cD4FOX": {
+   "base": "D4",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the field-ops arm cM38FO on base D4 (same binary ic_online_fieldops_r770)",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift_plant",
+   "kind": "ic_cold",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "role": "PLANTED timing and exactness control: cD4FO with KIC_INDEX_CANON=lift_plant: every index key is also checked against lift_scan and the selected canonicalizer (2 x stored states checks); same layout digests, slower index build",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "cD4FOaa": {
+   "base": "D4",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the field-ops arm cM38FO on base D4 (same binary ic_online_fieldops_r770)",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "role": "A/A copy of cD4FO",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "cM38FO": {
+   "base": "M38",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the parent's arm cM38RF with binary ic_online_fieldops_r770",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_cold",
+   "parent_source": "the field-ops protocol's arm cM38FO, verbatim",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "role": "PRIMARY candidate cold: cM38RF's configuration on the field-ops producer",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kD4FO": {
+   "base": "D4",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the field-ops arm kM38FO on base D4 (same binary ic_online_fieldops_r770)",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "rank_solve": "frame",
+   "role": "PRIMARY candidate rank stage: kM38FO's configuration on the D4 base",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kD4FOaa": {
+   "base": "D4",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the field-ops arm kM38FO on base D4 (same binary ic_online_fieldops_r770)",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "rank_solve": "frame",
+   "role": "A/A copy of kD4FO",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "kM38FO": {
+   "base": "M38",
+   "binary": "ic_online_fieldops_r770",
+   "derived_from": "the parent's arm kM38RF with binary ic_online_fieldops_r770",
+   "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+   "fold": true,
+   "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+   "index_canon": "lift",
+   "kind": "ic_rank",
+   "parent_source": "the field-ops protocol's arm kM38FO, verbatim",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_probe_pipeline": "linear_canon_lanes8",
+   "rank_solve": "frame",
+   "role": "PRIMARY candidate rank stage: kM38RF's configuration on the field-ops producer",
+   "scan_selftest": "full",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "parent_source": "the field-ops protocol's arm rT, verbatim",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "baseline_row": {
+  "base": "M38",
+  "binary": "ic_online_fieldops_r770",
+  "experiment": "koblitz-n83-fieldops-20261104",
+  "fieldops_protocol_sha256": "abe5bb74569b0cf4ec88f0ad0bf1c8fbd882260b7b2e6bd08860a22a7b526700",
+  "landed": "on main",
+  "primary": "1.2610 [1.2541, 1.2681] over the rank-finder row (side A of that run)",
+  "ratchet_rule": "if another PR replaces the n=83 row before this one lands, this result is recorded as a measurement against the row it measured (M38 on the field-ops producer), and a combined run follows",
+  "run": "https://github.com/isogeny-labs/cryptanalysis/actions/runs/41869146827"
+ },
+ "bootstrap": {
+  "draws": 10000,
+  "seed": 20261080
+ },
+ "controls_pass_rule": {
+  "aa": "over the 40 A/A pairs (B against Baa): the COLD ratio of sums cD4FO / cD4FOaa point estimate inside [0.97, 1.03], and the END-TO-END ratio's 95% two-stage interval contains 1. The field-ops template required the end-to-end POINT estimate inside [0.97, 1.03]; with independent rank and online draws on D4 that fails a true null about half the time (power.json: e2e_point_inside_0.97_1.03_rate), so the end-to-end rule is the interval",
+  "otherwise": "verdict invalid",
+  "planted": "index build cD4FOX / cD4FO over the 20 planted pairs, 95% bootstrap lower bound (pairs resampled, 10,000 draws) above 1; every cD4FOX must also reproduce the frozen layout digests and check 2 x stored states roots",
+  "planted_exactness": "the three planted corruptions rejected by verify_closure.py on both closure bases before timing, and the crate tests passing"
+ },
+ "decision_rule": {
+  "improvement": "R lower bound > 1: a qualified Tier 1 end-to-end speedup of the D4 base over the M38 row with the same producer. It replaces the n=83 row only if every gate and control passes",
+  "invalid": "any gate or control fails or is unknown, or any scheduled row is missing (time-guard skips included)",
+  "not_separated": "otherwise",
+  "regression": "R upper bound < 1"
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "aa_rule": "the A/A pairs compare B with Baa: kD4FO / cD4FO against kD4FOaa / cD4FOaa, the same arm twice, alternating, same point and seed",
+  "deadline_min": 165,
+  "order_seed0": 2026110780,
+  "pair_rule": "a primary pair is one A side and one B side with the same point and the same rank seed (the seed is the rank process's RNG seed on each base; the two bases give different rank work, so the pair shares a point and a seed, not a draw). Each point's K pairs run as 2K sides in strict alternation, ABAB... or BABA..., the starting side drawn from random.Random(ORDER_SEED0 + i)",
+  "planted_arms": [
+   "cD4FO",
+   "cD4FOX"
+  ],
+  "planted_pairs_per_point": 1,
+  "planted_rule": "a planted pair is cD4FO and cD4FOX, cold processes only, alternating, with the start drawn from the same generator",
+  "points": 20,
+  "primary_pairs_per_point": 3,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cM38FO",
+   "cD4FO"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_seed0": 2500,
+  "rank_seeds": {
+   "s000": [
+    2501,
+    2502,
+    2503
+   ],
+   "s001": [
+    2504,
+    2505,
+    2506
+   ],
+   "s002": [
+    2507,
+    2508,
+    2509
+   ],
+   "s003": [
+    2510,
+    2511,
+    2512
+   ],
+   "s004": [
+    2513,
+    2514,
+    2515
+   ],
+   "s005": [
+    2516,
+    2517,
+    2518
+   ],
+   "s006": [
+    2519,
+    2520,
+    2521
+   ],
+   "s007": [
+    2522,
+    2523,
+    2524
+   ],
+   "s008": [
+    2525,
+    2526,
+    2527
+   ],
+   "s009": [
+    2528,
+    2529,
+    2530
+   ],
+   "s010": [
+    2531,
+    2532,
+    2533
+   ],
+   "s011": [
+    2534,
+    2535,
+    2536
+   ],
+   "s012": [
+    2537,
+    2538,
+    2539
+   ],
+   "s013": [
+    2540,
+    2541,
+    2542
+   ],
+   "s014": [
+    2543,
+    2544,
+    2545
+   ],
+   "s015": [
+    2546,
+    2547,
+    2548
+   ],
+   "s016": [
+    2549,
+    2550,
+    2551
+   ],
+   "s017": [
+    2552,
+    2553,
+    2554
+   ],
+   "s018": [
+    2555,
+    2556,
+    2557
+   ],
+   "s019": [
+    2558,
+    2559,
+    2560
+   ]
+  },
+  "rank_seeds_note": "2501-2560 are new on n=83 (inputs/seed_disjointness.json; the positive control finds the field-ops schedule's 2101-2136). The first choice, 2301-2360, collided with koblitz-n83-onlineframe2-20261021/schedule.json and was replaced. 60 distinct rank seeds give 240 D4 attempts (4 per seed) for the probe-law gate and 960 attempts on M38",
+  "rank_stage_design": "each side runs its own rank process on its own base: kM38FO needs 16 attempts (16 unknown-log columns), kD4FO needs 4. The rank work is therefore NOT the same in the two sides; it is the quantity under test. Within a base it is the same (gated: identical relation digests, probe vectors, root calls and counters per seed across kD4FO and kD4FOaa)",
+  "rho_rule": "one rT process per point, seed rho_seed_base + point seed",
+  "rho_seed_base": 1080000,
+  "runtime_estimate": "power.json runtime: about 62 min for the job (43 min schedule), about 92 min on a 1.5x slower host; time guard 165 min, job limit 180 min",
+  "segment_rule": "O1: Q0 on cM38FO and cD4FO, shuffled by random.Random(ORDER_SEED0 + 99). Then one segment P<i> per point i = 1..POINTS in panel order. Its four sub-blocks (primary, aa, planted, rho) run in an order shuffled by the point's generator",
+  "segment_upper_estimate_s": {
+   "O": 100,
+   "P": 450
+  },
+  "side_rule": "a side is two fresh processes run back to back, its rank process and then its cold process, both on the pair's point. The rank process runs the rank stage with the pair's rank seed (no cached table) and then solves the point; the cold process loads the base's verified table and solves the point",
+  "sides": {
+   "A": [
+    "kM38FO",
+    "cM38FO"
+   ],
+   "B": [
+    "kD4FO",
+    "cD4FO"
+   ],
+   "Baa": [
+    "kD4FOaa",
+    "cD4FOaa"
+   ]
+  },
+  "time_guard": "before each segment: skip it (rows skipped_time_guard) if the elapsed job time plus the larger of its upper estimate and 1.1x the longest segment of its panel so far exceeds 165 min. A skipped row makes the run invalid",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 1800,
+   "rho_tuned": 600
+  }
+ },
+ "draft_not_frozen": false,
+ "evidence_change": "none: both sides run the full scan self-test over their own domain (D4's is 2^24, M38's 2^26: the domain is the smallest even power of two covering the base's logical states, the producer's own rule, not a sampled or shortened check), build, check and digest their own index, and the rank stage runs to full rank and checks its table against the frozen verified table. The Feistel domain stepping down is a consequence of the smaller base and is part of what is measured",
+ "exactness_argument": {
+  "bases": "D4 is another input to the same producer: its orbit representatives, labels and table are checked by the pinned oracle (verify_closure.py), its index and layout digests are frozen from a local run and reproduced by every process of this run, every rank process reproduces the frozen table, and every recovered scalar replays [d]G = Q in the oracle. Within-column algebraic coincidences remove 4.98% of D4's logical keys (E = 12,618,968 of 13,280,000): that is a property of the base, in E and in the probe law",
+  "producer": "None of them changes what is computed; each changes how: F1. **Inlined field products and squares** (`fast_field`, `fmul`, `fsqr`). The library's `Gf2_128::mul` folds with its `clmul_u64`, which is not `#[inline]` and lives in the library crate, so every product makes six out-of-line calls (round 2's C8 enabled the carry-less multiply in the state loop but could not inline that call). `fast_field::mul` forms the same polynomial product with four carry-less 64 x 64 products (the library's Karatsuba uses three; both give the one product of the two polynomials) and reduces it with the library's two folds by the tail t = irr - z^n, statement for statement (`reduce` is `reduce_fold`). `fast_field::sqr` forms a0^2 + a1^2 z^128, the square in characteristic 2, and the same reduction. A reduced field element is unique, so every product and square is the library's. Side B's binary is built with `-C target-feature=+pclmulqdq` (`online-b/.cargo/config.toml`) so the carry-less products inline. `fast_field::check` runs before any use and fails closed: the CPU has the instruction, the field meets the library's fold conditions (tail degree d <= 63, 2d < n + 2, n + d <= 129), and the inlined product and square equal the library's on edge cases and on 65,536 pseudo-random pairs. E1. **The state loop's three squarings by the inlined square.** `s3_roots_from_inverses` read `solver.square`, a byte-table map built by `S3Solver128::new` from the images `gf.sqr(e)` of the unit vectors. Squaring is GF(2)-linear and the table map is the linear map with those images, so the two agree on every element; its 45 KB of tables leave the state loop's cache footprint. E2. **Byte-image lookups for every linear map** (`Linear128::apply`). The same eleven table lookups of the same tables and the same XORs, with the bytes read from `v.to_le_bytes()` instead of eleven variable shifts of v. S4. **The scan self-test evaluated from per-round tables** (`RoundTables`). `ScanPermutation::apply` calls `round(right, key)` only with right = (index & mask) < 2^half, and every later right is masked again, so each round is read from a table of `round(v, key)` over [0, 2^half), filled by calling `round` itself. The table-evaluated `apply` is therefore `apply` on every index, and `scan_permutation_selftest` makes the parent's three checks (no image at or above the domain, no repeated in-range image, exactly `len` in-range images) of the same function over the same domain in the same order, with the parent's eight-image loop. The online and rank scans still evaluate `apply`; the self-test's sampled inverse check is unchanged. Two more edits: the header comment and the summary field `field_ops_pipeline` (this producer's name for the four changes; side A's binary emits none). One appended test module (`fieldops_tests`, run by the workflow's `cargo test --bins`) checks the equalities the proofs above rest on: the inlined product and square against the library's on every pair of a 2^20-element sample and on edge cases, the square map against the inlined square, the byte-image lookup against the parent's shift loop, and the table-evaluated permutation against `apply` on every index of the M38 and M10 domains for both self-test keys."
+ },
+ "frozen_at_utc": "2026-11-07T22:22:13+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row present and valid (exit 0, verified, schedule match, no memory event), no time-guard skip",
+  "receipt integrity (verify_receipt.py, fail closed): every executed row's raw producer record decodes, its SHA-256 equals the wrapper summary's raw_result_sha256, and its arm, kind, panel, point and seed equal the frozen schedule's; serial, arm, point, seed, segment, command line and stdout file equal the schedule's; rows ran in schedule order; runner_start.json records this protocol's, this schedule's, arm.py's and run_schedule.py's SHA-256 and no smoke subset; every row ran its ARM's binary (by name and by the digest runner_start.json lists), unchanged at the end. An unknown gate is a failure",
+  "every IC row's summary names its arm's rank_probe_pipeline and field_ops_pipeline (fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables on every IC arm: the same binary on both sides)",
+  "placement: every process's Cpus_allowed_list, read from /proc while it ran, is the one execution CPU",
+  "host identity: the CPU record at the start and the end of the schedule has the same model, microcode and flags",
+  "before any timing: check_log_table.py: M38's table and header re-verified and D4's header and table pass verify_closure.py --base --table --planted in the pinned oracle (three planted corruptions rejected on each), both SHA-256 pinned; the field-ops crates' tests pass",
+  "every IC process (arm.py): KIC_INDEX_CANON as the arm (lift; lift_plant in cD4FOX only); index roots checked 0 times, or 2 x stored states in cD4FOX; the full scan self-test; the arm's index_build_pipeline and field_ops_pipeline; ITS base's frozen base hash, columns, orbits, orbits per column, multiplier list, states, slots, root entries, logical-state and table-map digests; its base's frozen LAYOUT digests (stored_states_blake3, table_slots_blake3); cold: the frozen cached table's input digest; rank: the arm's rank_solve, K' relations, one frame per attempt",
+  "per point: one scalar across every IC process (both bases, cold and rank) and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point and base: one relation and one probe count across every IC process of that base",
+  "per base (M38 and D4): one index and layout digest set across every process, equal to the frozen one",
+  "Q0 (O1): cM38FO gives M38's frozen identity (1,612,533 probes), cD4FO gives D4's frozen identity (inputs/local_identity.json)",
+  "rank arms: full rank (K' relations), 0 failed attempts, 0 rows without gain, one frame per attempt, and the written factor-log table equal to the base's frozen verified table, log for log",
+  "per D4 rank seed: rank_relations_blake3, per-attempt probe vector, root calls and point-addition counters identical across every kD4FO and kD4FOaa process with that seed",
+  "probe law (both arms gated): pooled probes per relation of kD4FO over its 60 distinct seeds (240 attempts) over r / (166 E_D4), and of kM38FO over its 60 seeds (960 attempts) over r / (166 E_M38), each inside [0.80, 1.20]; each over at least 64 attempts"
+ ],
+ "kind": "n83-k4c400-paired-e2e-tier1",
+ "local_diagnostics": {
+  "closure_check": "inputs/local_verify_closure_D4.json",
+  "identity": "inputs/local_identity.json",
+  "label": "cloud-agent VM, shared; correctness and sizing only",
+  "profile": "inputs/local_profile.json"
+ },
+ "multiplicity": "one primary statistic; every secondary is descriptive and never changes the verdict",
+ "online": {
+  "base_construction": "M38: restored by the field-ops restore.py (frozen SHA-256); D4: make_closure_base.py --columns 4 --norm 165, regenerated by restore.py to its frozen SHA-256, verified by verify_closure.py before timing",
+  "bases": {
+   "D4": {
+    "base_hash": "db8ce3190ff02126405151601a3ebc66f905e108a7540d4bfb87e24b25fd4f03",
+    "builder": "make_closure_base.py --columns 4 --norm 165 (the field-ops experiment's builder, unchanged, from B's K600 header, in restore.py)",
+    "closure_multipliers_sha256": "abce236e87ac82ca9db1a059c4c18fc7d97510a475874f26db20fedaa5146546",
+    "factor_base_points": 66400,
+    "factor_log_table": "inputs/factor_logs_n83_closure_D4.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): every orbit, member and label of the base, [L_c]G = R_c for every column, [w L_c]G = P for every orbit; the table is the first four logs of the M38 table (make_log_table.py), also reproduced log for log by every rank process",
+    "factor_log_table_sha256": "c57f07abc88dd627c11c4f716d5ced733b26b8c20fa7b1535df36fd8d4dc6efe",
+    "header_sha256": "fabaf09f47c28a744cfb8888198d411d4e033c2deb4caf657d2eda3da07361d4",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 13280000,
+     "logical_states_blake3": "4fe91f10e3fcc38649e783975ca59325ea901d05594acd8486a6940ee9264ca1",
+     "source": "inputs/local_identity.json: identical over 5 local processes (cold lift, cold lift_plant, rank seeds 301-303); a function of the orbit representatives only",
+     "table_entries": 12618968,
+     "table_map_sum64": "bc44f0034ae0df5e",
+     "table_map_xor64": "fdaacce75d09d941"
+    },
+    "index_orbits": 400,
+    "k_prime": 4,
+    "law_band": [
+     0.8,
+     1.2
+    ],
+    "law_probes_per_relation": 4091080.7854622505,
+    "layout_digest": {
+     "source": "inputs/local_identity.json: the same five processes (KIC_INDEX_CANON = lift and lift_plant: every index key re-checked against lift_scan and the selected canonicalizer, 2 x stored states checks)",
+     "stored_states_blake3": "f43709303ba13ead941dd85e1c001f96b847d8d199927c4efcaea59fae3f29d7",
+     "table_slots_blake3": "1725b5e1bf04954bf6cf028aa2401e61ae2a340e2c6eb7eb916ca32da69b36eb"
+    },
+    "log_table_input_blake3": "61a5fb02d2b139791df9062c4da1f14bf39c1ae015b1dcb1502b0b686ab8fafe",
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 165,
+    "orbit_columns": 4,
+    "orbits_per_column": 100,
+    "path": "snapshots/closure/base_n83_closure_D4.jsonl",
+    "q0_identity": {
+     "probes_folded": 197321,
+     "relation": [
+      33422,
+      6509,
+      6056,
+      31940
+     ],
+     "scalar": "3141592653589793",
+     "source": "inputs/local_identity.json (cold lift and lift_plant, rank seeds 301-303: identical relation; the scalar replays [d]G = Q in the pinned oracle in the run)"
+    },
+    "regular_states": 13280000,
+    "role": "Z[tau]-multiplier closure D4: 4 columns x 100 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 165); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 12618968,
+    "root_table_slots": 33554432,
+    "source": "this experiment (make_closure_base.py --columns 4 --norm 165)",
+    "stored_states_folded": 6640200
+   },
+   "M38": {
+    "base_hash": "827f49bdf3e419e90955533ea086ebf14420ed46523486f34161cff2c0c96b01",
+    "builder": "make_closure_base.py --columns 16 --norm 64 (from B's K600 header, in restore.py)",
+    "closure_multipliers_sha256": "f5369ce3a96539463ddec6156a43bc7f753c7976a9dcebbc6670b93e54d5b0ee",
+    "factor_base_points": 100928,
+    "factor_log_table": "inputs/factor_logs_n83_closure_M38.json",
+    "factor_log_table_check": "verify_closure.py --base --table --planted (pinned oracle): the base's every orbit, member and label, [L_c]G = R_c for every column, [w L_c]G = alpha(R_c) for every orbit; and the logs equal B's archived logs of R_0..R_{K'-1}",
+    "factor_log_table_sha256": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+    "header_sha256": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca",
+    "index_digest": {
+     "accounting": "after the last target; outside setup and every online interval",
+     "logical_states": 30682112,
+     "logical_states_blake3": "0925158097176d43248ca55a0fb71dad899ac8fee9830319ab744d8ef4c70b26",
+     "source": "the local decisive test (inputs/local_decisive_test.json): identical over 9 local rank processes (seeds 301-309); a function of the orbit representatives only",
+     "table_entries": 30366551,
+     "table_map_sum64": "83d519abd1686b4d",
+     "table_map_xor64": "d98ecf6236b9d814"
+    },
+    "index_orbits": 608,
+    "k_prime": 16,
+    "law_band": [
+     0.8,
+     1.2
+    ],
+    "law_probes_per_relation": 1700068.523328942,
+    "layout_digest": {
+     "source": "the local layout test (inputs/local_layout_test.json): Q0, KIC_INDEX_CANON = selected and lift, one process each, identical; the same processes reproduce the closure protocol's frozen logical-state and table-map digests, root entries and Q0 identity",
+     "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+     "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+    },
+    "log_table_input_blake3": "89bd526048586a2569c6b2fe33235dfe5560c387a75e6354ab768ebd2c3a78bc",
+    "logs_equal_B_first_columns": true,
+    "norm_cap": 64,
+    "orbit_columns": 16,
+    "orbits_per_column": 38,
+    "parent_source": "koblitz-n83-fieldops-20261104 protocol.json online.bases.M38 (sha256 abe5bb74569b0cf4ec88f0ad0bf1c8fbd882260b7b2e6bd08860a22a7b526700), every field verbatim; four fields added from the local identity run (inputs/local_identity.json)",
+    "path": "snapshots/closure/base_n83_closure_M38.jsonl",
+    "q0_identity": {
+     "probes_folded": 1612533,
+     "relation": [
+      81344,
+      53967,
+      13071,
+      42373
+     ],
+     "scalar": "3141592653589793",
+     "source": "the local decisive test (rank process, seeds 301-309, identical)"
+    },
+    "regular_states": 30682112,
+    "role": "Z[tau]-multiplier closure: 16 columns x 38 orbits (alpha = a + b tau, a odd > 0, a^2 + ab + 2b^2 <= 64); column c's orbits are alpha(R_c) for B's R_c",
+    "root_table_entries": 30366551,
+    "root_table_slots": 67108864,
+    "source": "koblitz-n83-closure-20261019 protocol.json online.bases.M38 (commit 3761fd260), verbatim",
+    "stored_states_folded": 15341360
+   }
+  },
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role k4c400-cold-v1, 20 points), disjoint from Q0, B's panel and every earlier n=83 panel including the field-ops and field-ops-2 panels (make_targets.py EARLIER_ROLES; role-agnostic x/y scan in inputs/panel_disjointness.json, 0 hits)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "lambda": "2998004823950457",
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target",
+  "sqrt_r": 92573139.235,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "../koblitz-n83-fieldops-20261104/snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "owner_ruling": {
+  "consequence": "D4 (K' = 4) is an index-calculus row. A K' = 0 base would be a known-log reference row (`koblitz-n83-knownlog-20261019`, BASELINES.md: ruling pending for that row), and is not measured here",
+  "date": "2026-11-07",
+  "recorded_in": [
+   "this protocol",
+   "README.md",
+   "docs/ic/BASELINES.md (next to the known-log ruling-pending note)"
+  ],
+  "verbatim_in_chat": "Owner ruling, 2026-11-07, given in chat: a closure base with K' >= 4 unknown-log columns counts as an index-calculus row. K' = 0 stays a known-log reference row."
+ },
+ "power": {
+  "aa_control": {
+   "band": [
+    0.97,
+    1.03
+   ],
+   "cold_point_inside_0.97_1.03_rate": 1.0,
+   "e2e_interval_contains_1_rate": 0.9625,
+   "e2e_point_inside_0.97_1.03_rate": 0.4725,
+   "pairs": 40
+  },
+  "designs_compared": {
+   "12x3": {
+    "power_at_1.10": 0.4675,
+    "power_at_1.20": 0.935
+   },
+   "16x3": {
+    "power_at_1.10": 0.525,
+    "power_at_1.20": 0.975
+   },
+   "20x3": {
+    "power_at_1.10": 0.695,
+    "power_at_1.20": 0.9975
+   }
+  },
+  "expected_ratio_at_prior_means_modelled": 1.945779274068053,
+  "file": "analysis/power.json",
+  "label": "sizing by simulation; the D4 side is modelled; no result",
+  "law_gate": {
+   "attempts": 240,
+   "band": [
+    0.8,
+    1.2
+   ],
+   "pass_rate_by_true_law_ratio": {
+    "1.00": 0.9985,
+    "1.15": 0.83325,
+    "1.30": 0.18425
+   }
+  },
+  "min_delta": 1.2,
+  "planted_control": {
+   "lower_bound_above_1_rate": 1.0,
+   "modelled_index_build_factor": 1.5,
+   "pairs": 20
+  },
+  "power_at_min_delta": 0.9975,
+  "rejection_rate_at_no_effect": 0.0075,
+  "variance": {
+   "cv_e2e_A": 0.07582699795609006,
+   "cv_e2e_B": 0.2344917661767622,
+   "cv_online_A": 1.2159805490418927,
+   "cv_online_B": 1.2164599937921965,
+   "cv_rank_stage_A": 0.20739211718222164,
+   "cv_rank_stage_B": 0.5022764692261792
+  }
+ },
+ "question": "Is the END-TO-END cold cost (setup + index build + rank stage + linear algebra + one-target online) of the D4 closure base (K' = 4 unknown-log columns, 400 orbits: make_closure_base.py --columns 4 --norm 165) lower than the current n=83 row's M38 base (K' = 16, 608 orbits), with the SAME frozen merged producer binary on both sides (ic_online_fieldops_r770, koblitz-n83-fieldops-20261104), on new held-out points and new rank seeds? Two levers move together (algo_levers.md 1 and 2): K' falls 16 -> 4, so the rank stage needs 4 relations instead of 16, and the orbit count falls 608 -> 400, so the stored states (83 K_orb^2 / 2) fall 2.31x; the logical states (13.28 M) fall under 2^24, which steps the Feistel self-test domain down from 2^26 to 2^24. The price is a smaller table (E 12.6 M against 30.4 M entries), so the probe law r / (166 E) rises 2.41x per relation and per target. The producer, every environment variable, the pipeline and the point panel are the same; only the base header and its factor-log table differ. Repeated alternating pairs and a 95% two-stage paired bootstrap lower bound above 1 decide (AGENTS.md, 'CPU performance isolation gate', Tier 1).",
+ "rejected_candidates": "headers a (K'=8, 624 orbits), b (K'=4, 612), c (K'=8, 448) of the local prototype are not measured here; inputs/local_profile.json lists their local numbers",
+ "schema": 1,
+ "section_5a": {
+  "limit": "factor-base construction and the linear algebra are not charged; the intervals carry no model uncertainty; rho's scalar multiplications stay a bound (0 to 2 (r_bits - 1) GAE)",
+  "reported": [
+   "gap to rT at w = 0, 0.1, 1 for A (M38) and B (D4)",
+   "A vs B order across the band",
+   "crossover weights"
+  ],
+  "rule": "AGENTS.md section 5a: every arm's unpriced native work, the matched rho's included, is priced at 0, 0.1 and 1 GAE per operation, and two arms are ranked only where the order holds across the band (band.py of koblitz-n83-opcounts-20261023, run unchanged)",
+  "script": "band_model.py",
+  "what_is_counted": "rho: counted in this run (rT's own charges_setup_and_solve in every rT process). IC: the field-ops producer emits no operation counts, so the IC units are a MODEL: the archived counted run 39882571652's per-kind counts (stacked producer, experiments/koblitz-n83-opcounts-20261023, analysis_v2/counts-v2.json) taken per root-index probe (probe-proportional kinds) and per relation attempt (the rest), applied to THIS run's measured probes and attempts per side and pair, and to each base's exact stored states for root-index inserts. It is a derived band, labelled model, not a counted run of this producer"
+ },
+ "sources": {
+  "builds": {
+   "both_sides": "the field-ops experiment's online-b/ crate, one binary ic_online_fieldops_r770, built once with -C target-feature=+pclmulqdq; the tuned rho rho_tuned_r770 from the field-ops online/ crate"
+  },
+  "closure_headers_sha256": {
+   "D4": "fabaf09f47c28a744cfb8888198d411d4e033c2deb4caf657d2eda3da07361d4",
+   "M38": "42e0de3d4394ab1f98a22d685acbc0288a95e62de8d7457692ea771325a216ca"
+  },
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "field_ops_pipeline": "fmul_clmul_inline+sqr_clmul_inline+state_square_clmul+maps_le_bytes+selftest_round_tables",
+  "fieldops_files_pinned": {
+   "fieldops_closure_base_builder": "92a5e5720b5eb9e38020c3bf5b9358c6ffc074fa784a5cd1939de83643787dfe",
+   "fieldops_closure_verifier": "b8406366cba6bd5d0e832d63a3381c64a941834ecc98633e8f90398afac97ff4",
+   "fieldops_protocol": "abe5bb74569b0cf4ec88f0ad0bf1c8fbd882260b7b2e6bd08860a22a7b526700",
+   "fieldops_receipt_verifier": "67cdb81eca4b395111f621c295356e263276e030935e31b59bf647b3923a0d72",
+   "fieldops_restore": "debdeb1621d92b27c437dffe7702dce591cdc5718925eee84a1b9b9a9bde84be",
+   "fieldops_source_derivation": "a1b205fe203dc519f5e9150bd934e1afa99e04f77f8ec0963233783c1ca35aeb",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "online_b_cargo_config": "fc2d17b0d665876bf81d5920dd9cc6a6df46fafad746d443cf2aa61246b0a11b",
+   "online_b_lock": "2373ea9535ef8b0f145a102086382ec790389fbae27f76bcef3f293a66f8bdbd",
+   "online_b_manifest": "a23918d696e0791e45a342a5f87342355a0a5e1868e9e62113833a491278bcae",
+   "online_lock": "2373ea9535ef8b0f145a102086382ec790389fbae27f76bcef3f293a66f8bdbd",
+   "online_manifest": "55827e9043296db44785e931769bef1ab6702a450b8537b8b1da1e4367da8191"
+  },
+  "fieldops_protocol_sha256": "abe5bb74569b0cf4ec88f0ad0bf1c8fbd882260b7b2e6bd08860a22a7b526700",
+  "fieldops_source_sha256": "8dc428ea7d788b8041b5ce59dcff7e72ed0896f0a5a05571dd45d05e67fce772",
+  "index_build_pipeline": "sum_inverse_lanes4+linear_canon_lanes8+lookahead32_prefetch+selftest_lanes8",
+  "local_sha256": {
+   "analysis_power_json": "cb4e31ad944272f12aaa209ab7e599d149b1c7f6bdea065d1983780ba1c92646",
+   "arm_py": "8e933da07fad4f04f3613a0def33d3f44830bc6f0623bb46fd8b86afa1e74589",
+   "band_model_py": "6c7f40f794c14d050791c5b183741e3fc14289e957ff19be322a03e14e83f65f",
+   "check_log_table_py": "f5c3785b814c03b324a14e5206c907845aad0ad331111096adf605c1be05a29a",
+   "check_panel_disjoint_py": "947ae161d0a107aa535aa47c2d731f674ade5d6d9926557e237b51f3059c3ebd",
+   "check_seed_disjoint_py": "773bf9eae37b3d1a868df1c6b3c635fc9041891e8444b1dd809df718f60d15ba",
+   "host_cpu_record": "3cef3cc370e9e42e6123ae7dc3114cd8c661234b7a7d055b1661746b65896da9",
+   "inputs_cold_targets_json": "6b8005ae822835a95313a7da26159b1e3d972514f2acd6bc993982514c2c32f3",
+   "inputs_factor_logs_n83_closure_D4_json": "c57f07abc88dd627c11c4f716d5ced733b26b8c20fa7b1535df36fd8d4dc6efe",
+   "inputs_factor_logs_n83_closure_M38_json": "06b9c079c69625948bb500681591b481b5949ef92694698fb6e95f5f1dfea4ee",
+   "inputs_local_identity_json": "f1460618a5bf36e6e0cb95653f44fd60ffc919fd7642d0833231b783237bf9e0",
+   "inputs_local_profile_json": "1465fcba15e6186d74fddc7f6e719f0d1f836ce25e3067e6e1ec37bf46c31964",
+   "inputs_local_prototype_rows_jsonl": "4afdd32355708734320e6908e1ff0be26d02f2fd3537a00ad0894742654140bf",
+   "inputs_local_verify_closure_D4_json": "dbc13e539bc363b686d2a953640f15b47b12c5755bc2192d115d0b74c884c620",
+   "inputs_panel_disjointness_json": "4b8300b4aa8227fc8f1bee09e8f97f5fdd506bc3c948056b9d8bc0c2350e1f91",
+   "inputs_power_prior_json": "45e857b8dfe59591c3d79794bbbe3f05493d1c67451ab61d9527abbd5f645859",
+   "inputs_seed_disjointness_json": "c3a445cb2aa8a5752d886cc7c95078e2b5715f960cb8e9fdb9b9cd79ad27d689",
+   "local_identity_py": "1b9ca51e6e396145a27912ce4dd6ef44cdb9663c30feed0d526efc6a680e6485",
+   "make_local_profile_py": "49dc8b5a4f529e6b5e65bbd3d08c0b33e46414d2d0ebcc4feececa34bd006a40",
+   "make_log_table_py": "07a68d4661feb9e1f71c438cb69f0d548313e4811ef9d8ae417f94565a89c368",
+   "make_power_prior_py": "2e37a9c9a1b17a65c959a8af1c3a675e88e5c0bb3b9739d6ef4f376d634c7914",
+   "make_protocol_py": "78c8e3bb8d4f7853bedd590dc90a2fcb202bd2fbd789362295e5a4eba6153bd2",
+   "make_schedule_py": "d9b8ab610bf4f0c02f4477374314a24c0f6f4acadd5d93cd64b04c437c7818cc",
+   "make_targets_py": "38120e85f1addc07aa6cfa6db1b51bc8edb8b043f00e497311e899a0f6647531",
+   "power_check_py": "7da0b6d50decf402253e0046bd6dee551c65ca01af4e46f85674e99660b080f9",
+   "profile_prototype_driver_py": "930c6b6d5a849c52c008a2d7b34ab4ab995783008d1a9eff19f1b1b16803c68b",
+   "profile_run_cold_sh": "a98e92d9f82fc965a87f5f3a5c8029d6e3ebd4a72de72f8b1a053fa12adcdcc5",
+   "profile_run_rank_sh": "b7aac2c3c722b72787d7324d5dfdb037e1f8b865089618490071de5830bfde01",
+   "restore_py": "6504f1a36c8c825a24e7eed12422d574f687db2d78bf1c8f454a535f266d0ad1",
+   "run_schedule_py": "4d29005f1f38a701041b6eaa80f66b02dab95f56e459594bed21d328559e9672",
+   "test_verify_receipt_py": "343214b66c370f927ebbf408bccd1ca1e036dc7e09000640a63fa4ffb19fb486",
+   "verify_receipt_py": "02505780e61cd6b3ce9fc9b42d9e96d56b1b377c28860930838fcaf9fa8a55a7"
+  },
+  "online_b_cargo_config_sha256": "fc2d17b0d665876bf81d5920dd9cc6a6df46fafad746d443cf2aa61246b0a11b",
+  "online_b_lock_sha256": "2373ea9535ef8b0f145a102086382ec790389fbae27f76bcef3f293a66f8bdbd",
+  "online_b_manifest_sha256": "a23918d696e0791e45a342a5f87342355a0a5e1868e9e62113833a491278bcae",
+  "online_lock_sha256": "2373ea9535ef8b0f145a102086382ec790389fbae27f76bcef3f293a66f8bdbd",
+  "online_manifest_sha256": "55827e9043296db44785e931769bef1ab6702a450b8537b8b1da1e4367da8191",
+  "producer": "the field-ops producer of koblitz-n83-fieldops-20261104, derived and pinned by ITS restore.py (every pin of its protocol.json), built from its online-b/ crate with -C target-feature=+pclmulqdq; this experiment builds and runs that crate unchanged",
+  "rank_probe_pipeline": "linear_canon_lanes8"
+ },
+ "statistics": {
+  "e2e_per_side": "E2E(side) = timing_ms.rank_stage of the side's rank process + cold_in_process_ms of the side's cold process: setup (including the index build and the scan self-test) + rank stage + linear algebra + one-target online, the row's definition",
+  "pairing_basis": "AGENTS.md Tier 1: 'run both variants on the same pinned exposed CPU with the same workload and limits' and 'require repeated alternating pairs'. A pair is the two variants on the same point with the same rank seed, adjacent in time on one CPU, in alternating order",
+  "primary": "R = sum over the 60 primary pairs of E2E(A) / sum over the same pairs of E2E(B). 95% percentile interval from a two-stage paired bootstrap, 10000 draws, random.Random(20261080): the points drawn with replacement, then each drawn point's pairs drawn with replacement; A and B of a pair are always drawn together",
+  "primary_is": "the paired END-TO-END ratio of the M38 row over D4; every stage ratio is co-reported and never decides",
+  "secondary": [
+   "geometric mean of the per-pair ratios E2E(A)/E2E(B), with the same bootstrap",
+   "index build, scan self-test, rank stage and online (stage secondaries, labelled), paired",
+   "cold, setup cM38FO / cD4FO, paired",
+   "index build in the rank processes kM38FO / kD4FO, paired",
+   "E2E process CPU time and process wall A / B, with the same bootstrap",
+   "peak RSS and minor faults of the cold processes",
+   "per-point ratio, and the ratio by pair position and by side order",
+   "observed coefficient of variation of the rank stage, online and E2E per side (to compare with power.json)",
+   "probe law of kM38FO and kD4FO; rank ns per probe; rho ms/step from rT; S per side; E2E cold gap over rT",
+   "section 5a band: band_model.py (see `section_5a`)"
+  ],
+  "stage_secondary": "four STAGE ratios, each labelled a stage secondary and never deciding, in the primary pairs with the same bootstrap: index build (timing_ms.index_build of the cold process) cM38FO / cD4FO, scan self-test (scan_order_selftest.ms of the cold process) cM38FO / cD4FO, rank stage (timing_ms.rank_stage) kM38FO / kD4FO, and online (online_ms of the cold process) cM38FO / cD4FO"
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'",
+ "template": {
+  "copied_verbatim": [
+   "inputs/factor_logs_n83_closure_M38.json",
+   "run_schedule.py"
+  ],
+  "experiment": "koblitz-n83-fieldops-20261104",
+  "landed": "on main"
+ },
+ "tier_rule": "AGENTS.md 'CPU performance evidence tiers', Tier 1: same pinned exposed CPU, same workload and limits; code and workload hashes, paired order, raw failures, correctness, process CPU time, memory, cgroup throttling and memory failures, steal time and scheduling counters recorded; repeated alternating pairs and a 95% paired confidence interval whose lower bound exceeds 1",
+ "why_this_run": "The local prototype (inputs/local_profile.json, inputs/local_prototype_rows.jsonl; a loaded shared VM; 10 rank seeds per arm, no interval) measured a 1.85x end-to-end speed-up of this header over M38 (mean process totals 5221 vs 9669 ms). It is a diagnostic: one online target per cold run is a single exponential sample, the rank stage is heavy-tailed (sd 595 ms on D4), and nothing was matched to rho. This run is the Tier 1 measurement."
+}

@@ -1,0 +1,51 @@
+{
+ "base": "koblitz-n83-k4c400-20261107/snapshots/closure/base_n83_closure_D4.jsonl",
+ "base_check": {
+  "checks": {
+   "all_x_distinct": true,
+   "base_hash": true,
+   "column_representatives_are_B_first_K": true,
+   "every_member_and_label": true,
+   "every_orbit_in_prime_order_subgroup": true,
+   "every_orbit_is_alpha_of_its_column": true,
+   "identity": true,
+   "multipliers": true,
+   "orbits_distinct_up_to_sign_and_frobenius": true
+  },
+  "notes": {
+   "orbits": 400,
+   "orbits_per_column": 100,
+   "repeated_orbits": []
+  },
+  "status": "PASS"
+ },
+ "base_hash": "db8ce3190ff02126405151601a3ebc66f905e108a7540d4bfb87e24b25fd4f03",
+ "base_sha256": "fabaf09f47c28a744cfb8888198d411d4e033c2deb4caf657d2eda3da07361d4",
+ "checker": "oracle.py pure-Python field arithmetic (pinned harness), not the producer",
+ "planted_controls": {
+  "caught": {
+   "duplicated_orbit": true,
+   "label_coefficient_off_by_one": true,
+   "log_off_by_one": true
+  },
+  "status": "PASS"
+ },
+ "status": "PASS",
+ "table": "koblitz-n83-k4c400-20261107/inputs/factor_logs_n83_closure_D4.json",
+ "table_check": {
+  "bad_columns": [],
+  "bad_orbits": [],
+  "checks": {
+   "base_hash": true,
+   "every_column_log_maps_G_to_R_c": true,
+   "every_orbit_log_maps_G_to_its_representative": true,
+   "kind": true,
+   "n_a_r": true,
+   "range": true,
+   "width": true
+  },
+  "logs_sha256": "777cb280785b355b62ab700b288cf1b17dfc27ada2ee52b65a5c0b86c1a21696",
+  "status": "PASS"
+ },
+ "table_sha256": "c57f07abc88dd627c11c4f716d5ced733b26b8c20fa7b1535df36fd8d4dc6efe"
+}
