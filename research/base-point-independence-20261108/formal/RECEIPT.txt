@@ -1,0 +1,16 @@
+# Lean check receipt
+date: 2026-11-08T18:58:36Z
+toolchain (lean-toolchain): leanprover/lean4:v4.34.1
+lean --version: Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+sha256 BasePointIndependence.lean: 52ff2b55bcc7650376c0e69947df1f7e5cea8b218fd02f9b2f1c4d47e9e3d0ed
+command: lean BasePointIndependence.lean
+--- output (every '#print axioms' line; an unfinished proof would list the sorry axiom here) ---
+'AddCommGroupLite.transfer' depends on axioms: [propext]
+'AddCommGroupLite.transfer_back' depends on axioms: [propext]
+'AddCommGroupLite.transfer_roundtrip' depends on axioms: [propext]
+'AddCommGroupLite.log_unique' depends on axioms: [propext]
+'AddCommGroupLite.ap_const_diff' depends on axioms: [propext]
+'AddCommGroupLite.ap_log_shift' depends on axioms: [propext]
+'AddCommGroupLite.ap_diff_indep_of_start' depends on axioms: [propext]
+'AddCommGroupLite.ap_base_sum_mem' depends on axioms: [propext, Quot.sound]
+--- exit: 0 ---
