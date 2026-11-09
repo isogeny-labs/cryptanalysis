@@ -101,7 +101,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ vars.ARTIFACTS_AWS_REGION || 'us-west-2' }}
         run: python3 tools/artifacts/artifacts.py pull --jobs 16 ecc2k130
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         with:
           version: v3.16.3
       - name: helm lint, both modes
@@ -201,7 +201,7 @@ jobs:
             --binary /fakes/ec2k-gpu --nvidia-smi /fakes/nvidia-smi --seconds 2 \
             --json-out /state/report.json
           python3 -c "import json,sys; r=json.load(open(sys.argv[1])); assert r['verdict'] == 'pass', r" "$state/report.json"
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         if: matrix.arch == 'amd64'
         with:
           version: v3.16.3
