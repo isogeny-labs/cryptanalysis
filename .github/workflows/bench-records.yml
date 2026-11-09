@@ -41,7 +41,7 @@ jobs:
         run: python3 -m unittest tools/test_benchrec.py
       - name: Configure S3 credentials
         if: ${{ env.KEY_ID != '' }}
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID || secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.ARTIFACTS_AWS_SECRET_ACCESS_KEY || secrets.AWS_SECRET_ACCESS_KEY }}
