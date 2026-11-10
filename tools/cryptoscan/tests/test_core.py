@@ -270,3 +270,17 @@ class PolicyRefinementTests(unittest.TestCase):
         b.add(CryptoUse(Primitive.PUBLIC_KEY, "rsa", key_bits=1024, context="public-key"))
         self.assertEqual(_ids([b])["KEY-PERMS"].severity, Severity.HIGH)
         self.assertFalse(policy.is_test_material("/etc/ssl/private/latest/server.key"))
+
+
+class NonCertificateVersionAttributeTests(unittest.TestCase):
+    def test_ssh_server_version_string_does_not_break_certificate_rules(self):
+        a = Asset(AssetKind.SSH_SERVER, "sshd", "/etc/ssh/sshd_config", "t", attributes={"version": "OpenSSH_10.2p1"})
+        a.add(names.ssh_kex("curve25519-sha256"))
+        ids = _ids([a])
+        self.assertNotIn("CERT-V1", ids)
+        c = Asset(AssetKind.CERTIFICATE, "c", "/etc/ssl/certs/c.pem", "t", attributes={"version": "1", "serial_bits": "12"})
+        ids = _ids([c])
+        self.assertIn("CERT-V1", ids)
+        self.assertIn("CERT-SHORT-SERIAL", ids)
+        c2 = Asset(AssetKind.CERTIFICATE, "c", "/etc/ssl/certs/c2.pem", "t", attributes={"version": "garbage"})
+        self.assertNotIn("CERT-V1", _ids([c2]))

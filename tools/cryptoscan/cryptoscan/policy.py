@@ -541,10 +541,20 @@ def rule_enctype(ctx: Context) -> List[Finding]:
     return out
 
 
+def _int_or_none(v) -> Optional[int]:
+    try:
+        return int(v) if v is not None and v != "" else None
+    except (TypeError, ValueError):
+        return None
+
+
 def rule_certificate(ctx: Context) -> List[Finding]:
     """Asset-level certificate checks (validity window, constraints)."""
     a, p, now = ctx.asset, ctx.profile, ctx.now
     out: List[Finding] = []
+    if a.kind not in (AssetKind.CERTIFICATE, AssetKind.CA_CERTIFICATE, AssetKind.TRUST_STORE, AssetKind.TLS_ENDPOINT,
+                      AssetKind.PGP_KEY, AssetKind.SSH_HOST_KEY, AssetKind.SSH_USER_KEY):
+        return out      # other kinds use "version" and "not_after" for their own purposes (e.g. OpenSSH banners)
     attrs = a.attributes
     nb, na = attrs.get("not_before"), attrs.get("not_after")
     anchor = _is_trust_anchor(a)
@@ -572,13 +582,15 @@ def rule_certificate(ctx: Context) -> List[Finding]:
         if days > 398 and "serverAuth" in (attrs.get("ext_key_usage") or []) and not attrs.get("self_signed"):
             out.append(ctx.finding("CERT-LONG-VALIDITY", f"Leaf certificate validity of {days} days exceeds 398", Severity.LOW,
                                    f"{a.name}", "Issue leaf certificates for <= 398 days (CA/B BR; 47 days from 2029).", (REF["CAB"],)))
-    if attrs.get("version") and int(attrs["version"]) < 3 and not anchor:
+    if a.kind in (AssetKind.CERTIFICATE, AssetKind.CA_CERTIFICATE) and _int_or_none(attrs.get("version")) not in (None, 3) \
+            and _int_or_none(attrs.get("version")) < 3 and not anchor:
         out.append(ctx.finding("CERT-V1", "X.509 version 1 certificate (no extensions)", Severity.LOW, f"{a.name}", "Re-issue as v3 with SAN, keyUsage and basicConstraints.", (REF["CAB"],)))
     if a.kind == AssetKind.CERTIFICATE and attrs.get("ext_key_usage") and "serverAuth" in attrs["ext_key_usage"] and not attrs.get("sans") and not attrs.get("self_signed"):
         out.append(ctx.finding("CERT-NO-SAN", "Server certificate without subjectAltName", Severity.LOW, f"{a.name}: modern clients ignore the CN.", "Re-issue with SAN entries.", (REF["CAB"],)))
     if attrs.get("self_signed") and not attrs.get("is_ca") and a.kind == AssetKind.CERTIFICATE and not attrs.get("is_default_snakeoil"):
         out.append(ctx.finding("CERT-SELF-SIGNED", "Self-signed end-entity certificate", Severity.INFO, f"{a.name}", "Issue from an internal CA so clients can validate it.", ()))
-    if attrs.get("serial_bits") is not None and int(attrs["serial_bits"]) < 64 and not anchor and p.name != "legacy":
+    sb = _int_or_none(attrs.get("serial_bits"))
+    if sb is not None and sb < 64 and not anchor and p.name != "legacy":
         out.append(ctx.finding("CERT-SHORT-SERIAL", f"Serial number has only {attrs['serial_bits']} bits", Severity.INFO, f"{a.name}: CA/B BR requires >= 64 bits of CSPRNG output to resist chosen-prefix collisions.", "Use a conformant CA.", (REF["CAB"],)))
     if attrs.get("explicit_curve_params"):
         pass  # covered by PK-EC-EXPLICIT

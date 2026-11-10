@@ -1,0 +1,16 @@
+static_resources:
+  listeners:
+  - name: https
+    filter_chains:
+    - transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+          common_tls_context:
+            tls_params:
+              tls_minimum_protocol_version: TLSv1_0
+              cipher_suites:
+              - "[ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]"
+              - ECDHE-RSA-AES128-SHA
+              - DES-CBC3-SHA
+              ecdh_curves: [X25519, P-256]
