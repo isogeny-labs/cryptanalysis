@@ -73,7 +73,11 @@ def file_owner(path: str) -> Optional[str]:
         return None
 
 
-_SKIP_DIRS = {"proc", "sys", "dev", "run", "snap", "node_modules", ".git", "__pycache__", "site-packages", "dist-packages", "lost+found"}
+PSEUDO_FS = {"proc", "sys", "dev", "run"}
+PSEUDO_FS_PATHS = ("/proc", "/sys", "/dev", "/run")
+_SKIP_DIRS = {"proc", "sys", "dev", "run", "snap", "node_modules", ".git", "__pycache__", "site-packages", "dist-packages", "lost+found",
+              ".cache", ".cargo", ".rustup", ".npm", ".yarn", ".pnpm-store", ".venv", "venv", ".tox", "target", ".gradle", ".m2",
+              ".local/share/Trash", ".Trash", ".docker", ".vscode-server", ".cursor-server"}
 
 
 def walk_files(roots: Sequence[str], max_files: int = 200000, max_depth: int = 12,
@@ -84,6 +88,8 @@ def walk_files(roots: Sequence[str], max_files: int = 200000, max_depth: int = 1
     seen_dev_ino = set()
     for root in roots:
         root = os.path.abspath(root)
+        if root == "/" + root.strip("/").split("/")[0] and root.strip("/") in PSEUDO_FS or any(root.startswith(p + "/") or root == p for p in PSEUDO_FS_PATHS):
+            continue
         if os.path.isfile(root):
             yield root
             continue
@@ -115,7 +121,8 @@ def home_dirs() -> List[str]:
     try:
         import pwd
         for pw in pwd.getpwall():
-            if pw.pw_dir and os.path.isdir(pw.pw_dir) and pw.pw_dir not in ("/", "/nonexistent", "/bin", "/sbin", "/usr/sbin", "/dev/null"):
+            if (pw.pw_dir and os.path.isdir(pw.pw_dir) and pw.pw_dir not in ("/", "/nonexistent", "/bin", "/sbin", "/usr/sbin", "/dev/null")
+                    and not pw.pw_dir.rstrip("/").startswith(PSEUDO_FS_PATHS) and not pw.pw_dir.startswith(("/usr/", "/bin", "/sbin", "/etc"))):
                 out.append(pw.pw_dir)
     except ImportError:
         pass

@@ -372,8 +372,10 @@ def tls_protocol(name: str, **kw) -> CryptoUse:
     canon = {"SSLV2": "sslv2", "SSLV3": "sslv3", "TLSV1": "tls1.0", "TLSV1.0": "tls1.0", "TLSV1_0": "tls1.0", "TLS1.0": "tls1.0", "TLS1": "tls1.0",
              "TLSV1.1": "tls1.1", "TLSV1_1": "tls1.1", "TLS1.1": "tls1.1", "TLSV1.2": "tls1.2", "TLSV1_2": "tls1.2", "TLS1.2": "tls1.2",
              "TLSV1.3": "tls1.3", "TLSV1_3": "tls1.3", "TLS1.3": "tls1.3", "DTLSV1.0": "dtls1.0", "DTLSV1.2": "dtls1.2", "DTLS1.0": "dtls1.0", "DTLS1.2": "dtls1.2"}
+    canon.update({"DTLSV1": "dtls1.0", "DTLS1": "dtls1.0", "DTLSV1_0": "dtls1.0", "DTLSV1_2": "dtls1.2", "TLSV1.0": "tls1.0", "SSL2": "sslv2", "SSL3": "sslv3", "SSLV2.0": "sslv2", "SSLV3.0": "sslv3"})
     key = name.upper().replace(" ", "")
-    return CryptoUse(primitive=Primitive.PROTOCOL, algorithm=canon.get(key, name.lower()), raw=name, context="tls-protocol", **kw)
+    context = kw.pop("context", "tls-protocol")
+    return CryptoUse(primitive=Primitive.PROTOCOL, algorithm=canon.get(key, name.lower()), raw=name, context=context, **kw)
 
 
 _TLS_SIGALGS = {
@@ -399,7 +401,7 @@ def tls_sigalg(name: str, **kw) -> CryptoUse:
 _KRB_ENCTYPES = {
     1: ("des-cbc-crc", "des", 56, "crc32"), 2: ("des-cbc-md4", "des", 56, "md4"), 3: ("des-cbc-md5", "des", 56, "md5"),
     5: ("des3-cbc-md5", "3des", 168, "md5"), 7: ("des3-cbc-sha1", "3des", 168, "sha1"), 16: ("des3-cbc-sha1", "3des", 168, "sha1"),
-    6: ("des3-cbc-raw", "3des", 168, None), 8: ("des-hmac-sha1", "des", 56, "sha1"),
+    4: ("des-cbc-raw", "des", 56, None), 6: ("des3-cbc-raw", "3des", 168, None), 8: ("des-hmac-sha1", "des", 56, "sha1"),
     9: ("dsaWithSHA1-CmsOID", "dsa", None, "sha1"), 10: ("md5WithRSAEncryption-CmsOID", "rsa", None, "md5"),
     11: ("sha1WithRSAEncryption-CmsOID", "rsa", None, "sha1"), 12: ("rc2CBC-EnvOID", "rc2", None, None),
     13: ("rsaEncryption-EnvOID", "rsa", None, None), 14: ("rsaES-OAEP-ENV-OID", "rsa", None, None), 15: ("des-ede3-cbc-Env-OID", "3des", 168, None),
@@ -429,28 +431,30 @@ _KRB_BY_NAME["des3-cbc-sha1"] = (16, "3des", 168, "sha1")
 def krb_enctype(name_or_id, **kw) -> CryptoUse:
     """Normalise a Kerberos enctype given by name (krb5.conf / klist) or number (keytab)."""
     raw = str(name_or_id)
+    context = kw.pop("context", "enctype")
+    extra_in = kw.pop("extra", {})
     if isinstance(name_or_id, int) or re.fullmatch(r"-?\d+", raw):
         etype = int(name_or_id)
         name, alg, bits, h = _KRB_ENCTYPES.get(etype, (f"etype-{etype}", "unknown", None, None))
         return CryptoUse(primitive=Primitive.ENCTYPE, algorithm=alg, key_bits=bits, hash_algorithm=h, raw=raw,
-                         context="enctype", extra={"enctype": name, "etype_id": etype}, **kw)
+                         context=context, extra={**extra_in, "enctype": name, "etype_id": etype}, **kw)
     n = raw.strip().lower()
     neg = n.startswith(("-", "!"))
     n = n.lstrip("-!+")
     canon = _KRB_ALIASES.get(n, n)
     if canon == "aes-family":
-        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="aes", key_bits=256, hash_algorithm="sha1", raw=raw, context="enctype",
-                         extra={"enctype": "aes", "family": True, "negated": neg}, **kw)
+        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="aes", key_bits=256, hash_algorithm="sha1", raw=raw, context=context,
+                         extra={**extra_in, "enctype": "aes", "family": True, "negated": neg}, **kw)
     if canon == "camellia-family":
-        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="camellia", key_bits=256, hash_algorithm="cmac", raw=raw, context="enctype",
-                         extra={"enctype": "camellia", "family": True, "negated": neg}, **kw)
+        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="camellia", key_bits=256, hash_algorithm="cmac", raw=raw, context=context,
+                         extra={**extra_in, "enctype": "camellia", "family": True, "negated": neg}, **kw)
     if canon in _KRB_BY_NAME:
         etype, alg, bits, h = _KRB_BY_NAME[canon]
-        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm=alg, key_bits=bits, hash_algorithm=h, raw=raw, context="enctype",
-                         extra={"enctype": canon, "etype_id": etype, "negated": neg}, **kw)
+        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm=alg, key_bits=bits, hash_algorithm=h, raw=raw, context=context,
+                         extra={**extra_in, "enctype": canon, "etype_id": etype, "negated": neg}, **kw)
     if n == "default":
-        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="default", raw=raw, context="enctype", extra={"enctype": "default", "negated": neg}, **kw)
-    return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="unknown", raw=raw, context="enctype", extra={"enctype": n, "negated": neg}, **kw)
+        return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="default", raw=raw, context=context, extra={**extra_in, "enctype": "default", "negated": neg}, **kw)
+    return CryptoUse(primitive=Primitive.ENCTYPE, algorithm="unknown", raw=raw, context=context, extra={**extra_in, "enctype": n, "negated": neg}, **kw)
 
 
 # ---------------------------------------------------------------------------

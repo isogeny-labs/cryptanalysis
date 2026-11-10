@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import re
+import stat
 from typing import Callable, Dict, Iterator, List, Optional, Sequence
 
 from ..model import CryptoUse, Primitive
@@ -143,8 +144,9 @@ def iter_candidate_files(ctx, roots: Sequence[str], exts: Sequence[str] = CERT_E
         if magic is None or ext in _NOISE_EXTS:
             continue
         try:
-            if os.path.getsize(path) > 65536:
-                continue
+            st = os.lstat(path)
+            if not stat.S_ISREG(st.st_mode) or st.st_size > 65536 or st.st_size < 16:
+                continue        # never open devices, FIFOs or sockets: a tty read blocks forever
             with open(path, "rb") as fh:
                 head = fh.read(16)
         except OSError:

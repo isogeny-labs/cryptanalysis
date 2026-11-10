@@ -247,3 +247,25 @@ class PolicyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PolicyRefinementTests(unittest.TestCase):
+    def test_self_signed_ca_anywhere_is_anchor(self):
+        a = _cert_asset("rsa2048-sha1.pem")
+        a.attributes.update({"is_ca": True, "self_signed": True})
+        ids = _ids([a])
+        self.assertNotIn("SIG-HASH-SHA1", ids)
+        self.assertIn("SIG-ANCHOR-WEAK-HASH", ids)
+
+    def test_test_material_capped(self):
+        a = Asset(AssetKind.PRIVATE_KEY, "k", "/opt/sdk/third_party/requests/tests/certs/server.key", "t",
+                  attributes={"mode": 0o644, "encrypted": False})
+        a.add(CryptoUse(Primitive.PUBLIC_KEY, "rsa", key_bits=1024, context="public-key"))
+        ids = _ids([a])
+        self.assertEqual(ids["KEY-PERMS"].severity, Severity.LOW)
+        self.assertIn("test-data", ids["KEY-PERMS"].tags)
+        self.assertEqual(ids["PK-RSA-LT-2048"].severity, Severity.LOW)
+        b = Asset(AssetKind.PRIVATE_KEY, "k", "/etc/ssl/private/server.key", "t", attributes={"mode": 0o644, "encrypted": False})
+        b.add(CryptoUse(Primitive.PUBLIC_KEY, "rsa", key_bits=1024, context="public-key"))
+        self.assertEqual(_ids([b])["KEY-PERMS"].severity, Severity.HIGH)
+        self.assertFalse(policy.is_test_material("/etc/ssl/private/latest/server.key"))

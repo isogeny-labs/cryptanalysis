@@ -23,6 +23,7 @@ I/O.  Rule ids are stable so that reports can be diffed between runs.
 from __future__ import annotations
 
 import datetime as _dt
+import re
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Tuple
 
@@ -165,7 +166,18 @@ class Context:
 # ---------------------------------------------------------------------------
 
 def _is_trust_anchor(asset: Asset) -> bool:
-    return asset.kind in (AssetKind.CA_CERTIFICATE, AssetKind.TRUST_STORE) or bool(asset.attributes.get("trust_anchor"))
+    """Trust-store entries, and any self-signed CA certificate: its self-signature is never verified."""
+    a = asset.attributes
+    return (asset.kind in (AssetKind.CA_CERTIFICATE, AssetKind.TRUST_STORE) or bool(a.get("trust_anchor"))
+            or bool(a.get("is_ca") and a.get("self_signed")))
+
+
+TEST_PATH_RE = re.compile(r"/(tests?|test_data|testdata|test-data|fixtures?|examples?|samples?|dummyserver|testing|mock(s|data)?|spec)(/|$)", re.I)
+
+
+def is_test_material(location: str) -> bool:
+    """Heuristic: key/cert material that ships inside a test or example tree of some package."""
+    return bool(location and TEST_PATH_RE.search(location))
 
 
 def rule_public_key(ctx: Context) -> List[Finding]:
@@ -748,5 +760,14 @@ def evaluate(assets: List[Asset], profile_name: str = "nist", now: Optional[_dt.
             f = ctx.finding("COLLECT-ERROR", "Collector could not fully inspect this asset", Severity.INFO, err, "Re-run with sufficient privileges or inspect manually.", ())
             findings.setdefault(f.finding_id, f)
     out = list(findings.values())
+    for f in out:
+        if f.rule_id not in ("PQC-TRANSITION", "COLLECT-ERROR") and f.asset_kind in (
+                AssetKind.CERTIFICATE, AssetKind.CA_CERTIFICATE, AssetKind.PRIVATE_KEY, AssetKind.JAVA_KEYSTORE,
+                AssetKind.SSH_USER_KEY, AssetKind.PGP_KEY) and is_test_material(f.location):
+            # Test fixtures shipped inside packages are inventory, not exposure: keep them visible but quiet.
+            f.tags.append("test-data")
+            if f.severity > Severity.LOW:
+                f.description += " [Capped at LOW: the file lives in a test/example tree.]"
+                f.severity = Severity.LOW
     out.sort(key=lambda f: (-int(f.severity), f.rule_id, f.asset_name, f.location))
     return out

@@ -219,8 +219,10 @@ def _is_ip(host: str) -> bool:
 def make_context(version: Optional[str] = None, ciphers: Optional[str] = LOCAL_CIPHER_STRING,
                  alpn: Optional[List[str]] = None) -> ssl.SSLContext:
     """Client context that accepts anything: we measure the server, we do not trust it."""
-    c = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    c.check_hostname = False
+    # This context deliberately allows TLS 1.0/1.1 and disables verification: it is a
+    # probe that asks a server which legacy versions it still accepts; no data is sent over it.
+    c = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)  # codeql[py/insecure-protocol] lgtm[py/insecure-protocol]
+    c.check_hostname = False  # codeql[py/insecure-default-protocol]
     c.verify_mode = ssl.CERT_NONE
     if ciphers:
         try:
@@ -263,7 +265,7 @@ def handshake(host: str, port: int, starttls: Optional[str], tctx: ssl.SSLContex
         raw.settimeout(timeout)
         if starttls:
             do_starttls(raw, starttls, host)
-        return tctx.wrap_socket(raw, server_hostname=None if _is_ip(host) else host)
+        return tctx.wrap_socket(raw, server_hostname=None if _is_ip(host) else host)  # codeql[py/insecure-protocol] lgtm[py/insecure-protocol]
     except BaseException:
         raw.close()
         raise

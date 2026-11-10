@@ -154,8 +154,10 @@ class KeysLocalCollector(Collector):
         seen: set = set()
         for path in iter_candidate_files(ctx, list(dict.fromkeys(roots)), exts=KEY_EXTS, magic=_magic, budget=budget):
             files.append(path)
+        # Home directories can hold whole source trees; stay shallow unless --deep.
+        home_depth = 6 if ctx.deep_fs_scan else int(ctx.opt("home_scan_depth", 2))
         for h in host_home_dirs(ctx):
-            for path in iter_candidate_files(ctx, [h], exts=KEY_EXTS, magic=_magic, budget=budget, max_depth=6,
+            for path in iter_candidate_files(ctx, [h], exts=KEY_EXTS, magic=_magic, budget=budget, max_depth=home_depth,
                                              skip_dirs=_HOME_SKIP):
                 files.append(path)
         if ctx.deep_fs_scan:
