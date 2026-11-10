@@ -19,11 +19,14 @@ import urllib.request
 API = "https://rest.runpod.io/v1"
 KEY = os.environ.get("RUNPOD_API_KEY")
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Cloudflare in front of the API answers 403/1010 to urllib's default agent.
+UA = "clmad-audit/1 (+https://github.com/isogeny-labs/cryptanalysis)"
 
 
 def api(method, path, body=None, timeout=60):
     req = urllib.request.Request(API + path, method=method,
-                                 headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"})
+                                 headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json",
+                                          "User-Agent": UA})
     data = json.dumps(body).encode() if body is not None else None
     with urllib.request.urlopen(req, data=data, timeout=timeout) as r:
         raw = r.read()
@@ -32,7 +35,7 @@ def api(method, path, body=None, timeout=60):
 
 def proxy(pod_id, path, token, method="GET", data=None, timeout=60):
     url = f"https://{pod_id}-8888.proxy.runpod.net{path}"
-    req = urllib.request.Request(url, method=method, data=data, headers={"X-Token": token})
+    req = urllib.request.Request(url, method=method, data=data, headers={"X-Token": token, "User-Agent": UA})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.status, r.read()
 
