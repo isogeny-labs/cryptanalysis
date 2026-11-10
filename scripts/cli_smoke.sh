@@ -586,6 +586,41 @@ if [ "$rc" -ne 127 ]; then
   fail=$((fail + 1))
 fi
 
+# ── m4gb: the external Groebner solver, through stub solvers ────────────
+# A stub that behaves like M4GB on a one-point system: writes the basis to -o.
+cat >"$tmp/solver_m4gb_n8_gf2" <<'SH'
+#!/bin/sh
+out=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && out=$2; shift; done
+printf 'X1 + 1\nX0\n^2 + \n' >"$out"
+echo '[m4gb]  P lcmdegree=3'
+echo 'Total CPU time : 0.01 s'
+echo 'Peak memory    : 3 MiB'
+SH
+# A wider stub that must not be chosen for a 2-variable system.
+cp "$tmp/solver_m4gb_n8_gf2" "$tmp/solver_m4gb_n64_gf2"
+# A stub that reports the unit ideal the way M4GB does: exit 1, no basis file.
+cat >"$tmp/solver_m4gb_n8_gf31" <<'SH'
+#!/bin/sh
+echo 'Caught exception:' >&2
+echo 'contradiction: 1=0' >&2
+exit 1
+SH
+chmod +x "$tmp"/solver_m4gb_n*
+printf '$fieldsize 2\n$vars 2 X\nX0*X1+X1\nX1+1\n' >"$tmp/sys2.in"
+printf '$fieldsize 31\n$vars 2 X\nX0+1\nX0+2\n' >"$tmp/sys31.in"
+want '"solution":{"X1":1,"X0":0}' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
+want "solver_m4gb_n8_gf2\"" m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
+want '"basis_size":2' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
+want '"max_degree":3' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
+want '"unit_ideal":true' m4gb --input "$tmp/sys31.in" --bin-dir "$tmp"
+export CA_M4GB_DIR="$tmp"
+want '"field":31' m4gb --input "$tmp/sys31.in"
+unset CA_M4GB_DIR
+want_bad 'no M4GB solver' m4gb --input "$tmp/sys2.in"
+want_bad '--input FILE required' m4gb
+want_bad 'no solver_m4gb_n<N>_gf2 with N >= 100' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp" --vars 100
+want_bad '--format must be default or mqchallenge' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp" --format anf
+
 # ── usage and unknown commands ──────────────────────────────────────────────
 want_fail
 want_fail not-a-command

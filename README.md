@@ -15,6 +15,11 @@ Rust, Go and Python bindings, and, in [`suite/`](suite/README.md), the Rust
 attack suite (symmetric, hash, ECDLP, nonce, lattice and post-quantum
 cryptanalysis) that grew up alongside it.
 
+`ca m4gb` runs the external Gröbner-basis solver M4GB on a polynomial system
+over a small finite field and reports the basis or root as JSON
+([docs/m4gb.md](docs/m4gb.md)); the solver is built separately at a pinned
+commit by `scripts/m4gb_build.sh` and never linked in.
+
 > **Status note on ECC2K-130 and isogeny-volcano work (as of 2026-10-01).**
 > This repository contains no ECDLP speedup, and none is claimed. The
 > volcano / descendant-curve experiments (`experiments/volcano-ic`, and the
