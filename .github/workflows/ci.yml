@@ -70,6 +70,9 @@ jobs:
         # reachable from the command line".
         run: ./scripts/cli_smoke.sh ./build/ca
 
+      - name: m4gb subcommand against stub solvers
+        run: python3 -m unittest discover -s tests -p test_m4gb_cli.py -v
+
       - name: CLI spot checks on a larger modulus
         run: |
           set -eux
