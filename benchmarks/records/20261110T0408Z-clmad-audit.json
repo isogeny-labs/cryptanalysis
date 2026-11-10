@@ -1,7 +1,44 @@
 {
   "branch": "claude/gallant-rubin-c51cyt",
   "closed_utc": null,
-  "commands": [],
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "research/clmad_audit_20261110/scripts/run_runpod.py",
+        "--arm",
+        "cuda13.4.3",
+        "--image",
+        "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+        "--bundle",
+        "/tmp/claude-0/-home-user/f443bfb4-633c-597f-8432-90f71803ee94/scratchpad/runpod/bundle.tar.xz",
+        "--out",
+        "research/clmad_audit_20261110/results/cuda13.4.3"
+      ],
+      "cwd": ".",
+      "exit": 3,
+      "started_utc": "2026-11-10T04:09:14+00:00",
+      "wall_s": 0.677
+    },
+    {
+      "argv": [
+        "python3",
+        "research/clmad_audit_20261110/scripts/run_runpod.py",
+        "--arm",
+        "cuda13.3.1",
+        "--image",
+        "nvidia/cuda:13.3.1-devel-ubuntu24.04",
+        "--bundle",
+        "/tmp/claude-0/-home-user/f443bfb4-633c-597f-8432-90f71803ee94/scratchpad/runpod/bundle.tar.xz",
+        "--out",
+        "research/clmad_audit_20261110/results/cuda13.3.1"
+      ],
+      "cwd": ".",
+      "exit": 3,
+      "started_utc": "2026-11-10T04:09:34+00:00",
+      "wall_s": 0.583
+    }
+  ],
   "commit": "fe751b09b08bc274d60cb22cfba25b13983b2b6e",
   "commit_dirty": false,
   "created_utc": "2026-11-10T04:08:33+00:00",
