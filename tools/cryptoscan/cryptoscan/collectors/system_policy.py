@@ -28,11 +28,11 @@ import re
 import sys
 from typing import Dict, List, Optional, Set, Tuple
 
+from .. import names, util
+from ..model import Asset, AssetKind, CryptoUse, Primitive
 from . import register
 from ._confparse import ctx_glob, file_attrs, is_root_host, logical, parse_properties, real
 from .base import Collector, ScanContext
-from .. import names, util
-from ..model import Asset, AssetKind, CryptoUse, Primitive
 
 # Entries the stock JDK disables in jdk.tls.disabledAlgorithms (JDK 17/21 defaults).
 JAVA_DEFAULT_TLS_DISABLED = ("SSLv3", "TLSv1", "TLSv1.1", "RC4", "DES", "MD5withRSA", "DH keySize < 1024",

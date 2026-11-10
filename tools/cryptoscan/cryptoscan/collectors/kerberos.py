@@ -43,14 +43,13 @@ import io
 import json
 import os
 import re
-from typing import Dict, Iterable, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
-from . import register
-from ._confparse import (blocks, ctx_glob, file_attrs, first, is_root_host, logical, parse_braces, real,
-                         strip_quotes, values)
-from .base import Collector, ScanContext
 from .. import keytab, names, util
 from ..model import Asset, AssetKind, CryptoUse, Primitive
+from . import register
+from ._confparse import blocks, ctx_glob, file_attrs, first, is_root_host, logical, parse_braces, real, values
+from .base import Collector, ScanContext
 
 ENCTYPE_SETTINGS = ("default_tgs_enctypes", "default_tkt_enctypes", "permitted_enctypes")
 

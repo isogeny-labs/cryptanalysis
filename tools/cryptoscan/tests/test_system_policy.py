@@ -2,7 +2,6 @@
 
 import os
 import tempfile
-import shutil
 import unittest
 
 from cryptoscan.collectors.base import ScanContext
