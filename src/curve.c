@@ -402,6 +402,8 @@ typedef struct glv_ctx {
     uint64_t *alpha, *beta;
     uint32_t m;
     uint64_t lam_pow[6];
+    uint64_t lam_shoup[6]; /* ca_shoup_pre(lam_pow[k], n) when lam_shoup_ok */
+    int lam_shoup_ok;      /* n < 2^63: Shoup products instead of u128 % */
     int dp_bits;
     uint64_t dp_mask;
     uint64_t abandon;
@@ -411,6 +413,14 @@ typedef struct glv_ctx {
     int tau_pair_steered;
     ca_curve_startup_stats *startup;
 } glv_ctx;
+
+/* a * lam^k mod n for the walk's coefficient update: the same residue as
+ * ca_mulmod(a, c->lam_pow[k], n), division-free when n < 2^63. */
+static inline uint64_t glv_lam_mul(const glv_ctx *c, uint64_t a, uint32_t k, uint64_t n)
+{
+    return c->lam_shoup_ok ? ca_shoup_mul(a, c->lam_pow[k], c->lam_shoup[k], n)
+                           : ca_mulmod(a, c->lam_pow[k], n);
+}
 
 /* A native snapshot includes the exact lane state. The size fields reject
  * snapshots made with a different diagnostic or cycle-escape build. */
@@ -670,8 +680,8 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
     if (!glv_startup_combination(c, &w->Y, w->a, w->b, 1, ops)) return 0;
     uint32_t k = glv_class_reduce(g, &w->Y, c->m, NULL);
     if (k) {
-        w->a = ca_mulmod(w->a, c->lam_pow[k], n);
-        w->b = ca_mulmod(w->b, c->lam_pow[k], n);
+        w->a = glv_lam_mul(c, w->a, k, n);
+        w->b = glv_lam_mul(c, w->b, k, n);
     }
     w->since_dp = 0;
 #ifdef CA_GLV_TRACE
@@ -734,6 +744,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     c.lam_pow[0] = 1 % n;
     for (uint32_t k = 1; k < c.m; k++)
         c.lam_pow[k] = ca_mulmod(c.lam_pow[k - 1], g->endo_lambda, n);
+    c.lam_shoup_ok = ca_shoup_ok(n);
+    if (c.lam_shoup_ok)
+        for (uint32_t k = 0; k < c.m; k++) c.lam_shoup[k] = ca_shoup_pre(c.lam_pow[k], n);
     ca_tau4_joint_plane_precomp plane_pre;
     if (paired2) {
         ca_tau4_joint_counts prep = {0};
@@ -962,8 +975,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 wk->b = ca_addmod(wk->b, wk->b, n);
                 uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                 if (kk) {
-                    wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
-                    wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                    wk->a = glv_lam_mul(&c, wk->a, kk, n);
+                    wk->b = glv_lam_mul(&c, wk->b, kk, n);
                 }
                 goto glv_dp_check;
             }
@@ -1013,8 +1026,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             wk->a = ca_addmod(wk->a, c.alpha[wk->idx], n);
             wk->b = ca_addmod(wk->b, c.beta[wk->idx], n);
             if (k) {
-                wk->a = ca_mulmod(wk->a, c.lam_pow[k], n);
-                wk->b = ca_mulmod(wk->b, c.lam_pow[k], n);
+                wk->a = glv_lam_mul(&c, wk->a, k, n);
+                wk->b = glv_lam_mul(&c, wk->b, k, n);
             }
             wk->Y = Yn[w];
             wk->since_dp++;
@@ -1066,8 +1079,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     wk->b = ca_addmod(pb, pb, n);
                     uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                     if (kk) {
-                        wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
-                        wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                        wk->a = glv_lam_mul(&c, wk->a, kk, n);
+                        wk->b = glv_lam_mul(&c, wk->b, kk, n);
                     }
 #        ifdef CA_GLV_FIELD_COUNT
                     ca_fc_phase = CA_FC_POST;

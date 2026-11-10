@@ -185,6 +185,29 @@ int main(void)
     CHECK_EQ_U64(ca_crt2(1, 1000003, 5, 999983) % 999983, 5);
     /* an unreduced r1 is reduced first (used to give 5, outside [0, 15)) */
     CHECK_EQ_U64(ca_crt2(UINT64_MAX, 3, 1, 5), 6);
+    /* Shoup fixed-factor products equal ca_mulmod for every q < 2^63
+     * (curve.c's GLV coefficient update relies on it), any a < 2^64. */
+    {
+        CHECK(!ca_shoup_ok(0) && !ca_shoup_ok(1) && ca_shoup_ok(2));
+        CHECK(ca_shoup_ok(((uint64_t)1 << 63) - 1) && !ca_shoup_ok((uint64_t)1 << 63));
+        ca_rng srng;
+        ca_rng_seed(&srng, 0x5409);
+        const uint64_t qs[] = {2, 3, 23729779, 16773703, 4294967291ULL, 53624256071278747ULL,
+                               (1ULL << 62) + 135, ((uint64_t)1 << 63) - 25,
+                               ((uint64_t)1 << 63) - 1};
+        for (size_t i = 0; i < sizeof(qs) / sizeof(qs[0]); i++) {
+            const uint64_t q = qs[i];
+            for (int t = 0; t < 20000; t++) {
+                uint64_t w = t < 3 ? (uint64_t[]){0, 1, q - 1}[t] : ca_rng_below(&srng, q);
+                uint64_t wp = ca_shoup_pre(w, q);
+                uint64_t a = (t & 3) == 0 ? ca_rng_next(&srng)
+                           : (t & 3) == 1 ? (uint64_t)(t >> 2) % q
+                           : (t & 3) == 2 ? UINT64_MAX - (uint64_t)(t >> 2)
+                                          : ca_rng_below(&srng, q);
+                CHECK_EQ_U64(ca_shoup_mul(a, w, wp, q), ca_mulmod(a, w, q));
+            }
+        }
+    }
     /* sieve */
     uint32_t pr[200];
     CHECK_EQ_U64(ca_sieve_primes(100, pr, 200), 25);
