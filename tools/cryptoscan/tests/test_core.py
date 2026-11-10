@@ -164,7 +164,8 @@ class NamesTests(unittest.TestCase):
 
 def _cert_asset(name, kind=AssetKind.CERTIFICATE, anchor=False):
     c = x509.load_certificates(_read(name))[0]
-    a = Asset(kind, c.subject, os.path.join(FIX, name), "test", attributes=dict(c.summary()))
+    # A synthetic location: the real fixture path contains "/tests/", which the policy treats as test material.
+    a = Asset(kind, c.subject, "/etc/ssl/certs/" + name, "test", attributes=dict(c.summary()))
     a.attributes["trust_anchor"] = anchor
     a.add(CryptoUse(Primitive.PUBLIC_KEY, c.public_key.algorithm, key_bits=c.public_key.key_bits, curve=c.public_key.curve, context="public-key"))
     a.add(CryptoUse(Primitive.SIGNATURE, c.signature_algorithm, hash_algorithm=c.signature_hash, context="certificate-signature"))

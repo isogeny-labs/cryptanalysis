@@ -177,7 +177,9 @@ class TlsRemoteSha1AndTls13Tests(unittest.TestCase):
         self.assertTrue(ep.attributes["tls1.3"])
         self.assertIn("tls1.3", ep.attributes["protocols"])
         ids = {f.rule_id for f in evaluate(assets, "nist")}
-        self.assertIn("SIG-HASH-SHA1", ids)
+        # The fixture is self-signed with CA:TRUE (openssl req -x509 default), so the policy treats its own
+        # signature as a trust-anchor signature (informational); a CA-signed SHA-1 leaf would be SIG-HASH-SHA1.
+        self.assertTrue({"SIG-HASH-SHA1", "SIG-ANCHOR-WEAK-HASH"} & ids, ids)
         self.assertNotIn("PROTO-TLS12", ids)                # TLS 1.3 available: the 1.2 rule stays quiet
         self.assertTrue(any(u.context == "tls-cipher-suite" and u.extra.get("protocol") == "tls1.3" for u in ep.uses))
 
