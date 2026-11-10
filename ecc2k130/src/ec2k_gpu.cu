@@ -746,11 +746,13 @@ int cmdRun(Options o, const HostWalk &walk, bool bench)
     printf("{\"status\":\"%s\",\"cmd\":\"%s\",\"walk\":\"%s\",\"iterations\":%llu,"
            "\"seconds\":%.3f,\"iterationsPerSecond\":%.0f,\"reports\":%llu,\"verified\":%llu,"
            "\"badReports\":%llu,\"restarts\":%llu,\"dropped\":%llu,\"threads\":%d,\"batch\":%d,"
-           "\"steps\":%d,\"dpWeight\":%d,\"runId\":%u,\"stopped\":%s}\n",
+           "\"steps\":%d,\"dpWeight\":%d,\"runId\":%u,\"stopped\":%s,"
+           "\"nvccVersion\":\"%d.%d.%d\"}\n",
            status, bench ? "bench" : "walk", WALK_NAME, iterations, dt,
            dt > 0 ? (double)(iterations - iterations0) / dt : 0.0, reports, verified, badReports,
            restarts, dropped, o.threads, ECC_BATCH, o.steps, o.dpWeight, o.runId,
-           stopRequested ? "true" : "false");
+           stopRequested ? "true" : "false", __CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__,
+           __CUDACC_VER_BUILD__);
     return rc;
 }
 
@@ -815,8 +817,9 @@ int cmdDevices()
                jsonString(cudaGetErrorString(err)).c_str(), driver, runtime);
         return 3;
     }
-    printf("{\"status\":\"ok\",\"driverVersion\":%d,\"runtimeVersion\":%d,\"devices\":[", driver,
-           runtime);
+    printf("{\"status\":\"ok\",\"driverVersion\":%d,\"runtimeVersion\":%d,"
+           "\"nvccVersion\":\"%d.%d.%d\",\"devices\":[",
+           driver, runtime, __CUDACC_VER_MAJOR__, __CUDACC_VER_MINOR__, __CUDACC_VER_BUILD__);
     for (int d = 0; d < n; ++d) printf("%s%s", d ? "," : "", deviceJson(d).c_str());
     printf("]}\n");
     return 0;

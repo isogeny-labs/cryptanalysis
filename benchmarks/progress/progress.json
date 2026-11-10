@@ -1,11 +1,11 @@
 {
   "headline_unit": "S",
-  "latest_record": "20261108T0611Z-n83-fo2d4",
+  "latest_record": "20261110T0408Z-clmad-audit",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared.",
   "records": {
     "censored": 0,
     "invalid": 0,
-    "measured": 15,
+    "measured": 16,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -1814,6 +1814,126 @@
       ],
       "problem": "ic:N53",
       "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 55.084,
+      "latest": 55.084,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "clmad_lo_chain_latency_rtx5090",
+      "points": [
+        {
+          "commit": "fe751b09b08b",
+          "date": "2026-11-10",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 100,
+          "record": "20261110T0408Z-clmad-audit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            55.084,
+            55.092
+          ],
+          "summary": "clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19 at -O2/-O3 and JIT); our reproducer and the ecc2k130 device tests pass on both; two-class timing: no operand class distinguishable, lo latency 55.08 (5090) / 63.53 (PRO 6000) cycles per op",
+          "value": 55.084
+        }
+      ],
+      "problem": "kernel:clmad_sm120",
+      "unit": "cycles_per_op"
+    },
+    {
+      "better": "lower",
+      "first": 63.528,
+      "latest": 63.528,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "clmad_lo_chain_latency_rtxpro6000",
+      "points": [
+        {
+          "commit": "fe751b09b08b",
+          "date": "2026-11-10",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 100,
+          "record": "20261110T0408Z-clmad-audit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            63.528,
+            63.54
+          ],
+          "summary": "clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19 at -O2/-O3 and JIT); our reproducer and the ecc2k130 device tests pass on both; two-class timing: no operand class distinguishable, lo latency 55.08 (5090) / 63.53 (PRO 6000) cycles per op",
+          "value": 63.528
+        }
+      ],
+      "problem": "kernel:clmad_sm120",
+      "unit": "cycles_per_op"
+    },
+    {
+      "better": "lower",
+      "first": 255.86,
+      "latest": 255.86,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "clmad_lo_chain_occupancy_rtx5090",
+      "points": [
+        {
+          "commit": "fe751b09b08b",
+          "date": "2026-11-10",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 50,
+          "record": "20261110T0408Z-clmad-audit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            255.842,
+            255.881
+          ],
+          "summary": "clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19 at -O2/-O3 and JIT); our reproducer and the ecc2k130 device tests pass on both; two-class timing: no operand class distinguishable, lo latency 55.08 (5090) / 63.53 (PRO 6000) cycles per op",
+          "value": 255.86
+        }
+      ],
+      "problem": "kernel:clmad_sm120",
+      "unit": "cycles_per_op"
+    },
+    {
+      "better": "lower",
+      "first": 255.901,
+      "latest": 255.901,
+      "latest_derived": {
+        "improvement_vs_first_percent": 0.0
+      },
+      "metric": "clmad_lo_chain_occupancy_rtxpro6000",
+      "points": [
+        {
+          "commit": "fe751b09b08b",
+          "date": "2026-11-10",
+          "derived": {
+            "improvement_vs_first_percent": 0.0
+          },
+          "n": 50,
+          "record": "20261110T0408Z-clmad-audit",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            255.896,
+            255.928
+          ],
+          "summary": "clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19 at -O2/-O3 and JIT); our reproducer and the ecc2k130 device tests pass on both; two-class timing: no operand class distinguishable, lo latency 55.08 (5090) / 63.53 (PRO 6000) cycles per op",
+          "value": 255.901
+        }
+      ],
+      "problem": "kernel:clmad_sm120",
+      "unit": "cycles_per_op"
     },
     {
       "better": "higher",
