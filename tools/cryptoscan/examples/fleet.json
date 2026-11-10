@@ -1,0 +1,21 @@
+{
+  "profile": "nist",
+  "targets": [
+    "bastion=ssh://bastion.example.net:22",
+    "https://www.example.net",
+    "https://intranet.example.net:8443",
+    "smtp://mail.example.net:25",
+    "imap://mail.example.net:143",
+    "ldap://dc1.example.net:389",
+    "postgres://db1.example.net:5432",
+    {"host": "core-sw1.example.net", "port": 22, "service": "ssh", "label": "core switch"},
+    {"host": "core-sw1.example.net", "service": "snmp"},
+    {"host": "fw1.example.net", "port": 443, "service": "tls", "label": "firewall mgmt"}
+  ],
+  "netdev_configs": ["/srv/rancid/configs/"],
+  "extra_paths": ["/opt/app/certs", "/srv/exports/ad-enctypes.csv"],
+  "options": {"snmp_communities": ["public"], "workers": 32, "tls_max_handshakes": 150},
+  "snmp_probe": false,
+  "deep_fs_scan": false,
+  "timeout": 8
+}

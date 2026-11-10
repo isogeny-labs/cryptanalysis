@@ -1,0 +1,6 @@
+# fixture ssh_config
+Host legacy
+    KexAlgorithms diffie-hellman-group1-sha1
+    Ciphers 3des-cbc
+Host *
+    FingerprintHash sha256
