@@ -265,6 +265,19 @@ What is still not covered:
   (which calls `exit`) skips teardown.
 - Checkpoints and logs on disk keep whatever they were given.
 
+## Toolkit versions and `clmad`
+
+The packed kernels do their field products with the `clmad` instruction
+(CUDA 13.3 and later, sm_80 and later). Compiler correctness is part of the
+result: a third-party report (NVIDIA bug 6955062, 2026-10-19) says `ptxas`
+13.4.92 folds a `clmad` whose multiplicand is the constant one on sm_120 at
+`-O2`/`-O3` and drops its high half. Both Makefiles under `ecc2k130/` read
+the `nvcc` version and refuse a `clmad` build on a `BAD_PTXAS` entry unless
+`ALLOW_BAD_PTXAS=1`; the GPU client prints `nvccVersion` in its `devices`
+and `bench`/`walk` JSON, so every run record names the compiler. The
+reproduction on our own hardware, and a two-class timing test of `clmad`,
+are in `research/clmad_audit_20261110/`.
+
 For runs whose result is worth something, use a dedicated GPU (or a
 MIG slice on A100/H100) rather than time-sliced or MPS sharing, keep
 profiling counters admin-only (`NVreg_RestrictProfilingToAdminUsers=1`, the
