@@ -265,19 +265,39 @@ uint32_t ca_ec_j0_coord_canonicalize(const ca_group *g, ca_elem *Y)
 }
 
 /* Reduce Y to the canonical representative of its automorphism class {Y,
- * psi(Y), ..., psi^{m-1}(Y)} and return the power k of psi applied. */
-static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m)
+ * psi(Y), ..., psi^{m-1}(Y)} and return the power k of psi applied.  When
+ * h_out is not NULL it receives ca_group_hash of the reduced point.
+ *
+ * j=0 (m = 6) uses the factored hash reducer by default: the same six point
+ * hashes in the same order with the same strict tie break, so the same
+ * representative and k as the legacy loop (tests/test_curve.c checks every
+ * word; experiments/prime-j0-cost-aware-chain/RHO_J0_FACTORED_HASH.md).
+ * -DCA_RHO_J0_FACTORED_HASH=OFF (CMake; C macro CA_RHO_J0_LEGACY_HASH)
+ * restores the loop of out-of-line ca_ec_endo calls.  The trajectory-
+ * changing representatives CA_RHO_J0_COORDINATE_ORBIT and
+ * CA_J0_RHO_COORD_CANON take precedence when selected. */
+static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m, uint64_t *h_out)
 {
 #ifdef CA_RHO_J0_COORDINATE_ORBIT
-    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6)
-        return ca_j0_coordinate_class_reduce(g, Y);
-#elif defined(CA_RHO_J0_FACTORED_HASH)
-    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6)
-        return ca_j0_factored_hash_class_reduce(g, Y);
+    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6) {
+        uint32_t k = ca_j0_coordinate_class_reduce(g, Y);
+        if (h_out) *h_out = ca_group_hash(g, Y);
+        return k;
+    }
 #endif
-
 #ifdef CA_J0_RHO_COORD_CANON
-    if (g->endo_kind == 1 && m == 6) return ca_ec_j0_coord_canonicalize(g, Y);
+    if (g->endo_kind == 1 && m == 6) {
+        uint32_t k = ca_ec_j0_coord_canonicalize(g, Y);
+        if (h_out) *h_out = ca_group_hash(g, Y);
+        return k;
+    }
+#endif
+#if !defined(CA_RHO_J0_COORDINATE_ORBIT) && !defined(CA_J0_RHO_COORD_CANON) &&                     \
+    !defined(CA_RHO_J0_LEGACY_HASH)
+    /* endo_kind J0 is only ever set on a native EC group (curve_enable), whose
+     * hash is ca_ec_hash_words; the kind test keeps that explicit. */
+    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6 && g->kind == CA_GROUP_EC)
+        return ca_j0_factored_hash_class_reduce_h(g, Y, h_out);
 #endif
     ca_elem cur = *Y, best = *Y;
     uint64_t best_h = ca_group_hash(g, Y);
@@ -294,6 +314,7 @@ static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m)
         }
     }
     *Y = best;
+    if (h_out) *h_out = best_h;
     return best_k;
 }
 
@@ -381,6 +402,8 @@ typedef struct glv_ctx {
     uint64_t *alpha, *beta;
     uint32_t m;
     uint64_t lam_pow[6];
+    uint64_t lam_shoup[6]; /* ca_shoup_pre(lam_pow[k], n) when lam_shoup_ok */
+    int lam_shoup_ok;      /* n < 2^63: Shoup products instead of u128 % */
     int dp_bits;
     uint64_t dp_mask;
     uint64_t abandon;
@@ -390,6 +413,14 @@ typedef struct glv_ctx {
     int tau_pair_steered;
     ca_curve_startup_stats *startup;
 } glv_ctx;
+
+/* a * lam^k mod n for the walk's coefficient update: the same residue as
+ * ca_mulmod(a, c->lam_pow[k], n), division-free when n < 2^63. */
+static inline uint64_t glv_lam_mul(const glv_ctx *c, uint64_t a, uint32_t k, uint64_t n)
+{
+    return c->lam_shoup_ok ? ca_shoup_mul(a, c->lam_pow[k], c->lam_shoup[k], n)
+                           : ca_mulmod(a, c->lam_pow[k], n);
+}
 
 /* A native snapshot includes the exact lane state. The size fields reject
  * snapshots made with a different diagnostic or cycle-escape build. */
@@ -647,10 +678,10 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
     w->a = ca_rng_below(rng, n);
     w->b = ca_rng_below(rng, n);
     if (!glv_startup_combination(c, &w->Y, w->a, w->b, 1, ops)) return 0;
-    uint32_t k = glv_class_reduce(g, &w->Y, c->m);
+    uint32_t k = glv_class_reduce(g, &w->Y, c->m, NULL);
     if (k) {
-        w->a = ca_mulmod(w->a, c->lam_pow[k], n);
-        w->b = ca_mulmod(w->b, c->lam_pow[k], n);
+        w->a = glv_lam_mul(c, w->a, k, n);
+        w->b = glv_lam_mul(c, w->b, k, n);
     }
     w->since_dp = 0;
 #ifdef CA_GLV_TRACE
@@ -713,6 +744,9 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     c.lam_pow[0] = 1 % n;
     for (uint32_t k = 1; k < c.m; k++)
         c.lam_pow[k] = ca_mulmod(c.lam_pow[k - 1], g->endo_lambda, n);
+    c.lam_shoup_ok = ca_shoup_ok(n);
+    if (c.lam_shoup_ok)
+        for (uint32_t k = 0; k < c.m; k++) c.lam_shoup[k] = ca_shoup_pre(c.lam_pow[k], n);
     ca_tau4_joint_plane_precomp plane_pre;
     if (paired2) {
         ca_tau4_joint_counts prep = {0};
@@ -753,6 +787,17 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     uint32_t rr = 8;
     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= rcap) rr *= 2;
     c.r = rr;
+    /* c.r is a power of two: rr starts at 8 and only doubles, up to rcap
+     * (32 or 128), and this is the only assignment to c.r (c is zeroed
+     * above and is never read back from a checkpoint; the checkpoint header
+     * only compares r).  So the walk's "% c.r" index reductions are a mask,
+     * with no 64-bit division per step.  The guard is unreachable; it keeps
+     * a future change of the table rule from silently breaking the mask. */
+    if (c.r < 8 || (c.r & (c.r - 1)) != 0) {
+        ca_set_error("glv: multiplier table size %u is not a power of two", c.r);
+        return CA_ERR_INTERNAL;
+    }
+    const uint32_t r_mask = c.r - 1;
     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
 
@@ -892,7 +937,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             }
 #endif
             if (!wk->retry) {
-                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) % c.r);
+                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) & r_mask);
                 wk->first = wk->idx;
                 wk->tries = 0;
             }
@@ -928,17 +973,15 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 wk->Y = Yn[w];
                 wk->a = ca_addmod(wk->a, wk->a, n);
                 wk->b = ca_addmod(wk->b, wk->b, n);
-                uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                 if (kk) {
-                    wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
-                    wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                    wk->a = glv_lam_mul(&c, wk->a, kk, n);
+                    wk->b = glv_lam_mul(&c, wk->b, kk, n);
                 }
-                h = ca_group_hash(g, &wk->Y);
                 goto glv_dp_check;
             }
 #endif
-            k = glv_class_reduce(g, &Yn[w], c.m);
-            h = ca_group_hash(g, &Yn[w]);
+            k = glv_class_reduce(g, &Yn[w], c.m, &h);
             /* Fruitless-cycle look-ahead: if the reduced point would pick the
              * same multiplier we just used, advance to the next one and redo
              * the step -- a deterministic function of the class, so walks
@@ -954,14 +997,14 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
              * 2-cycle to be of this form.  Both tests depend on Y alone, so
              * the step stays a function of the class.  Build with
              * -DCA_GLV_LOOKAHEAD_LEGACY for the original single test. */
-            uint32_t nat = (uint32_t)(ca_mix64(h) % c.r);
+            uint32_t nat = (uint32_t)(ca_mix64(h) & r_mask);
 #ifdef CA_GLV_LOOKAHEAD_LEGACY
             if (nat == wk->idx) {
 #else
             if ((nat == wk->idx || nat == wk->first) && wk->tries + 1 < c.r) {
                 wk->tries++;
 #endif
-                wk->idx = (wk->idx + 1) % c.r;
+                wk->idx = (wk->idx + 1) & r_mask;
                 wk->retry = 1;
 #ifdef CA_GLV_FIELD_COUNT
                 ca_fc_ev[CA_FC_EV_RETRIES]++;
@@ -983,8 +1026,8 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             wk->a = ca_addmod(wk->a, c.alpha[wk->idx], n);
             wk->b = ca_addmod(wk->b, c.beta[wk->idx], n);
             if (k) {
-                wk->a = ca_mulmod(wk->a, c.lam_pow[k], n);
-                wk->b = ca_mulmod(wk->b, c.lam_pow[k], n);
+                wk->a = glv_lam_mul(&c, wk->a, k, n);
+                wk->b = glv_lam_mul(&c, wk->b, k, n);
             }
             wk->Y = Yn[w];
             wk->since_dp++;
@@ -1034,12 +1077,11 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     ops++;
                     wk->a = ca_addmod(pa, pa, n);
                     wk->b = ca_addmod(pb, pb, n);
-                    uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                    uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                     if (kk) {
-                        wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
-                        wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
+                        wk->a = glv_lam_mul(&c, wk->a, kk, n);
+                        wk->b = glv_lam_mul(&c, wk->b, kk, n);
                     }
-                    h = ca_group_hash(g, &wk->Y);
 #        ifdef CA_GLV_FIELD_COUNT
                     ca_fc_phase = CA_FC_POST;
 #        endif

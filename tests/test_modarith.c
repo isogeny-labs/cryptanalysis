@@ -2,8 +2,89 @@
 #include "ca_internal.h"
 #include "test_util.h"
 
+/* The extended Euclid ca_invmod used before 2026-11-10 (64-bit division,
+ * signed 128-bit coefficients), kept as the reference for the binary xgcd
+ * that replaced it for odd moduli: the inverse is unique, and the zero /
+ * non-invertible results must match exactly. */
+static uint64_t invmod_reference(uint64_t a, uint64_t m)
+{
+    if (m == 0) return 0;
+    a %= m;
+    if (a == 0) return 0;
+    ca_i128 t = 0, newt = 1;
+    uint64_t r = m, newr = a;
+    while (newr) {
+        uint64_t q = r / newr;
+        ca_i128 tmp = t - (ca_i128)q * newt;
+        t = newt;
+        newt = tmp;
+        uint64_t tr = r - q * newr;
+        r = newr;
+        newr = tr;
+    }
+    if (r != 1) return 0;
+    if (t < 0) t += (ca_i128)m;
+    return (uint64_t)t;
+}
+
+static void invmod_vs_reference(void)
+{
+    static const uint64_t edge[] = {0,
+                                    1,
+                                    2,
+                                    3,
+                                    4,
+                                    5,
+                                    7,
+                                    8,
+                                    9,
+                                    15,
+                                    16,
+                                    17,
+                                    65537,
+                                    (1ULL << 32) - 1,
+                                    1ULL << 32,
+                                    (1ULL << 32) + 1,
+                                    (1ULL << 61) - 1,
+                                    (1ULL << 63) - 1,
+                                    1ULL << 63,
+                                    (1ULL << 63) + 1,
+                                    18446744073709551557ULL,
+                                    UINT64_MAX - 1,
+                                    UINT64_MAX};
+    const size_t ne = sizeof(edge) / sizeof(edge[0]);
+    for (size_t i = 0; i < ne; i++)
+        for (size_t j = 0; j < ne; j++) {
+            CHECK_EQ_U64(ca_invmod(edge[i], edge[j]), invmod_reference(edge[i], edge[j]));
+            CHECK_EQ_U64(ca_invmod(edge[i] + 1, edge[j]), invmod_reference(edge[i] + 1, edge[j]));
+            CHECK_EQ_U64(ca_invmod(edge[j] - 1, edge[j]), invmod_reference(edge[j] - 1, edge[j]));
+        }
+    for (uint64_t m = 0; m < 300; m++)
+        for (uint64_t a = 0; a <= 2 * m + 1; a++)
+            CHECK_EQ_U64(ca_invmod(a, m), invmod_reference(a, m));
+    /* random moduli of every bit length, odd and even, reduced and unreduced
+     * a, and a sharing a small factor with m (non-invertible) */
+    ca_rng rng;
+    ca_rng_seed(&rng, 0x1a7e5);
+    for (int bits = 2; bits <= 64; bits++) {
+        for (int t = 0; t < 4000; t++) {
+            uint64_t m = ca_rng_next(&rng);
+            if (bits < 64) m &= (1ULL << bits) - 1;
+            m |= 1ULL << (bits - 1);
+            if (t & 1) m |= 1;
+            uint64_t a = ca_rng_next(&rng);
+            if (t % 3 == 1) a %= m;
+            if (t % 3 == 2) a = (a % m) / 3 * 3;
+            uint64_t got = ca_invmod(a, m), want = invmod_reference(a, m);
+            CHECK_EQ_U64(got, want);
+            if (got) CHECK_EQ_U64(ca_mulmod(a % m, got, m), 1);
+        }
+    }
+}
+
 int main(void)
 {
+    invmod_vs_reference();
     /* powmod / invmod against brute force on small moduli */
     for (uint64_t m = 3; m < 200; m += 2) {
         for (uint64_t a = 1; a < m; a++) {
@@ -185,6 +266,35 @@ int main(void)
     CHECK_EQ_U64(ca_crt2(1, 1000003, 5, 999983) % 999983, 5);
     /* an unreduced r1 is reduced first (used to give 5, outside [0, 15)) */
     CHECK_EQ_U64(ca_crt2(UINT64_MAX, 3, 1, 5), 6);
+    /* Shoup fixed-factor products equal ca_mulmod for every q < 2^63
+     * (curve.c's GLV coefficient update relies on it), any a < 2^64. */
+    {
+        CHECK(!ca_shoup_ok(0) && !ca_shoup_ok(1) && ca_shoup_ok(2));
+        CHECK(ca_shoup_ok(((uint64_t)1 << 63) - 1) && !ca_shoup_ok((uint64_t)1 << 63));
+        ca_rng srng;
+        ca_rng_seed(&srng, 0x5409);
+        const uint64_t qs[] = {2,
+                               3,
+                               23729779,
+                               16773703,
+                               4294967291ULL,
+                               53624256071278747ULL,
+                               (1ULL << 62) + 135,
+                               ((uint64_t)1 << 63) - 25,
+                               ((uint64_t)1 << 63) - 1};
+        for (size_t i = 0; i < sizeof(qs) / sizeof(qs[0]); i++) {
+            const uint64_t q = qs[i];
+            for (int t = 0; t < 20000; t++) {
+                uint64_t w = t < 3 ? (uint64_t[]){0, 1, q - 1}[t] : ca_rng_below(&srng, q);
+                uint64_t wp = ca_shoup_pre(w, q);
+                uint64_t a = (t & 3) == 0   ? ca_rng_next(&srng)
+                             : (t & 3) == 1 ? (uint64_t)(t >> 2) % q
+                             : (t & 3) == 2 ? UINT64_MAX - (uint64_t)(t >> 2)
+                                            : ca_rng_below(&srng, q);
+                CHECK_EQ_U64(ca_shoup_mul(a, w, wp, q), ca_mulmod(a, w, q));
+            }
+        }
+    }
     /* sieve */
     uint32_t pr[200];
     CHECK_EQ_U64(ca_sieve_primes(100, pr, 200), 25);

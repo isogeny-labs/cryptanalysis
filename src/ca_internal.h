@@ -19,6 +19,30 @@ static inline double ca_now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
 }
 
+/* ---- multiplication by a fixed factor (Shoup) --------------------------- */
+
+/* For a fixed w < q < 2^63, wp = floor(w * 2^64 / q) turns a * w mod q into
+ * two multiplications and one conditional subtraction, for any a < 2^64:
+ * a*w - floor(a*wp / 2^64)*q lies in [0, 2q) (Shoup; Harvey 2014), and
+ * 2q < 2^64, so the wrapped 64-bit difference is exact.  The result equals
+ * ca_mulmod(a, w, q).  Callers must check q < 2^63 (ca_shoup_ok) and fall
+ * back to ca_mulmod otherwise.  src/linalg.c keeps its own identical
+ * file-local shoup_pre/shoup_mul for now (duplicated deliberately while
+ * that file is being edited elsewhere); fold it onto these later. */
+static inline int ca_shoup_ok(uint64_t q) { return q > 1 && q < ((uint64_t)1 << 63); }
+
+static inline uint64_t ca_shoup_pre(uint64_t w, uint64_t q)
+{
+    return (uint64_t)(((ca_u128)w << 64) / q);
+}
+
+static inline uint64_t ca_shoup_mul(uint64_t a, uint64_t w, uint64_t wp, uint64_t q)
+{
+    uint64_t qhat = (uint64_t)(((ca_u128)a * wp) >> 64);
+    uint64_t r = a * w - qhat * q;
+    return r >= q ? r - q : r;
+}
+
 /* ---- xoshiro256** PRNG ------------------------------------------------- */
 typedef struct ca_rng {
     uint64_t s[4];
