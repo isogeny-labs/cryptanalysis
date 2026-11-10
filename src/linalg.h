@@ -45,6 +45,18 @@ typedef struct ca_linsolve_report {
 ca_status ca_linsolve_mod_prime(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
                                 uint8_t *known, uint64_t seed, ca_linsolve_report *rep);
 
+/* The same with the Lanczos products, dot products and vector updates
+ * split across up to `threads` threads (0 or 1: one thread) of a pool kept
+ * for the whole solve.  The environment variable CA_LA_THREADS, when set
+ * to a positive integer, overrides `threads` here and in
+ * ca_linsolve_mod_prime (which otherwise uses one thread).  The solution,
+ * `known` and every report field but `seconds` are identical at every
+ * thread count: each thread owns whole output rows, and dot products are
+ * exact sums mod q added in a fixed order. */
+ca_status ca_linsolve_mod_prime_mt(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
+                                   uint8_t *known, uint64_t seed, uint32_t threads,
+                                   ca_linsolve_report *rep);
+
 /* Dense Gaussian elimination mod q on an n x n (+rhs) system given as a
  * row-major array; returns CA_ERR_SINGULAR if not uniquely solvable.  Used
  * as a fallback and for tests. */
