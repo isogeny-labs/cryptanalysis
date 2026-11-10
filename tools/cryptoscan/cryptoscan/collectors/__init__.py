@@ -7,6 +7,7 @@ from typing import Dict, Type
 from .base import Collector, ScanContext, Target  # noqa: F401
 
 _REGISTRY: Dict[str, Type[Collector]] = {}
+LOAD_ERRORS: Dict[str, str] = {}
 
 
 def register(cls: Type[Collector]) -> Type[Collector]:
@@ -40,3 +41,7 @@ def _load() -> None:
         except ImportError as e:   # a missing optional collector must not break the package
             import logging
             logging.getLogger("cryptoscan").debug("collector %s unavailable: %s", mod, e)
+        except Exception as e:     # a broken collector must not take the scanner down
+            import logging
+            logging.getLogger("cryptoscan").warning("collector %s failed to load: %s: %s", mod, type(e).__name__, e)
+            LOAD_ERRORS[mod] = f"{type(e).__name__}: {e}"

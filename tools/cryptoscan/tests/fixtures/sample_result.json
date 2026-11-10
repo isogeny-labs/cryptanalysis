@@ -1,0 +1,1198 @@
+{
+  "meta": {
+    "tool": "cryptoscan",
+    "version": "0.1.0",
+    "started": "2026-11-10T11:00:00+00:00",
+    "finished": "2026-11-10T11:05:00+00:00",
+    "hostname": "host-a",
+    "profile": "nist",
+    "targets": [
+      "localhost",
+      "web.example.com:443"
+    ],
+    "collectors_run": [
+      "ssh_local",
+      "x509_files",
+      "tls_remote",
+      "kerberos",
+      "system_policy"
+    ],
+    "collectors_skipped": {
+      "ipsec": "strongswan not installed",
+      "snmp": "needs_network"
+    },
+    "command_line": [
+      "cryptoscan",
+      "scan",
+      "--profile",
+      "nist"
+    ]
+  },
+  "assets": [
+    {
+      "kind": "tls_endpoint",
+      "name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "host": "web.example.com",
+      "uses": [
+        {
+          "primitive": "protocol",
+          "algorithm": "tls1.0",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "TLSv1.0",
+          "context": "tls-protocol",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "protocol",
+          "algorithm": "tls1.2",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "TLSv1.2",
+          "context": "tls-protocol",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "cipher",
+          "algorithm": "3des",
+          "key_bits": 168,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": "cbc",
+          "raw": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+          "context": "tls-cipher-suite",
+          "negotiated": null,
+          "extra": {
+            "kx": "rsa-kex",
+            "auth": "rsa",
+            "prf": null,
+            "export": false,
+            "pfs": false,
+            "aead": false,
+            "iana": "TLS_RSA_WITH_3DES_EDE_CBC_SHA"
+          }
+        },
+        {
+          "primitive": "cipher",
+          "algorithm": "aes",
+          "key_bits": 256,
+          "curve": null,
+          "hash_algorithm": "sha384",
+          "mode": "gcm",
+          "raw": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+          "context": "tls-cipher-suite",
+          "negotiated": null,
+          "extra": {
+            "kx": "ecdhe",
+            "auth": "rsa",
+            "prf": null,
+            "export": false,
+            "pfs": true,
+            "aead": true,
+            "iana": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+          }
+        },
+        {
+          "primitive": "key_exchange",
+          "algorithm": "hybrid-pq",
+          "key_bits": 256,
+          "curve": "curve25519",
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "X25519MLKEM768",
+          "context": "tls-group",
+          "negotiated": null,
+          "extra": {
+            "kem": "ml-kem-768"
+          }
+        },
+        {
+          "primitive": "key_exchange",
+          "algorithm": "ecdh",
+          "key_bits": 256,
+          "curve": "curve25519",
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "x25519",
+          "context": "tls-group",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {},
+      "errors": [],
+      "asset_id": "f1c85419e74fc1d8"
+    },
+    {
+      "kind": "ssh_server",
+      "name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "key_exchange",
+          "algorithm": "ecdh",
+          "key_bits": 256,
+          "curve": "curve25519",
+          "hash_algorithm": "sha256",
+          "mode": null,
+          "raw": "curve25519-sha256",
+          "context": "kex",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "key_exchange",
+          "algorithm": "dh",
+          "key_bits": 1024,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": null,
+          "raw": "diffie-hellman-group1-sha1",
+          "context": "kex",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "cipher",
+          "algorithm": "aes",
+          "key_bits": 128,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": "cbc",
+          "raw": "aes128-cbc",
+          "context": "cipher",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "cipher",
+          "algorithm": "aes",
+          "key_bits": 256,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": "gcm",
+          "raw": "aes256-gcm@openssh.com",
+          "context": "cipher",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "mac",
+          "algorithm": "hmac",
+          "key_bits": 160,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": null,
+          "raw": "hmac-sha1",
+          "context": "mac",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "signature",
+          "algorithm": "rsa",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": null,
+          "raw": "ssh-rsa",
+          "context": "hostkey",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "signature",
+          "algorithm": "ed25519",
+          "key_bits": 256,
+          "curve": "curve25519",
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "ssh-ed25519",
+          "context": "hostkey",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {},
+      "errors": [],
+      "asset_id": "4891c90af48797c8"
+    },
+    {
+      "kind": "certificate",
+      "name": "expired",
+      "location": "/etc/ssl/expired.pem",
+      "collector": "x509_files",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "public_key",
+          "algorithm": "rsa",
+          "key_bits": 1024,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": null,
+          "context": "public-key",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "signature",
+          "algorithm": "rsa",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": null,
+          "raw": null,
+          "context": "certificate-signature",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {
+        "subject": "CN=old.example.com",
+        "issuer": "CN=Example CA",
+        "not_before": "2019-01-01T00:00:00+00:00",
+        "not_after": "2020-01-01T00:00:00+00:00",
+        "signature_algorithm": "rsa",
+        "signature_hash": "sha1",
+        "public_key_algorithm": "rsa",
+        "key_bits": 1024,
+        "curve": null,
+        "is_ca": false,
+        "self_signed": false,
+        "sans": [
+          "a.example.com",
+          "b.example.com"
+        ],
+        "ext_key_usage": [
+          "serverAuth"
+        ],
+        "version": 3,
+        "serial_bits": 128
+      },
+      "errors": [],
+      "asset_id": "8bba6c03a7fdf7e5"
+    },
+    {
+      "kind": "certificate",
+      "name": "good",
+      "location": "/etc/ssl/good.pem",
+      "collector": "x509_files",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "public_key",
+          "algorithm": "ec",
+          "key_bits": 256,
+          "curve": "p-256",
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": null,
+          "context": "public-key",
+          "negotiated": null,
+          "extra": {}
+        },
+        {
+          "primitive": "signature",
+          "algorithm": "ecdsa",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": "sha256",
+          "mode": null,
+          "raw": null,
+          "context": "certificate-signature",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {
+        "subject": "CN=new.example.com",
+        "issuer": "CN=Example CA",
+        "not_before": "2026-10-01T00:00:00+00:00",
+        "not_after": "2027-01-05T00:00:00+00:00",
+        "signature_algorithm": "ecdsa",
+        "signature_hash": "sha256",
+        "public_key_algorithm": "ec",
+        "key_bits": 256,
+        "curve": "p-256",
+        "is_ca": false,
+        "self_signed": false,
+        "sans": [
+          "a.example.com",
+          "b.example.com"
+        ],
+        "ext_key_usage": [
+          "serverAuth"
+        ],
+        "version": 3,
+        "serial_bits": 128
+      },
+      "errors": [],
+      "asset_id": "f06aefcfdf15c164"
+    },
+    {
+      "kind": "private_key",
+      "name": "/root/.ssh/id_rsa",
+      "location": "/root/.ssh/id_rsa",
+      "collector": "ssh_local",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "public_key",
+          "algorithm": "rsa",
+          "key_bits": 2048,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": null,
+          "context": "public-key",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {
+        "mode": 420,
+        "owner": "root",
+        "encrypted": false,
+        "fmt": "openssh"
+      },
+      "errors": [],
+      "asset_id": "73d2f193ebedfb11"
+    },
+    {
+      "kind": "kerberos_config",
+      "name": "/etc/krb5.conf",
+      "location": "/etc/krb5.conf",
+      "collector": "kerberos",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "enctype",
+          "algorithm": "rc4",
+          "key_bits": 128,
+          "curve": null,
+          "hash_algorithm": "md5",
+          "mode": null,
+          "raw": "rc4-hmac",
+          "context": "enctype",
+          "negotiated": null,
+          "extra": {
+            "enctype": "rc4-hmac",
+            "etype_id": 23,
+            "negated": false
+          }
+        },
+        {
+          "primitive": "enctype",
+          "algorithm": "aes",
+          "key_bits": 256,
+          "curve": null,
+          "hash_algorithm": "sha1",
+          "mode": null,
+          "raw": "aes256-cts-hmac-sha1-96",
+          "context": "enctype",
+          "negotiated": null,
+          "extra": {
+            "enctype": "aes256-cts-hmac-sha1-96",
+            "etype_id": 18,
+            "negated": false
+          }
+        }
+      ],
+      "attributes": {},
+      "errors": [],
+      "asset_id": "a4c699ae5a765cc3"
+    },
+    {
+      "kind": "ssh_user_key",
+      "name": "<script>alert(1)</script>",
+      "location": "/home/x/.ssh/id_dsa",
+      "collector": "ssh_local",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "public_key",
+          "algorithm": "dsa",
+          "key_bits": 1024,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "<script>alert(1)</script>",
+          "context": "public-key",
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {
+        "mode": 384,
+        "owner": "x",
+        "encrypted": true
+      },
+      "errors": [],
+      "asset_id": "9c3ac8a305b7a15f"
+    },
+    {
+      "kind": "system_policy",
+      "name": "crypto-policy",
+      "location": "/etc/crypto-policies/config",
+      "collector": "system_policy",
+      "host": "host-a",
+      "uses": [
+        {
+          "primitive": "config",
+          "algorithm": "crypto-policy",
+          "key_bits": null,
+          "curve": null,
+          "hash_algorithm": null,
+          "mode": null,
+          "raw": "LEGACY",
+          "context": null,
+          "negotiated": null,
+          "extra": {}
+        }
+      ],
+      "attributes": {},
+      "errors": [],
+      "asset_id": "0d8c16a39e3c5a17"
+    }
+  ],
+  "findings": [
+    {
+      "rule_id": "PK-DSA",
+      "title": "DSA key (1024 bits): algorithm withdrawn",
+      "severity": "critical",
+      "asset_id": "9c3ac8a305b7a15f",
+      "asset_kind": "ssh_user_key",
+      "asset_name": "<script>alert(1)</script>",
+      "location": "/home/x/.ssh/id_dsa",
+      "collector": "ssh_local",
+      "description": "DSA (public-key on <script>alert(1)</script>) was withdrawn for signature generation by FIPS 186-5 and is disabled in OpenSSH since 7.0; 1024-bit DSA offers only 80 bits.",
+      "remediation": "Replace with ECDSA P-256/P-384, Ed25519, or ML-DSA.",
+      "host": "host-a",
+      "use": {
+        "primitive": "public_key",
+        "algorithm": "dsa",
+        "key_bits": 1024,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": "<script>alert(1)</script>",
+        "context": "public-key",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "FIPS 186-5",
+        "OpenSSH 7.0 release notes (ssh-dss disabled)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "6e2087a317105a21"
+    },
+    {
+      "rule_id": "CERT-EXPIRED",
+      "title": "Certificate expired 2505 days ago",
+      "severity": "high",
+      "asset_id": "8bba6c03a7fdf7e5",
+      "asset_kind": "certificate",
+      "asset_name": "expired",
+      "location": "/etc/ssl/expired.pem",
+      "collector": "x509_files",
+      "description": "expired: notAfter 2020-01-01T00:00:00+00:00.",
+      "remediation": "Renew or remove the certificate.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "CA/Browser Forum Baseline Requirements"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "c0968a9ba8e410cd"
+    },
+    {
+      "rule_id": "CFG-CRYPTO-POLICY-LEGACY",
+      "title": "System crypto policy is LEGACY",
+      "severity": "high",
+      "asset_id": "0d8c16a39e3c5a17",
+      "asset_kind": "system_policy",
+      "asset_name": "crypto-policy",
+      "location": "/etc/crypto-policies/config",
+      "collector": "system_policy",
+      "description": "crypto-policy: LEGACY re-enables TLS 1.0/1.1, DH-1024, SHA-1 signatures and 3DES system-wide.",
+      "remediation": "update-crypto-policies --set DEFAULT (or FUTURE / FIPS).",
+      "host": "host-a",
+      "use": {
+        "primitive": "config",
+        "algorithm": "crypto-policy",
+        "key_bits": null,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": "LEGACY",
+        "context": null,
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "abcb91891321d631"
+    },
+    {
+      "rule_id": "CIPHER-3DES",
+      "title": "Triple-DES (disallowed after 2023; Sweet32)",
+      "severity": "high",
+      "asset_id": "f1c85419e74fc1d8",
+      "asset_kind": "tls_endpoint",
+      "asset_name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "description": "tls-cipher-suite 'TLS_RSA_WITH_3DES_EDE_CBC_SHA' on web.example.com:443: 64-bit blocks allow birthday attacks on long sessions (Sweet32); NIST disallowed 3DES for encryption after 2023.",
+      "remediation": "Replace with AES-128/256-GCM.",
+      "host": "web.example.com",
+      "use": {
+        "primitive": "cipher",
+        "algorithm": "3des",
+        "key_bits": 168,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": "cbc",
+        "raw": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+        "context": "tls-cipher-suite",
+        "negotiated": null,
+        "extra": {
+          "kx": "rsa-kex",
+          "auth": "rsa",
+          "prf": null,
+          "export": false,
+          "pfs": false,
+          "aead": false,
+          "iana": "TLS_RSA_WITH_3DES_EDE_CBC_SHA"
+        }
+      },
+      "references": [
+        "Sweet32 (CVE-2016-2183): 64-bit block ciphers",
+        "NIST SP 800-131A Rev.2"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "384487990952a629"
+    },
+    {
+      "rule_id": "KEY-PERMS",
+      "title": "Private key readable by others (mode 0644)",
+      "severity": "high",
+      "asset_id": "73d2f193ebedfb11",
+      "asset_kind": "private_key",
+      "asset_name": "/root/.ssh/id_rsa",
+      "location": "/root/.ssh/id_rsa",
+      "collector": "ssh_local",
+      "description": "/root/.ssh/id_rsa",
+      "remediation": "chmod 600 the key file; check ownership.",
+      "host": "host-a",
+      "use": null,
+      "references": [],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "381566fcbb0bb567"
+    },
+    {
+      "rule_id": "KRB-RC4",
+      "title": "Kerberos RC4-HMAC enctype rc4-hmac",
+      "severity": "high",
+      "asset_id": "a4c699ae5a765cc3",
+      "asset_kind": "kerberos_config",
+      "asset_name": "/etc/krb5.conf",
+      "location": "/etc/krb5.conf",
+      "collector": "kerberos",
+      "description": "enctype 'rc4-hmac' on /etc/krb5.conf: rc4-hmac keys are the unsalted NT (MD4) password hash, so ticket encryption is only as strong as the password (Kerberoasting, pass-the-hash); RFC 8429 deprecates it.",
+      "remediation": "Remove rc4-hmac (arcfour-hmac) from default_tgs_enctypes / default_tkt_enctypes / permitted_enctypes and from msDS-SupportedEncryptionTypes; use AES.",
+      "host": "host-a",
+      "use": {
+        "primitive": "enctype",
+        "algorithm": "rc4",
+        "key_bits": 128,
+        "curve": null,
+        "hash_algorithm": "md5",
+        "mode": null,
+        "raw": "rc4-hmac",
+        "context": "enctype",
+        "negotiated": null,
+        "extra": {
+          "enctype": "rc4-hmac",
+          "etype_id": 23,
+          "negated": false
+        }
+      },
+      "references": [
+        "RFC 8429 (Deprecate 3DES and RC4 in Kerberos)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "b6027a5dc8e3de30"
+    },
+    {
+      "rule_id": "KX-SHA1",
+      "title": "Key exchange diffie-hellman-group1-sha1 hashes with SHA-1",
+      "severity": "high",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "kex 'diffie-hellman-group1-sha1' on sshd on host-a: RFC 9142 moves SHA-1 key exchanges to SHOULD NOT / MUST NOT.",
+      "remediation": "Prefer curve25519-sha256, diffie-hellman-group16-sha512, or the PQ hybrids (sntrup761x25519-sha512, mlkem768x25519-sha256).",
+      "host": "host-a",
+      "use": {
+        "primitive": "key_exchange",
+        "algorithm": "dh",
+        "key_bits": 1024,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": "diffie-hellman-group1-sha1",
+        "context": "kex",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "RFC 9142 (SSH key exchange recommendations)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "2e822b8cb82c2ac0"
+    },
+    {
+      "rule_id": "PK-DH-LT-2048",
+      "title": "Diffie-Hellman group of 1024 bits (Logjam class)",
+      "severity": "high",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "kex on sshd on host-a: 1024-bit DH is within reach of nation-state precomputation (Logjam) and disallowed by NIST since 2014; RFC 8270 raised the SSH minimum to 2048.",
+      "remediation": "Use >= 2048-bit groups, ECDH (curve25519), or ML-KEM hybrids.",
+      "host": "host-a",
+      "use": {
+        "primitive": "key_exchange",
+        "algorithm": "dh",
+        "key_bits": 1024,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": "diffie-hellman-group1-sha1",
+        "context": "kex",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "Logjam (CVE-2015-4000): 1024-bit DH",
+        "RFC 8270 (Increase SSH minimum DH modulus to 2048)",
+        "NIST SP 800-131A Rev.2"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "d6c61e6225001d54"
+    },
+    {
+      "rule_id": "PK-RSA-LT-2048",
+      "title": "RSA key of 1024 bits (disallowed since 2014)",
+      "severity": "high",
+      "asset_id": "8bba6c03a7fdf7e5",
+      "asset_kind": "certificate",
+      "asset_name": "expired",
+      "location": "/etc/ssl/expired.pem",
+      "collector": "x509_files",
+      "description": "RSA-1024 (public-key on expired) gives about 80 bits of security; NIST disallowed it for all uses after 2013.",
+      "remediation": "Re-key at 3072 bits or move to an elliptic-curve or post-quantum algorithm.",
+      "host": "host-a",
+      "use": {
+        "primitive": "public_key",
+        "algorithm": "rsa",
+        "key_bits": 1024,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": null,
+        "context": "public-key",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "NIST SP 800-131A Rev.2"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "7b97e4f7eee6b5f8"
+    },
+    {
+      "rule_id": "PROTO-TLS10",
+      "title": "TLS 1.0 enabled",
+      "severity": "high",
+      "asset_id": "f1c85419e74fc1d8",
+      "asset_kind": "tls_endpoint",
+      "asset_name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "description": "web.example.com:443: TLS 1.0 is deprecated by RFC 8996 and disallowed by NIST SP 800-52r2 and PCI DSS.",
+      "remediation": "Set the minimum protocol to TLS 1.2 (MinProtocol / ssl_protocols / ssl-min-version).",
+      "host": "web.example.com",
+      "use": {
+        "primitive": "protocol",
+        "algorithm": "tls1.0",
+        "key_bits": null,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": "TLSv1.0",
+        "context": "tls-protocol",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "RFC 8996 (Deprecating TLS 1.0 and TLS 1.1)",
+        "NIST SP 800-52 Rev.2"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "1d70723a0c407ce9"
+    },
+    {
+      "rule_id": "SIG-HASH-SHA1",
+      "title": "rsa signature with SHA-1",
+      "severity": "high",
+      "asset_id": "8bba6c03a7fdf7e5",
+      "asset_kind": "certificate",
+      "asset_name": "expired",
+      "location": "/etc/ssl/expired.pem",
+      "collector": "x509_files",
+      "description": "certificate-signature on expired: SHA-1 is collision-broken (SHAttered 2017, chosen-prefix 2020) and disallowed for signature generation since 2013; NIST retires SHA-1 entirely by 2030.",
+      "remediation": "Re-sign with SHA-256 or stronger.",
+      "host": "host-a",
+      "use": {
+        "primitive": "signature",
+        "algorithm": "rsa",
+        "key_bits": null,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": null,
+        "context": "certificate-signature",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "NIST SP 800-131A Rev.2",
+        "RFC 9155 (Deprecating MD5 and SHA-1 signature hashes in TLS 1.2)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "49d3383109b93372"
+    },
+    {
+      "rule_id": "SSH-RSA-SHA1",
+      "title": "ssh-rsa host-key/signature algorithm uses SHA-1",
+      "severity": "high",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "hostkey on sshd on host-a: the 'ssh-rsa' signature algorithm hashes with SHA-1 (RFC 4253). OpenSSH 8.8 disabled it by default; RFC 8332 replaces it with rsa-sha2-256/512. (The RSA key itself can stay.)",
+      "remediation": "Remove ssh-rsa from HostKeyAlgorithms / PubkeyAcceptedAlgorithms; keep rsa-sha2-256, rsa-sha2-512, ssh-ed25519.",
+      "host": "host-a",
+      "use": {
+        "primitive": "signature",
+        "algorithm": "rsa",
+        "key_bits": null,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": "ssh-rsa",
+        "context": "hostkey",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "RFC 8332 (rsa-sha2-256/512 for SSH)",
+        "OpenSSH 8.8 release notes (ssh-rsa SHA-1 signatures disabled)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "77fc755cf59e2c43"
+    },
+    {
+      "rule_id": "KX-RSA",
+      "title": "RSA key transport suite: no forward secrecy",
+      "severity": "medium",
+      "asset_id": "f1c85419e74fc1d8",
+      "asset_kind": "tls_endpoint",
+      "asset_name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "description": "tls-cipher-suite 'TLS_RSA_WITH_3DES_EDE_CBC_SHA' on web.example.com:443: static-RSA suites expose recorded traffic to later key compromise and to padding oracles (ROBOT).",
+      "remediation": "Prefer ECDHE suites or TLS 1.3.",
+      "host": "web.example.com",
+      "use": {
+        "primitive": "cipher",
+        "algorithm": "3des",
+        "key_bits": 168,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": "cbc",
+        "raw": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+        "context": "tls-cipher-suite",
+        "negotiated": null,
+        "extra": {
+          "kx": "rsa-kex",
+          "auth": "rsa",
+          "prf": null,
+          "export": false,
+          "pfs": false,
+          "aead": false,
+          "iana": "TLS_RSA_WITH_3DES_EDE_CBC_SHA"
+        }
+      },
+      "references": [
+        "NIST SP 800-52 Rev.2",
+        "RFC 9325 (BCP 195: TLS/DTLS recommendations)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "e184e3485c342913"
+    },
+    {
+      "rule_id": "SSH-CBC",
+      "title": "SSH CBC-mode cipher aes128-cbc",
+      "severity": "medium",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "cipher 'aes128-cbc' on sshd on host-a: CBC in SSH is vulnerable to plaintext recovery (CVE-2008-5161) and is disabled by default in OpenSSH.",
+      "remediation": "Use aes*-gcm@openssh.com, chacha20-poly1305@openssh.com or aes*-ctr.",
+      "host": "host-a",
+      "use": {
+        "primitive": "cipher",
+        "algorithm": "aes",
+        "key_bits": 128,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": "cbc",
+        "raw": "aes128-cbc",
+        "context": "cipher",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "Terrapin (CVE-2023-48795)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "f59c54b53780e13b"
+    },
+    {
+      "rule_id": "MAC-SHA1",
+      "title": "HMAC-SHA1 (hmac-sha1)",
+      "severity": "low",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "mac 'hmac-sha1' on sshd on host-a: HMAC-SHA1 is not collision-sensitive and remains approved by NIST, but it is deprecated by most hardening guides and not allowed by CNSA/BSI.",
+      "remediation": "Prefer hmac-sha2-256-etm@openssh.com / hmac-sha2-512-etm@openssh.com.",
+      "host": "host-a",
+      "use": {
+        "primitive": "mac",
+        "algorithm": "hmac",
+        "key_bits": 160,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": "hmac-sha1",
+        "context": "mac",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "RFC 9142 (SSH key exchange recommendations)"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "efdcbbaf6ecf904c"
+    },
+    {
+      "rule_id": "PK-RSA-2048-SUNSET",
+      "title": "RSA-2048 is deprecated after 2030 (112-bit security)",
+      "severity": "low",
+      "asset_id": "73d2f193ebedfb11",
+      "asset_kind": "private_key",
+      "asset_name": "/root/.ssh/id_rsa",
+      "location": "/root/.ssh/id_rsa",
+      "collector": "ssh_local",
+      "description": "RSA-2048 (public-key on /root/.ssh/id_rsa) provides 112 bits of security; NIST IR 8547 deprecates 112-bit quantum-vulnerable algorithms after 2030 and disallows them after 2035.",
+      "remediation": "Plan migration to ML-DSA (signatures) / ML-KEM (key establishment); use RSA-3072+ in the interim.",
+      "host": "host-a",
+      "use": {
+        "primitive": "public_key",
+        "algorithm": "rsa",
+        "key_bits": 2048,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": null,
+        "context": "public-key",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [],
+      "finding_id": "cfc89be0bc37a406"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography",
+      "severity": "low",
+      "asset_id": "73d2f193ebedfb11",
+      "asset_kind": "private_key",
+      "asset_name": "/root/.ssh/id_rsa",
+      "location": "/root/.ssh/id_rsa",
+      "collector": "ssh_local",
+      "description": "/root/.ssh/id_rsa uses rsa 2048-bit; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "dddaecab6800acf5"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography",
+      "severity": "low",
+      "asset_id": "9c3ac8a305b7a15f",
+      "asset_kind": "ssh_user_key",
+      "asset_name": "<script>alert(1)</script>",
+      "location": "/home/x/.ssh/id_dsa",
+      "collector": "ssh_local",
+      "description": "<script>alert(1)</script> uses dsa 1024-bit; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "a0b497a01ca958f2"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography",
+      "severity": "low",
+      "asset_id": "8bba6c03a7fdf7e5",
+      "asset_kind": "certificate",
+      "asset_name": "expired",
+      "location": "/etc/ssl/expired.pem",
+      "collector": "x509_files",
+      "description": "expired uses rsa 1024-bit, rsa with sha1; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "1f361bd7c57c7458"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography",
+      "severity": "low",
+      "asset_id": "f06aefcfdf15c164",
+      "asset_kind": "certificate",
+      "asset_name": "good",
+      "location": "/etc/ssl/good.pem",
+      "collector": "x509_files",
+      "description": "good uses ec 256-bit p-256, ecdsa with sha256; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "5e9f374dd7eac79a"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography",
+      "severity": "low",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "sshd on host-a uses dh 1024-bit with sha1, ecdh 256-bit curve25519 with sha256, ed25519 256-bit curve25519, rsa with sha1; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "host-a",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "606a7fa42b50eae0"
+    },
+    {
+      "rule_id": "PQC-TRANSITION",
+      "title": "Depends on quantum-vulnerable public-key cryptography (hybrid PQ also available)",
+      "severity": "info",
+      "asset_id": "f1c85419e74fc1d8",
+      "asset_kind": "tls_endpoint",
+      "asset_name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "description": "web.example.com:443 uses ecdh 256-bit curve25519; all of these fall to Shor's algorithm on a cryptographically relevant quantum computer. Data encrypted today is exposed to harvest-now-decrypt-later. Quantum-safe alternatives are also offered.",
+      "remediation": "Inventory this asset for the PQC migration plan; target ML-KEM (FIPS 203) hybrids for key establishment and ML-DSA (FIPS 204) / SLH-DSA (FIPS 205) for signatures before 2035.",
+      "host": "web.example.com",
+      "use": null,
+      "references": [
+        "NIST IR 8547 (Transition to Post-Quantum Cryptography Standards)",
+        "FIPS 203 (ML-KEM)",
+        "FIPS 204 (ML-DSA)"
+      ],
+      "quantum_vulnerable": true,
+      "deprecation_year": 2030,
+      "tags": [
+        "pqc"
+      ],
+      "finding_id": "147f2db248ef2fb5"
+    },
+    {
+      "rule_id": "PROTO-TLS12",
+      "title": "TLS 1.2 (no TLS 1.3)",
+      "severity": "info",
+      "asset_id": "f1c85419e74fc1d8",
+      "asset_kind": "tls_endpoint",
+      "asset_name": "web.example.com:443",
+      "location": "web.example.com:443",
+      "collector": "tls_remote",
+      "description": "web.example.com:443: TLS 1.2 remains approved; SP 800-52r2 requires TLS 1.3 support by 2024 and CNSA 2.0 expects TLS 1.3 for PQ hybrids.",
+      "remediation": "Enable TLS 1.3 alongside TLS 1.2.",
+      "host": "web.example.com",
+      "use": {
+        "primitive": "protocol",
+        "algorithm": "tls1.2",
+        "key_bits": null,
+        "curve": null,
+        "hash_algorithm": null,
+        "mode": null,
+        "raw": "TLSv1.2",
+        "context": "tls-protocol",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [
+        "NIST SP 800-52 Rev.2"
+      ],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "06487baa343a13ef"
+    },
+    {
+      "rule_id": "SSH-MAC-EAM",
+      "title": "Encrypt-and-MAC construction (hmac-sha1)",
+      "severity": "info",
+      "asset_id": "4891c90af48797c8",
+      "asset_kind": "ssh_server",
+      "asset_name": "sshd on host-a",
+      "location": "/etc/ssh/sshd_config",
+      "collector": "ssh_local",
+      "description": "mac 'hmac-sha1' on sshd on host-a: non-ETM MACs leak plaintext length information with CBC ciphers.",
+      "remediation": "Prefer the *-etm@openssh.com variants.",
+      "host": "host-a",
+      "use": {
+        "primitive": "mac",
+        "algorithm": "hmac",
+        "key_bits": 160,
+        "curve": null,
+        "hash_algorithm": "sha1",
+        "mode": null,
+        "raw": "hmac-sha1",
+        "context": "mac",
+        "negotiated": null,
+        "extra": {}
+      },
+      "references": [],
+      "quantum_vulnerable": false,
+      "deprecation_year": null,
+      "tags": [],
+      "finding_id": "eb3929837c953404"
+    }
+  ]
+}

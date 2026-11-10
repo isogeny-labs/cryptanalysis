@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict
 
 from ..model import ScanResult
-from . import cbom, csv_report, html, markdown, sarif, summary
+from . import cbom, csv_report, html, markdown, sarif
 from .summary import summarize
 
 __all__ = ["RENDERERS", "EXTENSIONS", "render", "summarize"]
