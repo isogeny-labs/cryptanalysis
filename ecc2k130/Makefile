@@ -38,6 +38,21 @@ CC    ?= cc
 CXX   ?= g++
 NVCC  ?= nvcc
 ARCH  ?= -gencode arch=compute_120,code=sm_120
+
+# Toolkit gate (2026-11-10).  ptxas 13.4.92 (CUDA 13.4 Update 2, also the
+# 13.4.3 metapackage) is reported to fold a clmad with a constant multiplicand
+# on sm_120 at -O2/-O3 and drop its high half (NVIDIA bug 6955062;
+# research/clmad_audit_20261110).  Every build here uses clmad, so a listed
+# version is refused unless ALLOW_BAD_PTXAS=1.  The binary records the
+# compiler it was built with (nvccVersion in its JSON output).
+NVCC_VERSION := $(shell $(NVCC) --version 2>/dev/null | sed -n 's/.*V\([0-9][0-9.]*\).*/\1/p' | tail -1)
+BAD_PTXAS ?= 13.4.92
+define check-ptxas
+	@v="$(NVCC_VERSION)"; for b in $(BAD_PTXAS); do \
+	  if [ "$$v" = "$$b" ] && [ "$(ALLOW_BAD_PTXAS)" != "1" ]; then \
+	    echo "refusing to build with nvcc/ptxas $$v: listed in BAD_PTXAS ($(BAD_PTXAS));" \
+	         "see research/clmad_audit_20261110; override with ALLOW_BAD_PTXAS=1" >&2; exit 1; fi; done
+endef
 WALK  ?= sigma
 BATCH ?= 16
 
@@ -197,6 +212,7 @@ endif
 gpu: $(CLIENT)
 
 $(CLIENT): src/ec2k_gpu.cu $(HDRS) $(BUILD)/model.o $(OBJ)/hostcheck.o | $(OBJ)
+	$(check-ptxas)
 	$(NVCC) -O3 -std=c++17 $(ARCH) $(DEFS) -Xptxas -v -lineinfo -Xcompiler -O3 \
 	    src/ec2k_gpu.cu $(OBJ)/hostcheck.o $(BUILD)/model.o -o $@ 2>&1 \
 	    | grep -E "Compiling entry|Used|spill|error" | grep -v "0 bytes spill" || true
