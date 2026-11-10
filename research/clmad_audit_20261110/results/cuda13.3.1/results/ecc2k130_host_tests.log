@@ -1,0 +1,37 @@
+python3 -m unittest discover -s codegen -p testclmad.py
+....FEE
+======================================================================
+ERROR: test_exact_source_equivalence (testclmad.NativeSquareProofTests.test_exact_source_equivalence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/bundle/ecc2k130/runner/codegen/testclmad.py", line 74, in test_exact_source_equivalence
+    result = prove(HEADER.read_text())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/bundle/ecc2k130/runner/codegen/prove_native_square.py", line 44, in prove
+    raise ValueError('native branch is outside the proved source contract')
+ValueError: native branch is outside the proved source contract
+
+======================================================================
+ERROR: test_wrong_mask_and_changed_native_operands_are_detected (testclmad.NativeSquareProofTests.test_wrong_mask_and_changed_native_operands_are_detected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/bundle/ecc2k130/runner/codegen/testclmad.py", line 84, in test_wrong_mask_and_changed_native_operands_are_detected
+    prove(bad_mask)
+  File "/work/bundle/ecc2k130/runner/codegen/prove_native_square.py", line 44, in prove
+    raise ValueError('native branch is outside the proved source contract')
+ValueError: native branch is outside the proved source contract
+
+======================================================================
+FAIL: test_unsupported_compiler_or_device_is_rejected (testclmad.ClmadGuardTests.test_unsupported_compiler_or_device_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/bundle/ecc2k130/runner/codegen/testclmad.py", line 44, in test_unsupported_compiler_or_device_is_rejected
+    self.assertNotEqual(old_device.returncode, 0)
+AssertionError: 0 == 0
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.080s
+
+FAILED (failures=1, errors=2)
+make: *** [Makefile:405: test-clmad] Error 1
+host_tests_exit=2
