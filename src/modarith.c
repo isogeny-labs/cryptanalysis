@@ -55,16 +55,15 @@ void ca_fc_read(uint64_t *out)
 }
 #endif
 
-uint64_t ca_invmod(uint64_t a, uint64_t m)
+/* Extended Euclid with signed 128-bit coefficients, so any 64-bit modulus
+ * (odd or even) is safe.  Precondition 0 < a < m.  This is the reference
+ * inversion: even moduli use it, and so do -DCA_GLV_FIELD_COUNT builds,
+ * where CA_FC_EUCLID counts its division steps (the counter keeps that
+ * meaning; see ca_invmod). */
+static uint64_t invmod_euclid(uint64_t a, uint64_t m)
 {
-    /* Extended Euclid with signed 128-bit coefficients so any 64-bit
-     * modulus is safe. */
-    if (m == 0) return 0;
-    a %= m;
-    if (a == 0) return 0;
     ca_i128 t = 0, newt = 1;
     uint64_t r = m, newr = a;
-    CA_FC_ADD(CA_FC_INV, 1);
     while (newr) {
         CA_FC_ADD(CA_FC_EUCLID, 1);
         uint64_t q = r / newr;
@@ -78,6 +77,90 @@ uint64_t ca_invmod(uint64_t a, uint64_t m)
     if (r != 1) return 0;
     if (t < 0) t += (ca_i128)m;
     return (uint64_t)t;
+}
+
+#ifndef CA_GLV_FIELD_COUNT
+/* Division-free binary extended gcd for an odd modulus m >= 3 and
+ * 0 < a < m, entirely in 64-bit words (Kaliski's almost-inverse with the
+ * shifts batched by ctz, then one exact division by 2^k).
+ *
+ * The pairs (u, s) and (v, r) keep the integer identity u*s + v*r = m with
+ * u, v odd and all four values in [0, m], so nothing overflows, and
+ *     a*s = (-1)^f v 2^k,  a*r = -(-1)^f u 2^k   (mod m),
+ * where f counts label swaps.  One step replaces the larger odd value by
+ * |u - v| / 2^z (odd), shifts its coefficient left by z and adds it to the
+ * other coefficient; the smaller value is kept.  The loop ends at u == v ==
+ * gcd(a, m); if that is 1 then s + r = m and a^-1 = (f ? r : s) * 2^-k.
+ * The critical path is one subtract, ctz and shift per step; the swap and
+ * the coefficients are selected, not branched on.  k < 128 (each step
+ * removes at least one bit from u*v < 2^128), and 2^-k is applied in at most
+ * three exact Montgomery-style divisions by 2^j, j <= 63.  The inverse is
+ * unique, so the result equals invmod_euclid's. */
+static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
+{
+    uint64_t ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;        /* m^-1 mod 2^64 */
+    const uint64_t neg_ninv = (uint64_t)0 - ninv;
+
+    uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctzll(v);
+    v >>= k;
+    for (;;) {
+        const uint64_t d = u - v, e = v - u;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint64_t sw = (uint64_t)0 - (uint64_t)lt;
+        const unsigned z = (unsigned)__builtin_ctzll(d); /* = ctz(e) */
+        const uint64_t big = lt ? e : d;                  /* |u - v| */
+        const uint64_t small = lt ? u : v;
+        const uint64_t cb = (s & ~sw) | (r & sw);         /* larger's coefficient */
+        const uint64_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    uint64_t x = flip ? r : s; /* in [1, m) */
+    while (k) {
+        /* x * 2^-j mod m: add the multiple of m that clears the low j bits. */
+        const unsigned j = k > 63 ? 63 : k;
+        const uint64_t t = (x * neg_ninv) & (((uint64_t)1 << j) - 1);
+        x = (uint64_t)(((ca_u128)t * m + x) >> j); /* < 2m */
+        if (x >= m) x -= m;
+        k -= j;
+    }
+    return x;
+}
+#endif
+
+/* Inverse of a modulo m, or 0 when m == 0, a == 0 (mod m) or gcd(a, m) != 1.
+ *
+ * Since 2026-11-10 odd moduli use invmod_binary_odd (no 64-bit division, no
+ * 128-bit coefficients); even moduli use the extended Euclid.  The value is
+ * unchanged for every input (the inverse is unique; the zero cases are
+ * tested before either routine).  CA_FC_INV still counts one per nonzero
+ * inversion.  CA_FC_EUCLID ("division steps of the inversions' extended
+ * Euclid") keeps its meaning and its counts: -DCA_GLV_FIELD_COUNT builds use
+ * invmod_euclid for every modulus, so their field counts stay comparable
+ * with earlier diagnostic runs (experiments/glv-batch-escape-20261024). */
+uint64_t ca_invmod(uint64_t a, uint64_t m)
+{
+    if (m == 0) return 0;
+    if (a >= m) a %= m;
+    if (a == 0) return 0;
+    CA_FC_ADD(CA_FC_INV, 1);
+#ifdef CA_GLV_FIELD_COUNT
+    return invmod_euclid(a, m);
+#else
+    if ((m & 1) == 0) return invmod_euclid(a, m);
+    return invmod_binary_odd(a, m);
+#endif
 }
 
 uint64_t ca_isqrt(uint64_t n)
