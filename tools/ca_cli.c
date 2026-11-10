@@ -222,6 +222,11 @@ static _Noreturn void usage(void)
         "        [--max-relation-tries K]  (rexp only)\n"
         "        [--s3-uri s3://BUCKET/PREFIX] [--sync-every SEC]  (lsieve or rexp state)\n"
         "        index calculus in the multiplicative group of a prime field\n"
+        "  m4gb  --input FILE [--field Q] [--vars N] [--format default|mqchallenge]\n"
+        "        [--bin PATH | --bin-dir DIR] [--threads T] [--timeout SEC] [--out FILE]\n"
+        "        [--keep] [--verbose]  (env: CA_M4GB_BIN, CA_M4GB_DIR)\n"
+        "        Groebner basis / root of a polynomial system over GF(q), q < 2^16 prime or 2^k,\n"
+        "        by the external M4GB solver (scripts/m4gb_build.sh)\n"
         "  crypto <args...> | crax <args...> | icx <args...> | isogeny-walk <args...>\n"
         "        delegate to the corresponding Rust CLI (binary override: CA_CRYPTO_BIN,\n"
         "        CA_CRAX_BIN, CA_ICX_BIN, or CA_ISOGENY_WALK_BIN)\n"
@@ -2470,6 +2475,389 @@ static int cmd_curve(void)
     return 0;
 }
 
+/* ------------------------------------------------------------------------
+ * m4gb: a Groebner basis of a polynomial system over a small finite field,
+ * computed by the external M4GB solver (Makarim-Stevens, ISSAC 2017; GPL-3,
+ * a separate binary built by scripts/m4gb_build.sh at a pinned commit with
+ * third_party/m4gb-patches applied).  The CLI writes nothing of its own into
+ * the solver: it picks a binary wide enough for the system, runs it as a
+ * child process with a wall-clock limit, and reports the result as JSON.
+ * Exit 0 is a decided answer (a basis, or the unit ideal: no solution);
+ * exit 1 is undecided (timeout, solver failure); exit 2 is a usage error.
+ * ---------------------------------------------------------------------- */
+
+static void json_print_string(const char *s)
+{
+    putchar('"');
+    for (; *s; s++) {
+        unsigned char c = (unsigned char)*s;
+        if (c == '"' || c == '\\') {
+            putchar('\\');
+            putchar(c);
+        } else if (c < 0x20)
+            printf("\\u%04x", c);
+        else
+            putchar(c);
+    }
+    putchar('"');
+}
+
+/* `$fieldsize Q`, `$vars N NAME` or `$vars a b c` (M4GB default format), or the
+ * Fukuoka MQ-challenge header (`Galois Field : GF(2)`, `GF(2)[x] / x^8 + ...`,
+ * `Number of variables (n) : 16`).  Returns the detected format: 0 default,
+ * 1 mqchallenge. */
+static int m4gb_detect(const char *path, uint64_t *field, uint64_t *vars)
+{
+    FILE *f = fopen(path, "r");
+    if (!f) die("cannot open --input");
+    char line[65536];
+    int format = 0;
+    while (fgets(line, sizeof line, f)) {
+        char *s = line;
+        while (*s == ' ' || *s == '\t') s++;
+        if (!strncmp(s, "$fieldsize", 10)) {
+            if (!*field) *field = strtoull(s + 10, NULL, 10);
+        } else if (!strncmp(s, "$vars", 5)) {
+            if (!*vars) {
+                char *rest = s + 5, *end = NULL;
+                unsigned long long n = strtoull(rest, &end, 10);
+                if (end != rest && n > 0) {
+                    *vars = n;
+                } else {
+                    uint64_t count = 0;
+                    for (char *tok = strtok(rest, " \t\r\n#"); tok; tok = strtok(NULL, " \t\r\n#"))
+                        count++;
+                    *vars = count;
+                }
+            }
+        } else if (strstr(s, "Galois Field") && strchr(s, ':')) {
+            format = 1;
+            if (!*field) {
+                const char *gf = strstr(s, "GF(");
+                if (gf) {
+                    unsigned long long ch = strtoull(gf + 3, NULL, 10), q = ch;
+                    const char *caret = strchr(gf, '^');
+                    if (strstr(gf, "[x]")) {
+                        /* GF(2)[x] / x^e + ...: the first exponent is the extension degree */
+                        if (caret) {
+                            unsigned long long e = strtoull(caret + 1, NULL, 10);
+                            for (unsigned long long i = 1; i < e; i++) q *= ch;
+                        }
+                    }
+                    *field = q;
+                }
+            }
+        } else if (strstr(s, "Number of variables") && strchr(s, ':')) {
+            format = 1;
+            if (!*vars) *vars = strtoull(strchr(s, ':') + 1, NULL, 10);
+        }
+    }
+    fclose(f);
+    return format;
+}
+
+/* The narrowest solver_m4gb_n<N>_gf<Q> in `dir` with N >= vars; 0 if none. */
+static int m4gb_pick(const char *dir, uint64_t field, uint64_t vars, char *out, size_t cap)
+{
+    DIR *d = opendir(dir);
+    if (!d) return 0;
+    uint64_t best = 0;
+    const struct dirent *e;
+    while ((e = readdir(d))) {
+        unsigned long long n = 0, q = 0;
+        char tail = 0;
+        if (sscanf(e->d_name, "solver_m4gb_n%llu_gf%llu%c", &n, &q, &tail) != 2) continue;
+        if (q != field || n < vars) continue;
+        if (!best || n < best) {
+            best = n;
+            snprintf(out, cap, "%s/%s", dir, e->d_name);
+        }
+    }
+    closedir(d);
+    return best != 0;
+}
+
+static int m4gb_temp(char *buf, size_t cap, const char *suffix)
+{
+    const char *tmp = getenv("TMPDIR");
+    snprintf(buf, cap, "%s/ca-m4gb-%ld-%sXXXXXX", tmp && *tmp ? tmp : "/tmp", (long)getpid(),
+             suffix);
+    int fd = mkstemp(buf);
+    return fd;
+}
+
+static int cmd_m4gb(void)
+{
+    const char *input = opt("--input");
+    if (!input) die("--input FILE required (M4GB default format or Fukuoka MQ-challenge format)");
+    uint64_t field = opt_u64("--field", 0), vars = opt_u64("--vars", 0);
+    int format = m4gb_detect(input, &field, &vars);
+    const char *fmt_opt = opt("--format");
+    if (fmt_opt) {
+        if (!strcmp(fmt_opt, "default"))
+            format = 0;
+        else if (!strcmp(fmt_opt, "mqchallenge"))
+            format = 1;
+        else
+            die("--format must be default or mqchallenge");
+    }
+    if (!field) die("field size not found in the input; pass --field Q");
+    if (!vars) die("variable count not found in the input; pass --vars N");
+    uint64_t threads = opt_u64("--threads", 1);
+    if (!threads) die("--threads must be at least 1");
+    double timeout = opt_f("--timeout", 0.0);
+    if (timeout < 0) die("--timeout must be nonnegative");
+    int verbose = flag("--verbose") || flag("-v");
+    int keep = flag("--keep");
+    const char *out_path = opt("--out");
+
+    char binary[4096];
+    const char *bin = opt("--bin");
+    if (bin) {
+        snprintf(binary, sizeof binary, "%s", bin);
+    } else {
+        const char *dir = opt("--bin-dir");
+        if (!dir) dir = getenv("CA_M4GB_DIR");
+        const char *env_bin = getenv("CA_M4GB_BIN");
+        if (dir && *dir) {
+            if (!m4gb_pick(dir, field, vars, binary, sizeof binary)) {
+                fprintf(stderr,
+                        "error: no solver_m4gb_n<N>_gf%" PRIu64 " with N >= %" PRIu64 " under %s\n",
+                        field, vars, dir);
+                exit(2);
+            }
+        } else if (env_bin && *env_bin) {
+            snprintf(binary, sizeof binary, "%s", env_bin);
+        } else {
+            die("no M4GB solver: pass --bin PATH or --bin-dir DIR, or set CA_M4GB_BIN or "
+                "CA_M4GB_DIR "
+                "(build one with scripts/m4gb_build.sh n<MAXVARS>_gf<FIELDSIZE>)");
+        }
+    }
+    if (access(binary, X_OK) != 0) {
+        fprintf(stderr, "error: M4GB solver is not executable: %s\n", binary);
+        exit(2);
+    }
+
+    char basis_path[4096], log_path[4096];
+    int bfd = m4gb_temp(basis_path, sizeof basis_path, "basis-");
+    if (bfd < 0) die("cannot create a temporary file");
+    close(bfd);
+    unlink(basis_path); /* M4GB creates it; an existing empty file is also fine */
+    int lfd = m4gb_temp(log_path, sizeof log_path, "log-");
+    if (lfd < 0) die("cannot create a temporary log file");
+    close(lfd);
+
+    char threads_s[32];
+    snprintf(threads_s, sizeof threads_s, "%" PRIu64, threads);
+    char *input_arg = strdup(input);
+    char fmt_arg[16];
+    snprintf(fmt_arg, sizeof fmt_arg, "%s", format == 1 ? "--mqchallenge" : "--default");
+    if (!input_arg) die("out of memory");
+    char *const args[] = {binary,       "--solve", "-i",          input_arg, "-o",    basis_path,
+                          "--loglevel", "3",       "--nrthreads", threads_s, fmt_arg, NULL};
+    extern char **environ;
+    posix_spawn_file_actions_t fa;
+    posix_spawn_file_actions_init(&fa);
+    posix_spawn_file_actions_addopen(&fa, 1, log_path, O_WRONLY | O_TRUNC, 0600);
+    posix_spawn_file_actions_adddup2(&fa, 1, 2);
+    pid_t pid;
+    double t0 = ca_now();
+    int spawn_error = posix_spawn(&pid, binary, &fa, NULL, args, environ);
+    posix_spawn_file_actions_destroy(&fa);
+    free(input_arg);
+    if (spawn_error != 0) {
+        fprintf(stderr, "error: cannot start %s: %s\n", binary, strerror(spawn_error));
+        exit(1);
+    }
+    int status = 0, timed_out = 0;
+    for (;;) {
+        pid_t r = waitpid(pid, &status, WNOHANG);
+        if (r == pid) break;
+        if (r < 0 && errno != EINTR) die("waitpid failed");
+        if (timeout > 0 && ca_now() - t0 > timeout) {
+            kill(pid, SIGKILL);
+            while (waitpid(pid, &status, 0) < 0 && errno == EINTR) {}
+            timed_out = 1;
+            break;
+        }
+        struct timespec ts = {0, 20 * 1000 * 1000};
+        nanosleep(&ts, NULL);
+    }
+    double wall = ca_now() - t0;
+
+    /* The solver's log: unit ideal, degree reached, its own CPU and memory figures. */
+    int unit_ideal = 0;
+    long max_degree = -1;
+    double cpu_seconds = -1, peak_mib = -1;
+    FILE *lf = fopen(log_path, "r");
+    char line[65536];
+    if (lf) {
+        while (fgets(line, sizeof line, lf)) {
+            if (strstr(line, "contradiction:")) unit_ideal = 1;
+            const char *d = strstr(line, "lcmdegree=");
+            if (d) {
+                long v = strtol(d + 10, NULL, 10);
+                if (v > max_degree) max_degree = v;
+            }
+            const char *c = strstr(line, "Total CPU time");
+            if (c && strchr(c, ':')) cpu_seconds = strtod(strchr(c, ':') + 1, NULL);
+            const char *m = strstr(line, "Peak memory");
+            if (m && strchr(m, ':')) peak_mib = strtod(strchr(m, ':') + 1, NULL);
+        }
+        fclose(lf);
+    }
+    int exited_ok = !timed_out && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    if (verbose)
+        fprintf(stderr, "[m4gb] %s: exit %d%s, %.3f s wall, log %s\n", binary,
+                WIFEXITED(status) ? WEXITSTATUS(status) : -1, timed_out ? " (killed: timeout)" : "",
+                wall, log_path);
+
+    if (timed_out || (!exited_ok && !unit_ideal)) {
+        printf("{\"status\":\"%s\",\"solver\":", timed_out ? "timeout" : "error");
+        json_print_string(binary);
+        printf(",\"wall_seconds\":%.6f", wall);
+        if (keep) {
+            printf(",\"log\":");
+            json_print_string(log_path);
+        }
+        printf("}\n");
+        if (!keep) {
+            unlink(log_path);
+            unlink(basis_path);
+        }
+        return 1;
+    }
+
+    /* The basis: one monic polynomial per line.  Lines for field equations of
+     * variables the input never declared print as `^2 + ` in upstream M4GB
+     * and are skipped.  A basis whose every line is `V` or `V + c` is a single
+     * point, reported as a solution: `V + c = 0`, so V = -c mod q. */
+    printf("{\"status\":\"ok\",\"solver\":");
+    json_print_string(binary);
+    printf(",\"field\":%" PRIu64 ",\"vars\":%" PRIu64 ",\"unit_ideal\":%s", field, vars,
+           unit_ideal ? "true" : "false");
+    size_t basis_size = 0;
+    int all_points = 1;
+    if (!unit_ideal) {
+        FILE *bf = fopen(basis_path, "r");
+        if (!bf) die("M4GB wrote no basis file");
+        /* pass 1: size and shape */
+        while (fgets(line, sizeof line, bf)) {
+            char *s = line;
+            size_t len = strlen(s);
+            while (len && (s[len - 1] == '\n' || s[len - 1] == '\r' || s[len - 1] == ' '))
+                s[--len] = 0;
+            if (!len || s[0] == '^') continue;
+            basis_size++;
+            /* V or V + c: a name, then optionally " + " and digits only */
+            char *q = s;
+            while (*q && *q != ' ') {
+                if (*q == '*' || *q == '^') {
+                    all_points = 0;
+                    break;
+                }
+                q++;
+            }
+            if (*q == ' ') {
+                if (strncmp(q, " + ", 3))
+                    all_points = 0;
+                else {
+                    for (q += 3; *q; q++)
+                        if (*q < '0' || *q > '9') {
+                            all_points = 0;
+                            break;
+                        }
+                }
+            }
+        }
+        if (!basis_size) all_points = 0;
+        printf(",\"basis_size\":%zu", basis_size);
+        rewind(bf);
+        /* pass 2: the lines (capped) and the solution */
+        printf(",\"basis\":[");
+        size_t shown = 0;
+        const size_t cap = 256;
+        while (fgets(line, sizeof line, bf)) {
+            char *s = line;
+            size_t len = strlen(s);
+            while (len && (s[len - 1] == '\n' || s[len - 1] == '\r' || s[len - 1] == ' '))
+                s[--len] = 0;
+            if (!len || s[0] == '^') continue;
+            if (shown < cap) {
+                if (shown) putchar(',');
+                json_print_string(s);
+            }
+            shown++;
+        }
+        printf("],\"basis_truncated\":%s", shown > cap ? "true" : "false");
+        if (all_points) {
+            rewind(bf);
+            printf(",\"solution\":{");
+            size_t k = 0;
+            while (fgets(line, sizeof line, bf)) {
+                char *s = line;
+                size_t len = strlen(s);
+                while (len && (s[len - 1] == '\n' || s[len - 1] == '\r' || s[len - 1] == ' '))
+                    s[--len] = 0;
+                if (!len || s[0] == '^') continue;
+                char *plus = strstr(s, " + ");
+                uint64_t c = 0;
+                if (plus) {
+                    *plus = 0;
+                    c = strtoull(plus + 3, NULL, 10) % field;
+                }
+                uint64_t value = c ? field - c : 0;
+                if (k++) putchar(',');
+                json_print_string(s);
+                printf(":%" PRIu64, value);
+            }
+            printf("}");
+        } else {
+            printf(",\"solution\":null");
+        }
+        fclose(bf);
+    } else {
+        printf(",\"basis_size\":1,\"basis\":[\"1\"],\"basis_truncated\":false,\"solution\":null");
+    }
+    if (max_degree >= 0)
+        printf(",\"max_degree\":%ld", max_degree);
+    else
+        printf(",\"max_degree\":null");
+    if (cpu_seconds >= 0)
+        printf(",\"cpu_seconds\":%.6f", cpu_seconds);
+    else
+        printf(",\"cpu_seconds\":null");
+    if (peak_mib >= 0)
+        printf(",\"peak_mib\":%.1f", peak_mib);
+    else
+        printf(",\"peak_mib\":null");
+    printf(",\"wall_seconds\":%.6f,\"threads\":%" PRIu64, wall, threads);
+    if (keep) {
+        printf(",\"log\":");
+        json_print_string(log_path);
+        printf(",\"basis_file\":");
+        json_print_string(basis_path);
+    }
+    printf("}\n");
+    if (out_path && !unit_ideal) {
+        if (rename(basis_path, out_path) != 0) {
+            /* across filesystems: copy */
+            FILE *src = fopen(basis_path, "r"), *dst = fopen(out_path, "w");
+            if (!src || !dst) die("cannot write --out");
+            size_t n;
+            while ((n = fread(line, 1, sizeof line, src)) > 0) fwrite(line, 1, n, dst);
+            fclose(src);
+            fclose(dst);
+            if (!keep) unlink(basis_path);
+        }
+    } else if (!keep) {
+        unlink(basis_path);
+    }
+    if (!keep) unlink(log_path);
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     argc_g = argc;
@@ -2547,6 +2935,7 @@ int main(int argc, char **argv)
     }
     if (!strcmp(cmd, "cheon")) return cmd_cheon();
     if (!strcmp(cmd, "ic")) return cmd_ic();
+    if (!strcmp(cmd, "m4gb")) return cmd_m4gb();
     if (!strcmp(cmd, "coord-job")) return cmd_coord_job();
     if (!strcmp(cmd, "work")) return cmd_work();
     if (!strcmp(cmd, "coord-status")) return cmd_coord_status();
