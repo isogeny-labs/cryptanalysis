@@ -939,13 +939,14 @@ static ca_status build_matrix(const rel_list *rels, uint32_t ncols, uint64_t pm1
 
 /* Solve the matrix modulo q^e for a large prime q: Lanczos mod q + Hensel. */
 static ca_status large_part_logs(const ca_spmat *A, const uint64_t *b, uint64_t q, unsigned e,
-                                 uint64_t *x, uint8_t *known, uint64_t seed,
+                                 uint64_t *x, uint8_t *known, uint64_t seed, uint32_t threads,
                                  ca_linsolve_report *rep)
 {
     /* b has rows entries and x/known have cols: fix the dimensions here, once,
      * rather than re-reading them through A across the solver calls. */
     const uint32_t rows = A->rows, cols = A->cols;
-    ca_status rc = ca_linsolve_mod_prime(A, b, q, x, known, seed, rep);
+    /* the Lanczos pool: bit-identical results at every thread count */
+    ca_status rc = ca_linsolve_mod_prime_mt(A, b, q, x, known, seed, threads, rep);
     if (rc != CA_OK) return rc;
     uint64_t qk = q;
     for (unsigned k = 1; k < e; k++) {
@@ -976,7 +977,7 @@ static ca_status large_part_logs(const ca_spmat *A, const uint64_t *b, uint64_t 
             uint64_t a = (uint64_t)acc;
             r[i] = (a % qk == 0) ? (a / qk) % q : 0;
         }
-        rc = ca_linsolve_mod_prime(A, r, q, x1, kn1, seed + k, NULL);
+        rc = ca_linsolve_mod_prime_mt(A, r, q, x1, kn1, seed + k, threads, NULL);
         if (rc != CA_OK) { free(r); free(x1); free(kn1); return rc; }
         for (uint32_t j = 0; j < cols; j++) {
             if (known[j] && kn1[j]) x[j] = (x[j] + qk * x1[j]) % qk1;
@@ -1380,7 +1381,7 @@ static ca_status ic_precompute_impl(uint64_t p, uint64_t g, const ca_ic_params *
             ca_linsolve_report rep;
             if (!xq || !kq) { free(xq); free(kq); rc = CA_ERR_NOMEM; break; }
             vlog(params, "[ic] solving relation matrix modulo %" PRIu64 "^%u\n", q, f.f[i].e);
-            rc = large_part_logs(&A, b, q, f.f[i].e, xq, kq, seed + i, &rep);
+            rc = large_part_logs(&A, b, q, f.f[i].e, xq, kq, seed + i, threads, &rep);
             st->lanczos_iterations += rep.lanczos_iters;
             vlog(params, "[ic] mod %llu^%u: %ux%u active, %u Lanczos iterations, %u attempts%s, %.2fs\n",
                  (unsigned long long)q, f.f[i].e, rep.active_rows, rep.active_cols, rep.lanczos_iters,
