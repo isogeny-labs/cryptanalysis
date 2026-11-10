@@ -753,6 +753,17 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
     uint32_t rr = 8;
     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= rcap) rr *= 2;
     c.r = rr;
+    /* c.r is a power of two: rr starts at 8 and only doubles, up to rcap
+     * (32 or 128), and this is the only assignment to c.r (c is zeroed
+     * above and is never read back from a checkpoint; the checkpoint header
+     * only compares r).  So the walk's "% c.r" index reductions are a mask,
+     * with no 64-bit division per step.  The guard is unreachable; it keeps
+     * a future change of the table rule from silently breaking the mask. */
+    if (c.r < 8 || (c.r & (c.r - 1)) != 0) {
+        ca_set_error("glv: multiplier table size %u is not a power of two", c.r);
+        return CA_ERR_INTERNAL;
+    }
+    const uint32_t r_mask = c.r - 1;
     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);
 
@@ -892,7 +903,7 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
             }
 #endif
             if (!wk->retry) {
-                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) % c.r);
+                wk->idx = (uint32_t)(ca_mix64(ca_group_hash(g, &wk->Y)) & r_mask);
                 wk->first = wk->idx;
                 wk->tries = 0;
             }
@@ -954,14 +965,14 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
              * 2-cycle to be of this form.  Both tests depend on Y alone, so
              * the step stays a function of the class.  Build with
              * -DCA_GLV_LOOKAHEAD_LEGACY for the original single test. */
-            uint32_t nat = (uint32_t)(ca_mix64(h) % c.r);
+            uint32_t nat = (uint32_t)(ca_mix64(h) & r_mask);
 #ifdef CA_GLV_LOOKAHEAD_LEGACY
             if (nat == wk->idx) {
 #else
             if ((nat == wk->idx || nat == wk->first) && wk->tries + 1 < c.r) {
                 wk->tries++;
 #endif
-                wk->idx = (wk->idx + 1) % c.r;
+                wk->idx = (wk->idx + 1) & r_mask;
                 wk->retry = 1;
 #ifdef CA_GLV_FIELD_COUNT
                 ca_fc_ev[CA_FC_EV_RETRIES]++;
