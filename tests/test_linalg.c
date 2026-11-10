@@ -210,7 +210,10 @@ int main(void)
                             tc[n] = A.col[k];
                             tv[n++] = A.val[k];
                         }
-                        if (v0) { tc[n] = 1; tv[n++] = v0; }
+                        if (v0) {
+                            tc[n] = 1;
+                            tv[n++] = v0;
+                        }
                         CHECK(ca_spmat_add_row(&B, tc, tv, n) == CA_OK);
                         uint64_t acc = 0;
                         for (uint32_t k = B.row_ptr[i]; k < B.row_ptr[i + 1]; k++) {
@@ -237,10 +240,16 @@ int main(void)
                     CHECK(memcmp(xk, x1, cols * sizeof(uint64_t)) == 0);
                     CHECK(memcmp(kk, k1, cols) == 0);
                 }
-                printf("threads q=%" PRIu64 " %ux%u: rc %d, iters %u, attempts %u, dense %d: identical at 1-5 threads\n",
+                printf("threads q=%" PRIu64
+                       " %ux%u: rc %d, iters %u, attempts %u, dense %d: identical at 1-5 threads\n",
                        q, rows, cols, (int)rc1, r1.lanczos_iters, r1.attempts, r1.used_dense);
                 ca_spmat_free(&A);
-                free(b); free(xt); free(x1); free(xk); free(k1); free(kk);
+                free(b);
+                free(xt);
+                free(x1);
+                free(xk);
+                free(k1);
+                free(kk);
             }
         }
     }

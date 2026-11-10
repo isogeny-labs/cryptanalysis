@@ -612,10 +612,10 @@ static void lz_atw(const lz_ctx *z, const ca_spmat *A, const uint64_t *w, uint64
 
 enum { LZ_JOB_AV = 1, LZ_JOB_ATW_DOT, LZ_JOB_ATW, LZ_JOB_UPDATE };
 
-#define LZ_MAX_THREADS 64u
-#define LZ_MIN_NNZ_PER_THREAD 512u /* below this a block is not worth a thread */
-#define LZ_WORKER_SPINS (1u << 11)  /* pause loops (tens of microseconds) before a worker sleeps */
-#define LZ_MAIN_SPINS (1u << 12)    /* pause loops before the main thread yields */
+#define LZ_MAX_THREADS        64u
+#define LZ_MIN_NNZ_PER_THREAD 512u       /* below this a block is not worth a thread */
+#define LZ_WORKER_SPINS       (1u << 11) /* pause loops (tens of microseconds) before a worker sleeps */
+#define LZ_MAIN_SPINS         (1u << 12) /* pause loops before the main thread yields */
 
 typedef struct lz_job {
     int kind;
@@ -655,7 +655,7 @@ struct lz_pool {
      * over can never take a block of the next one, and it reads the block
      * count from the same word */
     _Atomic uint64_t ticket;
-    _Atomic uint32_t done;  /* blocks of the current job finished */
+    _Atomic uint32_t done; /* blocks of the current job finished */
     lz_job job;
     uint32_t arow[LZ_MAX_THREADS + 1]; /* block bounds over the rows of A */
     uint32_t trow[LZ_MAX_THREADS + 1]; /* ... over the rows of A^T (coordinates) */
@@ -736,8 +736,7 @@ static void lz_run_block(lz_pool *P, uint32_t t)
         }
         break;
     }
-    default:
-        break;
+    default: break;
     }
 }
 
@@ -805,8 +804,10 @@ static void lz_pool_run(lz_pool *P)
     lz_claim_blocks(P, g);
     uint32_t spins = 0;
     while (atomic_load_explicit(&P->done, memory_order_acquire) != P->T) {
-        if (++spins < LZ_MAIN_SPINS) lz_relax();
-        else sched_yield(); /* a worker was preempted mid-block: let it run */
+        if (++spins < LZ_MAIN_SPINS)
+            lz_relax();
+        else
+            sched_yield(); /* a worker was preempted mid-block: let it run */
     }
 }
 
@@ -889,9 +890,8 @@ static uint32_t lz_threads(uint32_t requested)
 }
 
 /* y = D (A v) through the pool when there is one. */
-static void lz_av_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint64_t *v,
-                    uint64_t *y, const uint64_t *D, const uint64_t *Dp, const uint64_t *DR,
-                    const uint64_t *DRp)
+static void lz_av_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint64_t *v, uint64_t *y,
+                    const uint64_t *D, const uint64_t *Dp, const uint64_t *DR, const uint64_t *DRp)
 {
     if (!P || !z->fast) {
         lz_av(z, A, v, y, D, Dp, DR, DRp);
@@ -930,8 +930,8 @@ static void lz_atw_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint6
  * Lanczos on B = A^T D A with random diagonal D, solving B x = A^T D b.
  * Returns CA_OK if A x == b verified, CA_ERR_SINGULAR on breakdown.
  */
-static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
-                         ca_rng *rng, uint32_t *iters_out, lz_pool *P0)
+static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x, ca_rng *rng,
+                         uint32_t *iters_out, lz_pool *P0)
 {
     lz_pool *P = P0;
     uint32_t n = A->cols, m = A->rows;
