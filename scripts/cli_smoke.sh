@@ -606,7 +606,9 @@ echo 'contradiction: 1=0' >&2
 exit 1
 SH
 chmod +x "$tmp"/solver_m4gb_n*
+# shellcheck disable=SC2016  # '$fieldsize' and '$vars' are M4GB's literal header keywords.
 printf '$fieldsize 2\n$vars 2 X\nX0*X1+X1\nX1+1\n' >"$tmp/sys2.in"
+# shellcheck disable=SC2016
 printf '$fieldsize 31\n$vars 2 X\nX0+1\nX0+2\n' >"$tmp/sys31.in"
 want '"solution":{"X1":1,"X0":0}' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
 want "solver_m4gb_n8_gf2\"" m4gb --input "$tmp/sys2.in" --bin-dir "$tmp"
