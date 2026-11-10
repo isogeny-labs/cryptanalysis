@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="8005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" />
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+               maxThreads="150" SSLEnabled="true">
+      <SSLHostConfig protocols="TLSv1+TLSv1.2"
+                     ciphers="TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+                     honorCipherOrder="true">
+        <Certificate certificateKeystoreFile="conf/keystore.jks" certificateKeystorePassword="PLACEHOLDER-PASS" type="RSA" />
+      </SSLHostConfig>
+    </Connector>
+    <Engine name="Catalina" defaultHost="localhost" />
+  </Service>
+</Server>

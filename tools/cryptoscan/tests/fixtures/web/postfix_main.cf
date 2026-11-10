@@ -1,0 +1,11 @@
+# Postfix main.cf (TLS excerpt)
+myhostname = mx.example.com
+smtpd_tls_cert_file = /etc/ssl/certs/server.pem
+smtpd_tls_key_file = /etc/ssl/private/server.key
+smtpd_tls_security_level = may
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3
+smtpd_tls_protocols = !SSLv2, !SSLv3, !TLSv1
+smtpd_tls_mandatory_ciphers = high
+smtpd_tls_exclude_ciphers = aNULL, RC4
+smtp_tls_security_level = may
+smtp_tls_protocols = >=TLSv1.2

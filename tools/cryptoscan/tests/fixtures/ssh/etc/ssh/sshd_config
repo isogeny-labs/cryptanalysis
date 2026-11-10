@@ -1,0 +1,20 @@
+# fixture sshd_config
+Include /etc/ssh/sshd_config.d/*.conf
+Port 22
+Protocol 2,1
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_dsa_key
+KexAlgorithms +diffie-hellman-group14-sha1
+Ciphers ^aes128-cbc
+MACs ^hmac-sha1
+HostKeyAlgorithms ssh-rsa,rsa-sha2-512,ssh-ed25519
+PubkeyAcceptedAlgorithms -*-cert-v01@openssh.com
+FingerprintHash md5
+RequiredRSASize 1024
+
+Match User backup
+    Ciphers +3des-cbc
+    PubkeyAcceptedAlgorithms +ssh-rsa
+Match all

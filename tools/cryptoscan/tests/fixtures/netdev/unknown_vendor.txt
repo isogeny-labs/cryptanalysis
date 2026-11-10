@@ -1,0 +1,8 @@
+# ACME SwitchOS 3.1 running configuration
+system name acme-sw-9
+mgmt telnet enable
+mgmt ssh protocol 1
+snmp agent v2c read-community PLACEHOLDER
+ipsec tunnel t1 cipher 3des auth md5 dh group2
+web tls-protocols tlsv1.0 tlsv1.2
+mgmt ftp disable

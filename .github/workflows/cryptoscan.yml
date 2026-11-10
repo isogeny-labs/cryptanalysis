@@ -1,0 +1,70 @@
+name: cryptoscan
+# artifact-store: no-pull (pure-Python tool tests, fixtures are in Git)
+
+# tools/cryptoscan is a standard-library-only auditor of cryptographic
+# configuration (SSH, TLS, X.509 trust stores, Kerberos, network-device and
+# web-server configs, IPsec/VPN, local keys, system policies). Its tests run
+# offline against committed fixtures and in-process fake services. Python 3.9
+# is the syntax floor (ruff target py39); the oldest interpreter the runner
+# image still provides and the newest release are exercised.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/cryptoscan/**"
+      - ".github/workflows/cryptoscan.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/cryptoscan/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cryptoscan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: unittest / python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.13"]
+    defaults:
+      run:
+        working-directory: tools/cryptoscan
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Self-scan of the runner (smoke test, local collectors only)
+        run: |
+          python -m cryptoscan scan --no-network --out "$RUNNER_TEMP/cs" --format all
+          python -m cryptoscan report "$RUNNER_TEMP/cs/cryptoscan.json" --profile cnsa2 --out "$RUNNER_TEMP/cs-cnsa2" --format md
+          test -s "$RUNNER_TEMP/cs/cryptoscan.html"
+          test -s "$RUNNER_TEMP/cs/cryptoscan.cbom.json"
+      - name: Rule list is derivable from the engine
+        run: python -m cryptoscan rules --json | python -c "import json,sys; r=json.load(sys.stdin); assert len(r) > 80, len(r)"
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tools/cryptoscan
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install "ruff==0.15.8"
+      - run: ruff check --output-format github .

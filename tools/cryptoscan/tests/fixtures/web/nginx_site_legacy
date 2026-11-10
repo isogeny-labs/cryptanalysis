@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    server_name legacy.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name legacy.example.com www.legacy.example.com;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers 'ALL:!aNULL';
+    ssl_certificate /etc/ssl/certs/server.pem;
+    ssl_certificate_key /etc/ssl/private/server.key;
+    location / { root /var/www/html; }
+}
