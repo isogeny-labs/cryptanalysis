@@ -286,7 +286,9 @@ def iana_suite_uses(suite_names: Iterable[str], negotiated: Optional[bool] = Fal
         if not n or n in seen:
             continue
         seen.add(n)
-        out.append(names.tls_cipher_suite(n, negotiated=negotiated, extra=dict(extra or {})))
+        u = names.tls_cipher_suite(canonical_openssl_name(n), negotiated=negotiated, extra=dict(extra or {}))
+        u.raw = n
+        out.append(u)
     return out
 
 
