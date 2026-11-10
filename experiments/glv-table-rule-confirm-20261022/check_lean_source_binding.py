@@ -28,8 +28,8 @@ PREVIOUS_LIVE_SHA256 = "e1d624e58c54f25f9225be97481b50c0ed406cedcfdffa8ba66f01a5
 # 2026-11-10: src/curve.c changed outside the selector (factored j0 orbit hash
 # by default, index mask, Shoup coefficient products; PR #1464). The live pin
 # moves to that commit; the previous sized-cap pin is still re-checked.
-LIVE_SOURCE_COMMIT = "58b2791b85756ca6160da5f4e2b03d3c949e5b57"
-LIVE_SHA256 = "30f301d95640388814236fa487d0281a468dc0db829a189484e418fa82a4a719"
+LIVE_SOURCE_COMMIT = "bf76110326b5c843cb88135810cb5c1d955321fc"
+LIVE_SHA256 = "7a59212a15cbb80db00abb371900b696e4cd8aabbcd6dec175e166508ce1d70e"
 CAP_THRESHOLD_LG = 40
 CAP_BELOW = 32
 CAP_FROM = 128
