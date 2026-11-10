@@ -1,0 +1,126 @@
+{
+ "arm": "author-cuda13.4.3",
+ "image": "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+ "pod_id": "gzue3uiofinquo",
+ "created": {
+  "consumerUserId": "user_3JahrCo3UmxttnVuYylFiPlXpxw",
+  "containerDiskInGb": 30,
+  "costPerHr": 2.49,
+  "createdAt": "2026-11-10 04:20:04.385 +0000 UTC",
+  "desiredStatus": "RUNNING",
+  "dockerStartCmd": [
+   "bash",
+   "-c",
+   "apt-get update -qq >/tmp/apt.log 2>&1; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 xz-utils make g++ >>/tmp/apt.log 2>&1; mkdir -p /work; echo IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJUaW55IHRva2VuLWd1YXJkZWQgY29udHJvbCBzZXJ2ZXIgZm9yIGEgUnVuUG9kIEdQVSBwb2QgKG5vIFNTSCBuZWVkZWQpLgoKUFVUIC9idW5kbGUgICB1cGxvYWQgYSB0YXIueHo7IGl0IGlzIHVucGFja2VkIHRvIC93b3JrL2J1bmRsZSBhbmQKICAgICAgICAgICAgICBiYXNoIC93b3JrL2J1bmRsZS9yZXNlYXJjaC9jbG1hZF9hdWRpdF8yMDI2MTExMC9wb2QvcnVuLnNoIHN0YXJ0cwpHRVQgL3N0YXR1cyAgIEpTT046IHN0YXRlLCBleGl0IGNvZGUsIGxvZyB0YWlsCkdFVCAvbG9nICAgICAgdGhlIHJ1biBsb2cKR0VUIC9yZXN1bHRzICAvd29yay9yZXN1bHRzLnRhci54egoiIiIKaW1wb3J0IGhhc2hsaWIKaW1wb3J0IGpzb24KaW1wb3J0IG9zCmltcG9ydCBzdWJwcm9jZXNzCmltcG9ydCB0aHJlYWRpbmcKZnJvbSBodHRwLnNlcnZlciBpbXBvcnQgQmFzZUhUVFBSZXF1ZXN0SGFuZGxlciwgVGhyZWFkaW5nSFRUUFNlcnZlcgoKVE9LRU4gPSBvcy5lbnZpcm9uWyJUT0tFTiJdCldPUksgPSAiL3dvcmsiClNUQVRFID0geyJzdGF0ZSI6ICJpZGxlIiwgImV4aXQiOiBOb25lLCAiYnVuZGxlX3NoYTI1NiI6IE5vbmV9CkxPQ0sgPSB0aHJlYWRpbmcuTG9jaygpClJVTiA9IG9zLmVudmlyb24uZ2V0KCJSVU5fU0NSSVBUIiwgInJlc2VhcmNoL2NsbWFkX2F1ZGl0XzIwMjYxMTEwL3BvZC9ydW4uc2giKQoKCmRlZiBfd2F0Y2gocHJvYyk6CiAgICByYyA9IHByb2Mud2FpdCgpCiAgICB3aXRoIExPQ0s6CiAgICAgICAgU1RBVEVbInN0YXRlIl0gPSAiZG9uZSIKICAgICAgICBTVEFURVsiZXhpdCJdID0gcmMKCgpjbGFzcyBIKEJhc2VIVFRQUmVxdWVzdEhhbmRsZXIpOgogICAgZGVmIF9vayhzZWxmLCBib2R5LCBjdHlwZT0iYXBwbGljYXRpb24vanNvbiIpOgogICAgICAgIHNlbGYuc2VuZF9yZXNwb25zZSgyMDApCiAgICAgICAgc2VsZi5zZW5kX2hlYWRlcigiQ29udGVudC1UeXBlIiwgY3R5cGUpCiAgICAgICAgc2VsZi5zZW5kX2hlYWRlcigiQ29udGVudC1MZW5ndGgiLCBzdHIobGVuKGJvZHkpKSkKICAgICAgICBzZWxmLmVuZF9oZWFkZXJzKCkKICAgICAgICBzZWxmLndmaWxlLndyaXRlKGJvZHkpCgogICAgZGVmIF9hdXRoKHNlbGYpOgogICAgICAgIGlmIHNlbGYuaGVhZGVycy5nZXQoIlgtVG9rZW4iKSAhPSBUT0tFTjoKICAgICAgICAgICAgc2VsZi5zZW5kX3Jlc3BvbnNlKDQwMykKICAgICAgICAgICAgc2VsZi5lbmRfaGVhZGVycygpCiAgICAgICAgICAgIHJldHVybiBGYWxzZQogICAgICAgIHJldHVybiBUcnVlCgogICAgZGVmIGxvZ19tZXNzYWdlKHNlbGYsICphKToKICAgICAgICBwYXNzCgogICAgZGVmIGRvX0dFVChzZWxmKToKICAgICAgICBpZiBub3Qgc2VsZi5fYXV0aCgpOgogICAgICAgICAgICByZXR1cm4KICAgICAgICBpZiBzZWxmLnBhdGggPT0gIi9zdGF0dXMiOgogICAgICAgICAgICB0YWlsID0gIiIKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgd2l0aCBvcGVuKGYie1dPUkt9L3J1bi5sb2ciLCAicmIiKSBhcyBmOgogICAgICAgICAgICAgICAgICAgIGYuc2VlaygwLCAyKQogICAgICAgICAgICAgICAgICAgIGYuc2VlayhtYXgoMCwgZi50ZWxsKCkgLSAxNTAwKSkKICAgICAgICAgICAgICAgICAgICB0YWlsID0gZi5yZWFkKCkuZGVjb2RlKCJ1dGYtOCIsICJyZXBsYWNlIikKICAgICAgICAgICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgICAgICAgICBwYXNzCiAgICAgICAgICAgIHdpdGggTE9DSzoKICAgICAgICAgICAgICAgIGQgPSBkaWN0KFNUQVRFKQogICAgICAgICAgICBkWyJ0YWlsIl0gPSB0YWlsCiAgICAgICAgICAgIHNlbGYuX29rKGpzb24uZHVtcHMoZCkuZW5jb2RlKCkpCiAgICAgICAgZWxpZiBzZWxmLnBhdGggPT0gIi9sb2ciOgogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBzZWxmLl9vayhvcGVuKGYie1dPUkt9L3J1bi5sb2ciLCAicmIiKS5yZWFkKCksICJ0ZXh0L3BsYWluIikKICAgICAgICAgICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgICAgICAgICBzZWxmLnNlbmRfcmVzcG9uc2UoNDA0KQogICAgICAgICAgICAgICAgc2VsZi5lbmRfaGVhZGVycygpCiAgICAgICAgZWxpZiBzZWxmLnBhdGggPT0gIi9yZXN1bHRzIjoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgc2VsZi5fb2sob3BlbihmIntXT1JLfS9yZXN1bHRzLnRhci54eiIsICJyYiIpLnJlYWQoKSwgImFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbSIpCiAgICAgICAgICAgIGV4Y2VwdCBPU0Vycm9yOgogICAgICAgICAgICAgICAgc2VsZi5zZW5kX3Jlc3BvbnNlKDQwNCkKICAgICAgICAgICAgICAgIHNlbGYuZW5kX2hlYWRlcnMoKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHNlbGYuc2VuZF9yZXNwb25zZSg0MDQpCiAgICAgICAgICAgIHNlbGYuZW5kX2hlYWRlcnMoKQoKICAgIGRlZiBkb19QVVQoc2VsZik6CiAgICAgICAgaWYgbm90IHNlbGYuX2F1dGgoKToKICAgICAgICAgICAgcmV0dXJuCiAgICAgICAgaWYgc2VsZi5wYXRoICE9ICIvYnVuZGxlIjoKICAgICAgICAgICAgc2VsZi5zZW5kX3Jlc3BvbnNlKDQwNCkKICAgICAgICAgICAgc2VsZi5lbmRfaGVhZGVycygpCiAgICAgICAgICAgIHJldHVybgogICAgICAgIG4gPSBpbnQoc2VsZi5oZWFkZXJzLmdldCgiQ29udGVudC1MZW5ndGgiLCAiMCIpKQogICAgICAgIGRhdGEgPSBzZWxmLnJmaWxlLnJlYWQobikKICAgICAgICBzaGEgPSBoYXNobGliLnNoYTI1NihkYXRhKS5oZXhkaWdlc3QoKQogICAgICAgIHdpdGggTE9DSzoKICAgICAgICAgICAgaWYgU1RBVEVbInN0YXRlIl0gIT0gImlkbGUiOgogICAgICAgICAgICAgICAgc2VsZi5zZW5kX3Jlc3BvbnNlKDQwOSkKICAgICAgICAgICAgICAgIHNlbGYuZW5kX2hlYWRlcnMoKQogICAgICAgICAgICAgICAgcmV0dXJuCiAgICAgICAgICAgIFNUQVRFWyJzdGF0ZSJdID0gInJ1bm5pbmciCiAgICAgICAgICAgIFNUQVRFWyJidW5kbGVfc2hhMjU2Il0gPSBzaGEKICAgICAgICBvcy5tYWtlZGlycyhmIntXT1JLfS9idW5kbGUiLCBleGlzdF9vaz1UcnVlKQogICAgICAgIHdpdGggb3BlbihmIntXT1JLfS9idW5kbGUudGFyLnh6IiwgIndiIikgYXMgZjoKICAgICAgICAgICAgZi53cml0ZShkYXRhKQogICAgICAgIHdpdGggb3BlbihmIntXT1JLfS9idW5kbGUuc2hhMjU2IiwgInciKSBhcyBmOgogICAgICAgICAgICBmLndyaXRlKHNoYSArICJcbiIpCiAgICAgICAgc3VicHJvY2Vzcy5ydW4oWyJ0YXIiLCAiLXhKZiIsIGYie1dPUkt9L2J1bmRsZS50YXIueHoiLCAiLUMiLCBmIntXT1JLfS9idW5kbGUiXSwgY2hlY2s9RmFsc2UpCiAgICAgICAgbG9nID0gb3BlbihmIntXT1JLfS9ydW4ubG9nIiwgImFiIikKICAgICAgICBwcm9jID0gc3VicHJvY2Vzcy5Qb3BlbihbImJhc2giLCBmIntXT1JLfS9idW5kbGUve1JVTn0iXSwgc3Rkb3V0PWxvZywgc3RkZXJyPXN1YnByb2Nlc3MuU1RET1VULAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGN3ZD1mIntXT1JLfS9idW5kbGUiKQogICAgICAgIHRocmVhZGluZy5UaHJlYWQodGFyZ2V0PV93YXRjaCwgYXJncz0ocHJvYywpLCBkYWVtb249VHJ1ZSkuc3RhcnQoKQogICAgICAgIHNlbGYuX29rKGpzb24uZHVtcHMoeyJvayI6IFRydWUsICJzaGEyNTYiOiBzaGF9KS5lbmNvZGUoKSkKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgb3MubWFrZWRpcnMoV09SSywgZXhpc3Rfb2s9VHJ1ZSkKICAgIFRocmVhZGluZ0hUVFBTZXJ2ZXIoKCIwLjAuMC4wIiwgODg4OCksIEgpLnNlcnZlX2ZvcmV2ZXIoKQo= | base64 -d > /work/server.py; exec python3 /work/server.py"
+  ],
+  "env": {
+   "PUBLIC_KEY": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIGINUXwKEi4sZ2VKfheXzavKturOAp3U++5pzQiRBQL\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwOPJzoUQwJ7/dvUkyGJ7mKe+APKVF9oPN/Qw3Qyux cursor-cloud-agent@cursor\nssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD0RKN2UkyFCOy7PkCsoiKefuTLuRrP1+YMTk970UPK95tbIKbm3Gk4cp8PH72dtQkAqFV3+4hP/caMdzerca0UiIZpqcw2C5X+EFFtEPtjsUR8xmrlnzs5F4jp3tQISDLpRTxMcbTRuGdNqM//GwpB30DrPW/TGgJ3IkdGOd6MaorJstxdmVtrBMvbmUUwajVK2Nhag0GWmU/qo65mMVDGsDgSsDD/yCigan+uyyuyru7Uc6xnMjlXvmVpjresTbn4FDRLB1Rt0clyAjGVVjmw0WTYBEbP2ZuBW7InU5EQ0xnJPRnX/E5DN1fLBPipvJYGbc3faW1fGdnpg4QOHFVJ runpodctl-ssh-key\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINO3L0nMWX62gnE8J2rGp34jxfNen3bEH/b8RVy3PN6r cursor-cloud-agent-teal-mink\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwRI+hpltMf0Y9mSUCYFAmpJTFaEx6dr76eew3PCqTL cursor-ingest-agent\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK/m6mosB3AOJOLNfKp9PFGgvEEMV/5K7owo0vmBgV1z adamburan@Adams-MacBook-Pro.local\nssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsqJBIw+Zqi5pb9czRkTSUacVYStFdml8d84JeDEe5MERLZ+U9Zj/3764oeiCU/kx1OKU2J4ZcsMV3vvmIZo5NIQJmn5YBsoNGOB3qyI9FidWaw96HqD3fEqLRz5Ipt17xkJmaQYFY8Fkiatyjjm14FSUPDlHeOgFgvV1+EEQ0rLideGmsejoM45+i1w678ajcIZa6nueYzE+hl0sUpI2adNyrctXzciUoTJVeK/628vWYSWsXp8s8ASL/DMYCzOlATCcxPCDQG95AxqU0xvxjmIjmlWsJcDi2rEgkN0ZMC6mkwWAPc0cyB9N1VNlQvLrHInEuEDia7eOu5Q+TsxT5 RunPod-Key\nssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILfoikIkTYEtbAXxqkL9VAUpfL/++MWXF2wgfyWu9EZo cairn-node-agent",
+   "RUN_SCRIPT": "research/clmad_audit_20261110/pod/run_author_repro.sh",
+   "TOKEN": "FDV8jmPyPwO9UQEfr1Xewu_lMLs9uRPz"
+  },
+  "gpuCount": 1,
+  "id": "gzue3uiofinquo",
+  "imageName": "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+  "lastStartedAt": "2026-11-10 04:20:04.378 +0000 UTC",
+  "lastStatusChange": "Rented by User: Tue Nov 10 2026 04:20:04 GMT+0000 (Coordinated Universal Time)",
+  "machine": {
+   "dataCenterId": "US-NC-2",
+   "diskThroughputMBps": 13201,
+   "gpuTypeId": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+   "location": "US",
+   "maxDownloadSpeedMbps": 16522,
+   "maxUploadSpeedMbps": 11005,
+   "secureCloud": true,
+   "supportPublicIp": true,
+   "reservedCountVersion": 52752
+  },
+  "machineId": "t6r4lvei6hkk",
+  "memoryInGb": 188,
+  "name": "clmad-audit-author-cuda13.4.3-20261110T042002Z",
+  "ports": [
+   "8888/http"
+  ],
+  "publicIp": "",
+  "templateId": "",
+  "vcpuCount": 16,
+  "volumeInGb": 0,
+  "volumeMountPath": "/workspace"
+ },
+ "events": [
+  {
+   "t": 68.9,
+   "msg": "control server up"
+  },
+  {
+   "t": 69.3,
+   "msg": "bundle uploaded: {\"ok\": true, \"sha256\": \"792c0055415cecfe2812057c33d652bb291f364220bb284c68af6281bb04bea2\"}"
+  },
+  {
+   "t": 130.7,
+   "msg": "pod: done"
+  },
+  {
+   "t": 130.7,
+   "msg": "run finished, exit 0"
+  },
+  {
+   "t": 131.5,
+   "msg": "results fetched: 5296 bytes"
+  },
+  {
+   "t": 132.9,
+   "msg": "pod deleted"
+  }
+ ],
+ "last_pod": {
+  "consumerUserId": "user_3JahrCo3UmxttnVuYylFiPlXpxw",
+  "containerDiskInGb": 30,
+  "costPerHr": 2.49,
+  "createdAt": "2026-11-10 04:20:04.385 +0000 UTC",
+  "desiredStatus": "RUNNING",
+  "gpuCount": 1,
+  "id": "gzue3uiofinquo",
+  "imageName": "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+  "lastStartedAt": "2026-11-10 04:20:04.378 +0000 UTC",
+  "lastStatusChange": "Rented by User: Tue Nov 10 2026 04:20:04 GMT+0000 (Coordinated Universal Time)",
+  "machine": {},
+  "machineId": "t6r4lvei6hkk",
+  "memoryInGb": 188,
+  "name": "clmad-audit-author-cuda13.4.3-20261110T042002Z",
+  "ports": [
+   "8888/http"
+  ],
+  "publicIp": "",
+  "templateId": "",
+  "vcpuCount": 16,
+  "volumeInGb": 0,
+  "volumeMountPath": "/workspace"
+ },
+ "run_exit": 0,
+ "bundle_sha256_on_pod": "792c0055415cecfe2812057c33d652bb291f364220bb284c68af6281bb04bea2",
+ "final_pod": {
+  "consumerUserId": "user_3JahrCo3UmxttnVuYylFiPlXpxw",
+  "containerDiskInGb": 30,
+  "costPerHr": 2.49,
+  "createdAt": "2026-11-10 04:20:04.385 +0000 UTC",
+  "desiredStatus": "RUNNING",
+  "gpuCount": 1,
+  "id": "gzue3uiofinquo",
+  "imageName": "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+  "lastStartedAt": "2026-11-10 04:20:04.378 +0000 UTC",
+  "lastStatusChange": "Rented by User: Tue Nov 10 2026 04:20:04 GMT+0000 (Coordinated Universal Time)",
+  "machine": {},
+  "machineId": "t6r4lvei6hkk",
+  "memoryInGb": 188,
+  "name": "clmad-audit-author-cuda13.4.3-20261110T042002Z",
+  "ports": [
+   "8888/http"
+  ],
+  "publicIp": "",
+  "templateId": "",
+  "vcpuCount": 16,
+  "volumeInGb": 0,
+  "volumeMountPath": "/workspace"
+ },
+ "wall_s": 132.9
+}

@@ -265,6 +265,26 @@ What is still not covered:
   (which calls `exit`) skips teardown.
 - Checkpoints and logs on disk keep whatever they were given.
 
+## Toolkit versions and `clmad`
+
+The packed kernels do their field products with the `clmad` instruction
+(CUDA 13.3 and later, sm_80 and later). Compiler correctness is part of the
+result. `ptxas` folds a `clmad` whose multiplicand is the constant one and
+can drop its high half on sm_120 at `-O2`/`-O3` and under driver JIT (NVIDIA
+bug 6955062, reported 2026-10-19 for 13.4.92); the lab reproduced it with the
+public reproducer on both 13.3.73 and 13.4.92, and found that a slightly
+different Karatsuba formulation is not affected
+(`research/clmad_audit_20261110/`). The `ecc2k130` device tests
+(`make -C ecc2k130/runner test-packed-cuda`) pass on both toolkits, and no
+`clmad` operand in those kernels is a compile-time constant. So: run the
+device tests on every new toolkit before a campaign; list a version in
+`BAD_PTXAS` (both Makefiles under `ecc2k130/`) when they fail on it, which
+refuses the build unless `ALLOW_BAD_PTXAS=1`; and read `nvccVersion` from the
+GPU client's `devices` and `bench`/`walk` JSON, which every run record now
+carries. The same study's two-class timing test found no operand class of
+`clmad` distinguishable by latency on an RTX 5090 or an RTX PRO 6000, a bound
+at that sample size and not a constant-time guarantee.
+
 For runs whose result is worth something, use a dedicated GPU (or a
 MIG slice on A100/H100) rather than time-sliced or MPS sharing, keep
 profiling counters admin-only (`NVreg_RestrictProfilingToAdminUsers=1`, the
