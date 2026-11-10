@@ -45,6 +45,11 @@ static void j0_orbit_checks(void)
         ca_group_identity(&g, &id);
         CHECK_EQ_U64(ca_j0_coordinate_class_reduce(&g, &id), 0);
         CHECK_EQ_U64(ca_j0_factored_hash_class_reduce(&g, &id), 0);
+        {
+            uint64_t id_h = 0;
+            CHECK_EQ_U64(ca_j0_factored_hash_class_reduce_h(&g, &id, &id_h), 0);
+            CHECK_EQ_U64(id_h, ca_group_hash(&g, &id));
+        }
         CHECK(ca_group_is_identity(&g, &id));
 
         ca_rng rng;
@@ -58,10 +63,12 @@ static void j0_orbit_checks(void)
             for (uint32_t h = 0; h < 6; h++) {
                 ca_elem reference = rotated, factored = rotated;
                 uint32_t ref_k = j0_hash_reference(&g, &reference);
-                uint32_t factored_k = ca_j0_factored_hash_class_reduce(&g, &factored);
+                uint64_t factored_h = 0;
+                uint32_t factored_k = ca_j0_factored_hash_class_reduce_h(&g, &factored, &factored_h);
                 CHECK_EQ_U64(factored_k, ref_k);
                 for (size_t word = 0; word < 4; word++)
                     CHECK_EQ_U64(factored.w[word], reference.w[word]);
+                CHECK_EQ_U64(factored_h, ca_group_hash(&g, &reference));
                 ca_elem got = rotated, replay = rotated;
                 uint32_t k = ca_j0_coordinate_class_reduce(&g, &got);
                 CHECK(k < 6);
@@ -102,10 +109,12 @@ static void j0_orbit_checks(void)
         for (uint32_t h = 0; h < 6; h++) {
             ca_elem reference = rotated, factored = rotated;
             uint32_t ref_k = j0_hash_reference(&tiny, &reference);
-            uint32_t factored_k = ca_j0_factored_hash_class_reduce(&tiny, &factored);
+            uint64_t factored_h = 0;
+            uint32_t factored_k = ca_j0_factored_hash_class_reduce_h(&tiny, &factored, &factored_h);
             CHECK_EQ_U64(factored_k, ref_k);
             for (size_t word = 0; word < 4; word++)
                 CHECK_EQ_U64(factored.w[word], reference.w[word]);
+            CHECK_EQ_U64(factored_h, ca_group_hash(&tiny, &reference));
             ca_elem got = rotated, replay = rotated;
             uint32_t k = ca_j0_coordinate_class_reduce(&tiny, &got);
             CHECK(k < 6);

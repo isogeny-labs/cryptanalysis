@@ -17,10 +17,12 @@ option(CA_BUILD_RHO_ORBIT_BENCH "Build the one-target j0 rho orbit workload" OFF
 option(CA_BUILD_JOINT_TAU_BENCH "Build the prepared public double-scalar tau workload" OFF)
 option(CA_BUILD_PAIRED_RHO_BENCH "Build the one-target paired-lattice rho workload" OFF)
 option(CA_RHO_J0_COORDINATE_ORBIT "Use the experimental coordinate j0 rho orbit representative" OFF)
-option(CA_RHO_J0_FACTORED_HASH "Use the experimental factored legacy j0 rho orbit hash" OFF)
-if(CA_RHO_J0_COORDINATE_ORBIT AND CA_RHO_J0_FACTORED_HASH)
-  message(FATAL_ERROR "Choose at most one experimental j0 rho orbit reducer")
-endif()
+# The factored j0 orbit hash picks the same representative as the legacy
+# loop of six ca_ec_endo + ca_group_hash calls (bitwise; tests/test_curve.c)
+# and is the default.  OFF builds the legacy loop (C macro
+# CA_RHO_J0_LEGACY_HASH).  CA_RHO_J0_COORDINATE_ORBIT, which changes the walk,
+# takes precedence over either when ON.
+option(CA_RHO_J0_FACTORED_HASH "Factored j0 rho orbit hash (same walk as the legacy loop); OFF = legacy loop" ON)
 option(CA_NATIVE "Compile with -march=native" OFF)
 # OFF, ON (= address,undefined), or an explicit -fsanitize= list such as
 # "thread" or "memory".  ON is kept so existing invocations keep working.
@@ -128,8 +130,8 @@ if(CA_BUILD_SHARED)
 endif()
 if(CA_RHO_J0_COORDINATE_ORBIT)
   target_compile_definitions(cryptanalysis_objects PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-elseif(CA_RHO_J0_FACTORED_HASH)
-  target_compile_definitions(cryptanalysis_objects PRIVATE CA_RHO_J0_FACTORED_HASH=1)
+elseif(NOT CA_RHO_J0_FACTORED_HASH)
+  target_compile_definitions(cryptanalysis_objects PRIVATE CA_RHO_J0_LEGACY_HASH=1)
 endif()
 if(CA_J0_RHO_COORD_CANON)
   target_compile_definitions(cryptanalysis_objects PRIVATE CA_J0_RHO_COORD_CANON=1)
@@ -276,8 +278,8 @@ if(CA_BUILD_RHO_ORBIT_BENCH)
   target_compile_options(ca_rho_orbit_bench PRIVATE ${CA_WARNINGS})
   if(CA_RHO_J0_COORDINATE_ORBIT)
     target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_COORDINATE_ORBIT=1)
-  elseif(CA_RHO_J0_FACTORED_HASH)
-    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_FACTORED_HASH=1)
+  elseif(NOT CA_RHO_J0_FACTORED_HASH)
+    target_compile_definitions(ca_rho_orbit_bench PRIVATE CA_RHO_J0_LEGACY_HASH=1)
   endif()
   ca_sanitize(ca_rho_orbit_bench)
 endif()

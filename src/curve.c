@@ -265,19 +265,39 @@ uint32_t ca_ec_j0_coord_canonicalize(const ca_group *g, ca_elem *Y)
 }
 
 /* Reduce Y to the canonical representative of its automorphism class {Y,
- * psi(Y), ..., psi^{m-1}(Y)} and return the power k of psi applied. */
-static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m)
+ * psi(Y), ..., psi^{m-1}(Y)} and return the power k of psi applied.  When
+ * h_out is not NULL it receives ca_group_hash of the reduced point.
+ *
+ * j=0 (m = 6) uses the factored hash reducer by default: the same six point
+ * hashes in the same order with the same strict tie break, so the same
+ * representative and k as the legacy loop (tests/test_curve.c checks every
+ * word; experiments/prime-j0-cost-aware-chain/RHO_J0_FACTORED_HASH.md).
+ * -DCA_RHO_J0_FACTORED_HASH=OFF (CMake; C macro CA_RHO_J0_LEGACY_HASH)
+ * restores the loop of out-of-line ca_ec_endo calls.  The trajectory-
+ * changing representatives CA_RHO_J0_COORDINATE_ORBIT and
+ * CA_J0_RHO_COORD_CANON take precedence when selected. */
+static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m, uint64_t *h_out)
 {
 #ifdef CA_RHO_J0_COORDINATE_ORBIT
-    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6)
-        return ca_j0_coordinate_class_reduce(g, Y);
-#elif defined(CA_RHO_J0_FACTORED_HASH)
-    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6)
-        return ca_j0_factored_hash_class_reduce(g, Y);
+    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6) {
+        uint32_t k = ca_j0_coordinate_class_reduce(g, Y);
+        if (h_out) *h_out = ca_group_hash(g, Y);
+        return k;
+    }
 #endif
-
 #ifdef CA_J0_RHO_COORD_CANON
-    if (g->endo_kind == 1 && m == 6) return ca_ec_j0_coord_canonicalize(g, Y);
+    if (g->endo_kind == 1 && m == 6) {
+        uint32_t k = ca_ec_j0_coord_canonicalize(g, Y);
+        if (h_out) *h_out = ca_group_hash(g, Y);
+        return k;
+    }
+#endif
+#if !defined(CA_RHO_J0_COORDINATE_ORBIT) && !defined(CA_J0_RHO_COORD_CANON) && \
+    !defined(CA_RHO_J0_LEGACY_HASH)
+    /* endo_kind J0 is only ever set on a native EC group (curve_enable), whose
+     * hash is ca_ec_hash_words; the kind test keeps that explicit. */
+    if (g->endo_kind == CA_CURVE_ENDO_J0 && m == 6 && g->kind == CA_GROUP_EC)
+        return ca_j0_factored_hash_class_reduce_h(g, Y, h_out);
 #endif
     ca_elem cur = *Y, best = *Y;
     uint64_t best_h = ca_group_hash(g, Y);
@@ -294,6 +314,7 @@ static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m)
         }
     }
     *Y = best;
+    if (h_out) *h_out = best_h;
     return best_k;
 }
 
@@ -647,7 +668,7 @@ static int glv_restart(const glv_ctx *c, glv_walk *w, ca_rng *rng, uint64_t *ops
     w->a = ca_rng_below(rng, n);
     w->b = ca_rng_below(rng, n);
     if (!glv_startup_combination(c, &w->Y, w->a, w->b, 1, ops)) return 0;
-    uint32_t k = glv_class_reduce(g, &w->Y, c->m);
+    uint32_t k = glv_class_reduce(g, &w->Y, c->m, NULL);
     if (k) {
         w->a = ca_mulmod(w->a, c->lam_pow[k], n);
         w->b = ca_mulmod(w->b, c->lam_pow[k], n);
@@ -939,17 +960,15 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                 wk->Y = Yn[w];
                 wk->a = ca_addmod(wk->a, wk->a, n);
                 wk->b = ca_addmod(wk->b, wk->b, n);
-                uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                 if (kk) {
                     wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
                     wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
                 }
-                h = ca_group_hash(g, &wk->Y);
                 goto glv_dp_check;
             }
 #endif
-            k = glv_class_reduce(g, &Yn[w], c.m);
-            h = ca_group_hash(g, &Yn[w]);
+            k = glv_class_reduce(g, &Yn[w], c.m, &h);
             /* Fruitless-cycle look-ahead: if the reduced point would pick the
              * same multiplier we just used, advance to the next one and redo
              * the step -- a deterministic function of the class, so walks
@@ -1045,12 +1064,11 @@ static ca_status glv_rho_solve(const ca_group *g, const ca_elem *base, const ca_
                     ops++;
                     wk->a = ca_addmod(pa, pa, n);
                     wk->b = ca_addmod(pb, pb, n);
-                    uint32_t kk = glv_class_reduce(g, &wk->Y, c.m);
+                    uint32_t kk = glv_class_reduce(g, &wk->Y, c.m, &h);
                     if (kk) {
                         wk->a = ca_mulmod(wk->a, c.lam_pow[kk], n);
                         wk->b = ca_mulmod(wk->b, c.lam_pow[kk], n);
                     }
-                    h = ca_group_hash(g, &wk->Y);
 #        ifdef CA_GLV_FIELD_COUNT
                     ca_fc_phase = CA_FC_POST;
 #        endif
