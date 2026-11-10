@@ -388,7 +388,7 @@ def rule_cipher(ctx: Context) -> List[Finding]:
             out.append(ctx.finding("CIPHER-BELOW-PROFILE", f"{alg}-{bits} is below the {p.name} minimum of {p.sym_min_bits} bits", Severity.MEDIUM if p.name == "cnsa2" else Severity.LOW,
                                    f"{where}", f"Use {alg.upper()}-{p.sym_min_bits}.", tuple(p.references)))
         if mode == "cbc":
-            if u.context == "cipher" and ctx.asset.kind in (AssetKind.SSH_SERVER, AssetKind.SSH_CLIENT, AssetKind.SSH_REMOTE):
+            if u.context == "cipher":        # SSH transport cipher (sshd, ssh, remote probe, device SSH server)
                 out.append(ctx.finding("SSH-CBC", f"SSH CBC-mode cipher {u.raw}", Severity.MEDIUM,
                                        f"{where}: CBC in SSH is vulnerable to plaintext recovery (CVE-2008-5161) and is disabled by default in OpenSSH.",
                                        "Use aes*-gcm@openssh.com, chacha20-poly1305@openssh.com or aes*-ctr.", (REF["TERRAPIN"],)))
@@ -398,7 +398,7 @@ def rule_cipher(ctx: Context) -> List[Finding]:
                                        "Prefer AES-GCM / ChaCha20-Poly1305 and TLS 1.3.", (REF["52"], REF["RFC9325"])))
         if mode == "ccm-8":
             out.append(ctx.finding("TLS-CCM8", "AES-CCM with 64-bit tag", Severity.LOW, f"{where}: 8-byte authentication tags are weak for general use.", "Prefer GCM or CCM with 128-bit tags.", (REF["RFC9325"],)))
-        if alg == "chacha20-poly1305" and ctx.asset.kind in (AssetKind.SSH_SERVER, AssetKind.SSH_CLIENT, AssetKind.SSH_REMOTE) and not ctx.asset.attributes.get("kex_strict"):
+        if alg == "chacha20-poly1305" and u.context == "cipher" and not ctx.asset.attributes.get("kex_strict"):
             out.append(ctx.finding("SSH-TERRAPIN", "chacha20-poly1305@openssh.com without strict key exchange (Terrapin)", Severity.MEDIUM,
                                    f"{where}: CVE-2023-48795 allows prefix truncation unless both sides support kex-strict (OpenSSH >= 9.6).",
                                    "Upgrade OpenSSH to 9.6+ (strict kex) or disable chacha20-poly1305 and *-etm CBC ciphers.", (REF["TERRAPIN"],)))
