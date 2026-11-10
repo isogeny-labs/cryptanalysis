@@ -102,7 +102,7 @@ static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
     ninv *= 2 - m * ninv;
     ninv *= 2 - m * ninv;
     ninv *= 2 - m * ninv;
-    ninv *= 2 - m * ninv;        /* m^-1 mod 2^64 */
+    ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
     const uint64_t neg_ninv = (uint64_t)0 - ninv;
 
     uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
@@ -114,9 +114,9 @@ static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
         const int lt = u < v;
         const uint64_t sw = (uint64_t)0 - (uint64_t)lt;
         const unsigned z = (unsigned)__builtin_ctzll(d); /* = ctz(e) */
-        const uint64_t big = lt ? e : d;                  /* |u - v| */
+        const uint64_t big = lt ? e : d;                 /* |u - v| */
         const uint64_t small = lt ? u : v;
-        const uint64_t cb = (s & ~sw) | (r & sw);         /* larger's coefficient */
+        const uint64_t cb = (s & ~sw) | (r & sw); /* larger's coefficient */
         const uint64_t cs = (r & ~sw) | (s & sw);
         u = big >> z;
         v = small;

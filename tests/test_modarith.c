@@ -29,11 +29,29 @@ static uint64_t invmod_reference(uint64_t a, uint64_t m)
 
 static void invmod_vs_reference(void)
 {
-    static const uint64_t edge[] = {0, 1, 2, 3, 4, 5, 7, 8, 9, 15, 16, 17, 65537,
-                                    (1ULL << 32) - 1, 1ULL << 32, (1ULL << 32) + 1,
-                                    (1ULL << 61) - 1, (1ULL << 63) - 1, 1ULL << 63,
-                                    (1ULL << 63) + 1, 18446744073709551557ULL,
-                                    UINT64_MAX - 1, UINT64_MAX};
+    static const uint64_t edge[] = {0,
+                                    1,
+                                    2,
+                                    3,
+                                    4,
+                                    5,
+                                    7,
+                                    8,
+                                    9,
+                                    15,
+                                    16,
+                                    17,
+                                    65537,
+                                    (1ULL << 32) - 1,
+                                    1ULL << 32,
+                                    (1ULL << 32) + 1,
+                                    (1ULL << 61) - 1,
+                                    (1ULL << 63) - 1,
+                                    1ULL << 63,
+                                    (1ULL << 63) + 1,
+                                    18446744073709551557ULL,
+                                    UINT64_MAX - 1,
+                                    UINT64_MAX};
     const size_t ne = sizeof(edge) / sizeof(edge[0]);
     for (size_t i = 0; i < ne; i++)
         for (size_t j = 0; j < ne; j++) {
@@ -255,18 +273,24 @@ int main(void)
         CHECK(ca_shoup_ok(((uint64_t)1 << 63) - 1) && !ca_shoup_ok((uint64_t)1 << 63));
         ca_rng srng;
         ca_rng_seed(&srng, 0x5409);
-        const uint64_t qs[] = {2, 3, 23729779, 16773703, 4294967291ULL, 53624256071278747ULL,
-                               (1ULL << 62) + 135, ((uint64_t)1 << 63) - 25,
+        const uint64_t qs[] = {2,
+                               3,
+                               23729779,
+                               16773703,
+                               4294967291ULL,
+                               53624256071278747ULL,
+                               (1ULL << 62) + 135,
+                               ((uint64_t)1 << 63) - 25,
                                ((uint64_t)1 << 63) - 1};
         for (size_t i = 0; i < sizeof(qs) / sizeof(qs[0]); i++) {
             const uint64_t q = qs[i];
             for (int t = 0; t < 20000; t++) {
                 uint64_t w = t < 3 ? (uint64_t[]){0, 1, q - 1}[t] : ca_rng_below(&srng, q);
                 uint64_t wp = ca_shoup_pre(w, q);
-                uint64_t a = (t & 3) == 0 ? ca_rng_next(&srng)
-                           : (t & 3) == 1 ? (uint64_t)(t >> 2) % q
-                           : (t & 3) == 2 ? UINT64_MAX - (uint64_t)(t >> 2)
-                                          : ca_rng_below(&srng, q);
+                uint64_t a = (t & 3) == 0   ? ca_rng_next(&srng)
+                             : (t & 3) == 1 ? (uint64_t)(t >> 2) % q
+                             : (t & 3) == 2 ? UINT64_MAX - (uint64_t)(t >> 2)
+                                            : ca_rng_below(&srng, q);
                 CHECK_EQ_U64(ca_shoup_mul(a, w, wp, q), ca_mulmod(a, w, q));
             }
         }

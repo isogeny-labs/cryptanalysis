@@ -64,7 +64,8 @@ static void j0_orbit_checks(void)
                 ca_elem reference = rotated, factored = rotated;
                 uint32_t ref_k = j0_hash_reference(&g, &reference);
                 uint64_t factored_h = 0;
-                uint32_t factored_k = ca_j0_factored_hash_class_reduce_h(&g, &factored, &factored_h);
+                uint32_t factored_k =
+                    ca_j0_factored_hash_class_reduce_h(&g, &factored, &factored_h);
                 CHECK_EQ_U64(factored_k, ref_k);
                 for (size_t word = 0; word < 4; word++)
                     CHECK_EQ_U64(factored.w[word], reference.w[word]);

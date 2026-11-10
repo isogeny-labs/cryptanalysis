@@ -292,7 +292,7 @@ static uint32_t glv_class_reduce(const ca_group *g, ca_elem *Y, uint32_t m, uint
         return k;
     }
 #endif
-#if !defined(CA_RHO_J0_COORDINATE_ORBIT) && !defined(CA_J0_RHO_COORD_CANON) && \
+#if !defined(CA_RHO_J0_COORDINATE_ORBIT) && !defined(CA_J0_RHO_COORD_CANON) &&                     \
     !defined(CA_RHO_J0_LEGACY_HASH)
     /* endo_kind J0 is only ever set on a native EC group (curve_enable), whose
      * hash is ca_ec_hash_words; the kind test keeps that explicit. */
