@@ -12,7 +12,7 @@
 #include <vector>
 
 #ifndef N
-#define N 14
+#    define N 14
 #endif
 
 struct U128 {
@@ -66,7 +66,7 @@ __global__ void chain(const U128 *in, U128 *out)
     if (threadIdx.x != 0 || blockIdx.x != 0) return;
 #ifdef SQUARE
     U128 e = in[0];
-#pragma unroll
+#    pragma unroll
     for (int t = 0; t < N; ++t) {
         e = mul128(e, e);
         out[t] = e;
@@ -75,7 +75,7 @@ __global__ void chain(const U128 *in, U128 *out)
     U128 e;
     e.lo = 1;
     e.hi = 0;
-#pragma unroll
+#    pragma unroll
     for (int t = 0; t < N; ++t) {
         e = mul128(e, in[t]);
         out[t] = e;
@@ -127,13 +127,13 @@ static uint64_t splitmix64(uint64_t &s)
     return z ^ (z >> 31);
 }
 
-#define CK(x)                                                                              \
-    do {                                                                                   \
-        cudaError_t e_ = (x);                                                              \
-        if (e_ != cudaSuccess) {                                                           \
-            printf("cuda error: %s (%s)\n", cudaGetErrorString(e_), #x);                   \
-            return 2;                                                                      \
-        }                                                                                  \
+#define CK(x)                                                                                      \
+    do {                                                                                           \
+        cudaError_t e_ = (x);                                                                      \
+        if (e_ != cudaSuccess) {                                                                   \
+            printf("cuda error: %s (%s)\n", cudaGetErrorString(e_), #x);                           \
+            return 2;                                                                              \
+        }                                                                                          \
     } while (0)
 
 int main(int argc, char **argv)
