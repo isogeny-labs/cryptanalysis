@@ -4,8 +4,9 @@ name: cryptoscan
 # tools/cryptoscan is a standard-library-only auditor of cryptographic
 # configuration (SSH, TLS, X.509 trust stores, Kerberos, network-device and
 # web-server configs, IPsec/VPN, local keys, system policies). Its tests run
-# offline against committed fixtures and in-process fake services, on the
-# oldest and newest Python the tool supports.
+# offline against committed fixtures and in-process fake services. Python 3.9
+# is the syntax floor (ruff target py39); the oldest interpreter the runner
+# image still provides and the newest release are exercised.
 
 on:
   pull_request:
@@ -34,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.9", "3.13"]
+        python: ["3.10", "3.13"]
     defaults:
       run:
         working-directory: tools/cryptoscan

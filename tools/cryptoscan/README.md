@@ -179,7 +179,7 @@ The suite is offline: committed fixtures (certificates and keys generated with
 `openssl` at fixture time, hand-built keytabs, OpenPGP packets, device
 configurations) and in-process fake SSH, TLS, SMTP, PostgreSQL and SNMP
 services on loopback. CI (`.github/workflows/cryptoscan.yml`) runs it on
-Python 3.9 and 3.13 and self-scans the runner.
+Python 3.10 and 3.13 (3.9 syntax is enforced by ruff) and self-scans the runner.
 
 ## Limitations
 
