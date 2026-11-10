@@ -61,8 +61,10 @@ def enc_oid(oid: str) -> bytes:
     arcs = [int(x) for x in oid.strip(".").split(".")]
     if len(arcs) < 2:
         raise SnmpError("OID needs at least two arcs")
-    body = bytearray([arcs[0] * 40 + arcs[1]])
-    for a in arcs[2:]:
+    if arcs[0] > 2 or (arcs[0] < 2 and arcs[1] > 39) or any(a < 0 for a in arcs):
+        raise SnmpError("invalid OID arcs")
+    body = bytearray()
+    for a in [arcs[0] * 40 + arcs[1]] + arcs[2:]:     # the first subidentifier may exceed 127 (2.999...)
         chunk = [a & 0x7F]
         a >>= 7
         while a:
@@ -150,14 +152,18 @@ def decode_int(v: bytes) -> int:
 def decode_oid(v: bytes) -> str:
     if not v:
         raise SnmpError("empty OID")
-    arcs = [v[0] // 40, v[0] % 40]
+    subs: List[int] = []
     acc = 0
-    for b in v[1:]:
+    for b in v:
         acc = (acc << 7) | (b & 0x7F)
         if not b & 0x80:
-            arcs.append(acc)
+            subs.append(acc)
             acc = 0
-    return ".".join(str(a) for a in arcs)
+    if not subs:
+        raise SnmpError("truncated OID")
+    first = subs[0]
+    arcs = [0, first] if first < 40 else [1, first - 40] if first < 80 else [2, first - 80]
+    return ".".join(str(a) for a in arcs + subs[1:])
 
 
 @dataclass

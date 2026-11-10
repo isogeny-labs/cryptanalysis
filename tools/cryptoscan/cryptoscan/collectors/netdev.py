@@ -33,7 +33,7 @@ Active probes (only when ``ctx.active_probes``) for targets whose service is
   line comes back (status line and Server header recorded, 2 KB read at most).
 * UDP 161, only with ``ctx.snmp_probe`` (explicit operator consent): one SNMPv1
   and one SNMPv2c GET of sysDescr per community in
-  ``ctx.opt("snmp_communities", ["public"])`` -> PROTOCOL ``snmpv1`` /
+  ``ctx.opt("snmp_communities", ["public"])`` (2 s timeout, ``ctx.opt("snmp_timeout")``) -> PROTOCOL ``snmpv1`` /
   ``snmpv2c`` negotiated=True plus attribute ``sysDescr`` (200 chars), and one
   SNMPv3 engine discovery -> attributes ``snmpv3`` / ``engine_id_present``.
 
@@ -147,7 +147,10 @@ def detect_version(platform: str, text: str) -> Tuple[Optional[str], Optional[Tu
             eol = text.find("\n", m.start())
             line = text[m.start():eol if eol >= 0 else len(text)]
             raw = re.search(r"\d+\.\d+[^\s;\"]*", line[m.start(1) - m.start():]) if platform != "fortios" else None
-            return (raw.group(0).rstrip("-") if raw else ".".join(groups)), _vt(*groups)
+            disp = raw.group(0).rstrip("-,") if raw else ".".join(groups)
+            while disp.endswith(")") and disp.count(")") > disp.count("("):
+                disp = disp[:-1]
+            return disp, _vt(*groups)
     if platform == "huawei":
         m = re.search(r"Version (V\d+R\d+\S*)", text)
         if m:
@@ -476,7 +479,7 @@ def probe_target(t: Target, ctx: ScanContext) -> Optional[Asset]:
         comms = ctx.opt("snmp_communities", ["public"]) or ["public"]
         if isinstance(comms, str):
             comms = [c for c in comms.split(",") if c]
-        r = probe_snmp(t.host, port, list(comms), timeout=2.0)
+        r = probe_snmp(t.host, port, list(comms), timeout=float(ctx.opt("snmp_timeout", 2.0) or 2.0))
         for label in r["versions"]:
             a.add(CryptoUse(Primitive.PROTOCOL, label, raw=f"{label} GET sysDescr answered on {t.host}:{port}",
                             context="snmp-probe", negotiated=True,

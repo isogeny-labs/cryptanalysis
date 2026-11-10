@@ -946,7 +946,9 @@ def haproxy_blocks(ctx: ScanContext) -> List[Block]:
                 b.dhe_check = False
             else:
                 continue
-            if dh and dh[0].isdigit():
+            if b.role == "client":
+                pass                        # DH parameters are a server-side setting
+            elif dh and dh[0].isdigit():
                 b.dh_bits = (int(dh[0]), f"tune.ssl.default-dh-param {dh[0]}")
                 b.dhparam_directive = "tune.ssl.default-dh-param"
             elif dh_file:
@@ -1086,7 +1088,10 @@ def postfix_blocks(ctx: ScanContext) -> List[Block]:
         b.attrs["security_level"] = level or ("may" if use else "")
         protos: List[str] = []
         srcs = []
+        mandatory = level in ("encrypt", "dane", "fingerprint", "verify", "secure")
         for key in (f"{prefix}_tls_protocols", f"{prefix}_tls_mandatory_protocols"):
+            if key.endswith("mandatory_protocols") and not mandatory and key not in cf:
+                continue            # mandatory settings apply only at mandatory security levels
             if key in cf:
                 protos += parse_postfix_protocols(cf[key])
                 srcs.append(None)
@@ -1096,7 +1101,6 @@ def postfix_blocks(ctx: ScanContext) -> List[Block]:
         b.protocols = sort_protos(set(protos))
         b.proto_directive = f"{prefix}_tls_protocols + {prefix}_tls_mandatory_protocols"
         b.proto_source = "default" if all(s == "default" for s in srcs) else None
-        mandatory = level in ("encrypt", "dane", "fingerprint", "verify", "secure")
         for key, excl_key in ((f"{prefix}_tls_ciphers", f"{prefix}_tls_exclude_ciphers"),
                               (f"{prefix}_tls_mandatory_ciphers", f"{prefix}_tls_mandatory_exclude_ciphers")):
             if key.endswith("mandatory_ciphers") and not mandatory and key not in cf:
