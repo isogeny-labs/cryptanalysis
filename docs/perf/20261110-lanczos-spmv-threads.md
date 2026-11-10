@@ -62,12 +62,27 @@ process (`--samples 3`, `--full` for zp52); "median" is the median of the
 five per-run medians. `ic56 linalg` is `linalg_seconds` from one `ca ic`
 run each (56-bit, matrix 4695 × 2538 active).
 
-No quiet window long enough for the full ABAB occurred during the session
-(other agents' `rustc` builds kept the host at load 2–5). Single spot runs
-of earlier iterations of this change at load ≈1.2 showed the direction on
-the larger systems (zp52 97.4 → 66.8 ms at 4 threads; ic56 LA 0.23–0.32 →
-0.15–0.16 s at 4 threads); they are not from the final code and are not
-evidence.
+Quieter host (2026-11-10T18:56Z, load ≈0.95: one other process; final code):
+
+| kernel | T | A median (ms) | B median (ms) | B/A median | A min | B min |
+|---|---|---|---|---|---|---|
+| ic_precompute_zp44 | 1 | 17.03 | 17.25 | 1.013 | 16.73 | 17.08 |
+| ic_precompute_zp44 | 2 | 16.97 | 17.46 | 1.029 | 16.82 | 16.55 |
+| ic_precompute_zp44 | 4 | 16.97 | 15.23 | 0.897 | 16.52 | 13.85 |
+| linsolve_sparse | 1 | 9.65 | 9.69 | 1.004 | 9.05 | 9.65 |
+| linsolve_sparse | 2 | 9.57 | 7.60 | 0.794 | 9.25 | 7.47 |
+| linsolve_sparse | 4 | 9.44 | 6.06 | 0.642 | 9.17 | 5.80 |
+| ic_precompute_zp52 | 1 | 92.46 | 94.87 | 1.026 | 89.34 | 94.02 |
+| ic_precompute_zp52 | 2 | 93.54 | 95.70 | 1.023 | 91.43 | 90.08 |
+| ic_precompute_zp52 | 4 | 95.07 | 82.57 | 0.869 | 90.57 | 75.55 |
+| ic56 linalg | 1 | 283 | 249 | 0.880 | 246 | 242 |
+| ic56 linalg | 2 | 251 | 256 | 1.020 | 245 | 230 |
+| ic56 linalg | 4 | 251 | 183 | 0.729 | 250 | 152 |
+
+(T = 1 rows are A/A-like: the same kernels run in both arms, so their
+spread, ±3 % here and 12 % on one ic56 median, is the noise floor of this
+host.) Whole-kernel times include the sieve and verification, which are
+unchanged; the LA share of zp44 is ≈69 % of instructions.
 
 Contended host (another agent's `rustc` at ≈360 % CPU, load ≈4.8 on 4 vCPUs):
 
@@ -93,8 +108,10 @@ Contended host (another agent's `rustc` at ≈360 % CPU, load ≈4.8 on 4 vCPUs)
 - The 784 × 700 (`linsolve_sparse`) and 1267 × 714 (zp44) systems are a few
   microseconds per product: three pool barriers per Lanczos step cost a
   large share of that, so the gains the assessment estimated (2–3.5× on LA
-  with 4 cores) are not reached at these sizes even on a quiet host; they
-  grow with the matrix (zp52, ic56).
+  with 4 cores) are not reached: on the quieter host 4 threads give
+  B/A ≈0.64 on `linsolve_sparse` (all LA), ≈0.73 on the 56-bit LA phase,
+  0.87–0.90 on the whole zp44/zp52 kernels; 2 threads help only
+  `linsolve_sparse` (0.79).
 - On a saturated host a spinning pool loses (a preempted worker holds up
   each step). The adaptive switch and the persistent pool bound the loss
   (the first version, per-solve pool without the switch, measured up to
