@@ -298,3 +298,21 @@ if __name__ == "__main__":
         print("wrote", FIXTURE)
     else:
         unittest.main()
+
+
+class CsvControlCharacterTests(unittest.TestCase):
+    def test_nul_and_control_characters_do_not_break_csv(self):
+        import csv as _csv
+        import io
+        from cryptoscan.model import Asset, AssetKind, CryptoUse, Primitive, ScanMeta, ScanResult
+        from cryptoscan.policy import evaluate
+        from cryptoscan.report import csv_report
+        a = Asset(AssetKind.PGP_KEY, "key \x00with\x01nul", "/usr/share/keyrings/x.gpg", "pgp",
+                  attributes={"uids": ["bad\x00uid"]})
+        a.add(CryptoUse(Primitive.PUBLIC_KEY, "rsa", key_bits=1024, context="pgp-primary", raw="rsa\x00"))
+        res = ScanResult(meta=ScanMeta(), assets=[a], findings=evaluate([a], "nist"))
+        for which in ("findings", "uses"):
+            text = csv_report.render(res, which=which)
+            self.assertNotIn("\x00", text)
+            rows = list(_csv.reader(io.StringIO(text)))
+            self.assertGreater(len(rows), 1)

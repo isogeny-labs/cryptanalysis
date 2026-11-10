@@ -24,9 +24,16 @@ USE_COLUMNS = ["host", "asset_id", "asset_kind", "asset_name", "location", "coll
                "security_strength", "quantum_status", "worst_finding"]
 
 
+_CTRL = {c: None for c in range(32) if c not in (9, 10, 13)}
+_CTRL[0] = None
+
+
 def _c(x: Any, safe: bool) -> Any:
     if x is None:
         return ""
+    if isinstance(x, str):
+        # NUL and other C0 control characters break csv on Python < 3.12 and corrupt spreadsheets.
+        x = x.translate(_CTRL)
     if isinstance(x, bool):
         return "true" if x else "false"
     if isinstance(x, str):
@@ -40,7 +47,7 @@ def render(result: ScanResult, which: str = "findings", safe: bool = True) -> st
     if which not in ("findings", "uses"):
         raise ValueError(f"which must be 'findings' or 'uses', not {which!r}")
     buf = io.StringIO()
-    w = csv.writer(buf, lineterminator="\n")
+    w = csv.writer(buf, lineterminator="\n", escapechar="\\")
     rows: List[List[Any]] = []
     if which == "findings":
         w.writerow(FINDING_COLUMNS)
