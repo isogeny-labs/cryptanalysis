@@ -13,9 +13,9 @@
 #ifdef CA_RHO_J0_COORDINATE_ORBIT
 #define ORBIT_ARM "coordinate"
 #elif defined(CA_RHO_J0_LEGACY_HASH)
-#define ORBIT_ARM "hash"
+#    define ORBIT_ARM "hash"
 #else
-#define ORBIT_ARM "factored" /* the default since 2026-11-10 */
+#    define ORBIT_ARM "factored" /* the default since 2026-11-10 */
 #endif
 
 int main(int argc, char **argv)
