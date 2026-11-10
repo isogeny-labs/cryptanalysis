@@ -60,6 +60,8 @@ def main():
     ap.add_argument("--boot-timeout", type=int, default=900)
     ap.add_argument("--run-timeout", type=int, default=3600)
     ap.add_argument("--keep", action="store_true", help="do not delete the pod at the end")
+    ap.add_argument("--run-script", default="research/clmad_audit_20261110/pod/run.sh",
+                    help="script inside the bundle that the pod runs")
     a = ap.parse_args()
     if not KEY:
         print("RUNPOD_API_KEY missing", file=sys.stderr)
@@ -83,7 +85,7 @@ def main():
         "containerDiskInGb": a.disk_gb,
         "volumeInGb": 0,
         "ports": ["8888/http"],
-        "env": {"TOKEN": token},
+        "env": {"TOKEN": token, "RUN_SCRIPT": a.run_script},
         "dockerEntrypoint": [],
         "dockerStartCmd": ["bash", "-c", start],
         "interruptible": False,

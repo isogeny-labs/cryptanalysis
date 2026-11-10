@@ -101,3 +101,15 @@ vendor tool; a timing null is a bound, not a guarantee.
 `results/<arm>/` raw files; `results/summary.json`; `REPORT.md`; figures;
 a `bench.record/v1` record under `benchmarks/records/`; a
 `benchmarks/20261110-clmad-audit/` entry.
+
+## Amendment A1 (2026-11-10, after the main runs, before this addendum ran)
+
+The main runs did not reproduce Q1 with our reproducer on either toolkit,
+while the SASS counts show the constant-one step folded away (78 `CLMAD`
+at `-O1`..`-O3` against 84 at `-O0` for N = 14) under both. To separate
+"our reproducer does not trigger it" from "the defect is absent here", the
+third-party reproducer is run unchanged (`pod/run_author_repro.sh`: cloned
+on the pod, commit recorded, its own `run.sh`, N in {14, 15, 16, 18, 19})
+on both toolkits. Its exit codes are reported next to ours; they do not
+change the Q1 rule, which stays bound to our reproducer. Its source is not
+copied into this repository (no licence).

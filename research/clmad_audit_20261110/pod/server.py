@@ -18,7 +18,7 @@ TOKEN = os.environ["TOKEN"]
 WORK = "/work"
 STATE = {"state": "idle", "exit": None, "bundle_sha256": None}
 LOCK = threading.Lock()
-RUN = "research/clmad_audit_20261110/pod/run.sh"
+RUN = os.environ.get("RUN_SCRIPT", "research/clmad_audit_20261110/pod/run.sh")
 
 
 def _watch(proc):
