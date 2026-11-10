@@ -151,12 +151,12 @@ def run_junos(dev: Dev, P: List[Path]) -> None:
 # FortiOS
 # ---------------------------------------------------------------------------
 
-def _forti_proposal(dev: Dev, tok: str, ctx: str, phase2: bool, **extra) -> None:
+def _forti_proposal(dev: Dev, tok: str, ctx: str, is_phase2: bool, **extra) -> None:
     enc, _, h = tok.partition("-")
     add_enc(dev, enc, f"proposal {tok}", ctx, **extra)
     h = re.sub(r"^prf", "", h.split("-")[0]) if h else ""
     if h and h != "null":
-        if phase2:
+        if is_phase2:
             dev.mac_hmac(h, f"proposal {tok}", ctx, **extra)
         else:
             dev.hash(h, f"proposal {tok}", ctx, **extra)

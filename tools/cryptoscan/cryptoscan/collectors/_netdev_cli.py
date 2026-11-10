@@ -424,11 +424,18 @@ def _cisco_suite(tok: str) -> CryptoUse:
     low = tok.lower()
     spec = _TLS_CISCO.get(low)
     if spec is None:
-        m = re.match(r"^(ecdhe-rsa|ecdhe-ecdsa|dhe-rsa|dhe)-(.+?)-(sha384|sha256|sha|md5)$", low)
+        m = re.match(r"^(ecdhe-rsa|ecdhe-ecdsa|dhe-rsa|dhe)-(.+?)-(sha384|sha256|sha2|sha|md5)$", low)
         if m:
             kx = {"ecdhe-rsa": "ECDHE_RSA", "ecdhe-ecdsa": "ECDHE_ECDSA", "dhe-rsa": "DHE_RSA", "dhe": "DHE_RSA"}[m.group(1)]
-            c = m.group(2).upper().replace("-", "_")
-            spec = (kx, c, m.group(3).upper())
+            body, mac = m.group(2), {"SHA2": "SHA256"}.get(m.group(3).upper(), m.group(3).upper())
+            mm = re.fullmatch(r"aes-(gcm|cbc)-(128|256)|aes-(128|256)-(gcm|cbc)|aes-(gcm|cbc)", body)
+            if mm:
+                mode = (mm.group(1) or mm.group(4) or mm.group(5)).upper()
+                bits = mm.group(2) or mm.group(3) or ("256" if mac == "SHA384" else "128")
+                c = f"AES_{bits}_{mode}"
+            else:
+                c = body.upper().replace("-", "_")
+            spec = (kx, c, mac)
     if spec is None:
         return names.tls_cipher_suite(tok.upper().replace("-", "_"), negotiated=None)
     iana = f"TLS_{spec[0]}_WITH_{spec[1]}_{spec[2]}"

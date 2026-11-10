@@ -14,7 +14,8 @@ Oxidized checkout); a relative path that does not exist is retried under
 Platforms are detected from content (`detect_platform`): Cisco IOS / IOS-XE,
 NX-OS, IOS-XR, ASA, Junos (brace and ``set`` formats), Arista EOS, HP/Aruba
 ProCurve, FortiOS, PAN-OS (``set`` format), MikroTik RouterOS exports, Huawei
-VRP and F5 ``bigip.conf``.  Each file becomes one NETWORK_DEVICE asset whose
+VRP and F5 ``bigip.conf``.  Each file becomes one NETWORK_DEVICE asset
+(attributes platform, os_version, hostname, config_file) whose
 uses come from the platform parsers in ``_netdev_cli`` / ``_netdev_tree``.  A
 file whose platform is not recognised is scanned with a keyword heuristic
 (`generic_heuristic`); those uses carry ``extra["heuristic"] = True``.
@@ -143,9 +144,10 @@ def detect_version(platform: str, text: str) -> Tuple[Optional[str], Optional[Tu
         m = re.search(pat, text, re.M)
         if m:
             groups = [g for g in m.groups() if g is not None]
-            line = text[m.start():m.end()]
-            raw = re.search(r"\d+\.\d+(?:[.(]\d+\)?)?\S*", line)
-            return (raw.group(0).rstrip(";\"") if raw else ".".join(groups)), _vt(*groups)
+            eol = text.find("\n", m.start())
+            line = text[m.start():eol if eol >= 0 else len(text)]
+            raw = re.search(r"\d+\.\d+[^\s;\"]*", line[m.start(1) - m.start():]) if platform != "fortios" else None
+            return (raw.group(0).rstrip("-") if raw else ".".join(groups)), _vt(*groups)
     if platform == "huawei":
         m = re.search(r"Version (V\d+R\d+\S*)", text)
         if m:
@@ -194,9 +196,7 @@ def generic_heuristic(dev: Dev, text: str) -> int:
         s = line.strip()
         if not s or s.startswith(("!", "#", ";", "//")) or _DISABLE.search(s):
             continue
-        if re.search(r"\b(password|secret|key-string|pre-shared-key|community)\s+\S+", s, re.I) and not re.search(r"\bsnmp", s, re.I):
-            # a secret line: only the algorithm keywords are of interest, never the value
-            pass
+        # only the matched keyword goes into `raw`, never the rest of the line (it may hold a secret)
         for rx, kind, alg in _GEN_RULES:
             m = rx.search(s)
             if not m:
@@ -292,7 +292,9 @@ def parse_config(text: str, path: str, ctx: ScanContext, platform: Optional[str]
     hostname = detect_hostname(plat, text)
     stem = os.path.splitext(os.path.basename(path))[0]
     host = hostname or stem
-    attrs: Dict[str, object] = {"platform": plat, "platform_label": PLATFORM_LABELS.get(plat, plat), "version": disp_ver,
+    # the OS version is stored as "os_version": policy.rule_certificate reads attributes["version"] of *every*
+    # asset as an X.509 version integer (int("12.4") would raise, "2" would raise CERT-V1)
+    attrs: Dict[str, object] = {"platform": plat, "platform_label": PLATFORM_LABELS.get(plat, plat), "os_version": disp_ver,
                                 "hostname": hostname, "config_file": path}
     asset = Asset(AssetKind.NETWORK_DEVICE, f"{PLATFORM_LABELS.get(plat, plat)} {host}", path, "netdev", host=host,
                   attributes=attrs)

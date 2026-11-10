@@ -1,0 +1,19 @@
+set deviceconfig system hostname pa-edge-01
+set deviceconfig system service disable-telnet no
+set deviceconfig system service disable-http no
+set deviceconfig system snmp-setting access-setting version v2c snmp-community-string PLACEHOLDER
+set mgt-config users admin phash $1$abcd$xxxxxxxxxxxxxxxxxxxxxx
+set mgt-config users admin permissions role-based superuser yes
+set shared ssl-tls-service-profile MGMT protocol-settings min-version tls1-0
+set shared ssl-tls-service-profile MGMT protocol-settings max-version max
+set shared ssl-tls-service-profile MGMT protocol-settings enc-algo-3des yes
+set network ike crypto-profiles ike-crypto-profiles LEGACY hash md5
+set network ike crypto-profiles ike-crypto-profiles LEGACY dh-group group2
+set network ike crypto-profiles ike-crypto-profiles LEGACY encryption 3des
+set network ike crypto-profiles ipsec-crypto-profiles LEGACY-ESP esp encryption des
+set network ike crypto-profiles ipsec-crypto-profiles LEGACY-ESP esp authentication md5
+set network ike crypto-profiles ipsec-crypto-profiles LEGACY-ESP dh-group group1
+set network ike gateway GW1 protocol version ikev1
+set network ike gateway GW1 protocol ikev1 exchange-mode aggressive
+set network ike gateway GW1 protocol ikev1 ike-crypto-profile LEGACY
+set network ike gateway GW1 authentication pre-shared-key key PLACEHOLDER
