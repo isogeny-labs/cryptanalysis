@@ -4,6 +4,11 @@
 #include "linalg.h"
 #include "ca_internal.h"
 
+#include <pthread.h>
+#include <sched.h>
+#include <stdatomic.h>
+#include <unistd.h>
+
 /* ---- sparse matrix ------------------------------------------------------ */
 
 ca_status ca_spmat_init(ca_spmat *m, uint32_t cols, uint32_t expected_rows, uint32_t expected_nnz)
@@ -408,6 +413,11 @@ static void spmv64(const lz_ctx *z, uint32_t rows, const uint32_t *ptr, const ui
     }
 }
 
+/* (A thread of the Lanczos pool runs these on a block of rows [r0, r1) by
+ * passing ptr + r0, y + r0 and D + r0: row_ptr entries are absolute
+ * offsets into col/val, so the block's sums are the same exact sums, and no
+ * element of y is written by two threads.) */
+
 /* The same gather in signed 128-bit arithmetic, for moduli too large for
  * spmv64: every term is below 2^31 * 2^63 = 2^94 in size and lz_init
  * admits it only for rows of fewer than 2^31 terms, so the sum stays below
@@ -570,12 +580,344 @@ static void lz_atw(const lz_ctx *z, const ca_spmat *A, const uint64_t *w, uint64
         spmtv(A, w, out, z->q, acc);
 }
 
+/* ---- the Lanczos thread pool ------------------------------------------- */
+
+/*
+ * The products A v and A^T w of a Lanczos step, its three dot products and
+ * its vector update, split across a pool of threads created once per solve
+ * (ca_linsolve_mod_prime_mt) and reused by every step of every attempt.
+ *
+ * Determinism: each thread owns a block of output rows (rows of A for A v;
+ * rows of A^T, which are the coordinates of the n-vectors, for A^T w, the
+ * dot products and the update), so no element is written by two threads,
+ * and every element is the same exact residue mod q as in the one-thread
+ * code.  The dot products are exact sums mod q: each thread reduces its
+ * block to residues and the main thread adds the per-thread residues in
+ * thread order, which gives the one-thread residue whatever the partition.
+ * Nothing the solver reports (iterations, attempts, the solution) depends
+ * on the thread count.
+ *
+ * Synchronisation: a step is far shorter than a condition-variable round
+ * trip at the sizes index calculus produces (784 x 700 matrices are a few
+ * microseconds a product), so the main thread publishes a job by bumping
+ * a generation counter and the workers spin on it, falling asleep on a
+ * condition variable only after a long idle spell (between solves, during
+ * the dense fallback).  The blocks of a job are claimed from an atomic
+ * counter by whichever thread gets there first, the main thread included,
+ * so a worker the scheduler has not run yet (a busy or oversubscribed
+ * host) costs nothing: the main thread does its block.  Which thread runs
+ * a block never changes what the block computes.
+ */
+
+enum { LZ_JOB_AV = 1, LZ_JOB_ATW_DOT, LZ_JOB_ATW, LZ_JOB_UPDATE };
+
+#define LZ_MAX_THREADS 64u
+#define LZ_MIN_NNZ_PER_THREAD 512u /* below this a block is not worth a thread */
+#define LZ_WORKER_SPINS (1u << 15)  /* pause loops before a worker sleeps */
+#define LZ_MAIN_SPINS (1u << 12)    /* pause loops before the main thread yields */
+
+typedef struct lz_job {
+    int kind;
+    const lz_ctx *z;
+    const ca_spmat *A;
+    /* LZ_JOB_AV: y = D (A v) */
+    const uint64_t *v, *D, *Dp, *DR, *DRp;
+    uint64_t *y;
+    /* LZ_JOB_ATW[_DOT]: out = A^T w; dots of (wc, out, bp) */
+    const uint64_t *w, *wc, *bp;
+    uint64_t *out;
+    /* LZ_JOB_UPDATE */
+    uint64_t *x, *wn;
+    const uint64_t *wp, *Bw;
+    uint64_t coef, coefp, c1, c1p, c2, c2p;
+} lz_job;
+
+typedef struct lz_pool lz_pool;
+
+typedef struct lz_worker {
+    lz_pool *P;
+    uint32_t id;
+} lz_worker;
+
+struct lz_pool {
+    uint32_t T; /* threads including the caller, and blocks per job */
+    pthread_t *tids;
+    lz_worker *args;
+    pthread_mutex_t mu;
+    pthread_cond_t cv;
+    uint32_t sleepers; /* under mu */
+    _Atomic uint64_t gen;   /* bumped once per job */
+    _Atomic uint32_t next;  /* next unclaimed block of the current job */
+    _Atomic uint32_t done;  /* blocks of the current job finished */
+    _Atomic int quit;
+    lz_job job;
+    uint32_t *arow; /* T + 1 block bounds over the rows of A */
+    uint32_t *trow; /* T + 1 block bounds over the rows of A^T (coordinates) */
+    uint64_t (*dots)[8]; /* per-thread dot residues, one cache line each */
+};
+
+static inline void lz_relax(void)
+{
+#if defined(__x86_64__) || defined(__i386__)
+    __builtin_ia32_pause();
+#elif defined(__aarch64__)
+    __asm__ __volatile__("yield");
+#endif
+}
+
+/* Block bounds over the rows of a CSR matrix, balanced by nonzeros plus
+ * one per row (the per-row reduction). */
+static void lz_split(uint32_t rows, const uint32_t *ptr, uint32_t T, uint32_t *bounds)
+{
+    const uint64_t total = (uint64_t)ptr[rows] + rows;
+    uint32_t i = 0;
+    bounds[0] = 0;
+    for (uint32_t t = 1; t < T; t++) {
+        const uint64_t want = total * t / T;
+        while (i < rows && (uint64_t)ptr[i] + i < want) i++;
+        bounds[t] = i;
+    }
+    bounds[T] = rows;
+}
+
+static void lz_run_block(lz_pool *P, uint32_t t)
+{
+    const lz_job *J = &P->job;
+    const lz_ctx *z = J->z;
+    switch (J->kind) {
+    case LZ_JOB_AV: {
+        const uint32_t r0 = P->arow[t], r1 = P->arow[t + 1];
+        const ca_spmat *A = J->A;
+        if (z->fast == 1)
+            spmv64(z, r1 - r0, A->row_ptr + r0, A->col, A->val, J->v, J->y + r0,
+                   J->D ? J->D + r0 : NULL, J->D ? J->Dp + r0 : NULL);
+        else
+            spmv128(z, r1 - r0, A->row_ptr + r0, A->col, A->val, J->v, J->y + r0,
+                    J->D ? J->DR + r0 : NULL, J->D ? J->DRp + r0 : NULL);
+        break;
+    }
+    case LZ_JOB_ATW:
+    case LZ_JOB_ATW_DOT: {
+        const uint32_t r0 = P->trow[t], r1 = P->trow[t + 1];
+        if (z->fast == 1)
+            spmv64(z, r1 - r0, z->tptr + r0, z->tcol, z->tval, J->w, J->out + r0, NULL, NULL);
+        else
+            spmv128(z, r1 - r0, z->tptr + r0, z->tcol, z->tval, J->w, J->out + r0, NULL, NULL);
+        /* the coordinates this block just wrote are the ones it dots */
+        if (J->kind == LZ_JOB_ATW_DOT)
+            vdot3(z, J->wc + r0, J->out + r0, J->bp + r0, r1 - r0, P->dots[t]);
+        break;
+    }
+    case LZ_JOB_UPDATE: {
+        const uint32_t j0 = P->trow[t], j1 = P->trow[t + 1];
+        const uint64_t q = z->q, coef = J->coef, coefp = J->coefp, c1 = J->c1, c1p = J->c1p,
+                       c2 = J->c2, c2p = J->c2p;
+        uint64_t *x = J->x, *wn = J->wn;
+        const uint64_t *wc = J->wc, *wp = J->wp, *Bw = J->Bw;
+        if (c2) {
+            for (uint32_t j = j0; j < j1; j++) {
+                const uint64_t wj = wc[j];
+                x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
+                uint64_t tt = ca_submod(Bw[j], shoup_mul(wj, c1, c1p, q), q);
+                wn[j] = ca_submod(tt, shoup_mul(wp[j], c2, c2p, q), q);
+            }
+        } else {
+            for (uint32_t j = j0; j < j1; j++) {
+                const uint64_t wj = wc[j];
+                x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
+                wn[j] = ca_submod(Bw[j], shoup_mul(wj, c1, c1p, q), q);
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+/* Claim and run blocks of the current job until none is left.  The claim
+ * reads the counter the main thread reset (release) when it published the
+ * job, so a successful claim sees the whole job. */
+static void lz_claim_blocks(lz_pool *P)
+{
+    for (;;) {
+        const uint32_t t = atomic_fetch_add_explicit(&P->next, 1, memory_order_acq_rel);
+        if (t >= P->T) return;
+        lz_run_block(P, t);
+        atomic_fetch_add_explicit(&P->done, 1, memory_order_release);
+    }
+}
+
+static void *lz_worker_main(void *arg)
+{
+    const lz_worker *W = arg;
+    lz_pool *P = W->P;
+    uint64_t seen = 0;
+    for (;;) {
+        uint64_t g;
+        uint32_t spins = 0;
+        while ((g = atomic_load_explicit(&P->gen, memory_order_acquire)) == seen) {
+            if (++spins < LZ_WORKER_SPINS) {
+                lz_relax();
+                continue;
+            }
+            pthread_mutex_lock(&P->mu);
+            P->sleepers++;
+            while (atomic_load_explicit(&P->gen, memory_order_acquire) == seen)
+                pthread_cond_wait(&P->cv, &P->mu);
+            P->sleepers--;
+            pthread_mutex_unlock(&P->mu);
+            spins = 0;
+        }
+        seen = g;
+        if (atomic_load_explicit(&P->quit, memory_order_acquire)) break;
+        lz_claim_blocks(P);
+    }
+    return NULL;
+}
+
+static void lz_pool_wake(lz_pool *P)
+{
+    pthread_mutex_lock(&P->mu);
+    atomic_fetch_add_explicit(&P->gen, 1, memory_order_release);
+    if (P->sleepers) pthread_cond_broadcast(&P->cv);
+    pthread_mutex_unlock(&P->mu);
+}
+
+/* Run P->job on every block and return when all are done.  Every block of
+ * the previous job is finished here, so no thread still reads P->job. */
+static void lz_pool_run(lz_pool *P)
+{
+    atomic_store_explicit(&P->done, 0, memory_order_relaxed);
+    atomic_store_explicit(&P->next, 0, memory_order_release);
+    lz_pool_wake(P);
+    lz_claim_blocks(P);
+    uint32_t spins = 0;
+    while (atomic_load_explicit(&P->done, memory_order_acquire) != P->T) {
+        if (++spins < LZ_MAIN_SPINS) lz_relax();
+        else sched_yield(); /* a worker was preempted mid-block: let it run */
+    }
+}
+
+static void lz_pool_destroy(lz_pool *P)
+{
+    if (!P) return;
+    if (P->T > 1) {
+        atomic_store_explicit(&P->quit, 1, memory_order_release);
+        lz_pool_wake(P);
+        for (uint32_t t = 1; t < P->T; t++) pthread_join(P->tids[t], NULL);
+    }
+    pthread_mutex_destroy(&P->mu);
+    pthread_cond_destroy(&P->cv);
+    free(P->tids);
+    free(P->args);
+    free(P->arow);
+    free(P->trow);
+    free(P->dots);
+    free(P);
+}
+
+/* A pool of up to `threads` threads for a matrix with nnz nonzeros, or
+ * NULL for the one-thread path (threads <= 1, a small matrix, or no memory
+ * or threads to be had: the result is the same either way). */
+static lz_pool *lz_pool_create(uint32_t threads, uint32_t nnz)
+{
+    if (threads > LZ_MAX_THREADS) threads = LZ_MAX_THREADS;
+    /* spinning threads beyond the online CPUs only take turns */
+    const long ncpu = sysconf(_SC_NPROCESSORS_ONLN);
+    if (ncpu > 0 && threads > (uint32_t)ncpu) threads = (uint32_t)ncpu;
+    const uint32_t cap = nnz / LZ_MIN_NNZ_PER_THREAD;
+    if (threads > cap) threads = cap;
+    if (threads <= 1) return NULL;
+    lz_pool *P = calloc(1, sizeof(*P));
+    if (!P) return NULL;
+    P->tids = calloc(threads, sizeof(pthread_t));
+    P->args = calloc(threads, sizeof(lz_worker));
+    P->arow = calloc(threads + 1, sizeof(uint32_t));
+    P->trow = calloc(threads + 1, sizeof(uint32_t));
+    P->dots = calloc(threads, sizeof(*P->dots));
+    pthread_mutex_init(&P->mu, NULL);
+    pthread_cond_init(&P->cv, NULL);
+    atomic_init(&P->gen, 0);
+    atomic_init(&P->next, 0);
+    atomic_init(&P->done, 0);
+    atomic_init(&P->quit, 0);
+    P->T = 1;
+    if (!P->tids || !P->args || !P->arow || !P->trow || !P->dots) {
+        lz_pool_destroy(P);
+        return NULL;
+    }
+    for (uint32_t t = 1; t < threads; t++) {
+        P->args[t].P = P;
+        P->args[t].id = t;
+        if (pthread_create(&P->tids[t], NULL, lz_worker_main, &P->args[t]) != 0) break;
+        P->T++;
+    }
+    if (P->T == 1) {
+        lz_pool_destroy(P);
+        return NULL;
+    }
+    return P;
+}
+
+/* The thread count a solve uses: CA_LA_THREADS when set to a positive
+ * integer (a measurement knob: it overrides the caller), else the
+ * caller's, 0 meaning 1. */
+static uint32_t lz_threads(uint32_t requested)
+{
+    const char *env = getenv("CA_LA_THREADS");
+    if (env && *env) {
+        char *end = NULL;
+        unsigned long v = strtoul(env, &end, 10);
+        if (end && *end == '\0' && v >= 1) return v > LZ_MAX_THREADS ? LZ_MAX_THREADS : (uint32_t)v;
+    }
+    return requested ? requested : 1;
+}
+
+/* y = D (A v) through the pool when there is one. */
+static void lz_av_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint64_t *v,
+                    uint64_t *y, const uint64_t *D, const uint64_t *Dp, const uint64_t *DR,
+                    const uint64_t *DRp)
+{
+    if (!P || !z->fast) {
+        lz_av(z, A, v, y, D, Dp, DR, DRp);
+        return;
+    }
+    lz_job *J = &P->job;
+    J->kind = LZ_JOB_AV;
+    J->z = z;
+    J->A = A;
+    J->v = v;
+    J->y = y;
+    J->D = D;
+    J->Dp = Dp;
+    J->DR = DR;
+    J->DRp = DRp;
+    lz_pool_run(P);
+}
+
+/* out = A^T w through the pool when there is one. */
+static void lz_atw_p(lz_pool *P, const lz_ctx *z, const ca_spmat *A, const uint64_t *w,
+                     uint64_t *out, ca_i128 *acc)
+{
+    if (!P || !z->fast) {
+        lz_atw(z, A, w, out, acc);
+        return;
+    }
+    lz_job *J = &P->job;
+    J->kind = LZ_JOB_ATW;
+    J->z = z;
+    J->w = w;
+    J->out = out;
+    lz_pool_run(P);
+}
+
 /*
  * Lanczos on B = A^T D A with random diagonal D, solving B x = A^T D b.
  * Returns CA_OK if A x == b verified, CA_ERR_SINGULAR on breakdown.
  */
 static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
-                         ca_rng *rng, uint32_t *iters_out)
+                         ca_rng *rng, uint32_t *iters_out, lz_pool *P)
 {
     uint32_t n = A->cols, m = A->rows;
     uint64_t *D = malloc(m * sizeof(uint64_t));
@@ -600,6 +942,13 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
         rc = CA_ERR_NOMEM;
         goto out;
     }
+    /* the pool runs the gather kernels only; the scatter fallback stays on
+     * one thread */
+    if (P && !z.fast) P = NULL;
+    if (P) {
+        lz_split(m, A->row_ptr, P->T, P->arow);
+        lz_split(n, z.tptr, P->T, P->trow);
+    }
     for (uint32_t i = 0; i < m; i++) {
         D[i] = 1 + ca_rng_below(rng, q - 1);
         Dp[i] = shoup ? shoup_pre(D[i], q) : 0;
@@ -617,7 +966,7 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
         }
     }
     for (uint32_t i = 0; i < m; i++) tmp_m[i] = ca_mulmod(D[i], b[i] % q, q);
-    lz_atw(&z, A, tmp_m, bp, acc);
+    lz_atw_p(P, &z, A, tmp_m, bp, acc);
     memset(x, 0, n * sizeof(uint64_t));
     /* w_prev = w0 (i-1), w_cur = w1 (i) */
     uint64_t *w_prev = w0, *w_cur = w1, *w_next = w2;
@@ -626,10 +975,26 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     uint32_t it = 0;
     for (it = 0; it < n + 8; it++) {
         /* Bw = A^T D A w_cur */
-        lz_av(&z, A, w_cur, tmp_m, D, Dp, DR, DRp);
-        lz_atw(&z, A, tmp_m, Bw, acc);
         uint64_t dots[3];
-        vdot3(&z, w_cur, Bw, bp, n, dots);
+        if (P) {
+            lz_av_p(P, &z, A, w_cur, tmp_m, D, Dp, DR, DRp);
+            lz_job *J = &P->job;
+            J->kind = LZ_JOB_ATW_DOT;
+            J->z = &z;
+            J->w = tmp_m;
+            J->out = Bw;
+            J->wc = w_cur;
+            J->bp = bp;
+            lz_pool_run(P);
+            /* per-block residues added in block order: the exact sum mod q */
+            dots[0] = dots[1] = dots[2] = 0;
+            for (uint32_t t = 0; t < P->T; t++)
+                for (int k = 0; k < 3; k++) dots[k] = ca_addmod(dots[k], P->dots[t][k], q);
+        } else {
+            lz_av(&z, A, w_cur, tmp_m, D, Dp, DR, DRp);
+            lz_atw(&z, A, tmp_m, Bw, acc);
+            vdot3(&z, w_cur, Bw, bp, n, dots);
+        }
         uint64_t wBw = dots[0];
         int zero = 1;
         for (uint32_t j = 0; j < n; j++) if (w_cur[j]) { zero = 0; break; }
@@ -646,7 +1011,23 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
             const uint64_t coefp = shoup_pre(coef, q), c1p = shoup_pre(c1, q),
                            c2p = shoup_pre(c2, q);
             /* one pass: x and w_next both read w_cur */
-            if (c2) {
+            if (P) {
+                lz_job *J = &P->job;
+                J->kind = LZ_JOB_UPDATE;
+                J->z = &z;
+                J->x = x;
+                J->wn = w_next;
+                J->wc = w_cur;
+                J->wp = w_prev;
+                J->Bw = Bw;
+                J->coef = coef;
+                J->coefp = coefp;
+                J->c1 = c1;
+                J->c1p = c1p;
+                J->c2 = c2;
+                J->c2p = c2p;
+                lz_pool_run(P);
+            } else if (c2) {
                 for (uint32_t j = 0; j < n; j++) {
                     const uint64_t wj = w_cur[j];
                     x[j] = ca_addmod(x[j], shoup_mul(wj, coef, coefp, q), q);
@@ -674,7 +1055,7 @@ static ca_status lanczos(const ca_spmat *A, const uint64_t *b, uint64_t q, uint6
     }
     if (rc == CA_OK) {
         /* verify A x == b */
-        lz_av(&z, A, x, tmp_m, NULL, NULL, NULL, NULL);
+        lz_av_p(P, &z, A, x, tmp_m, NULL, NULL, NULL, NULL);
         for (uint32_t i = 0; i < m; i++) {
             if (tmp_m[i] != b[i] % q) { rc = CA_ERR_SINGULAR; break; }
         }
@@ -700,6 +1081,13 @@ out:
 
 ca_status ca_linsolve_mod_prime(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
                                 uint8_t *known, uint64_t seed, ca_linsolve_report *rep)
+{
+    return ca_linsolve_mod_prime_mt(A, b, q, x, known, seed, 1, rep);
+}
+
+ca_status ca_linsolve_mod_prime_mt(const ca_spmat *A, const uint64_t *b, uint64_t q, uint64_t *x,
+                                   uint8_t *known, uint64_t seed, uint32_t threads,
+                                   ca_linsolve_report *rep)
 {
     if (!A || !b || !x || !known) {
         ca_set_error("linsolve: null input or output");
@@ -796,11 +1184,15 @@ ca_status ca_linsolve_mod_prime(const ca_spmat *A, const uint64_t *b, uint64_t q
     if (nc > 0) {
         if (nr < nc) { rc = CA_ERR_SINGULAR; goto out2; }
         rc = CA_ERR_SINGULAR;
+        /* one pool for every attempt; NULL keeps the one-thread path */
+        lz_pool *pool = lz_pool_create(lz_threads(threads), Ared.nnz);
         for (int attempt = 0; attempt < 4 && rc != CA_OK; attempt++) {
             lrep.attempts++;
-            rc = lanczos(&Ared, bred, q, xred, &rng, &lrep.lanczos_iters);
-            if (rc == CA_ERR_NOMEM) goto out2;
+            rc = lanczos(&Ared, bred, q, xred, &rng, &lrep.lanczos_iters, pool);
+            if (rc == CA_ERR_NOMEM) break;
         }
+        lz_pool_destroy(pool);
+        if (rc == CA_ERR_NOMEM) goto out2;
         if (rc != CA_OK && nc <= 1200) {
             /* dense fallback on the normal equations */
             lrep.used_dense = 1;
