@@ -45,11 +45,13 @@ CXX     ?= g++
 OMPFLAGS ?= -fopenmp
 CLANG   ?= clang
 PTXAS   ?= ptxas
-# Toolkit gate, as in ../Makefile: ptxas 13.4.92 is reported to miscompile
-# clmad on sm_120 (NVIDIA bug 6955062; research/clmad_audit_20261110).  A
-# PACKED_CLMAD=1 build on a listed version is refused unless ALLOW_BAD_PTXAS=1.
+# Toolkit gate, as in ../Makefile (research/clmad_audit_20261110): a
+# PACKED_CLMAD=1 build on a BAD_PTXAS version is refused unless
+# ALLOW_BAD_PTXAS=1.  Empty by default: the ptxas constant-fold defect
+# (NVIDIA bug 6955062) reproduces on 13.3.73 and 13.4.92 with the public
+# reproducer, but test-packed-cuda passes on both with these kernels.
 NVCC_VERSION := $(shell $(NVCC) --version 2>/dev/null | sed -n 's/.*V\([0-9][0-9.]*\).*/\1/p' | tail -1)
-BAD_PTXAS ?= 13.4.92
+BAD_PTXAS ?=
 define check-ptxas
 	@if [ "$(PACKED_CLMAD)" = "1" ]; then v="$(NVCC_VERSION)"; for b in $(BAD_PTXAS); do \
 	  if [ "$$v" = "$$b" ] && [ "$(ALLOW_BAD_PTXAS)" != "1" ]; then \

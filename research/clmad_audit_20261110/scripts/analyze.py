@@ -48,7 +48,7 @@ def read_env(path):
     m = re.search(r"CUDA Version: ([0-9.]+)", env["raw"])
     if m:
         env["driver_cuda"] = m.group(1)
-    m = re.search(r"^(NVIDIA [^,\n]+), ([0-9a-fA-F-]{20,}), ([0-9.]+), ([0-9.]+)", env["raw"], re.M)
+    m = re.search(r"^(NVIDIA [^,\n]+), (GPU-[0-9a-fA-F-]+), ([0-9.]+), ([0-9.]+)", env["raw"], re.M)
     if m:
         env["gpu"] = m.group(1)
         env["compute_cap"] = m.group(4)
@@ -158,6 +158,76 @@ def q3_verdict(ts):
     return verdict, detail
 
 
+AUTHOR_OPTS = ["O3", "O2", "O1", "O0", "jit"]
+
+
+def read_author(d):
+    """Parse the third-party reproducer's run outputs (addendum A1).
+
+    Each file has sections '== ptxas -O3' .. '== PTX only, JIT-compiled by the
+    driver', each ending in 'exit N'.  Returns rows {N, opt, exit, wrong}."""
+    rows = []
+    files = {14: "author_run_default.txt", 15: "author_run_N15.txt", 16: "author_run_N16.txt",
+             18: "author_run_N18.txt", 19: "author_run_N19.txt"}
+    for n, fn in files.items():
+        try:
+            txt = open(os.path.join(d, fn), errors="replace").read()
+        except OSError:
+            continue
+        secs = re.split(r"^== ", txt, flags=re.M)[1:]
+        for sec in secs:
+            head = sec.splitlines()[0]
+            opt = "jit" if "PTX only" in head else re.search(r"-O(\d)", head).group(0)[1:]
+            m = re.search(r"^exit (\d+)$", sec, re.M)
+            w = re.search(r"^(\d+) of (\d+) steps wrong", sec, re.M)
+            rows.append({"N": n, "opt": opt, "exit": m.group(1) if m else "?",
+                         "wrong": f"{w.group(1)}/{w.group(2)}" if w else "?"})
+    meta = {}
+    for key, fn in (("commit", "author_commit.txt"), ("sha256", "author_sha256.txt")):
+        try:
+            meta[key] = open(os.path.join(d, fn)).read().strip()
+        except OSError:
+            pass
+    return rows, meta
+
+
+def author_verdict(rows):
+    by = {(r["N"], r["opt"]): r["exit"] for r in rows}
+    bad = sorted({n for (n, o), e in by.items() if o in ("O3", "O2") and e == "1"})
+    ok_low = all(e == "0" for (n, o), e in by.items() if o in ("O1", "O0"))
+    if bad and ok_low:
+        return "reproduced", bad
+    if rows and all(e == "0" for e in by.values()):
+        return "not reproduced", []
+    return "other pattern", sorted(set(by.values()))
+
+
+def svg_author(arms, path):
+    Ns, opts, cell, L, T = [14, 15, 16, 18, 19], AUTHOR_OPTS, 44, 170, 50
+    W = L + len(Ns) * cell + 40
+    H = T + len(arms) * (len(opts) * cell + 30) + 20
+    s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" font-family="Helvetica,Arial" font-size="11">',
+         f'<rect width="{W}" height="{H}" fill="white"/>',
+         '<text x="10" y="20" font-size="14">third-party reproducer (robik75/ptxas-clmad-constant-operand), unchanged: exit by N and ptxas level (0 match, 1 mismatch)</text>']
+    y = T
+    for arm, d in arms.items():
+        s.append(f'<text x="10" y="{y - 8}" font-size="12">{arm}  (nvcc {d["env"].get("nvcc", "?")}, {d["env"].get("gpu", "?")})</text>')
+        by = {(r["N"], r["opt"]): r["exit"] for r in d["author_rows"]}
+        for j, n in enumerate(Ns):
+            s.append(f'<text x="{L + j * cell + cell / 2}" y="{y + len(opts) * cell + 14}" text-anchor="middle">N={n}</text>')
+        for i, o in enumerate(opts):
+            lab = "driver JIT" if o == "jit" else f"-Xptxas -{o}"
+            s.append(f'<text x="{L - 8}" y="{y + i * cell + cell / 2 + 4}" text-anchor="end">{lab}</text>')
+            for j, n in enumerate(Ns):
+                e = by.get((n, o), "?")
+                col = {"0": "#2ca02c", "1": "#d62728", "2": "#ff7f0e"}.get(e, "#bbb")
+                s.append(f'<rect x="{L + j * cell}" y="{y + i * cell}" width="{cell - 2}" height="{cell - 2}" fill="{col}"/>')
+                s.append(f'<text x="{L + j * cell + cell / 2 - 1}" y="{y + i * cell + cell / 2 + 4}" text-anchor="middle" fill="white" font-weight="bold">{e}</text>')
+        y += len(opts) * cell + 30
+    s.append("</svg>")
+    open(path, "w").write("\n".join(s))
+
+
 def make_exit(path, key):
     try:
         txt = open(path, errors="replace").read()
@@ -242,12 +312,24 @@ def svg_repro(arms, path):
 
 
 def main():
-    arms = {}
+    arms, author = {}, {}
     for arm in sorted(os.listdir(RES)):
         d = os.path.join(RES, arm, "results")
         if not os.path.isdir(d):
             continue
         env = read_env(os.path.join(d, "env.txt"))
+        if arm.startswith("author-"):
+            rows, meta = read_author(d)
+            v, detail = author_verdict(rows)
+            alloc = {}
+            try:
+                alloc = json.load(open(os.path.join(RES, arm, "allocation.json")))
+            except OSError:
+                pass
+            author[arm] = {"env": {k: v2 for k, v2 in env.items() if k != "raw"}, "author_rows": rows,
+                           "source": meta, "verdict": v, "detail": detail,
+                           "pod": {"id": alloc.get("pod_id"), "wall_s": alloc.get("wall_s"), "run_exit": alloc.get("run_exit")}}
+            continue
         repro = read_repro(os.path.join(d, "repro_summary.tsv"))
         verdict, detail = q1_verdict(repro)
         extra = {r["variant"] + ("_ptxjit" if r["codegen"] == "ptx" else ""): r["exit"]
@@ -280,7 +362,7 @@ def main():
             "timing": timing,
             "q3": {g: {"verdict": v, "detail": dd} for g, (v, dd) in q3.items()},
         }
-    summary = {"schema": "clmad-audit-summary/v1", "t_threshold": T_THRESHOLD, "arms": {}}
+    summary = {"schema": "clmad-audit-summary/v1", "t_threshold": T_THRESHOLD, "arms": {}, "addendum_author_repro": author}
     for arm, d in arms.items():
         s = {k: v for k, v in d.items() if k not in ("timing", "repro")}
         s["timing"] = {g: d["timing"][g] for g in ("latency", "occupancy")}
@@ -291,6 +373,8 @@ def main():
     if arms:
         svg_timing(arms, os.path.join(RES, "fig_timing.svg"))
         svg_repro(arms, os.path.join(RES, "fig_repro.svg"))
+    if author:
+        svg_author(author, os.path.join(RES, "fig_repro_author.svg"))
     # REPORT.md
     L = ["# clmad audit on sm_120: results", "",
          "Decision rules: `PROTOCOL.md`. Numbers: `results/summary.json`. Raw: `results/<arm>/results/`.", ""]
@@ -305,6 +389,15 @@ def main():
     for arm, d in arms.items():
         for r in d["repro"]:
             L.append(f"| {arm} | {r['binary']} | {r['N']} | {r['opt']} | {r['codegen']} | {r['variant']} | {r['exit']} | {r['clmad_sass']} | {r['first_line'][:70]} |")
+    L += ["", "## Q1 addendum (A1): the third-party reproducer, unchanged", ""]
+    for arm, d in author.items():
+        L.append(f"- **{arm}** ({d['env'].get('gpu', '?')}, nvcc {d['env'].get('nvcc', '?')}, driver {d['env'].get('driver', '?')}): "
+                 f"{d['verdict']} {d['detail']}; source commit {d['source'].get('commit', '?')}; pod {d['pod']['id']}")
+    if author:
+        L += ["", "![author repro](results/fig_repro_author.svg)", "", "| arm | N | ptxas | exit | wrong steps |", "|---|---|---|---|---|"]
+        for arm, d in author.items():
+            for r in d["author_rows"]:
+                L.append(f"| {arm} | {r['N']} | {r['opt']} | {r['exit']} | {r['wrong']} |")
     L += ["", "## Q2: ecc2k130 tests", ""]
     for arm, d in arms.items():
         L.append(f"- **{arm}**: host clmad tests exit {d['q2']['host_tests_exit']}; test-packed-cuda exit {d['q2']['test_packed_cuda_exit']}")
@@ -330,6 +423,8 @@ def main():
                 L.append(f"| {mode} | A/A random_a~random_b t | | {ts[mode]['t_aa_random']:+.2f} | | | | fixed_a~fixed_b t {ts[mode]['t_fixed_pair']:+.2f}; lowhw~highhw t {ts[mode]['t_lowhw_highhw']:+.2f} |")
             L.append("")
     open(os.path.join(ROOT, "REPORT.md"), "w").write("\n".join(L) + "\n")
+    for a, d in author.items():
+        print(a, "author repro:", d["verdict"], d["detail"])
     print(json.dumps({a: {"q1": d["q1"]["verdict"], "q2": d["q2"], "q3": {g: d["q3"][g]["verdict"] for g in d["q3"]}} for a, d in arms.items()}, indent=1))
 
 

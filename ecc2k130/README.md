@@ -244,7 +244,8 @@ did not pay.
 ```sh
 make                         # host tests against the golden model (no CUDA): kernel and CPU walker
 make gpu                     # needs nvcc >= 13.3 for clmad; ARCH defaults to sm_120
-                             # refuses nvcc/ptxas 13.4.92 (BAD_PTXAS; NVIDIA bug 6955062) unless ALLOW_BAD_PTXAS=1
+                             # BAD_PTXAS="<ver> ..." refuses listed nvcc/ptxas versions (ALLOW_BAD_PTXAS=1 overrides);
+                             # run `make -C runner test-packed-cuda` on a new toolkit first (research/clmad_audit_20261110)
 make gpu NVCC=$(scripts/fetch_cuda.sh)/bin/nvcc     # CUDA 13.3 from NVIDIA's pip wheels
 make bench                   # bench --steps 1024 --launches 64
 make verify                  # walk at dp-weight 46, 300 reports re-walked on the model

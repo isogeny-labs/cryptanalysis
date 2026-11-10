@@ -1,6 +1,6 @@
 {
   "branch": "claude/gallant-rubin-c51cyt",
-  "closed_utc": null,
+  "closed_utc": "2026-11-10T04:26:30+00:00",
   "commands": [
     {
       "argv": [
@@ -37,6 +37,44 @@
       "exit": 3,
       "started_utc": "2026-11-10T04:09:34+00:00",
       "wall_s": 0.583
+    },
+    {
+      "argv": [
+        "python3",
+        "research/clmad_audit_20261110/scripts/run_runpod.py",
+        "--arm",
+        "cuda13.4.3",
+        "--image",
+        "nvidia/cuda:13.4.3-devel-ubuntu24.04",
+        "--bundle",
+        "/tmp/claude-0/-home-user/f443bfb4-633c-597f-8432-90f71803ee94/scratchpad/runpod/bundle.tar.xz",
+        "--out",
+        "research/clmad_audit_20261110/results/cuda13.4.3"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-10T04:12:12+00:00",
+      "wall_s": 184.97
+    },
+    {
+      "argv": [
+        "python3",
+        "research/clmad_audit_20261110/scripts/run_runpod.py",
+        "--arm",
+        "author-cuda13.3.1",
+        "--image",
+        "nvidia/cuda:13.3.1-devel-ubuntu24.04",
+        "--bundle",
+        "/tmp/claude-0/-home-user/f443bfb4-633c-597f-8432-90f71803ee94/scratchpad/runpod/bundle2.tar.xz",
+        "--run-script",
+        "research/clmad_audit_20261110/pod/run_author_repro.sh",
+        "--out",
+        "research/clmad_audit_20261110/results/author-cuda13.3.1"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-10T04:20:04+00:00",
+      "wall_s": 180.625
     }
   ],
   "commit": "fe751b09b08bc274d60cb22cfba25b13983b2b6e",
@@ -54,19 +92,120 @@
     "platform": "Linux-6.18.44-fc-v338-x86_64-with-glibc2.39"
   },
   "id": "20261110T0408Z-clmad-audit",
-  "metrics": [],
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 100,
+      "name": "clmad_lo_chain_latency_rtx5090",
+      "note": "arm cuda13.4.3, RTX 5090, nvcc 13.4.92: per-launch median cycles per dependent clmad.lo, fixed_a class, 1 block x 32 threads, CHAIN 2048; no operand class distinguishable (|t| <= 4.5)",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        55.084,
+        55.092
+      ],
+      "unit": "cycles_per_op",
+      "value": 55.084
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 100,
+      "name": "clmad_lo_chain_latency_rtxpro6000",
+      "note": "arm cuda13.3.1, RTX PRO 6000 Blackwell Server, nvcc 13.3.73: same statistic; no operand class distinguishable",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        63.528,
+        63.54
+      ],
+      "unit": "cycles_per_op",
+      "value": 63.528
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 50,
+      "name": "clmad_lo_chain_occupancy_rtx5090",
+      "note": "arm cuda13.4.3, 2 blocks per SM x 256 threads, per-launch median over threads",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        255.842,
+        255.881
+      ],
+      "unit": "cycles_per_op",
+      "value": 255.86
+    },
+    {
+      "baseline": null,
+      "better": "lower",
+      "n": 50,
+      "name": "clmad_lo_chain_occupancy_rtxpro6000",
+      "note": "arm cuda13.3.1, 2 blocks per SM x 256 threads",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        255.896,
+        255.928
+      ],
+      "unit": "cycles_per_op",
+      "value": 255.901
+    }
+  ],
   "problem": "kernel:clmad_sm120",
-  "raw": [],
+  "raw": [
+    {
+      "bytes": 69008,
+      "path": "research/clmad_audit_20261110/results/cuda13.4.3/results.tar.xz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b1/b1d142154c0a949a7115d2eab48e97dc4a53298e342f54bc448f21fe1230e5e7",
+      "sha256": "b1d142154c0a949a7115d2eab48e97dc4a53298e342f54bc448f21fe1230e5e7",
+      "uploaded": false
+    },
+    {
+      "bytes": 70584,
+      "path": "research/clmad_audit_20261110/results/cuda13.3.1/results.tar.xz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/11/116eed68957e90ae8edc918bff08f89d5d5342ade0fcfa836503940679800858",
+      "sha256": "116eed68957e90ae8edc918bff08f89d5d5342ade0fcfa836503940679800858",
+      "uploaded": false
+    },
+    {
+      "bytes": 5296,
+      "path": "research/clmad_audit_20261110/results/author-cuda13.4.3/results.tar.xz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8a/8a436c87ca7635e9ac18faa13af08bc85532f1b9dce5a259d9f790a9bc7e9857",
+      "sha256": "8a436c87ca7635e9ac18faa13af08bc85532f1b9dce5a259d9f790a9bc7e9857",
+      "uploaded": false
+    },
+    {
+      "bytes": 5536,
+      "path": "research/clmad_audit_20261110/results/author-cuda13.3.1/results.tar.xz",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/a7/a7dac1607007523b70f98a1d1b0dada3a2921ced145e56afb105b15df53c621d",
+      "sha256": "a7dac1607007523b70f98a1d1b0dada3a2921ced145e56afb105b15df53c621d",
+      "uploaded": false
+    },
+    {
+      "bytes": 65181,
+      "path": "research/clmad_audit_20261110/results/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/af/af706c6e0bb535c03f75fbfaab58ec518f7d18a9ff790f9e5a153332066d63e9",
+      "sha256": "af706c6e0bb535c03f75fbfaab58ec518f7d18a9ff790f9e5a153332066d63e9",
+      "uploaded": false
+    }
+  ],
   "repo": "cryptanalysis",
   "reports": {
-    "pdf": null,
+    "pdf": "research/clmad_audit_20261110/REPORT.pdf",
     "png": [],
-    "svg": []
+    "svg": [
+      "research/clmad_audit_20261110/results/fig_repro.svg",
+      "research/clmad_audit_20261110/results/fig_repro_author.svg",
+      "research/clmad_audit_20261110/results/fig_timing.svg"
+    ]
   },
   "schema": "bench.record/v1",
   "session": null,
   "slug": "clmad-audit",
-  "status": "open",
-  "summary": "",
+  "status": "measured",
+  "summary": "clmad on sm_120: third-party reproducer shows the ptxas constant-fold defect on both 13.3.73 and 13.4.92 (N=14,15,18,19 at -O2/-O3 and JIT); our reproducer and the ecc2k130 device tests pass on both; two-class timing: no operand class distinguishable, lo latency 55.08 (5090) / 63.53 (PRO 6000) cycles per op",
   "validation": null
 }

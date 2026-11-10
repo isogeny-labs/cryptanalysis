@@ -39,14 +39,16 @@ CXX   ?= g++
 NVCC  ?= nvcc
 ARCH  ?= -gencode arch=compute_120,code=sm_120
 
-# Toolkit gate (2026-11-10).  ptxas 13.4.92 (CUDA 13.4 Update 2, also the
-# 13.4.3 metapackage) is reported to fold a clmad with a constant multiplicand
-# on sm_120 at -O2/-O3 and drop its high half (NVIDIA bug 6955062;
-# research/clmad_audit_20261110).  Every build here uses clmad, so a listed
-# version is refused unless ALLOW_BAD_PTXAS=1.  The binary records the
-# compiler it was built with (nvccVersion in its JSON output).
+# Toolkit gate (2026-11-10, research/clmad_audit_20261110).  ptxas folds a
+# clmad whose multiplicand is the constant one and can drop its high half on
+# sm_120 at -O2/-O3 and under driver JIT (NVIDIA bug 6955062); the lab
+# reproduced it with the public reproducer on both 13.3.73 and 13.4.92.  These
+# kernels pass runner/ test-packed-cuda on both, and no clmad operand here is a
+# compile-time constant, so no version is refused by default.  List a version
+# in BAD_PTXAS when test-packed-cuda fails on it; ALLOW_BAD_PTXAS=1 overrides.
+# The binary records the compiler it was built with (nvccVersion in its JSON).
 NVCC_VERSION := $(shell $(NVCC) --version 2>/dev/null | sed -n 's/.*V\([0-9][0-9.]*\).*/\1/p' | tail -1)
-BAD_PTXAS ?= 13.4.92
+BAD_PTXAS ?=
 define check-ptxas
 	@v="$(NVCC_VERSION)"; for b in $(BAD_PTXAS); do \
 	  if [ "$$v" = "$$b" ] && [ "$(ALLOW_BAD_PTXAS)" != "1" ]; then \
