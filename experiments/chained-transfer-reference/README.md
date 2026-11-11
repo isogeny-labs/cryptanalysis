@@ -35,7 +35,7 @@ change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
   sets have paired additions and both dual norms compared with BigUint;
   independent Fp/Fp² point counts give order9,216, and reference negation
   counts self-inverse classes as4 and16.
-- Latest guarded suite receipt: native25 and reference37 passing tests, one pre-existing benchmark left
+- Latest guarded suite receipt: native25 and reference40 passing tests, one pre-existing benchmark left
   ignored. These are local correctness counts, not performance measurements.
   [pcc:unverified]
 
@@ -55,9 +55,20 @@ The subsequent [balanced genus2 prototype](BALANCED.md),
 checked primes5..101. Both10,404-class old/translated models match the existing
 chart engine; E109/F101 transfers without a rational Weierstrass point and
 all11,663 classes have paired norm additions checked. Latest complete guard
-passes native25/reference37 tests,1 existing benchmark ignored, formatting
+at that checkpoint passes native25/reference37 tests,1 existing benchmark ignored, formatting
 and strict Clippy (PCC-8b7ca0). The production backend/catalog remain unchanged.
 No non-split Richelot correspondence or computational advantage is supplied.
+[pcc:unverified]
+
+The [Frobenius-stable kernel assessment](NONSPLIT_KERNELS.md) and
+[inspected PDF](nonsplit-report.pdf) now enumerate all15 pairings on the
+predeclared E19/F17 sextic. Three are stable:1 degenerate and2 smooth targets,
+which are isomorphic to each other but not to the source as F17 curves.
+The E109/F101 quadratic cover instead has only the degenerate stable kernel.
+These fixture-specific outcomes do not assert unpolarized-Jacobian
+nonisomorphism or universal transfer impossibility. Final guard passes
+native25/reference40 tests,1 old benchmark ignored, formatting/strict Clippy
+and source checks(PCC-3c51f5). Actual non-split divisor maps remain next.
 [pcc:unverified]
 
 ## Cubic covers and arbitrary-class closed-point norm
