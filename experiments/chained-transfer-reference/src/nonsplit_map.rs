@@ -806,6 +806,59 @@ fn shifted_prime109_full_domains_and_source_recovery() {
     println!("PASS frozen shifted E109/F101, delta63, raw scale22; all12317 source/target classes both dual norms[2], bijection/additivity/coefficient descent; all109 scalar/recovery[4]/inverse82 relations, no scalar labels in maps");
 }
 
+#[test]
+fn accepted_target_elliptic_components_on_full_source_subgroups() {
+    use crate::balanced::SplitQuotients;
+    use crate::reference::MumfordDivisorP;
+    for (p, coefficients, orders, generator, inverse_four) in [
+        (17, [2, 2, 0], [19, 15], (5, 1), 5),
+        (101, [56, 13, 6], [109, 113], (0, 37), 82),
+    ] {
+        let split = SplitQuotients::new(p, coefficients).unwrap();
+        let r = RichelotMap::from_assessment(construct_for(p, coefficients).unwrap()).unwrap();
+        let base = &split.first.base;
+        let g = MumfordDivisorP::try_from_point(
+            base,
+            &BigUint::from(generator.0 as u64),
+            &BigUint::from(generator.1 as u64),
+        )
+        .unwrap();
+        let image = r.forward(&split.first.pull(&g).unwrap()).unwrap();
+        for n in 0..orders[0] {
+            let point = g.checked_scalar_mul(&BigUint::from(n), base).unwrap();
+            let transferred = r.forward(&split.first.pull(&point).unwrap()).unwrap();
+            assert_eq!(transferred, r.target.mul(&image, n).unwrap());
+            let reversed = r.dual(&transferred).unwrap();
+            let components = split.norms(&reversed).unwrap();
+            assert_eq!(
+                components.0,
+                point
+                    .checked_scalar_mul(&BigUint::from(4_u64), base)
+                    .unwrap()
+            );
+            assert!(components.1.is_identity());
+            assert_eq!(
+                components
+                    .0
+                    .checked_scalar_mul(&BigUint::from(inverse_four as u64), base)
+                    .unwrap(),
+                point
+            );
+            assert_eq!(
+                split
+                    .reconstruct(&components.0, &components.1, orders)
+                    .unwrap(),
+                reversed
+            );
+        }
+        let identity = MumfordDivisorP::identity(BigUint::from(p));
+        assert!(split
+            .reconstruct(&g, &identity, [orders[0] + 2, orders[1]])
+            .is_err());
+        println!("PASS F{p} target full r{} source subgroup has elliptic coordinates([4]P,0) after reversed Richelot/both norms,inverse{inverse_four} recovers P,all scalar/reconstruction controls,no scalar labels or solver", orders[0]);
+    }
+}
+
 /// Geometric branch-pair classes and coefficient Frobenius. This accepts
 /// extension classes directly, independently of the prime-field map wrapper.
 fn branch_two_torsion(j: &Jacobian<'_>, roots: &[Element]) -> Vec<Divisor> {

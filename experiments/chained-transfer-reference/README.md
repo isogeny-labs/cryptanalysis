@@ -1,5 +1,14 @@
 # Chained transfer differential reference
 
+Current [split-quotient checkpoint](SPLIT_QUOTIENTS.md) makes both elliptic
+norms/full odd rational-group reconstruction explicit. All285/12,317 classes
+pass completed reciprocal coordinates,inverses,both norm additions,cross-norm
+zero and sum of pull/norms=[2]. Every transferred source scalar has target
+coordinates([4]P,0). Seven upstream Lean lemmas pass; no DLP solver or
+measured advantage. Prior63cf80560 passes exact-head native25/reference47
+CI; current full49-test replay pending. Older snapshots below retain their
+exact scope. [pcc:unverified]
+
 Current [target Frobenius assessment](TARGET_FROBENIUS.md) strengthens both
 accepted17/101 maps to an unpolarized Fp-Jacobian nonisomorphism obstruction:
 source/target2-torsion over Fp³ has16/4 elements. Both targets have six-cycle

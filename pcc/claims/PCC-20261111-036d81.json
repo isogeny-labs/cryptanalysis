@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T13:03:43Z",
+ "id": "PCC-20261111-036d81",
+ "kind": "statement",
+ "producer": {
+  "commit": "63cf80560b8339b9ea67629746131f5c6f722299",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/split-quotients-01.txt",
+    "sha256": "926bba916819aa4c3e075e6672e25accd5eabf72fb4ff42d9fb0cb79d79bc190"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Complete split-quotient correctness test passes all285 F17 and12317 shiftedF101 source classes: checked reciprocal/inverse coordinate maps,bijection/paired additions,zero-support multiplicities0/1/2,both elliptic quotient norm additions,cross norms0,sum of pull/norms=[2] and reconstruction by odd component halving. Explicit elliptic counts19/15 and109/113; full norm pairs biject with product groups. No scalar label read. This is producer-run unsigned fixed-field evidence,not independent whole-map scientific verification,a DLP solver or computational advantage."
+}
