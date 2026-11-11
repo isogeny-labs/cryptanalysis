@@ -65,6 +65,7 @@ fn main() {
     check();
     check_richelot_target();
     check_full_richelot_image();
+    check_successor();
 }
 
 #[test]
@@ -139,4 +140,58 @@ fn independent_point_count_orders_of_both_models() {
             BigUint::from(10404_u32)
         );
     }
+}
+
+// This continuation is bound to a newer upstream checkpoint in source-pin.json.
+// The original baseline receipts remain unchanged and retain their old scope.
+fn check_successor() {
+    use chain::richelot::model::Richelot;
+    let r = Richelot::new([[-1, 0, 1], [4, 1, 1], [4, -1, 1]], 1, 2).unwrap();
+    for (model, expected_two) in [(r.source(), 4), (r.target(), 16)] {
+        let f = model.quintic();
+        let c = curve(&f);
+        assert_eq!(
+            reference::brute_force_jac_order_via_lpoly(&c),
+            BigUint::from(9216_u32)
+        );
+        let classes = model.classes();
+        assert_eq!(classes.len(), 9216);
+        let converted = |d: &chain::richelot::model::Class| {
+            let (u, v) = d.coefficients();
+            convert(&chain::Divisor { u, v }, &c, &f)
+        };
+        let mut two = 0;
+        for (i, d) in classes.iter().enumerate() {
+            let a = converted(d);
+            let inverse = a.checked_neg(&c).unwrap();
+            if inverse == a {
+                two += 1;
+            }
+            let h = &classes[(7919 * i + 37) % classes.len()];
+            assert_eq!(
+                a.checked_add(&converted(h), &c).unwrap(),
+                converted(&d.add(h).unwrap()),
+                "successor addition root={} class={i}",
+                model.root()
+            );
+            let composed = if model == r.source() {
+                r.dual(&r.transfer(d).unwrap()).unwrap()
+            } else {
+                r.transfer(&r.dual(d).unwrap()).unwrap()
+            };
+            assert_eq!(
+                a.checked_add(&a, &c).unwrap(),
+                converted(&composed),
+                "successor dual norm root={} class={i}",
+                model.root()
+            );
+        }
+        assert_eq!(two, expected_two);
+        println!("PASS successor root={}: 9216 classes, Fp/Fp² Jacobian order9216, BigUint self-inverse count{two}, paired additions and dual norm",model.root());
+    }
+}
+
+#[test]
+fn successor_both_complete_models_against_biguint() {
+    check_successor();
 }

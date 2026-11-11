@@ -5,7 +5,7 @@ digraph route {
   edge [fontname="DejaVu Sans", fontsize=10];
   E [label="E/F101: v²=u³+1\nP=(4,41), r=17"];
   J [label="Jac(C)/F101\nC: y²=x⁶+1\nbase W=(10,0)"];
-  J2 [label="Jac(C2)/F101\nC2: w²=41z⁶+9z⁴+9z²+41\nRichelot determinant 40"];
+  J2 [label="Jac(C2)/F101\nC2: w²=41z⁶+9z⁴+9z²+41\nC2 is isomorphic to C; R has degree4"];
   E2 [label="E2/F101\nV²=X³+9X²+66X+39\nimage P=(91,84)", fillcolor="#e1f1e9"];
   Z [label="E/F101: v²=u³+1\nzero on f*(E)", fillcolor="#f5e7e7"];
   Z2 [label="E2/F101, second quotient\nzero on the order-17 image", fillcolor="#f5e7e7"];
@@ -14,4 +14,14 @@ digraph route {
   J2 -> E2 [label="first norm\nX=41z², V=41w"];
   J -> Z [label="g* · zero control", style=dashed, color="#ad5555"];
   J2 -> Z2 [label="second norm · zero control", style=dashed, color="#ad5555"];
+  E -> E2 [label="tau phi [2]", style=dotted, color="#59616b", constraint=false];
+
+  ES [label="Successor Es/F101\nv²=u³+6u²+9u−16\nP=(48,20), r=3"];
+  JS [label="Jac(Cs)/F101, #J=9216\ny²=x⁶+6x⁴+9x²−16\n#J(F101)[2]=4"];
+  JT [label="Jac(Ct)/F101, #J=9216\nw²=20z⁶+81z⁴+83z²+21\n#J(F101)[2]=16"];
+  ET [label="Successor Et/F101\nV²=X³+81X²+44X+17\nimage P=(2,72); second norm zero", fillcolor="#e1f1e9"];
+  ES -> JS [label="whole-fiber pullback\nbase (1,0)"];
+  JS -> JT [label="R · degree4\ndeterminant91"];
+  JT -> ET [label="first norm\nbase (2,0)"];
+  ES -> ET [label="tau phi [2]", style=dotted, color="#59616b", constraint=false];
 }
